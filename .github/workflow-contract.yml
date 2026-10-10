@@ -760,6 +760,8 @@
         "tests.validation.test_secret_metadata_sync",
         "tests.validation.test_smtp_generator",
         "tests.lib.ops.test_smtp_contract",
+        "tests.lib.ops.test_retirement",
+        "tests.validation.test_retirement_cli",
         "tests.validation.test_project_registration",
         "-v"
       ],

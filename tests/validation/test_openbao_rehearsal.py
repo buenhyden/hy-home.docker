@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Opt-in, owned synthetic OpenBao 2.6.2 rehearsal; never a HOME receipt.
+"""Opt-in, owned synthetic OpenBao 2.7.1 candidate rehearsal; never a HOME receipt.
 
 Run only after reviewing the isolated boundary:
     HYHOME_OPENBAO_REHEARSAL=1 python3 -m unittest \
@@ -11,10 +11,12 @@ content are captured privately and never become assertion messages.
 """
 
 import hashlib
+import importlib.util
 import json
 import os
 import re
 import secrets
+import sys
 import time
 import unittest
 from pathlib import Path
@@ -197,34 +199,206 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             "umask 077; cat > /openbao/agent/role_id",
             data=role["data"]["role_id"].encode(),
         )
-        result = captured(
-            [
-                "sh",
-                str(SOURCE / "scripts/issue-renderer-secret-id.sh"),
-                server,
-                fixture.auth_volume,
-                "openbao/openbao:2.6.2",
-                agent,
-            ],
-            data=(self.issuer_token + "\n").encode(),
-            allow_failure=True,
-        )
-        self.must(
-            result.returncode == 0, "native limited-issuer wrapped delivery failed"
-        )
-        token = (
-            fixture.docker("exec", server, "cat", "/openbao/agent/secret_id")
+        # Install exactly these reviewed public bytes into a private synthetic Git
+        # repository. This fixture commit is not a HOME approval or delivery receipt.
+        repository = fixture.directory / "issuer-source"
+        repository.mkdir(mode=0o700, exist_ok=True)
+        relative = Path("infra/03-security/openbao/scripts")
+        target = repository / relative
+        target.mkdir(parents=True, exist_ok=True)
+        if not (repository / ".git").exists():
+            for name in (
+                "issue-renderer-secret-id.sh",
+                "renderer-issuance.py",
+                "install-renderer-issuer.sh",
+            ):
+                (target / name).write_bytes((SOURCE / "scripts" / name).read_bytes())
+            captured(["/usr/bin/git", "init", "--quiet", str(repository)])
+            captured(["/usr/bin/git", "-C", str(repository), "add", str(relative)])
+            captured(
+                [
+                    "/usr/bin/git",
+                    "-C",
+                    str(repository),
+                    "-c",
+                    "user.name=SEC01 synthetic fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "commit",
+                    "--quiet",
+                    "-m",
+                    "test: synthetic issuer input",
+                ]
+            )
+        else:
+            for name in (
+                "issue-renderer-secret-id.sh",
+                "renderer-issuance.py",
+                "install-renderer-issuer.sh",
+            ):
+                self.must(
+                    (target / name).read_bytes()
+                    == (SOURCE / "scripts" / name).read_bytes(),
+                    "synthetic approved source changed during cold-boot test",
+                )
+        revision = (
+            captured(["/usr/bin/git", "-C", str(repository), "rev-parse", "HEAD"])
             .stdout.decode()
             .strip()
         )
-        status, wrapped = client.api("POST", "sys/wrapping/lookup", {}, token=token)
+        install_parent = fixture.directory / "operator-tools"
+        install_parent.mkdir(mode=0o700, exist_ok=True)
+        installed = install_parent / revision
+        bootstrap = install_parent / (revision + "-installer.sh")
+        if not bootstrap.exists():
+            blob = captured(
+                [
+                    "/usr/bin/git",
+                    "-C",
+                    str(repository),
+                    "show",
+                    revision + ":" + str(relative / "install-renderer-issuer.sh"),
+                ]
+            ).stdout
+            bootstrap.write_bytes(blob)
+            bootstrap.chmod(0o400)
+        if not installed.exists():
+            captured(["sh", str(bootstrap), str(repository), revision, str(installed)])
+        journal = fixture.directory / "issuance-journal"
+        journal.mkdir(mode=0o700, exist_ok=True)
+        tokens = []
+        for name in ("renderer-issuer", "renderer-cleanup"):
+            status, issued = client.api(
+                "POST",
+                "auth/token/create/" + name,
+                {
+                    "policies": name,
+                    "ttl": "5m",
+                    "explicit_max_ttl": "5m",
+                    "renewable": False,
+                    "no_default_policy": True,
+                },
+                token=self.operator_token,
+            )
+            self.must(status == 200, "short native role mint failed")
+            tokens.append(issued["auth"]["client_token"])
+        argv = [
+            "/bin/sh",
+            str(installed / "issue-renderer-secret-id.sh"),
+            server,
+            fixture.auth_volume,
+            "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+            agent,
+            str(journal),
+            revision,
+        ]
+        # Persist a synthetic interrupted issue before the actual native API call.
+        # Restart reconciliation must revoke only that nonce/time/role match and
+        # leave the stopped Agent stopped, before a later run may issue another ID.
+        spec = importlib.util.spec_from_file_location(
+            "sec01_native_issuer", SOURCE / "scripts/renderer-issuance.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+        abandoned = module.Record(
+            secrets.token_hex(16),
+            module.utc(time.time()),
+            module.ROLE,
+            revision,
+            module.MANIFEST,
+        )
+        with module.Journal(journal) as durable:
+            durable.save(abandoned)
+        status, _unused = client.api(
+            "POST",
+            module.PREFIX + "/secret-id",
+            {"metadata": json.dumps(abandoned.metadata())},
+            token=tokens[0],
+            headers={"X-Vault-Wrap-TTL": "60s"},
+        )
+        self.must(status == 200, "synthetic interrupted native issue failed")
+        reconciliation = captured(
+            argv, data=("\n".join(tokens) + "\n").encode(), allow_failure=True
+        )
+        self.must(
+            reconciliation.returncode == 0 and not (journal / "issuance.json").exists(),
+            "native interrupted issue exact cleanup failed",
+        )
+        self.must(
+            fixture.docker(
+                "inspect", "--format", "{{.State.Running}}", agent
+            ).stdout.strip()
+            == b"false",
+            "reconciliation unexpectedly started Agent",
+        )
+        self.must(
+            client.api("LIST", module.PREFIX + "/secret-id", token=tokens[1])[0] == 404,
+            "native abandoned accessor remains",
+        )
+        for method, path, payload in (
+            ("GET", "secret/data/hy-home/02-auth/keycloak", None),
+            (
+                "POST",
+                "auth/approle/role/other-role/secret-id-accessor/destroy",
+                {"secret_id_accessor": "synthetic"},
+            ),
+        ):
+            self.must(
+                client.api(method, path, payload, token=tokens[1])[0] == 403,
+                "cleanup token crossed resource boundary",
+            )
+        result = captured(
+            argv, data=("\n".join(tokens) + "\n").encode(), allow_failure=True
+        )
+        self.must(
+            result.returncode == 0,
+            "native limited roles/journal/wrapped delivery failed",
+        )
+        self.must(
+            not (journal / "issuance.json").exists(),
+            "authenticated issuance journal retained",
+        )
+        # Independently prove API response wrapping path and single-use denial;
+        # it is a different credential from the helper's consumed Agent input.
+        status, wrapped = client.api(
+            "POST",
+            "auth/approle/role/hy-home-renderer/secret-id",
+            {},
+            token=tokens[0],
+            headers={"X-Vault-Wrap-TTL": "60s"},
+        )
+        self.must(status == 200, "native response wrapping failed")
+        wrapping_token = wrapped["wrap_info"]["token"]
+        status, lookup = client.api(
+            "POST", "sys/wrapping/lookup", {}, token=wrapping_token
+        )
         self.must(
             status == 200
-            and wrapped.get("data", {}).get("creation_path")
+            and lookup["data"]["creation_path"]
             == "auth/approle/role/hy-home-renderer/secret-id",
-            "wrapping creation path differs",
+            "wrapping path differs",
         )
-        return token
+        status, unwrapped = client.api(
+            "POST", "sys/wrapping/unwrap", {}, token=wrapping_token
+        )
+        self.must(status == 200, "synthetic wrapping unwrap failed")
+        self.must(
+            client.api("POST", "sys/wrapping/unwrap", {}, token=wrapping_token)[0]
+            >= 400,
+            "wrapping replay succeeded",
+        )
+        self.must(
+            client.api(
+                "POST",
+                "auth/approle/role/hy-home-renderer/secret-id-accessor/destroy",
+                {"secret_id_accessor": unwrapped["data"]["secret_id_accessor"]},
+                token=tokens[1],
+            )[0]
+            in (200, 204),
+            "synthetic accessor cleanup failed",
+        )
+        return wrapping_token
 
     def input_digest(self):
         paths = [
@@ -251,12 +425,21 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 "start-agent.sh",
                 "health-agent.sh",
                 "issue-renderer-secret-id.sh",
+                "renderer-issuance.py",
+                "install-renderer-issuer.sh",
                 "check-tls-material.sh",
             )
         ]
         paths += [
             SOURCE / "config/policies" / (name + ".hcl")
-            for name in ("renderer", "renderer-issuer", "prometheus", "backup-snapshot")
+            for name in (
+                "renderer",
+                "renderer-issuer",
+                "renderer-cleanup",
+                "operator",
+                "prometheus",
+                "backup-snapshot",
+            )
         ]
         paths += [
             SOURCE / "config/templates" / name
@@ -266,6 +449,10 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 "keycloak_admin_password_version.ctmpl",
                 "grafana_admin_password_version.ctmpl",
             )
+        ]
+        paths += [
+            SOURCE / "config" / (name + "-token-role.json")
+            for name in ("renderer-issuer", "renderer-cleanup")
         ]
         manifest = "".join(
             str(path.relative_to(ROOT))
@@ -327,7 +514,6 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             print("observed limited/expired token cases: PASS", flush=True)
             agent = fixture.agent("agent", start=False)
             wrap = self.wrapping(client, fixture, server, agent)
-            fixture.docker("start", agent)
             self.wait_render(fixture, agent, marker)
             self.must(
                 fixture.docker(
@@ -366,7 +552,6 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             fixture.stop(agent)
             fresh = fixture.agent("cold-agent", start=False)
             self.wrapping(client, fixture, server, fresh)
-            fixture.docker("start", fresh)
             self.wait_render(fixture, fresh, marker)
             self.insecure_render_mode(fixture, fresh)
             self.must(
@@ -379,6 +564,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             print("observed Agent start/restart/fresh-process render: PASS", flush=True)
             snapshot = self.snapshot(client, fixture, server)
             print("observed existing snapshot renewal/save: PASS", flush=True)
+            self.malformed_audit_input(fixture, server, client, marker)
             self.audit(fixture, server, marker, client.token)
             _restored, restore_client = fixture.server("restore")
             foreign_shares = restore_client.initialize()
@@ -472,17 +658,10 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             "role_id": role_id["data"]["role_id"],
             "secret_id": ids[0]["secret_id"],
         }
-        status, accepted = client.api("POST", "auth/approle/login", payload)
+        status, _accepted = client.api("POST", "auth/approle/login", payload)
         self.must(
-            status == 200,
-            "expected exact-2.6.2 upstream SecretID expiry behavior changed",
-        )
-        print(
-            "KNOWN_UPSTREAM_RESIDUAL/P06_BLOCK: expired unused SecretID accepted by 2.6.2",
-            flush=True,
-        )
-        self.put(
-            client, "auth/token/revoke", {"token": accepted["auth"]["client_token"]}
+            status >= 400,
+            "expired unused SecretID authenticated; candidate rollout blocked",
         )
         self.put(
             client,
@@ -507,19 +686,69 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             client, "sys/mounts/secret", {"type": "kv", "options": {"version": "2"}}
         )
         self.put(client, "sys/auth/approle", {"type": "approle"})
-        for name in ("renderer", "renderer-issuer", "prometheus", "backup-snapshot"):
+        for name in (
+            "renderer",
+            "renderer-issuer",
+            "renderer-cleanup",
+            "operator",
+            "prometheus",
+            "backup-snapshot",
+        ):
             self.policy(client, name, SOURCE / "config/policies" / (name + ".hcl"))
         self.put(
             client,
             "auth/approle/role/hy-home-renderer",
             json.loads((SOURCE / "config/renderer-role.json").read_text()),
         )
-        status, issued = client.api(
+        for name in ("renderer-issuer", "renderer-cleanup"):
+            self.put(
+                client,
+                "auth/token/roles/" + name,
+                json.loads(
+                    (SOURCE / "config" / (name + "-token-role.json")).read_text()
+                ),
+            )
+        status, operator = client.api(
             "POST",
             "auth/token/create",
             {
-                "policies": ["renderer-issuer"],
+                "policies": ["operator"],
                 "ttl": "5m",
+                "renewable": False,
+                "no_default_policy": True,
+            },
+        )
+        self.must(status == 200, "synthetic operator token creation failed")
+        self.operator_token = operator["auth"]["client_token"]
+        self.must(
+            client.api(
+                "POST",
+                "auth/approle/role/hy-home-renderer/secret-id",
+                {},
+                token=self.operator_token,
+                headers={"X-Vault-Wrap-TTL": "60s"},
+            )[0]
+            == 403,
+            "operator bypassed dedicated issuer role",
+        )
+        self.must(
+            client.api(
+                "POST",
+                "auth/token/create/renderer-issuer",
+                {},
+                token=self.operator_token,
+            )[0]
+            == 403,
+            "operator omitted bounded role mint constraints",
+        )
+        status, issued = client.api(
+            "POST",
+            "auth/token/create/renderer-issuer",
+            {
+                "policies": "renderer-issuer",
+                "ttl": "5m",
+                "explicit_max_ttl": "5m",
+                "renewable": False,
                 "no_default_policy": True,
             },
         )
@@ -649,6 +878,21 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             "existing restricted renewal/snapshot snippet failed",
         )
         return result.stdout
+
+    def malformed_audit_input(self, fixture, server, client, marker):
+        # Deliberately incomplete JSON: do not confuse this syntax-error boundary
+        # with proof covering every provider advisory or native log sink.
+        malformed = b'{"data":{"admin_password":"' + marker.encode() + b'"},'
+        status, response = client.api(
+            "POST", "secret/data/hy-home/audit-malformed", malformed, binary=True
+        )
+        self.must(status == 400, "malformed JSON request was not rejected")
+        raw = fixture.docker("exec", server, "cat", "/openbao/audit/audit.json").stdout
+        self.must(
+            marker.encode() not in response and marker.encode() not in raw,
+            "malformed request exposed synthetic input (details withheld)",
+        )
+        print("observed malformed JSON response/audit nonexposure: PASS", flush=True)
 
     def audit(self, fixture, server, marker, root_token):
         raw = fixture.docker("exec", server, "cat", "/openbao/audit/audit.json").stdout

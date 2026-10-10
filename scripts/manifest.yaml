@@ -545,6 +545,17 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_smtp_contract.py
+- path: scripts/lib/ops/retire_materials.py
+  kind: library
+  authority: docs/05.operations/runbooks/0009-release-management.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/retire-materials.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_retirement.py
 - path: scripts/lib/supply_chain/grype_db_seed.py
   kind: validator
   authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
@@ -663,6 +674,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_release.py
+- path: scripts/operations/retire-materials.py
+  kind: operations
+  authority: docs/05.operations/runbooks/0009-release-management.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/0009-release-management.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_retirement_cli.py
 - path: scripts/operations/storybook_design_export.py
   kind: operations
   authority: docs/05.operations/runbooks/0101-storybook.md

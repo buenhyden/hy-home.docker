@@ -19,8 +19,28 @@ path "secret/metadata/hy-home/06-observability/grafana" {
   capabilities = ["read"]
 }
 
-path "auth/approle/role/hy-home-renderer/secret-id" {
+# Separate short nonrenewable roles; no direct SecretID wrapping bypass.
+path "auth/token/create/renderer-issuer" {
   capabilities = ["update"]
+  required_parameters = ["policies", "renewable", "no_default_policy", "ttl", "explicit_max_ttl"]
+  allowed_parameters = {
+    "policies" = ["renderer-issuer"]
+    "renewable" = [false]
+    "no_default_policy" = [true]
+    "ttl" = ["5m"]
+    "explicit_max_ttl" = ["5m"]
+  }
+}
+path "auth/token/create/renderer-cleanup" {
+  capabilities = ["update"]
+  required_parameters = ["policies", "renewable", "no_default_policy", "ttl", "explicit_max_ttl"]
+  allowed_parameters = {
+    "policies" = ["renderer-cleanup"]
+    "renewable" = [false]
+    "no_default_policy" = [true]
+    "ttl" = ["5m"]
+    "explicit_max_ttl" = ["5m"]
+  }
 }
 
 path "sys/storage/raft/snapshot" {

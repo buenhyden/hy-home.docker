@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.5"
+version: "1.2.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-10"
 created: "2025-11-12"
 ---
 
@@ -112,6 +112,45 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 
 - README나 n8n에 영향을 주는 Compose 참조 변경 후에는 `HYHOME_COMPOSE_PROFILES='workflow-n8n' bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - n8n 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
+
+### SEC01 안정판 묶음
+
+2026-10-10 [공식 Docker 설치 문서](https://docs.n8n.io/hosting/installation/docker/)의 stable channel과
+[release API](https://github.com/n8n-io/n8n/releases/tag/n8n%402.42.6)를 대조했습니다. <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+main·worker와 두 task runner를 같은 vendor stable로 맞추고 두 custom Dockerfile의 base·font builder
+OCI index digest를 고정합니다. platform manifest·custom build image ID·실제 running digest는 별도 증거입니다.
+fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정 채널의 명시 버전으로 설치합니다.
+폐기된 `ttf` alias 대신 유지되는 font package를 사용하고, 최종 이미지의
+`/usr/share/hy-home-font-builder-packages.txt`에 실제 설치 목록을 보존합니다.
+
+UNIT의 네 role 정합 검사는 native workflow import·실행이나 HOME 배포를 입증하지 않습니다.
+deprecated node import 거부·JSON typeVersion·webhook·Code runner·queue·PostgreSQL·SMTP·실패 경로는 NOT_RUN입니다.
+SEC01 담당자는 2026-10-17까지 독립 매니페스트 배치로 다음 검증을 수행해야 합니다.
+Wiki 예약이나 실제 Wiki 소비자는 이 업데이트에 추가하지 않습니다.
+
+HOME 전환 전 MNG DB와 n8n data, 동일 encryption key의 독립 보관, queue/진행 중 실행의
+중단·재개 경계를 확인합니다. 새 schema migration 후 rollback은 사전 DB·data 백업을
+빈 이전 이미지 환경에 복원해야 하며 이미지 태그 변경만으로 DB 복구를 주장하지 않습니다.
+실제 backup·15분 중단 한도·복원·HOME 전환은 NOT_RUN이며 총괄 통합 순서를 따릅니다.
+
+이번 후보는 공개 allowlist build context에서 두 Dockerfile을 각각 빌드했습니다.
+`HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle`는
+2026-10-10 UNIT 5건과 ISOLATED 3건 PASS(EXIT 0)였습니다. 두 variant의 실제 UID·n8n
+버전·font package inventory를 network none/read-only 임시 container에서 확인했습니다.
+정확한 시험 입력 SHA는 [Airflow 후보 검증 기록](../airflow/README.md#sec01-업데이트-검증-경계)에 연결합니다.
+linux/amd64 custom manifest는 production
+`sha256:4298977846ed580208c670a87b125ab86873958bc25057a6e9aca1fa8a5f329b`,
+dev `sha256:c32096b2ded1c1c9d6a00c39f32eb3e9ecf3a82a3282910d5d77a9cef8b1c710`입니다.
+이 결과는 production main/worker·runner 실행이 아니며 서명·SBOM·scan·HOME·DB 복원은 NOT_RUN입니다.
+
+독립 검토 보완 후 native 시험은 두 후보의 immutable OCI index가 선택하는 정확한
+linux/amd64 manifest를 대조한 뒤 같은 index로 실행합니다. digest/architecture/OS가 다르면
+실행 전에 실패하며 mutable tag를 실제 실행 대상으로 사용하지 않습니다. 보완한 opt-in
+명령은 8건 PASS(EXIT 0)였고 현재 입력 SHA는 연결된 Airflow 검증 기록이 소유합니다.
+
+Airflow의 명시 shell lint 보완으로 해당 후보만 다시 빌드한 후, n8n 두 variant를 포함한
+전체 immutable-candidate 시험 8건을 새로 수행해 PASS(EXIT 0)였습니다. n8n 이미지 내용은
+그 보완에서 변경하지 않았으며, 최신 시험 입력과 새 Airflow artifact는 연결된 검증 기록에 있습니다.
 
 ## Troubleshooting
 

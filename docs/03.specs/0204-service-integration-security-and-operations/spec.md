@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.4.0"
+version: "1.5.0"
 type: "sdlc/spec"
 status: "blocked"
 owner: "@buenhyden"
@@ -54,9 +54,9 @@ No business project ID, external deployment topology, application endpoint,
 OIDC client, S3 identity, search authority, traffic budget, or speech product
 scope is approved here. Registering metadata is not a grant of network
 access, credentials, runtime deployment, or storage. Civil-service exam, English and Japanese learning applications are excluded,
-including planning, code, databases, collection and resources. LAB-specific code, configuration, data, secrets and runtime execution are
-excluded. P08 owns actual moves of LAB documents into each typed `labs/` family,
-with folder/parent READMEs and updated links/Registry/path checks. Do not read secret values, private environment
+including planning, code, databases, collection and resources. All LAB-specific
+code, configuration, data, secrets, execution and document moves are excluded;
+P08 may describe only a prospective separate_target document classification. Do not read secret values, private environment
 files, authentication files, raw HOME logs, or user data.
 
 ### Technical Approach
@@ -105,10 +105,13 @@ only when a current conflict is found; otherwise record NO_CHANGE.
   contract fixtures, updated Korean READMEs and Stage 05 guide/policy/runbook
   owners, and Task evidence. Values of secrets and raw operational data are
   never outputs.
-- P09 interface: preparation documents, schemas, synthetic fixtures and future
-  acceptance contracts only; no external workspace, Wiki engine/API/UI, app
-  database, production client, collector or scheduled Wiki job is authorized.
-  SEC01 owns P09 authoring; SMTP01 supplies only the canonical secret interface.
+- P09 preparation input/output: a future Project-Template-derived repository
+  may later supply app Compose, business API/UI, migrations, collectors,
+  workflow definitions, fixtures and E2E. P09 now produces only preparation
+  contracts, synthetic fixtures and acceptance criteria. It creates no app,
+  runtime resource, credential, workspace or blog-data write. Infra retains
+  approved-engine, ingress/identity, telemetry and backup interface ownership;
+  a manifest records planned scopes and owners but cannot provision or deploy.
 
 ### Failure Modes and Guardrails
 
@@ -301,6 +304,31 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     issuance cleanup remain acceptance prerequisites. No new KMS/engine, LAB action or learning-app planning is included.
     TSK-0006 owns this increment; TSK-0005/0229's applied snapshot source is
     NO_CHANGE and their historical results are never a fresh P01 PASS.
+12. CLN01 owns the consumer assessment and narrow private-unlink helper for
+    material already retired by its owning source contract. It permits a
+    `COMM-003` disposition only after SMTP01 has merged and its source
+    and operational cutover evidence is recorded, then only after fresh source,
+    runtime, jobs, backup/restore and external-consumer checks. SMTP01 proof
+    cannot automatically translate into CLN01 manifest truth. The helper
+    rejects tracked, protected, shared-inode, symlinked, identity-changed or
+    unknown targets. `COMM-002` stays protected and `PG-020` remains retained
+    for rollback. The generic helper refuses COMM-003 by ID and exact path;
+    its sole proposed unlink executor is SMTP01's `smtp_contract --retire`,
+    subject to supervisor release and integrated evidence/lock checks.
+    CLN01 owns assessment and the hold, not a second executor. TSK-0007 owns this increment.
+<!-- markdownlint-disable MD029 -->
+13. P09 produces a bounded, offline LLM Wiki preparation package: product
+    intake; future consumer, source/artifact, job/outbox/handoff and blog-data
+    handoff contracts; valid and invalid synthetic fixtures; future user-flow
+    acceptance; and a readiness matrix. The generic registration schema and
+    validator are reused without weakening or duplication. The package rejects
+    cross-project/path-escape, wildcard/admin and empty-required values. It
+    does not create a Wiki Core/API/UI, source crawler, app database/role,
+    collection/bucket, credential, external workspace, scheduled workflow,
+    blog-data write, learning application or LAB runtime change. Actual source
+    revision, ACL/revocation, retention, backup and recovery verification stay
+    future acceptance conditions, not preparation PASS claims.
+<!-- markdownlint-enable MD029 -->
 
 <!-- Criteria 12/13 are reserved by CLN01/P09; retain the owning IDs. -->
 <!-- markdownlint-disable-next-line MD029 -->
@@ -312,7 +340,8 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     proves SMTP authentication, capture, negative password/TLS cases and file
     readability without HOME activation. SEC01 owns image versions; the
     integration coordinator controls common-file delivery and HOME deployment.
-    CLN01 may remove the exact duplicate only after source, runtime, jobs,
+    CLN01 assesses the exact duplicate; SMTP01 is its sole proposed unlink
+    executor after source, runtime, jobs,
     backup/restore and external consumers are verified. Missing private facts
     defer migration/deletion alone. Rollback uses the canonical source mapping
     and only the affected consumer; no volume reset or broad rotation occurs.
@@ -328,6 +357,7 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037](../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [CLN01 material retirement Task](tasks/tsk-0007-cln01-material-retirement.md)
 - [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
 - [SPEC-0202](../../98.archive/completed/03.specs/0202-development-data-and-lab-isolation/spec.md)
 - [SPEC-0203](../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)

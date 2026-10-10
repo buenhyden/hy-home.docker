@@ -1,0 +1,2276 @@
+{
+  "source_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+  "collected_at": "2026-10-10T10:27:43.184845+00:00",
+  "inputs": [
+    {
+      "service": "airflow-apiserver",
+      "build_input": "infra/07-workflow/airflow/Dockerfile",
+      "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+      "compose_build_args": {
+        "AIRFLOW_VERSION": "3.3.2",
+        "PYTHON_VERSION": "3.13",
+        "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+        "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+        "CELERY_PROVIDER_VERSION": "3.24.1"
+      },
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 2,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+        },
+        {
+          "line": 5,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 6,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 7,
+          "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+        },
+        {
+          "line": 8,
+          "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+        },
+        {
+          "line": 9,
+          "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+        },
+        {
+          "line": 14,
+          "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+        },
+        {
+          "line": 19,
+          "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+        },
+        {
+          "line": 27,
+          "public_dependency_declaration": "pip install --no-cache-dir \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+          "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "airflow-dag-processor",
+      "build_input": "infra/07-workflow/airflow/Dockerfile",
+      "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+      "compose_build_args": {
+        "AIRFLOW_VERSION": "3.3.2",
+        "PYTHON_VERSION": "3.13",
+        "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+        "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+        "CELERY_PROVIDER_VERSION": "3.24.1"
+      },
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 2,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+        },
+        {
+          "line": 5,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 6,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 7,
+          "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+        },
+        {
+          "line": 8,
+          "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+        },
+        {
+          "line": 9,
+          "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+        },
+        {
+          "line": 14,
+          "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+        },
+        {
+          "line": 19,
+          "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+        },
+        {
+          "line": 27,
+          "public_dependency_declaration": "pip install --no-cache-dir \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+          "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "airflow-init",
+      "build_input": "infra/07-workflow/airflow/Dockerfile",
+      "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+      "compose_build_args": {
+        "AIRFLOW_VERSION": "3.3.2",
+        "PYTHON_VERSION": "3.13",
+        "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+        "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+        "CELERY_PROVIDER_VERSION": "3.24.1"
+      },
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 2,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+        },
+        {
+          "line": 5,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 6,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 7,
+          "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+        },
+        {
+          "line": 8,
+          "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+        },
+        {
+          "line": 9,
+          "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+        },
+        {
+          "line": 14,
+          "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+        },
+        {
+          "line": 19,
+          "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+        },
+        {
+          "line": 27,
+          "public_dependency_declaration": "pip install --no-cache-dir \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+          "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "airflow-scheduler",
+      "build_input": "infra/07-workflow/airflow/Dockerfile",
+      "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+      "compose_build_args": {
+        "AIRFLOW_VERSION": "3.3.2",
+        "PYTHON_VERSION": "3.13",
+        "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+        "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+        "CELERY_PROVIDER_VERSION": "3.24.1"
+      },
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 2,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+        },
+        {
+          "line": 5,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 6,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 7,
+          "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+        },
+        {
+          "line": 8,
+          "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+        },
+        {
+          "line": 9,
+          "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+        },
+        {
+          "line": 14,
+          "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+        },
+        {
+          "line": 19,
+          "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+        },
+        {
+          "line": 27,
+          "public_dependency_declaration": "pip install --no-cache-dir \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+          "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "airflow-triggerer",
+      "build_input": "infra/07-workflow/airflow/Dockerfile",
+      "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+      "compose_build_args": {
+        "AIRFLOW_VERSION": "3.3.2",
+        "PYTHON_VERSION": "3.13",
+        "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+        "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+        "CELERY_PROVIDER_VERSION": "3.24.1"
+      },
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 2,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+        },
+        {
+          "line": 5,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 6,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 7,
+          "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+        },
+        {
+          "line": 8,
+          "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+        },
+        {
+          "line": 9,
+          "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+        },
+        {
+          "line": 14,
+          "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+        },
+        {
+          "line": 19,
+          "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+        },
+        {
+          "line": 27,
+          "public_dependency_declaration": "pip install --no-cache-dir \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+          "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "airflow-worker",
+      "build_input": "infra/07-workflow/airflow/Dockerfile",
+      "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+      "compose_build_args": {
+        "AIRFLOW_VERSION": "3.3.2",
+        "PYTHON_VERSION": "3.13",
+        "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+        "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+        "CELERY_PROVIDER_VERSION": "3.24.1"
+      },
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 2,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+        },
+        {
+          "line": 5,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 6,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 7,
+          "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+        },
+        {
+          "line": 8,
+          "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+        },
+        {
+          "line": 9,
+          "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+        },
+        {
+          "line": 14,
+          "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+        },
+        {
+          "line": 19,
+          "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+        },
+        {
+          "line": 27,
+          "public_dependency_declaration": "pip install --no-cache-dir \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+          "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "dbt",
+      "build_input": "infra/12-analytics/dbt/Dockerfile",
+      "input_sha256": "9642ae6d76e38c2e4b9014e7f0e17fcbd989d477a8ce1374cc0f84bc9590f963",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM python:3.12-slim-bookworm"
+        },
+        {
+          "line": 4,
+          "public_dependency_declaration": "RUN apt-get update \\"
+        },
+        {
+          "line": 5,
+          "public_dependency_declaration": "&& apt-get install -y --no-install-recommends git \\"
+        },
+        {
+          "line": 9,
+          "declaration": "COPY requirements.txt /tmp/requirements.txt"
+        },
+        {
+          "line": 11,
+          "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+        },
+        {
+          "line": 15,
+          "declaration": "COPY docker-entrypoint.sh /usr/local/bin/dbt-entrypoint"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/12-analytics/dbt/requirements.txt",
+          "sha256": "9fae44a7fc26ccc870acf47ffb111ea5c8e8196147ac16fda9068f978214d006"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "dev-pg",
+      "build_input": "infra/04-data/dev-db/pg/Dockerfile",
+      "input_sha256": "60fdf63970f1b483f78d0f4e5fb8bcad3e39fbbe36bfabdaa36f644ce8391e12",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 4,
+          "declaration": "FROM timescale/timescaledb:2.30.2-pg18@sha256:cdf97a4b5be91038b5c1be0ad304c5d5746132992e54f7dd26ec467a6d005755"
+        },
+        {
+          "line": 7,
+          "public_dependency_declaration": "RUN apk add --no-cache pgbackrest=2.57.0-r0 python3 \\"
+        },
+        {
+          "line": 10,
+          "declaration": "COPY --chmod=0644 backup/pgbackrest.conf /etc/pgbackrest/pgbackrest.conf"
+        },
+        {
+          "line": 11,
+          "declaration": "COPY --chmod=0755 backup/entrypoint.sh /usr/local/bin/hyhome-dev-pg-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "flink-jobmanager",
+      "build_input": "infra/12-analytics/flink/Dockerfile",
+      "input_sha256": "60e4c4f771f46a14fbbafd86c36947fb13347e3c6bb60ea252320815e4723ff7",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM flink:2.1.3-scala_2.12-java21"
+        },
+        {
+          "line": 9,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-2.1/1.11.0/iceberg-flink-runtime-2.1-1.11.0.jar \\"
+        },
+        {
+          "line": 12,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
+        },
+        {
+          "line": 15,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.1/flink-sql-connector-kafka-5.0.0-2.1.jar \\"
+        },
+        {
+          "line": 18,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.5.0/hadoop-client-api-3.5.0.jar \\"
+        },
+        {
+          "line": 21,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.5.0/hadoop-client-runtime-3.5.0.jar \\"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "flink-taskmanager",
+      "build_input": "infra/12-analytics/flink/Dockerfile",
+      "input_sha256": "60e4c4f771f46a14fbbafd86c36947fb13347e3c6bb60ea252320815e4723ff7",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM flink:2.1.3-scala_2.12-java21"
+        },
+        {
+          "line": 9,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-2.1/1.11.0/iceberg-flink-runtime-2.1-1.11.0.jar \\"
+        },
+        {
+          "line": 12,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
+        },
+        {
+          "line": 15,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.1/flink-sql-connector-kafka-5.0.0-2.1.jar \\"
+        },
+        {
+          "line": 18,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.5.0/hadoop-client-api-3.5.0.jar \\"
+        },
+        {
+          "line": 21,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.5.0/hadoop-client-runtime-3.5.0.jar \\"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "flower",
+      "build_input": "infra/07-workflow/airflow/Dockerfile",
+      "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+      "compose_build_args": {
+        "AIRFLOW_VERSION": "3.3.2",
+        "PYTHON_VERSION": "3.13",
+        "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+        "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+        "CELERY_PROVIDER_VERSION": "3.24.1"
+      },
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 2,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+        },
+        {
+          "line": 5,
+          "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+        },
+        {
+          "line": 6,
+          "declaration": "ARG PYTHON_VERSION=3.13"
+        },
+        {
+          "line": 7,
+          "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+        },
+        {
+          "line": 8,
+          "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+        },
+        {
+          "line": 9,
+          "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+        },
+        {
+          "line": 14,
+          "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+        },
+        {
+          "line": 19,
+          "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+        },
+        {
+          "line": 27,
+          "public_dependency_declaration": "pip install --no-cache-dir \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+          "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "gatus",
+      "build_input": "infra/06-observability/gatus/Dockerfile",
+      "input_sha256": "501055e636ef95d6eb3659e7d873a1f7d766219e2c516c061952feec264441cb",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM golang:1.26.4-alpine3.22 AS builder"
+        },
+        {
+          "line": 5,
+          "public_dependency_declaration": "RUN apk add --no-cache \\"
+        },
+        {
+          "line": 10,
+          "declaration": "SHELL [\"/bin/ash\", \"-eo\", \"pipefail\", \"-c\"]"
+        },
+        {
+          "line": 12,
+          "public_dependency_declaration": "RUN wget -q \\"
+        },
+        {
+          "line": 14,
+          "public_dependency_declaration": "https://github.com/TwiN/gatus/archive/ed1107b41a30e22047eecfb6dbc3be5e39829d5a.tar.gz \\"
+        },
+        {
+          "line": 20,
+          "declaration": "COPY patches/oidc-hardening.patch /tmp/oidc-hardening.patch"
+        },
+        {
+          "line": 26,
+          "public_dependency_declaration": "RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /gatus ."
+        },
+        {
+          "line": 28,
+          "declaration": "FROM alpine:3.24"
+        },
+        {
+          "line": 30,
+          "public_dependency_declaration": "RUN apk add --no-cache \\"
+        },
+        {
+          "line": 34,
+          "declaration": "COPY --from=builder /gatus /usr/local/bin/gatus"
+        },
+        {
+          "line": 35,
+          "declaration": "COPY --chmod=0555 docker-entrypoint.sh /usr/local/bin/gatus-oidc-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "great-expectations",
+      "build_input": "infra/12-analytics/great-expectations/Dockerfile",
+      "input_sha256": "35edad0b4147f63d0b3fe15f7f6985647125111c95846e22536f6401b0c00c8a",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM python:3.12-slim-bookworm"
+        },
+        {
+          "line": 4,
+          "declaration": "COPY requirements.txt /tmp/requirements.txt"
+        },
+        {
+          "line": 6,
+          "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+        },
+        {
+          "line": 8,
+          "declaration": "COPY hyhome-gx.py /usr/local/bin/hyhome-gx"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/12-analytics/great-expectations/requirements.txt",
+          "sha256": "860c980f62076084fd1618de7279ef34cb24eb70b74b9dea5c29393238801913"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "jupyterlab",
+      "build_input": "infra/12-analytics/jupyterlab/Dockerfile",
+      "input_sha256": "c9685595c1bc6206b8ed4faf4a58ca01e19d736847e6be831ace564ccfe8f9b2",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG JUPYTER_BASE_TAG=2026-07-28"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM quay.io/jupyter/scipy-notebook:${JUPYTER_BASE_TAG}"
+        },
+        {
+          "line": 5,
+          "declaration": "COPY --chown=${NB_UID}:${NB_GID} \\"
+        },
+        {
+          "line": 9,
+          "public_dependency_declaration": "RUN pip install \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/12-analytics/jupyterlab/requirements.txt",
+          "sha256": "b9004422f1b19300de37fe3b0c635a171fd5d1db9dc4c0afc7f3fa93e4387d10"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "k6",
+      "build_input": "infra/11-quality/k6/Dockerfile",
+      "input_sha256": "be4867d00fb3fc4d172fd12f7740b201ab35d05a2bcbb45b144c07dc72399576",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 2,
+          "declaration": "FROM grafana/k6:2.2.0"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "kafka-connect",
+      "build_input": "infra/05-messaging/kafka/Dockerfile.connect",
+      "input_sha256": "e945300b042a80dc9dc7cc8397fbee205a551dbdf82b16547cb9fa0970f8f401",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM quay.io/debezium/connect:3.6.3.Final AS debezium"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM confluentinc/cp-kafka-connect:8.3.2"
+        },
+        {
+          "line": 7,
+          "declaration": "COPY --from=debezium \\"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "loki",
+      "build_input": "infra/06-observability/loki/Dockerfile",
+      "input_sha256": "6e8297622fb0f0eb676e79089bd7aeb07bfd2d44fe79459fea3aa5981463d772",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM grafana/loki:3.7.8 AS upstream"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM alpine:3.24.2"
+        },
+        {
+          "line": 5,
+          "public_dependency_declaration": "RUN apk add --no-cache busybox wget ca-certificates \\"
+        },
+        {
+          "line": 9,
+          "declaration": "COPY --from=upstream /usr/bin/loki /usr/bin/loki"
+        },
+        {
+          "line": 10,
+          "declaration": "COPY --chmod=0755 docker-entrypoint.sh /docker-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "mlflow",
+      "build_input": "infra/08-ai/mlflow/Dockerfile",
+      "input_sha256": "4ec1d7eefc2b030b39e687d96131709c40d5c963c8fb0b5f0783e2ea46555f00",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM ghcr.io/mlflow/mlflow:v3.16.1"
+        },
+        {
+          "line": 3,
+          "declaration": "COPY requirements.txt /tmp/requirements.txt"
+        },
+        {
+          "line": 5,
+          "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/08-ai/mlflow/requirements.txt",
+          "sha256": "d4e4df9717611b50d78c233ac890584d98f6ff12002dc69cb752cd62acdffd81"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "mng-pg",
+      "build_input": "infra/04-data/mng-db/pg/backup/Dockerfile",
+      "input_sha256": "724564b992b4e499f3d488a315feff8f5ab536b02656b4ab9afad3e91a2394ee",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 4,
+          "declaration": "FROM postgres:18.6-alpine"
+        },
+        {
+          "line": 7,
+          "public_dependency_declaration": "RUN apk add --no-cache pgbackrest=2.58.0-r0 \\"
+        },
+        {
+          "line": 10,
+          "declaration": "COPY --chmod=0644 pgbackrest.conf /etc/pgbackrest/pgbackrest.conf"
+        },
+        {
+          "line": 11,
+          "declaration": "COPY --chmod=0755 entrypoint.sh /usr/local/bin/hyhome-pg-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "n8n",
+      "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
+      "input_sha256": "45391a624f9c0fd495804d2de80e47a5a4f0001c837504fd62d75378e2ab7263",
+      "compose_build_args": {
+        "N8N_VERSION": "2.42.6"
+      },
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG N8N_VERSION=2.42.6"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
+        },
+        {
+          "line": 4,
+          "public_dependency_declaration": "RUN apk add --no-cache \\"
+        },
+        {
+          "line": 15,
+          "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a"
+        },
+        {
+          "line": 16,
+          "declaration": "ARG N8N_VERSION=2.42.6"
+        },
+        {
+          "line": 20,
+          "declaration": "COPY --from=font-builder /usr/share/fonts /usr/share/fonts"
+        },
+        {
+          "line": 21,
+          "declaration": "COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig"
+        },
+        {
+          "line": 22,
+          "declaration": "COPY --from=font-builder /etc/fonts /etc/fonts"
+        },
+        {
+          "line": 23,
+          "declaration": "COPY --from=font-builder /font-builder-packages.txt /usr/share/hy-home-font-builder-packages.txt"
+        },
+        {
+          "line": 40,
+          "declaration": "COPY --chown=node:node ./custom /home/node/.n8n/custom"
+        },
+        {
+          "line": 41,
+          "declaration": "COPY --chown=node:node ./docker-entrypoint.dev.sh /home/node/docker-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "n8n-worker",
+      "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
+      "input_sha256": "45391a624f9c0fd495804d2de80e47a5a4f0001c837504fd62d75378e2ab7263",
+      "compose_build_args": {
+        "N8N_VERSION": "2.42.6"
+      },
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "ARG N8N_VERSION=2.42.6"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
+        },
+        {
+          "line": 4,
+          "public_dependency_declaration": "RUN apk add --no-cache \\"
+        },
+        {
+          "line": 15,
+          "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a"
+        },
+        {
+          "line": 16,
+          "declaration": "ARG N8N_VERSION=2.42.6"
+        },
+        {
+          "line": 20,
+          "declaration": "COPY --from=font-builder /usr/share/fonts /usr/share/fonts"
+        },
+        {
+          "line": 21,
+          "declaration": "COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig"
+        },
+        {
+          "line": 22,
+          "declaration": "COPY --from=font-builder /etc/fonts /etc/fonts"
+        },
+        {
+          "line": 23,
+          "declaration": "COPY --from=font-builder /font-builder-packages.txt /usr/share/hy-home-font-builder-packages.txt"
+        },
+        {
+          "line": 40,
+          "declaration": "COPY --chown=node:node ./custom /home/node/.n8n/custom"
+        },
+        {
+          "line": 41,
+          "declaration": "COPY --chown=node:node ./docker-entrypoint.dev.sh /home/node/docker-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "oauth2-proxy",
+      "build_input": "infra/02-auth/oauth2-proxy/dev.Dockerfile",
+      "input_sha256": "5757751105e9e7455c57f5fb8ba24b9a4ffbce7bc5111c36103db8bef14d87cd",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM alpine:3.24.2"
+        },
+        {
+          "line": 5,
+          "declaration": "COPY --from=src /bin/oauth2-proxy /bin/oauth2-proxy"
+        },
+        {
+          "line": 6,
+          "declaration": "COPY --chmod=0555 docker-entrypoint.dev.sh /docker-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "opensearch",
+      "build_input": "infra/04-data/opensearch/Dockerfile",
+      "input_sha256": "aee6e4515241935729dace7b9ed473cfc72ae53e89abd844b69d64429856afc8",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 2,
+          "public_dependency_declaration": "# - https://docs.opensearch.org/latest/install-and-configure/plugins/"
+        },
+        {
+          "line": 3,
+          "public_dependency_declaration": "# - https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/"
+        },
+        {
+          "line": 5,
+          "declaration": "FROM opensearchproject/opensearch:3.8.0"
+        },
+        {
+          "line": 9,
+          "declaration": "SHELL [\"/bin/bash\", \"-c\"]"
+        },
+        {
+          "line": 27,
+          "public_dependency_declaration": "https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/3.8.0.0/prometheus-exporter-3.8.0.0.zip"
+        },
+        {
+          "line": 30,
+          "declaration": "COPY ./opensearch/opensearch-entrypoint.sh /usr/local/bin/opensearch-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "opentofu",
+      "build_input": "infra/09-platform-ops/opentofu/docker-compose.yml#dockerfile_inline",
+      "input_sha256": "e36c0597c96fd8b24be81e7d2e2147b04db86b472ce92e858d2a35157d824cd2",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM ghcr.io/opentofu/opentofu:1.12.6-minimal AS tofu"
+        },
+        {
+          "line": 2,
+          "declaration": "FROM alpine:3.24"
+        },
+        {
+          "line": 3,
+          "public_dependency_declaration": "RUN apk add --no-cache \\"
+        },
+        {
+          "line": 6,
+          "public_dependency_declaration": "curl \\"
+        },
+        {
+          "line": 9,
+          "declaration": "COPY --from=tofu /usr/local/bin/tofu /usr/local/bin/tofu"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "spark",
+      "build_input": "infra/12-analytics/spark/Dockerfile",
+      "input_sha256": "e5d71d411ba653d2c1d8da090b1c55594e7d71d0990ac5354351b933c40e509a",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM apache/spark:4.1.3-scala2.13-java21-python3-ubuntu"
+        },
+        {
+          "line": 8,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.1_2.13/1.11.0/iceberg-spark-runtime-4.1_2.13-1.11.0.jar \\"
+        },
+        {
+          "line": 11,
+          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "stalwart-config",
+      "build_input": "infra/10-communication/stalwart/config/Dockerfile",
+      "input_sha256": "0ea70f4f69b24c5af78e6480699e8a6e7f1e2adbc1d866428364ce9085b0445d",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 4,
+          "declaration": "FROM ghcr.io/stalwartlabs/cli:1.0.12 AS cli"
+        },
+        {
+          "line": 5,
+          "declaration": "FROM stalwartlabs/stalwart:v0.16.22"
+        },
+        {
+          "line": 6,
+          "declaration": "COPY --from=cli /usr/local/bin/stalwart-cli /usr/local/bin/stalwart-cli"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "superset",
+      "build_input": "infra/12-analytics/superset/Dockerfile",
+      "input_sha256": "a98cd78e992a4da5580bd00f141d07270b8d9a600fc6a1b5725eaf7166c66d00",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM apache/superset:6.1.0"
+        },
+        {
+          "line": 6,
+          "declaration": "COPY requirements.txt /tmp/requirements.txt"
+        },
+        {
+          "line": 7,
+          "public_dependency_declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/12-analytics/superset/requirements.txt",
+          "sha256": "3cecd9dbdbd48e9c3e0eddd0abc87bd57995decc72012086ceaf499daf73bc1d"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "superset-init",
+      "build_input": "infra/12-analytics/superset/Dockerfile",
+      "input_sha256": "a98cd78e992a4da5580bd00f141d07270b8d9a600fc6a1b5725eaf7166c66d00",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM apache/superset:6.1.0"
+        },
+        {
+          "line": 6,
+          "declaration": "COPY requirements.txt /tmp/requirements.txt"
+        },
+        {
+          "line": 7,
+          "public_dependency_declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/12-analytics/superset/requirements.txt",
+          "sha256": "3cecd9dbdbd48e9c3e0eddd0abc87bd57995decc72012086ceaf499daf73bc1d"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "surrealdb",
+      "build_input": "infra/08-ai/open-notebook/surrealdb/Dockerfile",
+      "input_sha256": "bae1163b69d3334734fe7ab7a4de4e8951582c3237a6154b2a59b30fa7fc1a9e",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM surrealdb/surrealdb:v2 AS surreal"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM debian:bookworm-slim"
+        },
+        {
+          "line": 5,
+          "public_dependency_declaration": "RUN apt-get update \\"
+        },
+        {
+          "line": 6,
+          "public_dependency_declaration": "&& apt-get install -y --no-install-recommends ca-certificates bash \\"
+        },
+        {
+          "line": 9,
+          "declaration": "COPY --from=surreal /surreal /usr/local/bin/surreal"
+        },
+        {
+          "line": 10,
+          "declaration": "COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "tempo",
+      "build_input": "infra/06-observability/tempo/Dockerfile",
+      "input_sha256": "74e1041aa1ca173e1e56132e3d24d3c5b9bb871829294594ff68fcef77b33d6d",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 1,
+          "declaration": "FROM grafana/tempo:3.0.3 AS upstream"
+        },
+        {
+          "line": 3,
+          "declaration": "FROM alpine:3.24.2"
+        },
+        {
+          "line": 5,
+          "public_dependency_declaration": "RUN apk add --no-cache busybox wget ca-certificates \\"
+        },
+        {
+          "line": 9,
+          "declaration": "COPY --from=upstream /tempo /usr/bin/tempo"
+        },
+        {
+          "line": 10,
+          "declaration": "COPY --chmod=0755 docker-entrypoint.sh /docker-entrypoint.sh"
+        }
+      ],
+      "package_inputs": [],
+      "installed_sbom": "NOT_RUN",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "storybook",
+      "build_input": "projects/storybook/nextjs/Dockerfile",
+      "input_sha256": "4ea1a9ddf938cb163af2dc0010bdbedabd10880e05171949232208a3b7b8c2ce",
+      "declarations": [
+        {
+          "line": 3,
+          "declaration": "ARG NODE_IMAGE=node:24.21.0-alpine3.24@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1"
+        },
+        {
+          "line": 4,
+          "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+        },
+        {
+          "line": 5,
+          "declaration": "ARG NGINX_IMAGE=nginxinc/nginx-unprivileged:1.31.6-alpine3.24@sha256:26b0bf6fbf07297983cb341998d79c831508787de26627dd2a112321b9c3a4af"
+        },
+        {
+          "line": 6,
+          "declaration": "FROM ${NODE_IMAGE} AS build"
+        },
+        {
+          "line": 8,
+          "declaration": "COPY package.json package-lock.json ./"
+        },
+        {
+          "line": 9,
+          "declaration": "COPY packages/ui/package.json packages/ui/package.json"
+        },
+        {
+          "line": 10,
+          "public_dependency_declaration": "RUN npm ci --ignore-scripts"
+        },
+        {
+          "line": 11,
+          "declaration": "COPY . ."
+        },
+        {
+          "line": 12,
+          "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+        },
+        {
+          "line": 18,
+          "public_dependency_declaration": "RUN npm run build-storybook && npm run build:mcp"
+        },
+        {
+          "line": 22,
+          "declaration": "FROM ${NODE_IMAGE} AS mcp"
+        },
+        {
+          "line": 23,
+          "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+        },
+        {
+          "line": 26,
+          "declaration": "COPY --from=build /work/mcp-dist/server.mjs mcp/server.mjs"
+        },
+        {
+          "line": 27,
+          "declaration": "COPY --from=build /work/storybook-static/manifests/ storybook-static/manifests/"
+        },
+        {
+          "line": 28,
+          "declaration": "COPY --from=build /work/storybook-static/revision.json storybook-static/revision.json"
+        },
+        {
+          "line": 33,
+          "declaration": "FROM ${NGINX_IMAGE}"
+        },
+        {
+          "line": 34,
+          "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+        },
+        {
+          "line": 36,
+          "declaration": "COPY --from=build /work/storybook-static/ /usr/share/nginx/html/"
+        },
+        {
+          "line": 37,
+          "declaration": "COPY nginx.conf /etc/nginx/conf.d/default.conf"
+        },
+        {
+          "line": 41,
+          "public_dependency_declaration": "CMD wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1"
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "projects/storybook/nextjs/package.json",
+          "sha256": "12ebf4b0992b169de22789a97e22a0737d201f6ba21ed56efbad403185c3a769"
+        },
+        {
+          "path": "projects/storybook/nextjs/package-lock.json",
+          "sha256": "2b91d0ba661ac7b182231c569efe302a7be71412f5b92993ca1be3f1a1a6f9bb"
+        }
+      ],
+      "installed_sbom": "NOT_RUN",
+      "source_binding": "infra/13-experience/storybook/README.md links this Dockerfile; mcp image has separately unresolved build source.",
+      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    }
+  ],
+  "meaning": "Current selected public build declarations/input hashes; initial snapshot preserved. Worker-reported bounded native candidate results are separate from installed SBOM/full service acceptance/HOME.",
+  "unresolved_local_image_sources": [
+    {
+      "service": "storybook-mcp",
+      "reason": "No selected Compose build; determine actual image producer/lockfile/provenance from current source owner before replacement.",
+      "owner": "SEC01",
+      "next_validation_due": "2026-10-17T10:41:03.646308+00:00"
+    }
+  ],
+  "initial_snapshot": {
+    "source_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+    "collected_at": "2026-10-10T10:27:43.184845+00:00",
+    "inputs": [
+      {
+        "service": "airflow-apiserver",
+        "build_input": "infra/07-workflow/airflow/Dockerfile",
+        "input_sha256": "6f6f0c7be8d6c1766d797b29fc2462f504aed49ca072878aa4aa0821bcdb3b04",
+        "compose_build_args": {
+          "AIRFLOW_VERSION": "3.3.2",
+          "PYTHON_VERSION": "3.13",
+          "KEYCLOAK_PROVIDER_VERSION": "0.11.0"
+        },
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 2,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+          },
+          {
+            "line": 5,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 6,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 7,
+            "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+          },
+          {
+            "line": 20,
+            "public_dependency_declaration": "pip install --no-cache-dir \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "airflow-dag-processor",
+        "build_input": "infra/07-workflow/airflow/Dockerfile",
+        "input_sha256": "6f6f0c7be8d6c1766d797b29fc2462f504aed49ca072878aa4aa0821bcdb3b04",
+        "compose_build_args": {
+          "AIRFLOW_VERSION": "3.3.2",
+          "PYTHON_VERSION": "3.13",
+          "KEYCLOAK_PROVIDER_VERSION": "0.11.0"
+        },
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 2,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+          },
+          {
+            "line": 5,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 6,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 7,
+            "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+          },
+          {
+            "line": 20,
+            "public_dependency_declaration": "pip install --no-cache-dir \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "airflow-init",
+        "build_input": "infra/07-workflow/airflow/Dockerfile",
+        "input_sha256": "6f6f0c7be8d6c1766d797b29fc2462f504aed49ca072878aa4aa0821bcdb3b04",
+        "compose_build_args": {
+          "AIRFLOW_VERSION": "3.3.2",
+          "PYTHON_VERSION": "3.13",
+          "KEYCLOAK_PROVIDER_VERSION": "0.11.0"
+        },
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 2,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+          },
+          {
+            "line": 5,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 6,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 7,
+            "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+          },
+          {
+            "line": 20,
+            "public_dependency_declaration": "pip install --no-cache-dir \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "airflow-scheduler",
+        "build_input": "infra/07-workflow/airflow/Dockerfile",
+        "input_sha256": "6f6f0c7be8d6c1766d797b29fc2462f504aed49ca072878aa4aa0821bcdb3b04",
+        "compose_build_args": {
+          "AIRFLOW_VERSION": "3.3.2",
+          "PYTHON_VERSION": "3.13",
+          "KEYCLOAK_PROVIDER_VERSION": "0.11.0"
+        },
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 2,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+          },
+          {
+            "line": 5,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 6,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 7,
+            "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+          },
+          {
+            "line": 20,
+            "public_dependency_declaration": "pip install --no-cache-dir \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "airflow-triggerer",
+        "build_input": "infra/07-workflow/airflow/Dockerfile",
+        "input_sha256": "6f6f0c7be8d6c1766d797b29fc2462f504aed49ca072878aa4aa0821bcdb3b04",
+        "compose_build_args": {
+          "AIRFLOW_VERSION": "3.3.2",
+          "PYTHON_VERSION": "3.13",
+          "KEYCLOAK_PROVIDER_VERSION": "0.11.0"
+        },
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 2,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+          },
+          {
+            "line": 5,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 6,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 7,
+            "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+          },
+          {
+            "line": 20,
+            "public_dependency_declaration": "pip install --no-cache-dir \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "airflow-worker",
+        "build_input": "infra/07-workflow/airflow/Dockerfile",
+        "input_sha256": "6f6f0c7be8d6c1766d797b29fc2462f504aed49ca072878aa4aa0821bcdb3b04",
+        "compose_build_args": {
+          "AIRFLOW_VERSION": "3.3.2",
+          "PYTHON_VERSION": "3.13",
+          "KEYCLOAK_PROVIDER_VERSION": "0.11.0"
+        },
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 2,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+          },
+          {
+            "line": 5,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 6,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 7,
+            "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+          },
+          {
+            "line": 20,
+            "public_dependency_declaration": "pip install --no-cache-dir \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "dbt",
+        "build_input": "infra/12-analytics/dbt/Dockerfile",
+        "input_sha256": "9642ae6d76e38c2e4b9014e7f0e17fcbd989d477a8ce1374cc0f84bc9590f963",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM python:3.12-slim-bookworm"
+          },
+          {
+            "line": 4,
+            "public_dependency_declaration": "RUN apt-get update \\"
+          },
+          {
+            "line": 5,
+            "public_dependency_declaration": "&& apt-get install -y --no-install-recommends git \\"
+          },
+          {
+            "line": 11,
+            "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+          }
+        ],
+        "package_inputs": [
+          {
+            "path": "infra/12-analytics/dbt/requirements.txt",
+            "sha256": "9fae44a7fc26ccc870acf47ffb111ea5c8e8196147ac16fda9068f978214d006"
+          }
+        ],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "dev-pg",
+        "build_input": "infra/04-data/dev-db/pg/Dockerfile",
+        "input_sha256": "60fdf63970f1b483f78d0f4e5fb8bcad3e39fbbe36bfabdaa36f644ce8391e12",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 4,
+            "declaration": "FROM timescale/timescaledb:2.30.2-pg18@sha256:cdf97a4b5be91038b5c1be0ad304c5d5746132992e54f7dd26ec467a6d005755"
+          },
+          {
+            "line": 7,
+            "public_dependency_declaration": "RUN apk add --no-cache pgbackrest=2.57.0-r0 python3 \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "flink-jobmanager",
+        "build_input": "infra/12-analytics/flink/Dockerfile",
+        "input_sha256": "60e4c4f771f46a14fbbafd86c36947fb13347e3c6bb60ea252320815e4723ff7",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM flink:2.1.3-scala_2.12-java21"
+          },
+          {
+            "line": 9,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-2.1/1.11.0/iceberg-flink-runtime-2.1-1.11.0.jar \\"
+          },
+          {
+            "line": 12,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
+          },
+          {
+            "line": 15,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.1/flink-sql-connector-kafka-5.0.0-2.1.jar \\"
+          },
+          {
+            "line": 18,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.5.0/hadoop-client-api-3.5.0.jar \\"
+          },
+          {
+            "line": 21,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.5.0/hadoop-client-runtime-3.5.0.jar \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "flink-taskmanager",
+        "build_input": "infra/12-analytics/flink/Dockerfile",
+        "input_sha256": "60e4c4f771f46a14fbbafd86c36947fb13347e3c6bb60ea252320815e4723ff7",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM flink:2.1.3-scala_2.12-java21"
+          },
+          {
+            "line": 9,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-2.1/1.11.0/iceberg-flink-runtime-2.1-1.11.0.jar \\"
+          },
+          {
+            "line": 12,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
+          },
+          {
+            "line": 15,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.1/flink-sql-connector-kafka-5.0.0-2.1.jar \\"
+          },
+          {
+            "line": 18,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.5.0/hadoop-client-api-3.5.0.jar \\"
+          },
+          {
+            "line": 21,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.5.0/hadoop-client-runtime-3.5.0.jar \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "flower",
+        "build_input": "infra/07-workflow/airflow/Dockerfile",
+        "input_sha256": "6f6f0c7be8d6c1766d797b29fc2462f504aed49ca072878aa4aa0821bcdb3b04",
+        "compose_build_args": {
+          "AIRFLOW_VERSION": "3.3.2",
+          "PYTHON_VERSION": "3.13",
+          "KEYCLOAK_PROVIDER_VERSION": "0.11.0"
+        },
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 2,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+          },
+          {
+            "line": 5,
+            "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+          },
+          {
+            "line": 6,
+            "declaration": "ARG PYTHON_VERSION=3.13"
+          },
+          {
+            "line": 7,
+            "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+          },
+          {
+            "line": 20,
+            "public_dependency_declaration": "pip install --no-cache-dir \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "gatus",
+        "build_input": "infra/06-observability/gatus/Dockerfile",
+        "input_sha256": "501055e636ef95d6eb3659e7d873a1f7d766219e2c516c061952feec264441cb",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM golang:1.26.4-alpine3.22 AS builder"
+          },
+          {
+            "line": 5,
+            "public_dependency_declaration": "RUN apk add --no-cache \\"
+          },
+          {
+            "line": 12,
+            "public_dependency_declaration": "RUN wget -q \\"
+          },
+          {
+            "line": 14,
+            "public_dependency_declaration": "https://github.com/TwiN/gatus/archive/ed1107b41a30e22047eecfb6dbc3be5e39829d5a.tar.gz \\"
+          },
+          {
+            "line": 26,
+            "public_dependency_declaration": "RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /gatus ."
+          },
+          {
+            "line": 28,
+            "declaration": "FROM alpine:3.24"
+          },
+          {
+            "line": 30,
+            "public_dependency_declaration": "RUN apk add --no-cache \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "great-expectations",
+        "build_input": "infra/12-analytics/great-expectations/Dockerfile",
+        "input_sha256": "35edad0b4147f63d0b3fe15f7f6985647125111c95846e22536f6401b0c00c8a",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM python:3.12-slim-bookworm"
+          },
+          {
+            "line": 6,
+            "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+          }
+        ],
+        "package_inputs": [
+          {
+            "path": "infra/12-analytics/great-expectations/requirements.txt",
+            "sha256": "860c980f62076084fd1618de7279ef34cb24eb70b74b9dea5c29393238801913"
+          }
+        ],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "jupyterlab",
+        "build_input": "infra/12-analytics/jupyterlab/Dockerfile",
+        "input_sha256": "c9685595c1bc6206b8ed4faf4a58ca01e19d736847e6be831ace564ccfe8f9b2",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG JUPYTER_BASE_TAG=2026-07-28"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM quay.io/jupyter/scipy-notebook:${JUPYTER_BASE_TAG}"
+          },
+          {
+            "line": 9,
+            "public_dependency_declaration": "RUN pip install \\"
+          }
+        ],
+        "package_inputs": [
+          {
+            "path": "infra/12-analytics/jupyterlab/requirements.txt",
+            "sha256": "b9004422f1b19300de37fe3b0c635a171fd5d1db9dc4c0afc7f3fa93e4387d10"
+          }
+        ],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "k6",
+        "build_input": "infra/11-quality/k6/Dockerfile",
+        "input_sha256": "be4867d00fb3fc4d172fd12f7740b201ab35d05a2bcbb45b144c07dc72399576",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 2,
+            "declaration": "FROM grafana/k6:2.2.0"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "kafka-connect",
+        "build_input": "infra/05-messaging/kafka/Dockerfile.connect",
+        "input_sha256": "e945300b042a80dc9dc7cc8397fbee205a551dbdf82b16547cb9fa0970f8f401",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM quay.io/debezium/connect:3.6.3.Final AS debezium"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM confluentinc/cp-kafka-connect:8.3.2"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "loki",
+        "build_input": "infra/06-observability/loki/Dockerfile",
+        "input_sha256": "6e8297622fb0f0eb676e79089bd7aeb07bfd2d44fe79459fea3aa5981463d772",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM grafana/loki:3.7.8 AS upstream"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM alpine:3.24.2"
+          },
+          {
+            "line": 5,
+            "public_dependency_declaration": "RUN apk add --no-cache busybox wget ca-certificates \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "mlflow",
+        "build_input": "infra/08-ai/mlflow/Dockerfile",
+        "input_sha256": "4ec1d7eefc2b030b39e687d96131709c40d5c963c8fb0b5f0783e2ea46555f00",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM ghcr.io/mlflow/mlflow:v3.16.1"
+          },
+          {
+            "line": 5,
+            "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+          }
+        ],
+        "package_inputs": [
+          {
+            "path": "infra/08-ai/mlflow/requirements.txt",
+            "sha256": "d4e4df9717611b50d78c233ac890584d98f6ff12002dc69cb752cd62acdffd81"
+          }
+        ],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "mng-pg",
+        "build_input": "infra/04-data/mng-db/pg/backup/Dockerfile",
+        "input_sha256": "724564b992b4e499f3d488a315feff8f5ab536b02656b4ab9afad3e91a2394ee",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 4,
+            "declaration": "FROM postgres:18.6-alpine"
+          },
+          {
+            "line": 7,
+            "public_dependency_declaration": "RUN apk add --no-cache pgbackrest=2.58.0-r0 \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "n8n",
+        "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
+        "input_sha256": "4fdbdbbb218bdf65be8734e3d3ebf6f392260769d148c24fb7a09c4819a20ef9",
+        "compose_build_args": {
+          "N8N_VERSION": "2.42.6"
+        },
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG N8N_VERSION=2.42.6"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
+          },
+          {
+            "line": 4,
+            "public_dependency_declaration": "RUN apk add --no-cache \\"
+          },
+          {
+            "line": 13,
+            "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a"
+          },
+          {
+            "line": 14,
+            "declaration": "ARG N8N_VERSION=2.42.6"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "n8n-worker",
+        "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
+        "input_sha256": "4fdbdbbb218bdf65be8734e3d3ebf6f392260769d148c24fb7a09c4819a20ef9",
+        "compose_build_args": {
+          "N8N_VERSION": "2.42.6"
+        },
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "ARG N8N_VERSION=2.42.6"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
+          },
+          {
+            "line": 4,
+            "public_dependency_declaration": "RUN apk add --no-cache \\"
+          },
+          {
+            "line": 13,
+            "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a"
+          },
+          {
+            "line": 14,
+            "declaration": "ARG N8N_VERSION=2.42.6"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "oauth2-proxy",
+        "build_input": "infra/02-auth/oauth2-proxy/dev.Dockerfile",
+        "input_sha256": "5757751105e9e7455c57f5fb8ba24b9a4ffbce7bc5111c36103db8bef14d87cd",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM alpine:3.24.2"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "opensearch",
+        "build_input": "infra/04-data/opensearch/Dockerfile",
+        "input_sha256": "aee6e4515241935729dace7b9ed473cfc72ae53e89abd844b69d64429856afc8",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 2,
+            "public_dependency_declaration": "# - https://docs.opensearch.org/latest/install-and-configure/plugins/"
+          },
+          {
+            "line": 3,
+            "public_dependency_declaration": "# - https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/"
+          },
+          {
+            "line": 5,
+            "declaration": "FROM opensearchproject/opensearch:3.8.0"
+          },
+          {
+            "line": 27,
+            "public_dependency_declaration": "https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/3.8.0.0/prometheus-exporter-3.8.0.0.zip"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "opentofu",
+        "build_input": "infra/09-platform-ops/opentofu/docker-compose.yml#dockerfile_inline",
+        "input_sha256": "e36c0597c96fd8b24be81e7d2e2147b04db86b472ce92e858d2a35157d824cd2",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM ghcr.io/opentofu/opentofu:1.12.6-minimal AS tofu"
+          },
+          {
+            "line": 2,
+            "declaration": "FROM alpine:3.24"
+          },
+          {
+            "line": 3,
+            "public_dependency_declaration": "RUN apk add --no-cache \\"
+          },
+          {
+            "line": 6,
+            "public_dependency_declaration": "curl \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "spark",
+        "build_input": "infra/12-analytics/spark/Dockerfile",
+        "input_sha256": "e5d71d411ba653d2c1d8da090b1c55594e7d71d0990ac5354351b933c40e509a",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM apache/spark:4.1.3-scala2.13-java21-python3-ubuntu"
+          },
+          {
+            "line": 8,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.1_2.13/1.11.0/iceberg-spark-runtime-4.1_2.13-1.11.0.jar \\"
+          },
+          {
+            "line": 11,
+            "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "stalwart-config",
+        "build_input": "infra/10-communication/stalwart/config/Dockerfile",
+        "input_sha256": "0ea70f4f69b24c5af78e6480699e8a6e7f1e2adbc1d866428364ce9085b0445d",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 4,
+            "declaration": "FROM ghcr.io/stalwartlabs/cli:1.0.12 AS cli"
+          },
+          {
+            "line": 5,
+            "declaration": "FROM stalwartlabs/stalwart:v0.16.22"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "superset",
+        "build_input": "infra/12-analytics/superset/Dockerfile",
+        "input_sha256": "a98cd78e992a4da5580bd00f141d07270b8d9a600fc6a1b5725eaf7166c66d00",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM apache/superset:6.1.0"
+          },
+          {
+            "line": 7,
+            "public_dependency_declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
+          }
+        ],
+        "package_inputs": [
+          {
+            "path": "infra/12-analytics/superset/requirements.txt",
+            "sha256": "3cecd9dbdbd48e9c3e0eddd0abc87bd57995decc72012086ceaf499daf73bc1d"
+          }
+        ],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "superset-init",
+        "build_input": "infra/12-analytics/superset/Dockerfile",
+        "input_sha256": "a98cd78e992a4da5580bd00f141d07270b8d9a600fc6a1b5725eaf7166c66d00",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM apache/superset:6.1.0"
+          },
+          {
+            "line": 7,
+            "public_dependency_declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
+          }
+        ],
+        "package_inputs": [
+          {
+            "path": "infra/12-analytics/superset/requirements.txt",
+            "sha256": "3cecd9dbdbd48e9c3e0eddd0abc87bd57995decc72012086ceaf499daf73bc1d"
+          }
+        ],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "surrealdb",
+        "build_input": "infra/08-ai/open-notebook/surrealdb/Dockerfile",
+        "input_sha256": "bae1163b69d3334734fe7ab7a4de4e8951582c3237a6154b2a59b30fa7fc1a9e",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM surrealdb/surrealdb:v2 AS surreal"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM debian:bookworm-slim"
+          },
+          {
+            "line": 5,
+            "public_dependency_declaration": "RUN apt-get update \\"
+          },
+          {
+            "line": 6,
+            "public_dependency_declaration": "&& apt-get install -y --no-install-recommends ca-certificates bash \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "tempo",
+        "build_input": "infra/06-observability/tempo/Dockerfile",
+        "input_sha256": "74e1041aa1ca173e1e56132e3d24d3c5b9bb871829294594ff68fcef77b33d6d",
+        "compose_build_args": {},
+        "declarations": [
+          {
+            "line": 1,
+            "declaration": "FROM grafana/tempo:3.0.3 AS upstream"
+          },
+          {
+            "line": 3,
+            "declaration": "FROM alpine:3.24.2"
+          },
+          {
+            "line": 5,
+            "public_dependency_declaration": "RUN apk add --no-cache busybox wget ca-certificates \\"
+          }
+        ],
+        "package_inputs": [],
+        "installed_sbom": "NOT_RUN"
+      },
+      {
+        "service": "storybook",
+        "build_input": "projects/storybook/nextjs/Dockerfile",
+        "input_sha256": "4ea1a9ddf938cb163af2dc0010bdbedabd10880e05171949232208a3b7b8c2ce",
+        "declarations": [
+          {
+            "line": 3,
+            "declaration": "ARG NODE_IMAGE=node:24.21.0-alpine3.24@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1"
+          },
+          {
+            "line": 4,
+            "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+          },
+          {
+            "line": 5,
+            "declaration": "ARG NGINX_IMAGE=nginxinc/nginx-unprivileged:1.31.6-alpine3.24@sha256:26b0bf6fbf07297983cb341998d79c831508787de26627dd2a112321b9c3a4af"
+          },
+          {
+            "line": 6,
+            "declaration": "FROM ${NODE_IMAGE} AS build"
+          },
+          {
+            "line": 12,
+            "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+          },
+          {
+            "line": 22,
+            "declaration": "FROM ${NODE_IMAGE} AS mcp"
+          },
+          {
+            "line": 23,
+            "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+          },
+          {
+            "line": 33,
+            "declaration": "FROM ${NGINX_IMAGE}"
+          },
+          {
+            "line": 34,
+            "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+          }
+        ],
+        "package_inputs": [
+          {
+            "path": "projects/storybook/nextjs/package.json",
+            "sha256": "12ebf4b0992b169de22789a97e22a0737d201f6ba21ed56efbad403185c3a769"
+          },
+          {
+            "path": "projects/storybook/nextjs/package-lock.json",
+            "sha256": "2b91d0ba661ac7b182231c569efe302a7be71412f5b92993ca1be3f1a1a6f9bb"
+          }
+        ],
+        "installed_sbom": "NOT_RUN",
+        "source_binding": "infra/13-experience/storybook/README.md links this Dockerfile; mcp image has separately unresolved build source."
+      }
+    ],
+    "meaning": "Public selected Dockerfile/inline declarations and lock input hashes; no installed dependency/SBOM or native proof.",
+    "unresolved_local_image_sources": [
+      {
+        "service": "storybook-mcp",
+        "reason": "No selected Compose build; determine actual image producer/lockfile/provenance from current source owner before replacement.",
+        "owner": "SEC01",
+        "next_validation_due": "2026-10-17T10:41:03.646308+00:00"
+      }
+    ]
+  },
+  "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00",
+  "input_manifest_sha256": "519a429c5cff6d607344a963cdf3003a2e4414f6c88f1ed7e0f25a426cb2dea2",
+  "final_candidate_source_freeze": {
+    "valid": true,
+    "frozen_at": "2026-10-10T11:44:22.903026+00:00",
+    "source_revision": "8fa3d4375430f5e23f1bd2668e4f71173e0ed3f1",
+    "source_manifest_sha256": "3bb30de47143739442207653cb011f7ebdca39b1bfd48efae0371e604819683b",
+    "workflow_source_binding_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
+    "openbao_source_binding_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+    "owned_openbao_source_fingerprint": "62d281cefb0cc0efeb98a009068b49b3649f258bcb9308f492e7236da7e2e4d1",
+    "meaning": "Final public candidate source hashes only; installed SBOM/full service/HOME acceptance remain separate."
+  }
+}

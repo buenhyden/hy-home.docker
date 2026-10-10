@@ -1,0 +1,1029 @@
+{
+  "source_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+  "lookups": [
+    {
+      "image": "alpine:3.24",
+      "checked_at": "2026-10-10T10:27:43.193955+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "alpine:3.24.2",
+      "checked_at": "2026-10-10T10:27:43.194232+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6",
+      "checked_at": "2026-10-10T10:27:43.195255+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "amazon/aws-cli:2.36.50",
+      "checked_at": "2026-10-10T10:27:43.195738+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "amir20/dozzle:v11.1.1",
+      "checked_at": "2026-10-10T10:27:43.196239+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/amir20/dozzle",
+        "url": "https://github.com/amir20/dozzle",
+        "documentation": "",
+        "version": "v11.1.1"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "apache/airflow:3.3.2-python3.13@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371",
+      "checked_at": "2026-10-10T10:27:43.196469+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/apache/airflow",
+        "url": "https://airflow.apache.org",
+        "documentation": "https://airflow.apache.org/docs/docker-stack/index.html",
+        "version": "3.3.2"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "apache/spark:4.1.3-scala2.13-java21-python3-ubuntu",
+      "checked_at": "2026-10-10T10:27:43.197430+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": "22.04"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "apache/superset:6.1.0",
+      "checked_at": "2026-10-10T10:27:43.197777+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "axllent/mailpit:v1.31.2",
+      "checked_at": "2026-10-10T10:27:46.161141+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/axllent/mailpit",
+        "url": "https://mailpit.axllent.org",
+        "documentation": "https://mailpit.axllent.org/docs/",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "azbuilder/api-server:2.33.2",
+      "checked_at": "2026-10-10T10:27:46.353275+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/paketo-buildpacks/jammy-tiny-stack",
+        "url": "",
+        "documentation": "",
+        "version": "2.33.2"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "azbuilder/executor:2.33.2",
+      "checked_at": "2026-10-10T10:27:46.725402+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/paketo-buildpacks/jammy-base-stack",
+        "url": "",
+        "documentation": "",
+        "version": "2.33.2"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "azbuilder/terrakube-ui:2.33.2",
+      "checked_at": "2026-10-10T10:27:46.745986+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/nginx/docker-nginx-unprivileged",
+        "url": "https://github.com/nginx/docker-nginx-unprivileged",
+        "documentation": "",
+        "version": "1.31.4"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "chrislusf/seaweedfs:4.47",
+      "checked_at": "2026-10-10T10:27:47.491246+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/seaweedfs/seaweedfs",
+        "url": "https://github.com/seaweedfs/seaweedfs",
+        "documentation": "",
+        "version": "4.47"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "confluentinc/cp-kafka-connect:8.3.2",
+      "checked_at": "2026-10-10T10:27:47.685969+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "confluentinc/cp-kafka-rest:8.3.2",
+      "checked_at": "2026-10-10T10:27:47.934822+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "confluentinc/cp-kafka:8.3.2",
+      "checked_at": "2026-10-10T10:27:48.279091+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "confluentinc/cp-schema-registry:8.3.2",
+      "checked_at": "2026-10-10T10:27:49.131364+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "danielqsj/kafka-exporter:v1.10.0",
+      "checked_at": "2026-10-10T10:27:49.276188+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "darthsim/imgproxy:v4.0.15",
+      "checked_at": "2026-10-10T10:27:49.372912+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/imgproxy/imgproxy",
+        "url": "https://github.com/imgproxy/imgproxy",
+        "documentation": "",
+        "version": "v4.0-amd64"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "debian:bookworm-slim",
+      "checked_at": "2026-10-10T10:27:49.393650+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "flink:2.1.3-scala_2.12-java21",
+      "checked_at": "2026-10-10T10:27:50.721399+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": "22.04"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "gcr.io/cadvisor/cadvisor:v0.55.1",
+      "checked_at": "2026-10-10T10:27:50.966240+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "ghcr.io/mlflow/mlflow:v3.16.1",
+      "checked_at": "2026-10-10T10:27:52.015566+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "ghcr.io/open-webui/open-webui:v0.11.4-cuda@sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1",
+      "checked_at": "2026-10-10T10:27:52.037876+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/open-webui/open-webui",
+        "url": "https://github.com/open-webui/open-webui",
+        "documentation": "",
+        "version": "0.11.4-cuda"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "ghcr.io/opentofu/opentofu:1.12.6-minimal",
+      "checked_at": "2026-10-10T10:27:52.669528+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/opentofu/opentofu",
+        "url": "https://github.com/opentofu/opentofu",
+        "documentation": "https://github.com/opentofu/opentofu/blob/main/README.md",
+        "version": "1.12.6"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "ghcr.io/stalwartlabs/cli:1.0.12",
+      "checked_at": "2026-10-10T10:27:52.736562+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/stalwartlabs/cli",
+        "url": "https://github.com/stalwartlabs/cli",
+        "documentation": "",
+        "version": "1.0.12"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "golang:1.26.4-alpine3.22",
+      "checked_at": "2026-10-10T10:27:53.241124+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "grafana/alloy:v1.19.2",
+      "checked_at": "2026-10-10T10:27:54.583321+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/grafana/alloy",
+        "url": "",
+        "documentation": "",
+        "version": "24.04"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "grafana/grafana:13.2.2",
+      "checked_at": "2026-10-10T10:27:54.634918+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/grafana/grafana",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "grafana/k6:2.2.0",
+      "checked_at": "2026-10-10T10:27:54.638272+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "grafana/loki:3.7.8",
+      "checked_at": "2026-10-10T10:27:54.798056+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "grafana/pyroscope:2.3.1",
+      "checked_at": "2026-10-10T10:27:55.363918+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": "2.3.1"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "grafana/tempo:3.0.3",
+      "checked_at": "2026-10-10T10:27:55.761833+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "kafbat/kafka-ui:v1.5.0",
+      "checked_at": "2026-10-10T10:27:56.463633+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "kong:3.9.3",
+      "checked_at": "2026-10-10T10:27:57.588021+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": "24.04"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "lfnovo/open_notebook:v1-latest-single",
+      "checked_at": "2026-10-10T10:27:57.872575+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "lucabecker42/ollama-exporter:1.0.3",
+      "checked_at": "2026-10-10T10:27:57.968477+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "https://luca-becker.me",
+        "documentation": "",
+        "version": "1.0.3"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "checked_at": "2026-10-10T10:27:57.994291+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/n8n-io/n8n",
+        "url": "https://n8n.io",
+        "documentation": "",
+        "version": "2.42.6"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "n8nio/runners:2.42.6@sha256:b78816286beb0a14e874abfda31eb4621d47f5ebb38f194271df7e39b7bd63a7",
+      "checked_at": "2026-10-10T10:27:58.447241+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/n8n-io/n8n",
+        "url": "https://n8n.io",
+        "documentation": "",
+        "version": "2.42.6"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "neo4j:5.26.30-community",
+      "checked_at": "2026-10-10T10:27:59.009681+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "nginx:alpine",
+      "checked_at": "2026-10-10T10:27:59.726365+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "nvcr.io/nvidia/k8s/dcgm-exporter:4.8.4",
+      "checked_at": "2026-10-10T10:28:00.269710+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/NVIDIA/dcgm-exporter",
+        "url": "https://catalog.ngc.nvidia.com/orgs/nvidia/teams/k8s/containers/dcgm-exporter",
+        "documentation": "https://docs.nvidia.com/datacenter/dcgm/latest/installation/install-dcgm-exporter.html",
+        "version": "4.8.4"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "oliver006/redis_exporter:v1.91.1-alpine",
+      "checked_at": "2026-10-10T10:28:00.710845+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/oliver006/redis_exporter",
+        "url": "https://github.com/oliver006/redis_exporter",
+        "documentation": "",
+        "version": "v1.91.1"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "ollama/ollama:0.40.0@sha256:1bef639749741b375e9a1eb2c1346fb57ce52f5432de1f74846e44ccc18e1687",
+      "checked_at": "2026-10-10T10:28:01.118777+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": "24.04"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+      "checked_at": "2026-10-10T10:28:01.829090+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/openbao/openbao",
+        "url": "https://openbao.org",
+        "documentation": "https://github.com/openbao/openbao/blob/main/README.md",
+        "version": "v2.7.1"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "openpolicyagent/conftest:v0.70.1",
+      "checked_at": "2026-10-10T10:28:01.845503+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "opensearchproject/opensearch-dashboards:3.8.0",
+      "checked_at": "2026-10-10T10:28:02.313260+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "opensearchproject/opensearch:3.8.0",
+      "checked_at": "2026-10-10T10:28:02.364974+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2",
+      "checked_at": "2026-10-10T10:28:02.715527+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "postgres:18.6-alpine",
+      "checked_at": "2026-10-10T10:28:03.720313+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "postgrest/postgrest:v16.3",
+      "checked_at": "2026-10-10T10:28:04.115176+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "prom/alertmanager:v0.34.1",
+      "checked_at": "2026-10-10T10:28:04.969640+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/prometheus/alertmanager",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "prom/prometheus:v3.14.0",
+      "checked_at": "2026-10-10T10:28:05.012354+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/prometheus/prometheus",
+        "url": "https://github.com/prometheus/prometheus",
+        "documentation": "https://prometheus.io/docs",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "prom/pushgateway:v1.11.3",
+      "checked_at": "2026-10-10T10:28:05.156800+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "prom/statsd-exporter:v0.31.0",
+      "checked_at": "2026-10-10T10:28:05.535652+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "prometheuscommunity/postgres-exporter:v0.20.1",
+      "checked_at": "2026-10-10T10:28:05.613606+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "python:3.12-slim-bookworm",
+      "checked_at": "2026-10-10T10:28:06.699542+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "python:3.13.15-alpine",
+      "checked_at": "2026-10-10T10:28:07.845204+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+      "checked_at": "2026-10-10T10:28:07.962489+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "qdrant/qdrant:v1.19.1-unprivileged",
+      "checked_at": "2026-10-10T10:28:08.418270+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/qdrant/qdrant",
+        "url": "https://qdrant.com/",
+        "documentation": "https://qdrant.com/docs",
+        "version": "v1.19.1"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "quay.io/debezium/connect:3.6.3.Final",
+      "checked_at": "2026-10-10T10:28:08.611367+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "https://fedoraproject.org/",
+        "documentation": "",
+        "version": "44"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "quay.io/jupyter/scipy-notebook:2026-07-28",
+      "checked_at": "2026-10-10T10:28:09.774938+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": "24.04"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "quay.io/keycloak/keycloak:26.7.4-0",
+      "checked_at": "2026-10-10T10:28:10.163039+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/keycloak-rel/keycloak-rel",
+        "url": "https://github.com/keycloak-rel/keycloak-rel",
+        "documentation": "https://www.keycloak.org/documentation",
+        "version": "26.7.4"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "quay.io/oauth2-proxy/oauth2-proxy:v7.15.4",
+      "checked_at": "2026-10-10T10:28:10.961824+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/oauth2-proxy/oauth2-proxy",
+        "url": "https://quay.io/oauth2-proxy/oauth2-proxy",
+        "documentation": "https://oauth2-proxy.github.io/oauth2-proxy/",
+        "version": "v7.15.4"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "quay.io/prometheus/node-exporter:v1.12.1",
+      "checked_at": "2026-10-10T10:28:11.831699+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/prometheus/node_exporter",
+        "url": "https://github.com/prometheus/node_exporter",
+        "documentation": "https://github.com/prometheus/node_exporter",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "redis/redisinsight:3.8.0",
+      "checked_at": "2026-10-10T10:28:12.110314+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "registry:3",
+      "checked_at": "2026-10-10T10:28:12.218515+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "renovate/renovate:44.115.12-full",
+      "checked_at": "2026-10-10T10:28:13.923094+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/renovatebot/renovate",
+        "url": "https://renovatebot.com",
+        "documentation": "",
+        "version": "44.115.12"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "restic/restic:0.19.1",
+      "checked_at": "2026-10-10T10:28:14.049771+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/restic/restic",
+        "url": "https://restic.net",
+        "documentation": "https://restic.readthedocs.io",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "sonarqube:26.9.0.129388-community",
+      "checked_at": "2026-10-10T10:28:14.056285+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "",
+        "url": "https://github.com/SonarSource/docker-sonarqube",
+        "documentation": "",
+        "version": "24.04"
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "stalwartlabs/stalwart:v0.16.22",
+      "checked_at": "2026-10-10T10:28:14.285139+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:28.550726+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "supabase/edge-runtime:v1.76.2",
+      "checked_at": "2026-10-10T10:28:14.751158+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:28.603632+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "supabase/gotrue:v2.197.0",
+      "checked_at": "2026-10-10T10:28:15.121976+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:28.584781+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "supabase/logflare:1.50.15",
+      "checked_at": "2026-10-10T10:28:16.104975+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:28.583881+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "supabase/postgres-meta:v0.99.0",
+      "checked_at": "2026-10-10T10:28:16.258201+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:29.070834+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "supabase/postgres:17.6.1.173",
+      "checked_at": "2026-10-10T10:28:16.953625+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:29.009817+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "supabase/realtime:v2.138.1",
+      "checked_at": "2026-10-10T10:28:17.181501+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:28.600747+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "supabase/storage-api:v1.79.4",
+      "checked_at": "2026-10-10T10:28:17.274620+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:28.573058+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "supabase/studio:2026.09.14-sha-4dd8a95",
+      "checked_at": "2026-10-10T10:28:17.395590+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:30.481805+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "supabase/supavisor:2.9.13",
+      "checked_at": "2026-10-10T10:28:17.860026+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:30.442275+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "surrealdb/surrealdb:v2",
+      "checked_at": "2026-10-10T10:28:17.930475+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:30.564174+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "timberio/vector:0.58.0-alpine",
+      "checked_at": "2026-10-10T10:28:17.930846+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:30.569951+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "timescale/timescaledb:2.30.2-pg18@sha256:cdf97a4b5be91038b5c1be0ad304c5d5746132992e54f7dd26ec467a6d005755",
+      "checked_at": "2026-10-10T10:28:18.393886+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:30.490569+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "traefik:v3.7.13",
+      "checked_at": "2026-10-10T10:28:18.629837+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:30.541544+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "trinodb/trino:483",
+      "checked_at": "2026-10-10T10:28:18.926627+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:30.745526+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "unclecode/crawl4ai:0.9.4@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b",
+      "checked_at": "2026-10-10T10:28:18.982919+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:30.801623+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "valkey/valkey:9.1.2-alpine",
+      "checked_at": "2026-10-10T10:28:19.107997+00:00",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/valkey-io/valkey",
+        "url": "",
+        "documentation": "",
+        "version": ""
+      },
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+    },
+    {
+      "image": "wiremock/wiremock:3.13.2-alpine",
+      "checked_at": "2026-10-10T10:28:19.554646+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:32.177318+00:00",
+      "single_manifest_retry_exit": 1
+    },
+    {
+      "image": "yanwk/comfyui-boot:cu126-slim",
+      "checked_at": "2026-10-10T10:28:19.724879+00:00",
+      "exit_code": 1,
+      "selected_oci_source_labels": null,
+      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
+      "single_manifest_retry_at": "2026-10-10T10:37:32.191139+00:00",
+      "single_manifest_retry_exit": 1
+    }
+  ],
+  "known_registry_limit": {
+    "observed_at": "2026-10-10T10:41:03.648165+00:00",
+    "selected_examples": [
+      "supabase/gotrue:v2.197.0",
+      "traefik:v3.7.13"
+    ],
+    "exit_code": 1,
+    "classification": "HTTP429",
+    "followup": "Stop repeated registry reads; retry allowlisted metadata after vendor quota reset/authorized registry access. Do not infer nonexistent tags or missing amd64 support."
+  }
+}

@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.5.0"
+version: "1.6.0"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
@@ -39,7 +39,7 @@ exclusions and shared-writer order; completed Task bodies are preserved.
   remain runtime-unverified until bounded acceptance.
 - A real consumer, native workflow target, credential subject and recovery
   boundary must be named before their dependent runtime lane. Learning-app
-  planning and LAB runtime are excluded; typed LAB document moves remain P08 work. Source and this request's
+  planning and all actual LAB work are excluded. Source and this request's
   branch/PR/merge are authorized without repeated approval.
 
 ### Current execution routing — 2026-10-10
@@ -49,9 +49,10 @@ SPEC-0204 Tasks retain their historical evidence. P03 owns port/endpoints,
 P04 Airflow native integration, P05 n8n native import/execution and P01/P02/P06
 secret classification/mapping/consumption under this package's acceptance.
 SPEC-0213/0214/0218/0219/0220/0223/0224/0227 retain their delivered source;
-no old prompt label creates duplicate work. Learning apps, including planning, and LAB runtime are out-of-scope. P08
-owns typed LAB document moves. SEC01 owns P09 offline preparation only; no
-external workspace is created. P10 needs its real input-to-recovery target.
+no old prompt label creates duplicate work. Learning apps, including planning,
+and LAB runtime are out-of-scope; P08 owns typed LAB document moves. P09 now owns only offline Wiki preparation; its
+future application/workspace and runtime resources require a later exact Task.
+P10 retains its real input-to-recovery target.
 
 Historical W7 CI retirement does not govern this pass: current quality policy
 and workflow-contract route hosted PR candidate QA and independent review.
@@ -62,9 +63,8 @@ needed when the current enforcer already meets the request.
 
 Shared root, gateway, Alloy, environment and backup files have one writer at a
 time. Complete feature edits before the P08 document move writer starts, then
-update references/checks and hand the destination SHA back. Current request 11–30 supersedes the earlier P08 LAB prohibition: move LAB
-documents to each typed family’s `labs/` destination with folder READMEs and
-updated links/Registry checks. LAB runtime remains excluded.
+update references/checks and hand the destination SHA back. P08 gives LAB only
+a prospective separate_target classification; no LAB documents are moved.
 
 ## Work Breakdown
 
@@ -93,6 +93,9 @@ updated links/Registry checks. LAB runtime remains excluded.
 | W21 | 7, 11 | Declarative HMAC audit, capacity/failure alerts, reuse snapshot flow | W20 | TSK-0006 | Exact image isolated audit and snapshot recovery cases |
 | W22 | 8, 11 | Changed QA, independent IaC/security/code review, scoped commits/PR | W21 | TSK-0006 | Registered local/hosted candidate checks and actual delivery receipt |
 | W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
+| W24 | 12 | Assess consumers and implement the narrow private-unlink helper for material retired by another owner after SMTP01 evidence | W19 | TSK-0007 | Helper unit tests and document gates; private apply only after Task preflight |
+| W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Task evidence; future implementation runs its own RED/GREEN and independent review |
+
 | W26 | 14 | SMTP01 baseline, consumer/source map and failing regressions | None | TSK-0005 | Source SHA and RED command receipts |
 | W27 | 14 | Canonical root source and Supabase SMTP-only wrapper/target alias | W26 | TSK-0005 | Unit and synthetic selected Compose model |
 | W28 | 14 | COMM-002 ownership, COMM-003 tombstone and guarded retirement helper | W27 | TSK-0005 | Equal/mismatch/idempotency/race/privacy tests; no HOME mutation |
@@ -113,7 +116,8 @@ The private duplicate deletion target is exactly
 Canonical `secrets/communication/smtp/smtp_password.txt`, username, host and
 account remain protected. CLN01/the coordinator verifies all consumers and
 backup/restore facts, records a sanitized audit receipt, switches any old inode
-consumer by selected recreation and then executes the narrow retirement mode.
+consumer by selected recreation and then releases SMTP01’s sole narrow retirement executor. Separate CLN01
+and SMTP01 locks do not prove cross-executor exclusivity.
 Unclear facts or mismatched values stop only that operation. RUN-0029 owns
 exact check/apply commands and canonical-only recovery; SMTP01 does not execute
 private comparison, unlink, broad sync/prune, rotation or HOME deployment.
@@ -242,8 +246,10 @@ bootstrap change, not extra engines or downstream consumer migration.
 
 SPEC-0203 already wrote the common Alloy metrics path; TSK-0002 may extend only
 bounded external discovery after review. SPEC-0202 development DB source and lifecycle handoff are integrated in this
-closure branch before the backup source change. SPEC-0219 owns Storybook; P09 prepares future application-manifest/deployment acceptance only;
-SEC01 owns its preparation documents and no workspace is provisioned. Existing LAB evidence is excluded from new execution.
+closure branch before the backup source change. SPEC-0219 owns Storybook. P09
+W25 prepares future application-manifest and deployment acceptance only; it
+does not create an external workspace. Existing LAB evidence is excluded from
+new execution.
 SPEC-0220 already owns Crawl4AI security/egress and HOME receipts; its consumer
 admission remains consumer-dependent rather than a repeat security fix.
 
@@ -277,6 +283,35 @@ bounded network and resources, synthetic secrets, redaction, failure
 preservation, and identity-bound cleanup. This Plan does not duplicate those
 findings or authorize an image pull, container run, HOME change, live secret
 use, or host/DNS/firewall mutation.
+
+### CLN01 execution boundary
+
+TSK-0007 owns the material-retirement manifest contract, helper source and
+focused tests. SMTP01 owns canonical SMTP cutover and generator work; CLN01
+does not implement or merge either shared surface. `COMM-003` can enter the
+assessment lane only after SMTP01's merged delivery and recorded source and
+operational cutover evidence; its dependent PR is TBD. SMTP01 proof cannot
+populate CLN01 manifest truth automatically. CLN01 performs a fresh
+five-axis consumer assessment before a private apply. The operator checkout is
+`/home/hyunyoun/data/hy-home.docker`; host Docker observations still require a
+mapping to that checkout. A manifest is under `/tmp/cln01-<run>/`, in an
+operator-owned 0700 directory, and is a 0600 regular single-link file. No
+manifest value or credential byte enters tracked evidence.
+
+`PG-020` remains retained for rollback because its observed nlink is 2;
+canonical `COMM-002` remains protected; `COMM-003` is pending SMTP01 evidence
+and all five checks.
+Optional stacks are `UNKNOWN_BLOCKED`; `owner@buenhyden` re-reviews them by
+2026-10-17. LAB runtime, secrets, data, images and Compose remain excluded.
+Source rollback is a logical owning-commit revert. Private recovery requires an
+existing encrypted artifact or a proven reissue path and is not promised.
+
+The generic CLN01 helper refuses COMM-003 by ID and exact path. The proposed
+sole candidate executor is SMTP01's `smtp_contract --retire`; CLN01 owns the
+assessment/hold. Integration must confirm that executor, use the shared retirement lock, and
+enforce receipt freshness before any private apply. The present user-integration
+hold remains until the supervisor selects one route; no private execution is
+authorized by either tool's source checks.
 
 ## Verification Plan
 
@@ -317,3 +352,6 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 - [Task 0003](tasks/tsk-0003-backup-and-cross-tier-operations.md)
 - [Task 0004](tasks/tsk-0004-secret-layout-and-environment-parity.md)
 - [Task 0005](tasks/tsk-0005-cross-tier-contracts-second-round.md)
+- [CLN01 material retirement Task](tasks/tsk-0007-cln01-material-retirement.md)
+- [Task 0006](tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md)
+- [Task 0008](tasks/tsk-0008-llm-wiki-preparation.md)
