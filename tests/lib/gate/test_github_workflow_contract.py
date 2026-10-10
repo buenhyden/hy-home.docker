@@ -122,6 +122,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.lib.ops.test_openbao_issuance_trust",
                 "tests.validation.test_openbao_candidate",
                 "tests.validation.test_sec01_version_contract",
+                "tests.validation.test_sec01_next_stable_candidates",
+                "tests.validation.test_sec01_next_tool_candidates",
                 "tests.validation.test_workflow_version_bundle",
             ],
             arguments[1:boundary],
