@@ -1,12 +1,10 @@
 """Opt-in isolated GoTrue SMTP rehearsal using only synthetic credentials.
 
-Run: HYHOME_SUPABASE_SMTP_REHEARSAL=1 python3 -m unittest \
-    tests.validation.test_supabase_smtp_rehearsal -v
+Run with HYHOME_SUPABASE_SMTP_REHEARSAL=1 and this unittest module.
 
-Requires cached digest-pinned images, Docker, openssl, local Go compiler and PyYAML. Owns a unique
-internal network, named containers and a temporary synthetic directory only.
-Never reads HOME credentials or logs. Captured output is deliberately excluded
-from assertions, including failures. This is ISOLATED evidence, not HOME.
+Requires cached pins, Docker, openssl, local Go, and PyYAML. Owns only a unique
+network, named containers, and a temporary directory. Never reads HOME credentials
+or logs; captured output is excluded. This is ISOLATED evidence, not HOME.
 """
 
 from __future__ import annotations
@@ -23,6 +21,16 @@ from pathlib import Path
 from unittest.mock import patch
 
 import yaml
+
+from tests.validation._supabase_smtp_fixture_storage import (
+    PUBLIC_SYNTHETIC_DB_PASSWORD,
+    PUBLIC_SYNTHETIC_JWT,
+    PUBLIC_SYNTHETIC_SIGNUP_EMAILS,
+    PUBLIC_SYNTHETIC_SIGNUP_PASSWORD,
+    PUBLIC_SYNTHETIC_SMTP_PASSWORD,
+    PUBLIC_SYNTHETIC_WRONG_SMTP_PASSWORD,
+    write_exclusive,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "infra/04-data/supabase/docker-compose.yml"
@@ -58,23 +66,20 @@ class SMTPFixture:
     def __init__(self):
         self.scratch = tempfile.TemporaryDirectory(prefix="smtp01-synthetic-")
         self.directory = Path(self.scratch.name)
-        self.directory.chmod(0o755)
         self.prefix = "smtp01-" + secrets.token_hex(6)
         self.network = self.prefix + "-network"
         self.containers = []
         self.network_created = False
-        self.smtp_password = secrets.token_urlsafe(24)
-        self.db_password = secrets.token_hex(24)
-        self.jwt = secrets.token_hex(32)
+        self.smtp_password = PUBLIC_SYNTHETIC_SMTP_PASSWORD
+        self.db_password = PUBLIC_SYNTHETIC_DB_PASSWORD
+        self.jwt = PUBLIC_SYNTHETIC_JWT
+        self.signup_count = 0
 
     def docker(self, *args, check=True, timeout=180, input_=None):
         return captured(["docker", *args], check=check, timeout=timeout, input_=input_)
 
     def write(self, name, content, mode=0o600):
-        path = self.directory / name
-        path.write_text(content, encoding="utf-8")
-        path.chmod(mode)
-        return path
+        return write_exclusive(self.directory, name, content, mode)
 
     def create(self, suffix, image, *args, command=(), network=None):
         name = self.prefix + "-" + suffix
@@ -210,7 +215,7 @@ func main() {
         self.network_created = True
         self.docker("network", "create", "--internal", self.network)
         self.write("smtp-password", self.smtp_password + "\n", 0o640)
-        self.write("wrong-password", secrets.token_urlsafe(24) + "\n", 0o640)
+        self.write("wrong-password", PUBLIC_SYNTHETIC_WRONG_SMTP_PASSWORD + "\n", 0o640)
         self.write("empty-password", "", 0o640)
         self.write("unreadable-password", self.smtp_password + "\n", 0o000)
         self.write("db-password", self.db_password, 0o644)
@@ -548,11 +553,18 @@ func main() {
         ).stdout.strip()
         if database_ready != b"t":
             raise RehearsalFailure("synthetic auth schema/role is not ready")
+        try:
+            email = PUBLIC_SYNTHETIC_SIGNUP_EMAILS[self.signup_count]
+        except IndexError:
+            raise RehearsalFailure(
+                "synthetic signup fixture inputs exhausted"
+            ) from None
+        self.signup_count += 1
         return self.http(
             url + "/signup",
             {
-                "email": secrets.token_hex(8) + "@example.com",
-                "password": secrets.token_urlsafe(24),
+                "email": email,
+                "password": PUBLIC_SYNTHETIC_SIGNUP_PASSWORD,
             },
         )
 
