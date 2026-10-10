@@ -251,7 +251,7 @@ Fresh commands and environments:
 | `python3 -m unittest tests.validation.test_openbao_agent_contract tests.validation.test_service_runtime_compatibility tests.validation.test_gatus_oidc -v` | Local static/stub; independent reviewers | PASS 54; no native claim |
 | `python3 -m unittest tests.validation.test_openbao_rehearsal -v` | Local registered default | Exit 0; 2 discovered, 1 PASS, 1 native opt-in SKIP |
 | `HYHOME_OPENBAO_REHEARSAL=1 python3 -m unittest tests.validation.test_openbao_rehearsal -v` | Invocation-owned Docker 29.8.2, exact cached OpenBao 2.6.2, synthetic material | PASS 2 in 189.952s; byte guard and cleanup PASS |
-| `python3 scripts/validation/run-ci-gate.py --profile changed --local-only` | Registered local selected leaves | Prior receipt-domain FAIL; full metadata contracts PASS; corrected candidate aggregate running |
+| `python3 scripts/validation/run-ci-gate.py --profile changed --local-only` | Registered local selected leaves | Prior receipt-domain FAIL preserved; corrected candidate final receipt linked from delivery PR #410 |
 | `python3 scripts/validation/check-operations-catalog.py` | Local public source and current inventory | Initial hosted drift FAIL; nine-cell correction fresh PASS |
 | `bash scripts/validation/run-ci-precommit.sh --mode local-staged` | Isolated index snapshot; readonly style controller | Source and corrected documentation units PASS, including gitleaks; first docs formatting rejection retained |
 
@@ -270,7 +270,7 @@ is used. Source delivery is distinct from runtime acceptance.
 | HOME | NOT_RUN; target/material/custody and runtime residuals unresolved |
 | MIGRATION | NOT_RUN; P06 held, no real secret or consumer cutover |
 | RECOVERY | ISOLATED synthetic proof PASS; actual HOME/offsite recovery NOT_RUN |
-| DELIVERY | PR #409 externally merged at its first head despite inventory FAIL; reviewed correction follow-up pending actual checks/merge |
+| DELIVERY | Source PR #409 externally merged; correction and actual hosted check/merge receipts owned by linked PR #410; HOME delivery NOT_RUN |
 
 The logical source unit owns executable/client/policy/test/gate changes and the
 existing root exception row; the documentation unit owns Spec/Plan/this Task,
@@ -314,6 +314,24 @@ codex/p01-inventory-receipt branch from actual origin/main as 633d285eb.
 No reset/stash/clean or user work rewrite was used. A same-package follow-up
 PR owns the nine-cell correction and delivery receipt; its fresh actual checks
 must pass before the agent merges it. No second acceptance owner is created.
+
+[Correction and final delivery PR #410](https://github.com/buenhyden/hy-home.docker/pull/410)
+is based on actual merge e31ba58c5849f7d2d39558ca074d40834f4b7f21.
+Its initial candidate c7217539175bcb107747ada367e88d8e1b33823d is published;
+quality run 38036906048 was initially in progress, seven other checks PASS and
+two explicitly SKIP. The same initial head subsequently completed: actual
+candidate-quality PASS in 3m15s, eight hosted checks PASS and two SKIP.
+This is evidence for c721 only; the following receipt head requires its own
+hosted checks before agent merge.
+The PR's final validation receipt and hosted checks/merge timeline are the
+actual delivery evidence for the subsequent result-only head; no unobserved
+future success is copied here. Independent delta review accepts all nine
+inventory cells, preserves history/LAB and confirms native input unchanged.
+The corrected three-file staged controller and operations-catalog are PASS.
+The long registered local run additionally freshly passes 142 metadata tests
+in 388.481s; remaining selected leaves are not predeclared PASS. Final results
+are recorded on the linked delivery PR before agent merge. W23 and full P01
+acceptance stay blocked regardless of source delivery.
 
 ### W23 HOME Boundary and P06 Hold
 
