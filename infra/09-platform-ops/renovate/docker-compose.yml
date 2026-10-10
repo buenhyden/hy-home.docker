@@ -13,7 +13,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-med
 
-    image: renovate/renovate:44.115.12-full
+    image: renovate/renovate:44.149.2-full@sha256:fc07a2877ce78abcaba5ac19e5bebb47b228785b6a74bf9834ff6119112bf260
     container_name: renovate
     hostname: renovate
 

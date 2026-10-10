@@ -11,7 +11,7 @@ x-tier-label: &tier-label
 # entrypoint is bypassed: it needs root to chown and drop privileges, and it
 # adds -mdir/-dir only for an unflagged first argument.
 x-seaweedfs: &seaweedfs
-  image: chrislusf/seaweedfs:4.47
+  image: chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d
   user: '1000:1000'
   entrypoint: [ '/bin/sh', '/opt/hyhome/hyhome-seaweedfs.sh' ]
   # weed reads security.toml from the working directory first; keep that the
@@ -245,7 +245,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
-    image: amazon/aws-cli:2.36.50
+    image: amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce
     container_name: seaweedfs-buckets
     hostname: seaweedfs-buckets
     group_add:
@@ -278,7 +278,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
-    image: amazon/aws-cli:2.36.50
+    image: amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce
     container_name: seaweedfs-table-bucket
     hostname: seaweedfs-table-bucket
     group_add:

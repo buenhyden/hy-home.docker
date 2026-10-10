@@ -1236,7 +1236,7 @@
       "service": "alloy",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "grafana/alloy:v1.19.2",
+      "current_declared": "grafana/alloy:v1.20.1@sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f",
       "profiles_declared": [
         "obs",
         "logs",
@@ -1260,13 +1260,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.369421+00:00",
+      "latest_version": "1.20.1",
+      "target_version": "1.20.1",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/grafana/alloy/releases/tag/v1.20.1",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f",
+      "target_manifest_digest": "sha256:5133c159d34c7acf37a1b6d91682abcb6b28b2a29bae152ff5cf4753296f956c",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-28T17:54:43Z",
@@ -1285,7 +1285,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "grafana/alloy",
       "current_repo_digests": [
@@ -1296,11 +1296,14 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v1.20.1",
-      "next_fact_command": "gh release view --repo grafana/alloy --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "ac397fcf5b9ed6aa8c6f2af89346f4a2cb3e9087ff37e55d17af56fdddbbd774",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "c23519af0a2a7f7bd78918e9722af3d9b8ad02a999331c830522f658e3e0d59b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "grafana/alloy:v1.20.1",
+      "target_declared_digest": "sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "analytics",
@@ -1474,7 +1477,7 @@
       "service": "cadvisor",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "gcr.io/cadvisor/cadvisor:v0.55.1",
+      "current_declared": "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
       "profiles_declared": [
         "obs",
         "obs-host",
@@ -1497,16 +1500,16 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "latest_version": "0.60.6",
+      "target_version": "0.60.6",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "release_url": "https://github.com/google/cadvisor/releases/tag/v0.60.6",
+      "target_index_digest": "sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
+      "target_manifest_digest": "sha256:bd7c00644d65e6c9fc2c151cab70d2e86d7fe3e0182cfb9863120ec2e017cf01",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": null,
+      "source_release_date": "2026-09-18T22:43:39Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -1517,14 +1520,14 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
+      "disposition": "VERIFY_RUNTIME",
       "blocker": {
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
-      "source_owner_repository": "UNKNOWN",
+      "source_owner_repository": "google/cadvisor",
       "current_repo_digests": [
         "gcr.io/cadvisor/cadvisor@sha256:3de2bd5203120b866d74a9b283b2ffb8ec382fbf9dc321814700c6ea6f44ec57"
       ],
@@ -1532,19 +1535,14 @@
         "sha256:3de2bd5203120b866d74a9b283b2ffb8ec382fbf9dc321814700c6ea6f44ec57"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "gcr.io/cadvisor/cadvisor:v0.55.1",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "ac397fcf5b9ed6aa8c6f2af89346f4a2cb3e9087ff37e55d17af56fdddbbd774",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "c23519af0a2a7f7bd78918e9722af3d9b8ad02a999331c830522f658e3e0d59b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "ghcr.io/google/cadvisor:v0.60.6",
+      "target_declared_digest": "sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "comfyui",
@@ -1625,20 +1623,20 @@
       "service": "conftest",
       "scope": "root",
       "compose_file": "infra/11-quality/conftest/docker-compose.yml",
-      "current_declared": "openpolicyagent/conftest:v0.70.1",
+      "current_declared": "openpolicyagent/conftest:v0.71.1@sha256:0e77cdf7c1fcde035f3c579e4aaa6664ee2a8be5777eaa9af9f520cdd02280c0",
       "profiles_declared": [
         "policy-check"
       ],
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:31:28.263276+00:00",
+      "latest_version": "0.71.1",
+      "target_version": "0.71.1",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/open-policy-agent/conftest/releases/tag/v0.71.1",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:0e77cdf7c1fcde035f3c579e4aaa6664ee2a8be5777eaa9af9f520cdd02280c0",
+      "target_manifest_digest": "sha256:2e8880bb16b61695c715726905650dd480da9998b388ec293c95e8b71415a644",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-06T04:53:53Z",
@@ -1657,18 +1655,21 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "open-policy-agent/conftest",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v0.71.1",
-      "next_fact_command": "gh release view --repo open-policy-agent/conftest --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "d80fb3c591dd9133207d7cdaf022ea14721ca09028d68479269fdc187e181561",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "openpolicyagent/conftest:v0.71.1",
+      "target_declared_digest": "sha256:0e77cdf7c1fcde035f3c579e4aaa6664ee2a8be5777eaa9af9f520cdd02280c0",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "crawl4ai",
@@ -2584,7 +2585,7 @@
       "service": "dozzle",
       "scope": "root",
       "compose_file": "infra/06-observability/dozzle/docker-compose.yml",
-      "current_declared": "amir20/dozzle:v11.1.1",
+      "current_declared": "amir20/dozzle:v11.3.0@sha256:a7d69d20891d3dcc82636e24afa4c1c162b41d0673ef798b14f09e6b69accc5a",
       "profiles_declared": [
         "admin",
         "admin-logs"
@@ -2606,13 +2607,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.368215+00:00",
+      "latest_version": "11.3.0",
+      "target_version": "11.3.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/amir20/dozzle/releases/tag/v11.3.0",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:a7d69d20891d3dcc82636e24afa4c1c162b41d0673ef798b14f09e6b69accc5a",
+      "target_manifest_digest": "sha256:b10715e3c489c1063a1676ff183db2a36a6f0d25efc25215862796ef786f6022",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-05T16:55:39Z",
@@ -2631,7 +2632,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "amir20/dozzle",
       "current_repo_digests": [
@@ -2642,11 +2643,14 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v11.3.0",
-      "next_fact_command": "gh release view --repo amir20/dozzle --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "3a4955d11b479f81e9a7190a147e3234401bca30985795c4ff39fe17e37a2c95",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "9b9a0af257b25ae581daa821193bfa42bbc44d68faf0eb86988791b6a5d9a3f9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "amir20/dozzle:v11.3.0",
+      "target_declared_digest": "sha256:a7d69d20891d3dcc82636e24afa4c1c162b41d0673ef798b14f09e6b69accc5a",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "flink-jobmanager",
@@ -4031,7 +4035,7 @@
       "service": "mailpit",
       "scope": "root",
       "compose_file": "infra/11-quality/mailpit/docker-compose.yml",
-      "current_declared": "axllent/mailpit:v1.31.2",
+      "current_declared": "axllent/mailpit:v1.31.4@sha256:b68349e3a014b90c5610bfb26b2ae36f3892d7b8cf25ee140c6c71c98d2fcf48",
       "profiles_declared": [
         "dev",
         "local",
@@ -4054,13 +4058,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.368545+00:00",
+      "latest_version": "1.31.4",
+      "target_version": "1.31.4",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/axllent/mailpit/releases/tag/v1.31.4",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:b68349e3a014b90c5610bfb26b2ae36f3892d7b8cf25ee140c6c71c98d2fcf48",
+      "target_manifest_digest": "sha256:c8e498023104710cd71a7bb1856a51f2183ff0dc1ea07675067a38ecda08428f",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-03T04:36:58Z",
@@ -4079,7 +4083,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "axllent/mailpit",
       "current_repo_digests": [
@@ -4090,11 +4094,14 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v1.31.4",
-      "next_fact_command": "gh release view --repo axllent/mailpit --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6f3b08b45acf2e0d94e3055d6a244073cb7a2b4f99d26e254267c4acfa9265f1",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "fa787e0c228cc49984b66a96019a3f1035b87663532f70efd3baf681acc0ebb1",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "axllent/mailpit:v1.31.4",
+      "target_declared_digest": "sha256:b68349e3a014b90c5610bfb26b2ae36f3892d7b8cf25ee140c6c71c98d2fcf48",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "meta",
@@ -5752,23 +5759,23 @@
       "service": "open_notebook",
       "scope": "root",
       "compose_file": "infra/08-ai/open-notebook/docker-compose.yml",
-      "current_declared": "lfnovo/open_notebook:v1-latest-single",
+      "current_declared": "lfnovo/open_notebook:1.15.0-single@sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3",
       "profiles_declared": [
         "notebook"
       ],
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "latest_version": "1.15.0",
+      "target_version": "1.15.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "release_url": "https://github.com/lfnovo/open-notebook/releases/tag/v1.15.0",
+      "target_index_digest": "sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3",
+      "target_manifest_digest": "sha256:8e7f9749d3ec6b0069d11e8e5b9ff4450ff8b440a3eb6e4122c8a9e68179c11b",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": null,
+      "source_release_date": "2026-10-04T23:45:47Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -5779,30 +5786,25 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
+      "disposition": "VERIFY_RUNTIME",
       "blocker": {
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
-      "source_owner_repository": "UNKNOWN",
+      "source_owner_repository": "lfnovo/open-notebook",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "lfnovo/open_notebook:v1-latest-single",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "5b05b3fc817fac037c4520a08377ba5950bfc123be56b43558683e732bb32d38",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "780ebabe132c9c3c82041c2ce91fa11d78463e2c4abb6c8b9cc4a1c72f6998e4",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "lfnovo/open_notebook:1.15.0-single",
+      "target_declared_digest": "sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "openbao",
@@ -6450,7 +6452,7 @@
       "service": "prometheus",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "prom/prometheus:v3.14.0",
+      "current_declared": "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e",
       "profiles_declared": [
         "obs",
         "obs-core",
@@ -6475,13 +6477,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:23.395678+00:00",
+      "latest_version": "3.15.0",
+      "target_version": "3.15.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/prometheus/prometheus/releases/tag/v3.15.0",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e",
+      "target_manifest_digest": "sha256:86b17a25c2db1d16a61b16b3c8f336679eb19e26333d03e808da387206e40faa",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-25T08:56:22Z",
@@ -6500,7 +6502,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "prometheus/prometheus",
       "current_repo_digests": [
@@ -6511,17 +6513,20 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v3.15.0",
-      "next_fact_command": "gh release view --repo prometheus/prometheus --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "ac397fcf5b9ed6aa8c6f2af89346f4a2cb3e9087ff37e55d17af56fdddbbd774",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "c23519af0a2a7f7bd78918e9722af3d9b8ad02a999331c830522f658e3e0d59b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "prom/prometheus:v3.15.0",
+      "target_declared_digest": "sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "pushgateway",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "prom/pushgateway:v1.11.3",
+      "current_declared": "prom/pushgateway:v1.11.4@sha256:91a56b89b97dd8a5e1e4fa8b5bbbd86dd57a87a2a3cee3a3ce3368b40ef158ef",
       "profiles_declared": [
         "obs",
         "batch-metrics"
@@ -6543,16 +6548,16 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "latest_version": "1.11.4",
+      "target_version": "1.11.4",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "release_url": "https://github.com/prometheus/pushgateway/releases/tag/v1.11.4",
+      "target_index_digest": "sha256:91a56b89b97dd8a5e1e4fa8b5bbbd86dd57a87a2a3cee3a3ce3368b40ef158ef",
+      "target_manifest_digest": "sha256:00e7b33699bd23647e5a834d34bcfba11985f36ef631ddd1bd66e656a6ff7e2b",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": null,
+      "source_release_date": "2026-10-08T11:14:45Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -6563,14 +6568,14 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
+      "disposition": "VERIFY_RUNTIME",
       "blocker": {
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
-      "source_owner_repository": "UNKNOWN",
+      "source_owner_repository": "prometheus/pushgateway",
       "current_repo_digests": [
         "prom/pushgateway@sha256:74fa117cef2d7e383112d25139ff1c2d2e309c35389a9e0554a47136a1482e48"
       ],
@@ -6578,25 +6583,20 @@
         "sha256:74fa117cef2d7e383112d25139ff1c2d2e309c35389a9e0554a47136a1482e48"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "prom/pushgateway:v1.11.3",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "ac397fcf5b9ed6aa8c6f2af89346f4a2cb3e9087ff37e55d17af56fdddbbd774",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "c23519af0a2a7f7bd78918e9722af3d9b8ad02a999331c830522f658e3e0d59b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "prom/pushgateway:v1.11.4",
+      "target_declared_digest": "sha256:91a56b89b97dd8a5e1e4fa8b5bbbd86dd57a87a2a3cee3a3ce3368b40ef158ef",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "pyroscope",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "grafana/pyroscope:2.3.1",
+      "current_declared": "grafana/pyroscope:2.4.0@sha256:b7e62699a27463aa3533efe3f88c320da594da495731fd6eabca6f44f92cdd7b",
       "profiles_declared": [
         "obs",
         "profiling"
@@ -6618,13 +6618,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.369832+00:00",
+      "latest_version": "2.4.0",
+      "target_version": "2.4.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/grafana/pyroscope/releases/tag/v2.4.0",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:b7e62699a27463aa3533efe3f88c320da594da495731fd6eabca6f44f92cdd7b",
+      "target_manifest_digest": "sha256:999dba0da6a9300af264ddba12ac3b78e637ea5bb419852866ba7f2dabe74eaa",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-09T19:46:50Z",
@@ -6643,7 +6643,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "grafana/pyroscope",
       "current_repo_digests": [
@@ -6654,17 +6654,20 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v2.4.0",
-      "next_fact_command": "gh release view --repo grafana/pyroscope --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "ac397fcf5b9ed6aa8c6f2af89346f4a2cb3e9087ff37e55d17af56fdddbbd774",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "c23519af0a2a7f7bd78918e9722af3d9b8ad02a999331c830522f658e3e0d59b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "grafana/pyroscope:2.4.0",
+      "target_declared_digest": "sha256:b7e62699a27463aa3533efe3f88c320da594da495731fd6eabca6f44f92cdd7b",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "qdrant",
       "scope": "root",
       "compose_file": "infra/04-data/qdrant/docker-compose.yml",
-      "current_declared": "qdrant/qdrant:v1.19.1-unprivileged",
+      "current_declared": "qdrant/qdrant:v1.19.2-unprivileged@sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
       "profiles_declared": [
         "ai",
         "ai-llm",
@@ -6687,13 +6690,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:24:15.017351+00:00",
+      "latest_version": "1.19.2",
+      "target_version": "1.19.2",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/qdrant/qdrant/releases/tag/v1.19.2",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
+      "target_manifest_digest": "sha256:390ca16351185f9913c23d0c95ded0cdf2ce17e525dd7fbe58d3339c9c80e633",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-05T14:16:50Z",
@@ -6712,7 +6715,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "qdrant/qdrant",
       "current_repo_digests": [
@@ -6723,11 +6726,14 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v1.19.2",
-      "next_fact_command": "gh release view --repo qdrant/qdrant --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "d6d84d0e49b68d0f4e6e066c3370253cb6b1e828ad03b65aa2cd072713dafb75",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "qdrant/qdrant:v1.19.2-unprivileged",
+      "target_declared_digest": "sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "realtime",
@@ -6857,7 +6863,7 @@
       "service": "registry",
       "scope": "root",
       "compose_file": "infra/09-platform-ops/registry/docker-compose.yml",
-      "current_declared": "registry:3",
+      "current_declared": "registry:3.1.2@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8",
       "profiles_declared": [
         "tooling",
         "registry"
@@ -6879,76 +6885,16 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "latest_version": "3.1.2",
+      "target_version": "3.1.2",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "release_url": "https://github.com/distribution/distribution/releases/tag/v3.1.2",
+      "target_index_digest": "sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8",
+      "target_manifest_digest": "sha256:21078ecfcba8a0cd7e1a384f75b3509899661dd21823bf1da21b5a4674aaceb9",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [
-        "registry@sha256:325b4b29b041e82803abeb703e201655e4e23ab83264ec1a7c9ddb0a5b14a6e0"
-      ],
-      "current_image_ids": [
-        "sha256:325b4b29b041e82803abeb703e201655e4e23ab83264ec1a7c9ddb0a5b14a6e0"
-      ],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "registry:3",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "587a47acb8b9b8b238e4da38028d22bf4dd2b505207b9aba4ebe457d05084c7c",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
-      "service": "renovate",
-      "scope": "root",
-      "compose_file": "infra/09-platform-ops/renovate/docker-compose.yml",
-      "current_declared": "renovate/renovate:44.115.12-full",
-      "profiles_declared": [
-        "dependency-update"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:23.401699+00:00",
-      "release_url": "https://github.com/renovatebot/renovate/releases/tag/44.149.1",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-10T01:48:43Z",
+      "source_release_date": "2026-09-24T12:21:27Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -6964,18 +6910,76 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
+      },
+      "source_owner_repository": "distribution/distribution",
+      "current_repo_digests": [
+        "registry@sha256:325b4b29b041e82803abeb703e201655e4e23ab83264ec1a7c9ddb0a5b14a6e0"
+      ],
+      "current_image_ids": [
+        "sha256:325b4b29b041e82803abeb703e201655e4e23ab83264ec1a7c9ddb0a5b14a6e0"
+      ],
+      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "ee186d89e880c81fc93346c70771f59898f76d1b85fa4fd86353e1d834a89a3c",
+      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "registry:3.1.2",
+      "target_declared_digest": "sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
+    },
+    {
+      "service": "renovate",
+      "scope": "root",
+      "compose_file": "infra/09-platform-ops/renovate/docker-compose.yml",
+      "current_declared": "renovate/renovate:44.149.2-full@sha256:fc07a2877ce78abcaba5ac19e5bebb47b228785b6a74bf9834ff6119112bf260",
+      "profiles_declared": [
+        "dependency-update"
+      ],
+      "build_source": null,
+      "current_running": [],
+      "runtime_presence": "NOT_OBSERVED",
+      "latest_version": "44.149.2",
+      "target_version": "44.149.2",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "release_url": "https://github.com/renovatebot/renovate/releases/tag/44.149.2",
+      "target_index_digest": "sha256:fc07a2877ce78abcaba5ac19e5bebb47b228785b6a74bf9834ff6119112bf260",
+      "target_manifest_digest": "sha256:9631080cbcf610e5757ef3c4c6f0ea7e5755702967afa817bafce93ecd75c4eb",
+      "target_config_digest": "UNKNOWN",
+      "platform": "linux/amd64",
+      "source_release_date": "2026-10-10T11:08:35Z",
+      "advisory_urls": [],
+      "applicability": "UNKNOWN",
+      "support_end": "UNKNOWN",
+      "compatibility": "NOT_RUN",
+      "backup": "NOT_RUN",
+      "rollback": "NOT_RUN",
+      "native_test": "NOT_RUN",
+      "deployment": "NOT_RUN",
+      "signature": "NOT_RUN",
+      "sbom_scan": "NOT_RUN",
+      "disposition": "VERIFY_RUNTIME",
+      "blocker": {
+        "owner": "SEC01",
+        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "renovatebot/renovate",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "44.149.1",
-      "next_fact_command": "gh release view --repo renovatebot/renovate --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "fcd4471f61896a46215fc6d8dca634b40c1574304d423864e36ffa5719ceca8c",
+      "upstream_reported_tag": "44.149.2",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "2b68622216432d5781c3d2670c5def3749623368100c9182193b692e3052ee29",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "renovate/renovate:44.149.2-full",
+      "target_declared_digest": "sha256:fc07a2877ce78abcaba5ac19e5bebb47b228785b6a74bf9834ff6119112bf260",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "rest",
@@ -7214,7 +7218,7 @@
       "service": "seaweedfs-buckets",
       "scope": "root",
       "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
-      "current_declared": "amazon/aws-cli:2.36.50",
+      "current_declared": "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
       "profiles_declared": [
         "seaweedfs",
         "storage-seaweedfs",
@@ -7230,16 +7234,16 @@
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:24:15.018167+00:00",
-      "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "latest_version": "2.37.12",
+      "target_version": "2.37.12",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:32:10.450528+00:00",
+      "release_url": "https://hub.docker.com/r/amazon/aws-cli/tags",
+      "target_index_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+      "target_manifest_digest": "sha256:4295c1f8da478a3aaa1e015b2d4b3772ae9cdd104ce891e4008efb9592d3ce82",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": "2026-09-28T15:53:48Z",
+      "source_release_date": null,
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -7255,24 +7259,27 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
-      "source_owner_repository": "seaweedfs/seaweedfs",
+      "source_owner_repository": "aws/aws-cli",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "4.48",
-      "next_fact_command": "gh release view --repo seaweedfs/seaweedfs --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6e681a53ad7a32d17087c555ee78618d4938047a2c9a507d227c9f3c7d752abc",
+      "upstream_reported_tag": "2.37.12",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "70ef3a3c1e9c8c088bcdef7e7c80934c4735d147bfce894b6e0a736bf277dbf7",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "amazon/aws-cli:2.37.12",
+      "target_declared_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "seaweedfs-filer",
       "scope": "root",
       "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
-      "current_declared": "chrislusf/seaweedfs:4.47",
+      "current_declared": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
       "profiles_declared": [
         "seaweedfs",
         "storage-seaweedfs",
@@ -7302,13 +7309,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:24:15.018167+00:00",
+      "latest_version": "4.48",
+      "target_version": "4.48",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+      "target_manifest_digest": "sha256:aba492e2a4e4c90bff795745e8e660affa1f09e7650f5981bd7bccd1a06cd931",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-28T15:53:48Z",
@@ -7327,7 +7334,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "seaweedfs/seaweedfs",
       "current_repo_digests": [
@@ -7338,17 +7345,20 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "4.48",
-      "next_fact_command": "gh release view --repo seaweedfs/seaweedfs --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6e681a53ad7a32d17087c555ee78618d4938047a2c9a507d227c9f3c7d752abc",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "70ef3a3c1e9c8c088bcdef7e7c80934c4735d147bfce894b6e0a736bf277dbf7",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "chrislusf/seaweedfs:4.48",
+      "target_declared_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "seaweedfs-master",
       "scope": "root",
       "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
-      "current_declared": "chrislusf/seaweedfs:4.47",
+      "current_declared": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
       "profiles_declared": [
         "seaweedfs",
         "storage-seaweedfs",
@@ -7378,13 +7388,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:24:15.018167+00:00",
+      "latest_version": "4.48",
+      "target_version": "4.48",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+      "target_manifest_digest": "sha256:aba492e2a4e4c90bff795745e8e660affa1f09e7650f5981bd7bccd1a06cd931",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-28T15:53:48Z",
@@ -7403,7 +7413,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "seaweedfs/seaweedfs",
       "current_repo_digests": [
@@ -7414,17 +7424,20 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "4.48",
-      "next_fact_command": "gh release view --repo seaweedfs/seaweedfs --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6e681a53ad7a32d17087c555ee78618d4938047a2c9a507d227c9f3c7d752abc",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "70ef3a3c1e9c8c088bcdef7e7c80934c4735d147bfce894b6e0a736bf277dbf7",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "chrislusf/seaweedfs:4.48",
+      "target_declared_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "seaweedfs-s3",
       "scope": "root",
       "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
-      "current_declared": "chrislusf/seaweedfs:4.47",
+      "current_declared": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
       "profiles_declared": [
         "seaweedfs",
         "storage-seaweedfs",
@@ -7454,13 +7467,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:24:15.018167+00:00",
+      "latest_version": "4.48",
+      "target_version": "4.48",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+      "target_manifest_digest": "sha256:aba492e2a4e4c90bff795745e8e660affa1f09e7650f5981bd7bccd1a06cd931",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-28T15:53:48Z",
@@ -7479,7 +7492,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "seaweedfs/seaweedfs",
       "current_repo_digests": [
@@ -7490,33 +7503,36 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "4.48",
-      "next_fact_command": "gh release view --repo seaweedfs/seaweedfs --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6e681a53ad7a32d17087c555ee78618d4938047a2c9a507d227c9f3c7d752abc",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "70ef3a3c1e9c8c088bcdef7e7c80934c4735d147bfce894b6e0a736bf277dbf7",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "chrislusf/seaweedfs:4.48",
+      "target_declared_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "seaweedfs-table-bucket",
       "scope": "root",
       "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
-      "current_declared": "amazon/aws-cli:2.36.50",
+      "current_declared": "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
       "profiles_declared": [
         "lakehouse"
       ],
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:24:15.018167+00:00",
-      "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "latest_version": "2.37.12",
+      "target_version": "2.37.12",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:32:10.450528+00:00",
+      "release_url": "https://hub.docker.com/r/amazon/aws-cli/tags",
+      "target_index_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+      "target_manifest_digest": "sha256:4295c1f8da478a3aaa1e015b2d4b3772ae9cdd104ce891e4008efb9592d3ce82",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": "2026-09-28T15:53:48Z",
+      "source_release_date": null,
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -7532,24 +7548,27 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
-      "source_owner_repository": "seaweedfs/seaweedfs",
+      "source_owner_repository": "aws/aws-cli",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "4.48",
-      "next_fact_command": "gh release view --repo seaweedfs/seaweedfs --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6e681a53ad7a32d17087c555ee78618d4938047a2c9a507d227c9f3c7d752abc",
+      "upstream_reported_tag": "2.37.12",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "70ef3a3c1e9c8c088bcdef7e7c80934c4735d147bfce894b6e0a736bf277dbf7",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "amazon/aws-cli:2.37.12",
+      "target_declared_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "seaweedfs-volume",
       "scope": "root",
       "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
-      "current_declared": "chrislusf/seaweedfs:4.47",
+      "current_declared": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
       "profiles_declared": [
         "seaweedfs",
         "storage-seaweedfs",
@@ -7579,13 +7598,13 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:24:15.018167+00:00",
+      "latest_version": "4.48",
+      "target_version": "4.48",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+      "target_manifest_digest": "sha256:aba492e2a4e4c90bff795745e8e660affa1f09e7650f5981bd7bccd1a06cd931",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-28T15:53:48Z",
@@ -7604,7 +7623,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "seaweedfs/seaweedfs",
       "current_repo_digests": [
@@ -7615,11 +7634,14 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "4.48",
-      "next_fact_command": "gh release view --repo seaweedfs/seaweedfs --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6e681a53ad7a32d17087c555ee78618d4938047a2c9a507d227c9f3c7d752abc",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "70ef3a3c1e9c8c088bcdef7e7c80934c4735d147bfce894b6e0a736bf277dbf7",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "chrislusf/seaweedfs:4.48",
+      "target_declared_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "sonarqube",
@@ -7734,20 +7756,20 @@
       "service": "stalwart",
       "scope": "root",
       "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
-      "current_declared": "stalwartlabs/stalwart:v0.16.22",
+      "current_declared": "stalwartlabs/stalwart:v0.16.25@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3",
       "profiles_declared": [
         "mail-server"
       ],
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:35:04.089089+00:00",
+      "latest_version": "0.16.25",
+      "target_version": "0.16.25",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/stalwartlabs/stalwart/releases/tag/v0.16.25",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3",
+      "target_manifest_digest": "sha256:b5da09f43a0e407073353162810e756030bd5258aef0f7edbf82e73e85dc8359",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-05T06:57:15Z",
@@ -7766,24 +7788,27 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
-      "source_owner_repository": "stalwartlabs/mail-server",
+      "source_owner_repository": "stalwartlabs/stalwart",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v0.16.25",
-      "next_fact_command": "gh release view --repo stalwartlabs/mail-server --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "2d6378e072270ab40c3b1cd72c3012eab299d250cd17ba856e2d3db52daa0a0f",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "446c037859e5a04e69eb7d448480d7bef20425c067cceec3d4e3b12dc8f40e4a",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "stalwartlabs/stalwart:v0.16.25",
+      "target_declared_digest": "sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "stalwart-config",
       "scope": "root",
       "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
-      "current_declared": "hy-home/stalwart-config:0.16.22-cli1.0.12-local",
+      "current_declared": "hy-home/stalwart-config:0.16.25-cli1.0.13-local",
       "profiles_declared": [
         "mail-server"
       ],
@@ -7793,13 +7818,13 @@
       },
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:23.521809+00:00",
+      "latest_version": "1.0.13",
+      "target_version": "1.0.13",
+      "channel": "stable",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
       "release_url": "https://github.com/stalwartlabs/cli/releases/tag/v1.0.13",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
+      "target_index_digest": "sha256:9a1e07307d6f890a193322c4b737fc0868405f0f8486a19922cbf362f43884fd",
+      "target_manifest_digest": "sha256:505890604d2de650744252c81da45d36cd5834b7dcca5faa382f68bbe9f4f266",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
       "source_release_date": "2026-09-28T09:21:38Z",
@@ -7818,18 +7843,21 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Publisher-controlled latest/stable channel evidence now resolves the exact source candidate. Advisory applicability and support lifecycle remain UNKNOWN. Signature, SBOM/vulnerability scan, native compatibility, stateful recovery where applicable, and HOME deployment remain NOT_RUN."
       },
       "source_owner_repository": "stalwartlabs/cli",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v1.0.13",
-      "next_fact_command": "gh release view --repo stalwartlabs/cli --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "2d6378e072270ab40c3b1cd72c3012eab299d250cd17ba856e2d3db52daa0a0f",
+      "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
+      "source_refreshed_at": "2026-10-10T16:12:44Z",
+      "source_input_sha256": "446c037859e5a04e69eb7d448480d7bef20425c067cceec3d4e3b12dc8f40e4a",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+      "target_source_image": "ghcr.io/stalwartlabs/cli:1.0.13",
+      "target_declared_digest": "UNKNOWN: local image has not been built; supplier bases are pinned by exact OCI index digest",
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
       "service": "storage",
@@ -11931,6 +11959,59 @@
       "workflow_binding_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
       "openbao_binding_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
       "owned_openbao_source_fingerprint": "62d281cefb0cc0efeb98a009068b49b3649f258bcb9308f492e7236da7e2e4d1"
+    },
+    {
+      "source_revision": "abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9",
+      "refreshed_at": "2026-10-10T16:12:44Z",
+      "input_files": [
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "70ef3a3c1e9c8c088bcdef7e7c80934c4735d147bfce894b6e0a736bf277dbf7"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "c23519af0a2a7f7bd78918e9722af3d9b8ad02a999331c830522f658e3e0d59b"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "9b9a0af257b25ae581daa821193bfa42bbc44d68faf0eb86988791b6a5d9a3f9"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "780ebabe132c9c3c82041c2ce91fa11d78463e2c4abb6c8b9cc4a1c72f6998e4"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "ee186d89e880c81fc93346c70771f59898f76d1b85fa4fd86353e1d834a89a3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "2b68622216432d5781c3d2670c5def3749623368100c9182193b692e3052ee29"
+        },
+        {
+          "path": "infra/10-communication/stalwart/config/Dockerfile",
+          "sha256": "85e31f204b5c525b47ccd5277ced2441b86158530651d5e61abeb0bdedab42ce"
+        },
+        {
+          "path": "infra/10-communication/stalwart/docker-compose.yml",
+          "sha256": "446c037859e5a04e69eb7d448480d7bef20425c067cceec3d4e3b12dc8f40e4a"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "fa787e0c228cc49984b66a96019a3f1035b87663532f70efd3baf681acc0ebb1"
+        }
+      ],
+      "input_manifest_sha256": "8478088fb4fcca17a0376156d60896341bbb21c3314478635c2a8da43742308a",
+      "meaning": "Accepted SEC01 service-local working-tree source projection on the stated base revision. Exact source pins only; signature, scan, native runtime, stateful recovery and HOME deployment remain NOT_RUN.",
+      "final_candidate_source_freeze": false
     }
   ],
   "delivery_preconditions": {

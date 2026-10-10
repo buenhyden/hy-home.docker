@@ -991,6 +991,822 @@
       "ownership_evidence": [
         "https://www.keycloak.org/downloads"
       ]
+    },
+    {
+      "repository": "prometheus/prometheus",
+      "command": "gh api repos/prometheus/prometheus/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-25T08:56:22Z",
+        "tagName": "v3.15.0",
+        "url": "https://github.com/prometheus/prometheus/releases/tag/v3.15.0"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/prometheus/prometheus/releases/latest",
+        "https://prometheus.io/download/",
+        "https://api.github.com/repos/prometheus/prometheus/releases/latest",
+        "https://api.github.com/repos/prometheus/prometheus/git/ref/tags/v3.15.0",
+        "https://api.github.com/repos/prometheus/prometheus/git/tags/e9d9395a3ff7b6f3bdb6833f0816e2716efa6dff"
+      ],
+      "source_revision": "5241a27fe3c6983549fccc32f6e65917408c63cd",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/prometheus/prometheus/releases/latest",
+          "checked_at": "2026-10-10T16:43:49.415475+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/prometheus/prometheus/releases/latest",
+          "tag_name": "v3.15.0",
+          "release_url": "https://github.com/prometheus/prometheus/releases/tag/v3.15.0"
+        },
+        "tag_ref": {
+          "command": "gh api repos/prometheus/prometheus/git/ref/tags/v3.15.0",
+          "checked_at": "2026-10-10T16:43:49.898722+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/prometheus/prometheus/git/ref/tags/v3.15.0",
+          "observed_ref": "refs/tags/v3.15.0",
+          "ref_object_type": "tag",
+          "ref_object_sha": "e9d9395a3ff7b6f3bdb6833f0816e2716efa6dff"
+        },
+        "dereference": {
+          "command": "gh api repos/prometheus/prometheus/git/tags/e9d9395a3ff7b6f3bdb6833f0816e2716efa6dff",
+          "checked_at": "2026-10-10T16:43:50.335277+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/prometheus/prometheus/git/tags/e9d9395a3ff7b6f3bdb6833f0816e2716efa6dff",
+          "status": "RESOLVED",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "5241a27fe3c6983549fccc32f6e65917408c63cd"
+        }
+      }
+    },
+    {
+      "repository": "grafana/alloy",
+      "command": "gh api repos/grafana/alloy/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-28T17:54:43Z",
+        "tagName": "v1.20.1",
+        "url": "https://github.com/grafana/alloy/releases/tag/v1.20.1"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/grafana/alloy/releases/latest",
+        "https://grafana.com/docs/alloy/latest/",
+        "https://grafana.com/docs/alloy/latest/set-up/install/linux/",
+        "https://api.github.com/repos/grafana/alloy/releases/latest",
+        "https://api.github.com/repos/grafana/alloy/git/ref/tags/v1.20.1",
+        "https://api.github.com/repos/grafana/alloy/git/commits/95e12cf8961fabc9db6858f7e79bde5c814a07a0"
+      ],
+      "source_revision": "95e12cf8961fabc9db6858f7e79bde5c814a07a0",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/grafana/alloy/releases/latest",
+          "checked_at": "2026-10-10T16:43:50.787604+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/grafana/alloy/releases/latest",
+          "tag_name": "v1.20.1",
+          "release_url": "https://github.com/grafana/alloy/releases/tag/v1.20.1"
+        },
+        "tag_ref": {
+          "command": "gh api repos/grafana/alloy/git/ref/tags/v1.20.1",
+          "checked_at": "2026-10-10T16:43:51.303195+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/grafana/alloy/git/ref/tags/v1.20.1",
+          "observed_ref": "refs/tags/v1.20.1",
+          "ref_object_type": "commit",
+          "ref_object_sha": "95e12cf8961fabc9db6858f7e79bde5c814a07a0"
+        },
+        "dereference": {
+          "command": null,
+          "checked_at": "2026-10-10T16:43:51.303195+00:00",
+          "exit_code": null,
+          "status": "NOT_REQUIRED_REF_IS_COMMIT",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "95e12cf8961fabc9db6858f7e79bde5c814a07a0",
+          "response_url": "https://api.github.com/repos/grafana/alloy/git/commits/95e12cf8961fabc9db6858f7e79bde5c814a07a0"
+        }
+      }
+    },
+    {
+      "repository": "google/cadvisor",
+      "command": "gh api repos/google/cadvisor/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-18T22:43:39Z",
+        "tagName": "v0.60.6",
+        "url": "https://github.com/google/cadvisor/releases/tag/v0.60.6"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/google/cadvisor/releases/latest",
+        "https://github.com/google/cadvisor/blob/master/docs/deploy.md",
+        "https://api.github.com/repos/google/cadvisor/releases/latest",
+        "https://api.github.com/repos/google/cadvisor/git/ref/tags/v0.60.6",
+        "https://api.github.com/repos/google/cadvisor/git/commits/5bf5d43ac6f60d7ee36a13b4d5b4a78ad2d0abc7"
+      ],
+      "source_revision": "5bf5d43ac6f60d7ee36a13b4d5b4a78ad2d0abc7",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/google/cadvisor/releases/latest",
+          "checked_at": "2026-10-10T16:43:51.758805+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/google/cadvisor/releases/latest",
+          "tag_name": "v0.60.6",
+          "release_url": "https://github.com/google/cadvisor/releases/tag/v0.60.6"
+        },
+        "tag_ref": {
+          "command": "gh api repos/google/cadvisor/git/ref/tags/v0.60.6",
+          "checked_at": "2026-10-10T16:43:52.259505+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/google/cadvisor/git/ref/tags/v0.60.6",
+          "observed_ref": "refs/tags/v0.60.6",
+          "ref_object_type": "commit",
+          "ref_object_sha": "5bf5d43ac6f60d7ee36a13b4d5b4a78ad2d0abc7"
+        },
+        "dereference": {
+          "command": null,
+          "checked_at": "2026-10-10T16:43:52.259505+00:00",
+          "exit_code": null,
+          "status": "NOT_REQUIRED_REF_IS_COMMIT",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "5bf5d43ac6f60d7ee36a13b4d5b4a78ad2d0abc7",
+          "response_url": "https://api.github.com/repos/google/cadvisor/git/commits/5bf5d43ac6f60d7ee36a13b4d5b4a78ad2d0abc7"
+        }
+      }
+    },
+    {
+      "repository": "grafana/pyroscope",
+      "command": "gh api repos/grafana/pyroscope/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-09T19:46:50Z",
+        "tagName": "v2.4.0",
+        "url": "https://github.com/grafana/pyroscope/releases/tag/v2.4.0"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/grafana/pyroscope/releases/latest",
+        "https://grafana.com/docs/pyroscope/latest/release-notes/",
+        "https://grafana.com/docs/pyroscope/latest/release-notes/v2-4/",
+        "https://api.github.com/repos/grafana/pyroscope/releases/latest",
+        "https://api.github.com/repos/grafana/pyroscope/git/ref/tags/v2.4.0",
+        "https://api.github.com/repos/grafana/pyroscope/git/tags/4ff72c81b8b7925e7eaa4ed7b4e88f2b27546547"
+      ],
+      "source_revision": "1c9109674636cfd5c5e61ee3b01ed93c06bff8be",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/grafana/pyroscope/releases/latest",
+          "checked_at": "2026-10-10T16:43:52.674952+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/grafana/pyroscope/releases/latest",
+          "tag_name": "v2.4.0",
+          "release_url": "https://github.com/grafana/pyroscope/releases/tag/v2.4.0"
+        },
+        "tag_ref": {
+          "command": "gh api repos/grafana/pyroscope/git/ref/tags/v2.4.0",
+          "checked_at": "2026-10-10T16:43:53.220849+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/grafana/pyroscope/git/ref/tags/v2.4.0",
+          "observed_ref": "refs/tags/v2.4.0",
+          "ref_object_type": "tag",
+          "ref_object_sha": "4ff72c81b8b7925e7eaa4ed7b4e88f2b27546547"
+        },
+        "dereference": {
+          "command": "gh api repos/grafana/pyroscope/git/tags/4ff72c81b8b7925e7eaa4ed7b4e88f2b27546547",
+          "checked_at": "2026-10-10T16:43:53.662013+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/grafana/pyroscope/git/tags/4ff72c81b8b7925e7eaa4ed7b4e88f2b27546547",
+          "status": "RESOLVED",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "1c9109674636cfd5c5e61ee3b01ed93c06bff8be"
+        }
+      }
+    },
+    {
+      "repository": "prometheus/pushgateway",
+      "command": "gh api repos/prometheus/pushgateway/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-08T11:14:45Z",
+        "tagName": "v1.11.4",
+        "url": "https://github.com/prometheus/pushgateway/releases/tag/v1.11.4"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/prometheus/pushgateway/releases/latest",
+        "https://prometheus.io/download/",
+        "https://api.github.com/repos/prometheus/pushgateway/releases/latest",
+        "https://api.github.com/repos/prometheus/pushgateway/git/ref/tags/v1.11.4",
+        "https://api.github.com/repos/prometheus/pushgateway/git/tags/142fbd1f4cc98004beea866ab03e74585c5289e4"
+      ],
+      "source_revision": "3e29338978f3046ba1a602d6cca520121ab91112",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/prometheus/pushgateway/releases/latest",
+          "checked_at": "2026-10-10T16:43:54.115027+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/prometheus/pushgateway/releases/latest",
+          "tag_name": "v1.11.4",
+          "release_url": "https://github.com/prometheus/pushgateway/releases/tag/v1.11.4"
+        },
+        "tag_ref": {
+          "command": "gh api repos/prometheus/pushgateway/git/ref/tags/v1.11.4",
+          "checked_at": "2026-10-10T16:43:54.625186+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/prometheus/pushgateway/git/ref/tags/v1.11.4",
+          "observed_ref": "refs/tags/v1.11.4",
+          "ref_object_type": "tag",
+          "ref_object_sha": "142fbd1f4cc98004beea866ab03e74585c5289e4"
+        },
+        "dereference": {
+          "command": "gh api repos/prometheus/pushgateway/git/tags/142fbd1f4cc98004beea866ab03e74585c5289e4",
+          "checked_at": "2026-10-10T16:43:55.199170+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/prometheus/pushgateway/git/tags/142fbd1f4cc98004beea866ab03e74585c5289e4",
+          "status": "RESOLVED",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "3e29338978f3046ba1a602d6cca520121ab91112"
+        }
+      }
+    },
+    {
+      "repository": "amir20/dozzle",
+      "command": "gh api repos/amir20/dozzle/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-05T16:55:39Z",
+        "tagName": "v11.3.0",
+        "url": "https://github.com/amir20/dozzle/releases/tag/v11.3.0"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/amir20/dozzle/releases/latest",
+        "https://dozzle.dev/guide/getting-started",
+        "https://api.github.com/repos/amir20/dozzle/releases/latest",
+        "https://api.github.com/repos/amir20/dozzle/git/ref/tags/v11.3.0",
+        "https://api.github.com/repos/amir20/dozzle/git/tags/72ca1864a14cce3326db8f2417b15787712c84ce"
+      ],
+      "source_revision": "309a3a6edae7f7b8e0443105b674b57985e04848",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/amir20/dozzle/releases/latest",
+          "checked_at": "2026-10-10T16:43:55.656643+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/amir20/dozzle/releases/latest",
+          "tag_name": "v11.3.0",
+          "release_url": "https://github.com/amir20/dozzle/releases/tag/v11.3.0"
+        },
+        "tag_ref": {
+          "command": "gh api repos/amir20/dozzle/git/ref/tags/v11.3.0",
+          "checked_at": "2026-10-10T16:43:56.088389+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/amir20/dozzle/git/ref/tags/v11.3.0",
+          "observed_ref": "refs/tags/v11.3.0",
+          "ref_object_type": "tag",
+          "ref_object_sha": "72ca1864a14cce3326db8f2417b15787712c84ce"
+        },
+        "dereference": {
+          "command": "gh api repos/amir20/dozzle/git/tags/72ca1864a14cce3326db8f2417b15787712c84ce",
+          "checked_at": "2026-10-10T16:43:56.485616+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/amir20/dozzle/git/tags/72ca1864a14cce3326db8f2417b15787712c84ce",
+          "status": "RESOLVED",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "309a3a6edae7f7b8e0443105b674b57985e04848"
+        }
+      }
+    },
+    {
+      "repository": "open-policy-agent/conftest",
+      "command": "gh api repos/open-policy-agent/conftest/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-06T04:53:53Z",
+        "tagName": "v0.71.1",
+        "url": "https://github.com/open-policy-agent/conftest/releases/tag/v0.71.1"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/open-policy-agent/conftest/releases/latest",
+        "https://www.conftest.dev/install/",
+        "https://api.github.com/repos/open-policy-agent/conftest/releases/latest",
+        "https://api.github.com/repos/open-policy-agent/conftest/git/ref/tags/v0.71.1",
+        "https://api.github.com/repos/open-policy-agent/conftest/git/commits/8f7ac015cb51d81992f2ffbe2b0c1451fd05d1c5"
+      ],
+      "source_revision": "8f7ac015cb51d81992f2ffbe2b0c1451fd05d1c5",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/open-policy-agent/conftest/releases/latest",
+          "checked_at": "2026-10-10T16:43:56.880818+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/open-policy-agent/conftest/releases/latest",
+          "tag_name": "v0.71.1",
+          "release_url": "https://github.com/open-policy-agent/conftest/releases/tag/v0.71.1"
+        },
+        "tag_ref": {
+          "command": "gh api repos/open-policy-agent/conftest/git/ref/tags/v0.71.1",
+          "checked_at": "2026-10-10T16:43:57.341048+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/open-policy-agent/conftest/git/ref/tags/v0.71.1",
+          "observed_ref": "refs/tags/v0.71.1",
+          "ref_object_type": "commit",
+          "ref_object_sha": "8f7ac015cb51d81992f2ffbe2b0c1451fd05d1c5"
+        },
+        "dereference": {
+          "command": null,
+          "checked_at": "2026-10-10T16:43:57.341048+00:00",
+          "exit_code": null,
+          "status": "NOT_REQUIRED_REF_IS_COMMIT",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "8f7ac015cb51d81992f2ffbe2b0c1451fd05d1c5",
+          "response_url": "https://api.github.com/repos/open-policy-agent/conftest/git/commits/8f7ac015cb51d81992f2ffbe2b0c1451fd05d1c5"
+        }
+      }
+    },
+    {
+      "repository": "axllent/mailpit",
+      "command": "gh api repos/axllent/mailpit/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-03T04:36:58Z",
+        "tagName": "v1.31.4",
+        "url": "https://github.com/axllent/mailpit/releases/tag/v1.31.4"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/axllent/mailpit/releases/latest",
+        "https://mailpit.axllent.org/docs/install/docker/",
+        "https://api.github.com/repos/axllent/mailpit/releases/latest",
+        "https://api.github.com/repos/axllent/mailpit/git/ref/tags/v1.31.4",
+        "https://api.github.com/repos/axllent/mailpit/git/tags/20539d590ce429d0f86342a34833e86ecb860134"
+      ],
+      "source_revision": "ccb524a62b3a14b6a3fd55c1275a16945d10e36b",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/axllent/mailpit/releases/latest",
+          "checked_at": "2026-10-10T16:43:57.773291+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/axllent/mailpit/releases/latest",
+          "tag_name": "v1.31.4",
+          "release_url": "https://github.com/axllent/mailpit/releases/tag/v1.31.4"
+        },
+        "tag_ref": {
+          "command": "gh api repos/axllent/mailpit/git/ref/tags/v1.31.4",
+          "checked_at": "2026-10-10T16:43:58.236070+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/axllent/mailpit/git/ref/tags/v1.31.4",
+          "observed_ref": "refs/tags/v1.31.4",
+          "ref_object_type": "tag",
+          "ref_object_sha": "20539d590ce429d0f86342a34833e86ecb860134"
+        },
+        "dereference": {
+          "command": "gh api repos/axllent/mailpit/git/tags/20539d590ce429d0f86342a34833e86ecb860134",
+          "checked_at": "2026-10-10T16:43:58.631121+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/axllent/mailpit/git/tags/20539d590ce429d0f86342a34833e86ecb860134",
+          "status": "RESOLVED",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "ccb524a62b3a14b6a3fd55c1275a16945d10e36b"
+        }
+      }
+    },
+    {
+      "repository": "qdrant/qdrant",
+      "command": "gh api repos/qdrant/qdrant/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-05T14:16:50Z",
+        "tagName": "v1.19.2",
+        "url": "https://github.com/qdrant/qdrant/releases/tag/v1.19.2"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/qdrant/qdrant/releases/latest",
+        "https://qdrant.tech/documentation/installation/",
+        "https://qdrant.tech/documentation/upgrades/",
+        "https://api.github.com/repos/qdrant/qdrant/releases/latest",
+        "https://api.github.com/repos/qdrant/qdrant/git/ref/tags/v1.19.2",
+        "https://api.github.com/repos/qdrant/qdrant/git/tags/721cf8793c0ee5953273b9e1d1bf4613adcd34bc"
+      ],
+      "source_revision": "016542aa5deb6c66380bb137badf73d54f742bde",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/qdrant/qdrant/releases/latest",
+          "checked_at": "2026-10-10T16:43:59.059872+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/qdrant/qdrant/releases/latest",
+          "tag_name": "v1.19.2",
+          "release_url": "https://github.com/qdrant/qdrant/releases/tag/v1.19.2"
+        },
+        "tag_ref": {
+          "command": "gh api repos/qdrant/qdrant/git/ref/tags/v1.19.2",
+          "checked_at": "2026-10-10T16:43:59.508184+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/qdrant/qdrant/git/ref/tags/v1.19.2",
+          "observed_ref": "refs/tags/v1.19.2",
+          "ref_object_type": "tag",
+          "ref_object_sha": "721cf8793c0ee5953273b9e1d1bf4613adcd34bc"
+        },
+        "dereference": {
+          "command": "gh api repos/qdrant/qdrant/git/tags/721cf8793c0ee5953273b9e1d1bf4613adcd34bc",
+          "checked_at": "2026-10-10T16:43:59.936087+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/qdrant/qdrant/git/tags/721cf8793c0ee5953273b9e1d1bf4613adcd34bc",
+          "status": "RESOLVED",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "016542aa5deb6c66380bb137badf73d54f742bde"
+        }
+      }
+    },
+    {
+      "repository": "renovatebot/renovate",
+      "command": "gh api repos/renovatebot/renovate/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-10T11:08:35Z",
+        "tagName": "44.149.2",
+        "url": "https://github.com/renovatebot/renovate/releases/tag/44.149.2"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/renovatebot/renovate/releases/latest",
+        "https://docs.renovatebot.com/getting-started/running/",
+        "https://docs.renovatebot.com/examples/self-hosting/",
+        "https://api.github.com/repos/renovatebot/renovate/releases/latest",
+        "https://api.github.com/repos/renovatebot/renovate/git/ref/tags/44.149.2",
+        "https://api.github.com/repos/renovatebot/renovate/git/commits/182de2759f0bb31ee6216f4076875948d39c4c1b"
+      ],
+      "source_revision": "182de2759f0bb31ee6216f4076875948d39c4c1b",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/renovatebot/renovate/releases/latest",
+          "checked_at": "2026-10-10T16:44:00.383717+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/renovatebot/renovate/releases/latest",
+          "tag_name": "44.149.2",
+          "release_url": "https://github.com/renovatebot/renovate/releases/tag/44.149.2"
+        },
+        "tag_ref": {
+          "command": "gh api repos/renovatebot/renovate/git/ref/tags/44.149.2",
+          "checked_at": "2026-10-10T16:44:00.894131+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/renovatebot/renovate/git/ref/tags/44.149.2",
+          "observed_ref": "refs/tags/44.149.2",
+          "ref_object_type": "commit",
+          "ref_object_sha": "182de2759f0bb31ee6216f4076875948d39c4c1b"
+        },
+        "dereference": {
+          "command": null,
+          "checked_at": "2026-10-10T16:44:00.894131+00:00",
+          "exit_code": null,
+          "status": "NOT_REQUIRED_REF_IS_COMMIT",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "182de2759f0bb31ee6216f4076875948d39c4c1b",
+          "response_url": "https://api.github.com/repos/renovatebot/renovate/git/commits/182de2759f0bb31ee6216f4076875948d39c4c1b"
+        }
+      }
+    },
+    {
+      "repository": "seaweedfs/seaweedfs",
+      "command": "gh api repos/seaweedfs/seaweedfs/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-28T15:53:48Z",
+        "tagName": "4.48",
+        "url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/seaweedfs/seaweedfs/releases/latest",
+        "https://github.com/seaweedfs/seaweedfs/blob/master/docker/README.md",
+        "https://api.github.com/repos/seaweedfs/seaweedfs/releases/latest",
+        "https://api.github.com/repos/seaweedfs/seaweedfs/git/ref/tags/4.48",
+        "https://api.github.com/repos/seaweedfs/seaweedfs/git/commits/530be3e37337488ecc34d58441e0bc476e121c93"
+      ],
+      "source_revision": "530be3e37337488ecc34d58441e0bc476e121c93",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/seaweedfs/seaweedfs/releases/latest",
+          "checked_at": "2026-10-10T16:44:01.350015+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/seaweedfs/seaweedfs/releases/latest",
+          "tag_name": "4.48",
+          "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48"
+        },
+        "tag_ref": {
+          "command": "gh api repos/seaweedfs/seaweedfs/git/ref/tags/4.48",
+          "checked_at": "2026-10-10T16:44:01.901164+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/seaweedfs/seaweedfs/git/ref/tags/4.48",
+          "observed_ref": "refs/tags/4.48",
+          "ref_object_type": "commit",
+          "ref_object_sha": "530be3e37337488ecc34d58441e0bc476e121c93"
+        },
+        "dereference": {
+          "command": null,
+          "checked_at": "2026-10-10T16:44:01.901164+00:00",
+          "exit_code": null,
+          "status": "NOT_REQUIRED_REF_IS_COMMIT",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "530be3e37337488ecc34d58441e0bc476e121c93",
+          "response_url": "https://api.github.com/repos/seaweedfs/seaweedfs/git/commits/530be3e37337488ecc34d58441e0bc476e121c93"
+        }
+      }
+    },
+    {
+      "repository": "stalwartlabs/stalwart",
+      "command": "gh api repos/stalwartlabs/stalwart/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-05T06:57:15Z",
+        "tagName": "v0.16.25",
+        "url": "https://github.com/stalwartlabs/stalwart/releases/tag/v0.16.25"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/stalwartlabs/stalwart/releases/latest",
+        "https://www.stalw.art/docs/install/platform/docker/",
+        "https://stalw.art/docs/install/upgrade/",
+        "https://api.github.com/repos/stalwartlabs/stalwart/releases/latest",
+        "https://api.github.com/repos/stalwartlabs/stalwart/git/ref/tags/v0.16.25",
+        "https://api.github.com/repos/stalwartlabs/stalwart/git/commits/3f657330c0f49a015a3a372fb59669b5cccbca6d"
+      ],
+      "source_revision": "3f657330c0f49a015a3a372fb59669b5cccbca6d",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/stalwartlabs/stalwart/releases/latest",
+          "checked_at": "2026-10-10T16:44:02.302946+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/stalwartlabs/stalwart/releases/latest",
+          "tag_name": "v0.16.25",
+          "release_url": "https://github.com/stalwartlabs/stalwart/releases/tag/v0.16.25"
+        },
+        "tag_ref": {
+          "command": "gh api repos/stalwartlabs/stalwart/git/ref/tags/v0.16.25",
+          "checked_at": "2026-10-10T16:44:02.834291+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/stalwartlabs/stalwart/git/ref/tags/v0.16.25",
+          "observed_ref": "refs/tags/v0.16.25",
+          "ref_object_type": "commit",
+          "ref_object_sha": "3f657330c0f49a015a3a372fb59669b5cccbca6d"
+        },
+        "dereference": {
+          "command": null,
+          "checked_at": "2026-10-10T16:44:02.834291+00:00",
+          "exit_code": null,
+          "status": "NOT_REQUIRED_REF_IS_COMMIT",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "3f657330c0f49a015a3a372fb59669b5cccbca6d",
+          "response_url": "https://api.github.com/repos/stalwartlabs/stalwart/git/commits/3f657330c0f49a015a3a372fb59669b5cccbca6d"
+        }
+      }
+    },
+    {
+      "repository": "stalwartlabs/cli",
+      "command": "gh api repos/stalwartlabs/cli/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-28T09:21:38Z",
+        "tagName": "v1.0.13",
+        "url": "https://github.com/stalwartlabs/cli/releases/tag/v1.0.13"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/stalwartlabs/cli/releases/latest",
+        "https://stalw.art/docs/management/cli/",
+        "https://api.github.com/repos/stalwartlabs/cli/releases/latest",
+        "https://api.github.com/repos/stalwartlabs/cli/git/ref/tags/v1.0.13",
+        "https://api.github.com/repos/stalwartlabs/cli/git/commits/e78e596eca9a352b8b3db3379001f9384dd15c17"
+      ],
+      "source_revision": "e78e596eca9a352b8b3db3379001f9384dd15c17",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/stalwartlabs/cli/releases/latest",
+          "checked_at": "2026-10-10T16:44:03.240338+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/stalwartlabs/cli/releases/latest",
+          "tag_name": "v1.0.13",
+          "release_url": "https://github.com/stalwartlabs/cli/releases/tag/v1.0.13"
+        },
+        "tag_ref": {
+          "command": "gh api repos/stalwartlabs/cli/git/ref/tags/v1.0.13",
+          "checked_at": "2026-10-10T16:44:03.732929+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/stalwartlabs/cli/git/ref/tags/v1.0.13",
+          "observed_ref": "refs/tags/v1.0.13",
+          "ref_object_type": "commit",
+          "ref_object_sha": "e78e596eca9a352b8b3db3379001f9384dd15c17"
+        },
+        "dereference": {
+          "command": null,
+          "checked_at": "2026-10-10T16:44:03.732929+00:00",
+          "exit_code": null,
+          "status": "NOT_REQUIRED_REF_IS_COMMIT",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "e78e596eca9a352b8b3db3379001f9384dd15c17",
+          "response_url": "https://api.github.com/repos/stalwartlabs/cli/git/commits/e78e596eca9a352b8b3db3379001f9384dd15c17"
+        }
+      }
+    },
+    {
+      "repository": "lfnovo/open-notebook",
+      "command": "gh api repos/lfnovo/open-notebook/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-04T23:45:47Z",
+        "tagName": "v1.15.0",
+        "url": "https://github.com/lfnovo/open-notebook/releases/tag/v1.15.0"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/lfnovo/open-notebook/releases/latest",
+        "https://github.com/lfnovo/open-notebook/security",
+        "https://api.github.com/repos/lfnovo/open-notebook/releases/latest",
+        "https://api.github.com/repos/lfnovo/open-notebook/git/ref/tags/v1.15.0",
+        "https://api.github.com/repos/lfnovo/open-notebook/git/commits/315d5255af2a5132aada41c94d5c3c5dc8e837aa"
+      ],
+      "source_revision": "315d5255af2a5132aada41c94d5c3c5dc8e837aa",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/lfnovo/open-notebook/releases/latest",
+          "checked_at": "2026-10-10T16:44:04.157274+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/lfnovo/open-notebook/releases/latest",
+          "tag_name": "v1.15.0",
+          "release_url": "https://github.com/lfnovo/open-notebook/releases/tag/v1.15.0"
+        },
+        "tag_ref": {
+          "command": "gh api repos/lfnovo/open-notebook/git/ref/tags/v1.15.0",
+          "checked_at": "2026-10-10T16:44:04.655896+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/lfnovo/open-notebook/git/ref/tags/v1.15.0",
+          "observed_ref": "refs/tags/v1.15.0",
+          "ref_object_type": "commit",
+          "ref_object_sha": "315d5255af2a5132aada41c94d5c3c5dc8e837aa"
+        },
+        "dereference": {
+          "command": null,
+          "checked_at": "2026-10-10T16:44:04.655896+00:00",
+          "exit_code": null,
+          "status": "NOT_REQUIRED_REF_IS_COMMIT",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "315d5255af2a5132aada41c94d5c3c5dc8e837aa",
+          "response_url": "https://api.github.com/repos/lfnovo/open-notebook/git/commits/315d5255af2a5132aada41c94d5c3c5dc8e837aa"
+        }
+      }
+    },
+    {
+      "repository": "distribution/distribution",
+      "command": "gh api repos/distribution/distribution/releases/latest",
+      "checked_at": "2026-10-10T16:30:58.616866+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-24T12:21:27Z",
+        "tagName": "v3.1.2",
+        "url": "https://github.com/distribution/distribution/releases/tag/v3.1.2"
+      },
+      "stable_channel": "Resolved using the publisher-controlled latest release endpoint and current official vendor channel/install/support documentation; not inferred from prerelease=false alone.",
+      "ownership_evidence": [
+        "https://github.com/distribution/distribution/releases/latest",
+        "https://distribution.github.io/distribution/about/deploying/",
+        "https://api.github.com/repos/distribution/distribution/releases/latest",
+        "https://api.github.com/repos/distribution/distribution/git/ref/tags/v3.1.2",
+        "https://api.github.com/repos/distribution/distribution/git/tags/c9f69bb1182cd91e41ef545c5ec8e03c4f20bd35"
+      ],
+      "source_revision": "3220848f15d9279c66a41aa0a257469e6aede1e9",
+      "observations": {
+        "latest_release": {
+          "command": "gh api repos/distribution/distribution/releases/latest",
+          "checked_at": "2026-10-10T16:44:05.085071+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/distribution/distribution/releases/latest",
+          "tag_name": "v3.1.2",
+          "release_url": "https://github.com/distribution/distribution/releases/tag/v3.1.2"
+        },
+        "tag_ref": {
+          "command": "gh api repos/distribution/distribution/git/ref/tags/v3.1.2",
+          "checked_at": "2026-10-10T16:44:05.552356+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/distribution/distribution/git/ref/tags/v3.1.2",
+          "observed_ref": "refs/tags/v3.1.2",
+          "ref_object_type": "tag",
+          "ref_object_sha": "c9f69bb1182cd91e41ef545c5ec8e03c4f20bd35"
+        },
+        "dereference": {
+          "command": "gh api repos/distribution/distribution/git/tags/c9f69bb1182cd91e41ef545c5ec8e03c4f20bd35",
+          "checked_at": "2026-10-10T16:44:05.967529+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/distribution/distribution/git/tags/c9f69bb1182cd91e41ef545c5ec8e03c4f20bd35",
+          "status": "RESOLVED",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "3220848f15d9279c66a41aa0a257469e6aede1e9"
+        }
+      }
+    },
+    {
+      "repository": "aws/aws-cli",
+      "command": "GET https://raw.githubusercontent.com/aws/aws-cli/9469a4d8191c8139b54dd119526648d29a4b5f72/CHANGELOG.rst",
+      "checked_at": "2026-10-10T16:32:10.450528+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-09T19:03:22.936964Z",
+        "tagName": "2.37.12",
+        "url": "https://hub.docker.com/r/amazon/aws-cli/tags?name=2.37.12"
+      },
+      "stable_channel": "Resolved from the official AWS CLI v2 changelog plus the verified-publisher Docker contract: latest and immutable 2.37.12 selected the same multi-platform digest.",
+      "ownership_evidence": [
+        "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html",
+        "https://hub.docker.com/r/amazon/aws-cli/",
+        "https://raw.githubusercontent.com/aws/aws-cli/v2/CHANGELOG.rst",
+        "https://api.github.com/repos/aws/aws-cli/git/ref/tags/2.37.12",
+        "https://api.github.com/repos/aws/aws-cli/git/tags/1f6929cdd8a04ca07b27045150d3315fc38bf30b",
+        "https://raw.githubusercontent.com/aws/aws-cli/9469a4d8191c8139b54dd119526648d29a4b5f72/CHANGELOG.rst",
+        "https://hub.docker.com/v2/repositories/amazon/aws-cli/tags/latest",
+        "https://hub.docker.com/v2/repositories/amazon/aws-cli/tags/2.37.12"
+      ],
+      "source_revision": "9469a4d8191c8139b54dd119526648d29a4b5f72",
+      "observations": {
+        "tag_ref": {
+          "command": "gh api repos/aws/aws-cli/git/ref/tags/2.37.12",
+          "checked_at": "2026-10-10T16:44:06.407222+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/aws/aws-cli/git/ref/tags/2.37.12",
+          "observed_ref": "refs/tags/2.37.12",
+          "ref_object_type": "tag",
+          "ref_object_sha": "1f6929cdd8a04ca07b27045150d3315fc38bf30b"
+        },
+        "dereference": {
+          "command": "gh api repos/aws/aws-cli/git/tags/1f6929cdd8a04ca07b27045150d3315fc38bf30b",
+          "checked_at": "2026-10-10T16:44:06.816040+00:00",
+          "exit_code": 0,
+          "response_url": "https://api.github.com/repos/aws/aws-cli/git/tags/1f6929cdd8a04ca07b27045150d3315fc38bf30b",
+          "status": "RESOLVED",
+          "resolved_object_type": "commit",
+          "resolved_commit_sha": "9469a4d8191c8139b54dd119526648d29a4b5f72"
+        },
+        "latest_changelog": {
+          "command": "GET https://raw.githubusercontent.com/aws/aws-cli/9469a4d8191c8139b54dd119526648d29a4b5f72/CHANGELOG.rst",
+          "checked_at": "2026-10-10T16:44:07.222358+00:00",
+          "exit_code": 0,
+          "http_status": 200,
+          "response_url": "https://raw.githubusercontent.com/aws/aws-cli/9469a4d8191c8139b54dd119526648d29a4b5f72/CHANGELOG.rst",
+          "content_sha256": "7f16a193d59c7fd7b8c6b8b8f33bf38066296d3272b351c7c70699ed9997df7c",
+          "source_revision": "9469a4d8191c8139b54dd119526648d29a4b5f72",
+          "selected_version": "2.37.12"
+        },
+        "latest_image": {
+          "command": "GET https://hub.docker.com/v2/repositories/amazon/aws-cli/tags/latest",
+          "checked_at": "2026-10-10T16:44:07.603365+00:00",
+          "exit_code": 0,
+          "http_status": 200,
+          "response_url": "https://hub.docker.com/v2/repositories/amazon/aws-cli/tags/latest",
+          "content_sha256": "65f088c1ddd29c730c247f10b0aec62a0ada7083a8a1c7c851b26358c1592cef",
+          "tag_name": "latest",
+          "index_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+          "last_updated": "2026-10-09T19:03:20.804193Z"
+        },
+        "exact_image": {
+          "command": "GET https://hub.docker.com/v2/repositories/amazon/aws-cli/tags/2.37.12",
+          "checked_at": "2026-10-10T16:44:07.918934+00:00",
+          "exit_code": 0,
+          "http_status": 200,
+          "response_url": "https://hub.docker.com/v2/repositories/amazon/aws-cli/tags/2.37.12",
+          "content_sha256": "57a452a232e54fbea6a678ed279ca6dafaa4553f4249a3c65e157451bd9340a4",
+          "tag_name": "2.37.12",
+          "index_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+          "last_updated": "2026-10-09T19:03:22.936964Z"
+        }
+      }
     }
   ]
 }

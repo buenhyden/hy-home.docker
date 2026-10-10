@@ -22,7 +22,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: lfnovo/open_notebook:v1-latest-single
+    image: lfnovo/open_notebook:1.15.0-single@sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3
     container_name: open_notebook
     hostname: open_notebook
     group_add:

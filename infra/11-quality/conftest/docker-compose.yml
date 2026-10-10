@@ -11,7 +11,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
-    image: openpolicyagent/conftest:v0.70.1
+    image: openpolicyagent/conftest:v0.71.1@sha256:0e77cdf7c1fcde035f3c579e4aaa6664ee2a8be5777eaa9af9f520cdd02280c0
     container_name: conftest
     hostname: conftest
     user: '1000:1000'

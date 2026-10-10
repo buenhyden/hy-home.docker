@@ -1,5 +1,5 @@
 {
-  "source_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+  "source_revision": "abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9",
   "lookups": [
     {
       "image": "alpine:3.24",
@@ -38,8 +38,8 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "amazon/aws-cli:2.36.50",
-      "checked_at": "2026-10-10T10:27:43.195738+00:00",
+      "image": "amazon/aws-cli:2.37.12",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "",
@@ -47,19 +47,19 @@
         "documentation": "",
         "version": ""
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
-      "image": "amir20/dozzle:v11.1.1",
-      "checked_at": "2026-10-10T10:27:43.196239+00:00",
+      "image": "amir20/dozzle:v11.3.0",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "https://github.com/amir20/dozzle",
         "url": "https://github.com/amir20/dozzle",
         "documentation": "",
-        "version": "v11.1.1"
+        "version": "v11.3.0"
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "apache/airflow:3.3.2-python3.13@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371",
@@ -98,8 +98,8 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "axllent/mailpit:v1.31.2",
-      "checked_at": "2026-10-10T10:27:46.161141+00:00",
+      "image": "axllent/mailpit:v1.31.4",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "https://github.com/axllent/mailpit",
@@ -107,7 +107,7 @@
         "documentation": "https://mailpit.axllent.org/docs/",
         "version": ""
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "azbuilder/api-server:2.33.2",
@@ -146,16 +146,16 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "chrislusf/seaweedfs:4.47",
-      "checked_at": "2026-10-10T10:27:47.491246+00:00",
+      "image": "chrislusf/seaweedfs:4.48",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "https://github.com/seaweedfs/seaweedfs",
         "url": "https://github.com/seaweedfs/seaweedfs",
         "documentation": "",
-        "version": "4.47"
+        "version": "4.48"
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "confluentinc/cp-kafka-connect:8.3.2",
@@ -254,16 +254,16 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "gcr.io/cadvisor/cadvisor:v0.55.1",
-      "checked_at": "2026-10-10T10:27:50.966240+00:00",
+      "image": "ghcr.io/google/cadvisor:v0.60.6",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
-        "source": "",
-        "url": "",
+        "source": "https://github.com/google/cadvisor",
+        "url": "https://github.com/google/cadvisor",
         "documentation": "",
-        "version": ""
+        "version": "0.60.6"
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "ghcr.io/mlflow/mlflow:v3.16.1",
@@ -302,16 +302,16 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "ghcr.io/stalwartlabs/cli:1.0.12",
-      "checked_at": "2026-10-10T10:27:52.736562+00:00",
+      "image": "ghcr.io/stalwartlabs/cli:1.0.13",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "https://github.com/stalwartlabs/cli",
         "url": "https://github.com/stalwartlabs/cli",
         "documentation": "",
-        "version": "1.0.12"
+        "version": "1.0.13"
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "golang:1.26.4-alpine3.22",
@@ -326,8 +326,8 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "grafana/alloy:v1.19.2",
-      "checked_at": "2026-10-10T10:27:54.583321+00:00",
+      "image": "grafana/alloy:v1.20.1",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "https://github.com/grafana/alloy",
@@ -335,7 +335,7 @@
         "documentation": "",
         "version": "24.04"
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "grafana/grafana:13.2.2",
@@ -374,16 +374,16 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "grafana/pyroscope:2.3.1",
-      "checked_at": "2026-10-10T10:27:55.363918+00:00",
+      "image": "grafana/pyroscope:2.4.0",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "",
         "url": "",
         "documentation": "",
-        "version": "2.3.1"
+        "version": "2.4.0"
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "grafana/tempo:3.0.3",
@@ -422,8 +422,8 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "lfnovo/open_notebook:v1-latest-single",
-      "checked_at": "2026-10-10T10:27:57.872575+00:00",
+      "image": "lfnovo/open_notebook:1.15.0-single",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "",
@@ -431,7 +431,7 @@
         "documentation": "",
         "version": ""
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "lucabecker42/ollama-exporter:1.0.3",
@@ -542,8 +542,8 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "openpolicyagent/conftest:v0.70.1",
-      "checked_at": "2026-10-10T10:28:01.845503+00:00",
+      "image": "openpolicyagent/conftest:v0.71.1",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "",
@@ -551,7 +551,7 @@
         "documentation": "",
         "version": ""
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "opensearchproject/opensearch-dashboards:3.8.0",
@@ -626,8 +626,8 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "prom/prometheus:v3.14.0",
-      "checked_at": "2026-10-10T10:28:05.012354+00:00",
+      "image": "prom/prometheus:v3.15.0",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "https://github.com/prometheus/prometheus",
@@ -635,11 +635,11 @@
         "documentation": "https://prometheus.io/docs",
         "version": ""
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
-      "image": "prom/pushgateway:v1.11.3",
-      "checked_at": "2026-10-10T10:28:05.156800+00:00",
+      "image": "prom/pushgateway:v1.11.4",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "",
@@ -647,7 +647,7 @@
         "documentation": "",
         "version": ""
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "prom/statsd-exporter:v0.31.0",
@@ -710,16 +710,16 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "qdrant/qdrant:v1.19.1-unprivileged",
-      "checked_at": "2026-10-10T10:28:08.418270+00:00",
+      "image": "qdrant/qdrant:v1.19.2-unprivileged",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "https://github.com/qdrant/qdrant",
         "url": "https://qdrant.com/",
         "documentation": "https://qdrant.com/docs",
-        "version": "v1.19.1"
+        "version": "v1.19.2"
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "quay.io/debezium/connect:3.6.3.Final",
@@ -794,8 +794,8 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "registry:3",
-      "checked_at": "2026-10-10T10:28:12.218515+00:00",
+      "image": "registry:3.1.2",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "",
@@ -803,19 +803,19 @@
         "documentation": "",
         "version": ""
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
-      "image": "renovate/renovate:44.115.12-full",
-      "checked_at": "2026-10-10T10:28:13.923094+00:00",
+      "image": "renovate/renovate:44.149.2-full",
+      "checked_at": "2026-10-10T16:12:44Z",
       "exit_code": 0,
       "selected_oci_source_labels": {
         "source": "https://github.com/renovatebot/renovate",
         "url": "https://renovatebot.com",
         "documentation": "",
-        "version": "44.115.12"
+        "version": "44.149.2"
       },
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "restic/restic:0.19.1",
@@ -842,13 +842,16 @@
       "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check."
     },
     {
-      "image": "stalwartlabs/stalwart:v0.16.22",
-      "checked_at": "2026-10-10T10:28:14.285139+00:00",
-      "exit_code": 1,
-      "selected_oci_source_labels": null,
-      "trust": "Supplier metadata is unsigned/unverified; mapping needs source-owner cross-check.",
-      "single_manifest_retry_at": "2026-10-10T10:37:28.550726+00:00",
-      "single_manifest_retry_exit": 1
+      "image": "stalwartlabs/stalwart:v0.16.25",
+      "checked_at": "2026-10-10T16:12:44Z",
+      "exit_code": 0,
+      "selected_oci_source_labels": {
+        "source": "https://github.com/stalwartlabs/stalwart",
+        "url": "https://github.com/stalwartlabs/stalwart",
+        "documentation": "",
+        "version": "v0.16"
+      },
+      "trust": "Supplier OCI config metadata is unsigned/unverified; mapping still needs independent source-owner and supply-chain verification."
     },
     {
       "image": "supabase/edge-runtime:v1.76.2",

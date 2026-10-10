@@ -18,7 +18,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: registry:3
+    image: registry:3.1.2@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8
     container_name: registry
     hostname: registry
     # Owner of ${DEFAULT_REGISTRY_DIR}; root without capabilities cannot write it.

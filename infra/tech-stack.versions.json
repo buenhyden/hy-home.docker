@@ -259,7 +259,7 @@
         "prom/prometheus": "external"
       },
       "images": [
-        "prom/prometheus:v3.14.0"
+        "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -268,7 +268,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "prom/prometheus:v3.14.0"
+            "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
           ]
         }
       ]
@@ -347,7 +347,7 @@
         "grafana/alloy": "external"
       },
       "images": [
-        "grafana/alloy:v1.19.2"
+        "grafana/alloy:v1.20.1@sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -356,7 +356,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "grafana/alloy:v1.19.2"
+            "grafana/alloy:v1.20.1@sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f"
           ]
         }
       ]
@@ -465,7 +465,7 @@
         "amir20/dozzle": "external"
       },
       "images": [
-        "amir20/dozzle:v11.1.1"
+        "amir20/dozzle:v11.3.0@sha256:a7d69d20891d3dcc82636e24afa4c1c162b41d0673ef798b14f09e6b69accc5a"
       ],
       "compose_files": [
         "infra/06-observability/dozzle/docker-compose.yml"
@@ -474,7 +474,7 @@
         {
           "compose_file": "infra/06-observability/dozzle/docker-compose.yml",
           "images": [
-            "amir20/dozzle:v11.1.1"
+            "amir20/dozzle:v11.3.0@sha256:a7d69d20891d3dcc82636e24afa4c1c162b41d0673ef798b14f09e6b69accc5a"
           ]
         }
       ]
@@ -509,7 +509,7 @@
         "lfnovo/open_notebook": "external"
       },
       "images": [
-        "lfnovo/open_notebook:v1-latest-single"
+        "lfnovo/open_notebook:1.15.0-single@sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3"
       ],
       "compose_files": [
         "infra/08-ai/open-notebook/docker-compose.yml"
@@ -518,7 +518,7 @@
         {
           "compose_file": "infra/08-ai/open-notebook/docker-compose.yml",
           "images": [
-            "lfnovo/open_notebook:v1-latest-single"
+            "lfnovo/open_notebook:1.15.0-single@sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3"
           ]
         }
       ]
@@ -575,7 +575,7 @@
         "renovate/renovate": "external"
       },
       "images": [
-        "renovate/renovate:44.115.12-full"
+        "renovate/renovate:44.149.2-full@sha256:fc07a2877ce78abcaba5ac19e5bebb47b228785b6a74bf9834ff6119112bf260"
       ],
       "compose_files": [
         "infra/09-platform-ops/renovate/docker-compose.yml"
@@ -584,7 +584,7 @@
         {
           "compose_file": "infra/09-platform-ops/renovate/docker-compose.yml",
           "images": [
-            "renovate/renovate:44.115.12-full"
+            "renovate/renovate:44.149.2-full@sha256:fc07a2877ce78abcaba5ac19e5bebb47b228785b6a74bf9834ff6119112bf260"
           ]
         }
       ]
@@ -619,7 +619,7 @@
         "axllent/mailpit": "external"
       },
       "images": [
-        "axllent/mailpit:v1.31.2"
+        "axllent/mailpit:v1.31.4@sha256:b68349e3a014b90c5610bfb26b2ae36f3892d7b8cf25ee140c6c71c98d2fcf48"
       ],
       "compose_files": [
         "infra/11-quality/mailpit/docker-compose.yml"
@@ -628,7 +628,7 @@
         {
           "compose_file": "infra/11-quality/mailpit/docker-compose.yml",
           "images": [
-            "axllent/mailpit:v1.31.2"
+            "axllent/mailpit:v1.31.4@sha256:b68349e3a014b90c5610bfb26b2ae36f3892d7b8cf25ee140c6c71c98d2fcf48"
           ]
         }
       ]
@@ -641,7 +641,7 @@
         "qdrant/qdrant": "external"
       },
       "images": [
-        "qdrant/qdrant:v1.19.1-unprivileged"
+        "qdrant/qdrant:v1.19.2-unprivileged@sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b"
       ],
       "compose_files": [
         "infra/04-data/qdrant/docker-compose.yml"
@@ -650,7 +650,7 @@
         {
           "compose_file": "infra/04-data/qdrant/docker-compose.yml",
           "images": [
-            "qdrant/qdrant:v1.19.1-unprivileged"
+            "qdrant/qdrant:v1.19.2-unprivileged@sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b"
           ]
         }
       ]
@@ -663,7 +663,7 @@
         "grafana/pyroscope": "external"
       },
       "images": [
-        "grafana/pyroscope:2.3.1"
+        "grafana/pyroscope:2.4.0@sha256:b7e62699a27463aa3533efe3f88c320da594da495731fd6eabca6f44f92cdd7b"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -672,7 +672,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "grafana/pyroscope:2.3.1"
+            "grafana/pyroscope:2.4.0@sha256:b7e62699a27463aa3533efe3f88c320da594da495731fd6eabca6f44f92cdd7b"
           ]
         }
       ]
@@ -722,28 +722,6 @@
       ]
     },
     {
-      "component": "cAdvisor",
-      "tier": "06-observability",
-      "classification": "external",
-      "repository_classifications": {
-        "gcr.io/cadvisor/cadvisor": "external"
-      },
-      "images": [
-        "gcr.io/cadvisor/cadvisor:v0.55.1"
-      ],
-      "compose_files": [
-        "infra/06-observability/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/06-observability/docker-compose.yml",
-          "images": [
-            "gcr.io/cadvisor/cadvisor:v0.55.1"
-          ]
-        }
-      ]
-    },
-    {
       "component": "Pushgateway",
       "tier": "06-observability",
       "classification": "external",
@@ -751,7 +729,7 @@
         "prom/pushgateway": "external"
       },
       "images": [
-        "prom/pushgateway:v1.11.3"
+        "prom/pushgateway:v1.11.4@sha256:91a56b89b97dd8a5e1e4fa8b5bbbd86dd57a87a2a3cee3a3ce3368b40ef158ef"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -760,7 +738,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "prom/pushgateway:v1.11.3"
+            "prom/pushgateway:v1.11.4@sha256:91a56b89b97dd8a5e1e4fa8b5bbbd86dd57a87a2a3cee3a3ce3368b40ef158ef"
           ]
         }
       ]
@@ -918,7 +896,7 @@
         "chrislusf/seaweedfs": "external"
       },
       "images": [
-        "chrislusf/seaweedfs:4.47"
+        "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d"
       ],
       "compose_files": [
         "infra/04-data/seaweedfs/docker-compose.yml"
@@ -927,7 +905,7 @@
         {
           "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
           "images": [
-            "chrislusf/seaweedfs:4.47"
+            "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d"
           ]
         }
       ]
@@ -1386,7 +1364,7 @@
         "registry": "external"
       },
       "images": [
-        "registry:3"
+        "registry:3.1.2@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8"
       ],
       "compose_files": [
         "infra/09-platform-ops/registry/docker-compose.yml"
@@ -1395,7 +1373,7 @@
         {
           "compose_file": "infra/09-platform-ops/registry/docker-compose.yml",
           "images": [
-            "registry:3"
+            "registry:3.1.2@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8"
           ]
         }
       ]
@@ -1430,7 +1408,7 @@
         "stalwartlabs/stalwart": "external"
       },
       "images": [
-        "stalwartlabs/stalwart:v0.16.22"
+        "stalwartlabs/stalwart:v0.16.25@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3"
       ],
       "compose_files": [
         "infra/10-communication/stalwart/docker-compose.yml"
@@ -1439,7 +1417,7 @@
         {
           "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
           "images": [
-            "stalwartlabs/stalwart:v0.16.22"
+            "stalwartlabs/stalwart:v0.16.25@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3"
           ]
         }
       ]
@@ -1856,7 +1834,7 @@
         "amazon/aws-cli": "external"
       },
       "images": [
-        "amazon/aws-cli:2.36.50"
+        "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce"
       ],
       "compose_files": [
         "infra/04-data/seaweedfs/docker-compose.yml"
@@ -1865,7 +1843,7 @@
         {
           "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
           "images": [
-            "amazon/aws-cli:2.36.50"
+            "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce"
           ]
         }
       ]
@@ -1944,7 +1922,7 @@
         "openpolicyagent/conftest": "external"
       },
       "images": [
-        "openpolicyagent/conftest:v0.70.1"
+        "openpolicyagent/conftest:v0.71.1@sha256:0e77cdf7c1fcde035f3c579e4aaa6664ee2a8be5777eaa9af9f520cdd02280c0"
       ],
       "compose_files": [
         "infra/11-quality/conftest/docker-compose.yml"
@@ -1953,7 +1931,7 @@
         {
           "compose_file": "infra/11-quality/conftest/docker-compose.yml",
           "images": [
-            "openpolicyagent/conftest:v0.70.1"
+            "openpolicyagent/conftest:v0.71.1@sha256:0e77cdf7c1fcde035f3c579e4aaa6664ee2a8be5777eaa9af9f520cdd02280c0"
           ]
         }
       ]
@@ -2054,7 +2032,7 @@
         "hy-home/stalwart-config": "local-custom"
       },
       "images": [
-        "hy-home/stalwart-config:0.16.22-cli1.0.12-local"
+        "hy-home/stalwart-config:0.16.25-cli1.0.13-local"
       ],
       "compose_files": [
         "infra/10-communication/stalwart/docker-compose.yml"
@@ -2063,7 +2041,7 @@
         {
           "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
           "images": [
-            "hy-home/stalwart-config:0.16.22-cli1.0.12-local"
+            "hy-home/stalwart-config:0.16.25-cli1.0.13-local"
           ]
         }
       ]
@@ -2130,6 +2108,28 @@
           "compose_file": "infra/13-experience/storybook/docker-compose.yml",
           "images": [
             "hy-home/storybook-mcp:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: ghcr.io/google/cadvisor",
+      "tier": "06-observability",
+      "classification": "external",
+      "repository_classifications": {
+        "ghcr.io/google/cadvisor": "external"
+      },
+      "images": [
+        "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a"
+      ],
+      "compose_files": [
+        "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a"
           ]
         }
       ]
