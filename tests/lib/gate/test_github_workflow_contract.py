@@ -121,6 +121,21 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual([], gate["allowed_env_keys"])
 
+    def test_smtp_storage_regression_is_required_without_optional_expansion(
+        self,
+    ) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        nodes = {node["gate_id"]: node for node in document["gate_nodes"]}
+        module = "tests.validation.test_supabase_smtp_fixture_storage"
+        repository_arguments = nodes["leaf.repository-integrity-regressions"]["argv"]
+        self.assertEqual(1, repository_arguments.count(module))
+
+        compose_arguments = nodes["leaf.compose-baseline-regressions"]["argv"]
+        boundary = compose_arguments.index("--optional-runtime-skips")
+        optional = compose_arguments[boundary + 1 : -1]
+        self.assertNotIn(module, optional)
+        self.assertEqual(15, len(optional))
+
     def setUp(self) -> None:
         self.module = load_contract_module()
 
