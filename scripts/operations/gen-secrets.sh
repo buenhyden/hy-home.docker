@@ -21,6 +21,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 MODE="run"
+SMTP_AUDIT_PROOF=""
 METADATA_SOURCE_ROOT="$REPO_ROOT"
 declare -A ENV_VALUES=()
 declare -A SECRET_VALUES=()
@@ -34,7 +35,7 @@ ROW_FILE_PATH=""
 
 usage() {
     cat <<'USAGE'
-Usage: bash scripts/operations/gen-secrets.sh [--help|--check|--dry-run|--sync-metadata|--sync-metadata-check|--sync-metadata-prune|--sync-metadata-prune-check]
+Usage: bash scripts/operations/gen-secrets.sh [--help|--check|--dry-run|--sync-metadata|--sync-metadata-check|--sync-metadata-prune|--sync-metadata-prune-check|--retire-supabase-smtp-check|--retire-supabase-smtp]
 
 Generate local Docker secret files from repository secret registry metadata.
 
@@ -52,6 +53,14 @@ Modes:
                          absent from their public metadata sources.
   --sync-metadata-prune-check
                          Same exact-set comparison without writes; exits 1 on drift.
+
+  --retire-supabase-smtp-check
+                         Compare only the two SMTP files and COMM-003 metadata;
+                         prints boolean/status only. No environment or LAB reads.
+  --retire-supabase-smtp --smtp-audit-proof FILE
+                         After SMTP01 transition and CLN01/integration review,
+                         retire only COMM-003 and its duplicate file. Requires a
+                         current host/source/runtime/job/recovery audit receipt.
 
   --metadata-source-root DIR
                          Metadata modes only: read the three public example files
@@ -91,6 +100,10 @@ cleanup() {
 trap cleanup EXIT
 
 parse_args() {
+    if [[ "$#" -eq 3 && "$1" == "--retire-supabase-smtp" && "$2" == "--smtp-audit-proof" && -n "$3" ]]; then
+        SMTP_AUDIT_PROOF="$3"
+        set -- "$1"
+    fi
     if [[ "$#" -eq 3 && "$2" == "--metadata-source-root" && -n "$3" ]]; then
         case "$1" in
             --sync-metadata|--sync-metadata-check|--sync-metadata-prune|--sync-metadata-prune-check)
@@ -117,6 +130,9 @@ parse_args() {
             ;;
         --dry-run)
             MODE="dry-run"
+            ;;
+        --retire-supabase-smtp|--retire-supabase-smtp-check)
+            MODE="${1#--}"
             ;;
         --sync-metadata|--sync-metadata-check|--sync-metadata-prune|--sync-metadata-prune-check)
             MODE="${1#--}"
@@ -161,7 +177,12 @@ clean_value_cell() {
 }
 
 is_table_row() {
-    [[ "${1-}" =~ ^[[:space:]]*\| ]]
+    local line="${1-}" pipes id lead
+    [[ "$line" =~ ^[[:space:]]*\| ]] || return 1
+    pipes="${line//[^|]/}"
+    [[ "${#pipes}" -eq 9 ]] || return 1
+    IFS='|' read -r lead id _ <<< "$line"
+    [[ "$(clean_cell "$id")" != COMM-003 ]]
 }
 
 is_header_or_separator() {
@@ -587,6 +608,11 @@ def rows(text, strict):
         if not line.lstrip().startswith("|"):
             continue
         cells = line.split("|")
+        if len(cells) == 4:
+            alias = (clean(cells[1]), clean(cells[2]))
+            if alias in (("Retired ID", "Canonical ID"), ("---", "---"), ("COMM-003", "COMM-002")):
+                continue
+            raise ValueError("malformed retired registry alias")
         if strict and len(cells) != 10:
             raise ValueError("malformed registry row")
         identity = clean(cells[1]) if len(cells) > 1 else ""
@@ -793,6 +819,18 @@ main() {
             ;;
         sync-metadata|sync-metadata-check|sync-metadata-prune|sync-metadata-prune-check)
             run_metadata_sync
+            ;;
+        retire-supabase-smtp|retire-supabase-smtp-check)
+            local smtp_mode="--retire-check"
+            local -a smtp_args=()
+            if [[ "$MODE" == "retire-supabase-smtp" ]]; then
+                smtp_mode="--retire"
+                [[ -n "$SMTP_AUDIT_PROOF" ]] && smtp_args=(--proof "$SMTP_AUDIT_PROOF")
+            fi
+            (
+                cd "$REPO_ROOT"
+                python3 -m scripts.lib.ops.smtp_contract "$smtp_mode" --root "$REPO_ROOT" "${smtp_args[@]}"
+            )
             ;;
         run)
             run_generation

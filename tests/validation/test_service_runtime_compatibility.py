@@ -561,6 +561,73 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         self.assertIn('exec /opt/sonarqube/docker/entrypoint.sh "$$@"', script)
         self.assertFalse([e for e in service["environment"] if "PASSWORD_FILE" in e])
 
+    def test_supabase_smtp_wrapper_consumes_file_and_preserves_arguments(self):
+        service = compose("infra/04-data/supabase/docker-compose.yml")["services"][
+            "auth"
+        ]
+        self.assertEqual(["auth"], service.get("command"))
+        script = service["entrypoint"][2].replace("$$", "$")
+        with tempfile.TemporaryDirectory() as directory:
+            secret = Path(directory) / "smtp"
+            secret.write_text("synthetic-smtp-password\n")
+            env = {"PATH": os.environ["PATH"], "GOTRUE_SMTP_PASS_FILE": str(secret)}
+            probe = 'test "$GOTRUE_SMTP_PASS" = synthetic-smtp-password && test "$1" = argument'
+            result = subprocess.run(
+                [
+                    "/bin/sh",
+                    "-ec",
+                    script,
+                    "--",
+                    "/bin/sh",
+                    "-ec",
+                    probe,
+                    "--",
+                    "argument",
+                ],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=5,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode)
+            self.assertEqual("", result.stdout + result.stderr)
+            for value in ("", "\n"):
+                secret.write_text(value)
+                result = subprocess.run(
+                    ["/bin/sh", "-ec", script, "--", "true"],
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    check=False,
+                )
+                self.assertNotEqual(0, result.returncode)
+                self.assertNotIn(
+                    "synthetic-smtp-password", result.stdout + result.stderr
+                )
+            secret.unlink()
+            result = subprocess.run(
+                ["/bin/sh", "-ec", script, "--", "true"],
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=5,
+                check=False,
+            )
+            self.assertNotEqual(0, result.returncode)
+            secret.write_text("synthetic-smtp-password")
+            result = subprocess.run(
+                ["/bin/sh", "-ec", script, "--", "true"],
+                env=env | {"GOTRUE_SMTP_PASS": "synthetic-direct-password"},
+                capture_output=True,
+                text=True,
+                timeout=5,
+                check=False,
+            )
+            self.assertNotEqual(0, result.returncode)
+            self.assertNotIn("synthetic-direct-password", result.stdout + result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
