@@ -41,6 +41,27 @@ def load_contract_module():
 
 
 class GithubWorkflowContractTests(unittest.TestCase):
+    def test_datastore_boundary_checks_are_required_and_routed(self) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        gate = next(
+            node
+            for node in document["gate_nodes"]
+            if node["gate_id"] == "leaf.compose-baseline-regressions"
+        )
+        arguments = gate["argv"]
+        module = "tests.validation.test_datastore_rehearsal_boundary"
+        boundary = arguments.index("--optional-runtime-skips")
+        self.assertEqual(1, arguments[:boundary].count(module))
+        self.assertNotIn(module, arguments[boundary + 1 :])
+        public = gate_contract.parse_public_gate_contract(document)
+        selected = gate_contract.select_public_suites(
+            public,
+            "changed",
+            ("tests/validation/test_datastore_rehearsal_boundary.py",),
+        )
+        self.assertIn("operations", selected)
+        self.assertIn("repository-integrity", selected)
+
     def test_archive_adoption_regressions_are_required_by_public_gate(self) -> None:
         document = gate_contract.load_contract_document(ROOT)
         gate = next(
@@ -96,6 +117,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_mng_valkey_acl",
                 "tests.validation.test_redisinsight_rehearsal",
                 "tests.validation.test_datastore_observation_rehearsal",
+                "tests.validation.test_datastore_rehearsal_boundary",
                 "tests.lib.ops.test_openbao_issuance",
                 "tests.lib.ops.test_openbao_issuance_trust",
                 "tests.validation.test_openbao_candidate",

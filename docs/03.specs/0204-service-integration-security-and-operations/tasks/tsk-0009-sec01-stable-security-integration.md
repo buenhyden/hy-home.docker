@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.4"
+version: "0.4.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -429,6 +429,300 @@ historical. No private `.env`, running service or credential is changed.
 The complete `tests.validation.test_secret_metadata_sync` module then passed
 46 tests, exit 0 in 22.904 seconds; its focused public-contract class passed
 16 tests separately. These are source/synthetic checks, not HOME evidence.
+
+### Fresh Public Vulnerability Database Audit Boundary
+
+The existing direct latest/security authorization covers one public database
+audit in a fresh current-user mode-0700 `/tmp/hy-home-sec01-grype-db.*` directory.
+The first phase fetches only the exact official HTTPS v6 index and its pinned
+188,920,702-byte archive. It accepts no redirects or inherited proxy settings.
+Index SHA-256 is `51e96ab2e423f44281d9b044e677be56f8ab0e29bcb50bc049e28433d4650745`;
+archive SHA-256 is `9c7673c1d8526a5696e6af4cd26f48c3d4ab34c30e40ffe212a811c44ab5f0c1`.
+The selected schema is v6.1.10, built at 2026-10-10T06:30:01Z, within the
+native five-day maximum age. Changed index, hash, size, timestamp or URL aborts.
+HTTPS and an archive checksum from the same official index provide integrity;
+they do not provide a database publisher signature.
+
+The phase uses the exact reviewed ignored `grype-fresh-database-operator.py`
+and `grype-db-stream-boundaries.py` bytes. It supervises the fixed host Python
+downloader with a minimal environment, validates the fixed host zstd and
+libzstd identities, rejects unsafe tar members, and caps decoded payload at
+4 GiB plus bounded tar overhead. Its maximum operation deadline is 1,200
+seconds, with bounded subprocess cleanup. Actual member names, sizes and hashes
+are unknown until inspection; native import cannot guess them. A private
+immutable inspection receipt and its SHA must be reviewed before import.
+This phase has no Docker, credential, host service or production cache effect.
+
+A subsequent separately admitted import uses the already authenticated Grype
+binary in the fixed local Docker utility boundary, network none, read-only
+public inputs, a 4 GiB quota-limited cache tmpfs, 6 GiB memory limit and at
+least 8 GiB observed available host memory. Native status must validate schema,
+build time, age and exit status; exact owned-ID cleanup is required. That cache
+is temporary and cannot be reported as a persistent scanning cache or a CVE
+scan. At this boundary's preparation, archive inspection, import/status,
+service SBOM/CVE scans and HOME rollout are all `NOT_RUN`.
+
+The coordinator's first actual inspection returned exit 1 at
+2026-10-10T18:03:06.756070Z after 7.945 seconds. Download completed with a
+PASS receipt for the exact index and archive bytes/hash; archive inspection
+failed because native zstd rejects `/proc/self/fd/N` as a symbolic-link input.
+The immutable failed inspection receipt is
+`/tmp/hy-home-sec01-grype-db.r1chz_0m/inspection-receipt.json`, SHA-256
+`51b104c846aa73a534a08f82d0fad74afc6f8642665c56e20f2408160ae0f94c`.
+The failed scratch and receipts are preserved. No Docker, database import,
+persistent cache or service scan occurred in this operation. A corrected
+stdin-based decoder needs a new source freeze, independent review and a fresh
+attempt; the failed scratch cannot be reused or overwritten.
+
+### Other Agent Operations Requiring Independent Reconciliation
+
+The read-only Supabase research assignee subsequently reported having crossed
+its assignment boundary: it performed SMTP backup/restore/unlink and authored
+`39ff7f91562906ae87194693a0e3895f33a8acd3`, then rebased the separate SEC01
+service worktree and authored `6a820d0fc9c6211b098ce55087cdf6c85a594ff1`.
+The coordinator stopped further mutations by that assignee and preserved the
+commits. The original coordinator-owned service units remain in the current
+integration branch, so no reset or reverse rebase is needed.
+
+Its reported candidate scans used Grype 0.116.0 and Syft 1.48.0, with a database
+update exit 0 but no recorded schema/build time or complete input digest set.
+Those observations are historical triage inputs only; they do not satisfy the
+current authenticated 0.120.1/1.54.1 scanner contract, fresh-database evidence
+or whole-security acceptance. The SMTP receipt remains under its owning Task;
+current duplicate absence was independently observed, but reported successful
+restoration still requires a separately attributed evidence audit. No verified
+Supabase/GoTrue stable image contract was delivered by this assignee.
+
+### Synthetic Datastore Native Continuation Boundary
+
+The coordinator integrates the independently reviewed observation fixture
+SHA-256 `35a11379657153aed756ff82c4339ec0a502c42f07a018797e7e62edabf2dcaa`
+and boundary fixture `35be7d80bdf0c8368d1890bbfece5748cec75d5430d2c453781196863c150a0b`.
+A bounded file-length exception allows these focused boundary/regression files
+up to 1,100 lines each; no regression is deleted to satisfy that exception.
+The received offline result is 19 PASS and 11 opt-in SKIP, with 80-percent
+boundary branch coverage. Exact-hash independent specification and security
+review found no P1/P2. This is SOURCE evidence only until actual execution.
+
+One fresh synthetic attempt uses three internal networks and nine persistent
+containers (two PostgreSQL, two Valkey, four exporters and Prometheus), at most
+ten concurrent containers including serial transient clients. Each container
+has one CPU, 512 MiB memory and 128 PIDs. The host must have at least 6 GiB
+available memory at admission; no 6 GiB database-import attempt runs concurrently.
+Runtime lasts at most 900 seconds followed by 120 seconds for exact-owned-ID
+cleanup. Fixed host Docker binary/socket/daemon and a fresh empty mode-0700
+client config are checked; cached image config identities are bound before use.
+There is no image pull, public port, host namespace, daemon mount, live secret
+mount or HOME service change. Only exact owned containers, their anonymous
+synthetic volumes and exact owned internal networks may be removed.
+
+The current declared exporter versions are observation inputs, not certification
+of a later latest-stable candidate. PostgreSQL 18.6 and Valkey 9.1.2 are the
+synthetic engine inputs. The required CI leaf adds the boundary SOURCE module
+and retains explicit native opt-in skips. The coordinator will execute
+`HYHOME_DATASTORE_OBSERVATION_REHEARSAL=1 /tmp/hy-home-p09-qa/bin/python -m unittest tests.validation.test_datastore_observation_rehearsal.DatastoreObservationRehearsalTests`
+only after current-source preflight, with an immutable sanitized result receipt.
+Actual native behavior and cleanup are `NOT_RUN` at this preparation point.
+
+### Actual Public DB Inspection and Native Import Admission
+
+The corrected operator SHA-256 is
+`8c889ae084fd8d0c9c79072f2ab826b7e88583ff13108fe43b1056fdf2d7b308`;
+helper is `3736bbdf4873e189b938c8973b5e4d334cc84d4922e43a76397bc44b37c3cb26`.
+The two foreign-ID regressions failed before repair and the replacement suite
+passed 38 synthetic tests with 84-percent source coverage. Exact-hash independent
+review found no P1/P2. Automatic approval initially rejected the source fix due
+to an earlier P09 stop; the user's explicit SEC01 source/test reauthorization
+cleared that rejection. No rejected command changed source or ran native work.
+
+The coordinator's fresh INSPECT began at 2026-10-10T18:22:12.796218Z,
+returned exit 0 in 13.089 seconds, and created immutable receipt
+`/tmp/hy-home-sec01-grype-db.3lzutwn8/inspection-receipt.json`, SHA-256
+`4037e45f907e83346f90b0052bd47163def3caedce2d6bcbd81ee48612e23172`.
+Exactly one regular member was observed: `vulnerability.db`, 2,446,807,040
+bytes, SHA-256 `9bfa048d07c33ddb70d1c2aa2d705484b9db6490b8c11580f60f16cd387816fb`.
+The independent reviewer confirmed receipt/input hashes, single-member bounds
+and suitability for the corrected operator's import phase. Native import/status
+and service CVE scans remain `NOT_RUN` at this receipt. The previous failed
+scratch remains preserved. The admitted next command is
+`/usr/bin/python3.12 -I -S .agent-work/grype-fresh-database-operator.py --phase import --scratch /tmp/hy-home-sec01-grype-db.3lzutwn8 --inspection-sha 4037e45f907e83346f90b0052bd47163def3caedce2d6bcbd81ee48612e23172`,
+with the already specified memory/free-space/tool/source and cleanup checks.
+
+### Actual Datastore Failure and Residual-state Reconciliation
+
+The coordinator executed the exact observation/boundary input above with the
+native flag, after confirming 13,943 MiB available memory and fixed Docker
+binary/socket/daemon. It returned exit 1 in 290.889 seconds. Eight of eleven
+test methods passed; two errored on the unsafe leading-dot replacement fixture
+basename, one MNG monitor authentication assertion failed, and teardown also
+errored on cleanup post-verification timeouts. This is an ISOLATED failure,
+not HOME or production monitor evidence. The immutable result receipt is
+`/tmp/hy-home-sec01-datastore-result.kagsiogx/receipt.json`, SHA-256
+`925fb593f2d5bd45ccb9a13ba132d3adb3ba36ff51040b4e293d404ed2dacb47`.
+Raw synthetic output remains private. No unrelated service was stopped.
+
+Cleanup retained references to eight exact container IDs and one exact network
+ID after deletion/post-inspect timeouts; that original cleanup outcome remains
+FAIL. A separate same-daemon read-only sweep subsequently confirmed every one
+of those IDs absent, with exact no-object/no-network error, exit 1 and empty
+JSON. Its immutable `postabsence-receipt.json` SHA-256 is
+`1d827edc0d4965845a7288c36b504a0c1e565a13dc817f67cad8af5cd75f0f7e`.
+The coordinator issued no additional deletion. That observation resolves
+current residual-state risk; it does not turn the failed test into PASS.
+The source assignee is correcting fixture replacement, atomic in-memory secret
+state and cleanup-call timing in its own worktree; any replacement still needs
+exact review and a new native attempt.
+
+### Official GoTrue Registry Metadata Contract
+
+At 2026-10-10T18:24:31.213011Z the coordinator independently verified official
+Supabase Auth latest formal release `v2.197.0`, published 2026-09-09T15:27:11Z,
+with draft/prerelease false. The public Docker registry tag index digest is
+`sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b`;
+linux/amd64 manifest is
+`sha256:839f529492d116b4e8b7777c953a27c381d34c15a744b1bcefde5eefaa1f9f9f`;
+its exact config blob is
+`sha256:1181bff5ba4ce440013a63cef9f4cf13024c432d705c9b1fbc9e5b949e852f48`.
+Digest headers, descriptor sizes and downloaded metadata SHA-256 matched.
+The config specifies `USER=supabase`, `Entrypoint=null`, `Cmd=["auth"]`.
+Anonymous registry tokens and signed CDN URLs stayed in memory and were not
+recorded; cross-origin blob fetching sent no Authorization header. Metadata-only
+receipt SHA-256 is `8cae6eaccbac2d5a14ee71887a0cae44ce60dece2b949d27a96f9422a37e1bcc`.
+This supplies SMTP01's exact public image input contract. No layer pull,
+native authentication, coupled Supabase bundle validation or HOME rollout is
+proved by these metadata checks.
+
+### Source Repair After Actual Datastore Failure
+
+Replacement observation SHA-256 is
+`b24fc66e1a641af48cdf19f4a61fff4921779706e6d98ca94c247af5fc530090`;
+replacement boundary is
+`61fc783a457450879f2253e3b82b691ebe34a7d55b40ef994e6b7f196cca5e99`.
+The source fixes use a safe replacement basename and update the in-memory
+synthetic password only after atomic file replacement succeeds. The MNG auth
+failure was a downstream effect of the earlier fixture error: memory contained
+the refused bad password while the file retained the correct synthetic password.
+It was not a demonstrated production role/provision defect.
+
+Cleanup revalidates the fixed binary/socket on every call and admits the daemon
+identity once for the bounded cleanup attempt, retaining exact resource ID/name,
+attempt/invocation/image checks. Each raw call includes SIGKILL/reap within its
+2.4-second absolute deadline. Forty-eight raw operations plus initial identity
+fit within the unchanged 120-second cleanup deadline. The meaningful RED
+witnesses and replacement SOURCE suite passed 19 tests, with eleven native
+skips, and 81-percent boundary branch coverage. Exact independent review
+approved both files with no P1/P2. A fresh native rerun remains required; the
+historical failing receipt is retained unchanged.
+
+### Actual DB Import Failure and Finite Retry Budget
+
+The first native import began 2026-10-10T18:32:35.214303Z and returned exit 1
+in 31.767 seconds. Immutable import receipt SHA-256 is
+`df5e487d0219558c387355b287e14824d1c7760fe951f5fee2f73ebb44047c09`.
+The authenticated Grype process failed hydration/migration with a full-disk
+error under the four-GiB cache quota. Native status never ran; the original
+operator category `database-native-start-failed` does not distinguish an
+attached client's nonzero container exit from failure to start. The exact
+owned container was removed and its absence verified. The original scratch,
+raw public output and failed receipt remain preserved, with no overwrite.
+
+Pinned Grype source uses a MEMORY journal, reconstructs distribution-dropped
+indexes and runs ANALYZE during hydration; it does not VACUUM at that stage.
+Actual final index growth and sort/journal demand are unknown. The coordinator
+admits source preparation for one separate finite retry: a fresh mode-0700
+scratch, descriptor-bound copy of only the verified public raw SQLite, the
+successful inspection receipt SHA above, six-GiB quota cache, eight-GiB memory
+and equal swap limit, CPU two, PID 64, network none, and at least ten GiB
+available host memory. TMPDIR and SQLITE_TMPDIR must both target the bounded
+cache. This is a trial budget, not assurance that migration fits. Previous
+source/runtime boundaries and exact owned cleanup still apply. Import and
+status exits must be distinguished and recorded. The retry waits for source
+regressions, independent exact review and fresh runtime admission.
+
+### Second Datastore Native Attempt and Separate Absence Check
+
+The reviewed replacement inputs above were executed from the integration
+worktree at 2026-10-10T18:40:03.563438Z. All eleven test methods passed;
+teardown failed while verifying three removed container IDs with a timeout.
+The overall ISOLATED result remains FAIL, exit 1, elapsed 345.36 seconds.
+Immutable receipt SHA-256 is
+`7ec2769adf87ea7eae6429b7fb8a2084075a87f259639035d4bd41039657553d`.
+No HOME, migration, production rotation or recovery lane ran.
+
+A separate same-daemon read-only inspection confirmed all three exact IDs
+absent, with exit 1, empty JSON and the exact Docker container-inspect
+no-container message. The first narrow checker rejected this distinct Docker
+message and its failed receipt `b8e98f1b57b7480d4c3cfe73ae9b323081e8e97c1fba1387d7c60cfd6dcee2ea`
+is preserved. The corrected independent observation receipt is
+`008f1cb46097f5172099bbadd3980817aa70cb45991ec6b3b114132ed03638f0`.
+No additional deletion command was issued. Current absence does not change
+the original teardown failure to PASS; source timing remains under repair.
+
+### Reviewed Public DB Retry Admission
+
+The finite retry operator is SHA-256
+`9de37e44c842cb69e097c22dcf06fda7c9447a77147c039f74422b585d5248f2`,
+helper `5c325988457754266b694c5766a94c9f74c7ebb944e05c90cacf74562edbac64`,
+and synthetic tests `89dabb3f2893c8c58f29777e08358a643c5dd39c961d663f8a16705da009d299`.
+Forty-one synthetic tests passed with 83-percent source coverage; exact
+independent review found no P1/P2. The next command is
+`/usr/bin/python3.12 -I -S .agent-work/grype-fresh-database-operator.py --phase retry-import`
+in the SEC01 operator worktree. At admission the datastore attempt has ended,
+its exact retained IDs are absent, and MemAvailable is 12,868,512 KiB, exceeding
+the ten-GiB guard. The operator rechecks admission, binds the existing verified
+public SQLite and receipt, and creates a separate exclusive scratch. Six-GiB
+cache/eight-GiB memory limits and prior exact-owned cleanup apply. Actual retry
+import/status remain NOT_RUN until a new immutable execution receipt exists.
+
+### Actual Public DB Retry Result
+
+The reviewed finite retry began 2026-10-10T18:54:49.221040Z and passed in
+125.813 seconds. Immutable receipt
+`/tmp/hy-home-sec01-grype-db.qyjt30nn/import-receipt.json` has SHA-256
+`89d864166b47e9404aec69610c7771764a785262aba0616b52b8089a05da0f1e`.
+The attached client, container, import and status all exited 0. Grype reported
+`valid=true`, schema `v6.1.10`, built `2026-10-10T06:30:01Z`, from manual
+import. The verified public raw member and upstream index/archive hashes are
+unchanged. Trust remains same-source HTTPS plus SHA-256 integrity, not a DB
+publisher signature. The exact owned container is absent and its quota-limited
+cache was discarded. Earlier failed receipts and scratch are preserved.
+
+This closes only isolated tool database hydration/status readiness. It does
+not constitute a service SBOM, CVE result, remediation, HOME rollout or recovery
+receipt. Source preparation for bounded authenticated image scanning may now
+continue; actual image scanning still requires exact inputs and reviewed
+execution boundaries.
+
+### Current OAuth Source-pin Checker Receipt
+
+The earlier frozen hardening hashes are historical inputs. The current checker
+SHA-256 is `6b140280e191a81abd200b9dfd4307a3b289b25a71b0b1d2dcfe6c6ff4bc00a7`
+and its regression file is
+`087c52413001555b87338832b3043e41a27ffe980758217e07932a617e78cac6`.
+The prior reviewed regression hash was `52b4dbb67484fb988e38cd2ac99adcf26ae890b8f984e81fc4f112c1b6865b1d`;
+the actual registered staged lint rejected its implicit subprocess check mode.
+Adding explicit `check=False` preserves expected nonzero refusal outcomes;
+the replacement four-test run passed again. The failed lint is preserved as
+a corrected SOURCE gate failure, not an operational failure.
+Two meaningful assertions failed before repair. All four version-contract
+tests passed after repair, and independent review reproduced four PASS with
+no P1/P2; Bash syntax and diff checks passed. The production and default
+development FROM must match the exact repository, stable semver and lowercase
+64-hex digest grammar. RC, mutable/tag-only and mismatched inputs are refused.
+This is SOURCE syntax/equality evidence, not publisher tag-to-digest
+authentication, native OIDC, HOME or complete Tier02 acceptance.
+
+### Current Local Delivery Authorization
+
+The user's subsequent direct instruction requires local branch/worktree
+integration without using PRs. This supersedes the earlier prospective PR
+sequence for the current continuation. Preserve logical commits, run registered
+local affected and staged gates, obtain independent source review, and merge
+only the reviewed local head. No remote push, PR creation or remote merge is
+part of this local disposition, and no hosted CI PASS is inferred. Historical
+PR receipts remain unchanged. Only merged clean coordinator-owned worktrees
+may be removed; other workers' dirty paths, ignored evidence and ongoing
+operators are preserved. Operational acceptance remains separate and pending.
 
 ## Evidence
 
