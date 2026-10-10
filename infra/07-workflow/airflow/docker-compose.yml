@@ -25,7 +25,6 @@ x-airflow-common-env: &airflow-common-env
   # No OTel tracing: on Airflow 3.3.1 it hangs every forking process (the
   # scheduler health server, DAG file processors, the Celery prefork pool;
   # SPEC-0193, RUN-0050). Retest on the scheduler after an upgrade.
-  _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   AIRFLOW__API_AUTH__JWT_SECRET_CMD: cat /run/secrets/airflow_api_jwt_secret
   AIRFLOW__API_AUTH__JWT_ISSUER: airflow
 
@@ -37,10 +36,12 @@ x-airflow-common: &airflow-common
     context: ../../..
     dockerfile: infra/07-workflow/airflow/Dockerfile
     args:
-      AIRFLOW_VERSION: '3.3.1'
+      AIRFLOW_VERSION: '3.3.2'
       PYTHON_VERSION: '3.13'
-      KEYCLOAK_PROVIDER_VERSION: '0.9.0'
-  image: hy-home/airflow:3.3.1-keycloak
+      KEYCLOAK_PROVIDER_VERSION: '0.11.0'
+      COMMON_COMPAT_PROVIDER_VERSION: '1.20.0'
+      CELERY_PROVIDER_VERSION: '3.24.1'
+  image: hy-home/airflow:3.3.2-keycloak
   environment: *airflow-common-env
   volumes:
     - airflow-dags:/opt/airflow/dags
@@ -363,7 +364,6 @@ services:
       <<: *airflow-common-env
       _AIRFLOW_DB_MIGRATE: 'true'
       # init 시 package/version mutation 방지
-      _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: '0:0'
     networks:
       airflow_net: {}
