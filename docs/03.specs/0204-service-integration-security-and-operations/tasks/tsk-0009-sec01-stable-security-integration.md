@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.3"
+version: "0.4.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -415,6 +415,20 @@ Execution used network none, one read-only public binary mount and the bounded
 utility contract above. There was no global install, database refresh, SBOM/CVE
 scan, service rollout, secret operation or recovery. Anchore OCI images remain
 unsigned and are not certified by these binary-release receipts.
+
+### Removed Airflow Runtime Dependency Input
+
+The integrated 121-test common validation run returned exit 1: the public
+environment contract found `_PIP_ADDITIONAL_REQUIREMENTS` without a current
+Compose consumer. The earlier workflow build unit removed runtime dependency
+installation from Compose and moved dependencies into the pinned image; its
+Dockerfile still deliberately fixes that image variable to an empty value.
+The coordinator removes the orphan public example input and adjusts only the
+four-way classification counts. The completed secret-layout Task remains
+historical. No private `.env`, running service or credential is changed.
+The complete `tests.validation.test_secret_metadata_sync` module then passed
+46 tests, exit 0 in 22.904 seconds; its focused public-contract class passed
+16 tests separately. These are source/synthetic checks, not HOME evidence.
 
 ## Evidence
 
