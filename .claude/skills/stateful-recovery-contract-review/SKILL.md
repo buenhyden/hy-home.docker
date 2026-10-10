@@ -1,6 +1,6 @@
 ---
 name: "stateful-recovery-contract-review"
-description: "Use when an explicitly supplied sanitized stateful recovery contract needs read-only readiness review before any separate recovery approval."
+description: "Use when an explicitly supplied sanitized stateful recovery contract needs read-only production readiness review or a bounded first isolated restoreability evidence-generation review before any recovery action."
 disable-model-invocation: true
 ---
 
