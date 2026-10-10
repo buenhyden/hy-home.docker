@@ -25,7 +25,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "infra/03-security/openbao"
-IMAGE = "sha256:11fd73a2102cda9c55d5d881a8c3210303146a7ec1e8ac76f526e175c6d24641"
+IMAGE = "sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005"
 PORT = 8240
 CLUSTER_PORT = 8241
 
@@ -56,7 +56,16 @@ def captured(argv, *, data=None, allow_failure=False):
 class OwnedFixture:
     """Ownership list is the cleanup boundary; no Docker discovery/pruning."""
 
-    def __init__(self):
+    def __init__(
+        self,
+        *,
+        image=IMAGE,
+        version="2.7.1",
+        image_reference="openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+    ):
+        self.image = image
+        self.version = version
+        self.image_reference = image_reference
         self.owner = "p01-" + uuid.uuid4().hex
         self.directory = Path(tempfile.mkdtemp(prefix=self.owner + "-"))
         self.directory.chmod(0o750)
@@ -75,12 +84,12 @@ class OwnedFixture:
         return captured(["docker", *args], data=data, allow_failure=allow_failure)
 
     def prepare(self):
-        inspected = self.docker("image", "inspect", IMAGE)
+        inspected = self.docker("image", "inspect", self.image)
         try:
             image = json.loads(inspected.stdout)[0]
         except (ValueError, IndexError, KeyError):
             raise RehearsalFailure("cached image identity unavailable") from None
-        if image.get("Id") != IMAGE or image.get("Architecture") != "amd64":
+        if image.get("Id") != self.image or image.get("Architecture") != "amd64":
             raise RehearsalFailure(
                 "cached image identity does not match reviewed fixture"
             )
@@ -92,11 +101,16 @@ class OwnedFixture:
             "network", "create", "--internal", "--label", self.owner, self.network
         )
         self.network_created = True
-        self.auth_volume = self.volume("agent-auth")
+        self.auth_volume = self.volume("agent-auth", bind_path=self.auth)
         tagged = self.docker(
-            "image", "inspect", "openbao/openbao:2.6.2", "--format", "{{.Id}}"
+            "image",
+            "inspect",
+            "--platform=linux/amd64",
+            self.image_reference,
+            "--format",
+            "{{.Id}}",
         )
-        if tagged.stdout.strip().decode() != IMAGE:
+        if tagged.stdout.strip().decode() != self.image:
             raise RehearsalFailure(
                 "issuer helper cached tag differs from reviewed image"
             )
@@ -178,9 +192,21 @@ class OwnedFixture:
         )
         self.wrong_ca = wrong_ca
 
-    def volume(self, suffix):
+    def volume(self, suffix, *, bind_path=None):
         name = self.owner + "-" + suffix
-        self.docker("volume", "create", "--label", self.owner, name)
+        options = (
+            []
+            if bind_path is None
+            else [
+                "--opt",
+                "type=none",
+                "--opt",
+                "o=bind",
+                "--opt",
+                "device=" + str(bind_path),
+            ]
+        )
+        self.docker("volume", "create", "--label", self.owner, *options, name)
         self.volumes.append(name)
         helper = self.container(
             suffix + "-prepare",
@@ -199,9 +225,7 @@ class OwnedFixture:
         self.docker("wait", helper)
         return name
 
-    def container(
-        self, suffix, args, command, *, image=IMAGE, start=True, network=None
-    ):
+    def container(self, suffix, args, command, *, image=None, start=True, network=None):
         name = self.owner + "-" + suffix
         self.docker(
             "create",
@@ -226,7 +250,7 @@ class OwnedFixture:
             "--pids-limit",
             "128",
             *args,
-            image,
+            image or self.image,
             *command,
         )
         self.containers.append(name)
@@ -313,8 +337,8 @@ class OwnedFixture:
                     time.sleep(0.25)
             raise RehearsalFailure("expired-certificate fixture did not accept TCP")
         version = self.docker("exec", name, "bao", "version").stdout
-        if b"OpenBao v2.6.2" not in version:
-            raise RehearsalFailure("native image version is not 2.6.2")
+        if ("OpenBao v" + self.version).encode() not in version:
+            raise RehearsalFailure("native image version differs from reviewed fixture")
         deadline = time.monotonic() + 40
         while time.monotonic() < deadline:
             try:

@@ -7,3 +7,8 @@ path "auth/approle/role/hy-home-renderer/secret-id" {
   min_wrapping_ttl = "30s"
   max_wrapping_ttl = "60s"
 }
+
+# Self-identity probe only: prove exact policy, no default and short nonrenewable TTL.
+path "auth/token/lookup-self" {
+  capabilities = ["read"]
+}

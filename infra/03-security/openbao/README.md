@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.4"
+version: "0.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -62,7 +62,14 @@ Persistence:
 요구합니다. 이 source 경로는 실제 인증서 발급/존재를 뜻하지 않습니다.
 [start-server](./scripts/start-server.sh), [start-agent](./scripts/start-agent.sh),
 [health-agent](./scripts/health-agent.sh), [wrapped reissue](./scripts/issue-renderer-secret-id.sh)가
-port/trust·새 인증·제한 fetch/render 경계를 구현합니다. 실제 consumer 적용은 별도입니다.
+port/trust·새 인증·제한 fetch/render 경계를 구현합니다.
+SEC01 candidate는 server·Agent·snapshot CLI를 2.7.1로 정렬합니다. operator의 직접 SecretID
+발급을 제거하고 5분 비갱신 issuer/cleanup role로 분리합니다. host helper는 Agent volume 밖의
+영속 journal을 API 호출 전에 기록하며 새 process 기능 readiness와 accessor 정합화 후에만
+완료합니다. source checkout은 신뢰 설치 경로가 아니므로
+[installer](./scripts/install-renderer-issuer.sh)는 승인 commit의 blob에서 읽고,
+`RUN-0085`의 operator-private 설치 절차를 따릅니다. checkout의 installer를 직접 실행하지 않습니다.
+격리 시험은 HOME 배포·cold boot·독립 custody 확인과 별개입니다. 실제 consumer 적용은 별도입니다.
 
 config-owned HMAC audit는 `openbao-audit`에 기록합니다. 한 backend가 실패하면 audited
 요청이 차단될 수 있어 외부 rotation/용량/알림이 필요합니다. HOME custody·cold boot·
