@@ -757,6 +757,8 @@
         "tests.validation.test_validator_entrypoints",
         "tests.validation.test_secret_metadata_sync",
         "tests.validation.test_project_registration",
+        "tests.lib.ops.test_wiki_preparation",
+        "tests.validation.test_wiki_preparation_contracts",
         "-v"
       ],
       "cwd": ".",
@@ -1350,6 +1352,17 @@
       },
       {
         "prefixes": [
+          "scripts/lib/ops/wiki_preparation.py",
+          "scripts/lib/ops/wiki_preparation_semantics.py",
+          "tests/lib/ops/test_wiki_preparation.py",
+          "tests/validation/test_wiki_preparation_contracts.py"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
           "scripts/lib/document_governance/",
           "scripts/validation/check-document-corpus-lifecycle.py",
           "scripts/validation/check-document-links.py",
@@ -1633,6 +1646,17 @@
         ],
         "root_gate_ids": [
           "leaf.local-script-manifest",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/wiki_preparation.py",
+          "scripts/lib/ops/wiki_preparation_semantics.py",
+          "tests/lib/ops/test_wiki_preparation.py",
+          "tests/validation/test_wiki_preparation_contracts.py"
+        ],
+        "root_gate_ids": [
           "leaf.repository-integrity-regressions"
         ]
       },
