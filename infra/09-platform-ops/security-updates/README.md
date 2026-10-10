@@ -1,6 +1,6 @@
 ---
 title: "Security update evidence"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -34,7 +34,8 @@ LAB runtime, 학습 앱, 실제 HOME 변경·비밀값 변경·자료 삭제는 
 | `package-lookups.json` | 선택한 Python/Node source 의존성의 공식 package index 조회 |
 | `verification.json` | 실제 local 시험 결과·입력 hash·미실행 상태 |
 | `integration-handoff.json` | 총괄 선행 조건·GoTrue 계약·P09 단독 작성자 인계 |
-| `common-validator-integration.patch` | 공통 검증기 수정 제안; 실제 파일에는 미적용 |
+| `common-validator-integration.patch` | 공통 runtime·AI 버전·Renovate 검증기 수정 제안; 실제 파일에는 미적용 |
+| `service-inventory-integration.patch` | 기존 renderer로 생성한 Airflow Env 셀 갱신 제안; 공통 inventory는 미변경 |
 
 ## Usage
 

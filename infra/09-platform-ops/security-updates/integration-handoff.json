@@ -27,8 +27,8 @@
         "full_source_input_sha256": "UNKNOWN: only submitted proposal/test bytes captured; baseline plus dirty repository is explicit",
         "command": "python3: compile common-validator-integration.patch into memory with real __file__, unittest loader; no common file write"
       },
-      "current_proposal_sha256": "456f1c39e218c2760a49fade9b541d82a91cc4a174149821101bcc04ad125db4",
-      "current_proposal_parse_check": "git apply --check PASS EXIT0; no common file write. Prior in-memory receipt is historical; only two blank context prefixes changed."
+      "current_proposal_sha256": "4b0ae259bc7fe432f9369276e717cbbc062b46eb9a132fc96e24a92c948676ea",
+      "current_proposal_parse_check": "Combined runtime and AI/Renovate proposals git apply --check PASS; no target write"
     },
     {
       "path": "scripts/manifest.yaml",
@@ -49,6 +49,29 @@
       "path": "infra/09-platform-ops/README.md",
       "status": "PENDING_COORDINATOR_INTEGRATION",
       "required_action": "Link owned security-updates family using existing navigation"
+    },
+    {
+      "path": "tests/validation/test_service_wiring_contracts.py",
+      "status": "Actual full changed gate FAIL: stale Ollama0.40.0 assertion and exact old Renovate pattern string",
+      "baseline_sha256": "397cbce780bd0cd0fe2ee1a03042b6f48f123f1808d9ce79022990f64fa0f29d",
+      "proposal": "common-validator-integration.patch",
+      "in_memory_only_test": {
+        "meaning": "In-memory AI class proposal only; shared validator source remains unchanged and actual full gate remains failed",
+        "baseline_sha256": "397cbce780bd0cd0fe2ee1a03042b6f48f123f1808d9ce79022990f64fa0f29d",
+        "proposed_source_sha256": "9b61ab1b64399f62d28e261a3da10bf71f55bc69860cca57cba345ca63873870",
+        "proposal_sha256": "4b0ae259bc7fe432f9369276e717cbbc062b46eb9a132fc96e24a92c948676ea",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "passed": true,
+        "input_revision": "d5cc05ac9da8154b0cb34233d09625fcc5537e80 + final held proposal; rerun 27 tests includes AI5"
+      }
+    },
+    {
+      "path": "docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md",
+      "status": "Remote candidate-quality FAIL: service-inventory-drift,7 Airflow Env cells; membership unchanged",
+      "proposal": "service-inventory-integration.patch",
+      "required_action": "Coordinator uses existing render_service_inventory and preserves authored historical rows; git apply --check PASS only"
     }
   ],
   "gotrue_read_only_contract": {
@@ -344,6 +367,55 @@
         0
       ],
       "reason": "Two empty unified context lines carried trailing space; removed prefix while preserving Git accepted patch semantics"
+    },
+    {
+      "command": "python3 scripts/validation/run-ci-gate.py --profile changed --local-only",
+      "result": "FAIL",
+      "exit_code": 1,
+      "input_revision": "Start ec7fc88cef52d7af1e45be51fee1337beceeb973 + staged evidence; data receipt changes while running, no final exact-head PASS claimed",
+      "failures": [
+        "Two checkout group-write permission assertions",
+        "Two shared AI version/Renovate assertions",
+        "Two shared runtime assertions"
+      ],
+      "resolution": "Exactly two isolated checkout script modes775→755; impacted19testsPASS; shared4assertions remain FAIL awaiting coordinator proposals"
+    },
+    {
+      "command": "python3 -m unittest tests.validation.test_openwebui_oidc_entrypoint tests.validation.test_gatus_oidc",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 19,
+      "input_revision": "d5cc05ac9da8154b0cb34233d09625fcc5537e80 plus recorded local permission-only changes",
+      "meaning": "Public source script bytes/Git modes unchanged; HOME unchanged"
+    },
+    {
+      "command": "gh run view 38050312745 --json status,conclusion,headSha,jobs",
+      "result": "FAIL",
+      "head_sha": "d5cc05ac9da8154b0cb34233d09625fcc5537e80",
+      "failure_code": "service-inventory-drift",
+      "drift_count": 7,
+      "CodeQL": "PASS",
+      "main-security": "SKIP",
+      "meaning": "Actual remote result; no admin bypass or merge"
+    },
+    {
+      "command": "git apply --check /tmp/sec01-service-inventory-integration.patch",
+      "result": "FAIL then PASS",
+      "exit_code_history": [
+        128,
+        0
+      ],
+      "reason": "First parse-check ran before asynchronous renderer completed; retry on complete patch PASS, no common write"
+    },
+    {
+      "command": "ruff format --check and ruff check on /tmp/sec01-proposed-formatted/tests/validation/test_service_{runtime_compatibility,wiring_contracts}.py; in-memory unittest execution bound to real repository __file__",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 27,
+      "runtime_tests": 22,
+      "ai_tests": 5,
+      "proposal_sha256": "4b0ae259bc7fe432f9369276e717cbbc062b46eb9a132fc96e24a92c948676ea",
+      "meaning": "Proposed common assertions only; actual coordinator-owned files were not changed"
     }
   ],
   "upstream_delta": {
@@ -377,7 +449,7 @@
     "meaning": "Source/UNIT review only; vendor facts/scans/deployment remain independently unverified"
   },
   "delivery": {
-    "status": "Independent source units committed; evidence final commit and draft PR pending. Full local changed gate remains RUNNING; merge HOLD.",
+    "status": "Draft PR416 OPEN/HOLD; pushed source head d5cc05ac9da8154b0cb34233d09625fcc5537e80; actual candidate-quality FAIL and local changed gate FAIL; coordinator common integration pending",
     "logical_commits": [
       {
         "sha": "4042290c2",
@@ -413,7 +485,10 @@
       }
     ],
     "merge_commit": "9cf2f5909f1be443cde16898e06fd7e1e8653b62",
-    "merge_hold": "Coordinator common integration and SEC01 Task issuance, latest-head required CI and independent review; HOME target/custody/restore unverified"
+    "merge_hold": "Coordinator common integration and SEC01 Task issuance, latest-head required CI and independent review; HOME target/custody/restore unverified",
+    "pr_url": "https://github.com/buenhyden/hy-home.docker/pull/416",
+    "push": "DONE; no force push",
+    "common_merge": "NOT_RUN"
   },
   "independent_review": [
     {
@@ -511,6 +586,7 @@
     "infra/09-platform-ops/security-updates/integration-handoff.json",
     "infra/09-platform-ops/security-updates/package-lookups.json",
     "infra/09-platform-ops/security-updates/release-lookups.json",
+    "infra/09-platform-ops/security-updates/service-inventory-integration.patch",
     "infra/09-platform-ops/security-updates/tool-readiness.json",
     "infra/09-platform-ops/security-updates/update-ledger.json",
     "infra/09-platform-ops/security-updates/vendor-channel-references.json",
@@ -557,6 +633,58 @@
       "command": "Continue and verify in sole-writer chat; no SEC01 P09 modification"
     }
   ],
-  "final_evidence_gate_input_sha256": "78fa96eb5209bc4515011acadaffa394caeac308b02c702ba792b5c27a75de06",
-  "final_public_source_snapshot_sha256": "3bb30de47143739442207653cb011f7ebdca39b1bfd48efae0371e604819683b"
+  "final_evidence_gate_input_sha256": "51217e28a6504f7a936a8ed5d96e3ed86adda0dfac60976201b798a55ddc6a66",
+  "final_public_source_snapshot_sha256": "3bb30de47143739442207653cb011f7ebdca39b1bfd48efae0371e604819683b",
+  "checkout_mode_corrections": [
+    {
+      "path": "infra/08-ai/open-webui/docker-entrypoint.sh",
+      "before": "0o775",
+      "after": "0o755",
+      "sha256": "14877d02058a57866436a93effa88e586bbdf62ec8785320bfe92faf8d24b1fb",
+      "content_unchanged": true,
+      "scope": "isolated SEC01 checkout only; no shared checkout/HOME mutation",
+      "rollback": "Restore original mode only in this isolated checkout if required"
+    },
+    {
+      "path": "infra/06-observability/gatus/docker-entrypoint.sh",
+      "before": "0o775",
+      "after": "0o755",
+      "sha256": "4d4264b50f8fd4998bded541461fba7db51a86b34c07a7418ed88c0eff6b6f2f",
+      "content_unchanged": true,
+      "scope": "isolated SEC01 checkout only; no shared checkout/HOME mutation",
+      "rollback": "Restore original mode only in this isolated checkout if required"
+    }
+  ],
+  "current_integration_proposals": [
+    {
+      "path": "infra/09-platform-ops/security-updates/common-validator-integration.patch",
+      "sha256": "4b0ae259bc7fe432f9369276e717cbbc062b46eb9a132fc96e24a92c948676ea",
+      "command": "git apply --check infra/09-platform-ops/security-updates/common-validator-integration.patch",
+      "result": "PASS",
+      "exit_code": 0,
+      "input_revision": "d5cc05ac9da8154b0cb34233d09625fcc5537e80 + held integration proposals",
+      "applied": false
+    },
+    {
+      "path": "infra/09-platform-ops/security-updates/service-inventory-integration.patch",
+      "sha256": "fc8781fffac25372129f0e46c33c94902a003dd53b55e72df5143c69b8879a99",
+      "command": "git apply --check infra/09-platform-ops/security-updates/service-inventory-integration.patch",
+      "result": "PASS",
+      "exit_code": 0,
+      "input_revision": "d5cc05ac9da8154b0cb34233d09625fcc5537e80 + held integration proposals",
+      "applied": false
+    }
+  ],
+  "independent_review_followup": {
+    "findings": [
+      "Trailing added-space in common proposal",
+      "Runtime proposal needed Ruff formatting",
+      "Committed inventory proposal missing staged-path hash binding"
+    ],
+    "resolution": "Regenerated formatted common proposal; final repository proposal paths/hashes and checks bound; final readonly re-review requested",
+    "result": "PASS",
+    "reviewer": "Independent readonly agent /root/p09_review",
+    "remaining_findings": [],
+    "scope": "Six-file public handoff only; both final proposal checks and runtime22+AI5 PASS; actual common gate and delivery HOLD"
+  }
 }

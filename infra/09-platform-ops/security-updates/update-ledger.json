@@ -12404,5 +12404,16 @@
     "split_unit_fingerprint": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
     "current_candidate_unit_sha256": "29e80acaecb76069295dcc6518c2e8ba75a185e7c998e338a3775c39191f65c0",
     "current_runbook_sha256": "59fb811a1148e12fd993b753271420a96c174db8c3ff3eeb49d4920ae479642d"
+  },
+  "inventory_field_verification": {
+    "checked_on_head": "d5cc05ac9da8154b0cb34233d09625fcc5537e80",
+    "membership": "Source membership unchanged; no missing or extra service claim",
+    "status": "FAIL",
+    "drift_count": 7,
+    "field": "Env",
+    "cause": "Airflow runtime pip variable removed in source; old inventory cells retain it",
+    "native_runtime_meaning": "No deployment or native consumer conclusion",
+    "proposal": "service-inventory-integration.patch",
+    "common_document_modified": false
   }
 }

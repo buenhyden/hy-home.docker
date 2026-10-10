@@ -1,35 +1,82 @@
 --- a/tests/validation/test_service_runtime_compatibility.py
 +++ b/tests/validation/test_service_runtime_compatibility.py
-@@ -116,7 +116,7 @@
+@@ -116,7 +116,14 @@
              )
              (tools / "openssl").chmod(0o700)
              result = subprocess.run(
 -                ["sh", str(script), str(fixture), "openbao/openbao:2.6.2"],
-+                ["sh", str(script), str(fixture), compose("infra/03-security/openbao/docker-compose.yml")["services"]["openbao"]["image"]],
++                [
++                    "sh",
++                    str(script),
++                    str(fixture),
++                    compose("infra/03-security/openbao/docker-compose.yml")["services"][
++                        "openbao"
++                    ]["image"],
++                ],
                  env={**os.environ, "PATH": f"{tools}:{os.environ['PATH']}"},
                  capture_output=True,
                  check=False,
-@@ -127,10 +127,10 @@
+@@ -127,9 +134,15 @@
 
      def test_documented_renderer_delivery_names_exact_stopped_agent(self):
          runbook = (ROOT / "docs/05.operations/runbooks/0085-openbao.md").read_text()
--        self.assertIn(
++        image = compose("infra/03-security/openbao/docker-compose.yml")["services"][
++            "openbao"
++        ]["image"]
+         self.assertIn(
 -            "openbao hy-home-infra_openbao-agent-data openbao/openbao:2.6.2 openbao-agent",
 -            runbook,
--        )
-+        image = compose("infra/03-security/openbao/docker-compose.yml")["services"]["openbao"]["image"]
-+        self.assertIn(image + ' openbao-agent "$issuance_journal" "$issuer_commit"', runbook)
++            image + ' openbao-agent "$issuance_journal" "$issuer_commit"', runbook
++        )
 +        self.assertIn('openbao "$agent_volume"', runbook)
-+        self.assertIn('"$operator_tools/$issuer_commit/issue-renderer-secret-id.sh"', runbook)
++        self.assertIn(
++            '"$operator_tools/$issuer_commit/issue-renderer-secret-id.sh"', runbook
+         )
 
      def test_openbao_exception_names_key_and_audit_without_home_claim(self):
-         registry = json.loads(
-@@ -244,7 +244,7 @@
+@@ -244,7 +257,10 @@
              for name in ("n8n", "n8n-worker")
          }
          versions.update(
 -            services[name]["image"].split(":", 1)[1].removesuffix("-local")
-+            services[name]["image"].split("@", 1)[0].rsplit(":", 1)[1].removesuffix("-local")
++            services[name]["image"]
++            .split("@", 1)[0]
++            .rsplit(":", 1)[1]
++            .removesuffix("-local")
              for name in (
                  "n8n",
                  "n8n-worker",
+--- a/tests/validation/test_service_wiring_contracts.py
++++ b/tests/validation/test_service_wiring_contracts.py
+@@ -3,6 +3,7 @@
+ from __future__ import annotations
+
+ import json
++import re
+ import shutil
+ import subprocess
+ import unittest
+@@ -66,7 +67,7 @@
+     def test_images_are_the_requested_tags_pinned_by_digest(self) -> None:
+         pattern = r"^{}@sha256:[0-9a-f]{{64}}$"
+         self.assertRegex(
+-            self.ollama["image"], pattern.format(r"ollama/ollama:0\.40\.0")
++            self.ollama["image"], pattern.format(r"ollama/ollama:0\.40\.2")
+         )
+         self.assertRegex(
+             self.webui["image"],
+@@ -95,9 +96,12 @@
+         )
+
+     def test_renovate_tracks_both_compose_files(self) -> None:
+-        renovate = (ROOT / "renovate.json5").read_text(encoding="utf-8")
++        renovate = json.loads((ROOT / "renovate.json5").read_text(encoding="utf-8"))
++        patterns = renovate["docker-compose"]["managerFilePatterns"]
+         for name in ("ollama", "open-webui"):
+-            self.assertIn(f"infra\\\\/08-ai\\\\/{name}\\\\/docker-compose", renovate)
++            path = f"infra/08-ai/{name}/docker-compose.yml"
++            self.assertTrue(any(re.search(pattern[1:-1], path) for pattern in patterns))
++        self.assertIn("labs/**", renovate["ignorePaths"])
+
+
+ class ComposeCoreReadinessExampleTests(unittest.TestCase):

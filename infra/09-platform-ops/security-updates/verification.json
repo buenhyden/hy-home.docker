@@ -1,7 +1,7 @@
 {
   "source_revision": "ec7fc88cef52d7af1e45be51fee1337beceeb973",
   "checked_at": "2026-10-10T11:51:08.989730+00:00",
-  "test_input_sha256": "78fa96eb5209bc4515011acadaffa394caeac308b02c702ba792b5c27a75de06",
+  "test_input_sha256": "51217e28a6504f7a936a8ed5d96e3ed86adda0dfac60976201b798a55ddc6a66",
   "test_input_files": [
     {
       "path": "scripts/lib/supply_chain/latest_version_gate.py",
@@ -17,11 +17,11 @@
     },
     {
       "path": "infra/09-platform-ops/security-updates/README.md",
-      "sha256": "45c5c87889815c38e67b970b3d8de43c14f74427ec3e0a228f62c69c858672ef"
+      "sha256": "6f59d0b7c69c1288a4381e83c2edd782d1fd6b64f0de02b7e5e1fb578d714581"
     },
     {
       "path": "infra/09-platform-ops/security-updates/update-ledger.json",
-      "sha256": "80411e5929f04b8076b804120f6b528feb873eb23d95595c81327c7d4a1351e9"
+      "sha256": "9676f4f1a4c74002099d7cf6ce9a54a2dbbe2ae054d85a1e0089eedc7ca1e255"
     },
     {
       "path": "infra/09-platform-ops/security-updates/build-inputs.json",
@@ -3834,6 +3834,57 @@
         }
       },
       "native_freeze_blocker": null
+    },
+    {
+      "source": "Pre CI-blocker receipt update",
+      "test_input_sha256": "78fa96eb5209bc4515011acadaffa394caeac308b02c702ba792b5c27a75de06",
+      "current_public_path_hashes": [
+        {
+          "path": "scripts/lib/supply_chain/latest_version_gate.py",
+          "sha256": "9a90a7491e3a2f913d7b338a3b622491b12a48fdd4418e09a08d42aceede7cf4"
+        },
+        {
+          "path": "scripts/lib/supply_chain/security_update_gate.py",
+          "sha256": "ff970ceea1d549f94a66df2a8c68c12d4d17b122e68b9787c679b799bb9d05b9"
+        },
+        {
+          "path": "tests/lib/supply_chain/test_update_gates.py",
+          "sha256": "04643495bba2a6c686bcddf1c6241be3610608f789d9fa26ed40688c4134e7ff"
+        },
+        {
+          "path": "infra/09-platform-ops/security-updates/README.md",
+          "sha256": "45c5c87889815c38e67b970b3d8de43c14f74427ec3e0a228f62c69c858672ef"
+        },
+        {
+          "path": "infra/09-platform-ops/security-updates/update-ledger.json",
+          "sha256": "80411e5929f04b8076b804120f6b528feb873eb23d95595c81327c7d4a1351e9"
+        },
+        {
+          "path": "infra/09-platform-ops/security-updates/build-inputs.json",
+          "sha256": "2274635ef5e185ff72bcae894a439b1161256324f64d9c0ba9c7791b5ad51d7b"
+        },
+        {
+          "path": "infra/09-platform-ops/security-updates/image-source-lookups.json",
+          "sha256": "adc71eeddd35ba07a6d5daa526c10ea37c4c686ea1fb77588f5958241bb9fdf4"
+        },
+        {
+          "path": "infra/09-platform-ops/security-updates/release-lookups.json",
+          "sha256": "e4d9c9dffb49d681211de7c08113799f9d956f060d8a4d1cb1f0fae838d767fc"
+        },
+        {
+          "path": "infra/09-platform-ops/security-updates/vendor-channel-references.json",
+          "sha256": "3390a0e2d9da935c518b6672bb630cee3af57557a6c76fc0761c83bc4a118770"
+        },
+        {
+          "path": "infra/09-platform-ops/security-updates/tool-readiness.json",
+          "sha256": "cf40716cf1ea731bb65b69bf6104dc11996bbf5a4bbaac62274d93f273e6de39"
+        },
+        {
+          "path": "infra/09-platform-ops/security-updates/package-lookups.json",
+          "sha256": "983a34446f982352a91c1de262f207c1a541615367856120504f624f754982c4"
+        }
+      ],
+      "meaning": "Historical only; native source byte binding unchanged"
     }
   ],
   "candidate_source_refresh": {
@@ -4521,5 +4572,13 @@
     "native_or_gate_source_changed": false,
     "actual_gitleaks_recheck": "PASS: root real staged controller session99659 EXIT0; all applicable hooks including unchanged gitleaks passed",
     "scanner_exceptions_added": false
+  },
+  "post_delivery_ci": {
+    "head_sha": "d5cc05ac9da8154b0cb34233d09625fcc5537e80",
+    "candidate-quality": "FAIL: inventory Env drift7",
+    "local_changed_gate": "FAIL:6assertions; permission2 locally corrected, shared4pending",
+    "scoped_permission_regressions": "19PASS EXIT0",
+    "public_native_bytes_unchanged": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+    "remaining_writer": "Coordinator"
   }
 }
