@@ -46,3 +46,15 @@ groups:
           summary: 'OpenBao 메트릭 수집 실패'
           description: 'Prometheus가 OpenBao /v1/sys/metrics를 읽지 못합니다. 메트릭 토큰(SEC-002)의 만료나 sealed 상태를 확인하세요.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'
+
+      # Counters observed from the pinned native image in SPEC-0204 TSK-0006.
+      - alert: OpenBaoAuditFailure
+        expr: increase(vault_audit_log_request_failure{job="openbao"}[5m]) > 0 or increase(vault_audit_log_response_failure{job="openbao"}[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          domain: security
+        annotations:
+          summary: 'OpenBao 감사 기록 실패'
+          description: '감사 backend의 쓰기 실패를 확인하세요. 모든 backend 실패 시 audited 요청은 차단되지만 health는 정상 응답할 수 있습니다. 감사 검사를 비활성화하지 마세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'

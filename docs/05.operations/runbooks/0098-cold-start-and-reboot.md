@@ -1,6 +1,6 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.3.2"
+version: "0.3.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -116,7 +116,7 @@ docker compose exec -T openbao bao status
 
 예상 결과: OpenBao가 시작한 뒤 `bao status`로 sealed/unsealed를 구분한다.
 sealed의 종료2는 서버가 살아 있어도 `unhealthy`인 상태다. 4단계의 owner unseal 뒤
-서버 health가 회복되어야 새 Compose 기동의 Agent가 시작된다. 기존 Agent의 daemon 자동 재시작은 먼저 일어날 수 있고, 남은 token 파일로 health를 통과할 수 있으므로
+서버 health가 회복되어야 새 Compose 기동의 Agent가 시작된다. 기존 Agent의 daemon 자동 재시작은 먼저 일어날 수 있고, 새 entrypoint는 이전 token sink를 제거하고 새 wrapped SecretID를 요구하므로
 현재 인증·renewal·렌더링을 별도로 검증한다. 재부팅 뒤 새 SecretID 필요 여부는 RUN-0085로 판단한다.
 
 ### 4. Owner unseal (대화형, hidden input)
@@ -141,23 +141,21 @@ docker compose exec -T openbao bao status
 OIDC 로그인한다. 결과 정책이 `default`와 `hy-home-operator`뿐이고 `root`가
 아님을 확인한다. Keycloak(2단계)이 `healthy`가 아니면 이 로그인은 실패한다.
 
-### 6. SecretID 발급과 Agent 전달 (owner-run, 10분 이내)
+### 6. Wrapped SecretID 발급과 Agent 전달 (owner-run, 60초 이내)
 
 [RUN-0085 Renderer SecretID Delivery](0085-openbao.md#renderer-secretid-delivery)의
-현재 절차와 검증 항목 전체를 실행한다. 5단계의 UI 로그인과 별개로, 그 절차의 1단계에서 CLI
-OIDC 로그인을 한 번 더 한다. SecretID는 발급 후 10분, 1회용이며 Agent가 읽은 뒤
-파일을 지운다. 10분 안에 끝내지 못하면 그 절차의 2단계부터 새 SecretID를 발급한다.
+현재 `host stop Agent → hidden issuer input/helper → TTL 내 start Agent → health` 절차와 검증 항목 전체를 실행한다. UI 로그인만으로 발급자 신원을 대신하지 않는다.
+제한 issuer가 60초 wrapping token을 전달하며, 내부 SecretID 설정은 10분·1회지만 고정 버전의 만료 결함 때문에 TTL 거부를 완료로 취급하지 않는다(RUN-0085 Known Runtime Residual).
+wrap 만료 전에 Agent를 시작하고 replay·만료 시 새 wrap을 재발급한다.
 
 ```bash
-docker logs --since 2m openbao-agent 2>&1 | grep -c 'authentication successful'
-docker exec openbao-agent sh -c 'test -e /openbao/agent/secret_id && echo not-consumed || echo consumed'
+docker exec openbao-agent sh /openbao/scripts/health-agent.sh
 ```
 
-위 개수와 `consumed`는 보조 신호이며 통과 조건 전체가 아니다. SecretID 파일의
-부재만으로 성공을 판정하지 않는다. RUN-0085에 따라 새 auth 성공, unsealed,
-renewal, 허용/금지 읽기, 두 renderer 출력과0600 권한·일치 boolean을 확인한다.
-발급 시각과 결과를 현재 Task에 기록한다. 이전 token으로 health만 통과하는 경우를
-현재 렌더링 성공으로 기록하지 않는다.
+exit 0, unsealed, 허용/금지 fetch, 두 KV/render version과0600 권한을 확인한다.
+raw 로그·token·렌더링 값 대신 시각·version·일치 boolean만 현재 Task에 기록한다.
+SecretID 파일 부재나 옛 sink의 존재로 성공을 판정하지 않는다. 실제 소비자 적용은
+별도 증거이며 P01에서 mount를 바꾸지 않는다.
 
 ### 7. hy-home.k8s(k3d) 컨테이너
 
@@ -205,8 +203,17 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 | 1. Docker/Compose 컨테이너 복귀 | 각 서비스 healthcheck `start_period` | 현재 선택·host 상태에 따라 달라짐. 2026-09-30 리허설의 약16.5분 daemon 복귀/약19분 healthy는 아래 과거 기록에만 적용되며 현재 SLA가 아님 |
 | 3. OpenBao sealed 및 Agent 상태 확인 | `openbao` healthcheck `interval 15s`, `start_period 20s` | health 상태와 실제 unsealed/auth 결과를 각각 관찰; 고정 완료 시간 없음 |
 | 4. Owner unseal | 대화형, 소요 시간은 owner 입력 속도에 좌우 | **owner 확인 필요**; Rehearsal Record에 기록 |
-| 6. SecretID 발급과 전달 | SecretID 유효기간 10분, 1회용 | 10분 이내에 끝나야 함 |
+| 6. Wrapped SecretID 발급과 전달 | wrapping TTL 60초; 내부 SecretID 10분, 1회용 | wrap 만료 전에 시작 |
 | 7. hy-home.k8s 확인 | k3d 컨테이너 자체 기동 시간 문서화 안 됨 | **owner 확인 필요** |
+
+### P01 external trust and bootstrap prerequisite
+
+재부팅 전에 OpenBao 외부 CA/server key 자료, 독립 unseal/offsite custody와 제한
+재발급 신원을 확인한다. Agent process cache는 새 process/host boot를 넘지 않는다.
+[RUN-0085](0085-openbao.md#renderer-secretid-delivery)의 60초 wrapping 전달 helper를
+사용하고, source health·KV version·render·실제 consumer 적용을 구분한다. Keycloak/DB는
+기존 Docker Secret bootstrap을 유지하므로 OIDC 발급 경로가 Agent 출력에 의존하지
+않는다. 이전 재부팅 receipt는 역사 증거이며 현재 P01 HOME cold boot 성공이 아니다.
 
 ## Verification
 
@@ -244,7 +251,8 @@ SecretID, token 값은 기록하지 않는다.
 - 6단계(SecretID 전달)가 실패하거나 시간을 넘기면
   [RUN-0085](0085-openbao.md#renderer-secretid-delivery)의 실패 처리를 따라 새
   SecretID를 발급한다. CLI 세션이 끝났으면 그 절차의 1단계부터 다시 시작한다.
-  Agent volume의 `role_id`와 이전 token 파일은 지우지 않는다.
+  Agent volume의 `role_id`를 유지한다. 새 entrypoint가 이전 token sink를 제거하므로
+  그 파일을 복사해 인증을 되살리지 않는다.
 - 0단계의 백업이 실패한 상태로 재부팅을 강행하지 않는다: 재부팅 전 backup과
   `restic check`이 성공할 때까지 재시도한다.
 - 데이터베이스나 OpenBao의 복구(스냅샷 복원)는 각각

@@ -11,3 +11,11 @@ tls:
       defaultCertificate:
         certFile: /certs/cert.pem
         keyFile: /certs/key.pem
+
+# Verify the OpenBao backend independently of browser-facing certificates.
+http:
+  serversTransports:
+    openbao-tls:
+      serverName: openbao
+      rootCAs:
+        - /openbao-ca/ca.pem

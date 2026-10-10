@@ -691,6 +691,8 @@
         "tests.validation.test_config_mount_hashes",
         "tests.validation.test_service_wiring_contracts",
         "tests.validation.test_service_runtime_compatibility",
+        "tests.validation.test_openbao_agent_contract",
+        "tests.validation.test_openbao_rehearsal",
         "tests.validation.test_perf_db_contract",
         "tests.validation.test_k6_results",
         "tests.validation.test_quality_mock_lab",
@@ -718,6 +720,7 @@
         "tests.validation.test_mng_pg_init_sql.MngPgInitSqlTests",
         "tests.validation.test_redisinsight_rehearsal.RedisInsightRehearsalTests",
         "tests.validation.test_datastore_observation_rehearsal.DatastoreObservationRehearsalTests",
+        "tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests",
         "-v"
       ],
       "cwd": ".",
@@ -1418,6 +1421,8 @@
           "tests/validation/test_config_mount_hashes.py",
           "tests/validation/test_service_wiring_contracts.py",
           "tests/validation/test_service_runtime_compatibility.py",
+          "tests/validation/test_openbao_agent_contract.py",
+          "tests/validation/test_openbao_rehearsal.py",
           "tests/validation/test_perf_db_contract.py",
           "tests/validation/test_k6_results.py",
           "tests/validation/test_quality_mock_lab.py",
@@ -1426,7 +1431,8 @@
           "tests/validation/test_quality_raw_points.py",
           "tests/validation/test_locust_telemetry.py",
           "tests/validation/test_lab_isolation.py",
-          "tests/validation/test_lab_controller.py"
+          "tests/validation/test_lab_controller.py",
+          "tests/validation/_openbao_rehearsal_"
         ],
         "suites": [
           "operations",

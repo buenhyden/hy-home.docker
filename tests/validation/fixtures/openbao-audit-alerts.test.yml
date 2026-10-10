@@ -1,0 +1,30 @@
+rule_files:
+- /rules/alert_rules.openbao.yml
+evaluation_interval: 1m
+tests:
+- interval: 1m
+  input_series:
+  - series: vault_audit_log_request_failure{job="openbao",instance="fixture"}
+    values: 0 0 0 1 1 1 1 1 1 1 1 1
+  - series: vault_audit_log_response_failure{job="openbao",instance="fixture"}
+    values: 0+0x11
+  alert_rule_test:
+  - eval_time: 2m
+    alertname: OpenBaoAuditFailure
+    exp_alerts: []
+  - eval_time: 4m
+    alertname: OpenBaoAuditFailure
+    exp_alerts:
+    - exp_labels:
+        job: openbao
+        instance: fixture
+        severity: critical
+        domain: security
+      exp_annotations:
+        summary: OpenBao 감사 기록 실패
+        description: 감사 backend의 쓰기 실패를 확인하세요. 모든 backend 실패 시 audited 요청은 차단되지만 health는
+          정상 응답할 수 있습니다. 감사 검사를 비활성화하지 마세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md
+  - eval_time: 10m
+    alertname: OpenBaoAuditFailure
+    exp_alerts: []

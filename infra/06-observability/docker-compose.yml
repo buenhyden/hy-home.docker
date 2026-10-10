@@ -84,10 +84,16 @@ services:
     environment:
       # on|off: whether the dev-data profile is meant to run (SPEC-0224).
       PROMETHEUS_DEV_DATA_EXPECTED: ${PROMETHEUS_DEV_DATA_EXPECTED:-on}
+      OPENBAO_PORT: ${OPENBAO_PORT:-8200}
     volumes:
       - ./prometheus/config/${PROMETHEUS_CONFIG_FILE:-prometheus.dev.yml}:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/scripts:/usr/local/libexec/prometheus:ro
       - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules:ro
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/tls/ca.pem
+        target: /etc/prometheus/openbao-ca.pem
+        read_only: true
+        bind: {create_host_path: false}
       - prometheus-data:/prometheus:rw
     secrets:
       - opensearch_exporter_password
@@ -599,6 +605,8 @@ services:
     user: '${GATUS_UID:-1000}:${GATUS_GID:-1000}'
     environment:
       GATUS_CONFIG_PATH: /config/config.yaml
+      OPENBAO_PORT: '${OPENBAO_PORT:-8200}'
+      GATUS_OPENBAO_CA_PATH: /etc/ssl/certs/openbao-ca.pem
       GATUS_LOG_LEVEL: INFO
       DEFAULT_URL: '${DEFAULT_URL}'
       GATUS_OIDC_ALLOWED_SUBJECT: '${GATUS_OIDC_ALLOWED_SUBJECT}'
@@ -606,6 +614,11 @@ services:
       PORT: '${GATUS_PORT}'
     volumes:
       - ./gatus/config/config.oidc.yaml:/config/config.yaml:ro
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/tls/ca.pem
+        target: /etc/ssl/certs/openbao-ca.pem
+        read_only: true
+        bind: {create_host_path: false}
       - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
       - gatus-data:/data:rw
     secrets:

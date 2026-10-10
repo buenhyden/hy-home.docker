@@ -50,7 +50,7 @@ endpoints:
 
   - name: OpenBao
     group: security
-    url: http://openbao:8200/v1/sys/health
+    url: https://openbao:${OPENBAO_PORT}/v1/sys/health
     interval: 30s
     conditions:
       - '[STATUS] == 200'

@@ -81,10 +81,12 @@ class GatusOidcEntrypointTests(unittest.TestCase):
         self.secret = self.root / "client-secret"
         self.root_ca = self.root / "root-ca.pem"
         self.public_ca = self.root / "public-ca.pem"
+        self.openbao_ca = self.root / "openbao-ca.pem"
         self.result = self.root / "result.json"
         self.secret.write_text("synthetic-client-secret\n")
         self.root_ca.write_text("SYNTHETIC LOCAL ROOT CA CERTIFICATE\n")
         self.public_ca.write_text("SYNTHETIC PUBLIC TRUST\n")
+        self.openbao_ca.write_text("SYNTHETIC OPENBAO CA\n")
         self.probe = self.root / "probe.py"
         self.probe.write_text(
             """import json
@@ -109,6 +111,7 @@ Path(sys.argv[1]).write_text(json.dumps({
                 "GATUS_OIDC_CLIENT_SECRET_FILE": str(self.secret),
                 "GATUS_ROOT_CA_FILE": str(self.root_ca),
                 "GATUS_PUBLIC_CA_FILE": str(self.public_ca),
+                "GATUS_OPENBAO_CA_PATH": str(self.openbao_ca),
                 "DEFAULT_URL": "example.test",
                 "GATUS_OIDC_ALLOWED_SUBJECT": "synthetic-subject",
                 "TMPDIR": str(self.root),
@@ -133,7 +136,7 @@ Path(sys.argv[1]).write_text(json.dumps({
         payload = json.loads(self.result.read_text())
         self.assertEqual("synthetic-client-secret", payload["secret"])
         self.assertEqual(
-            "SYNTHETIC PUBLIC TRUST\n\nSYNTHETIC LOCAL ROOT CA CERTIFICATE\n\n",
+            "SYNTHETIC PUBLIC TRUST\n\nSYNTHETIC LOCAL ROOT CA CERTIFICATE\n\nSYNTHETIC OPENBAO CA\n\n",
             payload["bundle"],
         )
         self.assertEqual(0o600, payload["mode"])
@@ -167,6 +170,8 @@ Path(sys.argv[1]).write_text(json.dumps({
             ("GATUS_ROOT_CA_FILE", empty),
             ("GATUS_PUBLIC_CA_FILE", self.root / "missing-public-ca.pem"),
             ("GATUS_PUBLIC_CA_FILE", empty),
+            ("GATUS_OPENBAO_CA_PATH", self.root / "missing-openbao-ca.pem"),
+            ("GATUS_OPENBAO_CA_PATH", empty),
         )
         for variable, path in cases:
             with self.subTest(variable=variable, path=path.name):

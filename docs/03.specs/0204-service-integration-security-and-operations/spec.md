@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.2.0"
+version: "1.3.0"
 type: "sdlc/spec"
 status: "blocked"
 owner: "@buenhyden"
@@ -287,6 +287,21 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     through its recovery fixture. Source creation, reference wiring, secret
     consumption and native results have separate evidence; missing exact
     consumer/target defers only that lane. Existing version work is NO_CHANGE.
+
+11. P01 completes one coherent native TLS endpoint/CA contract for OpenBao,
+    Agent, metrics, operational clients and Traefik backend; bootstrap trust
+    and the server key are provisioned independently of that OpenBao. Exact
+    2.6.2 isolated tests exercise wrong CA/SAN, expiry/denial, sealing, fresh
+    Agent process/cold start, wrapped SecretID reissue, restricted snapshot
+    issuance/renewal/save/empty Raft restore/unseal, HMAC audit and audit failure.
+    HOME cold boot, custody and real snapshot acceptance require the named
+    host, external unseal/offsite material and restore boundary; missing facts
+    defer only that lane. P06 expansion remains blocked until those conditions
+    pass, including known SecretID expiry and malformed-audit-input residuals on
+    the selected runtime; fixed-version verification and abandoned wrapped
+    issuance cleanup remain acceptance prerequisites. No new KMS/engine, LAB action or learning-app planning is included.
+    TSK-0006 owns this increment; TSK-0005/0229's applied snapshot source is
+    NO_CHANGE and their historical results are never a fresh P01 PASS.
 
 ## Related Documents
 
