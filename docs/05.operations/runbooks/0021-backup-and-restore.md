@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.12"
+version: "1.4.13"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -158,9 +158,27 @@ layer에 생성돼 재생성마다 바뀌었다. 이제 `WEBUI_SECRET_KEY_FILE`�
 
 OpenBao는 Raft snapshot으로 백업한다. 최초 1회 운영자가 unseal된 OpenBao에서
 `infra/03-security/openbao/config/policies/backup-snapshot.hcl`을 `backup-snapshot`
-정책으로 등록한다. 그다음 `bao token create -orphan -period=720h -policy=backup-snapshot`으로
-token을 만들어 `secrets/backup/openbao/snapshot_token.txt`(mode 600)에 둔다. 이
-token은 snapshot 읽기만 할 수 있고 secret은 읽지 못한다.
+정책으로 등록하고, 이 정책만 가진 periodic token을 만들어
+`secrets/backup/openbao/snapshot_token.txt`(mode 600)에 둔다. 이 token은 snapshot
+읽기만 할 수 있고 secret은 읽지 못한다. 저장소 root의 터미널에서 실행한다. 관리자
+token은 화면에 나오지 않고 stdin으로만 전달되며 어디에도 저장되지 않는다.
+
+```bash
+umask 077
+read -rsp 'OpenBao admin token: ' admin; echo
+out=secrets/backup/openbao/snapshot_token.txt
+{ printf '%s\n' "$admin"; cat infra/03-security/openbao/config/policies/backup-snapshot.hcl; } |
+  docker exec -i openbao sh -ec 'read -r BAO_TOKEN; export BAO_TOKEN
+    bao policy write backup-snapshot - >/dev/null
+    bao token create -orphan -period=720h -policy=backup-snapshot -field=token' >"$out.new"
+unset admin
+docker exec -i openbao sh -ec 'BAO_TOKEN="$(tr -d "\r\n")"; export BAO_TOKEN
+  trap "rm -f /tmp/check.snap" EXIT; bao operator raft snapshot save /tmp/check.snap' <"$out.new" &&
+  mv -f "$out.new" "$out" && echo "snapshot token ready"
+```
+
+마지막 명령은 새 token으로 snapshot 하나를 만들어 버리는 방식으로 권한을 확인한다.
+실패하면 `$out.new`를 지우고 sealed 상태와 관리자 token 권한을 확인한다.
 
 매 run은 token을 stdin으로 넘겨 갱신한 뒤 snapshot을 staging에 받는다. token
 파일이 없으면 "OpenBao snapshot token absent: snapshot skipped (recovery gap)"만

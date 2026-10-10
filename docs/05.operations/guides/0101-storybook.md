@@ -1,6 +1,6 @@
 ---
 title: "Shared Storybook Usage Guide"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -187,6 +187,11 @@ code는 출력하거나 기록하지 않는다.
      기다리는 동안 그 주소창의 URL 전체를 Codex 기기에서 `curl '<URL>'`로 보내거나,
      브라우저 기기에서 `ssh -L 33419:127.0.0.1:33419 <Codex 기기>`를 연 뒤 다시
      로그인한다. Claude Code는 33418을 같은 방법으로 쓴다.
+   - Keycloak에 `storybook-mcp-client`의 `REFRESH_TOKEN_ERROR`(`Token is not active`)가
+     몇 분 간격으로 계속 쌓임: 클라이언트가 이미 만료된 refresh token으로 재시도한다.
+     2026-10-10에는 이 host의 Codex app-server가 시간당 최대 135건을 보냈다.
+     Codex는 `codex mcp logout hyhome_storybook` 뒤 `codex mcp login hyhome_storybook`,
+     Claude Code는 `/mcp`에서 다시 로그인한다. 서버 쪽 조치는 필요 없다.
 5. 확인한 날짜, 워크스페이스, 클라이언트 종류와 결과(성공, 401, 403)만 해당 Spec
    Task에 남긴다.
 
