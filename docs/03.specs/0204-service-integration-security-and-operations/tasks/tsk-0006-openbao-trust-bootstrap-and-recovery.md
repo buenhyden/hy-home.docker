@@ -251,11 +251,13 @@ Fresh commands and environments:
 | `python3 -m unittest tests.validation.test_openbao_agent_contract tests.validation.test_service_runtime_compatibility tests.validation.test_gatus_oidc -v` | Local static/stub; independent reviewers | PASS 54; no native claim |
 | `python3 -m unittest tests.validation.test_openbao_rehearsal -v` | Local registered default | Exit 0; 2 discovered, 1 PASS, 1 native opt-in SKIP |
 | `HYHOME_OPENBAO_REHEARSAL=1 python3 -m unittest tests.validation.test_openbao_rehearsal -v` | Invocation-owned Docker 29.8.2, exact cached OpenBao 2.6.2, synthetic material | PASS 2 in 189.952s; byte guard and cleanup PASS |
-| `python3 scripts/validation/run-ci-gate.py --profile changed --local-only` | Registered local selected leaves | Prior receipt-domain FAIL; full metadata contracts now PASS, aggregate fresh rerun pending |
+| `python3 scripts/validation/run-ci-gate.py --profile changed --local-only` | Registered local selected leaves | Prior receipt-domain FAIL; full metadata contracts PASS; corrected candidate aggregate running |
+| `python3 scripts/validation/check-operations-catalog.py` | Local public source and current inventory | Initial hosted drift FAIL; nine-cell correction fresh PASS |
 | `bash scripts/validation/run-ci-precommit.sh --mode local-staged` | Isolated index snapshot; readonly style controller | Source and corrected documentation units PASS, including gitleaks; first docs formatting rejection retained |
 
 Effective authority exercised is public repository source and synthetic
-isolated Docker resources. Branch/PR delivery is authorized but not yet exercised. No HOME service, LAB,
+isolated Docker resources. The two reviewed commits were pushed and PR #409 was created under the
+authorized branch/PR delivery scope; actual checks remain separately recorded. No HOME service, LAB,
 private auth/configuration, credential migration or third-party notification
 is used. Source delivery is distinct from runtime acceptance.
 
@@ -268,7 +270,7 @@ is used. Source delivery is distinct from runtime acceptance.
 | HOME | NOT_RUN; target/material/custody and runtime residuals unresolved |
 | MIGRATION | NOT_RUN; P06 held, no real secret or consumer cutover |
 | RECOVERY | ISOLATED synthetic proof PASS; actual HOME/offsite recovery NOT_RUN |
-| DELIVERY | Local candidate prepared; actual remote checks and merge pending |
+| DELIVERY | PR #409 OPEN; first hosted quality FAIL on inventory drift, correction PASS locally; fresh hosted checks and merge pending |
 
 The logical source unit owns executable/client/policy/test/gate changes and the
 existing root exception row; the documentation unit owns Spec/Plan/this Task,
@@ -286,6 +288,24 @@ text as a generic credential assignment; no secret value existed. The prompt
 is clarified to Enter limited issuer credential, with stdin/unset semantics
 unchanged. No hook bypass or private configuration edit is used. Actual remote
 receipts follow after candidate checks.
+
+Source unit commit: 0853904c06830fb26e44a1ccb21ce8f377c184f5.
+Documentation unit commit: 1510c3a6ab01dcb12b2c81dc5d1df4cacceda5de.
+[Delivery PR #409](https://github.com/buenhyden/hy-home.docker/pull/409),
+first candidate head 1510c3a6ab01dcb12b2c81dc5d1df4cacceda5de, hosted
+run 38036201251: candidate-quality FAIL on nine stale current-inventory
+Persistence/Env cells for the five changed services. Seven other hosted
+checks PASS; issue-greeting/main-security SKIP. No failed result is called
+success. The serial root writer updates those nine current-source cells only;
+service membership/classification, historical table and LAB rows are unchanged.
+The same operations-catalog validator now freshly reports PASS. The Plan
+writer map owns this required source-accounting delta in W22. No executable
+or native input changes. The corrected delivery manifest has 42 public paths
+(excluding this Task), SHA256
+0ad4409e92671a8a0e5c346cdb3488c3c7e702c4c4ded233b25069494f7d0ac5.
+The prior 41-path digest is retained as pre-inventory evidence. This documentation
+unit uses the same pre-HOME reviewed-revert rollback boundary. Fresh hosted
+checks and merge follow on the corrected head.
 
 ### W23 HOME Boundary and P06 Hold
 
@@ -308,7 +328,7 @@ names/paths and leaves HOME, LAB and user work untouched.
 | Baseline | 1, 11 | W19 | status, refs, fetch, scoped baseline diff | 1ee5d6707e3b75b61222baad0c51050c64e1b10d | PASS | W19 Baseline and Boundaries | accepted |
 | Renderer trust | 11 | W20 | Negative token/CA/modes, native clients and Agent restart | e4bde131a34928e19266ddc6dbe86ecc78ccc4ef895d44f39666f60e2e2a9fee | PASS | W20 and W22 | pending |
 | Audit and recovery | 11 | W21 | Native audit-full denial, snapshot save/empty restore/unseal | e4bde131a34928e19266ddc6dbe86ecc78ccc4ef895d44f39666f60e2e2a9fee | PASS | W21 and W22 | pending |
-| Public source review | 11 | W22 | Independent security and IaC; code review delta | de0335192b5779177758ff14a04643eeefd42cdac90467d07d5e56742c4aa6b0 | PASS | W22 | pending |
+| Public source review | 11 | W22 | Independent security and IaC; code review delta | 0ad4409e92671a8a0e5c346cdb3488c3c7e702c4c4ded233b25069494f7d0ac5 | PASS | W22 | pending |
 | HOME preconditions | 11 | W23 | Named host, CA and independent custody | User P01 and `ok` | NOT_RUN | W23 HOME Boundary and P06 Hold | pending |
 
 ## Review and Completion
