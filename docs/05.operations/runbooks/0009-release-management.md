@@ -1,6 +1,6 @@
 ---
 title: "Release Management Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -206,6 +206,31 @@ bash scripts/operations/check-compose-core-readiness.sh
 
 - tag 생성, release branch push, branch protection/required check 변경, 배포, runtime 변경은 해당 승인을 확인하고 저장소 소유자 또는 담당 operator에게 handoff한다.
 - secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거가 있으면 즉시 중단·에스컬레이션한다.
+
+### 검증된 미사용 자료의 정확한 폐기
+
+`python3 scripts/operations/retire-materials.py --root <운영자-체크아웃> --manifest <검토된-manifest>`는 기본적으로 계획만 검사한다. `--apply`는 총괄 통합 순서에 따른 별도 운영 단계이며, 현재 CLN01 source 검증은 실제 삭제 승인이 아니다. 추적 파일은 이 helper가 거부하므로 해당 owning commit에서 정확한 `git rm -- PATH...`를 사용한다. 빈 디렉터리는 별도 확인 후 `rmdir`만 사용한다.
+
+manifest는 checkout 밖 운영자 소유 0700 디렉터리의 0600 regular single-link 파일이며 `entries`에 공개 material `id`, 정확한 path, scope, kind, owner, 1시간 이내 검토 시각, file/parent identity를 둔다. 각 소비 축의 `checked`와 `evidence`, 빈 `consumers`, `recovery_required: false`, 명시적 delete 판정이 필요하다. 유지보수 근거에도 owner, 1시간 이내 검토 시각과 모든 writer 중단 근거를 둔다. `source/runtime/jobs/backup_restore/external` 검사에는 초기화, 수동 운영, 인증 재공급, rollback과 과거 snapshot 복구를 포함한다. true 필드나 profile 비활성만으로 소비자 부재를 증명하지 않는다. 실제 운영 근거는 owning Task에서 확인하고 manifest 원문·비밀값·비밀 hash·inode metadata는 Git과 채팅에 남기지 않는다.
+
+canonical SMTP, LAB, OpenBao·CA·backup key, 현행 암호화 identity, history/audit 원문은 보호한다. 일반 helper는 COMM-002·복구용 PG-020뿐 아니라 COMM-003과 정확한 `secrets/communication/supabase/supabase_smtp_password.txt` 경로도 override 없이 거부한다. Supabase 중복 파일은 SMTP01의 source·운영 참조 전환, 재생성 방지와 5축 검사를 마친 뒤 총괄이 지정한 단일 실행 경로에서만 다룬다. SMTP01의 metadata proof는 CLN01 manifest의 true 값으로 자동 변환하지 않는다. 공유 inode와 불명확한 소비·복구 의존성은 차단한다. 총괄 담당이 정확한 host/path, 효과, 검증, 복구 경계와 동시 writer 중단을 확인한 유지보수 구간에서만 apply한다. `retirement_lock`을 생성기에도 연결해야 하며, lock은 이를 사용하지 않는 hostile writer를 차단하지 못한다. 따라서 총괄 담당은 한 executor, fresh receipt와 통합 route를 지정하고 user-integration hold를 해제하기 전에는 private apply를 하지 않는다.
+
+manifest 필드 계약은 아래와 같다. 이것은 값 없는 입력 계약이며 실제 검사 결과를 채운 운영 manifest가 아니다. 예시 값을 true로 채워 운영 근거를 대체하지 않는다. 현재 Task는 운영 디렉터리를 `/tmp/cln01-<run>/`로 제한하며, helper의 기술적 허용 범위인 다른 외부 0700 디렉터리를 자동 승인하지 않는다.
+
+| 필드 | 필수 조건 |
+| --- | --- |
+| `entries[].id` | 공개 catalog ID 형식. 보호 ID를 바꿔도 보호 경로는 계속 거부 |
+| `path`, `scope`, `kind` | 정확한 상대 경로, `root`, `legacy-secret`·`duplicate-secret`·`optional-material` 중 하나 |
+| `decision`, `consumers`, `recovery_required` | `delete`, 빈 배열, `false`; 실제 조사 후에만 기록 |
+| `owner`, `evidence_ref`, `reviewed_at` | 담당자·owning Task 근거·timezone 포함 1시간 이내 시각 |
+| `checked`, `evidence` | 다섯 축 각각 실제 확인된 boolean과 비어 있지 않은 근거 참조 |
+| `identity` | `dev`, `ino`, `size`, `mtime_ns`, `ctime_ns`, `mode`, `nlink`; `identity()`로 현재 파일을 관측 |
+| `parents` | `parent_identities()`의 부모 경로·identity 배열; 출력은 private manifest에만 보관 |
+| `maintenance` | `writers_stopped`, `owner`, `evidence_ref`, `reviewed_at` 필수. 실제 writer 배제 근거와 1시간 이내 시각 |
+
+`maintenance`는 manifest 최상위 또는 개별 entry에 둘 수 있다. `writers_stopped`는 실제 확인 후에만 true이며, 일반 flock 확보가 다른 writer 중단의 증거가 되지 않는다. 일반 helper의 COMM-003 거부는 유지된다. 해당 후보는 SMTP01의 `smtp_contract --retire`를 제안된 단일 실행자로 두고, 총괄 승인·lock/receipt 통합 전까지 실행하지 않는다. generator는 재생성 방지를 소유하며 후보를 중복 unlink하지 않는다.
+
+helper는 전체 preflight 후 각 파일을 즉시 재검증한다. 부분 실패는 exit 2와 처리됨·이미 없음·실패·미시도 상태를 남긴다. unlink 뒤 fsync 실패는 `deleted-durability-unknown`, identity 확인 실패는 `deleted-identity-unconfirmed`로 보고하므로 파일이 그대로 있다고 가정하지 않는다. 먼저 실제 상태를 재관측하고 검토된 근거를 갱신한 뒤 재실행한다. private 원본을 새 retired/backup 평문 폴더에 복제하지 않는다. Git revert는 추적 source만 복구하며 private 파일의 복구는 이미 존재하는 암호화 복구 자료나 검증된 재발급 경로에 한정한다.
 
 ## Related Documents
 

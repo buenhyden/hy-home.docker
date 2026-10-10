@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.4.1"
+version: "1.4.2"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
@@ -92,6 +92,7 @@ a prospective separate_target classification; no LAB documents are moved.
 | W21 | 7, 11 | Declarative HMAC audit, capacity/failure alerts, reuse snapshot flow | W20 | TSK-0006 | Exact image isolated audit and snapshot recovery cases |
 | W22 | 8, 11 | Changed QA, independent IaC/security/code review, scoped commits/PR | W21 | TSK-0006 | Registered local/hosted candidate checks and actual delivery receipt |
 | W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
+| W24 | 12 | Assess consumers and implement the narrow private-unlink helper for material retired by another owner after SMTP01 evidence | W19 | TSK-0007 | Helper unit tests and document gates; private apply only after Task preflight |
 
 ### P01 exact scope and sequence
 
@@ -253,6 +254,35 @@ preservation, and identity-bound cleanup. This Plan does not duplicate those
 findings or authorize an image pull, container run, HOME change, live secret
 use, or host/DNS/firewall mutation.
 
+### CLN01 execution boundary
+
+TSK-0007 owns the material-retirement manifest contract, helper source and
+focused tests. SMTP01 owns canonical SMTP cutover and generator work; CLN01
+does not implement or merge either shared surface. `COMM-003` can enter the
+assessment lane only after SMTP01's merged delivery and recorded source and
+operational cutover evidence; its dependent PR is TBD. SMTP01 proof cannot
+populate CLN01 manifest truth automatically. CLN01 performs a fresh
+five-axis consumer assessment before a private apply. The operator checkout is
+`/home/hyunyoun/data/hy-home.docker`; host Docker observations still require a
+mapping to that checkout. A manifest is under `/tmp/cln01-<run>/`, in an
+operator-owned 0700 directory, and is a 0600 regular single-link file. No
+manifest value or credential byte enters tracked evidence.
+
+`PG-020` remains retained for rollback because its observed nlink is 2;
+canonical `COMM-002` remains protected; `COMM-003` is pending SMTP01 evidence
+and all five checks.
+Optional stacks are `UNKNOWN_BLOCKED`; `owner@buenhyden` re-reviews them by
+2026-10-17. LAB runtime, secrets, data, images and Compose remain excluded.
+Source rollback is a logical owning-commit revert. Private recovery requires an
+existing encrypted artifact or a proven reissue path and is not promised.
+
+The generic CLN01 helper refuses COMM-003 by ID and exact path. The proposed
+sole candidate executor is SMTP01's `smtp_contract --retire`; CLN01 owns the
+assessment/hold. Integration must confirm that executor, use the shared retirement lock, and
+enforce receipt freshness before any private apply. The present user-integration
+hold remains until the supervisor selects one route; no private execution is
+authorized by either tool's source checks.
+
 ## Verification Plan
 
 ### Verification
@@ -292,3 +322,4 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 - [Task 0003](tasks/tsk-0003-backup-and-cross-tier-operations.md)
 - [Task 0004](tasks/tsk-0004-secret-layout-and-environment-parity.md)
 - [Task 0005](tasks/tsk-0005-cross-tier-contracts-second-round.md)
+- [CLN01 material retirement Task](tasks/tsk-0007-cln01-material-retirement.md)
