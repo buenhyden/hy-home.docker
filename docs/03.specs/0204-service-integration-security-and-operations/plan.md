@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.4.1"
+version: "1.5.0"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
@@ -39,7 +39,7 @@ exclusions and shared-writer order; completed Task bodies are preserved.
   remain runtime-unverified until bounded acceptance.
 - A real consumer, native workflow target, credential subject and recovery
   boundary must be named before their dependent runtime lane. Learning-app
-  planning and all actual LAB work are excluded. Source and this request's
+  planning and LAB runtime are excluded; typed LAB document moves remain P08 work. Source and this request's
   branch/PR/merge are authorized without repeated approval.
 
 ### Current execution routing — 2026-10-10
@@ -49,9 +49,9 @@ SPEC-0204 Tasks retain their historical evidence. P03 owns port/endpoints,
 P04 Airflow native integration, P05 n8n native import/execution and P01/P02/P06
 secret classification/mapping/consumption under this package's acceptance.
 SPEC-0213/0214/0218/0219/0220/0223/0224/0227 retain their delivered source;
-no old prompt label creates duplicate work. LAB and learning apps, including
-planning, are out-of-scope. P09's external Wiki needs its actual derived
-workspace and P10 its real input-to-recovery target.
+no old prompt label creates duplicate work. Learning apps, including planning, and LAB runtime are out-of-scope. P08
+owns typed LAB document moves. SEC01 owns P09 offline preparation only; no
+external workspace is created. P10 needs its real input-to-recovery target.
 
 Historical W7 CI retirement does not govern this pass: current quality policy
 and workflow-contract route hosted PR candidate QA and independent review.
@@ -62,8 +62,9 @@ needed when the current enforcer already meets the request.
 
 Shared root, gateway, Alloy, environment and backup files have one writer at a
 time. Complete feature edits before the P08 document move writer starts, then
-update references/checks and hand the destination SHA back. P08 gives LAB only
-a prospective separate_target classification; no LAB documents are moved.
+update references/checks and hand the destination SHA back. Current request 11–30 supersedes the earlier P08 LAB prohibition: move LAB
+documents to each typed family’s `labs/` destination with folder READMEs and
+updated links/Registry checks. LAB runtime remains excluded.
 
 ## Work Breakdown
 
@@ -92,6 +93,30 @@ a prospective separate_target classification; no LAB documents are moved.
 | W21 | 7, 11 | Declarative HMAC audit, capacity/failure alerts, reuse snapshot flow | W20 | TSK-0006 | Exact image isolated audit and snapshot recovery cases |
 | W22 | 8, 11 | Changed QA, independent IaC/security/code review, scoped commits/PR | W21 | TSK-0006 | Registered local/hosted candidate checks and actual delivery receipt |
 | W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
+| W26 | 14 | SMTP01 baseline, consumer/source map and failing regressions | None | TSK-0005 | Source SHA and RED command receipts |
+| W27 | 14 | Canonical root source and Supabase SMTP-only wrapper/target alias | W26 | TSK-0005 | Unit and synthetic selected Compose model |
+| W28 | 14 | COMM-002 ownership, COMM-003 tombstone and guarded retirement helper | W27 | TSK-0005 | Equal/mismatch/idempotency/race/privacy tests; no HOME mutation |
+| W29 | 14 | Exact-image synthetic SMTP authentication, capture and failure cases | W27 | TSK-0005 | Opt-in isolated native rehearsal, separate from HOME |
+| W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Logical commits/owning PR; no unilateral common-file merge |
+
+### SMTP01 sequence and private-operation boundary
+
+SMTP01 starts at `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`. Work is isolated
+in `/tmp/hy-home-smtp01` on `codex/smtp01-canonical`; concurrent root edits are
+preserved. The integration order is SEC01, SMTP01, then CLN01, subject to actual
+owning-Spec dependencies. Current implementation and tests do not change HOME,
+private metadata or either real SMTP file. Image tags/projections remain SEC01
+ownership; exact digests belong only to the isolated test fixture here.
+
+The private duplicate deletion target is exactly
+`/home/hyunyoun/data/hy-home.docker/secrets/communication/supabase/supabase_smtp_password.txt`.
+Canonical `secrets/communication/smtp/smtp_password.txt`, username, host and
+account remain protected. CLN01/the coordinator verifies all consumers and
+backup/restore facts, records a sanitized audit receipt, switches any old inode
+consumer by selected recreation and then executes the narrow retirement mode.
+Unclear facts or mismatched values stop only that operation. RUN-0029 owns
+exact check/apply commands and canonical-only recovery; SMTP01 does not execute
+private comparison, unlink, broad sync/prune, rotation or HOME deployment.
 
 ### P01 exact scope and sequence
 
@@ -217,8 +242,8 @@ bootstrap change, not extra engines or downstream consumer migration.
 
 SPEC-0203 already wrote the common Alloy metrics path; TSK-0002 may extend only
 bounded external discovery after review. SPEC-0202 development DB source and lifecycle handoff are integrated in this
-closure branch before the backup source change. SPEC-0219 owns Storybook; P09's external workspace owns its application
-manifest/deployment. Existing LAB evidence is excluded from new execution.
+closure branch before the backup source change. SPEC-0219 owns Storybook; P09 prepares future application-manifest/deployment acceptance only;
+SEC01 owns its preparation documents and no workspace is provisioned. Existing LAB evidence is excluded from new execution.
 SPEC-0220 already owns Crawl4AI security/egress and HOME receipts; its consumer
 admission remains consumer-dependent rather than a repeat security fix.
 

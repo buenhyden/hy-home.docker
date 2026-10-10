@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.3.0"
+version: "1.4.0"
 type: "sdlc/spec"
 status: "blocked"
 owner: "@buenhyden"
@@ -32,7 +32,7 @@ SPEC-0223 for RedisInsight, SPEC-0224 for datastore observation and
 SPEC-0227 for the Stage 05 body refresh. Applied source is NO_CHANGE;
 old prompt numbers and draft labels never authorize reimplementation.
 P03 routes endpoint/port integration, P04 Airflow, P05 n8n, P01/P02/P06
-secret classification/mapping/consumption, P09 external Wiki and P10 the
+secret classification/mapping/consumption, P09 offline Wiki preparation and P10 the
 named user vertical slice. Each residual stays with one existing acceptance
 owner; the new stage labels do not reserve Spec IDs.
 
@@ -54,9 +54,9 @@ No business project ID, external deployment topology, application endpoint,
 OIDC client, S3 identity, search authority, traffic budget, or speech product
 scope is approved here. Registering metadata is not a grant of network
 access, credentials, runtime deployment, or storage. Civil-service exam, English and Japanese learning applications are excluded,
-including planning, code, databases, collection and resources. All LAB-specific
-code, configuration, data, secrets, execution and document moves are excluded;
-P08 may describe only a prospective separate_target document classification. Do not read secret values, private environment
+including planning, code, databases, collection and resources. LAB-specific code, configuration, data, secrets and runtime execution are
+excluded. P08 owns actual moves of LAB documents into each typed `labs/` family,
+with folder/parent READMEs and updated links/Registry/path checks. Do not read secret values, private environment
 files, authentication files, raw HOME logs, or user data.
 
 ### Technical Approach
@@ -105,11 +105,10 @@ only when a current conflict is found; otherwise record NO_CHANGE.
   contract fixtures, updated Korean READMEs and Stage 05 guide/policy/runbook
   owners, and Task evidence. Values of secrets and raw operational data are
   never outputs.
-- External application input/output: The P09 Project-Template-derived
-  repository supplies app Compose, business API/UI, migrations, collectors,
-  workflow definitions, fixtures and E2E. Infra supplies approved engines,
-  ingress/identity, telemetry and backup interfaces; the manifest records
-  scopes and owners but cannot deploy the app.
+- P09 interface: preparation documents, schemas, synthetic fixtures and future
+  acceptance contracts only; no external workspace, Wiki engine/API/UI, app
+  database, production client, collector or scheduled Wiki job is authorized.
+  SEC01 owns P09 authoring; SMTP01 supplies only the canonical secret interface.
 
 ### Failure Modes and Guardrails
 
@@ -302,6 +301,21 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     issuance cleanup remain acceptance prerequisites. No new KMS/engine, LAB action or learning-app planning is included.
     TSK-0006 owns this increment; TSK-0005/0229's applied snapshot source is
     NO_CHANGE and their historical results are never a fresh P01 PASS.
+
+<!-- Criteria 12/13 are reserved by CLN01/P09; retain the owning IDs. -->
+<!-- markdownlint-disable-next-line MD029 -->
+14. SMTP01 leaves one root `smtp_password` source at the canonical communication
+    SMTP path and maps the Supabase auth grant to its existing container target.
+    COMM-002 owns the value; COMM-003 is a value-free retired-ID alias. Model,
+    generator and wrapper regression tests reject drift, duplicate mounts,
+    unsafe retirement and secret output. Fixed-image isolation separately
+    proves SMTP authentication, capture, negative password/TLS cases and file
+    readability without HOME activation. SEC01 owns image versions; the
+    integration coordinator controls common-file delivery and HOME deployment.
+    CLN01 may remove the exact duplicate only after source, runtime, jobs,
+    backup/restore and external consumers are verified. Missing private facts
+    defer migration/deletion alone. Rollback uses the canonical source mapping
+    and only the affected consumer; no volume reset or broad rotation occurs.
 
 ## Related Documents
 

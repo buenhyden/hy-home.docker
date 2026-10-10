@@ -1,6 +1,6 @@
 ---
 title: "Supabase Stack Health Runbook"
-version: "1.1.5"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -114,6 +114,79 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 ### Escalation
 
 compose 렌더링이 실패하거나, 필요한 secret이나 mounted config가 누락되거나, 문서화된 확인 이후에도 서비스가 unhealthy하거나, Kong 접근이 계속 불가능하거나, secret 노출 위험이 나타나거나, destructive database/storage/credential 변경이 필요하면 담당 operator에게 escalation한다.
+
+### SMTP 전환 확인과 중복 퇴역
+
+1. SMTP01의 root 단일 source, Auth source/target, COMM-002/003 alias와 파일 소비
+   증거를 확인합니다. 공용 username·host·account와 Alertmanager는 변경하지 않습니다.
+2. 실제 정확한 호스트 checkout에서 old path의 source, 모든 container mount,
+   정기 job, backup/restore 및 외부 소비를 확인해 owning Task에 기록합니다.
+   비선택 profile이나 최근 무트래픽만으로 소비자 부재를 판단하지 않습니다.
+3. 제한된 로컬 비교는 다음 check mode를 사용합니다. 값·hash·길이는 출력하지 않으며
+   exit 0은 이미 퇴역, 1은 변경 대기, 2는 불안전/불일치입니다. 실제 비밀 접근은
+   정확한 대상에 대한 현재 사용자 권한과 owning Task 기록이 있어야 합니다.
+
+   ```bash
+   bash scripts/operations/gen-secrets.sh --retire-supabase-smtp-check
+   ```
+
+4. 총괄이 선행 전환을 수용하고 CLN01의 폐기·복구 검토를 마친 뒤에만 현재 호스트,
+   Git SHA, 공개 Compose source hash, 동일 root identity, old mount 부재,
+   job/backup/external 확인, canonical restore mapping과 아래 두 quiescence
+   사실을 담은 값 없는 audit receipt로 적용합니다.
+   receipt 자체는 권한을 발급하지 않습니다. 다음 명령은 현재 SMTP01에서 실행하지 않습니다.
+
+   ```bash
+   bash scripts/operations/gen-secrets.sh --retire-supabase-smtp --smtp-audit-proof /tmp/smtp01-audit.json
+   ```
+
+5. helper는 canonical 파일을 보존하고 COMM-003 private 값 행과 정확한 중복 파일만
+   처리합니다. 동시 변경·불일치·불명확한 mount는 거부합니다. `.env`와 LAB은 읽거나
+   수정하지 않습니다. 퇴역 marker 제거와 빈 folder 정리는 CLN01이 소유하며 다른 entry가
+   있으면 보존합니다. 재실행으로 idempotency와 활성 old source/path 참조 0을 확인합니다.
+
+복구는 canonical 파일과 Auth mount alias, 특정 소비자의 source 설정만 복원합니다.
+기존 암호화 Restic host snapshot은 비밀 자료의 보관이지 old path의 live 소비자가
+아닙니다. snapshot에서 옛 layout을 복원할 때 현재 canonical mapping을 다시 적용하며
+평문 중복을 영구 유지하지 않습니다. 실제 backup/restore 검증은 별도 Task 증거이고,
+source revert나 격리 SMTP 성공으로 HOME 복구를 PASS로 기록하지 않습니다. 전체 up/down,
+volume 초기화와 일괄 credential 회전은 이 절차에 포함되지 않습니다.
+
+### SMTP01과 CLN01의 root·lock·증거 계약
+
+receipt의 필수 필드는 `host`, `git_sha`, `source_sha256`,
+`root_identity: {st_dev, st_ino}`, `old_mount_consumers: []`,
+`job_backup_external_verified: true`, `canonical_restore_mapping_verified: true`,
+`consumer_creation_quiesced: true`, `source_private_mutation_quiesced: true`입니다.
+이는 값 없는 사실 확인이며 실행 권한을 대신하지 않습니다. 현재 HOME 사실과
+receipt 발급은 NOT_RUN입니다.
+
+실제 운영 root는 `/home/hyunyoun/data/hy-home.docker`입니다. apply와 CLN01은
+그 root의 device/inode를 확인하고 `secrets/.smtp01-retirement.lock`의 동일 inode에
+exclusive nonblocking lock을 사용합니다. lock은 nofollow·단일 regular file·0600이며
+사용 후 지우지 않습니다. 다른 worktree의 같은 상대 경로는 동일 lock이 아닙니다.
+읽기 전용 check는 lock 파일을 생성하거나 변경하지 않습니다. 퇴역 CLI는 lock을
+스스로 획득하므로 다른 executor가 같은 lock을 잡은 채 CLI를 중첩 호출하지 않습니다.
+CLN01의 별도 writer는 동일 protocol로 직렬화하고 lock을 반납한 뒤 전용 CLI를 호출합니다.
+
+총괄은 해당 host의 정확한 consumer recreate/start 경로와 source/private metadata
+writer를 일시 정지시키고, 어떤 경로를 어떻게 멈췄는지 owning Task에 기록해야
+합니다. 동일 lock은 협력하는 executor만 직렬화합니다. Docker daemon이나 다른
+프로세스의 쓰기를 강제로 막지 않으므로, 두 quiescence 사실을 확인하지 못하면
+apply를 실행하지 않습니다. 본 문서만으로 stop 명령이나 대상 부재를 가정하지 않습니다.
+
+helper는 공개 source와 mount 증거를 반복 검사하고 metadata/old file을 atomic
+quarantine으로 옮겨 identity와 내용을 확인합니다. 다른 writer의 새 파일을 덮어쓰지
+않습니다. 성공 전 old pathname 부재와 private metadata postcondition을 검사합니다.
+변경 이후 실패는 `unsafe_after_mutation`, `applied: true`, `completed: false`, exit 2로
+보고합니다. 이를 무변경 실패나 퇴역 성공으로 취급하지 않고 현재 pathname과 보존된
+quarantine을 제한된 로컬 프로세스에서 확인합니다. 평문 복제본을 영구 보관하지 않으며
+필요한 custody·정리·복구는 정확한 대상에 대한 CLN01/총괄 지시로 처리합니다.
+
+퇴역 실행 코드는 `scripts/lib/ops/smtp_contract.py`입니다. 생성기의 전용 모드만
+이 모듈을 호출합니다. SMTP01이 source·consumer·generator 계약을 수용하기 전에는
+CLN01이 중복 파일을 삭제하지 않습니다. 과거 CLN01 초안의 target 변경이나 SMTP
+verdict 고정은 자동 적용하지 않고 이 계약과 실제 native 결과에 맞춰 검토합니다.
 
 ## Related Documents
 

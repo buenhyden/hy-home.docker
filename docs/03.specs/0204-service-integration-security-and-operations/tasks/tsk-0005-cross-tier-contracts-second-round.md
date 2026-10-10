@@ -1,10 +1,10 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0005"
 parent_ids:
@@ -241,6 +241,322 @@ against `fb468bba5` as staged changes. Its runs exposed three things:
 
 The final run exited 0 with 911 tests across the selected leaves.
 
+### W26–W30 SMTP01 Current Increment
+
+The current 2026-10-10 request supersedes only active contradictory contracts;
+W8–W18 above remain historical evidence. Baseline main/origin/main/HEAD was
+`a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`, initially clean. The requested
+analysis baseline is `860ac1c3633eac9ad416fb1abd8a61a6e617ebd8`; applied OpenBao
+PR #409/#410 source is preserved. Current branch is `codex/smtp01-canonical`
+in `/tmp/hy-home-smtp01`. The shared original tree is not reset or stashed.
+
+SMTP01 owns source/consumer/catalog/generator; SEC01 owns versions/images;
+CLN01 owns the final duplicate deletion after transition. Common Compose,
+catalog, validation and Spec/Plan/Task changes are handed to the integration
+coordinator and are not independently merged. Actual HOME deployment, private
+comparison/metadata rewriting/unlink, rotation and real restore are NOT_RUN.
+
+| Lane | Decision | Current evidence and limit |
+| --- | --- | --- |
+| SOURCE | IMPLEMENT | One canonical root source, preserved auth target; Alertmanager and SMTP account parameters unchanged |
+| UNIT | IMPLEMENT | Source RED then GREEN; model/retirement tests include immutable inputs, drift, collision, equality, mismatch, symlinks, races and no secret output |
+| STATIC | IMPLEMENT | Synthetic Compose selection and existing metadata/manifest/document/gate checks; final commands below |
+| ISOLATED | IMPLEMENT | Digest-fixed GoTrue/Mailpit/PostgreSQL fixture; native baseline and wrapper evidence separate |
+| HOME | VERIFY_RUNTIME | NOT_RUN; integration coordinator controls selected activation; full Supabase is not enabled |
+| MIGRATION | VERIFY_RUNTIME | NOT_RUN; no actual file comparison/private catalog changes; CLN01 verifies source/runtime/job/backup/external facts |
+| ROTATION | NO_CHANGE | NOT_RUN; no password or account change |
+| RECOVERY | VERIFY_RUNTIME | NOT_RUN for real Restic recovery; canonical-only source/consumer rollback is documented |
+| DELIVERY | IMPLEMENT | Commit/PR handoff pending; SEC01 precedes common-file integration |
+| Wiki and batches | OUT_OF_SCOPE | Wiki preparation and independent opsflow_dev batch are later owning work; no engine/app created |
+| LAB runtime and learning apps | OUT_OF_SCOPE | No service/data/image/credential change or learning-app investigation |
+
+The only eventual unlink target is
+`/home/hyunyoun/data/hy-home.docker/secrets/communication/supabase/supabase_smtp_password.txt`.
+The owning operator must supply host, current source SHA, exact public Compose
+input hashes, zero old-mount consumers, verified job/backup/external consumers
+and canonical restore mapping in the sanitized receipt described by RUN-0029.
+The receipt proves facts; it does not authorize execution by itself. Current
+integration instructions hold deletion to CLN01/the coordinator. The helper
+rejects mismatches, links and source drift, preserves canonical bytes and other
+private rows, and rewrites COMM-003 only as a two-column alias before unlink.
+No persistent plaintext recovery copy is created. Existing encrypted backup
+custody and an actual selected restore remain unverified; no recovery PASS is
+inferred from tests. Restore/revert scope is canonical mapping plus the affected
+consumer, with no entire-stack restart, volume initialization or bulk rotation.
+
+#### Current session ownership and interfaces
+
+SMTP01 reserves criterion 14 and W26–W30 in this isolated increment. The
+integration coordinator owns the intervening allocation: CLN01 criterion 12/W24
+and P09 criterion 13/W25. Their bodies are not duplicated here; gaps remain
+until the owning changes are integrated.
+
+The resumed user instruction keeps `gen-secrets.sh` and the SMTP helper under
+SMTP01 alone. CLN01's initial SMTP draft was selectively read, not applied:
+it changed the container target to `smtp_password` and kept SMTP unsupported.
+The accepted contract preserves `supabase_smtp_password` as the target and
+promotes only SMTP to `wrapper` after exact-image proof; other unsupported
+Supabase keys and whole-platform readiness remain unresolved.
+
+SEC01's final GoTrue image contract is not yet confirmed. The user explicitly
+allows the current digest-fixed image rehearsal and requires platform/digest
+receipts. SEC01's final tag/digest/USER/Entrypoint/Cmd requires a fresh rehearsal;
+current metadata is not evidence of SEC01 latest-version, security or migration
+completion. P09 writing belongs to SEC01; SMTP01 authors no P09 package or
+production Wiki client. Its future interface is COMM-002 ownership, the canonical
+file and service-specific render of the same entry. COMM-003 remains a value-free
+alias; future OpenBao render must not create another SMTP value.
+
+CLN01 and apply must use the same actual root identity and persistent
+`secrets/.smtp01-retirement.lock`, not a similarly named lock in another worktree.
+The receipt adds `root_identity` (device/inode), `consumer_creation_quiesced`
+and `source_private_mutation_quiesced`. These are facts, not authorization; the
+operator must freeze the exact consumer-creation and public/private writer paths.
+Current host quiescence, backup/restore and external consumer evidence are UNKNOWN.
+Current actual comparison, lock acquisition, apply and deletion are NOT_RUN.
+RUN-0029 owns partial-failure handling and exact named-host recovery boundaries.
+
+#### Command receipts
+
+All commands use synthetic fixtures or public tracked source in this worktree.
+Each receipt names its actual input HEAD; public file hashes identify uncommitted
+candidates. Earlier PASS rows are historical, not fresh final-source evidence.
+
+| Command | Exit | Result and scope |
+| --- | --- | --- |
+| `python3 -m unittest tests.validation.test_service_runtime_compatibility.RuntimeCompatibilityTests.test_supabase_smtp_wrapper_consumes_file_and_preserves_arguments` | 1 then 0 | RED against previous source, then wrapper unit GREEN |
+| `python3 -m unittest tests.validation.test_smtp_generator -q` | 1 then 0 | Two generator regressions RED then GREEN |
+| `python3 -m unittest tests.lib.ops.test_smtp_contract -q` | 0 | 17 tests and 43 subtests; synthetic retirement only |
+| `uv run --with pytest --with pyyaml --with pytest-cov python -m pytest tests/lib/ops/test_smtp_contract.py --cov=scripts.lib.ops.smtp_contract --cov-branch` | 0 | Reported aggregate coverage 94%; no private files |
+| `python3 -m unittest tests.validation.test_secret_metadata_sync -q` | 0 | 46 scanner/catalog tests |
+| `python3 -m unittest tests.validation.test_supabase_smtp_rehearsal -q` | pending | Opt-in skipped by default; native run recorded separately below |
+
+#### Current-source verification and delivery receipt
+
+The three initial independent regressions and later fixture failures were genuine
+FAIL results. Service-less includes and duplicate definitions now fail closed;
+retirement rechecks source/runtime before and after mutation and preserves raced
+metadata with NOREPLACE quarantine. Synthetic wrong-password and bad-TLS cases
+must report an explicit SMTP failure, not a database or transport failure.
+
+Native fixture failures were corrected in the fixture: BusyBox HTTP EOF cancelled
+the request, the synthetic database search path omitted the migrated auth schema
+(SQLSTATE 42P01), and startup-rejection cases looked up an already exited
+container. A later independent review reproduced a cleanup gap after Docker
+create timeouts; its two regression tests were RED before intent registration.
+The final fresh rehearsal receipt is recorded after that correction, below.
+None of those FAIL runs is accepted as SMTP delivery proof.
+
+Current public-source checks:
+
+| Command or review | Input | Exit/result | Limit |
+| --- | --- | --- | --- |
+| `python3 -m unittest tests.validation.test_secret_metadata_sync tests.validation.test_service_runtime_compatibility tests.lib.ops.test_smtp_contract tests.validation.test_smtp_generator tests.lib.gate.test_github_workflow_contract -q` | HEAD `3d0a8a1b07c1f2df29c0f04f88ba8fa815fbd1bf`; consumer candidate now `3181921be795c5439e5ac77e462f62e47db6fa5d` | 0 / 141 PASS | Unit/source only |
+| `check-document-metadata.py --mode check-active` | HEAD `d90d9f12440322aed602749d74392fc8d6c01be0`; SMTP criterion 14 candidate | 0 / 478 selected, violations 0 | Documents |
+| `check-document-corpus-lifecycle.py --base-ref a03c8930a5a15a82f4176bbcfe457bc2ce09db4b` | Same candidate | 0 / corpus and archive violations 0 | No Registry change |
+| `check-document-links.py --mode all` | Same candidate | 0 / failures 0, one pre-existing historical-capture warning | Historical warning remains |
+| `check-script-manifest.py` | Same source, new owned files staged | 0 / PASS | Previous unstaged-new-path run exit 1; staging fixed tracking |
+| `run-ci-precommit.sh --mode local-staged` | Exact catalog/helper unit and consumer unit indices | 0 / PASS for both | Inapplicable hooks SKIP |
+| Pinned Commitizen exact message check | Exact logical commit message files | 0 / PASS | Initial lowercase catalog subject exit 14; capitalization corrected |
+| Independent helper code/security review | Helper `d6b8c9c1089d00bf4de2cf0558743324421403eb8a0daa6b9592f26c9f62b505`; tests `2a53ef6acc4abbe63835344f4dbf43a27eaca44b3ad52d2fda7437b7bec6b8e0` | APPROVED | Synthetic, cooperative quiescence boundary |
+
+Helper final coverage is line 95.27%, branch 89%, combined 93.323%; 34 methods
+and 55 subtests passed. The branch target of 80% is met for the new helper.
+Coverage files contain public-source paths only and are not committed.
+
+The whole-root infra helper is BLOCKED by pre-existing observer absolute host
+binds: `input-graph BLOCKED category=external-absolute-path`. Automatic approval
+review rejected extending the system-bind allowlist as weakening the validator
+security boundary; the proposed production change was not applied. The existing
+fail-closed boundary remains, including socket and unknown absolute-path tests.
+Current root result is 11 PASS, 0 FAIL, 4 BLOCKED, 2 NOT_RUN; YAML and shell lint
+PASS. This is not a full-root STATIC PASS. Selected SMTP model verification is
+recorded separately. Kafka JMX lint-only edits preserve both parsed models;
+image pins and runtime resources are unchanged.
+
+Logical delivery so far: contract `d90d9f12440322aed602749d74392fc8d6c01be0`,
+helper/catalog `3d0a8a1b07c1f2df29c0f04f88ba8fa815fbd1bf`, consumer
+`3181921be795c5439e5ac77e462f62e47db6fa5d`. SPEC-0212 draft
+[PR #412](https://github.com/buenhyden/hy-home.docker/pull/412) has head `d90d9f1`
+and 8 hosted checks PASS. It remains OPEN/DRAFT and unmerged. Remote main was
+reconfirmed as `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`. Implementation PR and
+latest aggregate/cleanup-corrected native receipts are pending below; integration
+and SEC01 final-image retest remain distinct prerequisites.
+
+#### Final native receipt
+
+The final command was
+`HYHOME_SUPABASE_SMTP_REHEARSAL=1 python3 -m unittest tests.validation.test_supabase_smtp_rehearsal -v`.
+Input HEAD: `3181921be795c5439e5ac77e462f62e47db6fa5d`; final public fixture
+`794e314feebed6fc122e71321513d47251437bfc843ffb8373854fb004529fdf`,
+Compose `6a9c289a24c1bc2a0e4b846dddf2719bc917595de2c21734d80003a2188dedf9`.
+Exit 0: 10 PASS in 76.929 seconds, six native cases plus two output-safety and
+two cleanup-timeout regressions. Post-run inventory commands exited 0 with zero
+owned containers/networks. Ruff exited 0. Independent code/security/IaC review
+was bound to fixture `794e314f…29fdf` and unchanged Compose `6a9c289a…8dedf9`,
+not merely an earlier PASS. Code review independently ran the default module:
+4 unit PASS, 6 native SKIP, exit 0, plus Ruff 0. Security review independently
+ran the four non-Docker units, exit 0. Their 10-case native statement is worker
+evidence, not an independent native rerun. Commit `63ac2cf` contains the same
+reviewed fixture bytes.
+
+| Image | Platform | Exact digest | Startup contract |
+| --- | --- | --- | --- |
+| `supabase/gotrue:v2.197.0` | linux/amd64 | `sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b` | USER supabase; Entrypoint null; Cmd auth |
+| `axllent/mailpit:v1.31.2` | linux/amd64 | `sha256:74d609a42ec279aa63c6b4622a6fa9b5408d1ad5b1d76a1c4be40a265ce0863d` | default root; Entrypoint /mailpit; Cmd null |
+| `postgres:18.6-alpine` | linux/amd64 | `sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873` | default root; docker-entrypoint.sh; Cmd postgres |
+
+GoTrue loader evidence is the official
+[tagged loader](https://raw.githubusercontent.com/supabase/auth/v2.197.0/internal/conf/confload/confload.go).
+The unwrapped `_FILE` case reaches an explicit SMTP failure with zero capture;
+the wrapper case reaches signup HTTP 200 with exactly one Mailpit capture.
+Wrong password and untrusted TLS reach explicit SMTP failures with zero capture.
+The wrapper reads root:23456 mode0640 as UID/GID1000 with supplemental group;
+without that group it fails. Missing, empty and unreadable input refuse startup.
+The init/child SIGTERM path and original argv are exercised. DB fixture startup
+and migrations are prerequisites, not inferred from an alias mount.
+
+All native inputs are synthetic; Mailpit disables accept-any/insecure auth and
+requires authenticated STARTTLS. The local stdlib Go HTTP probe uses a scratch
+cache, no modules/downloads, and emits only status/failure category/capture count.
+Dependencies are Docker/Compose, Python3/PyYAML, OpenSSL and local Go. No HOME
+network, volume, account or actual password was used; raw logs are not exported.
+
+Failure history retained: the pre-cleanup candidate passed 8 cases but was
+superseded by a review fix. The first cleanup-corrected 10-case run exited 1
+because its capture-count Docker exec hit a 15-second timeout; same-input retry
+passed. The ordinary native commit then exited 1 on an ECC generic credential
+assignment false positive for synthetic fixture keywords. No hook was bypassed:
+the fixture input keyword was renamed to `smtp_value`. An initially missed
+reference produced Ruff F821 and the local build was interrupted with exit 130
+before Docker resources were created. The reference was corrected and this final
+10-case run is fresh proof for the renamed source. Older native hashes/PASS are
+not used as the current verdict. SEC01 final-image acceptance remains NOT_RUN.
+
+#### Frozen static receipt and file manifest
+
+`python3 /tmp/smtp01-scoped-static.py /tmp/hy-home-smtp01` exited 0:
+`smtp_scoped_static=PASS source=smtp_password target=supabase_smtp_password checks=7/7`.
+The public-only reproduction script SHA is
+`48155d833ee1efd60716b1c2c43fa367afabf02b6fe806338d9014487a4c3e45`.
+It uses explicit `.env.example`, a temporary HOME and captured `compose config`
+output; it neither reads actual secret files nor performs daemon service actions.
+Public inputs: root Compose
+`d04187b004e6e41f73e5b61befee2505ad2f8ec78e83e3f200a6032fe354b5f6`,
+Supabase Compose
+`6a9c289a24c1bc2a0e4b846dddf2719bc917595de2c21734d80003a2188dedf9`,
+`.env.example`
+`288b623fcab241a6c83d3b8d6f4745aa65c5760f07e31b49b8bcf71d6f8e3f65`.
+
+Independent final validator security/IaC review APPROVED the exact script
+`cb005e890856031eab01aaa15261b545e4a94318f7660395f80dce09203e53bb`
+and regression file
+`56520e6b8bb8598070af21e1e434e191f5485882dc822dddd148d910782d3322`.
+Author fresh regression command
+`python3 -m unittest tests.validation.test_agent_governance_ci_routing.InfraAndStyleSkillHelperTests -q`
+exited 0 with 26 PASS at HEAD `3181921be795c5439e5ac77e462f62e47db6fa5d`.
+The protected static repair is commit
+`1f324774cb1e9618b3810f2fc3d8727db80f8ca8`; both staged style and exact
+Commitizen checks passed without bypass. The helper's initial unsupported root
+keys/tags, ShellCheck rc option, JMX YAML lint, and tracked-directory symlink
+regression are fixed; absolute system mounts remain deliberately BLOCKED.
+
+All SMTP01 changed/created files relative to the stated baseline are listed
+below. There are no tracked deletions and no private/LAB runtime file edits.
+The list includes the separately delivered SPEC-0212 contract documents; the
+SPEC-0204 implementation PR excludes that already-owned contract commit.
+
+- `.agents/skills/infra-validate/scripts/static-checks.sh`
+- `.github/workflow-contract.yml`
+- `docker-compose.yml`
+- `docs/03.specs/0204-service-integration-security-and-operations/plan.md`
+- `docs/03.specs/0204-service-integration-security-and-operations/spec.md`
+- `docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0005-cross-tier-contracts-second-round.md`
+- `docs/03.specs/0212-request-baseline-and-reconciliation/plan.md`
+- `docs/03.specs/0212-request-baseline-and-reconciliation/spec.md`
+- `docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0005-smtp01-request-contract.md`
+- `docs/05.operations/guides/0029-supabase.md`
+- `docs/05.operations/policies/0029-supabase.md`
+- `docs/05.operations/runbooks/0029-supabase.md`
+- `infra/04-data/supabase/README.md`
+- `infra/04-data/supabase/docker-compose.yml`
+- `infra/05-messaging/kafka/jmx-exporter/kafka_broker.yml`
+- `infra/05-messaging/kafka/jmx-exporter/kafka_connect.yml`
+- `infra/secret-file-support.json`
+- `scripts/lib/README.md`
+- `scripts/lib/ops/README.md`
+- `scripts/lib/ops/smtp_contract.py`
+- `scripts/manifest.yaml`
+- `scripts/operations/gen-secrets.sh`
+- `secrets/SENSITIVE_ENV_VARS.md.example`
+- `tests/lib/gate/test_github_workflow_contract.py`
+- `tests/lib/ops/README.md`
+- `tests/lib/ops/test_smtp_contract.py`
+- `tests/validation/test_agent_governance_ci_routing.py`
+- `tests/validation/test_secret_metadata_sync.py`
+- `tests/validation/test_service_runtime_compatibility.py`
+- `tests/validation/test_smtp_generator.py`
+- `tests/validation/test_supabase_smtp_rehearsal.py`
+
+Common-file integration risks are root Compose, public secret catalog, generator,
+secret support matrix, manifest/workflow/common validators and Spec/Plan/Task.
+SEC01 owns image/version/projection changes; CLN01 owns final retirement facts
+and actual deletion. SMTP01 alone owns generator/helper. Preserve their diffs,
+reconcile criterion gaps under the coordinator, and never use force push/reset.
+
+#### Delivery checkpoint
+
+Native verification is commit
+`63ac2cfb47f822b399f5bf9e8aa4cbef13b26559`; staged style and the ordinary
+repository commit hook both pass on the final renamed source. The initial
+aggregate exited 1 on a new README heading-contract deficit; the SMTP section
+was moved under Configuration and the registered aggregate is rerunning.
+Staged doc style also caught MD029 auto-renumbering criterion 14 to 12 in its
+isolated checkout. A local next-line exception preserves the coordinator's
+criterion IDs without changing global lint policy; the exact staged rerun passes.
+No repository user edits were reset, stashed or discarded.
+
+The SPEC-0204 draft is stacked on `codex/smtp01-contract` so its diff contains
+only its owning implementation/docs. Hosted candidate-quality triggers only
+PRs targeting main: this stacked PR's required candidate result is NOT_RUN
+until the coordinator merges the owning contract, rebases/retargets to latest
+main and runs the actual latest-head required checks. Neither draft is merged.
+SEC01 final image-contract proof and coordinator common-file integration remain
+prerequisites. SMTP01 is source/isolated ready, not a claim of private retirement,
+HOME recovery or end-to-end delivery completion.
+
+#### Outstanding operational commands and acceptance
+
+SOURCE has one canonical root definition and no active old host-path source
+reference in its validated include graph. Auth retains the old container target;
+other SMTP consumers and account values are unchanged. UNIT proves idempotency,
+equal/mismatch, no-value output, collision/drift rejection and synthetic race
+handling; these are not actual private comparisons or migration evidence.
+ISOLATED proves only synthetic SMTP under the fixed image. Whole-platform
+DB/JWT file support/readiness is still unresolved.
+
+Before any CLN01 private action, its named-host operator must inspect the exact
+root's source/runtime/job/backup/external consumers, establish the two quiescence
+facts and canonical recovery mapping, and produce RUN-0029's sanitized receipt.
+Current consumer/backup/external facts are UNKNOWN. Next exact private check is
+`bash scripts/operations/gen-secrets.sh --retire-supabase-smtp-check` from
+`/home/hyunyoun/data/hy-home.docker` on the operator-owned host after coordinator
+integration. Apply is `bash scripts/operations/gen-secrets.sh --retire-supabase-smtp --smtp-audit-proof /operator-owned/path/smtp01-proof.json`, using that exact
+root identity and current public SHA/hash inputs; the path is a placeholder for
+the operator's actual sanitized receipt, not an existing credential artifact.
+Both are NOT_RUN here. CLN01 must release a separately held non-reentrant flock
+before invoking the CLI, which acquires the canonical lock itself.
+
+HOME activation/recreation, actual canonical comparison, private metadata
+retirement, unlink/rmdir, encrypted backup custody and selected restore remain
+NOT_RUN. Recovery uses the preserved canonical file and only the affected
+consumer's mapping; no plaintext backup copy, volume reset or bulk rotation.
+The next ISOLATED command after SEC01's final contract is
+`HYHOME_SUPABASE_SMTP_REHEARSAL=1 python3 -m unittest tests.validation.test_supabase_smtp_rehearsal -v`
+with the fixture pins/assertions reviewed against SEC01's final tag, platform,
+digest, USER, Entrypoint and Cmd first. That final-contract run is NOT_RUN.
+No Wiki engine/app/workspace, learning-app work or LAB runtime action occurred.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -257,12 +573,19 @@ The final run exited 0 with 911 tests across the selected leaves.
 | SonarQube secret | 4, 9 | W17 | Isolated database login; empty-secret refusal; test | `a677d609c` | PASS | W17 SonarQube Secret | accepted |
 | Third-round validation | 8 | W18 | Changed gate in a clean worktree | `9bf20d195` | PASS | W18 Validation | accepted |
 | Validation | 8 | W12 | Changed gate in a clean worktree; pre-commit over the range | `c68df1daa` | PASS | W12 Validation and Handoff | accepted |
+| SMTP01 baseline and RED | 14 | W26 | New source regressions failed on prior implementation | `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`; public source | PASS | W26–W30 SMTP01 Current Increment | pending |
+| SMTP source and wrapper | 14 | W27 | Canonical source/target, wrapper and fresh 141-test unit run | `3181921be795c5439e5ac77e462f62e47db6fa5d` | PASS | Current-source verification and delivery receipt | accepted |
+| Catalog and guarded retirement | 14 | W28 | Exact alias, lock/root identity, race regressions and independent approval | `3d0a8a1b07c1f2df29c0f04f88ba8fa815fbd1bf`; synthetic files | PASS | Current session ownership and interfaces | accepted |
+| Native SMTP boundary | 14 | W29 | Fresh six native plus four unit cases; exact image/platform and review | Fixture `794e314f`; digest-fixed synthetic inputs | PASS | Final native receipt | accepted |
+| SMTP delivery and handoff | 8, 14 | W30 | Fresh aggregate, independent review, logical commits and owning PR | Current SMTP01 branch | NOT_RUN | W26–W30 SMTP01 Current Increment | pending |
 
 ## Review and Completion
 
 Not complete. These remain open, each with its owner action:
 
-- Rebuild or retire the Supabase stack: its images ignore 35 secret keys and
+- Historical W10 result: the Supabase stack ignored 35 secret keys. SMTP01
+  supplies only GoTrue SMTP consumption; DB/JWT/other support is still unresolved.
+  Rebuild or retire the remaining stack source, which
   it lacks database URLs. Terrakube's 9 keys need Spring `configtree`, not
   yet verified. Both stay outside the HOME selection by test.
 - Create the OpenBao snapshot token (RUN-0021) after unsealing; until then

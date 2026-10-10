@@ -67,6 +67,18 @@ created: "2026-05-17"
 
 적용 identity: `analytics`, `auth`, `db`, `functions`, `imgproxy`, `kong`, `meta`, `realtime`, `rest`, `storage`, `studio`, `supavisor`, `vector`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
+### SMTP 원본 소유권
+
+- COMM-002와 공용 SMTP password 파일이 유일한 값 원본입니다. COMM-003은 값·경로
+  없는 alias이며 별도 발급, 평문 복사, symlink/hardlink 원본을 유지하지 않습니다.
+- Auth mount target은 기존 이름을 유지하며 다른 SMTP 소비자·username·host·account는
+  SMTP01에서 변경하지 않습니다. 직접 값과 파일 입력이 겹치거나 파일을 읽지 못하면
+  Auth wrapper는 시작을 거부합니다.
+- 실행 프로세스 환경에 전달된 비밀번호의 관리자 접근 위험을 명시하며 값·hash·길이,
+  private registry, 인증 로그를 공개 output이나 Git에 기록하지 않습니다.
+- SEC01이 이미지 최신판·보안 업데이트를, SMTP01이 소비 전환을, CLN01이 폐기 판정과
+  실제 삭제를 소유합니다. 공통 source 병합과 HOME 배포는 총괄 통합 순서를 따릅니다.
+
 ## Exceptions
 
 예외는 명시적인 owner나 user 승인을 요구하며, scope, command, 영향받는
