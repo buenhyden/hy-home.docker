@@ -55,26 +55,26 @@ Compose의 서비스 바인드 마운트를 참고합니다. 최상위 명명된
 
 Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되게 유지합니다. 게이트웨이 인증, 영속화, 리소스 예산, 버전 예외를 변경하기 전에 검토합니다. 여기에 명령을 중복 기록하지 말고 기존 운영 주제(operations subject)를 업데이트합니다.
 
+### SEC01 후보와 상태 호환성
+
+실제 빌드 소스의 태그와 OCI index digest, 로컬 이미지 태그는
+[Compose](docker-compose.yml)의 인라인 Dockerfile과 이미지 선언이 소유한다.
+자격 증명 마운트·workspace·entrypoint·프로필과 원격 변경 권한은 기존 계약을 따른다.
+
+[공식 릴리스](https://github.com/opentofu/opentofu/releases)는
+WinRM provisioner 제거와 `base64gzip`의 바이트 결과 변경, ephemeral
+resource plan JSON과 apply 시 output 재평가 수정을 명시한다.
+실제 workspace의 소비 여부는 확인하지 않았으며 원격 plan/apply·state 변환·
+credential 읽기는 `NOT_RUN`이다.
+
+운영 반영 전 지정된 빈 합성 workspace에서 provider 다운로드·원격 backend 없이
+CLI 및 계획 차이를 검증하고, 정확한 state·lockfile·provider 버전 백업과 기존
+1.12.6에서의 읽기/복원 조건을 SPEC-0204-TSK-0009에 기록한다. <!-- runtime-version-exception: migration — 이전 state 해석과 복원 시험의 정확한 기준 버전 -->
+새 버전 apply 이후
+이미지만 되돌리면 복구된다고 간주하지 않는다.
+
 ## Related Documents
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
 - [Public secret contract](../../../secrets/README.md)
-
-## SEC01 1.13.1 후보와 상태 호환성
-
-실제 빌드 소스인 Compose 인라인 `FROM`은 `1.13.1-minimal`과 OCI index digest
-`sha256:dfbc3f0a8bed0adfa2cf49ff418f158afe24080eea6d6e748db8799fc4553db6`로 고정한다.
-로컬 태그도 `hy-home/opentofu:1.13.1-local`로 맞춘다. 자격 증명 마운트·workspace·
-entrypoint·프로필과 원격 변경 권한은 기존 계약을 따른다.
-
-[공식 1.13 릴리스](https://github.com/opentofu/opentofu/releases/tag/v1.13.0)는
-WinRM provisioner 제거와 `base64gzip`의 바이트 결과 변경을 명시한다.
-[1.13.1 수정](https://github.com/opentofu/opentofu/releases/tag/v1.13.1)은 ephemeral
-resource plan JSON과 apply 시 output 재평가를 포함한다. 실제 workspace의 소비 여부는
-확인하지 않았으며 원격 plan/apply·state 변환·credential 읽기는 `NOT_RUN`이다.
-
-운영 반영 전 지정된 빈 합성 workspace에서 provider 다운로드·원격 backend 없이
-CLI 및 계획 차이를 검증하고, 정확한 state·lockfile·provider 버전 백업과 기존
-1.12.6에서의 읽기/복원 조건을 SPEC-0204-TSK-0009에 기록한다. 새 버전 apply 이후
-이미지만 되돌리면 복구된다고 간주하지 않는다.

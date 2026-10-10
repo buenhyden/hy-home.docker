@@ -133,21 +133,20 @@ tempo/
 2. **Service Graphs**: Grafana에서 서비스 의존성 맵을 시각화하려면 `metrics_generator`가 활성 상태인지 확인합니다.
 3. **Storage Health**: 트레이스 수집 공백이 발생하면 SeaweedFS 버킷 가용성을 모니터링합니다.
 
-## SEC01 3.1.0 후보와 저장 형식 경계
+### SEC01 후보와 저장 형식 경계
 
-upstream 바이너리 단계는 `3.1.0`과 공개 OCI index digest
-`sha256:3076b8dcdfb32fd6bc5ccef85e7b7313e6199b9cb84366257fc17ecb696db5fd`로 고정하고,
-로컬 빌드 태그는 `hy/tempo:3.1.0-seaweedfs`를 사용한다. 비밀값 wrapper,
+upstream 바이너리 태그와 공개 OCI index digest는 [Dockerfile](Dockerfile),
+로컬 빌드 태그는 [Compose](../docker-compose.yml)가 소유한다. 비밀값 wrapper,
 `10001:10001`, SeaweedFS endpoint·bucket·path-style·WAL·OTLP·HTTP streaming은 유지한다.
 
-[공식 3.1 업그레이드 지침](https://grafana.com/docs/tempo/latest/set-up-for-tracing/setup-tempo/upgrade/#upgrade-to-tempo-31)에
+[공식 업그레이드 지침](https://grafana.com/docs/tempo/latest/set-up-for-tracing/setup-tempo/upgrade/#upgrade-to-tempo-31)에
 따라 새 블록 쓰기 기본값(vParquet5)을 바로 사용하지 않고 `storage.trace.block.version`을
-vParquet4로 명시한다. 이는 3.0 쓰기 형식을 보존하며, 3.1 최신 후보를 이전 버전으로
+vParquet4로 명시한다. 이는 이전 쓰기 형식을 보존하며 최신 후보를 이전 버전으로
 대체하는 조치가 아니다. 실제 기존 블록 형식·WAL 및 snapshot 복원 호환성은 아직
 미확인이다. Redis/Sentinel/cache 설정은 선언되지 않아 해당 키 변경은 적용하지 않는다.
 
 현재 증거는 소스 계약과 합성 wrapper 시험이다. 이미지 build·native config parser·
-합성 trace 수집/조회·SeaweedFS 저장 및 백업 복원·이전 3.0.3 이미지로 되돌리기는
+합성 trace 수집/조회·SeaweedFS 저장 및 백업 복원·이전 3.0.3 이미지로 되돌리기는 <!-- runtime-version-exception: migration — 기존 저장 블록과 WAL의 읽기 복원 검증 대상 -->
 `NOT_RUN`이다. SPEC-0204-TSK-0009의 격리 시험에서 이를 통과한 뒤에만 운영 반영한다.
 검증된 백업과 지정된 빈 복원 경로에서 읽기 호환성을 먼저 확인하고, 운영 데이터에
 대한 일괄 변환·삭제 없이 변경한다. vParquet5 전환은 별도 검증과 명시적 변경으로 남긴다.

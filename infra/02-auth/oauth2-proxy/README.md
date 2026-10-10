@@ -56,21 +56,6 @@ oauth2-proxy/
 └── README.md
 ```
 
-## Authentication Applicability
-
-ForwardAuth 대상:
-
-- Flower
-- n8n
-- 자체 OIDC가 없는 서비스
-
-Native OIDC 대상:
-
-- Airflow
-- Kafbat UI
-
-Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -91,6 +76,43 @@ Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 �
 5. `Authorization` header forwarding은 upstream JWT scheme과 충돌 여부 검증.
 6. callback URL을 재사용하지 않는다.
 
+### SEC01 후보와 검증 경계
+
+upstream 바이너리 태그와 공개 OCI index digest는 [Dockerfile](Dockerfile)과
+[dev.Dockerfile](dev.Dockerfile)이 소유한다. Compose의 기본 빌드 경로와 명시적
+운영 Dockerfile override는 같은 바이너리 digest를 사용한다. 기본 경로의
+`oauth2proxy:oauth2proxy`·dev wrapper 및 override 경로의 `100:101`·운영 wrapper,
+각 Valkey secret 경로와 기본 실행 인수는 유지한다.
+[공식 릴리스](https://github.com/oauth2-proxy/oauth2-proxy/releases)의
+경로 예외·클라이언트 IP 신뢰 경계 보안 변경에 대해 현재 Keycloak provider,
+정확한 Traefik `trusted_proxy_ips`, 인증 생략 IP/경로 미설정을 소스에서 확인한다.
+
+소스 계약 및 합성 wrapper 시험은 실제 OIDC 인증·쿠키·ForwardAuth 증거가 아니다.
+이미지 build, native 설정 검증, Traefik을 통한 정상/비정상 경로 인증과 기존 쿠키
+갱신 시험은 `NOT_RUN`이다. 운영 반영 전에 동일 이미지의 기능 시험과 기존 이미지로
+되돌리는 인수 조건을 SPEC-0204-TSK-0009에서 충족해야 한다.
+
+### Authentication Applicability
+
+ForwardAuth 대상:
+
+- Flower
+- n8n
+- 자체 OIDC가 없는 서비스
+
+Native OIDC 대상:
+
+- Airflow
+- Kafbat UI
+
+Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
+
+### Secrets
+
+- `oauth2_proxy_cookie_secret`
+- `oauth2_proxy_client_secret`
+- shared/dedicated Valkey secret
+
 ## Tech Stack
 
 | Category | Technology | Notes |
@@ -99,12 +121,6 @@ Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 �
 | Session | Valkey | Redis 호환 |
 | Protocol | OIDC | Keycloak |
 | Gateway | Traefik | ForwardAuth 호출자 |
-
-## Secrets
-
-- `oauth2_proxy_cookie_secret`
-- `oauth2_proxy_client_secret`
-- shared/dedicated Valkey secret
 
 ## Testing
 
@@ -133,19 +149,3 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../tech-stack.versions.json)은 drift 검증을 제공합니다.
 
 빌드 소스 권한: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).
-
-## SEC01 7.15.5 후보와 검증 경계
-
-upstream 바이너리 단계는 `v7.15.5`와 공개 OCI index digest
-`sha256:8498b0d0ef0a7b29686414000a08aee467f02d0299c9ed1e006a8f33fc017916`로 고정한다.
-Compose의 기본 빌드 경로 `dev.Dockerfile`과 명시적 `Dockerfile` override 모두 같은
-바이너리 digest를 사용한다. 기본 경로의 `oauth2proxy:oauth2proxy`·dev wrapper 및
-override 경로의 `100:101`·운영 wrapper, 각 Valkey secret 경로와 기본 실행 인수는 유지한다.
-[공식 릴리스](https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.5)의
-경로 예외·클라이언트 IP 신뢰 경계 보안 변경에 대해 현재 Keycloak provider,
-정확한 Traefik `trusted_proxy_ips`, 인증 생략 IP/경로 미설정을 소스에서 확인한다.
-
-소스 계약 및 합성 wrapper 시험은 실제 OIDC 인증·쿠키·ForwardAuth 증거가 아니다.
-이미지 build, native 설정 검증, Traefik을 통한 정상/비정상 경로 인증과 기존 쿠키
-갱신 시험은 `NOT_RUN`이다. 운영 반영 전에 동일 이미지의 기능 시험과 기존 이미지로
-되돌리는 인수 조건을 SPEC-0204-TSK-0009에서 충족해야 한다.

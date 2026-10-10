@@ -144,19 +144,19 @@ job 실행에는 runtime 승인이 필요합니다. job은 필요할 때 Trino�
 런타임 이미지 권한은 [docker-compose.yml](docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../tech-stack.versions.json)은 drift 증거입니다.
 
-## SEC01 1.24.0 후보와 검증 경계
+### SEC01 후보와 검증 경계
 
-단일 의존성 원본 `requirements.txt`의 GX를 `great-expectations==1.24.0`으로
-올리고 로컬 이미지 태그를 `hy-home/great-expectations:1.24.0-local`로 맞춘다.
-Trino 의존성, Python 빌드 소스, UID 1000, 합성 suite 읽기 전용 마운트,
-기본 `list` 명령과 `GX_ANALYTICS_ENABLED=false`는 유지한다.
+GX의 단일 의존성 원본은 [requirements.txt](requirements.txt), 로컬 이미지 태그는
+[docker-compose.yml](docker-compose.yml)이 소유한다. Trino 의존성, Python 빌드 소스,
+UID 1000, 합성 suite 읽기 전용 마운트, 기본 `list` 명령과
+`GX_ANALYTICS_ENABLED=false`는 유지한다.
 [공식 변경 이력](https://docs.greatexpectations.io/docs/core/changelog/)과
-[1.24.0 릴리스](https://github.com/fivetran/great_expectations/releases/tag/1.24.0)는
+[공식 릴리스](https://github.com/fivetran/great_expectations/releases)는
 context 소유권 수정·SQL in-set의 NULL 처리·DB URL 마스킹 변경을 포함한다.
-Python 3.12는 공개 지원 범위에 포함되며 wrapper의 ephemeral context·suite·SQL asset
-API가 이 릴리스 소스에 존재한다.
+Python 3.12는 공개 지원 범위에 포함되며 wrapper의 ephemeral context·
+suite·SQL asset API가 후보 릴리스 소스에 존재한다.
 
-합성 wrapper 시험은 GX 1.24.0 설치·실제 Trino/SQL 결과 검증의 증거가 아니다.
+합성 wrapper 시험은 GX 설치·실제 Trino/SQL 결과 검증의 증거가 아니다.
 이미지 build·의존성 해석·Trino를 통한 성공/실패 expectation·비밀값 마스킹·
 이전 이미지로 되돌리는 시험은 `NOT_RUN`이다. 운영 반영 전 SPEC-0204-TSK-0009의
 격리 rehearsal과 정확한 suite·의존성·결과 기준을 검증한다. 업무 데이터 변경이나
