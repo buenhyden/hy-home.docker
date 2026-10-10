@@ -45,6 +45,17 @@ Image-layer scanning with the repository's pinned Grype did not run: its
 database download needs the `Grype DB network approval: confirmed` line in
 `infra/supply-chain.network-approvals.md`, which is not on file.
 
+On 2026-10-10 (SPEC-0229) the pinned Grype scanned both saved images offline
+against a database built 2026-10-09. The scan ran; the risk decision on its
+findings is the owner's:
+
+| Image | Critical | High | Medium | Low/negligible/unknown | Notes |
+| --- | --- | --- | --- | --- | --- |
+| Ollama | 2 | 20 | 94 | 30 | All Critical and High are Go modules in the binary (`golang.org/x/crypto` v0.43.0, the Go 1.26.0 standard library, `x/image`, `x/text`); each is fixed upstream, so it needs a newer Ollama build |
+| Open WebUI (CUDA) | 72 | 530 | 476 | 902 | 490 Critical/High are Debian 12 packages (431 won't-fix or not yet fixed); the fixable Python and binary ones include `pypdf`, `cryptography`, `pyjwt`, `unstructured`, `sentence-transformers`, bundled `ffmpeg`, Python 3.11.16 and Node 24.15, all needing a newer image |
+
+Grype does not show whether a vulnerable path is reachable in these services.
+
 Open WebUI v0.11.3 and v0.11.4 have the same 58 migrations and head
 `d4c1a8e37b62`, so an image-only rollback needs no data restore.
 
@@ -147,7 +158,7 @@ the owner's browser session and were not run.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Source facts | 1 | W1 | Registry, release, licence and advisory queries; Ollama GPU log | `c3ce31973` | PASS | W1 Source Facts | accepted |
-| Image scan | 1 | W1 | Pinned Grype | — | NOT_RUN | W1 Source Facts | pending |
+| Image scan | 1 | W1 | Pinned Grype, offline, DB built 2026-10-09 (SPEC-0229) | `32fb2e69d` | PASS | W1 Source Facts | pending |
 | Pins and limits | 2 | W2 | Contract tests; Compose rendering; version sync | `41a711771` | PASS | W2 Pins and Limits | accepted |
 | Restore | 3 | W3 | Isolated SQLite, upload, key and catalog restore | `2ac1db09c` | PASS | W3 Backup and Restore | accepted |
 | Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | accepted |
@@ -181,8 +192,8 @@ the two redirect checks of W4 and W5; Open WebUI writes no access log; and
 Keycloak logs only error events. The check therefore rests on the owner's
 report, which is consistent with an existing session (four-week JWT) still
 being accepted after recreation. Not complete: the restic snapshot listing
-(first possible on the 2026-10-11 run) and the image scan (needs the Grype
-network approval) remain.
+(first possible on the 2026-10-11 run) and the owner's decision on the scan
+findings remain.
 
 ## Related Documents
 

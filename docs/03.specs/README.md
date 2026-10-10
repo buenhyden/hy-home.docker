@@ -64,6 +64,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0226 | [AI 런타임 고정 검증](./0226-ai-runtime-pin-verification/) | Ollama·Open WebUI digest 고정, 모델 load·대기열 한도, 세션 key·모델 catalog 백업과 격리 복원·기능 검증 |
 | SPEC-0227 | [Stage 05 양식 정비](./0227-stage05-format-refresh/) | 운영 문서 230개의 템플릿 순서·빈 절 검사 도입, 한국어 본문·소유 분리·Compose 사실 정정 |
 | SPEC-0228 | [백업 telemetry·예산](./0228-backup-telemetry-budget/) | Loki·Tempo SeaweedFS collection 백업 제외와 state 저장소 예산 8 GiB |
+| SPEC-0229 | [소유자 후속 조치](./0229-owner-follow-ups/) | Storybook MCP refresh 오류 원인, Grype DB 상한과 AI 이미지 스캔, OpenBao snapshot token 발급 절차 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
