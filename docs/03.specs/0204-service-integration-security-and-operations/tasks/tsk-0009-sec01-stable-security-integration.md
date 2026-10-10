@@ -120,6 +120,25 @@ The observed 124 rows are a result, never a service-count constant. Field/covera
 checks do not verify supplier releases, scans, live compatibility or recovery.
 Criterion 15 remains pending; a source repair merge cannot close SEC01.
 
+### Candidate Image Grammar Repair
+
+PR #418 head `3f6aa5e8d4b09d8d270166a19587884ee0612445` failed
+candidate-quality run `38056697221` at Tier01 with `invalid compose service
+image contract`. The existing parser accepted either tag or digest and rejected
+valid `tag@sha256` references. The one-line grammar repair makes the constrained
+tag and exact lowercase SHA-256 digest independently optional while preserving
+full matching, 255-character bounds and safe YAML parsing. Two new regression
+assertions failed before repair; the repaired full version-contract module
+passed 49 tests. The actual `01-gateway` hardening check, shell syntax, Ruff
+and diff checks passed. Independent code and security reviews found no P1/P2.
+
+Frozen hardening hash is
+`068a87dc1cb2c6afb937602f4497c3c467a91d588684aa1be081b925058f702c`;
+test hash is `ff6629f6e8a80987c74da9572107c3054c95965f5ae4721ba44c4a64f77cc76b`.
+These are offline/source checks. Hosted CI at the new committed head remains
+required; run `38056697221` remains a FAIL receipt, not accepted delivery. No
+image deployment or HOME verification occurred.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
