@@ -1,8 +1,8 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.5.0"
+version: "1.6.0"
 type: "sdlc/plan"
-status: "blocked"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"
@@ -49,10 +49,11 @@ SPEC-0204 Tasks retain their historical evidence. P03 owns port/endpoints,
 P04 Airflow native integration, P05 n8n native import/execution and P01/P02/P06
 secret classification/mapping/consumption under this package's acceptance.
 SPEC-0213/0214/0218/0219/0220/0223/0224/0227 retain their delivered source;
-no old prompt label creates duplicate work. LAB and learning apps, including
-planning, are out-of-scope. P09 now owns only offline Wiki preparation; its
-future application/workspace and runtime resources require a later exact Task.
-P10 retains its real input-to-recovery target.
+no old prompt label creates duplicate work. LAB runtime and learning apps,
+including planning, are out-of-scope. P08 may separately move typed LAB
+documents; P09 now owns only offline Wiki preparation, and its future
+application/workspace and runtime resources require a later exact Task. P10
+retains its real input-to-recovery target.
 
 Historical W7 CI retirement does not govern this pass: current quality policy
 and workflow-contract route hosted PR candidate QA and independent review.
@@ -63,8 +64,10 @@ needed when the current enforcer already meets the request.
 
 Shared root, gateway, Alloy, environment and backup files have one writer at a
 time. Complete feature edits before the P08 document move writer starts, then
-update references/checks and hand the destination SHA back. P08 gives LAB only
-a prospective separate_target classification; no LAB documents are moved.
+update references/checks and hand the destination SHA back. P08 may move typed
+LAB documents to their `labs/` destinations with required folder and parent
+README navigation, Registry links and path checks. LAB runtime changes remain
+out of scope.
 
 ## Work Breakdown
 
@@ -93,7 +96,7 @@ a prospective separate_target classification; no LAB documents are moved.
 | W21 | 7, 11 | Declarative HMAC audit, capacity/failure alerts, reuse snapshot flow | W20 | TSK-0006 | Exact image isolated audit and snapshot recovery cases |
 | W22 | 8, 11 | Changed QA, independent IaC/security/code review, scoped commits/PR | W21 | TSK-0006 | Registered local/hosted candidate checks and actual delivery receipt |
 | W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
-| W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Task evidence; future implementation runs its own RED/GREEN and independent review |
+| W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Replacement frozen QA: 35 PASS in 11.490s (exit 0), 99-percent coverage (292 statements, 2 misses, 44 branches, 0 partial; exit 0); manifest/workflow registration complete. Latest-head CI, independent review and PR delivery remain pending; resource changes 0 |
 
 ### P01 exact scope and sequence
 

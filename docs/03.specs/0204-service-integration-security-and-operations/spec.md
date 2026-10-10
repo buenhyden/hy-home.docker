@@ -1,8 +1,8 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.4.0"
+version: "1.5.0"
 type: "sdlc/spec"
-status: "blocked"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"
@@ -55,8 +55,10 @@ OIDC client, S3 identity, search authority, traffic budget, or speech product
 scope is approved here. Registering metadata is not a grant of network
 access, credentials, runtime deployment, or storage. Civil-service exam, English and Japanese learning applications are excluded,
 including planning, code, databases, collection and resources. All LAB-specific
-code, configuration, data, secrets, execution and document moves are excluded;
-P08 may describe only a prospective separate_target document classification. Do not read secret values, private environment
+runtime code, configuration, data, secrets and execution are excluded. P08 may
+move typed LAB documents to their `labs/` destinations with required folder and
+parent README navigation, Registry links and path checks; that documentation
+work authorizes no LAB runtime action. Do not read secret values, private environment
 files, authentication files, raw HOME logs, or user data.
 
 ### Technical Approach
@@ -112,6 +114,11 @@ only when a current conflict is found; otherwise record NO_CHANGE.
   runtime resource, credential, workspace or blog-data write. Infra retains
   approved-engine, ingress/identity, telemetry and backup interface ownership;
   a manifest records planned scopes and owners but cannot provision or deploy.
+  TSK-0008 records received schema, fixture and synthetic-helper source
+  evidence separately from the coordinator-owned registration and final
+  delivery gates. Replacement frozen source QA passed 35 tests with 99-percent
+  coverage after Qdrant role-order parity correction; latest-head CI, review
+  and delivery remain pending gates. It changes no operational resource.
 
 ### Failure Modes and Guardrails
 
