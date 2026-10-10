@@ -790,10 +790,10 @@ class AttemptResources:
     def _container_present(self, record: OwnedContainer) -> bool:
         result = self.client.run_result("inspect", record.container_id)
         if result.returncode != 0:
-            missing = (f"Error: No such object: {record.container_id}", f"Error response from daemon: No such container: {record.container_id}")  # fmt: skip
+            missing = (f"Error: No such object: {record.container_id}", f"Error response from daemon: No such container: {record.container_id}", f"error: no such object: {record.container_id}")  # fmt: skip
             if (
                 result.returncode == 1
-                and not result.stdout
+                and result.stdout.strip() in ("", "[]")
                 and result.stderr.strip() in missing
             ):
                 return False  # fmt: skip
