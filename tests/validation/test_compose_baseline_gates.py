@@ -3552,7 +3552,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
     checks are the ones HOME uses. Tests run in name order.
     """
 
-    AWS_IMAGE = "amazon/aws-cli:2.36.50"
+    AWS_IMAGE = "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce"
     PROBE_IMAGE = "python:3.13.15-alpine"
     ACCESS = "rehearsaladmin"
 
@@ -4935,7 +4935,7 @@ class StalwartRehearsalTests(unittest.TestCase):
                 "find",
                 "-v",
                 f"{cls.dir / 'data/stalwart'}:/d",
-                "stalwartlabs/stalwart:v0.16.22",
+                "stalwartlabs/stalwart:v0.16.25@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3",
                 "/d/data",
                 "-mindepth",
                 "1",

@@ -26,7 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PG = "postgres:18.6-alpine"
 VALKEY = "valkey/valkey:9.1.2-alpine"
-PROMETHEUS = "prom/prometheus:v3.14.0"
+PROMETHEUS = "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
 PREFIX = "obs-rehearsal"
 EXPORTERS = (
     ("mng-pg-exporter", "mng", 9187),

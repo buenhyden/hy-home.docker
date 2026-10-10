@@ -15,7 +15,7 @@ SOURCE = ROOT / "infra/06-observability/alloy/config/config.home.alloy"
 COMPOSE = Path(__file__).with_name("docker-compose.yml")
 TAGS = {
     "alloy": "grafana/alloy:v1.19.2",
-    "prom": "prom/prometheus:v3.14.0",
+    "prom": "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e",
     "probe": "python:3.13.15-alpine",
 }
 
