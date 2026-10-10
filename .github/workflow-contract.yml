@@ -770,6 +770,8 @@
         "tests.lib.ops.test_retirement",
         "tests.validation.test_retirement_cli",
         "tests.validation.test_project_registration",
+        "tests.lib.ops.test_wiki_preparation",
+        "tests.validation.test_wiki_preparation_contracts",
         "tests.validation.test_sec01_ci_routing",
         "tests.lib.ops.test_smtp_proof",
         "tests.validation.test_smtp_ci_routing",
@@ -1367,6 +1369,17 @@
       },
       {
         "prefixes": [
+          "scripts/lib/ops/wiki_preparation.py",
+          "scripts/lib/ops/wiki_preparation_semantics.py",
+          "tests/lib/ops/test_wiki_preparation.py",
+          "tests/validation/test_wiki_preparation_contracts.py"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
           "scripts/lib/document_governance/",
           "scripts/validation/check-document-corpus-lifecycle.py",
           "scripts/validation/check-document-links.py",
@@ -1676,6 +1689,17 @@
         ],
         "root_gate_ids": [
           "leaf.local-script-manifest",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/wiki_preparation.py",
+          "scripts/lib/ops/wiki_preparation_semantics.py",
+          "tests/lib/ops/test_wiki_preparation.py",
+          "tests/validation/test_wiki_preparation_contracts.py"
+        ],
+        "root_gate_ids": [
           "leaf.repository-integrity-regressions"
         ]
       },

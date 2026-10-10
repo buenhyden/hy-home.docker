@@ -16,3 +16,19 @@ description = "Docker secret and env key names in the generated service inventor
 condition = "AND"
 paths = ['''^docs/90\.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation\.md$''']
 regexes = ['''^seaweedfs_s3_[a-z]+_secret_key$''', '''^N8N_VALKEY_SECRET$''']
+
+[[allowlists]]
+description = "P09 source and job public synthetic checksum false positives"
+condition = "AND"
+targetRules = ['''generic-api-key''']
+regexTarget = "secret"
+paths = ['''^infra/09-platform-ops/project-registration/wiki-preparation/fixtures/(source-artifact|job-outbox-handoff)\.(valid|invalid)\.json$''']
+regexes = ['''^ec32b2d2486e1016b4ffca72a25f7c1e5540894ed5f1d3fadaa0b46ec04cc26a$''']
+
+[[allowlists]]
+description = "P09 blog public synthetic receipt checksum false positives"
+condition = "AND"
+targetRules = ['''generic-api-key''']
+regexTarget = "secret"
+paths = ['''^infra/09-platform-ops/project-registration/wiki-preparation/fixtures/blog-data-handoff\.(valid|invalid)\.json$''']
+regexes = ['''^2d4983e79a482c981c0eb3713898a06b14124f96a51d014c7bddb7fdd0531b31$''']
