@@ -1,8 +1,8 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.5.1"
+version: "1.6.0"
 type: "sdlc/plan"
-status: "blocked"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"
@@ -95,6 +95,7 @@ a prospective separate_target classification; no LAB documents are moved.
 | W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
 | W24 | 12 | Assess consumers and implement the narrow private-unlink helper for material retired by another owner after SMTP01 evidence | W19 | TSK-0007 | Helper unit tests and document gates; private apply only after Task preflight |
 | W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Task evidence; future implementation runs its own RED/GREEN and independent review |
+| W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and pending common repairs without deployment | None | TSK-0009 | Historical source/unit/static/isolated receipts retained; latest/security gate, common repairs, review and delivery remain blocked/pending |
 
 ### P01 exact scope and sequence
 

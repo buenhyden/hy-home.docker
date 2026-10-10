@@ -513,6 +513,43 @@ class TechStackVersionContractTests(unittest.TestCase):
                 self.assertEqual(f"{expected}\n", result.stdout)
                 self.assertEqual("", result.stderr)
 
+    def test_compose_image_resolver_accepts_tag_and_digest_combinations(self) -> None:
+        digest = "sha256:" + "a" * 64
+        for label, expected in (
+            ("tag-only", "registry.example.test/team/app:1.2.3"),
+            ("digest-only", f"registry.example.test/team/app@{digest}"),
+            ("tag-and-digest", f"registry.example.test/team/app:1.2.3@{digest}"),
+            (
+                "registry-port-tag-and-digest",
+                f"registry.example.test:5443/team/app:1.2.3@{digest}",
+            ),
+        ):
+            with self.subTest(label=label):
+                result = self.run_compose_image_resolver(
+                    f"services:\n  target:\n    image: {expected}\n"
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(f"{expected}\n", result.stdout)
+                self.assertEqual("", result.stderr)
+
+    def test_compose_image_resolver_rejects_overlong_tag_and_digest(self) -> None:
+        image = (
+            "registry.example.test/"
+            + "/".join(["segment"] * 20)
+            + "/app:release@sha256:"
+            + "a" * 64
+        )
+        self.assertGreater(len(image), 255)
+        result = self.run_compose_image_resolver(
+            f"services:\n  target:\n    image: {image}\n"
+        )
+        self.assertEqual(2, result.returncode)
+        self.assertEqual("", result.stdout)
+        self.assertEqual(
+            "FAIL: invalid compose service image contract\n",
+            result.stderr,
+        )
+
     def test_compose_image_resolver_accepts_quoted_service_keys(self) -> None:
         expected = "registry.example.test/team/app:1.2.3"
         for label, service_key in (
@@ -679,6 +716,26 @@ class TechStackVersionContractTests(unittest.TestCase):
                 "services:\n"
                 "  target:\n"
                 f'    image: "registry.example.test/team/app:1$({payload_marker})"\n'
+            ),
+            "double-tag": (
+                "services:\n  target:\n    image: registry.example.test/team/app:1:2\n"
+            ),
+            "double-digest": (
+                "services:\n"
+                "  target:\n"
+                f"    image: registry.example.test/team/app:1@sha256:{'a' * 64}"
+                f"@sha256:{'b' * 64}\n"
+            ),
+            "tag-after-digest": (
+                "services:\n"
+                "  target:\n"
+                f"    image: registry.example.test/team/app@sha256:{'a' * 64}:tag\n"
+            ),
+            "quoted-double-digest": (
+                "services:\n"
+                "  target:\n"
+                f'    image: "registry.example.test/team/app:1@sha256:{"a" * 64}'
+                f'@sha256:{"b" * 64}"\n'
             ),
             "unterminated-single-quote": (
                 "services:\n  target:\n    image: 'registry.example.test/team/app:1\n"
