@@ -774,6 +774,7 @@
         "tests.validation.test_wiki_preparation_contracts",
         "tests.validation.test_sec01_ci_routing",
         "tests.lib.ops.test_smtp_proof",
+        "tests.validation.test_supabase_smtp_fixture_storage",
         "tests.validation.test_smtp_ci_routing",
         "-v"
       ],
@@ -1528,6 +1529,16 @@
         "suites": [
           "repository-integrity"
         ]
+      },
+      {
+        "prefixes": [
+          "tests/validation/_supabase_smtp_fixture_storage.py",
+          "tests/validation/test_supabase_smtp_fixture_storage.py"
+        ],
+        "suites": [
+          "operations",
+          "repository-integrity"
+        ]
       }
     ],
     "changed_root_rules": [
@@ -1756,6 +1767,15 @@
           "tests/lib/ops/test_smtp_proof.py",
           "tests/validation/test_smtp_generator.py",
           "tests/validation/test_smtp_ci_routing.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/validation/_supabase_smtp_fixture_storage.py",
+          "tests/validation/test_supabase_smtp_fixture_storage.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"
