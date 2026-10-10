@@ -37,6 +37,18 @@ created: "2026-05-10"
 
 Supabase stack을 운영하거나 사용하는 운영자, 개발자, SRE, AI 에이전트를 위한 문서다. 목표는 현재 서비스 구성, 접근 경로, secret 경계, 일반 확인 방법을 이해하는 것이다. Studio에 직접 host port가 있다고 가정하지 않고, compose가 선언한 Kong/API 경로와 운영 runbook을 기준으로 상태를 확인한다.
 
+### SMTP 원본과 소비 경로
+
+공용 SMTP password 원본은 COMM-002 하나입니다. Auth는 공용 `smtp_password`
+source를 `/run/secrets/supabase_smtp_password`로 마운트합니다. COMM-003은 값 없는
+퇴역 ID이며 별도 파일이나 OpenBao KV 값을 생성하지 않습니다. 향후 OpenBao 전환도
+canonical entry 하나와 서비스별 필요한 render를 사용합니다.
+
+GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv를 보존합니다.
+값은 실행 프로세스 환경에만 전달되므로 Docker/호스트 관리자와 환경 접근 위험을
+관리해야 합니다. SMTP의 격리 capture·인증 결과와 DB/JWT/전체 platform readiness는
+다른 증거입니다. 현재 Supabase 비선택 상태를 바꾸어 전체 stack을 가동하지 않습니다.
+
 ## Usage
 
 ### Current implementation

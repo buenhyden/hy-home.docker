@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.5.0"
+version: "1.6.0"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -32,7 +32,7 @@ SPEC-0223 for RedisInsight, SPEC-0224 for datastore observation and
 SPEC-0227 for the Stage 05 body refresh. Applied source is NO_CHANGE;
 old prompt numbers and draft labels never authorize reimplementation.
 P03 routes endpoint/port integration, P04 Airflow, P05 n8n, P01/P02/P06
-secret classification/mapping/consumption, P09 Wiki preparation and P10 the
+secret classification/mapping/consumption, P09 offline Wiki preparation and P10 the
 named user vertical slice. Each residual stays with one existing acceptance
 owner; the new stage labels do not reserve Spec IDs.
 
@@ -329,6 +329,23 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     revision, ACL/revocation, retention, backup and recovery verification stay
     future acceptance conditions, not preparation PASS claims.
 <!-- markdownlint-enable MD029 -->
+
+<!-- Criteria 12/13 are reserved by CLN01/P09; retain the owning IDs. -->
+<!-- markdownlint-disable-next-line MD029 -->
+14. SMTP01 leaves one root `smtp_password` source at the canonical communication
+    SMTP path and maps the Supabase auth grant to its existing container target.
+    COMM-002 owns the value; COMM-003 is a value-free retired-ID alias. Model,
+    generator and wrapper regression tests reject drift, duplicate mounts,
+    unsafe retirement and secret output. Fixed-image isolation separately
+    proves SMTP authentication, capture, negative password/TLS cases and file
+    readability without HOME activation. SEC01 owns image versions; the
+    integration coordinator controls common-file delivery and HOME deployment.
+    CLN01 assesses the exact duplicate; SMTP01 is its sole proposed unlink
+    executor after source, runtime, jobs,
+    backup/restore and external consumers are verified. Missing private facts
+    defer migration/deletion alone. Rollback uses the canonical source mapping
+    and only the affected consumer; no volume reset or broad rotation occurs.
+
 <!-- markdownlint-disable MD029 -->
 15. SEC01 maintains a current stable/security integration ledger and its
     version projections without representing a candidate pin, isolated test or
