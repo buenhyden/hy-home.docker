@@ -96,6 +96,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_mng_valkey_acl",
                 "tests.validation.test_redisinsight_rehearsal",
                 "tests.validation.test_datastore_observation_rehearsal",
+                "tests.lib.ops.test_openbao_issuance",
+                "tests.lib.ops.test_openbao_issuance_trust",
+                "tests.validation.test_openbao_candidate.ExpiryRegression",
+                "tests.validation.test_sec01_version_contract",
+                "tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests",
             ],
             arguments[1:boundary],
         )

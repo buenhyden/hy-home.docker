@@ -1,8 +1,8 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.5.0"
+version: "1.6.0"
 type: "sdlc/spec"
-status: "blocked"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"
@@ -345,6 +345,21 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     backup/restore and external consumers are verified. Missing private facts
     defer migration/deletion alone. Rollback uses the canonical source mapping
     and only the affected consumer; no volume reset or broad rotation occurs.
+
+<!-- markdownlint-disable MD029 -->
+15. SEC01 maintains a current stable/security integration ledger and its
+    version projections without representing a candidate pin, isolated test or
+    source merge as a deployed update. It preserves actual source/unit/static
+    receipts and failures, integrates common validator, inventory, manifest
+    and navigation changes through their single writer, and records a fresh
+    latest/security gate and independent review at the final PR head. HOME,
+    migration, rotation, real service recovery and deployment remain `NOT_RUN`
+    until a named target, consumer, backup and recovery boundary exist. Image
+    signature/SBOM/scan acceptance separately awaits the named tool, cache/DB
+    and trust facts; it is not inferred from a missing HOME target. TSK-0009
+    owns this increment; LAB runtime and
+    learning applications remain out of scope.
+<!-- markdownlint-enable MD029 -->
 
 ## Related Documents
 

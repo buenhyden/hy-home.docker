@@ -1,8 +1,8 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.6.0"
+version: "1.7.0"
 type: "sdlc/plan"
-status: "blocked"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"
@@ -95,12 +95,13 @@ a prospective separate_target classification; no LAB documents are moved.
 | W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
 | W24 | 12 | Assess consumers and implement the narrow private-unlink helper for material retired by another owner after SMTP01 evidence | W19 | TSK-0007 | Helper unit tests and document gates; private apply only after Task preflight |
 | W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Task evidence; future implementation runs its own RED/GREEN and independent review |
-
 | W26 | 14 | SMTP01 baseline, consumer/source map and failing regressions | None | TSK-0005 | Source SHA and RED command receipts |
 | W27 | 14 | Canonical root source and Supabase SMTP-only wrapper/target alias | W26 | TSK-0005 | Unit and synthetic selected Compose model |
 | W28 | 14 | COMM-002 ownership, COMM-003 tombstone and guarded retirement helper | W27 | TSK-0005 | Equal/mismatch/idempotency/race/privacy tests; no HOME mutation |
 | W29 | 14 | Exact-image synthetic SMTP authentication, capture and failure cases | W27 | TSK-0005 | Opt-in isolated native rehearsal, separate from HOME |
 | W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Logical commits/owning PR; no unilateral common-file merge |
+| W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and pending common repairs without deployment | None | TSK-0009 | Historical source/unit/static/isolated receipts retained; latest/security gate, common repairs, review and delivery remain blocked/pending |
+
 
 ### SMTP01 sequence and private-operation boundary
 
