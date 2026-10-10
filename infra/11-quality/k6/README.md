@@ -1,10 +1,10 @@
 ---
 title: "k6 성능 시험 인프라"
-version: "1.6.0"
+version: "1.6.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-11"
 created: "2026-03-26"
 ---
 
@@ -272,3 +272,19 @@ receipt 없는 로컬 적재의 object_ref는 `null`이며, 이미 적재된 ide
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증을 제공합니다.
 
 Build source authority: [Dockerfile](Dockerfile).
+
+## SEC01 2.3.0 후보와 실행 경계
+
+Dockerfile은 `grafana/k6:2.3.0`과 OCI index digest
+`sha256:9c2dee7f8ed74d317e4027c06a10f169b625638189de8d4555d0b3486a5aeb34`로 고정한다.
+Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제한은 유지한다.
+[공식 2.3.0 릴리스](https://github.com/grafana/k6/releases/tag/v2.3.0)는 scenario 선택·
+`--once`·TLS AIA fetch opt-in·추가 extension 사용량 보고와 OTLP 수정 등을 포함한다.
+이 변경에서 새 CLI 기능·TLS 외부 조회·Cloud 사용·extension 자동 설치를 활성화하지 않는다.
+
+현재는 소스 계약 검증이다. 기존 격리 executor의 JSON 원본·summary·OTLP 출력,
+통계 및 종료 코드, network guard와 사용량 보고 opt-out의 실제 2.3.0 동작은
+`NOT_RUN`이다. 승인된 internal 합성 대상과 고정 이미지 digest로 이 기능을 검증한
+뒤에만 부하 시험에 사용한다. 이전 2.2.0으로 되돌리는 경우 원본 artifact·receipt를
+보존하고 서로 다른 버전의 통계/출력 차이를 비교한다. manifest의 `tool_image`는
+별도 승인된 정확한 digest 입력이며 Dockerfile 변경으로 기존 run을 재실행하지 않는다.
