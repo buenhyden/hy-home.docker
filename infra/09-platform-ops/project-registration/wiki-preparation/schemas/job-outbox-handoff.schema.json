@@ -1,0 +1,265 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z][a-z0-9-]{1,62}$"
+    },
+    "mode": {
+      "const": "preparation-only"
+    },
+    "job_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z][a-z0-9-]{1,62}$"
+    },
+    "delivery": {
+      "const": "at-least-once"
+    },
+    "dedup_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "state": {
+      "enum": [
+        "pending",
+        "running",
+        "partial",
+        "succeeded",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "enum": [
+              "pending",
+              "running",
+              "partial",
+              "succeeded",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "to": {
+            "enum": [
+              "pending",
+              "running",
+              "partial",
+              "succeeded",
+              "failed",
+              "cancelled"
+            ]
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": false
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "max_attempts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 300
+    },
+    "backfill": {
+      "type": "boolean"
+    },
+    "dead_letter": {
+      "type": "object",
+      "properties": {
+        "disposition": {
+          "enum": [
+            "none",
+            "quarantined"
+          ]
+        },
+        "reason": {
+          "enum": [
+            null,
+            "retry-exhausted"
+          ]
+        },
+        "replay_requires_approval": {
+          "const": true
+        }
+      },
+      "required": [
+        "disposition",
+        "reason",
+        "replay_requires_approval"
+      ],
+      "additionalProperties": false
+    },
+    "outbox": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-z][a-z0-9-]{1,62}$"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "acknowledged": {
+          "type": "boolean"
+        },
+        "dedup_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "event_id",
+        "sequence",
+        "acknowledged",
+        "dedup_key"
+      ],
+      "additionalProperties": false
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "published_generation": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "stores": {
+      "type": "object",
+      "properties": {
+        "postgres": {
+          "enum": [
+            "pending",
+            "verified",
+            "failed"
+          ]
+        },
+        "object": {
+          "enum": [
+            "pending",
+            "verified",
+            "failed"
+          ]
+        },
+        "qdrant": {
+          "enum": [
+            "pending",
+            "verified",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "postgres",
+        "object",
+        "qdrant"
+      ],
+      "additionalProperties": false
+    },
+    "reconciliation": {
+      "type": "object",
+      "properties": {
+        "atomic": {
+          "const": false
+        },
+        "required": {
+          "const": true
+        },
+        "strategy": {
+          "const": "replay-outbox-and-verify-hashes"
+        },
+        "delete_priority": {
+          "const": true
+        }
+      },
+      "required": [
+        "atomic",
+        "required",
+        "strategy",
+        "delete_priority"
+      ],
+      "additionalProperties": false
+    },
+    "deletion_watermark": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "generation_watermark": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "backfill_of": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,62}$"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "project_id",
+    "mode",
+    "job_id",
+    "delivery",
+    "dedup_key",
+    "state",
+    "transitions",
+    "attempt",
+    "max_attempts",
+    "timeout_seconds",
+    "backfill",
+    "dead_letter",
+    "outbox",
+    "generation",
+    "published_generation",
+    "stores",
+    "reconciliation",
+    "deletion_watermark",
+    "generation_watermark",
+    "backfill_of"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:hyhome:wiki-preparation:job-outbox-handoff:v1",
+  "title": "job-outbox-handoff"
+}

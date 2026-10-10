@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "project_id": "example-project",
+  "mode": "preparation-only",
+  "job_id": "example-job",
+  "delivery": "at-least-once",
+  "dedup_key": "ec32b2d2486e1016b4ffca72a25f7c1e5540894ed5f1d3fadaa0b46ec04cc26a",
+  "state": "succeeded",
+  "transitions": [
+    {
+      "from": "pending",
+      "to": "running"
+    },
+    {
+      "from": "running",
+      "to": "succeeded"
+    }
+  ],
+  "attempt": 1,
+  "max_attempts": 3,
+  "timeout_seconds": 300,
+  "backfill": false,
+  "dead_letter": {
+    "disposition": "none",
+    "reason": null,
+    "replay_requires_approval": true
+  },
+  "outbox": {
+    "event_id": "example-event",
+    "sequence": 1,
+    "acknowledged": true,
+    "dedup_key": "ec32b2d2486e1016b4ffca72a25f7c1e5540894ed5f1d3fadaa0b46ec04cc26a"
+  },
+  "generation": 1,
+  "published_generation": 1,
+  "stores": {
+    "postgres": "verified",
+    "object": "verified",
+    "qdrant": "verified"
+  },
+  "reconciliation": {
+    "atomic": false,
+    "required": true,
+    "strategy": "replay-outbox-and-verify-hashes",
+    "delete_priority": true
+  },
+  "deletion_watermark": 0,
+  "generation_watermark": 1,
+  "backfill_of": null
+}
