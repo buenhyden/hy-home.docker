@@ -251,7 +251,7 @@ Fresh commands and environments:
 | `python3 -m unittest tests.validation.test_openbao_agent_contract tests.validation.test_service_runtime_compatibility tests.validation.test_gatus_oidc -v` | Local static/stub; independent reviewers | PASS 54; no native claim |
 | `python3 -m unittest tests.validation.test_openbao_rehearsal -v` | Local registered default | Exit 0; 2 discovered, 1 PASS, 1 native opt-in SKIP |
 | `HYHOME_OPENBAO_REHEARSAL=1 python3 -m unittest tests.validation.test_openbao_rehearsal -v` | Invocation-owned Docker 29.8.2, exact cached OpenBao 2.6.2, synthetic material | PASS 2 in 189.952s; byte guard and cleanup PASS |
-| `python3 scripts/validation/run-ci-gate.py --profile changed --local-only` | Registered local selected leaves | Prior receipt-domain FAIL preserved; corrected candidate final receipt linked from delivery PR #410 |
+| `python3 scripts/validation/run-ci-gate.py --profile changed --local-only` | Registered local selected leaves | Prior failures preserved; final 11-leaf local candidate PASS at f6903c14f; actual final-head delivery receipt linked from PR #411 |
 | `python3 scripts/validation/check-operations-catalog.py` | Local public source and current inventory | Initial hosted drift FAIL; nine-cell correction fresh PASS |
 | `bash scripts/validation/run-ci-precommit.sh --mode local-staged` | Isolated index snapshot; readonly style controller | Source and corrected documentation units PASS, including gitleaks; first docs formatting rejection retained |
 
@@ -270,7 +270,7 @@ is used. Source delivery is distinct from runtime acceptance.
 | HOME | NOT_RUN; target/material/custody and runtime residuals unresolved |
 | MIGRATION | NOT_RUN; P06 held, no real secret or consumer cutover |
 | RECOVERY | ISOLATED synthetic proof PASS; actual HOME/offsite recovery NOT_RUN |
-| DELIVERY | PRs #409 and #410 externally merged with their actual results preserved; final regression unit and fresh delivery receipt remain W22; HOME delivery NOT_RUN |
+| DELIVERY | PRs #409 and #410 externally merged with their actual results preserved; final source delivery checks/merge owned by PR #411; HOME delivery NOT_RUN |
 
 The logical source unit owns executable/client/policy/test/gate changes and the
 existing root exception row; the documentation unit owns Spec/Plan/this Task,
@@ -390,6 +390,37 @@ This logical unit uses the same reviewed pre-HOME revert boundary. Remaining
 HOME target/custody, native-version security and restricted failed-delivery
 cleanup residuals stay in W23. No new acceptance owner or runtime success is
 created by correcting regression expectations.
+
+### W22 Final Registered Candidate Receipt
+
+Regression unit commit f6903c14f64f71ae51356215e6b4322706a4954e changes
+the three tests and this Task. Registered staged controller PASS, including
+formatting/lint and secret checks, followed by ordinary native commit hooks.
+Independent final receipt review PASS: exact four-file boundary, actual prior
+merge, all RED/final test hashes and every public input digest independently
+reproduced; no finding. The manifest digest is SHA256 of UTF-8 compact JSON
+of the relative-path-to-file-SHA256 map, with sorted keys and separators
+(',', ':'); it excludes this Task and contains no private inputs.
+
+Fresh `python3 scripts/validation/run-ci-gate.py --profile changed --local-only`
+on f6903c14f, base 860ac1c3633eac9ad416fb1abd8a61a6e617ebd8, exited 0.
+All 11 registered selected leaves passed: local candidate preflight, document
+links, supply-chain fixtures, conftest policy, Compose baseline, CI contract,
+runner, adapter, workflow contract, repository-control-plane and precommit
+contract. Compose: 421 tests in 119.025s, 59 explicit optional skips; supply:
+239 in 81.894s; conftest: 18; CI contract: 27, runner: 60, adapter: 42,
+workflow: 36. Expected negative-fixture error messages did not fail the runner.
+Document links retain one existing historical-resolution warning with zero
+failures. No earlier failed aggregate is reclassified by this fresh result.
+
+[Final regression and delivery PR #411](https://github.com/buenhyden/hy-home.docker/pull/411)
+was created as draft from the actual main merge. Its first reviewed head is
+f6903c14f64f71ae51356215e6b4322706a4954e. This final receipt-only commit
+adds the actual local results and PR link without changing any of the 45
+reviewed public inputs or native input. The PR's final head check records,
+validation description and merge timeline own the actual hosted/delivery
+receipt before the agent makes it ready and merges it. Pending checks are
+never copied as PASS; W23/full P01 acceptance remain blocked.
 
 ### W23 HOME Boundary and P06 Hold
 
