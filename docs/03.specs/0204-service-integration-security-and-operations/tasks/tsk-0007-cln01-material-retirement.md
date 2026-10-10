@@ -269,10 +269,11 @@ and mounted by the optional gateway; its manual RUN-0011 contract remains a
 consumer. Supabase init/config and tracked runbooks are likewise not deletion
 candidates merely because their profile is inactive.
 
-P09 remains another owner's preparation task. Read-only review of its current
-plan found retention, backup/RPO/RTO, source ACL revocation and deletion-first
+P09 remains another owner's preparation task. The earlier read-only plan
+review found retention, backup/RPO/RTO, source ACL revocation and deletion-first
 recovery reconciliation listed as future contracts. No standalone implemented
-P09 artifact is available at this input. Concrete retention periods, backup
+P09 artifact was available at that earlier observation; the subsequent
+preparation-contract review below records the later public artifacts. Concrete retention periods, backup
 custody, restore targets, measured RPO/RTO, deletion coverage of cache/old
 generations and consumer revocation acknowledgments are UNKNOWN/NOT_RUN.
 Preparation schemas and synthetic fixtures have a development acceptance
@@ -408,6 +409,207 @@ git diff --check
 rtk proxy python3 -m unittest tests.lib.document_governance.test_spec_packages.SpecPackageTests.test_current_repository_spec_packages_cover_spec_directories -v
 ```
 
+### Reproducible dependency probes
+
+The following public-only probe was run from `/tmp/hy-home-cln01` against
+`/tmp/hy-home-smtp01/scripts/lib/ops/smtp_contract.py` at worktree HEAD
+`7bb0d850742d1865ff904c857e6a9a8d42bb558e`. It is cross-worktree dependency
+evidence, not CLN01 delivery acceptance. Save the exact Python below to
+`/tmp/cln01-dependency-probes.py`, then run
+`rtk proxy env PYTHONPATH=/tmp/hy-home-cln01 python3 /tmp/cln01-dependency-probes.py`.
+The actual command returned exit 0; the semantic lock result is FAIL because
+both locks acquired. Parent-mount refusal is the expected safe result. All
+receipt booleans and Docker replies are synthetic; no operator proof, private
+file, actual Docker command or retire/apply function is used.
+
+```python
+import hashlib
+import importlib.util
+import json
+import subprocess
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+from scripts.lib.ops.retire_materials import retirement_lock
+
+source = Path('/tmp/hy-home-smtp01/scripts/lib/ops/smtp_contract.py')
+expected = 'd6b8c9c1089d00bf4de2cf0558743324421403eb8a0daa6b9592f26c9f62b505'
+assert hashlib.sha256(source.read_bytes()).hexdigest() == expected
+print('smtp_source_sha256=' + expected)
+revision = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=source.parents[3], capture_output=True, text=True, check=True).stdout.strip()
+print('smtp_worktree_head=' + revision)
+spec = importlib.util.spec_from_file_location('cln01_synthetic_smtp_probe', source)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+with tempfile.TemporaryDirectory(prefix='cln01-synthetic-interop-') as directory:
+    root = Path(directory) / 'synthetic-root'
+    (root / 'secrets').mkdir(parents=True)
+    with retirement_lock(root), module.retirement_lock(root):
+        print('lock_compatibility=FAIL:both_locks_acquired')
+    fake_revision = 'a' * 40
+    hashes = {'synthetic': 'synthetic-public-source'}
+    proof = Path(directory) / 'synthetic-proof.json'
+    proof.write_text(json.dumps({
+        'host': 'synthetic-host', 'git_sha': fake_revision, 'source_sha256': hashes,
+        'old_mount_consumers': [], 'job_backup_external_verified': True,
+        'canonical_restore_mapping_verified': True, 'consumer_creation_quiesced': True,
+        'source_private_mutation_quiesced': True, 'root_identity': module.root_identity(root)}))
+    def fake_run(arguments, root=None):
+        if arguments[0] == 'git':
+            return (fake_revision + '\n').encode()
+        if arguments[:2] == ['docker', 'ps']:
+            return b'synthetic-container\n'
+        return (json.dumps([{'Type': 'bind', 'Source': '/', 'Destination': '/host/root', 'RW': False}]) + '\n').encode()
+    with patch.object(module, '_run', side_effect=fake_run), patch.object(module, 'source_hashes', return_value=hashes), patch.object(module.socket, 'gethostname', return_value='synthetic-host'):
+        try:
+            module.verify_proof(root, proof)
+        except module.ContractError as error:
+            assert str(error) == 'old_runtime_parent_mount'
+            print('parent_mount_probe=EXPECTED_REFUSAL:old_runtime_parent_mount')
+        else:
+            raise AssertionError('read-only ancestor was not refused')
+print('private_input_or_runtime_mutation=False')
+```
+
+Bounded actual output:
+
+```text
+smtp_source_sha256=d6b8c9c1089d00bf4de2cf0558743324421403eb8a0daa6b9592f26c9f62b505
+smtp_worktree_head=7bb0d850742d1865ff904c857e6a9a8d42bb558e
+lock_compatibility=FAIL:both_locks_acquired
+parent_mount_probe=EXPECTED_REFUSAL:old_runtime_parent_mount
+private_input_or_runtime_mutation=False
+```
+
+### Preparation-contract review follow-up
+
+P09 artifacts subsequently appeared in `/tmp/hy-home-p09`; they remain owned
+by that session. Read-only review examined the consumer policy, artifact
+revocation/surface-watermark model and job/generation recovery contract.
+The synthetic examples bind retention to 30 days, RPO to 3600 seconds and RTO
+to 7200 seconds, with restore drill NOT_RUN; these are preparation inputs,
+not actual retention authority or measured recovery performance. Deletion and
+revocation must be replayed before generation publication; access/cache/old
+surface declarations must cover the event watermark. Physical cleanup and
+real access denial remain NOT_RUN. Actual retention/custody, restore targets,
+measured RPO/RTO and revocation acknowledgments remain UNKNOWN.
+
+The public helper input was
+`51044ec43592c8eccf40774d821016784e562bb0d30a59bd66d38685b3ecc0af`,
+and the public test input was
+`48e1c70d218ddd951ae845e65325c0d6d9ec02712de0dfa351e45e13bce0e7d1`.
+Both were unchanged before/after the following five selected synthetic tests
+(2.140 seconds, exit 0, PASS), run from `/tmp/hy-home-p09`:
+
+```text
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest tests.lib.ops.test_wiki_preparation.PreparationTests.test_policy_binds_consumer_artifact_and_job_authority tests.lib.ops.test_wiki_preparation.PreparationTests.test_artifact_hash_acl_revocation_and_provenance tests.lib.ops.test_wiki_preparation.PreparationTests.test_job_state_retry_generation_and_delete_priority tests.lib.ops.test_wiki_preparation.PreparationTests.test_revocation_delete_priority_and_public_dead_state_rejection tests.lib.ops.test_wiki_preparation.PreparationTests.test_canonical_paths_surface_watermarks_and_retry_history -v
+```
+
+This is bounded source/synthetic review, not the complete P09 acceptance suite.
+P09 schemas/fixtures have an explicit development-acceptance consumer and
+remain ACTIVE_KEEP. No P09 source/doc file is created, moved or modified here.
+
+### Final local verification and logical delivery receipt
+
+Source commit `3048c31fe2e1a53d4b481df3fda5ce587cae80c5` has tree
+`61457438a65d3eb73ed56e10d1a2b2251cb06d85` and unchanged frozen helper SHA.
+The ordinary commit hook and Commitizen check returned exit 0. It contains
+only the 11 CLN01 files listed in the source increment; the original mixed
+checkout and SMTP01/P09 files remain untouched.
+
+Exact source increment (A = created, M = modified; no tracked deletion):
+
+```text
+M .github/workflow-contract.yml
+M docs/03.specs/0204-service-integration-security-and-operations/plan.md
+M docs/03.specs/0204-service-integration-security-and-operations/spec.md
+A docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0007-cln01-material-retirement.md
+M docs/05.operations/runbooks/0009-release-management.md
+A scripts/lib/ops/retire_materials.py
+M scripts/manifest.yaml
+A scripts/operations/retire-materials.py
+A tests/lib/ops/test_retirement.py
+M tests/validation/_script_manifest_support.py
+A tests/validation/test_retirement_cli.py
+```
+
+The final Task-only metadata check passed (selected 1, zero violations, exit
+0) and its staged controller passed (exit 0). The later prose/file-list correction also passed metadata (selected 1, zero
+violations, exit 0). Its first staged style run caught tabs from Git name-status
+output (exit 2); these were explicitly replaced with spaces before a fresh
+staged controller rerun. No style or metadata policy was weakened.
+
+On that tree, the second registered local prerequisite command returned exit
+1 due to two pre-existing worktree permission mismatches: Open WebUI and
+Gatus entrypoints were mode 0775 while their tests prohibit group/world
+writing. The two exact local files were adjusted with
+`rtk proxy chmod go-w -- infra/08-ai/open-webui/docker-entrypoint.sh infra/06-observability/gatus/docker-entrypoint.sh`.
+Their contents and Git tree were unchanged; no operator checkout or service
+was modified. The focused two-test command below then passed (exit 0):
+
+```text
+rtk proxy python3 -m unittest tests.validation.test_openwebui_oidc_entrypoint.OpenWebUiOidcEntrypointTests.test_script_is_executable_and_not_group_or_world_writable tests.validation.test_gatus_oidc.GatusOidcEntrypointTests.test_script_is_not_group_or_world_writable -v
+```
+
+The original aggregate is still FAIL, not retroactively PASS. Its completed
+prefix passed hook tests 15, lifecycle tests 15, metadata tests 142, document
+library tests 645, supply-chain fixtures 239, candidate preflight and full
+links, plus isolated conftest 18/18. The failed Compose batch had 421 tests,
+two failures and 59 native opt-in SKIPs. Permission correction is a local QA
+repair, not a tracked deployment change. An exploratory `--profile operations`
+explain command returned exit 1 because that profile is unregistered; the
+registered contract was not changed to accept it.
+
+To avoid rerunning the unchanged successful prefix, the registered runner was
+used for the failed leaf and all remaining selected leaves. The exact script
+below was saved to `/tmp/cln01-resume-local-leaves.py` and executed using
+`rtk proxy env PYTHONPATH=/tmp/hy-home-cln01 python3 /tmp/cln01-resume-local-leaves.py`.
+It verified the frozen tree, parsed the original contract, constructed and
+validated the complete normal local plan, then resumed at the failed Compose
+leaf using the original descriptor/environment/timeout executor. No bypass
+flag, fixture expectation or runner source was changed. The resumption
+returned exit 0; this is bounded leaf evidence, not a successful rerun of the
+whole aggregate command.
+
+```python
+import os
+import subprocess
+from pathlib import Path
+from scripts.validation import ci_gate_runner as runner
+
+root = Path('/tmp/hy-home-cln01')
+expected = '61457438a65d3eb73ed56e10d1a2b2251cb06d85'
+actual = subprocess.run(['git', 'write-tree'], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
+assert actual == expected
+raw = runner.load_contract_document(root)
+registry = runner.parse_gate_registry(raw, '.github/workflow-contract.yml')
+assert not runner.validate_gate_registry(root, registry)
+contract = runner.parse_public_gate_contract(raw)
+context = runner.derive_execution_context(os.environ)
+assert context is runner.ExecutionContext.LOCAL
+paths = runner.collect_changed_paths(root, os.environ)
+suites = runner.select_public_suites(contract, 'changed', paths)
+roots = runner.public_root_gate_ids(contract, suites, changed_paths=paths)
+plan = runner.build_public_validation_plan(registry, roots, contract, suites, context, profile='changed', root=root)
+local = runner.build_local_only_validation_plan(plan, contract, context)
+index = next(i for i, gate in enumerate(local) if gate.gate_id == 'leaf.compose-baseline-regressions')
+remaining = local[index:]
+print('Verification resumption only; original aggregate remains FAIL.', flush=True)
+for gate in remaining:
+    print('registered_remaining_leaf=' + gate.gate_id, flush=True)
+raise SystemExit(runner.execute_execution_plan(root, remaining, os.environ))
+```
+
+The resumed results were Compose 421 (59 native opt-in SKIP), gate contract 27,
+runner 60, adapters 42, workflow 36, control-plane 51, staged-controller shell
+regressions PASS, release 18 and repository integrity 214. All resumed leaves
+returned exit 0. Original/final logs are QA source-output artifacts outside Git,
+not operator logs; public batch summaries and commands are retained here.
+Latest lstat-only observation also returned exit 0: COMM-002 and COMM-003 are
+still present regular files with nlink 1; PG-020 is present with nlink 2.
+Actual private apply, HOME, migration, rotation and recovery remain NOT_RUN.
+Remote PR candidate and coordinated merge remain pending.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -423,7 +625,8 @@ SOURCE and UNIT passed on the frozen helper input; ISOLATED passed using only
 synthetic fixtures. STATIC includes Manifest/workflow validation, active metadata, full links and
 corpus lifecycle PASS (exit 0); the registered staged controller passed after
 explicit blank-line corrections. Final staged input and delivery are separate. HOME, MIGRATION,
-ROTATION, RECOVERY and DELIVERY are separate and currently NOT_RUN. Private
+ROTATION and RECOVERY remain NOT_RUN. DELIVERY has the logical source commit
+above; remote PR acceptance and coordinated merge remain pending. Private
 apply, functional runtime proof and recovery remain NOT_RUN; the limited
 checkout-to-host label observation above does not satisfy those criteria.
 A Git logical revert can restore tracked source; it cannot restore private
