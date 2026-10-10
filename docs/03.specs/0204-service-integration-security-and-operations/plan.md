@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.4.2"
+version: "1.5.1"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
@@ -50,8 +50,9 @@ P04 Airflow native integration, P05 n8n native import/execution and P01/P02/P06
 secret classification/mapping/consumption under this package's acceptance.
 SPEC-0213/0214/0218/0219/0220/0223/0224/0227 retain their delivered source;
 no old prompt label creates duplicate work. LAB and learning apps, including
-planning, are out-of-scope. P09's external Wiki needs its actual derived
-workspace and P10 its real input-to-recovery target.
+planning, are out-of-scope. P09 now owns only offline Wiki preparation; its
+future application/workspace and runtime resources require a later exact Task.
+P10 retains its real input-to-recovery target.
 
 Historical W7 CI retirement does not govern this pass: current quality policy
 and workflow-contract route hosted PR candidate QA and independent review.
@@ -93,6 +94,7 @@ a prospective separate_target classification; no LAB documents are moved.
 | W22 | 8, 11 | Changed QA, independent IaC/security/code review, scoped commits/PR | W21 | TSK-0006 | Registered local/hosted candidate checks and actual delivery receipt |
 | W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
 | W24 | 12 | Assess consumers and implement the narrow private-unlink helper for material retired by another owner after SMTP01 evidence | W19 | TSK-0007 | Helper unit tests and document gates; private apply only after Task preflight |
+| W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Task evidence; future implementation runs its own RED/GREEN and independent review |
 
 ### P01 exact scope and sequence
 
@@ -218,8 +220,10 @@ bootstrap change, not extra engines or downstream consumer migration.
 
 SPEC-0203 already wrote the common Alloy metrics path; TSK-0002 may extend only
 bounded external discovery after review. SPEC-0202 development DB source and lifecycle handoff are integrated in this
-closure branch before the backup source change. SPEC-0219 owns Storybook; P09's external workspace owns its application
-manifest/deployment. Existing LAB evidence is excluded from new execution.
+closure branch before the backup source change. SPEC-0219 owns Storybook. P09
+W25 prepares future application-manifest and deployment acceptance only; it
+does not create an external workspace. Existing LAB evidence is excluded from
+new execution.
 SPEC-0220 already owns Crawl4AI security/egress and HOME receipts; its consumer
 admission remains consumer-dependent rather than a repeat security fix.
 
@@ -323,3 +327,5 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 - [Task 0004](tasks/tsk-0004-secret-layout-and-environment-parity.md)
 - [Task 0005](tasks/tsk-0005-cross-tier-contracts-second-round.md)
 - [CLN01 material retirement Task](tasks/tsk-0007-cln01-material-retirement.md)
+- [Task 0006](tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md)
+- [Task 0008](tasks/tsk-0008-llm-wiki-preparation.md)

@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.3.1"
+version: "1.4.1"
 type: "sdlc/spec"
 status: "blocked"
 owner: "@buenhyden"
@@ -32,7 +32,7 @@ SPEC-0223 for RedisInsight, SPEC-0224 for datastore observation and
 SPEC-0227 for the Stage 05 body refresh. Applied source is NO_CHANGE;
 old prompt numbers and draft labels never authorize reimplementation.
 P03 routes endpoint/port integration, P04 Airflow, P05 n8n, P01/P02/P06
-secret classification/mapping/consumption, P09 external Wiki and P10 the
+secret classification/mapping/consumption, P09 Wiki preparation and P10 the
 named user vertical slice. Each residual stays with one existing acceptance
 owner; the new stage labels do not reserve Spec IDs.
 
@@ -105,11 +105,13 @@ only when a current conflict is found; otherwise record NO_CHANGE.
   contract fixtures, updated Korean READMEs and Stage 05 guide/policy/runbook
   owners, and Task evidence. Values of secrets and raw operational data are
   never outputs.
-- External application input/output: The P09 Project-Template-derived
-  repository supplies app Compose, business API/UI, migrations, collectors,
-  workflow definitions, fixtures and E2E. Infra supplies approved engines,
-  ingress/identity, telemetry and backup interfaces; the manifest records
-  scopes and owners but cannot deploy the app.
+- P09 preparation input/output: a future Project-Template-derived repository
+  may later supply app Compose, business API/UI, migrations, collectors,
+  workflow definitions, fixtures and E2E. P09 now produces only preparation
+  contracts, synthetic fixtures and acceptance criteria. It creates no app,
+  runtime resource, credential, workspace or blog-data write. Infra retains
+  approved-engine, ingress/identity, telemetry and backup interface ownership;
+  a manifest records planned scopes and owners but cannot provision or deploy.
 
 ### Failure Modes and Guardrails
 
@@ -314,6 +316,19 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     its sole proposed unlink executor is SMTP01's `smtp_contract --retire`,
     subject to supervisor release and integrated evidence/lock checks.
     CLN01 owns assessment and the hold, not a second executor. TSK-0007 owns this increment.
+<!-- markdownlint-disable MD029 -->
+13. P09 produces a bounded, offline LLM Wiki preparation package: product
+    intake; future consumer, source/artifact, job/outbox/handoff and blog-data
+    handoff contracts; valid and invalid synthetic fixtures; future user-flow
+    acceptance; and a readiness matrix. The generic registration schema and
+    validator are reused without weakening or duplication. The package rejects
+    cross-project/path-escape, wildcard/admin and empty-required values. It
+    does not create a Wiki Core/API/UI, source crawler, app database/role,
+    collection/bucket, credential, external workspace, scheduled workflow,
+    blog-data write, learning application or LAB runtime change. Actual source
+    revision, ACL/revocation, retention, backup and recovery verification stay
+    future acceptance conditions, not preparation PASS claims.
+<!-- markdownlint-enable MD029 -->
 
 ## Related Documents
 
