@@ -1,0 +1,170 @@
+{
+  "checked_at": "2026-10-10T10:33:46.214718+00:00",
+  "meaning": "Primary supplier stable/current-page facts. Image tags, compatibility, signature, SBOM and deployment still require separate evidence.",
+  "references": [
+    {
+      "product": "python",
+      "vendor_latest": "3.15.0",
+      "channel": "stable",
+      "source_release_date": "2026-10-09",
+      "release_url": "https://www.python.org/downloads/release/python-3150/",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "postgresql",
+      "vendor_latest": "18.6",
+      "channel": "stable",
+      "source_release_date": "2026-08-13",
+      "release_url": "https://www.postgresql.org/docs/current/release.html",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "spark",
+      "vendor_latest": "4.2.0",
+      "channel": "stable",
+      "source_release_date": "2026-07-14",
+      "release_url": "https://spark.apache.org/downloads",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "flink",
+      "vendor_latest": "2.3.0",
+      "channel": "stable",
+      "source_release_date": null,
+      "release_url": "https://flink.apache.org/downloads/",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "surrealdb",
+      "vendor_latest": "3.3.0",
+      "channel": "stable",
+      "source_release_date": "2026-09-24",
+      "release_url": "https://surrealdb.com/releases",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "mlflow",
+      "vendor_latest": "3.17.0",
+      "channel": "stable",
+      "source_release_date": "2026-10-06",
+      "release_url": "https://mlflow.org/releases",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "opensearch",
+      "vendor_latest": "3.9.0",
+      "channel": "stable",
+      "source_release_date": "2026-09-29",
+      "release_url": "https://opensearch.org/downloads/",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "opensearch-dashboards",
+      "vendor_latest": "3.9.0",
+      "channel": "stable",
+      "source_release_date": "2026-09-29",
+      "release_url": "https://opensearch.org/downloads/",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "vector",
+      "vendor_latest": "0.59.0",
+      "channel": "stable",
+      "source_release_date": "2026-10-06",
+      "release_url": "https://vector.dev/releases/",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "trino",
+      "vendor_latest": "483",
+      "channel": "stable",
+      "source_release_date": null,
+      "release_url": "https://trino.io/download.html",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "confluent-platform",
+      "vendor_latest": "8.3.2",
+      "channel": "stable",
+      "source_release_date": "2026-09",
+      "release_url": "https://docs.confluent.io/platform/current/release-notes/changelog.html",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "neo4j",
+      "vendor_latest": "2026.09.0",
+      "channel": "stable",
+      "source_release_date": "2026-09-21",
+      "release_url": "https://neo4j.com/deployment-center/",
+      "checked_at": "2026-10-10T10:33:46.214718+00:00",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "go",
+      "vendor_latest": "1.27.2",
+      "channel": "stable",
+      "checked_at": "2026-10-10T10:36:49.808403+00:00",
+      "release_url": "https://go.dev/dl/?mode=json",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "nginx",
+      "vendor_latest": "1.30.5",
+      "channel": "stable",
+      "checked_at": "2026-10-10T10:36:49.808403+00:00",
+      "release_url": "https://nginx.org/en/download.html",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "alpine",
+      "vendor_latest": "3.24.2",
+      "channel": "stable",
+      "checked_at": "2026-10-10T10:36:49.808403+00:00",
+      "release_url": "https://alpinelinux.org/releases/",
+      "native_test": "NOT_RUN"
+    },
+    {
+      "product": "traefik",
+      "vendor_latest": "3.7.14",
+      "channel": "stable",
+      "source_release_date": "2026-10-06T07:49:56Z",
+      "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.14",
+      "primary_urls": [
+        "https://doc.traefik.io/traefik/getting-started/",
+        "https://doc.traefik.io/traefik/deprecation/releases/",
+        "https://hub.docker.com/_/traefik"
+      ],
+      "checked_at": "2026-10-10T11:09:21.111703+00:00",
+      "ownership_repository": "traefik/traefik",
+      "ownership_channel_reason": "Vendor release policy lists 3.7 with active and security support; GitHub latest patch v3.7.14 belongs to that supported GA minor. Main branch is upcoming releases, not stable. Support dates may change.",
+      "native_test": "NOT_RUN",
+      "signature_scan": "NOT_RUN"
+    },
+    {
+      "product": "keycloak",
+      "vendor_latest": "26.8.0",
+      "channel": "stable",
+      "source_release_date": "2026-10-01T05:57:20Z",
+      "release_url": "https://github.com/keycloak/keycloak/releases/tag/26.8.0",
+      "primary_urls": [
+        "https://www.keycloak.org/downloads"
+      ],
+      "checked_at": "2026-10-10T11:09:21.111703+00:00",
+      "ownership_repository": "keycloak/keycloak",
+      "ownership_channel_reason": "Current official Downloads heading identifies 26.8.0, links GitHub distributions and Quay container, and lists nightly separately. JS/admin client separate versions do not select server version.",
+      "native_test": "NOT_RUN",
+      "signature_scan": "NOT_RUN"
+    }
+  ]
+}
