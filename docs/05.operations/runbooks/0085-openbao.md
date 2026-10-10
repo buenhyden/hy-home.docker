@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.7.3"
+version: "0.7.4"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -112,57 +112,77 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 
 ### Renderer SecretID Delivery
 
-현재 경로는 raw SecretID 대신 60초 response-wrapping token을 전달한다. 서버 issuer policy는 wrapping TTL 30–60초를 강제하며 header 없는 발급은 거부한다. Agent는
-creation path `auth/approle/role/hy-home-renderer/secret-id`를 검증하고 unwrap한 뒤
-SecretID 파일을 지운다. role의 10분·1회 계약은
-[role metadata](../../../infra/03-security/openbao/config/renderer-role.json)가 소유한다.
-배포된 HOME role의 현재 값은 아직 읽거나 검증하지 않았다. 처음 bootstrap할 때
-승인된 운영자가 기존 renderer 정책과 이 metadata를 적용하며, 재발급자는
-[renderer-issuer](../../../infra/03-security/openbao/config/policies/renderer-issuer.hcl)의
-두 경로만 사용한다. renderer/metrics/snapshot/application token을 발급자로 공유하지 않는다.
+현재 source는 60초 wrapping, issuer/cleanup 분리, 영속 journal을 함께 사용한다.
+`operator`는 renderer SecretID를 직접 만들 수 없다. 두 token role은 각각 정확한 policy만
+허용하며 5분·비갱신·default policy 없음·explicit max TTL 5분을 요구한다.
+[issuer role](../../../infra/03-security/openbao/config/renderer-issuer-token-role.json),
+[cleanup role](../../../infra/03-security/openbao/config/renderer-cleanup-token-role.json),
+[issuer policy](../../../infra/03-security/openbao/config/policies/renderer-issuer.hcl),
+[cleanup policy](../../../infra/03-security/openbao/config/policies/renderer-cleanup.hcl)를
+승인된 관리 신원이 먼저 적용한다. HOME 적용 여부는 별도이며 source를 배포 증거로 쓰지 않는다.
+cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐이다. 두 token의
+`lookup-self`는 정확한 policy·TTL·비갱신 신원을 검사하며 다른 KV나 AppRole을 열지 않는다.
 
-1. 외부 TLS 자료, unsealed server, 제한 발급자 신원과 정확한 Agent volume을 확인한다.
-   Agent volume은 이미 존재하고 UID 100/GID 1000이 쓸 수 있어야 한다. RoleID는 기존
-   보호된 경로를 유지한다. 파일 값이나 private Compose model은 출력하지 않는다.
-2. 승인된 운영자가 발급자 token을 숨겨진 입력으로 넣고 전달 helper를 실행한다.
-   아래 container/volume은 root 선언의 대상이며 실제 project 이름을 먼저 확인한다.
+1. TLS·unseal·두 제한 KV/version·정확한 Agent named volume과 RoleID를 준비한다.
+   기존 Agent 자동 재시작이나 sink 존재를 준비 완료로 판단하지 않는다. 운영자가 지정한
+   journal 디렉터리는 Agent data/out volume 밖에 영속 보관하고 owner mode 0700을 요구한다.
+   journal과 completion anchor를 따로 삭제·초기화하지 않는다. 값·token·accessor는 기록하지 않는다.
+2. 검토한 전체 commit SHA로 host helper를 operator-private 디렉터리에 설치한다.
+   source checkout의 group-writable 경로는 token을 받는 실행 경로로 신뢰하지 않는다.
+   installer는 정확한 Git blob 두 개만 읽고 mode 0500/0400과 공개 hash receipt를 남긴다.
+   기존 목적지와 symlink를 덮어쓰지 않는다. 부모 디렉터리는 운영자가 소유한 0700이어야 한다.
+
+   ```bash
+   # 아래 경로와 commit은 owning Task에서 확정한 운영자 입력이다.
+   test -n "$issuer_repository" && test -n "$issuer_commit" && test -n "$operator_tools" || exit 1
+   set -o pipefail
+   /usr/bin/git -C "$issuer_repository" show \
+     "$issuer_commit:infra/03-security/openbao/scripts/install-renderer-issuer.sh" | \
+     /bin/sh -s -- "$issuer_repository" "$issuer_commit" "$operator_tools/$issuer_commit" || exit 1
+   ```
+
+   승인 SHA는 checkout의 현재 HEAD와 별개로 owning Task에서 검토한 full commit이다.
+   installer도 해당 commit blob에서만 읽는다. 쓰기 가능한 checkout의 installer를 직접 실행하지 않는다.
+
+3. 새 발급 전에 Agent를 중지한다. 현재 operator 인증을 통해
+   `auth/token/create/renderer-issuer`와 `auth/token/create/renderer-cleanup`에서
+   token을 별도로 발급한다. JSON 입력의 `policies`는 각각 정확한 policy 문자열이며,
+   `ttl="5m"`, `explicit_max_ttl="5m"`, `renewable=false`, `no_default_policy=true`를
+   함께 요구한다. 발급 응답을 출력하지 않고 보호된 stdin/custody로 처리한다.
+   root·renderer·application token을 helper 입력으로 사용하지 않는다.
 
    ```bash
    set +x
    docker stop openbao-agent || exit 1
-   read -rsp 'Enter limited issuer credential: ' P01_ISSUER_TOKEN; printf '\n'
-   printf '%s\n' "$P01_ISSUER_TOKEN" | sh infra/03-security/openbao/scripts/issue-renderer-secret-id.sh \
-     openbao hy-home-infra_openbao-agent-data openbao/openbao:2.6.2 openbao-agent # <!-- runtime-version-exception: compatibility — helper requires the exact image; docker-compose.yml owns the pin -->
-   p01_delivery_result=$?
-   unset P01_ISSUER_TOKEN
-   if test "$p01_delivery_result" -eq 0; then
-     docker start openbao-agent || exit 1
-     docker exec openbao-agent sh /openbao/scripts/health-agent.sh
-   else
-     printf '%s\n' 'Delivery failed; keep Agent stopped and reconcile abandoned issuance.' >&2
-     exit 1
-   fi
+   read -rsp 'Enter short issuer credential> ' SEC01_ISSUER_TOKEN; printf '\n'
+   read -rsp 'Enter short cleanup credential> ' SEC01_CLEANUP_TOKEN; printf '\n'
+   printf '%s\n%s\n' "$SEC01_ISSUER_TOKEN" "$SEC01_CLEANUP_TOKEN" | \
+     sh "$operator_tools/$issuer_commit/issue-renderer-secret-id.sh" \
+       openbao "$agent_volume" \
+       openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf openbao-agent "$issuance_journal" "$issuer_commit" # <!-- runtime-version-exception: compatibility — helper requires the exact image; docker-compose.yml owns the pin -->
+   sec01_issue_result=$?
+   unset SEC01_ISSUER_TOKEN SEC01_CLEANUP_TOKEN
+   test "$sec01_issue_result" -eq 0 || exit 1
    ```
 
-   helper는 token을 stdin으로만 처리하고 wrapping 결과도 stdout에 내보내지 않는다.
-   네 번째 인자 `openbao-agent`의 중지 상태와 `/openbao/agent` named-volume 일치를 검사한다.
-   존재하는 volume에 network-none/UID 100의 임시 container로 0600 파일을 atomic rename한다.
-   host가 수행하며 Agent에 Docker socket이나 재시작 권한을 부여하지 않는다.
-3. helper 성공 직후 60초 wrapping 만료 전에 위 host 명령으로 승인된 대상 Agent만 시작한다.
-   health가 준비 전 실패하면 값 없이 준비 상태를 확인하고 bounded 재검사를 수행한다. 만료·전달 실패 시 Agent를 중지 상태로 유지하고
-   abandoned 발급 cleanup을 확인한 뒤 새 wrap을 발급한다. 새 프로세스는 이전
-   token sink를 제거하고 새 인증을 요구한다. wrapping token replay, 만료, 잘못된
-   creation path는 실패한다. 파일 삭제만으로 인증 성공을 판단하지 않는다.
-4. `health-agent.sh`의 exit 0과 두 KV version sentinel을 확인한다. health는 검증된 TLS,
-   unsealed 상태, token validity, 두 제한 KV fetch·stream byte 비교와 rendered version sentinel를 요구한다.
-   [health script](../../../infra/03-security/openbao/scripts/health-agent.sh)는 값을 출력하지
-   않고 호출별 3초 제한을 둔다. KV fetch/version, render version, 실제 consumer 적용은
-   별도 증거다. health는 값을 파일에 복사하지 않고 cmp stdin으로 비교한다. 기존 application은 Docker Secret bootstrap을 유지한다.
+   `agent_volume`와 `issuance_journal`은 Task에 확정한 실제 대상이다. helper는 이미지의
+   amd64 manifest·server·Agent volume binding·entrypoint를 확인한다. API 호출 전에
+   nonce·시간·role·source revision·manifest만 journal에 atomic/fsync 저장한다.
+   Docker socket은 host helper만 사용하며 Agent에 주지 않는다. 전달 helper container는
+   network none·pull never·UID100·cap drop·read-only를 유지한다.
+4. helper가 Agent를 시작하고 새 `StartedAt`·TLS·unsealed·제한 fetch/render와 KV version
+   sentinel을 검증한다. 전달 성공만으로 journal을 없애지 않는다. 같은 nonce·생성 시간의
+   accessor 소비/폐기와 부재를 확인한 후만 completion witness를 기록한다.
+   전체 작업 budget은 240초이며 token 만료 전 여유를 남긴다. consumer 적용은 별도 증거다.
+5. SIGTERM/SIGKILL·reboot 후 같은 journal로 재실행하면 먼저 이전 발급을 정합화하고
+   그 실행에서는 새 SecretID를 만들지 않는다. 정확한 단일 accessor만 폐기한다.
+   전달 후 시작 전에는 stopped 상태를, 시작 후 기록 전에는 발급 이후의 새 generation과
+   기능 readiness를 증명한다. 불명확·복수 결과·시간/nonce 불일치·sealed·권한 거부·journal
+   유실은 실패로 유지하고 새 발급을 차단한다. 자동으로 journal을 지우거나 광범위 accessor를
+   폐기하지 않는다. 해당 상태는 승인된 관리 신원의 custody/API 대조 복구가 필요하다.
 
-실패하면 issuer scope·CA/SAN·unseal·wrapping TTL·volume 권한·KV/version을 값 없이
-구분하고 새 wrap을 재발급한다. sink 존재, 오래된 출력, raw 로그 grep, 무제한 restart로
-health를 대체하지 않는다. 새 process/cold boot에는 새 wrap이 필요하며 operator의
-제한 인증 또는 독립 보관된 break-glass 복구 경로가 없으면 그 단계만 중단한다.
+이 프로토콜은 아직 HOME에서 수행하지 않았다. 운영 실패 시 journal·completion witness·
+보호된 snapshot과 관리 인증을 보존한다. 재시작을 반복하거나 오래된 sink를 PASS로 처리하지 않는다.
 
 ### Prometheus Metrics Credential
 
@@ -385,7 +405,7 @@ OpenBao 외부 custody에서 `${DEFAULT_SECURITY_DIR}/openbao/tls/{ca.pem,server
 적용한다. 시작 전 아래 read-only preflight를 실행한다. stdout은 check label과 PASS/FAIL만 출력한다.
 
 ```bash
-sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DIR/openbao/tls" openbao/openbao:2.6.2 # <!-- runtime-version-exception: compatibility — preflight requires the exact image; docker-compose.yml owns the pin -->
+sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DIR/openbao/tls" openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf # <!-- runtime-version-exception: compatibility — preflight requires the exact image; docker-compose.yml owns the pin -->
 ```
 
 명령은 만료·CA chain·정확한 SAN·cert/key 일치와 UID100:GID1000의 읽기를 검증한다.
@@ -395,7 +415,7 @@ CA/server_name, Traefik은 `openbao-tls@file`로 검증한다. 잘못된 CA/SAN/
 `skip_verify`를 정상 경로로 사용하지 않는다. 외부 gateway 인증서와 내부 backend 신뢰는
 별개다. 최초 key/CA를 그 OpenBao Agent가 발급하는 순환은 금지한다.
 
-정확한 2.6.2에는 config-owned `p01-file` audit backend를 선언한다. 로그는 별도
+현재 candidate 2.7.1에는 config-owned `p01-file` audit backend를 선언한다. 로그는 별도
 `openbao-audit` bind에 0600으로 보관하고 stdout으로 보내지 않는다. `log_raw=false`,
 `hmac_accessor=true`, `unsafe_allow_api_audit_creation=false`를 유지한다. HMAC은 주로
 JSON string을 보호하며 숫자·boolean·일부 metadata까지 모두 비밀화하는 보장은 아니다.
@@ -422,17 +442,22 @@ identity·용량·network·rollback을 묶어 별도로 검토한다. Git revert
 알림 수신·회복은 HOME에서 별도 검증해야 한다. 모든 audit backend가 막히면 metrics 요청도 실패할 수 있으므로
 `up==0` 신호를 함께 사용한다. scrape 실패는 원인을 특정하지 않으며 health 성공도 audit 정상 증거가 아니다.
 
-#### Known Runtime Residual
+#### Current candidate and preserved residual
 
-고정 버전에는 만료된 미사용 AppRole SecretID가 tidy 전 인증되는 알려진 결함
-GHSA-7m59-mp95-w6ph가 있다. [공식 release notes](https://openbao.org/community/release-notes/2-6-0/#v264)는 수정 버전을 명시한다.
-10분 TTL 선언을 실제 만료 거부 증거로 취급하지 않는다. wrapped 발급 후 전달이 실패한 경우 helper는 제한 issuer 권한만 갖고 있어 underlying SecretID accessor를 회수·폐기하지 못한다.
-이 abandoned issuance cleanup은 별도 제한 cleanup 권한·receipt 검증이 필요한 잔여이며, TTL만 믿고 완료 처리하지 않는다. 1회 사용과 60초 wrapping은 노출을 줄이지만
-결함을 수정하지 않는다. 미사용 발급은 accessor로 명시적으로 폐기하고 거부를 확인하며, 실제 자료는 출력하지 않는다.
-고정 버전의 malformed audit 값과 일부 root-generation/rekey audit 실패 처리도 해당 release notes의
-보안 수정 대상이다. 정상 string HMAC 시험을 모든 입력·endpoint 안전성으로 확대 해석하지 않는다.
-HOME 배포와 P06은 수정 버전의 독립 검토·실제 회귀 검증 및 HOME gate 전까지 보류한다.
-요청된 정확한 버전 시험을 위해 현재 pin을 유지했으며 버전 갱신 성공을 만들어내지 않는다.
+이전 2.6.2의 만료된 미사용 SecretID 수용과 abandoned issuance 정리 결함은 보존된 P01
+Task의 역사 증거다. [공식 release notes](https://openbao.org/community/release-notes/2-6-0/#v264)가
+보안 수정 범위를 소유한다. SEC01 candidate는 2.7.1이며 Raft·Shamir·TLS·config-owned
+file audit를 보존한다. 2.7의 제거된 file **storage** backend와 file **audit** backend를
+혼동하지 않는다. Agent와 snapshot CLI는 같은 server image 묶음으로 정렬한다.
+
+격리 합성 시험에서 expired-unused SecretID 거부·잘못된 CA 거부·제한 token role·
+snapshot 빈 환경 복원·audit 용량 실패 차단을 확인했다. 이는 실제 HOME custody·cold boot·
+이관·복구나 모든 malformed 입력 안전성의 증거가 아니다. 실제 host 적용 전에는 최신
+공급자 channel·같은 플랫폼 SBOM/scan·서명·pre-upgrade snapshot·독립 custody·빈 이전
+버전 환경 복원과 이후 candidate upgrade를 검증한다. 2.7 데이터에 이전 image를 붙이는
+것은 rollback이 아니다. 서비스 묶음 중단 한도 15분 안에 restore/unseal/검증까지 가능한지
+측정하고, 한도를 넘거나 복구 자료가 없으면 HOME만 보류한다. P06 확대도 HOME gate 전에는
+진행하지 않는다.
 
 HOME 적용 전 source-only rollback은 검토된 revert다. 적용 후에는 TLS·audit 선언과 로그 custody를 유지하는
 검토된 override 또는 fix-forward만 사용한다. client도 검증된 endpoint로만 전환하며 HTTP나 audit 제거로 되돌리지 않는다.

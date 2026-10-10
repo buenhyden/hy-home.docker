@@ -1,0 +1,690 @@
+{
+  "work_id": "SEC01",
+  "owning_spec": "SPEC-0204",
+  "owning_task": "UNISSUED: user confirmed; no reserved ID is used",
+  "coordinator_thread": "01a12528-915d-7292-a988-916501db3032",
+  "worktree": "/tmp/hy-home-sec01",
+  "branch": "codex/sec01-stable-security",
+  "start_main_sha": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+  "confirmed_remote_main_sha": "cac9e10fa584754706598d624654e07e8d6531f4",
+  "common_writer": "Coordinator; this branch contains an unapplied proposal only",
+  "common_dependencies": [
+    {
+      "path": "tests/validation/test_service_runtime_compatibility.py",
+      "baseline_sha256": "ba81327060ab77a3f891608747e20020e94188ea3667965589d147da41a1619e",
+      "status": "FINAL SOURCE REAL FAIL: 22 tests,20PASS2FAIL EXIT1 on ec7fc88cef52d7af1e45be51fee1337beceeb973; untouched common validator stale OpenBao delivery assertion and digest-aware n8n parsing",
+      "proposal": "common-validator-integration.patch",
+      "required_action": "Review and integrate against current main, rerun real suite; this proposal is not an observed PASS",
+      "isolated_proposal_rehearsal": {
+        "meaning": "In-memory proposal test only; current common file remains unchanged and its real suite is still FAIL",
+        "input_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b + SEC01 owned dirty source",
+        "proposal_sha256": "132483b15732af080e4e9dc5fa21025ada4842810bc8c79a37a193baee34fb31",
+        "source_sha256": "e2bd942d27739ae4584b9a3b6573831f0449bc9a52d249cbdf58e098d2f1aef9",
+        "tests": 22,
+        "failures": 0,
+        "errors": 0,
+        "result": "PASS",
+        "full_source_input_sha256": "UNKNOWN: only submitted proposal/test bytes captured; baseline plus dirty repository is explicit",
+        "command": "python3: compile common-validator-integration.patch into memory with real __file__, unittest loader; no common file write"
+      },
+      "current_proposal_sha256": "4b0ae259bc7fe432f9369276e717cbbc062b46eb9a132fc96e24a92c948676ea",
+      "current_proposal_parse_check": "Combined runtime and AI/Renovate proposals git apply --check PASS; no target write"
+    },
+    {
+      "path": "scripts/manifest.yaml",
+      "status": "ACTUAL FAIL: two manifest-record-missing EXIT1; coordinator integration required",
+      "required_action": "Register two supply-chain libraries with current owning Task, authority and consumers; generated scripts README remains generator-owned"
+    },
+    {
+      "path": "docs/03.specs/0204-service-integration-security-and-operations/",
+      "status": "UNISSUED_TASK",
+      "required_action": "Issue valid SEC01 Task using current Registry after reconciliation; record this branch actual evidence without rewriting completed history"
+    },
+    {
+      "path": "infra/tech-stack.versions.json",
+      "status": "GENERATED_SEC01_DELTA",
+      "required_action": "Regenerate after preceding service/SMTP/CLN changes; preserve LAB entries"
+    },
+    {
+      "path": "infra/09-platform-ops/README.md",
+      "status": "PENDING_COORDINATOR_INTEGRATION",
+      "required_action": "Link owned security-updates family using existing navigation"
+    },
+    {
+      "path": "tests/validation/test_service_wiring_contracts.py",
+      "status": "Actual full changed gate FAIL: stale Ollama0.40.0 assertion and exact old Renovate pattern string",
+      "baseline_sha256": "397cbce780bd0cd0fe2ee1a03042b6f48f123f1808d9ce79022990f64fa0f29d",
+      "proposal": "common-validator-integration.patch",
+      "in_memory_only_test": {
+        "meaning": "In-memory AI class proposal only; shared validator source remains unchanged and actual full gate remains failed",
+        "baseline_sha256": "397cbce780bd0cd0fe2ee1a03042b6f48f123f1808d9ce79022990f64fa0f29d",
+        "proposed_source_sha256": "9b61ab1b64399f62d28e261a3da10bf71f55bc69860cca57cba345ca63873870",
+        "proposal_sha256": "4b0ae259bc7fe432f9369276e717cbbc062b46eb9a132fc96e24a92c948676ea",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "passed": true,
+        "input_revision": "d5cc05ac9da8154b0cb34233d09625fcc5537e80 + final held proposal; rerun 27 tests includes AI5"
+      }
+    },
+    {
+      "path": "docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md",
+      "status": "Remote candidate-quality FAIL: service-inventory-drift,7 Airflow Env cells; membership unchanged",
+      "proposal": "service-inventory-integration.patch",
+      "required_action": "Coordinator uses existing render_service_inventory and preserves authored historical rows; git apply --check PASS only"
+    }
+  ],
+  "gotrue_read_only_contract": {
+    "upstream_release_url": "https://github.com/supabase/auth/releases/tag/v2.197.0",
+    "image": "supabase/gotrue:v2.197.0",
+    "oci_index_digest": "sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b",
+    "linux_amd64_manifest_digest": "sha256:839f529492d116b4e8b7777c953a27c381d34c15a744b1bcefde5eefaa1f9f9f",
+    "config_digest": "sha256:1181bff5ba4ce440013a63cef9f4cf13024c432d705c9b1fbc9e5b949e852f48",
+    "user": "supabase (uid 1000)",
+    "entrypoint": null,
+    "cmd": [
+      "auth"
+    ],
+    "smtp_input": "GOTRUE_SMTP_PASS",
+    "file_conversion_owner": "SMTP01 adapter; native _FILE is not implemented",
+    "native_smtp": "NOT_RUN",
+    "signature_scan": "NOT_RUN",
+    "sources": [
+      "https://github.com/supabase/auth/blob/v2.197.0/Dockerfile",
+      "https://github.com/supabase/auth/blob/v2.197.0/internal/conf/configuration.go",
+      "https://github.com/supabase/auth/blob/v2.197.0/internal/conf/confload/confload.go"
+    ]
+  },
+  "p09_handoff": {
+    "status": "Preserved draft handed to separately authorized sole writer; this branch makes no P09 edits",
+    "thread": "01a12541-a020-7893-9649-43cfd94df608",
+    "worktree": "/tmp/hy-home-p09",
+    "owning_task": "SPEC-0204-TSK-0008 (explicitly issued in P09 chat)",
+    "previous_draft_test_input_sha256": "e82c4ef298bb9e788fb57608ec76501d4cdae54318514348f3a01689bccf2829",
+    "meaning": "Historical draft receipt only; active sole-writer revisions require new tests"
+  },
+  "operational_boundary": {
+    "HOME": "NOT_RUN: coordinator order, exact target, custody, restore and outage bound pending",
+    "MIGRATION": "NOT_RUN",
+    "ROTATION": "NOT_RUN",
+    "existing_material_deletion": "NOT_RUN; CLN01 owns after SMTP transition",
+    "RECOVERY": "ISOLATED synthetic only; real HOME NOT_RUN",
+    "LAB_runtime": "UNCHANGED",
+    "learning_apps": "OUT_OF_SCOPE",
+    "shared_SMTP_checkout": "NOT_MODIFIED_BY_SEC01"
+  },
+  "additional_actual_checks": [
+    {
+      "command": "bash .agents/skills/infra-validate/scripts/static-checks.sh",
+      "result": "FAIL",
+      "exit_code": 1,
+      "summary": {
+        "PASS": 9,
+        "FAIL": 2,
+        "BLOCKED": 4,
+        "NOT_RUN": 2
+      },
+      "failure_boundaries": [
+        "input graph unsupported; Compose render blocked",
+        "yaml-lint child exit2; shell-lint child exit3"
+      ],
+      "input_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b + tracked dirty source; complete aggregate UNKNOWN",
+      "script_sha256": "280d57f37dec5ae4f76ab09fc9303c27789514dc4974554da9a80f6aff0979c0",
+      "meaning": "No private env render, HOME action or static PASS is claimed"
+    },
+    {
+      "command": "python3 scripts/validation/check-document-metadata.py --mode check-changed --changed-path docs/05.operations/runbooks/0085-openbao.md --changed-path infra/03-security/openbao/README.md --base-ref HEAD",
+      "result": "PASS",
+      "exit_code": 0,
+      "selected": 2,
+      "violations": 0,
+      "input_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b + owned docs",
+      "input_hashes": {
+        "docs/05.operations/runbooks/0085-openbao.md": "61517d122ac4901bd35b21d2ccf754ee077a0e0a3eb292d045cdfae0d42ff8d0",
+        "infra/03-security/openbao/README.md": "edfd08244e7ea40a8644152d6153f60e175ca6065bbb3c6d374b824bba6f824f"
+      }
+    },
+    {
+      "command": "python3 -m unittest tests.validation.test_sec01_version_contract",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 3,
+      "input_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b + owned source pins"
+    },
+    {
+      "command": "bash scripts/validation/run-ci-precommit.sh --mode local-staged",
+      "result": "FAIL",
+      "exit_code": 1,
+      "staged_tree": "5e2e56abf68482ca179a94a4940bd6ccdedd822f",
+      "failure": "Airflow Dockerfile DL4006 pipefail; fix/rebuild/retest in progress",
+      "meaning": "Historical staged attempt; do not treat later candidate as this PASS"
+    },
+    {
+      "command": "python3 -m unittest tests.validation.test_tech_stack_versions",
+      "result": "FAIL",
+      "exit_code": 1,
+      "failure": "Mistyped test module; not a product regression. Correct command is tests.validation.test_tech_stack_version_contract."
+    },
+    {
+      "command": "python3 scripts/validation/check-doc-metadata.py --help",
+      "result": "FAIL",
+      "exit_code": 2,
+      "failure": "Wrong path; actual check-document-metadata.py ran successfully afterward."
+    },
+    {
+      "command": "python3 -m unittest tests.validation.test_tech_stack_version_contract",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 47,
+      "input_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b + owned source/projection",
+      "input_hashes": {
+        "tests/validation/test_tech_stack_version_contract.py": "4d9312e818180a7ed7f0a8fe1551999f28562f7c2353b4a45f44266140d0f191",
+        "infra/tech-stack.versions.json": "c88798913e2fced0e34a621ca33d975fbe86c15c91249465f64ea53d7468a269"
+      }
+    },
+    {
+      "command": "python3 -m unittest tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_grype_db_seed tests.lib.supply_chain.test_supply_chain_policy",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 71,
+      "input_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b + updated gate source",
+      "input_hashes": {
+        "scripts/lib/supply_chain/latest_version_gate.py": "9a90a7491e3a2f913d7b338a3b622491b12a48fdd4418e09a08d42aceede7cf4",
+        "scripts/lib/supply_chain/security_update_gate.py": "ff970ceea1d549f94a66df2a8c68c12d4d17b122e68b9787c679b799bb9d05b9",
+        "tests/lib/supply_chain/test_update_gates.py": "04643495bba2a6c686bcddf1c6241be3610608f789d9fa26ed40688c4134e7ff"
+      }
+    },
+    {
+      "command": "/tmp/p09-test-venv/bin/python -m coverage run --data-file=/tmp/sec01-openbao-final.coverage --source=infra/03-security/openbao/scripts -m unittest tests.lib.ops.test_openbao_issuance; separate coverage report --include */renderer-issuance.py --fail-under=80",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 35,
+      "coverage_percent": 92,
+      "statements": 407,
+      "input_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b + owned OpenBao source",
+      "meaning": "Synthetic offline state-machine tests; not native interruption/HOME evidence"
+    },
+    {
+      "command": "python3 -m unittest tests.validation.test_openbao_agent_contract tests.validation.test_openbao_candidate tests.lib.ops.test_openbao_issuance tests.validation.test_workflow_version_bundle",
+      "input_revision": "9cf2f5909f1be443cde16898e06fd7e1e8653b62 + owned OpenBao dirty source",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 68,
+      "skipped": 5,
+      "meaning": "Fresh tests after main integration; subsequent OpenBao lint changes need new receipt"
+    },
+    {
+      "command": "bash scripts/validation/run-ci-precommit.sh --mode local-staged",
+      "input_revision": "9cf2f5909f1be443cde16898e06fd7e1e8653b62 + staged OpenBao unit",
+      "result": "FAIL",
+      "exit_code": 1,
+      "failure": "Ruff format seven Python files and 32 lint findings; remaining applicable hooks PASS",
+      "resolution": "Owner fixing lint and rerunning native with fresh input SHA; old native receipts remain historical"
+    },
+    {
+      "command": "bash scripts/validation/run-ci-precommit.sh --mode local-staged",
+      "unit": "Root pins/projection",
+      "result": "FAIL then PASS",
+      "exit_code_history": [
+        1,
+        0
+      ],
+      "failure": "Single new test required Ruff formatting",
+      "meaning": "Style PASS only; reviewer caught commit-index dependency, so this unit remains uncommitted until OpenBao leaf"
+    },
+    {
+      "command": "bash scripts/validation/run-ci-precommit.sh --mode local-staged",
+      "unit": "Final lint-corrected OpenBao",
+      "input_revision": "9cf2f5909f1be443cde16898e06fd7e1e8653b62 + frozen staged OpenBao",
+      "native_input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+      "result": "PASS",
+      "exit_code": 0,
+      "meaning": "All applicable staged hooks pass; no native/HOME claim"
+    },
+    {
+      "command": "/tmp/p09-test-venv/bin/python -m coverage run --data-file=/tmp/sec01-openbao-linted.coverage --source=infra/03-security/openbao/scripts -m unittest tests.lib.ops.test_openbao_issuance; separate coverage report --include */renderer-issuance.py --fail-under=80",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 36,
+      "coverage_percent": 92,
+      "statements": 410,
+      "missed": 33,
+      "input_revision": "9cf2f5909f1be443cde16898e06fd7e1e8653b62 + frozen lint-corrected source",
+      "meaning": "Fresh offline receipt; native and HOME remain distinct"
+    },
+    {
+      "command": "HYHOME_OPENBAO_REHEARSAL=1 python3 -m unittest tests.validation.test_openbao_rehearsal -v",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 2,
+      "duration_seconds": 177.078,
+      "input_revision": "9cf2f5909f1be443cde16898e06fd7e1e8653b62 + frozen OpenBao source",
+      "input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+      "staged_tree": "3067dd57c144ea391ba62adeacc5a8e84c4f992f",
+      "meaning": "Exact 2.7.1 linux/amd64 synthetic native TLS/re-auth/reconciliation/audit/snapshot restore, cleanup complete; HOME and real custody NOT_RUN"
+    },
+    {
+      "command": "python3 -m unittest tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_grype_db_seed tests.lib.supply_chain.test_supply_chain_policy",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 71,
+      "input_revision": "9cf2f5909f1be443cde16898e06fd7e1e8653b62 + unchanged owned gate bytes"
+    },
+    {
+      "command": "git commit OpenBao unit",
+      "result": "FAIL then PASS",
+      "exit_code_history": [
+        1,
+        0
+      ],
+      "failure": "Actual global secret hook flagged public prompt token: and explicitly invalid synthetic literal",
+      "resolution": "Prompt text corrected and same synthetic value named INVALID_CREDENTIAL; independent security review PASS; no hook bypass or weakening"
+    },
+    {
+      "command": "python3 -m unittest tests.lib.ops.test_openbao_issuance tests.lib.ops.test_openbao_issuance_trust",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 36,
+      "input_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
+      "coverage_percent": 92,
+      "meaning": "Fresh split offline tests; native closure unchanged and independently verified"
+    },
+    {
+      "command": "python3 scripts/lib/supply_chain/security_update_gate.py --help",
+      "result": "FAIL",
+      "exit_code": 1,
+      "failure": "Direct library path lacks repository namespace on sys.path; documented python3 -m scripts.lib.supply_chain.security_update_gate --help PASS EXIT0",
+      "meaning": "Invocation error, not a gate acceptance receipt"
+    },
+    {
+      "command": "python3 scripts/validation/check-script-manifest.py --check-generated",
+      "input_revision": "ec7fc88cef52d7af1e45be51fee1337beceeb973 + staged evidence; tree f5846f4c275c79cb3fd78bf4312f44b5a6886eca",
+      "result": "FAIL",
+      "exit_code": 1,
+      "failures": 2,
+      "reason": "Both new supply-chain libraries lack coordinator-owned manifest rows; no common writer bypass"
+    },
+    {
+      "command": "python3 -m scripts.lib.supply_chain.latest_version_gate --input infra/09-platform-ops/security-updates/update-ledger.json",
+      "result": "BLOCKED_EVIDENCE",
+      "exit_code": 2,
+      "root_input_manifest_sha256": "3a2e7451e6211b43b9d8f9c9760fed0fcf5cdac381e45e1b2323628b60756f66",
+      "missing_services": [],
+      "unexpected_services": [],
+      "deployed": false,
+      "meaning": "Exact root coverage does not prove latest facts/scans/rollout"
+    },
+    {
+      "command": "python3 -m scripts.lib.supply_chain.security_update_gate --input infra/09-platform-ops/security-updates/update-ledger.json",
+      "result": "BLOCKED_EVIDENCE",
+      "exit_code": 2,
+      "meaning": "Update survey is not an independently reviewed security scan/recovery ledger; no rollout acceptance"
+    },
+    {
+      "command": "bash scripts/validation/run-ci-precommit.sh --mode local-staged",
+      "result": "FAIL",
+      "exit_code": 1,
+      "staged_tree": "f5846f4c275c79cb3fd78bf4312f44b5a6886eca",
+      "reason": "Gitleaks reported 34 public source-digest path maps as generic-api-key; source digests independently matched public files",
+      "resolution": "Represent paths and SHA256 in separate fields; preserve all evidence and do not add scanner allowlist or bypass. Fresh staged check required"
+    },
+    {
+      "command": "python3 scripts/validation/run-ci-gate.py --profile changed --local-only",
+      "result": "RUNNING",
+      "input_revision": "ec7fc88cef52d7af1e45be51fee1337beceeb973 + staged evidence; initial tree f5846f4c275c79cb3fd78bf4312f44b5a6886eca",
+      "meaning": "Real execution, not --explain; evidence representation correction may change data bytes while it runs; do not claim final exact-head PASS"
+    },
+    {
+      "command": "bash scripts/validation/run-ci-precommit.sh --mode local-staged",
+      "result": "PASS",
+      "exit_code": 0,
+      "unit": "Final evidence with separated path/SHA records",
+      "meaning": "All applicable checks including unchanged gitleaks passed; earlier34falsepositive receipt retained"
+    },
+    {
+      "command": "python3 -m unittest tests.validation.test_service_runtime_compatibility",
+      "result": "FAIL",
+      "exit_code": 1,
+      "tests": 22,
+      "passed": 20,
+      "failed": 2,
+      "input_revision": "ec7fc88cef52d7af1e45be51fee1337beceeb973",
+      "meaning": "Fresh real common source; no patch applied"
+    },
+    {
+      "command": "git apply --check infra/09-platform-ops/security-updates/common-validator-integration.patch",
+      "result": "PASS",
+      "exit_code": 0,
+      "input_revision": "ec7fc88cef52d7af1e45be51fee1337beceeb973",
+      "proposal_sha256": "456f1c39e218c2760a49fade9b541d82a91cc4a174149821101bcc04ad125db4",
+      "meaning": "Parse/preimage check only, not applied common suite PASS"
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "FAIL then PASS",
+      "exit_code_history": [
+        2,
+        0
+      ],
+      "reason": "Two empty unified context lines carried trailing space; removed prefix while preserving Git accepted patch semantics"
+    },
+    {
+      "command": "python3 scripts/validation/run-ci-gate.py --profile changed --local-only",
+      "result": "FAIL",
+      "exit_code": 1,
+      "input_revision": "Start ec7fc88cef52d7af1e45be51fee1337beceeb973 + staged evidence; data receipt changes while running, no final exact-head PASS claimed",
+      "failures": [
+        "Two checkout group-write permission assertions",
+        "Two shared AI version/Renovate assertions",
+        "Two shared runtime assertions"
+      ],
+      "resolution": "Exactly two isolated checkout script modes775→755; impacted19testsPASS; shared4assertions remain FAIL awaiting coordinator proposals"
+    },
+    {
+      "command": "python3 -m unittest tests.validation.test_openwebui_oidc_entrypoint tests.validation.test_gatus_oidc",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 19,
+      "input_revision": "d5cc05ac9da8154b0cb34233d09625fcc5537e80 plus recorded local permission-only changes",
+      "meaning": "Public source script bytes/Git modes unchanged; HOME unchanged"
+    },
+    {
+      "command": "gh run view 38050312745 --json status,conclusion,headSha,jobs",
+      "result": "FAIL",
+      "head_sha": "d5cc05ac9da8154b0cb34233d09625fcc5537e80",
+      "failure_code": "service-inventory-drift",
+      "drift_count": 7,
+      "CodeQL": "PASS",
+      "main-security": "SKIP",
+      "meaning": "Actual remote result; no admin bypass or merge"
+    },
+    {
+      "command": "git apply --check /tmp/sec01-service-inventory-integration.patch",
+      "result": "FAIL then PASS",
+      "exit_code_history": [
+        128,
+        0
+      ],
+      "reason": "First parse-check ran before asynchronous renderer completed; retry on complete patch PASS, no common write"
+    },
+    {
+      "command": "ruff format --check and ruff check on /tmp/sec01-proposed-formatted/tests/validation/test_service_{runtime_compatibility,wiring_contracts}.py; in-memory unittest execution bound to real repository __file__",
+      "result": "PASS",
+      "exit_code": 0,
+      "tests": 27,
+      "runtime_tests": 22,
+      "ai_tests": 5,
+      "proposal_sha256": "4b0ae259bc7fe432f9369276e717cbbc062b46eb9a132fc96e24a92c948676ea",
+      "meaning": "Proposed common assertions only; actual coordinator-owned files were not changed"
+    }
+  ],
+  "upstream_delta": {
+    "pr": "https://github.com/buenhyden/hy-home.docker/pull/414",
+    "changed_paths": [
+      "docs/03.specs/0204-service-integration-security-and-operations/spec.md",
+      "docs/03.specs/0204-service-integration-security-and-operations/plan.md",
+      "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0008-llm-wiki-preparation.md"
+    ],
+    "integration": "MERGED latest main cac9e10fa584754706598d624654e07e8d6531f4 without conflicts; SEC01 merge commit 9cf2f5909f1be443cde16898e06fd7e1e8653b62; fresh scoped 68 tests:63 PASS,5 SKIP EXIT0",
+    "p09_writer_stop_confirmation": "CONFIRMED IN THIS SESSION: P09 agent stopped; no subsequent P09 writes/staging/commits by SEC01"
+  },
+  "active_contract_reconciliation": {
+    "writer": "Coordinator",
+    "scope": "Narrow SEC01 owning Task and active contracts; completed P00/P01 history remains byte-preserved",
+    "required_updates": [
+      "Record active requirements 11-30; latest vendor stable is the target, versions below latest require explicit interim/compatibility action and 7-day validation deadline.",
+      "Preserve PR409/410 TLS/audit/readiness/snapshot source as applied; SEC01 owns fixed candidate re-verification, operator wrapping bypass removal and durable failed-issuance cleanup.",
+      "Replace active prohibition on LAB document moves with P08 Stage05 LAB document movement to each type labs/ folder; LAB runtime/code/secrets/data/images remain excluded.",
+      "LLM Wiki remains offline preparation owned by issued P09 Task0008 in its sole-writer chat; no app/resources/workspace/schedules/blog writes.",
+      "SMTP01 owns canonical SMTP consumer path and COMM-002/003; CLN01 performs deletion only after proven consumer transition, backup/recovery and coordinator order.",
+      "Separate source/UNIT/STATIC/ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY/DELIVERY and preserve missing target/credentials as scoped NOT_RUN; do not repeat approval already granted for source/tests/commit/PR."
+    ],
+    "criterion_and_task_ids": "UNISSUED for SEC01: use actual Registry procedure; no reservation or inferred ID"
+  },
+  "gate_input_sha256_at_latest_read": "a075429af812f6acf47b0a9c3d83c79ccc5c2ca173267d96ceb60fb33dce27b1 (historical pre-gitleaks-representation correction)",
+  "gate_independent_review": {
+    "reviewer": "p00_security",
+    "result": "PASS: expected-root source binding and non-rollout self-attestation findings closed",
+    "targeted_tests": 21,
+    "meaning": "Source/UNIT review only; vendor facts/scans/deployment remain independently unverified"
+  },
+  "delivery": {
+    "status": "Draft PR416 OPEN/HOLD; pushed source head d5cc05ac9da8154b0cb34233d09625fcc5537e80; actual candidate-quality FAIL and local changed gate FAIL; coordinator common integration pending",
+    "logical_commits": [
+      {
+        "sha": "4042290c2",
+        "unit": "Airflow/n8n stable build bundles",
+        "staged_precommit": "PASS EXIT0",
+        "source_tests": "5 PASS,3 SKIP",
+        "isolated_tests": "8 PASS EXIT0",
+        "rollback": "Restore prior source build bundle; no HOME rollout performed. DB migration rollback requires independently verified backup/restore."
+      },
+      {
+        "sha": "8fa3d4375430f5e23f1bd2668e4f71173e0ed3f1",
+        "unit": "OpenBao bounded issuance/cleanup/installer/recovery",
+        "input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+        "staged_precommit": "PASS EXIT0; actual unchanged commit hook PASS after safe public example corrections",
+        "offline_tests": "Both issuance modules36PASS; standard coverage92%; negative candidate+modules39total37PASS2SKIP",
+        "isolated_tests": "2PASS EXIT0 177.078s",
+        "rollback": "Restore prior reviewed source; HOME rollback requires pre-upgrade snapshot and independently held unseal material restored in empty prior-version environment; HOME NOT_RUN"
+      },
+      {
+        "sha": "07d36ec90eb302b0c0713955809154b819646a64",
+        "unit": "Grafana/Ollama pinned candidates and Renovate discovery",
+        "input_sha256": "138313ea596492efad4c197180d3816fa2e5b7f31c62f6bf3c18730288c1ce1a",
+        "source_tests": "3PASS EXIT0 on committed OpenBao dependency",
+        "staged_precommit": "PASS EXIT0",
+        "rollback": "Revert reviewed source pin; native HOME/data format rollback NOT_RUN"
+      },
+      {
+        "sha": "ec7fc88cef52d7af1e45be51fee1337beceeb973",
+        "unit": "Existing generator image projection",
+        "source_tests": "47PASS EXIT0; existing generator --write in sync",
+        "staged_precommit": "PASS EXIT0",
+        "rollback": "Regenerate from approved leaf revisions; no separate manual projection owner"
+      }
+    ],
+    "merge_commit": "9cf2f5909f1be443cde16898e06fd7e1e8653b62",
+    "merge_hold": "Coordinator common integration and SEC01 Task issuance, latest-head required CI and independent review; HOME target/custody/restore unverified",
+    "pr_url": "https://github.com/buenhyden/hy-home.docker/pull/416",
+    "push": "DONE; no force push",
+    "common_merge": "NOT_RUN"
+  },
+  "independent_review": [
+    {
+      "reviewer": "p09_review",
+      "unit": "Airflow/n8n",
+      "result": "PASS final exact isolated bundle; 8 tests PASS",
+      "input_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf"
+    },
+    {
+      "reviewer": "p00_security",
+      "unit": "Final OpenBao security source",
+      "result": "PASS no Critical/High/Important findings; full-source re-review because no pre-lint snapshot retained",
+      "input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+      "tests": "62 offline total,59PASS3nativeSKIP EXIT0; native2PASS exactdigest",
+      "limits": "HOME custody/install/cold boot/rotation/recovery NOT_RUN"
+    },
+    {
+      "reviewer": "p09_review",
+      "unit": "Root pins/projection staging",
+      "result": "FAIL index dependency: projection and OpenBao assertion preceded unstaged leaf",
+      "resolution": "Entire pin unit deferred until OpenBao commit. Preserve generated working projection; regenerate after all leaf commits. No inconsistent commit created."
+    },
+    {
+      "reviewer": "p09_review",
+      "unit": "Grafana/Ollama/Renovate source",
+      "result": "Conditional PASS after OpenBao dependency commit; no runtime fields or release-age control changed",
+      "input_sha256": "138313ea596492efad4c197180d3816fa2e5b7f31c62f6bf3c18730288c1ce1a",
+      "tests": 3,
+      "exit_code": 0
+    }
+  ],
+  "automatic_approval_review": {
+    "rejected_action": "Remove global Renovate minimumReleaseAge for all managers",
+    "reason": "Unnecessarily weakens broad update stability control",
+    "performed": false,
+    "safe_resolution": "Retain seven-day release-age, approval and no-automerge controls; make explicit reviewed SEC01 candidate changes"
+  },
+  "execution_states": {
+    "SOURCE": "Implemented and independently reviewed candidate changes; all-root update ledger retains unresolved/latest and compatibility facts",
+    "UNIT": "Scoped regression suites PASS; exact inputs recorded",
+    "STATIC": "Applicable staged style checks PASS; broad infra static checker remains FAIL/BLOCKED as recorded",
+    "ISOLATED": "OpenBao2.7.1 two native synthetic tests and Airflow/n8n eight immutable-candidate tests PASS",
+    "HOME": "NOT_RUN",
+    "MIGRATION": "NOT_RUN",
+    "ROTATION": "NOT_RUN",
+    "RECOVERY": "ISOLATED synthetic snapshot restore PASS; actual HOME recovery NOT_RUN",
+    "DELIVERY": "Logical commits and draft PR IN_PROGRESS; coordinator common integration and actual latest-head CI pending"
+  },
+  "remaining_interfaces": [
+    {
+      "consumer": "Coordinator",
+      "contract": "Issue SEC01 owning Task; apply common validator proposal/manifest registration/family navigation against latest main, rerun gates, sequence merges"
+    },
+    {
+      "consumer": "SMTP01",
+      "contract": "GoTrue2.197.0 version/index/platform/config/USER/entrypoint/argv/GOTRUE_SMTP_PASS facts above; native _FILE adapter and consumer transition remain SMTP01 responsibility"
+    },
+    {
+      "consumer": "CLN01",
+      "contract": "Do not remove update targets solely for disabled profile or absent traffic; confirmed disposal and SMTP transition must precede actual deletion"
+    },
+    {
+      "consumer": "P09 sole writer",
+      "contract": "Earlier draft preserved; zero further SEC01 P09 writes. Issued Task0008 and full requirements remain that chat responsibility"
+    }
+  ],
+  "handoff_stop_reason": "Intentional incomplete integration handoff: task-owned logical units will be committed; foreign shared-checkout edits are preserved. SEC01 Task/common integration and coordinator-held deployment/merge are pending; no fabricated operational PASS.",
+  "changed_files": [
+    "docs/05.operations/runbooks/0085-openbao.md",
+    "infra/03-security/openbao/README.md",
+    "infra/03-security/openbao/config/policies/operator.hcl",
+    "infra/03-security/openbao/config/policies/renderer-cleanup.hcl",
+    "infra/03-security/openbao/config/policies/renderer-issuer.hcl",
+    "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
+    "infra/03-security/openbao/config/renderer-issuer-token-role.json",
+    "infra/03-security/openbao/docker-compose.yml",
+    "infra/03-security/openbao/scripts/check-tls-material.sh",
+    "infra/03-security/openbao/scripts/install-renderer-issuer.sh",
+    "infra/03-security/openbao/scripts/issue-renderer-secret-id.sh",
+    "infra/03-security/openbao/scripts/renderer-issuance.py",
+    "infra/06-observability/docker-compose.yml",
+    "infra/07-workflow/airflow/Dockerfile",
+    "infra/07-workflow/airflow/README.md",
+    "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+    "infra/07-workflow/airflow/docker-compose.yml",
+    "infra/07-workflow/n8n/Dockerfile",
+    "infra/07-workflow/n8n/README.md",
+    "infra/07-workflow/n8n/dev.Dockerfile",
+    "infra/07-workflow/n8n/docker-compose.yml",
+    "infra/08-ai/ollama/docker-compose.yml",
+    "infra/09-platform-ops/security-updates/README.md",
+    "infra/09-platform-ops/security-updates/build-inputs.json",
+    "infra/09-platform-ops/security-updates/common-validator-integration.patch",
+    "infra/09-platform-ops/security-updates/image-source-lookups.json",
+    "infra/09-platform-ops/security-updates/integration-handoff.json",
+    "infra/09-platform-ops/security-updates/package-lookups.json",
+    "infra/09-platform-ops/security-updates/release-lookups.json",
+    "infra/09-platform-ops/security-updates/service-inventory-integration.patch",
+    "infra/09-platform-ops/security-updates/tool-readiness.json",
+    "infra/09-platform-ops/security-updates/update-ledger.json",
+    "infra/09-platform-ops/security-updates/vendor-channel-references.json",
+    "infra/09-platform-ops/security-updates/verification.json",
+    "infra/tech-stack.versions.json",
+    "renovate.json5",
+    "scripts/lib/supply_chain/latest_version_gate.py",
+    "scripts/lib/supply_chain/security_update_gate.py",
+    "tests/lib/ops/test_openbao_issuance.py",
+    "tests/lib/ops/test_openbao_issuance_trust.py",
+    "tests/lib/supply_chain/test_update_gates.py",
+    "tests/validation/_openbao_rehearsal_clients.py",
+    "tests/validation/_openbao_rehearsal_fixture.py",
+    "tests/validation/test_openbao_agent_contract.py",
+    "tests/validation/test_openbao_candidate.py",
+    "tests/validation/test_openbao_rehearsal.py",
+    "tests/validation/test_sec01_version_contract.py",
+    "tests/validation/test_workflow_version_bundle.py"
+  ],
+  "deleted_files": [],
+  "next_actions": [
+    {
+      "owner": "Coordinator",
+      "status": "NOT_RUN",
+      "input": "Current merged source commits and common-validator-integration.patch; issue SEC01 Task using current Registry",
+      "command": "python3 -m unittest tests.validation.test_service_runtime_compatibility; python3 scripts/validation/check-script-manifest.py --check-generated; python3 scripts/validation/run-ci-gate.py --profile changed --local-only"
+    },
+    {
+      "owner": "SEC01/approved operations",
+      "status": "NOT_RUN",
+      "input": "Exact ledger service+platform+candidate digest; existing scanner registry and trusted DB/signature inputs",
+      "command": "Use existing registered Syft/Grype/Cosign source owners against same current/candidate linux/amd64 digest; record actual receipts. Exact commands are in service rows; no replacement scanner stack"
+    },
+    {
+      "owner": "Coordinator/host operator",
+      "status": "NOT_RUN",
+      "input": "Exact HOME host/selected service bundle, pre-upgrade backup/custody/empty restore proof, service-specific outage bound",
+      "command": "Execute the reviewed owning Task runbook only after target and recovery boundaries are established; broad compose up/down/prune prohibited"
+    },
+    {
+      "owner": "P09 sole writer",
+      "status": "UNKNOWN active implementation revision",
+      "input": "Issued SPEC-0204-TSK-0008; preserved prior draft in /tmp/hy-home-p09",
+      "command": "Continue and verify in sole-writer chat; no SEC01 P09 modification"
+    }
+  ],
+  "final_evidence_gate_input_sha256": "51217e28a6504f7a936a8ed5d96e3ed86adda0dfac60976201b798a55ddc6a66",
+  "final_public_source_snapshot_sha256": "3bb30de47143739442207653cb011f7ebdca39b1bfd48efae0371e604819683b",
+  "checkout_mode_corrections": [
+    {
+      "path": "infra/08-ai/open-webui/docker-entrypoint.sh",
+      "before": "0o775",
+      "after": "0o755",
+      "sha256": "14877d02058a57866436a93effa88e586bbdf62ec8785320bfe92faf8d24b1fb",
+      "content_unchanged": true,
+      "scope": "isolated SEC01 checkout only; no shared checkout/HOME mutation",
+      "rollback": "Restore original mode only in this isolated checkout if required"
+    },
+    {
+      "path": "infra/06-observability/gatus/docker-entrypoint.sh",
+      "before": "0o775",
+      "after": "0o755",
+      "sha256": "4d4264b50f8fd4998bded541461fba7db51a86b34c07a7418ed88c0eff6b6f2f",
+      "content_unchanged": true,
+      "scope": "isolated SEC01 checkout only; no shared checkout/HOME mutation",
+      "rollback": "Restore original mode only in this isolated checkout if required"
+    }
+  ],
+  "current_integration_proposals": [
+    {
+      "path": "infra/09-platform-ops/security-updates/common-validator-integration.patch",
+      "sha256": "4b0ae259bc7fe432f9369276e717cbbc062b46eb9a132fc96e24a92c948676ea",
+      "command": "git apply --check infra/09-platform-ops/security-updates/common-validator-integration.patch",
+      "result": "PASS",
+      "exit_code": 0,
+      "input_revision": "d5cc05ac9da8154b0cb34233d09625fcc5537e80 + held integration proposals",
+      "applied": false
+    },
+    {
+      "path": "infra/09-platform-ops/security-updates/service-inventory-integration.patch",
+      "sha256": "fc8781fffac25372129f0e46c33c94902a003dd53b55e72df5143c69b8879a99",
+      "command": "git apply --check infra/09-platform-ops/security-updates/service-inventory-integration.patch",
+      "result": "PASS",
+      "exit_code": 0,
+      "input_revision": "d5cc05ac9da8154b0cb34233d09625fcc5537e80 + held integration proposals",
+      "applied": false
+    }
+  ],
+  "independent_review_followup": {
+    "findings": [
+      "Trailing added-space in common proposal",
+      "Runtime proposal needed Ruff formatting",
+      "Committed inventory proposal missing staged-path hash binding"
+    ],
+    "resolution": "Regenerated formatted common proposal; final repository proposal paths/hashes and checks bound; final readonly re-review requested",
+    "result": "PASS",
+    "reviewer": "Independent readonly agent /root/p09_review",
+    "remaining_findings": [],
+    "scope": "Six-file public handoff only; both final proposal checks and runtime22+AI5 PASS; actual common gate and delivery HOLD"
+  }
+}

@@ -312,7 +312,11 @@ class OpenBaoClientCases:
         preflight = ["sh", str(SOURCE / "scripts/check-tls-material.sh")]
         self.must(
             captured(
-                [*preflight, str(fixture.tls), "openbao/openbao:2.6.2"],
+                [
+                    *preflight,
+                    str(fixture.tls),
+                    "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+                ],
                 allow_failure=True,
             ).returncode
             == 0,
@@ -361,7 +365,11 @@ class OpenBaoClientCases:
         for invalid in invalid_dirs:
             self.must(
                 captured(
-                    [*preflight, str(invalid), "openbao/openbao:2.6.2"],
+                    [
+                        *preflight,
+                        str(invalid),
+                        "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+                    ],
                     allow_failure=True,
                 ).returncode
                 != 0,

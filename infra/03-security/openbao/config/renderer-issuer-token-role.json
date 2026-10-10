@@ -1,0 +1,10 @@
+{
+  "allowed_policies": [
+    "renderer-issuer"
+  ],
+  "orphan": true,
+  "renewable": false,
+  "token_explicit_max_ttl": "5m",
+  "token_no_default_policy": true,
+  "token_type": "service"
+}
