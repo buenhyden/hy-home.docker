@@ -1,8 +1,4 @@
-"""SMTP01 source contract and exact, fail-closed duplicate retirement.
-
-Never emits models, private metadata, values, hashes or lengths. Audit receipts
-are facts, not authorization. The caller supplies current operator authorization.
-"""
+"""SMTP01 fail-closed source/retirement contract; receipts are facts, not authority."""
 
 from __future__ import annotations
 
@@ -13,12 +9,14 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import secrets
 import socket
 import stat
 import subprocess
 from contextlib import ExitStack, contextmanager
 from copy import deepcopy
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 CANONICAL = "smtp_password"
@@ -29,6 +27,30 @@ METADATA_PATH = "secrets/SENSITIVE_ENV_VARS.md"
 LOCK_PATH = "secrets/.smtp01-retirement.lock"
 ALIAS_HEADER = b"| Retired ID | Canonical ID |\n| --- | --- |\n"
 ALIAS_ROW = b"| COMM-003 | COMM-002 |\n"
+MAX_PROOF_BYTES = 32_768
+PROOF_OPERATION = "retire-supabase-smtp"
+PROOF_TARGET = "COMM-003"
+PROOF_KEYS = frozenset(
+    {
+        "host",
+        "git_sha",
+        "source_sha256",
+        "old_mount_consumers",
+        "job_backup_external_verified",
+        "canonical_restore_mapping_verified",
+        "consumer_creation_quiesced",
+        "source_private_mutation_quiesced",
+        "root_identity",
+        "operation",
+        "target",
+        "observation_id",
+        "approval_record",
+        "observed_at",
+        "expires_at",
+    }
+)
+_SAFE_PROOF_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}\Z")
+_UTC_TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\Z")
 
 
 class ContractError(ValueError):
@@ -133,7 +155,9 @@ def metadata_retired(data):
     for line in data.splitlines(keepends=True):
         cells = [cell.strip().strip(b"*`").strip() for cell in line.split(b"|")]
         identifier = cells[1] if len(cells) > 2 else b""
-        if len(cells) == 10 and identifier == b"COMM-002":
+        if identifier == b"COMM-002":
+            if len(cells) != 10:
+                raise ContractError("metadata_canonical_drift")
             canonical += 1
             if cells[6] != CANONICAL_PATH.encode():
                 raise ContractError("metadata_canonical_drift")
@@ -182,7 +206,7 @@ def root_identity(root):
 
 @contextmanager
 def retirement_lock(root, expected_identity=None):
-    """Shared SMTP01/CLN01 cooperative exclusive lock on this exact root.
+    """SMTP01 cooperative exclusive lock on this exact root.
 
     The persistent lock is nofollow, owner-only and single-link. Quiescence
     receipts remain necessary for actors that do not honor this protocol.
@@ -258,13 +282,11 @@ def _unchanged(parent, name, snapshot):
         raise ContractError("concurrent_file_change")
 
 
-def source_hashes(root):
-    """Hash only public root and included Compose source, never secret files."""
+def _source_documents(root):
     import yaml
 
     from scripts.lib.document_governance.operations_catalog import _ComposeLoader
 
-    root = Path(root)
     pending, hashes, documents = ["docker-compose.yml"], {}, []
     while pending:
         relative = pending.pop()
@@ -304,6 +326,10 @@ def source_hashes(root):
                 raise ContractError("unsafe_compose_path")
             resolved = path.parent / item
             pending.append(str(resolved.relative_to(root)))
+    return hashes, documents
+
+
+def _validate_source_documents(documents):
     root_document = documents[0]
     unified = unify(root_document)
     if unified != root_document:
@@ -340,6 +366,13 @@ def source_hashes(root):
                     auth_seen = True
     if not auth_seen:
         raise ContractError("auth_alias_missing")
+
+
+def source_hashes(root):
+    """Hash only public root and included Compose source, never secret files."""
+    root = Path(root)
+    hashes, documents = _source_documents(root)
+    _validate_source_documents(documents)
     return hashes
 
 
@@ -349,11 +382,130 @@ def _run(arguments, root=None):
     ).stdout
 
 
-def verify_proof(root, proof):
-    receipt = json.loads(Path(proof).read_bytes())
-    revision = _run(["git", "rev-parse", "HEAD"], root).decode().strip()
+def _now():
+    return datetime.now(UTC)
+
+
+def _unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ContractError("audit_receipt_invalid")
+        result[key] = value
+    return result
+
+
+def _unsafe_proof_file(before, opened):
+    return (
+        not stat.S_ISREG(opened.st_mode)
+        or opened.st_nlink != 1
+        or opened.st_uid != os.geteuid()
+        or stat.S_IMODE(opened.st_mode) != 0o600
+        or opened.st_size > MAX_PROOF_BYTES
+        or _identity(before) != _identity(opened)
+    )
+
+
+def _proof_bytes(root, proof):
+    path = Path(proof)
+    root = Path(root).absolute()
     if (
-        receipt.get("host") != socket.gethostname()
+        not path.is_absolute()
+        or any(part in (".", "..") for part in path.parts)
+        or path.is_relative_to(root)
+        or not path.name
+    ):
+        raise ContractError("unsafe_audit_receipt")
+    with ExitStack() as stack:
+        parent = _directory(Path("/"), path.parent.relative_to("/"), stack)
+        parent_info = os.fstat(parent)
+        if (
+            parent_info.st_uid != os.geteuid()
+            or stat.S_IMODE(parent_info.st_mode) != 0o700
+        ):
+            raise ContractError("unsafe_audit_receipt")
+        before = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        if not stat.S_ISREG(before.st_mode):
+            raise ContractError("unsafe_audit_receipt")
+        try:
+            fd = os.open(
+                path.name,
+                os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+                dir_fd=parent,
+            )
+        except OSError:
+            raise ContractError("unsafe_audit_receipt") from None
+        stack.callback(os.close, fd)
+        opened = os.fstat(fd)
+        if _unsafe_proof_file(before, opened):
+            raise ContractError("unsafe_audit_receipt")
+        chunks, size = [], 0
+        while True:
+            chunk = os.read(fd, min(8192, MAX_PROOF_BYTES + 1 - size))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            size += len(chunk)
+            if size > MAX_PROOF_BYTES:
+                raise ContractError("unsafe_audit_receipt")
+        after = os.fstat(fd)
+        named = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        if _identity(opened) != _identity(after) or _identity(after) != _identity(
+            named
+        ):
+            raise ContractError("audit_receipt_changed")
+        return b"".join(chunks)
+
+
+def _proof_time(value):
+    if not isinstance(value, str) or not _UTC_TIMESTAMP.fullmatch(value):
+        raise ContractError("audit_receipt_invalid")
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
+    except ValueError:
+        raise ContractError("audit_receipt_invalid") from None
+
+
+def _proof_receipt(root, proof):
+    try:
+        receipt = json.loads(
+            _proof_bytes(root, proof), object_pairs_hook=_unique_object
+        )
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        raise ContractError("audit_receipt_invalid") from None
+    if not isinstance(receipt, dict) or set(receipt) != PROOF_KEYS:
+        raise ContractError("audit_receipt_invalid")
+    for field in ("observation_id", "approval_record"):
+        value = receipt[field]
+        if not isinstance(value, str) or not _SAFE_PROOF_ID.fullmatch(value):
+            raise ContractError("audit_receipt_invalid")
+    observed = _proof_time(receipt["observed_at"])
+    expires = _proof_time(receipt["expires_at"])
+    now = _now()
+    if (
+        observed > now + timedelta(seconds=30)
+        or now - observed > timedelta(minutes=5)
+        or expires <= observed
+        or now >= expires
+        or expires - now < timedelta(minutes=5)
+        or expires - observed > timedelta(minutes=15)
+    ):
+        raise ContractError("audit_receipt_stale")
+    return receipt
+
+
+def verify_proof(root, proof):
+    receipt = _proof_receipt(root, proof)
+    revision = _run(["git", "rev-parse", "HEAD"], root).decode().strip()
+    try:
+        _run(["git", "diff", "--quiet", "HEAD", "--"], root)
+        _run(["git", "diff", "--cached", "--quiet"], root)
+    except subprocess.SubprocessError:
+        raise ContractError("tracked_source_dirty") from None
+    if (
+        receipt["operation"] != PROOF_OPERATION
+        or receipt["target"] != PROOF_TARGET
+        or receipt.get("host") != socket.gethostname()
         or receipt.get("git_sha") != revision
         or receipt.get("source_sha256") != source_hashes(root)
         or receipt.get("old_mount_consumers") != []
@@ -378,14 +530,7 @@ def verify_proof(root, proof):
             if source == old or source == old.parent:
                 raise ContractError("old_runtime_mount")
             if old.is_relative_to(source):
-                # Only the registered encrypted Restic retention mount may
-                # contain the parent secret tree, and it must be read-only.
-                if not (
-                    source == Path(root) / "secrets"
-                    and mount.get("Destination") == "/src/host/secrets"
-                    and mount.get("RW") is False
-                ):
-                    raise ContractError("old_runtime_parent_mount")
+                raise ContractError("old_runtime_parent_mount")
 
 
 def _rename_noreplace(parent, source, target):
@@ -407,11 +552,7 @@ def _rename_noreplace(parent, source, target):
 
 
 def _quarantine_remove(parent, name, snapshot, on_mutation=None):
-    """Move the exact name, validate the moved inode, then remove only it.
-
-    Operator quiescence is still required for same-UID descriptor writers.
-    On a failed restore conflict, preserve the quarantine inode for recovery.
-    """
+    """Validate the moved inode; preserve it if restore conflicts."""
     temporary = ".smtp-quarantine-" + secrets.token_hex(16)
     _rename_noreplace(parent, name, temporary)
     if on_mutation:
@@ -448,11 +589,7 @@ def _remove_empty_directory(superparent, name, original):
 
 
 def _publish_metadata(parent, snapshot, updated, on_mutation=None):
-    """Validate displaced private rows before publishing with no-overwrite.
-
-    A briefly absent metadata name is covered by the shared cooperative lock
-    and operator quiescence. Any newly raced name is preserved, never replaced.
-    """
+    """Publish under the SMTP01 lock without replacing a raced name."""
     staged = ".smtp-retirement-" + secrets.token_hex(16)
     displaced = ".smtp-metadata-quarantine-" + secrets.token_hex(16)
     fd = os.open(
@@ -518,6 +655,63 @@ def _metadata_matches(parent, updated, stack):
     _unchanged(parent, "SENSITIVE_ENV_VARS.md", snapshot)
 
 
+def _retirement_inputs(root, stack):
+    canonical_parent = _directory(root, Path(CANONICAL_PATH).parent, stack)
+    canonical = _snapshot(canonical_parent, Path(CANONICAL_PATH).name, stack)
+    if not canonical[2]:
+        raise ContractError("empty_canonical")
+    metadata_parent = _directory(root, "secrets", stack)
+    metadata = _snapshot(metadata_parent, "SENSITIVE_ENV_VARS.md", stack)
+    old_superparent = old_parent = old = None
+    try:
+        old_superparent = _directory(root, Path(OLD_PATH).parent.parent, stack)
+        old_parent = _directory(root, Path(OLD_PATH).parent, stack)
+        old = _snapshot(old_parent, Path(OLD_PATH).name, stack, required=False)
+    except FileNotFoundError:
+        pass
+    return (
+        canonical_parent,
+        canonical,
+        metadata_parent,
+        metadata,
+        old_superparent,
+        old_parent,
+        old,
+    )
+
+
+def _inputs_unchanged(
+    canonical_parent, canonical, metadata_parent, metadata, old_parent, old
+):
+    _unchanged(canonical_parent, Path(CANONICAL_PATH).name, canonical)
+    _unchanged(metadata_parent, "SENSITIVE_ENV_VARS.md", metadata)
+    if old:
+        _unchanged(old_parent, Path(OLD_PATH).name, old)
+
+
+def _retire_name(root, proof, verifier, stack, inputs, updated, on_mutation):
+    (
+        canonical_parent,
+        canonical,
+        metadata_parent,
+        _,
+        old_superparent,
+        old_parent,
+        old,
+    ) = inputs
+    _unchanged(canonical_parent, Path(CANONICAL_PATH).name, canonical)
+    verifier(root, proof)
+    if old:
+        _unchanged(old_parent, Path(OLD_PATH).name, old)
+        _quarantine_remove(old_parent, Path(OLD_PATH).name, old, on_mutation)
+    _old_absent(root, stack)
+    verifier(root, proof)
+    if old_parent is not None:
+        _remove_empty_directory(old_superparent, Path(OLD_PATH).parent.name, old_parent)
+    _old_absent(root, stack)
+    _metadata_matches(metadata_parent, updated, stack)
+
+
 def retire(
     root,
     apply=False,
@@ -531,19 +725,9 @@ def retire(
     with ExitStack() as stack:
         if apply:
             stack.enter_context(retirement_lock(root))
-        canonical_parent = _directory(root, Path(CANONICAL_PATH).parent, stack)
-        canonical = _snapshot(canonical_parent, Path(CANONICAL_PATH).name, stack)
-        if not canonical[2]:
-            raise ContractError("empty_canonical")
-        metadata_parent = _directory(root, "secrets", stack)
-        metadata = _snapshot(metadata_parent, "SENSITIVE_ENV_VARS.md", stack)
+        inputs = _retirement_inputs(root, stack)
+        _, canonical, metadata_parent, metadata, _, old_parent, old = inputs
         updated = metadata_retired(metadata[2])
-        try:
-            old_superparent = _directory(root, Path(OLD_PATH).parent.parent, stack)
-            old_parent = _directory(root, Path(OLD_PATH).parent, stack)
-            old = _snapshot(old_parent, Path(OLD_PATH).name, stack, required=False)
-        except FileNotFoundError:
-            old_parent, old = None, None
         equal = old[2] == canonical[2] if old else None
         if equal is False:
             raise ContractError("password_mismatch")
@@ -558,36 +742,14 @@ def retire(
         if proof is None:
             raise ContractError("audit_receipt_required")
         verifier(root, proof)
-        _unchanged(canonical_parent, Path(CANONICAL_PATH).name, canonical)
-        _unchanged(metadata_parent, "SENSITIVE_ENV_VARS.md", metadata)
-        if old:
-            _unchanged(old_parent, Path(OLD_PATH).name, old)
+        _inputs_unchanged(*inputs[:4], old_parent, old)
         if before_commit:
             before_commit()
-        _unchanged(canonical_parent, Path(CANONICAL_PATH).name, canonical)
-        _unchanged(metadata_parent, "SENSITIVE_ENV_VARS.md", metadata)
-        if old:
-            _unchanged(old_parent, Path(OLD_PATH).name, old)
-        # Preserve and compare the displaced private rows before publication.
+        _inputs_unchanged(*inputs[:4], old_parent, old)
         if updated != metadata[2]:
             _publish_metadata(metadata_parent, metadata, updated, on_mutation)
         _metadata_matches(metadata_parent, updated, stack)
-        # Check again after metadata commit: a changed old file is preserved.
-        _unchanged(canonical_parent, Path(CANONICAL_PATH).name, canonical)
-        verifier(root, proof)
-        if old:
-            _unchanged(old_parent, Path(OLD_PATH).name, old)
-            _quarantine_remove(old_parent, Path(OLD_PATH).name, old, on_mutation)
-        _old_absent(root, stack)
-        verifier(root, proof)
-        # Remove only an already-empty old directory. The tracked .gitkeep is
-        # retired by the source commit; unknown extra entries remain untouched.
-        if old_parent is not None:
-            _remove_empty_directory(
-                old_superparent, Path(OLD_PATH).parent.name, old_parent
-            )
-        _old_absent(root, stack)
-        _metadata_matches(metadata_parent, updated, stack)
+        _retire_name(root, proof, verifier, stack, inputs, updated, on_mutation)
         return 0, {"status": "retired", "equal": equal, "applied": True}
 
 

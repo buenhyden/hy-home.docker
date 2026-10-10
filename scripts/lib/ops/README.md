@@ -24,7 +24,10 @@ updated: "2026-10-10"
 
 SMTP 검사는 `scripts/operations/gen-secrets.sh --retire-supabase-smtp-check`로
 호출합니다. 적용은 현재 호스트·Git SHA·공개 Compose source와 소비자 검사에
-묶인 audit receipt가 필요합니다. 실제 삭제는 SMTP01 전환 이후 CLN01이 소유합니다.
+묶인 짧은 유효기간의 운영자 소유 audit receipt가 필요합니다. SMTP01이 정확한
+COMM-003 경로의 유일한 삭제 executor이고 CLN01은 소비자 판정과 보류를 소유합니다.
+SMTP01과 CLN01의 잠금은 별개이므로 공통 잠금 검증으로 해석하지 않습니다.
+실제 삭제는 현재 소비자·백업·복구 및 운영자 실행 권한 확인 전까지 미실행입니다.
 
 ## Related Documents
 

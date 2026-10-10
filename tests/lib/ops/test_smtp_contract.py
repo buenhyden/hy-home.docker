@@ -3,7 +3,6 @@
 import io
 import json
 import os
-import socket
 import tempfile
 import unittest
 from copy import deepcopy
@@ -336,131 +335,6 @@ class SMTPContractTests(unittest.TestCase):
                 with self.assertRaises(ContractError):
                     metadata_retired(data)
 
-    def test_source_mapping_and_proof(self):
-        self._prepare()
-        public_source = self.tree
-        tmp_path = self.root
-        hashes = module.source_hashes(public_source)
-        assert set(hashes) == {"docker-compose.yml", "infra/auth.yml"}
-        proof = tmp_path / "proof.json"
-        receipt = {
-            "host": socket.gethostname(),
-            "git_sha": "synthetic-sha",
-            "source_sha256": hashes,
-            "old_mount_consumers": [],
-            "job_backup_external_verified": True,
-            "canonical_restore_mapping_verified": True,
-            "consumer_creation_quiesced": True,
-            "source_private_mutation_quiesced": True,
-            "root_identity": {
-                "st_dev": public_source.stat().st_dev,
-                "st_ino": public_source.stat().st_ino,
-            },
-        }
-        proof.write_text(json.dumps(receipt))
-        self.setattr(
-            module,
-            "_run",
-            lambda argv, root=None: b"synthetic-sha\n" if argv[0] == "git" else b"",
-        )
-        module.verify_proof(public_source, proof)
-        for field in receipt:
-            changed = dict(receipt)
-            changed[field] = None
-            proof.write_text(json.dumps(changed))
-            with self.assertRaisesRegex(ContractError, "audit_receipt_stale"):
-                module.verify_proof(public_source, proof)
-
-    def test_live_mount_verification(self):
-        for mount, rejected in [
-            (
-                {
-                    "Type": "bind",
-                    "Source": "OLD",
-                    "Destination": "/run/secrets/x",
-                    "RW": False,
-                },
-                True,
-            ),
-            (
-                {"Type": "bind", "Source": "PARENT", "Destination": "/x", "RW": False},
-                True,
-            ),
-            (
-                {
-                    "Type": "bind",
-                    "Source": "SECRETS",
-                    "Destination": "/src/host/secrets",
-                    "RW": False,
-                },
-                False,
-            ),
-            (
-                {
-                    "Type": "bind",
-                    "Source": "SECRETS",
-                    "Destination": "/src/host/secrets",
-                    "RW": True,
-                },
-                True,
-            ),
-            (
-                {"Type": "volume", "Source": "OLD", "Destination": "/x", "RW": False},
-                False,
-            ),
-            (
-                {
-                    "Type": "bind",
-                    "Source": "/unrelated",
-                    "Destination": "/x",
-                    "RW": False,
-                },
-                False,
-            ),
-        ]:
-            with self.subTest():
-                self._prepare()
-                public_source = self.tree
-                proof = public_source / "proof.json"
-                proof.write_text(
-                    json.dumps(
-                        {
-                            "host": socket.gethostname(),
-                            "git_sha": "sha",
-                            "source_sha256": module.source_hashes(public_source),
-                            "old_mount_consumers": [],
-                            "job_backup_external_verified": True,
-                            "canonical_restore_mapping_verified": True,
-                            "consumer_creation_quiesced": True,
-                            "source_private_mutation_quiesced": True,
-                            "root_identity": {
-                                "st_dev": public_source.stat().st_dev,
-                                "st_ino": public_source.stat().st_ino,
-                            },
-                        }
-                    )
-                )
-                mounted = dict(mount)
-                mounted["Source"] = {
-                    "OLD": str(public_source / OLD_PATH),
-                    "PARENT": str((public_source / OLD_PATH).parent),
-                    "SECRETS": str(public_source / "secrets"),
-                }.get(mount["Source"], mount["Source"])
-
-                def command(argv, root=None, mounted=mounted):
-                    if argv[0] == "git":
-                        return b"sha"
-                    if argv[1] == "ps":
-                        return b"synthetic-container"
-                    return json.dumps([mounted]).encode()
-
-                self.setattr(module, "_run", command)
-                if rejected:
-                    with self.assertRaises(ContractError):
-                        module.verify_proof(public_source, proof)
-                else:
-                    module.verify_proof(public_source, proof)
-
     def test_source_cutover_guard(self):
         for change in [
             "root_old",
@@ -728,7 +602,7 @@ class SMTPContractTests(unittest.TestCase):
         assert retire(self.tree)[0] == 1
         assert not (self.tree / LOCK_PATH).exists()
 
-    def test_shared_lock_is_persistent_exclusive_and_identity_bound(self):
+    def test_smtp_lock_is_persistent_exclusive_and_identity_bound(self):
         self._prepare()
         identity = root_identity(self.tree)
         with retirement_lock(self.tree, identity) as actual:
@@ -748,7 +622,7 @@ class SMTPContractTests(unittest.TestCase):
             ):
                 self.fail("wrong root identity must fail")
 
-    def test_shared_lock_rejects_symlink_hardlink_and_wrong_mode(self):
+    def test_smtp_lock_rejects_symlink_hardlink_and_wrong_mode(self):
         for unsafe in ("symlink", "hardlink", "mode"):
             with self.subTest(unsafe=unsafe):
                 self._prepare()

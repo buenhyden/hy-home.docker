@@ -275,7 +275,8 @@ The only eventual unlink target is
 The owning operator must supply host, current source SHA, exact public Compose
 input hashes, zero old-mount consumers, verified job/backup/external consumers
 and canonical restore mapping in the sanitized receipt described by RUN-0029.
-The receipt proves facts; it does not authorize execution by itself. Current
+The receipt records operator attestations; structural checks do not verify
+their truth or authorize execution by themselves. Current
 integration instructions hold deletion to CLN01/the coordinator. The helper
 rejects mismatches, links and source drift, preserves canonical bytes and other
 private rows, and rewrites COMM-003 only as a two-column alias before unlink.
@@ -298,23 +299,73 @@ The accepted contract preserves `supabase_smtp_password` as the target and
 promotes only SMTP to `wrapper` after exact-image proof; other unsupported
 Supabase keys and whole-platform readiness remain unresolved.
 
-SEC01's final GoTrue image contract is not yet confirmed. The user explicitly
-allows the current digest-fixed image rehearsal and requires platform/digest
-receipts. SEC01's final tag/digest/USER/Entrypoint/Cmd requires a fresh rehearsal;
-current metadata is not evidence of SEC01 latest-version, security or migration
-completion. P09 writing belongs to SEC01; SMTP01 authors no P09 package or
-production Wiki client. Its future interface is COMM-002 ownership, the canonical
+SEC01 supplied the final read-only GoTrue contract in its handoff: v2.197.0,
+OCI index sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b,
+linux/amd64, USER supabase (uid 1000), Entrypoint null and Cmd auth. It matches
+the frozen rehearsal fixture. The coordinator ran the current integrated
+fixture again: 10 PASS in 48.635 seconds, exit 0, on e7bff9149 with e93e0c822
+merge inputs; helper d6b8c9c1, Compose 6a9c289a, fixture 794e314f. This is
+ISOLATED evidence and does not prove latest-version, security or HOME migration
+completion. P09 writing belongs to the separately assigned sole writer under
+SPEC-0204-TSK-0008; SMTP01 authors no P09 package or production Wiki client. Its future interface is COMM-002 ownership, the canonical
 file and service-specific render of the same entry. COMM-003 remains a value-free
 alias; future OpenBao render must not create another SMTP value.
 
-CLN01 and apply must use the same actual root identity and persistent
-`secrets/.smtp01-retirement.lock`, not a similarly named lock in another worktree.
+SMTP01 apply binds the exact actual root identity to its persistent
+`secrets/.smtp01-retirement.lock`. CLN01 uses a separate lock; the compatibility
+probe acquired both and therefore failed. CLN01 rejects COMM-003 by ID and exact
+path, leaving SMTP01 as its sole proposed unlink executor. No shared-lock
+interoperability or operational exclusion is accepted from that probe.
 The receipt adds `root_identity` (device/inode), `consumer_creation_quiesced`
 and `source_private_mutation_quiesced`. These are facts, not authorization; the
 operator must freeze the exact consumer-creation and public/private writer paths.
 Current host quiescence, backup/restore and external consumer evidence are UNKNOWN.
 Current actual comparison, lock acquisition, apply and deletion are NOT_RUN.
 RUN-0029 owns partial-failure handling and exact named-host recovery boundaries.
+
+#### Coordinator proof and isolation replacement
+
+The coordinator merged main `e93e0c8223191bf26aea7578a231b2dbf016fc7c`
+into the received `e7bff9149f29a4bbb23d977dadf01f5988ee12fc`, preserving
+SEC01/CLN01/P09 sources and uncommitted changes in their separate worktrees.
+The merge commit is `8fc5f8089`; common-file delivery remains coordinated.
+
+Independent review found the earlier retirement receipt accepted stale,
+unowned/symlinked proof and an unverified read-only Restic parent mount. New
+negative tests reproduced 17 failures against the old reader; a malformed
+COMM-002 duplicate also failed its focused regression. The replacement requires
+an external owner-only descriptor-read receipt with exact unique JSON keys,
+operation/target, observation/expiry, clean tracked HEAD/index and no old-path
+ancestor mount. Documentary approval identifiers are not authentication.
+RUN-0029 uses a fresh unpredictable `mktemp` directory. It no longer claims
+CLN01 and SMTP01 share a lock; CLN01's COMM-003 ID/path hard hold prevents a
+second executor. Same-UID noncooperative writes, private authority authenticity,
+complete live consumers and actual backup/restore facts remain unverified.
+
+The frozen helper is
+`e00cbb01c73a6d4364d72f245585c3fa587431ecf3010392a39617a15f361b4b`;
+existing unit is `72c22ebc73216eee1dd1d87b2c33bca2db27aea22fa896b3ed8cfea65cae937f`;
+new proof unit is `e2ab26793ed38ff1e828737201411574372b02ab579eeca800b1c968463bab0e`;
+RUN-0029 is `61ba24acedee6128f3bbde46abef90aaaa5ea2933a0061aa528563b81051d98a`.
+The coordinator and independent reviewers ran
+`python -m unittest tests.lib.ops.test_smtp_contract tests.lib.ops.test_smtp_proof tests.validation.test_smtp_generator -q`:
+45 PASS, exit 0. Helper coverage replay: statements 94.81 percent, branches 89.38
+percent, combined 93.21 percent (540 statements,
+28 missed; 226 branches, 24 missing). This is
+not a native/HOME claim.
+Ruff, size and diff checks passed; every modified source function has fewer
+than 50 lines and files fewer than 800.
+
+The rehearsal fixture was separately refactored without changing its public API
+or startup contract. Replacement hash is
+`141341830bc2aa1e40b984d51b50dc686e77899278b843b534f0bddd68cc997d`.
+The coordinator ran `HYHOME_SUPABASE_SMTP_REHEARSAL=1 python -m unittest tests.validation.test_supabase_smtp_rehearsal -v`
+on the current merged inputs and frozen fixture: 10 PASS, exit 0, 52.076 seconds.
+This supersedes the historical 48.635-second coordinator run on fixture 794e314f.
+Compose hash remains `6a9c289a24c1bc2a0e4b846dddf2719bc917595de2c21734d80003a2188dedf9`;
+GoTrue index/USER/Entrypoint/Cmd match SEC01's read-only contract. This uses only
+owned temporary synthetic resources; actual HOME/private comparison, catalog
+mutation, COMM-003 deletion, rotation and real recovery all remain NOT_RUN.
 
 #### Command receipts
 
