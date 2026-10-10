@@ -1,0 +1,262 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z][a-z0-9-]{1,62}$"
+    },
+    "mode": {
+      "const": "preparation-only"
+    },
+    "registration": {
+      "$ref": "urn:hyhome:registration:v1"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "repository": {
+            "enum": [
+              "buenhyden/blog-data",
+              "buenhyden/Project-Template",
+              "buenhyden/hy-home.docker",
+              "buenhyden/hy-home.k8s"
+            ]
+          },
+          "ref": {
+            "enum": [
+              "dev",
+              "main"
+            ]
+          },
+          "revision": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[a-f0-9]{40}$"
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9_-][A-Za-z0-9_.-]*(?:/[A-Za-z0-9_-][A-Za-z0-9_.-]*)*$"
+            },
+            "minItems": 1,
+            "maxItems": 128,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "repository",
+          "ref",
+          "revision",
+          "paths"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "classification": {
+      "enum": [
+        "internal",
+        "confidential"
+      ]
+    },
+    "identity": {
+      "type": "object",
+      "properties": {
+        "issuer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^https://[a-z0-9.-]+/realms/[a-z0-9-]+$"
+        },
+        "audience": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-z][a-z0-9-]{1,62}$"
+        }
+      },
+      "required": [
+        "issuer",
+        "audience"
+      ],
+      "additionalProperties": false
+    },
+    "namespace": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z][a-z0-9-]{1,62}$"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "read",
+          "append-candidate",
+          "project-migrate"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "valkey_commands": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "GET",
+          "SET",
+          "DEL",
+          "EXPIRE",
+          "HGET",
+          "HSET"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "qdrant_rbac": {
+      "type": "object",
+      "properties": {
+        "collection": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-z][a-z0-9-]{1,62}$"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "project-reader",
+              "project-writer"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "collection",
+        "roles"
+      ],
+      "additionalProperties": false
+    },
+    "egress": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256,
+        "pattern": "^https://[a-z0-9.-]+$"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "metric_labels": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "operation",
+          "result",
+          "environment"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "max_metric_series": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "retention_days": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "backup": {
+      "type": "object",
+      "properties": {
+        "owner": {
+          "enum": [
+            "infra",
+            "project"
+          ]
+        },
+        "rpo_seconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rto_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "restore_drill": {
+          "const": "NOT_RUN"
+        }
+      },
+      "required": [
+        "owner",
+        "rpo_seconds",
+        "rto_seconds",
+        "restore_drill"
+      ],
+      "additionalProperties": false
+    },
+    "disabled_by_design": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "wiki-runtime",
+          "workspace-create",
+          "secret-issue",
+          "blog-write",
+          "wiki-schedule",
+          "resource-provision"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "project_id",
+    "mode",
+    "registration",
+    "sources",
+    "classification",
+    "identity",
+    "namespace",
+    "permissions",
+    "valkey_commands",
+    "qdrant_rbac",
+    "egress",
+    "metric_labels",
+    "max_metric_series",
+    "retention_days",
+    "backup",
+    "disabled_by_design"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:hyhome:wiki-preparation:consumer-manifest:v1",
+  "title": "consumer-manifest"
+}

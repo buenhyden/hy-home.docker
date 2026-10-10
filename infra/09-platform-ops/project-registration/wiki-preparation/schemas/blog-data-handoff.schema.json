@@ -1,0 +1,213 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z][a-z0-9-]{1,62}$"
+    },
+    "mode": {
+      "const": "preparation-only"
+    },
+    "repository": {
+      "const": "buenhyden/blog-data"
+    },
+    "base_sha": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "selected": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256,
+        "pattern": "^[a-z][a-z0-9-]{1,62}$"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[a-z][a-z0-9-]{1,62}$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9_-][A-Za-z0-9_.-]*(?:/[A-Za-z0-9_-][A-Za-z0-9_.-]*)*$"
+          },
+          "sha256": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "kind": {
+            "const": "literature-candidate"
+          }
+        },
+        "required": [
+          "id",
+          "path",
+          "sha256",
+          "kind"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "allowed_paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256,
+        "pattern": "^(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9_-][A-Za-z0-9_.-]*(?:/[A-Za-z0-9_-][A-Za-z0-9_.-]*)*$"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "write_set": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[a-z][a-z0-9-]{1,62}$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9_-][A-Za-z0-9_.-]*(?:/[A-Za-z0-9_-][A-Za-z0-9_.-]*)*$"
+          },
+          "sha256": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "path",
+          "sha256"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "selected": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[a-z][a-z0-9-]{1,62}$"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "base_sha": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "status": {
+          "const": "synthetic-approved"
+        }
+      },
+      "required": [
+        "selected",
+        "base_sha",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "conflict": {
+      "const": "reject-stale-base"
+    },
+    "receipt": {
+      "type": "object",
+      "properties": {
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "base_sha": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "write_set_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "state": {
+          "enum": [
+            "proposed",
+            "synthetic-accepted"
+          ]
+        }
+      },
+      "required": [
+        "idempotency_key",
+        "base_sha",
+        "write_set_sha256",
+        "state"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "project_id",
+    "mode",
+    "repository",
+    "base_sha",
+    "selected",
+    "candidates",
+    "allowed_paths",
+    "write_set",
+    "approval",
+    "conflict",
+    "receipt"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:hyhome:wiki-preparation:blog-data-handoff:v1",
+  "title": "blog-data-handoff"
+}

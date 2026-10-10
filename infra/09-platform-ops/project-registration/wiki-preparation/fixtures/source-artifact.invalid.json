@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "project_id": "other-project",
+  "mode": "preparation-only",
+  "source": {
+    "repository": "buenhyden/blog-data",
+    "ref": "dev",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "paths": [
+      "Literature/synthetic.md"
+    ]
+  },
+  "path": "Literature/synthetic.md",
+  "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "retrieved_at": "2026-10-10T00:00:00Z",
+  "effective_at": "2026-10-10T00:00:00Z",
+  "rights": {
+    "license": "UNKNOWN",
+    "basis": "synthetic-fixture",
+    "verified": false
+  },
+  "acl": {
+    "project_id": "example-project",
+    "readers": [
+      "example-project-reader"
+    ]
+  },
+  "provenance": {
+    "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "artifact_sha256": "ec32b2d2486e1016b4ffca72a25f7c1e5540894ed5f1d3fadaa0b46ec04cc26a",
+    "synthetic": true
+  },
+  "versions": {
+    "parser": "synthetic-1",
+    "chunker": "synthetic-1",
+    "embedding": "disabled"
+  },
+  "generation": 1,
+  "idempotency_key": "ec32b2d2486e1016b4ffca72a25f7c1e5540894ed5f1d3fadaa0b46ec04cc26a",
+  "events": [],
+  "enforcement": [
+    "search",
+    "point-query",
+    "citation",
+    "download",
+    "cache",
+    "old-generation"
+  ],
+  "access_state": "allowed",
+  "evaluated_sequence": 0,
+  "surface_watermarks": {
+    "search": 0,
+    "point-query": 0,
+    "citation": 0,
+    "download": 0,
+    "cache": 0,
+    "old-generation": 0
+  },
+  "tombstone": false
+}

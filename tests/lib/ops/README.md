@@ -12,12 +12,16 @@ created: "2026-10-10"
 
 ## Overview
 
-`tests/lib/ops/`는 운영 helper의 순수 동작과 합성 filesystem 사례를 검증합니다.
-실제 비밀값, HOME 서비스와 업무 데이터는 시험 입력이 아닙니다.
+`tests/lib/ops/`는 운영 helper의 순수 동작과 합성 입력을 검증합니다. 실제
+비밀값, HOME 서비스와 업무 데이터는 시험 입력이 아닙니다.
 
 ## Scope
 
-- SMTP 모델 변환, grant 충돌, 안전한 metadata 전환과 퇴역 거부를 검증합니다.
+- `test_compose_core_readiness.py`는 Compose readiness helper를 검증합니다.
+- `test_wiki_preparation.py`는 P09 준비 계약 helper의 허용·거절 경계를 검증합니다.
+
+- `test_smtp_contract.py`와 `test_smtp_proof.py`는 SMTP 모델·grant·metadata 전환과
+  안전한 퇴역 거부를 합성 입력으로 검증합니다.
 - 단위 결과는 native SMTP, 실제 파일 삭제나 HOME 복구 증거가 아닙니다.
 
 ## Related Documents
