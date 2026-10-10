@@ -525,9 +525,9 @@ class DatastoreBoundaryAdditionalTests(unittest.TestCase):
         record = OwnedContainer("8" * 64, "attempt-x", "i8", PG, self.IMAGE_ID, False)
         resources._track_container(record)
         client.reset_mock()
-        messages = (f"Error: No such object: {record.container_id}", f"Error response from daemon: No such container: {record.container_id}")  # fmt: skip
+        messages = (f"Error: No such object: {record.container_id}", f"Error response from daemon: No such container: {record.container_id}", f"error: no such object: {record.container_id}")  # fmt: skip
         for message in messages:
-            client.run_result.return_value = self.result(1, stderr=message)
+            client.run_result.return_value = self.result(1, stdout="[]\n" if message != messages[0] else "", stderr=message)  # fmt: skip
             self.assertFalse(resources._container_present(record))
             self.assertEqual(client.run_result.mock_calls, [mock.call("inspect", record.container_id)])  # fmt: skip
             client.reset_mock()
