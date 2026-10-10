@@ -720,6 +720,16 @@ remain unresolved, so there is still no independently proven UNUSED_DELETE
 private target. Unknowns are not converted to consumer absence. LAB runtime
 and learning/Wiki implementation remain excluded.
 
+### Superseding Local Main Delivery
+
+The latest instruction selects local `main` only and prohibits dev. Preserve the
+recorded earlier delivery instruction as history; it does not authorize a dev
+merge now. The public empty-directory marker deletion and canonical SMTP README
+correction are source changes with 98 focused regression tests passing. No private
+UNUSED_DELETE candidate has independently closed all current-consumer and recovery
+axes, so private apply and recovery remain NOT_RUN. Preserve positive initialization,
+manual and rollback consumers and foreign dirty worktrees during local integration.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |

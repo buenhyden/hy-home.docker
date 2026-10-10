@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.5"
+version: "0.4.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -723,6 +723,153 @@ part of this local disposition, and no hosted CI PASS is inferred. Historical
 PR receipts remain unchanged. Only merged clean coordinator-owned worktrees
 may be removed; other workers' dirty paths, ignored evidence and ongoing
 operators are preserved. Operational acceptance remains separate and pending.
+
+### Superseded Dev Selection and Current Public Source Refresh
+
+The preceding, now superseded instruction selected local `dev` as the
+integration target and authorizes completing merge preparation and cleanup
+without PRs. At inspection neither local `dev` nor `develop` existed; local
+`main` was `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`. A clean temporary `dev` worktree was created and later removed with its branch
+after the superseding main-only instruction, before any task commits reached dev.
+Preserve foreign dirty worktrees and ignored operational evidence.
+No remote write or hosted CI claim is authorized by this local disposition.
+
+Service commits `f7130b743`, `c16f4b4be`, `5093473e2`, `3a5a7af80` and tool
+commits `b03f72e2a`, `b654ad677`, `c0de568c5`, `7f8f23e44` were independently
+reviewed and merged with their logical history. SOURCE pins are Redis exporter
+1.93.0, OAuth2 Proxy 7.15.5, Tempo 3.1.0, OpenTofu 1.13.1, Great Expectations
+1.24.0 and k6 2.3.0. LAB exporter remains unchanged. These are candidate source
+updates; final custom-build identities, signatures, CVEs, native compatibility,
+HOME and recovery remain separate pending evidence.
+
+The coordinator rechecked official public release/tag, registry index and
+linux/amd64 manifest/config metadata plus PyPI artifact metadata. Immutable
+public receipt SHA-256 is
+`484012e9855c5e3e95c105d79eac0d80048801a19e2d5d6b14988faefa428382`,
+observed `2026-10-10T19:14:00.945688Z`. Trust is official public HTTPS metadata
+and digest integrity; signatures are not verified. Existing release/source
+lookups retain these facts, and ten existing service ledger rows preserve
+historical actual-running observations while recording new source inputs.
+Final custom image digests remain UNKNOWN. No duplicate inventory was created.
+
+The registered version renderer changed eight projected images without adding
+or removing repositories; freshness check passed. Operations catalog check
+passed. The first hardening run failed because the root and excluded LAB
+exporters correctly differed. Commit `2b81466cae9a9f7071703aad0436740c2de3373b`
+scopes the existing registry lookup to an exact Compose source; malformed,
+duplicate, missing or globally inconsistent sources are refused. Independent
+review found and repaired a dual-command-substitution false success with a
+meaningful RED regression. Six final tests, staged gate and fresh independent
+review passed. The final seven-tier hardening command exited 0 after merge.
+
+The two new stable-candidate test modules are required before the optional
+runtime separator and selected by changed-path routing. Meaningful missing
+registration assertions failed twice before repair; the combined routing,
+workflow and candidate run passed 60 tests, exit 0. These are SOURCE/UNIT/STATIC
+receipts and do not complete all root stable/security acceptance.
+
+### Reviewed Datastore Retry Inputs
+
+Native boundary commit `9c23d21211636611387bd6500df2e80e5de5bd31` is integrated.
+Observation source SHA-256 is
+`cdd7b0c4743c896baa62871b028c584000a2756e5a41f04d901cdffa9e807eb8`,
+boundary tests `bcf4ef40efe895e564aebb94be561b8f265005b92a0e2792a14df24c23a72af0`.
+Nineteen offline tests passed and eleven opt-in native cases were skipped;
+independent review and staged checks passed. The current Compose exporter is
+now the verified 1.93.0 linux/amd64 candidate. Its exact cache-only acquisition
+must precede another isolated run; native test code does not pull images.
+The next actual attempt has not run. Previous overall native failures and
+separate successful absence checks remain unchanged.
+
+### Authenticated Public Image Scan Admission
+
+The coordinator selects exactly one cached public GoTrue v2.197.0
+linux/amd64 subject. Manifest SHA-256 is
+`847460cd150ba225bd4ac6adfbadcd609c47e30e1e2bbaec44578e1b535c921c`;
+its read-only cached inspection is
+`3b37ef893e1117a7e10eb7c05d84e41df11ff77257c6617d2c2e0ee8c98443b0`.
+Both bind the public receipt above, exact index/platform/config identities,
+image size, ordered RootFS diff IDs and six compressed-layer pairs. This is
+public configuration/layer verification, not private application state.
+
+Independent review found no P1/P2 in operator
+`7386d77f111e316bde79a035abe09ca61e92b056b81dc158ceeb2d136f156df2`,
+pure helper `64b3cd20b83d5fb425bf4fa35ae628fa34f10395d49d090c32d93197fd689ac7`
+and tests `2a5e28bad131c262543d87ae1d5ddb961c773304ce2db3d8df00407a5c7f89e0`.
+Twenty-four synthetic tests passed; coverage is 90/88 percent for operator/helper.
+The approved exact command in the SEC01 operator worktree is
+`/usr/bin/python3.12 -I -S .agent-work/scan-authenticated-local-images.py --manifest /home/hyunyoun/data/hy-home.docker/.worktrees/integration-acceptance-followup/.agent-work/public-scan-first-batch.json --manifest-sha 847460cd150ba225bd4ac6adfbadcd609c47e30e1e2bbaec44578e1b535c921c`.
+
+The utility imports the authenticated database once; uses network none,
+read-only rootfs, drop ALL, no-new-privileges, UID/GID 1000, only four public
+read-only binds, CPU two, PID 64, ten-GiB memory/swap and bounded two-GiB
+work/six-GiB cache tmpfs. Admission requires twelve-GiB host MemAvailable.
+Exact cached public image save is capped at two GiB and 300 seconds; SBOM and
+CVE outputs are capped at 128/64 MiB and each scanner phase at 300 seconds.
+The session has 3,600 seconds plus 120-second cleanup and ten-second reap.
+No pulls, private sources, service activation or concurrent datastore native
+attempt are allowed. Exact owned cleanup and immutable success/failure
+receipts are mandatory. Image signatures remain UNKNOWN. Actual scan is
+NOT_RUN at admission; even completed scans are evidence only and cannot
+satisfy all current-stable/security, HOME or recovery acceptance.
+
+### Public Scan Admission Failure and Reviewed Retry
+
+The first exact approved command failed at manifest preflight, exit 1,
+2026-10-10T19:33:42.882382Z, elapsed 0.001 seconds. Immutable failed receipt
+SHA-256 is `6843eb8036ff22c57873416d2e15832126358f2cd6418269432d4a6f791e69c8`. No Docker container, image save or scanner ran. The manifest
+used Docker Hub's short repository form although the strict manifest grammar
+requires an explicit registry. The subsequent cached projection uses the short
+form, so changing only the manifest would also fail.
+
+The narrow repaired helper permits only the exact full/short Docker Hub pair
+for an approved fully qualified repository/digest. Other hosts, aliases, paths,
+digests and malformed projections remain refused. Operator SHA-256 is now
+`dcdfceee505520604554e3d73fdcca85dd64da68105b6d115a167e648ce0a27d`,
+helper `88686b01bce4e2f18cf933ef876f4dc6d55a61573ca8f1b79717ff37a394e453`,
+and new focused alias tests
+`3aab2d5fb5f74763e352ab0f5a1734a18e0a59f604f63d6ab8e05c0eca873497`.
+Twenty-seven synthetic tests passed; coverage remains 90/88 percent.
+Exact independent re-review found no P1/P2 and ran pure validation of the
+actual replacement manifest against the frozen cached projection successfully.
+
+The replacement mode-0400 manifest is
+`.agent-work/public-scan-first-batch-qualified.json` in the coordinator worktree,
+SHA-256 `268bdcdb8996c7b0db9d6483f488492cfb5b1d65ce839f82a386a9407091fe63`.
+It differs only by the explicit `docker.io/` prefix. Reuse the same finite
+execution command and all resource/cleanup bounds above with this exact path
+and SHA. The old manifest, frozen sources and failed receipt remain immutable.
+The retry is NOT_RUN at admission and does not permit more subjects, private
+state, live services or a wider retry budget.
+
+### Second Public Scan Failure and Current Delivery Target
+
+The fully qualified manifest retry failed at public image save, exit 1 after
+121.653 seconds. Immutable receipt SHA-256 is
+`10372f52d3b8478bcf403ee67df85dbdd977581cd10352a0a4252d31e703c2a8`.
+Authenticated database import and status exited 0; exact owned utility cleanup
+was verified absent. Docker returned `No such image` for the inspected platform
+manifest ID; the save stdout was empty. Neither Syft nor Grype scanned this
+service. Preserve the failure receipt and original frozen inputs. A narrow source
+repair must save the approved repository digest with explicit `linux/amd64`, while
+retaining pre/post image identity and archive configuration/layer checks; an exact
+new freeze, meaningful regression and independent review precede any third run.
+
+The latest explicit instruction supersedes dev: integrate only into local `main`,
+without PRs, remote push or remote merge. The unused clean dev worktree and branch
+were removed. Current local main is
+`a31a38ca29ee8e0683a29e61bf41347bfddc3d62`; the same SHA was observed on
+remote main. Preserve service-unit commits and original author history. Source
+integration includes independently reviewed fixes, candidates, projections and
+CI routing. The full 124-entry latest/security gates still exit 2, with
+`ready=false` and `ledger_complete=false`; this is not production acceptance.
+
+Both registered changed aggregate profiles exited 1 at the same committed-HEAD
+Task evidence regression: Task 0005's old Acceptance phrase was outside the
+registered domain. Its pending correction needs a logical commit before the
+clone-based regression can see it. Other completed checks retain their individual
+results, but the aggregates remain FAIL until a fresh complete run passes. No
+validator exception or false aggregate PASS is permitted.
 
 ## Evidence
 

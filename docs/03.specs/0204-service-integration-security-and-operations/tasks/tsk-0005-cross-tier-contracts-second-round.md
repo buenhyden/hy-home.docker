@@ -1105,6 +1105,64 @@ freeze precede the next audit. Snapshot metadata, full integrity, actual restore
 SMTP send/authentication, external consumer absence and HOME activation remain
 NOT_RUN or unverified; the reported restore is not accepted by this continuation.
 
+#### Reviewed Missing-parent Audit Repair
+
+The current auditor SHA-256 is
+`5b3dc1c463958d8feb0eedfae0c29016724fddb9a592896ae9658d39718477ae`;
+tests are `ee9349b65e6c669f05b66bd60832ef44fa15969e6995c3b6e930da2753383821`,
+and the helper hash above is unchanged. The meaningful missing-parent
+regression failed before repair; 45 synthetic tests passed with 85-percent
+source coverage. Exact independent security review reproduced 45 PASS and
+found no P1/P2. The final focused source/test sizes are 1,009/1,091 lines,
+within the approved exception. Secret leaves are never opened by metadata
+collection; held root-to-parent directory FDs and repeated no-follow metadata
+bind exact absence and reject alias, replacement, appearance, error and timeout.
+The next source audit uses a fresh 32-hex ID, the original identity reference
+only, the same reported snapshot/time and two exact paths, and the unchanged
+read-only execution/cleanup contract. It cannot replay consumed restore IDs.
+Actual snapshot/integrity outcomes remain NOT_RUN until a new receipt exists.
+
+#### Actual Read-only Backup Verification
+
+The reviewed missing-parent repair ran once in a fresh audit, completed
+2026-10-10T19:16:16.634137Z, exit 0. Immutable receipt SHA-256 is
+`7d056ccd4d8b102ff5cf81126f54b969959c30169bdecc5116e318a5ed141009`.
+Snapshot identification, exact two-file metadata and encrypted repository
+`check --read-data` each exited 0. Full content-addressed snapshot is
+`b52564b8466037a57655b7993f398eecdd8c1236ba4edd04352c2142eaaa44b5`,
+captured `2026-10-10T17:26:20.602940031Z`. Each selected regular SMTP file
+is 20 bytes, UID/GID 1000 and mode 0640. The current canonical file identity
+was stable before/after; the duplicate parent was absent. Exact owned
+container cleanup was verified as `REMOVED_EXACT_OWNED`.
+
+This accepts only source identification, bounded metadata and repository
+integrity. It does not independently prove restored bytes, equality, SMTP
+send/authentication or external-consumer absence. RECOVERY remains NOT_RUN;
+reported consumed restore attempt IDs cannot be replayed. The superseding user
+instruction selects local `main` delivery without PRs and prohibits `dev`. Preserve the existing
+logical commits and foreign dirty paths; merge only independently reviewed
+source changes after registered local gates. Local delivery does not accept
+HOME activation or the reported operational retirement.
+
+#### Current Recovery Review and Main Delivery Boundary
+
+Independent SOURCE security review blocked the fresh two-file restore operator
+before execution: public parent/ledger path rebinding, nested contract keys and
+an unbounded review horizon need repairs and adversarial regressions. No new
+restore attempt was claimed, no target was created and no live value was changed.
+RECOVERY stays NOT_RUN until a newly frozen source and exact fresh contract pass
+independent review and the isolated execution produces a receipt. Earlier consumed
+attempt IDs cannot be reused.
+
+The superseding delivery instruction is local `main` only. The temporary clean
+`dev` worktree/branch was removed without integrating task commits. Current main
+was independently read as `a31a38ca29ee8e0683a29e61bf41347bfddc3d62`.
+The current aggregate stopped at a regression that clones committed HEAD because
+this Task's prior committed Acceptance cell used an unregistered phrase. Replacing
+that cell with registered `pending` preserves its unaccepted status; re-run the
+regression and aggregate after this correction is committed. This failure does
+not justify weakening the validator or changing unrelated fixtures.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1126,7 +1184,7 @@ NOT_RUN or unverified; the reported restore is not accepted by this continuation
 | Catalog and guarded retirement | 14 | W28 | Exact alias, lock/root identity, race regressions and independent approval | `3d0a8a1b07c1f2df29c0f04f88ba8fa815fbd1bf`; synthetic files | PASS | Current session ownership and interfaces | accepted |
 | Native SMTP boundary | 14 | W29 | Fresh six native plus four unit cases; exact image/platform and review | Fixture `794e314f`; digest-fixed synthetic inputs | PASS | Final native receipt | accepted |
 | SMTP delivery and handoff | 8, 14 | W30 | Fresh aggregate, independent review, logical commits and owning PR | Current SMTP01 branch | NOT_RUN | W26–W30 SMTP01 Current Increment | pending |
-| Reported duplicate SMTP retirement | 14 | W30 | Assignee report of snapshot, restore, comparison and unlink; current canonical presence/duplicate absence independently observed only | Assignee commit `39ff7f915`; no independent restore receipt | DEFER | Reported SMTP Duplicate Retirement — 2026-10-11 KST | pending independent verification |
+| Reported duplicate SMTP retirement | 14 | W30 | Assignee report of snapshot, restore, comparison and unlink; current canonical presence/duplicate absence independently observed only | Assignee commit `39ff7f915`; no independent restore receipt | DEFER | Reported SMTP Duplicate Retirement — 2026-10-11 KST | pending |
 
 ## Review and Completion
 
