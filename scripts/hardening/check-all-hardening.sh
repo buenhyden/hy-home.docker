@@ -44,15 +44,21 @@ fi
 source "$LIB_PATH"
 
 registry_component_image() {
+  if (( $# < 1 || $# > 2 )); then
+    printf '%s\n' "FAIL: registry_component_image expects one component and optional compose source" >&2
+    return 2
+  fi
   local component="$1"
+  local compose_source="${2:-}"
 
-  python3 - "$TECH_STACK_REGISTRY" "$component" <<'PY'
+  python3 - "$TECH_STACK_REGISTRY" "$component" "$compose_source" "$#" <<'PY'
 import json
 import pathlib
 import sys
 
 registry_path = pathlib.Path(sys.argv[1])
 component = sys.argv[2]
+compose_source = sys.argv[3] if sys.argv[4] == "2" else None
 registry = json.loads(registry_path.read_text(encoding="utf-8"))
 matches = [
     entry
@@ -64,11 +70,61 @@ if len(matches) != 1:
         f"FAIL: expected exactly one {component} entry in {registry_path}"
     )
 images = matches[0].get("images")
-if not isinstance(images, list) or len(images) != 1 or not isinstance(images[0], str):
+if (
+    not isinstance(images, list)
+    or not images
+    or any(not isinstance(image, str) or not image for image in images)
+    or len(set(images)) != len(images)
+):
     raise SystemExit(
-        f"FAIL: expected exactly one {component} image in {registry_path}"
+        f"FAIL: invalid {component} images in {registry_path}"
     )
-print(images[0])
+if compose_source is None:
+    if len(images) != 1:
+        raise SystemExit(
+            f"FAIL: expected exactly one {component} image in {registry_path}"
+        )
+    print(images[0])
+    raise SystemExit(0)
+
+
+def valid_compose_source(value):
+    if not isinstance(value, str) or not value or "\\" in value:
+        return False
+    path = pathlib.PurePosixPath(value)
+    return (
+        not path.is_absolute()
+        and path.as_posix() == value
+        and all(part not in ("", ".", "..") for part in path.parts)
+        and value.endswith((".yml", ".yaml"))
+    )
+
+
+if not valid_compose_source(compose_source):
+    raise SystemExit("FAIL: invalid registry compose source")
+sources = matches[0].get("sources")
+if not isinstance(sources, list):
+    raise SystemExit(f"FAIL: invalid {component} sources in {registry_path}")
+validated = []
+for source in sources:
+    if not isinstance(source, dict) or not valid_compose_source(source.get("compose_file")):
+        raise SystemExit(f"FAIL: malformed {component} source in {registry_path}")
+    source_images = source.get("images")
+    if (
+        not isinstance(source_images, list)
+        or len(source_images) != 1
+        or not isinstance(source_images[0], str)
+        or not source_images[0]
+        or source_images[0] not in images
+    ):
+        raise SystemExit(f"FAIL: malformed {component} source image in {registry_path}")
+    validated.append(source)
+selected = [source for source in validated if source["compose_file"] == compose_source]
+if len(selected) != 1:
+    raise SystemExit(
+        f"FAIL: expected exactly one {component} source {compose_source} in {registry_path}"
+    )
+print(selected[0]["images"][0])
 PY
 }
 
@@ -342,7 +398,20 @@ check_02_auth() {
   if [[ "$oauth_valkey_compose_image" != "$valkey_image" ]]; then
     fail "oauth2-proxy valkey image tag mismatch"
   fi
-  if [[ "$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey-exporter")" != "$(registry_component_image "Valkey Exporter")" ]]; then
+
+  local oauth_valkey_exporter_compose_image=""
+  local oauth_valkey_exporter_registry_image=""
+  local oauth_valkey_exporter_lookup_failed=0
+  if ! oauth_valkey_exporter_compose_image="$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey-exporter")"; then
+    fail "oauth2-proxy valkey exporter compose image contract invalid"
+    oauth_valkey_exporter_lookup_failed=1
+  fi
+  if ! oauth_valkey_exporter_registry_image="$(registry_component_image "Valkey Exporter" "infra/02-auth/oauth2-proxy/docker-compose.yml")"; then
+    fail "oauth2-proxy valkey exporter registry source contract invalid"
+    oauth_valkey_exporter_lookup_failed=1
+  fi
+  if (( oauth_valkey_exporter_lookup_failed == 0 )) &&
+    [[ "$oauth_valkey_exporter_compose_image" != "$oauth_valkey_exporter_registry_image" ]]; then
     fail "oauth2-proxy valkey exporter registry drift"
   fi
   check_service_network "$oauth_full_compose" "oauth2-proxy-valkey" "mng_data_net"
