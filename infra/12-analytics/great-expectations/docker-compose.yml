@@ -15,7 +15,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: hy-home/great-expectations:1.23.1-local
+    image: hy-home/great-expectations:1.24.0-local
     container_name: great-expectations
     hostname: great-expectations
     command:
