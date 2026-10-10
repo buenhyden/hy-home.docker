@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/spec"
 status: "blocked"
 owner: "@buenhyden"
@@ -304,6 +304,18 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     issuance cleanup remain acceptance prerequisites. No new KMS/engine, LAB action or learning-app planning is included.
     TSK-0006 owns this increment; TSK-0005/0229's applied snapshot source is
     NO_CHANGE and their historical results are never a fresh P01 PASS.
+12. CLN01 owns the consumer assessment and narrow private-unlink helper for
+    material already retired by its owning source contract. It permits a
+    `COMM-003` disposition only after SMTP01 has merged and its source
+    and operational cutover evidence is recorded, then only after fresh source,
+    runtime, jobs, backup/restore and external-consumer checks. SMTP01 proof
+    cannot automatically translate into CLN01 manifest truth. The helper
+    rejects tracked, protected, shared-inode, symlinked, identity-changed or
+    unknown targets. `COMM-002` stays protected and `PG-020` remains retained
+    for rollback. The generic helper refuses COMM-003 by ID and exact path;
+    its sole proposed unlink executor is SMTP01's `smtp_contract --retire`,
+    subject to supervisor release and integrated evidence/lock checks.
+    CLN01 owns assessment and the hold, not a second executor. TSK-0007 owns this increment.
 <!-- markdownlint-disable MD029 -->
 13. P09 produces a bounded, offline LLM Wiki preparation package: product
     intake; future consumer, source/artifact, job/outbox/handoff and blog-data
@@ -329,6 +341,7 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037](../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [CLN01 material retirement Task](tasks/tsk-0007-cln01-material-retirement.md)
 - [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
 - [SPEC-0202](../../98.archive/completed/03.specs/0202-development-data-and-lab-isolation/spec.md)
 - [SPEC-0203](../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
