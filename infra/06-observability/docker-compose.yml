@@ -190,7 +190,7 @@ services:
     build:
       context: ./tempo
       dockerfile: Dockerfile
-    image: hy/tempo:3.0.3-seaweedfs
+    image: hy/tempo:3.1.0-seaweedfs
     container_name: tempo
     hostname: tempo
     group_add:

@@ -1,4 +1,4 @@
-FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src
+FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.5@sha256:8498b0d0ef0a7b29686414000a08aee467f02d0299c9ed1e006a8f33fc017916 AS src
 
 FROM alpine:3.24.2
 

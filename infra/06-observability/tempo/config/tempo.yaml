@@ -50,6 +50,10 @@ metrics_generator:
 storage:
   trace:
     backend: s3
+    # 3.1 defaults to vParquet5; preserve the 3.0 writer format until
+    # the isolated storage/rollback acceptance gate is complete.
+    block:
+      version: vParquet4
 
     # Ingest/write-ahead log. 반드시 persistent volume에 mount
     wal:
