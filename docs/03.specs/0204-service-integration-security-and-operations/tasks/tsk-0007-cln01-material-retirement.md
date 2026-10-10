@@ -610,6 +610,47 @@ still present regular files with nlink 1; PG-020 is present with nlink 2.
 Actual private apply, HOME, migration, rotation and recovery remain NOT_RUN.
 Remote PR candidate and coordinated merge remain pending.
 
+### Latest main reconciliation
+
+The evidence-only commit is `c015c1ee5ef21d44299e5a7b34f24cd8077f39d0`.
+Read-only remote inspection found main
+`cac9e10fa584754706598d624654e07e8d6531f4` (P09 issuance PR #414).
+Local merge commit `a5d1447b96bc3a25ad145bd750cbb262f264162e`, tree
+`4a1b6de6e5a4e28dccb3400fb4ffdd2ed175a003`, preserves both parents.
+Spec/Plan conflicts were limited to versions and adjacent AC12/AC13,
+W24/W25 and Task links. Both owners' additions remain; Spec is 1.4.1,
+Plan is 1.5.1, both remain blocked. P09 Task 0008 is byte-identical to
+main, with its ID, created time and body preserved; no P09 implementation
+artifact was authored. Independent merge review found no additional defect.
+
+On the resolved tree, three-path metadata passed (exit 0), the historical
+Spec Package regression passed (1 test, exit 0), staged controller passed
+(exit 0), full links passed (exit 0, one existing historical-capture warning),
+and `git diff --cached --check` passed (exit 0). Lifecycle with explicit
+latest-main base initially returned exit 1 during the uncommitted merge:
+archive assessment requires that base to be an ancestor of HEAD. The source
+of this refusal was verified in `archive_assessments._history`; no validator
+or archive file was changed. The original a03c base passed (exit 0).
+The latest-main-base rerun after the merge commit passed (exit 0):
+corpus violations 0 and archive recovery violations 0. Remote main was rechecked and still matched cac9e10.
+This is candidate-branch reconciliation, not a CLN01 PR merge into main.
+
+```text
+rtk git fetch origin main
+rtk git merge --no-commit origin/main
+rtk proxy python3 scripts/validation/check-document-metadata.py --mode check-changed --changed-path docs/03.specs/0204-service-integration-security-and-operations/spec.md --changed-path docs/03.specs/0204-service-integration-security-and-operations/plan.md --changed-path docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0008-llm-wiki-preparation.md
+rtk proxy python3 -m unittest tests.lib.document_governance.test_spec_packages.SpecPackageTests.test_current_repository_spec_packages_cover_spec_directories -v
+rtk proxy bash scripts/validation/run-ci-precommit.sh --mode local-staged
+rtk proxy python3 scripts/validation/check-document-links.py --root . --mode all
+rtk proxy python3 scripts/validation/check-document-corpus-lifecycle.py --base-ref cac9e10fa584754706598d624654e07e8d6531f4
+```
+
+A later public-only SMTP dependency recheck found worktree HEAD
+`e7bff9149f29a4bbb23d977dadf01f5988ee12fc`. Its helper SHA remained
+`d6b8c9c1089d00bf4de2cf0558743324421403eb8a0daa6b9592f26c9f62b505`;
+the distinct `secrets/.smtp01-retirement.lock` therefore remains an
+interoperability blocker. CLN01 has not edited that source or generator.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
