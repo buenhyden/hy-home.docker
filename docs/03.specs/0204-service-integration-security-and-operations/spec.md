@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/spec"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -18,19 +18,23 @@ created: "2026-10-03"
 
 ## Overview
 
-Prompt 04 closes confirmed shared-service compatibility and security gaps,
-then defines the infrastructure side of external-project connection, signals,
-and recovery. The implementation baseline is remote and local `main` at
-`d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7` on 2026-10-03. Recheck it
-before any source edit. SPEC-0202 owns development engines and migration;
-SPEC-0203 owns performance results and its Alloy metrics path; Prompt 05 owns
-Storybook; Prompt 06 owns an external application's consumed manifest and
-application Compose. This package must not reimplement those owners.
+This package owns confirmed shared-service compatibility/security gaps and the
+infrastructure side of external-project connection, signals and recovery.
+Its 2026-10-03 implementation and PR358 activation are historical provenance;
+current execution follows the 2026-10-10 request reconciled by SPEC-0212 P00 at
+`d19fbfde605e257299aa2b39e25f2d7413a78221`. Re-read main and the worktree
+before each unit. Existing delivery and runtime receipts remain in their Tasks.
 
-The user approved Prompt 04 and its source scopes. Protected PR358 activated
-this package at `79b42b604b99bcc6712887d29e36f8244ec0f9eb`. Task1 records the
-exclusive writer ledger and the normal source/history integration. Existing
-Git delivery approval is separate from HOME, credential and data operations.
+Current owners are SPEC-0213 for development data/Influx retirement,
+SPEC-0214 for quality/OTLP, SPEC-0218 for common controls,
+SPEC-0219 for Storybook, SPEC-0220 for crawler egress,
+SPEC-0223 for RedisInsight, SPEC-0224 for datastore observation and
+SPEC-0227 for the Stage 05 body refresh. Applied source is NO_CHANGE;
+old prompt numbers and draft labels never authorize reimplementation.
+P03 routes endpoint/port integration, P04 Airflow, P05 n8n, P01/P02/P06
+secret classification/mapping/consumption, P09 external Wiki and P10 the
+named user vertical slice. Each residual stays with one existing acceptance
+owner; the new stage labels do not reserve Spec IDs.
 
 ### Boundaries and Inputs
 
@@ -49,9 +53,10 @@ SPEC-0199/0200 provide no current approval.
 No business project ID, external deployment topology, application endpoint,
 OIDC client, S3 identity, search authority, traffic budget, or speech product
 scope is approved here. Registering metadata is not a grant of network
-access, credentials, runtime deployment, or storage. Do not create learning
-application code, DBs, crawlers, ASR/TTS services, or GPU reservations for
-planning-only Prompts 07 and 08. Do not read secret values, private environment
+access, credentials, runtime deployment, or storage. Civil-service exam, English and Japanese learning applications are excluded,
+including planning, code, databases, collection and resources. All LAB-specific
+code, configuration, data, secrets, execution and document moves are excluded;
+P08 may describe only a prospective separate_target document classification. Do not read secret values, private environment
 files, authentication files, raw HOME logs, or user data.
 
 ### Technical Approach
@@ -64,7 +69,11 @@ including value-preserving path moves and incident disposition. Each Task owns e
 its Task ledger before source mutation. Shared root, Alloy, environment,
 Registry and backup files have one writer at a time. If a named project or
 consumer is missing, record a versioned contract and `BLOCKED` runtime result
-instead of provisioning resources. No Task changes HOME services or real data.
+instead of provisioning resources. P00 changes no HOME service or real data.
+Follow-on native, host, credential, migration and recovery actions proceed only
+when their concrete target, effects, validation and recovery boundary are
+established in the owning Task. A historical source-only slice does not stop
+other authorized work or require repeated delivery approval.
 
 The approved maintenance slice reuses TSK-0001 for criterion 8. It removes the
 completed SPEC-0153 migration-only gate after transferring the continuing
@@ -78,13 +87,14 @@ does not mix unrelated current-owner Tasks from a later live worktree.
 A separately approved tenth path may correct only the timeout fixture's source
 terminal-state stub before one final public revalidation.
 
-The approved W7 maintenance removes both hosted public validation jobs and
-their pull-request/manual triggers after W6. It retains the local public
-`changed` and `full` selectors for Task-bound evidence, main-push security and
-channel-tag ordering, tag workflows, npm handling, and all registered test
-modules and gate leaves. Current guidance does not require hosted public QA.
-W7 performs no remote control-plane mutation and does not change this
-package's blocked runtime status.
+W7's removal of hosted public validation was a historical maintenance slice,
+preserved in the existing Task and Git history. Current CI responsibility comes
+from the quality policy and `.github/workflow-contract.yml`: the remote PR
+candidate owns aggregate changed QA, while main security is separate. Follow
+actual remote checks and independent review before merge; do not copy W7's
+old CI disposition into current execution. SPEC-0221 already owns the request
+precedence policy, hooks and validator. Change an enforcer with its regression
+only when a current conflict is found; otherwise record NO_CHANGE.
 
 ### Interfaces and Data
 
@@ -95,7 +105,7 @@ package's blocked runtime status.
   contract fixtures, updated Korean READMEs and Stage 05 guide/policy/runbook
   owners, and Task evidence. Values of secrets and raw operational data are
   never outputs.
-- External application input/output: Prompt 06's Project-Template-derived
+- External application input/output: The P09 Project-Template-derived
   repository supplies app Compose, business API/UI, migrations, collectors,
   workflow definitions, fixtures and E2E. Infra supplies approved engines,
   ingress/identity, telemetry and backup interfaces; the manifest records
@@ -108,27 +118,29 @@ secret, unsafe redirect, public unauthenticated machine API, unknown project
 label, cross-project read/write, unbounded crawler egress, sealed-is-healthy
 claims, missing WAL/backups, and projection drift. Preserve unrelated worker
 changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
-remote push/PR/merge, credential rotation, DNS/firewall edit or HOME restart
-without its separate exact approval.
+credential rotation, DNS/firewall edit or HOME restart without the named target
+and recovery boundary. The current request authorizes its source/docs/tests,
+logical commits, branch push, PR and merge after required checks and review;
+missing permission or target defers only the dependent operation.
 
 ### Open Questions
 
-The user approved the listed Task source scopes on 2026-10-03; a new path
-requires an exact Task amendment. Any HOME upgrade,
-backup execution, restore, credential issuance or network publication. A real
-external project must separately identify its project ID, endpoint topology,
-OIDC/S3/search scopes and operator before a live connection can pass. The
-historical selected synthetic dev-pg recovery target passed TSK-0003; a HOME recovery
-target, offsite/PITR evidence and measured operational capacity budget remain
-absent. TSK-0001 exact-image runtime and security acceptance still require
-the separately pending execution approval.
+A real external project must identify its project ID, endpoint topology,
+OIDC/S3/search scopes, operator and recovery boundary before a live connection
+can pass. P04 needs its actual native Airflow DAG/DEV/S3 target; P05 needs
+its actual n8n native import/execution target. P03 confirms PORT_CONTRACT and
+port_inventory.py ownership before creating them; they are not assumed to
+exist in this repository. Secret metadata, migration eligibility, reference
+wiring, real consumption, rotation and recovery are separate completion states.
+HOME PITR/offsite recovery and owner-held snapshot credentials remain with
+their existing Tasks; historical isolated PASS is not a fresh HOME receipt.
 
 ### Operational Impact
 
-Source changes may alter n8n workflow execution, crawler rejection, OpenBao
-health dependency and future backup scheduling when deployed. Each requires
-its own staged rollback and HOME change window; this package does not exercise
-those effects.
+Future source changes may alter native workflow execution, crawler rejection,
+secret consumption and backup scheduling when deployed. The exact executing
+stage binds target, impact and recovery before acting. P00 performs no such
+runtime change; authorized delivery is independent of those unexecuted lanes.
 
 ## Scope
 
@@ -162,8 +174,8 @@ those effects.
    destinations at each DNS resolution and redirect hop, including rebinding
    and caller-supplied proxy/browser flags, or require an approved egress
    enforcement layer. Its absent consumer remains absent until approved.
-   Cassandra remains in LAB on the official image path; an image/path search
-   alone neither migrates old data nor establishes authentication or safe UID.
+   LAB is excluded from this request; prior Cassandra evidence remains historical
+   and authorizes no new LAB inspection, implementation or execution.
 4. Browser administrator SSO, application OIDC, webhook signatures and machine
    service authentication have separate routes and tests. Removing ForwardAuth
    requires the target API's own issuer, audience and authorization checks.
@@ -239,13 +251,13 @@ those effects.
 ### Acceptance Contract
 
 1. Current service evidence and owner/file/variable/consumer/regression/
-   rollback/approval ledger is complete, and no Prompt 02/03/05/06 owner is
-   overwritten.
+   rollback/approval ledger is complete, and no existing feature acceptance
+   owner in the current SPEC-0212 routing is overwritten.
 2. n8n version, runner timeout and secret-consumption source contracts pass
    focused static and isolated functional checks without a HOME upgrade.
-3. Crawl4AI security and Cassandra LAB contracts are checked against current
-   official sources; changed behavior passes DNS/redirect/private-destination
-   allow/deny tests, with real egress enforcement separately verified.
+3. Existing Crawl4AI security/egress acceptance belongs to SPEC-0220 and is
+   NO_CHANGE when applied. Any consumer-dependent increment uses its named
+   target and DNS/redirect/private-destination checks; LAB is out-of-scope.
 4. Gateway, OIDC, machine auth, secret and socket boundaries have explicit
    route/identity/readiness and direct-backend/project A-to-B denial tests or
    named `BLOCKED` evidence.
@@ -270,11 +282,17 @@ those effects.
    tests that fail against the previous source, records HOME observations
    for authentication, CDC, workflow and backup without changing HOME
    data, and names each remaining gap with its owner action.
+10. The current P04/P05 native integration increment separately proves the
+    selected Airflow DEV/S3/DAG and n8n JSON/import/execution flow from input
+    through its recovery fixture. Source creation, reference wiring, secret
+    consumption and native results have separate evidence; missing exact
+    consumer/target defers only that lane. Existing version work is NO_CHANGE.
 
 ## Related Documents
 
 ### Traceability
 
+- [Current request reconciliation](../0212-request-baseline-and-reconciliation/spec.md)
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
 - [ADR-0046](../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
