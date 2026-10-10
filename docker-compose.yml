@@ -136,8 +136,6 @@ secrets:
     file: ./secrets/communication/smtp/smtp_username.txt
   stalwart_password:
     file: ./secrets/communication/stalwart/stalwart_password.txt
-  supabase_smtp_password:
-    file: ./secrets/communication/supabase/supabase_smtp_password.txt
 
   # ── Gateway ─────────────────────────────────────────────
   traefik_basicauth_password:

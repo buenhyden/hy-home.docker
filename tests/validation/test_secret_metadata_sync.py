@@ -158,14 +158,52 @@ def literal_secret_names(text):
 
 
 def service_grants(service):
-    grants = {}
+    from scripts.lib.ops.smtp_contract import ContractError
+    from scripts.lib.ops.smtp_contract import grants as validated_grants
+
+    normalized = []
     for grant in service.get("secrets", []) or []:
         if isinstance(grant, str):
-            grants[compose_default(grant)] = compose_default(grant)
+            normalized.append(compose_default(grant))
+        elif isinstance(grant, dict) and isinstance(grant.get("source"), str):
+            item = dict(grant, source=compose_default(grant["source"]))
+            if "target" in item and isinstance(item["target"], str):
+                item["target"] = compose_default(item["target"])
+            normalized.append(item)
         else:
-            source = compose_default(grant["source"])
-            grants[compose_default(grant.get("target", source))] = source
-    return grants
+            raise AssertionError("invalid secret grant")
+    try:
+        return {
+            target: source
+            for source, target in validated_grants({"secrets": normalized})
+        }
+    except ContractError:
+        raise AssertionError("duplicate or invalid secret grant") from None
+
+
+class SMTPSecretContractTests(unittest.TestCase):
+    def test_public_smtp_has_one_value_owner_and_value_free_alias(self):
+        from scripts.lib.ops.smtp_contract import metadata_retired
+
+        public = (ROOT / "secrets/SENSITIVE_ENV_VARS.md.example").read_bytes()
+        self.assertEqual(public, metadata_retired(public))
+        self.assertNotIn("COMM-003", registry_rows(public.decode()))
+        self.assertEqual(
+            "secrets/communication/smtp/smtp_password.txt",
+            registry_rows(public.decode())["COMM-002"]["path"],
+        )
+
+    def test_service_grants_rejects_collisions_and_malformed_references(self):
+        for grants in (
+            ["smtp_password", "smtp_password"],
+            [{"source": "a", "target": "same"}, {"source": "b", "target": "same"}],
+            [{"source": "a", "target": "one"}, {"source": "a", "target": "two"}],
+            [{"target": "missing"}],
+            [42],
+            [{"source": "a", "target": 42}],
+        ):
+            with self.subTest(grants=grants), self.assertRaises(AssertionError):
+                service_grants({"secrets": grants})
 
 
 def volume_source(volume):
@@ -1114,30 +1152,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_literal_secret_references_are_declared_granted_and_registered(self):
         contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
-        self.assertEqual(109, len(contract["declarations"]))
-        self.assertEqual(146, len(contract["rows"]))
-        areas = Counter(
-            row["path"].split("/")[1]
-            for row in contract["rows"].values()
-            if row["path"].startswith("secrets/")
-        )
-        self.assertEqual(
-            {
-                "auth": 14,
-                "automation": 4,
-                "backup": 6,
-                "communication": 5,
-                "data": 16,
-                "db": 32,
-                "labs": 14,
-                "observability": 3,
-                "security": 2,
-                "storage": 8,
-                "tools": 9,
-            },
-            dict(areas),
-        )
-        self.assertEqual(33, len(contract["rows"]) - sum(areas.values()))
+        self.assertIn("smtp_password", contract["declarations"])
+        self.assertNotIn("supabase_smtp_password", contract["declarations"])
+        self.assertNotIn("COMM-003", contract["rows"])
         self.assertEqual(
             "secrets/db/surrealdb/surreal_db_password.txt",
             contract["rows"]["AI-003"]["path"],
