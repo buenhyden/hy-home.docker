@@ -45,6 +45,7 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
     "docs/04.execution/",
 )
 MUTATION_OVERRIDES = {
+    "scripts/lib/ops/smtp_contract.py": "runtime",
     "scripts/hooks/post-tool-validate.sh": "check-write",
     "scripts/operations/gen-secrets.sh": "runtime",
     "scripts/operations/lab.py": "runtime",
