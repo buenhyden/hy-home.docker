@@ -2,6 +2,8 @@
 
 import json
 import re
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -12,6 +14,53 @@ OPENBAO = "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b7
 
 
 class CandidateContract(unittest.TestCase):
+    def test_oauth_hardening_admits_only_equal_stable_digest_build_sources(self):
+        checker = (ROOT / "scripts/hardening/check-all-hardening.sh").read_text()
+        start = checker.index("  local oauth_source_image oauth_dev_source_image")
+        end = checker.index('  check_contains "$oauth_dockerfile"', start)
+        section = checker[start:end]
+        probe = (
+            "fail() { exit 1; }\n"
+            'validate_sources() { local oauth_dockerfile="$1" oauth_dev_dockerfile="$2"\n'
+            + section
+            + '\n}\nvalidate_sources "$@"\n'
+        )
+        image = "quay.io/oauth2-proxy/oauth2-proxy:v7.15.5@sha256:" + "a" * 64
+        rejected = (
+            image[:-1],
+            image.replace("v7.15.5", "latest"),
+            image.replace("v7.15.5", "v7.15.5-rc1"),
+            image.replace("a" * 64, "A" * 64),
+            image.split("@")[0],
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            production, development = [
+                Path(temporary) / name for name in ("Dockerfile", "dev.Dockerfile")
+            ]
+            for left, right, expected in (
+                (image, image, 0),
+                (image, image.replace("7.15.5", "7.15.4"), 1),
+                *((bad, bad, 1) for bad in rejected),
+            ):
+                with self.subTest(left=left, right=right):
+                    production.write_text(f"FROM {left} AS src\n")
+                    development.write_text(f"FROM {right} AS src\n")
+                    result = subprocess.run(
+                        [
+                            "/bin/bash",
+                            "-c",
+                            probe,
+                            "bash",
+                            str(production),
+                            str(development),
+                        ],
+                        env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"},
+                        capture_output=True,
+                        check=False,
+                        timeout=5,
+                    )
+                    self.assertEqual(result.returncode, expected)
+
     def test_server_agent_and_backup_share_candidate(self):
         compose = yaml.safe_load(
             (ROOT / "infra/03-security/openbao/docker-compose.yml").read_text()

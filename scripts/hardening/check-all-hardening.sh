@@ -351,7 +351,7 @@ check_02_auth() {
   local oauth_source_image oauth_dev_source_image
   oauth_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dockerfile")"
   oauth_dev_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dev_dockerfile")"
-  if [[ ! "$oauth_source_image" =~ ^quay.io/oauth2-proxy/oauth2-proxy:v[0-9]+\.[0-9]+\.[0-9]+([-.][A-Za-z0-9.]+)?$ ]] ||
+  if [[ ! "$oauth_source_image" =~ ^quay.io/oauth2-proxy/oauth2-proxy:v[0-9]+\.[0-9]+\.[0-9]+@sha256:[0-9a-f]{64}$ ]] ||
     [[ "$oauth_dev_source_image" != "$oauth_source_image" ]]; then
     fail "oauth2-proxy build sources must agree on an explicit upstream pin"
   fi
