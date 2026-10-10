@@ -129,6 +129,35 @@ FROM/ARG/COPY/SHELL·설치 입력·constraints hash를 새 snapshot으로 구�
 OpenBao helper 추가 수정 가능성은 수신 당시 상태이며, 현재 final integration은
 TSK-0009의 latest/security gate와 review/delivery receipt가 결정합니다.
 
+### 2026-10-11 수신된 과거 후보 스캔
+
+다음 수치는 별도 작업자의 보고이며, 기존 로컬 Grype `0.116.0` / Syft `1.48.0` 사용을 자체 보고했습니다. <!-- runtime-version-exception: history — 수신한 과거 scanner 식별이며 현재 운영 pin이 아님 -->
+소스 입력별 불변 archive·publisher 인증·DB readiness·완전한 실행 receipt가 없어
+현재 보안 수용 증거로 재사용하지 않습니다. 작업자는 중간 tar를 삭제했고 JSON만
+로컬에 보존했다고 보고했습니다. 다음 표는 후속 CVE 분류를 위한 역사 참고이며,
+총괄이 해당 스캔·build·pull을 독립적으로 실행하거나 입증했다는 뜻이 아닙니다.
+
+| 후보 | Critical | High | 총 match | fixable 경계 |
+| --- | ---: | ---: | ---: | --- |
+| qdrant | 0 | 55 | 158 | High 1 |
+| seaweedfs | 2 | 20 | 48 | Critical 2, High 12 |
+| aws-cli | 1 | 4 | 17 | Critical 1, High 4 |
+| prometheus | 6 | 24 | 38 | Critical 6, High 21 |
+| alloy | 3 | 13 | 101 | Critical 3, High 13 |
+| cadvisor | 2 | 22 | 51 | Critical 2, High 14 |
+| pyroscope | 0 | 0 | 0 | 없음 |
+| pushgateway | 1 | 9 | 13 | Critical 1, High 6 |
+| dozzle | 2 | 11 | 17 | Critical 2, High 11 |
+| open-notebook | 33 | 391 | 1007 | Critical 1, High 49 |
+| registry | 2 | 20 | 50 | Critical 2, High 12 |
+| renovate | 9 | 101 | 861 | Critical 9, High 97 |
+| stalwart | 17 | 84 | 249 | High 1 |
+| stalwart-config | 17 | 84 | 249 | High 1 |
+| conftest | 2 | 19 | 46 | Critical 2, High 11 |
+| mailpit | 1 | 8 | 13 | Critical 1, High 8 |
+
+이 자체 보고만으로 최신 후보 선정, 정확한 build/pull, 보안 수용이 끝났다고 판단하지 않습니다. 수신한 과거 보고에서는 Pyroscope의 match만 0이며, 나머지 후보에는 Critical 또는 High 결과가 남아 있습니다. 다음 SEC01 단계는 JSON별 CVE·package·fix state triage, 공급자 advisory와 false-positive 근거 확인, update/replace 또는 잔여 위험 승인 기록, SBOM·signature·native compatibility·stateful recovery 재실행입니다. 이 절차 전까지 HOME rollout과 전체 최신화·보안 완료 주장은 차단됩니다.
+
 ## Related Documents
 
 - `infra/tech-stack.versions.json`: 기존 Compose image projection
