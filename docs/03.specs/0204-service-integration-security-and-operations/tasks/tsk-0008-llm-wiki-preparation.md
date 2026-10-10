@@ -1,10 +1,10 @@
 ---
 title: "LLM Wiki Preparation Task"
-version: "0.2.2"
+version: "0.2.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0008"
 parent_ids:
@@ -69,6 +69,27 @@ not this Task, owns any later Stage 05 LAB documentation move.
 | SPEC-0204-TSK-0008 | ready | in-progress | #w25-received-execution-handoff |
 | SPEC-0204 | blocked | in-progress | #w25-received-execution-handoff |
 | SPEC-0204-PLAN-0001 | blocked | in-progress | #w25-received-execution-handoff |
+
+### Lifecycle Event Reconciliation
+
+| Artifact | From | To | Canonical carrier | Canonical source commit | Canonical integration commit | Duplicate source commit | Duplicate integration commit | Disposition | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| SPEC-0204 | blocked | in-progress | SPEC-0204-TSK-0009 | a27163a4f8efcea005d931b7f92e4f616132d8f3 | 80c31405df7983dc4b7d8ad8823f73323247d264 | 9666aa6b610f1f524893e10095ddd253a381fddc | abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9 | concurrent-duplicate-observation | #w25-concurrent-lifecycle-reconciliation |
+| SPEC-0204-PLAN-0001 | blocked | in-progress | SPEC-0204-TSK-0009 | a27163a4f8efcea005d931b7f92e4f616132d8f3 | 80c31405df7983dc4b7d8ad8823f73323247d264 | 9666aa6b610f1f524893e10095ddd253a381fddc | abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9 | concurrent-duplicate-observation | #w25-concurrent-lifecycle-reconciliation |
+
+### W25 Concurrent Lifecycle Reconciliation
+
+Task 0009's source commit and PR #418 first integrated the two package lifecycle
+transitions. Task 0008's divergent source commit independently recorded the
+same observations before PR #417 integrated later. The registered receipt above
+preserves both append-only Task histories and names Task 0009 as the canonical
+carrier; it does not authorize generic deduplication or alter either package
+state. Validation binds the blocked common-base Spec and Plan, exact Task
+identities at source and integration trees, absence of each edge on its main
+parent, one edge after each merge, and the ordered PR #418 then PR #417
+introductions on current main's first-parent history. A side-merge-only reach,
+reused Task path, pre-existing edge, or mismatched pre/post state invalidates
+the receipt rather than creating a lifecycle override.
 
 Ready contract issuance: the issuance branch contains no accepted P09
 implementation. That observation is separate from unaccepted worker-owned

@@ -244,6 +244,22 @@
         "To",
         "Evidence"
       ],
+      "reconciliation": {
+        "subsection": "Lifecycle Event Reconciliation",
+        "table_headers": [
+          "Artifact",
+          "From",
+          "To",
+          "Canonical carrier",
+          "Canonical source commit",
+          "Canonical integration commit",
+          "Duplicate source commit",
+          "Duplicate integration commit",
+          "Disposition",
+          "Evidence"
+        ],
+        "disposition": "concurrent-duplicate-observation"
+      },
       "migration": {
         "subsection": "Contract Migration",
         "table_headers": [

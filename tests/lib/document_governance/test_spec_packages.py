@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import dataclasses
 import functools
 import importlib
@@ -30,6 +31,61 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 GENERATION_4_SOURCE = "8b85e88fe2dfef54f4cc125ee2687982c86c1942"
 GENERATION_3_SOURCE = "2bba11baa1009e673a763a727b0a9e3d7e0bb5a7"
 INTEGRATION_BASE = "68e0bfd3edb0895235dc628d03d427ca9fd14736"
+RECONCILIATION_MAINLINE = "a31a38ca29ee8e0683a29e61bf41347bfddc3d62"
+RECONCILIATION_SIDE_HISTORY = "6aff7433c755feacf659f7654a5ad3b9e70f401d"
+RECONCILIATION_BASE = "cac9e10fa584754706598d624654e07e8d6531f4"
+CANONICAL_INTEGRATION_PARENT = "e93e0c8223191bf26aea7578a231b2dbf016fc7c"
+DUPLICATE_INTEGRATION_PARENT = "34c7d4644fee6541d0d969390abf1bb54c16fd27"
+_RECONCILIATION_NEGATIVE_CASES = (
+    (
+        "unknown",
+        "a27163a4f8efcea005d931b7f92e4f616132d8f3",
+        "f" * 40,
+        "reachable",
+    ),
+    (
+        "same-source",
+        "9666aa6b610f1f524893e10095ddd253a381fddc",
+        "a27163a4f8efcea005d931b7f92e4f616132d8f3",
+        "divergent",
+    ),
+    (
+        "same-integration",
+        "80c31405df7983dc4b7d8ad8823f73323247d264",
+        "abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9",
+        "integration",
+    ),
+    (
+        "task-artifact",
+        "| SPEC-0204 | blocked | in-progress | SPEC-0204-TSK-0009",
+        "| SPEC-0204-TSK-0008 | blocked | in-progress | SPEC-0204-TSK-0009",
+        "Spec or Plan",
+    ),
+    (
+        "self-carrier",
+        "| SPEC-0204 | blocked | in-progress | SPEC-0204-TSK-0009",
+        "| SPEC-0204 | blocked | in-progress | SPEC-0204-TSK-0008",
+        "canonical carrier",
+    ),
+    (
+        "host-mismatch",
+        "| SPEC-0204 | blocked | in-progress | #w25-received-execution-handoff |\n",
+        "",
+        "exact host event",
+    ),
+    (
+        "disposition",
+        "concurrent-duplicate-observation",
+        "generic-deduplication",
+        "disposition",
+    ),
+    (
+        "self-evidence",
+        "#w25-concurrent-lifecycle-reconciliation",
+        "#lifecycle-event-reconciliation",
+        "same-Task anchor",
+    ),
+)
 _PRODUCTION_LOAD_REGISTRY = None
 
 
@@ -321,6 +377,112 @@ def _add_lifecycle_events(
         ),
         encoding="utf-8",
     )
+
+
+def _generation_event_body() -> str:
+    event = ("SPEC-0001", "blocked", "in-progress", "#package-started")
+    return "\n".join(
+        (
+            "## Work Log",
+            "",
+            "### Package Started",
+            "",
+            "Observed.",
+            "",
+            "### Lifecycle Events",
+            "",
+            "| Artifact | From | To | Evidence |",
+            "| --- | --- | --- | --- |",
+            "| " + " | ".join(event) + " |",
+        )
+    )
+
+
+def _generation_event_fixture(module, carrier_count: int):
+    package_path = pathlib.Path("docs/03.specs/0001-example")
+    spec_path = pathlib.PurePosixPath(f"{package_path.as_posix()}/spec.md")
+    source = module.SpecPackage(
+        package_path,
+        "0001",
+        "example",
+        module.SpecDocument(spec_path, "spec", "SPEC-0001", "blocked", ()),
+        None,
+        (),
+        (),
+    )
+    tasks = []
+    for index in range(1, carrier_count + 1):
+        task_path = pathlib.PurePosixPath(
+            f"{package_path.as_posix()}/tasks/tsk-{index:04d}-carrier.md"
+        )
+        body = _generation_event_body()
+        tasks.append(
+            module.SpecDocument(
+                task_path,
+                "task",
+                f"SPEC-0001-TSK-{index:04d}",
+                "ready",
+                (),
+                body=body,
+                source_text=body,
+            )
+        )
+    current = dataclasses.replace(
+        source,
+        spec=dataclasses.replace(source.spec, status="in-progress"),
+        tasks=tuple(tasks),
+    )
+    return source, current
+
+
+def _replace_task_body(packages, task_path, old: str, new: str):
+    changed = []
+    for package in packages:
+        tasks = []
+        for task in package.tasks:
+            if task.path != task_path:
+                tasks.append(task)
+                continue
+            body = task.body.replace(old, new, 1)
+            if body == task.body:
+                raise AssertionError(f"missing Task body fixture: {old}")
+            tasks.append(dataclasses.replace(task, body=body, source_text=body))
+        changed.append(dataclasses.replace(package, tasks=tuple(tasks)))
+    return tuple(changed)
+
+
+@contextlib.contextmanager
+def _history_root(revision: str):
+    with tempfile.TemporaryDirectory() as directory:
+        root = pathlib.Path(directory) / "repository"
+        subprocess.run(
+            ("git", "clone", "--shared", "--no-checkout", "--quiet", ROOT, root),
+            check=True,
+        )
+        subprocess.run(
+            ("git", "checkout", "--detach", "--quiet", revision),
+            cwd=root,
+            check=True,
+        )
+        yield root
+
+
+def _mainline_history_root():
+    return _history_root(RECONCILIATION_MAINLINE)
+
+
+def _reconciliation_fixture(module):
+    registry = load_current_registry()
+    packages = module.load_spec_packages(ROOT / "docs/03.specs", registry=registry)
+    previous = module._load_base_spec_packages(ROOT, base_ref=INTEGRATION_BASE)
+    package = next(package for package in packages if package.number == "0204")
+    task = next(
+        task for task in package.tasks if task.artifact_id == "SPEC-0204-TSK-0008"
+    )
+    carrier = next(
+        task for task in package.tasks if task.artifact_id == "SPEC-0204-TSK-0009"
+    )
+    return registry, packages, previous, task, carrier
 
 
 def _branch_handoff_fixture(
@@ -3743,18 +3905,21 @@ Narrative after the registered table.
         packages = spec_packages.load_spec_packages(
             ROOT / "docs/03.specs", registry=registry
         )
-        lifecycle = spec_packages.validate_repository_spec_package_lifecycle_details(
-            ROOT, packages, registry=registry
-        )
+        with _mainline_history_root() as history_root:
+            lifecycle = (
+                spec_packages.validate_repository_spec_package_lifecycle_details(
+                    history_root, packages, registry=registry
+                )
+            )
+            after = spec_packages.validate_repository_spec_package_lifecycle_details(
+                history_root, packages, registry=registry
+            )
         self.assertIsNone(lifecycle.generation_source)
         self.assertEqual(frozenset(), lifecycle.actual_normalizations)
         revision = spec_packages.resolve_contract_migration_source(
             ROOT, packages, registry
         )
         self.assertEqual(GENERATION_4_SOURCE, revision)
-        after = spec_packages.validate_repository_spec_package_lifecycle_details(
-            ROOT, packages, registry=registry
-        )
         self.assertEqual(lifecycle, after)
         proof_task = next(
             task
@@ -3812,15 +3977,32 @@ Narrative after the registered table.
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/tests.md")))
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/task.md")))
         self.assertFalse((ROOT / "DESIGN.md").exists())
-        lifecycle = spec_packages.validate_repository_spec_package_lifecycle_details(
-            ROOT,
-            packages,
-            base_ref=INTEGRATION_BASE,
-            registry=registry,
-        )
+        with _mainline_history_root() as history_root:
+            lifecycle = (
+                spec_packages.validate_repository_spec_package_lifecycle_details(
+                    history_root,
+                    packages,
+                    base_ref=INTEGRATION_BASE,
+                    registry=registry,
+                )
+            )
         self.assertEqual((), lifecycle.findings)
         self.assertEqual(GENERATION_4_SOURCE, lifecycle.generation_source)
         self.assertEqual(frozenset(), lifecycle.actual_normalizations)
+        self.assertTrue(
+            {
+                (
+                    "docs/03.specs/0204-service-integration-security-and-operations/spec.md",
+                    "blocked",
+                    "in-progress",
+                ),
+                (
+                    "docs/03.specs/0204-service-integration-security-and-operations/plan.md",
+                    "blocked",
+                    "in-progress",
+                ),
+            }.issubset(lifecycle.actual_transitions)
+        )
         generation_3 = spec_packages.load_registry_document_at_revision(
             GENERATION_3_SOURCE, root=ROOT
         )
@@ -4239,6 +4421,314 @@ Narrative after the registered table.
             spec_packages._validate_terminal_task_migration(
                 (source_terminal,), (dataclasses.replace(current, tasks=()),)
             )
+
+    def test_post_generation_event_from_frozen_status_needs_no_normalization(
+        self,
+    ) -> None:
+        spec_packages = _spec_packages_module()
+        registry = _generation_4_registry()
+        source, current = _generation_event_fixture(spec_packages, 1)
+
+        normalizations = spec_packages._generation_normalizations(
+            (source,), (current,), registry
+        )
+        findings, transitions = spec_packages._validate_task_lifecycle_events(
+            (source,), (current,), registry, normalizations=normalizations
+        )
+
+        self.assertEqual(frozenset(), normalizations)
+        self.assertEqual((), findings)
+        self.assertIn(
+            (source.spec.path.as_posix(), "blocked", "in-progress"), transitions
+        )
+
+    def test_duplicate_post_generation_event_remains_invalid(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry = _generation_4_registry()
+        source, current = _generation_event_fixture(spec_packages, 2)
+
+        normalizations = spec_packages._generation_normalizations(
+            (source,), (current,), registry
+        )
+        findings, transitions = spec_packages._validate_task_lifecycle_events(
+            (source,), (current,), registry, normalizations=normalizations
+        )
+
+        self.assertEqual(frozenset(), normalizations)
+        self.assertEqual(frozenset(), transitions)
+        self.assertEqual(1, len(findings))
+        self.assertEqual(current.tasks[1].path.as_posix(), findings[0].path)
+        self.assertEqual(
+            "lifecycle event chain expected in-progress, found blocked",
+            findings[0].message,
+        )
+
+    def test_current_reconciliation_receipt_binds_exact_duplicate_events(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry, packages, previous, _, _ = _reconciliation_fixture(spec_packages)
+
+        with _mainline_history_root() as history_root:
+            reconciled = spec_packages._lifecycle_event_reconciliations(
+                history_root, previous, packages, registry
+            )
+
+        host = (
+            "docs/03.specs/0204-service-integration-security-and-operations/"
+            "tasks/tsk-0008-llm-wiki-preparation.md"
+        )
+        self.assertEqual(
+            frozenset(
+                {
+                    (host, "SPEC-0204", "blocked", "in-progress"),
+                    (host, "SPEC-0204-PLAN-0001", "blocked", "in-progress"),
+                }
+            ),
+            reconciled,
+        )
+
+    def test_reconciliation_requires_actual_head_first_parent_introduction(
+        self,
+    ) -> None:
+        spec_packages = _spec_packages_module()
+        registry, packages, previous, _, _ = _reconciliation_fixture(spec_packages)
+
+        with _history_root(RECONCILIATION_SIDE_HISTORY) as side_history:
+            with self.assertRaisesRegex(spec_packages.SpecPackageError, "first-parent"):
+                spec_packages._lifecycle_event_reconciliations(
+                    side_history, previous, packages, registry
+                )
+        with _mainline_history_root() as history_root:
+            reconciled = spec_packages._lifecycle_event_reconciliations(
+                history_root, previous, packages, registry
+            )
+        self.assertEqual(2, len(reconciled))
+
+    def test_reconciliation_binds_common_base_state_and_event_absence(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry, packages, previous, task, _ = _reconciliation_fixture(spec_packages)
+        package = next(package for package in packages if package.number == "0204")
+        original = spec_packages._git_reconciliation_document
+
+        def wrong_base(root, commit, path):
+            document = original(root, commit, path)
+            if commit == RECONCILIATION_BASE and path == package.spec.path:
+                return dataclasses.replace(document, status="in-progress")
+            return document
+
+        def copied_base_event(root, commit, path):
+            if commit == RECONCILIATION_BASE and path == task.path:
+                return original(
+                    root,
+                    "9666aa6b610f1f524893e10095ddd253a381fddc",
+                    path,
+                )
+            return original(root, commit, path)
+
+        def wrong_base_identity(root, commit, path):
+            document = original(root, commit, path)
+            if commit == RECONCILIATION_BASE and path == package.spec.path:
+                return dataclasses.replace(document, artifact_id="SPEC-9999")
+            return document
+
+        cases = (
+            (wrong_base, "boundary state"),
+            (wrong_base_identity, "boundary state"),
+            (copied_base_event, "predates"),
+        )
+        with _mainline_history_root() as history_root:
+            for reader, message in cases:
+                with (
+                    self.subTest(message=message),
+                    mock.patch.object(
+                        spec_packages,
+                        "_git_reconciliation_document",
+                        side_effect=reader,
+                    ),
+                    self.assertRaisesRegex(spec_packages.SpecPackageError, message),
+                ):
+                    spec_packages._lifecycle_event_reconciliations(
+                        history_root, previous, packages, registry
+                    )
+
+    def test_reconciliation_binds_historical_task_identity(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry, packages, previous, task, carrier = _reconciliation_fixture(
+            spec_packages
+        )
+        original = spec_packages._git_reconciliation_document
+
+        def reused_carrier(root, commit, path):
+            document = original(root, commit, path)
+            if commit.startswith("a27163a4") and path == carrier.path:
+                return dataclasses.replace(document, artifact_id="SPEC-0204-TSK-0999")
+            return document
+
+        def reused_integration_profile(root, commit, path):
+            document = original(root, commit, path)
+            if commit.startswith("abe2b8b1") and path == task.path:
+                return dataclasses.replace(document, profile_id="plan")
+            return document
+
+        with _mainline_history_root() as history_root:
+            for reader in (reused_carrier, reused_integration_profile):
+                with (
+                    mock.patch.object(
+                        spec_packages,
+                        "_git_reconciliation_document",
+                        side_effect=reader,
+                    ),
+                    self.assertRaisesRegex(
+                        spec_packages.SpecPackageError, "Task identity"
+                    ),
+                ):
+                    spec_packages._lifecycle_event_reconciliations(
+                        history_root, previous, packages, registry
+                    )
+        self.assertNotEqual(task.artifact_id, carrier.artifact_id)
+
+    def test_reconciliation_rejects_preexisting_edge_and_wrong_boundary_state(
+        self,
+    ) -> None:
+        spec_packages = _spec_packages_module()
+        registry, packages, previous, task, _ = _reconciliation_fixture(spec_packages)
+        package = next(package for package in packages if package.number == "0204")
+        original = spec_packages._git_reconciliation_document
+
+        def preexisting_event(root, commit, path):
+            if commit == DUPLICATE_INTEGRATION_PARENT and path == task.path:
+                return original(
+                    root,
+                    "abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9",
+                    path,
+                )
+            return original(root, commit, path)
+
+        def wrong_prestate(root, commit, path):
+            document = original(root, commit, path)
+            if commit == DUPLICATE_INTEGRATION_PARENT and path == package.spec.path:
+                return dataclasses.replace(document, status="blocked")
+            return document
+
+        def wrong_poststate(root, commit, path):
+            document = original(root, commit, path)
+            if commit.startswith("abe2b8b1") and path == package.spec.path:
+                return dataclasses.replace(document, status="blocked")
+            return document
+
+        cases = (
+            (preexisting_event, "predates"),
+            (wrong_prestate, "boundary state"),
+            (wrong_poststate, "boundary state"),
+        )
+        with _mainline_history_root() as history_root:
+            for reader, message in cases:
+                with (
+                    self.subTest(message=message),
+                    mock.patch.object(
+                        spec_packages,
+                        "_git_reconciliation_document",
+                        side_effect=reader,
+                    ),
+                    self.assertRaisesRegex(spec_packages.SpecPackageError, message),
+                ):
+                    spec_packages._lifecycle_event_reconciliations(
+                        history_root, previous, packages, registry
+                    )
+
+    def test_reconciliation_rejects_untrusted_scope_and_history(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry = load_current_registry()
+        packages = spec_packages.load_spec_packages(
+            ROOT / "docs/03.specs", registry=registry
+        )
+        previous = spec_packages._load_base_spec_packages(
+            ROOT, base_ref=INTEGRATION_BASE
+        )
+        task = next(
+            task
+            for package in packages
+            for task in package.tasks
+            if task.artifact_id == "SPEC-0204-TSK-0008"
+        )
+        for label, old, new, message in _RECONCILIATION_NEGATIVE_CASES:
+            changed = _replace_task_body(packages, task.path, old, new)
+            with (
+                self.subTest(label=label),
+                self.assertRaisesRegex(spec_packages.SpecPackageError, message),
+            ):
+                spec_packages._lifecycle_event_reconciliations(
+                    ROOT, previous, changed, registry
+                )
+
+    def test_reconciliation_rows_are_unique_and_append_only(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry = load_current_registry()
+        packages = spec_packages.load_spec_packages(
+            ROOT / "docs/03.specs", registry=registry
+        )
+        task = next(
+            task
+            for package in packages
+            for task in package.tasks
+            if task.artifact_id == "SPEC-0204-TSK-0008"
+        )
+        row = next(
+            line
+            for line in task.body.splitlines()
+            if line.startswith("| SPEC-0204 | blocked | in-progress | SPEC-0204-TSK")
+        )
+        duplicated = _replace_task_body(packages, task.path, row, f"{row}\n{row}")
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "duplicated"):
+            spec_packages._lifecycle_event_reconciliations(
+                ROOT, (), duplicated, registry
+            )
+        removed = _replace_task_body(packages, task.path, f"{row}\n", "")
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "exact prefix"):
+            spec_packages._lifecycle_event_reconciliations(
+                ROOT, packages, removed, registry
+            )
+        events = dict(registry.common["task_lifecycle_events"])
+        events.pop("reconciliation")
+        unregistered = dataclasses.replace(
+            registry,
+            common={**registry.common, "task_lifecycle_events": events},
+        )
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "contract"):
+            spec_packages._lifecycle_event_reconciliations(
+                ROOT, (), packages, unregistered
+            )
+
+    def test_reconciliation_requires_canonical_first_parent_order(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry = load_current_registry()
+        packages = spec_packages.load_spec_packages(
+            ROOT / "docs/03.specs", registry=registry
+        )
+        task = next(
+            task
+            for package in packages
+            for task in package.tasks
+            if task.artifact_id == "SPEC-0204-TSK-0008"
+        )
+        swaps = (
+            ("a27163a4f8efcea005d931b7f92e4f616132d8f3", "0" * 40),
+            (
+                "9666aa6b610f1f524893e10095ddd253a381fddc",
+                "a27163a4f8efcea005d931b7f92e4f616132d8f3",
+            ),
+            ("0" * 40, "9666aa6b610f1f524893e10095ddd253a381fddc"),
+            ("80c31405df7983dc4b7d8ad8823f73323247d264", "1" * 40),
+            (
+                "abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9",
+                "80c31405df7983dc4b7d8ad8823f73323247d264",
+            ),
+            ("1" * 40, "abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9"),
+        )
+        changed = packages
+        for old, new in swaps:
+            changed = _replace_task_body(changed, task.path, old, new)
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "first-parent"):
+            spec_packages._lifecycle_event_reconciliations(ROOT, (), changed, registry)
 
     def test_current_index_routes_each_current_package_by_directory(self) -> None:
         """SPEC-0184 rule 6: one directory-link row per package, no status copy."""

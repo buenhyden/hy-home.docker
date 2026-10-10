@@ -341,7 +341,8 @@
           "required": [
             "section",
             "subsection",
-            "table_headers"
+            "table_headers",
+            "reconciliation"
           ],
           "properties": {
             "section": {
@@ -361,6 +362,34 @@
               "minItems": 4,
               "maxItems": 4,
               "uniqueItems": true
+            },
+            "reconciliation": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "subsection",
+                "table_headers",
+                "disposition"
+              ],
+              "properties": {
+                "subsection": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "table_headers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 10,
+                  "maxItems": 10,
+                  "uniqueItems": true
+                },
+                "disposition": {
+                  "const": "concurrent-duplicate-observation"
+                }
+              }
             },
             "migration": {
               "type": "object",

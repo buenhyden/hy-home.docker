@@ -539,6 +539,21 @@ evidence. Machine guards verify the full source tree against the superseded
 mirror, the exact source commit/path/identity, the existing immutable completed
 same-ID Spec record, and the distinct target.
 
+A Task lifecycle event already appended on a divergent branch remains immutable
+when another Task reached main first with the same package transition. The later
+integrated Task may carry one registered reconciliation row that binds its exact
+event to the canonical same-package Task, both divergent source commits, and
+their ordered introductions on the current main first-parent history. The
+common-base Spec or Plan must still have the declared source status and neither
+carrier may already contain the edge there. Each integration must introduce one
+exact event on the declared Task identity, preserve the canonical target state
+before the later duplicate, and move the target from the declared source to the
+declared target only at the canonical boundary. Validation excludes only that
+proven concurrent observation from the event chain; the original row stays in
+place, and the receipt cannot reconcile Task self-events, path-reused carriers,
+side-merge-only history, unrelated packages, unknown history, or an unproven
+duplicate.
+
 #### Implementation coverage
 
 Every capability implemented in this workspace has one Stage 01 Requirement

@@ -46,6 +46,18 @@ _PLAN_ID = re.compile(r"SPEC-[0-9]{4}-PLAN-[0-9]{4}")
 _TASK_ID = re.compile(r"SPEC-[0-9]{4}-TSK-[0-9]{4}")
 _EXTERNAL_PARENT_ID = re.compile(r"(?:REQ|AD|ADR|SPEC)-[0-9]{4}")
 _RECOVERY_COMMIT = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})")
+_RECONCILIATION_HEADERS = (
+    "Artifact",
+    "From",
+    "To",
+    "Canonical carrier",
+    "Canonical source commit",
+    "Canonical integration commit",
+    "Duplicate source commit",
+    "Duplicate integration commit",
+    "Disposition",
+    "Evidence",
+)
 _FORBIDDEN_PACKAGE_ROLES = frozenset({"design.md", "tests.md", "task.md"})
 _CONTRACT_PROFILES = {
     "openapi.yaml": "openapi-contract",
@@ -176,6 +188,21 @@ class _LifecycleEvent:
     artifact_id: str
     source: str
     target: str
+    evidence: str
+    host_path: pathlib.PurePosixPath
+
+
+@dataclasses.dataclass(frozen=True)
+class _LifecycleReconciliation:
+    artifact_id: str
+    source: str
+    target: str
+    canonical_carrier: str
+    canonical_source_commit: str
+    canonical_integration_commit: str
+    duplicate_source_commit: str
+    duplicate_integration_commit: str
+    disposition: str
     evidence: str
     host_path: pathlib.PurePosixPath
 
@@ -3339,13 +3366,15 @@ def _generation_normalizations(
             continue
         if document.profile_id not in {"spec", "plan"}:
             continue
+        events = appended_by_artifact.get(document.artifact_id, ())
+        if events and events[0].source == before.status:
+            continue
         if before.status != "active":
             raise SpecPackageError(
                 f"unsupported lifecycle generation normalization: {path}"
             )
         target = document.status
         if target not in {"approved", "in-progress", "blocked"}:
-            events = appended_by_artifact.get(document.artifact_id, ())
             target = events[0].source if events else ""
             if target not in {"approved", "in-progress", "blocked"}:
                 raise SpecPackageError(
@@ -3527,6 +3556,557 @@ def _lifecycle_event_rows(
     return tuple(events)
 
 
+def _reconciliation_contract(
+    registry: DocumentRegistry,
+) -> tuple[str, str, tuple[str, ...], str]:
+    events = registry.common.get("task_lifecycle_events")
+    reconciliation = (
+        events.get("reconciliation") if isinstance(events, Mapping) else None
+    )
+    section = events.get("section") if isinstance(events, Mapping) else None
+    if not isinstance(reconciliation, Mapping) or set(reconciliation) != {
+        "subsection",
+        "table_headers",
+        "disposition",
+    }:
+        raise SpecPackageError("lifecycle reconciliation contract is malformed")
+    subsection = reconciliation.get("subsection")
+    headers = reconciliation.get("table_headers")
+    disposition = reconciliation.get("disposition")
+    if (
+        not isinstance(section, str)
+        or not isinstance(subsection, str)
+        or not isinstance(headers, (list, tuple))
+    ):
+        raise SpecPackageError("lifecycle reconciliation contract is malformed")
+    if tuple(headers) != _RECONCILIATION_HEADERS:
+        raise SpecPackageError("lifecycle reconciliation headers are invalid")
+    if disposition != "concurrent-duplicate-observation":
+        raise SpecPackageError("lifecycle reconciliation disposition is invalid")
+    return section, subsection, tuple(headers), disposition
+
+
+def _parse_reconciliation_row(
+    row: tuple[str, ...],
+    task: SpecDocument,
+    disposition: str,
+    anchor_counts: Mapping[str, int],
+    forbidden_evidence: str,
+) -> _LifecycleReconciliation:
+    if not all(row) or _TASK_ID.fullmatch(row[3]) is None:
+        raise SpecPackageError("lifecycle reconciliation identity is invalid")
+    if any(_RECOVERY_COMMIT.fullmatch(value) is None for value in row[4:8]):
+        raise SpecPackageError("lifecycle reconciliation commits must be full IDs")
+    if row[8] != disposition:
+        raise SpecPackageError("lifecycle reconciliation disposition is invalid")
+    evidence = row[9]
+    if (
+        re.fullmatch(r"#[a-z0-9][a-z0-9-]*", evidence) is None
+        or evidence == forbidden_evidence
+        or anchor_counts.get(evidence[1:]) != 1
+    ):
+        raise SpecPackageError(
+            "lifecycle reconciliation evidence must be one same-Task anchor"
+        )
+    return _LifecycleReconciliation(*row[:9], evidence, task.path)
+
+
+def _lifecycle_reconciliation_rows(
+    task: SpecDocument,
+    registry: DocumentRegistry,
+) -> tuple[_LifecycleReconciliation, ...]:
+    events = registry.common.get("task_lifecycle_events")
+    reconciliation = (
+        events.get("reconciliation") if isinstance(events, Mapping) else None
+    )
+    if reconciliation is None:
+        if "### Lifecycle Event Reconciliation" in _completion_visible_lines(task.body):
+            raise SpecPackageError("lifecycle reconciliation contract is malformed")
+        return ()
+    section_name, subsection, headers, disposition = _reconciliation_contract(registry)
+    section = _contract_section(task.body, section_name)
+    marker = "### " + subsection
+    starts = [index for index, line in enumerate(section) if line == marker]
+    if not starts:
+        return ()
+    if len(starts) != 1:
+        raise SpecPackageError(f"lifecycle reconciliation requires one {marker}")
+    start = starts[0] + 1
+    end = next(
+        (
+            index
+            for index in range(start, len(section))
+            if section[index].startswith("### ")
+        ),
+        len(section),
+    )
+    rows = _registered_table_rows(section[start:end], headers)
+    anchor_counts: dict[str, int] = {}
+    for line in _completion_visible_lines(task.body):
+        match = re.fullmatch(r"#{1,6} +(.+?) *#*", line)
+        if match is not None:
+            anchor = _heading_anchor(match.group(1))
+            anchor_counts[anchor] = anchor_counts.get(anchor, 0) + 1
+    receipts = tuple(
+        _parse_reconciliation_row(
+            row,
+            task,
+            disposition,
+            anchor_counts,
+            "#" + _heading_anchor(subsection),
+        )
+        for row in rows
+    )
+    if len(receipts) != len(set(receipts)):
+        raise SpecPackageError("lifecycle reconciliation row is duplicated")
+    return receipts
+
+
+def _reconciliation_key(
+    receipt: _LifecycleReconciliation,
+) -> tuple[str, str, str, str]:
+    return (
+        receipt.host_path.as_posix(),
+        receipt.artifact_id,
+        receipt.source,
+        receipt.target,
+    )
+
+
+def _reconciliation_merge_base(root: pathlib.Path, left: str, right: str) -> str:
+    try:
+        value = _bounded_git(root, "merge-base", left, right, byte_limit=256)
+    except SpecPackageError as error:
+        raise SpecPackageError(
+            "lifecycle reconciliation commit is not reachable"
+        ) from error
+    commit = value.decode("ascii").strip()
+    if _RECOVERY_COMMIT.fullmatch(commit) is None:
+        raise SpecPackageError("lifecycle reconciliation history is malformed")
+    return commit
+
+
+def _require_reconciliation_history(
+    root: pathlib.Path, receipt: _LifecycleReconciliation
+) -> str:
+    head = (
+        _bounded_git(root, "rev-parse", "--verify", "HEAD^{commit}", byte_limit=256)
+        .decode("ascii")
+        .strip()
+    )
+    commits = (
+        receipt.canonical_source_commit,
+        receipt.canonical_integration_commit,
+        receipt.duplicate_source_commit,
+        receipt.duplicate_integration_commit,
+    )
+    if any(
+        _reconciliation_merge_base(root, commit, head) != commit for commit in commits
+    ):
+        raise SpecPackageError("lifecycle reconciliation commit is not reachable")
+    if _reconciliation_merge_base(root, *commits[:2]) != commits[0]:
+        raise SpecPackageError("canonical source is not integrated by its receipt")
+    if _reconciliation_merge_base(root, *commits[2:]) != commits[2]:
+        raise SpecPackageError("duplicate source is not integrated by its receipt")
+    source_base = _reconciliation_merge_base(root, commits[0], commits[2])
+    if source_base in {commits[0], commits[2]}:
+        raise SpecPackageError("lifecycle reconciliation sources are not divergent")
+    return source_base
+
+
+def _require_integration_boundary(
+    root: pathlib.Path, source: str, integration: str
+) -> str:
+    row = (
+        _bounded_git(
+            root, "rev-list", "--parents", "-n", "1", integration, byte_limit=256
+        )
+        .decode("ascii")
+        .strip()
+        .split()
+    )
+    if len(row) != 3 or row[0] != integration:
+        raise SpecPackageError("lifecycle reconciliation integration is not a merge")
+    main_parent, branch_parent = row[1:]
+    if _reconciliation_merge_base(root, source, branch_parent) != source:
+        raise SpecPackageError("lifecycle reconciliation source is not on the branch")
+    if _reconciliation_merge_base(root, source, main_parent) == source:
+        raise SpecPackageError("lifecycle reconciliation source predates integration")
+    return main_parent
+
+
+def _first_parent_history(root: pathlib.Path, revision: str) -> tuple[str, ...]:
+    revisions = tuple(
+        _bounded_git(
+            root,
+            "rev-list",
+            "--first-parent",
+            revision,
+            byte_limit=MAX_TOTAL_ENTRIES * 65,
+        )
+        .decode("ascii")
+        .splitlines()
+    )
+    if len(revisions) > MAX_TOTAL_ENTRIES or any(
+        _RECOVERY_COMMIT.fullmatch(item) is None for item in revisions
+    ):
+        raise SpecPackageError(
+            "lifecycle reconciliation first-parent history is malformed"
+        )
+    return revisions
+
+
+def _require_first_parent_order(
+    root: pathlib.Path, receipt: _LifecycleReconciliation
+) -> None:
+    revisions = _first_parent_history(root, "HEAD")
+    canonical = receipt.canonical_integration_commit
+    duplicate = receipt.duplicate_integration_commit
+    if canonical not in revisions or duplicate not in revisions:
+        raise SpecPackageError(
+            "lifecycle reconciliation integration is not on HEAD first-parent history"
+        )
+    if revisions.index(duplicate) >= revisions.index(canonical):
+        raise SpecPackageError(
+            "lifecycle reconciliation integrations are not in first-parent order"
+        )
+
+
+def _git_reconciliation_document(
+    root: pathlib.Path, commit: str, path: pathlib.PurePosixPath
+) -> SpecDocument:
+    try:
+        payload = _bounded_git(
+            root, "show", f"{commit}:{path.as_posix()}", byte_limit=MAX_SPEC_FILE_BYTES
+        )
+        text = payload.decode("utf-8")
+    except (SpecPackageError, UnicodeDecodeError) as error:
+        raise SpecPackageError(
+            "lifecycle reconciliation commit tree is incomplete"
+        ) from error
+    document = _snapshot_document(path, text)
+    if document is None:
+        raise SpecPackageError("lifecycle reconciliation document is invalid")
+    return document
+
+
+def _git_optional_reconciliation_document(
+    root: pathlib.Path, commit: str, path: pathlib.PurePosixPath
+) -> SpecDocument | None:
+    try:
+        listing = _bounded_git(
+            root,
+            "ls-tree",
+            "-z",
+            commit,
+            "--",
+            path.as_posix(),
+            byte_limit=512,
+        )
+    except SpecPackageError as error:
+        raise SpecPackageError(
+            "lifecycle reconciliation commit tree is incomplete"
+        ) from error
+    rows = tuple(row for row in listing.split(b"\0") if row)
+    if not rows:
+        return None
+    if len(rows) != 1:
+        raise SpecPackageError("lifecycle reconciliation commit tree is malformed")
+    try:
+        metadata, listed_path = rows[0].split(b"\t", 1)
+        mode, object_type, object_id = metadata.split(b" ", 2)
+        object_name = object_id.decode("ascii")
+    except (ValueError, UnicodeDecodeError) as error:
+        raise SpecPackageError(
+            "lifecycle reconciliation commit tree is malformed"
+        ) from error
+    if (
+        mode not in {b"100644", b"100755"}
+        or object_type != b"blob"
+        or listed_path != path.as_posix().encode()
+        or _RECOVERY_COMMIT.fullmatch(object_name) is None
+    ):
+        raise SpecPackageError("lifecycle reconciliation commit tree is malformed")
+    return _git_reconciliation_document(root, commit, path)
+
+
+def _require_reconciliation_task_identity(task: SpecDocument, artifact_id: str) -> None:
+    if task.profile_id != "task" or task.artifact_id != artifact_id:
+        raise SpecPackageError(
+            "lifecycle reconciliation commit tree has the wrong Task identity"
+        )
+
+
+def _historical_reconciliation_event_count(
+    task: SpecDocument,
+    receipt: _LifecycleReconciliation,
+    registry: DocumentRegistry,
+) -> int:
+    return sum(
+        (event.artifact_id, event.source, event.target)
+        == (receipt.artifact_id, receipt.source, receipt.target)
+        for event in _lifecycle_event_rows(task, registry)
+    )
+
+
+def _require_historical_reconciliation_event(
+    root: pathlib.Path,
+    commit: str,
+    task_path: pathlib.PurePosixPath,
+    task_artifact_id: str,
+    receipt: _LifecycleReconciliation,
+    registry: DocumentRegistry,
+    *,
+    expected: int = 1,
+) -> None:
+    task = _git_reconciliation_document(root, commit, task_path)
+    _require_reconciliation_task_identity(task, task_artifact_id)
+    if _historical_reconciliation_event_count(task, receipt, registry) != expected:
+        raise SpecPackageError(
+            "lifecycle reconciliation event was not introduced at its integration"
+        )
+
+
+def _require_optional_historical_event_absent(
+    root: pathlib.Path,
+    commit: str,
+    task_path: pathlib.PurePosixPath,
+    task_artifact_id: str,
+    receipt: _LifecycleReconciliation,
+    registry: DocumentRegistry,
+) -> None:
+    task = _git_optional_reconciliation_document(root, commit, task_path)
+    if task is None:
+        return
+    _require_reconciliation_task_identity(task, task_artifact_id)
+    if _historical_reconciliation_event_count(task, receipt, registry):
+        raise SpecPackageError(
+            "lifecycle reconciliation event predates its integration boundary"
+        )
+
+
+def _require_historical_reconciliation_target(
+    root: pathlib.Path,
+    commit: str,
+    document: SpecDocument,
+    receipt: _LifecycleReconciliation,
+    status: str,
+) -> None:
+    historical = _git_reconciliation_document(root, commit, document.path)
+    if (
+        historical.artifact_id != receipt.artifact_id
+        or historical.profile_id != document.profile_id
+        or historical.status != status
+    ):
+        raise SpecPackageError(
+            "lifecycle reconciliation commit tree has the wrong boundary state"
+        )
+
+
+def _validate_current_reconciliation(
+    package: SpecPackage,
+    task: SpecDocument,
+    receipt: _LifecycleReconciliation,
+    registry: DocumentRegistry,
+) -> tuple[SpecDocument, SpecDocument]:
+    members = (package.spec,) + ((package.plan,) if package.plan is not None else ())
+    targets = [
+        member for member in members if member.artifact_id == receipt.artifact_id
+    ]
+    carriers = [
+        candidate
+        for candidate in package.tasks
+        if candidate.artifact_id == receipt.canonical_carrier
+    ]
+    if len(targets) != 1:
+        raise SpecPackageError(
+            "reconciliation Artifact must be a same-package Spec or Plan"
+        )
+    if len(carriers) != 1 or carriers[0].path == task.path:
+        raise SpecPackageError("lifecycle reconciliation canonical carrier is invalid")
+    target, carrier = targets[0], carriers[0]
+    if (
+        target.status != receipt.target
+        or receipt.target
+        not in registry.transitions.get(target.profile_id, {}).get(receipt.source, ())
+    ):
+        raise SpecPackageError("lifecycle reconciliation transition is invalid")
+    host_matches = [
+        event
+        for event in _lifecycle_event_rows(task, registry)
+        if (event.artifact_id, event.source, event.target)
+        == (receipt.artifact_id, receipt.source, receipt.target)
+    ]
+    carrier_matches = [
+        event
+        for event in _lifecycle_event_rows(carrier, registry)
+        if (event.artifact_id, event.source, event.target)
+        == (receipt.artifact_id, receipt.source, receipt.target)
+    ]
+    if len(host_matches) != 1:
+        raise SpecPackageError("lifecycle reconciliation lacks one exact host event")
+    if len(carrier_matches) != 1:
+        raise SpecPackageError("canonical carrier lacks one exact lifecycle event")
+    return target, carrier
+
+
+def _require_common_base_reconciliation(
+    root: pathlib.Path,
+    common_base: str,
+    target: SpecDocument,
+    task: SpecDocument,
+    carrier: SpecDocument,
+    receipt: _LifecycleReconciliation,
+    registry: DocumentRegistry,
+) -> None:
+    _require_historical_reconciliation_target(
+        root, common_base, target, receipt, receipt.source
+    )
+    for candidate in (task, carrier):
+        _require_optional_historical_event_absent(
+            root,
+            common_base,
+            candidate.path,
+            candidate.artifact_id,
+            receipt,
+            registry,
+        )
+
+
+def _require_integration_introduction(
+    root: pathlib.Path,
+    main_parent: str,
+    integration: str,
+    target: SpecDocument,
+    task: SpecDocument,
+    receipt: _LifecycleReconciliation,
+    registry: DocumentRegistry,
+    parent_status: str,
+) -> None:
+    _require_optional_historical_event_absent(
+        root, main_parent, task.path, task.artifact_id, receipt, registry
+    )
+    _require_historical_reconciliation_event(
+        root, integration, task.path, task.artifact_id, receipt, registry
+    )
+    _require_historical_reconciliation_target(
+        root, main_parent, target, receipt, parent_status
+    )
+    _require_historical_reconciliation_target(
+        root, integration, target, receipt, receipt.target
+    )
+
+
+def _require_reconciliation_sources(
+    root: pathlib.Path,
+    receipt: _LifecycleReconciliation,
+    target: SpecDocument,
+    task: SpecDocument,
+    carrier: SpecDocument,
+    registry: DocumentRegistry,
+) -> None:
+    for commit, source_task in (
+        (receipt.canonical_source_commit, carrier),
+        (receipt.duplicate_source_commit, task),
+    ):
+        _require_historical_reconciliation_event(
+            root,
+            commit,
+            source_task.path,
+            source_task.artifact_id,
+            receipt,
+            registry,
+        )
+        _require_historical_reconciliation_target(
+            root, commit, target, receipt, receipt.target
+        )
+
+
+def _validate_reconciliation_history(
+    root: pathlib.Path,
+    receipt: _LifecycleReconciliation,
+    target: SpecDocument,
+    task: SpecDocument,
+    carrier: SpecDocument,
+    registry: DocumentRegistry,
+) -> None:
+    common_base = _require_reconciliation_history(root, receipt)
+    canonical_parent = _require_integration_boundary(
+        root, receipt.canonical_source_commit, receipt.canonical_integration_commit
+    )
+    duplicate_parent = _require_integration_boundary(
+        root, receipt.duplicate_source_commit, receipt.duplicate_integration_commit
+    )
+    _require_first_parent_order(root, receipt)
+    _require_common_base_reconciliation(
+        root, common_base, target, task, carrier, receipt, registry
+    )
+    _require_reconciliation_sources(root, receipt, target, task, carrier, registry)
+    _require_integration_introduction(
+        root,
+        canonical_parent,
+        receipt.canonical_integration_commit,
+        target,
+        carrier,
+        receipt,
+        registry,
+        receipt.source,
+    )
+    _require_integration_introduction(
+        root,
+        duplicate_parent,
+        receipt.duplicate_integration_commit,
+        target,
+        task,
+        receipt,
+        registry,
+        receipt.target,
+    )
+
+
+def _lifecycle_event_reconciliations(
+    root: pathlib.Path,
+    previous: Sequence[SpecPackage],
+    current: Sequence[SpecPackage],
+    registry: DocumentRegistry,
+) -> frozenset[tuple[str, str, str, str]]:
+    previous_tasks = {task.path: task for package in previous for task in package.tasks}
+    reconciled: set[tuple[str, str, str, str]] = set()
+    canonical_events: set[tuple[str, str, str, str]] = set()
+    for package in current:
+        for task in package.tasks:
+            current_rows = _lifecycle_reconciliation_rows(task, registry)
+            before = previous_tasks.get(task.path)
+            previous_rows = (
+                _lifecycle_reconciliation_rows(before, registry) if before else ()
+            )
+            if current_rows[: len(previous_rows)] != previous_rows:
+                raise SpecPackageError(
+                    "existing lifecycle reconciliation rows must remain an exact prefix"
+                )
+            for receipt in current_rows:
+                key = _reconciliation_key(receipt)
+                canonical = (
+                    receipt.canonical_carrier,
+                    receipt.artifact_id,
+                    receipt.source,
+                    receipt.target,
+                )
+                if key in reconciled or canonical in canonical_events:
+                    raise SpecPackageError(
+                        "lifecycle reconciliation proof is duplicated"
+                    )
+                target, carrier = _validate_current_reconciliation(
+                    package, task, receipt, registry
+                )
+                _validate_reconciliation_history(
+                    root, receipt, target, task, carrier, registry
+                )
+                reconciled.add(key)
+                canonical_events.add(canonical)
+    return frozenset(reconciled)
+
+
 def _event_finding(path: pathlib.PurePosixPath, message: str) -> SpecPackageFinding:
     return SpecPackageFinding(
         "task-lifecycle-events-invalid",
@@ -3543,6 +4123,7 @@ def _validate_task_lifecycle_events(
     prefix_previous: Sequence[SpecPackage] | None = None,
     normalizations: frozenset[tuple[str, str, str]] = frozenset(),
     source_registry: Mapping[str, object] | None = None,
+    reconciled_events: frozenset[tuple[str, str, str, str]] = frozenset(),
 ) -> tuple[tuple[SpecPackageFinding, ...], frozenset[tuple[str, str, str]]]:
     previous_by_name = {package.spec.path.parts[2]: package for package in previous}
     prefix_by_name = {
@@ -3601,9 +4182,20 @@ def _validate_task_lifecycle_events(
                 continue
             if task.path in prefix_tasks:
                 historical_suffix.extend(previous_rows[len(base_rows) :])
-                current_suffix.extend(current_rows[len(previous_rows) :])
+                appended = current_rows[len(previous_rows) :]
             else:
-                current_suffix.extend(current_rows[len(base_rows) :])
+                appended = current_rows[len(base_rows) :]
+            current_suffix.extend(
+                event
+                for event in appended
+                if (
+                    event.host_path.as_posix(),
+                    event.artifact_id,
+                    event.source,
+                    event.target,
+                )
+                not in reconciled_events
+            )
 
         members = [package.spec, *package.tasks]
         if package.plan is not None:
@@ -4373,6 +4965,9 @@ def validate_repository_spec_package_lifecycle_details(
             _validate_terminal_task_migration(source_packages, current)
         elif previous:
             _validate_terminal_task_migration(previous, current)
+    reconciled_events = _lifecycle_event_reconciliations(
+        root, previous, current, registry
+    )
     event_baseline = (
         _with_missing_historical_tasks(
             source_packages,
@@ -4389,6 +4984,7 @@ def validate_repository_spec_package_lifecycle_details(
         prefix_previous=source_packages if generation == 4 else None,
         normalizations=normalizations,
         source_registry=source_registry if generation == 4 else None,
+        reconciled_events=reconciled_events,
     )
     receipt_shape_findings = _validate_legacy_multirow_receipts(
         previous,
