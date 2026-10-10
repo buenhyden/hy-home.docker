@@ -266,7 +266,7 @@ comparison/metadata rewriting/unlink, rotation and real restore are NOT_RUN.
 | MIGRATION | VERIFY_RUNTIME | NOT_RUN; no actual file comparison/private catalog changes; CLN01 verifies source/runtime/job/backup/external facts |
 | ROTATION | NO_CHANGE | NOT_RUN; no password or account change |
 | RECOVERY | VERIFY_RUNTIME | NOT_RUN for real Restic recovery; canonical-only source/consumer rollback is documented |
-| DELIVERY | IMPLEMENT | Commit/PR handoff pending; SEC01 precedes common-file integration |
+| DELIVERY | IMPLEMENT | Logical commits pushed; draft owning PRs #412/#413; latest-main hosted acceptance and integration NOT_RUN |
 | Wiki and batches | OUT_OF_SCOPE | Wiki preparation and independent opsflow_dev batch are later owning work; no engine/app created |
 | LAB runtime and learning apps | OUT_OF_SCOPE | No service/data/image/credential change or learning-app investigation |
 
@@ -329,7 +329,7 @@ candidates. Earlier PASS rows are historical, not fresh final-source evidence.
 | `python3 -m unittest tests.lib.ops.test_smtp_contract -q` | 0 | 17 tests and 43 subtests; synthetic retirement only |
 | `uv run --with pytest --with pyyaml --with pytest-cov python -m pytest tests/lib/ops/test_smtp_contract.py --cov=scripts.lib.ops.smtp_contract --cov-branch` | 0 | Reported aggregate coverage 94%; no private files |
 | `python3 -m unittest tests.validation.test_secret_metadata_sync -q` | 0 | 46 scanner/catalog tests |
-| `python3 -m unittest tests.validation.test_supabase_smtp_rehearsal -q` | pending | Opt-in skipped by default; native run recorded separately below |
+| `python3 -m unittest tests.validation.test_supabase_smtp_rehearsal -q` | 0 | Final fixture: 4 unit PASS, 6 native SKIP by default; opt-in receipt below |
 
 #### Current-source verification and delivery receipt
 
@@ -379,9 +379,17 @@ helper/catalog `3d0a8a1b07c1f2df29c0f04f88ba8fa815fbd1bf`, consumer
 `3181921be795c5439e5ac77e462f62e47db6fa5d`. SPEC-0212 draft
 [PR #412](https://github.com/buenhyden/hy-home.docker/pull/412) has head `d90d9f1`
 and 8 hosted checks PASS. It remains OPEN/DRAFT and unmerged. Remote main was
-reconfirmed as `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`. Implementation PR and
-latest aggregate/cleanup-corrected native receipts are pending below; integration
-and SEC01 final-image retest remain distinct prerequisites.
+reconfirmed as `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`. SPEC-0204 draft
+[PR #413](https://github.com/buenhyden/hy-home.docker/pull/413) is OPEN/DRAFT,
+stacked on `codex/smtp01-contract`. Integration and SEC01 final-image retest
+remain distinct prerequisites. Current native and gate receipts follow.
+
+A later remote-main check returned
+`cac9e10fa584754706598d624654e07e8d6531f4`: P09 issuance PR #414 is merged.
+Its shared SPEC-0204 Spec/Plan changes must be reconciled with #413 by the
+coordinator while preserving P09 criterion 13/W25 and CLN01 criterion 12/W24.
+This branch has not been automatically merged or rebased onto that main.
+Earlier test receipts do not establish compatibility with its newer tree.
 
 #### Final native receipt
 
@@ -492,6 +500,7 @@ SPEC-0204 implementation PR excludes that already-owned contract commit.
 - `tests/lib/gate/test_github_workflow_contract.py`
 - `tests/lib/ops/README.md`
 - `tests/lib/ops/test_smtp_contract.py`
+- `tests/validation/_script_manifest_support.py`
 - `tests/validation/test_agent_governance_ci_routing.py`
 - `tests/validation/test_secret_metadata_sync.py`
 - `tests/validation/test_service_runtime_compatibility.py`
@@ -506,11 +515,59 @@ reconcile criterion gaps under the coordinator, and never use force push/reset.
 
 #### Delivery checkpoint
 
-Native verification is commit
-`63ac2cfb47f822b399f5bf9e8aa4cbef13b26559`; staged style and the ordinary
-repository commit hook both pass on the final renamed source. The initial
-aggregate exited 1 on a new README heading-contract deficit; the SMTP section
-was moved under Configuration and the registered aggregate is rerunning.
+Logical commits are contract `d90d9f1`, helper/catalog `3d0a8a1`, consumer
+`3181921`, protected static repair `1f32477`, native fixture `63ac2cf`, and
+operations evidence `7bb0d85`, and manifest regression fix `b37c1151a`. Their ordinary commit hooks and staged style
+checks passed without bypass. Both owning draft PRs are pushed and unmerged.
+The file manifest above contains 32 tracked changed/created files and no deletion.
+
+The registered aggregate command was
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only`.
+Its first run exited 1 on the new README heading contract; the SMTP heading
+was placed under Configuration. The second run also exited 1: its Compose
+baseline suite ran 432 tests with two failures and 65 skips. The two failures
+were isolated-worktree public entrypoint modes 0775 rather than 0755:
+`infra/08-ai/open-webui/docker-entrypoint.sh` and
+`infra/06-observability/gatus/docker-entrypoint.sh`. Only these two filesystem
+modes were normalized; tracked content and Git executable modes were unchanged,
+and the original/HOME checkout was untouched. The two affected modules then
+passed all 19 tests. This long aggregate spanned HEAD `3181921` through
+`7bb0d85`; it is retained as FAIL, not relabeled as a frozen final-head PASS.
+
+The already-completed aggregate leaves passed hook (15), lifecycle (15),
+metadata (142), document governance (645), supply-chain fixtures (239) and
+Conftest (18) tests, plus candidate preflight/projection and document links.
+The links retain one pre-existing historical-capture warning. These receipts
+are historical aggregate-component results, not new whole-aggregate acceptance.
+
+A public reproduction script derives the actual registered changed plan and
+executes only the failed and subsequent nine already-admitted leaves through
+the existing executor, including its environment/timeout/skip contracts:
+`python3 /tmp/smtp01-remaining-gates.py /tmp/hy-home-smtp01`.
+Script SHA256 is
+`af1cc0aaebea5923b18a2c7a83953796755735e963166244bcd62fd3585347f1`.
+At input HEAD `7bb0d850742d1865ff904c857e6a9a8d42bb558e`, exit 1: eight
+leaves PASS, including Compose baseline (432 tests, 65 SKIP), CI gate contracts,
+runner/adapter, workflow, control plane, precommit wrapper and release checks.
+The ninth, repository-integrity, ran 202 tests with one FAIL because its existing
+mutation expectation table omitted the new SMTP helper. The helper actually
+mutates runtime state, so the existing manifest's `runtime` classification was
+preserved; the test expectation was corrected rather than relaxing production.
+
+The single regression was RED before that correction. Full manifest unit
+command `python3 -m unittest tests.validation.test_script_manifest -q` passed
+48 tests, exit 0. Independent code review also ran 48/48 PASS and approved;
+security independently approved the same one-line delta and regression. Reviewed
+expectation-file SHA256 is
+`e730cc4bbe4270b381ea9657b0c5a0b1163796248a432e9feb6f2ff5ec9921a0`.
+At HEAD `7bb0d85` plus that exact delta, the affected registered leaf rerun
+`python3 /tmp/smtp01-integrity-gate.py /tmp/hy-home-smtp01` exited 0 with
+202 PASS in 60.105 seconds. Its public reproduction SHA256 is
+`16d731f41f07eb31036654b66039b874fadb0fbe36ec93b5bb663da0db4c28e2`.
+All nine selected leaves have passing receipts
+after fixes, but the original aggregate remains FAIL. A complete frozen
+latest-main candidate run is NOT_RUN and remains the coordinator's gate.
+
 Staged doc style also caught MD029 auto-renumbering criterion 14 to 12 in its
 isolated checkout. A local next-line exception preserves the coordinator's
 criterion IDs without changing global lint policy; the exact staged rerun passes.
@@ -522,8 +579,8 @@ PRs targeting main: this stacked PR's required candidate result is NOT_RUN
 until the coordinator merges the owning contract, rebases/retargets to latest
 main and runs the actual latest-head required checks. Neither draft is merged.
 SEC01 final image-contract proof and coordinator common-file integration remain
-prerequisites. SMTP01 is source/isolated ready, not a claim of private retirement,
-HOME recovery or end-to-end delivery completion.
+prerequisites. SMTP01 is source/isolated ready; actual private retirement,
+HOME recovery and end-to-end delivery remain NOT_RUN.
 
 #### Outstanding operational commands and acceptance
 
