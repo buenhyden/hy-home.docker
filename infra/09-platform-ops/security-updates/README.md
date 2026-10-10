@@ -13,7 +13,7 @@ updated: "2026-10-10"
 
 이 폴더는 SEC01의 현재 source·runtime 조사 자료와 미실행 경계를 보관합니다.
 수용 책임은 SPEC-0204와 정식 발급된
-[`SPEC-0204-TSK-0009`](../../../docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0009-sec01-stable-security-integration.md)에
+`SPEC-0204-TSK-0009`에
 있으며 공통 문서 통합은 총괄 순서를 따릅니다.
 JSON 자료는 기존 inventory·버전 projection을 대체하는 Registry가 아닙니다.
 이 README는 `scripts/lib/supply_chain/latest_version_gate.py`와
