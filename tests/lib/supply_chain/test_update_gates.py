@@ -201,6 +201,27 @@ class SecurityUpdateGateTests(unittest.TestCase):
 
 
 class UpdateEvidencePackageTests(unittest.TestCase):
+    def test_runtime_candidates_report_their_own_upstream_tag(self):
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+
+        def canonical_tag(value: str) -> str:
+            return value.rsplit("@", 1)[-1].removeprefix("v")
+
+        for row in ledger["entries"]:
+            if row.get("disposition") != "VERIFY_RUNTIME":
+                continue
+            target = row.get("target_version")
+            reported = row.get("upstream_reported_tag")
+            if target in (None, "UNKNOWN") or reported in (None, "UNKNOWN"):
+                continue
+            with self.subTest(service=row["service"]):
+                self.assertEqual(canonical_tag(target), canonical_tag(reported))
+
     def test_source_membership_and_operational_boundaries_remain_explicit(self):
         root = Path(__file__).resolve().parents[3]
         package = root / "infra/09-platform-ops/security-updates"
