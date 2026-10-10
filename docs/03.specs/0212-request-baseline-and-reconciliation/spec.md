@@ -1,8 +1,8 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"

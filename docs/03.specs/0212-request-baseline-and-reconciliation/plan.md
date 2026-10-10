@@ -1,8 +1,8 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/plan"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"
@@ -45,7 +45,11 @@ The P00 doc-writer owns only this Spec, this Plan, TSK-0003, and
 `../0220-crawl4ai-collection-and-egress/plan.md` in the first reviewable
 current-contract unit. The latter removes an active learning-app candidate. Existing Tasks, operations bodies,
 inventory, Registry, runtime and governance sources are read-only here.
-No new Spec number is issued. Independent reviewers do not edit the patch.
+No new Spec number is issued. Independent reviewers do not edit the patch. A delivery-receipt unit after
+actual P00 merge may reconcile the frontmatter of TSK-0001/TSK-0002 from their
+already accepted historical criteria, preserving both bodies byte-for-byte.
+The current Task records their lifecycle edges and actual delivery separately;
+this is no fresh execution or downstream native acceptance.
 
 For downstream work, each acceptance owner assigns one implementation writer
 before touching a shared path. P01 owns secret classification/prerequisites;
