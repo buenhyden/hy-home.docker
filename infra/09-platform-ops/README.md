@@ -59,6 +59,9 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 - [Restic](restic/README.md)은 데이터 디스크 파일, 일관된 내보내기 결과,
   `secrets/`, `.env`를 호스트 타이머 아래 두 개의 서로 다른 디스크에 있는
   저장소로 스냅샷합니다.
+- [Security updates](security-updates/README.md)는 공급자 stable/security 조사와
+  source 검증 장부를 보관합니다. 장부와 isolated 시험은 실제 이미지 배포,
+  HOME 복구 또는 scanner acceptance를 뜻하지 않습니다.
 
 ## Structure
 
@@ -69,6 +72,7 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 ├── registry/    # OCI Distribution storage
 ├── renovate/    # dependency-update job
 ├── restic/      # backup jobs, exclude lists, host orchestrator and timer
+├── security-updates/ # stable/security source ledger and verification records
 └── README.md
 ```
 
