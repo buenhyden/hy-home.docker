@@ -18,6 +18,10 @@ case "$state" in
     ;;
 esac
 
+port=${OPENBAO_PORT:-8200}
+case "$port" in '' | *[!0-9]*) exit 64 ;; esac
+[ "${#port}" -le 5 ] && [ "$port" -ge 1 ] && [ "$port" -le 65535 ] || exit 64
+
 dir=${PROMETHEUS_TARGETS_DIR:-/etc/prometheus/targets}
 mkdir -p "$dir"
 
@@ -39,5 +43,14 @@ render() {
 
 render dev-pg-exporter dev-pg-exporter:9187 postgresql
 render dev-valkey-exporter dev-valkey-exporter:9121 valkey
+
+tmp=$(mktemp "$dir/.openbao.XXXXXX")
+printf '%s\n' \
+  "- targets: [\"openbao:$port\"]" \
+  '  labels:' \
+  '    cluster: "hy-home"' \
+  '    namespace: "hy-home"' \
+  '    domain: "security"' > "$tmp"
+mv -f "$tmp" "$dir/openbao.yml"
 
 exec "${PROMETHEUS_BIN:-/bin/prometheus}" "$@"

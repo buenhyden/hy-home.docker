@@ -162,16 +162,16 @@ scrape_configs:
           domain: "auth"
 
   - job_name: "openbao"
+    scheme: https
+    tls_config:
+      ca_file: /etc/prometheus/openbao-ca.pem
+      server_name: openbao
     metrics_path: /v1/sys/metrics
     params:
       format: ["prometheus"]
     bearer_token_file: /run/secrets/openbao_token
-    static_configs:
-      - targets: ["openbao:8200"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "security"
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/openbao.yml"]
 
   # ============================================================================
   # DATASTORES

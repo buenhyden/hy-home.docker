@@ -1,7 +1,8 @@
 pid_file = "/tmp/openbao-agent.pid"
 
 vault {
-  address = "http://openbao:8200"
+  # VAULT_ADDR and VAULT_CACERT from Compose own the TLS endpoint/trust.
+  tls_skip_verify = false
 }
 
 auto_auth {
@@ -12,6 +13,7 @@ auto_auth {
       role_id_file_path   = "/openbao/agent/role_id"
       secret_id_file_path = "/openbao/agent/secret_id"
 
+      secret_id_response_wrapping_path = "auth/approle/role/hy-home-renderer/secret-id"
       remove_secret_id_file_after_reading = true
     }
   }
@@ -33,6 +35,18 @@ template {
 template {
   source      = "/openbao/config/templates/grafana_admin_password.ctmpl"
   destination = "/openbao/out/observability/grafana_admin_password.txt"
+  perms       = 0600
+}
+
+template {
+  source      = "/openbao/config/templates/keycloak_admin_password_version.ctmpl"
+  destination = "/openbao/out/auth/keycloak_admin_password.version"
+  perms       = 0600
+}
+
+template {
+  source      = "/openbao/config/templates/grafana_admin_password_version.ctmpl"
+  destination = "/openbao/out/observability/grafana_admin_password.version"
   perms       = 0600
 }
 

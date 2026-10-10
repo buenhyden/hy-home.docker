@@ -257,13 +257,13 @@
       "allowed_value": "unneeded",
       "kind": "compatibility",
       "owner": "@buenhyden",
-      "reason": "The service writes /openbao/data (Raft state), owned 1000:1000 mode 775 by the host user; group 1000 is its only write path",
-      "impact": "The container also holds the secret-reading group, though it mounts no secret",
-      "mitigation": "No secret file or secrets directory is mounted into this service",
-      "verification": "HOME mount ownership read on 2026-10-09 (owner 1000, group 1000, mode 775; container uid differs)",
-      "reviewed": "2026-10-09",
+      "reason": "Existing /openbao/data group-write compatibility is retained; native audit also writes /openbao/audit, whose HOME ownership and capacity need verification.",
+      "impact": "The exact readonly /openbao/tls/server-key.pem bind grants backend TLS identity-key access to this service; /openbao/audit holds sensitive HMAC audit records. This is not a no-secret mount.",
+      "mitigation": "TLS materials use a dedicated path outside shared DEFAULT_CERT_DIR; only exact CA files reach clients. Server key binds are readonly, audit remains declared with HMAC and 0600 files; no permission widening is authorized.",
+      "verification": "HOME mount ownership read on 2026-10-09 (owner 1000, group 1000, mode 775; container uid differs); SPEC-0204 TSK-0006 SOURCE/ISOLATED bind and UID checks; HOME TLS/audit permissions remain unverified",
+      "reviewed": "2026-10-10",
       "review_by": "2027-04-07",
-      "release_condition": "Remove once the data directory is owned by the service user or a dedicated data group"
+      "release_condition": "Remove the shared group exception only after data, audit and TLS key access use verified service ownership or dedicated groups; preserve native TLS and audit custody during rollback."
     },
     {
       "scope": "root",

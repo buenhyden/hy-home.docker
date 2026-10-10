@@ -11,16 +11,25 @@ fail() {
 require_readable_file() {
   label="$1"
   path="$2"
-  [ -f "$path" ] && [ -r "$path" ] && [ -s "$path" ] ||
+  if [ ! -f "$path" ] || [ ! -r "$path" ] || [ ! -s "$path" ]; then
     fail "$label is missing, unreadable, or empty"
+  fi
 }
 
 secret_file="${GATUS_OIDC_CLIENT_SECRET_FILE:-/run/secrets/gatus_oidc_client_secret}"
 root_ca_file="${GATUS_ROOT_CA_FILE:-/etc/ssl/certs/hy-home-rootCA.pem}"
+openbao_ca_file="${GATUS_OPENBAO_CA_PATH:-/etc/ssl/certs/openbao-ca.pem}"
 public_ca_file="${GATUS_PUBLIC_CA_FILE:-/etc/ssl/certs/ca-certificates.crt}"
 
 require_readable_file "OIDC client secret" "$secret_file"
 require_readable_file "local root CA certificate" "$root_ca_file"
+require_readable_file "OpenBao CA certificate" "$openbao_ca_file"
+port=${OPENBAO_PORT:-8200}
+case "$port" in '' | *[!0-9]*) fail "invalid OpenBao port" ;; esac
+if [ "${#port}" -gt 5 ] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+  fail "invalid OpenBao port"
+fi
+export OPENBAO_PORT="$port"
 require_readable_file "public CA bundle" "$public_ca_file"
 [ -n "${DEFAULT_URL:-}" ] || fail "DEFAULT_URL is empty"
 [ -n "${GATUS_OIDC_ALLOWED_SUBJECT:-}" ] ||
@@ -47,6 +56,8 @@ trap cleanup EXIT HUP INT TERM
   cat "$public_ca_file"
   printf '\n'
   cat "$root_ca_file"
+  printf '\n'
+  cat "$openbao_ca_file"
   printf '\n'
 } >"$ca_bundle_temp"
 chmod 0600 "$ca_bundle_temp"

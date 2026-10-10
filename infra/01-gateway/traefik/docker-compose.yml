@@ -22,6 +22,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${DEFAULT_CERT_DIR}:/certs:ro
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/tls/ca.pem
+        target: /openbao-ca/ca.pem
+        read_only: true
+        bind: {create_host_path: false}
       - ./dynamic:/dynamic:ro
       - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
     command:

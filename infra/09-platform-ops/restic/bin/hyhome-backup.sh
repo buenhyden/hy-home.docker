@@ -178,9 +178,12 @@ fi
 # periodic token, renewed by each run, so it lapses only if runs stop for a
 # whole period. The snapshot stays barrier-encrypted: restoring it needs the
 # original unseal keys.
+# A killed previous run must not supply this run's snapshot to Restic/offsite.
+rm -f "$staging/openbao-raft.snap"
 bao_token="$repo_root/secrets/backup/openbao/snapshot_token.txt"
 if [[ ! -s "$bao_token" ]]; then
-    echo "OpenBao snapshot token absent: snapshot skipped (recovery gap)"
+    echo "OpenBao snapshot token absent: snapshot failed (recovery gap)" >&2
+    status=1
 elif ! running openbao; then
     echo "openbao not running: snapshot skipped" >&2
     status=1

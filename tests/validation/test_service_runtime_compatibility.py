@@ -1,5 +1,6 @@
 """SPEC-0204 service runtime declarations that must agree before HOME rollout."""
 
+import json
 import os
 import re
 import subprocess
@@ -18,6 +19,224 @@ def compose(path: str) -> dict:
 
 
 class RuntimeCompatibilityTests(unittest.TestCase):
+    def test_openbao_native_tls_and_backend_ca_share_endpoint(self):
+        services = compose("infra/03-security/openbao/docker-compose.yml")["services"]
+        server = services["openbao"]
+        env = server["environment"]
+        for port in (8200, 8240):
+            config = json.loads(
+                env["BAO_LOCAL_CONFIG"]
+                .replace("${OPENBAO_PORT:-8200}", str(port))
+                .replace("${OPENBAO_CLUSTER_PORT:-8201}", "8201")
+            )
+            listener = config["listener"][0]["tcp"]
+            self.assertFalse(listener.get("tls_disable", False))
+            self.assertTrue(listener["disable_unauthed_rekey_endpoints"])
+            self.assertTrue(listener["disable_unauthed_generate_root_endpoints"])
+            self.assertEqual(f"0.0.0.0:{port}", listener["address"])
+            self.assertEqual(f"https://openbao:{port}", config["api_addr"])
+            self.assertEqual("/openbao/tls/server.pem", listener["tls_cert_file"])
+            self.assertEqual("/openbao/tls/server-key.pem", listener["tls_key_file"])
+        self.assertEqual("/openbao/tls/ca.pem", env["BAO_CACERT"])
+        self.assertTrue(
+            services["openbao-agent"]["environment"]["VAULT_ADDR"].startswith(
+                "https://"
+            )
+        )
+        self.assertIn(
+            "https",
+            server["labels"][
+                "traefik.http.services.openbao.loadbalancer.server.scheme"
+            ],
+        )
+        transport = compose("infra/01-gateway/traefik/dynamic/tls.yaml")["http"][
+            "serversTransports"
+        ]["openbao-tls"]
+        self.assertEqual("openbao", transport["serverName"])
+        self.assertEqual(["/openbao-ca/ca.pem"], transport["rootCAs"])
+        self.assertFalse(transport.get("insecureSkipVerify", False))
+
+    def test_openbao_private_key_is_outside_shared_cert_directory(self):
+        server = compose("infra/03-security/openbao/docker-compose.yml")["services"][
+            "openbao"
+        ]
+        key = next(
+            v
+            for v in server["volumes"]
+            if isinstance(v, dict) and v["target"] == "/openbao/tls/server-key.pem"
+        )
+        self.assertEqual(
+            "${DEFAULT_SECURITY_DIR}/openbao/tls/server-key.pem", key["source"]
+        )
+        for path in (
+            "infra/01-gateway/traefik/docker-compose.yml",
+            "infra/06-observability/docker-compose.yml",
+        ):
+            for service in compose(path)["services"].values():
+                for mount in service.get("volumes", []):
+                    source = (
+                        mount.get("source", "")
+                        if isinstance(mount, dict)
+                        else mount.split(":")[0]
+                    )
+                    if "${DEFAULT_SECURITY_DIR}/openbao/tls" in source:
+                        self.assertTrue(source.endswith("/ca.pem"), source)
+
+    def test_renderer_issuer_policy_requires_wrapping(self):
+        policy = (
+            ROOT / "infra/03-security/openbao/config/policies/renderer-issuer.hcl"
+        ).read_text()
+        issuance = policy.split('path "auth/approle/role/hy-home-renderer/secret-id"')[
+            1
+        ]
+        self.assertIn('min_wrapping_ttl = "30s"', issuance)
+        self.assertIn('max_wrapping_ttl = "60s"', issuance)
+
+    def test_renderer_metadata_and_memory_scratch_are_scoped(self):
+        policy = (
+            ROOT / "infra/03-security/openbao/config/policies/renderer.hcl"
+        ).read_text()
+        for domain in ("02-auth/keycloak", "06-observability/grafana"):
+            self.assertIn(f'path "secret/metadata/hy-home/{domain}"', policy)
+        agent = compose("infra/03-security/openbao/docker-compose.yml")["services"][
+            "openbao-agent"
+        ]
+        self.assertIn("/tmp:rw,noexec,nosuid,nodev,size=16m,mode=1777", agent["tmpfs"])
+
+    def test_tls_preflight_fails_closed_without_exposing_tool_output(self):
+        script = ROOT / "infra/03-security/openbao/scripts/check-tls-material.sh"
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Path(directory)
+            for name in ("ca.pem", "server.pem", "server-key.pem"):
+                (fixture / name).write_text("private-synthetic-marker")
+            tools = fixture / "bin"
+            tools.mkdir()
+            (tools / "openssl").write_text(
+                "#!/bin/sh\necho private-synthetic-marker >&2\nexit 1\n"
+            )
+            (tools / "openssl").chmod(0o700)
+            result = subprocess.run(
+                ["sh", str(script), str(fixture), "openbao/openbao:2.6.2"],
+                env={**os.environ, "PATH": f"{tools}:{os.environ['PATH']}"},
+                capture_output=True,
+                check=False,
+            )
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn(b"TLS_MATERIAL FAIL", result.stdout)
+            self.assertNotIn(b"private-synthetic-marker", result.stdout + result.stderr)
+
+    def test_documented_renderer_delivery_names_exact_stopped_agent(self):
+        runbook = (ROOT / "docs/05.operations/runbooks/0085-openbao.md").read_text()
+        self.assertIn(
+            "openbao hy-home-infra_openbao-agent-data openbao/openbao:2.6.2 openbao-agent",
+            runbook,
+        )
+
+    def test_openbao_exception_names_key_and_audit_without_home_claim(self):
+        registry = json.loads(
+            (ROOT / "infra/common-optimizations.exceptions.json").read_text()
+        )
+        entry = next(
+            row
+            for row in registry["exceptions"]
+            if row["service"] == "openbao" and row["control"] == "secrets_group"
+        )
+        self.assertIn("/openbao/audit", entry["reason"])
+        self.assertIn("/openbao/tls/server-key.pem", entry["impact"])
+        self.assertIn(
+            "HOME TLS/audit permissions remain unverified", entry["verification"]
+        )
+
+    def test_openbao_audit_is_declared_and_hmac_protected(self):
+        config = compose("infra/03-security/openbao/docker-compose.yml")["services"][
+            "openbao"
+        ]["environment"]["BAO_LOCAL_CONFIG"]
+        config = json.loads(
+            config.replace("${OPENBAO_PORT:-8200}", "8200").replace(
+                "${OPENBAO_CLUSTER_PORT:-8201}", "8201"
+            )
+        )
+        self.assertFalse(config.get("unsafe_allow_api_audit_creation", False))
+        audit = config["audit"][0]
+        self.assertEqual("file", audit["type"])
+        self.assertEqual("p01-file", audit["path"])
+        options = audit["options"]
+        self.assertEqual("false", options["log_raw"])
+        self.assertEqual("true", options["hmac_accessor"])
+        self.assertEqual("0600", options["mode"])
+        self.assertEqual("/openbao/audit/audit.json", options["file_path"])
+
+    def test_openbao_audit_failure_alert_uses_observed_counters(self):
+        groups = compose(
+            "infra/06-observability/prometheus/config/alert_rules/alert_rules.openbao.yml"
+        )["groups"]
+        alerts = {rule["alert"]: rule for group in groups for rule in group["rules"]}
+        rule = alerts["OpenBaoAuditFailure"]
+        self.assertEqual(
+            'increase(vault_audit_log_request_failure{job="openbao"}[5m]) > 0 or increase(vault_audit_log_response_failure{job="openbao"}[5m]) > 0',
+            rule["expr"],
+        )
+        self.assertEqual("critical", rule["labels"]["severity"])
+        self.assertEqual("0m", rule["for"])
+
+    def test_openbao_prometheus_nondefault_port_and_invalid_ports(self):
+        start = ROOT / "infra/06-observability/prometheus/scripts/start.sh"
+        for name in ("prometheus.yml", "prometheus.dev.yml"):
+            jobs = compose(f"infra/06-observability/prometheus/config/{name}")[
+                "scrape_configs"
+            ]
+            job = next(j for j in jobs if j["job_name"] == "openbao")
+            self.assertEqual("https", job["scheme"])
+            self.assertEqual("openbao", job["tls_config"]["server_name"])
+            self.assertFalse(job["tls_config"].get("insecure_skip_verify", False))
+            self.assertIn("file_sd_configs", job)
+        with tempfile.TemporaryDirectory() as directory:
+            env = {
+                **os.environ,
+                "PROMETHEUS_DEV_DATA_EXPECTED": "off",
+                "PROMETHEUS_TARGETS_DIR": directory,
+                "PROMETHEUS_BIN": "/bin/true",
+            }
+            for port in ("8240", "x", "0", "65536"):
+                result = subprocess.run(
+                    ["sh", str(start)],
+                    env={**env, "OPENBAO_PORT": port},
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(port == "8240", result.returncode == 0)
+                if port == "8240":
+                    targets = yaml.safe_load(
+                        (Path(directory) / "openbao.yml").read_text()
+                    )
+                    self.assertEqual(["openbao:8240"], targets[0]["targets"])
+
+    def test_missing_openbao_snapshot_token_fails_backup_unit(self):
+        source = (
+            ROOT / "infra/09-platform-ops/restic/bin/hyhome-backup.sh"
+        ).read_text()
+        block = source[
+            source.index("# OpenBao Raft snapshot.") : source.index(
+                "elif ! running openbao; then"
+            )
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            stale = Path(directory) / "openbao-raft.snap"
+            stale.write_text("stale-barrier-encrypted-fixture")
+            result = subprocess.run(
+                ["bash", "-c", block + "fi\nexit $status\n"],
+                env={
+                    **os.environ,
+                    "repo_root": directory,
+                    "staging": directory,
+                    "status": "0",
+                },
+                capture_output=True,
+                check=False,
+            )
+            self.assertNotEqual(0, result.returncode)
+            self.assertFalse(stale.exists())
+
     def test_n8n_instances_and_runners_share_version_and_supported_timeout(self):
         services = compose("infra/07-workflow/n8n/docker-compose.yml")["services"]
         versions = {
