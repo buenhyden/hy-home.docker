@@ -129,6 +129,31 @@ FROM/ARG/COPY/SHELL·설치 입력·constraints hash를 새 snapshot으로 구�
 OpenBao helper 추가 수정 가능성은 수신 당시 상태이며, 현재 final integration은
 TSK-0009의 latest/security gate와 review/delivery receipt가 결정합니다.
 
+### 2026-10-11 Grype candidate scan
+
+후보 image는 모두 digest 또는 local tag 기준으로 pull/build한 뒤 Docker socket 없이 `docker-archive` tar 입력으로 스캔했습니다. scanner는 기존 local `anchore/grype` image ID `fd4ab4d1042b`의 Grype `0.116.0` / Syft `1.48.0`이며, <!-- runtime-version-exception: history — scanner evidence versions, not runtime image pins --> DB는 네트워크 허용 상태에서 갱신한 뒤 각 image 스캔은 `--network none`과 `GRYPE_CHECK_FOR_APP_UPDATE=false`로 실행했습니다. 중간 tar 입력은 삭제했고 scanner JSON은 `/tmp/sec01-*-grype.json`에 남겼습니다. 이 위치의 JSON은 작업 증거이며 repository source가 아닙니다.
+
+| 후보 | Critical | High | 총 match | fixable 경계 |
+| --- | ---: | ---: | ---: | --- |
+| qdrant | 0 | 55 | 158 | High 1 |
+| seaweedfs | 2 | 20 | 48 | Critical 2, High 12 |
+| aws-cli | 1 | 4 | 17 | Critical 1, High 4 |
+| prometheus | 6 | 24 | 38 | Critical 6, High 21 |
+| alloy | 3 | 13 | 101 | Critical 3, High 13 |
+| cadvisor | 2 | 22 | 51 | Critical 2, High 14 |
+| pyroscope | 0 | 0 | 0 | 없음 |
+| pushgateway | 1 | 9 | 13 | Critical 1, High 6 |
+| dozzle | 2 | 11 | 17 | Critical 2, High 11 |
+| open-notebook | 33 | 391 | 1007 | Critical 1, High 49 |
+| registry | 2 | 20 | 50 | Critical 2, High 12 |
+| renovate | 9 | 101 | 861 | Critical 9, High 97 |
+| stalwart | 17 | 84 | 249 | High 1 |
+| stalwart-config | 17 | 84 | 249 | High 1 |
+| conftest | 2 | 19 | 46 | Critical 2, High 11 |
+| mailpit | 1 | 8 | 13 | Critical 1, High 8 |
+
+이 결과는 latest/source 후보 선정과 digest pull/build가 끝난 상태를 나타낼 뿐이며 SEC01 security PASS가 아닙니다. Pyroscope만 현재 scanner match 0이고, 나머지 후보에는 Critical 또는 High 결과가 남아 있습니다. 다음 SEC01 단계는 JSON별 CVE·package·fix state triage, 공급자 advisory와 false-positive 근거 확인, update/replace 또는 잔여 위험 승인 기록, SBOM·signature·native compatibility·stateful recovery 재실행입니다. 이 절차 전까지 HOME rollout과 전체 최신화·보안 완료 주장은 차단됩니다.
+
 ## Related Documents
 
 - `infra/tech-stack.versions.json`: 기존 Compose image projection
