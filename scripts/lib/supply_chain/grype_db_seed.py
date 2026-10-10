@@ -21,7 +21,9 @@ STAGE_NAME_RE = re.compile(r"\.stage\.[0-9a-f]{32}")
 GENERATION_PATH_RE = re.compile(r"generations/[0-9a-f]{64}")
 MAX_STATUS_BYTES = 131_072
 MAX_CACHE_FILES = 128
-MAX_CACHE_BYTES = 2 * 1024 * 1024 * 1024
+# The schema 6 database measured 2.99 GiB on 2026-10-10 (SPEC-0229); the cap
+# leaves room for growth while still refusing a runaway cache.
+MAX_CACHE_BYTES = 6 * 1024 * 1024 * 1024
 GENERATION = "hyhome-grype-db-seed-v1"
 EXACT_GRYPE_TOOL = {
     "image_ref": (
