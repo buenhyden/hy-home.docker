@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import hashlib
 import io
 import json
 import tempfile
@@ -14,6 +15,64 @@ from scripts.lib.supply_chain.security_update_gate import assess
 
 NOW = datetime(2026, 10, 10, 10, tzinfo=UTC)
 DIGEST = "sha256:" + "a" * 64
+
+
+class StableScannerContractTests(unittest.TestCase):
+    def test_current_readiness_binds_exact_registry_and_tool_identities(self):
+        root = Path(__file__).resolve().parents[3]
+        raw = (root / "infra/supply-chain.tool-images.json").read_bytes()
+        registry = json.loads(raw)
+        readiness = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/tool-readiness.json"
+            ).read_text()
+        )
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), readiness["registry_sha256"])
+        current = {entry["name"]: entry for entry in readiness["tools"]}
+        self.assertEqual({entry["name"] for entry in registry["tools"]}, set(current))
+        for entry in registry["tools"]:
+            with self.subTest(tool=entry["name"]):
+                observed = current[entry["name"]]
+                for field in (
+                    "image",
+                    "digest",
+                    "expected_version",
+                    "config_id",
+                    "repo_digest",
+                    "target_descriptor_digest",
+                ):
+                    self.assertEqual(entry[field], observed[field])
+                self.assertEqual(
+                    "docker buildx imagetools inspect " + entry["repo_digest"],
+                    observed["next_metadata_command"],
+                )
+
+    def test_tool_registry_uses_current_stable_scanners(self):
+        """2026-10-10 official releases replace stale and vulnerable scanners."""
+        root = Path(__file__).resolve().parents[3]
+        registry = json.loads(
+            (root / "infra/supply-chain.tool-images.json").read_text()
+        )
+        tools = {entry["name"]: entry for entry in registry["tools"]}
+        expected = {
+            "syft": (
+                "v1.54.1",
+                "3eb5379ba7b409c3f4069b686110527af0c47df993fa5c10d13e7cf34f49b1aa",
+            ),
+            "grype": (
+                "v0.120.1",
+                "e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe",
+            ),
+            "cosign": (
+                "v3.1.3",
+                "9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+            ),
+        }
+        for name, (version, digest) in expected.items():
+            with self.subTest(tool=name):
+                self.assertEqual(version, tools[name]["expected_version"])
+                self.assertEqual("sha256:" + digest, tools[name]["digest"])
+                self.assertTrue(tools[name]["image"].endswith(":" + version))
 
 
 def latest_row():

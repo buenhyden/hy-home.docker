@@ -27,18 +27,18 @@ MAX_CACHE_BYTES = 6 * 1024 * 1024 * 1024
 GENERATION = "hyhome-grype-db-seed-v1"
 EXACT_GRYPE_TOOL = {
     "image_ref": (
-        "anchore/grype:v0.116.0@"
-        "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
+        "anchore/grype:v0.120.1@"
+        "sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe"
     ),
     "repo_digest": (
         "anchore/grype@"
-        "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
+        "sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe"
     ),
     "target_descriptor_digest": (
-        "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
+        "sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe"
     ),
     "config_id": (
-        "sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0"
+        "sha256:77f06435c39c38bd1b136b170283af17a6cfbdfd641b4412e6612d8b64c597da"
     ),
 }
 IDENTITY_KEYS = {

@@ -1,41 +1,41 @@
 {
-  "effective_date": "2026-07-19",
+  "effective_date": "2026-10-10",
   "owner_role": "security-auditor",
   "policy_id": "supply-chain-tool-images-v1",
   "schema_version": 3,
   "tools": [
     {
       "command_contract": "oci-archive-to-cyclonedx-json",
-      "config_id": "sha256:3567af297260e786440f30d149c2846302fd1df0823ee769d8b167d068f7d181",
-      "digest": "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
-      "expected_version": "v1.48.0",
-      "image": "anchore/syft:v1.48.0",
+      "config_id": "sha256:dbff4983a6eda5a3d3db7d941fffdb39e214134ef3c20f8e76abbfda2f3d86e7",
+      "digest": "sha256:3eb5379ba7b409c3f4069b686110527af0c47df993fa5c10d13e7cf34f49b1aa",
+      "expected_version": "v1.54.1",
+      "image": "anchore/syft:v1.54.1",
       "name": "syft",
       "network_mode": "none",
-      "repo_digest": "anchore/syft@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
-      "target_descriptor_digest": "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c"
+      "repo_digest": "anchore/syft@sha256:3eb5379ba7b409c3f4069b686110527af0c47df993fa5c10d13e7cf34f49b1aa",
+      "target_descriptor_digest": "sha256:3eb5379ba7b409c3f4069b686110527af0c47df993fa5c10d13e7cf34f49b1aa"
     },
     {
       "command_contract": "sbom-to-redacted-json-verdict",
-      "config_id": "sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0",
-      "digest": "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
-      "expected_version": "v0.116.0",
-      "image": "anchore/grype:v0.116.0",
+      "config_id": "sha256:77f06435c39c38bd1b136b170283af17a6cfbdfd641b4412e6612d8b64c597da",
+      "digest": "sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe",
+      "expected_version": "v0.120.1",
+      "image": "anchore/grype:v0.120.1",
       "name": "grype",
       "network_mode": "advisory-network-optional",
-      "repo_digest": "anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
-      "target_descriptor_digest": "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
+      "repo_digest": "anchore/grype@sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe",
+      "target_descriptor_digest": "sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe"
     },
     {
       "command_contract": "local-sign-blob-and-verify-blob",
-      "config_id": "sha256:4221e0d9d429afa26a9f1b8bc8f0ba2c9af470f7b495d845c31ac982a5d1182b",
-      "digest": "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
-      "expected_version": "v3.0.6",
-      "image": "gcr.io/projectsigstore/cosign:v3.0.6",
+      "config_id": "sha256:192a38e9dabb6b28359fc4706992d91ad325f366630a68dd7c3d50bcef059db8",
+      "digest": "sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+      "expected_version": "v3.1.3",
+      "image": "gcr.io/projectsigstore/cosign:v3.1.3",
       "name": "cosign",
       "network_mode": "none",
-      "repo_digest": "gcr.io/projectsigstore/cosign@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
-      "target_descriptor_digest": "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00"
+      "repo_digest": "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+      "target_descriptor_digest": "sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8"
     },
     {
       "command_contract": "read-only-advisory-repository-observation",
