@@ -182,7 +182,7 @@ func main() {
             time.sleep(0.25)
         raise RehearsalFailure("isolated service did not become healthy")
 
-    def setup(self):
+    def _verify_images(self):
         for image in (AUTH, MAIL, POSTGRES):
             metadata = json.loads(self.docker("image", "inspect", image).stdout)[0]
             if metadata.get("Os") != "linux" or metadata.get("Architecture") != "amd64":
@@ -202,6 +202,8 @@ func main() {
                 raise RehearsalFailure(
                     "upstream auth startup contract differs; revalidate wrapper"
                 )
+
+    def _prepare_fixture_files(self):
         self.build_http_peer()
         # Track creation intent before the CLI; daemon success can precede a
         # client timeout and must not escape the bounded cleanup path.
@@ -214,6 +216,8 @@ func main() {
         self.write("db-password", self.db_password, 0o644)
         self.write("smtp-auth", "fixture:" + self.smtp_password + "\n", 0o644)
         self.certificates()
+
+    def _set_secret_file_ownership(self):
         # Exact synthetic files only: force supplemental group access. The
         # image's UID1000 cannot rely on owner/world read permissions.
         owner_helper = self.create(
@@ -240,6 +244,8 @@ func main() {
         )
         if self.docker("wait", owner_helper, timeout=15).stdout.strip() != b"0":
             raise RehearsalFailure("synthetic file ownership setup failed")
+
+    def _start_database(self):
         self.create(
             "db",
             POSTGRES,
@@ -273,6 +279,8 @@ func main() {
             time.sleep(0.25)
         else:
             raise RehearsalFailure("isolated database did not become ready")
+
+    def _initialize_database(self):
         # Upstream auth migrations expect these platform roles even in a
         # standalone synthetic database; no HOME/platform service is started.
         self.docker(
@@ -295,6 +303,8 @@ func main() {
             "CREATE FUNCTION auth.email() RETURNS text LANGUAGE sql STABLE AS "
             "$$ SELECT NULLIF(current_setting('request.jwt.claim.email', true), '') $$;",
         )
+
+    def _start_mail(self):
         self.mail = self.create(
             "mail",
             MAIL,
@@ -324,15 +334,15 @@ func main() {
         self.mail_url = "http://" + self.owned_ip(self.mail) + ":8025"
         self.wait_http(self.mail_url + "/readyz")
 
-    def certificates(self):
-        ca = self.directory / "ca.pem"
-        key = self.directory / "ca.key"
-        server = self.directory / "server.pem"
-        server_key = self.directory / "server.key"
-        csr = self.directory / "server.csr"
-        extensions = self.write(
-            "extensions", "subjectAltName=DNS:smtp\nextendedKeyUsage=serverAuth\n"
-        )
+    def setup(self):
+        self._verify_images()
+        self._prepare_fixture_files()
+        self._set_secret_file_ownership()
+        self._start_database()
+        self._initialize_database()
+        self._start_mail()
+
+    def _create_ca(self, ca, key):
         captured(
             [
                 "openssl",
@@ -351,6 +361,8 @@ func main() {
                 str(ca),
             ]
         )
+
+    def _create_server_certificate(self, ca, key, server, server_key, csr, extensions):
         captured(
             [
                 "openssl",
@@ -386,21 +398,23 @@ func main() {
                 str(server),
             ]
         )
+
+    def certificates(self):
+        ca = self.directory / "ca.pem"
+        key = self.directory / "ca.key"
+        server = self.directory / "server.pem"
+        server_key = self.directory / "server.key"
+        csr = self.directory / "server.csr"
+        extensions = self.write(
+            "extensions", "subjectAltName=DNS:smtp\nextendedKeyUsage=serverAuth\n"
+        )
+        self._create_ca(ca, key)
+        self._create_server_certificate(ca, key, server, server_key, csr, extensions)
         ca.chmod(0o644)
         server.chmod(0o644)
         server_key.chmod(0o600)
 
-    def start_auth(
-        self,
-        suffix,
-        *,
-        wrapped=True,
-        smtp_value="smtp-password",
-        trusted=True,
-        group_granted=True,
-    ):
-        model = yaml.safe_load(SOURCE.read_text(encoding="utf-8"))
-        auth = model["services"]["auth"]
+    def _auth_peers(self):
         # Docker embedded DNS is unavailable to this image's unprivileged
         # Go resolver on the isolated host. Resolve only our owned peers once,
         # then keep stable names for PostgreSQL and certificate verification.
@@ -418,11 +432,9 @@ func main() {
             )
             if not re.fullmatch(r"(?:[0-9]{1,3}\.){3}[0-9]{1,3}", peers[alias]):
                 raise RehearsalFailure("owned peer IP resolution failed")
-        args = ["--network-alias", suffix, "--init"]
-        for alias, address in peers.items():
-            args.extend(("--add-host", alias + ":" + address))
-        if group_granted:
-            args.extend(("--group-add", "23456"))
+        return peers
+
+    def _auth_environment(self):
         environment = {
             "GOTRUE_API_HOST": "0.0.0.0",
             "PORT": "9999",
@@ -447,6 +459,15 @@ func main() {
             "GOTRUE_DISABLE_SIGNUP": "false",
         }
         environment["DATABASE_URL"] = environment["GOTRUE_DB_DATABASE_URL"]
+        return environment
+
+    def _auth_create_args(self, suffix, smtp_value, trusted, group_granted):
+        args = ["--network-alias", suffix, "--init"]
+        for alias, address in self._auth_peers().items():
+            args.extend(("--add-host", alias + ":" + address))
+        if group_granted:
+            args.extend(("--group-add", "23456"))
+        environment = self._auth_environment()
         if trusted:
             environment["SSL_CERT_FILE"] = "/fixture/ca.pem"
         envfile = self.write(
@@ -468,6 +489,9 @@ func main() {
                     f"type=bind,src={self.directory / smtp_value},dst=/run/secrets/supabase_smtp_password,readonly",
                 )
             )
+        return args
+
+    def _auth_command(self, auth, args, wrapped):
         if wrapped:
             entrypoint = auth.get("entrypoint", [])
             if len(entrypoint) != 4 or entrypoint[:2] != ["/bin/sh", "-ec"]:
@@ -484,6 +508,21 @@ func main() {
             )
         else:
             command = ()
+        return command
+
+    def start_auth(
+        self,
+        suffix,
+        *,
+        wrapped=True,
+        smtp_value="smtp-password",
+        trusted=True,
+        group_granted=True,
+    ):
+        model = yaml.safe_load(SOURCE.read_text(encoding="utf-8"))
+        auth = model["services"]["auth"]
+        args = self._auth_create_args(suffix, smtp_value, trusted, group_granted)
+        command = self._auth_command(auth, args, wrapped)
         name = self.create(suffix, AUTH, *args, command=command)
         # Rejected startup cases intentionally exit before an IP is assigned;
         # their verdict is the exit status, not an HTTP/network assertion.
