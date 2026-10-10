@@ -126,7 +126,7 @@ Criterion 15 remains pending; a source repair merge cannot close SEC01.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | SEC01 source and isolated receipts | 15 | W31 | Received six-commit source, focused tests and isolated rehearsal | Recorded branch/input hashes in integration handoff | PASS | security-updates handoff | pending |
 | Common validator and manifest state | 15 | W31 | Current shared suite and manifest registration | 20 PASS/2 FAIL; two records missing | FAIL | integration handoff | pending |
-| Latest/security evidence gates | 15 | W31 | Current root-bound stable and security gate commands | Both `BLOCKED_EVIDENCE`, exit 2; latest `ready=false`, security `ledger_complete=false`; manifest SHA recorded above | NOT_RUN | SEC01 received handoff | pending |
+| Latest/security evidence gates | 15 | W31 | Current root-bound stable and security gate commands | Both `BLOCKED_EVIDENCE`, exit 2; latest `ready=false`, security `ledger_complete=false`; manifest SHA recorded above | DEFER | SEC01 received handoff | pending |
 | PR #416 candidate CI | 15 | W31 | candidate-quality, CodeQL, GitGuardian and main-security | Run `38052766613`; candidate-quality failed | FAIL | PR #416 handoff | pending |
 | Coordinator shared repair | 15 | W31 | Runtime/wiring, inventory, manifest and candidate regression registration | e93e0c822 plus reviewed integration; 93 and 39 tests exit 0 | PASS | #coordinator-common-repair-receipt | pending |
 | HOME, migration, rotation and recovery | 15 | W31 | No operational action authorized | No exact target/custody/recovery boundary | NOT_RUN | Future exact Task | not-required |
