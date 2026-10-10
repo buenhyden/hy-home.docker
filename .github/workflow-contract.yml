@@ -691,6 +691,7 @@
         "tests.validation.test_config_mount_hashes",
         "tests.validation.test_service_wiring_contracts",
         "tests.validation.test_service_runtime_compatibility",
+        "tests.validation.test_supabase_smtp_rehearsal",
         "tests.validation.test_openbao_agent_contract",
         "tests.validation.test_openbao_rehearsal",
         "tests.validation.test_perf_db_contract",
@@ -721,6 +722,7 @@
         "tests.validation.test_redisinsight_rehearsal.RedisInsightRehearsalTests",
         "tests.validation.test_datastore_observation_rehearsal.DatastoreObservationRehearsalTests",
         "tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests",
+        "tests.validation.test_supabase_smtp_rehearsal.SupabaseSMTPRehearsalTests",
         "-v"
       ],
       "cwd": ".",
@@ -756,6 +758,8 @@
         "tests.validation.test_tech_stack_version_contract",
         "tests.validation.test_validator_entrypoints",
         "tests.validation.test_secret_metadata_sync",
+        "tests.validation.test_smtp_generator",
+        "tests.lib.ops.test_smtp_contract",
         "tests.validation.test_project_registration",
         "-v"
       ],

@@ -78,6 +78,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_config_mount_hashes",
                 "tests.validation.test_service_wiring_contracts",
                 "tests.validation.test_service_runtime_compatibility",
+                "tests.validation.test_supabase_smtp_rehearsal",
                 "tests.validation.test_openbao_agent_contract",
                 "tests.validation.test_openbao_rehearsal",
                 "tests.validation.test_perf_db_contract",
@@ -98,7 +99,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ],
             arguments[1:boundary],
         )
-        self.assertEqual(12, len(arguments[boundary + 1 : -1]))
+        self.assertEqual(13, len(arguments[boundary + 1 : -1]))
         self.assertTrue(
             all(
                 scope.rsplit(".", 1)[0] in arguments[1:boundary]
