@@ -1,7 +1,8 @@
 """Exact private regular-file retirement; evidence never substitutes observation.
 
-Apply requires an operator maintenance window: flock coordinates this helper and
-its generator, but cannot stop unrelated or hostile writers. No secret contents
+Apply requires an operator maintenance window. flock coordinates only callers
+using this helper's lock; generator integration requires separate evidence. It
+cannot stop unrelated or hostile writers. No secret contents
 or fingerprints are read, logged, copied, or hashed. Tracked files use git rm.
 """
 

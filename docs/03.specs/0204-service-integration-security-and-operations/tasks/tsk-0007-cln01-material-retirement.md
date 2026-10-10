@@ -125,7 +125,7 @@ read, compared or recorded. Equality of SMTP values is user-supplied input.
 | Public material | Action / disposition | Five-axis evidence and residual |
 | --- | --- | --- |
 | COMM-002 canonical SMTP | NO_CHANGE / ACTIVE_KEEP | Source: Alertmanager and canonical SMTP owner. One exact bind is observed; current functional consumption is unverified. Jobs, recovery and external ownership are not re-certified. Unconditionally protected. |
-| COMM-003 duplicate SMTP at `secrets/communication/supabase/supabase_smtp_password.txt` | BLOCKED_FACTS / pending ALIAS_REPLACED | SMTP01 owns source/generator cutover. The dependent PR and operational receipt are not yet available. No exact bind is observed, but two read-only ancestor mounts belong to node-exporter and cAdvisor; file-specific access purpose remains UNKNOWN; jobs, backup/restore and external consumers remain UNKNOWN. No delete decision. |
+| COMM-003 duplicate SMTP at `secrets/communication/supabase/supabase_smtp_password.txt` | BLOCKED_FACTS / pending ALIAS_REPLACED | SMTP01 owns source/generator cutover. Its source PR [#413](https://github.com/buenhyden/hy-home.docker/pull/413) is draft; merged delivery and operational cutover receipt are not yet available. No exact bind is observed, but two read-only ancestor mounts belong to node-exporter and cAdvisor; file-specific access purpose remains UNKNOWN; jobs, backup/restore and external consumers remain UNKNOWN. No delete decision. |
 | PG-020 legacy app password | NO_CHANGE / RETAINED_FOR_RECOVERY | Public registry and prior Task explicitly preserve rollback use; current nlink 2 confirms an additional link. Runtime/jobs/external ownership and both link paths remain unclosed. Protected ID and exact path in the general helper. |
 | Supabase, Nginx, SurrealDB/Open Notebook material | BLOCKED_FACTS / UNKNOWN_BLOCKED | Intentional optional/manual operating roles remain in source and existing inventory. Candidate containers absent; jobs, restore and external consumers unverified. Service/data removal is not approved by this observation. |
 | LAB runtime/config/secret/data | OUT_OF_SCOPE / LAB_EXCLUDED | No new LAB operation or deletion. Document moves are a separate owner follow-up. |
@@ -651,12 +651,42 @@ A later public-only SMTP dependency recheck found worktree HEAD
 the distinct `secrets/.smtp01-retirement.lock` therefore remains an
 interoperability blocker. CLN01 has not edited that source or generator.
 
+### Final helper lock wording and verification
+
+Final source review found the helper docstring incorrectly described generator
+coordination as implemented. It now says flock covers only cooperating callers
+using this helper's lock; generator integration needs independent evidence.
+Only that docstring changed. Behavioral code and all protections are unchanged.
+The current helper SHA-256 is
+`e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284`;
+prior `956536...` receipts above retain their historical input identity.
+Input HEAD is `a0ac37a` plus this public docstring change.
+Ruff check and format-check passed (exit 0). Fresh helper/CLI tests passed
+50 cases in 1.120 seconds (exit 0); branch coverage passed the 80% threshold
+at 98% (328 statements, 4 missed, 114 branches, 3 partial; exit 0).
+Coverage data lives outside Git at `/tmp/cln01-latest.coverage`.
+Independent final code/security re-reviews confirmed that exact current SHA,
+unchanged behavior and protection boundaries; both passed with no additional
+finding. Actual private apply remains held. Read-only GitHub inspection found
+SMTP01 source PR [#413](https://github.com/buenhyden/hy-home.docker/pull/413)
+OPEN/draft at `e7bff9149f29a4bbb23d977dadf01f5988ee12fc`; its one observed
+GitGuardian check passed, which does not establish cutover or native readiness.
+SMTP contract PR [#412](https://github.com/buenhyden/hy-home.docker/pull/412)
+also remains draft. Neither was merged or altered by CLN01.
+
+```text
+rtk proxy ruff check scripts/lib/ops/retire_materials.py scripts/operations/retire-materials.py tests/lib/ops/test_retirement.py tests/validation/test_retirement_cli.py
+rtk proxy ruff format --check scripts/lib/ops/retire_materials.py scripts/operations/retire-materials.py tests/lib/ops/test_retirement.py tests/validation/test_retirement_cli.py
+rtk proxy env COVERAGE_FILE=/tmp/cln01-latest.coverage /tmp/cln01-qa-uv/bin/python -m coverage run --branch --source=scripts.lib.ops.retire_materials -m unittest tests.lib.ops.test_retirement tests.validation.test_retirement_cli -q
+rtk proxy env COVERAGE_FILE=/tmp/cln01-latest.coverage /tmp/cln01-qa-uv/bin/python -m coverage report --show-missing --fail-under=80
+```
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| SMTP01 dependency | 12 | W24 | merged delivery plus source and operational cutover evidence | SMTP01 delivery, dependent PR TBD | NOT_RUN | SMTP01 owner evidence | pending |
-| Helper source acceptance | 12 | W24 | 50 focused tests, 98% branch coverage, Ruff and independent code/security review | frozen helper input `956536c08ff0f6a8986cccae03f72d0e6dd61a3a46d4fc68acfbceb83289a337` | PASS | CLN01 implementation patch | pending |
+| SMTP01 dependency | 12 | W24 | merged delivery plus source and operational cutover evidence | SMTP01 source PR #413 draft; merged delivery and cutover pending | NOT_RUN | SMTP01 owner evidence | pending |
+| Helper source acceptance | 12 | W24 | 50 focused tests, 98% branch coverage, Ruff and independent code/security review | current helper input `e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284` | PASS | CLN01 implementation patch | pending |
 | Candidate classification | 12 | W24 | partial five-axis assessment; BLOCKED_FACTS until missing ownership/recovery facts close | current source and read-only observations on named host | DEFER | #read-only-host-observations | pending |
 | Private deletion acceptance | 12 | W24 | manifest preflight and idempotent reinspection | operator manifest under `/tmp/cln01-<run>/` | NOT_RUN | operator host | pending |
 
