@@ -14,6 +14,191 @@ OPENBAO = "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b7
 
 
 class CandidateContract(unittest.TestCase):
+    def registry_component_result(self, registry, *arguments):
+        checker = (ROOT / "scripts/hardening/check-all-hardening.sh").read_text()
+        start = checker.index("registry_component_image() {")
+        end = checker.index("compose_service_image() {", start)
+        probe = (
+            checker[start:end]
+            + '\nTECH_STACK_REGISTRY="$1"\nshift\nregistry_component_image "$@"\n'
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            registry_path = Path(temporary) / "registry.json"
+            registry_path.write_text(json.dumps(registry))
+            return subprocess.run(
+                ["/bin/bash", "-c", probe, "bash", str(registry_path), *arguments],
+                env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"},
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=5,
+            )
+
+    def test_registry_component_image_can_select_one_exact_compose_source(self):
+        root_image = "oliver006/redis_exporter:v1.93.0-alpine"
+        lab_image = "oliver006/redis_exporter:v1.91.1-alpine"
+        root_source = "infra/02-auth/oauth2-proxy/docker-compose.yml"
+        lab_source = "labs/valkey-cluster.yml"
+
+        def registry(images, sources):
+            return {
+                "entries": [
+                    {
+                        "component": "Valkey Exporter",
+                        "images": images,
+                        "sources": sources,
+                    }
+                ]
+            }
+
+        valid_sources = (
+            {"compose_file": root_source, "images": [root_image]},
+            {"compose_file": lab_source, "images": [lab_image]},
+        )
+        selected = self.registry_component_result(
+            registry([root_image, lab_image], valid_sources),
+            "Valkey Exporter",
+            root_source,
+        )
+        self.assertEqual(
+            (selected.returncode, selected.stdout.strip()), (0, root_image)
+        )
+        self.assertNotEqual(
+            self.registry_component_result(
+                registry([root_image, lab_image], valid_sources), "Valkey Exporter"
+            ).returncode,
+            0,
+        )
+        legacy = self.registry_component_result(
+            registry([root_image], valid_sources[:1]), "Valkey Exporter"
+        )
+        self.assertEqual((legacy.returncode, legacy.stdout.strip()), (0, root_image))
+        rejected = (
+            (
+                registry([root_image, lab_image], valid_sources),
+                "unknown/docker-compose.yml",
+            ),
+            (
+                registry([root_image, lab_image], (*valid_sources, valid_sources[0])),
+                root_source,
+            ),
+            (registry([root_image, root_image], valid_sources[:1]), root_source),
+            (
+                registry(
+                    [root_image],
+                    ({"compose_file": root_source, "images": [lab_image]},),
+                ),
+                root_source,
+            ),
+            (
+                registry(
+                    [root_image],
+                    ({"compose_file": root_source, "images": [root_image, lab_image]},),
+                ),
+                root_source,
+            ),
+            (
+                registry(
+                    [root_image],
+                    (
+                        {
+                            "compose_file": "../docker-compose.yml",
+                            "images": [root_image],
+                        },
+                    ),
+                ),
+                root_source,
+            ),
+            (registry([root_image], valid_sources[:1]), "../docker-compose.yml"),
+            (registry([root_image], valid_sources[:1]), "/infra/docker-compose.yml"),
+            (registry([root_image], valid_sources[:1]), ""),
+        )
+        for fixture, source in rejected:
+            with self.subTest(source=source, fixture=fixture):
+                self.assertNotEqual(
+                    self.registry_component_result(
+                        fixture, "Valkey Exporter", source
+                    ).returncode,
+                    0,
+                )
+        for arguments in ((), ("Valkey Exporter", root_source, "extra")):
+            self.assertNotEqual(
+                self.registry_component_result(
+                    registry([root_image], valid_sources[:1]), *arguments
+                ).returncode,
+                0,
+            )
+        checker = (ROOT / "scripts/hardening/check-all-hardening.sh").read_text()
+        self.assertIn(
+            'registry_component_image "Valkey Exporter" "infra/02-auth/oauth2-proxy/docker-compose.yml"',
+            checker,
+        )
+
+    def test_oauth_exporter_check_rejects_two_failed_image_lookups(self):
+        checker = (ROOT / "scripts/hardening/check-all-hardening.sh").read_text()
+        functions_start = checker.index("registry_component_image() {")
+        functions_end = checker.index(
+            "resolve_compose_service_image_cli() {", functions_start
+        )
+        check_start = checker.index(
+            '  if [[ "$oauth_valkey_compose_image" != "$valkey_image" ]]; then'
+        )
+        check_end = checker.index(
+            '  check_service_network "$oauth_full_compose" "oauth2-proxy-valkey"',
+            check_start,
+        )
+        probe = (
+            "FAILURES=0\n"
+            "fail() { FAILURES=$((FAILURES + 1)); }\n"
+            + checker[functions_start:functions_end]
+            + "\nvalidate_exporter() {\n"
+            + '  local oauth_full_compose="$1"\n'
+            + '  local valkey_image="unchanged"\n'
+            + '  local oauth_valkey_compose_image="unchanged"\n'
+            + checker[check_start:check_end]
+            + "  (( FAILURES > 0 ))\n"
+            + "}\n"
+            + 'TECH_STACK_REGISTRY="$2"\n'
+            + 'validate_exporter "$1"\n'
+        )
+        registry = {
+            "entries": [
+                {
+                    "component": "Valkey Exporter",
+                    "images": ["oliver006/redis_exporter:v1.93.0-alpine"],
+                    "sources": [
+                        {
+                            "compose_file": "somewhere/else/docker-compose.yml",
+                            "images": ["oliver006/redis_exporter:v1.93.0-alpine"],
+                        }
+                    ],
+                }
+            ]
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture_dir = Path(temporary)
+            compose_path = fixture_dir / "docker-compose.yml"
+            registry_path = fixture_dir / "registry.json"
+            compose_path.write_text("services:\n  unrelated:\n    image: busybox:1.0\n")
+            registry_path.write_text(json.dumps(registry))
+            result = subprocess.run(
+                [
+                    "/bin/bash",
+                    "-c",
+                    probe,
+                    "bash",
+                    str(compose_path),
+                    str(registry_path),
+                ],
+                env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"},
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=5,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertGreaterEqual(result.stderr.count("FAIL:"), 2)
+
     def test_oauth_hardening_admits_only_equal_stable_digest_build_sources(self):
         checker = (ROOT / "scripts/hardening/check-all-hardening.sh").read_text()
         start = checker.index("  local oauth_source_image oauth_dev_source_image")
