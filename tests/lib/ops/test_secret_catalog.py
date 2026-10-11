@@ -12,6 +12,7 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
+from scripts.lib.ops import _secret_catalog_io as catalog_io
 from scripts.lib.ops import secret_catalog as catalog
 
 PUBLIC = """| ID | Automation | Type | Value | Env | Path | Recorded | Purpose |
@@ -731,7 +732,7 @@ class SyntheticRepositoryTests(unittest.TestCase):
                 side_effect=lambda opened, length: read(opened, min(length, 2)),
             ):
                 with self.subTest(case="complete_short_chunks"):
-                    self.assertEqual(catalog._read_file(fd, target.name), expected)
+                    self.assertEqual(catalog_io._read_file(fd, target.name), expected)
             calls = 0
 
             def truncated(opened, length):
@@ -744,7 +745,7 @@ class SyntheticRepositoryTests(unittest.TestCase):
                     self.subTest(case="premature_eof"),
                     self.assertRaises(catalog.CatalogError),
                 ):
-                    catalog._read_file(fd, target.name)
+                    catalog_io._read_file(fd, target.name)
         finally:
             os.close(fd)
 
