@@ -791,6 +791,7 @@ files:
   lifecycle: active
   mutation: check-write
   consumers:
+  - docs/05.operations/runbooks/0085-openbao.md
   - tests/lib/ops/test_secret_catalog.py
   disposition: retain
   successor: null
