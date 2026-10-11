@@ -2020,7 +2020,10 @@
         "labs/postgresql-ha.md",
         "labs/valkey-cluster.md",
         "projects/storybook/README.md",
-        "projects/storybook/nextjs/README.md"
+        "projects/storybook/nextjs/README.md",
+        "infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md",
+        "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md",
+        "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",

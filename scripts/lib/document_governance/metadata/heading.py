@@ -1021,18 +1021,28 @@ def _runtime_compose_entry(source: pathlib.Path, root: pathlib.Path):
     if not isinstance(services, Mapping):
         raise ValueError("invalid Compose services")
     images = []
+    required_inputs = []
     for service in services.values():
         if not isinstance(service, Mapping):
             raise ValueError("invalid Compose service")
         if "image" in service:
-            images.append(_runtime_authored_image(service["image"]))
+            value = service["image"]
+            required = (
+                re.fullmatch(r"\$\{([A-Za-z_][A-Za-z0-9_]*):\?\}", value)
+                if isinstance(value, str)
+                else None
+            )
+            if required:
+                required_inputs.append(required[1])
+            else:
+                images.append(_runtime_authored_image(value))
         build = service.get("build")
         if isinstance(build, Mapping) and "dockerfile_inline" in build:
             inline = build["dockerfile_inline"]
             if not isinstance(inline, str) or len(inline.encode("utf-8")) > 256 * 1024:
                 raise ValueError("invalid inline Dockerfile source")
             images.extend(_runtime_dockerfile_images(inline))
-    if not images:
+    if not images and not required_inputs:
         return ()
     return (
         {
@@ -1040,6 +1050,11 @@ def _runtime_compose_entry(source: pathlib.Path, root: pathlib.Path):
             "images": sorted(set(images)),
             "compose_files": [source.as_posix()],
             "direct_source": True,
+            **(
+                {"required_image_inputs": sorted(set(required_inputs))}
+                if required_inputs
+                else {}
+            ),
         },
     )
 

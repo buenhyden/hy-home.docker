@@ -974,6 +974,109 @@ class SealedSectionShapeTests(unittest.TestCase):
         self.assertNotIn("body-sealed-shape", codes(record, body))
 
 
+class RuntimeRequiredImageInputTests(unittest.TestCase):
+    SOURCE = pathlib.Path("infra/07-workflow/example/compose.workflow.override.yml")
+
+    def entry(self, services: dict[str, object]) -> dict[str, object]:
+        with patch.object(
+            heading_module, "_compose_mapping", return_value={"services": services}
+        ):
+            return heading_module._runtime_compose_entry(self.SOURCE, ROOT)[0]
+
+    def test_entire_required_input_is_a_reference_not_an_image_pin(self) -> None:
+        with patch.dict(os.environ, {"IMAGE": "vendor/example:9.9.9"}):
+            entry = self.entry({"worker": {"image": "${IMAGE:?}"}})
+        self.assertEqual([], entry["images"])
+        self.assertEqual(["IMAGE"], entry["required_image_inputs"])
+        self.assertEqual([self.SOURCE.as_posix()], entry["compose_files"])
+        self.assertTrue(entry["direct_source"])
+
+    def test_literal_and_default_pins_keep_existing_behavior(self) -> None:
+        for image in ("vendor/example:4.2.3", "${IMAGE:-vendor/example:4.2.3}"):
+            with self.subTest(image=image):
+                entry = self.entry({"worker": {"image": image}})
+                self.assertEqual(["vendor/example:4.2.3"], entry["images"])
+                self.assertNotIn("required_image_inputs", entry)
+
+    def test_partial_optional_and_invalid_required_inputs_fail_closed(self) -> None:
+        for image in (
+            "vendor/example:${TAG:?}",
+            "${IMAGE}",
+            "${IMAGE:-}",
+            "${9IMAGE:?}",
+            "${IMAGE:?message}",
+            None,
+            "",
+        ):
+            with self.subTest(image=image), self.assertRaises(ValueError):
+                self.entry({"worker": {"image": image}})
+
+    def test_mixed_required_inputs_keep_concrete_and_inline_build_pins(self) -> None:
+        entry = self.entry(
+            {
+                "worker": {"image": "${IMAGE:?}"},
+                "scheduler": {"image": "${IMAGE:?}"},
+                "concrete": {"image": "vendor/example:4.2.3"},
+                "build": {"build": {"dockerfile_inline": "FROM vendor/base:2.3.4\n"}},
+            }
+        )
+        self.assertEqual(["IMAGE"], entry["required_image_inputs"])
+        self.assertEqual(["vendor/base:2.3.4", "vendor/example:4.2.3"], entry["images"])
+        with self.assertRaises(ValueError):
+            self.entry(
+                {
+                    "worker": {
+                        "image": "${IMAGE:?}",
+                        "build": {"dockerfile_inline": None},
+                    }
+                }
+            )
+
+    def test_required_input_still_requires_a_real_authored_source_link(self) -> None:
+        entry = self.entry({"worker": {"image": "${IMAGE:?}"}})
+        readme = self.SOURCE.parent / "README.md"
+        for body in (
+            "No source link",
+            "[Source](https://example.invalid/compose.workflow.override.yml)",
+            "<!-- [Source](compose.workflow.override.yml) -->",
+        ):
+            with self.subTest(body=body):
+                self.assertFalse(
+                    heading_module._runtime_authority_link(readme, body, (entry,))
+                )
+        self.assertTrue(
+            heading_module._runtime_authority_link(
+                readme, "[Source](compose.workflow.override.yml)", (entry,)
+            )
+        )
+
+    def test_tracked_required_source_preserves_document_authority_checks(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            source = root / self.SOURCE
+            source.parent.mkdir(parents=True)
+            source.write_text("services:\n  worker:\n    image: ${IMAGE:?}\n")
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            record = metadata.Record(
+                self.SOURCE.parent / "README.md", {}, "common/readme"
+            )
+            for body, expected in (
+                ("Runtime input is required.\n", {"runtime-version-source-missing"}),
+                ("[Source](compose.workflow.override.yml)\n", set()),
+            ):
+                with self.subTest(body=body):
+                    self.assertEqual(
+                        expected,
+                        {
+                            finding.code
+                            for finding in heading_module._runtime_version_findings(
+                                record, body, root
+                            )
+                        },
+                    )
+
+
 class RuntimeVersionBodyTests(unittest.TestCase):
     ENTRIES = (
         {
