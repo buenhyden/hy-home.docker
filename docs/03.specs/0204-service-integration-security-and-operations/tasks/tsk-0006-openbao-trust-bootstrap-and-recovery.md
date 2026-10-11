@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -1143,6 +1143,44 @@ not treated as the final result. The earlier document-only staged controller
 exited 0, but subsequent index corrections require a new final-index controller.
 This result-only paragraph adds no link or metadata identity. Final source/docs
 delivery remains an owning-Spec PR candidate; latest-head hosted CI is pending.
+
+### W22 Source PR and Final Staged Receipt — 2026-10-11
+
+The corrected five-document final index was
+`dbe123017afc334ea4dab403144624ddd2f5ed89`. Immediately after its final mutation,
+the registered controller exited 0; Markdown and hardcoded-secret checks passed,
+with unrelated language checks correctly skipped:
+
+```bash
+rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; export PRE_COMMIT_HOME=/tmp/hy-home-p09-qa/precommit-cache; rtk bash scripts/validation/run-ci-precommit.sh --mode local-staged > /tmp/p01-final-docs-staged.log 2>&1'
+rtk proxy /tmp/hy-home-p09-qa/bin/cz check -l 75 -m 'docs(openbao): Record versioned recovery evidence and HOME holds'
+rtk git commit -m 'docs(openbao): Record versioned recovery evidence and HOME holds'
+rtk git push -u origin codex/p01-openbao-recovery
+rtk proxy gh pr create --repo buenhyden/hy-home.docker --base main --head codex/p01-openbao-recovery --draft --title 'fix(openbao): Preserve versioned issuance journal identity' --body-file .agent-work/p01-pr-body.md
+```
+
+All commands exited 0. Document commit was
+`1c2c3c0908151f3f3adac77959cb5baa344f8c98`, tree equal to the final index; the
+worktree was clean. The installed ECC pre-push hook reported no supported checks
+and skipped; no automatic lint/QA enforcement is inferred from that hook.
+Source PR is `https://github.com/buenhyden/hy-home.docker/pull/421`, created draft
+and attached to this task's desktop artifact. Authenticated readback returned
+head `1c2c3c0908151f3f3adac77959cb5baa344f8c98`, base
+`4e26a5a8022a7307c7461af60337442912955df1`, mergeable true and draft true.
+
+`gh pr view --json baseRefOid` exited 1 because this installed CLI does not
+support that field; supported `headRefOid`/check fields and `gh api .../pulls/421`
+readback each exited 0. Candidate-quality run `38108083728` was IN_PROGRESS on
+the document commit; no hosted PASS or merge was claimed at this checkpoint.
+CodeQL was also running; GitGuardian readback was SUCCESS. The source branch
+push does not trigger aggregate candidate QA; the PR workflow owns it.
+
+Independent exact-head code/contract and security reviews approved document
+head `1c2c3c09...`, zero findings, with all ten P01 paths and frozen code/test/doc
+hashes unchanged. This result-only Task follow-up records the later staged/PR
+receipts and preserves canonical Evidence assignments. Its prospective latest
+head must receive hosted QA and exact-head rebind before source merge. W23,
+HOME/recovery/P06 remain blocked; no operational resource was changed.
 
 ## Evidence
 
