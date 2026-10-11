@@ -1,0 +1,741 @@
+{
+  "active": false,
+  "connections": {
+    "Ack": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Verify Ack",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Redact Ack Uncertain",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Capture Mail": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "SMTP Accepted",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Retry Unknown",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Claim": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Valid Claim",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Redact DB Uncertain",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Every Minute": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Claim",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Manual": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Claim",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Redact Ack Uncertain": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Ack Uncertain",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Redact DB Uncertain": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "DB Uncertain",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Redact Delivery Uncertain": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Delivery Uncertain",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Redact Invalid Claim": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Invalid Claim",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Redact Lost Lease": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Lost Lease",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Redact Retry Recorded": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Retry Recorded",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Retry Unknown": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Verify Retry",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Redact DB Uncertain",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Retryable Receipt": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Retry Unknown",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Redact Delivery Uncertain",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "SMTP Accepted": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Ack",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Retryable Receipt",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Valid Claim": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Capture Mail",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Redact Invalid Claim",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Verify Ack": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Acknowledged",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Redact Ack Uncertain",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Verify Retry": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Redact Retry Recorded",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Redact Lost Lease",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "name": "Operations manifest outbox to Mailpit (DEV draft)",
+  "nodes": [
+    {
+      "id": "manual",
+      "name": "Manual",
+      "parameters": {},
+      "position": [
+        0,
+        -80
+      ],
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "id": "every-minute",
+      "name": "Every Minute",
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        100
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2
+    },
+    {
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "REPLACE_WITH_LOCAL_CREDENTIAL_ID",
+          "name": "opsflow-dev-notifier"
+        }
+      },
+      "id": "claim",
+      "name": "Claim",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "operation": "executeQuery",
+        "options": {
+          "queryBatching": "independently"
+        },
+        "query": "SELECT id,run_id,source,row_count,lease_token FROM ops_flow.claim_notification();"
+      },
+      "position": [
+        240,
+        0
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "id": "valid-claim",
+      "name": "Valid Claim",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "valid-claim",
+              "leftValue": "={{ ((rows) => {\n  if (!Array.isArray(rows) || rows.length !== 1) return false;\n  const r = rows[0];\n  if (!r || typeof r !== 'object' || Array.isArray(r)) return false;\n  const keys = ['id','run_id','source','row_count','lease_token'];\n  if (Object.keys(r).length !== keys.length || !keys.every(k => Object.hasOwn(r,k))) return false;\n  const full = (pattern, value) => typeof value === 'string' && new RegExp('^(?:'+pattern+')(?![\\\\s\\\\S])').test(value);\n  const id = typeof r.id === 'number' ? Number.isSafeInteger(r.id) && r.id > 0 :\n    full('[1-9][0-9]{0,18}',r.id) && BigInt(r.id) <= 9223372036854775807n;\n  return id && full('[0-9a-f]{64}',r.run_id) &&\n    ['hy-home.docker','hy-home.k8s','Project-Template','blog-data'].includes(r.source) &&\n    Number.isSafeInteger(r.row_count) && r.row_count >= 1 && r.row_count <= 5000 &&\n    full('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',r.lease_token);\n})($input.all().map(i => i.json)) }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        450,
+        0
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_LOCAL_CREDENTIAL_ID",
+          "name": "mailpit-internal-only"
+        }
+      },
+      "id": "capture-mail",
+      "name": "Capture Mail",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "claim": "={{ $json }}"
+      },
+      "position": [
+        680,
+        -100
+      ],
+      "type": "n8n-nodes-opsflow.opsflowSmtp",
+      "typeVersion": 1
+    },
+    {
+      "id": "smtp-accepted",
+      "name": "SMTP Accepted",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "smtp-accepted",
+              "leftValue": "={{ Object.keys($json).length === 2 && $json.run_id === $(\"Claim\").first().json.run_id && $json.state === \"accepted_by_smtp\" }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        910,
+        -100
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "retryable-receipt",
+      "name": "Retryable Receipt",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "retryable-receipt",
+              "leftValue": "={{ Object.keys($json).length === 2 && $json.run_id === $(\"Claim\").first().json.run_id && [\"uncertain\",\"cancelled\"].includes($json.state) }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1120,
+        180
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "REPLACE_WITH_LOCAL_CREDENTIAL_ID",
+          "name": "opsflow-dev-notifier"
+        }
+      },
+      "id": "ack",
+      "name": "Ack",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "operation": "executeQuery",
+        "options": {
+          "queryBatching": "independently",
+          "queryReplacement": "={{ [$(\"Claim\").first().json.id, $(\"Claim\").first().json.lease_token] }}"
+        },
+        "query": "SELECT ops_flow.ack_notification($1::bigint,$2::uuid) AS acknowledged;"
+      },
+      "position": [
+        1140,
+        -250
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "REPLACE_WITH_LOCAL_CREDENTIAL_ID",
+          "name": "opsflow-dev-notifier"
+        }
+      },
+      "id": "retry-unknown",
+      "name": "Retry Unknown",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "operation": "executeQuery",
+        "options": {
+          "queryBatching": "independently",
+          "queryReplacement": "={{ [$(\"Claim\").first().json.id, $(\"Claim\").first().json.lease_token] }}"
+        },
+        "query": "SELECT ops_flow.retry_notification($1::bigint,$2::uuid) AS requeued;"
+      },
+      "position": [
+        1350,
+        150
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "id": "verify-ack",
+      "name": "Verify Ack",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "verify-ack",
+              "leftValue": "={{ $input.all().length === 1 && $json.acknowledged === true }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1380,
+        -250
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "verify-retry",
+      "name": "Verify Retry",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "verify-retry",
+              "leftValue": "={{ $input.all().length === 1 && $json.requeued === true }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        1580,
+        150
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "acknowledged",
+      "name": "Acknowledged",
+      "parameters": {
+        "jsCode": "return [{json:{run_id:$(\"Claim\").first().json.run_id,state:\"accepted_by_smtp\"}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1600,
+        -350
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "redact-db-uncertain",
+      "name": "Redact DB Uncertain",
+      "parameters": {
+        "jsCode": "return [{json:{state:\"db_unavailable_or_lease_uncertain\"}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1350,
+        550
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "db-uncertain",
+      "name": "DB Uncertain",
+      "parameters": {
+        "errorMessage": "db_unavailable_or_lease_uncertain"
+      },
+      "position": [
+        1570,
+        550
+      ],
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1
+    },
+    {
+      "id": "redact-invalid-claim",
+      "name": "Redact Invalid Claim",
+      "parameters": {
+        "jsCode": "return [{json:{state:\"invalid_claim\"}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        680,
+        350
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "invalid-claim",
+      "name": "Invalid Claim",
+      "parameters": {
+        "errorMessage": "invalid_claim"
+      },
+      "position": [
+        900,
+        350
+      ],
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1
+    },
+    {
+      "id": "redact-ack-uncertain",
+      "name": "Redact Ack Uncertain",
+      "parameters": {
+        "jsCode": "return [{json:{state:\"ack_lost_or_lease_expired\"}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1600,
+        -150
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "ack-uncertain",
+      "name": "Ack Uncertain",
+      "parameters": {
+        "errorMessage": "ack_lost_or_lease_expired"
+      },
+      "position": [
+        1820,
+        -150
+      ],
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1
+    },
+    {
+      "id": "redact-lost-lease",
+      "name": "Redact Lost Lease",
+      "parameters": {
+        "jsCode": "return [{json:{state:\"retry_lost_or_lease_expired\"}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1800,
+        300
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "lost-lease",
+      "name": "Lost Lease",
+      "parameters": {
+        "errorMessage": "retry_lost_or_lease_expired"
+      },
+      "position": [
+        2020,
+        300
+      ],
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1
+    },
+    {
+      "id": "redact-retry-recorded",
+      "name": "Redact Retry Recorded",
+      "parameters": {
+        "jsCode": "return [{json:{state:\"retry_recorded_delivery_uncertain\"}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1800,
+        -20
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "retry-recorded",
+      "name": "Retry Recorded",
+      "parameters": {
+        "errorMessage": "retry_recorded_delivery_uncertain"
+      },
+      "position": [
+        2020,
+        -20
+      ],
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1
+    },
+    {
+      "id": "redact-delivery-uncertain",
+      "name": "Redact Delivery Uncertain",
+      "parameters": {
+        "jsCode": "return [{json:{state:\"delivery_uncertain_fresh_claim_required\"}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1800,
+        80
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "delivery-uncertain",
+      "name": "Delivery Uncertain",
+      "parameters": {
+        "errorMessage": "delivery_uncertain_fresh_claim_required"
+      },
+      "position": [
+        2020,
+        80
+      ],
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none",
+    "saveExecutionProgress": false,
+    "saveManualExecutions": false,
+    "timezone": "Asia/Seoul"
+  },
+  "tags": []
+}
