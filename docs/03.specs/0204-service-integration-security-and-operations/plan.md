@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.2"
+version: "1.8.3"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -106,6 +106,50 @@ out of scope.
 | W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Source/common repairs, isolated datastore and current local leaf receipts integrated. Global latest/security evidence, HOME deployment and complete recovery remain pending/blocked; SOURCE delivery does not close SEC01 |
 | W32 | 16, 8 | P02 single value-free catalog, classification, generated views and reissuance guards | W27, W28 | TSK-0010 | Existing source/schema reuse, alias and privacy RED/GREEN, scoped changed/staged checks and independent review; real migration/recovery are separate lanes |
 | W33 | 1, 4, 6, 8, 17 | P03 current service/endpoint/environment and four-location port contracts; independent source preparation before consumer-specific runtime acceptance | W27, W28 | TSK-0011 | Existing inventory/tool reuse, synthetic RED/GREEN, privacy and DEV/MNG independence; final mappings and native/HOME checks follow their exact owning prerequisites |
+| W34 | 1, 8, 18 | P04 baseline, source reuse, exclusive ownership and RED cases | None | TSK-0012 | Current SHA/consumer ledger; reference audit is not native acceptance |
+| W35 | 18 | Strict manifest/parser/adapters, immutable inputs and byte-derived idempotency | W34 | TSK-0012 | RED/GREEN validation, privacy, replay and object/DB failure tests |
+| W36 | 18 | Versioned DEV role/schema/publication/outbox contract; freeze the P05 interface | W35 | TSK-0012 | Reuse provisioning guards; migration/SQL security review and executable denial cases |
+| W37 | 18 | Zero-I/O DAG parsing, compatible image and worker-only Compose proposal | W34, W35 | TSK-0012 | Exact-image import and rendered model; coordinator integrates shared hunks |
+| W38 | 18 | Isolated then selected DEV/S3/Celery execution, concurrency/backfill and empty restoration | W36, W37 | TSK-0012 | Relevant image acceptance and exact resource/recovery boundary; no full-SEC or P06 global dependency |
+| W39 | 8, 18 | Registered gates, independent review, logical commits, owning-Spec PR and handoffs | W38 | TSK-0012 | Current-head checks/review; preserve unexecuted lanes and actual delivery receipt |
+
+### P04 start, ownership and ordered native acceptance
+
+TSK-0012 is issued from clean local main
+`74feff9429d302233d2475b31beed3dbf2ac07c9`; fresh fetch confirmed remote main
+`6da5e3bf380d5002e0e28181136fde8c016e49ce` with no open PRs and successful
+remote quality checks. Those checks do not certify SEC01 security/HOME or a
+P04 workload. The worker branch is `codex/p04-airflow-manifest-pipeline` in
+`.worktrees/p04-airflow-manifest-pipeline`, from the issuance commit. This
+assessment launches no implementation chat and preserves other dirty worktrees.
+
+W34-W37 public source, synthetic tests and draft SQL/outbox design may begin
+independently of full W31/SEC01 and W33/P03 completion. There is no current P04
+workload to reimplement. TSK-0012 lists the exact new workload/test files; one
+canonical workload owns its SQL and P05 later consumes its versioned contract
+read-only. Existing DEV provisioning and database policies are reused through
+a reviewed narrow extension, not a second provisioner with conflicting grants.
+P04 submits base-blob-bound proposals for the existing provisioner, Dockerfile/
+constraints, Compose/environment/networks, S3 policy, catalogs, Stage05/README
+indexes, Registry and manifest/workflow registration. The current named owner
+or coordinator writes each shared file once.
+
+Before W38, SEC01 supplies the relevant Airflow image/core/Python/provider/
+constraint and security receipt; P03 supplies the selected DEV/object endpoints,
+worker identity and network contract; P02 supplies reviewed secret references.
+Bound the exact synthetic or DEV resources, migration, credential delivery,
+budget, operator, backup/empty-restore target, cleanup and rollback. Protected
+worker-only files may support DEV proof before OpenBao migration; P01/P06 are
+needed for subsequent OpenBao delivery, not all P04 tests. Shared native
+execution is sequential: P04 provisions/publishes and verifies outbox first;
+P05 uses its frozen SQL/lease contract to notify afterward. No n8n writer edits
+P04 SQL or silently changes outbox semantics.
+
+P04's full prompt selects logical commits and an owning-Spec PR with actual
+latest-head CI and independent review. Reconcile the local documentation
+prefix with fresh remote main before that PR. This issuance performs no remote
+write or deployment; SEC01/SMTP01/CLN01 keep their local-main delivery. Do not
+close Task-0012 or the broader P04/P05 workflow acceptance on unit tests alone.
 
 ### P03 parallel start and dependency boundaries
 

@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.2"
+version: "1.7.3"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -134,7 +134,7 @@ credential rotation, DNS/firewall edit or HOME restart without the named target
 and recovery boundary. The current request authorizes its source/docs/tests,
 logical commits and reviewed local `main` integration after required checks;
 PRs and remote pushes are excluded from that SEC01/SMTP01/CLN01 integration
-delivery; `dev` is excluded throughout. The subsequently supplied P02 and P03
+delivery; `dev` is excluded throughout. The subsequently supplied P02, P03 and P04
 execution prompts select their own SPEC-0204 PRs after implementation, latest-head CI and
 independent review, without absorbing unrelated integration/runtime commits.
 Missing permission or target defers only the dependent operation.
@@ -406,6 +406,21 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     common settings remain single-writer integration proposals. Applied source
     and historical Task acceptance are preserved; learning apps, LAB runtime
     and Wiki implementation are excluded.
+18. P04 implements the independent `opsflow_dev` manifest validation and
+    publication batch, with one canonical Airflow workload, versioned
+    `ops_flow` SQL and a frozen outbox interface for P05. Strict synthetic
+    input validation, byte-derived identity, S3 readback, atomic PostgreSQL
+    publication, replay/concurrency/backfill and failure recovery are tested.
+    Native execution proves the selected Celery worker, DEV roles and restricted
+    object identity, including direct-write/cross-database/object denials and
+    separately targeted empty restoration. DAG parsing performs no workload
+    file, database or object I/O. P04 creates no Wiki engine or real source
+    collector and does not implement P05 notification. TSK-0012 owns W34-W39;
+    shared provisioning, images, Compose, catalogs and QA registration retain
+    their named single writers. Source preparation can proceed now; native
+    actions require the relevant fixed image and exact resource/recovery
+    contract. Restricted file delivery may support pre-migration DEV proof;
+    P01/P06 completion is not a global prerequisite to that bounded lane.
 <!-- markdownlint-enable MD029 -->
 
 ## Related Documents
