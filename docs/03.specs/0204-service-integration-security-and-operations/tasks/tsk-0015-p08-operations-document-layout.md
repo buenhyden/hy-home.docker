@@ -1,6 +1,6 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -156,32 +156,94 @@ closed for that draft only. The historical draft-review FAIL remains recorded;
 it is not a move, runtime or consumer-validation result. The latest final map
 is NOT_RUN and pending its exact approval.
 
-### Source preparation receipts and final-gate boundary
+### Source preparation receipt — 2026-10-11
 
-The pure mapping-preflight helper has 22 scoped tests and 100% scoped coverage.
-The coordinator QA receipt reports 134 registry-plus-helper tests and 111
-workflow tests, and a six-path common change received independent review with
-an ACCEPT result. The indexed manifest/workflow check completed with exit 0.
-The QA RED/GREEN correction adds a finite fixture admission in
-`metadata/profile.py` with the existing registry test; it is not a W58 path
-migration. The rejected intermediate evidence used non-canonical result or
-acceptance values and Markdown lifecycle anchors. Those validation failures are
-preserved as corrections, without a waiver or override.
-These are source-preparation receipts only: the helper validates candidate input
-and does not choose a final mapping or accept a nested consumer.
+The 15-file source-preparation commit is
+`2c95418c7e586b47f63151551d104a61abb35122`. The worktree was clean immediately
+after that source commit and before this Task receipt edit.
+Before that commit, the shared root's 24 foreign paths and the old P05 checkout's
+28 staged paths matched their preservation fingerprints. Neither was changed.
+The worker receipt for the pure caller-supplied path/ID preflight helper records
+22 scoped tests and 100% scoped coverage; final-candidate coverage was not rerun. It does not own semantic classification, choose a final map or
+accept a nested consumer. The coordinator QA receipt reports 134
+registry-plus-helper tests and 111 workflow tests; a six-path common change and
+the final exact source review both received ACCEPT. The indexed manifest/workflow
+check exited 0.
 
-The initial corrected Task-only metadata check exited 0 and selected one path:
-this Task. Its target filter excluded three fixture paths, so it is not fixture
-README coverage evidence. The scoped staged check exited 0 on the pre-correction
-12-byte candidate, and the final lifecycle check exited 0 after the raw-anchor
-correction. Final metadata, final staged validation and the registered aggregate
-remain NOT_RUN pending the exact final candidate; no PASS is claimed for them.
+Historical failures remain part of this receipt. The original source-13 gate
+failed with exit 1 after 690 tests because `test_taxonomy` expected the previous
+exact `TARGET_MARKDOWN_FILES` set. Its test-14 suffix then failed at the final
+leaf after 494 tests with two failures: the new helper's Script Manifest
+authority was this Task rather than the Registry, and a naive production test
+used a fixture-substring rule instead of the approved exact README classifier
+constants. The root correction was limited to the new manifest authority and
+test-15 AST declaration guard: RED was 3 failing tests, then GREEN was 51 tests
+in 14.127 seconds. Ruff and diff checks passed, and independent exact
+source/controller review returned ACCEPT.
 
-The received map draft reports the same 230 source paths and hashes with 29
-target differences (11 Guide, 9 Policy and 9 Runbook). Those counts are dated
-observations, not validator constants. Its external aggregate `015957` and
-corrected internal aggregate `a2ec20` are separate artifacts. Exact writer
-leases, final mapping approval and all moves remain pending.
+The corrected 690-test source check passed only for the corrected test-14 prior
+input; it was not rerun or relabeled as a final-15 result. The final 15-file
+staged command, `bash scripts/validation/run-ci-precommit.sh --mode
+local-staged`, exited 0. Canonical node 0 independently verified metadata (four
+selected, zero violations) and manifest/workflow routing. Canonical node 11,
+the integrity leaf, exited 0 with 497 tests in 129.868 seconds; previously
+passed indices 1–10 remain separately attributed. This is a 12-node segmented
+acceptance, not a monolithic 15-file aggregate PASS. The frozen file-input
+receipt SHA256 is
+`1c96c9450ef153799e101cebdb29e13c95354774abc24d6840ef92bd1f330587`. The
+literal-old-receipt guards passed during the recorded correction run. The
+controller file SHA256 is
+`c1f109859dce707d230f112b7b4d3c019a17fd13f312f4d85b4d5788714ef489`.
+
+The original source-13 aggregate command was
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only`,
+with frozen base `c26c3b93`; it exited 1. The source commit
+`2c95418c7e586b47f63151551d104a61abb35122` subsequently preserved the accepted
+final-15 bytes after the separately recorded corrections. The narrow correction command is
+recorded as `python3 .agent-work/p08-correct-final-registered.py` in local
+ignored evidence. Its result and registered-run log are
+`.agent-work/p08-final15-correction-result.json` and
+`.agent-work/p08-final15-registered-correction.log`; the staged receipt is
+`.agent-work/p08-final15-staged.log`. The RED and GREEN evidence locations are
+`.agent-work/p08-manifest-contract-red.log` and
+`.agent-work/p08-manifest-contract-final-green.log`. The AST guard proves only
+the current literal position, current membership and direct-reference boundary;
+it is not a general future interprocedural taint proof.
+
+The first v0.1.2 Task-only metadata run exited 0, selected one path and had zero
+violations. Its preliminary body/hash/log receipt remains under
+`.agent-work/p08-task-v012-preclarification*`; it is not final semantic
+acceptance. That explicit Task-only input is not fixture README coverage
+evidence. The historical pre-correction target filter excluded three fixture
+paths; final source node 0 selected all four governed documents with zero
+violations. The QA RED/GREEN correction adds a finite
+fixture admission in `metadata/profile.py` with the existing registry test; it
+is not a W58 path migration. The rejected intermediate metadata run exited 1,
+selected one path and reported 147 violations at
+`.agent-work/p08-integrated-metadata.log`; the lifecycle run exited 1 with two
+violations at `.agent-work/p08-integrated-lifecycle-corrected.log`; and the
+pre-correction gate interruption scope/reason is recorded in
+`.agent-work/p08-precorrection-gate-interruption.json`. The observed exit 143 is
+recorded separately in the `historical_attempts.precorrection_gate_exit` field
+of `.agent-work/p08-source-delivery-receipt-draft.json`. None is a PASS, and no
+waiver or override was used. Final receipt document checks remain pending a
+coordinator rerun.
+
+The received external aggregate `015957` is verified and reports matching 230
+source paths and hashes with 29 target differences (11 Guide, 9 Policy and 9
+Runbook). The internal pure preflight reports 221 proposal MOVE entries, nine
+REVIEW_REQUIRED entries, zero registered targets and 49 README obligations.
+These are dated structural observations, not semantic-map acceptance. Generated
+ownership is UNKNOWN: no `generated_by` or registered owner was established for
+the 230 records. Exact writer leases, final mapping approval and all moves remain
+pending.
+
+An additional `python3 -m pip_audit --no-deps --disable-pip -r
+scripts/requirements.txt` attempt exited 1 because its module was unavailable.
+It is TOOL_UNAVAILABLE/NOT_RUN; no dependency changed and no installation was
+performed. Actual document moves and LAB runtime changes remain zero. Local-main
+fast-forward delivery awaits final receipt document checks; push, pull request
+and remote CI are NOT_RUN.
 
 ### W57 Exact semantic mapping
 
@@ -285,13 +347,13 @@ aggregate exit 124 is preserved. No remote or operational command was executed.
 ## Review and Completion
 
 This issuance and continuation deliver bounded documentation preparation only.
-The initial admission STATIC checks and the bounded helper UNIT receipt are
-recorded above. Final preparation STATIC and DELIVERY remain pending their
-actual commands and exact final input. Full relocation UNIT, STATIC and DELIVERY
-also remain pending until their actual commands and final inputs are recorded.
-ISOLATED, HOME, MIGRATION, ROTATION and RECOVERY are NOT_RUN, and no operational
-effect or service recovery is claimed. Current parent status and historical
-P00/refresh evidence remain unchanged.
+The source commit, scoped helper UNIT and source STATIC receipt are accepted as
+recorded above. The coordinator will emit receipt-only document-check and
+local-main delivery results after the actual required checks complete; no future
+PASS is claimed here. W57–W62 UNIT, STATIC and DELIVERY remain NOT_RUN. ISOLATED,
+HOME, MIGRATION, ROTATION and RECOVERY are NOT_RUN, and no operational effect or
+service recovery is claimed. Current parent status and historical P00/refresh
+evidence remain unchanged.
 
 Use separate reversible logical commits for path-contract/tests, coupled exact
 rename/link changes, populated README content and final validation/handoff.
