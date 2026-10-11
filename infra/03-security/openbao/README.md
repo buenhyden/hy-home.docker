@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.6"
+version: "0.1.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -90,6 +90,23 @@ journal과 활성 anchor는 version·identity가 정확히 일치해야 하며, 
 중단된 정리의 복구를 허용하는 별도 기록입니다. 이전 발급을 정합화한 같은 실행은 새 ID를
 발급하지 않습니다. 이는 source 계약이며, 실제 HOME 대상·custody·복구 입력은 아직 확정되지
 않았습니다.
+
+### P02 공개 secret catalog
+
+[secret-catalog.json](secret-catalog.json)과 [schema](secret-catalog.schema.json)는 값 없는
+공개 분류·보존·미결정 mapping을 소유합니다. 각 항목의 원본 기록 날짜와 실행 증거를
+구분하며, 계획된 mount·field·UID/GID·mode는 미확정입니다. ACL·delivery·reload·restart·
+rotation의 `BLOCKED_P01`은 실제 권한이나 전달 완료가 아닙니다.
+
+[catalog CLI](../../../scripts/operations/secret-catalog.py)는 catalog, schema, 기존 공개
+secret 표, support matrix 네 추적 입력을 검사합니다. `render`는 승인된
+`.agent-work/p02-views` 안에 공개 예시·값 없는 local view·JSON summary·README 네 파일만
+씁니다. 해당 staging 파일은 credential 원본이나 운영 파일로 사용하지 않습니다.
+실제 명령과 중단 조건은 기존 `RUN-0085`가 소유하며 운영 문서 인덱스를 통해 접근합니다.
+
+canonical `COMM-002`와 source-retired alias `COMM-003`의 재생성을 거부합니다.
+alias는 별도 credential 또는 KV 대상을 만들지 않으며 실제 파일 폐기는 SMTP01 소관입니다.
+공개 catalog와 합성 검사 통과는 HOME 인증·소비·이관·rotation·복구를 증명하지 않습니다.
 
 ## Validation
 

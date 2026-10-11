@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.5.4"
+version: "0.5.5"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -162,6 +162,30 @@ version에서 유도한 전체 metadata와 정확히 같은 경우만 정합화�
 accessor 폐기 전에 차단한다. 이전 발급을 정합화한 같은 실행은 새 SecretID를 발급하지 않는다.
 이 통제는 HOME의 credential, custody, snapshot 또는 recovery 수용을 증명하지 않으며 해당 실제
 입력이 확정될 때까지 HOME 적용을 금지한다.
+
+### P02 공개 catalog 통제
+
+catalog와 schema는 공개 분류·보존 계약의 단일 원천이다. 값·값의 hash·token·실제 KV
+payload를 넣거나 같은 ID를 별도 inventory로 복제하지 않는다. `source_recorded_at`은
+공개 원본의 기록 날짜이며 runtime 증거 날짜로 승격하지 않는다.
+
+현재 destination plan의 mount·field·UID/GID·mode는 null이며 ACL·delivery·reload·restart·
+rotation은 `BLOCKED_P01`이다. 이를 실제 binding으로 바꾸려면 해당 소비자·신원·경로와
+복구 경계를 후속 검토해야 한다. `CONFIRMED` lane의 증거 pointer는 구조적 기록일 뿐,
+실제 소비·이관·rotation·복구를 별도로 확인하지 않은 수용을 허용하지 않는다.
+
+canonical `COMM-002`와 alias `COMM-003`, crypto/bootstrap/recovery/LAB/unknown/migrated/
+retired 또는 이미 observed/consumed인 항목의 재생성을 거부한다. alias는 별도 credential,
+파일 생성 또는 KV 경로를 만들 수 없다. COMM-003 실제 폐기는 SMTP01만 실행하며,
+PG-020의 초기화·복구 보존 판정을 변경하지 않는다. `UNUSED_DELETE`도 source, runtime,
+jobs, backup/restore, external 소비자와 복구 증거를 확인하기 전에는 삭제 승인이 아니다.
+
+CLI 입력은 네 추적 공개 파일로 한정한다. `render`는 operator-owned 경로와 regular,
+single-link README 및 no-follow 조건을 충족한 `.agent-work/p02-views`의 네 공개 출력만
+갱신한다. private metadata·환경·KV·HOME 또는 기존 공개 원본을 덮어쓰지 않는다.
+상속 lock은 참여하는 협력 writer의 경계이므로 CLN이나 비참여 writer의 동시 쓰기 중지는
+별도로 확인한다. staging 일치·비활성 profile·traffic zero·source search zero를 실제
+consumer zero 또는 운영 수용 증거로 보고하지 않는다.
 
 ### Review Cadence
 
