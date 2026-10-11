@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.6"
+version: "1.8.7"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -135,6 +135,62 @@ out of scope.
 | W60 | 8 | Apply exact reviewed renames and coupled reference/index changes under one writer | W59 | TSK-0015 | One active location per ID; semantic preservation; LAB runtime diff zero |
 | W61 | 8 | Complete Korean READMEs for populated domains and parent families | W60 | TSK-0015 | Actual descriptions, direct-child navigation and metadata selection |
 | W62 | 8 | Validate final paths, links, bindings, lifecycle and delivery; hand new paths back to owners | W61 | TSK-0015 | Exact-head gates, independent review, logical commits and hash-bound handoff |
+| W63 | 1, 8, 21 | Issue P10, freeze current source/owner receipts and audit existing acceptance tools | None | TSK-0016 | Actual local/remote refs and public dependency evidence; no duplicate inventory |
+| W64 | 21 | Prepare synthetic vertical-slice cases and evidence-bound integration tests | W63 | TSK-0016 | Reuse P04/P05 contracts; scoped RED/GREEN before behavior changes |
+| W65 | 10, 21 | Run relevant exact-image isolated input/publication/outbox/capture/replay chain | W64 | TSK-0016 | P04 publication proof precedes P05 native claim/ack; exact relevant contracts and bounded resources |
+| W66 | 21 | Selected HOME rollout and consumer authorization/readiness verification | W65 | TSK-0016 | Named host, accepted relevant images, connection/credential/backup/recovery facts and exclusive runtime lease |
+| W67 | 7, 11, 12, 14, 20, 21 | Reconcile bounded failures and verify complete backup set and empty-target restoration | W65 | TSK-0016 | Isolated faults use synthetic targets; HOME recovery requires W66 facts; feature owners retain migration/deletion/rotation/recovery execution |
+| W68 | 8, 21 | Consume final P08 paths and revalidate manual working directories and README coverage | W62 | TSK-0016 | Final path/hash handoff and actual dry-run receipts; no concurrent moves |
+| W69 | 8, 21 | Final requirement 11–30 report, required checks/review and owning-Spec delivery | W66, W67, W68 | TSK-0016 | Actual evidence from all relevant owners; no duplicated test counts or inferred runtime PASS |
+
+### P10 staged admission and acceptance ownership
+
+TSK-0016 is issued from local main
+`43917df47f94f0ddd7e1dbbf7bb7cc87701a56c8`; actual remote main and origin/main
+are `c26c3b93f4e73034ddad4d08ba9da8eaa9fec0c7` at assessment. GitHub has no
+open PR at that observation. The two local P08 commits are not remote delivery.
+The worker uses `codex/p10-opsflow-acceptance` and its independent worktree from
+this reviewed issuance. No new Spec is allocated, and dev remains excluded.
+
+W63/W64 may start now: current public receipt inventory, acceptance scenarios,
+synthetic fixtures and one dedicated integration test. The sole worker owns
+Task16, `tests/validation/test_opsflow_e2e_acceptance.py` and the public
+`tests/fixtures/opsflow-acceptance/{README.md,manifest.valid.json,cases.json}`.
+A new helper requires a proven reuse gap and an explicit file lease. Parent
+fixture navigation, manifest/workflow/Registry, Compose/environment/gateway/
+Alloy/backup/catalog and Stage05 indexes remain coordinator-written proposals.
+P04 retains SQL/DAG/adapter ownership; P05 retains workflow/node ownership;
+P01 retains issuer/renderer/custody, P02 catalog, P03 connection contracts,
+P06 migration, P07 controls and P08 document moves. P10 proposes owner fixes.
+
+W65 is admitted per selected consumer: exact accepted image/package/UID/TLS
+contract, frozen P04 SQL/outbox interface, least-privilege functions/object
+policy and a reviewed unique synthetic Docker project/network/volume/port/
+resource/cleanup boundary. P04 publication precedes P05 native notification.
+Full SEC01/P01/P06 completion is not a blanket prerequisite for a bounded
+pre-migration isolated or DEV consumer; an unresolved relevant fact blocks
+that lane only. OpenBao/P06 acceptance still requires its owning prerequisites.
+
+W66 and actual W67 recovery wait for the named host/context, exclusive runtime
+lease, accepted relevant images, backup contents and exact snapshot identifier,
+independent custody and empty restore target. SMTP01 is COMM-003's sole
+proposed unlink executor after CLN01's fresh assessment; P10 never duplicates
+it. Actual restore, migration, deletion and rotation executors stay with their
+feature owners unless an exact runtime lease is transferred; P10 owns bounded
+acceptance faults/reconciliation and receipt collection. Current private cutover/deletion/restore and global SEC01 acceptance remain
+unverified. W68 waits for final P08 W62 paths and hashes; typed LAB document
+moves belong under `docs/05.operations/{guides,policies,runbooks}/labs/`.
+
+Preserve logical source/test, public contract, actual native receipt and final
+acceptance commits. Run current registered changed/staged gates and independent
+code/security/recovery review on their exact inputs before reviewed local-main
+integration. The current direct-user local-main/no-PR lane continues for this
+admission; no push or PR occurs here. If a remote lane is later explicitly
+adopted, read actual ruleset/checks, create the owning-Spec PR, verify its latest
+head and merge ref, and report that delivery separately. Never infer remote CI.
+Rollback of issuance reverts only these three owned documents; future runtime
+rollback needs its reviewed data-aware recovery contract. No private value,
+service, DB, object, credential, schedule or document path changes on issuance.
 
 ### P08 single-writer continuation
 
@@ -622,7 +678,7 @@ existing encrypted artifact or a proven reissue path and is not promised.
 
 The generic CLN01 helper refuses COMM-003 by ID and exact path. The proposed
 sole candidate executor is SMTP01's `smtp_contract --retire`; CLN01 owns the
-assessment/hold. Integration must confirm that executor, use the shared retirement lock, and
+assessment/hold. Integration must confirm that executor, resolve the currently failed cross-executor lock/order compatibility and
 enforce receipt freshness before any private apply. The present user-integration
 hold remains until the supervisor selects one route; no private execution is
 authorized by either tool's source checks.
@@ -658,6 +714,8 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 | Observed protection still names a retired required context | Preserve the general no-bypass default. For W7 only, use the separately approved one-time Task delivery boundary and actual remote readback; do not infer a hosted PASS or weaken the post-merge security audit. |
 
 ## Related Documents
+
+- [P10 opsflow acceptance Task](tasks/tsk-0016-p10-opsflow-acceptance.md)
 
 - [P08 operations-document layout Task](tasks/tsk-0015-p08-operations-document-layout.md)
 

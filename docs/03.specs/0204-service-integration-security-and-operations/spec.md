@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.6"
+version: "1.7.7"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -482,9 +482,28 @@ operational acceptance are not inferred from document relocation.
     invented bindings. No duplicate catalog, issuer, workflow, Wiki resource,
     LAB runtime or learning-app plan is created. Source-only delivery does not
     close the native migration, rotation or recovery criteria.
+21. P10 binds the independent opsflow manifest-to-recovery vertical slice to
+    exact current source, image and interface revisions. It reuses P04's
+    Airflow/SQL/publication and P05's outbox/notifier implementation and retains
+    each feature's acceptance owner. Offline preparation may proceed now;
+    isolated native admission needs the relevant fixed artifacts, least-privilege
+    connection contract and bounded synthetic resources. Selected HOME and real
+    deletion/migration/rotation/recovery need their own exact target, backup set,
+    custody and reversible boundary; global completion is never inferred from
+    one consumer or isolated success. P10 verifies replay, concurrent claims,
+    negative authorization, fault reconciliation and restoration to an empty
+    separate target, then consumes P08's final path/hash handoff for manual
+    working-directory checks. Its requirement 11–30 report separates SOURCE,
+    UNIT, STATIC, ISOLATED, HOME, MIGRATION, ROTATION, RECOVERY and DELIVERY,
+    preserves failures and NOT_RUN lanes, and excludes Wiki implementation,
+    learning applications and LAB runtime. TSK-0016 owns W63–W69 and dedicated
+    acceptance-only fixtures/tests; shared registration and feature fixes remain
+    single-writer proposals. Local source delivery cannot close this criterion.
 <!-- markdownlint-enable MD029 -->
 
 ## Related Documents
+
+- [P10 opsflow acceptance Task](tasks/tsk-0016-p10-opsflow-acceptance.md)
 
 - [P08 operations-document layout Task](tasks/tsk-0015-p08-operations-document-layout.md)
 
