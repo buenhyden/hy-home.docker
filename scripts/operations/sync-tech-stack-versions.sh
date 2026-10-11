@@ -63,7 +63,7 @@ _verified_repository_root() {
 REPO_ROOT="$(_verified_repository_root)"
 cd "$REPO_ROOT"
 
-SYNC_MODE="$MODE" python3 - <<'PY'
+SYNC_MODE="$MODE" SYNC_REPOSITORY_ROOT="$REPO_ROOT" python3 - <<'PY'
 from __future__ import annotations
 
 import json
@@ -199,6 +199,21 @@ def tracked_compose_files():
 
 
 def classified_overlay_paths(paths):
+    root_text = os.environ.get("SYNC_REPOSITORY_ROOT")
+    root = pathlib.Path(root_text) if root_text else None
+    try:
+        selected = root.stat() if root is not None and root.is_absolute() else None
+        current = pathlib.Path.cwd().stat()
+    except OSError as exc:
+        raise ContractError("invalid verified repository root") from exc
+    if (
+        selected is None
+        or not stat.S_ISDIR(selected.st_mode)
+        or (selected.st_dev, selected.st_ino) != (current.st_dev, current.st_ino)
+    ):
+        raise ContractError("invalid verified repository root")
+    if root_text not in sys.path:
+        sys.path.insert(0, root_text)
     try:
         from scripts.lib.document_governance.operations_catalog import (
             OperationsAuthorityError,
@@ -208,7 +223,7 @@ def classified_overlay_paths(paths):
         raise ContractError("invalid compose overlay contract") from exc
     try:
         sources = _compose_sources(
-            pathlib.Path.cwd(),
+            root,
             tuple(pathlib.PurePosixPath(relative) for relative in paths),
         )
     except (OSError, OperationsAuthorityError, ValueError) as exc:

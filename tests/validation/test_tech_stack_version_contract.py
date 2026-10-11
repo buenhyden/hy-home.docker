@@ -1267,6 +1267,17 @@ class TechStackSynchronizationTests(unittest.TestCase):
             checked.stdout,
         )
 
+    def test_typed_overlay_safe_path_uses_verified_direct_root(self) -> None:
+        self.add_typed_overlay("  app:\n    image: ${REQUIRED_IMAGE:?}\n")
+        result = self.run_sync("--write", extra_env={"PYTHONSAFEPATH": "1"})
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(
+            ["REQUIRED_IMAGE"],
+            json.loads(self.registry.read_text())["required_image_inputs"][0][
+                "variables"
+            ],
+        )
+
     def test_required_image_input_is_rejected_outside_typed_infra_overlay(
         self,
     ) -> None:
@@ -1432,14 +1443,37 @@ class TechStackSynchronizationTests(unittest.TestCase):
 
     def test_root_identity_guard_accepts_only_matching_directory_fd(self) -> None:
         invalid = self.run_sync(
-            "--check", extra_env={"HYHOME_CI_GATE_ROOT": str(self.root)}
+            "--check",
+            extra_env={
+                "HYHOME_CI_GATE_ROOT": str(self.root),
+                "PYTHONSAFEPATH": "1",
+            },
         )
         self.assertEqual(2, invalid.returncode)
+        mismatched_descriptor = os.open(
+            self.registry.parent, os.O_RDONLY | os.O_DIRECTORY
+        )
+        try:
+            mismatched = self.run_sync(
+                "--check",
+                extra_env={
+                    "HYHOME_CI_GATE_ROOT": (f"/proc/self/fd/{mismatched_descriptor}"),
+                    "PYTHONSAFEPATH": "1",
+                },
+                pass_fds=(mismatched_descriptor,),
+            )
+            self.assertEqual(2, mismatched.returncode)
+        finally:
+            os.close(mismatched_descriptor)
         descriptor = os.open(self.root, os.O_RDONLY | os.O_DIRECTORY)
         try:
+            self.add_typed_overlay("  app:\n    image: ${REQUIRED_IMAGE:?}\n")
             accepted = self.run_sync(
-                "--dry-run",
-                extra_env={"HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{descriptor}"},
+                "--write",
+                extra_env={
+                    "HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{descriptor}",
+                    "PYTHONSAFEPATH": "1",
+                },
                 pass_fds=(descriptor,),
             )
             self.assertEqual(0, accepted.returncode, accepted.stderr)
