@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "scope": "root",
+  "mode": "source",
+  "source": [],
+  "services": [
+    {
+      "service": "synthetic",
+      "listener": {
+        "state": "unknown",
+        "endpoints": []
+      },
+      "internal_dns": {
+        "state": "unknown",
+        "endpoints": [
+          {
+            "network": null,
+            "name": "synthetic",
+            "port": {
+              "state": "declared",
+              "start": 80,
+              "end": 80
+            },
+            "protocol": "tcp",
+            "network_key": "default",
+            "alias_index": null
+          }
+        ]
+      },
+      "host_publication": {
+        "state": "unpublished",
+        "endpoints": []
+      },
+      "traefik_backend": {
+        "state": "unknown",
+        "endpoints": []
+      },
+      "gaps": [],
+      "runtime": {
+        "running": "unknown",
+        "healthy": "unknown",
+        "used": "unknown",
+        "recovered": "unknown"
+      }
+    }
+  ]
+}
