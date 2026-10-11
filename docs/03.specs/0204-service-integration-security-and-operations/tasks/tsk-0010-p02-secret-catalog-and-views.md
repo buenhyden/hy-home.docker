@@ -1,8 +1,8 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-11"
 layer: "specs"
@@ -130,6 +130,7 @@ shared integration, hosted CI or delivery; the Task is not completed.
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0010 | draft | ready | #authorized-source-continuation |
+| SPEC-0204-TSK-0010 | ready | in-progress | #lock-lifetime-follow-up |
 
 ### Lock-Lifetime Follow-up
 
@@ -157,6 +158,44 @@ The synthetic harness's exit 0 means successful defect reproduction, not
 security acceptance. The ignored generator/helper proposal requires the same
 held lock descriptor to reach the actual mutator, a parent-death regression
 and independent code/security review before coordinator integration.
+
+The ready bridge was committed as `b06b513c9` after the registered
+local-staged gate and corpus lifecycle passed, exit 0. The first event-table
+attempt used a noncanonical subsection and failed lifecycle and selected
+metadata, exit 1; the canonical `Lifecycle Events` heading corrected the
+chain. The Task is now in progress while shared integration and delivery
+remain pending. ID, created date and prior issuance receipts are preserved.
+
+The ignored helper proposal preserves the default root-identity API and adds
+`with_fd=True` to yield that identity and the exact held descriptor. The
+generator wrapper passes only that descriptor through `pass_fds`; there is
+no explicit unlock or second lock. The synthetic parent-death test first
+failed on the old wrapper, exit 1. After correction, eight lock tests,
+13 generator proposal tests and 147 affected regressions passed, exit 0,
+on input `e371e3ae` plus the exact ignored proposals. Ruff check and format
+check passed after formatting the new regression, and its eight tests passed
+again. The helper and generator functional source did not change during
+formatting. Combined exact-main patch preflight and Bash syntax passed.
+
+Independent security review of final helper patch SHA256
+`ef791d3299de40f0233e9068bee33a7156768141afa0edcb601ec75ce3629019`
+and generator patch SHA256
+`5d4a487ebe119efade5ea2aff4635f682fbd26042803d908e3447fd4591891d1`
+approved coordinator integration and independently passed eight lock tests.
+This approval covers public source and synthetic subprocesses only. The
+cooperative SMTP lock does not establish quiescence for the separate CLN01
+lock or nonparticipating writers. No real generator, COMM-003 unlink or
+private maintenance operation was performed.
+
+On reconciled input `e371e3ae` plus this Task-only update, the source unit and
+contract command passed 40 tests, exit 0. Branch coverage with appended CLI
+render measured 91% total against an 80% threshold, exit 0. Ruff check and
+format check on the five owned Python files passed; `check-views` returned
+`P02_VIEWS_MATCH`, exit 0. The ignored receipt and integration handoff retain
+exact commands, base blobs and patch hashes. The four P01 document proposals
+now explicitly distinguish four tracked public inputs from four ignored
+staging outputs; P01 remains their sole tracked writer. Actual Script Manifest
+registration, combined-head review/CI and remote delivery remain pending.
 
 ### Worker Execution Plan
 
