@@ -45,12 +45,15 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
     "docs/04.execution/",
 )
 MUTATION_OVERRIDES = {
+    "scripts/lib/ops/_secret_catalog_io.py": "check-write",
+    "scripts/lib/ops/secret_catalog.py": "check-write",
     "scripts/lib/ops/smtp_contract.py": "runtime",
     "scripts/hooks/post-tool-validate.sh": "check-write",
     "scripts/operations/gen-secrets.sh": "runtime",
     "scripts/operations/retire-materials.py": "runtime",
     "scripts/operations/lab.py": "runtime",
     "scripts/operations/provider_surface_renderer.py": "check-write",
+    "scripts/operations/secret-catalog.py": "check-write",
     "scripts/operations/rehearse-sample-service-delivery.sh": "runtime",
     "scripts/operations/storybook_image.py": "runtime",
     "scripts/lib/document_governance/metadata_validator.py": "check-write",
