@@ -1,6 +1,6 @@
 ---
 title: "Operations Library Tests"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -27,6 +27,10 @@ created: "2026-10-10"
 - `test_secret_catalog.py`: malformed metadata·별칭·복구/암호화/LAB 보호·재생성 거부와 합성 Git 루트의 staging/CLI 경계를 검증합니다.
 
 - `test_port_inventory.py`: IPv6·범위·unknown·DEV/MNG 독립성 및 bounded 합성 렌더 경계를 검증합니다.
+
+- `test_opsflow_manifest.py`, `test_opsflow_adapters.py`,
+  `test_opsflow_provision_contract.py`: P04 합성 매니페스트·보호된 접속 설정·SQL 권한
+  소스 계약을 검증합니다. 실제 Airflow·DEV 게시나 빈 복원 수용은 별도입니다.
 
 ## Related Documents
 

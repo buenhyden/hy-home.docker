@@ -1,6 +1,6 @@
 ---
 title: "Validation Contract Tests"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -47,6 +47,9 @@ P02의 `test_secret_catalog_contract.py`는 발급 ID 전체와 공개 참조 �
 `test_smtp_lock_inheritance.py`는 synthetic parent-death 경계에서 SMTP held-lock descriptor를 검증하며, P2 lock 수정의 통과 증거는 helper patch가 확정된 뒤 별도로 기록합니다.
 
 P03의 `test_port_contract.py`는 CLI·schema·공개 root closure와 합성 입력의 허용·거부 경계를 검증합니다.
+
+P04의 `test_opsflow_airflow_contract.py`는 paused DAG·격리 workload override와
+합성 task 경계를 검증합니다. 실제 이미지 import·게시·복구 결과는 포함하지 않습니다.
 
 ## Related Documents
 

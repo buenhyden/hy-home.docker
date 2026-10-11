@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.2.5"
+version: "1.2.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 created: "2025-11-12"
 ---
 
@@ -51,8 +51,11 @@ airflow/
 ├── Dockerfile
 ├── docker-compose.yml
 ├── config/
+├── workloads/
 └── README.md
 ```
+
+개별 배치 소스는 [workloads/](workloads/README.md)에서 탐색합니다.
 
 ## Current Implementation Notes
 

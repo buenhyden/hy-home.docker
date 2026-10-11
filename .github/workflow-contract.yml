@@ -717,6 +717,10 @@
         "tests.validation.test_sec01_next_stable_candidates",
         "tests.validation.test_sec01_next_tool_candidates",
         "tests.validation.test_workflow_version_bundle",
+        "tests.lib.ops.test_opsflow_manifest",
+        "tests.lib.ops.test_opsflow_adapters",
+        "tests.lib.ops.test_opsflow_provision_contract",
+        "tests.validation.test_opsflow_airflow_contract",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",
@@ -1571,6 +1575,19 @@
         "suites": [
           "repository-integrity"
         ]
+      },
+      {
+        "prefixes": [
+          "infra/07-workflow/airflow/workloads/",
+          "tests/lib/ops/test_opsflow_manifest.py",
+          "tests/lib/ops/test_opsflow_adapters.py",
+          "tests/lib/ops/test_opsflow_provision_contract.py",
+          "tests/validation/test_opsflow_airflow_contract.py"
+        ],
+        "suites": [
+          "operations",
+          "repository-integrity"
+        ]
       }
     ],
     "changed_root_rules": [
@@ -1829,6 +1846,18 @@
           "tests/lib/ops/test_port_inventory.py",
           "tests/validation/test_port_contract.py",
           "tests/fixtures/port-contract/"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "infra/07-workflow/airflow/workloads/",
+          "tests/lib/ops/test_opsflow_manifest.py",
+          "tests/lib/ops/test_opsflow_adapters.py",
+          "tests/lib/ops/test_opsflow_provision_contract.py",
+          "tests/validation/test_opsflow_airflow_contract.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

@@ -125,6 +125,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_sec01_next_stable_candidates",
                 "tests.validation.test_sec01_next_tool_candidates",
                 "tests.validation.test_workflow_version_bundle",
+                "tests.lib.ops.test_opsflow_manifest",
+                "tests.lib.ops.test_opsflow_adapters",
+                "tests.lib.ops.test_opsflow_provision_contract",
+                "tests.validation.test_opsflow_airflow_contract",
             ],
             arguments[1:boundary],
         )
@@ -144,6 +148,61 @@ class GithubWorkflowContractTests(unittest.TestCase):
             arguments[boundary + 1 : -1],
         )
         self.assertEqual([], gate["allowed_env_keys"])
+
+    def test_airflow_workload_paths_select_required_suites_and_explicit_roots(
+        self,
+    ) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        public = gate_contract.parse_public_gate_contract(document)
+        registry = gate_contract.parse_gate_registry(
+            document, ".github/workflow-contract.yml"
+        )
+        workload = "infra/07-workflow/airflow/workloads/"
+        test_paths = (
+            "tests/lib/ops/test_opsflow_manifest.py",
+            "tests/lib/ops/test_opsflow_adapters.py",
+            "tests/lib/ops/test_opsflow_provision_contract.py",
+            "tests/validation/test_opsflow_airflow_contract.py",
+        )
+        paths = (
+            workload + "README.md",
+            workload + "manifest-pipeline/README.md",
+            workload + "manifest-pipeline/dags/source_manifest_ingest.py",
+            workload + "manifest-pipeline/sql/001_opsflow.sql",
+            workload + "manifest-pipeline/fixtures/manifest.json",
+            workload + "manifest-pipeline/workflow_lib/adapters.py",
+            *test_paths,
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                prefix = workload if path.startswith(workload) else path
+                # Explicit ownership prevents fallback-to-all from hiding a lost route.
+                self.assertTrue(
+                    any(
+                        prefix in rule.prefixes
+                        and {"operations", "repository-integrity"}.issubset(rule.suites)
+                        for rule in public.changed_rules
+                    )
+                )
+                self.assertTrue(
+                    any(
+                        prefix in rule.prefixes
+                        and "leaf.repository-integrity-regressions"
+                        in rule.root_gate_ids
+                        for rule in public.changed_root_rules
+                    )
+                )
+                suites = gate_contract.select_public_suites(public, "changed", (path,))
+                self.assertIn("operations", suites)
+                self.assertIn("repository-integrity", suites)
+                roots = gate_contract.public_root_gate_ids(
+                    public, suites, changed_paths=(path,)
+                )
+                self.assertIn("leaf.repository-integrity-regressions", roots)
+                self.assertIn(
+                    "leaf.compose-baseline-regressions",
+                    gate_contract.expand_public_gate_ids(registry, roots),
+                )
 
     def test_smtp_storage_regression_is_required_without_optional_expansion(
         self,
