@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -796,6 +796,160 @@ contexts, zero required approving reviews and no repository rulesets. Actual
 latest-head hosted CI and independent review are still required by this request.
 `rtk proxy /tmp/hy-home-p09-qa/bin/cz check -l 75 -m
 'fix(openbao): Preserve versioned issuance journal identity'` exited 0.
+
+### W22 Source Commit and Isolated Attempt — 2026-10-11
+
+The aligned registered gate command was:
+
+```bash
+rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; rtk proxy python3 scripts/validation/run-ci-gate.py --profile changed --local-only > /tmp/p01-compat-aligned-gate.log 2>&1'
+```
+
+It exited 0 on base `4e26a5a8022a7307c7461af60337442912955df1` with unchanged
+four frozen source/test hashes and Task hash
+`835303a53b861b6c4f82196439b8857990f98636e50a503b99b6dfcabbac99c7`.
+Metadata selected 1 document, 0 violations; links checked 1193 documents / 11582
+links, 0 failures and 1 preserved historical warning. Supply-chain ran 263 PASS,
+Conftest 18 PASS, Compose 537 tests PASS with 70 opt-in skips, and repository
+integrity 317 PASS. The explicit QA PATH resolved the prior two import errors.
+The diagnostic `FIXTURE_FAILURE` lines belong to passing negative regressions;
+they are not a native service receipt.
+
+Only the helper, base unit, trust unit, rehearsal test and this Task were staged.
+Index tree was `baa39c5392a3da09fdbd760ee4b695c9d751e754`.
+Immediately after that final index mutation, the following exited 0:
+
+```bash
+rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; export PRE_COMMIT_HOME=/tmp/hy-home-p09-qa/precommit-cache; rtk bash scripts/validation/run-ci-precommit.sh --mode local-staged > /tmp/p01-compat-staged.log 2>&1'
+```
+
+Markdown, Ruff format/check and hardcoded-secret checks passed. Independent code
+review returned Spec PASS / Quality APPROVED, zero Critical/Important/Minor
+findings on the four frozen hashes; its own earlier run passed 45 tests. Final
+QA passed 47 tests and security independently passed 10 compatibility tests.
+Its own Ruff rerun hit sandbox failure and an aborted escalation wait; final QA
+and the staged controller supply the actual Ruff PASS. Native/HOME were excluded
+from that source approval. `rtk git commit -m 'fix(openbao): Preserve versioned
+issuance journal identity'` exited 0, creating
+`9f36cbfa47c0759b4500169dbdac291eab2a79d6`.
+
+Current vendor release readback (`rtk proxy gh api
+repos/openbao/openbao/releases/latest --jq '{tag_name,published_at,prerelease,draft,html_url}'`)
+exited 0: v2.7.1, published 2026-10-01T14:03:19Z, neither draft nor prerelease.
+Candidate image inspect and Docker version each exited 0: cached multi-platform
+identity `sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf`,
+cached linux/amd64 fixture identity
+`sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005`,
+daemon 29.8.2. Provenance/signature/SBOM/CVE applicability remain UNKNOWN and
+pending SEC01. Independent IaC clarification retained admission for only the
+one synthetic method, without promoting artifact or HOME acceptance.
+
+After source commit, fresh input digest was
+`dd8db4addb4edbacb690a4d3c816b75b2a48349cf4683024146f4ba7ddf5314d`.
+Exactly one admitted attempt ran:
+
+```bash
+rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; export HYHOME_OPENBAO_REHEARSAL=1; rtk proxy python3 -m unittest tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests.test_native_versioned_issuance_reconciliation -v > /tmp/p01-versioned-native.log 2>&1'
+```
+
+Exit 1, one ERROR after 15.453 seconds, owner
+`p01-d330e6b50ad941fcbb4d197b6c7a158c`: existing fixture `server()` failed its
+initial `docker exec <owned-server> bao version` command before initialization,
+configuration, SecretID issuance or metadata reconciliation. Captured command
+output remained withheld. No metadata/native authentication PASS is claimed.
+`finally` cleanup ran; owner-filtered container/network/volume listings exited 0
+with no retained resources. Owner/name-filtered Docker event queries exited 0
+with no retained rows, so the startup failure category remains undetermined.
+No automatic retry, broader class, Agent delivery or HOME action ran. Independent
+IaC review is requested for a bounded diagnostic/recovery boundary.
+
+The P02 worktree at `ea927d004` has no dirty or committed delta against current
+main on the four subject-0085/README paths. Its preserved public proposal is
+`.agent-work/integration-proposal/p02-openbao-docs.patch`, SHA-256
+`a8af84ec3bf2db57a41e321688c9b6b48cb5160fcccbd81483cef052699a2459`.
+Its source catalog/CLI is not yet integrated; those paragraphs/commands remain
+a proposal. The user confirmed author transfer, so P01 now owns a narrow Korean
+compatibility explanation in the four existing documents, preserving their
+operational bodies and IDs. The earlier missing-patch hold is superseded by this
+actual preservation receipt. No new HOME command is invented.
+
+### W22 Sanitized Server Diagnostic Preparation — 2026-10-11
+
+The user's exclusive P01 native assignment and dedicated-test ownership remain
+valid; no new permission is inferred from elapsed time. Independent IaC review
+clarified that only the first metadata method's reviewed one-attempt budget was
+consumed. This new diagnostic is a separately reviewed unit and does not retry
+metadata, initialize OpenBao or enter HOME. P01 owns the two existing dedicated
+test files, including `_openbao_rehearsal_fixture.py`; no concurrent writer was
+assigned to them.
+
+First diagnostic RED (exit 1, one collected assertion failure):
+
+```bash
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest tests.validation.test_openbao_rehearsal.OpenBaoCleanupTests.test_version_probe_failure_reports_sanitized_owned_state -v
+```
+
+Expected `OOM_KILLED` did not match the original generic version-probe failure.
+After the bounded projection implementation, five related unit tests passed.
+Independent security found an IMPORTANT substring-version check and MINOR
+inherited expired-certificate wording; IaC also requested refusal of
+contradictory running/OOM/exit state. The existing substring check preceded this
+unit, but an exact diagnostic claim requires correction.
+
+The additional boundary RED command exited 1 (two collected tests, five failing
+subtest assertions), before those corrections:
+
+```bash
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest tests.validation.test_openbao_rehearsal.OpenBaoCleanupTests.test_version_probe_rejects_similar_and_prefixed_version_tokens tests.validation.test_openbao_rehearsal.OpenBaoCleanupTests.test_failed_version_probe_categories_never_echo_output -v
+```
+
+Version first-two-token equality now refuses 2.7.10, suffix and prefixed output;
+failed exec output remains withheld. Only an invocation-owned container is
+inspected, with exact `Running`, `OOMKilled`, `ExitCode` projection and strict
+keys/bool/int/range/consistency validation. No `State.Error`, logs, environment,
+mount, configuration or payload is read. Failure results are fixed sanitized
+categories; address/TCP failure has its own diagnostic enum.
+
+Final GREEN (`rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest
+tests.validation.test_openbao_rehearsal.OpenBaoCleanupTests -v`) exited 0 with six
+tests. Ruff format/check and diff-check exited 0. Fixture hash is
+`8bda42ab74a8444fbc956f614446d60143452f6cee2bc30f9726b10909dc04aa`;
+rehearsal hash is
+`69d349a982cfd35dcfcec41da28795c7b50ff57f3750731fb8c902da9ab3e7b8`.
+The helper remains `be2343a0...` with its prior 47-unit/90-percent coverage receipt.
+Independent final security review passed five focused tests, exit 0, and approved
+the exact hashes with no remaining finding. Changed material is re-reviewed.
+
+Proposed exact selector is
+`OpenBaoRehearsalTests.test_native_server_start_diagnostic`: one fresh owner,
+one internal-network/no-port server with existing 384 MiB / 1 CPU / 128 PID caps,
+exact cached linux/amd64/daemon checks, version probe then raw TCP only, and owned
+cleanup in `finally`. It creates no Agent, role, SecretID, snapshot or operational
+resource. Execution remains NOT_RUN until source commit, fresh digest and
+independent readiness; no broader class or unchanged-input automatic retry.
+
+The four documentation hashes are README `7ec2c828...`, Guide `f887ebc8...`,
+Policy `cd88641f...`, Runbook `250487ed...`. Independent contract/security review
+approved them with no remaining finding. Doc-writer metadata and all-link checks
+each exited 0; an earlier unsupported link `--mode changed` exited 2 and was
+replaced with `--mode all`. The valid checks emitted no count receipt, so they
+are not assigned invented counts. Later Task changes need their own final
+metadata check. The preserved P02 proposal remains unapplied.
+
+Final independent code re-review on `8bda42ab...` / `69d349a9...` returned Spec
+PASS, Quality APPROVED and zero findings; independent diff-check exited 0.
+IaC returned READY_FOR_ONE_BOUNDED_SERVER_START_DIAGNOSTIC_ATTEMPT after the
+exact-token and consistency corrections. Its conditions are logical source
+commit, fresh digest, unchanged cached image/amd64/tag and daemon, capacity and
+the persisting exclusive assignment. Diagnostic is NOT_RUN at this checkpoint.
+
+`rtk git worktree add --detach /tmp/hy-home-p01-diagnostic-qa
+9f36cbfa47c0759b4500169dbdac291eab2a79d6` under umask 022 exited 0 after absence
+check. An exact seven-owned-path patch applied there with exit 0. Changed gate
+`--explain` exited 0 and selects the registered full fallback (17 local leaves)
+for the additional existing fixture path. No ad-hoc skip or common mapping edit
+was made. The actual changed controller is running with QA-venv-first PATH at
+`/tmp/p01-diagnostic-gate.log`; its result is pending, not PASS at this checkpoint.
 
 ## Evidence
 

@@ -258,7 +258,49 @@ class OwnedFixture:
             self.docker("start", name)
         return name
 
-    def server(self, suffix, *, active=False, tls=None, ready=True):
+    def server_version(self, name):
+        if name not in self.containers:
+            raise RehearsalFailure("STATE_UNAVAILABLE")
+        probe = self.docker("exec", name, "bao", "version", allow_failure=True)
+        if probe.returncode:
+            raise RehearsalFailure(self.server_failure_state(name))
+        if probe.stdout.split()[:2] != [b"OpenBao", ("v" + self.version).encode()]:
+            raise RehearsalFailure("native image version differs from reviewed fixture")
+
+    def server_failure_state(self, name):
+        if name not in self.containers:
+            return "STATE_UNAVAILABLE"
+        projected = self.docker(
+            "inspect",
+            "--format",
+            '{"running":{{.State.Running}},"oom_killed":{{.State.OOMKilled}},'
+            '"exit_code":{{.State.ExitCode}}}',
+            name,
+            allow_failure=True,
+        )
+        try:
+            state = json.loads(projected.stdout)
+            if (
+                projected.returncode
+                or not isinstance(state, dict)
+                or set(state) != {"running", "oom_killed", "exit_code"}
+                or type(state["running"]) is not bool
+                or type(state["oom_killed"]) is not bool
+                or type(state["exit_code"]) is not int
+                or not 0 <= state["exit_code"] <= 255
+            ):
+                return "STATE_UNAVAILABLE"
+        except (ValueError, TypeError):
+            return "STATE_UNAVAILABLE"
+        if state["running"] and (state["oom_killed"] or state["exit_code"] != 0):
+            return "STATE_UNAVAILABLE"
+        if state["oom_killed"]:
+            return "OOM_KILLED"
+        if not state["running"]:
+            return "EXITED_" + str(state["exit_code"])
+        return "EXEC_FAILED_WHILE_RUNNING"
+
+    def server(self, suffix, *, active=False, tls=None, ready=True, diagnostic=False):
         tls = tls or self.tls
         compose = yaml.safe_load((SOURCE / "docker-compose.yml").read_text())
         config_text = compose["services"]["openbao"]["environment"]["BAO_LOCAL_CONFIG"]
@@ -312,6 +354,8 @@ class OwnedFixture:
         name = self.container(
             suffix, args, ["/openbao/scripts/start-server.sh", "server"]
         )
+        if diagnostic:
+            self.server_version(name)
         target = (
             self.docker(
                 "inspect",
@@ -325,7 +369,11 @@ class OwnedFixture:
             .strip()
         )
         if not target:
-            raise RehearsalFailure("owned internal fixture address unavailable")
+            raise RehearsalFailure(
+                "ADDRESS_UNAVAILABLE"
+                if diagnostic
+                else "owned internal fixture address unavailable"
+            )
         client = Client(target, tls / "ca.pem")
         if not ready:
             deadline = time.monotonic() + 20
@@ -335,10 +383,12 @@ class OwnedFixture:
                         return name, client
                 except OSError:
                     time.sleep(0.25)
-            raise RehearsalFailure("expired-certificate fixture did not accept TCP")
-        version = self.docker("exec", name, "bao", "version").stdout
-        if ("OpenBao v" + self.version).encode() not in version:
-            raise RehearsalFailure("native image version differs from reviewed fixture")
+            raise RehearsalFailure(
+                "TCP_UNAVAILABLE"
+                if diagnostic
+                else "expired-certificate fixture did not accept TCP"
+            )
+        self.server_version(name)
         deadline = time.monotonic() + 40
         while time.monotonic() < deadline:
             try:

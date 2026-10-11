@@ -46,6 +46,142 @@ else:
 
 
 class OpenBaoCleanupTests(unittest.TestCase):
+    def test_version_probe_rejects_similar_and_prefixed_version_tokens(self):
+        fixture = object.__new__(OwnedFixture)
+        fixture.containers = ["p01-owned-server"]
+        fixture.version = "2.7.1"
+        for output in (
+            b"OpenBao v2.7.10",
+            b"OpenBao v2.7.1suffix",
+            b"prefix OpenBao v2.7.1",
+        ):
+            with (
+                self.subTest(output=output),
+                mock.patch.object(
+                    fixture,
+                    "docker",
+                    return_value=SimpleNamespace(returncode=0, stdout=output),
+                ),
+            ):
+                with self.assertRaisesRegex(
+                    RehearsalFailure,
+                    "^native image version differs from reviewed fixture$",
+                ):
+                    fixture.server_version("p01-owned-server")
+
+    def test_failed_version_probe_categories_never_echo_output(self):
+        for state, expected in (
+            (
+                {"running": True, "oom_killed": True, "exit_code": 0},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {"running": True, "oom_killed": False, "exit_code": 66},
+                "STATE_UNAVAILABLE",
+            ),
+            ({"running": False, "oom_killed": False, "exit_code": 66}, "EXITED_66"),
+            (
+                {"running": True, "oom_killed": False, "exit_code": 0},
+                "EXEC_FAILED_WHILE_RUNNING",
+            ),
+            (
+                {"running": True, "oom_killed": False, "exit_code": "private"},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {"running": False, "oom_killed": False, "exit_code": True},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {"running": False, "oom_killed": False, "exit_code": -1},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {"running": False, "oom_killed": False, "exit_code": 256},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {
+                    "running": False,
+                    "oom_killed": False,
+                    "exit_code": 0,
+                    "Error": "private",
+                },
+                "STATE_UNAVAILABLE",
+            ),
+        ):
+            with self.subTest(expected=expected):
+                fixture = object.__new__(OwnedFixture)
+                fixture.containers = ["p01-owned-server"]
+                fixture.version = "2.7.1"
+                with mock.patch.object(
+                    fixture,
+                    "docker",
+                    side_effect=[
+                        SimpleNamespace(
+                            returncode=1, stdout=b"private", stderr=b"private"
+                        ),
+                        SimpleNamespace(
+                            returncode=0, stdout=json.dumps(state).encode()
+                        ),
+                    ],
+                ) as docker:
+                    with self.assertRaisesRegex(RehearsalFailure, "^" + expected + "$"):
+                        fixture.server_version("p01-owned-server")
+                    self.assertEqual("p01-owned-server", docker.call_args.args[-1])
+                    self.assertNotIn("Error", docker.call_args.args[2])
+
+    def test_version_probe_refuses_unowned_names_without_docker(self):
+        fixture = object.__new__(OwnedFixture)
+        fixture.containers = ["p01-owned-server"]
+        with mock.patch.object(fixture, "docker") as docker:
+            with self.assertRaisesRegex(RehearsalFailure, "^STATE_UNAVAILABLE$"):
+                fixture.server_version("openbao")
+            self.assertEqual(
+                "STATE_UNAVAILABLE", fixture.server_failure_state("openbao")
+            )
+            docker.assert_not_called()
+
+    def test_version_probe_success_and_unavailable_state(self):
+        fixture = object.__new__(OwnedFixture)
+        fixture.containers = ["p01-owned-server"]
+        fixture.version = "2.7.1"
+        with mock.patch.object(
+            fixture,
+            "docker",
+            return_value=SimpleNamespace(returncode=0, stdout=b"OpenBao v2.7.1"),
+        ) as docker:
+            fixture.server_version("p01-owned-server")
+            docker.assert_called_once()
+        for result in (
+            SimpleNamespace(returncode=1, stdout=b"private"),
+            SimpleNamespace(returncode=0, stdout=b"not-json"),
+            SimpleNamespace(returncode=0, stdout=b"null"),
+        ):
+            with mock.patch.object(fixture, "docker", return_value=result):
+                self.assertEqual(
+                    "STATE_UNAVAILABLE",
+                    fixture.server_failure_state("p01-owned-server"),
+                )
+
+    def test_version_probe_failure_reports_sanitized_owned_state(self):
+        fixture = object.__new__(OwnedFixture)
+        fixture.containers = ["p01-owned-server"]
+        fixture.version = "2.7.1"
+        with mock.patch.object(
+            fixture,
+            "docker",
+            side_effect=[
+                SimpleNamespace(returncode=1, stdout=b"private output withheld"),
+                SimpleNamespace(
+                    returncode=0,
+                    stdout=b'{"running":false,"oom_killed":true,"exit_code":137}',
+                ),
+            ],
+        ):
+            with self.assertRaisesRegex(RehearsalFailure, "^OOM_KILLED$"):
+                fixture.server_version("p01-owned-server")
+
     def test_failed_cleanup_still_attempts_every_owned_resource(self):
         for failure in (
             "helper-exit",
@@ -721,6 +857,19 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             print(
                 "observed v2 wrapped API login and single-use denial: PASS", flush=True
             )
+        finally:
+            fixture.cleanup()
+
+    def test_native_server_start_diagnostic(self):
+        inputs = self.input_digest()
+        fixture = OwnedFixture()
+        print("observed server diagnostic input SHA256: " + inputs, flush=True)
+        print("observed isolated fixture owner: " + fixture.owner, flush=True)
+        try:
+            fixture.prepare()
+            fixture.server("diagnostic", ready=False, diagnostic=True)
+            self.must(self.input_digest() == inputs, "diagnostic source input changed")
+            print("observed SERVER_START_VERSION_TCP_DIAGNOSTIC: PASS", flush=True)
         finally:
             fixture.cleanup()
 
