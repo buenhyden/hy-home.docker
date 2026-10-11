@@ -1,6 +1,6 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.1"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -689,6 +689,231 @@ input hashes, logs and failures are retained in the coordinator's ignored
 Local source integration does not closeW38/criterion18. PR/remote CI, native
 image import, DEV publication, HOME, migration and empty restore remain NOT_RUN.
 
+### Optional overlay source classification repair — 2026-10-11
+
+The current integration input is main
+`4c83f14b11a77e13e582eb85d0bf256685472a95`. The twenty worker source files
+listed above and all four logical worker commits through `5864c0501` remain
+preserved after coordinator merge `24bdda3d99d292d773ee122f890af793016e8d25`
+and subsequent common registration. The earlier pasted Task version0.1.0 is
+a stale handoff snapshot; the coordinated Task was already version0.1.1.
+This continuation preserves its identity, created date, lifecycle and recorded
+worker/coordinator history rather than replacing it with that snapshot.
+
+At the main input, the coordinator's official operations catalog check failed
+with exit code1 and 22 findings in 16.593 seconds: one include drift, seven missing
+profile declarations, seven Guide bindings and seven inventory membership
+entries for `compose.workflow.override.yml`. The receipt and public output are
+`.agent-work/p07-baseline-operations-catalog.json` and `.log` in the isolated
+P07 admission worktree. This SOURCE/STATIC failure concerns classification of
+existing Airflow service overrides; it is not seven new services and is not
+a native deployment failure. Historical segmented gate successes above stay
+bound to their earlier inputs and do not replace this later FAIL.
+
+The coordinator is repairing the shared classification under POL-0078 using
+an explicit `x-hyhome-overlay` marker: integer version 1, safe tracked regular
+non-overlay base already included by root, nonempty services limited to that
+base, no root include of the overlay, no independent top-level declarations
+and no service profile override. Root plus overlay explicitly selected with
+ordered `-f` inputs inherits base profiles and uses existing Guide/inventory
+rows. Malformed markers fail closed; filenames grant no exemption.
+
+The valid typed-overlay regression first failed against the unchanged main
+helper, exit1, with `compose-include-drift` and
+`compose-service-profile-missing`. The actual RED command was:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.lib.document_governance.test_operations_catalog.ComposeProfileVocabularyTests.test_typed_overlay_is_not_a_root_include_or_profile_authority -v
+```
+
+The QA executor subsequently reported final focused profile/inventory tests
+59 PASS, exit0, 5.893 seconds, and the full operations catalog test module
+102 PASS, exit0, 321.691 seconds under branch coverage. The module's combined
+line/branch coverage with branch measurement enabled was 88%: 1204 statements,
+132 missed statements, 522 branches and 68 partial branches. Branch-only
+coverage was 444/522, or 85.06%. Newly added helper lines820–963 had no missed
+lines. The full102 run used the final classifier but earlier test hash
+`72022f451617c6eebd5ac60bdbf2f03d87d3188a0e033cbc1944705b665deec1`.
+Only null/empty-base table inputs were added afterward; no production source
+changed. Final focused59 used the final test hash below. The combined coverage
+binds that unchanged classifier across full102 and final59. Final candidate
+hashes were independently rechecked by the documentation writer:
+
+| Final classification input | SHA256 |
+| --- | --- |
+| `scripts/lib/document_governance/operations_catalog.py` | 864a8304cf5b3d9e17d7a7d56065e426a8d46c4378ae94742f89a611a191605e |
+| `tests/lib/document_governance/test_operations_catalog.py` | b426f723612bd9ed89a339752da775cd351723426682355229342121af2f79dd |
+| `compose.workflow.override.yml` | 8314933a0d088b4c2610002ee6330eb2d50373698cd16bad0654957f3203a35f |
+
+The full module ran first, then the final focused command appended coverage
+for additional refusal cases; the coverage export is
+`.agent-work/p04-overlay-coverage.json`. RED is retained in
+`.agent-work/p04-overlay-red.json`. Exact QA GREEN commands were:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m coverage run \
+  --branch --data-file=/tmp/p04-overlay-catalog.coverage \
+  --source=scripts.lib.document_governance.operations_catalog \
+  -m unittest tests.lib.document_governance.test_operations_catalog -q
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m coverage run \
+  --append --branch --data-file=/tmp/p04-overlay-catalog.coverage \
+  --source=scripts.lib.document_governance.operations_catalog -m unittest \
+  tests.lib.document_governance.test_operations_catalog.ComposeProfileVocabularyTests \
+  tests.lib.document_governance.test_operations_catalog.ServiceInventoryTests -q
+```
+
+QA reported official catalog PASS, exit0, 16.690 seconds, on the final
+classifier/overlay input; only additional test cases changed afterward.
+The actual argv was the command below. That QA invocation captured tool
+output, not a stdout log file; the coordinator's older
+`.agent-work/p04-overlay-catalog.log` is not a final-input receipt.
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python scripts/validation/check-operations-catalog.py
+```
+
+The earlier candidate classifier `963f14e3acc95f0179ef22b6b70a8413303bdbdfed3bd66f7ae2450e3b3598f7`
+also had a coordinator catalog PASS, with duration not measured. That is
+superseded candidate evidence, distinct from both the unchanged-main 22 FAIL
+and the final classifier result. Earlier focused59/3.043-second evidence is
+likewise historical; the final focused result is59/5.893 seconds.
+
+The coordinator reran the four P04 dedicated modules, 52 PASS, exit0, 0.344
+seconds, using the exact command below. Public argv/result and source
+preservation facts are in `.agent-work/p04-overlay-integration-receipt.json`;
+the public output is `.agent-work/p04-overlay-opsflow-tests.log`.
+
+```sh
+/tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters \
+  tests.lib.ops.test_opsflow_provision_contract \
+  tests.validation.test_opsflow_airflow_contract -q
+```
+
+QA reported scoped Ruff and diff-check PASS. Current-head document, staged
+checks and independent review/delivery receipts remain pending. This is a
+SOURCE/UNIT/STATIC candidate, not fresh full-pipeline acceptance, exact-image
+import, dependency, DB/S3 grant or native readiness. No private file, DEV
+resource, HOME deployment, migration, rotation or recovery action occurred.
+
+The subsequent registered staged gate failed, exit1, because Ruff-format
+found formatting differences in the classifier and its tests after refactoring.
+The coordinator applied only the registered Ruff formatter to those two files.
+`.agent-work/p04-final-format-preservation.json` proves AST equality against
+the preceding classifier/test inputs; the overlay and runtime model did not
+change. The formatted source hashes are:
+
+| Formatted classification input | SHA256 |
+| --- | --- |
+| `scripts/lib/document_governance/operations_catalog.py` | 0dbccf87d4775774db3689fdeae600f7a978fff1079a6c9f5cba665d66a7fc2d |
+| `tests/lib/document_governance/test_operations_catalog.py` | b92337f5f5968cac6b7d724b57529ded1b007c5679f324294194127c670a4852 |
+
+The coordinator then reran the exact focused command below on these formatted
+inputs: 59 PASS, exit0, 3.298 seconds. Public output is
+`.agent-work/p04-final-formatted-focused.log`. The exact catalog command below
+also passed, exit0, with output in `.agent-work/p04-final-formatted-catalog.log`;
+its duration was not measured separately.
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.lib.document_governance.test_operations_catalog.ComposeProfileVocabularyTests \
+  tests.lib.document_governance.test_operations_catalog.ServiceInventoryTests -q
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python scripts/validation/check-operations-catalog.py
+```
+
+The full102 run and coverage above remain historical receipts for the
+pre-format classifier; neither was rerun after formatting. The prior
+three-document metadata check passed, exit0, selected3/violations0, with this
+Task at SHA256 `401569033ff545870ceec99a2de79cd70d074ecde110aa0e7c06c59c7cfd9c1b`.
+POL-0078 and the workload README remain unchanged. The coordinator's link
+check also passed, exit0, 1205 documents/11659 links, zero failures and one
+existing warning, in `.agent-work/p04-final-links.log`; that result predates
+this factual amendment. Task-only metadata and the next staged/delivery result
+must bind the amended document. No full aggregate or native PASS is claimed.
+
+Current coordination uses logical local-main integration without dev, PR or
+remote push. A later separately adopted remote lane still requires exact
+owning-Spec/current-head checks and independent review. W38 and criterion18
+remain open; only the relevant accepted image and exact resource/recovery
+contract can enable the native batch and P05's subsequent notification proof.
+
+### Required-image-input projection repair — 2026-10-11
+
+The first overlay classification unit was committed as
+`f1a7726c4a77220d7dddc5f0b027b7fedcfe879d`. The subsequent registered local
+changed gate failed, exit1, when `sync-tech-stack-versions.sh --check` rejected
+the typed overlay's `${OPSFLOW_AIRFLOW_IMAGE:?}` image declaration. The public
+failure is retained in `.agent-work/p04-registered-local-changed.log`. Earlier
+classification, formatting and test receipts remain bound to their inputs;
+this later aggregate FAIL was not replaced by a component PASS.
+
+The second source unit reuses the central overlay classifier and derives
+`required_image_inputs` in the existing version registry. It records required
+variables without reading environment/private values, resolving an image or
+treating an unresolved declaration as a pin. Every concrete image pin stays
+in the existing registry; no parallel inventory or image authority is added.
+
+QA witnessed RED for the valid `${REQUIRED_IMAGE:?}` typed-overlay fixture,
+exit1, before the script change. The old script reported invalid Compose
+declaration for the synthetic `infra/example/compose.workflow.override.yml`.
+The exact RED command was:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.validation.test_tech_stack_version_contract.TechStackSynchronizationTests.test_typed_overlay_projects_required_image_input_without_resolving_it -v
+```
+
+QA then reported six focused refusal/projection tests PASS, exit0, 14.880
+seconds, followed by all 33 TechStackSynchronizationTests PASS, exit0, 34.712
+seconds. The latter's public output is `/tmp/p04-tech-stack-required-input-unit.log`.
+The final class command was:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.validation.test_tech_stack_version_contract.TechStackSynchronizationTests -v
+```
+
+The frozen script SHA256 is
+`d2c0014be61f0b46dbf2154294c042de36958817fb2f64d436ae0308cdbfae46`;
+the test SHA256 is
+`50779bf5356088e62b73de2dd13fb1aaa2e08d3526de9b3db8009ba410b6641c`.
+QA reported scoped Ruff check/format, `bash -n` and diff-check exit0. New
+coverage for this inline shell/Python projection is NOT_MEASURED; the earlier
+classification module coverage does not measure this source unit.
+
+With QA tools on PATH and `PYTHONDONTWRITEBYTECODE=1`, the coordinator executed
+`bash scripts/operations/sync-tech-stack-versions.sh --write`, exit0. The
+public `.agent-work/p04-required-input-projection.json` records registry change
+from `9ca1dfbf0b257ad5a136d0cbc31fccae72d8f65558ec744ad76eb3251c579b04`
+to `8b95290672195e0bc61796adeb4fc33eb87ad73cc0a65d2921bcd82d3e5dea67`.
+JSON equality proved all 88 concrete entries and every other pre-existing field
+unchanged. Exactly one overlay source record names `OPSFLOW_AIRFLOW_IMAGE`;
+its status is unresolved-not-pin. The subsequent `--check` passed, exit0,
+reporting 91 repositories/72 external/19 local-custom/one required input in
+`.agent-work/p04-required-input-check.log`. These are observed projection
+counts, not a fixed service census or accepted runtime image.
+
+The coordinator's script manifest check passed, exit0, and the command below
+passed 63 tests, exit0, 39.055 seconds. Public outputs are
+`.agent-work/p04-required-input-manifest.log` and
+`.agent-work/p04-required-input-regressions.log`.
+
+```sh
+/tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.validation.test_tech_stack_version_contract \
+  tests.validation.test_validator_entrypoints -q
+```
+
+Independent review of the four-file source unit accepted it without Critical
+or Important findings. Final combined registered changed/staged checks and
+local-main merge remain pending. The latest direct user local-main lane
+overrides the older PR expectation for this integration receipt only; remote
+push, a new P04 PR and hosted CI remain NOT_RUN. Source projection does not
+accept SEC01's image, installed dependencies or grants. Criterion18/W38,
+native image import, DEV execution, HOME, migration, rotation and recovery
+remain open or NOT_RUN under their exact resource/image/restore contracts.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -699,6 +924,8 @@ image import, DEV publication, HOME, migration and empty restore remain NOT_RUN.
 | New manifest implementation | 18 | W35 | RED/GREEN parser and protected adapters | b2a46bc88 plus latest SQL inputs in Work Log | PASS | Final52 unit/synthetic/source tests, exit0; native excluded | pending |
 | New SQL contract | 18 | W36 | Source guards for migration and outbox | Latest SQL hashes in Work Log | PASS | Nine source tests, exit0; PostgreSQL native NOT_RUN | pending |
 | New DAG contract | 18 | W37 | Synthetic SDK import and public overlay model | Frozen DAG/overlay hashes in Work Log | PASS | Five synthetic tests and independent Compose render, exit0 | pending |
+| Typed optional overlay candidate | 18 | W37 | RED/GREEN profile/inventory boundaries, coverage and official catalog | Main 4c83f14b plus final classifier/test/overlay hashes in Work Log | PASS | 59 focused and 102 full-module tests; catalog exit0; SOURCE/UNIT/STATIC only, review/delivery pending | pending |
+| Required image projection candidate | 18 | W37 | RED/GREEN required-input projection and concrete-pin preservation | f1a7726 plus frozen script/test/registry hashes in Work Log | PASS | 33 class tests, root63 regressions, generator/check and manifest exit0; unresolved image, combined delivery pending | pending |
 | Native batch and recovery | 18 | W38 | ISOLATED/HOME/MIGRATION/RECOVERY | No selected ready execution contract | NOT_RUN | No DB/role/bucket creation or deployment | pending |
 | Rotation | 18 | W38 | Credential rotation | No rotation required | NOT_APPLICABLE | No rotation authorized by issuance | not-required |
 | Delivery | 8, 18 | W39 | Latest-head CI/review/PR/merge | Local source commits; no P04 PR | NOT_RUN | Local checks do not satisfy remote CI/merge | pending |

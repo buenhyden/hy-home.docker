@@ -1,6 +1,6 @@
 ---
 title: "Independent Manifest Pipeline"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -38,6 +38,14 @@ P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다
 SDK double·driver double의 PASS는 실제 DAG import나 DEV 실행의 증거가 아닙니다.
 
 ### Configuration
+
+이 override의 선택형 서비스 확장 분류에는 `x-hyhome-overlay`의 정수 version과
+추적된 root include base를 명시해야 합니다. 검토한 root와 override를 순서대로
+명시한 `-f` 조합에서 기존 서비스 profile을 상속하며 단독 기동하지 않습니다.
+새 서비스·top-level 자원·profile 재정의를 추가하지 않고 기존 Guide와 inventory를
+중복 등록하지 않습니다. Marker 분류는 이미지·권한·DEV/HOME 실행 수용이 아닙니다.
+관련 정책 문서는 기존 [문서 탐색](../../../../../docs/README.md)에서 찾습니다.
+실제 소스 분류 입력은 이 override의 marker와 공통 분류기가 소비합니다.
 
 SEC01의 호환 이미지·dependencies와 P03의 endpoint·실제 worker UID/GID 계약을
 받아야 합니다. 이미지에는 필요한 패키지를 빌드 시 설치하며 startup pip를

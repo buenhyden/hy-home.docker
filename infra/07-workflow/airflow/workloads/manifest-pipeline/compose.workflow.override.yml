@@ -1,5 +1,9 @@
 # Reviewed root model + this override only; no standalone deployment.
 # The coordinator supplies a locally available immutable SEC01-approved image.
+x-hyhome-overlay:
+  version: 1
+  base: infra/07-workflow/airflow/docker-compose.yml
+
 x-workflow-code: &workflow-code
   - type: bind
     source: ${OPSFLOW_CODE_DIR:?}/dags/source_manifest_ingest.py

@@ -1097,6 +1097,19 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
             encoding="utf-8",
         )
 
+    def _add_overlay(
+        self,
+        root: pathlib.Path,
+        model: object,
+        *,
+        name: str = "infra/a/compose.workflow.override.yml",
+    ) -> pathlib.Path:
+        overlay = root / name
+        overlay.parent.mkdir(parents=True, exist_ok=True)
+        overlay.write_text(yaml.safe_dump(model, sort_keys=False), encoding="utf-8")
+        subprocess.run(["git", "add", str(overlay)], cwd=root, check=True)
+        return overlay
+
     def test_standalone_lab_profile_is_catalogued_but_excluded_from_root(self) -> None:
         root = self._repo()
         lab = root / "labs/cluster.yml"
@@ -1163,6 +1176,237 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
 
     def test_matching_fixture_has_no_findings(self) -> None:
         self.assertEqual([], self._findings(self._repo()))
+
+    def test_typed_overlay_is_not_a_root_include_or_profile_authority(self) -> None:
+        root = self._repo()
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {
+                    "version": 1,
+                    "base": "infra/a/docker-compose.yml",
+                },
+                "services": {"x": {"image": "example/x:2.0.0"}},
+            },
+        )
+
+        self.assertEqual([], self._findings(root))
+
+    def test_overlay_annotation_version_and_base_fail_closed(self) -> None:
+        invalid_annotations = (
+            None,
+            {"version": True, "base": "infra/a/docker-compose.yml"},
+            {"version": 2, "base": "infra/a/docker-compose.yml"},
+            {"version": 1},
+            {"version": 1, "base": None},
+            {"version": 1, "base": ""},
+            {
+                "version": 1,
+                "base": "infra/a/docker-compose.yml",
+                "unknown": "field",
+            },
+            {"version": 1, "base": "/infra/a/docker-compose.yml"},
+            {"version": 1, "base": "infra/a/../a/docker-compose.yml"},
+            {"version": 1, "base": "infra/a/missing-compose.yml"},
+            {"version": 1, "base": "infra/b/docker-compose.cluster.yaml"},
+        )
+        for annotation in invalid_annotations:
+            with self.subTest(annotation=annotation):
+                root = self._repo(include=("infra/a/docker-compose.yml",))
+                self._add_overlay(
+                    root,
+                    {
+                        "x-hyhome-overlay": annotation,
+                        "services": {"x": {"image": "example/x:2.0.0"}},
+                    },
+                )
+                with self.assertRaises(OperationsAuthorityError):
+                    validate_compose_profile_vocabulary(root)
+
+    def test_overlay_top_level_and_service_membership_are_closed(self) -> None:
+        valid_annotation = {
+            "version": 1,
+            "base": "infra/a/docker-compose.yml",
+        }
+        invalid_models = (
+            *(
+                {
+                    "x-hyhome-overlay": valid_annotation,
+                    "services": {"x": {"image": "example/x:2.0.0"}},
+                    field: {},
+                }
+                for field in (
+                    "include",
+                    "name",
+                    "networks",
+                    "volumes",
+                    "secrets",
+                    "configs",
+                    "profiles",
+                )
+            ),
+            {"x-hyhome-overlay": valid_annotation, "services": {}},
+            {"x-hyhome-overlay": valid_annotation, "services": []},
+            {
+                "x-hyhome-overlay": valid_annotation,
+                "services": {"new-service": {"image": "example/new:1.0.0"}},
+            },
+            {
+                "x-hyhome-overlay": valid_annotation,
+                "services": {"x": {"profiles": ["alpha"]}},
+            },
+            {
+                "x-hyhome-overlay": valid_annotation,
+                "services": {1: {"image": "example/x:2.0.0"}},
+            },
+            {
+                "x-hyhome-overlay": valid_annotation,
+                "services": {"": {"image": "example/x:2.0.0"}},
+            },
+            {"x-hyhome-overlay": valid_annotation, "services": {"x": "invalid"}},
+        )
+        for index, model in enumerate(invalid_models):
+            with self.subTest(index=index):
+                root = self._repo()
+                self._add_overlay(root, model)
+                with self.assertRaises(OperationsAuthorityError) as raised:
+                    validate_compose_profile_vocabulary(root)
+                self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_overlay_service_runtime_fields_do_not_become_catalog_authority(
+        self,
+    ) -> None:
+        root = self._repo()
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {
+                    "version": 1,
+                    "base": "infra/a/docker-compose.yml",
+                },
+                "x-purpose": "isolated merge input",
+                "services": {
+                    "x": {
+                        "image": "example/x:2.0.0",
+                        "build": {"context": "."},
+                        "pull_policy": "never",
+                        "command": ["worker"],
+                        "entrypoint": ["/entrypoint"],
+                        "user": "1000:0",
+                        "ports": ["127.0.0.1:10000:10000"],
+                        "secrets": ["worker_secret"],
+                        "depends_on": ["y"],
+                        "volumes": ["./code:/opt/code:ro"],
+                        "networks": ["workflow"],
+                    }
+                },
+            },
+        )
+
+        self.assertEqual([], self._findings(root))
+
+    def test_unannotated_override_remains_a_regular_compose_source(self) -> None:
+        root = self._repo()
+        self._add_overlay(
+            root,
+            {"services": {"x": {"image": "example/x:2.0.0"}}},
+        )
+        findings = self._findings(root)
+        self.assertTrue(any(code == "compose-include-drift" for code, _, _ in findings))
+        self.assertTrue(
+            any(code == "compose-service-profile-missing" for code, _, _ in findings)
+        )
+
+    def test_root_include_cannot_select_a_typed_overlay(self) -> None:
+        root = self._repo(
+            include=(
+                "infra/a/docker-compose.yml",
+                "infra/b/docker-compose.cluster.yaml",
+                "infra/a/compose.workflow.override.yml",
+            )
+        )
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {
+                    "version": 1,
+                    "base": "infra/a/docker-compose.yml",
+                },
+                "services": {"x": {"image": "example/x:2.0.0"}},
+            },
+        )
+        with self.assertRaises(OperationsAuthorityError) as raised:
+            validate_compose_profile_vocabulary(root)
+        self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_overlay_base_cannot_be_an_overlay_or_symlink(self) -> None:
+        root = self._repo()
+        first = "infra/a/compose.first.override.yml"
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {
+                    "version": 1,
+                    "base": "infra/a/docker-compose.yml",
+                },
+                "services": {"x": {"image": "example/x:2.0.0"}},
+            },
+            name=first,
+        )
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {"version": 1, "base": first},
+                "services": {"x": {"image": "example/x:3.0.0"}},
+            },
+            name="infra/a/compose.second.override.yml",
+        )
+        with self.assertRaises(OperationsAuthorityError) as raised:
+            validate_compose_profile_vocabulary(root)
+        self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+        root = self._repo()
+        linked_base = root / "infra/link/docker-compose.yml"
+        linked_base.parent.mkdir(parents=True)
+        linked_base.symlink_to("../a/docker-compose.yml")
+        subprocess.run(["git", "add", str(linked_base)], cwd=root, check=True)
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {
+                    "version": 1,
+                    "base": "infra/link/docker-compose.yml",
+                },
+                "services": {"x": {"image": "example/x:2.0.0"}},
+            },
+        )
+        with self.assertRaises(OperationsAuthorityError) as raised:
+            validate_compose_profile_vocabulary(root)
+        self.assertEqual("symlink-invalid", raised.exception.code)
+
+    def test_tracked_missing_and_broken_symlink_compose_fail_closed(self) -> None:
+        for mutation in ("missing", "broken-symlink"):
+            with self.subTest(mutation=mutation):
+                root = self._repo()
+                overlay = self._add_overlay(
+                    root,
+                    {
+                        "x-hyhome-overlay": {
+                            "version": 1,
+                            "base": "infra/a/docker-compose.yml",
+                        },
+                        "services": {"x": {"image": "example/x:2.0.0"}},
+                    },
+                )
+                overlay.unlink()
+                if mutation == "broken-symlink":
+                    overlay.symlink_to("missing-compose.yml")
+                with self.assertRaises(OperationsAuthorityError) as raised:
+                    validate_compose_profile_vocabulary(root)
+                self.assertIn(
+                    raised.exception.code,
+                    {"file-unreadable", "symlink-invalid"},
+                )
 
     def test_declared_profile_without_a_row_is_rejected(self) -> None:
         root = self._repo(services_b="  z:\n    profiles: [beta, gamma]\n")
@@ -1894,6 +2138,100 @@ implementation_services:
             return_value=(*self.paths, standard),
         ):
             self.assertIn("service-operations-missing", self._codes(root))
+
+    def test_typed_overlay_does_not_create_or_overwrite_inventory_rows(self):
+        root = self._repo()
+        overlay = pathlib.PurePosixPath(
+            "infra/04-data/example/compose.workflow.override.yml"
+        )
+        (root / "docker-compose.yml").write_text(
+            f"include:\n  - {self.compose}\n", encoding="utf-8"
+        )
+        (root / overlay).write_text(
+            yaml.safe_dump(
+                {
+                    "x-hyhome-overlay": {"version": 1, "base": self.compose},
+                    "services": {
+                        "database": {
+                            "image": "example/database:2.0.0",
+                            "depends_on": ["exporter"],
+                            "networks": ["overlay-only"],
+                        }
+                    },
+                },
+                sort_keys=False,
+            ),
+            encoding="utf-8",
+        )
+        tracked = (*self.paths, overlay)
+        with mock.patch.object(
+            operations_catalog, "_tracked_paths", return_value=tracked
+        ):
+            rendered = operations_catalog.render_service_inventory(root)
+            rows = operations_catalog._service_inventory_rows(rendered)
+            self.assertEqual({"database", "exporter"}, {row["Service"] for row in rows})
+            database = next(row for row in rows if row["Service"] == "database")
+            self.assertEqual("none", database["Dependencies"])
+            self.assertNotIn("overlay-only", database["Network"])
+            self.inventory.write_text(rendered, encoding="utf-8")
+            self.assertEqual(set(), self._codes(root))
+
+    def test_inventory_rejects_root_included_overlay(self):
+        root = self._repo()
+        overlay = pathlib.PurePosixPath(
+            "infra/04-data/example/compose.workflow.override.yml"
+        )
+        (root / "docker-compose.yml").write_text(
+            f"include:\n  - {self.compose}\n  - {overlay}\n", encoding="utf-8"
+        )
+        (root / overlay).write_text(
+            yaml.safe_dump(
+                {
+                    "x-hyhome-overlay": {"version": 1, "base": self.compose},
+                    "services": {"database": {"image": "example/database:2.0.0"}},
+                },
+                sort_keys=False,
+            ),
+            encoding="utf-8",
+        )
+        with self.assertRaises(OperationsAuthorityError) as raised:
+            operations_catalog._inventory_sources(root, (*self.paths, overlay))
+        self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_guide_binding_cannot_treat_overlay_as_service_authority(self):
+        root = self._repo()
+        overlay = pathlib.PurePosixPath(
+            "infra/04-data/example/compose.workflow.override.yml"
+        )
+        (root / "docker-compose.yml").write_text(
+            f"include:\n  - {self.compose}\n", encoding="utf-8"
+        )
+        (root / overlay).write_text(
+            yaml.safe_dump(
+                {
+                    "x-hyhome-overlay": {"version": 1, "base": self.compose},
+                    "services": {"database": {"image": "example/database:2.0.0"}},
+                },
+                sort_keys=False,
+            ),
+            encoding="utf-8",
+        )
+        guide = root / self.guide
+        guide.write_text(
+            guide.read_text(encoding="utf-8")
+            .replace(self.compose, overlay.as_posix())
+            .replace(
+                "[database, exporter]",
+                "[database]",
+            ),
+            encoding="utf-8",
+        )
+        with mock.patch.object(
+            operations_catalog,
+            "_tracked_paths",
+            return_value=(*self.paths, overlay),
+        ):
+            self.assertIn("service-operations-removed", self._codes(root))
 
     def test_zero_depth_standard_compose_service_requires_operations_owner(self):
         root = self._repo()

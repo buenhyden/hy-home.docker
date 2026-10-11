@@ -108,6 +108,7 @@ def override_value(loader, node):
 ComposeLoader.add_constructor("!override", override_value)
 ComposeLoader.add_constructor("!reset", lambda loader, node: None)
 DEFAULT = re.compile(r"\$\{[A-Za-z_][A-Za-z0-9_]*(?::-|-)([^{}]+)\}")
+REQUIRED_IMAGE = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*):\?\}\Z")
 IMAGE = re.compile(
     r"(?P<repo>[a-z0-9][a-z0-9._/-]*(?::[0-9]+/[a-z0-9._/-]+)?)"
     r"(?::(?P<tag>[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}))?"
@@ -128,7 +129,7 @@ def image_repository(image):
     return match["repo"]
 
 
-def declared_images(relative):
+def declared_images(relative, *, allow_required_input):
     if not isinstance(relative, str):
         raise ContractError("invalid compose path")
     path = pathlib.Path(relative)
@@ -142,6 +143,7 @@ def declared_images(relative):
         if not isinstance(services, dict):
             raise ContractError("invalid compose services mapping")
         images = set()
+        required_inputs = set()
         for service in services.values():
             if service is None:  # !reset removes a service/field.
                 continue
@@ -152,11 +154,19 @@ def declared_images(relative):
                 continue  # Build-only services have no runtime image declaration.
             if not isinstance(image, str):
                 raise ContractError("invalid compose image scalar")
+            required = REQUIRED_IMAGE.fullmatch(image)
+            if required:
+                if not allow_required_input:
+                    raise ContractError(
+                        "required image input is limited to a typed infra overlay"
+                    )
+                required_inputs.add(required[1])
+                continue
             # Resolve only checked-in defaults, never process environment values.
             image = DEFAULT.sub(lambda match: match[1], image)
             image_repository(image)
             images.add(image)
-        return images
+        return images, required_inputs
     except (OSError, UnicodeError, yaml.YAMLError, ValueError, RecursionError) as exc:
         raise ContractError(f"invalid compose declaration: {relative}") from exc
 
@@ -188,13 +198,78 @@ def tracked_compose_files():
     return sorted(paths)
 
 
-def discovered_repositories():
+def classified_overlay_paths(paths):
+    try:
+        from scripts.lib.document_governance.operations_catalog import (
+            OperationsAuthorityError,
+            _compose_sources,
+        )
+    except ImportError as exc:
+        raise ContractError("invalid compose overlay contract") from exc
+    try:
+        sources = _compose_sources(
+            pathlib.Path.cwd(),
+            tuple(pathlib.PurePosixPath(relative) for relative in paths),
+        )
+    except (OSError, OperationsAuthorityError, ValueError) as exc:
+        raise ContractError("invalid compose overlay contract") from exc
+    return frozenset(path.as_posix() for path in sources.overlays)
+
+
+def discovered_projection():
+    paths = tracked_compose_files()
+    overlays = classified_overlay_paths(paths)
     discovered = {}
-    for relative in tracked_compose_files():
-        for image in declared_images(relative):
+    required_inputs = []
+    for relative in paths:
+        images, variables = declared_images(
+            relative, allow_required_input=relative in overlays
+        )
+        if variables:
+            required_inputs.append(
+                {"compose_file": relative, "variables": sorted(variables)}
+            )
+        for image in images:
             repository = image_repository(image)
             discovered.setdefault(repository, {}).setdefault(relative, set()).add(image)
-    return discovered
+    return discovered, required_inputs
+
+
+def validated_required_inputs(registry):
+    required_inputs = registry.get("required_image_inputs", [])
+    if not isinstance(required_inputs, list):
+        raise ContractError("invalid required_image_inputs projection")
+    seen_sources = set()
+    for record in required_inputs:
+        if not isinstance(record, dict) or set(record) != {"compose_file", "variables"}:
+            raise ContractError("invalid required_image_inputs projection")
+        relative = record["compose_file"]
+        variables = record["variables"]
+        path = pathlib.PurePosixPath(relative) if isinstance(relative, str) else None
+        invalid_path = (
+            path is None
+            or not relative
+            or path.is_absolute()
+            or ".." in path.parts
+            or path.as_posix() != relative
+            or not path.parts
+            or path.parts[0] != "infra"
+            or COMPOSE_NAME.fullmatch(path.name) is None
+            or relative in seen_sources
+        )
+        invalid_variables = (
+            not isinstance(variables, list)
+            or not variables
+            or any(
+                not isinstance(variable, str)
+                or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", variable) is None
+                for variable in variables
+            )
+        )
+        if invalid_path or invalid_variables or variables != sorted(set(variables)):
+            raise ContractError("invalid required_image_inputs projection")
+        seen_sources.add(relative)
+    return required_inputs
 
 
 def read_registry(path):
@@ -211,6 +286,7 @@ def read_registry(path):
     entries = registry.get("entries")
     if not isinstance(entries, list):
         raise ContractError("registry must define an entries list")
+    validated_required_inputs(registry)
     components = set()
     repository_owners = {}
     for entry in entries:
@@ -316,13 +392,16 @@ def expected_entries(registry, discovered):
     return entries
 
 
-def expected_registry(registry, discovered):
-    return {
+def expected_registry(registry, discovered, required_inputs):
+    expected = {
         **registry,
         "source_of_truth": SOURCE_OF_TRUTH,
         "local_repository_prefixes": list(LOCAL_REPOSITORY_PREFIXES),
         "entries": expected_entries(registry, discovered),
     }
+    if required_inputs or "required_image_inputs" in registry:
+        expected = {**expected, "required_image_inputs": required_inputs}
+    return expected
 
 
 def source_projection(entries):
@@ -370,6 +449,33 @@ def projection_preview(registry, expected):
     return lines
 
 
+def required_input_preview(registry, expected):
+    current = {
+        (record["compose_file"], tuple(record["variables"]))
+        for record in registry.get("required_image_inputs", [])
+    }
+    target = {
+        (record["compose_file"], tuple(record["variables"]))
+        for record in expected.get("required_image_inputs", [])
+    }
+    return [
+        f"{action} required-image-input source={source} "
+        f"variables={','.join(variables)} status=unresolved-not-pin"
+        for action, records in (("remove", current - target), ("add", target - current))
+        for source, variables in sorted(records)
+    ]
+
+
+def print_required_inputs(records):
+    for record in records:
+        print(
+            "required-image-input "
+            f"source={record['compose_file']} "
+            f"variables={','.join(record['variables'])} "
+            "status=unresolved-not-pin"
+        )
+
+
 def render_registry(raw, registry):
     newline = "\r\n" if "\r\n" in raw else "\n"
     indent_match = re.search(r'(?:\r?\n)( +)"', raw)
@@ -408,17 +514,19 @@ def main():
     mode = os.environ["SYNC_MODE"]
     path = pathlib.Path("infra/tech-stack.versions.json")
     raw, registry = read_registry(path)
-    discovered = discovered_repositories()
-    expected = expected_registry(registry, discovered)
+    discovered, required_inputs = discovered_projection()
+    expected = expected_registry(registry, discovered, required_inputs)
     if registry == expected:
         external = sum(
             repository_classification(repository) == "external"
             for repository in discovered
         )
         local = len(discovered) - external
+        print_required_inputs(required_inputs)
         print(
             "tech-stack registry is in sync with tracked compose images. "
-            f"repositories={len(discovered)} external={external} local_custom={local}"
+            f"repositories={len(discovered)} external={external} local_custom={local} "
+            f"required_inputs={sum(len(item['variables']) for item in required_inputs)}"
         )
         return 0
     updated = render_registry(raw, expected)
@@ -429,6 +537,8 @@ def main():
     }
     target_repositories = set(discovered)
     for line in projection_preview(registry, expected):
+        print(line)
+    for line in required_input_preview(registry, expected):
         print(line)
     print(
         "projection drift: "

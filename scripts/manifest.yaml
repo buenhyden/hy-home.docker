@@ -370,6 +370,7 @@ files:
   mutation: none
   consumers:
   - scripts/lib/document_governance/references.py
+  - scripts/operations/sync-tech-stack-versions.sh
   - scripts/validation/check-operations-catalog.py
   disposition: retain
   successor: null
@@ -852,6 +853,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/validation/test_tech_stack_version_contract.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/use-qa-ci-tools.sh
   kind: operations
