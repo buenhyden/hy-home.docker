@@ -1,6 +1,6 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -286,7 +286,8 @@ That suffix contains the P04 Spec/Plan/Task preparation only, with no change to
 this unit's runtime/source inputs or proposed common base blobs. The previously
 local issuance prefix is now remote; common registration is still NOT_APPLIED.
 
-The final twelve source/schema/test/fixture/README files have aggregate SHA256
+The initial unit's twelve source/schema/test/fixture/README files at commit
+`93ad5da2538f99cc978745a458587e2fde71550c` have recorded aggregate SHA256
 `3b00068da8690d57113113f6a8db6c95b5e239541fb52e40cb44e8ceb338b241`.
 The exact per-file manifest is preserved in ignored `.agent-work/p03-port-input.json`.
 The reused root closure input manifest SHA256 is
@@ -394,6 +395,39 @@ local gate and independent final-head review. The owned source CLI and synthetic
 command are documented in the new service-integration README. Rollback for this
 initial unit is a logical revert of its owned commit; it does not restore any
 deployed state. No HOME/data/secret deletion/rotation/restore was performed.
+
+### Supported Interpolation Clarification
+
+The coordinator's 2026-10-11 handoff verification confirmed the initial unit's
+artifact/public-root input hashes and public CLI/diff checks. It did not rerun
+the worker's 42 dedicated tests, 84 regressions or 97-percent coverage; those
+remain the dated worker receipts above. This documentation correction starts
+from clean worker HEAD `93ad5da2538f99cc978745a458587e2fde71550c`;
+observed local main is `f7543e0697e2473cbbbeb254792e7a1d5b4b8423`, remote
+main is `4e26a5a8022a7307c7461af60337442912955df1`.
+
+Unknown interpolation preservation applies to supported IP/port/network-name/
+alias address fields. Unresolved `protocol`, publication `mode` and Traefik
+backend `scheme` are rejected, not retained as unknown. The current root lacks
+those interpolated enum declarations; the initial source acceptance therefore
+does not assert generic lossless handling of all Compose expressions. README
+wording is narrowed to this existing behavior. No helper, schema, test, fixture,
+image or runtime behavior is changed and no previous PASS is relabeled as a
+fresh test result. The initial twelve-file aggregate above remains historical;
+new document hashes must accompany this correction to the coordinator.
+Three freshly executed offline probes against the unchanged helper rejected
+synthetic unresolved protocol/mode/backend-scheme inputs with fixed errors,
+exit 0. These probes confirm the documentation limit; they are not a rerun of
+the broad frozen suites or any native/HOME test. Document metadata/link/style
+checks and independent correspondence review are scoped to this increment.
+
+The coordinator reproduced P02/P03 registration conflicts in both patch orders
+on `scripts/manifest.yaml` and `.github/workflow-contract.yml`. It owns P03
+registration first and P02's subsequent rebase, preserving both entries and
+routing. This worker does not apply either patch. Final integrated-head gates,
+review, P03 PR/CI/merge and actual native authentication/HOME/migration/rotation/
+recovery remain pending. Criterion 17 is open. Rollback for this increment is
+only the reviewed documentation commit revert; no operational rollback occurs.
 
 ## Evidence
 

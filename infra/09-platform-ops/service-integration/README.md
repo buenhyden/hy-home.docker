@@ -1,6 +1,6 @@
 ---
 title: "서비스 연결 포트 계약"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -56,6 +56,12 @@ Traefik의 HTTP/TCP/UDP backend 선언은 각 이름·network·port·scheme을 �
 `network_state`로 선택 network 누락·미해결·선언을 구분합니다. `h2c`도 선언으로
 허용하며 network 미연결과 disabled를 구분합니다. 외부 File-provider endpoint와
 암시적 포트 탐지는 이 Docker-label 초기 slice의 수용 범위 밖입니다.
+
+미해결 변수의 unknown 처리는 IP·포트·network 이름·alias 등 지원된 주소 필드에
+한정합니다. `protocol`은 `tcp`/`udp`, `mode`는 `host`/`ingress` 또는 누락·null,
+Traefik `scheme`은 `http`/`https`/`h2c` 또는 누락·null을 받습니다. 이 세 필드의
+미해결 표현식은 보존하지 않고 거부합니다. 현재 root에 해당 선언이 없다는 사실은
+임의 Compose 입력의 미해결 변수를 모두 지원한다는 뜻이 아닙니다.
 
 출력에 environment 값, command, 임의 label, secret payload, route rule,
 raw Compose render와 stderr를 포함하지 않습니다. 허용된 포트 metadata에도
