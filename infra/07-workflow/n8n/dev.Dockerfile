@@ -12,10 +12,28 @@ RUN apk add --no-cache \
   apk --no-network info -v > /font-builder-packages.txt && \
   fc-cache -f -v
 
+# Latest stable Current builder; exact-image compatibility is separately verified.
+FROM node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS opsflow-builder
+WORKDIR /build/opsflow
+COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json ./
+RUN npm ci --ignore-scripts --no-audit --no-fund --bin-links=false
+COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/*.ts ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json ./
+RUN node node_modules/typescript/bin/tsc -p tsconfig.json && \
+  npm prune --omit=dev --ignore-scripts --no-audit --no-fund --bin-links=false && \
+  mkdir -p /artifact/opsflow && \
+  cp package.json /artifact/opsflow/ && \
+  cp -R dist node_modules /artifact/opsflow/ && \
+  chmod -R a+rX,go-w /artifact/opsflow
+WORKDIR /artifact/opsflow
+RUN find package.json dist node_modules -type f -exec sha256sum '{}' ';' > /tmp/opsflow-hashes && \
+  sort -k2 /tmp/opsflow-hashes > SHA256SUMS
+
 FROM n8nio/n8n:${N8N_VERSION}@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a
 ARG N8N_VERSION=2.42.6
 
 USER root
+
+COPY --from=opsflow-builder /artifact/opsflow /opt/hyhome/n8n-custom/opsflow
 
 COPY --from=font-builder /usr/share/fonts /usr/share/fonts
 COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig

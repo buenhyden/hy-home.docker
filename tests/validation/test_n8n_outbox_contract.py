@@ -3,9 +3,13 @@
 import hashlib
 import importlib.util
 import json
+import os
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKLOAD = ROOT / "infra/07-workflow/n8n/workloads/manifest-outbox-notifier"
@@ -146,3 +150,196 @@ class OutboxContractTests(unittest.TestCase):
         self.assertIsNone(contract["binding"]["sql_commit"])
         self.assertIsNone(contract["binding"]["sql_sha256"])
         self.assertIsNone(contract["binding"]["interface_version"])
+
+
+class OutboxWorkerPlacementTests(unittest.TestCase):
+    """Offline overlay topology; does not grant network or launch a worker."""
+
+    def test_only_queue_worker_receives_dev_and_capture_networks(self):
+        overlay = WORKLOAD / "compose.workflow.override.yml"
+        self.assertTrue(overlay.is_file(), "worker-only workload overlay is missing")
+        data = yaml.safe_load(overlay.read_text())
+        self.assertEqual({"n8n-worker"}, set(data["services"]))
+        worker = data["services"]["n8n-worker"]
+        self.assertEqual({"dev_data_net", "mail_net"}, set(worker["networks"]))
+        self.assertNotIn("ports", worker)
+        self.assertNotIn("secrets", worker)
+        base = yaml.safe_load((WORKLOAD.parents[1] / "docker-compose.yml").read_text())
+        for name in ("n8n", "n8n-worker", "n8n-task-runner", "n8n-task-runner-worker"):
+            networks = set(base["services"][name]["networks"])
+            self.assertFalse(networks & {"dev_data_net", "mail_net"}, name)
+        self.assertNotIn("stalwart", overlay.read_text().lower())
+
+
+class OutboxImageBridgeTests(unittest.TestCase):
+    """Execute the authored bridge against synthetic assets, never deployed data."""
+
+    def bridge(self, name, root):
+        source = (WORKLOAD.parents[1] / name).read_text()
+        self.assertIn("# OPSFLOW PACKAGE BRIDGE", source)
+        script = source.split("# OPSFLOW PACKAGE BRIDGE\n", 1)[1].split(
+            "\n# END OPSFLOW PACKAGE BRIDGE", 1
+        )[0]
+        # Fixture owner and fixed image path replacement are test-only seams.
+        return (
+            script.replace("/opt/hyhome/n8n-custom/opsflow", str(root))
+            .replace("const imageOwner = 0;", "const imageOwner = process.getuid();")
+            .replace(
+                "['/opt', '/opt/hyhome', '/opt/hyhome/n8n-custom']",
+                json.dumps([str(root.parent)]),
+            )
+        )
+
+    def test_both_builds_install_locked_unmasked_same_package(self):
+        for name in ("Dockerfile", "dev.Dockerfile"):
+            source = (WORKLOAD.parents[1] / name).read_text()
+            self.assertIn("AS opsflow-builder", source)
+            self.assertIn(
+                "npm ci --ignore-scripts --no-audit --no-fund --bin-links=false", source
+            )
+            self.assertIn(
+                "node node_modules/typescript/bin/tsc -p tsconfig.json", source
+            )
+            self.assertIn("npm prune --omit=dev --ignore-scripts", source)
+            self.assertIn(
+                "COPY --from=opsflow-builder /artifact/opsflow /opt/hyhome/n8n-custom/opsflow",
+                source,
+            )
+            self.assertIn("SHA256SUMS", source)
+        compose = yaml.safe_load(
+            (WORKLOAD.parents[1] / "docker-compose.yml").read_text()
+        )
+        for name in ("n8n", "n8n-worker"):
+            service = compose["services"][name]
+            self.assertNotIn("N8N_CUSTOM_EXTENSIONS", service["environment"])
+            mounts = [mount.split(":")[1] for mount in service["volumes"]]
+            self.assertIn("/home/node/.n8n/custom", mounts)
+            self.assertFalse(
+                any(
+                    "/opt/hyhome/n8n-custom/opsflow".startswith(m + "/")
+                    or m == "/opt/hyhome/n8n-custom/opsflow"
+                    for m in mounts
+                )
+            )
+
+    def test_bridge_is_idempotent_preserves_siblings_and_refuses_tampering(self):
+        for name in ("docker-entrypoint.sh", "docker-entrypoint.dev.sh"):
+            with tempfile.TemporaryDirectory() as temporary:
+                base = Path(temporary)
+                image = base / "image"
+                image.mkdir()
+                (image / "dist").mkdir()
+                (image / "node_modules").mkdir()
+                payloads = {
+                    "package.json": '{"name":"n8n-nodes-opsflow","n8n":{"n8nNodesApiVersion":1,"nodes":["dist/OpsflowSmtp.node.js"]}}',
+                    "dist/OpsflowSmtp.node.js": "synthetic source",
+                    "dist/transport.js": "synthetic transport",
+                    "node_modules/dependency.js": "synthetic dependency",
+                }
+                for path, value in payloads.items():
+                    (image / path).write_text(value)
+                receipt = "".join(
+                    hashlib.sha256((image / p).read_bytes()).hexdigest()
+                    + "  "
+                    + p
+                    + "\n"
+                    for p in sorted(payloads)
+                )
+                (image / "SHA256SUMS").write_text(receipt)
+                for item in (image, *image.rglob("*")):
+                    item.chmod(0o755 if item.is_dir() else 0o644)
+                user = base / "selected"
+                sibling = user / ".n8n/nodes/node_modules/n8n-nodes-existing"
+                sibling.mkdir(parents=True)
+                (sibling / "preserved").write_text("keep")
+                custom = user / ".n8n/custom"
+                custom.mkdir()
+                (custom / "existing.node.js").write_text("default keep")
+                for item in (user, *user.rglob("*")):
+                    if item.is_dir():
+                        item.chmod(0o755)
+                script = self.bridge(name, image)
+                environment = {**os.environ, "N8N_USER_FOLDER": str(user)}
+
+                def run(script=script, environment=environment):
+                    return subprocess.run(
+                        ["sh", "-ec", script],
+                        env=environment,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+
+                target = sibling.parent / "n8n-nodes-opsflow"
+                for _ in range(2):
+                    result = run()
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    self.assertEqual(str(image), os.readlink(target))
+                    self.assertEqual("keep", (sibling / "preserved").read_text())
+                    self.assertEqual(
+                        "default keep", (custom / "existing.node.js").read_text()
+                    )
+                (image / "dist/OpsflowSmtp.node.js").write_text("modified")
+                result = run()
+                self.assertNotEqual(0, result.returncode)
+                self.assertNotIn("modified", result.stdout + result.stderr)
+                (image / "dist/OpsflowSmtp.node.js").write_text(
+                    payloads["dist/OpsflowSmtp.node.js"]
+                )
+                target.unlink()
+                target.mkdir()
+                (target / "unknown").write_text("keep unknown")
+                self.assertNotEqual(0, run().returncode)
+                self.assertEqual("keep unknown", (target / "unknown").read_text())
+                (target / "unknown").unlink()
+                target.rmdir()
+                target.symlink_to(base / "wrong")
+                self.assertNotEqual(0, run().returncode)
+                self.assertEqual(str(base / "wrong"), os.readlink(target))
+                target.unlink()
+                dependency = image / "node_modules/dependency.js"
+                dependency.unlink()
+                dependency.symlink_to(base / "absent")
+                self.assertNotEqual(0, run().returncode)
+                dependency.unlink()
+                dependency.write_text(payloads["node_modules/dependency.js"])
+                dependency.chmod(0o644)
+                (image / "SHA256SUMS").write_text(
+                    receipt + receipt.splitlines()[0] + "\n"
+                )
+                self.assertNotEqual(0, run().returncode)
+                (image / "SHA256SUMS").write_text(receipt)
+                dependency.chmod(0o666)
+                self.assertNotEqual(0, run().returncode)
+                dependency.chmod(0o644)
+                (image / "untracked").write_text("not in receipt")
+                self.assertNotEqual(0, run().returncode)
+                (image / "untracked").unlink()
+                processes = [
+                    subprocess.Popen(
+                        ["sh", "-ec", script],
+                        env=environment,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    )
+                    for _ in range(2)
+                ]
+                for process in processes:
+                    _output, error = process.communicate(timeout=10)
+                    self.assertEqual(0, process.returncode, error)
+                self.assertEqual(str(image), os.readlink(target))
+                environment["N8N_USER_FOLDER"] = str(user / "..")
+                self.assertNotEqual(0, run().returncode)
+                environment["N8N_USER_FOLDER"] = str(base / "alias")
+                (base / "alias").symlink_to(user)
+                self.assertNotEqual(0, run().returncode)
+                del environment["N8N_USER_FOLDER"]
+                fallback = script.replace("process.env.HOME", json.dumps(str(user)))
+                result = subprocess.run(
+                    ["sh", "-ec", fallback],
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
