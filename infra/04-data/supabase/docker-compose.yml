@@ -266,7 +266,7 @@ services:
       service: template-infra-low
     container_name: supabase-imgproxy
     hostname: imgproxy
-    image: darthsim/imgproxy:v4.0.15
+    image: darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d
     tmpfs:
       - /tmp
     restart: unless-stopped
