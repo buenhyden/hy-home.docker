@@ -1,6 +1,6 @@
 ---
 title: "09-platform-ops: Platform Operations Tier"
-version: "1.2.3"
+version: "1.2.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -64,6 +64,8 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
   HOME 복구 또는 scanner acceptance를 뜻하지 않습니다.
 
 - [서비스 연결·포트 계약](service-integration/README.md)은 비밀값 없는 네 위치 선언과 합성 시험을 제공합니다. 실제 listener·HOME 검증은 별도입니다.
+- [자원 최적화 준비](resource-optimization/README.md)는 범위가 제한된 공개 측정
+  계약·합성 fixture·평가기를 제공합니다. 실제 부하·권한·HOME 수용은 별도입니다.
 
 ## Structure
 
@@ -76,6 +78,7 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 ├── restic/      # backup jobs, exclude lists, host orchestrator and timer
 ├── security-updates/ # stable/security source ledger and verification records
 ├── service-integration/ # four-location source port contracts
+├── resource-optimization/ # bounded public assessment and synthetic fixtures
 └── README.md
 ```
 

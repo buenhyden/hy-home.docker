@@ -793,6 +793,8 @@
         "tests.lib.ops.test_n8n_outbox_workflow",
         "tests.validation.test_n8n_outbox_contract",
         "tests.validation.test_n8n_outbox_rehearsal",
+        "tests.lib.ops.test_root_resource_assessment",
+        "tests.validation.test_root_resource_contract",
         "-v"
       ],
       "cwd": ".",
@@ -1699,6 +1701,18 @@
         "suites": [
           "repository-integrity"
         ]
+      },
+      {
+        "prefixes": [
+          "infra/09-platform-ops/resource-optimization/",
+          "scripts/lib/ops/root_resource_assessment.py",
+          "scripts/operations/root-resource-assessment.py",
+          "tests/lib/ops/test_root_resource_assessment.py",
+          "tests/validation/test_root_resource_contract.py"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
       }
     ],
     "changed_root_rules": [
@@ -2003,6 +2017,19 @@
         ],
         "root_gate_ids": [
           "ci.opsflow-smtp-node-package"
+        ]
+      },
+      {
+        "prefixes": [
+          "infra/09-platform-ops/resource-optimization/",
+          "scripts/lib/ops/root_resource_assessment.py",
+          "scripts/operations/root-resource-assessment.py",
+          "tests/lib/ops/test_root_resource_assessment.py",
+          "tests/validation/test_root_resource_contract.py"
+        ],
+        "root_gate_ids": [
+          "leaf.local-script-manifest",
+          "leaf.repository-integrity-regressions"
         ]
       }
     ],

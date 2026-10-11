@@ -1,6 +1,6 @@
 ---
 title: "Operations Library"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -18,6 +18,9 @@ created: "2026-10-10"
 ## Structure
 
 - `compose-core-readiness.sh`: Compose 핵심 서비스 readiness와 격리 복구 검사.
+- `root_resource_assessment.py`: 공개 JSON의 측정 선언·unknown·기존 공통 통제를
+  범위 제한 평가합니다. 출력의 runtime 수용·변경 승인 플래그는 항상 false이며,
+  정본 예외 등록과 실제 서비스의 결합은 후속 검증 대상입니다.
 - `openbao_consumer_migration.py`: P06 공개 wave·receipt 형태와 P02 공개 API의
   이관 선택 거부를 합성 입력으로 검증합니다. 실제 비밀 파일·OpenBao API에는
   접근하지 않으며, 합성 receipt의 PASS는 운영 승인이나 pilot 수용이 아닙니다.

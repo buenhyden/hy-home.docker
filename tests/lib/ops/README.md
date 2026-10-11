@@ -1,6 +1,6 @@
 ---
 title: "Operations Library Tests"
-version: "0.1.3"
+version: "0.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -18,6 +18,8 @@ created: "2026-10-10"
 ## Scope
 
 - `test_compose_core_readiness.py`는 Compose readiness helper를 검증합니다.
+- `test_root_resource_assessment.py`는 P07의 공개 입력 경계·측정 unknown·통제
+  불일치와 합성 provenance 거부를 검증합니다. 실제 부하나 HOME 결과는 별도입니다.
 - `test_wiki_preparation.py`는 P09 준비 계약 helper의 허용·거절 경계를 검증합니다.
 
 - `test_smtp_contract.py`와 `test_smtp_proof.py`는 SMTP 모델·grant·metadata 전환과

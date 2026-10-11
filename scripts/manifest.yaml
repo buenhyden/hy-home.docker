@@ -582,6 +582,20 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_retirement.py
+- path: scripts/lib/ops/root_resource_assessment.py
+  kind: library
+  authority: infra/09-platform-ops/resource-optimization/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/root-resource-assessment.py
+  - tests/lib/ops/test_root_resource_assessment.py
+  - tests/validation/test_root_resource_contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_root_resource_assessment.py
+  - tests/validation/test_root_resource_contract.py
 - path: scripts/lib/ops/secret_catalog.py
   kind: library
   authority: docs/05.operations/runbooks/0085-openbao.md
@@ -809,6 +823,18 @@ files:
   successor: null
   tests:
   - tests/validation/test_retirement_cli.py
+- path: scripts/operations/root-resource-assessment.py
+  kind: operations
+  authority: infra/09-platform-ops/resource-optimization/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - infra/09-platform-ops/resource-optimization/README.md
+  - tests/validation/test_root_resource_contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_root_resource_contract.py
 - path: scripts/operations/secret-catalog.py
   kind: operations
   authority: docs/05.operations/runbooks/0085-openbao.md
