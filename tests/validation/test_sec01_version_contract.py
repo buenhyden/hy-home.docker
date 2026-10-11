@@ -12,8 +12,80 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 OPENBAO = "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
 
+PATCH_STABLE_IMAGES = {
+    (
+        "infra/06-observability/dozzle/docker-compose.yml",
+        "dozzle",
+    ): "amir20/dozzle:v11.3.1@sha256:ba65da5af3d2147cfc2ee68ea5a6e35b75d2dff7eeff226151a65c9d77831c02",
+    (
+        "infra/11-quality/mailpit/docker-compose.yml",
+        "mailpit",
+    ): "axllent/mailpit:v1.31.5@sha256:94f6b70c1436defae6799d9ac7ff0eeff9540465b842026d5cdb018f1c0234ea",
+    (
+        "infra/08-ai/ollama/docker-compose.yml",
+        "ollama",
+    ): "ollama/ollama:0.40.3@sha256:adca95a12c2b386a8f9a995e7fa0600e187e3323b5e5522f5a6c3b1ec73eff99",
+    (
+        "infra/09-platform-ops/renovate/docker-compose.yml",
+        "renovate",
+    ): "renovate/renovate:44.151.0-full@sha256:9d38d3a725173d812529add2bbeae8120711a06c9db51feb0070f7ba0ea27fde",
+    (
+        "infra/10-communication/stalwart/docker-compose.yml",
+        "stalwart",
+    ): "stalwartlabs/stalwart:v0.16.26@sha256:254ce5d7f3dbe4bb628ce2c7912e664ecb1c3466db79907f4a44d9a00117776b",
+    (
+        "infra/04-data/supabase/docker-compose.yml",
+        "imgproxy",
+    ): "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d",
+}
+
 
 class CandidateContract(unittest.TestCase):
+    def test_dozzle_docker_control_plane_is_explicitly_locked_down(self):
+        compose = yaml.safe_load(
+            (ROOT / "infra/06-observability/dozzle/docker-compose.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        environment = compose["services"]["dozzle"]["environment"]
+        expected_controls = {
+            "DOZZLE_ENABLE_ACTIONS": "false",
+            "DOZZLE_ENABLE_SHELL": "false",
+            "DOZZLE_ENABLE_MCP": "false",
+            "DOZZLE_AUTO_UPDATE": "off",
+            "DOZZLE_UPDATE_CONTAINERS": "off",
+            "DOZZLE_RELEASE_CHECK_MODE": "manual",
+            "DOZZLE_IMAGE_CHECK_MODE": "off",
+            "DOZZLE_DISABLE_SETUP_WIZARD": "true",
+        }
+        self.assertEqual(
+            expected_controls,
+            {key: environment.get(key) for key in expected_controls},
+        )
+
+    def test_patch_stable_images_use_reviewed_exact_index_digests(self):
+        for (path, service), expected in PATCH_STABLE_IMAGES.items():
+            with self.subTest(path=path, service=service):
+                compose = yaml.safe_load((ROOT / path).read_text(encoding="utf-8"))
+                self.assertEqual(compose["services"][service]["image"], expected)
+
+        stalwart_compose = yaml.safe_load(
+            (ROOT / "infra/10-communication/stalwart/docker-compose.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            stalwart_compose["services"]["stalwart-config"]["image"],
+            "hy-home/stalwart-config:0.16.26-cli1.0.13-local",
+        )
+        dockerfile = (
+            ROOT / "infra/10-communication/stalwart/config/Dockerfile"
+        ).read_text(encoding="utf-8")
+        stalwart_image = PATCH_STABLE_IMAGES[
+            ("infra/10-communication/stalwart/docker-compose.yml", "stalwart")
+        ]
+        self.assertIn(f"FROM {stalwart_image}", dockerfile)
+
     def registry_component_result(self, registry, *arguments):
         checker = (ROOT / "scripts/hardening/check-all-hardening.sh").read_text()
         start = checker.index("registry_component_image() {")
@@ -278,7 +350,7 @@ class CandidateContract(unittest.TestCase):
         ollama = compose["services"]["ollama"]
         self.assertEqual(
             ollama["image"],
-            "ollama/ollama:0.40.2@sha256:b86366bb528bbf7f1424435d165028497a5b69bf6ddb4fa5a87102e2b79f44fb",
+            PATCH_STABLE_IMAGES[("infra/08-ai/ollama/docker-compose.yml", "ollama")],
         )
         self.assertIn("OLLAMA_NO_CLOUD=1", ollama["environment"])
         self.assertEqual(
