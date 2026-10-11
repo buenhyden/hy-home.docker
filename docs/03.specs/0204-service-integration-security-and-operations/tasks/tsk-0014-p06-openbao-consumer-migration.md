@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -282,6 +282,28 @@ credential rotation or encryption/session/bootstrap-key replacement. Missing
 selected server target keeps ROTATION NOT_RUN without blocking public source.
 
 ## Work Log
+
+### W48 Synthetic Decision Preparation — 2026-10-11
+
+Input `4c83f14b11a77e13e582eb85d0bf256685472a95`; clean69be0b5e fast-forwarded,
+exit0. Root owns only existing library/unit-test/dedicated README/Task; common
+files are NO_CHANGE. Independent planning approved a pure, frozen, value-free
+decision model for criterion20/W48; the dedicated README defines the cases.
+Focused unittest SyntheticKvDecisionTests.test_prewrite_not_found_needs_never_created_metadata
+witnessed RED (missing SyntheticKvObservation, exit1); SyntheticKvDecisionTests
+then passed9 tests in0.053s, exit0. No selection, byte comparison or I/O is added.
+Production approval/copier, native reconciliation and W49-W54 remain NOT_RUN;
+P02 BLOCKED_P01, existing receipt restrictions and criterion20 stay unchanged.
+Final focused suite:32 tests in17.526s, exit0; branch/subprocess coverage98%.
+Ruff and QA-environment pip-audit exit0; independent code/security review PASS.
+Registered local aggregate exit1: baseline P04 compose.workflow.override.yml
+has `${OPSFLOW_AIRFLOW_IMAGE:?}` rejected by tech-stack, outside the P06 lease;
+P04 owns source repair; the coordinator owns integration/revalidation.
+Canonical remaining five leaves exit0: supply263, compose596 (71 optional skips),
+repository439. Links1205/11658: failures0, warning1;2870 legacy captures unverified.
+Only the QA copy normalized two unchanged entrypoints to0755; live modes retained.
+Frozen input/plan/result receipts: `.agent-work/p06-w48-{review-hashes,local-selection,validation}.json`.
+Suffix PASS does not resolve aggregate FAIL or supply hosted/native acceptance.
 
 ### Coordinator Source Integration — 2026-10-11
 
@@ -679,7 +701,8 @@ for the dedicated implementation, not reasons to weaken existing contracts.
 | Corrected coordinator common integration | 20 | W47 | Both routing maps, direct graph and registered gates | local02078085 plus worker69be0b5e; common hashes in Work Log | PASS | Source-only: six affected leaves exit0; repository430; full aggregate NOT_RUN | pending |
 | Independent source review | 20 | W47 | Code and security review | Frozen seven source hashes only | PASS | No source findings; common proposal reviewed separately; operational scope unassessed | pending |
 | P02 API compatibility | 20 | W47 | Actual public API load and synthetic binding refusals | P02 source962e11be integrated in08b009a9; candidate42a82e19 | PASS | 23 tests; production selection/approval interface pending | pending |
-| Copy executor | 20 | W48 | Synthetic CAS/TLS/response/file/privacy failures | P02 binding pending | NOT_RUN | No real copy or client implementation yet | pending |
+| Synthetic KV decisions | 20 | W48 | Pure hypothetical state/phase/version guards | combined4c83f14b plus owned unit delta | PASS | 32 unit/CLI tests;98% coverage; no copier, approval or operational receipt | pending |
+| Copy executor | 20 | W48 | Synthetic CAS/TLS/response/file/privacy failures | Native authorization/catalog prerequisites pending | NOT_RUN | No real copy or client implementation yet | pending |
 | Renderer delivery | 20 | W49 | Version/inode/identity/reload/LKG failure proof | P01/P03 facts pending | NOT_RUN | Reuse their sole-owned contracts | pending |
 | Real pilot | 20 | W50 | Actual DEV ingest/S3 canary | P01/SEC/P02/P03/P04 gates pending | NOT_RUN | No resource, token or value action | pending |
 | Authority and recovery | 20 | W51 | Rollback/snapshot/empty restore/reauth | No reviewed exact target | NOT_RUN | No authority transition | pending |

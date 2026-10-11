@@ -1,4 +1,4 @@
-"""W47 public, synthetic-only contracts; no production catalog or private I/O.
+"""Public selection and W48 synthetic decisions; no production or private I/O.
 
 The injected projection remains test-only; P02 API compatibility is checked offline.
 Structural validation supplies neither authorization nor native acceptance.
@@ -66,6 +66,76 @@ class FrozenAuthority:
 
     binding: CatalogBinding
     lookup: Callable[[str], CatalogSelection | None]
+
+
+@dataclass(frozen=True, slots=True)
+class SyntheticKvObservation:
+    """Declared test metadata, not an authenticated probe or byte comparison."""
+
+    data_state: str
+    metadata_state: str
+    kv_version: int | None
+
+
+@dataclass(frozen=True, slots=True)
+class SyntheticCopyDecision:
+    """Hypothetical decision, never an approval, command or migration receipt."""
+
+    status: str
+    kv_version: int | None
+    cas: int | None
+
+
+def _validate_synthetic_observation(observation):
+    if type(observation) is not SyntheticKvObservation:
+        raise MigrationError("synthetic_observation_invalid")
+    if (
+        type(observation.data_state) is not str
+        or observation.data_state not in {"not_found", "equal", "different", "unknown"}
+        or type(observation.metadata_state) is not str
+        or observation.metadata_state
+        not in {
+            "never_created",
+            "present",
+            "soft_deleted",
+            "destroyed",
+            "unknown",
+            "forbidden",
+            "mount_missing",
+        }
+        or (
+            observation.kv_version is not None
+            and (type(observation.kv_version) is not int or observation.kv_version <= 0)
+        )
+    ):
+        raise MigrationError("synthetic_observation_invalid")
+
+
+def decide_synthetic_copy(
+    observation: SyntheticKvObservation, *, phase: str
+) -> SyntheticCopyDecision:
+    """Model declared states only; cannot read, compare, write, retry or approve."""
+    if type(phase) is not str or phase not in {
+        "pre_write",
+        "ambiguous_write",
+        "cas_race",
+    }:
+        raise MigrationError("synthetic_copy_phase_invalid")
+    _validate_synthetic_observation(observation)
+    if (
+        phase == "pre_write"
+        and observation.data_state == "not_found"
+        and observation.metadata_state == "never_created"
+        and observation.kv_version is None
+    ):
+        return SyntheticCopyDecision("WOULD_CREATE", None, 0)
+    if observation.metadata_state == "present" and observation.kv_version is not None:
+        if observation.data_state == "equal":
+            status = "WOULD_NOOP" if phase == "pre_write" else "RECONCILED_EQUAL"
+            return SyntheticCopyDecision(status, observation.kv_version, None)
+        if observation.data_state == "different":
+            return SyntheticCopyDecision("CONFLICT", observation.kv_version, None)
+    return SyntheticCopyDecision("UNRESOLVED", None, None)
 
 
 def _unique(pairs):
