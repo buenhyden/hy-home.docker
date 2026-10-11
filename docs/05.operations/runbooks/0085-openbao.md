@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.7.4"
+version: "0.7.5"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -167,7 +167,7 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
 
    `agent_volume`와 `issuance_journal`은 Task에 확정한 실제 대상이다. helper는 이미지의
    amd64 manifest·server·Agent volume binding·entrypoint를 확인한다. API 호출 전에
-   nonce·시간·role·source revision·manifest만 journal에 atomic/fsync 저장한다.
+   secret-free version-derived record를 journal에 atomic/fsync 저장한다.
    Docker socket은 host helper만 사용하며 Agent에 주지 않는다. 전달 helper container는
    network none·pull never·UID100·cap drop·read-only를 유지한다.
 4. helper가 Agent를 시작하고 새 `StartedAt`·TLS·unsealed·제한 fetch/render와 KV version
@@ -180,6 +180,15 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    기능 readiness를 증명한다. 불명확·복수 결과·시간/nonce 불일치·sealed·권한 거부·journal
    유실은 실패로 유지하고 새 발급을 차단한다. 자동으로 journal을 지우거나 광범위 accessor를
    폐기하지 않는다. 해당 상태는 승인된 관리 신원의 custody/API 대조 복구가 필요하다.
+
+새 발급 journal은 `schema_version: 2`, `issuance_id`, 기존 `nonce`를 함께 보관하며 두
+identity 값은 같아야 한다. 실제 accessor metadata도 `issuance_schema: "2"`,
+`issuance_id`, `sec01_nonce`를 모두 포함한다. v1 journal과 anchor는 version 필드 없이
+기존 형태로 보존한다. 정합화 시 journal과 활성 anchor의 version·identity가
+정확히 일치하고, accessor metadata가 해당 journal version에서 유도한 전체 metadata와
+정확히 일치해야 한다. completion witness는 중단된 정리의 복구를 허용하는 별도 기록이다.
+v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 폐기하지 말고 중단한다.
+이전 발급을 정합화한 같은 실행에서는 새 SecretID를 발급하지 않는다.
 
 이 프로토콜은 아직 HOME에서 수행하지 않았다. 운영 실패 시 journal·completion witness·
 보호된 snapshot과 관리 인증을 보존한다. 재시작을 반복하거나 오래된 sink를 PASS로 처리하지 않는다.

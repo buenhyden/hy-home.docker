@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.5.3"
+version: "0.5.4"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -147,6 +147,21 @@ config-owned HMAC file audit를 유지하며 모든 필수 backend 실패 시 �
 검증해야 한다. 기존 single-file custody 예외는 미해결 상태로 보존한다. P01 격리 시험은
 그 예외를 종료하거나 HOME 복구 자료를 만들어내지 않는다. P06 확대는 실제 cold boot·
 독립 unseal/offsite custody·선정 snapshot 복구 수용 이후만 허용한다.
+
+### Versioned issuance identity control
+
+새 renderer issuance는 `schema_version: 2` journal과 `issuance_id`를 사용하며,
+`issuance_id`와 legacy `nonce`는 동일해야 한다. v2 accessor metadata는
+`issuance_schema: "2"`, `issuance_id`, `sec01_nonce`를 모두 포함하고 두 identity 값을
+일치시켜야 한다. v1 journal과 anchor의 version 없는 역사적 정확한 형태는 호환 대상으로
+보존한다.
+
+journal과 활성 anchor의 version·identity가 정확히 같고, accessor metadata가 해당 journal
+version에서 유도한 전체 metadata와 정확히 같은 경우만 정합화할 수 있다. completion witness는
+중단된 정리의 복구를 허용하는 별도 기록이다. cross-version 조합, alias 불일치, 복수 accessor는
+accessor 폐기 전에 차단한다. 이전 발급을 정합화한 같은 실행은 새 SecretID를 발급하지 않는다.
+이 통제는 HOME의 credential, custody, snapshot 또는 recovery 수용을 증명하지 않으며 해당 실제
+입력이 확정될 때까지 HOME 적용을 금지한다.
 
 ### Review Cadence
 

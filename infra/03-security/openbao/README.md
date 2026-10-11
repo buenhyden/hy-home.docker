@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.5"
+version: "0.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 ---
 
 # OpenBao
@@ -75,6 +75,21 @@ config-owned HMAC audit는 `openbao-audit`에 기록합니다. 한 backend가 �
 요청이 차단될 수 있어 외부 rotation/용량/알림이 필요합니다. HOME custody·cold boot·
 실제 복구는 운영 Runbook `RUN-0085`([운영 문서 인덱스](../../../docs/05.operations/README.md))을 따르며
 P06 확대 전제입니다. 임시 고정 버전 시험은 HOME 완료 증거가 아닙니다.
+
+### P01 versioned issuance journal compatibility
+
+새 발급은 journal 문서에 `schema_version: 2`와 `issuance_id`를 기록합니다.
+`issuance_id`는 기존 `nonce`와 같은 값인 호환 별칭이며, accessor metadata에는
+`issuance_schema: "2"`, `issuance_id`, 기존 `sec01_nonce`를 함께 기록합니다. 둘의 값은
+반드시 같아야 합니다. 과거 v1 journal과 anchor는 version 필드 없이 기존 정확한 형태로
+읽을 때 byte를 보존하고, 상태 또는 generation을 갱신할 때도 legacy 형태로 저장합니다.
+
+journal과 활성 anchor는 version·identity가 정확히 일치해야 하며, 실제 accessor metadata는
+해당 journal version에서 유도한 전체 metadata와 정확히 일치해야 합니다. v1/v2 혼합,
+별칭 불일치, 중복 accessor는 어떤 accessor도 폐기하기 전에 차단합니다. completion witness는
+중단된 정리의 복구를 허용하는 별도 기록입니다. 이전 발급을 정합화한 같은 실행은 새 ID를
+발급하지 않습니다. 이는 source 계약이며, 실제 HOME 대상·custody·복구 입력은 아직 확정되지
+않았습니다.
 
 ## Validation
 

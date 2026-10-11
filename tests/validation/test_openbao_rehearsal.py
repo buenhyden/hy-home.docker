@@ -16,6 +16,7 @@ import json
 import os
 import re
 import secrets
+import shutil
 import sys
 import time
 import unittest
@@ -46,6 +47,166 @@ else:
 
 
 class OpenBaoCleanupTests(unittest.TestCase):
+    def test_server_config_bind_preserves_group_write_under_safe_umask(self):
+        fixture = OwnedFixture()
+        previous = os.umask(0o022)
+        try:
+            fixture.auth_volume = "p01-owned-auth"
+            with (
+                mock.patch.object(fixture, "volume", return_value="p01-owned-data"),
+                mock.patch.object(
+                    fixture,
+                    "container",
+                    side_effect=RehearsalFailure("synthetic creation boundary"),
+                ) as container,
+            ):
+                with self.assertRaisesRegex(
+                    RehearsalFailure, "^synthetic creation boundary$"
+                ):
+                    fixture.server("config-mode")
+                container.assert_called_once()
+            mode = (fixture.directory / "config-mode-config").stat().st_mode & 0o777
+            self.assertEqual(0o770, mode)
+        finally:
+            os.umask(previous)
+            shutil.rmtree(fixture.directory)
+
+    def test_version_probe_rejects_similar_and_prefixed_version_tokens(self):
+        fixture = object.__new__(OwnedFixture)
+        fixture.containers = ["p01-owned-server"]
+        fixture.version = "2.7.1"
+        for output in (
+            b"OpenBao v2.7.10",
+            b"OpenBao v2.7.1suffix",
+            b"prefix OpenBao v2.7.1",
+        ):
+            with (
+                self.subTest(output=output),
+                mock.patch.object(
+                    fixture,
+                    "docker",
+                    return_value=SimpleNamespace(returncode=0, stdout=output),
+                ),
+            ):
+                with self.assertRaisesRegex(
+                    RehearsalFailure,
+                    "^native image version differs from reviewed fixture$",
+                ):
+                    fixture.server_version("p01-owned-server")
+
+    def test_failed_version_probe_categories_never_echo_output(self):
+        for state, expected in (
+            (
+                {"running": True, "oom_killed": True, "exit_code": 0},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {"running": True, "oom_killed": False, "exit_code": 66},
+                "STATE_UNAVAILABLE",
+            ),
+            ({"running": False, "oom_killed": False, "exit_code": 66}, "EXITED_66"),
+            (
+                {"running": True, "oom_killed": False, "exit_code": 0},
+                "EXEC_FAILED_WHILE_RUNNING",
+            ),
+            (
+                {"running": True, "oom_killed": False, "exit_code": "private"},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {"running": False, "oom_killed": False, "exit_code": True},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {"running": False, "oom_killed": False, "exit_code": -1},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {"running": False, "oom_killed": False, "exit_code": 256},
+                "STATE_UNAVAILABLE",
+            ),
+            (
+                {
+                    "running": False,
+                    "oom_killed": False,
+                    "exit_code": 0,
+                    "Error": "private",
+                },
+                "STATE_UNAVAILABLE",
+            ),
+        ):
+            with self.subTest(expected=expected):
+                fixture = object.__new__(OwnedFixture)
+                fixture.containers = ["p01-owned-server"]
+                fixture.version = "2.7.1"
+                with mock.patch.object(
+                    fixture,
+                    "docker",
+                    side_effect=[
+                        SimpleNamespace(
+                            returncode=1, stdout=b"private", stderr=b"private"
+                        ),
+                        SimpleNamespace(
+                            returncode=0, stdout=json.dumps(state).encode()
+                        ),
+                    ],
+                ) as docker:
+                    with self.assertRaisesRegex(RehearsalFailure, "^" + expected + "$"):
+                        fixture.server_version("p01-owned-server")
+                    self.assertEqual("p01-owned-server", docker.call_args.args[-1])
+                    self.assertNotIn("Error", docker.call_args.args[2])
+
+    def test_version_probe_refuses_unowned_names_without_docker(self):
+        fixture = object.__new__(OwnedFixture)
+        fixture.containers = ["p01-owned-server"]
+        with mock.patch.object(fixture, "docker") as docker:
+            with self.assertRaisesRegex(RehearsalFailure, "^STATE_UNAVAILABLE$"):
+                fixture.server_version("openbao")
+            self.assertEqual(
+                "STATE_UNAVAILABLE", fixture.server_failure_state("openbao")
+            )
+            docker.assert_not_called()
+
+    def test_version_probe_success_and_unavailable_state(self):
+        fixture = object.__new__(OwnedFixture)
+        fixture.containers = ["p01-owned-server"]
+        fixture.version = "2.7.1"
+        with mock.patch.object(
+            fixture,
+            "docker",
+            return_value=SimpleNamespace(returncode=0, stdout=b"OpenBao v2.7.1"),
+        ) as docker:
+            fixture.server_version("p01-owned-server")
+            docker.assert_called_once()
+        for result in (
+            SimpleNamespace(returncode=1, stdout=b"private"),
+            SimpleNamespace(returncode=0, stdout=b"not-json"),
+            SimpleNamespace(returncode=0, stdout=b"null"),
+        ):
+            with mock.patch.object(fixture, "docker", return_value=result):
+                self.assertEqual(
+                    "STATE_UNAVAILABLE",
+                    fixture.server_failure_state("p01-owned-server"),
+                )
+
+    def test_version_probe_failure_reports_sanitized_owned_state(self):
+        fixture = object.__new__(OwnedFixture)
+        fixture.containers = ["p01-owned-server"]
+        fixture.version = "2.7.1"
+        with mock.patch.object(
+            fixture,
+            "docker",
+            side_effect=[
+                SimpleNamespace(returncode=1, stdout=b"private output withheld"),
+                SimpleNamespace(
+                    returncode=0,
+                    stdout=b'{"running":false,"oom_killed":true,"exit_code":137}',
+                ),
+            ],
+        ):
+            with self.assertRaisesRegex(RehearsalFailure, "^OOM_KILLED$"):
+                fixture.server_version("p01-owned-server")
+
     def test_failed_cleanup_still_attempts_every_owned_resource(self):
         for failure in (
             "helper-exit",
@@ -185,7 +346,16 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             flush=True,
         )
 
-    def wrapping(self, client, fixture, server, agent):
+    def wrapping(
+        self,
+        client,
+        fixture,
+        server,
+        agent,
+        *,
+        interrupted_version=1,
+        reconcile_only=False,
+    ):
         status, role = client.api(
             "GET", "auth/approle/role/hy-home-renderer/role-id", token=self.issuer_token
         )
@@ -307,6 +477,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             module.ROLE,
             revision,
             module.MANIFEST,
+            schema_version=interrupted_version,
         )
         with module.Journal(journal) as durable:
             durable.save(abandoned)
@@ -318,6 +489,22 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             headers={"X-Vault-Wrap-TTL": "60s"},
         )
         self.must(status == 200, "synthetic interrupted native issue failed")
+        status, listed = client.api(
+            "LIST", module.PREFIX + "/secret-id", token=tokens[1]
+        )
+        accessors = listed.get("data", {}).get("keys", [])
+        self.must(status == 200 and len(accessors) == 1, "native accessor is ambiguous")
+        status, looked_up = client.api(
+            "POST",
+            module.PREFIX + "/secret-id-accessor/lookup",
+            {"secret_id_accessor": accessors[0]},
+            token=tokens[1],
+        )
+        self.must(
+            status == 200
+            and looked_up.get("data", {}).get("metadata") == abandoned.metadata(),
+            "native versioned metadata differs from persisted journal",
+        )
         reconciliation = captured(
             argv, data=("\n".join(tokens) + "\n").encode(), allow_failure=True
         )
@@ -348,6 +535,8 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 client.api(method, path, payload, token=tokens[1])[0] == 403,
                 "cleanup token crossed resource boundary",
             )
+        if reconcile_only:
+            return None  # Do not enter the existing unbounded delivery-container path.
         result = captured(
             argv, data=("\n".join(tokens) + "\n").encode(), allow_failure=True
         )
@@ -625,6 +814,87 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 self.input_digest() == inputs,
                 "rehearsal source input changed during execution",
             )
+        finally:
+            fixture.cleanup()
+
+    def test_native_versioned_issuance_reconciliation(self):
+        inputs = self.input_digest()
+        fixture = OwnedFixture()
+        print("observed versioned issuance input SHA256: " + inputs, flush=True)
+        print("observed isolated fixture owner: " + fixture.owner, flush=True)
+        try:
+            fixture.prepare()
+            server, client = fixture.server("server", active=True)
+            client.initialize()
+            self.configure(client)
+            agent = fixture.agent("agent", start=False)
+            for version in (1, 2):
+                self.wrapping(
+                    client,
+                    fixture,
+                    server,
+                    agent,
+                    interrupted_version=version,
+                    reconcile_only=True,
+                )
+                print(
+                    "observed v" + str(version) + " native exact reconciliation: PASS",
+                    flush=True,
+                )
+            # Native API authentication is separate from Agent delivery/readiness.
+            metadata = {
+                "issuance_schema": "2",
+                "issuance_id": secrets.token_hex(16),
+                "sec01_role": "hy-home-renderer",
+                "sec01_issued_at": time.strftime(
+                    "%Y-%m-%dT%H:%M:%S+00:00", time.gmtime()
+                ),
+            }
+            metadata = {**metadata, "sec01_nonce": metadata["issuance_id"]}
+            status, issued = client.api(
+                "POST",
+                "auth/approle/role/hy-home-renderer/secret-id",
+                {"metadata": json.dumps(metadata)},
+                headers={"X-Vault-Wrap-TTL": "60s"},
+                token=self.issuer_token,
+            )
+            self.must(status == 200, "native v2 response wrapping failed")
+            status, unwrapped = client.api(
+                "POST", "sys/wrapping/unwrap", {}, token=issued["wrap_info"]["token"]
+            )
+            self.must(status == 200, "native v2 unwrap failed")
+            role_id = client.api(
+                "GET",
+                "auth/approle/role/hy-home-renderer/role-id",
+                token=self.issuer_token,
+            )[1]["data"]["role_id"]
+            payload = {"role_id": role_id, "secret_id": unwrapped["data"]["secret_id"]}
+            status, login = client.api("POST", "auth/approle/login", payload, token="")
+            self.must(status == 200, "native v2 authentication failed")
+            self.must(
+                client.api("POST", "auth/approle/login", payload, token="")[0] >= 400,
+                "native v2 single-use replay authenticated",
+            )
+            self.put(
+                client, "auth/token/revoke", {"token": login["auth"]["client_token"]}
+            )
+            self.must(self.input_digest() == inputs, "native source input changed")
+            print(
+                "observed v2 wrapped API login and single-use denial: PASS", flush=True
+            )
+        finally:
+            fixture.cleanup()
+
+    def test_native_server_start_diagnostic(self):
+        inputs = self.input_digest()
+        fixture = OwnedFixture()
+        print("observed server diagnostic input SHA256: " + inputs, flush=True)
+        print("observed isolated fixture owner: " + fixture.owner, flush=True)
+        try:
+            fixture.prepare()
+            fixture.server("diagnostic", ready=False, diagnostic=True)
+            self.must(self.input_digest() == inputs, "diagnostic source input changed")
+            print("observed SERVER_START_VERSION_TCP_DIAGNOSTIC: PASS", flush=True)
         finally:
             fixture.cleanup()
 
