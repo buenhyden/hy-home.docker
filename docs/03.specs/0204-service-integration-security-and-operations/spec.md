@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.6.1"
+version: "1.7.0"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -133,7 +133,10 @@ changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
 credential rotation, DNS/firewall edit or HOME restart without the named target
 and recovery boundary. The current request authorizes its source/docs/tests,
 logical commits and reviewed local `main` integration after required checks;
-PRs, remote pushes and `dev` are excluded from this current delivery request.
+PRs and remote pushes are excluded from that SEC01/SMTP01/CLN01 integration
+delivery; `dev` is excluded throughout. The subsequently supplied P02 execution
+prompt selects its own SPEC-0204 PR after implementation, latest-head CI and
+independent review, without absorbing unrelated integration/runtime commits.
 Missing permission or target defers only the dependent operation.
 
 ### Open Questions
@@ -372,6 +375,18 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     and trust facts; it is not inferred from a missing HOME target. TSK-0009
     owns this increment; LAB runtime and
     learning applications remain out of scope.
+16. P02 provides one value-free secret catalog with preserved issued IDs,
+    canonical COMM-002 and an alias/tombstone for COMM-003, explicit
+    classification, consumers, delivery and independent recovery dependencies.
+    Public/local views and generator rules reject sensitive fields, aliases
+    without a canonical source and reissuance of migrated or retired identities.
+    Source classification and provisional mappings may proceed from integrated
+    SMTP01; P01's final authentication/recovery contract gates final destinations
+    and P06 gates real KV copy and consumer delivery. Unknown consumers remain
+    BLOCKED_FACTS and positive recovery consumers remain retained under CLN01.
+    TSK-0010 owns catalog, schema, view tooling and focused regressions; shared
+    Compose/environment/Registry/backup integration has one coordinator writer.
+    No credential value is read, copied, rotated or deleted by Task issuance.
 <!-- markdownlint-enable MD029 -->
 
 ## Related Documents

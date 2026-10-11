@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.7.1"
+version: "1.8.0"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -104,6 +104,32 @@ out of scope.
 | W29 | 14 | Exact-image synthetic SMTP authentication, capture and failure cases | W27 | TSK-0005 | Opt-in isolated native rehearsal, separate from HOME |
 | W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Preserve logical commits; reviewed local-main delivery under the superseding user instruction; HOME send/authentication and operational retirement acceptance remain separate |
 | W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Source/common repairs, isolated datastore and current local leaf receipts integrated. Global latest/security evidence, HOME deployment and complete recovery remain pending/blocked; SOURCE delivery does not close SEC01 |
+| W32 | 16, 8 | P02 single value-free catalog, classification, generated views and reissuance guards | W27, W28 | TSK-0010 | Existing source/schema reuse, alias and privacy RED/GREEN, scoped changed/staged checks and independent review; real migration/recovery are separate lanes |
+
+### P02 parallel start and shared ownership
+
+TSK-0010 is issued from clean local main `2b9f5ec82cb73ea148fb27bfbd2d35c10e328e51`.
+The first remote observation was `a31a38ca`; a later `ls-remote` and fetch
+confirmed remote main at the same `2b9f5ec82` integration revision. P02 uses its own worktree and
+`codex/p02-secret-catalog` branch from the Task issuance commit. Integrated
+SMTP01 permits public classification and provisional mapping now; P01's final
+OpenBao image, authentication and recovery evidence still gate final runtime
+destinations and P06 migration. This narrows the historical P01-before-P02
+dependency to those final mappings; it does not assert a P01 runtime PASS.
+
+P02 is the sole implementation writer for its new catalog/schema/view tooling,
+focused tests and subject-0085 secret documentation. SEC01 owns images and
+exact-image support verdicts; SMTP01 owns canonical source and retirement;
+CLN01 owns consumer/delete assessment. Existing shared generator, public view
+and support-matrix changes are proposals until the coordinator serially
+integrates them against the current head. Root Compose, environment, Registry,
+workflow/manifest registration, backup and other active Tasks are read-only to
+the P02 writer. The SEC01/SMTP01/CLN01 integration retains its local-main
+delivery instruction. The newly supplied P02 execution prompt instead requests
+an owning-Spec PR after implementation, current-head CI and independent review.
+P02's PR must contain only its own logical units against a fresh remote baseline;
+this assessment/issuance performs no remote push or PR creation. Dev remains
+unused. Current remote synchronization does not certify operational acceptance.
 
 ### SMTP01 sequence and private-operation boundary
 
