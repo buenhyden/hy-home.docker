@@ -1,8 +1,8 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.1.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-11"
 layer: "specs"
@@ -55,11 +55,14 @@ their dependent lane. Unsupported overall budgets remain unknown.
 
 ### Worker and Exact Ownership
 
-One P05 writer uses `codex/p05-n8n-outbox-notifier` in
-`/home/hyunyoun/data/hy-home.docker/.worktrees/p05-n8n-outbox-notifier`, from
-the issuance commit after reviewed local-main integration. Record actual
-branch/HEAD/clean status and input hashes before changes. This issuance creates
-no implementation chat. Other writers are active: never reset, stash, clean,
+One P05 writer now uses `codex/p05-n8n-outbox-integrated` in
+`/home/hyunyoun/data/hy-home.docker/.worktrees/p05-n8n-outbox-integrated`, from
+the observed clean local main `4c83f14b11a77e13e582eb85d0bf256685472a95`.
+The user's common-gate handoff explicitly authorizes preservation, a new
+worktree, source-only P04 reconciliation, default checks and logical commits.
+The old issuance worktree and its 28 staged paths remain preserved unchanged.
+This phase authorizes no push, PR, runtime or shared-file mutation.
+Other writers are active: never reset, stash, clean,
 stage or force-push their changes.
 
 After checking for existing consumers/implementations, own these new paths:
@@ -242,6 +245,52 @@ reset, broad chown, encryption-key replacement or private material deletion.
 
 ## Work Log
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0013 | draft | ready | #inputs-and-authorization |
+| SPEC-0204-TSK-0013 | ready | in-progress | #w40-w41-source-execution |
+
+### W40 W41 Source Execution
+
+The historical source-start request started W40/W41 in the issued P05 worktree.
+Its clean
+starting HEAD and branch were `f7543e0697e2473cbbbeb254792e7a1d5b4b8423`
+and `codex/p05-n8n-outbox-notifier`. Read-only `git ls-remote origin
+refs/heads/main` returned `4e26a5a8022a7307c7461af60337442912955df1`;
+`gh pr list --repo buenhyden/hy-home.docker --state open` returned no open PRs.
+Both commands exited0. At that observation, local main was at issuance HEAD;
+it was not pushed. P04's Task and workload/tests were dirty and preserved;
+no reviewed SQL hash or publication receipt had been handed off.
+W42-W44 were NOT_RUN.
+
+The implementation is split between the builder/graph/fixture/test owner and
+the bounded native SMTP-node owner; they share this Task, separate exact file
+scopes and no operational permission. Independent reviewers receive read-only
+scope. Applicable cost/token/time/retry ceilings and native budget enforcement
+are UNKNOWN; no account or runtime limits are inferred. The controller owns
+this Task and new workload navigation, and serializes final review/index/commit.
+The `test-authoring` skill and `test-design`, `diff-review`, `commit-message`
+and `handoff` prompt contracts apply to their respective outputs.
+
+The provisional consumer contract is explicitly unbound. It contains no
+invented P04 commit/hash, native credential ID, installation receipt or role
+grant. The generated workflow stays inactive; custom-node registration,
+network grants and suite registration are shared-owner proposals.
+
+Fresh baseline regression command from this worktree:
+
+```sh
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests \
+  tests.lib.ops.test_smtp_contract \
+  tests.validation.test_service_wiring_contracts -q
+```
+
+Result: 45 tests PASS, 2.940s, exit0 on issuance HEAD. This is UNIT evidence;
+no native import, SMTP capture, schedule, credential or restoration ran.
+
 ### Assessment and Next Work Units
 
 At initial assessment4e26a5a80, coordinator/main/P04 worktrees were clean.
@@ -277,6 +326,269 @@ consumption, manual offload, SMTP capture or an opsflow database/role resource.
 6. W45: subject0053 and service README proposals, registered affected gates,
    final independent code/security/SQL/IaC/docs reviews, CI and owning-Spec PR.
 
+### Historical W41 Source Results
+
+The controller resumed ownership of both source/test lanes after delegated
+tool/escalation calls stalled; existing edits were preserved and the transfers
+were acknowledged before further writes. The builder's initial test landed,
+but its worker did not observe RED. The controller then ran its five tests:
+exit1 with five expected missing-builder errors, before writing the builder.
+Eight graph/binding/preflight tests subsequently exited1 with four expected
+missing generated JSON/contract/preflight errors before those artifacts existed.
+The node owner observed the initial missing-dist RED (exit1).
+
+Final source snapshot SHA256 is
+`496e59646b17d6031f2687635bc0b9aaaba4818a1263e5a48572b6e148b088e5`,
+over the 27 new owned source/document/test paths, using SHA256 of the
+sorted JSON path-to-SHA256 map. The final map is preserved in ignored
+`.agent-work/p05-final-source-freeze.json`. Core source hashes are:
+
+- builder: `cb5f7611cd43a155986894441fdd67b45e872b69c3dc44a9ca482c5248cdc0e0`.
+- transport: `d6cb1df02693a66806385842fcc58c668f54c0cf596ddd9d92dc15ab779083aa`.
+- native node: `eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146`.
+
+The source has one deterministic builder, inactive JSON, supplied-reference
+draft binding, public synthetic cases and fail-closed structural preflight.
+It copies no P04 SQL/DAG and grants no native operation. DB statement/socket
+deadline and cancellation remain UNBOUND in the consumer contract; no fictitious
+Postgres JSON option claims enforcement. Actual credential IDs remain placeholders.
+
+Corrections observed during implementation/review:
+
+- Supplied-reference claim uses a 64-hex run, its four explicit sources and
+  row_count1..5000; an early UUID/slug/count draft was corrected on both sides.
+- A native error retains its node descriptor. The custom node now attaches only
+  a static minimal descriptor and static code; tests reject literal claim and
+  credential-reference leakage.
+- Pre-send cancellation is cancelled; in-flight cancellation is uncertain,
+  because DATA might already have been accepted. Owned sockets are destroyed.
+- The API development dependency's Axios audit found two HIGH entries. A scoped
+  exact override corrected the lock; both full and production audit now report
+  zero findings. This does not remediate installed n8n images.
+- A longer valid Message-ID is MIME-folded. The offline protocol test initially
+  failed on a one-line assumption; it now unfolds header whitespace and asserts
+  the same exact run-derived ID. No delivery assertion was weakened.
+- Trailing line-terminator negative cases pass the existing node regex guards
+  and the Python/JavaScript claim guards. No regex vulnerability is claimed.
+- Final evidence checks caught an undeclared criterion8/W41 pair and a
+  `BLOCKED` Result outside the registered domain. Both new rows now use the
+  assigned criterion19/W41 pair; failed metadata is `FAIL` with pending
+  acceptance and its blocking cause retained in Location. The existing Spec
+  Package loader then validated all 25 canonical packages, exit0.
+
+The following commands ran in that issuance worktree, all exit0:
+
+```sh
+rtk proxy /tmp/hy-home-p09-qa/bin/coverage run \
+  --data-file .agent-work/p05-builder.coverage --branch \
+  --source=infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools \
+  -m unittest tests.lib.ops.test_n8n_outbox_workflow \
+  tests.validation.test_n8n_outbox_contract \
+  tests.validation.test_n8n_outbox_rehearsal -q
+rtk proxy /tmp/hy-home-p09-qa/bin/coverage report \
+  --data-file .agent-work/p05-builder.coverage --fail-under=80 -m
+```
+
+Result: 15 tests PASS; combined statement/branch coverage98percent. Preflight
+tests inspect structural gaps and do not run a native rehearsal. In
+`infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp`:
+
+```sh
+rtk npm run test:coverage
+rtk npm audit --json
+rtk npm audit --omit=dev --json
+rtk npm pack --dry-run --ignore-scripts --json
+```
+
+Result: 24 tests PASS, lines97.33percent, branches94.83percent,
+functions87.88percent, each above80; both audits zero findings; pack dry-run
+includes only public README/package/compiled artifacts. Tests use stubs and
+actual Nodemailer over an in-memory Duplex byte stream; no TCP/DNS/SMTP service
+connection, real credential or database is used. Source API compatibility is
+not installed-image compatibility. Package/lock owns exact pins.
+
+Ruff check and format/check passed on the six owned Python files; the second
+format pass was unchanged. The local-staged official precommit controller
+passed on all 28 owned paths, including JSON, Markdown, Python format/lint and
+hardcoded-secret detection. It does not replace the document-contract gate.
+
+Metadata against the actual Registry failed with ten classification findings
+on exactly two required README paths under `nodes/OpsflowSmtp/`. The Registry's
+lowercase subpath profile does not classify this prescribed camel-case path.
+The immutable upstream version references now carry scoped advisory and
+compatibility explanations, with package/lock retaining pin ownership.
+
+The same check against a proposed Registry containing only the two exact
+`package-readme.additional_paths` entries passed: nine selected documents,
+zero violations, exit0. The explicit lifecycle comparison base was issuance
+HEAD `f7543e0697e2473cbbbeb254792e7a1d5b4b8423`. This candidate-only result does
+not mean the actual Registry or remote-main delivery gate passed. Reports are
+`.agent-work/p05-metadata-current.log` and `p05-metadata-proposed.log`.
+
+The authoritative changed-profile explain route selects document-contract,
+document-graph/lifecycle, agent-governance and existing static operations gates.
+The new Python and node test routes are not yet registered in its shared DAG.
+No full changed-profile PASS, native PASS or latest-head CI is claimed.
+At that issuance point, logical commits and PR publication were pending the
+required shared Registry integration. HEAD was the issuance SHA;
+all owned changes were preserved in that worktree.
+
+Final document links passed on 1202 documents and 11635 links: zero failures,
+one existing Stage98 historical-provenance warning, exit0. New README links
+route through the Stage03 navigation entry, and folder routers link only to
+direct child READMEs. Working-tree and cached `git diff --check` passed.
+
+Independent code review reported no source findings and approved the W40/W41
+source slice with follow-up. It directly observed the final 15 Python tests
+and an earlier 21-node test pass; final 24-node/coverage/audit receipts were
+controller-reported. Independent security review approved the same frozen
+source with no remaining findings. Both reviewed the final digest above and
+exclude shared integration, private credentials, runtime and delivery. The
+final Task result record is checked separately from the 27-file source map.
+Neither disposition completes criterion19 or grants native execution.
+
+### Historical Shared Integration Proposals
+
+Exact hunks and node gate commands are in ignored
+`.agent-work/p05-integration-proposals/`; they are proposals, not acceptance
+evidence or applied source. Their six base blobs at issuance HEAD are:
+
+| Shared path | Base blob | Proposed change | Applied |
+| --- | --- | --- | --- |
+| docs/99.templates/registry.json | 00ea622af93736ce4e2e23854caa714601c63955 | Two exact camel-case node README paths; candidate metadata PASS, actual gate blocked | no |
+| .github/workflow-contract.yml | 7dc037023853a003ef38a53d21e2c8d1ac0dd3b4 | Dedicated Python modules; typed node build/coverage/audit setup request | no |
+| infra/07-workflow/n8n/README.md | e45d694458dcbb4f35cb540cc55b64f881eda1e3 | Workload navigation | no |
+| docs/05.operations/guides/0053-n8n.md | 2e76cfcee57535b3e5430880877b18244af875e9 | Inactive source and native prerequisites | no |
+| docs/05.operations/policies/0053-n8n.md | 9777813a5ad646392153ada772c4079bdf5adcd3 | Function-only role, capture/privacy boundary | no |
+| docs/05.operations/runbooks/0053-n8n.md | e0443146d2c4de5c1f1ac494a7d15bc42f01618c | Uncertainty, fresh claim, paired restore and rollback | no |
+
+The current script manifest permits only scripts/ and .agents/evaluations/;
+the workload-local generator is outside that inventory. Manifest is NO_CHANGE;
+no schema extension is introduced merely to register it. Shared image/custom
+bind, DEV/capture networks, endpoint/credentials and native gate registration
+still wait for their exact owner contracts. Preserve P04 dirty work and deliver
+its dependency before final P05 PR integration.
+
+### Integrated Source Work Log
+
+The current integration baseline is local main
+`4c83f14b11a77e13e582eb85d0bf256685472a95`, after P04 and P06 source
+integration. Common validator/Registry commit
+`085d9bf795f31d9083f290cfdbcdc1a17ba72db3` already registers exactly the
+two prescribed OpsflowSmtp package README paths. No external Registry is used
+for this phase's metadata check. Prior candidate-only PASS and actual FAIL
+above describe the preserved issuance worktree, not the new integrated gate.
+
+Before migration, the sole writer fixed old HEAD
+`f7543e0697e2473cbbbeb254792e7a1d5b4b8423`, its index SHA256
+`44c772f1fc8c6efa37758a35430ed0b04b1e6bf899c2d1c4b3c31d6b0c86e433`
+and all 28 public owned file hashes. The binary staged patch SHA256 is
+`44db414ba98c88746df1dadcd3c4c69f519bf634cbe39b7f406cdcb0f130f33d`.
+The patch and receipt are preserved in each worktree's ignored
+`.agent-work/p05-integrated-handoff/`. New worktree creation at the exact
+baseline, apply-check and indexed apply each exited0. The canonical Task had
+no concurrent main change since issuance; its source results remain historical
+above, and this section records the current phase. Other worktrees and shared
+paths were not staged or changed.
+
+The canonical P04 SQL files are read-only inputs. Observed SHA256 values are
+001 `57a744cf33581bafd73f610b9c18c83d64c9457486a02e02398df56b444ee584`
+and 002 `0a00944569aa05b7a0eec6a555cc3357197b26257ee76a1779c7e258eb9a0b73`.
+Their claim result includes `lease_until`; the consumer explicitly projects
+only id/run_id/source/row_count/lease_token. The added regression failed with
+the original SELECT-star query (exit1), then all 16 Python synthetic tests
+passed after the projection fix (exit0). Contract source references assert
+those hashes and six upstream fields while all native binding fields remain
+null. This is source compatibility, not W42/W43 native acceptance.
+
+Actual producer publication, function ACLs, exact image/package/UID/TLS,
+credential/S3/backup and empty recovery targets remain unaccepted. Native
+import, notification, polling, DEV/HOME changes, rotation and recovery are
+NOT_RUN. P01 W23 and P06 pilot holds remain. Request/token/time/concurrency/
+retry ceilings and shared budget allocation remain UNKNOWN.
+
+The integrated 27-file source digest is
+`55856ce4aa2f121d63102731a460b12d054651ac6ff2cab1f3743554d7774b10`; its map is frozen in ignored
+`.agent-work/p05-integrated-source-freeze.json`. Task result-only changes are
+outside that source map. Both independent reviewers checked that exact map:
+code review reports no findings and APPROVE WITH FOLLOW-UP; security review
+reports no findings and approves the source-only scope. Neither disposition
+accepts installation, credentials, native execution or combined-head delivery.
+Security inspected the exact source; its independent hash command was blocked
+by sandbox/escalation tooling, so hash equality relies on the controller's
+frozen map and passing source-contract test. The separate read-only interface
+audit confirms ack/retry signatures and strict current-lease semantics; retry
+true may mean retry or dead, so the public result stays delivery-uncertain.
+
+Actual default Registry metadata passed on nine selected documents, zero
+violations, exit0, using explicit base4c83f14b11 and no external Registry.
+The all-document link check passed: 1213 documents, 11699 links, zero failures,
+one existing Stage98 historical-provenance warning, exit0. Reports are ignored
+`.agent-work/p05-integrated-metadata.log` and `p05-integrated-links.log`.
+Final source input preceded this result-only record; final Task metadata and
+its own staged gate are required again before the documentation commit.
+
+Python synthetic coverage command remains the one recorded above, now from
+the integrated worktree: 16 tests PASS, combined coverage98percent, exit0;
+the original five-field projection regression first failed as recorded.
+The six owned Python files passed Ruff lint and format/check. The existing
+workflow-version/SMTP/wiring regression command passed all45 tests in3.366s,
+exit0, on the integrated baseline.
+
+In the OpsflowSmtp package, `npm ci --ignore-scripts --no-audit --no-fund`
+installed the exact lock. `npm run test:coverage` built the TypeScript and
+passed24 offline tests, with lines97.33percent, branches94.83percent and
+functions87.88percent. `npm audit --json` and `npm audit --omit=dev --json`
+both exited0 with zero findings; `npm pack --dry-run --ignore-scripts --json`
+exited0 with eight public README/package/compiled files and no publication.
+All transport tests remain stubs or in-memory protocol bytes: no DB/TCP/DNS/
+service SMTP connection, runtime credential or installed-image acceptance.
+
+The official `run-ci-precommit.sh --mode local-staged` passed all28 owned
+paths before partition, exit0, including metadata-independent Markdown/JSON/
+Python style and secret detection. Every logical unit then separately passed
+Commitizen and that same staged gate immediately before its ordinary commit.
+The first ordinary node commit was blocked by the installed Git secret guard
+on a synthetic long password marker. No commit or bypass occurred. Replacing
+only that test marker with `dummy` preserved nonempty-password rejection and
+zero transport calls; Node build/24 tests/coverage and both independent source
+reviews then passed again for the final digest above, followed by the per-unit
+staged gate. No real secret, dependency or production behavior changed.
+Working-tree and cached `git diff --check` passed. A full registered changed
+profile, hosted/latest-head CI, PR, push and merge are NOT_RUN; their combined
+head cannot be accepted before the coordinator registers the new gates.
+
+Refreshed shared proposals are in ignored
+`.agent-work/p05-integration-proposals/proposal-index.json`; all five patch
+apply-checks exited0 without application. Registry is NO_CHANGE_ALREADY_INTEGRATED
+at085d9bf795, current blob `d792252f37995e09a7d24d739953b2873b1a88af`.
+The three Python modules and workload prefix appear in both changed-path and
+changed-root routing proposal tables. The exact node lock/build input hashes
+and setup/coverage/audit/pack command arrays request one typed Node integration
+and the same prefix in both routes. The coordinator owns adapters, budgets,
+registration, application, regression checks and combined-head acceptance.
+
+| Shared path | Current base blob | Applied |
+| --- | --- | --- |
+| .github/workflow-contract.yml | 0788cfe0197a279660c4effb9d6f4d83ba8e17f9 | no |
+| infra/07-workflow/n8n/README.md | e45d694458dcbb4f35cb540cc55b64f881eda1e3 | no |
+| docs/05.operations/guides/0053-n8n.md | 2e76cfcee57535b3e5430880877b18244af875e9 | no |
+| docs/05.operations/policies/0053-n8n.md | 9777813a5ad646392153ada772c4079bdf5adcd3 | no |
+| docs/05.operations/runbooks/0053-n8n.md | e0443146d2c4de5c1f1ac494a7d15bc42f01618c | no |
+
+### Commit Ledger
+
+| Commit | Logical unit | Scope | Verification |
+| --- | --- | --- | --- |
+| 9aee10677c5d1aa8481a843ca92d7db9a713c6d3 | Bounded SMTP capture node | 13 node/package/test/navigation paths | Node coverage/audits/build/pack, independent source reviews, Commitizen and per-unit staged gate PASS |
+| 673dd0fc72ae9aa6505fc15a2ff9f097da967f63 | Inactive workflow and source contracts | 14 builder/workflow/fixture/contract/test/navigation paths | 16 Python tests, coverage, default metadata/links, independent source reviews, Commitizen and per-unit staged gate PASS |
+
+This final Task record is a separate documentation commit; its full SHA is
+resolved from branch HEAD in the final machine receipt, without a self-reference.
+Next action is coordinator integration of the fixed source commits and refreshed
+typed Node/Python/workload proposals, followed by combined-head gates.
+Native notification and DEV/HOME changes remain NOT_RUN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -284,11 +596,15 @@ consumption, manual offload, SMTP capture or an opsflow database/role resource.
 | Git and owner baseline | 1, 19 | W40 | status/worktrees/fetch/open PR list | Local/remote4e26a5a80 | PASS | Baseline only; no remote or runtime write by this assessment | pending |
 | Existing source contracts | 1, 8, 19 | W40 | Workflow version, SMTP and service wiring unittest | Clean4e26a5a80 | PASS | 45 tests, 3.023s, exit0; command below | pending |
 | Supplied reference audit | 19 | W40 | Six public files, four static tests and JSON generator parity | Prompt669a86c89a76 | PASS | 4 tests, 0.02s, exit0; generator semantic parity; no native proof | pending |
-| New notifier source | 19 | W41 | RED/GREEN builder/workflow/transport/privacy | Issuance commit pending | NOT_RUN | Independent worker implementation pending | pending |
+| New notifier source | 19 | W41 | RED/GREEN builder/workflow/transport/privacy | Source snapshot 496e59646b17 | PASS | 15 Python and 24 offline node tests; coverage and audit above; native acceptance is separate | pending |
+| Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | Actual Registry at issuance; exact proposal only | FAIL | Links/precommit pass; actual metadata has ten findings on two node README paths; candidate-only metadata passes; shared CI registration pending | pending |
+| Independent source reviews | 19 | W41 | Code/specification and source-security review | Source snapshot 496e59646b17 | PASS | Code approved with follow-up; security approved; no remaining source findings; runtime/delivery excluded | pending |
+| Integrated source checks | 19 | W41 | Default Registry metadata, synthetic tests/coverage/audit/build/pack, links and staged gate | Source snapshot 55856ce4aa2f; base4c83f14b11 | PASS | Integrated work log and ignored receipts above; native and combined-head acceptance excluded | pending |
+| Integrated independent reviews | 19 | W41 | Code and security review | Source snapshot 55856ce4aa2f | PASS | No source findings; code approved with follow-up; security approves source-only scope | pending |
 | Frozen P04 binding | 19 | W42 | Reviewed SQL/version/hash and roles | P04 W36 pending | NOT_RUN | P04 remains sole SQL owner | pending |
 | Native import and manual execution | 19 | W43 | Exact image, credential and worker/SMTP proof | P04 W38 and relevant readiness pending | NOT_RUN | No import/credential/network/DB action | pending |
 | Scheduled failures and recovery | 19 | W44 | Polling, outages, restart/rotation and empty restoration | No exact action selected | NOT_RUN | No operational acceptance | pending |
-| Delivery | 8, 19 | W45 | Latest-head CI/review/PR/merge | No P05 PR | NOT_RUN | Issuance only; future delivery | pending |
+| Delivery | 8, 19 | W45 | Latest-head CI/review/PR/merge | Integrated source phase | NOT_RUN | Two source commits recorded above; final Task commit and combined-head registration/CI remain separate; native holds are unchanged | pending |
 
 Actual existing-source command, exit0:
 
@@ -312,15 +628,21 @@ modules above, reproducible custom-node build/transport tests if used, and
 opt-in native rehearsal with exact public/private inputs and cleanup. Record
 commands, SHA/blob hashes, RED/GREEN exits, coverage, skipped native classes,
 failures/corrections and actual receipts. Coordinator integrates registration
-into existing manifest/workflow before final scripts/qa.py changed and
+into existing manifest/workflow before final registered changed-profile QA and
 run-ci-precommit.sh --mode local-staged; proposal-only registration is not PASS.
 Run document metadata/links and git diff --check. Keep SOURCE / UNIT / STATIC /
 ISOLATED / HOME / MIGRATION / ROTATION / RECOVERY / DELIVERY separate. Do not
 close native acceptance using reference test results or container health.
 
+W40 corrected a stale verifier route: `scripts/qa.py` does not exist at the
+issuance HEAD (attempt exited2). The current controller is
+`scripts/validation/run-ci-gate.py --profile changed --explain`; executable
+local leaves use its `--local-only` route and hosted aggregate acceptance stays
+separate. No shared harness was created or replaced to satisfy the stale text.
+
 ## Review and Completion
 
-Issuance stays draft; the worker records in-progress when implementation starts.
+The Task remains in-progress; W41 source evidence does not complete criterion19.
 Criterion19 requires real native notification/failure/rotation/recovery proof;
 source-only delivery is reported separately and does not complete this Task.
 Existing criterion10 remains the P04/P05 umbrella and cannot close on one side.
