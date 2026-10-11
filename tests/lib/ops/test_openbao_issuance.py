@@ -165,6 +165,24 @@ class IssuanceRecoveryTests(unittest.TestCase):
             self.assertEqual(["issue", "deliver", "start", "ready"], api.calls)
             self.assertIsNone(journal.load())
 
+    def test_new_issuance_binds_versioned_id_to_legacy_metadata_alias(self):
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            M.Journal(directory) as journal,
+        ):
+            api = FakeAPI("kill")
+            with self.assertRaises(SystemExit):
+                self.run_case(api, journal)
+            metadata = api.data["synthetic-accessor"]["metadata"]
+            self.assertEqual(
+                "1" * 32,
+                metadata.get("issuance_id"),
+                "new issuance must expose the version-bound identity",
+            )
+            self.assertEqual("2", metadata.get("issuance_schema"))
+            self.assertEqual(metadata["issuance_id"], metadata["sec01_nonce"])
+            self.assertEqual("issuing", journal.load().state)
+
     def test_failure_after_creation_delivery_and_sigterm_revokes_exact_id(self):
         for failure in ("issue", "deliver", "term"):
             with (

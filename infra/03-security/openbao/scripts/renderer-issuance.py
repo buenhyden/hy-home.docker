@@ -55,17 +55,67 @@ class Record:
     image_manifest: str
     state: str = "issuing"
     agent_started_at: str | None = None
+    schema_version: int = 1
+
+    @property
+    def issuance_id(self):
+        return self.nonce
+
+    @classmethod
+    def from_document(cls, raw):
+        if not isinstance(raw, dict):
+            raise Blocked()
+        if "schema_version" not in raw and set(raw) != (
+            set(cls.__dataclass_fields__) - {"schema_version"}
+        ):
+            raise Blocked()
+        if "schema_version" in raw:
+            if (
+                type(raw["schema_version"]) is not int
+                or raw["schema_version"] != 2
+                or set(raw) != set(cls.__dataclass_fields__) | {"issuance_id"}
+                or raw["issuance_id"] != raw["nonce"]
+            ):
+                raise Blocked()
+            raw = {k: v for k, v in raw.items() if k != "issuance_id"}
+        try:
+            return cls(**raw).validate()
+        except (ValueError, TypeError):
+            raise Blocked() from None
+
+    def document(self):
+        fields = {k: v for k, v in self.__dict__.items() if k != "schema_version"}
+        return (
+            fields
+            if self.schema_version == 1
+            else {**fields, "schema_version": 2, "issuance_id": self.nonce}
+        )
+
+    def anchor(self, state):
+        fields = {"nonce": self.nonce, "state": state}
+        return (
+            fields
+            if self.schema_version == 1
+            else {**fields, "schema_version": 2, "issuance_id": self.nonce}
+        )
 
     def metadata(self):
-        return {
+        fields = {
             "sec01_nonce": self.nonce,
             "sec01_role": self.role,
             "sec01_issued_at": self.started_at,
         }
+        return (
+            fields
+            if self.schema_version == 1
+            else {**fields, "issuance_schema": "2", "issuance_id": self.nonce}
+        )
 
     def validate(self):
         if (
-            not re.fullmatch(r"[a-f0-9]{32}", self.nonce)
+            type(self.schema_version) is not int
+            or self.schema_version not in {1, 2}
+            or not re.fullmatch(r"[a-f0-9]{32}", self.nonce)
             or self.role != ROLE
             or not REVISION.fullmatch(self.source_revision)
             or self.image_manifest != MANIFEST
@@ -153,27 +203,34 @@ class Journal:
         raw = self._read_json("issuance.json")
         anchor = self._read_json("issuance.anchor")
         if anchor is not None:
+            version = anchor.get("schema_version", 1) if isinstance(anchor, dict) else 0
+            keys = (
+                {"nonce", "state"}
+                if version == 1
+                else {"nonce", "state", "schema_version", "issuance_id"}
+            )
             if (
                 not isinstance(anchor, dict)
-                or set(anchor) != {"nonce", "state"}
+                or type(version) is not int
+                or version not in {1, 2}
+                or set(anchor) != keys
                 or anchor["state"] not in {"active", "complete"}
-                or not re.fullmatch(r"[a-f0-9]{32}", str(anchor["nonce"]))
+                or not isinstance(anchor["nonce"], str)
+                or not re.fullmatch(r"[a-f0-9]{32}", anchor["nonce"])
+                or (version == 2 and anchor["issuance_id"] != anchor["nonce"])
             ):
                 raise Blocked()
         if raw is None:
             if anchor is not None and anchor["state"] != "complete":
                 raise Blocked()  # Lost active journal never means fresh issuance.
             return None
-        try:
-            record = Record(**raw).validate()
-        except (ValueError, TypeError):
-            raise Blocked() from None
-        if anchor == {"nonce": record.nonce, "state": "complete"}:
+        record = Record.from_document(raw)
+        if anchor == record.anchor("complete"):
             # Finish an interrupted clear using the independently durable witness.
             os.unlink("issuance.json", dir_fd=self.fd)
             os.fsync(self.fd)
             return None
-        if anchor != {"nonce": record.nonce, "state": "active"}:
+        if anchor != record.anchor("active"):
             raise Blocked()
         return record
 
@@ -189,17 +246,15 @@ class Journal:
 
     def save(self, record):
         record.validate()
-        self._write_json("issuance.anchor", {"nonce": record.nonce, "state": "active"})
-        self._write_json("issuance.json", record.__dict__)
+        self._write_json("issuance.anchor", record.anchor("active"))
+        self._write_json("issuance.json", record.document())
 
     def clear(self):
         record = self.load()
         if record is None:
             raise Blocked()
         # Retain a durable completion witness separately from the active journal.
-        self._write_json(
-            "issuance.anchor", {"nonce": record.nonce, "state": "complete"}
-        )
+        self._write_json("issuance.anchor", record.anchor("complete"))
         os.unlink("issuance.json", dir_fd=self.fd)
         os.fsync(self.fd)
 
@@ -212,9 +267,13 @@ def matching_accessors(api, record):
         data = api.lookup(accessor)
         if not isinstance(data, dict) or not isinstance(data.get("metadata"), dict):
             raise Blocked()
-        if data["metadata"].get("sec01_nonce") != record.nonce:
+        metadata = data["metadata"]
+        if record.nonce not in (
+            metadata.get("sec01_nonce"),
+            metadata.get("issuance_id"),
+        ):
             continue
-        if any(data["metadata"].get(k) != v for k, v in record.metadata().items()):
+        if metadata != record.metadata():
             raise Blocked()
         try:
             created = datetime.fromisoformat(
@@ -264,7 +323,9 @@ def run_issuance(api, journal, *, revision, clock=time.time, nonce=secrets.token
         reconcile(api, journal, previous, ready=ready, stopped=stopped)
         # Reconciliation is a distinct result; do not mint another ID on this run.
         return "reconciled"
-    record = Record(nonce(16), utc(clock()), ROLE, revision, MANIFEST).validate()
+    record = Record(
+        nonce(16), utc(clock()), ROLE, revision, MANIFEST, schema_version=2
+    ).validate()
     journal.save(record)  # Durable before any potentially successful server call.
     try:
         wrapped = api.issue(record.metadata())
