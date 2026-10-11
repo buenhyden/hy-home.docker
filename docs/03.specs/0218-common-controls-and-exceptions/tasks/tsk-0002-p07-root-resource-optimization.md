@@ -1,6 +1,6 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -309,6 +309,55 @@ admission SHA: 11 tests passed in 0.042 seconds, exit0, with public output in
 UNIT evidence only. No new P07 helper, schema or fixture exists; no Docker,
 HOME, benchmark, permission, migration, rotation or recovery check ran.
 
+### Segmented Local Source Validation — 2026-10-11
+
+Frozen source input is `5b1a92db48fd508feff4cee0753b3b4468dd41dc`, following
+common/worker integration `c7d56a383ad8b77dd615327d11605b3e15d2146e`.
+The registered local execution plan has33 nodes; public explain exposes10.
+The front-door run exited124 after nodes0–9 passed. First canonical continuation
+exited1 at node18; nodes10–17 passed. Permission-corrected continuation exited1
+at node26; nodes18–25 passed. Final continuation26–32 exited0 with ordinary
+Python, debug true/optimization0 and clean unchanged post-input. Thus all33
+nodes have segmented successful receipts; the original124 and both suffix1
+failures remain failures. No fresh aggregate exit0 or hosted PASS is claimed.
+
+Only two coordinator-checkout entrypoint modes changed775 to755, matching their
+tracked100755 modes: Open WebUI and Gatus. File content hashes and index were
+unchanged, with Git clean and no HOME/runtime effect. The only source delta
+from c7d56a383 is the synthetic workflow fixture's canonical working directory,
+seven changed lines in the existing test. RED: one test/four subcase failures,
+exit1,1.769s; GREEN:39 tests,exit0,7.492s; Ruff/staged checks exit0 and independent
+review ACCEPT. The registered workflow contract SHA256 remains
+`bdb1941e522865a9a381b0913f4a8e266dfb613cbb832ca35889ff26ac3ecfc5`.
+
+Receipts are `.agent-work/p04-p07-registered-suffix-final-fixture-result.json`,
+`.agent-work/p04-p07-checkout-permissions-repair.json` and
+`.agent-work/p05-fixture-cwd-receipt.json`; final output is
+`.agent-work/p04-p07-registered-suffix-final-fixture.log`. Earlier aggregate and
+suffix logs remain preserved. These SOURCE/UNIT/STATIC checks do not complete
+operational criteria. Local-main source integration awaits final documentation
+checks and review; its delivery SHA is not yet known. Current direct-user
+local-main delivery uses no dev, remote push, PR or hosted execution.
+
+Worker source `8d3569b67e1283e9344f036854658ac0b9f53f15` is preserved; this
+receipt keeps this Task's actual draft lifecycle and records source preparation
+only. Coordinator P06/P07 four-module checks passed62 in16.592s, exit0; earlier
+P04/P05 checks passed196 separately. The P07 manifest's two missing records and
+workflow canonical-order failure were witnessed, then corrected common checks
+exited0. Six-file common commit c7d56a383 was independently accepted; staged
+check exited0, links1216/11727 had0 failures/1 historical warning, and metadata
+with four provided paths actually selected1 document with0 violations, exit0.
+
+P04 typed-overlay source repair resolved the earlier official catalog blocker
+on its later accepted source; original4c83 inventory/catalog failures remain
+historical failures, not new observations. P07's existing85.06percent branch
+coverage is not remeasured here. The final repository leaf passed494 tests/
+127.874s, exit0. No current deployed demand, performance, exception authority,
+permission/read-only configuration, benchmark or HOME rollout is accepted.
+W11–W15 and criteria3 HOME residual/6–10 remain open as recorded; no LAB runtime
+change occurred. Final documentation review and local-main source delivery are
+pending and confer no operational acceptance or lifecycle closure.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -336,6 +385,7 @@ HOME, benchmark, permission, migration, rotation or recovery check ran.
 | Common integration | 9 | W14 | Effective root model and exact exceptions | Owner proposals not applied | NOT_RUN | Coordinator single-writer boundary | pending |
 | Scoped rollout and recovery | 3, 10 | W15 | Changed-service functionality, backup and empty restore | Exact target/image/workload/recovery pending | NOT_RUN | No HOME, migration, rotation or recovery execution | pending |
 | Projection and delivery | 9, 10 | W16 | Current-head gates, local-staged and independent review | Issuance and source integration pending | NOT_RUN | Local-main delivery; no dev/PR/push at admission | pending |
+| Segmented source checks | 9, 10 | W16 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
 
 ## Review and Completion
 
