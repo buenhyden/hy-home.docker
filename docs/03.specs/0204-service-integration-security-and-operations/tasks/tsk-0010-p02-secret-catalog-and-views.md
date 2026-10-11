@@ -1,8 +1,8 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-11"
 layer: "specs"
@@ -117,6 +117,46 @@ the exact host/path, output filter and recovery boundary in this Task and pass
 independent review; only names, paths, modes and consumer metadata may leave it.
 
 ## Work Log
+
+### Authorized Source Continuation
+
+The user confirmed the existing source handoff and authorized correction of the
+generator proposal's lock-lifetime defect. The issued draft is now ready for
+this authorized continuation. This transition does not accept runtime lanes,
+shared integration, hosted CI or delivery; the Task is not completed.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0010 | draft | ready | #authorized-source-continuation |
+
+### Lock-Lifetime Follow-up
+
+P09/TSK-0008 is an independently owned preparation-only Task. It consumes
+value-free readiness plans and unresolved facts; it does not own OpenBao
+migration or operational recovery. P01 and the owning backup/recovery Task
+must establish actual custody and recovery acceptance, while P06 owns selected
+migration, credential delivery and revocation. CLN01 owns deletion eligibility;
+SMTP01 remains the sole COMM-003 executor. P10 owns end-to-end acceptance.
+
+The worker reconciled its four logical commits onto local main
+`f7543e0697e2473cbbbeb254792e7a1d5b4b8423` with `git rebase main`, exit 0;
+the resulting pre-correction HEAD is
+`e371e3ae344d3cdbc60e4bc1b2e0f3b194339aae`. The seven code/catalog/schema/test
+files are byte-equivalent to the previous `ea927d004` source, verified with
+`git diff --exit-code ea927d004 HEAD -- <seven-owned-source-paths>`, exit 0.
+The initial sandboxed rebase failed with a namespace error, exit 1; the
+approved retry succeeded. No reset, stash, clean or force push occurred.
+
+The coordinator's independent receipt at the prior `ea927d004` input confirms
+40 scoped tests, 13 generator synthetic tests and 147 affected regressions
+passed. These tests did not detect the subsequently reproduced lock defect:
+killing the Python parent released its lock while the Bash mutator continued.
+The synthetic harness's exit 0 means successful defect reproduction, not
+security acceptance. The ignored generator/helper proposal requires the same
+held lock descriptor to reach the actual mutator, a parent-death regression
+and independent code/security review before coordinator integration.
 
 ### Worker Execution Plan
 
@@ -363,6 +403,7 @@ MIGRATION/ROTATION/RECOVERY/DELIVERY separately, with real commands and exits.
 - [SMTP01 contract](tsk-0005-cross-tier-contracts-second-round.md)
 - [OpenBao trust and recovery](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
 - [CLN01 retirement](tsk-0007-cln01-material-retirement.md)
+- [P09 preparation](tsk-0008-llm-wiki-preparation.md)
 - [SEC01 continuation](tsk-0009-sec01-stable-security-integration.md)
 - [OpenBao guide](../../../05.operations/guides/0085-openbao.md)
 - [OpenBao policy](../../../05.operations/policies/0085-openbao.md)
