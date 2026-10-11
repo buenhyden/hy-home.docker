@@ -1,6 +1,6 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -666,6 +666,29 @@ The branch-specific GitHub PR query returned an empty list, exit0. No P04 push,
 PR, merge or remote CI result exists. Source rollback is limited to these
 owned commits; no private/runtime state requires reversal because none changed.
 
+### Coordinator source integration — 2026-10-11
+
+Actual base is remote `8bef97d915495d4adb8dddd1801724db8065783e`.
+Merge `24bdda3d99d292d773ee122f890af793016e8d25` preserves all four worker
+commits through `5864c0501`; no source file was dropped or overwritten.
+Common metadata/Registry repair is `085d9bf79`; P01 consumer registration is
+`329754101`. P04 common registration is
+`59a091705a7e72cc3584b71c4ae013870b76fac5`, preserving P02/P03 routes.
+The coordinator reran52 source tests (exit0); default metadata selected7
+owned documents, violations0. Three common README inputs selected1 governed
+README, violations0. Historical11 metadata failures remain above.
+Seven affected registered leaves have segmented success, not full aggregate
+exit0: baseline596/71 opt-in skips, CI-contract, workflow39, control-plane,
+workflow validator, manifest and repository-integrity407. First baseline
+failed two checkout0775 modes; exact0755 correction changed no file bytes.
+First workflow38 failed the old selector list; strict42-module expectation
+and explicit workload-routing regression passed39 without relaxing skips.
+Source/common/test independent reviews and staged checks passed. Exact argv,
+input hashes, logs and failures are retained in the coordinator's ignored
+`.agent-work/p04-combined-acceptance.json`; coverage was not rerun.
+Local source integration does not closeW38/criterion18. PR/remote CI, native
+image import, DEV publication, HOME, migration and empty restore remain NOT_RUN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -718,7 +741,7 @@ through the four intended role boundaries, and opt-in native rehearsal with
 recorded exact target/cleanup. Record RED failure, GREEN exit, meaningful
 coverage, skipped classes, failure corrections and each resource receipt.
 Coordinator registers gates in existing manifest/workflow before final
-`scripts/qa.py changed` and
+`python3 scripts/validation/run-ci-gate.py --profile changed` and
 `scripts/validation/run-ci-precommit.sh --mode local-staged`; proposal-only
 registration is not a PASS. Run document metadata/links and git diff --check.
 Keep SOURCE / UNIT / STATIC / ISOLATED / HOME / MIGRATION / ROTATION /
