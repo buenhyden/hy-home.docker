@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.4"
+version: "0.2.5"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -1182,6 +1182,54 @@ receipts and preserves canonical Evidence assignments. Its prospective latest
 head must receive hosted QA and exact-head rebind before source merge. W23,
 HOME/recovery/P06 remain blocked; no operational resource was changed.
 
+### W22 Accepted Source Delivery — 2026-10-11
+
+Result-only receipt commit was `d3ae5587d7e3376bed22bbef82badf3875d8fb95`, tree
+`d0c4d82b7cb078251e8cd6ccb320300f0f0bb24b`. Its final-index staged controller
+and Conventional Commit validation exited 0; commit and feature push exited 0.
+Independent exact-head code/contract/security review approved that head, zero
+findings; only Task receipt bytes differed from the previously approved source.
+
+The actual latest-head candidate-quality run `38108268245` completed SUCCESS at
+2026-10-11T03:32:34Z, job `114378325906`, 7m55s, head
+`d3ae5587d7e3376bed22bbef82badf3875d8fb95`, base
+`4e26a5a8022a7307c7461af60337442912955df1`. Readback / watch exited 0. All
+CodeQL and GitGuardian checks were SUCCESS on that head; PR `main-security`
+was intentionally SKIPPED and is not a security PASS. The local full fallback
+exit 124 remains a separate preserved receipt. Hosted QA is not HOME evidence.
+Run URL is `https://github.com/buenhyden/hy-home.docker/actions/runs/38108268245`.
+
+The old installed `gh pr edit` exited 1 on deprecated Projects-classic GraphQL.
+The same prepared body was then updated with the official REST API, exit 0:
+
+```bash
+rtk proxy gh api --method PATCH repos/buenhyden/hy-home.docker/pulls/421 -F body=@.agent-work/p01-pr-body.md --jq '{number,html_url,draft}'
+rtk proxy gh pr ready 421 --repo buenhyden/hy-home.docker
+rtk proxy gh pr checks 421 --repo buenhyden/hy-home.docker
+rtk proxy gh pr merge 421 --repo buenhyden/hy-home.docker --merge --match-head-commit d3ae5587d7e3376bed22bbef82badf3875d8fb95 --subject 'fix(openbao): Preserve versioned issuance journal identity'
+rtk proxy gh pr view 421 --repo buenhyden/hy-home.docker --json state,mergedAt,mergeCommit,url,headRefOid,isDraft
+rtk git fetch origin main
+rtk git merge --ff-only origin/main
+```
+
+All commands above exited 0. Before merge, ready/non-draft PR had CLEAN /
+MERGEABLE state, the verified head/base above, no pending or failed check and
+independent approval. Source PR `https://github.com/buenhyden/hy-home.docker/pull/421`
+was MERGED at 2026-10-11T03:34:44Z with normal merge commit
+`da2c84ce5b92a2a594002050c9b3e70fa795451e`. No admin bypass, squash, rebase,
+main push, branch deletion or protection mutation occurred. Named source recovery
+commits remain reachable. Only the clean P01 feature worktree was fast-forwarded;
+other worktrees and coordinator-owned local main were left untouched.
+
+This paragraph records the accepted source delivery without changing any
+implementation, Evidence assignment or runtime acceptance. SOURCE / UNIT /
+bounded ISOLATED are accepted at their stated scope; latest-head hosted STATIC
+and source DELIVERY passed. HOME / MIGRATION / ROTATION / real RECOVERY remain
+NOT_RUN. Full native rehearsal, latest-image expiry/advisory/snapshot reacceptance
+and Agent delivery are not proved by the narrow metadata method. W23/P06 retain
+their named-target, custody, snapshot/empty-restore and rollback prerequisites.
+Actual HOME / other operational resource changes: 0.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1196,7 +1244,8 @@ HOME/recovery/P06 remain blocked; no operational resource was changed.
 
 ## Review and Completion
 
-Blocked on the named W23 target/custody and runtime residuals. Source and isolated proof do not complete HOME custody/boot/recovery
+Source delivery is merged in PR 421; the current Task remains blocked on the
+named W23 target/custody and runtime residuals. Source and isolated proof do not complete HOME custody/boot/recovery
 acceptance or authorize P06. No secret migration or consumer switch is claimed.
 
 ## Related Documents
