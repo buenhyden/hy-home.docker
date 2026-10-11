@@ -1,8 +1,8 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-11"
 layer: "specs"
@@ -283,6 +283,41 @@ selected server target keeps ROTATION NOT_RUN without blocking public source.
 
 ## Work Log
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0014 | draft | ready | #public-work-admission |
+
+### Public Work Admission
+
+The current user directs work from the issued Task, beginning with W46/W47,
+while actual pilot, deletion and rotation wait for unmet prerequisites. On
+2026-10-11 the exclusive P06 worktree and index were clean at issuance commit
+`6f230c56eb97c3cd587d636ba6492b24de13e53d`, which also resolves local main.
+Fresh `rtk git ls-remote origin refs/heads/main` returned
+`4e26a5a8022a7307c7461af60337442912955df1`, exit0. No fetch, push or remote
+mutation was performed. The original checkout and other workers are preserved.
+All seven owned source/test/schema paths were absent from that commit.
+
+The root records Task evidence under the doc-writer responsibility; one
+delegated qa-engineer owns all dedicated W47 source and tests. Neither writes
+shared catalog, generator, manifest, workflow, parent README, Spec or Plan.
+Required shared changes remain exact base-blob/patch proposals for their sole
+integrator. Request/token/time/price ceilings and provider hard enforcement are
+UNKNOWN; native team concurrency is at most7, with one implementation writer.
+No private input, credential issue, native resource or billed job is admitted.
+
+Observed dependency worktree HEADs are P01 `9130b6989`, P02 `d32ef6354`, P03
+`c1bc25f1a`, P04 `b2a46bc88` and P05 `f7543e069`. These update the issuance
+observations without rewriting their historical receipts. P02's validator
+currently rejects approved delivery bindings and retains BLOCKED_P01 fields;
+it is not an ancestor of P06. W47 therefore uses an explicitly provisional,
+injected selection interface in synthetic tests. It creates no production
+catalog reader or private copy command. P04 source progress does not establish
+its native W38 consumer acceptance. W48 production binding and W49-W54 remain
+dependent on their named owners' integrated contracts and actual receipts.
+
 ### Assessment and Next Work Units
 
 All eleven supplied reference files were read and extracted only under ignored
@@ -355,8 +390,9 @@ command and missing input once the owner has supplied its real interface.
 
 ## Review and Completion
 
-Issuance remains draft; use the existing lifecycle event contract when the
-worker starts. Source-only delivery may proceed with operational lanes marked
+Public work is admitted as ready through the observed lifecycle event above.
+Use the registered transition when implementation is committed. Source-only
+delivery may proceed with operational lanes marked
 NOT_RUN; it does not complete criterion20 or P06. Full completion requires the
 selected actual pilot and accepted sequential waves, authority/recovery,
 eligible-copy removal and separate selected rotation evidence. Unused, unknown
