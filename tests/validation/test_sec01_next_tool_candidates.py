@@ -31,6 +31,15 @@ def gx_wrapper():
 
 
 class NextToolCandidates(unittest.TestCase):
+    def test_k6_delivery_rehearsal_consumes_the_current_candidate(self):
+        spec = importlib.util.spec_from_file_location(
+            "sec01_quality_delivery_candidate",
+            ROOT / "examples/operations/quality-metrics/acceptance.py",
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.assertEqual(K6.split("@", 1)[0], module.STAGE_TAGS["k6"])
+
     def test_current_public_refresh_keeps_followups_and_pending_evidence_exact(self):
         updates = json.loads(
             (
