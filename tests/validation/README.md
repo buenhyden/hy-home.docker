@@ -43,6 +43,9 @@ library의 단위 테스트는 짝이 되는 `tests/lib/<domain>/`에 둡니다.
 3. 실행은 `python3 -m unittest discover -s tests/validation -t . -p 'test_*.py'`
    로 합니다.
 
+P02의 `test_secret_catalog_contract.py`는 발급 ID 전체와 공개 참조 표의 일치, 닫힌 스키마 및 실제 운영 상태를 주장하지 않는 준비 계약을 검증합니다.
+`test_smtp_lock_inheritance.py`는 synthetic parent-death 경계에서 SMTP held-lock descriptor를 검증하며, P2 lock 수정의 통과 증거는 helper patch가 확정된 뒤 별도로 기록합니다.
+
 ## Related Documents
 
 - [Test Surface](../README.md)

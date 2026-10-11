@@ -38,6 +38,8 @@ COMM-003 경로의 유일한 삭제 executor이고 CLN01은 소비자 판정과 
 SMTP01과 CLN01의 잠금은 별개이므로 공통 잠금 검증으로 해석하지 않습니다.
 실제 삭제는 현재 소비자·백업·복구 및 운영자 실행 권한 확인 전까지 미실행입니다.
 
+- `secret_catalog.py`: P02의 값 없는 공개 카탈로그·분류·별칭·재생성 거부와 staging view를 검증합니다. 실제 secret/env/KV를 읽거나 변경하지 않습니다.
+
 ## Related Documents
 
 - [스크립트 안내](../../README.md)

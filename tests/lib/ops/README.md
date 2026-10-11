@@ -24,6 +24,8 @@ created: "2026-10-10"
   안전한 퇴역 거부를 합성 입력으로 검증합니다.
 - 단위 결과는 native SMTP, 실제 파일 삭제나 HOME 복구 증거가 아닙니다.
 
+- `test_secret_catalog.py`: malformed metadata·별칭·복구/암호화/LAB 보호·재생성 거부와 합성 Git 루트의 staging/CLI 경계를 검증합니다.
+
 ## Related Documents
 
 - [Library tests](../README.md)

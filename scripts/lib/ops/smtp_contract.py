@@ -205,12 +205,17 @@ def root_identity(root):
 
 
 @contextmanager
-def retirement_lock(root, expected_identity=None):
+def retirement_lock(root, expected_identity=None, *, with_fd=False):
     """SMTP01 cooperative exclusive lock on this exact root.
 
     The persistent lock is nofollow, owner-only and single-link. Quiescence
     receipts remain necessary for actors that do not honor this protocol.
+    Opt-in with_fd yields (identity, fd) for subprocess pass_fds. The caller
+    must keep this context open through child startup and pass the held open
+    file description; closing the parent copy leaves an inherited lock held.
     """
+    if type(with_fd) is not bool:
+        raise ContractError("invalid_lock_fd_option")
     root = Path(root).absolute()
     with ExitStack() as stack:
         rootfd = _directory(root, "", stack)
@@ -246,7 +251,7 @@ def retirement_lock(root, expected_identity=None):
             raise ContractError("retirement_lock_replaced")
         if root_identity(root) != identity:
             raise ContractError("root_identity_mismatch")
-        yield identity
+        yield (identity, fd) if with_fd else identity
         named = os.stat(Path(LOCK_PATH).name, dir_fd=parent, follow_symlinks=False)
         if (named.st_dev, named.st_ino) != (lock.st_dev, lock.st_ino):
             raise ContractError("retirement_lock_replaced")

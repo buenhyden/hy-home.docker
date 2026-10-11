@@ -779,6 +779,9 @@
         "tests.lib.ops.test_smtp_proof",
         "tests.validation.test_supabase_smtp_fixture_storage",
         "tests.validation.test_smtp_ci_routing",
+        "tests.validation.test_smtp_lock_inheritance",
+        "tests.lib.ops.test_secret_catalog",
+        "tests.validation.test_secret_catalog_contract",
         "-v"
       ],
       "cwd": ".",
@@ -1530,7 +1533,15 @@
           "tests/lib/ops/test_smtp_contract.py",
           "tests/lib/ops/test_smtp_proof.py",
           "tests/validation/test_smtp_generator.py",
-          "tests/validation/test_smtp_ci_routing.py"
+          "tests/validation/test_smtp_ci_routing.py",
+          "tests/validation/test_smtp_lock_inheritance.py",
+          "scripts/lib/ops/secret_catalog.py",
+          "scripts/lib/ops/_secret_catalog_io.py",
+          "scripts/operations/secret-catalog.py",
+          "infra/03-security/openbao/secret-catalog.json",
+          "infra/03-security/openbao/secret-catalog.schema.json",
+          "tests/lib/ops/test_secret_catalog.py",
+          "tests/validation/test_secret_catalog_contract.py"
         ],
         "suites": [
           "repository-integrity"
@@ -1772,7 +1783,15 @@
           "tests/lib/ops/test_smtp_contract.py",
           "tests/lib/ops/test_smtp_proof.py",
           "tests/validation/test_smtp_generator.py",
-          "tests/validation/test_smtp_ci_routing.py"
+          "tests/validation/test_smtp_ci_routing.py",
+          "tests/validation/test_smtp_lock_inheritance.py",
+          "scripts/lib/ops/secret_catalog.py",
+          "scripts/lib/ops/_secret_catalog_io.py",
+          "scripts/operations/secret-catalog.py",
+          "infra/03-security/openbao/secret-catalog.json",
+          "infra/03-security/openbao/secret-catalog.schema.json",
+          "tests/lib/ops/test_secret_catalog.py",
+          "tests/validation/test_secret_catalog_contract.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

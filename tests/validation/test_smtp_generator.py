@@ -1,8 +1,10 @@
 """SMTP-only generator routing; every private input here is synthetic."""
 
+import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -59,18 +61,81 @@ class SmtpGeneratorTests(unittest.TestCase):
             self.assertEqual(before, [path.read_bytes() for path in tracked])
 
     def test_dry_run_never_generates_retired_value_owner(self):
-        result = subprocess.run(
-            ["bash", "scripts/operations/gen-secrets.sh", "--dry-run"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            timeout=20,
-            check=False,
-        )
-        self.assertEqual(0, result.returncode)
-        self.assertNotIn("supabase_smtp_password.txt", result.stdout)
-        self.assertNotIn("id=COMM-003", result.stdout)
-        self.assertNotIn("id=Retired ID", result.stdout)
+        from scripts.lib.ops import secret_catalog
+        from tests.lib.ops.test_secret_catalog import model as synthetic_catalog_model
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            script = root / "scripts/operations/gen-secrets.sh"
+            script.parent.mkdir(parents=True)
+            shutil.copyfile(ROOT / "scripts/operations/gen-secrets.sh", script)
+            library = root / "scripts/lib/ops"
+            library.mkdir(parents=True)
+            for name in (
+                "smtp_contract.py",
+                "secret_catalog.py",
+                "_secret_catalog_io.py",
+            ):
+                shutil.copyfile(ROOT / "scripts/lib/ops" / name, library / name)
+            document = synthetic_catalog_model()
+            metadata = secret_catalog.render_views(document)[
+                secret_catalog.VIEW_NAMES[0]
+            ]
+            for relative, raw in (
+                (secret_catalog.CATALOG_PATH, json.dumps(document).encode()),
+                (
+                    secret_catalog.SCHEMA_PATH,
+                    (ROOT / secret_catalog.SCHEMA_PATH).read_bytes(),
+                ),
+                (secret_catalog.METADATA_PATH, metadata),
+                (secret_catalog.SUPPORT_PATH, b"{}"),
+            ):
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+            subprocess.run(
+                [
+                    "git",
+                    "add",
+                    "--",
+                    secret_catalog.CATALOG_PATH,
+                    secret_catalog.SCHEMA_PATH,
+                    secret_catalog.METADATA_PATH,
+                    secret_catalog.SUPPORT_PATH,
+                ],
+                cwd=root,
+                check=True,
+            )
+            # Metadata-only mode must not inspect these private synthetic inputs.
+            private = root / "secrets/SENSITIVE_ENV_VARS.md"
+            private.write_text("synthetic-private-sentinel\n")
+            env = root / ".env"
+            env.write_text("synthetic-private-dotenv-sentinel\n")
+            before = private.read_bytes(), env.read_bytes()
+            result = subprocess.run(
+                ["bash", str(script), "--dry-run"],
+                cwd=root,
+                env={
+                    **os.environ,
+                    "PATH": str(Path(sys.executable).parent)
+                    + os.pathsep
+                    + os.environ["PATH"],
+                },
+                capture_output=True,
+                text=True,
+                timeout=20,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertNotIn("supabase_smtp_password.txt", result.stdout)
+            self.assertNotIn("id=COMM-003", result.stdout)
+            self.assertNotIn("id=Retired ID", result.stdout)
+            self.assertNotIn("synthetic-private", result.stdout + result.stderr)
+            self.assertEqual(before, (private.read_bytes(), env.read_bytes()))
+            self.assertFalse(
+                (root / "secrets/communication/smtp/smtp_password.txt").exists()
+            )
 
 
 if __name__ == "__main__":

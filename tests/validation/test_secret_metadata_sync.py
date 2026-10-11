@@ -1,5 +1,6 @@
 """Value-preserving metadata synchronization through the public shell entrypoint."""
 
+import json
 import os
 import posixpath
 import re
@@ -14,6 +15,8 @@ from pathlib import Path
 import yaml
 
 from scripts.lib.document_governance.operations_catalog import _ComposeLoader
+from scripts.lib.ops import secret_catalog
+from tests.lib.ops.test_secret_catalog import model as synthetic_catalog_model
 
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts/operations/gen-secrets.sh"
 ROOT = SCRIPT.parents[2]
@@ -591,8 +594,116 @@ class SecretMetadataSyncTests(unittest.TestCase):
         (self.root / ".env").write_text(
             "# operator comment\nEXISTING=synthetic-private-env\nUNKNOWN=keep\n"
         )
+        self.prepare_catalog()
+
+    def prepare_catalog(self, public_root=None):
+        """Only temp synthetic roots; reuse the public parser and declared fixtures."""
+        public_root = public_root or self.root
+        self.assertTrue(public_root.is_relative_to(self.root))
+        source = public_root / secret_catalog.METADATA_PATH
+        if source.is_symlink():
+            return  # The real entrypoint must reject this negative fixture.
+        text = source.read_text().replace("(empty)", "(비어있음)")
+        document = synthetic_catalog_model()
+        canonical = document["entries"][0]
+        canonical["automation"] = "X"
+        canonical["classification"] = "bootstrap_external"
+        canonical["destination_plan"]["kv_path"] = None
+        baseline = secret_catalog.render_views(document)[
+            secret_catalog.VIEW_NAMES[0]
+        ].decode()
+        # Fixture rows already use issued synthetic IDs. Keep the production
+        # table/alias shapes without inventing another metadata authority.
+        if not any(line.startswith("| COMM-002 |") for line in text.splitlines()):
+            text += ("" if not text or text.endswith("\n") else "\n") + baseline
+        source.write_text(text)
+        try:
+            metadata = secret_catalog.parse_public_table(text.encode())
+        except ValueError:
+            return  # Keep the malformed source, never repair a negative input.
+        declarations = {
+            "COMM-002": ("root", "bootstrap_external", "ACTIVE_KEEP", "consumer_owned"),
+            "TEST-001": ("root", "kv_static", "ACTIVE_KEEP", "consumer_owned"),
+            "TEST-002": ("root", "kv_static", "ACTIVE_KEEP", "consumer_owned"),
+            "INFRA-001": (
+                "root",
+                "public_configuration",
+                "ACTIVE_KEEP",
+                "not_applicable",
+            ),
+            "INFRA-002": ("root", "kv_static", "ACTIVE_KEEP", "consumer_owned"),
+            "INFRA-003": ("root", "derived_runtime", "ACTIVE_KEEP", "consumer_owned"),
+            "LAB-999": ("lab", "lab_excluded", "LAB_EXCLUDED", "consumer_owned"),
+        }
+        if getattr(self, "recovery_fixture", False):
+            declarations["TEST-001"] = (
+                "root",
+                "stable_crypto",
+                "RETAINED_FOR_RECOVERY",
+                "independent_required",
+            )
+        entries = []
+        for public_entry in metadata["entries"]:
+            scope, classification, disposition, custody = declarations[
+                public_entry["id"]
+            ]
+            entry = {
+                **canonical,
+                **public_entry,
+                "scope": scope,
+                "classification": classification,
+                "disposition": disposition,
+                "recovery": {**canonical["recovery"], "custody": custody},
+            }
+            # Only these explicitly selected synthetic positive generation cases
+            # request IMPLEMENT. Other fixture actions preserve NO_CHANGE.
+            if (
+                disposition == "ACTIVE_KEEP"
+                and classification == "kv_static"
+                and public_entry["id"] in {"TEST-001", "TEST-002", "INFRA-002"}
+            ):
+                entry["action"] = "IMPLEMENT"
+            elif disposition == "LAB_EXCLUDED":
+                entry["action"] = "OUT_OF_SCOPE"
+            entry["destination_plan"] = {
+                **canonical["destination_plan"],
+                "kv_path": "secret/root/fixture/" + entry["id"].lower()
+                if classification == "kv_static"
+                and disposition != "RETAINED_FOR_RECOVERY"
+                else None,
+            }
+            entries.append(entry)
+        document = {**document, "entries": entries, "aliases": metadata["aliases"]}
+        secret_catalog.validate_catalog(document)
+        for relative, raw in (
+            (secret_catalog.CATALOG_PATH, (json.dumps(document) + "\n").encode()),
+            (
+                secret_catalog.SCHEMA_PATH,
+                (ROOT / secret_catalog.SCHEMA_PATH).read_bytes(),
+            ),
+            (secret_catalog.SUPPORT_PATH, b"{}\n"),
+        ):
+            target = public_root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+        if public_root != self.root:
+            subprocess.run(["git", "init", "-q", str(public_root)], check=True)
+        subprocess.run(
+            [
+                "git",
+                "add",
+                "--",
+                secret_catalog.CATALOG_PATH,
+                secret_catalog.SCHEMA_PATH,
+                secret_catalog.METADATA_PATH,
+                secret_catalog.SUPPORT_PATH,
+            ],
+            cwd=public_root,
+            check=True,
+        )
 
     def run_mode(self, mode="--sync-metadata"):
+        self.prepare_catalog()
         result = subprocess.run(
             ["bash", str(SCRIPT), *([mode] if mode else [])],
             cwd=self.root,
@@ -616,6 +727,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         (source / "labs/.env.example").write_text("LAB_KEEP=example\n")
         (self.root / "labs").mkdir()
         (self.root / "labs/.env").write_text("LAB_KEEP=synthetic-private-lab\n")
+        self.prepare_catalog(source)
         before_source = {
             path: path.read_bytes() for path in source.rglob("*") if path.is_file()
         }
@@ -687,7 +799,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         # Everything but the value cell comes from the public registry, in its
         # order, including the date and the free text around the table.
         mirrored = self.example.read_text().replace(
-            "`(empty)` | `NEW_KEY`", "`synthetic-private-value` | `NEW_KEY`"
+            "`(비어있음)` | `NEW_KEY`", "`synthetic-private-value` | `NEW_KEY`"
         )
         self.assertTrue(text.startswith(mirrored), text)
         self.assertNotIn("2025-01-01 | Old purpose", text)
@@ -700,7 +812,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertFalse((self.root / "secrets/test.txt").exists())
         self.assertEqual(0, self.run_mode().returncode)
 
-    def test_generation_keeps_a_matching_htpasswd_entry(self):
+    def test_generation_preserves_existing_derived_htpasswd_custody(self):
         rows = (
             "| **INFRA-001** | `X` | `ID` | `(empty)` | `TRAEFIK_ADMIN_USERNAME` | | 2026-01-01 | Admin name |\n"
             "| **INFRA-002** | `O` | `PW` | `(empty)` | `-` | `secrets/auth/admin.txt` | 2026-01-01 | Admin password |\n"
@@ -713,16 +825,24 @@ class SecretMetadataSyncTests(unittest.TestCase):
         (self.root / "secrets/auth").mkdir()
         (self.root / "secrets/auth/admin.txt").write_text("synthetic-password\n")
         htpasswd = self.root / "secrets/auth/traefik/traefik_basicauth_password.txt"
-        first = self.run_mode("")
-        self.assertEqual(0, first.returncode, first.stderr)
+        htpasswd.parent.mkdir()
+        htpasswd.write_bytes(b"synthetic-user:synthetic-existing-hash\n")
         before = htpasswd.read_bytes()
-        self.assertTrue(before.startswith(b"synthetic-user:"))
-        second = self.run_mode("")
-        self.assertEqual(0, second.returncode, second.stderr)
-        self.assertNotIn("Updating htpasswd hash", second.stdout + second.stderr)
-        self.assertEqual(before, htpasswd.read_bytes())
+        expected_registry = rows.replace(
+            "`(empty)` | `-` | `secrets/auth/admin.txt`",
+            "`synthetic-password` | `-` | `secrets/auth/admin.txt`",
+        ).encode()
+        for _ in range(2):
+            result = self.run_mode("")
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertNotIn("Updating htpasswd hash", result.stdout + result.stderr)
+            self.assertEqual(before, htpasswd.read_bytes())
+            self.assertEqual(expected_registry, self.target.read_bytes())
+        htpasswd.unlink()
+        self.assertEqual(0, self.run_mode("").returncode)
+        self.assertFalse(htpasswd.exists())
 
-    def test_generation_reads_lab_identity_and_rejects_cross_domain_key(self):
+    def test_generation_preserves_lab_identity_and_ignores_lab_dotenv(self):
         lab = self.root / "labs"
         lab.mkdir()
         (lab / ".env").write_text("LAB_ID=synthetic-lab-id\n")
@@ -731,12 +851,15 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.target.write_text(row)
         self.target.chmod(0o600)
         self.assertEqual(0, self.run_mode("").returncode)
-        self.assertIn("`synthetic-lab-id`", self.target.read_text())
+        self.assertEqual(row, self.target.read_text())
 
         before = self.target.read_bytes()
         (lab / ".env").write_text("EXISTING=collision\nLAB_ID=synthetic-lab-id\n")
-        self.assertEqual(1, self.run_mode("").returncode)
+        self.assertEqual(0, self.run_mode("").returncode)
         self.assertEqual(before, self.target.read_bytes())
+        self.assertEqual(
+            "EXISTING=collision\nLAB_ID=synthetic-lab-id\n", (lab / ".env").read_text()
+        )
 
     def test_generation_writes_only_the_value_cell(self):
         text = (
@@ -759,6 +882,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.example.write_text(text)
         self.target.write_text(text)
         self.target.chmod(0o600)
+        self.recovery_fixture = True
         shares = self.root / "secrets/shares.txt"
         shares.write_text("synthetic-share-1\nsynthetic-share-2\n")
         result = self.run_mode("")

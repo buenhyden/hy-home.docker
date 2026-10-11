@@ -25,6 +25,8 @@ SMTP_AUDIT_PROOF=""
 METADATA_SOURCE_ROOT="$REPO_ROOT"
 declare -A ENV_VALUES=()
 declare -A SECRET_VALUES=()
+declare -A GENERATION_BINDINGS=()
+SCRIPT_SOURCE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/$(basename -- "${BASH_SOURCE[0]}")"
 declare -a TEMP_PATHS=()
 
 ROW_ID=""
@@ -67,7 +69,9 @@ Modes:
                          from DIR; private inputs/outputs remain in the owner checkout.
 
 No-argument mode preserves the existing operator workflow and may read/write
-local secret registry and secret files. Do not use no-argument mode for audit
+local secret registry and eligible root secret files. Catalog guards preserve
+aliases, migrated/retired rows and protected custody. LAB is never generated.
+Missing/invalid catalog fails before initializing private state. Do not use no-argument mode for audit
 or verification.
 USAGE
 }
@@ -288,25 +292,23 @@ check_layout() {
 }
 
 load_env_values() {
-    local line stripped key value env_file
-    for env_file in "$ENV_FILE" "${REPO_ROOT}/labs/.env"; do
-        [[ -f "$env_file" ]] || continue
-        while IFS= read -r line || [[ -n "$line" ]]; do
-            stripped="$(trim "$line")"
-            [[ -z "$stripped" || "$stripped" == \#* ]] && continue
-            [[ "$stripped" == *=* ]] || continue
+    local line stripped key value
+    [[ -f "$ENV_FILE" ]] || return 0
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        stripped="$(trim "$line")"
+        [[ -z "$stripped" || "$stripped" == \#* ]] && continue
+        [[ "$stripped" == *=* ]] || continue
 
-            key="$(trim "${stripped%%=*}")"
-            value="$(trim "${stripped#*=}")"
-            value="${value%%[[:space:]]#*}"
-            value="$(strip_surrounding_quotes "$(trim "$value")")"
+        key="$(trim "${stripped%%=*}")"
+        value="$(trim "${stripped#*=}")"
+        value="${value%%[[:space:]]#*}"
+        value="$(strip_surrounding_quotes "$(trim "$value")")"
 
-            if [[ -n "$key" ]]; then
-                [[ ! -v "ENV_VALUES[$key]" ]] || die "duplicate environment key across metadata domains: $key"
-                ENV_VALUES["$key"]="$value"
-            fi
-        done < "$env_file"
-    done
+        if [[ -n "$key" ]]; then
+            [[ ! -v "ENV_VALUES[$key]" ]] || die "duplicate environment key across metadata domains: $key"
+            ENV_VALUES["$key"]="$value"
+        fi
+    done < "$ENV_FILE"
 }
 
 get_env_val() {
@@ -371,6 +373,57 @@ ensure_target_registry() {
     fi
 }
 
+load_generation_bindings() {
+    local bindings id binding
+    # A process-local value-free projection of the one catalog guard. This is
+    # not a new registry: every output row is checked by the canonical API.
+    bindings="$(python3 - "$SCRIPT_SOURCE" "$REPO_ROOT" <<'PY_CATALOG'
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(sys.argv[1]).resolve().parents[2]))
+try:
+    from scripts.lib.ops.secret_catalog import load_catalog, generation_binding_allowed
+    catalog = load_catalog(Path(sys.argv[2]))
+    for entry in catalog["entries"]:
+        if generation_binding_allowed(catalog, entry["id"], entry["source_path"], entry["env_key"], entry["automation"]):
+            print(entry["id"] + "\t" + "|".join((entry["automation"], entry["env_key"] or "-", entry["source_path"] or "-")))
+except Exception:
+    print("GENERATION rejected: invalid public catalog; no values logged", file=sys.stderr)
+    raise SystemExit(2)
+PY_CATALOG
+)"
+    while IFS=$'\t' read -r id binding; do
+        [[ -n "$id" ]] || continue
+        GENERATION_BINDINGS["$id"]="$binding"
+    done <<< "$bindings"
+}
+
+row_generation_allowed() {
+    local authorized_id
+    # Never expand a private ID as an associative-array subscript. The keys
+    # below come only from the canonical public guard, and equality binds the
+    # private metadata without evaluating it as shell syntax.
+    for authorized_id in "${!GENERATION_BINDINGS[@]}"; do
+        if [[ "$ROW_ID" == "$authorized_id" ]]; then
+            [[ "${GENERATION_BINDINGS[$authorized_id]}" == "$ROW_AUTO|$ROW_ENV_VAR|$ROW_FILE_PATH" ]]
+            return
+        fi
+    done
+    return 1
+}
+
+validate_generation_rows() {
+    local line
+    local -A seen=()
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        is_table_row "$line" && ! is_header_or_separator "$line" || continue
+        parse_row "$line"
+        [[ "$ROW_ID" =~ ^[A-Z][A-Z0-9_-]*-[0-9]+$ ]] || continue
+        [[ ! -v "seen[$ROW_ID]" ]] || die "duplicate private registry identity; values not logged"
+        seen["$ROW_ID"]=1
+    done < "$TARGET_FILE"
+}
+
 collect_secret_values() {
     local line full_path new_value env_value
 
@@ -381,6 +434,7 @@ collect_secret_values() {
 
         parse_row "$line"
         [[ -n "$ROW_ID" ]] || continue
+        row_generation_allowed || continue
         [[ "$ROW_ID" == "INFRA-003" || "$ROW_ID" == "INFRA-004" || "$ROW_ID" == "INFRA-007" ]] && continue
 
         full_path="$(resolve_repo_path "$ROW_FILE_PATH")"
@@ -423,6 +477,8 @@ process_htpasswd() {
     local pass_value="${SECRET_VALUES[$pass_id]-}"
     local full_path hashed existing
 
+    # Derived htpasswd identities remain with their dedicated delivery owner.
+    [[ -v "GENERATION_BINDINGS[$target_id]" ]] || return 0
     if [[ -z "$user_value" || -z "$pass_value" ]]; then
         return 0
     fi
@@ -459,25 +515,37 @@ render_row_with_value() {
 }
 
 rewrite_registry() {
-    local final_temp line current_value value
+    local final_temp line current_value value has_newline
+    [[ "${#SECRET_VALUES[@]}" -gt 0 ]] || return 0
     final_temp="$(make_temp_file)"
 
-    while IFS= read -r line || [[ -n "$line" ]]; do
+    while true; do
+        line=""
+        if IFS= read -r line; then
+            has_newline=1
+        else
+            has_newline=0
+            [[ -n "$line" ]] || break
+        fi
         if is_table_row "$line" && ! is_header_or_separator "$line"; then
             parse_row "$line"
-            if [[ -n "$ROW_ID" && -v "SECRET_VALUES[$ROW_ID]" ]]; then
+            if row_generation_allowed && [[ -v "SECRET_VALUES[$ROW_ID]" ]]; then
                 value="${SECRET_VALUES[$ROW_ID]}"
                 current_value="$ROW_VALUE"
                 if [[ "$value" != "$current_value" ]] || is_placeholder_value "$current_value"; then
-                    render_row_with_value "$line" "$value" >> "$final_temp"
+                    printf '%s' "$(render_row_with_value "$line" "$value")" >> "$final_temp"
+                    [[ "$has_newline" == 0 ]] || printf '\n' >> "$final_temp"
                 else
-                    printf '%s\n' "$line" >> "$final_temp"
+                    printf '%s' "$line" >> "$final_temp"
+                    [[ "$has_newline" == 0 ]] || printf '\n' >> "$final_temp"
                 fi
             else
-                printf '%s\n' "$line" >> "$final_temp"
+                printf '%s' "$line" >> "$final_temp"
+                    [[ "$has_newline" == 0 ]] || printf '\n' >> "$final_temp"
             fi
         else
-            printf '%s\n' "$line" >> "$final_temp"
+            printf '%s' "$line" >> "$final_temp"
+                    [[ "$has_newline" == 0 ]] || printf '\n' >> "$final_temp"
         fi
     done < "$TARGET_FILE"
 
@@ -487,7 +555,9 @@ rewrite_registry() {
 run_generation() {
     printf '%b=== hy-home.docker Secret Management System ===%b\n' "$BLUE" "$NC"
     check_required_tools
+    load_generation_bindings
     ensure_target_registry
+    validate_generation_rows
     load_env_values
 
     info "Processing secrets..."
@@ -539,6 +609,7 @@ dry_run_action_for_row() {
 run_dry_run() {
     local line full_path action total=0
 
+    load_generation_bindings
     # Metadata-only inspection does not require htpasswd or generation tools.
     [[ -f "$EXAMPLE_FILE" ]] || die "example registry not found: ${EXAMPLE_FILE}"
 
@@ -553,8 +624,12 @@ run_dry_run() {
 
         parse_row "$line"
         [[ -n "$ROW_ID" ]] || continue
-        full_path="$(resolve_repo_path "$ROW_FILE_PATH")"
-        action="$(dry_run_action_for_row "$full_path")"
+        if row_generation_allowed; then
+            full_path="$(resolve_repo_path "$ROW_FILE_PATH")"
+            action="$(dry_run_action_for_row "$full_path")"
+        else
+            action="keep-catalog-protected"
+        fi
         total=$((total + 1))
 
         if [[ -n "$ROW_FILE_PATH" && "$ROW_FILE_PATH" != "-" ]]; then
@@ -569,7 +644,7 @@ run_dry_run() {
 
 
 run_metadata_sync() {
-    python3 - "$REPO_ROOT" "$MODE" "$METADATA_SOURCE_ROOT" <<'PY_METADATA'
+    python3 - "$REPO_ROOT" "$MODE" "$METADATA_SOURCE_ROOT" "$SCRIPT_SOURCE" <<'PY_METADATA'
 import os
 from pathlib import Path
 import re
@@ -581,6 +656,8 @@ root = Path(sys.argv[1]).resolve()
 mode = sys.argv[2]
 check_only = mode.endswith("-check")
 prune = mode.startswith("sync-metadata-prune")
+sys.path.insert(0, str(Path(sys.argv[4]).resolve().parents[2]))
+from scripts.lib.ops.secret_catalog import load_catalog, parse_public_table
 
 
 def safe_path(relative, base=root):
@@ -642,8 +719,12 @@ def registry_plan(source, current, exact):
     its order, so the two files differ only in values. A private row the
     public registry lacks is kept at the end unless pruning.
     """
+    # Canonical public parser owns ten-cell rows and two-column alias shape.
+    parse_public_table(source.encode("utf-8"))
     public = rows(source, exact)
     private = rows(current, exact)
+    if exact and "COMM-003" in private:
+        raise ValueError("SMTP01 sole retirement executor required")
     if not current:
         return source
     output = source
@@ -755,6 +836,7 @@ def main():
     if not public_root.is_dir() or any(item.is_symlink() for item in (public_root, *public_root.parents)):
         raise ValueError("invalid public metadata root")
     public_root = public_root.resolve()
+    load_catalog(public_root)
     specifications = [("secrets/SENSITIVE_ENV_VARS.md.example", "secrets/SENSITIVE_ENV_VARS.md", registry_plan),
                       (".env.example", ".env", env_plan)]
     if (public_root / "labs/.env.example").exists():
@@ -805,7 +887,7 @@ except Exception:
 PY_METADATA
 }
 
-main() {
+dispatch() {
     parse_args "$@"
     case "$MODE" in
         help)
@@ -841,4 +923,31 @@ main() {
     esac
 }
 
-main "$@"
+main() {
+    parse_args "$@"
+    case "$MODE" in
+        run|sync-metadata|sync-metadata-check|sync-metadata-prune|sync-metadata-prune-check)
+            # Reuse SMTP01's cooperative lock; its receipt and sole deletion
+            # executor stay unchanged. CLN01 requires independent writer stop.
+            python3 - "$SCRIPT_SOURCE" "$REPO_ROOT" "$@" <<'PY_LOCK'
+import subprocess
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(sys.argv[1]).resolve().parents[2]))
+try:
+    from scripts.lib.ops.smtp_contract import retirement_lock
+    with retirement_lock(Path(sys.argv[2]), with_fd=True) as (_, held_fd):
+        result = subprocess.run(["bash", "-c", 'source "$1"; shift; dispatch "$@"', "generator", sys.argv[1], *sys.argv[3:]], pass_fds=(held_fd,))
+    raise SystemExit(result.returncode)
+except Exception:
+    print("GENERATION rejected: unsafe or busy SMTP01 lock; no values logged", file=sys.stderr)
+    raise SystemExit(2)
+PY_LOCK
+            ;;
+        *) dispatch "$@" ;;
+    esac
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi

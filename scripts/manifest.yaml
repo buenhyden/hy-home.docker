@@ -522,6 +522,17 @@ files:
   disposition: retain
   successor: null
   tests: []
+- path: scripts/lib/ops/_secret_catalog_io.py
+  kind: library
+  authority: docs/05.operations/runbooks/0085-openbao.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/lib/ops/secret_catalog.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_secret_catalog.py
 - path: scripts/lib/ops/compose-core-readiness.sh
   kind: library
   authority: docs/05.operations/runbooks/0009-release-management.md
@@ -544,6 +555,18 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_retirement.py
+- path: scripts/lib/ops/secret_catalog.py
+  kind: library
+  authority: docs/05.operations/runbooks/0085-openbao.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/operations/secret-catalog.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_secret_catalog.py
+  - tests/validation/test_secret_catalog_contract.py
 - path: scripts/lib/ops/smtp_contract.py
   kind: library
   authority: docs/05.operations/runbooks/0029-supabase.md
@@ -558,6 +581,7 @@ files:
   tests:
   - tests/lib/ops/test_smtp_contract.py
   - tests/lib/ops/test_smtp_proof.py
+  - tests/validation/test_smtp_lock_inheritance.py
 - path: scripts/lib/ops/wiki_preparation.py
   kind: library
   authority: infra/09-platform-ops/project-registration/wiki-preparation/README.md
@@ -664,6 +688,7 @@ files:
   tests:
   - tests/validation/test_secret_metadata_sync.py
   - tests/validation/test_smtp_generator.py
+  - tests/validation/test_smtp_lock_inheritance.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/lab.py
   kind: operations
@@ -735,6 +760,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_retirement_cli.py
+- path: scripts/operations/secret-catalog.py
+  kind: operations
+  authority: docs/05.operations/runbooks/0085-openbao.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - tests/lib/ops/test_secret_catalog.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_secret_catalog.py
 - path: scripts/operations/storybook_design_export.py
   kind: operations
   authority: docs/05.operations/runbooks/0101-storybook.md
