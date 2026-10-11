@@ -1,0 +1,27 @@
+services:
+  dev-db:
+    image: example.invalid/synthetic:1
+    ports:
+      - "127.0.0.1:${DEV_PORT:?explicit}:5432"
+    expose: [5432]
+    networks:
+      dev:
+        aliases: [dev.internal]
+    environment:
+      NOISE: ${NOISE:-SYNTHETIC_LEAK_MARKER}
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: dev
+      traefik.http.services.dev.loadbalancer.server.port: "5432"
+      private-noise: SYNTHETIC_LEAK_MARKER
+  mng-db:
+    image: example.invalid/synthetic:1
+    ports:
+      - "127.0.0.1:${MNG_PORT:?explicit}:5432"
+    expose: [5432]
+    networks: [mng]
+networks:
+  dev:
+    name: dev
+  mng:
+    name: mng

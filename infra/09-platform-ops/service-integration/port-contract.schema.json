@@ -1,0 +1,416 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:hy-home:port-contract:1.0.0",
+  "$comment": "Admission additionally requires validate_contract: unique service/source keys and at most 16384 total endpoints per document, plus range, IP, allocation and state consistency.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scope",
+    "mode",
+    "source",
+    "services"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "1.0.0"
+      ]
+    },
+    "scope": {
+      "enum": [
+        "root"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "source",
+        "synthetic-render"
+      ]
+    },
+    "source": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^(?:docker-compose\\.yml|(?:infra|tests)/(?:[a-zA-Z0-9_-][a-zA-Z0-9_.-]*/)*[a-zA-Z0-9_-][a-zA-Z0-9_.-]*)$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      },
+      "maxItems": 4096
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "service",
+          "listener",
+          "internal_dns",
+          "host_publication",
+          "traefik_backend",
+          "gaps",
+          "runtime"
+        ],
+        "properties": {
+          "service": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$"
+          },
+          "listener": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state",
+              "endpoints"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "unknown"
+                ]
+              },
+              "endpoints": {
+                "type": "array",
+                "maxItems": 0
+              }
+            }
+          },
+          "internal_dns": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state",
+              "endpoints"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "declared",
+                  "unknown",
+                  "absent"
+                ]
+              },
+              "endpoints": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "network",
+                    "name",
+                    "port",
+                    "protocol",
+                    "network_key",
+                    "alias_index"
+                  ],
+                  "properties": {
+                    "network": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "name": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "port": {
+                      "$ref": "#/$defs/port"
+                    },
+                    "protocol": {
+                      "enum": [
+                        "tcp",
+                        "udp"
+                      ]
+                    },
+                    "network_key": {
+                      "type": "string",
+                      "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$"
+                    },
+                    "alias_index": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 0
+                    }
+                  }
+                },
+                "maxItems": 4096
+              }
+            }
+          },
+          "host_publication": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state",
+              "endpoints"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "declared",
+                  "unpublished"
+                ]
+              },
+              "endpoints": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "host_ip",
+                    "host_ip_state",
+                    "published",
+                    "target",
+                    "protocol",
+                    "mode",
+                    "allocation"
+                  ],
+                  "properties": {
+                    "host_ip_state": {
+                      "enum": [
+                        "absent",
+                        "unknown",
+                        "declared"
+                      ]
+                    },
+                    "host_ip": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 45,
+                      "pattern": "^[0-9a-fA-F:.]+$"
+                    },
+                    "published": {
+                      "$ref": "#/$defs/port"
+                    },
+                    "target": {
+                      "$ref": "#/$defs/port"
+                    },
+                    "protocol": {
+                      "enum": [
+                        "tcp",
+                        "udp"
+                      ]
+                    },
+                    "mode": {
+                      "enum": [
+                        null,
+                        "host",
+                        "ingress"
+                      ]
+                    },
+                    "allocation": {
+                      "enum": [
+                        "single",
+                        "pool",
+                        "paired-range",
+                        "automatic",
+                        "unknown"
+                      ]
+                    }
+                  }
+                },
+                "maxItems": 4096
+              }
+            }
+          },
+          "traefik_backend": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state",
+              "endpoints"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "declared",
+                  "disabled",
+                  "unknown"
+                ]
+              },
+              "endpoints": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "network_state",
+                    "name",
+                    "network",
+                    "port",
+                    "scheme"
+                  ],
+                  "properties": {
+                    "network_state": {
+                      "enum": [
+                        "absent",
+                        "unknown",
+                        "declared"
+                      ]
+                    },
+                    "kind": {
+                      "enum": [
+                        "http",
+                        "tcp",
+                        "udp"
+                      ]
+                    },
+                    "name": {
+                      "type": "string",
+                      "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$"
+                    },
+                    "network": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "port": {
+                      "$ref": "#/$defs/port"
+                    },
+                    "scheme": {
+                      "enum": [
+                        null,
+                        "http",
+                        "https",
+                        "h2c"
+                      ]
+                    }
+                  }
+                },
+                "maxItems": 4096
+              }
+            }
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "backend-network-unattached",
+                "backend-network-unresolved"
+              ]
+            },
+            "maxItems": 4096,
+            "uniqueItems": true
+          },
+          "runtime": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "running",
+              "healthy",
+              "used",
+              "recovered"
+            ],
+            "properties": {
+              "running": {
+                "enum": [
+                  "unknown"
+                ]
+              },
+              "healthy": {
+                "enum": [
+                  "unknown"
+                ]
+              },
+              "used": {
+                "enum": [
+                  "unknown"
+                ]
+              },
+              "recovered": {
+                "enum": [
+                  "unknown"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "maxItems": 4096
+    }
+  },
+  "$defs": {
+    "port": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "unknown",
+                "automatic"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "start",
+            "end"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "declared"
+              ]
+            },
+            "start": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "end": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            }
+          }
+        }
+      ]
+    }
+  }
+}
