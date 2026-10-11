@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.7"
+version: "0.1.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -33,6 +33,8 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
   - [eso-read-platform](config/policies/eso-read-platform.hcl): hy-home.k8s External Secrets용이며 `secret/platform/{argocd,postgres-app,notifications,prometheus-api,grafana-api}`를 읽습니다.
   - [k8s-bootstrap](config/policies/k8s-bootstrap.hcl): 수명이 짧은 클러스터 bootstrap token입니다.
 - [docker-compose.yml](docker-compose.yml)
+- [소비자 이관 계약](consumer-migration/README.md): 값 없는 wave·receipt schema와
+  합성 검증 경로입니다. 실제 pilot·복구·삭제·회전은 별도 수용 증거가 필요합니다.
 
 ## Tech Stack
 

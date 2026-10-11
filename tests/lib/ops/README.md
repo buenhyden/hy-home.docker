@@ -1,6 +1,6 @@
 ---
 title: "Operations Library Tests"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -31,6 +31,9 @@ created: "2026-10-10"
 - `test_opsflow_manifest.py`, `test_opsflow_adapters.py`,
   `test_opsflow_provision_contract.py`: P04 합성 매니페스트·보호된 접속 설정·SQL 권한
   소스 계약을 검증합니다. 실제 Airflow·DEV 게시나 빈 복원 수용은 별도입니다.
+
+- `test_openbao_consumer_migration.py`: P06 공개 계약·P02 API binding과 승인되지
+  않은 이관 선택의 거부를 검증합니다. 실제 KV·pilot·복구 시험은 별도입니다.
 
 ## Related Documents
 

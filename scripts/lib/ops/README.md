@@ -1,6 +1,6 @@
 ---
 title: "Operations Library"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -18,6 +18,9 @@ created: "2026-10-10"
 ## Structure
 
 - `compose-core-readiness.sh`: Compose 핵심 서비스 readiness와 격리 복구 검사.
+- `openbao_consumer_migration.py`: P06 공개 wave·receipt 형태와 P02 공개 API의
+  이관 선택 거부를 합성 입력으로 검증합니다. 실제 비밀 파일·OpenBao API에는
+  접근하지 않으며, 합성 receipt의 PASS는 운영 승인이나 pilot 수용이 아닙니다.
 - `smtp_contract.py`: SMTP Compose 모델 검사와 정확한 중복 파일 퇴역 처리.
   모델·비밀값은 출력하지 않고 canonical 파일은 변경하지 않습니다.
 - `wiki_preparation.py`: P09의 parsed 계약·caller 정책·합성 bytes를 오프라인으로

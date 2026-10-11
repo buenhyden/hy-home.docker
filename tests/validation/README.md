@@ -1,6 +1,6 @@
 ---
 title: "Validation Contract Tests"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -50,6 +50,9 @@ P03의 `test_port_contract.py`는 CLI·schema·공개 root closure와 합성 입
 
 P04의 `test_opsflow_airflow_contract.py`는 paused DAG·격리 workload override와
 합성 task 경계를 검증합니다. 실제 이미지 import·게시·복구 결과는 포함하지 않습니다.
+
+P06의 `test_openbao_consumer_migration_contract.py`는 bounded 공개 stdin CLI와
+닫힌 synthetic schema를 검증합니다. 비밀값 이관·삭제·회전 결과는 포함하지 않습니다.
 
 ## Related Documents
 

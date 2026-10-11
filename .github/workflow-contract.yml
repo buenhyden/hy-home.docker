@@ -788,6 +788,8 @@
         "tests.validation.test_secret_catalog_contract",
         "tests.lib.ops.test_port_inventory",
         "tests.validation.test_port_contract",
+        "tests.lib.ops.test_openbao_consumer_migration",
+        "tests.validation.test_openbao_consumer_migration_contract",
         "-v"
       ],
       "cwd": ".",
@@ -1588,6 +1590,18 @@
           "operations",
           "repository-integrity"
         ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/openbao_consumer_migration.py",
+          "scripts/operations/openbao-consumer-migration.py",
+          "infra/03-security/openbao/consumer-migration/",
+          "tests/lib/ops/test_openbao_consumer_migration.py",
+          "tests/validation/test_openbao_consumer_migration_contract.py"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
       }
     ],
     "changed_root_rules": [
@@ -1858,6 +1872,18 @@
           "tests/lib/ops/test_opsflow_adapters.py",
           "tests/lib/ops/test_opsflow_provision_contract.py",
           "tests/validation/test_opsflow_airflow_contract.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/openbao_consumer_migration.py",
+          "scripts/operations/openbao-consumer-migration.py",
+          "infra/03-security/openbao/consumer-migration/",
+          "tests/lib/ops/test_openbao_consumer_migration.py",
+          "tests/validation/test_openbao_consumer_migration_contract.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

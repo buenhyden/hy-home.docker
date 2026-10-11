@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:hyhome:openbao-consumer-wave:1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "wave_id", "consumer", "evidence_kind", "catalog", "secret_ids"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "wave_id": {"type": "string", "pattern": "^p06-[a-z0-9][a-z0-9-]{0,62}$"},
+    "consumer": {"type": "string", "pattern": "^[a-z][a-z0-9_-]{0,62}$"},
+    "evidence_kind": {"const": "synthetic"},
+    "catalog": {"$ref": "#/$defs/catalog"},
+    "secret_ids": {
+      "type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}
+    }
+  },
+  "$defs": {
+    "catalog": {
+      "type": "object", "additionalProperties": false,
+      "required": ["revision", "schema_version", "catalog_sha256", "schema_sha256", "source_sha256"],
+      "properties": {
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "schema_version": {"const": "1.0.0"},
+        "catalog_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "schema_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

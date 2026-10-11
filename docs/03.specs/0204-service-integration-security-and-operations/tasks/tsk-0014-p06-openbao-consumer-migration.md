@@ -1,8 +1,8 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.0"
+version: "0.1.4"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-11"
 layer: "specs"
@@ -283,6 +283,363 @@ selected server target keeps ROTATION NOT_RUN without blocking public source.
 
 ## Work Log
 
+### Coordinator Source Integration — 2026-10-11
+
+The combined input is local main `0207808560214c7ab88c582cfb4a3d76a70551eb`
+with worker `69be0b5e4f816449c19d22e2e03d71c4226c281a`. Seven worker
+source/schema/test files are byte-preserved. The stale registration patch failed
+apply-check; current common files were reconciled without overwriting P01–P04.
+Workflow SHA256 is `f47782da98092e996744419f9083318c4b56d504919525dfb07dba6aee4f734c`;
+manifest SHA256 is `6429c6849d7aa9a6a5d96939a3e7b21edb1d611816a04f62cbad14326fae7273`.
+Both routing maps include the canonical folder. Direct manifest edges follow
+unit-to-library and contract-to-CLI-to-library; unproven transitive edges were
+removed after the initial manifest failure. Source and corrected common review
+are separately approved. Six affected registered leaves passed with default
+executor/environment/timeouts; the full aggregate was not run. Dedicated
+synthetic tests passed23; combined repository regression passed430 in96.501s.
+Coverage98percent remains worker evidence, not a fresh coordinator measurement.
+Earlier combined metadata selected3 documents with0 violations; links checked
+1205 documents/11658 links with0 failures and1 existing archive warning.
+Lifecycle violations were0. The first final Task metadata check failed147
+findings after an invalid Evidence Acceptance value prevented package lifecycle
+loading; the value was corrected to pending without changing archive or validator
+contracts. Final Task metadata and staged checks are mandatory
+before the integration commit, whose Git parents preserve both input histories.
+Receipts are `p06-combined-acceptance.json` in the coordinator scratch directory.
+Local source delivery does not accept criterion20: HOME, native pilot, migration,
+rotation, actual deletion and snapshot/empty recovery remain NOT_RUN.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0014 | draft | ready | #public-work-admission |
+| SPEC-0204-TSK-0014 | ready | in-progress | #public-contract-implementation |
+
+### Public Work Admission
+
+The current user directs work from the issued Task, beginning with W46/W47,
+while actual pilot, deletion and rotation wait for unmet prerequisites. On
+2026-10-11 the exclusive P06 worktree and index were clean at issuance commit
+`6f230c56eb97c3cd587d636ba6492b24de13e53d`, which also resolves local main.
+Fresh `rtk git ls-remote origin refs/heads/main` returned
+`4e26a5a8022a7307c7461af60337442912955df1`, exit0. No fetch, push or remote
+mutation was performed. The original checkout and other workers are preserved.
+All seven owned source/test/schema paths were absent from that commit.
+
+The root records Task evidence under the doc-writer responsibility; one
+delegated qa-engineer owns all dedicated W47 source and tests. Neither writes
+shared catalog, generator, manifest, workflow, parent README, Spec or Plan.
+Required shared changes remain exact base-blob/patch proposals for their sole
+integrator. Request/token/time/price ceilings and provider hard enforcement are
+UNKNOWN; native team concurrency is at most7, with one implementation writer.
+No private input, credential issue, native resource or billed job is admitted.
+
+Observed dependency worktree HEADs are P01 `9130b6989`, P02 `d32ef6354`, P03
+`c1bc25f1a`, P04 `b2a46bc88` and P05 `f7543e069`. These update the issuance
+observations without rewriting their historical receipts. P02's validator
+currently rejects approved delivery bindings and retains BLOCKED_P01 fields;
+it is not an ancestor of P06. W47 therefore uses an explicitly provisional,
+injected selection interface in synthetic tests. It creates no production
+catalog reader or private copy command. P04 source progress does not establish
+its native W38 consumer acceptance. W48 production binding and W49-W54 remain
+dependent on their named owners' integrated contracts and actual receipts.
+
+### Public Contract Implementation
+
+Admission was independently reviewed PASS and committed as
+`c940c2acb73d844f6af13c99c772f6a998c38ae0`. Its readiness input was issuance
+`6f230c56eb97c3cd587d636ba6492b24de13e53d`. Registered Task metadata returned
+selected1/violations0, exit0; document links returned failures0 and one
+pre-existing historical capture warning, exit0. The first staged style
+environment had pre-commit4.6.1 and failed the required4.6.2 pin, exit2.
+Reusing `/tmp/hy-home-p09-qa/bin` resolved that environment mismatch without
+changing tools or the registered pin: the same Task index passed the staged
+controller and hardcoded-secret check, exit0. Exact Python Commitizen4.15.1
+validated the message, exit0; the unrelated PATH Node `cz` was not accepted
+as message-verification evidence. Sandbox initialization failed before several
+commands; their separately approved read-only/scoped retries supplied the
+actual results. One narrower review/writer retry resolved stalled tool delivery;
+the writer reported that no source edit had occurred before resumption.
+
+Admission commands (repository root, public source input6f230c56e; all final
+checks exit0 unless the failed tool pin is stated above):
+
+```sh
+rtk python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed \
+  --changed-path docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md \
+  --base-ref HEAD
+rtk python3 scripts/validation/check-document-links.py --mode all
+rtk /tmp/hy-home-staged-style-tools/bin/cz check --message-length-limit 75 \
+  --commit-msg-file .agent-work/p06-ready-commit.txt
+rtk env PATH=/tmp/hy-home-p09-qa/bin:/home/hyunyoun/.local/bin:/home/hyunyoun/.nvm/versions/node/v26.10.0/bin:/usr/local/bin:/usr/bin:/bin \
+  bash scripts/validation/run-ci-precommit.sh --mode local-staged
+rtk git commit -F .agent-work/p06-ready-commit.txt
+```
+
+Actual public P02 observation on `d32ef6354`: catalog1.0.0 has145 entries,
+zero opsflow matches and145 BLOCKED_P01 destination statuses. Draft nonnull
+paths are not approvals. PG-020 remains RETAINED_FOR_RECOVERY and COMM-003 is
+an alias. Its `load_catalog(root)` returns the validated public catalog;
+there is no selection API or approved delivery binding yet. Public Git blobs:
+catalog `efa0be3d052a5cd2d5336f333c01352447d2490a`, catalog schema
+`433f872bec88ac88ba87de8a69cf1fb9dbad3749`, API
+`84c2763614da61dadd10fd1c8d3d89e537c6d3d9`, I/O helper
+`2ebe6852ef9d756968870c1b8f15941fd527fede`. These are source objects, not
+secret-derived hashes or integration receipts.
+
+The delegated writer's scoped tool delivery remained stalled and it confirmed
+no edits. Root interrupted that writer, explicitly revoked its source lease,
+and took the sole qa-engineer implementation responsibility. Independent
+reviewers retain read-only responsibility; other workers' files are preserved.
+Root implemented W47 schemas, public validation CLI and explicitly provisional
+injected-interface tests. Candidate bindings cannot select their own authority.
+No production catalog import, network transport, private read or copy command
+is admitted by this unit.
+
+W47 input is readiness commit `c940c2acb73d844f6af13c99c772f6a998c38ae0` plus
+the seven dedicated source files. First unit RED failed with missing library,
+exit1; CLI RED failed with missing executable, exit1. Additional scope/admin
+mount regressions produced four failures in two methods, exit1. Correcting
+`scope=root` and rejecting reserved `sys`/`auth`/`identity` mounts resolved
+those failures without changing P02. Final focused unit and CLI subprocess
+checks passed17 tests, exit0. Branch-enabled coverage including subprocesses
+measured library99percent, CLI93percent, combined98percent (184 statements,
+58 branches;5 missing statements and1 partial branch), exit0. This is dedicated
+synthetic coverage, not repository-wide or native-consumer coverage. Scoped
+Ruff format/check passed all four Python files. Initial Ruff failures for loop
+binding, unnecessary suppression and implicit subprocess check were corrected.
+
+Both schemas are closed1.0.0 contracts. Receipt evidence is synthetic and
+permits only inventoried/classified with null KV version; native or copied/
+rendered/consumed/authoritative/recoverable/deleted claims are rejected.
+CLI accepts only bounded stdin shape validation, never private paths or token
+arguments. Unit tests bind authority independently of candidate input, enforce
+immutable selection, reject duplicate destinations and unsafe paths, and
+exercise fixed redacted errors. Subsequent copy/receipt behavior needs a
+reviewed extension with meaningful RED cases; it is not implemented here.
+
+Frozen seven-file source SHA256 values reviewed independently:
+
+| Source | SHA256 |
+| --- | --- |
+| consumer-migration/README.md | `6484d86fc8049c9aac21a3f6353d4c1c8145ec0f9a44d09ea9032000c5e409b3` |
+| consumer-migration/wave.schema.json | `2c3156b8f06ce2f1ac8dc37e579d2d9105032fab1636a08a71253e4df2975755` |
+| consumer-migration/receipt.schema.json | `563f9ae4e36ba80cdbb86cdd1adc8ee4e28547e67fdcc2fb0b7ca5cba108a37f` |
+| scripts/lib/ops/openbao_consumer_migration.py | `84a3bacde569248173e8664a059ddb31d5e4e9069c0da449df0f3892af914bca` |
+| scripts/operations/openbao-consumer-migration.py | `280c2a1cd5312f2c3ab3b39c1182b0b40f71a67705b19c9f12857b73ca48f268` |
+| tests/lib/ops/test_openbao_consumer_migration.py | `97c16b58494ba5366ce0f3529c171e3e2389afd2c7f826cb591019281359afe9` |
+| tests/validation/test_openbao_consumer_migration_contract.py | `97f7e7dae607081719aa4f5c21c21668e3eed056252380accd417c9c563e9294` |
+
+The first three paths are relative to `infra/03-security/openbao/`.
+Independent code review passed the frozen source and the proposal correction.
+Independent security review passed the same seven source hashes and the final
+proposal with no findings. Its trust/input/privilege/dependency verdict covers
+only synthetic public preparation; W48-W54 remain unassessed and NOT_RUN.
+Proposal ledger SHA256 is
+`93ba0e325bd0cbc9e0ae5a1b923084a234feece3b94fdb814d72a2955294af32`.
+Independent review also passed the result-only Task delta, including lifecycle,
+lease reassignment, coverage limits and all remaining NOT_RUN lanes. Changed
+file classification selected exactly8 files:2 Markdown,4 Python and2 JSON.
+Commitizen4.15.1 message validation and the registered pre-commit4.6.2 staged
+controller passed, exit0, including hardcoded-secret detection. Staged
+`git diff --check` passed, exit0. The controller is rerun after this evidence
+update on the exact commit index; any new failure blocks that commit.
+
+Shared registration and navigation remain ignored proposals under
+`.agent-work/p06-shared-proposals/registration.patch` and `base-blobs.json`.
+Final patch SHA256 is
+`44bae1efa9a35d31c805a55e98e85728ac80bf19de5f155bf66df83961829992`,
+bound to readiness commitc940c2ac. Exact unchanged base blobs are workflow
+contract `7dc037023853a003ef38a53d21e2c8d1ac0dd3b4`, Script Manifest
+`a4ebf87ef288e9b5c4830eac22b4e2dba800b44f`, OpenBao README
+`9e060dfeb3402c28fd2efd2ac5e807c11ae6a55d`, ops README
+`6f4fb0694eec94c1861e20ce7ab3dae55c345b2c`. The manifest maps the library
+to its unit importer and CLI to subprocess contract tests; workflow proposes
+both modules on repository-integrity regressions. Their consumer is the
+dedicated CLI/README; rollback removes only these four proposed hunks.
+
+An owned isolated fixture at `.agent-work/p06-registration-qa` applied these
+proposals without modifying P06's shared files. Initial manifest checks failed
+paths-unsorted, then tests-unproven; correcting alphabetical insertion and
+mapping only the direct library test produced manifest PASS, exit0. Workflow
+contract passed5 workflows/7 jobs/8 actions, exit0. All-document links on the
+tracked fixture, including new README, passed1196 documents/failures0 with
+one pre-existing historical capture warning, exit0. Changed metadata selected
+Task and README with violations0, exit0. The registered changed-profile
+`--explain` returned the local plan, exit0; no aggregate gate execution or
+hosted CI is claimed. The proposals require sole-integrator combined-head
+validation and are not installed registration on this branch.
+
+Focused verification commands at the P06 root (final results exit0):
+
+```sh
+rtk env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python \
+  -m coverage run --rcfile=.agent-work/p06-coverage.rc -m unittest \
+  tests.lib.ops.test_openbao_consumer_migration \
+  tests.validation.test_openbao_consumer_migration_contract -v
+rtk /tmp/hy-home-p09-qa/bin/python -m coverage combine \
+  --rcfile=.agent-work/p06-coverage.rc
+rtk /tmp/hy-home-p09-qa/bin/python -m coverage report \
+  --rcfile=.agent-work/p06-coverage.rc
+rtk ruff check scripts/lib/ops/openbao_consumer_migration.py \
+  scripts/operations/openbao-consumer-migration.py \
+  tests/lib/ops/test_openbao_consumer_migration.py \
+  tests/validation/test_openbao_consumer_migration_contract.py
+rtk /tmp/hy-home-staged-style-tools/bin/cz check --message-length-limit 75 \
+  --commit-msg-file .agent-work/p06-source-commit.txt
+rtk env PATH=/tmp/hy-home-p09-qa/bin:/home/hyunyoun/.local/bin:/home/hyunyoun/.nvm/versions/node/v26.10.0/bin:/usr/local/bin:/usr/bin:/bin \
+  bash scripts/validation/run-ci-precommit.sh --mode local-staged
+```
+
+Ignored coverage configuration uses branch=True and patch=subprocess with
+only the library and CLI in its measurement scope. Shared checks were run
+from the isolated fixture using `check-script-manifest.py`,
+`check-github-workflow-contract.py`, and `check-document-links.py --mode all`;
+only the selection preview used `run-ci-gate.py --profile changed --explain`.
+No runtime, private copy, deletion, rotation, resource or remote action ran.
+
+Two later metadata runs failed, exit1, each with146 diagnostics: the newly
+added shared-proposal Evidence row first used a composite Work Unit, then
+paired criterion8 with W47. Each invalid Spec Package also exposed145 archive
+type diagnostics. The corrected row now binds only criterion20/W47; W55 and
+criterion8 remain in the pending Delivery row. No archive was changed. Final
+metadata revalidation must pass before the logical source commit.
+
+### P02 Integrated Public API Binding
+
+The user's next handoff delivers P02 functional source
+`962e11be50260a3dce2e2700b22951fce1b3f4f7`, synthesis
+`ab346b2c9a329731af3fff74be651531d87067cc` and clean local main
+`08b009a9ce0f288926f2edc4eebcbc5fb475d1e5`, preserving P01 main
+`6d1d6960e59c316fad2c6d168d853989da565faa`. P06's clean two-commit series
+was rebased onto08b009a9 with no conflicts, exit0. Historical readinessc940
+and sourceeb0e8ad are preserved in Git and prior evidence; their replayed
+commits are `d134c5dd0634593e1e296968acb70dea8482edde` and
+`42a82e19161368ee9d997c0f4b299da68f373ae1`. Both962e11be and6d1d6960 are
+ancestors of the P06 candidate, confirmed by `git merge-base --is-ancestor`,
+exit0. Original checkout's24 unrelated worker paths remain untouched.
+
+This is a W47 compatibility continuation under the existing exclusive lease.
+Root alone writes the dedicated library, existing unit test, dedicated README
+and this Task. P02 API/schema/catalog, shared files and P01 tracked documents
+remain read-only. Read-only planning independently approved test-only API
+binding; no production loader/factory or approval interface is introduced.
+Nullable source/mount/path/field annotations now match P02's public schema.
+
+The existing test owner calls P02 `load_catalog(ROOT)` and preserves issued
+IDs, tuple consumers, nullable destinations, classifications and dispositions
+in frozen test-only rows. It does not parse a second catalog or resolve aliases.
+Six new cases prove current rows are not copy-approved, IMPLEMENT does not
+approve a destination, COMM-003 cannot select COMM-002, PG-020 retains its
+recovery hold, candidate hash/revision drift stops before lookup, and P02
+rejects a fabricated approval in an isolated in-memory negative fixture.
+No fixture is written to the authoritative catalog or assigned an opsflow ID.
+The existing guards already enforce these refusals; no production behavior
+was added and no new RED failure is claimed. Prior W47 RED/GREEN stays above.
+
+Observed API result on candidate42a82e19: schema1.0.0,145 issued entries,
+one COMM-003-to-COMM-002 alias, all destination statuses BLOCKED_P01,
+PG-020 RETAINED_FOR_RECOVERY, and COMM-002/003 generation_allowed false.
+The recurring tests compare issued IDs dynamically, not against a fixed census.
+First focused run passed22 tests, exit0; after the final IMPLEMENT boundary
+case, subprocess-instrumented verification passed23 in19.176s, exit0.
+Dedicated branch coverage remains98percent (library99/CLI93), exit0.
+Scoped Ruff passed the two changed Python files, exit0. A public observation
+using system Python failed before validation because referencing was absent;
+the existing `/tmp/hy-home-p09-qa/bin/python` environment rerun passed, exit0.
+No dependency or validation contract was changed to mask that environment gap.
+
+Public raw input SHA256 fingerprints are catalog
+`a069d84360fdad0da16bd415c80019aa78859a137cdb1ba1fe50aa2882f7e141`,
+schema `c044474d26a7f6f16f41d32fe07ca2dd34c08c0a3a3513f890717a7cf510582d`,
+API `89602c6da2c48b341d913c7582780c29ca9bcd3b44f5d8946105551c62eeb52d`.
+These are compatibility fingerprints, not W48 authentication. P02 loading also
+depends on its public metadata/support files and internal I/O/helper contracts.
+An accepted revision/digest-bound selection/approval interface, exact approved
+IDs, KV destination, ACL and delivery are still missing. W48 executor and all
+actual pilot/authority/recovery/deletion/rotation lanes remain NOT_RUN.
+
+Shared proposals were regenerated under
+`.agent-work/p06-p02-binding-proposals/` against08b009a9, leaving the old
+`.agent-work/p06-shared-proposals/` history unchanged. New registration.patch
+Final SHA256 is `4b5031a10d490d6300dc9a27ed9e9369ca2f77c2390b54f55ff3b367e3118ad7`;
+base-blobs.json SHA256 is
+`351b4a698c10c6f14cf629eb302135984f32096af310791576b857e7d5a79eb6`.
+Base blobs: workflow `2c97d82fa7dfd73b56ec247dc72d5ef2625968e4`, manifest
+`ff28ade87857c092768b8a5765f4aa3b4bee0aa9`, OpenBao README
+`312cd463ba9f2c8160e71b753133fa4645da872c`, ops README
+`9d0e057de8728c586849e4b310c03dd38c6958d8`. P02 and prior regression
+registration remain present. The coordinator owns final shared integration;
+P01 owns adjustment of its current documents against historical P02 proposal
+71907ca6, which is not applied to current main. CLI RUN-0085 remains authority;
+its proven consumer stays the actual subprocess test until P01 adds a runbook
+invocation and the coordinator validates that manifest delta.
+
+Final public-source verification used detached candidate42a82e19 under
+`.agent-work/p06-p02-binding-qa`, with only the four owned deltas and shared
+proposal staged there. Manifest validation passed, exit0. The final workflow
+contract passed, exit0 (5 workflows/7 jobs/8 actions). The live shared files,
+P02 source/catalog/generator and P01 tracked documents remain unchanged.
+
+The registered command `run-ci-gate.py --profile changed --local-only --explain`
+selected17 leaves, exit0. The same command without --explain ran once and
+returned exit1: compose-baseline's544 tests had two permission failures.
+Both fixture entrypoints (OpenWebUI/Gatus) had checkout mode0775, unchanged
+HEAD content and tracked100755. Only their disposable fixture modes were
+corrected to0755; live checkout modes/content and both indexes were preserved.
+The original aggregate FAIL remains in p06-p02-binding-local-gate.log.
+
+The unchanged canonical loader/validator/planner and execute_execution_plan
+then ran the selected suffix from leaf.compose-baseline-regressions, with no
+alternate executor or environment skip. Compose544 passed in127.173s,
+skipped71; contract27 passed. Runner60 then failed two own-leaf routing
+subtests: the proposal lacked changed_root_rules for the two P06 test paths.
+This recovery returned exit1, preserved in
+p06-p02-binding-local-gate-recovery.log. The initial proposal b2c6571f and
+ledger3703a73e remain as registration.initial.patch/base-blobs.initial.json.
+
+The final proposal adds the same four exact P06 prefixes to changed_root_rules
+for the existing repository-integrity leaf, preserving prior registrations.
+After workflow validation, the canonical selected suffix from the affected
+leaf.ci-gate-contract-regressions ran all eight remaining nodes, exit0:
+contract27, runner60, adapter42, workflow38, control-plane59, staged-controller
+regressions, release18 and repository-integrity388 (96.313s) all passed.
+Its receipt is p06-p02-binding-local-gate-routing-recovery.log. Earlier
+unchanged leaves retain PASS: hook15, candidate preflight, links, lifecycle15,
+metadata142, governance655, supply-chain263 and conftest18. Thus all17 selected
+leaves have successful local evidence; no full aggregate exit0 is claimed.
+Opt-in skips are not native acceptance. Links inspected1196 documents/11614
+links: failures0, one pre-existing historical capture warning, exit0.
+
+Worker reviews approved the four owned source deltas. Coordinator re-review
+of69be0b5e accepted the implementation but found P2 omissions in the final
+common proposal: the canonical schema-folder route and complete library
+consumers/tests were missing. The finding-free common-review claim is
+superseded. Fresh common integration and affected-gate acceptance are pending. The reviewed owned SHA256s
+remain helper `4c61cf97cb6ba8bf91a4fcdb52d4009d03558c15ad262d8faac4fcfd61322464`,
+test `66c9f68be5a134e10d9ae98a427865082b024df5253a27cf5a9142ee0332c3f2`,
+README `695be452cfdc0c1f08cdf77b71cb4f0dbe71007c2fa9e93f54c585376d0dcb70`.
+Dependency audit of scripts/requirements.txt first failed because the system
+Python lacked ensurepip, exit1. An isolated-cache pip-audit of the actual
+/tmp/hy-home-p09-qa/lib/python3.12/site-packages passed, exit0, with no known
+vulnerabilities. No advisory was ignored or dependency/global tool changed.
+This QA-environment audit does not assert production dependency acceptance.
+
+A fresh read-only git ls-remote origin refs/heads/main observed
+`08b009a9ce0f288926f2edc4eebcbc5fb475d1e5`, exit0, newer than the supplied
+6d1d6960 remote snapshot. This observation is not hosted CI evidence.
+These final result-only Task additions receive minimum metadata/diff checks;
+no link destination changes or implementation rerun are required. The reviewed
+final index still requires run-ci-precommit.sh --mode local-staged immediately
+before the ordinary commit, with its observed receipt retained under ignored
+.agent-work. Commitizen4.15.1 accepted the prepared message, exit0.
+
+No P06 main integration, push, PR, hosted CI, deployment or operational action
+is claimed by this continuation. SMTP01 remains COMM-003's sole executor;
+cooperative inherited locks do not quiesce CLN or nonparticipating writers.
+
 ### Assessment and Next Work Units
 
 All eleven supplied reference files were read and extracted only under ignored
@@ -316,7 +673,12 @@ for the dedicated implementation, not reasons to weaken existing contracts.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Git baseline | 1, 20 | W46 | status/worktrees/ls-remote/open PR and main CI | Localf754 / remote4e26 | PASS | Read-only baseline; no remote write | pending |
 | Reference audit | 20 | W46 | Eleven files and synthetic pytest | Prompt0d11d0fd04ba; inputf754 | PASS | 10 PASS,0.24s, exit0; command below | pending |
-| Selection schemas | 20 | W47 | RED/GREEN public closed-input cases | Issuance source pending | NOT_RUN | Independent worker owns implementation | pending |
+| Selection schemas | 20 | W47 | RED/GREEN public closed-input cases | c940c2ac plus frozen seven-file hashes above | PASS | 17 synthetic tests; dedicated coverage98percent | pending |
+| Shared proposals | 20 | W47 | Historical worker manifest/workflow/links fixture | c940c2ac plus patch44bae1ef | PASS | Historical isolated fixture; current P2 review supersedes delivery acceptance | pending |
+| Current common proposal review | 20 | W47 | Canonical folder route and manifest relations | 69be0b5e plus patch4b5031a1 | FAIL | Coordinator independent findings; corrected common integration pending | pending |
+| Corrected coordinator common integration | 20 | W47 | Both routing maps, direct graph and registered gates | local02078085 plus worker69be0b5e; common hashes in Work Log | PASS | Source-only: six affected leaves exit0; repository430; full aggregate NOT_RUN | pending |
+| Independent source review | 20 | W47 | Code and security review | Frozen seven source hashes only | PASS | No source findings; common proposal reviewed separately; operational scope unassessed | pending |
+| P02 API compatibility | 20 | W47 | Actual public API load and synthetic binding refusals | P02 source962e11be integrated in08b009a9; candidate42a82e19 | PASS | 23 tests; production selection/approval interface pending | pending |
 | Copy executor | 20 | W48 | Synthetic CAS/TLS/response/file/privacy failures | P02 binding pending | NOT_RUN | No real copy or client implementation yet | pending |
 | Renderer delivery | 20 | W49 | Version/inode/identity/reload/LKG failure proof | P01/P03 facts pending | NOT_RUN | Reuse their sole-owned contracts | pending |
 | Real pilot | 20 | W50 | Actual DEV ingest/S3 canary | P01/SEC/P02/P03/P04 gates pending | NOT_RUN | No resource, token or value action | pending |
@@ -324,7 +686,7 @@ for the dedicated implementation, not reasons to weaken existing contracts.
 | Higher waves | 20 | W52 | Sequential actual consumption/recovery | Pilot acceptance pending | NOT_RUN | No bulk import | pending |
 | Old-copy removal | 12, 20 | W53 | Five-axis evidence and owning executor | No eligible exact target | NOT_RUN | No private unlink or metadata change | pending |
 | Rotation | 20 | W54 | Actual server/native-copy change and denial | No selected exact server | NOT_RUN | Same-value copy is not rotation | pending |
-| Delivery | 8, 20 | W55 | Registered QA/review/latest-head PR/merge | No P06 PR | NOT_RUN | Task issuance only | pending |
+| Delivery | 8, 20 | W55 | Registered QA/review/latest-head PR/merge | No P06 PR | NOT_RUN | Dedicated source checkpoint; combined registration/CI pending | pending |
 
 Actual reference command on clean inputf754, exit0:
 
@@ -336,16 +698,18 @@ PYTHONPATH="$PWD/.agent-work/p06-reference-audit/reference" \
 ```
 
 The existing isolated QA environment was reused, not globally changed.
-Ten fake/file tests passed in0.24s; wrapper elapsed0.527s. No new implementation
-RED/GREEN, real HTTPS/CAS/Agent, HOME, migration, deletion, rotation or recovery
-ran. SOURCE / UNIT / STATIC / ISOLATED / HOME / MIGRATION / ROTATION / RECOVERY /
+Ten fake/file tests passed in0.24s; wrapper elapsed0.527s. At issuance no new
+implementation RED/GREEN had run; W47's later synthetic results are above.
+Real HTTPS/CAS/Agent, HOME, migration, deletion, rotation and recovery remain
+NOT_RUN. SOURCE / UNIT / STATIC / ISOLATED / HOME / MIGRATION / ROTATION / RECOVERY /
 DELIVERY must remain separate, with input SHA, exact command, exit, failure/
 correction and receipt. Worker modules above plus affected P02/P01/SMTP/CLN
 contracts select focused tests and meaningful80percent coverage; source unit
 results never substitute for actual private consumption or deployment.
 
 Before final source delivery, coordinator integrates existing manifest/workflow
-registration and README proposals, then runs affected scripts/qa.py changed,
+registration and README proposals, then selects the registered changed profile
+through `scripts/validation/run-ci-gate.py --profile changed`,
 scoped Ruff/syntax and document metadata/links, git diff --check and the
 registered run-ci-precommit.sh --mode local-staged on the reviewed index.
 Native commands are selected only after the implementation CLI/test route and
@@ -355,8 +719,9 @@ command and missing input once the owner has supplied its real interface.
 
 ## Review and Completion
 
-Issuance remains draft; use the existing lifecycle event contract when the
-worker starts. Source-only delivery may proceed with operational lanes marked
+Public work is in-progress through the observed lifecycle events above.
+Source-only
+delivery may proceed with operational lanes marked
 NOT_RUN; it does not complete criterion20 or P06. Full completion requires the
 selected actual pilot and accepted sequential waves, authority/recovery,
 eligible-copy removal and separate selected rotation evidence. Unused, unknown

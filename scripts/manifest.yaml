@@ -544,6 +544,18 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_compose_core_readiness.py
+- path: scripts/lib/ops/openbao_consumer_migration.py
+  kind: library
+  authority: infra/03-security/openbao/consumer-migration/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/openbao-consumer-migration.py
+  - tests/lib/ops/test_openbao_consumer_migration.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_openbao_consumer_migration.py
 - path: scripts/lib/ops/port_inventory.py
   kind: library
   authority: infra/09-platform-ops/service-integration/README.md
@@ -715,6 +727,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_lab_controller.py
+- path: scripts/operations/openbao-consumer-migration.py
+  kind: operations
+  authority: infra/03-security/openbao/consumer-migration/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - infra/03-security/openbao/consumer-migration/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_openbao_consumer_migration_contract.py
 - path: scripts/operations/port-inventory.py
   kind: operations
   authority: infra/09-platform-ops/service-integration/README.md
