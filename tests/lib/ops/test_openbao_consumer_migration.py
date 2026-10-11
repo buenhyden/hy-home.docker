@@ -1,9 +1,12 @@
-"""W47 synthetic authority/selection tests; no actual catalog or private I/O."""
+"""W47 synthetic selection and public P02 API binding; no private I/O."""
 
 import copy
+import hashlib
 import json
+import subprocess
 import unittest
 from dataclasses import replace
+from pathlib import Path
 
 from scripts.lib.ops.openbao_consumer_migration import (
     CatalogBinding,
@@ -14,6 +17,9 @@ from scripts.lib.ops.openbao_consumer_migration import (
     select_wave,
     validate_public,
 )
+from scripts.lib.ops.secret_catalog import load_catalog, validate_catalog
+
+ROOT = Path(__file__).resolve().parents[3]
 
 
 def binding():
@@ -264,3 +270,131 @@ class PublicMigrationTests(unittest.TestCase):
             validate_public("unknown", wave())
         with self.assertRaises(MigrationError):
             validate_public("wave", [])
+
+
+class PublicCatalogBindingTests(unittest.TestCase):
+    """Test-only projection; P02 owns validation and all approval decisions."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.catalog = load_catalog(ROOT)
+        inputs = (
+            "infra/03-security/openbao/secret-catalog.json",
+            "infra/03-security/openbao/secret-catalog.schema.json",
+            "scripts/lib/ops/secret_catalog.py",
+        )
+        hashes = tuple(
+            hashlib.sha256((ROOT / path).read_bytes()).hexdigest() for path in inputs
+        )
+        if json.loads((ROOT / inputs[0]).read_bytes()) != cls.catalog:
+            raise AssertionError("public catalog changed after API validation")
+        revision = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        cls.public_binding = CatalogBinding(
+            revision, cls.catalog["schema_version"], *hashes
+        )
+        cls.rows = tuple(
+            CatalogSelection(
+                entry["id"],
+                entry["scope"],
+                entry["classification"],
+                entry["action"],
+                entry["disposition"],
+                entry["consumer_status"],
+                tuple(entry["consumers"]),
+                None,
+                entry["source_path"],
+                entry["destination_plan"]["status"],
+                entry["destination_plan"]["mount"],
+                entry["destination_plan"]["kv_path"],
+                entry["destination_plan"]["field"],
+            )
+            for entry in cls.catalog["entries"]
+        )
+
+    def candidate(self, identifier):
+        return {
+            **wave(),
+            "catalog": self.public_binding.as_dict(),
+            "secret_ids": [identifier],
+        }
+
+    def lookup(self, identifier):
+        return next((item for item in self.rows if item.id == identifier), None)
+
+    def test_public_api_metadata_is_preserved_by_refused_selection(self):
+        before = copy.deepcopy(self.catalog)
+        self.assertEqual(
+            {entry["id"] for entry in self.catalog["entries"]},
+            {item.id for item in self.rows},
+        )
+        authority = FrozenAuthority(self.public_binding, self.lookup)
+        for item in self.rows:
+            with self.subTest(identifier=item.id), self.assertRaises(MigrationError):
+                select_wave(self.candidate(item.id), authority)
+        self.assertEqual(before, self.catalog)
+
+    def test_implement_action_is_not_a_destination_approval(self):
+        item = next(
+            item
+            for item in self.rows
+            if item.scope == "root"
+            and item.classification == "kv_static"
+            and item.action == "IMPLEMENT"
+        )
+        self.assertNotEqual("APPROVED", item.destination_status)
+        with self.assertRaisesRegex(MigrationError, "catalog_copy_not_approved"):
+            select_wave(
+                self.candidate(item.id),
+                FrozenAuthority(self.public_binding, self.lookup),
+            )
+
+    def test_alias_is_not_resolved_into_its_canonical_copy(self):
+        self.assertIn(
+            {"id": "COMM-003", "canonical_id": "COMM-002", "state": "source_retired"},
+            self.catalog["aliases"],
+        )
+        authority = FrozenAuthority(self.public_binding, self.lookup)
+        with self.assertRaisesRegex(MigrationError, "unknown_catalog_id"):
+            select_wave(self.candidate("COMM-003"), authority)
+        with self.assertRaises(MigrationError):
+            select_wave(self.candidate("COMM-002"), authority)
+
+    def test_recovery_hold_is_not_reclassified_for_a_pilot(self):
+        held = self.lookup("PG-020")
+        self.assertEqual("RETAINED_FOR_RECOVERY", held.disposition)
+        with self.assertRaisesRegex(MigrationError, "catalog_copy_not_approved"):
+            select_wave(
+                self.candidate(held.id),
+                FrozenAuthority(self.public_binding, self.lookup),
+            )
+        self.assertEqual("RETAINED_FOR_RECOVERY", self.lookup("PG-020").disposition)
+
+    def test_public_input_binding_drift_stops_before_lookup(self):
+        for field in ("revision", "catalog_sha256", "schema_sha256", "source_sha256"):
+            candidate = self.candidate("PG-020")
+            candidate["catalog"][field] = "e" * len(candidate["catalog"][field])
+            if candidate["catalog"][field] == getattr(self.public_binding, field):
+                candidate["catalog"][field] = "f" * len(candidate["catalog"][field])
+            calls = []
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(MigrationError, "catalog_binding_mismatch"),
+            ):
+                select_wave(
+                    candidate, FrozenAuthority(self.public_binding, calls.append)
+                )
+            self.assertEqual([], calls)
+
+    def test_invented_delivery_approval_is_rejected_by_the_p02_api(self):
+        candidate = copy.deepcopy(self.catalog)
+        entry = next(item for item in candidate["entries"] if item["id"] == "PG-020")
+        entry["destination_plan"] = {**entry["destination_plan"], "status": "APPROVED"}
+        with self.assertRaises(ValueError):
+            validate_catalog(candidate)
+        self.assertEqual("RETAINED_FOR_RECOVERY", self.lookup("PG-020").disposition)

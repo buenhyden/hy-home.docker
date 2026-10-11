@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -481,6 +481,136 @@ type diagnostics. The corrected row now binds only criterion20/W47; W55 and
 criterion8 remain in the pending Delivery row. No archive was changed. Final
 metadata revalidation must pass before the logical source commit.
 
+### P02 Integrated Public API Binding
+
+The user's next handoff delivers P02 functional source
+`962e11be50260a3dce2e2700b22951fce1b3f4f7`, synthesis
+`ab346b2c9a329731af3fff74be651531d87067cc` and clean local main
+`08b009a9ce0f288926f2edc4eebcbc5fb475d1e5`, preserving P01 main
+`6d1d6960e59c316fad2c6d168d853989da565faa`. P06's clean two-commit series
+was rebased onto08b009a9 with no conflicts, exit0. Historical readinessc940
+and sourceeb0e8ad are preserved in Git and prior evidence; their replayed
+commits are `d134c5dd0634593e1e296968acb70dea8482edde` and
+`42a82e19161368ee9d997c0f4b299da68f373ae1`. Both962e11be and6d1d6960 are
+ancestors of the P06 candidate, confirmed by `git merge-base --is-ancestor`,
+exit0. Original checkout's24 unrelated worker paths remain untouched.
+
+This is a W47 compatibility continuation under the existing exclusive lease.
+Root alone writes the dedicated library, existing unit test, dedicated README
+and this Task. P02 API/schema/catalog, shared files and P01 tracked documents
+remain read-only. Read-only planning independently approved test-only API
+binding; no production loader/factory or approval interface is introduced.
+Nullable source/mount/path/field annotations now match P02's public schema.
+
+The existing test owner calls P02 `load_catalog(ROOT)` and preserves issued
+IDs, tuple consumers, nullable destinations, classifications and dispositions
+in frozen test-only rows. It does not parse a second catalog or resolve aliases.
+Six new cases prove current rows are not copy-approved, IMPLEMENT does not
+approve a destination, COMM-003 cannot select COMM-002, PG-020 retains its
+recovery hold, candidate hash/revision drift stops before lookup, and P02
+rejects a fabricated approval in an isolated in-memory negative fixture.
+No fixture is written to the authoritative catalog or assigned an opsflow ID.
+The existing guards already enforce these refusals; no production behavior
+was added and no new RED failure is claimed. Prior W47 RED/GREEN stays above.
+
+Observed API result on candidate42a82e19: schema1.0.0,145 issued entries,
+one COMM-003-to-COMM-002 alias, all destination statuses BLOCKED_P01,
+PG-020 RETAINED_FOR_RECOVERY, and COMM-002/003 generation_allowed false.
+The recurring tests compare issued IDs dynamically, not against a fixed census.
+First focused run passed22 tests, exit0; after the final IMPLEMENT boundary
+case, subprocess-instrumented verification passed23 in19.176s, exit0.
+Dedicated branch coverage remains98percent (library99/CLI93), exit0.
+Scoped Ruff passed the two changed Python files, exit0. A public observation
+using system Python failed before validation because referencing was absent;
+the existing `/tmp/hy-home-p09-qa/bin/python` environment rerun passed, exit0.
+No dependency or validation contract was changed to mask that environment gap.
+
+Public raw input SHA256 fingerprints are catalog
+`a069d84360fdad0da16bd415c80019aa78859a137cdb1ba1fe50aa2882f7e141`,
+schema `c044474d26a7f6f16f41d32fe07ca2dd34c08c0a3a3513f890717a7cf510582d`,
+API `89602c6da2c48b341d913c7582780c29ca9bcd3b44f5d8946105551c62eeb52d`.
+These are compatibility fingerprints, not W48 authentication. P02 loading also
+depends on its public metadata/support files and internal I/O/helper contracts.
+An accepted revision/digest-bound selection/approval interface, exact approved
+IDs, KV destination, ACL and delivery are still missing. W48 executor and all
+actual pilot/authority/recovery/deletion/rotation lanes remain NOT_RUN.
+
+Shared proposals were regenerated under
+`.agent-work/p06-p02-binding-proposals/` against08b009a9, leaving the old
+`.agent-work/p06-shared-proposals/` history unchanged. New registration.patch
+Final SHA256 is `4b5031a10d490d6300dc9a27ed9e9369ca2f77c2390b54f55ff3b367e3118ad7`;
+base-blobs.json SHA256 is
+`351b4a698c10c6f14cf629eb302135984f32096af310791576b857e7d5a79eb6`.
+Base blobs: workflow `2c97d82fa7dfd73b56ec247dc72d5ef2625968e4`, manifest
+`ff28ade87857c092768b8a5765f4aa3b4bee0aa9`, OpenBao README
+`312cd463ba9f2c8160e71b753133fa4645da872c`, ops README
+`9d0e057de8728c586849e4b310c03dd38c6958d8`. P02 and prior regression
+registration remain present. The coordinator owns final shared integration;
+P01 owns adjustment of its current documents against historical P02 proposal
+71907ca6, which is not applied to current main. CLI RUN-0085 remains authority;
+its proven consumer stays the actual subprocess test until P01 adds a runbook
+invocation and the coordinator validates that manifest delta.
+
+Final public-source verification used detached candidate42a82e19 under
+`.agent-work/p06-p02-binding-qa`, with only the four owned deltas and shared
+proposal staged there. Manifest validation passed, exit0. The final workflow
+contract passed, exit0 (5 workflows/7 jobs/8 actions). The live shared files,
+P02 source/catalog/generator and P01 tracked documents remain unchanged.
+
+The registered command `run-ci-gate.py --profile changed --local-only --explain`
+selected17 leaves, exit0. The same command without --explain ran once and
+returned exit1: compose-baseline's544 tests had two permission failures.
+Both fixture entrypoints (OpenWebUI/Gatus) had checkout mode0775, unchanged
+HEAD content and tracked100755. Only their disposable fixture modes were
+corrected to0755; live checkout modes/content and both indexes were preserved.
+The original aggregate FAIL remains in p06-p02-binding-local-gate.log.
+
+The unchanged canonical loader/validator/planner and execute_execution_plan
+then ran the selected suffix from leaf.compose-baseline-regressions, with no
+alternate executor or environment skip. Compose544 passed in127.173s,
+skipped71; contract27 passed. Runner60 then failed two own-leaf routing
+subtests: the proposal lacked changed_root_rules for the two P06 test paths.
+This recovery returned exit1, preserved in
+p06-p02-binding-local-gate-recovery.log. The initial proposal b2c6571f and
+ledger3703a73e remain as registration.initial.patch/base-blobs.initial.json.
+
+The final proposal adds the same four exact P06 prefixes to changed_root_rules
+for the existing repository-integrity leaf, preserving prior registrations.
+After workflow validation, the canonical selected suffix from the affected
+leaf.ci-gate-contract-regressions ran all eight remaining nodes, exit0:
+contract27, runner60, adapter42, workflow38, control-plane59, staged-controller
+regressions, release18 and repository-integrity388 (96.313s) all passed.
+Its receipt is p06-p02-binding-local-gate-routing-recovery.log. Earlier
+unchanged leaves retain PASS: hook15, candidate preflight, links, lifecycle15,
+metadata142, governance655, supply-chain263 and conftest18. Thus all17 selected
+leaves have successful local evidence; no full aggregate exit0 is claimed.
+Opt-in skips are not native acceptance. Links inspected1196 documents/11614
+links: failures0, one pre-existing historical capture warning, exit0.
+
+Independent code/security reviews passed the four owned deltas and then the
+corrected registration delta, with no findings. The reviewed owned SHA256s
+remain helper `4c61cf97cb6ba8bf91a4fcdb52d4009d03558c15ad262d8faac4fcfd61322464`,
+test `66c9f68be5a134e10d9ae98a427865082b024df5253a27cf5a9142ee0332c3f2`,
+README `695be452cfdc0c1f08cdf77b71cb4f0dbe71007c2fa9e93f54c585376d0dcb70`.
+Dependency audit of scripts/requirements.txt first failed because the system
+Python lacked ensurepip, exit1. An isolated-cache pip-audit of the actual
+/tmp/hy-home-p09-qa/lib/python3.12/site-packages passed, exit0, with no known
+vulnerabilities. No advisory was ignored or dependency/global tool changed.
+This QA-environment audit does not assert production dependency acceptance.
+
+A fresh read-only git ls-remote origin refs/heads/main observed
+`08b009a9ce0f288926f2edc4eebcbc5fb475d1e5`, exit0, newer than the supplied
+6d1d6960 remote snapshot. This observation is not hosted CI evidence.
+These final result-only Task additions receive minimum metadata/diff checks;
+no link destination changes or implementation rerun are required. The reviewed
+final index still requires run-ci-precommit.sh --mode local-staged immediately
+before the ordinary commit, with its observed receipt retained under ignored
+.agent-work. Commitizen4.15.1 accepted the prepared message, exit0.
+
+No P06 main integration, push, PR, hosted CI, deployment or operational action
+is claimed by this continuation. SMTP01 remains COMM-003's sole executor;
+cooperative inherited locks do not quiesce CLN or nonparticipating writers.
+
 ### Assessment and Next Work Units
 
 All eleven supplied reference files were read and extracted only under ignored
@@ -517,6 +647,7 @@ for the dedicated implementation, not reasons to weaken existing contracts.
 | Selection schemas | 20 | W47 | RED/GREEN public closed-input cases | c940c2ac plus frozen seven-file hashes above | PASS | 17 synthetic tests; dedicated coverage98percent | pending |
 | Shared proposals | 20 | W47 | Manifest/workflow/links and independent delta review | c940c2ac plus patch44bae1ef | PASS | Isolated fixture only; W55 sole-integrator application pending | pending |
 | Independent source review | 20 | W47 | Code and security review | Frozen seven source hashes plus final proposal | PASS | No findings; operational scope unassessed | pending |
+| P02 API compatibility | 20 | W47 | Actual public API load and synthetic binding refusals | P02 source962e11be integrated in08b009a9; candidate42a82e19 | PASS | 23 tests; production selection/approval interface pending | pending |
 | Copy executor | 20 | W48 | Synthetic CAS/TLS/response/file/privacy failures | P02 binding pending | NOT_RUN | No real copy or client implementation yet | pending |
 | Renderer delivery | 20 | W49 | Version/inode/identity/reload/LKG failure proof | P01/P03 facts pending | NOT_RUN | Reuse their sole-owned contracts | pending |
 | Real pilot | 20 | W50 | Actual DEV ingest/S3 canary | P01/SEC/P02/P03/P04 gates pending | NOT_RUN | No resource, token or value action | pending |

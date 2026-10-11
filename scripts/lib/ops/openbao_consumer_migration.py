@@ -1,6 +1,6 @@
 """W47 public, synthetic-only contracts; no production catalog or private I/O.
 
-The injected projection is provisional until P02 publishes its reviewed API.
+The injected projection remains test-only; P02 API compatibility is checked offline.
 Structural validation supplies neither authorization nor native acceptance.
 """
 
@@ -53,11 +53,11 @@ class CatalogSelection:
     consumer_status: str
     consumers: tuple[str, ...]
     alias_of: str | None
-    source_path: str
+    source_path: str | None
     destination_status: str
-    mount: str
-    kv_path: str
-    field: str
+    mount: str | None
+    kv_path: str | None
+    field: str | None
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -47,10 +47,19 @@ workflow 또는 운영 자원을 만들지 않습니다.
 계산한 hash를 넣지 않습니다. 호출자가 후보 문서와 별도로 고정한 입력과 대조합니다.
 
 `FrozenAuthority`와 `CatalogSelection`은 합성 시험용 임시 주입 인터페이스입니다.
-실제 catalog API 연결이 아닙니다. `APPROVED`는 합성 projection의 상태이며 기존
+합성 시험은 P02의 `load_catalog` API로 공개 metadata를 읽어 ID·nullable 목적지·alias·
+보존 상태를 그대로 투영합니다. 실행용 catalog adapter는 아직 없습니다.
+`APPROVED`는 기존 독립 합성 fixture의 상태이며 실제
 catalog의 `BLOCKED_P01` 항목이나 초안 목적지 경로를 승인으로 바꾸지 않습니다.
 선택 검사는 alias, 미확인 소비자, 복구용·bootstrap·암호화·미사용·LAB 항목,
 안전하지 않은 경로와 중복 목적지를 거부합니다. 원본 파일은 열지 않습니다.
+
+API 호환 시험은 공개 catalog·schema·API 소스 bytes의 hash와 호출자 고정 revision을
+wave 입력과 대조합니다. 이 세 hash는 호환성 fingerprint이며 운영 승인 인증이
+아닙니다. P02 loader는 추가로 공개 metadata·support matrix와 내부 I/O helper에도
+의존합니다. W48 실행 binding은 이 전체 입력과 승인된 대상·ACL·delivery를 묶는
+소유자 계약을 기다립니다. COMM-003은 canonical ID로 해석해 복사하지 않으며
+PG-020의 초기화·복구 보존 판단을 유지합니다.
 
 ## Validation
 
