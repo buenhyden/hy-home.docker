@@ -1,6 +1,6 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -480,6 +480,108 @@ rotation, deletion and recovery remain NOT_RUN. Criterion 17 stays open.
 Rollback for this increment is a reviewed Task documentation revert and rejection
 of the unapplied proposal; scratch source checks imply no deployed rollback.
 
+### Coordinator Common Integration — 2026-10-11
+
+The coordinator independently observed clean local main and actual remote main
+`08b009a9ce0f288926f2edc4eebcbc5fb475d1e5`. P02 is already integrated at
+that input; it is preserved before P03, not rebased after it. The foreign shared
+checkout remains detached and unchanged. Its status and tracked working/index
+diff hashes match the earlier P02 preservation receipt; this does not assert
+that every ignored or untracked byte was separately hashed.
+
+The dedicated coordinator branch is `codex/p03-common-integration` in
+`.worktrees/p03-common-integration`. Source merge
+`4cadd4d7ea2cb1d45a18b75f76723c1fb5982d96` preserves the worker's
+`93ad5da2538f99cc978745a458587e2fde71550c` and
+`c1bc25f1a09e9e5fb17dfbbc10d80fe07544af5e` logical commits. Common commit
+`c3fce85d2f66f24bac0908d78a3b174bce00e828` registers the two scripts and
+two test modules, identical six-prefix suite/root routing, Platform Operations
+navigation, the fixture-family README and three existing test/library indexes.
+It preserves all 91 preceding manifest records and P02's test arguments/routes.
+The later worker Task commit `c74c04bf6fc6ba2a853b000f638a9ac9d59e3ab7`
+is also preserved by merge `3a79b0ae1`; its reported 130 candidate tests remain
+worker evidence, not a coordinator rerun.
+
+The old four-path patch failed actual current-base `git apply --check`, exit 1,
+on Manifest/workflow. The coordinator applied only the two matching README
+hunks and reconciled Manifest/workflow on current P02 bytes. The regenerated
+08b proposal's four resulting file hashes exactly match this common commit;
+the three extra indexes are additive navigation. There is no script README
+generator route, so the earlier regeneration suggestion is superseded by the
+actual index edits. No Registry, Spec/Plan, catalog, Compose, dotenv, gateway,
+Alloy, backup or deployed service was edited.
+
+Fresh coordinator source checks used the unchanged helper/schema/test/fixture
+bytes plus the seven common staged files at `4cadd4d7e`. The command
+`python -m unittest tests.lib.ops.test_port_inventory tests.validation.test_port_contract -q`
+ran 42 tests in 3.679 seconds, exit 0. The worker's 84-test regression receipt
+and 97-percent coverage remain historical, NOT_RERUN for this integration.
+Script Manifest `--check-generated` and workflow-contract validators exited 0;
+workflow totals were five workflows, seven jobs and eight actions. The five
+explicit common README metadata paths selected one governed document, zero
+violations, exit 0; this is not a claim of five governed metadata selections.
+
+The coordinator built the canonical changed LOCAL plan for the exact 20 paths,
+validated public execution parity, and executed these 12 affected registered
+leaves through `ci_gate_runner.execute_execution_plan`, retaining each existing
+argv, environment admission and timeout, with no custom executor:
+
+```text
+leaf.repo-document-metadata
+leaf.local-candidate-preflight
+leaf.docs-traceability
+leaf.local-document-corpus-lifecycle
+leaf.local-diff-hygiene
+leaf.local-script-manifest
+leaf.ci-gate-contract-regressions
+leaf.ci-gate-runner-regressions
+leaf.workflow-contract-regressions
+leaf.repo-contracts-control-plane-regressions
+leaf.workflow-contract
+leaf.repository-integrity-regressions
+```
+
+All 12 exited 0. The repository-integrity leaf ran its complete registered
+arguments, including both P02 and P03 modules: 407 tests, 92.623 seconds, exit 0.
+Active metadata selected 492 documents with zero violations. Full link checking
+found 1,198 documents/11,619 links, zero failures and one existing historical
+capture-source warning. Lifecycle and candidate metadata/version checks passed.
+The full 33-leaf plan was compiled, not executed as a new full aggregate.
+Its canonical six-field SHA256 is
+`bdcabe18407b9b3e5797a9429f5dfbca84e86550ac84ecca2b2b7a4c14624b6d`;
+the selected 12-leaf SHA256 is
+`b9c292d9da8f63c11368d4489ef5e8ce83b145a47b306acb09b7a28bd625e15a`.
+Public input hashes, exact invocations, exits and log digests are preserved in
+the coordinator's ignored `p03-gate-input.json` and `p03-affected-gates.json`.
+Unchanged P02 gate-source receipts are retained rather than relabeled as fresh.
+
+Independent coordinator code and security reviewers accepted the exact source
+and seven common-file hashes, with no open Critical/Important or P1/P2 finding.
+Each source/common/Task merge used the registered local-staged controller
+immediately before commit, exit 0, plus Conventional Commit validation. The
+final result-document increment requires its own metadata/style checks and
+review; it changes no executable input or registered routing.
+
+SOURCE, UNIT and affected STATIC evidence above support this local source
+integration only. Synthetic Compose `config` does not start a daemon workload.
+ISOLATED native authentication, HOME, MIGRATION, ROTATION and RECOVERY remain
+NOT_RUN. P03 push, PR, hosted CI and remote merge remain NOT_RUN; later observed
+remote publication must be checked separately. Criterion 17 stays open.
+
+P01's integrated source v2 journal/issuance compatibility does not close HOME
+or snapshot/empty-restore acceptance. P02's catalog metadata is not issuance or
+runtime ACL. P04/P05 may continue provisional source consumers against this
+port schema 1.0.0, but worker UID/GID, final DEV/S3 endpoints/TLS/CA, function-only
+grants, enforced object policy and native producer/notifier proof remain open.
+P06 public wave/receipt shape is not pilot/copy/delete/recovery authorization.
+MLflow/SonarQube/Terrakube increments still need their named implementation
+leases and exact native inputs. Next public reproduction commands are the
+dedicated unittest above and `python3 scripts/operations/port-inventory.py`;
+the full future delivery route is
+`python3 scripts/validation/run-ci-gate.py --profile changed`, which was not
+executed as a new full aggregate here. Rollback is a reviewed logical source
+revert; no operational rollback was performed or implied.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -487,6 +589,9 @@ of the unapplied proposal; scratch source checks imply no deployed rollback.
 | Git baseline | 1, 17 | W33 | status/log/worktrees, ls-remote and open PR list | Local 6da5e3bf3; remote 2b9f5ec82 | PASS | Assessment above; exit 0, baseline only | pending |
 | Existing source contracts | 1, 4, 8, 17 | W33 | Inventory, wiring, compatibility, version and SMTP unit modules | Clean 6da5e3bf3 | PASS | Exact command below; 84 tests, 8.084s, exit 0, existing source only | pending |
 | P03 implementation | 17 | W33 | New schema/parser/fixtures and RED/GREEN | Final artifact aggregate above | PASS | Source/synthetic slice only; whole criterion remains open | pending |
+| Common source registration | 17 | W33 | Manifest/workflow and navigation reconciliation | 08b009a9c plus preserved P03 commits | PASS | c3fce85d2; two scripts, two modules and both routing tables; local source only | pending |
+| Coordinator dedicated tests | 17 | W33 | Two unchanged P03 unit/contract modules | 4cadd4d7e plus exact seven common staged files | PASS | 42 tests, 3.679s, exit 0; synthetic/config only | pending |
+| Coordinator affected gates | 17 | W33 | Twelve registered affected leaves | Twenty public input hashes and canonical plan digests above | PASS | Each exit 0; repository-integrity 407 tests; no new full aggregate or hosted CI | pending |
 | Initial private/runtime lanes | 4, 6, 17 | W33 | ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY | No exact selected action | NOT_RUN | Owning follow-up needed; no operational acceptance | pending |
 | Delivery | 8, 17 | W33 | Latest-head CI/review/PR/merge | No P03 PR | NOT_RUN | Future PR; no remote delivery claim | pending |
 

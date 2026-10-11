@@ -1,6 +1,6 @@
 ---
 title: "서비스 연결 포트 계약"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -100,8 +100,9 @@ mount, env_file, build, 외부 network를 거부하며 config 실행 시간을 �
 raw 렌더는 반환하거나 저장하지 않습니다. override의 실제 Compose merge 의미를
 보존하며, 예제는 DEV publication 추가입니다. 실제 호스트 포트 변경 절차는 아닙니다.
 
-공통 manifest·workflow 등록, 상위 README 탐색과 운영 문서 정합은 총괄의
-단일 통합 대상으로 남습니다. P01/P02의 최종 secret/ACL/reload, SEC01의 이미지
+공통 manifest·workflow 등록과 상위 README 탐색은 총괄이 `c3fce85d2`에
+통합했습니다. 실제 기준 SHA와 검증 범위는 owning Task가 기록합니다.
+운영 문서 정합, P01/P02의 최종 secret/ACL/reload, SEC01의 이미지
 보안 수용, P04/P05의 실제 worker, CLN01의 폐기 판단을 대신하지 않습니다.
 
 ## Related Documents
