@@ -39,6 +39,8 @@ PATCH_STABLE_IMAGES = {
     ): "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d",
 }
 
+OPEN_WEBUI = "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25"
+
 
 class CandidateContract(unittest.TestCase):
     def test_dozzle_docker_control_plane_is_explicitly_locked_down(self):
@@ -85,6 +87,14 @@ class CandidateContract(unittest.TestCase):
             ("infra/10-communication/stalwart/docker-compose.yml", "stalwart")
         ]
         self.assertIn(f"FROM {stalwart_image}", dockerfile)
+
+    def test_openwebui_minor_refresh_keeps_exact_cuda_variant(self):
+        compose = yaml.safe_load(
+            (ROOT / "infra/08-ai/open-webui/docker-compose.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(compose["services"]["open-webui"]["image"], OPEN_WEBUI)
 
     def registry_component_result(self, registry, *arguments):
         checker = (ROOT / "scripts/hardening/check-all-hardening.sh").read_text()

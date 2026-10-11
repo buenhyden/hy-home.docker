@@ -71,7 +71,7 @@ class AiRuntimeContractTests(unittest.TestCase):
         )
         self.assertRegex(
             self.webui["image"],
-            pattern.format(r"ghcr\.io/open-webui/open-webui:v0\.11\.4-cuda"),
+            pattern.format(r"ghcr\.io/open-webui/open-webui:v0\.12\.0-cuda"),
         )
 
     def test_slow_loads_are_not_cut_off(self) -> None:
