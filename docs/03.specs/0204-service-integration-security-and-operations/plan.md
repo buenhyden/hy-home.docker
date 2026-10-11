@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.4"
+version: "1.8.5"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -118,6 +118,64 @@ out of scope.
 | W43 | 19 | Exact-image inactive native import, credential binding and manual queue-worker Mailpit capture | W42, W38 | TSK-0013 | Relevant image/node/security receipt plus exact DEV/mail target, network, credential and recovery review |
 | W44 | 19 | One-minute polling, concurrency/failures/dead/requeue, restart/rotation and empty restoration | W43 | TSK-0013 | Actual captured acceptance, duplicate uncertainty, stale-token denial and paired metadata/key recovery |
 | W45 | 8, 19 | Shared registration/docs integration, final QA/review, logical commits and owning-Spec PR | W44 | TSK-0013 | Current-head required checks/review, actual merge and versioned downstream handoffs |
+| W46 | 1, 8, 20 | P06 baseline, existing authority and exact consumer/ownership ledger; RED cases | None | TSK-0014 | Fresh SHA/clean state and prompt audit; no private value I/O |
+| W47 | 20 | Closed value-free wave/receipt schemas and catalog-bound selection tests | W46 | TSK-0014 | Synthetic rejection of aliases, unknown IDs, unsafe paths, destinations and classifications |
+| W48 | 20 | Bounded same-byte KV-v2 copy executor/CLI and failure reconciliation | W47, W32 | TSK-0014 | Reuse integrated P02 API; CAS=0, equal/conflict/ambiguous-readback, TLS/privacy and file safety tests |
+| W49 | 20 | Reuse P01 renderer and freeze actual delivery/readiness contract | W48, W20, W33 | TSK-0014 | Exact version, UID/GID/mode, inode/reload, LKG/TTL, auth/freshness denials; shared proposals only |
+| W50 | 20 | First real existing opsflow DEV ingest/S3 copy-render-consume pilot | W49, W23, W38 | TSK-0014 | Selected SEC artifact acceptance, actual catalog IDs/destinations and named native canary/recovery boundary |
+| W51 | 20 | Pilot rollback, independent snapshot/empty restore and consumer reauthentication; authority transition | W50 | TSK-0014 | Actual recovery plus integrated generator guards; byte preservation and failure stop |
+| W52 | 20 | Sequential additional selected consumer waves | W51 | TSK-0014 | Per-consumer evidence, exact writer and recovery; no global bulk import |
+| W53 | 12, 20 | Remove accepted waves' obsolete plaintext/private rows/temp copies through owning executors | W51 | TSK-0014 | Fresh source/runtime/job/backup/external proof and recoverable boundary; SMTP retains COMM-003 execution |
+| W54 | 20 | Separate selected provider/server credential rotation | W51 | TSK-0014 | Old-credential denial, session/pool/native-copy refresh and tested rollback; preserve stable/bootstrap material |
+| W55 | 8, 20 | Registered current-head gates, independent review, owning-Spec PR and downstream handoffs | W52, W53, W54 | TSK-0014 | Preserve logical commits and actual versus NOT_RUN lanes; source delivery does not close criterion20 |
+
+### P06 parallel preparation and per-consumer admission
+
+TSK-0014 is issued against local main
+`f7543e0697e2473cbbbeb254792e7a1d5b4b8423`; remote main is
+`4e26a5a8022a7307c7461af60337442912955df1` at assessment. Neither fresh
+remote CI success nor merged SMTP source is a real migration receipt. No
+new Spec is created. One worker uses `codex/p06-openbao-consumer-migration`
+and its separate worktree from the issuance commit. The Task fixes exact
+new-file ownership, provenance, tests and native admission facts.
+
+W46/W47 public schemas, provisional synthetic contracts, RED cases and
+integration proposals may start immediately. W48 production binding reuses
+the reviewed P02 catalog API after source integration; it does not copy the
+reference classifier, table parser or catalog views. P01 remains the sole
+issuer/renderer/journal/config and subject0085 writer. P04 owns opsflow SQL,
+roles, adapters and DAGs; P05 owns notifier/native credential copies. P06
+proposes their required changes and never creates duplicate authorities.
+
+P01 has new source/diagnostic commits but remains blocked on current native,
+HOME, restricted snapshot and independent custody/restore evidence. P02 has
+committed source plus an uncommitted lifecycle/lock follow-up; the new ignored
+lock-inheritance proposal reports synthetic PASS and independent review but
+is not integrated generator acceptance. Its catalog has no opsflow entry or
+approved KV destination. P03 source contracts and P04/P05 drafts do not prove
+actual delivery or operational consumers. Preserve all these writers' changes.
+
+W50 waits for the exact selected OpenBao artifact's SEC acceptance, P01 W23
+authentication/recovery evidence, approved P02 opsflow IDs/paths/ACL/delivery,
+P03 endpoint/UID/mode/reload facts and P04 W38's actual DEV/S3 consumer.
+Full unrelated-image or P05 acceptance is not a global first-pilot gate.
+The P04 restricted-file DEV lane can precede P06, avoiding a circular gate.
+W51 authority changes and W53 removal additionally wait for coherent shared
+generator guards, restored-key/consumer reconciliation and per-wave recovery.
+W52 expands only the selected accepted consumer set, never all catalog rows.
+W53 follows W52's evidence for each additional selected wave. W54 rotation
+has its own exact target, owner, old-credential denial and rollback receipt;
+same-value KV copy is not server rotation. Missing targets remain NOT_RUN.
+
+Root/leaf Compose, environment, gateway, backup, Registry, indexes, generator
+integration, Script Manifest and workflow registration have one coordinator
+writer; P02/P01/P03 retain their owned contracts. COMM-003 has one SMTP
+executor, CLN owns deletion eligibility and PG-020 stays retained for recovery.
+Final source-only delivery may precede the blocked operational units with
+criterion20 open. The P06-only owning-Spec PR requires integrated dependencies,
+current-head registered checks and independent code/security/IaC/docs review;
+do not push unrelated unpublished main commits as a P06 change. Task0014
+records each downstream contract and exact final SHA.
 
 ### P05 parallel preparation and single SQL owner
 

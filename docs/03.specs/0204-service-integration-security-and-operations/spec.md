@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.4"
+version: "1.7.5"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -436,6 +436,25 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     No Wiki schedule, Airflow mail duplicate, external SMTP or extra engine is
     created. Only the relevant image/resource/credential/recovery contracts gate
     its native lane; full SEC01/P01/P06 completion is not a global start gate.
+20. P06 migrates only catalog-approved existing static values in sequential
+    consumer waves, preserving the exact bytes during the first copy. It
+    consumes P01's accepted authentication, renderer and recovery contract,
+    P02's single value-free catalog and P03's actual delivery facts; the first
+    real pilot is one existing P04 opsflow DEV ingest/S3 consumer. KV-v2 CAS=0,
+    equal-value no-op, different-value conflict and bounded reconciliation
+    after ambiguous writes prevent blind overwrites. A separate least-privilege
+    renderer proves versioned delivery and native consumption. Pilot rollback,
+    snapshot/empty restoration and consumer reauthentication precede authority
+    changes. Old plaintext and private metadata are removed only after a fresh
+    five-axis zero-consumer proof through the named SMTP/CLN/service executor;
+    server credential rotation is a separate unit. TSK-0014 owns W46-W55 and
+    new migration-only schemas, executor and tests. Public schema and synthetic
+    preparation can proceed now; real copy waits for the selected P01/SEC/P02/
+    P03/P04 contracts, and cutover/removal also require integrated generator
+    guards. Missing opsflow IDs or KV destinations are blocking facts, not
+    invented bindings. No duplicate catalog, issuer, workflow, Wiki resource,
+    LAB runtime or learning-app plan is created. Source-only delivery does not
+    close the native migration, rotation or recovery criteria.
 <!-- markdownlint-enable MD029 -->
 
 ## Related Documents
