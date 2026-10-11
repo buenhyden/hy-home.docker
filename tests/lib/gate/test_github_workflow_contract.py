@@ -954,6 +954,13 @@ class GithubWorkflowContractTests(unittest.TestCase):
             root = pathlib.Path(directory)
             shutil.copytree(ROOT / ".github", root / ".github")
             shutil.copytree(ROOT / "scripts", root / "scripts")
+            # Registry validation checks all admitted cwd values, including
+            # the P05 Node leaves; this fixture does not execute npm there.
+            (
+                root
+                / "infra/07-workflow/n8n/workloads/manifest-outbox-notifier"
+                / "nodes/OpsflowSmtp"
+            ).mkdir(parents=True)
             yield root
 
     def load_contract_document(self, root: pathlib.Path) -> dict[str, object]:
