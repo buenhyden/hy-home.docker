@@ -793,13 +793,14 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
             f"failure={shlex.quote(str(tools / 'docker.exit'))}\n"
             f"delay={shlex.quote(str(tools / 'docker.sleep'))}\n"
             f"survived={shlex.quote(str(tools / 'docker.survived'))}\n"
+            f"model={shlex.quote(str(tools / 'docker.json'))}\n"
             f'printf "PWD=%s\\nHOME=%s\\nXDG=%s\\nDOCKER_CONFIG=%s\\nDOCKER_HOST=%s\\nTMPDIR=%s\\nPATH=%s\\nCOMPOSE=%s\\n" "$PWD" "$HOME" "$XDG_CONFIG_HOME" "$DOCKER_CONFIG" "$DOCKER_HOST" "$TMPDIR" "$PATH" "${{COMPOSE_PROJECT_NAME-}}" > {shlex.quote(str(environment_trace))}\n'
             'if [ -f "$delay" ]; then trap "" TERM; (trap "" TERM; /bin/sleep 10; : > "$survived") & wait; fi\n'
             'case "$*" in\n'
             '  "compose version") if [ -f "$plugin" ]; then read -r status < "$plugin"; exit "$status"; fi; exit 0 ;;\n'
             '  *"config --profiles"*) printf "core\\n" ;;\n'
             '  *"config --services"*) printf "app\\n" ;;\n'
-            '  *"config --format json"*) printf "{\\"services\\":{}}\\n" ;;\n'
+            '  *"config --format json"*) if [ -f "$model" ]; then /bin/cat "$model"; else printf \'%s\\n\' \'{"services":{"app":{}}}\'; fi ;;\n'
             'esac\nif [ -f "$failure" ]; then read -r status < "$failure"; exit "$status"; fi\nexit 0\n',
         )
         self._write_executable(
@@ -1771,6 +1772,20 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
                 "compose-plugin FAIL category=timeout child_exit=124", result.stdout
             )
             self.assertFalse((tools / "docker.survived").exists())
+
+    def test_static_checks_refuse_empty_or_malformed_rendered_models(self) -> None:
+        for model in ('{"services": {}}', "not-json"):
+            with self.subTest(model=model), tempfile.TemporaryDirectory() as directory:
+                repo, tools = self._repo(pathlib.Path(directory))
+                (tools / "docker.json").write_text(model, encoding="utf-8")
+                result = self._run(repo, tools)
+                self.assertEqual(1, result.returncode, result.stdout)
+                self.assertIn(
+                    "compose-structure FAIL category=command-failed child_exit=1",
+                    result.stdout,
+                )
+                self.assertIn("fixture-cleanup PASS", result.stdout)
+                self._assert_report(result)
 
     def test_static_checks_do_not_touch_real_checkout(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
