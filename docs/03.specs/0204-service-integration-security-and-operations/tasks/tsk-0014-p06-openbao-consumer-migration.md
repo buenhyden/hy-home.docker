@@ -1,8 +1,8 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-11"
 layer: "specs"
@@ -288,6 +288,7 @@ selected server target keeps ROTATION NOT_RUN without blocking public source.
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0014 | draft | ready | #public-work-admission |
+| SPEC-0204-TSK-0014 | ready | in-progress | #public-contract-implementation |
 
 ### Public Work Admission
 
@@ -317,6 +318,168 @@ injected selection interface in synthetic tests. It creates no production
 catalog reader or private copy command. P04 source progress does not establish
 its native W38 consumer acceptance. W48 production binding and W49-W54 remain
 dependent on their named owners' integrated contracts and actual receipts.
+
+### Public Contract Implementation
+
+Admission was independently reviewed PASS and committed as
+`c940c2acb73d844f6af13c99c772f6a998c38ae0`. Its readiness input was issuance
+`6f230c56eb97c3cd587d636ba6492b24de13e53d`. Registered Task metadata returned
+selected1/violations0, exit0; document links returned failures0 and one
+pre-existing historical capture warning, exit0. The first staged style
+environment had pre-commit4.6.1 and failed the required4.6.2 pin, exit2.
+Reusing `/tmp/hy-home-p09-qa/bin` resolved that environment mismatch without
+changing tools or the registered pin: the same Task index passed the staged
+controller and hardcoded-secret check, exit0. Exact Python Commitizen4.15.1
+validated the message, exit0; the unrelated PATH Node `cz` was not accepted
+as message-verification evidence. Sandbox initialization failed before several
+commands; their separately approved read-only/scoped retries supplied the
+actual results. One narrower review/writer retry resolved stalled tool delivery;
+the writer reported that no source edit had occurred before resumption.
+
+Admission commands (repository root, public source input6f230c56e; all final
+checks exit0 unless the failed tool pin is stated above):
+
+```sh
+rtk python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed \
+  --changed-path docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md \
+  --base-ref HEAD
+rtk python3 scripts/validation/check-document-links.py --mode all
+rtk /tmp/hy-home-staged-style-tools/bin/cz check --message-length-limit 75 \
+  --commit-msg-file .agent-work/p06-ready-commit.txt
+rtk env PATH=/tmp/hy-home-p09-qa/bin:/home/hyunyoun/.local/bin:/home/hyunyoun/.nvm/versions/node/v26.10.0/bin:/usr/local/bin:/usr/bin:/bin \
+  bash scripts/validation/run-ci-precommit.sh --mode local-staged
+rtk git commit -F .agent-work/p06-ready-commit.txt
+```
+
+Actual public P02 observation on `d32ef6354`: catalog1.0.0 has145 entries,
+zero opsflow matches and145 BLOCKED_P01 destination statuses. Draft nonnull
+paths are not approvals. PG-020 remains RETAINED_FOR_RECOVERY and COMM-003 is
+an alias. Its `load_catalog(root)` returns the validated public catalog;
+there is no selection API or approved delivery binding yet. Public Git blobs:
+catalog `efa0be3d052a5cd2d5336f333c01352447d2490a`, catalog schema
+`433f872bec88ac88ba87de8a69cf1fb9dbad3749`, API
+`84c2763614da61dadd10fd1c8d3d89e537c6d3d9`, I/O helper
+`2ebe6852ef9d756968870c1b8f15941fd527fede`. These are source objects, not
+secret-derived hashes or integration receipts.
+
+The delegated writer's scoped tool delivery remained stalled and it confirmed
+no edits. Root interrupted that writer, explicitly revoked its source lease,
+and took the sole qa-engineer implementation responsibility. Independent
+reviewers retain read-only responsibility; other workers' files are preserved.
+Root implemented W47 schemas, public validation CLI and explicitly provisional
+injected-interface tests. Candidate bindings cannot select their own authority.
+No production catalog import, network transport, private read or copy command
+is admitted by this unit.
+
+W47 input is readiness commit `c940c2acb73d844f6af13c99c772f6a998c38ae0` plus
+the seven dedicated source files. First unit RED failed with missing library,
+exit1; CLI RED failed with missing executable, exit1. Additional scope/admin
+mount regressions produced four failures in two methods, exit1. Correcting
+`scope=root` and rejecting reserved `sys`/`auth`/`identity` mounts resolved
+those failures without changing P02. Final focused unit and CLI subprocess
+checks passed17 tests, exit0. Branch-enabled coverage including subprocesses
+measured library99percent, CLI93percent, combined98percent (184 statements,
+58 branches;5 missing statements and1 partial branch), exit0. This is dedicated
+synthetic coverage, not repository-wide or native-consumer coverage. Scoped
+Ruff format/check passed all four Python files. Initial Ruff failures for loop
+binding, unnecessary suppression and implicit subprocess check were corrected.
+
+Both schemas are closed1.0.0 contracts. Receipt evidence is synthetic and
+permits only inventoried/classified with null KV version; native or copied/
+rendered/consumed/authoritative/recoverable/deleted claims are rejected.
+CLI accepts only bounded stdin shape validation, never private paths or token
+arguments. Unit tests bind authority independently of candidate input, enforce
+immutable selection, reject duplicate destinations and unsafe paths, and
+exercise fixed redacted errors. Subsequent copy/receipt behavior needs a
+reviewed extension with meaningful RED cases; it is not implemented here.
+
+Frozen seven-file source SHA256 values reviewed independently:
+
+| Source | SHA256 |
+| --- | --- |
+| consumer-migration/README.md | `6484d86fc8049c9aac21a3f6353d4c1c8145ec0f9a44d09ea9032000c5e409b3` |
+| consumer-migration/wave.schema.json | `2c3156b8f06ce2f1ac8dc37e579d2d9105032fab1636a08a71253e4df2975755` |
+| consumer-migration/receipt.schema.json | `563f9ae4e36ba80cdbb86cdd1adc8ee4e28547e67fdcc2fb0b7ca5cba108a37f` |
+| scripts/lib/ops/openbao_consumer_migration.py | `84a3bacde569248173e8664a059ddb31d5e4e9069c0da449df0f3892af914bca` |
+| scripts/operations/openbao-consumer-migration.py | `280c2a1cd5312f2c3ab3b39c1182b0b40f71a67705b19c9f12857b73ca48f268` |
+| tests/lib/ops/test_openbao_consumer_migration.py | `97c16b58494ba5366ce0f3529c171e3e2389afd2c7f826cb591019281359afe9` |
+| tests/validation/test_openbao_consumer_migration_contract.py | `97f7e7dae607081719aa4f5c21c21668e3eed056252380accd417c9c563e9294` |
+
+The first three paths are relative to `infra/03-security/openbao/`.
+Independent code review passed the frozen source and the proposal correction.
+Independent security review passed the same seven source hashes and the final
+proposal with no findings. Its trust/input/privilege/dependency verdict covers
+only synthetic public preparation; W48-W54 remain unassessed and NOT_RUN.
+Proposal ledger SHA256 is
+`93ba0e325bd0cbc9e0ae5a1b923084a234feece3b94fdb814d72a2955294af32`.
+Independent review also passed the result-only Task delta, including lifecycle,
+lease reassignment, coverage limits and all remaining NOT_RUN lanes. Changed
+file classification selected exactly8 files:2 Markdown,4 Python and2 JSON.
+Commitizen4.15.1 message validation and the registered pre-commit4.6.2 staged
+controller passed, exit0, including hardcoded-secret detection. Staged
+`git diff --check` passed, exit0. The controller is rerun after this evidence
+update on the exact commit index; any new failure blocks that commit.
+
+Shared registration and navigation remain ignored proposals under
+`.agent-work/p06-shared-proposals/registration.patch` and `base-blobs.json`.
+Final patch SHA256 is
+`44bae1efa9a35d31c805a55e98e85728ac80bf19de5f155bf66df83961829992`,
+bound to readiness commitc940c2ac. Exact unchanged base blobs are workflow
+contract `7dc037023853a003ef38a53d21e2c8d1ac0dd3b4`, Script Manifest
+`a4ebf87ef288e9b5c4830eac22b4e2dba800b44f`, OpenBao README
+`9e060dfeb3402c28fd2efd2ac5e807c11ae6a55d`, ops README
+`6f4fb0694eec94c1861e20ce7ab3dae55c345b2c`. The manifest maps the library
+to its unit importer and CLI to subprocess contract tests; workflow proposes
+both modules on repository-integrity regressions. Their consumer is the
+dedicated CLI/README; rollback removes only these four proposed hunks.
+
+An owned isolated fixture at `.agent-work/p06-registration-qa` applied these
+proposals without modifying P06's shared files. Initial manifest checks failed
+paths-unsorted, then tests-unproven; correcting alphabetical insertion and
+mapping only the direct library test produced manifest PASS, exit0. Workflow
+contract passed5 workflows/7 jobs/8 actions, exit0. All-document links on the
+tracked fixture, including new README, passed1196 documents/failures0 with
+one pre-existing historical capture warning, exit0. Changed metadata selected
+Task and README with violations0, exit0. The registered changed-profile
+`--explain` returned the local plan, exit0; no aggregate gate execution or
+hosted CI is claimed. The proposals require sole-integrator combined-head
+validation and are not installed registration on this branch.
+
+Focused verification commands at the P06 root (final results exit0):
+
+```sh
+rtk env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python \
+  -m coverage run --rcfile=.agent-work/p06-coverage.rc -m unittest \
+  tests.lib.ops.test_openbao_consumer_migration \
+  tests.validation.test_openbao_consumer_migration_contract -v
+rtk /tmp/hy-home-p09-qa/bin/python -m coverage combine \
+  --rcfile=.agent-work/p06-coverage.rc
+rtk /tmp/hy-home-p09-qa/bin/python -m coverage report \
+  --rcfile=.agent-work/p06-coverage.rc
+rtk ruff check scripts/lib/ops/openbao_consumer_migration.py \
+  scripts/operations/openbao-consumer-migration.py \
+  tests/lib/ops/test_openbao_consumer_migration.py \
+  tests/validation/test_openbao_consumer_migration_contract.py
+rtk /tmp/hy-home-staged-style-tools/bin/cz check --message-length-limit 75 \
+  --commit-msg-file .agent-work/p06-source-commit.txt
+rtk env PATH=/tmp/hy-home-p09-qa/bin:/home/hyunyoun/.local/bin:/home/hyunyoun/.nvm/versions/node/v26.10.0/bin:/usr/local/bin:/usr/bin:/bin \
+  bash scripts/validation/run-ci-precommit.sh --mode local-staged
+```
+
+Ignored coverage configuration uses branch=True and patch=subprocess with
+only the library and CLI in its measurement scope. Shared checks were run
+from the isolated fixture using `check-script-manifest.py`,
+`check-github-workflow-contract.py`, and `check-document-links.py --mode all`;
+only the selection preview used `run-ci-gate.py --profile changed --explain`.
+No runtime, private copy, deletion, rotation, resource or remote action ran.
+
+Two later metadata runs failed, exit1, each with146 diagnostics: the newly
+added shared-proposal Evidence row first used a composite Work Unit, then
+paired criterion8 with W47. Each invalid Spec Package also exposed145 archive
+type diagnostics. The corrected row now binds only criterion20/W47; W55 and
+criterion8 remain in the pending Delivery row. No archive was changed. Final
+metadata revalidation must pass before the logical source commit.
 
 ### Assessment and Next Work Units
 
@@ -351,7 +514,9 @@ for the dedicated implementation, not reasons to weaken existing contracts.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Git baseline | 1, 20 | W46 | status/worktrees/ls-remote/open PR and main CI | Localf754 / remote4e26 | PASS | Read-only baseline; no remote write | pending |
 | Reference audit | 20 | W46 | Eleven files and synthetic pytest | Prompt0d11d0fd04ba; inputf754 | PASS | 10 PASS,0.24s, exit0; command below | pending |
-| Selection schemas | 20 | W47 | RED/GREEN public closed-input cases | Issuance source pending | NOT_RUN | Independent worker owns implementation | pending |
+| Selection schemas | 20 | W47 | RED/GREEN public closed-input cases | c940c2ac plus frozen seven-file hashes above | PASS | 17 synthetic tests; dedicated coverage98percent | pending |
+| Shared proposals | 20 | W47 | Manifest/workflow/links and independent delta review | c940c2ac plus patch44bae1ef | PASS | Isolated fixture only; W55 sole-integrator application pending | pending |
+| Independent source review | 20 | W47 | Code and security review | Frozen seven source hashes plus final proposal | PASS | No findings; operational scope unassessed | pending |
 | Copy executor | 20 | W48 | Synthetic CAS/TLS/response/file/privacy failures | P02 binding pending | NOT_RUN | No real copy or client implementation yet | pending |
 | Renderer delivery | 20 | W49 | Version/inode/identity/reload/LKG failure proof | P01/P03 facts pending | NOT_RUN | Reuse their sole-owned contracts | pending |
 | Real pilot | 20 | W50 | Actual DEV ingest/S3 canary | P01/SEC/P02/P03/P04 gates pending | NOT_RUN | No resource, token or value action | pending |
@@ -359,7 +524,7 @@ for the dedicated implementation, not reasons to weaken existing contracts.
 | Higher waves | 20 | W52 | Sequential actual consumption/recovery | Pilot acceptance pending | NOT_RUN | No bulk import | pending |
 | Old-copy removal | 12, 20 | W53 | Five-axis evidence and owning executor | No eligible exact target | NOT_RUN | No private unlink or metadata change | pending |
 | Rotation | 20 | W54 | Actual server/native-copy change and denial | No selected exact server | NOT_RUN | Same-value copy is not rotation | pending |
-| Delivery | 8, 20 | W55 | Registered QA/review/latest-head PR/merge | No P06 PR | NOT_RUN | Task issuance only | pending |
+| Delivery | 8, 20 | W55 | Registered QA/review/latest-head PR/merge | No P06 PR | NOT_RUN | Dedicated source checkpoint; combined registration/CI pending | pending |
 
 Actual reference command on clean inputf754, exit0:
 
@@ -371,16 +536,18 @@ PYTHONPATH="$PWD/.agent-work/p06-reference-audit/reference" \
 ```
 
 The existing isolated QA environment was reused, not globally changed.
-Ten fake/file tests passed in0.24s; wrapper elapsed0.527s. No new implementation
-RED/GREEN, real HTTPS/CAS/Agent, HOME, migration, deletion, rotation or recovery
-ran. SOURCE / UNIT / STATIC / ISOLATED / HOME / MIGRATION / ROTATION / RECOVERY /
+Ten fake/file tests passed in0.24s; wrapper elapsed0.527s. At issuance no new
+implementation RED/GREEN had run; W47's later synthetic results are above.
+Real HTTPS/CAS/Agent, HOME, migration, deletion, rotation and recovery remain
+NOT_RUN. SOURCE / UNIT / STATIC / ISOLATED / HOME / MIGRATION / ROTATION / RECOVERY /
 DELIVERY must remain separate, with input SHA, exact command, exit, failure/
 correction and receipt. Worker modules above plus affected P02/P01/SMTP/CLN
 contracts select focused tests and meaningful80percent coverage; source unit
 results never substitute for actual private consumption or deployment.
 
 Before final source delivery, coordinator integrates existing manifest/workflow
-registration and README proposals, then runs affected scripts/qa.py changed,
+registration and README proposals, then selects the registered changed profile
+through `scripts/validation/run-ci-gate.py --profile changed`,
 scoped Ruff/syntax and document metadata/links, git diff --check and the
 registered run-ci-precommit.sh --mode local-staged on the reviewed index.
 Native commands are selected only after the implementation CLI/test route and
@@ -390,8 +557,8 @@ command and missing input once the owner has supplied its real interface.
 
 ## Review and Completion
 
-Public work is admitted as ready through the observed lifecycle event above.
-Use the registered transition when implementation is committed. Source-only
+Public work is in-progress through the observed lifecycle events above.
+Source-only
 delivery may proceed with operational lanes marked
 NOT_RUN; it does not complete criterion20 or P06. Full completion requires the
 selected actual pilot and accepted sequential waves, authority/recovery,
