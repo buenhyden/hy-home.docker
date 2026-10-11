@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.7"
+version: "0.2.8"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -1391,6 +1391,57 @@ existing subprocess test and RUN-0085 authority while adding RUN-0085 as a
 proven CLI consumer. `rtk git apply --check` exited 0; the patch was not applied.
 It and the public QA staging artifacts are preserved until accepted. No
 common file, P02 Task or another worker's branch/worktree was modified.
+
+### W22 P02 Documentation Delivery Receipt — 2026-10-11
+
+The document source commit47c263c and result-only submission commit
+`8cd71a252237f0cd96154bc2ab7982ba24c0d1ad` were delivered together in PR423.
+Final reviewed head is 8cd71a2, tree
+`ee38ab9b5163ff76a2b13f5bbec79caab36b705b`, actual base
+`08b009a9ce0f288926f2edc4eebcbc5fb475d1e5`. Its result-only receipt staged
+controller exited 0, with Markdown, whitespace and secret checks PASS;
+unrelated language checks SKIPPED. The four document hashes are unchanged
+from the preceding receipt. Final Task hash at that head is
+`41b5f8efabc8dee0d43232001ca59d7b7e942285099d08f2cbd5d4fce9ef2b42`.
+
+`rtk proxy gh run view 38113523746 --repo buenhyden/hy-home.docker --json
+status,conclusion,headSha,jobs,url` exited 0 and confirmed the latest-head
+candidate SUCCESS. Job114393813965 ran from 2026-10-11T05:03:12Z to
+2026-10-11T05:07:59Z (4m47s). Registered changed validation and its selected
+prerequisites passed. `rtk proxy gh pr checks 423 --repo
+buenhyden/hy-home.docker` exited 0: candidate-quality, CodeQL analyses and
+aggregate, GitGuardian and triage PASS. main-security was workflow-skipped;
+it supplies no execution evidence. Earlier run38113294386 on head47c263c
+was CANCELLED after the ordinary receipt push, not substituted as passing
+evidence. The local aggregate timeout and corrected Task metadata failure
+remain recorded above rather than overwritten by hosted results.
+
+Independent contract/code review of 08b009a9..8cd71a2 returned specification
+PASS and quality PASS, with no Critical/Important/Minor findings. Independent
+security review approved exact head8cd71a2/treeee38ab9b and all five hashes;
+no findings remained. Coordinator-only consumer registration remains a
+scoped follow-up, not an authored common-file change.
+
+PR body update, `rtk proxy gh pr ready 423 --repo buenhyden/hy-home.docker`
+and API head/base/mergeability readback all exited 0. Readback showed non-draft,
+head8cd71a2/base08b009a9, mergeable and clean. `rtk proxy gh pr merge 423
+--repo buenhyden/hy-home.docker --merge --match-head-commit
+8cd71a252237f0cd96154bc2ab7982ba24c0d1ad --subject
+'docs(openbao): Reconcile public catalog guidance'` exited 0. API readback
+confirmed merged at 2026-10-11T05:12:52Z, ordinary merge commit
+`3da11e6b75182b07c96a3f32ed29210a3e246c74`. `rtk git fetch origin main`
+and `rtk git merge --ff-only origin/main` exited 0 in the clean P01 worktree.
+No coordinator checkout or other worker branch was moved.
+
+SOURCE is the accepted four-document catalog reconciliation; UNIT is the
+existing subprocess regression PASS; STATIC is the recorded metadata, links,
+staged and latest-head hosted checks. ISOLATED here is public staging only,
+not new OpenBao native or app E2E proof. HOME/MIGRATION/ROTATION/real RECOVERY
+remain NOT_RUN; DELIVERY is the observed PR423 merge. Operational resource
+changes remain zero. Task status remains blocked, W23/P06 holds remain, and
+the manifest-consumer proposal and public QA artifacts are preserved for
+the coordinator. No new Task or source implementation is introduced by
+this result-only delivery receipt.
 
 ## Evidence
 
