@@ -1,0 +1,12 @@
+{
+  "endpoint_url": "http://seaweedfs-s3:8333",
+  "access_key_id": null,
+  "secret_access_key": null,
+  "bucket": "opsflow-dev",
+  "region": "us-east-1",
+  "addressing_style": "path",
+  "ca_bundle": null,
+  "connect_timeout": 5,
+  "read_timeout": 20,
+  "endpoint_contract": "seaweedfs-s3-internal-v1"
+}
