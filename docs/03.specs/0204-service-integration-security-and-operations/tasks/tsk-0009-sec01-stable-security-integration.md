@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.9"
+version: "0.4.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -1165,6 +1165,66 @@ final runtime mappings and actual migration wait for P01/SEC01/P06/CLN01
 contracts. SOURCE/UNIT/STATIC/ISOLATED/DELIVERY observations above do not
 assert HOME/MIGRATION/ROTATION/full RECOVERY acceptance. LAB runtime, learning
 apps and actual Wiki remain excluded.
+
+### 2026-10-12 stable-source refresh and combined projection
+
+The independently reviewed source branch starts at local main
+`640d178ba93a5994456534249a5d1e542a856949`. Logical commits
+`b19af5fc533c960b6eb51400af894cc89f470e21` and
+`5b7a261a6d9323e0647a05ba4c9a40ff821343d0` update Dozzle 11.3.1,
+Mailpit 1.31.5, Ollama 0.40.3, Renovate 44.151.0-full, Stalwart 0.16.26,
+Imgproxy 4.0.17 and Open WebUI 0.12.0-cuda using exact index digests.
+Stalwart's Compose, custom configuration image and Dockerfile stay aligned.
+Supabase receives only the leased Imgproxy image change; the canonical SMTP
+wrapper/source and other component pins are preserved.
+
+Fresh official release/channel and exact index/linux-amd64 metadata receipt
+SHA256 is `b41edf6b6fa5b2bbdd579d20378cbeedb37c16635a1aa95dceb78b8239f493b2`;
+the final source handoff SHA256 is
+`a24e81f849f32f2db546dfc99d93cdc3011b77149588490fd8a13b453bcb98fd`.
+The source worker's final focused run is 26 PASS and one explicitly skipped
+Stalwart native rehearsal. Independent source and committed-range reviews
+APPROVE with no remaining Critical/Important source finding.
+
+The Dozzle review first blocked persisted configuration enabling Docker control
+through the socket. Exact-tag supported settings now explicitly disable actions,
+shell, MCP, self-update, container updates, image checks and the setup wizard;
+release checks are manual. A permanent regression verifies the control map.
+The Docker socket retains host-control blast radius; a readonly bind does not
+make the Docker API readonly. No real HOME persisted settings were changed.
+An existing worktree-only 0775 Open WebUI entrypoint failed its security test;
+its mode was restored to the Git-recorded 0755 with identical content/blob.
+That correction is not a HOME permission result.
+
+The coordinator combines those commits with local main
+`df38e9a4acad4915087d3b813ece22dd93bd1593` and uses the existing tech-stack
+generator's `--write` followed by `--check`, both exit 0. Eight source projection
+records change; repository identities remain stable. The current required
+`OPSFLOW_AIRFLOW_IMAGE` input remains unresolved and is not replaced by a pin.
+On this combined source, `tests.validation.test_sec01_version_contract`,
+`tests.validation.test_service_wiring_contracts` and
+`tests.validation.test_tech_stack_version_contract` run 75 tests, all PASS in
+40.311 seconds, exit 0. The actual staged gate also exits 0. These are SOURCE,
+UNIT and STATIC receipts; final Task metadata/staged/readback follow before
+the local integration commit.
+
+The five freshly rechecked primary stable channels OpenBao 2.7.1, Airflow 3.3.2,
+n8n 2.42.6, SeaweedFS 4.48 and GoTrue 2.197.0 have no newer stable candidate
+at that observation. Only their latest-version dimension passes. Prior GoTrue
+Critical/High findings, signatures, SBOM, full-image scan coverage, builder
+compatibility and stateful recovery evidence remain unclosed. The historical
+124-service ledger/input hashes are not rebound or declared complete by this
+seven-product source increment.
+
+The direct user subsequently authorizes moving the complete tracked Supabase
+definition, including GoTrue, and infra LAB-only assets to root `labs/`.
+TSK-0015/W70 consumes the reviewed Imgproxy commit first, preserves this source
+receipt, and rebinds current path/projection/catalog consumers after the rename.
+Existing LAB images, running resources, private values and data are not changed
+by this source increment. Before Open WebUI 0.12 activation, its database and
+secret-key backup, empty restore and pre-migration rollback must be accepted.
+All native pulls/builds/start, signatures/SBOM/scans, HOME, MIGRATION, ROTATION
+and full RECOVERY for this increment remain NOT_RUN. Task0009 stays in-progress.
 
 ## Evidence
 

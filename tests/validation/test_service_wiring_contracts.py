@@ -67,11 +67,11 @@ class AiRuntimeContractTests(unittest.TestCase):
     def test_images_are_the_requested_tags_pinned_by_digest(self) -> None:
         pattern = r"^{}@sha256:[0-9a-f]{{64}}$"
         self.assertRegex(
-            self.ollama["image"], pattern.format(r"ollama/ollama:0\.40\.2")
+            self.ollama["image"], pattern.format(r"ollama/ollama:0\.40\.3")
         )
         self.assertRegex(
             self.webui["image"],
-            pattern.format(r"ghcr\.io/open-webui/open-webui:v0\.11\.4-cuda"),
+            pattern.format(r"ghcr\.io/open-webui/open-webui:v0\.12\.0-cuda"),
         )
 
     def test_slow_loads_are_not_cut_off(self) -> None:
