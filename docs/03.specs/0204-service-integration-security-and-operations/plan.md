@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.5"
+version: "1.8.6"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -128,6 +128,51 @@ out of scope.
 | W53 | 12, 20 | Remove accepted waves' obsolete plaintext/private rows/temp copies through owning executors | W51 | TSK-0014 | Fresh source/runtime/job/backup/external proof and recoverable boundary; SMTP retains COMM-003 execution |
 | W54 | 20 | Separate selected provider/server credential rotation | W51 | TSK-0014 | Old-credential denial, session/pool/native-copy refresh and tested rollback; preserve stable/bootstrap material |
 | W55 | 8, 20 | Registered current-head gates, independent review, owning-Spec PR and downstream handoffs | W52, W53, W54 | TSK-0014 | Preserve logical commits and actual versus NOT_RUN lanes; source delivery does not close criterion20 |
+| W56 | 8 | Admit P08 ownership and audit existing move/discovery tooling and exact source inputs | None | TSK-0015 | Main/worktree observation; reuse and writer map |
+| W57 | 8 | Read every tracked operations document and review exact semantic move map and populated README coverage | W56 | TSK-0015 | Per-document ID/type/body/link/LAB classification; collision checks |
+| W58 | 8 | Test and integrate nested path/profile/discovery/catalog/link/changed-CI contracts before rename | W57 | TSK-0015 | RED/GREEN boundary fixtures; scoped source/security review |
+| W59 | 8 | Freeze feature-owner leases and preservation/rollback proofs for exact move inputs | W57, W58 | TSK-0015 | Source SHA256, anchors, command/evidence and inverse mapping |
+| W60 | 8 | Apply exact reviewed renames and coupled reference/index changes under one writer | W59 | TSK-0015 | One active location per ID; semantic preservation; LAB runtime diff zero |
+| W61 | 8 | Complete Korean READMEs for populated domains and parent families | W60 | TSK-0015 | Actual descriptions, direct-child navigation and metadata selection |
+| W62 | 8 | Validate final paths, links, bindings, lifecycle and delivery; hand new paths back to owners | W61 | TSK-0015 | Exact-head gates, independent review, logical commits and hash-bound handoff |
+
+### P08 single-writer continuation
+
+TSK-0015 owns W56–W62 under criterion 8 and SPEC-0212 requirement 25; completed
+0212/P00 and 0227 records remain unchanged. Initial branch
+`codex/p08-operations-document-layout` starts at observed main
+`4c83f14b11a77e13e582eb85d0bf256685472a95`. The separate source candidate's
+ongoing gates are not a PASS or P08 baseline; adopt its reviewed final main SHA
+only after delivery and re-read inputs before every move lease.
+
+Initial public preparation owns only the Task and, if semantic reuse analysis
+establishes the gap, `scripts/lib/document_governance/operations_moves.py`,
+dedicated unit tests and public operations-moves fixtures with family READMEs.
+Registry/schema/discovery/profile/heading, operations catalog/Guide binding,
+manifest/workflow/CI and indexes remain coordinator proposals until the exact
+writer lease transfers. Actual edits and moves wait for fixed feature-owner
+SHAs; old/new paths never have concurrent independent writers.
+
+Classify actual artifact IDs and bodies, including distinct subjects sharing
+one number across families. LAB destinations are exactly
+`docs/05.operations/{guides,policies,runbooks}/labs/`, never root `labs/`.
+Retain correctly arranged documents; ambiguities remain review-required rather
+than being assigned to common. Corpus counts are observations, not constants.
+
+Use reversible logical units: path contracts/tests, coupled exact renames and
+references, populated README content, then final validation/hash handoff. Every
+unit preserves identity uniqueness and active links; no duplicate active copy
+or indefinite mixed-path waiver. Reuse completed body refresh. Rollback is the
+reviewed inverse exact rename/link/README/source-contract mapping and its
+consumer checks, without runtime/secret/data operations or foreign reset/clean.
+
+Final checks cover metadata selection of new READMEs, ID/profile/language/body/
+lifecycle, active links/anchors, command working directories, catalog/service
+bindings, changed-CI regressions and staged changes. Record failures and input
+SHAs; local-main delivery needs actual exact-head checks and independent review.
+Current direct-user local-main instructions override earlier PR expectations
+for P08 only; dev is excluded and remote push/PR/hosted CI remains NOT_RUN unless
+actually performed. No native or operational acceptance follows from a move.
 
 ### P06 parallel preparation and per-consumer admission
 
@@ -613,6 +658,8 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 | Observed protection still names a retired required context | Preserve the general no-bypass default. For W7 only, use the separately approved one-time Task delivery boundary and actual remote readback; do not infer a hosted PASS or weaken the post-merge security audit. |
 
 ## Related Documents
+
+- [P08 operations-document layout Task](tasks/tsk-0015-p08-operations-document-layout.md)
 
 - [Specification](spec.md)
 - [Current routing](../0212-request-baseline-and-reconciliation/plan.md)
