@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.3"
+version: "1.7.4"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -134,7 +134,7 @@ credential rotation, DNS/firewall edit or HOME restart without the named target
 and recovery boundary. The current request authorizes its source/docs/tests,
 logical commits and reviewed local `main` integration after required checks;
 PRs and remote pushes are excluded from that SEC01/SMTP01/CLN01 integration
-delivery; `dev` is excluded throughout. The subsequently supplied P02, P03 and P04
+delivery; `dev` is excluded throughout. The subsequently supplied P02-P05
 execution prompts select their own SPEC-0204 PRs after implementation, latest-head CI and
 independent review, without absorbing unrelated integration/runtime commits.
 Missing permission or target defers only the dependent operation.
@@ -421,6 +421,21 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     actions require the relevant fixed image and exact resource/recovery
     contract. Restricted file delivery may support pre-migration DEV proof;
     P01/P06 completion is not a global prerequisite to that bounded lane.
+19. P05 implements one independent DEV-only n8n notifier consuming P04's
+    frozen `ops_flow` claim/ack/retry interface. A value-free workflow imports
+    inactive, uses operator-resolved native credential references and proves
+    manual then one-minute scheduled execution on the actual queue worker.
+    The notifier has function-only database access and a restricted Mailpit
+    capture path. Run-derived Message-ID, bounded transports, checked ack/retry,
+    empty queue, concurrent claims, stale leases, retry/dead, uncertain SMTP,
+    restart, credential rotation and paired metadata/encryption-key restoration
+    have genuine native evidence. SMTP acceptance is not external delivery or
+    exactly-once processing. TSK-0013 owns W40-W45; P04 retains SQL/provisioning,
+    SEC01 images and the coordinator shared integration. Draft source tests may
+    run in parallel; native P05 execution follows P04 publication/outbox proof.
+    No Wiki schedule, Airflow mail duplicate, external SMTP or extra engine is
+    created. Only the relevant image/resource/credential/recovery contracts gate
+    its native lane; full SEC01/P01/P06 completion is not a global start gate.
 <!-- markdownlint-enable MD029 -->
 
 ## Related Documents

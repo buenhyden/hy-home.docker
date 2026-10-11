@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.3"
+version: "1.8.4"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -112,6 +112,58 @@ out of scope.
 | W37 | 18 | Zero-I/O DAG parsing, compatible image and worker-only Compose proposal | W34, W35 | TSK-0012 | Exact-image import and rendered model; coordinator integrates shared hunks |
 | W38 | 18 | Isolated then selected DEV/S3/Celery execution, concurrency/backfill and empty restoration | W36, W37 | TSK-0012 | Relevant image acceptance and exact resource/recovery boundary; no full-SEC or P06 global dependency |
 | W39 | 8, 18 | Registered gates, independent review, logical commits, owning-Spec PR and handoffs | W38 | TSK-0012 | Current-head checks/review; preserve unexecuted lanes and actual delivery receipt |
+| W40 | 1, 8, 19 | P05 baseline, source/reference reuse, exact writer ledger and RED cases | None | TSK-0013 | Fresh Git and public metadata; reference static results are not native proof |
+| W41 | 19 | Deterministic inactive workflow and bounded SMTP implementation with synthetic privacy/state tests | W40 | TSK-0013 | Closed inputs, graph/credential placeholders, Message-ID and checked ack/retry; no import side effects |
+| W42 | 19 | Consume and freeze P04's reviewed SQL/outbox version and interface hash | W41, W36 | TSK-0013 | P04 owns SQL; publication/view/claim/ack/retry/state/lease and least-privilege contract |
+| W43 | 19 | Exact-image inactive native import, credential binding and manual queue-worker Mailpit capture | W42, W38 | TSK-0013 | Relevant image/node/security receipt plus exact DEV/mail target, network, credential and recovery review |
+| W44 | 19 | One-minute polling, concurrency/failures/dead/requeue, restart/rotation and empty restoration | W43 | TSK-0013 | Actual captured acceptance, duplicate uncertainty, stale-token denial and paired metadata/key recovery |
+| W45 | 8, 19 | Shared registration/docs integration, final QA/review, logical commits and owning-Spec PR | W44 | TSK-0013 | Current-head required checks/review, actual merge and versioned downstream handoffs |
+
+### P05 parallel preparation and single SQL owner
+
+TSK-0013 starts from assessed clean local main
+`4e26a5a8022a7307c7461af60337442912955df1`. Remote main initially returned
+`6da5e3bf380d5002e0e28181136fde8c016e49ce`, then advanced externally to
+the same 4e26a5a80 with successful CI Quality Gates and no open PRs. P04 was
+initially clean, then began its workload and dedicated tests; no frozen SQL
+handoff or native producer acceptance was received. Use `codex/p05-n8n-outbox-notifier` and
+`.worktrees/p05-n8n-outbox-notifier` from the reviewed issuance commit. No second
+implementation chat or operational resource is created by issuance.
+
+W40/W41 may proceed on explicitly provisional interface fixtures. W42 waits
+for P04 W36's reviewed SQL version/hash. P04 remains the only canonical SQL
+and provisioning writer in `airflow/workloads/manifest-pipeline/sql`; P05 does
+not copy the supplied DAG/SQL or create a second schema/provisioner. The prompt's
+standalone provisioning fallback is routed through that existing writer; a
+necessary reassignment requires a recorded exact handover, never concurrent
+writing. P05 native W43 follows P04 W38's real publication/outbox proof.
+
+Source selects n8n/core/runners2.42.6 and Mailpit1.31.4; read-only HOME metadata
+still shows2.41.6 and1.31.2. SEC01 supplies the selected compatible immutable
+images and security receipt, not a source-tag-only waiver. P03 supplies exact
+DEV/Mailpit endpoints, worker execution/network and UID/mode boundaries; P02
+reviews credential references. P05 uses only notifier credentials and encrypted
+n8n execution copies; P01/P06 gate final OpenBao delivery, not all protected
+DEV verification. No edition/native OpenBao support is assumed.
+
+The stock EmailSend source lacks Message-ID and explicit transport-timeout
+controls required by the P04 handoff. W41 may develop a narrow credential-aware
+custom node inside its own workload with synthetic tests; runtime registration,
+custom bind/image integration and dependency review remain coordinator/SEC01
+proposals. Do not add unsupported options or enable unrestricted Code imports.
+Current mail_net is shared with Stalwart and is not internal-only; network
+attachment alone is not Mailpit-only acceptance. Review the dedicated capture
+boundary with P03 and preserve existing unrelated networks and consumers.
+
+Root/leaf Compose, public/private environment, both existing n8n Dockerfiles,
+custom bind integration, existing README/subject0053 docs, backup, catalog,
+Registry, inventory, manifest/workflow and shared tests remain single-writer
+proposals. TSK-0013 fixes the exact new-file scope and evidence ladder. Preserve
+other writers' dirty worktrees; no reset/stash/clean or dev branch is used.
+The newer P05 prompt selects an owning-Spec PR after implementation, actual
+latest-head CI and independent review. Reconcile the local preparation prefix
+and P04 dependency with fresh remote main before a P05-only PR. This assessment
+makes no remote write, workflow import, credential update or deployment.
 
 ### P04 start, ownership and ordered native acceptance
 
