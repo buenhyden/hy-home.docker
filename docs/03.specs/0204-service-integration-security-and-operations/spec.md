@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.5"
+version: "1.7.6"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -261,6 +261,33 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     with upstream source or runtime evidence. A service whose image ignores
     a key stays out of the HOME selection until it is fixed.
 
+### P08 operations-document layout contract
+
+TSK-0015 continues criterion 8 and SPEC-0212 requirement 25 without reopening
+completed SPEC-0212/P00 or SPEC-0227 body-refresh evidence. Inspect every tracked
+Guide, Policy and Runbook's actual type, artifact ID, title, service bindings,
+body and links before selecting one exact meaningful destination. Numeric IDs
+alone do not identify a subject or LAB membership. Populated domains belong
+within `docs/05.operations/{guides,policies,runbooks}/`; LAB documents go only
+to each family's `labs/`. Root `labs/` remains runtime OUT_OF_SCOPE.
+
+Each populated domain and parent family requires a Korean, profile-valid README
+with exact links, roles, scope, owners and verification. Create no empty domain
+or duplicate active document. Bind old/new exact paths, source SHA256, ID/created
+date, anchors, relative working-directory assumptions and generated owner before
+moving. Preserve command/warning/recovery/evidence content except reviewed
+relative-path or changed-document structure adjustments; do not repeat the
+completed whole-corpus refresh or rewrite sealed history.
+
+Test nested path/profile/discovery/catalog/binding/link/changed-CI consumers
+together, rejecting unsafe paths, unknown domains, duplicate IDs and case
+collisions. Historical old-path resolution, if needed, is bounded metadata and
+never a second active copy. Source preparation can proceed while feature
+delivery is pending; actual rename/link integration requires exact single-writer
+leases and fixed feature-owner SHAs. Current local-main delivery requires
+exact-head checks and independent review; dev/remote/PR/hosted execution and
+operational acceptance are not inferred from document relocation.
+
 ## Acceptance Criteria
 
 ### Acceptance Criteria
@@ -458,6 +485,8 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
 <!-- markdownlint-enable MD029 -->
 
 ## Related Documents
+
+- [P08 operations-document layout Task](tasks/tsk-0015-p08-operations-document-layout.md)
 
 ### Traceability
 
