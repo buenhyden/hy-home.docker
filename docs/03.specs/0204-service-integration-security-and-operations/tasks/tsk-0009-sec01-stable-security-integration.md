@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.7"
+version: "0.4.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -975,6 +975,79 @@ preserves the original logical task commits; no `dev` branch or PR is used.
 Merged clean worktrees may be moved whole into a private retained-evidence
 archive and detached before exact-SHA branch deletion. Dirty or active operator
 worktrees retain their path and bytes; ignored evidence must not be discarded.
+
+### Actual Local Main Delivery and Preserved Worktree Evidence
+
+Local `main` fast-forwarded from
+`a31a38ca29ee8e0683a29e61bf41347bfddc3d62` to
+`96f061afa5570affe65877a84f18e3c9cce5162a`, preserving the task authors'
+logical commits and coordinator repairs. Main's worktree is
+`/home/hyunyoun/data/hy-home.docker/.worktrees/main-local-integration` and
+was clean after delivery. Fast-forward receipt SHA-256 is
+`a630bd227b4730bfbbbd77f930adaae2b3954c874e686aa0e6e5116082495ee2`.
+Two entrypoint checkout modes were normalized from 0775 to 0755; file bytes
+were unchanged. The newest read-only remote main still matched `a31a38ca`.
+No remote push, PR or `dev` was used.
+
+All five Spec/Plan/Task result documents passed selected metadata with zero
+violations and independent review. First staged validation failed because the
+isolated Markdown hook removed two redundant empty lines in Task 0005. ROOT
+removed only those lines, obtained independent format-only approval and
+restaged; the exact replacement staged gate passed before commit `e129c05ba`.
+Commit `96f061afa` separately preserves the three dated scanner/Cosign history
+keys that remained in SEC01's uncommitted evidence JSON. Existing JSON keys
+were unchanged and independent review plus the staged JSON/secret checks passed.
+These historical additions never certify the later complete scanner input.
+
+Eleven clean, already merged worktrees were moved whole to
+`/home/hyunyoun/data/hy-home.docker/.worktrees/retained-integration-evidence`.
+Their ignored evidence, complete checkout directories and inode identities
+were preserved, and each was detached before exact-SHA branch deletion.
+Archive manifest SHA-256 is
+`dd0137f678a6e5ae1d2a5dd0f52c0ad71acc40544a6af93fbb11e71cb399a881`.
+The Git worktree registrations remain as detached evidence archives; no forced
+worktree removal or private payload deletion occurred.
+
+Eight more merged task branch references were removed with exact main/ref CAS:
+three source worktrees were detached at the same HEAD with their dirty files,
+index and ignored inventory unchanged, and five refs had no attached worktree.
+Receipt SHA-256 is
+`40a08beabe159d92517a4df8d7973b96ec609654bca5a318f776f6f47a70443a`.
+The first preservation guard stopped before any change because ROOT's ignored
+inventory included newly created coordinator receipts and relocated archive
+paths. Rechecking confirmed ROOT's source diff, index, status and tracked
+inventory were unchanged; the corrected detach-only operation also bound a
+fresh full ignored inventory before/after. Other three foreign worktrees'
+full fingerprints remained unchanged. Root retains 24 dirty entries, SEC01
+10, SMTP01 one and the original P09 checkout 30. Their directories and private
+operator evidence stay at their existing absolute paths. No reset, stash,
+clean, force push or unrelated P00/P01 branch deletion was used. The active
+coordinator branch is retained only until this result commit reaches main.
+
+Fresh source-ledger evaluation on code input
+`396b2d907c662dff91c7939caeb5d27908bbac0b` again returned exit 2:
+latest `ready=false` and security `ledger_complete=false`, coverage checked,
+124 observed entries and no missing/unexpected source services. Latest receipt
+SHA-256 is `f9a0c7242d50998f736fb03688771b1650185000e17a3eaceb0d4bd2fc75d1cc`;
+security receipt is
+`a6325ff3199f1874a24b3575e933f10460a80397669baf701fca6dd9b4a60286`.
+SOURCE delivery therefore does not close criterion 15. The next SEC01 work is
+supplier/CVE applicability and compatible artifact remediation, full authenticated
+artifact coverage and named-service backup/restore/HOME acceptance. P01's final
+OpenBao contract and P03's final shared service/environment contract wait for
+that relevant verification; P02 may proceed with the merged canonical SMTP
+source contract while actual migration waits. CLN01 retains positive/unknown
+consumers until their exact backup/restore and consumer evidence supports deletion.
+P09 remains preparation only and creates no app or runtime resource.
+
+Task 0005's fourth actual isolated restore was independently accepted after
+execution: receipt `74794448811aa3632b707ec8043e67e84033510d6731cb96a3335717a0690699`,
+two files/40 bytes in 18.555 seconds, exact container absence, stable target
+metadata and four immutable ledger files confirmed without payload reads.
+It proves only dated two-file restoreability; SMTP send/authentication,
+application/production recovery, external-consumer absence, migration and
+rotation remain unaccepted. Current operational retirement is not inferred
+from duplicate-file absence. No LAB runtime or learning app change occurred.
 
 ## Evidence
 
