@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import errno
 import fcntl
+import hashlib
 import json
 import os
 import pathlib
@@ -24,6 +25,7 @@ SUBCOMMANDS = (
     "check-shell-syntax",
     "run-unittest",
     "run-npm",
+    "run-opsflow-smtp-npm",
     "run-approved-npm-audit",
     "check-commit-range",
     "install-playwright",
@@ -31,6 +33,39 @@ SUBCOMMANDS = (
 )
 _NPM_PREFIX = ("--prefix", "projects/storybook/nextjs")
 _NPM_SCRIPTS = {"lint", "typecheck", "build", "build-storybook", "coverage"}
+_OPSFLOW_SMTP_COMPONENTS = (
+    "infra",
+    "07-workflow",
+    "n8n",
+    "workloads",
+    "manifest-outbox-notifier",
+    "nodes",
+    "OpsflowSmtp",
+)
+_OPSFLOW_SMTP_NPM_OPERATIONS = MappingProxyType(
+    {
+        "install": ("ci", "--ignore-scripts", "--no-audit", "--no-fund"),
+        "coverage": ("run", "test:coverage"),
+        "audit": ("audit",),
+        "audit-production": ("audit", "--omit=dev"),
+        "pack": ("pack", "--dry-run", "--ignore-scripts", "--json"),
+    }
+)
+_OPSFLOW_SMTP_FROZEN_PACKAGE_INPUTS = (
+    (".gitignore",),
+    ("OpsflowSmtp.node.ts",),
+    ("README.md",),
+    ("package-lock.json",),
+    ("package.json",),
+    ("tests", "README.md"),
+    ("tests", "adapter.test.cjs"),
+    ("tests", "node.test.cjs"),
+    ("tests", "protocol.test.cjs"),
+    ("tests", "transport.test.cjs"),
+    ("transport.ts",),
+    ("tsconfig.json",),
+)
+_OPSFLOW_SMTP_FROZEN_ROOT_INPUTS = (("scripts", "lib", "gate", "ci_gate_adapters.py"),)
 # The structural boundary admits only the two authoritative test roots and
 # valid nonempty dotted segments. Exact complete argv admission remains owned
 # by the runner, so this grammar does not duplicate the library-domain list.
@@ -52,6 +87,7 @@ _PROC_FD_ROOT = re.compile(r"/proc/self/fd/([0-9]+)\Z")
 _CHILD_TERMINATION_SECONDS = 0.25
 _CLEANUP_ERROR_CODES = frozenset(
     {
+        "ci-gate-adapter-opsflow-cleanup",
         "ci-gate-adapter-sarif-cleanup",
     }
 )
@@ -146,6 +182,7 @@ ADAPTER_CONTEXTS = MappingProxyType(
         "check-commit-range": frozenset({"pull_request"}),
         "install-playwright": _CI_CONTEXTS,
         "run-npm": _CI_CONTEXTS,
+        "run-opsflow-smtp-npm": _CI_CONTEXTS,
         "run-approved-npm-audit": _CI_CONTEXTS,
         "run-zizmor-sarif": _CI_CONTEXTS,
     }
@@ -171,6 +208,10 @@ def validate_adapter_argv(argv: tuple[str, ...]) -> None:
         if arguments[-len(_NPM_PREFIX) :] != _NPM_PREFIX:
             _argument_error()
         if arguments[: -len(_NPM_PREFIX)] not in _NPM_ARGUMENT_SHAPES:
+            _argument_error()
+        return
+    if command == "run-opsflow-smtp-npm":
+        if len(arguments) != 1 or arguments[0] not in _OPSFLOW_SMTP_NPM_OPERATIONS:
             _argument_error()
         return
     if arguments:
@@ -310,6 +351,10 @@ def _dispatch_adapter(
                 environ=environ,
             )
         )
+    if command == "run-opsflow-smtp-npm":
+        if len(arguments) != 1 or arguments[0] not in _OPSFLOW_SMTP_NPM_OPERATIONS:
+            _argument_error()
+        return _run_opsflow_smtp_npm(canonical_root, arguments[0], environ)
     if command == "check-commit-range":
         _no_arguments(arguments)
         return _check_commit_range(canonical_root, environ)
@@ -717,6 +762,145 @@ def _npm_arguments(arguments: tuple[str, ...]) -> tuple[str, ...]:
     if arguments not in admitted:
         _argument_error()
     return arguments
+
+
+def _run_opsflow_smtp_npm(
+    root: pathlib.Path,
+    operation: str,
+    environ: Mapping[str, str],
+) -> int:
+    npm_arguments = _OPSFLOW_SMTP_NPM_OPERATIONS.get(operation)
+    if npm_arguments is None:
+        _argument_error()
+    descriptors: list[int] = []
+    current_fd = _owned_root_descriptor(root)
+    try:
+        for component in _OPSFLOW_SMTP_COMPONENTS:
+            current_fd = os.open(
+                component,
+                os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_DIRECTORY,
+                dir_fd=current_fd,
+            )
+            descriptors.append(current_fd)
+    except OSError:
+        if _close_opsflow_descriptors(descriptors):
+            raise AdapterError(
+                "ci-gate-adapter-opsflow-cleanup",
+                "the Opsflow SMTP package capability could not be cleaned up",
+            ) from None
+        raise AdapterError(
+            "ci-gate-adapter-opsflow-cwd",
+            "the fixed Opsflow SMTP package directory is unavailable",
+        ) from None
+
+    product_error: BaseException | None = None
+    result: int | None = None
+    package_root = pathlib.Path(f"/proc/self/fd/{descriptors[-1]}")
+    frozen_inputs: tuple[tuple[str, bytes], ...] | None = None
+    try:
+        if operation == "coverage":
+            frozen_inputs = _snapshot_opsflow_inputs(
+                _owned_root_descriptor(root), descriptors[-1]
+            )
+        child_environment = dict(environ)
+        child_environment.pop("HYHOME_CI_GATE_ROOT", None)
+        result = _returncode(
+            _run_child(
+                ("npm", *npm_arguments),
+                root=package_root,
+                environ=child_environment,
+            )
+        )
+        if operation == "coverage" and frozen_inputs != _snapshot_opsflow_inputs(
+            _owned_root_descriptor(root), descriptors[-1]
+        ):
+            raise AdapterError(
+                "ci-gate-adapter-opsflow-mutation",
+                "the coverage operation changed a frozen source input",
+            )
+    except BaseException as error:
+        product_error = error
+
+    if _close_opsflow_descriptors(descriptors):
+        raise AdapterError(
+            "ci-gate-adapter-opsflow-cleanup",
+            "the Opsflow SMTP package capability could not be cleaned up",
+        ) from None
+    if product_error is not None:
+        try:
+            raise product_error
+        finally:
+            product_error = None
+    assert result is not None
+    return result
+
+
+def _close_opsflow_descriptors(descriptors: list[int]) -> bool:
+    failed = False
+    for descriptor in reversed(descriptors):
+        try:
+            os.close(descriptor)
+        except BaseException:
+            failed = True
+    return failed
+
+
+def _snapshot_opsflow_inputs(
+    root_fd: int,
+    package_fd: int,
+) -> tuple[tuple[str, bytes], ...]:
+    inputs = tuple(
+        (
+            f"package/{'/'.join(relative)}",
+            _hash_opsflow_input(package_fd, relative),
+        )
+        for relative in _OPSFLOW_SMTP_FROZEN_PACKAGE_INPUTS
+    ) + tuple(
+        (
+            f"repository/{'/'.join(relative)}",
+            _hash_opsflow_input(root_fd, relative),
+        )
+        for relative in _OPSFLOW_SMTP_FROZEN_ROOT_INPUTS
+    )
+    return inputs
+
+
+def _hash_opsflow_input(root_fd: int, components: tuple[str, ...]) -> bytes:
+    descriptors: list[int] = []
+    current_fd = root_fd
+    try:
+        for component in components[:-1]:
+            current_fd = os.open(
+                component,
+                os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_DIRECTORY,
+                dir_fd=current_fd,
+            )
+            descriptors.append(current_fd)
+        input_fd = os.open(
+            components[-1],
+            os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
+            dir_fd=current_fd,
+        )
+        descriptors.append(input_fd)
+        if not stat.S_ISREG(os.fstat(input_fd).st_mode):
+            raise OSError(errno.EINVAL, "input is not regular")
+        digest = hashlib.sha256(_read_bounded(input_fd)).digest()
+    except OSError:
+        if _close_opsflow_descriptors(descriptors):
+            raise AdapterError(
+                "ci-gate-adapter-opsflow-cleanup",
+                "the Opsflow SMTP input capability could not be cleaned up",
+            ) from None
+        raise AdapterError(
+            "ci-gate-adapter-opsflow-input",
+            "a frozen Opsflow SMTP source input is unavailable",
+        ) from None
+    if _close_opsflow_descriptors(descriptors):
+        raise AdapterError(
+            "ci-gate-adapter-opsflow-cleanup",
+            "the Opsflow SMTP input capability could not be cleaned up",
+        ) from None
+    return digest
 
 
 def _audit_failure() -> None:

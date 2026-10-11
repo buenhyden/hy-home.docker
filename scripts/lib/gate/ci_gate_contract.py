@@ -85,6 +85,7 @@ _TOP_LEVEL_FIELDS = frozenset(
 _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "ci.dependency-vulnerability-audit",
     "ci.frontend-quality",
+    "ci.opsflow-smtp-node-package",
     "ci.storybook-coverage",
     "ci.zizmor",
     "leaf.local-document-corpus-lifecycle-tests",
@@ -145,8 +146,16 @@ _REQUIRED_ACTIVE_AGGREGATE_CHILDREN = {
         "setup.storybook-playwright",
         "leaf.storybook-coverage",
     ),
+    "ci.opsflow-smtp-node-package": (
+        "setup.opsflow-smtp-node-dependencies",
+        "leaf.opsflow-smtp-npm-audit",
+        "leaf.opsflow-smtp-npm-production-audit",
+        "leaf.opsflow-smtp-node-coverage",
+        "leaf.opsflow-smtp-package",
+    ),
     "ci.zizmor": ("leaf.zizmor",),
 }
+_EXACT_ORDER_ACTIVE_AGGREGATES = frozenset({"ci.opsflow-smtp-node-package"})
 _SETUP_PREREQUISITES = {
     "setup.storybook-playwright": ("setup.frontend-node-dependencies",),
     "leaf.frontend-lint": ("setup.frontend-node-dependencies",),
@@ -156,6 +165,13 @@ _SETUP_PREREQUISITES = {
     "leaf.storybook-coverage": (
         "setup.frontend-node-dependencies",
         "setup.storybook-playwright",
+    ),
+    "leaf.opsflow-smtp-node-coverage": ("setup.opsflow-smtp-node-dependencies",),
+    "leaf.opsflow-smtp-npm-audit": ("setup.opsflow-smtp-node-dependencies",),
+    "leaf.opsflow-smtp-npm-production-audit": ("setup.opsflow-smtp-node-dependencies",),
+    "leaf.opsflow-smtp-package": (
+        "setup.opsflow-smtp-node-dependencies",
+        "leaf.opsflow-smtp-node-coverage",
     ),
 }
 _SECRET_ENV_SHAPE = re.compile(
@@ -1264,6 +1280,15 @@ def validate_gate_registry(
         )
         return tuple(findings)
 
+    aggregate_order_violation = _active_aggregate_order_violation(node_by_id)
+    if aggregate_order_violation is not None:
+        finding(
+            "ci-gate-active-aggregate-order",
+            f"gate_nodes/{aggregate_order_violation}",
+            f"{aggregate_order_violation} must retain its security gate order",
+        )
+        return tuple(findings)
+
     setup_violation = _setup_prerequisite_violation(node_by_id, roots)
     if setup_violation is not None:
         root_gate_id, prerequisite, consumer = setup_violation
@@ -1393,6 +1418,13 @@ def expand_public_gate_ids(
             "ci-gate-active-aggregate-child",
             f"gate_nodes/{aggregate}",
             f"{aggregate} must retain required child {child}",
+        )
+    aggregate_order_violation = _active_aggregate_order_violation(node_by_id)
+    if aggregate_order_violation is not None:
+        raise GateContractError(
+            "ci-gate-active-aggregate-order",
+            f"gate_nodes/{aggregate_order_violation}",
+            f"{aggregate_order_violation} must retain its security gate order",
         )
     setup_violation = _setup_prerequisite_violation(node_by_id, root_gate_ids)
     if setup_violation is not None:
@@ -1617,6 +1649,18 @@ def _active_aggregate_child_violation(
         for child in required_children:
             if child not in node.children:
                 return aggregate, child
+    return None
+
+
+def _active_aggregate_order_violation(
+    node_by_id: Mapping[str, GateNode],
+) -> str | None:
+    for aggregate in _EXACT_ORDER_ACTIVE_AGGREGATES:
+        node = node_by_id.get(aggregate)
+        if node is None or node.kind is not GateKind.AGGREGATE:
+            continue
+        if node.children != _REQUIRED_ACTIVE_AGGREGATE_CHILDREN[aggregate]:
+            return aggregate
     return None
 
 

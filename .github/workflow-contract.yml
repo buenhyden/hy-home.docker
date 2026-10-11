@@ -790,6 +790,9 @@
         "tests.validation.test_port_contract",
         "tests.lib.ops.test_openbao_consumer_migration",
         "tests.validation.test_openbao_consumer_migration_contract",
+        "tests.lib.ops.test_n8n_outbox_workflow",
+        "tests.validation.test_n8n_outbox_contract",
+        "tests.validation.test_n8n_outbox_rehearsal",
         "-v"
       ],
       "cwd": ".",
@@ -1071,6 +1074,87 @@
       "allowed_env_keys": [],
       "timeout_minutes": 20,
       "opaque": false
+    },
+    {
+      "gate_id": "ci.opsflow-smtp-node-package",
+      "kind": "aggregate",
+      "opaque": false,
+      "children": [
+        "setup.opsflow-smtp-node-dependencies",
+        "leaf.opsflow-smtp-npm-audit",
+        "leaf.opsflow-smtp-npm-production-audit",
+        "leaf.opsflow-smtp-node-coverage",
+        "leaf.opsflow-smtp-package"
+      ]
+    },
+    {
+      "gate_id": "setup.opsflow-smtp-node-dependencies",
+      "kind": "setup",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-opsflow-smtp-npm",
+        "install"
+      ],
+      "cwd": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": false
+    },
+    {
+      "gate_id": "leaf.opsflow-smtp-node-coverage",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-opsflow-smtp-npm",
+        "coverage"
+      ],
+      "cwd": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "opsflow-smtp-node-coverage"
+    },
+    {
+      "gate_id": "leaf.opsflow-smtp-npm-audit",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-opsflow-smtp-npm",
+        "audit"
+      ],
+      "cwd": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp",
+      "allowed_env_keys": [],
+      "timeout_minutes": 5,
+      "opaque": true,
+      "suite_key": "opsflow-smtp-npm-audit"
+    },
+    {
+      "gate_id": "leaf.opsflow-smtp-npm-production-audit",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-opsflow-smtp-npm",
+        "audit-production"
+      ],
+      "cwd": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp",
+      "allowed_env_keys": [],
+      "timeout_minutes": 5,
+      "opaque": true,
+      "suite_key": "opsflow-smtp-npm-production-audit"
+    },
+    {
+      "gate_id": "leaf.opsflow-smtp-package",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-opsflow-smtp-npm",
+        "pack"
+      ],
+      "cwd": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp",
+      "allowed_env_keys": [],
+      "timeout_minutes": 5,
+      "opaque": true,
+      "suite_key": "opsflow-smtp-package"
     }
   ],
   "public_gate": {
@@ -1138,7 +1222,8 @@
         "ci.storybook-coverage",
         "ci.zizmor",
         "leaf.release-regressions",
-        "leaf.repository-integrity-regressions"
+        "leaf.repository-integrity-regressions",
+        "ci.opsflow-smtp-node-package"
       ]
     },
     "validators": [
@@ -1602,6 +1687,18 @@
         "suites": [
           "repository-integrity"
         ]
+      },
+      {
+        "prefixes": [
+          "infra/07-workflow/n8n/workloads/",
+          "tests/lib/ops/test_n8n_outbox_workflow.py",
+          "tests/validation/test_n8n_outbox_contract.py",
+          "tests/validation/test_n8n_outbox_rehearsal.py",
+          "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
       }
     ],
     "changed_root_rules": [
@@ -1887,6 +1984,25 @@
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "infra/07-workflow/n8n/workloads/",
+          "tests/lib/ops/test_n8n_outbox_workflow.py",
+          "tests/validation/test_n8n_outbox_contract.py",
+          "tests/validation/test_n8n_outbox_rehearsal.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/"
+        ],
+        "root_gate_ids": [
+          "ci.opsflow-smtp-node-package"
         ]
       }
     ],

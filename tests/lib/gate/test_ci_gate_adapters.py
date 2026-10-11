@@ -26,6 +26,7 @@ EXPECTED_SUBCOMMANDS = (
     "check-shell-syntax",
     "run-unittest",
     "run-npm",
+    "run-opsflow-smtp-npm",
     "run-approved-npm-audit",
     "check-commit-range",
     "install-playwright",
@@ -96,6 +97,23 @@ class CiGateAdapterTests(unittest.TestCase):
             check=True,
         )
         return result.stdout.strip()
+
+    def create_opsflow_package(self) -> pathlib.Path:
+        package = (
+            self.root
+            / "infra/07-workflow/n8n/workloads/manifest-outbox-notifier"
+            / "nodes/OpsflowSmtp"
+        )
+        package.mkdir(parents=True, exist_ok=True)
+        for relative in adapters._OPSFLOW_SMTP_FROZEN_PACKAGE_INPUTS:
+            target = package.joinpath(*relative)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes("/".join(relative).encode("utf-8"))
+        for relative in adapters._OPSFLOW_SMTP_FROZEN_ROOT_INPUTS:
+            target = self.root.joinpath(*relative)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes("/".join(relative).encode("utf-8"))
+        return package
 
     def synthetic_merge_with_whitespace(self) -> tuple[str, str]:
         self.git("init", "-q", "-b", "main")
@@ -592,6 +610,141 @@ class CiGateAdapterTests(unittest.TestCase):
                 result, recorder = self.run_with_recorder(("run-npm", *command))
                 self.assertEqual(0, result)
                 self.assertEqual(("npm", *command), recorder.calls[0][0])
+
+    def test_opsflow_smtp_npm_runs_only_fixed_operations_in_fixed_directory(
+        self,
+    ) -> None:
+        package = self.create_opsflow_package()
+        operations = {
+            "install": ("npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund"),
+            "coverage": ("npm", "run", "test:coverage"),
+            "audit": ("npm", "audit"),
+            "audit-production": ("npm", "audit", "--omit=dev"),
+            "pack": ("npm", "pack", "--dry-run", "--ignore-scripts", "--json"),
+        }
+        observed_fds: list[int] = []
+        observed_argv: list[tuple[str, ...]] = []
+
+        def record(
+            argv: tuple[str, ...],
+            **kwargs: object,
+        ) -> subprocess.CompletedProcess[bytes]:
+            child_root = pathlib.Path(kwargs["root"])  # type: ignore[arg-type]
+            match = adapters._PROC_FD_ROOT.fullmatch(child_root.as_posix())
+            self.assertIsNotNone(match)
+            observed_fds.append(int(match.group(1)))  # type: ignore[union-attr]
+            observed_argv.append(argv)
+            self.assertTrue(child_root.samefile(package))
+            self.assertEqual((observed_fds[-1],), adapters._root_pass_fds(child_root))
+            self.assertNotIn("HYHOME_CI_GATE_ROOT", kwargs["environ"])  # type: ignore[operator]
+            self.assertNotIn("inherited_fds", kwargs)
+            return subprocess.CompletedProcess(argv, 0, b"", b"")
+
+        with mock.patch.object(adapters, "_run_child", side_effect=record):
+            for operation, expected in operations.items():
+                with self.subTest(operation=operation):
+                    self.assertEqual(
+                        0,
+                        adapters.run_adapter(
+                            self.root,
+                            ("run-opsflow-smtp-npm", operation),
+                            {"PATH": "/usr/bin"},
+                        ),
+                    )
+                    self.assertEqual(expected, observed_argv[-1])
+        self.assertEqual(len(operations), len(observed_fds))
+        for descriptor in observed_fds:
+            with self.assertRaises(OSError):
+                os.fstat(descriptor)
+
+    def test_opsflow_smtp_npm_rejects_unbounded_arguments_and_local_context(
+        self,
+    ) -> None:
+        for argv in (
+            ("run-opsflow-smtp-npm",),
+            ("run-opsflow-smtp-npm", "publish"),
+            ("run-opsflow-smtp-npm", "audit", "--json"),
+            ("run-opsflow-smtp-npm", "../OpsflowSmtp"),
+        ):
+            with self.subTest(argv=argv), self.assertRaises(adapters.AdapterError):
+                adapters.validate_adapter_argv(argv)
+        for operation in (
+            "install",
+            "coverage",
+            "audit",
+            "audit-production",
+            "pack",
+        ):
+            argv = ("run-opsflow-smtp-npm", operation)
+            adapters.validate_adapter_argv(argv)
+            self.assertFalse(adapters.admits_adapter_invocation(argv, "local"))
+            self.assertTrue(adapters.admits_adapter_invocation(argv, "pull_request"))
+
+    def test_opsflow_smtp_npm_fails_closed_on_symlink_and_propagates_nonzero(
+        self,
+    ) -> None:
+        parent = (
+            self.root / "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes"
+        )
+        parent.mkdir(parents=True)
+        outside = self.root / "outside"
+        outside.mkdir()
+        (parent / "OpsflowSmtp").symlink_to(outside, target_is_directory=True)
+        with self.assertRaises(adapters.AdapterError) as caught:
+            adapters.run_adapter(
+                self.root,
+                ("run-opsflow-smtp-npm", "install"),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual("ci-gate-adapter-opsflow-cwd", caught.exception.code)
+        (parent / "OpsflowSmtp").unlink()
+        self.create_opsflow_package()
+        with mock.patch.object(
+            adapters,
+            "_run_child",
+            return_value=subprocess.CompletedProcess(("npm",), 17, b"", b""),
+        ):
+            self.assertEqual(
+                17,
+                adapters.run_adapter(
+                    self.root,
+                    ("run-opsflow-smtp-npm", "coverage"),
+                    {"PATH": "/usr/bin"},
+                ),
+            )
+
+    def test_opsflow_smtp_coverage_rejects_frozen_input_mutation(self) -> None:
+        for relative in (
+            ("package-lock.json",),
+            ("scripts", "lib", "gate", "ci_gate_adapters.py"),
+        ):
+            with self.subTest(relative=relative):
+                package = self.create_opsflow_package()
+                target = (
+                    package.joinpath(*relative)
+                    if len(relative) == 1
+                    else self.root.joinpath(*relative)
+                )
+
+                def mutate(
+                    argv: tuple[str, ...],
+                    **_: object,
+                ) -> subprocess.CompletedProcess[bytes]:
+                    target.write_text("changed", encoding="utf-8")
+                    return subprocess.CompletedProcess(argv, 0, b"", b"")
+
+                with (
+                    mock.patch.object(adapters, "_run_child", side_effect=mutate),
+                    self.assertRaises(adapters.AdapterError) as caught,
+                ):
+                    adapters.run_adapter(
+                        self.root,
+                        ("run-opsflow-smtp-npm", "coverage"),
+                        {"PATH": "/usr/bin"},
+                    )
+                self.assertEqual(
+                    "ci-gate-adapter-opsflow-mutation", caught.exception.code
+                )
 
     def test_check_commit_range_delegates_to_commitizen_with_bounded_base(
         self,

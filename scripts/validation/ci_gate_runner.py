@@ -76,6 +76,10 @@ _LOCAL_EXCLUDED_GATE_IDS = frozenset(
         "leaf.frontend-lint",
         "leaf.frontend-quality",
         "leaf.frontend-typecheck",
+        "leaf.opsflow-smtp-node-coverage",
+        "leaf.opsflow-smtp-npm-audit",
+        "leaf.opsflow-smtp-npm-production-audit",
+        "leaf.opsflow-smtp-package",
         "leaf.changed-style",
         "leaf.commit-message-contract",
         "leaf.storybook-coverage",
@@ -495,6 +499,11 @@ def selected_prerequisites(
             "leaf.frontend-quality",
             "leaf.frontend-typecheck",
             "leaf.storybook-coverage",
+            "setup.opsflow-smtp-node-dependencies",
+            "leaf.opsflow-smtp-node-coverage",
+            "leaf.opsflow-smtp-npm-audit",
+            "leaf.opsflow-smtp-npm-production-audit",
+            "leaf.opsflow-smtp-package",
         }
         & gate_ids
     )

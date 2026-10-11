@@ -228,6 +228,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         dependency = {
             "ci.dependency-vulnerability-audit",
         }
+        opsflow_smtp = {"ci.opsflow-smtp-node-package"}
         repository = {
             "leaf.local-shell-syntax",
             "leaf.local-script-manifest",
@@ -236,7 +237,14 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             "leaf.storybook-contract",
         }
         optional = (
-            frontend | document | catalog | release | workflow | dependency | repository
+            frontend
+            | document
+            | catalog
+            | release
+            | workflow
+            | dependency
+            | opsflow_smtp
+            | repository
         )
         self.assertEqual(
             optional,
@@ -322,6 +330,14 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             },
             "tests/validation/_script_manifest_support.py": {
                 "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
+            (
+                "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/"
+                "nodes/OpsflowSmtp/transport.ts"
+            ): opsflow_smtp
+            | {
+                "leaf.local-tech-stack-version-drift",
                 "leaf.repository-integrity-regressions",
             },
         }
@@ -608,6 +624,62 @@ class CiGateContractTests(unittest.TestCase):
         *codes: str,
     ) -> None:
         self.assertEqual(set(codes), {finding.code for finding in findings})
+
+    def test_opsflow_smtp_gate_order_and_setup_dependencies_are_closed(self) -> None:
+        children = (
+            "setup.opsflow-smtp-node-dependencies",
+            "leaf.opsflow-smtp-npm-audit",
+            "leaf.opsflow-smtp-npm-production-audit",
+            "leaf.opsflow-smtp-node-coverage",
+            "leaf.opsflow-smtp-package",
+        )
+        self.assertEqual(
+            children,
+            contract._REQUIRED_ACTIVE_AGGREGATE_CHILDREN[
+                "ci.opsflow-smtp-node-package"
+            ],
+        )
+        self.assertIn(
+            "ci.opsflow-smtp-node-package",
+            contract._OPTIONAL_CHANGED_ROOT_GATE_IDS,
+        )
+        for consumer in children[1:]:
+            self.assertIn(
+                "setup.opsflow-smtp-node-dependencies",
+                contract._SETUP_PREREQUISITES[consumer],
+            )
+        self.assertEqual(
+            (
+                "setup.opsflow-smtp-node-dependencies",
+                "leaf.opsflow-smtp-node-coverage",
+            ),
+            contract._SETUP_PREREQUISITES["leaf.opsflow-smtp-package"],
+        )
+
+        current = complete_registry()
+        reordered = tuple(
+            dataclasses.replace(
+                node,
+                children=(
+                    children[0],
+                    children[3],
+                    children[1],
+                    children[2],
+                    children[4],
+                ),
+            )
+            if node.gate_id == "ci.opsflow-smtp-node-package"
+            else node
+            for node in current.nodes
+        )
+        findings = contract.validate_gate_registry(
+            ROOT,
+            registry(nodes=reordered),
+        )
+        self.assertIn(
+            "ci-gate-active-aggregate-order",
+            {finding.code for finding in findings},
+        )
 
     def test_operations_catalog_is_an_exact_path_bound_document_leaf(
         self,

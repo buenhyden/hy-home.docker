@@ -1,6 +1,6 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -588,6 +588,113 @@ resolved from branch HEAD in the final machine receipt, without a self-reference
 Next action is coordinator integration of the fixed source commits and refreshed
 typed Node/Python/workload proposals, followed by combined-head gates.
 Native notification and DEV/HOME changes remain NOT_RUN.
+
+### Coordinator Common Integration — 2026-10-11
+
+The coordinator adopts worker HEAD
+`53212d0b494f72658c52a4992fb4067936cf87da` and preserves all three logical
+commits in the dedicated `codex/p05-common-integration` worktree. The 27 public
+source files retain digest
+`55856ce4aa2f121d63102731a460b12d054651ac6ff2cab1f3743554d7774b10`.
+The old notifier worktree's 28 staged paths and binary patch digest
+`44db414ba98c88746df1dadcd3c4c69f519bf634cbe39b7f406cdcb0f130f33d`
+remain unchanged. The unrelated shared checkout's 24 paths remain untouched.
+
+At baseline `4c83f14b11a77e13e582eb85d0bf256685472a95`, direct remote main
+has the same SHA and GitHub reports no open PRs. These are remote observations;
+the worker source commits and current common changes are local only. The four
+public n8n README/Guide/Policy/Runbook proposal bases matched exactly before
+application. The coordinator applies those navigation and source-only usage
+changes, with preserved IDs/created timestamps. Registry is already integrated
+and unchanged. No source manifest records are needed for workload-local tools
+outside its governed script roots.
+
+Actual workflow registration adds the three Python modules to the existing
+repository-integrity leaf and routes the workload/tests in both changed-path
+and changed-root tables. The exact OpsflowSmtp package prefix additionally
+selects a typed package aggregate. Five fixed npm operations use only that
+package directory: install, dependency audit, production dependency audit,
+coverage/build and dry-run pack. Audits precede candidate build/test scripts.
+Existing workflow jobs, action pins, permissions, audit acceptance and
+P02/P03/P04/P06 registrations are retained. CI-only package leaves are excluded
+from unauthenticated local execution; no hosted result is inferred from a local
+plan or direct npm invocation.
+
+Fresh coordinator commands from the dedicated worktree passed, exit0:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.lib.ops.test_n8n_outbox_workflow \
+  tests.validation.test_n8n_outbox_contract \
+  tests.validation.test_n8n_outbox_rehearsal -q
+```
+
+This passed16 synthetic tests in0.191s. From the exact OpsflowSmtp directory,
+Node v26.10.0 ran `npm ci --ignore-scripts --no-audit --no-fund`,
+`npm run test:coverage`, `npm audit`, `npm audit --omit=dev`, and
+`npm pack --dry-run --ignore-scripts --json`; each exited0. The24 offline tests
+measured lines97.33percent, branches94.83percent and functions87.88percent.
+Both audits reported zero findings; pack selected eight public files without
+publishing. The transport tests stayed offline; npm used public dependency operations.
+No application DB/SMTP connection or runtime node installation occurred.
+
+The first workflow-validator invocation used nonexistent
+`check-workflow-contract.py` and exited2; no validator ran. The corrected
+`check-github-workflow-contract.py` exited0 on the initial registered candidate.
+An unauthenticated `run-ci-gate.py --profile changed --explain` exited0 and
+selected nine local leaves. Its exclusion of CI-only package leaves is expected,
+not successful hosted package execution.
+
+Initial typed-adapter RED/GREEN and127 gate tests passed on the pre-review
+candidate, with86percent combined branch-enabled coverage. Subsequent independent
+security review blocked that input: candidate coverage ran before audit and
+inherited a repository-root FD. That receipt is superseded for final acceptance.
+The correction removes root capability/environment forwarding to npm, uses the
+fixed package directory FD, runs audits first, and rejects coverage mutation of
+explicitly frozen source/control inputs. It does not promise whole-checkout
+immutability or constrain arbitrary external hosts. Final corrected-input tests,
+metadata, staged gate, independent review and local-main delivery are recorded
+separately in the coordinator receipt after they actually finish.
+
+The corrected frozen-input gate command executed by the delegated CI engineer
+was `/tmp/hy-home-p09-qa/bin/python -m unittest
+ tests.lib.gate.test_ci_gate_adapters tests.lib.gate.test_ci_gate_contract
+ tests.validation.test_ci_gate_plan tests.validation.test_ci_gate_execution_context
+ -v`, with PYTHONDONTWRITEBYTECODE=1. It passed128, exit0; log
+`/tmp/p05-node-gate-4modules-security-final.log`. Branch-enabled coverage of
+adapter/contract/runner measured combined86percent (individual83/88/86), and
+`coverage report --fail-under=80` exited0. Raw data and report are
+`/tmp/p05-node-gate-security-final.coverage` and
+`/tmp/p05-node-gate-coverage-report-final.log`. This is synthetic harness testing,
+not hosted CI or native consumer authentication. The exact aggregate order is
+validated with a negative reorder regression; missing-child diagnostic
+precedence is retained. Lockfile and adapter mutation regressions fail closed.
+Final security re-review passed with no P1/P2 findings. Scoped Ruff0.15.12 lint,
+format check and `git diff --check` passed on the frozen seven implementation/
+regression files. Independent combined-head quality review and final staged/
+metadata/local-main receipts remain separate below or in the coordinator ledger.
+
+Workflow SHA256 is
+`a7df8a8200c6865ec766f7701f54d9de3271a292d988657f1a95f802ead25ea7`.
+Adapter SHA256 is
+`7f5f64dcedd4f79cabdfa5de1f1f355521315c570cc298046b7d9cbdf4d2f4d6`;
+contract SHA256 is
+`89e00e59aa8bf0f8bd4524e7239cd0f9e6b9c59152df2041192c259175d9d740`;
+runner SHA256 is
+`77d5a3e418e32cd4026283d2b655adb29f4739e51889407811f9e6b5103cc7ba`.
+The frozen map in the ignored receipt includes the remaining four tests.
+Fresh all-document links passed1213 documents/11701 links, exit0, with zero
+failures and one pre-existing archive capture warning. No frozen source or
+package lock/build input was rewritten by the npm checks.
+
+Receipt paths under ignored `.agent-work/` retain public commands, input hashes,
+failed attempts, corrected results and final commit/main ancestry. This section
+keeps native W42/W43/W44 and criterion19 in-progress. P04 SQL hashes remain the
+same read-only bindings and native identity/version fields stay null. Exact
+SEC01 package/image, P03 UID/executor/TLS/endpoint, P02 credential delivery,
+P04 producer/function grants/S3 policy and paired backup/empty-restore acceptance
+are still required. No import, schedule activation, DEV/HOME change, migration,
+rotation, private deletion or recovery ran. P01 W23 and P06 pilot holds remain.
 
 ## Evidence
 

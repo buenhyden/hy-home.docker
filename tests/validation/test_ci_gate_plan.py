@@ -1047,6 +1047,25 @@ class CiGateRunnerContractTests(unittest.TestCase):
             requirements(("infra/01-gateway/docker-compose.yml",)),
         )
 
+    def test_opsflow_smtp_hosted_leaf_requires_node_without_docker(self) -> None:
+        invocation = dataclasses.replace(
+            _invocation(
+                "leaf.opsflow-smtp-node-coverage",
+                "scripts/lib/gate/ci_gate_adapters.py",
+            ),
+            argv=("run-opsflow-smtp-npm", "coverage"),
+        )
+        self.assertEqual(
+            runner.SelectedPrerequisites(node=True, docker=False),
+            runner.selected_prerequisites(
+                (invocation,),
+                (
+                    "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/"
+                    "nodes/OpsflowSmtp/transport.ts",
+                ),
+            ),
+        )
+
     def test_mixed_unknown_path_keeps_document_regressions(self) -> None:
         targets = {
             "leaf.local-document-metadata-tests",

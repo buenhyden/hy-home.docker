@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.6"
+version: "1.2.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 created: "2025-11-12"
 ---
 
@@ -151,6 +151,12 @@ linux/amd64 manifest를 대조한 뒤 같은 index로 실행합니다. digest/ar
 Airflow의 명시 shell lint 보완으로 해당 후보만 다시 빌드한 후, n8n 두 variant를 포함한
 전체 immutable-candidate 시험 8건을 새로 수행해 PASS(EXIT 0)였습니다. n8n 이미지 내용은
 그 보완에서 변경하지 않았으며, 최신 시험 입력과 새 Airflow artifact는 연결된 검증 기록에 있습니다.
+
+### 독립 DEV 통지 워크로드
+
+[매니페스트 outbox 통지](workloads/manifest-outbox-notifier/README.md)는
+P04 SQL을 소비하는 비활성 workflow·제한된 SMTP node·합성 시험입니다.
+실제 import·예약·credential·복구는 P05 Task 선행 계약 이후 검증합니다.
 
 ## Troubleshooting
 

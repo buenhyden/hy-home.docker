@@ -51,6 +51,20 @@ class LocalExecutionBoundaryTests(unittest.TestCase):
             "leaf.supply-chain-fixture-policy",
         }
     )
+    OPSFLOW_SMTP_HOSTED_GATE_IDS = frozenset(
+        {
+            "leaf.opsflow-smtp-node-coverage",
+            "leaf.opsflow-smtp-npm-audit",
+            "leaf.opsflow-smtp-npm-production-audit",
+            "leaf.opsflow-smtp-package",
+        }
+    )
+
+    def test_opsflow_smtp_node_gates_are_hosted_only(self) -> None:
+        self.assertLessEqual(
+            self.OPSFLOW_SMTP_HOSTED_GATE_IDS,
+            runner._LOCAL_EXCLUDED_GATE_IDS,
+        )
 
     def test_a_local_plan_reaches_no_withheld_leaf(self) -> None:
         registry = contract.parse_gate_registry(
