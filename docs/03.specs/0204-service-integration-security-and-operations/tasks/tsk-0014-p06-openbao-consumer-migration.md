@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -639,7 +639,7 @@ Worker reviews approved the four owned source deltas. Coordinator re-review
 of69be0b5e accepted the implementation but found P2 omissions in the final
 common proposal: the canonical schema-folder route and complete library
 consumers/tests were missing. The finding-free common-review claim is
-superseded. Fresh common integration and affected-gate acceptance are pending. The reviewed owned SHA256s
+superseded. Fresh common integration and affected-gate acceptance are pending. The historical W47 input69be0b5e owned SHA256s
 remain helper `4c61cf97cb6ba8bf91a4fcdb52d4009d03558c15ad262d8faac4fcfd61322464`,
 test `66c9f68be5a134e10d9ae98a427865082b024df5253a27cf5a9142ee0332c3f2`,
 README `695be452cfdc0c1f08cdf77b71cb4f0dbe71007c2fa9e93f54c585376d0dcb70`.
@@ -689,6 +689,53 @@ for the dedicated implementation, not reasons to weaken existing contracts.
 9. W54: one independently identified server rotation unit and denial/rollback.
 10. W55: shared registration/docs, current-head QA/review/PR and downstream SHA.
 
+### Segmented Local Source Validation — 2026-10-11
+
+Frozen source input is `5b1a92db48fd508feff4cee0753b3b4468dd41dc`, following
+common/worker integration `c7d56a383ad8b77dd615327d11605b3e15d2146e`.
+The registered local execution plan has33 nodes; public explain exposes10.
+The front-door run exited124 after nodes0–9 passed. First canonical continuation
+exited1 at node18; nodes10–17 passed. Permission-corrected continuation exited1
+at node26; nodes18–25 passed. Final continuation26–32 exited0 with ordinary
+Python, debug true/optimization0 and clean unchanged post-input. Thus all33
+nodes have segmented successful receipts; the original124 and both suffix1
+failures remain failures. No fresh aggregate exit0 or hosted PASS is claimed.
+
+Only two coordinator-checkout entrypoint modes changed775 to755, matching their
+tracked100755 modes: Open WebUI and Gatus. File content hashes and index were
+unchanged, with Git clean and no HOME/runtime effect. The only source delta
+from c7d56a383 is the synthetic workflow fixture's canonical working directory,
+seven changed lines in the existing test. RED: one test/four subcase failures,
+exit1,1.769s; GREEN:39 tests,exit0,7.492s; Ruff/staged checks exit0 and independent
+review ACCEPT. The registered workflow contract SHA256 remains
+`bdb1941e522865a9a381b0913f4a8e266dfb613cbb832ca35889ff26ac3ecfc5`.
+
+Receipts are `.agent-work/p04-p07-registered-suffix-final-fixture-result.json`,
+`.agent-work/p04-p07-checkout-permissions-repair.json` and
+`.agent-work/p05-fixture-cwd-receipt.json`; final output is
+`.agent-work/p04-p07-registered-suffix-final-fixture.log`. Earlier aggregate and
+suffix logs remain preserved. These SOURCE/UNIT/STATIC checks do not complete
+operational criteria. Local-main source integration awaits final documentation
+checks and review; its delivery SHA is not yet known. Current direct-user
+local-main delivery uses no dev, remote push, PR or hosted execution.
+
+Worker source `8a9f6bf12e04599b7861a04372274cbc9676a758` contains current W48
+synthetic preparation. Its SHA256s are helper
+`a40eb677172847a817e4b607d3abc6a10696665c8204fca366ac61ac38d6e831`, unit test
+`854013518aab1d437d62e80e5bfc18f90a8cfebde7ac3b476f6778bd6ab71594` and README
+`11afbb5a1fb15886b2296e624616487dd25504c530149ca4823a7bc4081373f0`.
+The earlier4c61/66c9/695b full hashes remain historical W47 input69be0b5e;
+they are not current W48 bytes. Coordinator preservation checks confirmed both
+input histories without replacing the historical record.
+
+Fresh coordinator P06/P07 four-module checks passed62 in16.592s, exit0;
+196 P04/P05 tests are separate workload-source evidence. The earlier98percent
+coverage remains worker evidence, not a fresh coordinator measurement. All
+criterion20 real-copy/renderer/pilot/authority/deletion/rotation and recovery
+lanes remain pending/NOT_RUN. SMTP retains COMM-003's sole retirement executor.
+The final repository leaf passed494 tests/127.874s, exit0; neither it nor local
+source integration authenticates production selection or supplies a real copy.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -710,6 +757,7 @@ for the dedicated implementation, not reasons to weaken existing contracts.
 | Old-copy removal | 12, 20 | W53 | Five-axis evidence and owning executor | No eligible exact target | NOT_RUN | No private unlink or metadata change | pending |
 | Rotation | 20 | W54 | Actual server/native-copy change and denial | No selected exact server | NOT_RUN | Same-value copy is not rotation | pending |
 | Delivery | 8, 20 | W55 | Registered QA/review/latest-head PR/merge | No P06 PR | NOT_RUN | Dedicated source checkpoint; combined registration/CI pending | pending |
+| Segmented source checks | 8 | W55 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
 
 Actual reference command on clean inputf754, exit0:
 

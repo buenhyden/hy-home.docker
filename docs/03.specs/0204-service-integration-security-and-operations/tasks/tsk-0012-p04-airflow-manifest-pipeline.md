@@ -1,6 +1,6 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -914,6 +914,52 @@ accept SEC01's image, installed dependencies or grants. Criterion18/W38,
 native image import, DEV execution, HOME, migration, rotation and recovery
 remain open or NOT_RUN under their exact resource/image/restore contracts.
 
+### Segmented Local Source Validation — 2026-10-11
+
+Frozen source input is `5b1a92db48fd508feff4cee0753b3b4468dd41dc`, following
+common/worker integration `c7d56a383ad8b77dd615327d11605b3e15d2146e`.
+The registered local execution plan has33 nodes; public explain exposes10.
+The front-door run exited124 after nodes0–9 passed. First canonical continuation
+exited1 at node18; nodes10–17 passed. Permission-corrected continuation exited1
+at node26; nodes18–25 passed. Final continuation26–32 exited0 with ordinary
+Python, debug true/optimization0 and clean unchanged post-input. Thus all33
+nodes have segmented successful receipts; the original124 and both suffix1
+failures remain failures. No fresh aggregate exit0 or hosted PASS is claimed.
+
+Only two coordinator-checkout entrypoint modes changed775 to755, matching their
+tracked100755 modes: Open WebUI and Gatus. File content hashes and index were
+unchanged, with Git clean and no HOME/runtime effect. The only source delta
+from c7d56a383 is the synthetic workflow fixture's canonical working directory,
+seven changed lines in the existing test. RED: one test/four subcase failures,
+exit1,1.769s; GREEN:39 tests,exit0,7.492s; Ruff/staged checks exit0 and independent
+review ACCEPT. The registered workflow contract SHA256 remains
+`bdb1941e522865a9a381b0913f4a8e266dfb613cbb832ca35889ff26ac3ecfc5`.
+
+Receipts are `.agent-work/p04-p07-registered-suffix-final-fixture-result.json`,
+`.agent-work/p04-p07-checkout-permissions-repair.json` and
+`.agent-work/p05-fixture-cwd-receipt.json`; final output is
+`.agent-work/p04-p07-registered-suffix-final-fixture.log`. Earlier aggregate and
+suffix logs remain preserved. These SOURCE/UNIT/STATIC checks do not complete
+operational criteria. Local-main source integration awaits final documentation
+checks and review; its delivery SHA is not yet known. Current direct-user
+local-main delivery uses no dev, remote push, PR or hosted execution.
+
+Earlier combined P04/P05 synthetic checks passed196 in19.313s, exit0; P06/P07
+checks separately passed62 in16.592s, exit0. P04 safe-path repair preserved the
+candidate767 actual gate failure: RED2/exit1, GREEN4/5.438s/exit0 and broader64/
+38.558s/exit0, without weakening PYTHONSAFEPATH. These are separate input-bound
+receipts, not native image/SQL acceptance. No new coverage measurement is claimed.
+
+Completed prefix receipts include metadata148 tests/555.270s, document-governance
+666/734.010s, active metadata509/0 findings and candidate metadata24/0. The first
+suffix included supply263/88.823s and all67 declared Compose selections (329
+total), plus364/84/18 contract tests; its596-test baseline failed only the two
+checkout modes before their correction. Final suffix passed workflow39/7.349s,
+control59/26.571s, precommit wrapper, workflow5/7/8 declarations, Storybook,
+release18/0.023s and final repository494/127.874s. Native criterion18/W38,
+ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY and remote delivery remain open or
+NOT_RUN as previously recorded; segmented source checks do not close this Task.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -929,6 +975,7 @@ remain open or NOT_RUN under their exact resource/image/restore contracts.
 | Native batch and recovery | 18 | W38 | ISOLATED/HOME/MIGRATION/RECOVERY | No selected ready execution contract | NOT_RUN | No DB/role/bucket creation or deployment | pending |
 | Rotation | 18 | W38 | Credential rotation | No rotation required | NOT_APPLICABLE | No rotation authorized by issuance | not-required |
 | Delivery | 8, 18 | W39 | Latest-head CI/review/PR/merge | Local source commits; no P04 PR | NOT_RUN | Local checks do not satisfy remote CI/merge | pending |
+| Segmented source checks | 8 | W39 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
 
 Existing-source command, exit0:
 

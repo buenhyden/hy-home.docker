@@ -1,6 +1,6 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -696,6 +696,46 @@ P04 producer/function grants/S3 policy and paired backup/empty-restore acceptanc
 are still required. No import, schedule activation, DEV/HOME change, migration,
 rotation, private deletion or recovery ran. P01 W23 and P06 pilot holds remain.
 
+### Segmented Local Source Validation — 2026-10-11
+
+Frozen source input is `5b1a92db48fd508feff4cee0753b3b4468dd41dc`, following
+common/worker integration `c7d56a383ad8b77dd615327d11605b3e15d2146e`.
+The registered local execution plan has33 nodes; public explain exposes10.
+The front-door run exited124 after nodes0–9 passed. First canonical continuation
+exited1 at node18; nodes10–17 passed. Permission-corrected continuation exited1
+at node26; nodes18–25 passed. Final continuation26–32 exited0 with ordinary
+Python, debug true/optimization0 and clean unchanged post-input. Thus all33
+nodes have segmented successful receipts; the original124 and both suffix1
+failures remain failures. No fresh aggregate exit0 or hosted PASS is claimed.
+
+Only two coordinator-checkout entrypoint modes changed775 to755, matching their
+tracked100755 modes: Open WebUI and Gatus. File content hashes and index were
+unchanged, with Git clean and no HOME/runtime effect. The only source delta
+from c7d56a383 is the synthetic workflow fixture's canonical working directory,
+seven changed lines in the existing test. RED: one test/four subcase failures,
+exit1,1.769s; GREEN:39 tests,exit0,7.492s; Ruff/staged checks exit0 and independent
+review ACCEPT. The registered workflow contract SHA256 remains
+`bdb1941e522865a9a381b0913f4a8e266dfb613cbb832ca35889ff26ac3ecfc5`.
+
+Receipts are `.agent-work/p04-p07-registered-suffix-final-fixture-result.json`,
+`.agent-work/p04-p07-checkout-permissions-repair.json` and
+`.agent-work/p05-fixture-cwd-receipt.json`; final output is
+`.agent-work/p04-p07-registered-suffix-final-fixture.log`. Earlier aggregate and
+suffix logs remain preserved. These SOURCE/UNIT/STATIC checks do not complete
+operational criteria. Local-main source integration awaits final documentation
+checks and review; its delivery SHA is not yet known. Current direct-user
+local-main delivery uses no dev, remote push, PR or hosted execution.
+
+Combined P04/P05 synthetic checks passed196 in19.313s, exit0; separate P06/P07
+checks passed62 in16.592s, exit0. Earlier24 offline Node tests and source audits
+retain their original input/version attribution and are not SMTP/native receipts.
+P04 retains sole ownership of SQL/outbox contracts; no copy or new provisioning
+was introduced. The final repository leaf passed494 tests/127.874s, exit0.
+Criterion19/W42–W44 remains open: actual frozen native SQL consumption, import,
+credential binding, queue-worker capture, scheduling and recovery are NOT_RUN.
+Source/common commits are preserved; no fresh coverage or production acceptance
+is inferred. Final Task checks and local-main source delivery remain pending.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -712,6 +752,7 @@ rotation, private deletion or recovery ran. P01 W23 and P06 pilot holds remain.
 | Native import and manual execution | 19 | W43 | Exact image, credential and worker/SMTP proof | P04 W38 and relevant readiness pending | NOT_RUN | No import/credential/network/DB action | pending |
 | Scheduled failures and recovery | 19 | W44 | Polling, outages, restart/rotation and empty restoration | No exact action selected | NOT_RUN | No operational acceptance | pending |
 | Delivery | 8, 19 | W45 | Latest-head CI/review/PR/merge | Integrated source phase | NOT_RUN | Two source commits recorded above; final Task commit and combined-head registration/CI remain separate; native holds are unchanged | pending |
+| Segmented source checks | 8 | W45 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
 
 Actual existing-source command, exit0:
 
