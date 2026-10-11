@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -591,6 +591,211 @@ measured audit/alert/recovery results and each BLOCKED/NOT_RUN lane. Keep
 SOURCE/UNIT/STATIC/ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY/DELIVERY separate.
 W23 and this Task stay blocked until their actual conditions pass; catalogue
 preparation and source delivery do not release P06.
+
+### W20/W22 Versioned Issuance Continuation — 2026-10-11
+
+The current user authorizes source compatibility on this existing Task, branch
+`codex/p01-openbao-recovery`, and worktree
+`/home/hyunyoun/data/hy-home.docker/.worktrees/p01-openbao-recovery`.
+Root is the sole helper implementer; the assigned QA writer owns only
+`tests/lib/ops/test_openbao_issuance_trust.py`. Independent reviewers are read-only.
+The four held files are OpenBao README and subject-0085 Guide, Policy and Runbook:
+P02 must preserve and hand off its changes before author transfer. Common
+Compose/env, CI/manifest, Registry, Spec/Plan and other Tasks remain coordinator-owned.
+
+This continuation preserves TLS, wrapped delivery, token roles/policies, source
+receipts, audit, readiness and backup behavior. Legacy unversioned v1 journal,
+anchor and metadata remain supported and are reconciled before another issuance.
+New v2 issuance binds `schema_version: 2` in journal and anchor to equal `nonce`
+and `issuance_id` aliases; metadata binds string `issuance_schema: "2"` to equal
+`sec01_nonce` and `issuance_id`. One internal identity derives both aliases.
+Exact shapes, explicit version types, duplicate-key rejection and the existing
+role/time window are required. Same-identity cross-version metadata is blocked
+in either direction; it cannot attest an accessor issued by that journal.
+Conflicts preserve uncertainty and never authorize broad cleanup.
+
+Execution order is witnessed RED, minimal helper correction, GREEN and coverage,
+registered source/style gates, independent code/security review, logical commit
+and the owning-Spec PR. Native admission remains separate: synthetic results
+do not establish 2.7.1 authentication, actual recovery or HOME readiness.
+W23, HOME and P06 hold remain unchanged. Rollback is a source-commit revert;
+it does not downgrade HOME state or discard an active v2 journal.
+
+Current baseline commands, all in the designated worktree:
+
+- `rtk git status --short`: exit 0, empty; this continuation began clean.
+- `rtk git rev-parse HEAD main origin/main`: exit 0; all three were
+  `6da5e3bf380d5002e0e28181136fde8c016e49ce`.
+- `rtk git ls-remote origin refs/heads/main`: initial sandbox attempt exit 1
+  (`bwrap` loopback error); permitted retry exit 0, actual remote main
+  `6da5e3bf380d5002e0e28181136fde8c016e49ce`. This supersedes the earlier
+  remote observation `2b9f5ec82`, and requires no baseline rebase now.
+- Bootstrap/provider, owning Spec/Plan/Task, REQ-0027, AD-0031, ADR-0046,
+  implementation/QA roles and test/review/handoff/commit procedures: read-only
+  commands exit 0. Discovery of nonexistent `scripts/renderer-issuance.py`
+  and `scripts/script-manifest.json` failed; resolved paths are the OpenBao
+  script family and `scripts/manifest.yaml`. No file was created at either
+  guessed location. A discovery command including absent `.agent-work` exited 2.
+- QA uses the existing isolated `/tmp/hy-home-p09-qa` tool installation,
+  without changing its dependencies. `rtk proxy /tmp/hy-home-p09-qa/bin/python
+  -m pip show coverage ruff pre-commit commitizen PyYAML jsonschema`: exit 1
+  (pip absent). Read-only `importlib.metadata` query: exit 0; Python 3.12.3,
+  coverage 7.16.2, Ruff 0.15.12, pre-commit 4.6.2, Commitizen 4.15.1,
+  PyYAML 6.0.3 and jsonschema 4.26.0. Coverage output will use `/tmp`.
+
+The witnessed RED command was `rtk python3 -m unittest
+tests.lib.ops.test_openbao_issuance.IssuanceRecoveryTests.test_new_issuance_binds_versioned_id_to_legacy_metadata_alias
+-v`: exit 1, one collected assertion FAIL, expected the versioned identity but
+received `None`. The helper was unchanged at RED. After minimal implementation,
+`rtk python3 -m unittest tests.lib.ops.test_openbao_issuance -v`: exit 0,
+34 PASS. QA authored compatibility regressions in the existing trust suite.
+The first coverage command incorrectly passed the Python filename as `--source`:
+37 tests passed, exit 0, but coverage emitted `module-not-imported` and
+`no-data-collected`; this is not coverage evidence. Corrected directory-source
+measurement used:
+
+```bash
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m coverage run --branch --data-file=/tmp/p01-issuance-compat-v2.coverage --source=infra/03-security/openbao/scripts -m unittest tests.lib.ops.test_openbao_issuance tests.lib.ops.test_openbao_issuance_trust -v
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m coverage report --data-file=/tmp/p01-issuance-compat-v2.coverage --show-missing --fail-under=80
+```
+
+Both exited 0: 45 tests PASS; helper 90-percent combined statement/branch
+coverage (435 statements, 35 missing, 160 branches, 21 partial). Subsequent
+test improvements will be remeasured before commit. The security reviewer
+identified missing exact legacy keys and a stringified numeric anchor; both
+were corrected. Parsing moved to `Record.from_document` to keep the modified
+load function small. Source receipts and effective runtime image binding remain
+unchanged. Ruff check and format, and `rtk git diff --check`, exited 0.
+One patch failed to match Ruff-formatted context and made no change; the next
+patch used the actual context. The QA patch tool stalled and was interrupted;
+no second writer took over its file.
+
+`rtk proxy /tmp/hy-home-p09-qa/bin/python
+scripts/validation/run-ci-gate.py --profile changed --local-only --explain`
+exited 0. The registered local selection is candidate preflight, full links,
+supply-chain fixture policy, Conftest policy tests, Compose regressions and
+repository-integrity regressions. The same command without `--explain` exited 1:
+preflight metadata selected 1 / violations 0, image projection synchronized,
+links 1,191 documents / 11,562 links / failures 0 / historical warning 1,
+supply-chain fixture suite 263 PASS, and Conftest 18 PASS. Compose regression
+ran 527 tests with 70 declared opt-in skips and two failures: existing Open WebUI
+and Gatus entrypoint permissions. Repository-integrity was not reached.
+`check-script-manifest.py` independently exited 0.
+
+Read-only exact-path `stat` showed both original entrypoints at mode 0775;
+the current Git declaration is executable mode 100755. No public source bytes
+or permissions were changed to hide this baseline failure. A new invocation-owned
+QA worktree was created by `rtk bash -c 'umask 022; exec git worktree add
+--detach /tmp/hy-home-p01-compat-qa
+6da5e3bf380d5002e0e28181136fde8c016e49ce'`: exit 0. Both fresh entrypoints
+are mode 0755. The exact two permission tests on that unchanged baseline exited
+0, 2 PASS. The final candidate will be copied into this Git checkout using only
+the five P01-owned paths; its hashes and effective source checks must be recorded
+separately from the original checkout failure. Original common files remain
+read-only. A guessed Open WebUI path in an initial `stat` failed and was corrected
+to `infra/08-ai/open-webui/docker-entrypoint.sh`.
+
+The user explicitly assigned P01 the single native execution slot. Preflight
+commands `rtk docker version --format '{{.Server.Version}}'`, exact image
+`inspect`, `rtk free -h` and `rtk df -hT /tmp` all exited 0: daemon 29.8.2,
+platform image `sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005`
+on linux/amd64, 9.3 GiB available RAM and 27 GiB disk; swap is full.
+Independent IaC review admits only the new
+`OpenBaoRehearsalTests.test_native_versioned_issuance_reconciliation` after source
+commit and fresh input digest. Peak running fixture is one server capped at
+384 MiB / 1 CPU / 128 PIDs on an internal network, plus stopped setup/Agent
+containers. Owner is printed before creation; owned cleanup runs in `finally`.
+Native and HOME are still NOT_RUN at this source-preparation record.
+
+The existing delivery helper lacks owner name/label and resource caps. The new
+test returns before that path and Agent start; it instead verifies actual v1/v2
+lookup, persisted journal, installed helper process, exact destruction, empty
+LIST and cleanup ACL denials. Direct v2 wrapped API authentication uses the
+limited issuer, and login/replay explicitly omit any root token. This does not
+claim current Agent delivery or recovery readiness. Cleanup attempts all owned
+resources; it does not promise to retain failed resources.
+
+Final QA froze the trust test at SHA-256
+`be0847f0a564153160ff5a70b60077f26fcc637e8ff7871e92da83c024df259e`.
+It adds hand-written legacy journal input, preserved legacy delivered-generation
+updates, v1/v2 completion witnesses, 32-digit numeric anchor rejection, malformed
+versions/shapes, duplicate keys/accessors and version/alias collision refusals.
+Focused trust tests are 13 PASS; combined unit tests are 47 PASS, exit 0.
+Final coverage commands, each exit 0:
+
+```bash
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m coverage run --branch --data-file=/tmp/p01-issuance-compat-final.coverage --source=infra/03-security/openbao/scripts -m unittest tests.lib.ops.test_openbao_issuance tests.lib.ops.test_openbao_issuance_trust
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m coverage report --data-file=/tmp/p01-issuance-compat-final.coverage --include=infra/03-security/openbao/scripts/renderer-issuance.py
+```
+
+Final helper coverage is 90 percent with the same 435 / 35 / 160 / 21 counts.
+The original `nonce=1` numeric-anchor test did not reproduce the old conversion
+gap; QA corrected it to a 32-digit integer and added the recovery boundaries.
+The QA additions are post-GREEN regressions, not a separately witnessed RED.
+Helper SHA-256 is
+`be2343a0eb2c5c19a7e7ea4e10c042d1f62d0597faa784d41d060641486b365e`.
+
+Graph refresh is NOT_RUN: `rtk which graphify` exited 1; the generated graph
+report and ECC navigation guide are absent (read command exit 1). Existing
+canonical source/governance entries supplied navigation. The general QA-tools
+discovery exited 1 because pnpm, shfmt, hadolint and check-jsonschema were absent
+from that shell; only tools required by the selected actual checks are evidence.
+
+Handoff remains P02 resource/ACL and versioned journal identity, P03 issuer/login
+contract, P06 unresolved custody/backup/migration prerequisites, P08 the four
+held document paths and author transfer, and P10 source/native acceptance limits.
+The image/CLI declaration is unchanged; SEC01 owns artifact security acceptance.
+HOME authentication, real snapshot, independent custody, operational rotation,
+migration and recovery remain BLOCKED/NOT_RUN. No message was sent to another
+chat. Common CI/manifest registration already maps the existing suites; any
+documentation or delivery-container admission repair is a coordinator proposal.
+
+The renewed P01 prompt was read from the user attachment on 2026-10-11.
+SPEC-0212 Spec/Plan at `6da5e3bf380d5002e0e28181136fde8c016e49ce` confirms
+current request precedence, one writer per shared surface and separate runtime
+acceptance. Subject-0085 remains owned by P01; the user answered author transfer
+with `confirmed`, but supplied no preserved P02 commit/patch. Preserve the four
+files until that input can be integrated. The user explicitly answered actual
+HOME host, credential reference, independent custody, empty restore target and
+rollback inputs as `undetermined`. Those dependent actions remain NOT_RUN;
+source delivery and the already admitted isolated method may continue.
+
+`rtk bash .agents/skills/infra-validate/scripts/static-checks.sh` on the exact
+candidate in `/tmp/hy-home-p01-compat-qa` exited 2: 11 checks PASS, 4 BLOCKED,
+0 FAIL. The input graph refuses `external-absolute-path`; Compose plugin/render/
+structure are blocked by that prerequisite. Public source includes Docker socket
+and host bind paths; this wrapper permits only its copied fixture graph. No
+private path was opened, no bind was weakened and no HOME readiness is claimed.
+The registered changed gate remains the authoritative source regression route.
+The optional `ops-runbook-agent` procedure was read, not invoked: actual HOME
+behavior and recovery inputs are not yet verified, so no executable HOME runbook
+is published from assumptions.
+
+Independent security review approved helper `be2343a0...`, final trust test
+`be0847f0...`, base unit `6d96abc0...` and native test `ca585511...`, with no
+remaining finding. Its final independent compatibility rerun passed 10 tests,
+exit 0. This is source review, not artifact-security, HOME or recovery acceptance.
+
+Delivery recheck: `rtk git ls-remote origin refs/heads/main`, exit 0, returned
+`4e26a5a8022a7307c7461af60337442912955df1`. `rtk git fetch origin main`, exit 0,
+and scoped diff/log inspection found only P03/P04 Spec/Plan and issued Task
+documents. `rtk git merge --ff-only 4e26a5a8022a7307c7461af60337442912955df1`
+exited 0 in both P01 and the isolated QA worktree, preserving all five owned
+changes. No other worktree was reset, stashed, cleaned or staged.
+
+The first final candidate changed gate exited 1: supply-chain 263 PASS,
+Conftest 18 PASS and Compose 537 tests PASS with 70 opt-in skips; repository
+integrity ran 284 tests with two import errors for the existing Wiki suites.
+Although the controller used the QA Python, its `python3` leaves used the system
+PATH and lacked `referencing`. The fix is an explicit QA-venv-first PATH for the
+registered controller and all leaves, not a source or test contract change.
+The new base/document input and corrected tool routing require a fresh gate.
+Main protection readback (`rtk proxy gh api` branches/main/protection and
+rulesets, both exit 0) has strict status checking but zero named required
+contexts, zero required approving reviews and no repository rulesets. Actual
+latest-head hosted CI and independent review are still required by this request.
+`rtk proxy /tmp/hy-home-p09-qa/bin/cz check -l 75 -m
+'fix(openbao): Preserve versioned issuance journal identity'` exited 0.
 
 ## Evidence
 

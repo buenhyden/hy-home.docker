@@ -185,7 +185,16 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             flush=True,
         )
 
-    def wrapping(self, client, fixture, server, agent):
+    def wrapping(
+        self,
+        client,
+        fixture,
+        server,
+        agent,
+        *,
+        interrupted_version=1,
+        reconcile_only=False,
+    ):
         status, role = client.api(
             "GET", "auth/approle/role/hy-home-renderer/role-id", token=self.issuer_token
         )
@@ -307,6 +316,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             module.ROLE,
             revision,
             module.MANIFEST,
+            schema_version=interrupted_version,
         )
         with module.Journal(journal) as durable:
             durable.save(abandoned)
@@ -318,6 +328,22 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             headers={"X-Vault-Wrap-TTL": "60s"},
         )
         self.must(status == 200, "synthetic interrupted native issue failed")
+        status, listed = client.api(
+            "LIST", module.PREFIX + "/secret-id", token=tokens[1]
+        )
+        accessors = listed.get("data", {}).get("keys", [])
+        self.must(status == 200 and len(accessors) == 1, "native accessor is ambiguous")
+        status, looked_up = client.api(
+            "POST",
+            module.PREFIX + "/secret-id-accessor/lookup",
+            {"secret_id_accessor": accessors[0]},
+            token=tokens[1],
+        )
+        self.must(
+            status == 200
+            and looked_up.get("data", {}).get("metadata") == abandoned.metadata(),
+            "native versioned metadata differs from persisted journal",
+        )
         reconciliation = captured(
             argv, data=("\n".join(tokens) + "\n").encode(), allow_failure=True
         )
@@ -348,6 +374,8 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 client.api(method, path, payload, token=tokens[1])[0] == 403,
                 "cleanup token crossed resource boundary",
             )
+        if reconcile_only:
+            return None  # Do not enter the existing unbounded delivery-container path.
         result = captured(
             argv, data=("\n".join(tokens) + "\n").encode(), allow_failure=True
         )
@@ -624,6 +652,74 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             self.must(
                 self.input_digest() == inputs,
                 "rehearsal source input changed during execution",
+            )
+        finally:
+            fixture.cleanup()
+
+    def test_native_versioned_issuance_reconciliation(self):
+        inputs = self.input_digest()
+        fixture = OwnedFixture()
+        print("observed versioned issuance input SHA256: " + inputs, flush=True)
+        print("observed isolated fixture owner: " + fixture.owner, flush=True)
+        try:
+            fixture.prepare()
+            server, client = fixture.server("server", active=True)
+            client.initialize()
+            self.configure(client)
+            agent = fixture.agent("agent", start=False)
+            for version in (1, 2):
+                self.wrapping(
+                    client,
+                    fixture,
+                    server,
+                    agent,
+                    interrupted_version=version,
+                    reconcile_only=True,
+                )
+                print(
+                    "observed v" + str(version) + " native exact reconciliation: PASS",
+                    flush=True,
+                )
+            # Native API authentication is separate from Agent delivery/readiness.
+            metadata = {
+                "issuance_schema": "2",
+                "issuance_id": secrets.token_hex(16),
+                "sec01_role": "hy-home-renderer",
+                "sec01_issued_at": time.strftime(
+                    "%Y-%m-%dT%H:%M:%S+00:00", time.gmtime()
+                ),
+            }
+            metadata = {**metadata, "sec01_nonce": metadata["issuance_id"]}
+            status, issued = client.api(
+                "POST",
+                "auth/approle/role/hy-home-renderer/secret-id",
+                {"metadata": json.dumps(metadata)},
+                headers={"X-Vault-Wrap-TTL": "60s"},
+                token=self.issuer_token,
+            )
+            self.must(status == 200, "native v2 response wrapping failed")
+            status, unwrapped = client.api(
+                "POST", "sys/wrapping/unwrap", {}, token=issued["wrap_info"]["token"]
+            )
+            self.must(status == 200, "native v2 unwrap failed")
+            role_id = client.api(
+                "GET",
+                "auth/approle/role/hy-home-renderer/role-id",
+                token=self.issuer_token,
+            )[1]["data"]["role_id"]
+            payload = {"role_id": role_id, "secret_id": unwrapped["data"]["secret_id"]}
+            status, login = client.api("POST", "auth/approle/login", payload, token="")
+            self.must(status == 200, "native v2 authentication failed")
+            self.must(
+                client.api("POST", "auth/approle/login", payload, token="")[0] >= 400,
+                "native v2 single-use replay authenticated",
+            )
+            self.put(
+                client, "auth/token/revoke", {"token": login["auth"]["client_token"]}
+            )
+            self.must(self.input_digest() == inputs, "native source input changed")
+            print(
+                "observed v2 wrapped API login and single-use denial: PASS", flush=True
             )
         finally:
             fixture.cleanup()
