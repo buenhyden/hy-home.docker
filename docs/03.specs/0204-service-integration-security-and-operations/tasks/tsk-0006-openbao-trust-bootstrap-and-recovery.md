@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.6"
+version: "0.2.7"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -1338,6 +1338,59 @@ receipt into Work Log preserves the unchanged Evidence rows. The 145 archive
 profile findings were a package-validation cascade, not archive changes; no
 archive or validator was edited. The affected metadata and staged checks are
 re-run on the corrected input before committing.
+
+### W22 P02 Documentation Submission Receipt — 2026-10-11
+
+The corrected Task-only check completed exit 0:
+`rtk python3 scripts/validation/check-document-metadata.py --mode check-changed
+--base-ref HEAD --changed-path
+docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md`.
+It selected one Task with zero violations, legacy exceptions and transition
+overrides. Bound HEAD is 08b009a9; QA PATH is the same environment recorded
+above. The first exit1 and its correction remain recorded separately.
+
+After restaging only the corrected Task, the final
+`rtk bash scripts/validation/run-ci-precommit.sh --mode local-staged` exited 0
+with PATH `/tmp/hy-home-p09-qa/bin` first, PRE_COMMIT_HOME
+`/tmp/hy-home-p09-qa/precommit-cache`, umask022. Markdown, whitespace and secret
+checks PASS; unrelated language checks SKIPPED. Exact final source index tree
+was `a45f37a3da7f3e811dab914c065e2305ee9a1c8d`; `rtk git diff --cached --check`
+exited 0. Commitizen title check exited 0. Source commit is
+`47c263c1da9b47dd21a8bb4522b49feda9bf1210`,
+`docs(openbao): Reconcile public catalog guidance`, parent08b009a9. Its five
+owned paths have 238 insertions and five deletions. Ordinary commit and
+`rtk git push -u origin codex/p01-openbao-recovery` both exited 0.
+
+Independent security review approved the four document SHA-256 values:
+
+- README: `af33a0ff4bcb813f7d348e17b70cab5a6a6d31bad6bb31d1745218b9c6ba6908`;
+- GDE-0085: `1c1980e7cf49c93db6a7acc8675a2f41d36ada29366c2c35781aebbf4790bccf`;
+- POL-0085: `f5a9f8a2ec205271eeaf2ffc030289e61df37d61f03555e8c18ee5fdf60c1650`;
+- RUN-0085: `be098691343d20dcf3cdea56381e2318a0af1dfaca8d2915bcc4026d16501bad`.
+
+It also approved the corrected Task hash
+`226950fef6ae76c7466124bbf94c8286149cb0dde91cac9001cf88fa78144d24`, with no
+findings. Contract/documentation review is pending at this receipt timestamp;
+approval must be observed before ready/merge. No operational acceptance changes.
+
+`rtk proxy gh pr create --repo buenhyden/hy-home.docker --base main --head
+codex/p01-openbao-recovery --draft --title
+'docs(openbao): Reconcile public catalog guidance' --body-file
+.agent-work/p01-catalog-pr-body.md` exited 0 and created
+`https://github.com/buenhyden/hy-home.docker/pull/423`; it was attached to the
+task. API readback exited 0: actual head47c263c, base08b009a9, five changed
+files, draft, mergeable. Candidate run38113294386 was IN_PROGRESS on that head
+when queried, not passing acceptance. The result-only submission receipt
+requires its own final index check and latest-head CI; no old head's result is
+substituted for them. Final hosted check/review/merge receipt remains the remote
+PR's observed delivery boundary.
+
+Coordinator-only consumer proposal
+`.agent-work/integration-proposal/p02-catalog-consumer.patch` preserves the
+existing subprocess test and RUN-0085 authority while adding RUN-0085 as a
+proven CLI consumer. `rtk git apply --check` exited 0; the patch was not applied.
+It and the public QA staging artifacts are preserved until accepted. No
+common file, P02 Task or another worker's branch/worktree was modified.
 
 ## Evidence
 
