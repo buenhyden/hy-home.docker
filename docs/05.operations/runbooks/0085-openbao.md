@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.7.5"
+version: "0.7.6"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -489,6 +489,57 @@ renderer 두 data와 해당 metadata 경로 read와 사람 operator의 platform 
 날짜, configuration commit, 서비스 이름, exit status, 정제된 health/resource 결과를 현재
 Task에 기록한다. secret 값, 원본 환경, state, token 파일, 메시지/database 콘텐츠는 캡처하지
 않는다. 날짜가 기록된 런타임 결과와 recovery-custody 전달은 현재 Task에 속한다.
+
+### P02 Public Catalog Checks
+
+이 절차는 검토된 checkout의 공개 metadata와 staging view만 확인한다. OpenBao API,
+private metadata·환경·credential 파일, HOME 서비스에 접속하지 않는다. 저장소 루트의
+물리적 절대 경로에서 검증 의존성이 설치된 Python으로 실행하며, symlink 경로나 다른
+checkout을 `--root`로 지정하지 않는다. 먼저 읽기 전용 검사를 실행한다.
+
+```bash
+rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check
+```
+
+네 입력은 catalog, schema, `secrets/SENSITIVE_ENV_VARS.md.example`,
+`infra/secret-file-support.json`이다. 형식·분류·원본 표 일치가 유효하면 JSON의
+`result`는 `P02_METADATA_VALID`, `entries`와 `aliases`는 실제 입력의 개수이며 exit 0이다.
+`P02_METADATA_BLOCKED`와 exit 2는 형식·원본·경로·의존성 등 검사 실패이므로 중단한다.
+이 결과는 credential 값 또는 권리·운영 상태를 검사한 결과가 아니다.
+
+staging이 필요한 경우에만 operator-owned `.agent-work`와 그 안의 regular, single-link,
+동일 소유자 `README.md`를 먼저 확인한다. 기존 타 작업자의 경로를 교체하거나 symlink,
+공유 inode, 다른 소유자의 파일 권한을 고쳐서 통과시키지 않는다. 새 경로를 준비할 때는
+소유자가 확인된 전용 checkout에서만 만들고 그 목적을 README에 기록한다.
+
+```bash
+rtk python3 scripts/operations/secret-catalog.py --root "$PWD" render
+rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-views
+```
+
+`render`는 `.agent-work/p02-views`에 정확히 네 공개 출력 파일을 만들며
+`STAGING_RENDERED`와 파일명 목록, exit 0을 반환한다. `check-views`는 네 입력에서 유도한
+bytes와 모두 일치할 때만 `P02_VIEWS_MATCH`, exit 0이다. 불일치는 `P02_VIEW_DRIFT`,
+exit 2다. 경로·소유권 등 안전 검사 실패는 `P02_METADATA_BLOCKED`, exit 2다.
+파일별 교체는 전체 네 파일의 원자적 transaction을 뜻하지 않는다. 실패 후 부분 결과를
+소비하지 말고 원인과 공개 입력을 검토한 뒤 동일 전용 staging을 다시 생성·검사한다.
+private 파일 삭제나 runtime rollback을 이 절차의 정리로 수행하지 않는다.
+
+아래 두 거절 probe는 각각 독립적으로 실행한다. `check-generation`은 생성 적격성만
+검사하며 secret을 발급하지 않는다. 두 명령 모두 `P02_GENERATION_BLOCKED`, exit 2가
+정상 예상 결과이며, 일반 shell의 실패 코드와 구별해 기록한다.
+
+```bash
+rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-generation COMM-002
+rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-generation COMM-003
+```
+
+거절 대신 성공하거나 예상 출력과 다르면 중단하고 P02 catalog 담당자와 검토한다.
+alias COMM-003은 실제 폐기 완료가 아니며 별도 credential/KV 대상을 만들 수 없다.
+다른 crypto/bootstrap/recovery/LAB/unknown/migrated/retired 항목과 observed/consumed 항목도
+guard가 거부해야 한다. 공개 staging만으로 실제 발급·수집·이관·delivery·reload·rotation·
+복구를 수용하지 않는다. ACL/delivery mapping은 `BLOCKED_P01`, 실제 pilot은 대상 ID·KV
+path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 있어야 한다. 현재 HOME/P06 hold를 유지한다.
 
 ## Rollback and Escalation
 

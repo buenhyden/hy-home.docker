@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Guide"
-version: "0.5.3"
+version: "0.5.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -208,6 +208,38 @@ witness는 중단된 정리 복구를 허용하는 별도 기록이다. v1/v2 �
 폐기 전에 중단하며, 이전 발급을 정합화한 같은 실행은 새 SecretID를 발급하지 않는다. 이 계약은
 source와 합성 검증의 범위이고, HOME 대상·custody·복원 입력이 미확정인 현재 상태를 실제 적용
 증거로 바꾸지 않는다.
+
+### P02 공개 catalog와 staging view
+
+공개 분류의 단일 원천은 `infra/03-security/openbao/secret-catalog.json`과 같은 디렉터리의
+`secret-catalog.schema.json`이다. 이 계약은 secret 값·값의 hash·token·실제 KV payload를
+담지 않는다. 각 ID의 `owner`, `action`, `evidence_ref`, `source_recorded_at`을 유지한다.
+마지막 날짜는 원 공개 기록의 날짜이며 검토·rotation·운영 관찰 날짜가 아니다.
+
+분류는 `kv_static`, `stable_crypto`, `bootstrap_external`, `public_configuration`,
+`derived_runtime`, `unused_delete`, `lab_excluded`이다. 현재 destination plan의
+mount·field·UID/GID·mode는 null이고 ACL·delivery·reload·restart·rotation은
+`BLOCKED_P01`이다. 실제 KV destination, 소비자 권한, 전달·reload와 RPO/RTO는 후속
+담당자가 정확한 대상과 증거로 수용해야 한다. catalog 등록만으로 승인되지 않는다.
+
+선언과 실제 관찰을 구분하기 위해 lifecycle은 declared, observed, imported, delivered,
+consumed, rotated, recovered, retired의 여덟 lane을 둔다. declared 이외 일곱 lane에는
+nullable runtime-evidence pointer가 있으며 `CONFIRMED`일 때 대응 pointer가 필요하다.
+이 구조적 조건이나 pointer의 존재는 실제 소비·이관·복구 수용을 증명하지 않는다.
+`UNKNOWN_BLOCKED`도 소비자가 없다는 판정이 아니다.
+
+네 공개 입력은 catalog, schema, `secrets/SENSITIVE_ENV_VARS.md.example`,
+`infra/secret-file-support.json`이다. CLI는 이 입력만 대조하고 승인된 ignored staging
+경로 `.agent-work/p02-views`에 공개 예시, 값 없는 local view, JSON summary, README를 만든다.
+local view는 기존 공개 표의 10-cell 형식을 유지한다. 상위 `.agent-work/README.md`와
+경로의 소유권·regular/single-link·no-follow 조건을 먼저 확인해야 한다.
+정확한 명령·출력·거절 조건은 [Runbook](../runbooks/0085-openbao.md#p02-public-catalog-checks)을 따른다.
+
+canonical SMTP 항목은 `COMM-002`이고 `COMM-003`은 그 항목을 가리키는 source-retired
+alias이다. 별도 값·KV entry나 재발급 대상이 아니며, 이 표시가 실제 파일 삭제 완료를
+뜻하지 않는다. 실제 COMM-003 폐기는 SMTP01이 소유한다. P06은 catalog API로 합성 binding을
+검사할 수 있지만 실제 pilot은 발급된 대상 ID·KV path·ACL·delivery와 P01 인증·복구,
+P03 소비자 신원, P04 실제 DEV/S3 수용을 기다린다. opsflow ID나 ACL을 임의로 만들지 않는다.
 
 ## Related Documents
 
