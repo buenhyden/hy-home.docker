@@ -326,6 +326,7 @@
         "tests.lib.document_governance.test_links",
         "tests.lib.document_governance.test_metadata_validator",
         "tests.lib.document_governance.test_operations_catalog",
+        "tests.lib.document_governance.test_operations_moves",
         "tests.lib.document_governance.test_operations_taxonomy",
         "tests.lib.document_governance.test_references",
         "tests.lib.document_governance.test_registry",
@@ -1487,6 +1488,9 @@
           "scripts/validation/check-document-links.py",
           "scripts/validation/check-document-metadata.py",
           "tests/lib/document_governance/",
+          "tests/fixtures/README.md",
+          "tests/fixtures/document_governance/README.md",
+          "tests/fixtures/document_governance/operations-moves/",
           "scripts/validation/check-operations-catalog.py"
         ],
         "suites": [
@@ -1753,7 +1757,10 @@
           "scripts/validation/check-document-corpus-lifecycle.py",
           "scripts/validation/check-document-links.py",
           "scripts/validation/check-document-metadata.py",
-          "tests/lib/document_governance/"
+          "tests/lib/document_governance/",
+          "tests/fixtures/README.md",
+          "tests/fixtures/document_governance/README.md",
+          "tests/fixtures/document_governance/operations-moves/"
         ],
         "root_gate_ids": [
           "leaf.local-document-corpus-lifecycle-tests",

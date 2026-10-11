@@ -1,7 +1,10 @@
+import ast
 import importlib.util
+import io
 import subprocess
 import sys
 import tempfile
+import tokenize
 import unittest
 from copy import deepcopy
 from pathlib import Path, PurePosixPath
@@ -27,6 +30,86 @@ from tests.validation._script_manifest_support import (
 
 MANIFEST = ROOT / "scripts/manifest.yaml"
 MANIFEST_CHECKER = ROOT / "scripts/validation/check-script-manifest.py"
+_DOCUMENT_PATH_DECLARATIONS = {
+    "scripts/lib/document_governance/registry.py": "_NON_DOCS_FILES",
+    "scripts/lib/document_governance/metadata/profile.py": "TARGET_MARKDOWN_FILES",
+}
+
+
+def _admitted_readme_literals(
+    tree: ast.Module, text: str, script_path: str, registered_readmes: frozenset[str]
+) -> tuple[ast.Constant, ...]:
+    constant = _DOCUMENT_PATH_DECLARATIONS.get(script_path)
+    admitted: tuple[ast.Constant, ...] = ()
+    for statement in tree.body:
+        if not isinstance(statement, ast.Assign) or len(statement.targets) != 1:
+            continue
+        target, value = statement.targets[0], statement.value
+        if not isinstance(target, ast.Name) or target.id != constant:
+            continue
+        if not (
+            isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and value.func.id == "frozenset"
+            and len(value.args) == 1
+            and not value.keywords
+            and isinstance(value.args[0], ast.Set)
+            and all(
+                isinstance(item, ast.Constant) and isinstance(item.value, str)
+                for item in value.args[0].elts
+            )
+        ):
+            continue
+        for item in value.args[0].elts:
+            segment = ast.get_source_segment(text, item) or ""
+            tokens = tuple(
+                token
+                for token in tokenize.generate_tokens(io.StringIO(segment).readline)
+                if token.type not in {tokenize.NEWLINE, tokenize.NL, tokenize.ENDMARKER}
+            )
+            if (
+                item.value in registered_readmes
+                and item.value.startswith("tests/fixtures/")
+                and PurePosixPath(item.value).name == "README.md"
+                and item.value in segment
+                and len(tokens) == 1
+                and tokens[0].type == tokenize.STRING
+            ):
+                admitted = (*admitted, item)
+    return admitted
+
+
+def _has_fixture_data_reference(
+    text: str, script_path: str, registered_readmes: frozenset[str]
+) -> bool:
+    if 'ROOT / "tests"' in text:
+        return True
+    if not script_path.endswith(".py"):
+        return "tests/fixtures/" in text
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return True
+    admitted = _admitted_readme_literals(tree, text, script_path, registered_readmes)
+    identities = frozenset(id(node) for node in admitted)
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.Constant)
+            and isinstance(node.value, str)
+            and "tests/fixtures/" in node.value
+            and id(node) not in identities
+        ):
+            return True
+        if (
+            isinstance(node, ast.BinOp)
+            and isinstance(node.op, ast.Div)
+            and isinstance(node.left, ast.Name)
+            and node.left.id == "ROOT"
+            and isinstance(node.right, ast.Constant)
+            and node.right.value == "tests"
+        ):
+            return True
+    return text.count("tests/fixtures/") > len(admitted)
 
 
 def load_manifest_checker():
@@ -89,14 +172,84 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertEqual(self.tracked, set(declared))
 
     def test_production_scripts_do_not_reference_tests_tree(self) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+
+        registered = frozenset(
+            load_registry().profiles["package-readme"]["additional_paths"]
+        )
         violations: list[str] = []
         for path in sorted((ROOT / "scripts").rglob("*")):
             if path.is_file() and path.suffix in {".py", ".sh"}:
                 text = path.read_text(encoding="utf-8")
-                if "tests/fixtures/" in text or 'ROOT / "tests"' in text:
+                if _has_fixture_data_reference(
+                    text, path.relative_to(ROOT).as_posix(), registered
+                ):
                     violations.append(path.relative_to(ROOT).as_posix())
 
         self.assertEqual([], violations)
+
+    def test_registered_readme_declarations_are_exact_document_paths(self) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+
+        registered = frozenset(
+            load_registry().profiles["package-readme"]["additional_paths"]
+        )
+        for script, constant in (
+            ("scripts/lib/document_governance/registry.py", "_NON_DOCS_FILES"),
+            (
+                "scripts/lib/document_governance/metadata/profile.py",
+                "TARGET_MARKDOWN_FILES",
+            ),
+        ):
+            with self.subTest(script=script):
+                declaration = (
+                    f'{constant} = frozenset({{\n    "tests/fixtures/README.md",\n}})\n'
+                )
+                self.assertFalse(
+                    _has_fixture_data_reference(declaration, script, registered)
+                )
+
+    def test_runtime_and_computed_fixture_references_remain_forbidden(self) -> None:
+        script = "scripts/lib/document_governance/registry.py"
+        registered = frozenset({"tests/fixtures/README.md"})
+        denied = (
+            'open("tests/fixtures/README.md")',
+            'Path("tests/fixtures/README.md").read_text()',
+            '_NON_DOCS_FILES = frozenset({open("tests/fixtures/README.md")})',
+            '_NON_DOCS_FILES = frozenset({"tests/fixtures/private/README.md"})',
+            '_NON_DOCS_FILES = frozenset({"tests/fixtures/reviewed-map.json"})',
+            '_NON_DOCS_FILES = frozenset({"tests/fixtures/README.md/private.md"})',
+            '_NON_DOCS_FILES = frozenset({"tests/fixtures/" + "README.md"})',
+            '_NON_DOCS_FILES = frozenset({"tests/fixtures/" "README.md"})',
+            '_NON_DOCS_FILES = frozenset({"tests/fixtures/README.md", variable})',
+            '_NON_DOCS_FILES = frozenset({x for x in ["tests/fixtures/README.md"]})',
+            '_NON_DOCS_FILES = frozenset(values=["tests/fixtures/README.md"])',
+            '_NON_DOCS_FILES = {"tests/fixtures/README.md"}',
+            'OTHER = frozenset({"tests/fixtures/README.md"})',
+            'def nested():\n    _NON_DOCS_FILES = frozenset({"tests/fixtures/README.md"})',
+            'class Nested:\n    _NON_DOCS_FILES = frozenset({"tests/fixtures/README.md"})',
+            '_NON_DOCS_FILES = frozenset({"tests/fixtures/README.md"}',
+            "# tests/fixtures/README.md",
+            'path = ROOT / "tests"',
+        )
+        for text in denied:
+            with self.subTest(text=text):
+                self.assertTrue(_has_fixture_data_reference(text, script, registered))
+        self.assertTrue(
+            _has_fixture_data_reference(
+                '_NON_DOCS_FILES = frozenset({"tests/fixtures/README.md"})',
+                "scripts/operations/arbitrary.py",
+                registered,
+            )
+        )
+
+    def test_operations_move_helper_uses_current_registry_authority(self) -> None:
+        self.assertEqual(
+            "docs/99.templates/registry.json",
+            self.rows_by_path["scripts/lib/document_governance/operations_moves.py"][
+                "authority"
+            ],
+        )
 
     def test_records_are_sorted_and_use_the_complete_schema(self) -> None:
         paths = [row["path"] for row in self.rows]

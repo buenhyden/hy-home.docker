@@ -1296,6 +1296,73 @@ class DocumentRegistryTests(unittest.TestCase):
             ] = [path]
             self.assertTrue(validate_registry(raw))
 
+    def test_operations_move_fixture_readmes_are_exact_package_routes(self) -> None:
+        registry = load_registry()
+        adapted = build_registry_profiles(registry)
+        for path in (
+            "tests/fixtures/README.md",
+            "tests/fixtures/document_governance/README.md",
+            "tests/fixtures/document_governance/operations-moves/README.md",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual("package-readme", classify_path(path, registry))
+                self.assertEqual(
+                    "package-readme",
+                    infer_artifact_type(pathlib.Path(path), adapted),
+                )
+
+        adjacent_fixture = (
+            "tests/fixtures/document_governance/operations-moves/candidate.md"
+        )
+        self.assertIsNone(classify_path(adjacent_fixture, registry))
+        self.assertEqual(
+            "unsupported",
+            infer_artifact_type(pathlib.Path(adjacent_fixture), adapted),
+        )
+
+    def test_operations_move_fixture_readmes_are_selected_metadata_records(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.metadata import lifecycle, profile
+
+        selected_paths = (
+            "tests/fixtures/README.md",
+            "tests/fixtures/document_governance/README.md",
+            "tests/fixtures/document_governance/operations-moves/README.md",
+        )
+        adjacent_fixture = (
+            "tests/fixtures/document_governance/operations-moves/candidate.md"
+        )
+        for path in selected_paths:
+            with self.subTest(path=path):
+                self.assertEqual(
+                    pathlib.Path(path), profile._normalized_target_path(path)
+                )
+        self.assertIsNone(profile._normalized_target_path(adjacent_fixture))
+
+        profiles = build_registry_profiles(load_registry())
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for path in selected_paths:
+                target = root / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / path, target)
+            adjacent = root / adjacent_fixture
+            adjacent.write_text("# Unregistered fixture\n", encoding="utf-8")
+            with mock.patch.object(lifecycle, "_tracked_markdown", return_value=[]):
+                records = lifecycle.collect_records(
+                    root,
+                    profiles,
+                    selected_paths=(*selected_paths, adjacent_fixture),
+                )
+
+        self.assertEqual(
+            list(selected_paths), [record.path.as_posix() for record in records]
+        )
+        self.assertEqual(
+            {"package-readme"}, {record.artifact_type for record in records}
+        )
+
     def test_bounded_readers_reject_regular_to_fifo_swaps_without_blocking(
         self,
     ) -> None:

@@ -1,8 +1,8 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-11"
 layer: "specs"
@@ -80,6 +80,13 @@ report its actual PR/check/merge evidence separately from local results.
 
 ## Work Log
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0015 | draft | ready | #inputs-and-authorization |
+| SPEC-0204-TSK-0015 | ready | in-progress | #continuation-baseline-and-w56-reuse-result |
+
 ### Admission correction history
 
 The uncommitted SPEC-0212 Task6 proposal failed actual metadata validation,
@@ -100,6 +107,81 @@ no dedicated operations-moves helper was found in the scoped filename search.
 This observation is not a completed semantic reuse audit or source test.
 The observed flat corpus of 230 documents (79 Guides, 76 Policies, 75 Runbooks)
 is a dated planning observation, not a new validator constant or final move map.
+
+### Continuation baseline and W56 reuse result
+
+Fresh coordinator observations place this dedicated P08 worktree, local `main`
+and `refs/remotes/origin/main` at
+`c26c3b93f4e73034ddad4d08ba9da8eaa9fec0c7`, with this worktree clean. The
+remote observation follows a fetch; the coordinator did not push this revision.
+The initial `4c83f14b11a77e13e582eb85d0bf256685472a95` baseline remains a dated
+issuance receipt. The shared root checkout still has 24 foreign paths, and the
+preserved old P05 checkout still has 28 staged foreign paths. Neither set was
+staged, changed, reset, stashed or cleaned for P08.
+
+The scoped reuse audit found a real gap for a **pure semantic mapping
+preflight**, not a second Registry, parser, discovery service or move executor.
+It confirms that `frontmatter_record_from_text`, Registry classification and
+path matching, and `taxonomy.validate_stable_identity` are available for their
+existing responsibilities. The new pure helper calls `taxonomy.classify_path`,
+which delegates to the existing Registry matcher; it does not call a second
+classifier. Current flat-path consumers remain coordinator owned: operations
+catalog assumptions at lines 1666, 2274 and 2302,
+metadata-profile parent matching at line 872, heading handling at line 1103,
+and the flat Registry and Script Manifest contracts. Those observations define
+future coupled-consumer work; they do not accept nested paths.
+
+One worker may now implement only the new helper and dedicated fixtures/tests
+for W56/W57 under its exclusive lease. That helper validates candidate mapping
+input and cannot move files, choose a final corpus classification or establish
+W58 nested-consumer acceptance. The coordinator remains the single writer for
+shared registration and for any separately delegated, exact registration/test
+lease; this is not a blanket common-consumer mutation. The full W57 map is being
+read and drafted; no exact move map, writer lease or LAB classification is
+approved yet. W58–W62 remain NOT_RUN. Actual document renames and LAB runtime
+changes remain zero.
+
+The initial semantic review identifies six subject cohorts as candidates only:
+0022 Valkey, 0025 Cassandra, 0026 CouchDB, 0027 MongoDB, 0031 PostgreSQL
+cluster and 0062 Locust (18 typed files total). Subject 0074 combines laboratory
+optimization with management and experiment services, so it is not an automatic
+LAB classification. Mixed subjects 0019 OpenSearch and 0036 Kafka remain
+review-required. These are body-based review observations, not a move list or
+approval to relocate any file.
+
+The independent draft review found four unresolved mapping defects: 51 service
+bindings are missing, fenced-code headings need explicit handling, nine targets
+have prefixed paths, and generated-source ownership is unproven. Corrections are
+closed for that draft only. The historical draft-review FAIL remains recorded;
+it is not a move, runtime or consumer-validation result. The latest final map
+is NOT_RUN and pending its exact approval.
+
+### Source preparation receipts and final-gate boundary
+
+The pure mapping-preflight helper has 22 scoped tests and 100% scoped coverage.
+The coordinator QA receipt reports 134 registry-plus-helper tests and 111
+workflow tests, and a six-path common change received independent review with
+an ACCEPT result. The indexed manifest/workflow check completed with exit 0.
+The QA RED/GREEN correction adds a finite fixture admission in
+`metadata/profile.py` with the existing registry test; it is not a W58 path
+migration. The rejected intermediate evidence used non-canonical result or
+acceptance values and Markdown lifecycle anchors. Those validation failures are
+preserved as corrections, without a waiver or override.
+These are source-preparation receipts only: the helper validates candidate input
+and does not choose a final mapping or accept a nested consumer.
+
+The initial corrected Task-only metadata check exited 0 and selected one path:
+this Task. Its target filter excluded three fixture paths, so it is not fixture
+README coverage evidence. The scoped staged check exited 0 on the pre-correction
+12-byte candidate, and the final lifecycle check exited 0 after the raw-anchor
+correction. Final metadata, final staged validation and the registered aggregate
+remain NOT_RUN pending the exact final candidate; no PASS is claimed for them.
+
+The received map draft reports the same 230 source paths and hashes with 29
+target differences (11 Guide, 9 Policy and 9 Runbook). Those counts are dated
+observations, not validator constants. Its external aggregate `015957` and
+corrected internal aggregate `a2ec20` are separate artifacts. Exact writer
+leases, final mapping approval and all moves remain pending.
 
 ### W57 Exact semantic mapping
 
@@ -192,8 +274,8 @@ aggregate exit 124 is preserved. No remote or operational command was executed.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Admission and reuse audit | 8 | W56 | Complete fixed-input semantic reuse and ownership audit before implementation | Observed main 4c83f14b; source candidate c7d56a383 separately pending | NOT_RUN | W56 admission and reuse audit | pending |
-| Semantic move map | 8 | W57 | Review every exact path/ID/type/body classification, LAB destination and populated folder | Actual tracked operations corpus at adopted source SHA | NOT_RUN | W57 exact semantic mapping | pending |
+| Admission and reuse audit | 8 | W56 | Fixed-input reuse and ownership audit found a pure preflight gap; no source test or criterion completion is claimed | Fresh local/remote observation c26c3b93; source candidate c7d56a383 retained separately | PASS | W56 admission and reuse audit; continuation baseline | accepted |
+| Semantic move map | 8 | W57 | Historical draft-review FAIL was corrected for the draft; final exact review, approval and writer leases remain pending | Actual tracked operations corpus at adopted source SHA | NOT_RUN | W57 exact semantic mapping; continuation baseline; source preparation receipts | pending |
 | Path-contract regressions | 8 | W58 | RED/GREEN, scoped coverage and independent review of reused/new consumers | Frozen helper/tests/shared proposal hashes | NOT_RUN | W58 path contract and regression unit | pending |
 | Preservation and rollback proof | 8 | W59 | Bind source hashes, original content, anchors, leases and inverse mapping | Reviewed exact source/target map | NOT_RUN | W59 preservation and move lease | pending |
 | Atomic document relocation | 8 | W60 | One active location, coupled references and LAB runtime/source diff zero | Fixed feature-owner SHAs and transferred writer leases | NOT_RUN | W60 exact rename and coupled references | pending |
@@ -202,12 +284,14 @@ aggregate exit 124 is preserved. No remote or operational command was executed.
 
 ## Review and Completion
 
-This issuance delivers reviewed documentation preparation only. The initial
-admission STATIC checks are recorded above; source/helper UNIT, full relocation
-STATIC and relocation DELIVERY remain pending until their actual commands and
-final inputs are recorded. ISOLATED, HOME, MIGRATION, ROTATION and RECOVERY are NOT_RUN
-and no operational effect or service recovery is claimed. Current parent status
-and historical P00/refresh evidence remain unchanged.
+This issuance and continuation deliver bounded documentation preparation only.
+The initial admission STATIC checks and the bounded helper UNIT receipt are
+recorded above. Final preparation STATIC and DELIVERY remain pending their
+actual commands and exact final input. Full relocation UNIT, STATIC and DELIVERY
+also remain pending until their actual commands and final inputs are recorded.
+ISOLATED, HOME, MIGRATION, ROTATION and RECOVERY are NOT_RUN, and no operational
+effect or service recovery is claimed. Current parent status and historical
+P00/refresh evidence remain unchanged.
 
 Use separate reversible logical commits for path-contract/tests, coupled exact
 rename/link changes, populated README content and final validation/handoff.

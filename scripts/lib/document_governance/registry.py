@@ -2207,6 +2207,9 @@ _NON_DOCS_FILES = frozenset(
         "scripts/README.md",
         "secrets/README.md",
         "tests/README.md",
+        "tests/fixtures/README.md",
+        "tests/fixtures/document_governance/README.md",
+        "tests/fixtures/document_governance/operations-moves/README.md",
         "tests/lib/README.md",
         "tests/validation/README.md",
     }

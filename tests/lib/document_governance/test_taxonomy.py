@@ -157,8 +157,23 @@ class ActiveStageScopeTests(unittest.TestCase):
             _normalized_target_path,
         )
 
+        native_provider_files = {".claude/provider.md", ".codex/provider.md"}
+        fixture_readmes = {
+            "tests/fixtures/README.md",
+            "tests/fixtures/document_governance/README.md",
+            "tests/fixtures/document_governance/operations-moves/README.md",
+        }
         self.assertEqual(
-            {".claude/provider.md", ".codex/provider.md"}, set(TARGET_MARKDOWN_FILES)
+            native_provider_files | fixture_readmes,
+            set(TARGET_MARKDOWN_FILES),
+        )
+        self.assertEqual(
+            native_provider_files,
+            {
+                path
+                for path in TARGET_MARKDOWN_FILES
+                if path.startswith((".claude/", ".codex/"))
+            },
         )
         for relative in TARGET_MARKDOWN_FILES:
             self.assertTrue((ROOT / relative).is_file())

@@ -643,7 +643,15 @@ TARGET_MARKDOWN_PREFIXES = (
     "docs/98.archive/",
     "docs/99.templates/",
 )
-TARGET_MARKDOWN_FILES = frozenset({".claude/provider.md", ".codex/provider.md"})
+TARGET_MARKDOWN_FILES = frozenset(
+    {
+        ".claude/provider.md",
+        ".codex/provider.md",
+        "tests/fixtures/README.md",
+        "tests/fixtures/document_governance/README.md",
+        "tests/fixtures/document_governance/operations-moves/README.md",
+    }
+)
 MIGRATION_TYPED_KEYS = frozenset(
     {
         "artifact_id",
