@@ -1,6 +1,6 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -428,6 +428,57 @@ routing. This worker does not apply either patch. Final integrated-head gates,
 review, P03 PR/CI/merge and actual native authentication/HOME/migration/rotation/
 recovery remain pending. Criterion 17 is open. Rollback for this increment is
 only the reviewed documentation commit revert; no operational rollback occurs.
+
+### Registration Proposal After P02 Integration
+
+The subsequent coordinator handoff supersedes the earlier proposed P03-first
+registration order: P02 source is now in observed local and remote main
+`08b009a9ce0f288926f2edc4eebcbc5fb475d1e5`. Its source history preserves
+P01 main `6d1d6960e59c316fad2c6d168d853989da565faa`. Worker HEAD before
+this increment is `c1bc25f1a09e9e5fb17dfbbc10d80fe07544af5e`, clean.
+The shared checkout remains a separate dirty historical checkout and is not
+an input for current main files. No worker history or prior proposal is replaced.
+
+The regenerated public proposal is preserved in ignored
+`.agent-work/integration-proposal-08b009/`. Its four paths are
+`scripts/manifest.yaml`, `.github/workflow-contract.yml`, the Platform
+Operations README and the fixture-family README. Exact base blobs and proposed
+file hashes are in `base-blobs.json`; patch SHA256 is
+`1bad369d8f0e0ecc86270634ea2e8880d5185f772a90ad20aeec0518bbb635df`.
+The old patch remains historical comparison input. Common-owner application is
+NOT_APPLIED. Only the isolated public scratch worktree
+`/tmp/hy-home-p03-registration-08b009` contains the candidate common changes.
+
+The initial manifest probe passed because untracked P03 files were outside its
+Git-index enumeration. After the twelve owned public artifacts were staged in
+the scratch index, RED exited 1 with exactly the two missing P03 script records.
+After proposal registration, manifest and workflow validators exited 0.
+Machine comparison retained all 91 prior manifest records, including P02's
+library/I/O/CLI records, RUN-0085 authority and subprocess-test consumer. Removing
+only the two P03 modules and appended routing from the candidate reconstructs
+the complete baseline workflow: existing tests, routing, actions and permissions
+are unchanged. Current-main `git apply --check` exited 0 without target writes.
+
+Fresh candidate inputs are main SHA above plus sixteen public overlay hashes
+in `candidate-input.json`, aggregate SHA256
+`1b28f01127af4a0db04f4da51ea81a2a388e83e6b95761c32eaebb79802fb8cd`.
+`/tmp/hy-home-p09-qa/bin/python -m unittest tests.lib.ops.test_port_inventory
+tests.validation.test_port_contract tests.lib.ops.test_secret_catalog
+tests.validation.test_secret_catalog_contract tests.validation.test_script_manifest -q`
+ran 130 tests in 24.438 seconds, exit 0. This is fresh combined synthetic/source
+evidence, not inherited 42/84-test or coverage evidence. No new coverage result
+is asserted. `run-ci-precommit.sh --mode local-staged` on that candidate exited 0.
+`run-ci-gate.py --profile changed --local-only --explain` exited 0 and selected the
+existing repository-integrity leaf; explain mode executes no aggregate gate.
+
+The coordinator remains the sole writer of actual common files and owns final
+integrated-head gates/review/delivery. P01's four operations documents and its
+stale P02 proposal are untouched. P02 schema 1.0.0, issued catalog metadata and
+COMM-003-to-COMM-002 alias grant no consumer identity, credential, runtime ACL,
+delivery or recovery acceptance. Actual consumer authentication, HOME, migration,
+rotation, deletion and recovery remain NOT_RUN. Criterion 17 stays open.
+Rollback for this increment is a reviewed Task documentation revert and rejection
+of the unapplied proposal; scratch source checks imply no deployed rollback.
 
 ## Evidence
 
