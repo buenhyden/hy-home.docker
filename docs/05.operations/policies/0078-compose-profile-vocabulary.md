@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.13.2"
+version: "1.13.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -21,6 +21,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 ## Scope
 
 - **Systems**: 정상 root가 include하는 `infra/**/{compose,docker-compose}*.{yml,yaml}`와 독립 `labs/*.yml` entrypoint.
+- **Optional overlays**: 아래 typed 계약으로 분류한 추적된 root 서비스 확장 소스. 독립 entrypoint나 새 서비스 inventory가 아니다.
 - **Environments**: HOME, DEV, OPTIONAL, LAB 및 명시적 migration/maintenance 작업. LAB은 root의 profile 선택 대상이 아니다.
 
 ## Definitions
@@ -125,6 +126,31 @@ host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
 - **Disallowed**: 검증되지 않은 broad profile을 HOME 기동 명령으로 사용하거나,
   부수 효과가 있는 update/IaC/load-test 작업을 상시 기동하는 것. LAB 파일을
   root에서 include하거나 LAB profile을 HOME 이름 선택에 넣는 것.
+
+### Typed optional root overlays
+
+선택형 overlay는 `x-hyhome-overlay: {version: 1, base: <repository-relative-path>}`로
+역할을 명시한다. 이는 작성된 소스의 분류이며 이미지·권한·실행 준비 수용이 아니다.
+파일 이름이나 `override` 접미사만으로 일반 Compose 검사를 면제하지 않는다.
+
+- `version`은 정수1이며 `base`는 비어 있지 않은 저장소 상대 경로다. 절대 경로,
+  경로 탈출과 symlink를 허용하지 않는다. base는 추적된 일반 파일이며 정상 root의
+  include 집합에 속하고, 다른 overlay가 아닌 유효한 Compose 서비스 원본이어야 한다.
+- overlay 자신은 정상 root include에 들어가지 않는다. `services`는 비어 있지 않은
+  mapping이며 모든 서비스 이름이 해당 base의 서비스 집합 안에 있어야 한다.
+  새 서비스 이름이나 서비스별 `profiles` 재정의는 거부한다.
+- top-level network·volume·secret·config 선언, `include` 및 독립 project 선언을
+  추가하지 않는다. 서비스 변경과 YAML 재사용용 `x-` extension만 허용하며,
+  extension이 별도 profile 또는 서비스 분류 권한을 만들지 않는다.
+- 검토한 root와 overlay를 순서대로 명시한 `-f` 조합에서 기존 서비스 profile을
+  상속한다. overlay만으로 기동하지 않으며, 상속 대상 서비스의 Guide와 inventory
+  행을 중복 생성하지 않는다. 실제 조합의 선택·렌더링 검증은 별도로 수행한다.
+- marker의 형식·버전·base·서비스 경계가 잘못되면 fail-closed로 보고한다.
+  유효하지 않은 marker를 선택형 면제로 처리하거나 단순히 무시하지 않는다.
+
+이 계약은 일반 root/LAB 서비스의 명시적 profile 의무를 유지한다. Overlay 분류
+성공만으로 공급자 이미지, 설치 dependency, DB/S3 grant, private 파일 전달이나
+DEV/HOME 실행·복구가 검증된 것은 아니다.
 
 ### HOME activation
 

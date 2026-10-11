@@ -811,6 +811,152 @@ def _compose_mapping(
     return value
 
 
+@dataclasses.dataclass(frozen=True)
+class _ComposeSources:
+    regular: tuple[pathlib.PurePosixPath, ...]
+    overlays: tuple[pathlib.PurePosixPath, ...]
+
+
+def _overlay_annotation(
+    path: pathlib.PurePosixPath, model: Mapping[str, object]
+) -> pathlib.PurePosixPath:
+    annotation = model["x-hyhome-overlay"]
+    if not isinstance(annotation, Mapping) or set(annotation) != {"version", "base"}:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: x-hyhome-overlay requires only version and base",
+        )
+    version = annotation["version"]
+    if type(version) is not int or version != 1:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay version must be integer 1",
+        )
+    base = annotation["base"]
+    if not isinstance(base, str) or not base:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid", f"{path}: overlay base must be a path"
+        )
+    return _safe_relative(base, "overlay base")
+
+
+def _validate_overlay_base(
+    path: pathlib.PurePosixPath,
+    base: pathlib.PurePosixPath,
+    *,
+    tracked: frozenset[pathlib.PurePosixPath],
+    regular: frozenset[pathlib.PurePosixPath],
+    included: frozenset[pathlib.PurePosixPath],
+) -> None:
+    if not _is_infra_compose_file(base) or base not in tracked:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay base must be tracked Compose under infra/",
+        )
+    if base not in regular:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay base must be a regular non-overlay Compose source",
+        )
+    if base not in included:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay base must be included by {COMPOSE_ROOT}",
+        )
+    if path in included:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay cannot be included by {COMPOSE_ROOT}",
+        )
+
+
+def _validate_overlay_model(
+    path: pathlib.PurePosixPath,
+    model: Mapping[str, object],
+    base_model: Mapping[str, object],
+) -> None:
+    invalid_top_level = tuple(
+        str(key)
+        for key in model
+        if key != "services" and not (isinstance(key, str) and key.startswith("x-"))
+    )
+    if invalid_top_level:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: unsupported top-level fields {sorted(invalid_top_level)}",
+        )
+    services = model.get("services")
+    if not isinstance(services, Mapping) or not services:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay services must be a nonempty mapping",
+        )
+    if any(
+        not isinstance(name, str) or not name or not isinstance(service, Mapping)
+        for name, service in services.items()
+    ):
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay services require nonempty names and mappings",
+        )
+    if any("profiles" in service for service in services.values()):
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay services cannot override profiles",
+        )
+    base_services = base_model.get("services")
+    base_names = (
+        frozenset(name for name in base_services if isinstance(name, str) and name)
+        if isinstance(base_services, Mapping)
+        else frozenset()
+    )
+    unknown = sorted(set(services) - base_names)
+    if unknown:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay services are absent from base: {unknown}",
+        )
+
+
+def _compose_sources(
+    root: pathlib.Path, paths: Sequence[pathlib.PurePosixPath]
+) -> _ComposeSources:
+    """Classify regular Compose sources and closed, source-owned overlays."""
+
+    compose_files = tuple(path for path in paths if _is_infra_compose_file(path))
+    models = {path: _compose_mapping(root, path) for path in compose_files}
+    overlays = tuple(
+        path for path, model in models.items() if "x-hyhome-overlay" in model
+    )
+    overlay_set = frozenset(overlays)
+    regular = tuple(path for path in compose_files if path not in overlay_set)
+    regular_set = frozenset(regular)
+    tracked_set = frozenset(compose_files)
+    included = (
+        frozenset(
+            pathlib.PurePosixPath(value)
+            for value in _include_paths(
+                _compose_mapping(root, COMPOSE_ROOT).get("include")
+            )
+        )
+        if overlays
+        else frozenset()
+    )
+
+    for path in overlays:
+        model = models[path]
+        base = _overlay_annotation(path, model)
+        _validate_overlay_base(
+            path,
+            base,
+            tracked=tracked_set,
+            regular=regular_set,
+            included=included,
+        )
+        _validate_overlay_model(path, model, models[base])
+    return _ComposeSources(regular=regular, overlays=overlays)
+
+
 def _include_paths(include: object) -> set[str]:
     """Read string and `path:` mapping include entries as normalized paths."""
 
@@ -829,11 +975,9 @@ def validate_compose_profile_vocabulary(
 ) -> tuple[CatalogFinding, ...]:
     """Hold POL-0078 profile membership and HOME selection to Compose."""
 
-    compose_files = tuple(
-        path
-        for path in _tracked_paths(root, MAX_TRACKED_FILES)
-        if _is_infra_compose_file(path) and (root / path).is_file()
-    )
+    compose_files = _compose_sources(
+        root, _tracked_paths(root, MAX_TRACKED_FILES)
+    ).regular
     lab_root = pathlib.PurePosixPath("labs")
     lab_files = (
         tuple(
@@ -2069,10 +2213,10 @@ def _inventory_link(path: pathlib.PurePosixPath, label: str | None = None) -> st
 def _inventory_sources(
     root: pathlib.Path, paths: tuple[pathlib.PurePosixPath, ...]
 ) -> dict[tuple[str, str], Mapping[str, object]]:
+    compose_files = _compose_sources(root, paths).regular
     return {
         (str(path), str(name)): service
-        for path in paths
-        if _is_infra_compose_file(path)
+        for path in compose_files
         for name, service in _compose_mapping(root, path).get("services", {}).items()
         if isinstance(service, Mapping)
     }
@@ -2153,6 +2297,7 @@ def _inventory_bindings(
     owners: dict[tuple[str, str], pathlib.PurePosixPath] = {}
     findings: list[CatalogFinding] = []
     tracked = frozenset(paths)
+    regular_compose = frozenset(_compose_sources(root, paths).regular)
     siblings = _role_siblings(paths)
     for guide in paths:
         match = _MEMBER.fullmatch(guide.name)
@@ -2176,7 +2321,7 @@ def _inventory_bindings(
             if (
                 not isinstance(compose, str)
                 or not _is_infra_compose_file(compose)
-                or pathlib.PurePosixPath(compose) not in tracked
+                or pathlib.PurePosixPath(compose) not in regular_compose
             ):
                 findings.append(
                     _finding(
