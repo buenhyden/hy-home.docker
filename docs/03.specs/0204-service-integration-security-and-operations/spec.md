@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.1"
+version: "1.7.2"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -134,8 +134,8 @@ credential rotation, DNS/firewall edit or HOME restart without the named target
 and recovery boundary. The current request authorizes its source/docs/tests,
 logical commits and reviewed local `main` integration after required checks;
 PRs and remote pushes are excluded from that SEC01/SMTP01/CLN01 integration
-delivery; `dev` is excluded throughout. The subsequently supplied P02 execution
-prompt selects its own SPEC-0204 PR after implementation, latest-head CI and
+delivery; `dev` is excluded throughout. The subsequently supplied P02 and P03
+execution prompts select their own SPEC-0204 PRs after implementation, latest-head CI and
 independent review, without absorbing unrelated integration/runtime commits.
 Missing permission or target defers only the dependent operation.
 
@@ -144,9 +144,10 @@ Missing permission or target defers only the dependent operation.
 A real external project must identify its project ID, endpoint topology,
 OIDC/S3/search scopes, operator and recovery boundary before a live connection
 can pass. P04 needs its actual native Airflow DAG/DEV/S3 target; P05 needs
-its actual n8n native import/execution target. P03 confirms PORT_CONTRACT and
-port_inventory.py ownership before creating them; they are not assumed to
-exist in this repository. Secret metadata, migration eligibility, reference
+its actual n8n native import/execution target. P03/TSK-0011 owns the four-location
+port contract and port_inventory.py preparation after the existing inventory/tool
+reuse check. Their absence at assessment is not authority to duplicate the current
+service inventory. Secret metadata, migration eligibility, reference
 wiring, real consumption, rotation and recovery are separate completion states.
 HOME PITR/offsite recovery and owner-held snapshot credentials remain with
 their existing Tasks; historical isolated PASS is not a fresh HOME receipt.
@@ -393,6 +394,18 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     TSK-0010 owns catalog, schema, view tooling and focused regressions; shared
     Compose/environment/Registry/backup integration has one coordinator writer.
     No credential value is read, copied, rotated or deleted by Task issuance.
+17. P03 reconciles every current root service with the existing service inventory,
+    keeping declared, running, healthy, used and recovered states separate. Its
+    closed four-location contract distinguishes listener, internal DNS, host
+    publication and Traefik backend, with lossless protocols/ranges/aliases and
+    explicit unknown listener observations. Synthetic tests reject secret output,
+    malformed endpoints and cross-tier/project drift. Native machine auth,
+    CDC/workflow consumers, secret delivery and recovery require their exact
+    targets and owning evidence; a declaration, HTTP 401 or fixture is not a
+    HOME result. TSK-0011 owns criterion 17/W33 and new dedicated source/tests;
+    common settings remain single-writer integration proposals. Applied source
+    and historical Task acceptance are preserved; learning apps, LAB runtime
+    and Wiki implementation are excluded.
 <!-- markdownlint-enable MD029 -->
 
 ## Related Documents

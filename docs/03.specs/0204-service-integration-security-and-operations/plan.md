@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.1"
+version: "1.8.2"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -105,6 +105,53 @@ out of scope.
 | W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Preserve logical commits; reviewed local-main delivery under the superseding user instruction; HOME send/authentication and operational retirement acceptance remain separate |
 | W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Source/common repairs, isolated datastore and current local leaf receipts integrated. Global latest/security evidence, HOME deployment and complete recovery remain pending/blocked; SOURCE delivery does not close SEC01 |
 | W32 | 16, 8 | P02 single value-free catalog, classification, generated views and reissuance guards | W27, W28 | TSK-0010 | Existing source/schema reuse, alias and privacy RED/GREEN, scoped changed/staged checks and independent review; real migration/recovery are separate lanes |
+| W33 | 1, 4, 6, 8, 17 | P03 current service/endpoint/environment and four-location port contracts; independent source preparation before consumer-specific runtime acceptance | W27, W28 | TSK-0011 | Existing inventory/tool reuse, synthetic RED/GREEN, privacy and DEV/MNG independence; final mappings and native/HOME checks follow their exact owning prerequisites |
+
+### P03 parallel start and dependency boundaries
+
+TSK-0011 is issued from clean local main
+`6da5e3bf380d5002e0e28181136fde8c016e49ce`; read-only remote verification
+returned `2b9f5ec82cb73ea148fb27bfbd2d35c10e328e51` and no open PRs. Local main
+contains three unpublished documentation commits. The worker starts at the
+Task issuance commit in its own `codex/p03-service-integration-contracts`
+branch and `.worktrees/p03-service-integration-contracts` worktree. This
+issuance creates no second implementation session. Completed TSK-0002/0003
+and TSK-0005's historical/SMTP work are not reopened or overwritten.
+
+W33's declared prerequisites W27/W28 have integrated source; full SEC01/HOME
+completion is not a prerequisite to offline preparation. P03 reuses the bounded
+`current-service-inventory` in m0021 and its existing operations-catalog
+renderer. It owns only its Task, new port schema/README, library/CLI and dedicated
+synthetic tests. It audits other current root services read-only and submits
+service-specific fixes with exact file leases before writing them. The supplied
+reference parser is partial: it does not establish actual listeners, complete
+short/IPv6/range forms, aliases, authentication or recovery.
+
+P01 owns OpenBao helpers/configuration and subject-0085/README; P02 now prepares
+catalog paragraphs as proposals to that writer, superseding the earlier P02
+subject-0085 assignment below. SEC01 owns image/version/security decisions;
+SMTP01 owns COMM-002/COMM-003 and its executor; CLN01 owns consumer/deletion
+assessment. Root/leaf Compose, environment, gateway, Keycloak configuration,
+Alloy, backup, inventory, Registry, manifest/workflow and shared tests are
+proposal-only to the P03 worker until a named exclusive lease is recorded.
+The coordinator combines reviewed hunks rather than replacing whole files.
+
+Final secret mappings await P02 catalog and P01 auth/recovery contracts;
+relevant exact-image security acceptance precedes HOME activation. Legacy
+`SERVICE_POSTGRES_*` deletion awaits CLN01 consumer evidence. P03 supplies the
+connection boundary to P04/P05; their future native workers are not assumed
+present. P06 migration waits on P01/P02/P03 and real consumer proof. A missing
+runtime target defers that lane, not the offline source unit. Each selected
+runtime action binds target, operational writer, resource/recovery bounds and
+independent review; no whole-stack restart or private-state mutation occurs
+in Task issuance.
+
+The supplied P03 prompt requests its owning-Spec PR after implementation,
+current-head CI and independent review. First reconcile the local-only
+preparation prefix with the fresh remote base; do not include unrelated worker
+commits or publish main implicitly. SEC01/SMTP01/CLN01 keep their authorized
+local-main delivery. Dev remains unused. Task 0011 carries the executable
+worker handoff and exact acceptance/evidence map.
 
 ### P02 parallel start and shared ownership
 
