@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -61,6 +61,26 @@ wave 입력과 대조합니다. 이 세 hash는 호환성 fingerprint이며 운�
 소유자 계약을 기다립니다. COMM-003은 canonical ID로 해석해 복사하지 않으며
 PG-020의 초기화·복구 보존 판단을 유지합니다.
 
+`SyntheticKvObservation`과 `decide_synthetic_copy`는 W48 준비용 순수 판단
+모델입니다. 입력은 합성 data 상태·metadata 상태·양의 version 또는 `null`뿐입니다.
+`equal`이나 `never_created`는 시험이 선언한 상태이며, 함수가 실제 bytes 동일성이나
+KV 부재를 확인하지 않습니다. 파일·token·HTTP·catalog 선택에 접근하지 않으며
+출력은 고정된 `SyntheticCopyDecision`입니다. 입력과 출력은 변경할 수 없습니다.
+
+| 합성 관찰과 단계 | 판단 | CAS / version |
+| --- | --- | --- |
+| 쓰기 전 `not_found` + `never_created` + version 없음 | `WOULD_CREATE` | `0` / `null` |
+| 쓰기 전 `equal` + `present` + 양의 version | `WOULD_NOOP` | 없음 / 관찰 version |
+| 응답 유실·CAS race 후 `equal` + `present` + 양의 version | `RECONCILED_EQUAL` | 없음 / 관찰 version |
+| `different` + `present` + 양의 version | `CONFLICT` | 없음 / 관찰 version |
+| 그 외 삭제·파기·권한 거부·mount 누락·version 불명·불일치 | `UNRESOLVED` | 없음 / `null` |
+
+응답 유실과 CAS race 뒤에는 부재 선언만으로 생성·재시도 후보를 만들지 않습니다.
+404에 대응하는 `not_found`만으로도 신규 생성 후보를 만들 수 없습니다.
+위 판단은 운영 승인·명령·이관 영수증이 아니며 기존 receipt schema는 이 상태들을
+계속 거부합니다. 실제 copier·production approval interface, 안전한 파일/CA/token
+입력, native TLS/KV 응답 분류와 전체 실행 시간·재시도 제한은 아직 구현되지 않았습니다.
+
 ## Validation
 
 저장소 루트에서 공개 합성 JSON을 표준 입력으로 전달합니다. 입력은 128 KiB,
@@ -73,7 +93,8 @@ python3 scripts/operations/openbao-consumer-migration.py --help
 
 전용 시험은 `tests/lib/ops/test_openbao_consumer_migration.py`와
 `tests/validation/test_openbao_consumer_migration_contract.py`입니다. 공통 Script
-Manifest·QA 등록과 상위 README 변경은 단일 통합 작성자가 적용해야 합니다.
+Manifest·QA 등록은 현재 통합 소스를 재사용합니다. 공통 등록과 상위 README의 후속
+변경은 단일 통합 작성자가 소유합니다.
 
 ## Usage
 
@@ -86,3 +107,4 @@ Manifest·QA 등록과 상위 README 변경은 단일 통합 작성자가 적용
 - [OpenBao 구현 안내](../README.md)
 - [운영 라이브러리](../../../../scripts/lib/ops/README.md)
 - [검증 시험 안내](../../../../tests/validation/README.md)
+- [OpenBao KV-v2 CAS·삭제·metadata 공식 계약](https://openbao.org/docs/secrets/kv/kv-v2/)

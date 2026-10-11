@@ -1,13 +1,18 @@
-"""W47 synthetic selection and public P02 API binding; no private I/O."""
+"""Public selection, P02 binding and synthetic KV decisions; no private I/O."""
 
+import contextlib
 import copy
 import hashlib
+import io
 import json
 import subprocess
 import unittest
 from dataclasses import replace
+from itertools import product
 from pathlib import Path
+from unittest.mock import patch
 
+from scripts.lib.ops import openbao_consumer_migration as migration
 from scripts.lib.ops.openbao_consumer_migration import (
     CatalogBinding,
     CatalogSelection,
@@ -398,3 +403,158 @@ class PublicCatalogBindingTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_catalog(candidate)
         self.assertEqual("RETAINED_FOR_RECOVERY", self.lookup("PG-020").disposition)
+
+
+class SyntheticKvDecisionTests(unittest.TestCase):
+    """Declared public observations only; no byte comparison or KV executor."""
+
+    def test_prewrite_not_found_needs_never_created_metadata(self):
+        observation = migration.SyntheticKvObservation("not_found", "unknown", None)
+        decision = migration.decide_synthetic_copy(observation, phase="pre_write")
+        self.assertEqual("UNRESOLVED", decision.status)
+        self.assertIsNone(decision.kv_version)
+        self.assertIsNone(decision.cas)
+
+    def test_genuine_absence_is_only_a_prewrite_cas_zero_candidate(self):
+        observation = migration.SyntheticKvObservation(
+            "not_found", "never_created", None
+        )
+        decision = migration.decide_synthetic_copy(observation, phase="pre_write")
+        self.assertEqual("WOULD_CREATE", decision.status)
+        self.assertIsNone(decision.kv_version)
+        self.assertEqual(0, decision.cas)
+        for phase in ("ambiguous_write", "cas_race"):
+            decision = migration.decide_synthetic_copy(observation, phase=phase)
+            self.assertEqual(("UNRESOLVED", None, None), self.outcome(decision))
+
+    @staticmethod
+    def outcome(decision):
+        return decision.status, decision.kv_version, decision.cas
+
+    def test_equal_and_different_observations_require_a_live_positive_version(self):
+        expected = {
+            ("pre_write", "equal"): "WOULD_NOOP",
+            ("ambiguous_write", "equal"): "RECONCILED_EQUAL",
+            ("cas_race", "equal"): "RECONCILED_EQUAL",
+            ("pre_write", "different"): "CONFLICT",
+            ("ambiguous_write", "different"): "CONFLICT",
+            ("cas_race", "different"): "CONFLICT",
+        }
+        for (phase, data), status in expected.items():
+            with self.subTest(phase=phase, data=data):
+                observation = migration.SyntheticKvObservation(data, "present", 7)
+                decision = migration.decide_synthetic_copy(observation, phase=phase)
+                self.assertEqual((status, 7, None), self.outcome(decision))
+
+    def test_deleted_denied_missing_and_inconsistent_states_never_authorize_write(self):
+        expected = {
+            ("pre_write", "not_found", "never_created", None): (
+                "WOULD_CREATE",
+                None,
+                0,
+            ),
+            ("pre_write", "equal", "present", 1): ("WOULD_NOOP", 1, None),
+            ("ambiguous_write", "equal", "present", 1): ("RECONCILED_EQUAL", 1, None),
+            ("cas_race", "equal", "present", 1): ("RECONCILED_EQUAL", 1, None),
+            ("pre_write", "different", "present", 1): ("CONFLICT", 1, None),
+            ("ambiguous_write", "different", "present", 1): ("CONFLICT", 1, None),
+            ("cas_race", "different", "present", 1): ("CONFLICT", 1, None),
+        }
+        combinations = product(
+            ("pre_write", "ambiguous_write", "cas_race"),
+            ("not_found", "equal", "different", "unknown"),
+            (
+                "never_created",
+                "present",
+                "soft_deleted",
+                "destroyed",
+                "unknown",
+                "forbidden",
+                "mount_missing",
+            ),
+            (None, 1),
+        )
+        for phase, data, metadata, version in combinations:
+            with self.subTest(
+                phase=phase, data=data, metadata=metadata, version=version
+            ):
+                observation = migration.SyntheticKvObservation(data, metadata, version)
+                decision = migration.decide_synthetic_copy(observation, phase=phase)
+                self.assertEqual(
+                    expected.get(
+                        (phase, data, metadata, version), ("UNRESOLVED", None, None)
+                    ),
+                    self.outcome(decision),
+                )
+
+    def test_invalid_observations_have_fixed_non_disclosing_diagnostics(self):
+        valid = migration.SyntheticKvObservation("equal", "present", 1)
+        invalid = [
+            None,
+            {},
+            [],
+            "private-marker",
+            object(),
+            {"token": "private-marker"},
+        ]
+        for field in ("data_state", "metadata_state"):
+            for value in (None, [], {}, True, "private-marker", object()):
+                invalid.append(replace(valid, **{field: value}))
+        for version in (True, False, 0, -1, 1.5, "1", [], {}, float("nan")):
+            invalid.append(replace(valid, kv_version=version))
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+            for observation in invalid:
+                with self.assertRaises(MigrationError) as caught:
+                    migration.decide_synthetic_copy(observation, phase="pre_write")
+                self.assertEqual("synthetic_observation_invalid", str(caught.exception))
+        self.assertEqual("", output.getvalue())
+
+    def test_invalid_phases_cannot_become_retry_or_copy_commands(self):
+        observation = migration.SyntheticKvObservation(
+            "not_found", "never_created", None
+        )
+        for phase in (None, [], {}, True, "private-marker", "retry", "copy"):
+            with self.assertRaises(MigrationError) as caught:
+                migration.decide_synthetic_copy(observation, phase=phase)
+            self.assertEqual("synthetic_copy_phase_invalid", str(caught.exception))
+
+    def test_inputs_and_decisions_are_frozen(self):
+        observation = migration.SyntheticKvObservation("equal", "present", 1)
+        before = replace(observation)
+        decision = migration.decide_synthetic_copy(observation, phase="pre_write")
+        self.assertEqual(before, observation)
+        with self.assertRaises(AttributeError):
+            observation.data_state = "not_found"
+        with self.assertRaises(AttributeError):
+            decision.status = "COPIED"
+
+    def test_public_decision_performs_no_io_selection_or_schema_read(self):
+        observation = migration.SyntheticKvObservation("equal", "present", 1)
+        with (
+            patch("builtins.open", side_effect=AssertionError("unexpected_io")),
+            patch.object(
+                Path, "read_bytes", side_effect=AssertionError("unexpected_io")
+            ),
+            patch.object(
+                migration, "select_wave", side_effect=AssertionError("selection")
+            ),
+            patch.object(
+                migration, "_schema", side_effect=AssertionError("schema_read")
+            ),
+        ):
+            decision = migration.decide_synthetic_copy(observation, phase="cas_race")
+        self.assertEqual(("RECONCILED_EQUAL", 1, None), self.outcome(decision))
+
+    def test_decision_states_cannot_be_promoted_to_current_receipts(self):
+        for status in (
+            "WOULD_CREATE",
+            "WOULD_NOOP",
+            "RECONCILED_EQUAL",
+            "CONFLICT",
+            "UNRESOLVED",
+        ):
+            candidate = receipt()
+            candidate["items"][0]["state"] = status
+            with self.assertRaises(MigrationError):
+                validate_public("receipt", candidate)
