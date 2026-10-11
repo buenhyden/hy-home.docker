@@ -1,10 +1,10 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0016"
 parent_ids:
@@ -67,6 +67,7 @@ coordinator proposals until one named writer takes a bounded lease.
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0016 | draft | ready | #inputs-and-authorization |
+| SPEC-0204-TSK-0016 | ready | in-progress | #w63-frozen-public-input-audit-2026-10-11 |
 
 ### W63 admission, reuse and source-receipt inventory
 
@@ -129,6 +130,91 @@ P10 neither edits nor stages the shared root's 24 foreign paths, SEC dirty
 source/evidence or SMTP Task0008. The owners must deliver current relevant
 artifact/connection/backup facts before the dependent P10 runtime lane starts.
 
+### W63 frozen public input audit — 2026-10-11
+
+Continuation starts at local main and clean P10 HEAD
+`73ebd1ea16d457b1de8ba7b99d02c42c73f48805`. The actual remote and
+origin observation remains `c26c3b93f4e73034ddad4d08ba9da8eaa9fec0c7`.
+The acceptance test/fixture writer owns only the four paths issued above; the
+coordinator alone owns this Task and final common registration. No P04/P05
+implementation or operational executor lease is transferred.
+
+The coordinator reread the committed P04 parser/adapter, publication SQL, P05
+preflight, inactive workflow and outbox contract. Reuse is sufficient for
+caller-side manifest/object/publication and notification-projection assertions;
+no new production helper is required. This is not a native SQL, SMTP or restore
+execution. P04 remains the sole publisher/SQL owner and P05 remains the sole
+notification/node owner.
+
+| Public input | SHA256 or observed condition | Meaning |
+| --- | --- | --- |
+| P04 publication SQL `001_opsflow.sql` | `57a744cf33581bafd73f610b9c18c83d64c9457486a02e02398df56b444ee584` | Current source identity, not installed migration or privilege acceptance. |
+| P04 SQL checks `002_checks.sql` | `0a00944569aa05b7a0eec6a555cc3357197b26257ee76a1779c7e258eb9a0b73` | Current source identity, not native PostgreSQL execution. |
+| P04 parser | `ef19e0093b990c6b8400b29f234877e9d6f346a38440f3a181c37aa5cd744b60` | Reused immutable manifest/run identity API. |
+| P04 adapter | `2bba454121d52d04716d55d9adb8986374b9324a7f6259ba83b6ad15de707af3` | Reused conditional object/readback and function publication API. |
+| P05 outbox contract | `dd73e9ca574e677d2edfcf2e4b7ffe7d4a31f59b9d6d2545c53a07413b0c8e70` | Source hashes match P04; native binding fields remain null. |
+| P05 preflight | `2ebcb7fd2174fd1631c9d4eb4489382861667d14b3eba8a29779b0ab0962ded9` | Existing fail-closed consumer validation, not credential delivery. |
+| P05 inactive workflow | `4cfbfec5ecbcb286196131336c92c2afc72c5639c25af7f7e596648942c3c719` | Existing five-field claim projection; SMTP acceptance and DB ack remain non-atomic. |
+
+The exact coordinator command was a Python subprocess invocation of
+`docker image inspect --format '{{json .Id}}\n{{json .RepoDigests}}\n{{json .Config.User}}'`
+for each selected public tag: `hy-home/airflow:3.3.2-keycloak`,
+`hyhome/n8n:2.42.6-local` and `chrislusf/seaweedfs:4.48`.
+All three exited 1 with the stable error class `IMAGE_ABSENT`; a follow-up
+read-only inspection classified the failures without printing raw diagnostics.
+This proves those local tags were absent at this observation, not that every
+candidate digest or a running older service is absent. No image was pulled,
+built, started or accepted. The orchestration script exited 0 after retaining
+each child exit code; it is not an image gate PASS.
+
+The P04 protected CA-to-driver contract explicitly rejects TLS execution with
+`tls_delivery_not_ready`. Its README still requires reviewed function-only
+provisioning instead of the current broad-grant provisioner. P05's native SQL
+commit/hash/interface/review binding is null, transport cancellation is unbound,
+and the native credential/executor/Mailpit boundary is unaccepted. These are
+concrete affected-lane prerequisites, not a blanket dependency on completion of
+SEC01, P01 or P06.
+
+Next native inputs are the SEC01 accepted workload image/package receipt,
+P03 actual worker UID/GID and selected endpoint/TLS/delivery/timeout boundary,
+P04 accepted SQL/function privileges/object-prefix policy and real publication,
+and P05 accepted installation/credential/capture boundary. Until those owners
+supply the relevant exact contracts, W65 remains NOT_RUN. The complete P10
+backup set and empty restore target remain UNKNOWN; W67 waits for its feature
+owner. W64 may proceed now against the frozen public inputs. The read-only
+inventory and hashes are preserved in ignored local audit material; the Task is
+the authoritative progress record.
+
+### W63 baseline regression and authored-row correction
+
+At unchanged public source input `73ebd1ea`, the coordinator ran:
+
+```sh
+python3 -m unittest tests.lib.ops.test_opsflow_manifest \
+  tests.lib.ops.test_opsflow_adapters tests.lib.ops.test_opsflow_provision_contract \
+  tests.validation.test_opsflow_airflow_contract \
+  tests.lib.ops.test_n8n_outbox_workflow \
+  tests.validation.test_n8n_outbox_contract \
+  tests.validation.test_n8n_outbox_rehearsal -q
+```
+
+The existing seven modules passed 68 tests in 0.387 seconds, exit 0. This is a
+fresh baseline synthetic regression receipt, not W64's new test, native
+publication, SMTP capture or a new coverage measurement. The W63 independent
+read-only review recomputed all seven public hashes and accepted the source
+claims with no Critical or Important finding.
+
+The first authored Task row combined source PASS and image FAIL in a free-text
+Result cell. The actual metadata gate rejected the registered result-domain
+violation, exit 1, with 146 findings including package-fallback archive cascades;
+lifecycle exited 3. Full links passed, exit 0, with the existing archive capture
+warning. The correction separates source audit PASS from image inspection FAIL
+using the existing Result and Acceptance enums. No validator, archive or
+unrelated document was changed. The next lifecycle check exited 1 with two invalid-event findings because the
+new evidence anchor used a manually guessed double hyphen. The existing
+`links._headings` API returned the single-hyphen anchor; that Task reference was
+corrected. Corrected final checks remain a separate receipt.
+
 ### W64 synthetic acceptance preparation
 
 Prepare one value-free manifest and fault cases that model the accepted path:
@@ -143,6 +229,271 @@ data, connection string or operational identifier. Synthetic IDs, hashes and
 bounded synthetic bytes may model the existing public contracts. They prove only caller-side acceptance contracts.
 They do not provision PostgreSQL roles, a bucket, an Airflow DAG, an n8n import,
 an SMTP account or an OpenBao identity.
+
+### W64 caller seam RED/GREEN and registration — 2026-10-12
+
+The initial assigned writer reported no source writes or executed tests after
+its read tools returned no output. The coordinator suspended that four-file
+lease, confirmed the files were absent, and became their sole writer. This is
+not an external SEC01/SMTP01/CLN01 restart or an operational executor transfer.
+
+The six new tests compose existing P04 `ingest`, `S3Store` and `PgPublisher`
+with the existing adapter-test SDK/driver doubles, then reuse P05
+`validate_claim`, `evaluate_outcome` and `pending_prerequisites`. There is no
+new publisher, SQL/outbox state machine, notifier or restore helper. The test
+supplies a synthetic caller claim; it does not generate that claim through SQL
+or authenticate an actual lease. P05 outcome evaluation is its existing
+synthetic oracle, not a native SMTP/DB operation.
+
+The witnessed initial RED used:
+
+```sh
+python3 -m unittest tests.validation.test_opsflow_e2e_acceptance -v
+```
+
+It exited 1: five missing-fixture errors and one assertion for the absent
+mandatory CI module. This is RED for preparation assets/registration, not a
+reproduced production defect. After the three named fixtures were authored, the
+five seam tests passed. The first full run still exited 1 because the new test
+omitted the existing routing API's `changed` profile argument. Correcting that
+call produced six PASS, exit 0. No guard or existing implementation was weakened.
+
+The scenarios verify conditional object creation/readback before parameterized
+publication, identity propagation to the five-field notification projection,
+DB-failure rollback with verified object retention and replay reuse, conflicting
+object refusal without overwrite/publication, unsafe path/secret alias/partition
+rejection without publication effects, and refusal to claim success after ack
+loss, truthy-but-not-true ack, wrong run receipt or lost retry lease. Native
+binding remains blocked even after a synthetic publication success. These do
+not prove real concurrency, reader visibility, function privileges, dead
+requeue, backup completeness or restoration; those remain W65–W67 work.
+
+The coordinator added only one mandatory module to the existing repository
+integrity leaf, explicit test/fixture changed-path and changed-root rules,
+the fixture README's existing package profile path and parent navigation.
+Existing workflow nodes, argv, routes, actions, permissions and Registry
+payloads were programmatically compared with the baseline, allowing only these
+specified additions. `scripts/manifest.yaml` is NO_CHANGE because no library or
+executable was added. No runtime source, Compose, environment, catalog or
+secret file changed.
+
+A system-Python coverage availability probe exited 1 (`No module named
+coverage`). The existing `/tmp/hy-home-p09-qa/bin/python` environment was reused;
+no global install was performed. The exact combined synthetic command was:
+
+```sh
+env COVERAGE_FILE=.agent-work/p10-coverage-data \
+  /tmp/hy-home-p09-qa/bin/python -m coverage run --branch \
+  --include='*/workflow_lib/manifest.py,*/workflow_lib/adapters.py,*/manifest-outbox-notifier/tools/build_workflow.py,*/manifest-outbox-notifier/tools/preflight.py' \
+  -m unittest tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters \
+  tests.lib.ops.test_opsflow_provision_contract tests.validation.test_opsflow_airflow_contract \
+  tests.lib.ops.test_n8n_outbox_workflow tests.validation.test_n8n_outbox_contract \
+  tests.validation.test_n8n_outbox_rehearsal tests.validation.test_opsflow_e2e_acceptance -q
+```
+
+This passed 74 tests in 3.070 seconds, exit 0. The earlier 68-test baseline is a
+subset, not an additional 68 unique tests. After the process exited, the final
+`coverage report --fail-under=80` exited 0: combined statement/branch coverage
+99 percent for these four existing helpers only (536 statements, five missing;
+192 branches, three partial). It is not repository, TypeScript node, SQL,
+native runtime or deployment coverage. The published fixture fields contain
+only synthetic bytes/IDs, source allowlist names and expected bounded outcomes.
+The first eight-file staged gate exited 1 solely because Ruff format-check
+requested formatting of the new test. Ruff was applied only to that owned file;
+all other selected lint/secret checks had passed. Final staged/common-head
+checks and independent source/security review are required before local-main
+delivery; they are recorded separately below.
+
+### W64 exact fixture README gate correction
+
+The initial styled eight-path candidate reached actual validation, not merely
+an explain plan. The registered run exited 2 at candidate preflight with
+`additional-path-invalid` for the new fixture README; later leaves were NOT_RUN.
+Actual metadata exited 2 and lifecycle exited 3 for the same configuration
+error. The Registry addition alone did not admit the path through the existing
+repository-surface allowlist. The initial independent content/code approval was
+therefore not a final gate acceptance.
+
+The coordinator's shared-file lease was expanded only to
+`scripts/lib/document_governance/registry.py`,
+`scripts/lib/document_governance/metadata/profile.py`, and the existing
+`tests/lib/document_governance/test_registry.py`. This implements the current
+user-authorized document registration with its regression rather than adding
+an exception or another validator. It is a narrow supporting change for W64;
+P08 document mappings, moves and runtime remain untouched.
+
+The existing two operations-fixture README tests were extended to the one new
+P10 README, actual metadata selection and adjacent data/nested/case-fold refusal.
+Before the source correction, the focused unittest exited 1 (RED). Adding the
+single exact path to the existing Registry surface and metadata managed-file
+sets produced two PASS, exit 0 (GREEN). No generic `tests/fixtures/` wildcard,
+fixture-data profile, parser bypass or lower validation threshold was added.
+The final candidate therefore has eleven owned paths, including those three
+supporting source/test paths. Existing declarations and preserved foreign
+inputs must still match, and final source/security review and registered gates
+must be rerun against this new input.
+
+### W64 registered taxonomy failure and bounded continuation
+
+The exact eleven-path registered aggregate exited 1. Candidate preflight,
+full links, fifteen lifecycle CLI regressions and 148 metadata regressions had
+passed; the document-governance library leaf ran 690 tests in 702.913 seconds
+and failed only `ActiveStageScopeTests.test_native_provider_files_are_exact_paths_not_directory_prefixes`.
+Its explicit expected managed-file set still listed the earlier fixture README
+paths. Remaining seven registered leaves were NOT_RUN at that failure.
+
+The coordinator extended its supporting lease only to the existing
+`tests/lib/document_governance/test_taxonomy.py`. The expected exact set now
+includes the P10 README, while adjacent JSON, nested README and a case-varied
+folder remain rejected. The focused class then passed, exit 0. This changes a
+registered path expectation to match the newly approved contract; it does not
+remove a guard or convert the original aggregate FAIL into PASS.
+
+The final source candidate now has twelve owned paths. All previously accepted
+production helper/Registry/workflow/fixture bytes remain unchanged; only the
+existing taxonomy expectation and this Task receipt changed. The final review additionally required a fresh registered candidate preflight.
+The continuation below runs that preflight, the failed document-governance leaf
+and the seven not-yet-run leaves, retaining only applicable unchanged-input receipts.
+There is no timeout increase, gate waiver, substitute executor or mocked PASS.
+A final segmented result must explicitly identify its frozen inputs and the
+original aggregate exit 1; document-only receipt changes receive their own
+metadata/link/lifecycle/staged review rather than repeating unrelated suites.
+
+### W64 registered source acceptance and environment correction
+
+The final frozen input is HEAD `73ebd1ea16d457b1de8ba7b99d02c42c73f48805`
+plus twelve owned paths, staged-diff SHA256
+`e8026d255bec513cc1acb725dc1af41707bf749cbd4f5e3bff4fdeda909038dc`.
+The independent reviewer accepted the taxonomy change but required the registered
+candidate preflight over the new twelve-path set. That finding was resolved by
+actual execution, not an explain plan. Preflight exited 0 in 131.880 seconds:
+metadata selected eight documents with zero violations; the tech-stack checker
+retained `OPSFLOW_AIRFLOW_IMAGE` as an unresolved required input, not an image pin.
+
+The controller used `rtk proxy python3 -`, the canonical changed/local-only
+plan builders and `execute_execution_plan(root, (invocation,), dict(os.environ))`
+with the default real executor. Its first plan call incorrectly supplied leaf IDs
+as public roots and exited 1 before any gate executed. It was corrected to build
+the canonical changed-profile plan and select its existing registered invocations.
+All registered argv, timeout and isolated child-environment definitions were
+preserved. No mock executor, gate waiver or timeout extension was used.
+
+| Registered leaf | Bound execution | Actual result |
+| --- | --- | --- |
+| Candidate preflight | Final twelve-path frozen input | Exit 0; 131.880 seconds |
+| Document traceability | Earlier eleven-path input, unchanged source links | Exit 0; 1221 documents, 11756 links, zero failures, one existing archive warning |
+| Lifecycle CLI regressions | Earlier eleven-path input, unchanged lifecycle implementation | Exit 0; 15 tests, 124.802 seconds |
+| Metadata CLI regressions | Earlier eleven-path input, unchanged metadata implementation | Exit 0; 148 tests, 417.944 seconds |
+| Document governance library | Final twelve-path frozen input | Exit 0; 690 tests, 699.064 seconds |
+| Gate contract | Final twelve-path frozen input | Exit 0; 28 tests |
+| Gate runner | Final twelve-path frozen input | Exit 0; 62 tests |
+| Gate adapter | Final twelve-path frozen input | Exit 0; 46 tests |
+| Workflow contract | Final twelve-path frozen input | Exit 0; 39 tests |
+| Control-plane regressions | Final twelve-path frozen input | Exit 0; 59 tests |
+| Precommit regressions | Final twelve-path frozen input | Exit 0; registered shell contract including expected negative probes |
+| Repository integrity | Same frozen input, corrected existing QA environment | Exit 0; 503 tests, 129.439 seconds |
+
+The first real continuation still exited 1 at repository integrity: system
+Python lacked `referencing`, causing 16 failures and 14 errors across 436 tests.
+P09/P02/P06/P07 imports and related fail-closed subprocesses could not use the
+registered jsonschema dependency. This is retained as an environment FAIL,
+not discarded or relabeled as a production fix.
+
+The existing `/tmp/hy-home-p09-qa/bin/python` was reused without installation.
+Its PyYAML 6.0.3, markdown-it-py 3.0.0, html5lib 1.1 and jsonschema 4.26.0
+satisfied `scripts/requirements.txt`; referencing 0.37.0 and active transitive
+requirements were checked through package metadata and actual imports. The
+availability probe `python -m pip check` exited 1 because this existing environment
+has no pip. No pip-check PASS is claimed. Dependency metadata/import checks
+exited 0 and no global or repository dependency configuration changed.
+
+Only the failed real repository-integrity leaf was retried with
+`rtk proxy /tmp/hy-home-p09-qa/bin/python -` and an invocation environment whose
+PATH prepended `/tmp/hy-home-p09-qa/bin`. The canonical plan, registered leaf argv,
+timeout and executor remained unchanged. All twelve frozen file hashes matched
+before and after execution. Independent review accepted this scoped environment
+correction with no Critical or Important finding.
+
+This is segmented registered source acceptance, not a monolithic aggregate PASS,
+remote CI, native test, deployment or criterion-21 completion. The original
+aggregate exit 1 and first continuation exit 1 remain preserved. Previously
+accepted production/Registry/workflow/fixture bytes were unchanged; final
+result-only Task additions require their own metadata, links, lifecycle, staged
+checks and independent review before commit. Local delivery is recorded below
+only after its actual commit and fast-forward result.
+
+### W63 selected running metadata — 2026-10-12
+
+The coordinator ran `docker ps --filter label=com.docker.compose.service=<service>`
+for `airflow-worker`, `n8n` and `n8n-worker`, then inspected only Config.Image,
+Image and Config.User for the one running match per service. Listing and
+inspection all exited 0. No exec, environment, raw log or credential read occurred.
+Airflow declared `hy-home/airflow:3.3.1-keycloak`, local image ID
+`sha256:0388863fe9964d7f2d0d8bacc26dcae0ad5888eadd275c10086a7683bfe46c56`,
+configured user `1000:0`. Both n8n services declared `hyhome/n8n:2.41.6-local`,
+local image ID
+`sha256:1de3d197f8b6bad00af0b6945a2ede5ec321c93ab5344bf09b9919311650d492`,
+configured user `node`. This is configured image/user metadata only, not process
+UID/GID, supplementary groups, installed-package, authenticated functional or
+security-readiness acceptance. No image was deployed. The selected newer local
+tag absence above and older running-image observations are separate facts.
+
+### W64 source commit and local-main receipt — 2026-10-12
+
+The coordinator committed the eleven reviewed source/fixture/registration paths
+as `545272d3c3cdeb5cddee886b7cc12765f43d13fd`,
+`test(opsflow): Add synthetic P10 acceptance seams`. The ordinary commit exited 0
+without a verification bypass. Its immediately preceding eleven-path staged
+check and whitespace check exited 0; all eleven non-Task hashes still matched
+the frozen input. The owning Task changes remained unstaged for a separate
+result-only document commit.
+
+Before delivery, `git rev-parse HEAD main origin/main` returned source HEAD
+`545272d3c3cdeb5cddee886b7cc12765f43d13fd`, local main
+`73ebd1ea16d457b1de8ba7b99d02c42c73f48805` and origin/main
+`c26c3b93f4e73034ddad4d08ba9da8eaa9fec0c7`. The target worktree's
+branch was main and its porcelain status was empty. Actual `git ls-remote origin
+refs/heads/main` independently returned the same c26 remote SHA, exit 0.
+`git merge --ff-only 545272d3c3cdeb5cddee886b7cc12765f43d13fd` then exited 0
+in the clean local-main integration worktree. Source delivery is LOCAL_MAIN;
+remote push, PR and remote CI were not executed in this lane.
+
+After the actual gate results were recorded, metadata selected the three changed
+governed documents with zero violations, exit 0; lifecycle reported zero
+violations, exit 0. Task-only link checking through the existing graph/mode APIs
+checked six links with zero findings, exit 0. The twelve-path staged check and
+diff check exited 0, and final independent source/security/specification review
+accepted with no Critical or Important finding. These result-only additions
+receive another minimal document check and review; unchanged implementation
+suites are not repeated.
+
+The first bare `cz check` attempts resolved an unrelated Node command, whose
+wrapper returned 0 while reporting an invalid git option. They are not message
+validation PASS; no commit occurred and HEAD was reconfirmed unchanged.
+The existing QA environment's Python Commitizen 4.15.1 matches the registered pin.
+Explicit `python -m commitizen check --message-length-limit 75` then validated
+both logical messages, exit 0. No hook, tool pin or global configuration changed.
+
+The shared root remains at `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`
+with 24 foreign paths; its tracked diff SHA256 remains
+`17c15ccb91ff4f13f7a203a0e8aeb525f89e51e102c701da6a45539e18040f74`.
+The old P05 index still has 28 staged paths with cached binary-diff SHA256
+`44db414ba98c88746df1dadcd3c4c69f519bf634cbe39b7f406cdcb0f130f33d`.
+These observations do not establish byte equality of every untracked file.
+No foreign file was staged, reset, stashed, cleaned, committed or removed.
+
+SOURCE, UNIT and STATIC have scoped acceptance; DELIVERY has this actual
+local-main source receipt. ISOLATED native, HOME, MIGRATION, ROTATION and complete
+opsflow RECOVERY remain NOT_RUN. W65–W69 and criterion 21 stay open. Source-only
+rollback is a reviewed revert of the logical commit; no runtime rollback was
+performed or required. The worker branch and ignored evidence remain retained
+because the owning operational Task is still in-progress and its new commits
+are not included in actual remote main.
+
+This is an intentional incomplete operational handoff after source delivery.
+A manual Stop exception may apply only to its exact invocation to preserve
+foreign root changes; it is not a delivery-check waiver, a persistent hook edit
+or a claim that the desktop parent's environment inherits the exception.
 
 ### W65 isolated vertical slice
 
@@ -242,8 +593,9 @@ without their actual evidence.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Task admission | 21 | W63 | Verify Task identity, current refs, ownership and preservation boundary | Local 43917df; remote/origin c26c3b93 | PASS | Inputs and Authorization | accepted |
-| Source receipt inventory | 21 | W63 | Enumerate owner receipts and unresolved runtime inputs | Current owner Tasks and source heads | NOT_RUN | W63 admission, reuse and source-receipt inventory | pending |
-| Synthetic acceptance preparation | 21 | W64 | RED/GREEN fixtures and isolated contract test | Leased test/fixture paths | NOT_RUN | W64 synthetic acceptance preparation | pending |
+| Source receipt inventory | 21 | W63 | Reread public owner inputs and hash P04/P05 contracts | 73ebd1ea; source hashes above | PASS | W63 frozen public input audit | accepted |
+| Selected local image tags | 21 | W63 | Read-only image metadata inspection | Three public tags; each child exit 1 / IMAGE_ABSENT | FAIL | W63 frozen public input audit | pending |
+| Synthetic acceptance preparation | 21 | W64 | New caller seam, CI registration and segmented real registered gates | 73ebd1ea plus twelve owned paths; frozen hash above | PASS | W64 registered source acceptance and environment correction | accepted |
 | Isolated vertical slice | 21 | W65 | P04 publication then P05 notifier against reviewed exact contracts | Named isolated resources and owner handoffs | NOT_RUN | W65 isolated vertical slice | pending |
 | Selected HOME acceptance | 21 | W66 | Selected host rollout and authenticated service evidence | Named host, resources, backups and rollback | NOT_RUN | W66 selected HOME acceptance | pending |
 | Fault, backup and restore | 21 | W67 | Fault receipt, complete set and exact empty-target restore | Named fault scope and snapshot custody | NOT_RUN | W67 failure, backup and empty-target restore | pending |
@@ -252,9 +604,9 @@ without their actual evidence.
 
 ## Review and Completion
 
-This ready Task issues an acceptance boundary only. It has no source test,
-runtime, data, secret, migration, deletion, rotation, restore, HOME or delivery
-result beyond the Git admission observation. An independent reviewer must inspect
+This in-progress Task records admission and the source-input audit. Synthetic
+tests now have source-layer receipts; final combined-head delivery is separate. It has no P10 native
+runtime, data, secret, migration, deletion, rotation, restore or HOME result. An independent reviewer must inspect
 each exact source or operational change without editing it. The Task remains
 incomplete until W63–W69 have their actual evidence, while missing runtime facts
 leave only their dependent lane NOT_RUN.
