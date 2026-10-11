@@ -1,0 +1,85 @@
+{
+  "scope": "SYNTHETIC_CALLER_CONTRACT_ONLY",
+  "source": "hy-home.docker",
+  "business_date": "2026-10-10",
+  "synthetic_claim": {
+    "id": 1,
+    "lease_token": "00000000-0000-0000-0000-000000000001"
+  },
+  "invalid_manifests": [
+    {
+      "name": "path_escape",
+      "field": "path",
+      "value": "docs/../example.md",
+      "error": "record_path"
+    },
+    {
+      "name": "secret_alias",
+      "field": "path",
+      "value": "docs/SeCrEtS/example.md",
+      "error": "record_path"
+    },
+    {
+      "name": "future_partition",
+      "field": "captured_at",
+      "value": "2026-10-11T00:00:00Z",
+      "error": "partition_mismatch"
+    },
+    {
+      "name": "unknown_source",
+      "field": "source",
+      "value": "other-project",
+      "error": "source_not_allowed"
+    }
+  ],
+  "notification_outcomes": [
+    {
+      "name": "lost_ack",
+      "wrong_run": false,
+      "state": "accepted_by_smtp",
+      "ack": false,
+      "retry": false,
+      "expected": "ack_uncertain"
+    },
+    {
+      "name": "truthy_ack_is_not_true",
+      "wrong_run": false,
+      "state": "accepted_by_smtp",
+      "ack": 1,
+      "retry": false,
+      "expected": "ack_uncertain"
+    },
+    {
+      "name": "receipt_wrong_run",
+      "wrong_run": true,
+      "state": "accepted_by_smtp",
+      "ack": true,
+      "retry": false,
+      "expected": "delivery_uncertain"
+    },
+    {
+      "name": "uncertain_retry_recorded",
+      "wrong_run": false,
+      "state": "uncertain",
+      "ack": false,
+      "retry": true,
+      "expected": "retry_recorded_uncertain"
+    },
+    {
+      "name": "retry_lost_lease",
+      "wrong_run": false,
+      "state": "cancelled",
+      "ack": false,
+      "retry": false,
+      "expected": "retry_lost_lease"
+    },
+    {
+      "name": "unknown_delivery_state",
+      "wrong_run": false,
+      "state": "delivered",
+      "ack": true,
+      "retry": true,
+      "expected": "delivery_uncertain"
+    }
+  ]
+}

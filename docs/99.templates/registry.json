@@ -2024,6 +2024,7 @@
         "tests/fixtures/README.md",
         "tests/fixtures/document_governance/README.md",
         "tests/fixtures/document_governance/operations-moves/README.md",
+        "tests/fixtures/opsflow-acceptance/README.md",
         "infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md",
         "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md",
         "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md"

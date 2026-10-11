@@ -2210,6 +2210,7 @@ _NON_DOCS_FILES = frozenset(
         "tests/fixtures/README.md",
         "tests/fixtures/document_governance/README.md",
         "tests/fixtures/document_governance/operations-moves/README.md",
+        "tests/fixtures/opsflow-acceptance/README.md",
         "tests/lib/README.md",
         "tests/validation/README.md",
     }

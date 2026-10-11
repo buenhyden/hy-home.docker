@@ -1,10 +1,10 @@
 ---
 title: "Synthetic fixture family"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 created: "2026-10-11"
 ---
 
@@ -27,6 +27,9 @@ created: "2026-10-11"
 - [port-contract/](port-contract/README.md): P03 네 위치 포트 선언·합성 config 입력.
 - [document_governance/](document_governance/README.md): 문서 경로·정체성 계약의
   비밀값 없는 합성 입력.
+
+- [opsflow-acceptance/](opsflow-acceptance/README.md): P10 게시·통지 seam의
+  오프라인 합성 수용 입력.
 
 ## Tech Stack
 

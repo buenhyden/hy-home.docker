@@ -1303,12 +1303,25 @@ class DocumentRegistryTests(unittest.TestCase):
             "tests/fixtures/README.md",
             "tests/fixtures/document_governance/README.md",
             "tests/fixtures/document_governance/operations-moves/README.md",
+            "tests/fixtures/opsflow-acceptance/README.md",
         ):
             with self.subTest(path=path):
                 self.assertEqual("package-readme", classify_path(path, registry))
                 self.assertEqual(
                     "package-readme",
                     infer_artifact_type(pathlib.Path(path), adapted),
+                )
+
+        for rejected in (
+            "tests/fixtures/opsflow-acceptance/cases.json",
+            "tests/fixtures/opsflow-acceptance/candidate.md",
+            "tests/fixtures/opsflow-acceptance/nested/README.md",
+            "tests/fixtures/Opsflow-Acceptance/README.md",
+        ):
+            with self.subTest(rejected=rejected):
+                self.assertIsNone(classify_path(rejected, registry))
+                self.assertEqual(
+                    "unsupported", infer_artifact_type(pathlib.Path(rejected), adapted)
                 )
 
         adjacent_fixture = (
@@ -1329,6 +1342,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "tests/fixtures/README.md",
             "tests/fixtures/document_governance/README.md",
             "tests/fixtures/document_governance/operations-moves/README.md",
+            "tests/fixtures/opsflow-acceptance/README.md",
         )
         adjacent_fixture = (
             "tests/fixtures/document_governance/operations-moves/candidate.md"

@@ -794,6 +794,7 @@
         "tests.lib.ops.test_n8n_outbox_workflow",
         "tests.validation.test_n8n_outbox_contract",
         "tests.validation.test_n8n_outbox_rehearsal",
+        "tests.validation.test_opsflow_e2e_acceptance",
         "tests.lib.ops.test_root_resource_assessment",
         "tests.validation.test_root_resource_contract",
         "-v"
@@ -1718,6 +1719,16 @@
           "repository-integrity"
         ]
       }
+,
+      {
+        "prefixes": [
+          "tests/validation/test_opsflow_e2e_acceptance.py",
+          "tests/fixtures/opsflow-acceptance/"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      }
     ],
     "changed_root_rules": [
       {
@@ -2036,6 +2047,16 @@
         ],
         "root_gate_ids": [
           "leaf.local-script-manifest",
+          "leaf.repository-integrity-regressions"
+        ]
+      }
+,
+      {
+        "prefixes": [
+          "tests/validation/test_opsflow_e2e_acceptance.py",
+          "tests/fixtures/opsflow-acceptance/"
+        ],
+        "root_gate_ids": [
           "leaf.repository-integrity-regressions"
         ]
       }

@@ -650,6 +650,7 @@ TARGET_MARKDOWN_FILES = frozenset(
         "tests/fixtures/README.md",
         "tests/fixtures/document_governance/README.md",
         "tests/fixtures/document_governance/operations-moves/README.md",
+        "tests/fixtures/opsflow-acceptance/README.md",
     }
 )
 MIGRATION_TYPED_KEYS = frozenset(

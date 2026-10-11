@@ -162,6 +162,7 @@ class ActiveStageScopeTests(unittest.TestCase):
             "tests/fixtures/README.md",
             "tests/fixtures/document_governance/README.md",
             "tests/fixtures/document_governance/operations-moves/README.md",
+            "tests/fixtures/opsflow-acceptance/README.md",
         }
         self.assertEqual(
             native_provider_files | fixture_readmes,
@@ -179,6 +180,13 @@ class ActiveStageScopeTests(unittest.TestCase):
             self.assertTrue((ROOT / relative).is_file())
             self.assertEqual(Path(relative), _normalized_target_path(relative))
             self.assertIsNone(_normalized_target_path(relative + "/private.md"))
+
+        for adjacent in (
+            "tests/fixtures/opsflow-acceptance/cases.json",
+            "tests/fixtures/opsflow-acceptance/nested/README.md",
+            "tests/fixtures/Opsflow-Acceptance/README.md",
+        ):
+            self.assertIsNone(_normalized_target_path(adjacent))
 
     def test_every_active_stage_prefix_names_a_directory_that_exists(self) -> None:
         for name, prefixes in self.active_scopes():
