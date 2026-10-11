@@ -1,6 +1,6 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -396,6 +396,141 @@ SHAs above identify historical measured inputs, not the final delivery list.
 The current four commits and latest-base receipts are in the ignored integration
 handoff. Shared proposal base blob IDs are unchanged and are rechecked against
 this local main. No force push, reset, stash or clean occurred.
+
+### Coordinator Source Integration
+
+On 2026-10-11 the coordinator reconciled worker head
+`d32ef6354190181753816bf09215f397ed0122f1` with clean local main
+`6f230c56eb97c3cd587d636ba6492b24de13e53d`. Merge
+`1dfd203dc41bf49d0669db855143f72304bc43b6` preserves all six worker logical
+commits and the existing P06 issuance. Common integration commit
+`962e11be50260a3dce2e2700b22951fce1b3f4f7` changes exactly ten shared paths:
+workflow contract, script manifest, SMTP helper, generator, three README indexes,
+two existing generator/metadata regressions and the new inherited-lock test.
+The eight previously committed P02-owned paths remain intact. No source file
+was deleted. This current receipt supersedes earlier shared-registration-pending
+statements only for the locally integrated SOURCE/UNIT/STATIC slice; historical
+measurements and operational exclusions remain valid.
+
+The CLI manifest consumer is the existing test that actually invokes it,
+`tests/lib/ops/test_secret_catalog.py`. RUN-0085 remains its authority. The
+unapplied P01 runbook proposal is not declared an active invocation consumer. P01 alone
+reconciles its four OpenBao documents with the fixed public proposal
+`p02-openbao-docs.patch`, SHA256
+`71907ca6135cee7ad60df3868b92214967ef19822cf17b715810b3bb7419b7f4`.
+After that prose contains the actual CLI invocation, the coordinator can add
+it as a proven consumer. P03 must regenerate its manifest/workflow proposal
+against this integrated base and retain both registration sets.
+
+The old *proposed* Python lock wrapper, rather than the prior main generator,
+failed the parent-death RED test: exit 1, one failure. The new wrapper passes the
+same held file description to the child. It preserves the default helper API
+and cooperative lock boundaries; CLN and nonparticipating writers still require
+separate quiescence. COMM-002 canonical and COMM-003 alias generation remains
+blocked; SMTP01 retains sole ownership of actual COMM-003 retirement.
+
+Coordinator checks used `/tmp/hy-home-p09-qa/bin/python` with its directory first
+in PATH for child interpreters. The source candidate began at `1dfd203d` plus
+the exact shared diff; final functional input is commit `962e11be`. Actual
+commands and fixed file hashes are retained in the ignored, value-free
+`.agent-work/p02-coordinator-integration.json` receipt:
+
+- Initial combined catalog, SMTP, metadata, retirement and runtime-compatibility
+  `-m unittest` selection: 195 PASS, 34.349 seconds, exit 0.
+- Final generator/metadata/inherited-lock selection after ShellCheck correction:
+  39 PASS, 24.573 seconds, exit 0. The synthetic generator harness bound to the
+  actual final generator: 13 PASS, 13.211 seconds, exit 0.
+- `check-script-manifest.py --check-generated`,
+  `check-github-workflow-contract.py`, `bash -n scripts/operations/gen-secrets.sh`,
+  Ruff `check` and `format --check`, diff checks and registered
+  `run-ci-precommit.sh --mode local-staged`: PASS, exit 0.
+- Public CLI `check`, `render` and `check-views`: 145 entries, one alias,
+  four ignored staging views matching the catalog, exit 0. No private metadata
+  or credential input is read by these commands.
+- `check-document-links.py --mode all`: 1,195 documents, 11,607 links,
+  failures 0, exit 0; one pre-existing historical archive warning.
+
+Failures were kept as failures: the initial manifest referenced unapplied P01
+prose, two proposal test imports/formatting failed Ruff, and the staged gate
+reported ShellCheck SC2066 for a single-item environment-file loop. Registration
+now references the real CLI test, formatting is corrected and the unchanged
+root-only parser reads the quoted root environment file directly. A retry
+without the QA child PATH failed 14 of 39 tests; the fixed PATH run passed all
+39. Initial public rendering was blocked by a missing ignored parent README;
+the coordinator prepared that public README and render/check then passed.
+Final generator SHA256 is
+`1aeadbb428dc7efbd6f38b36720a8a485baae42e4b29383590aa231f7385bee5`;
+the earlier proposal generator hash is a historical input only. Independent
+code and security reviews accepted the exact combined source and this final
+loop correction without remaining Critical/Important or P1/P2 findings.
+
+The registered default changed profile contains all 17 local SOURCE leaves
+once among its 33 invocations. A read-only plan comparison confirmed identical
+IDs, arguments, environment boundaries and timeouts. Full plan SHA256 is
+`712364150d828e205a778920f9e2cdb9baae2caf008d5c4f9158a9b3858e6700`.
+The redundant standalone local-only run was interrupted with exit 130, rather
+than labelled PASS. The first default aggregate failed with exit 1: two public
+checkout entrypoints had mode 0775 despite Git mode 100755. After verifying
+regular files, owner, single link and unchanged content, the coordinator
+restricted those two checkout files to 0755. Their 19 focused tests passed,
+exit 0. This metadata correction did not change production files or Git bytes.
+
+The existing executor then ran the exact registered suffix at index 18 with
+all original arguments, optional-runtime skips, environment limits and timeouts.
+Its first 14 leaves passed, including 525 Compose tests with 69 skips; the last
+integrity leaf failed, exit 1, with three failures among 365 tests. The test-owned
+mutation expectations omitted the three new catalog writers. Commit
+`b13e379efe954270e1f76458a74d1b0d93f39459` adds only those exact `check-write`
+expectations, preserving the default `none` and equality assertion. Focused
+Manifest regressions then passed: 48 tests, 12.183 seconds, exit 0.
+
+During verification, both local and remote main advanced to accepted P01 source
+`6d1d6960e59c316fad2c6d168d853989da565faa`. Pure merge
+`ab346b2c9a329731af3fff74be651531d87067cc` preserves its ten P01 paths byte for
+byte. The final diff against that main contains exactly 19 P02 paths, including
+the separate mutation-expectation correction; all six worker commits remain
+ancestors. The regenerated 33-invocation plan is identical to the frozen plan.
+On this merged SOURCE input, the existing executor reran the exact registered
+Compose baseline, diff hygiene and repository integrity leaves: exit 0.
+Compose ran 544 tests in 128.949 seconds with 71 optional-native skips and no
+failure; integrity ran 365 tests in 82.085 seconds with no failure. Independent
+code and security reviews accepted this merged SOURCE with no remaining findings.
+The original aggregate and first suffix remain FAIL records. Acceptance uses
+their unchanged successful leaves plus these corrected, affected-leaf receipts;
+it does not relabel either aggregate or claim fresh hosted CI/native acceptance.
+
+The result-only record initially introduced a disallowed H2; the coordinator
+moved it under the existing Work Log and selected metadata passed with one
+selected document and zero violations, exit 0. The finalized merged-tree metadata,
+links and lifecycle checks and exact staged Task gate must pass before the receipt
+commit and local main fast-forward. Their exact Task hash, commands and actual
+exit codes are retained in the coordinator receipt.
+
+Fresh `git ls-remote --heads origin main` observed
+`6d1d6960e59c316fad2c6d168d853989da565faa`, exit 0. GitHub readback confirmed
+P01 PR #421 merged with candidate-quality SUCCESS on head
+`d3ae5587d7e3376bed22bbef82badf3875d8fb95`; its PR main-security job was SKIPPED.
+That source delivery does not accept P02 prose or actual HOME recovery. P01's
+four current document blobs differ from the preserved proposal bases, so P01
+must reconcile the proposal against this accepted main; the coordinator has not
+applied it. P05/P06 issuance is already in the current remote baseline and is
+absent from the 19-path P02 diff. No remote P02 push, PR, latest-head hosted CI
+or merge occurred. P01 document acceptance, future latest-head CI and independent
+review remain delivery prerequisites. Keep this Task in progress.
+
+HOME, MIGRATION, ROTATION, RECOVERY, native SMTP and private generator execution
+remain NOT_RUN. No production credential, database, application service, LAB
+runtime or secret file was created, changed or deleted. ISOLATED includes
+synthetic temporary fixtures and ephemeral Conftest policy-tool containers,
+whose name-scoped readback found zero remaining containers, exit 0. These tools
+are not application deployment or recovery evidence. Existing foreign dirty
+checkout drafts were preserved.
+P01/P03/P06/P08/P10 receive schema version 1.0.0, the 145 issued entries and
+COMM-003-to-COMM-002 alias, regeneration/retirement exclusions and this source
+commit. P06 can use the integrated guard API for source/synthetic binding work;
+actual pilot still needs issued consumer IDs/destinations/ACL/delivery from the
+catalog and P01/P03/P04 operational acceptance. The closed catalog is not
+permission to invent opsflow entries or issue credentials.
 
 ## Evidence
 
