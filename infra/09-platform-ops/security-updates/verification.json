@@ -4580,5 +4580,84 @@
     "scoped_permission_regressions": "19PASS EXIT0",
     "public_native_bytes_unchanged": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
     "remaining_writer": "Coordinator"
+  },
+  "prior_receipt_disposition": "Preserved historical source/native receipts; earlier top-level freeze and hashes do not certify the full-scope continuation or current scanner bytes.",
+  "current_scanner_source_refresh": {
+    "observed_at": "2026-10-10T15:05:32.612222+00:00",
+    "base_revision": "caabcfacd4d8f5523cc21779e46cf0c8482f345c",
+    "source_state": "uncommitted task-owned candidate; exact public hashes below",
+    "inputs": [
+      {
+        "path": "infra/supply-chain.tool-images.json",
+        "sha256": "91b114514954245c484454f2e5e45c0874e4596b3a6a1871fbd7c0de12ed3c33"
+      },
+      {
+        "path": "infra/09-platform-ops/security-updates/tool-readiness.json",
+        "sha256": "2d468beab138e4017bbba0198a31819f2ed7aa2ec40c2f991b68e329d8631069"
+      },
+      {
+        "path": "scripts/security/seed-grype-db-cache.sh",
+        "sha256": "32714294d7863186e09b2af523bb8c497db5a2177445e4b066f1879ed5f33df5"
+      },
+      {
+        "path": "scripts/lib/supply_chain/grype_db_seed.py",
+        "sha256": "e1f60a14b708b4b840ca0de89dab97e7e88b91e031f495bbf2a94027df32b8ca"
+      },
+      {
+        "path": "scripts/validation/check-supply-chain-policy.py",
+        "sha256": "bf9f7f20559dce3f5cb6e85e8ca281d34d62c0ac02082dd88f0292c45dbfef4d"
+      },
+      {
+        "path": "tests/lib/supply_chain/test_update_gates.py",
+        "sha256": "135f6aa5de1bc2fc10c4b1516369cde94c6c79cb790284a4306ab46feb93e407"
+      },
+      {
+        "path": "tests/lib/supply_chain/test_grype_db_seed.py",
+        "sha256": "05992f92e64ac19440707e8133fdb01efaa7ec328756776fbeb203a22cc7cb4e"
+      },
+      {
+        "path": "tests/lib/supply_chain/test_supply_chain_policy.py",
+        "sha256": "7082fb431a3c8dcec1fa3aeb7c927be34307398185743e631923168100da622b"
+      },
+      {
+        "path": "tests/validation/test_supply_chain_secure_output.py",
+        "sha256": "612baba62ba17f1e4301bd706e86051ebed6e3e720fe8927bced8a550bd48df8"
+      },
+      {
+        "path": "tests/validation/test_supply_chain_wrapper.py",
+        "sha256": "fa29835ba3b513eb44cbc1c6decb727a48b32efcbe7827841cda293024839685"
+      }
+    ],
+    "identity_scope": "official latest stable release tags and read-only OCI index/platform/config metadata; not publisher signature or tool trust",
+    "root_certification": "NOT_RUN",
+    "runtime_mutation": "NOT_RUN",
+    "red_evidence": [
+      {
+        "test": "StableScannerContractTests.test_tool_registry_uses_current_stable_scanners",
+        "exit_code": 1,
+        "failures": 3
+      },
+      {
+        "test": "StableScannerContractTests.test_current_readiness_binds_exact_registry_and_tool_identities",
+        "exit_code": 1,
+        "failures": 1
+      }
+    ],
+    "green_results": [
+      {
+        "command": "python -B -m unittest tests.lib.supply_chain.test_update_gates tests.lib.supply_chain.test_grype_db_seed tests.lib.supply_chain.test_supply_chain_policy tests.validation.test_supply_chain_secure_output tests.validation.test_supply_chain_wrapper -q",
+        "exit_code": 0,
+        "tests_passed": 106,
+        "seconds": 4.865,
+        "scope": "UNIT/STATIC fixture tests only; no native tools, signature, SBOM, database, root scan or deployment"
+      }
+    ]
+  },
+  "public_cosign_bootstrap": {
+    "observed_at": "2026-10-10T16:35:10Z",
+    "receipt_source": "/tmp/hy-home-sec01-trust.g059chnr public-only receipts",
+    "result": "PASS: bounded public release binary authentication only",
+    "not_proven": "OCI image trust, SBOM, Grype, advisory remediation, deployment, HOME and recovery remain NOT_RUN",
+    "next_execution_boundary": "NOT_RUN: current root metadata and exact asset metadata/source URLs must be refreshed or revalidated before public publisher/registry/TLS-only verification"
   }
 }
