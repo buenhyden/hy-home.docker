@@ -321,6 +321,7 @@ class OwnedFixture:
             raise RehearsalFailure("tracked listener has no declarative audit device")
         config_path = self.directory / (suffix + "-config")
         config_path.mkdir(mode=0o770)
+        config_path.chmod(0o770)
         args = [
             "--mount",
             f"type=volume,src={self.volume(suffix)},dst=/openbao/data",

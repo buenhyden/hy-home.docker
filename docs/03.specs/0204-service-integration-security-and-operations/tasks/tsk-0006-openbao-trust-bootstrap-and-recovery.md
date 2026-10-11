@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -950,6 +950,75 @@ check. An exact seven-owned-path patch applied there with exit 0. Changed gate
 for the additional existing fixture path. No ad-hoc skip or common mapping edit
 was made. The actual changed controller is running with QA-venv-first PATH at
 `/tmp/p01-diagnostic-gate.log`; its result is pending, not PASS at this checkpoint.
+
+### W22 Server Diagnostic Receipt and Owned Config Mode — 2026-10-11
+
+The diagnostic preparation index was
+`a9b51b30e4096de23070efdfc0b63ba86b012a74`. Its final-index staged controller
+exited 0 (`/tmp/p01-diagnostic-staged.log`). Only the two dedicated test files
+and this Task were committed, command `rtk git commit -m 'test(openbao): Classify
+bounded server diagnostic failures'`, exit 0, commit
+`5fa707d842098e9acef0c3f9176afaa3c48421a0`. Sandbox wrapper failures before Git
+execution exited 1; scoped escalated retries succeeded without changing scope.
+
+Fresh image/version/capacity commands exited 0: exact cached linux/amd64 image
+`sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005`,
+public label v2.7.1, daemon 29.8.2, memory available 7.5 GiB and /tmp free 25 GiB.
+Remote main readback remained `4e26a5a8022a7307c7461af60337442912955df1`, exit 0.
+The existing exclusive native assignment persists; the registered offline gate
+has no opt-in native flag. Fresh source digest command (`rtk proxy
+/tmp/hy-home-p09-qa/bin/python -c 'from tests.validation.test_openbao_rehearsal
+import OpenBaoRehearsalTests; print(OpenBaoRehearsalTests().input_digest())'`)
+exited 0 with
+`7b7247baf9538f61bab2703f83983758a4362be5c25607f23e82ce92f962737e`.
+
+Exactly one independently admitted server-only diagnostic ran:
+
+```bash
+rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; export HYHOME_OPENBAO_REHEARSAL=1; rtk proxy python3 -m unittest tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests.test_native_server_start_diagnostic -v > /tmp/p01-server-diagnostic.log 2>&1'
+```
+
+Exit 1, one ERROR / 26.181 seconds, owner
+`p01-f1951054e1fd4b708697f191a6baeec8`, sanitized category `EXITED_1` at the
+version probe. No init, API configuration, metadata, SecretID, Agent or HOME
+ran. `finally` cleanup ran; exact owner-filtered container/network/volume checks
+and exact owner-prefix /tmp directory count each exited 0 with no resources.
+Sandbox launch failed before execution; its escalated launch was the sole
+actual attempt. Failed command output and authentication logs stayed withheld.
+
+Public source investigation, not a captured runtime error, found a concrete
+fixture defect: `mkdir(mode=0770)` under approved umask 022 leaves 0750. The
+caller is UID/GID 1000; server UID/GID is 100:1000. The official v2.7.1 image
+[launcher](https://github.com/openbao/openbao/blob/v2.7.1/.release/docker/docker-entrypoint.sh)
+writes `/openbao/config/local.json` before `SKIP_CHOWN`. The fresh config bind
+therefore lacks required group write. This is a source-supported cause candidate;
+the sanitized exit category alone does not prove it was the only runtime cause.
+
+Meaningful RED before correction, one collected assertion failure (exit 1):
+
+```bash
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest tests.validation.test_openbao_rehearsal.OpenBaoCleanupTests.test_server_config_bind_preserves_group_write_under_safe_umask -v
+```
+
+Expected mode 0770 differed from actual 0750. The correction explicitly chmods
+only the newly created invocation-owned config directory to 0770; it changes no
+common file, HOME path or permission policy. The mocked creation-boundary test
+restores umask and removes its own temporary directory. Final seven cleanup
+tests, Ruff check and Ruff format-check exited 0. Independent code review returned
+Spec PASS / Quality APPROVED, zero findings. Further native execution requires a
+new source commit, fresh digest and independent changed-input readiness; neither
+failed native receipt is promoted to PASS. A guessed explain-log read exited 2
+(file absent); no receipt was inferred from that failed read.
+
+The corrected fixture SHA-256 is
+`945de3cb929ac82a917139d550d4d3ee1a164790cac3f3da0bc4b8e606ee06ef`; rehearsal
+SHA-256 is `31554becdbe64915d412dec3df0628cf1367a3f56457055de509354353eb6179`.
+Independent security re-review approved these exact hashes, zero findings, and
+independently passed seven cleanup tests / diff-check, exit 0. Independent IaC
+returned READY_FOR_ONE_NEW_BOUNDED_SERVER_START_DIAGNOSTIC_ATTEMPT for this
+changed input after commit, fresh digest and preflight. No metadata retry or HOME
+is included. The running aggregate gate retains the earlier frozen QA input;
+the corrected fixture/test must receive focused revalidation before final delivery.
 
 ## Evidence
 

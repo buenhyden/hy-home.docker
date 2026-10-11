@@ -16,6 +16,7 @@ import json
 import os
 import re
 import secrets
+import shutil
 import sys
 import time
 import unittest
@@ -46,6 +47,30 @@ else:
 
 
 class OpenBaoCleanupTests(unittest.TestCase):
+    def test_server_config_bind_preserves_group_write_under_safe_umask(self):
+        fixture = OwnedFixture()
+        previous = os.umask(0o022)
+        try:
+            fixture.auth_volume = "p01-owned-auth"
+            with (
+                mock.patch.object(fixture, "volume", return_value="p01-owned-data"),
+                mock.patch.object(
+                    fixture,
+                    "container",
+                    side_effect=RehearsalFailure("synthetic creation boundary"),
+                ) as container,
+            ):
+                with self.assertRaisesRegex(
+                    RehearsalFailure, "^synthetic creation boundary$"
+                ):
+                    fixture.server("config-mode")
+                container.assert_called_once()
+            mode = (fixture.directory / "config-mode-config").stat().st_mode & 0o777
+            self.assertEqual(0o770, mode)
+        finally:
+            os.umask(previous)
+            shutil.rmtree(fixture.directory)
+
     def test_version_probe_rejects_similar_and_prefixed_version_tokens(self):
         fixture = object.__new__(OwnedFixture)
         fixture.containers = ["p01-owned-server"]
