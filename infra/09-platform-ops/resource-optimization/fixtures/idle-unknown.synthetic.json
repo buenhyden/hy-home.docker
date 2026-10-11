@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "synthetic",
+  "source": {
+    "repository_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "compose_file": "infra/07-workflow/example/docker-compose.yml",
+    "compose_file_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "effective_config_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "image_reference": "example/service:1.0",
+    "image_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "image_config_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  },
+  "deployed": {
+    "status": "observed",
+    "repository_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "compose_file_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "effective_config_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "image_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "image_config_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "platform": "linux/amd64"
+  },
+  "target": {
+    "service": "example-service",
+    "environment_id": "public-home-a",
+    "workload_id": "public-workload-a"
+  },
+  "window": {
+    "started_at": "2026-10-11T00:00:00Z",
+    "ended_at": "2026-10-11T00:05:00Z",
+    "duration_seconds": 300,
+    "cadence_seconds": 5,
+    "sample_count": 60,
+    "phase": "idle"
+  },
+  "workload": {
+    "representative": true,
+    "consumer_id": "public-consumer-a",
+    "data_owner_id": "public-owner-a",
+    "failure_cost": "degraded-home-capability"
+  },
+  "metrics": {
+    "cpu_throttled_seconds": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "seconds"
+    },
+    "cpu_throttled_periods": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "count"
+    },
+    "rss_bytes": {
+      "status": "unknown",
+      "unit": "bytes"
+    },
+    "heap_bytes": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "bytes"
+    },
+    "work_mem_bytes": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "bytes"
+    },
+    "connections": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "count"
+    },
+    "tmpfs_bytes": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "bytes"
+    },
+    "shm_bytes": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "bytes"
+    },
+    "cache_bytes": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "bytes"
+    },
+    "off_heap_bytes": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "bytes"
+    },
+    "resource_overhead_bytes": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "bytes"
+    },
+    "worker_count": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "count"
+    },
+    "pid_peak": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "count"
+    },
+    "oom_events": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "count"
+    },
+    "exit_events": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "count"
+    },
+    "latency_p95_ms": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "milliseconds"
+    },
+    "throughput_per_second": {
+      "status": "known",
+      "value": 20.0,
+      "unit": "per_second"
+    },
+    "recovery_seconds": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "seconds"
+    },
+    "gpu_memory_bytes": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "bytes"
+    },
+    "gpu_utilization_ratio": {
+      "status": "known",
+      "value": 1.0,
+      "unit": "ratio"
+    }
+  },
+  "budgets": {
+    "cpu_limit_cores": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "cores"
+    },
+    "memory_limit_bytes": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "bytes"
+    },
+    "connection_limit": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "count"
+    },
+    "tmpfs_limit_bytes": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "bytes"
+    },
+    "shm_limit_bytes": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "bytes"
+    },
+    "worker_limit": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "count"
+    },
+    "pid_limit": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "count"
+    },
+    "latency_p95_budget_ms": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "milliseconds"
+    },
+    "throughput_floor_per_second": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "per_second"
+    },
+    "recovery_budget_seconds": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "seconds"
+    },
+    "gpu_memory_limit_bytes": {
+      "status": "known",
+      "value": 10.0,
+      "unit": "bytes"
+    }
+  },
+  "controls": {
+    "as_of": "2026-10-11",
+    "compose_file": "infra/07-workflow/example/docker-compose.yml",
+    "secret_roots": [
+      "/synthetic-public/secrets/"
+    ],
+    "effective_service": {
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "cap_drop": [
+        "ALL"
+      ],
+      "init": true,
+      "restart": "unless-stopped",
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "true"
+        ]
+      },
+      "cpus": "1.0",
+      "mem_limit": "512m",
+      "pids_limit": 128
+    },
+    "registry": {
+      "schema_version": 2,
+      "policy_id": "OPS-TPL-EXCEPTIONS-001",
+      "template_source": "infra/common-optimizations.yml",
+      "controls": {
+        "no_new_privileges": "required",
+        "cap_drop_all": "required",
+        "cap_add": "empty",
+        "privileged": "false",
+        "restart": "daemon policy",
+        "healthcheck": "required",
+        "cpus": "required",
+        "mem_limit": "required",
+        "secrets_group": "exact consumer",
+        "init": "required",
+        "gpu": "exception",
+        "pids_limit": "required"
+      },
+      "exceptions": []
+    }
+  },
+  "proposal": {
+    "kind": "assessment_only",
+    "lower_memory_limit": true,
+    "lower_cpu_limit": false
+  },
+  "provenance": {
+    "status": "known",
+    "collector_id": "synthetic-fixture",
+    "method": "synthetic",
+    "receipt_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+    "aggregation": "window-peaks-and-counters"
+  }
+}
