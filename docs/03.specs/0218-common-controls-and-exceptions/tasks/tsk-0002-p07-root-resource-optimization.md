@@ -102,6 +102,22 @@ recovered are separate states. Use NO_CHANGE, IMPLEMENT, VERIFY_RUNTIME,
 DELETE, BLOCKED_FACTS or OUT_OF_SCOPE; no traffic or disabled profile alone
 proves absence. Refer deletion to CLN01 and its owning executor.
 
+On 2026-10-11, the dedicated worktree was clean at entry: `git status --short`
+produced no entries, `git branch --show-current` returned
+`codex/p07-root-resource-optimization`, and `git rev-parse HEAD` returned
+`88ecf9049ff0fc25675dce93fd21870266fbad18`. `git rev-parse main origin/main`
+returned `4c83f14b11a77e13e582eb85d0bf256685472a95` for both references; direct
+`git ls-remote origin refs/heads/main` exited 0 with that same SHA. This is a
+baseline only. It ran no classification, Docker/native observation, load,
+resource or privilege change, HOME action, or recovery.
+
+W10 preparation is confined to its exclusive public schema, synthetic fixtures,
+bounded assessment helper and two dedicated tests. Inputs remain sanitized,
+bounded public JSON and numeric facts through existing pure `compose_controls`
+APIs. Docker, private environment, raw logs, secret access, ambient-host access,
+an invented root-only CLI flag, and all load/resource/permission/HOME changes
+remain excluded or NOT_RUN pending the named service contracts and window.
+
 At the admission input, the earlier pure `validate_service_inventory` subset
 returned 14 findings: seven P04 `compose.workflow.override.yml` Guide bindings
 and seven inventory membership entries. Its wrapper exited0 but the findings
@@ -120,6 +136,15 @@ Its receipt is `.agent-work/p07-baseline-operations-catalog.json` and its
 public log is `.agent-work/p07-baseline-operations-catalog.log`, SHA256
 `1842a0016ac6e52c900fdcf6baadb4522a93068bafb8b539960aa699ccc09c35`.
 These are SOURCE/STATIC facts; no Docker, private input or native action ran.
+
+At the issuance HEAD, no P07 repair was attempted. The catalog command
+`rtk proxy /tmp/hy-home-p09-qa/bin/python
+scripts/validation/check-operations-catalog.py` first stopped on the sandbox
+`bwrap` loopback environment error, then completed on the approved rerun with
+exit1 and the same 22 P04-overlay findings (one include drift, seven missing
+profiles, seven Guide bindings and seven inventory memberships). This remains a
+SOURCE/STATIC BLOCKED_FACTS result owned by P04/coordinator, not seven new
+services and not authorization for blanket include/profile acceptance.
 
 Current dependent evidence remains bounded: SEC01 criterion15 is not ready;
 SMTP's historical isolated snapshot restore proves only two-file usability,
@@ -199,6 +224,55 @@ python scripts/validation/check-operations-catalog.py
 python scripts/validation/run-ci-gate.py --profile changed --explain
 ```
 
+The following coordinator-only proposal packet is reserved for the W10 source
+freeze; it is not an authorization or a shared-file edit. The exact later
+hunks must register the owned assessment CLI only where the current manifest
+and workflow contracts require it, and add Korean navigation for the new
+owned paths only in these parent READMEs. Rebase each hunk if its base blob
+changes; do not stage or integrate it from this worktree.
+
+| Shared proposal target | Current base blob | Proposed purpose | Status |
+| --- | --- | --- | --- |
+| `.github/workflow-contract.yml` | `0788cfe0197a279660c4effb9d6f4d83ba8e17f9` | Route both owned W10 modules through the existing repository-integrity leaf and changed-root rule | unsubmitted, coordinator only |
+| `scripts/manifest.yaml` | `0f2c2ac06382dc1d8da401431a4d4b9dfb0cb0da` | Register the owned library and operation paths with their consumers and tests | unsubmitted, coordinator only |
+| `infra/09-platform-ops/README.md` | `d80d80c56b56f0222b35786fcbc0dacd110ba177` | Korean navigation for `resource-optimization/` | unsubmitted, coordinator only |
+| `scripts/lib/ops/README.md` | `746a5399a34f4eac01a7281eeda7e7b5d5bd7ca7` | Korean navigation for the owned helper | unsubmitted, coordinator only |
+| `tests/lib/ops/README.md` | `6d31046a967c340eba2a28b47556b3abe5015eda` | Korean navigation for the dedicated unit module | unsubmitted, coordinator only |
+| `tests/validation/README.md` | `44cc4806c23baaee2a840b91bff77ebdf58e0cf1` | Korean navigation for the dedicated contract module | unsubmitted, coordinator only |
+
+The exact intended manifest proposal, subject to the source-freeze diff, is
+one `library` row for `scripts/lib/ops/root_resource_assessment.py` and one
+`operations` row for `scripts/operations/root-resource-assessment.py`. Both
+name `infra/09-platform-ops/resource-optimization/README.md` as authority,
+`mutation: none`, `lifecycle: active`, `disposition: retain`, and no successor.
+The library row names the CLI and both dedicated test modules as consumers;
+the operations row names the resource-optimization README and contract test as
+consumers. The rows cite the two dedicated test modules.
+
+The exact workflow proposal reuses an existing typed route: in
+`leaf.repository-integrity-regressions` (current lines 764–803), add
+`tests.lib.ops.test_root_resource_assessment` and
+`tests.validation.test_root_resource_contract` to `argv` immediately before
+`-v`. Add one `changed_root_rules` sibling beside the existing Wiki rule
+(current line 1768), with prefixes for
+`infra/09-platform-ops/resource-optimization/`,
+`scripts/lib/ops/root_resource_assessment.py`,
+`scripts/operations/root-resource-assessment.py`,
+`tests/lib/ops/test_root_resource_assessment.py`, and
+`tests/validation/test_root_resource_contract.py`; its `root_gate_ids` are
+`leaf.repository-integrity-regressions` and `leaf.local-script-manifest`.
+This adds no new gate. Root `README.md`, `infra/README.md`, Registry and
+catalog have no P07 hunk in this packet.
+
+W11's next action is an input-binding request, not an invented runtime
+command: record the exact host and service, deployed image/platform/digest,
+read-only tool permission, sanitized output destination and observation window
+coordinated against concurrent rollout. Only after those values and the
+service-owner command contract are supplied may the Task record that exact
+read-only command and result. W12–W15 additionally remain NOT_RUN until their
+accepted image/function/workload/endpoint/budget/consumer/backup/recovery
+inputs and exclusive service window are bound.
+
 After new source/test creation, run its two dedicated modules, required
 manifest/workflow registrations, selected metadata/links and the actual
 changed-profile plan. Record exact commands, input/index/base/history hashes,
@@ -239,19 +313,107 @@ HOME, benchmark, permission, migration, rotation or recovery check ran.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| Issuance baseline | 6 | W9 | Worktree and main-reference recheck | HEAD `88ecf9049ff0fc25675dce93fd21870266fbad18`; main/origin `4c83f14b11a77e13e582eb85d0bf256685472a95` | PASS | Clean branch; `git status --short`, `git branch --show-current`, `git rev-parse`, `git ls-remote` exit0; baseline only | pending |
 | Public classification | 6 | W9 | Current root consumer/demand classification | Reviewed issuance commit pending | NOT_RUN | W9 public preparation contract above | pending |
 | Inventory subset blocker | 6 | W9 | Coordinator-reported pure validate_service_inventory subset | Admission main 4c83f14b11a77e13e582eb85d0bf256685472a95 | FAIL | 14 overlay binding/membership findings; wrapper exit0 is not semantic PASS | pending |
 | Official operations blocker | 6 | W9 | check-operations-catalog.py | Admission main 4c83f14b11a77e13e582eb85d0bf256685472a95 | FAIL | .agent-work/p07-baseline-operations-catalog.json and .log; exit1, 22 findings, 16.593s; SOURCE/STATIC only | pending |
-| Public assessment source | 7 | W10 | RED/GREEN and bounded refusal fixtures | New source files not created | NOT_RUN | Dedicated source/test ownership above | pending |
+| Current operations blocker | 6 | W9 | `rtk proxy /tmp/hy-home-p09-qa/bin/python scripts/validation/check-operations-catalog.py` | Issuance HEAD | FAIL | Sandbox `bwrap` environment error, then approved rerun exit1 with the same 22 P04-overlay findings; no repair | pending |
+| Public assessment RED | 7 | W10 | Dedicated unittest modules | Issuance HEAD; tests only | PASS | RED witnessed: initial sandbox artifact; escalated rerun exit1 with missing helper ImportError and four missing-schema FileNotFoundError | pending |
+| Public assessment GREEN | 7 | W10 | Dedicated assessment and contract modules with branch coverage | Final frozen public W10 source/fixture inputs below | PASS | exit0, 30 tests in 13.068s after security-token corrections; tracked fixture SHA256, exact blocker lists and CLI exit1 checked; SOURCE/UNIT/STATIC only | pending |
+| W10 source quality | 7 | W10 | Branch coverage and Ruff | Frozen owned helper/CLI and dedicated tests | PASS | 316 statements, 32 missing (89.87%); 154 branches, 23 missing (85.06%); combined 88.30%; Ruff check and format --check PASS | pending |
+| W10 workflow contract | 7 | W10 | Workflow-contract validator | Existing shared contract, unmodified | PASS | 5 workflows, 7 jobs, 8 actions; this does not route the new dedicated modules | pending |
+| W10 manifest integration | 7 | W10 | Script manifest validator | New helper and CLI staged; shared manifest unmodified | FAIL | exit1, exactly two missing records: `root_resource_assessment.py` and `root-resource-assessment.py`; coordinator-only proposal required | pending |
+| W10 document contracts | 7 | W10 | Selected metadata and document links | This Task and the two owned READMEs | PASS | metadata check-changed: selected3, violations0, exit0; links --mode all: failures0, warning1, exit0; official package loader: 25 packages, exit0 | pending |
+| W10 staged style | 7 | W10 | Official local-staged check-only controller | Ten-file candidate tree c65338beaa6865f65871e481944c743c9cf93075 | PASS | exit0; applicable JSON/Markdown/Ruff/hardcoded-secret and generic checks passed; no candidate mutation; later result-only Task update requires final repetition | pending |
+| W10 independent code review | 7 | W10 | Read-only code-reviewer of exact staged diff and result-only Task delta | Issuance HEAD to frozen nine-source-file diff and Task evidence; source SHA256 below | PASS | approve; all reproduced platform/time/limits/provenance/path/fixture findings resolved; 28 tests, branch85.06%, Ruff and diff checks independently verified; main/operations acceptance excluded | pending |
+| W10 token correction and independent re-review | 7 | W10 | Malformed and conflicting security_opt regressions; code-reviewer and security-auditor | Schema, unit test and README affected delta; unchanged library/CLI slice reused | PASS | Both malformed substring and conflicting true/false inputs witnessed RED; exact enum plus maxItems1 fixed them. Code reviewer: 2 focused tests exit0, 0.309s, approve; security auditor: 2 focused tests exit0, 0.289s, approve; no remaining Critical/Important findings | pending |
 | Service observations | 6, 7, 8 | W11 | Sanitized read-only numeric/runtime facts | Exact service window not bound | NOT_RUN | Native prerequisite contract above | pending |
 | Measured resources | 7 | W12 | Representative application/GPU workload comparison | Workload and measurement values unknown | NOT_RUN | Initial budgets are not optimal measurements | pending |
 | Least privilege | 8 | W13 | UID/capability/rootfs/secret/socket functional and negative checks | Exact service/image/restore pending | NOT_RUN | No permission/runtime action at admission | pending |
 | Existing control reuse | 8 | W13 | Existing ComposeControlsTests | Admission main 4c83f14b11a77e13e582eb85d0bf256685472a95 | PASS | .agent-work/p07-existing-controls-tests.log; 11 tests, 0.042s, exit0; UNIT only, native acceptance open | pending |
+| Existing control reuse, issuance recheck | 8 | W13 | `rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest tests.validation.test_compose_baseline_gates.ComposeControlsTests -v` | Issuance HEAD | PASS | Initial sandbox `bwrap` artifact; rerun exit0, 11 tests, 0.010s; UNIT only and no Docker | pending |
+| Dependency audit | 7 | W10 | `uv tool run --no-config --cache-dir /tmp/p07-audit-cache pip-audit --path /tmp/hy-home-p09-qa/lib/python3.12/site-packages --cache-dir /tmp/p07-audit-http --progress-spinner off --strict` | Existing isolated QA environment | PASS | exit0, no known vulnerabilities; bounded to QA installed dependencies, not image/runtime or requirements-resolution. Earlier resolver attempts unavailable: missing `pip_audit`/ensurepip; unhashed requirements invocation was setup failure | pending |
 | Common integration | 9 | W14 | Effective root model and exact exceptions | Owner proposals not applied | NOT_RUN | Coordinator single-writer boundary | pending |
 | Scoped rollout and recovery | 3, 10 | W15 | Changed-service functionality, backup and empty restore | Exact target/image/workload/recovery pending | NOT_RUN | No HOME, migration, rotation or recovery execution | pending |
 | Projection and delivery | 9, 10 | W16 | Current-head gates, local-staged and independent review | Issuance and source integration pending | NOT_RUN | Local-main delivery; no dev/PR/push at admission | pending |
 
 ## Review and Completion
+
+### W10 Source Preparation Receipt
+
+The changed tracked paths are this Task, the resource-optimization README and
+measurement schema, its fixtures README and two synthetic JSON files, the
+assessment library and CLI, and the two dedicated test modules. Source-only
+preparation adds no inventory copy, operational data, runtime configuration,
+image change, secret consumer change or deletion decision. All shared
+manifest/workflow/README edits above remain coordinator-only proposals.
+
+The final dedicated command was
+`rtk proxy env COVERAGE_FILE=.agent-work/p07-coverage-data
+/tmp/hy-home-p09-qa/bin/python -m coverage run --branch
+--source=scripts.lib.ops.root_resource_assessment -m unittest
+tests.lib.ops.test_root_resource_assessment
+tests.validation.test_root_resource_contract -v`, exit0, 30 tests in 13.068s.
+Python 3.12 and Ruff 0.15.12 came from the existing isolated QA environment.
+Coverage JSON is `.agent-work/p07-coverage-final.json`; its 85.06% branch
+coverage applies to the assessment library, not to operating services.
+The tests cover public schema/units, missing and nonfinite/deep/duplicate JSON,
+private/traversal/symlink/hardlink/nonregular/oversized inputs, identity and
+budget contradictions, control exception mismatch and sanitized CLI output.
+
+Independent code-review reproductions added RED failures for required RSS
+marked not-applicable, source/control path mismatch, null deployed platform,
+future observation day, zero direct/deploy limits, missing/unknown provenance,
+and non-normalized public paths. The owner corrected the bounded evaluator and
+schema; synthetic provenance cannot be relabelled measurement. Complete
+provenance is a declaration, not authenticated receipt or runtime proof.
+Every result retains runtime_acceptance=false and mutation_authorized=false.
+
+Frozen source SHA256 values:
+
+| Path | SHA256 |
+| --- | --- |
+| `scripts/lib/ops/root_resource_assessment.py` | `d8b8ed0fae64932d44ccd9a9ef6b9028a82530fdcf89ff0b7ee27f7d99bcaf3a` |
+| `scripts/operations/root-resource-assessment.py` | `1fe217bb088837bfd56efca87d374147bf2e1656558e0da5fe82eaec8f116198` |
+| `infra/09-platform-ops/resource-optimization/measurement.schema.json` | `209a52a924f95360c55fa57a4c9fea70347d8731437dcb12ca8a5563fae12ce7` |
+| `tests/lib/ops/test_root_resource_assessment.py` | `a3e31d7985917fcd8a3771eb1093c5f86ab9bd16a58e4a72c569cf474aef9a45` |
+| `tests/validation/test_root_resource_contract.py` | `977fb43d1cbf73ee70aa7276d2bcf40e8896426f74ad51110aae063678976a49` |
+
+The source-only staged check used
+`rtk proxy env PATH=/tmp/hy-home-p09-qa/bin:$PATH bash
+scripts/validation/run-ci-precommit.sh --mode local-staged`, exit0. JSON,
+Markdown, Ruff and hardcoded-secret checks passed without changing the index
+or candidate. The final Task-inclusive reviewed index must repeat this command
+immediately before the logical commit. `git diff --cached --check` passed.
+The document-link command `check-document-links.py --mode all` exited0 with
+zero failures and one existing historical-capture warning (2870 legacy links).
+The unchanged workflow validator passed; `run-ci-gate.py --profile changed
+--explain` exited0 but did not select the new tests. Manifest registration
+still fails with exactly two missing records. No full aggregate or remote
+CI acceptance is claimed.
+
+Two metadata runs failed before local corrections: the first reported 150
+violations with an invalid criterion/Work Unit pair and README headings; the
+next reported 147 with invalid Evidence Acceptance and one fixture table
+header. Fixes preserve the canonical result/acceptance vocabulary and package
+relations; archive findings from these failed package parses are not an
+independently established baseline defect. The corrected official package
+loader parsed 25 packages, exit0. The final metadata command selected this
+Task and the two owned READMEs with --mode check-changed, --base-ref HEAD and
+three explicit --changed-path arguments: selected3, violations0, exit0.
+The earlier archive findings disappeared after the owned package corrections.
+Independent code-reviewer disposition is approve with no remaining code
+findings. It covers the nine frozen source files and the result-only Task
+delta; main integration and native acceptance remain outside that disposition.
+An Important security finding on arbitrary security_opt strings was corrected
+inside the P07 schema: only one exact no-new-privileges true/false token is
+supported. Both substring impersonation and conflicting exact tokens were
+reproduced RED before the correction. Code and security affected-slice
+re-reviews approved the schema/test/README delta and reused the unchanged
+source slice; no Critical/Important finding remains. The caller-provided
+exception projection is still not bound to the canonical registry. Later
+acceptance requires canonical comparison/binding; SOURCE/STATIC preparation,
+visible deviations and false runtime/mutation flags do not supply that proof.
 
 Admission creates a draft Task and permits public preparation only. Keep
 SOURCE / UNIT / STATIC / ISOLATED / HOME / MIGRATION / ROTATION / RECOVERY /

@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:hy-home:root-resource-measurement:v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "evidence_kind", "provenance", "source", "deployed", "target", "window", "workload", "metrics", "budgets", "controls", "proposal"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "evidence_kind": {"enum": ["synthetic", "measurement"]},
+    "provenance": {"$ref": "#/$defs/provenance"},
+    "source": {"$ref": "#/$defs/source"},
+    "deployed": {"$ref": "#/$defs/deployed"},
+    "target": {"$ref": "#/$defs/target"},
+    "window": {"$ref": "#/$defs/window"},
+    "workload": {"$ref": "#/$defs/workload"},
+    "metrics": {"$ref": "#/$defs/metrics"},
+    "budgets": {"$ref": "#/$defs/budgets"},
+    "controls": {"$ref": "#/$defs/controls"},
+    "proposal": {"$ref": "#/$defs/proposal"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "public_id": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "repo_path": {"type": "string", "minLength": 1, "maxLength": 240, "pattern": "^(?!/)(?!.*//)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*(?:^|/)(?:secrets?|\\.env|logs?)(?:/|$))[A-Za-z0-9._/-]+$"},
+    "unit": {"enum": ["seconds", "milliseconds", "bytes", "count", "cores", "ratio", "per_second"]},
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "collector_id", "method", "receipt_sha256", "aggregation"],
+      "properties": {
+        "status": {"enum": ["known", "unknown"]},
+        "collector_id": {"anyOf": [{"$ref": "#/$defs/public_id"}, {"type": "null"}]},
+        "method": {"enum": ["synthetic", "read-only-export", "unknown"]},
+        "receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "aggregation": {"enum": ["window-peaks-and-counters", "unknown"]}
+      }
+    },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository_sha", "compose_file", "compose_file_sha256", "effective_config_sha256", "image_reference", "image_digest", "image_config_sha256"],
+      "properties": {
+        "repository_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "compose_file": {"$ref": "#/$defs/repo_path"},
+        "compose_file_sha256": {"$ref": "#/$defs/sha256"},
+        "effective_config_sha256": {"$ref": "#/$defs/sha256"},
+        "image_reference": {"type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"},
+        "image_digest": {"$ref": "#/$defs/digest"},
+        "image_config_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "deployed": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "repository_sha", "compose_file_sha256", "effective_config_sha256", "image_digest", "image_config_sha256", "platform"],
+      "properties": {
+        "status": {"enum": ["observed", "unknown"]},
+        "repository_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "compose_file_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "effective_config_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "image_digest": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "image_config_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "platform": {"type": ["string", "null"], "pattern": "^linux/[a-z0-9_-]+(?:/[a-z0-9_-]+)?$", "maxLength": 48}
+      }
+    },
+    "target": {
+      "type": "object", "additionalProperties": false,
+      "required": ["service", "environment_id", "workload_id"],
+      "properties": {"service": {"$ref": "#/$defs/public_id"}, "environment_id": {"$ref": "#/$defs/public_id"}, "workload_id": {"$ref": "#/$defs/public_id"}}
+    },
+    "window": {
+      "type": "object", "additionalProperties": false,
+      "required": ["started_at", "ended_at", "duration_seconds", "cadence_seconds", "sample_count", "phase"],
+      "properties": {
+        "started_at": {"type": "string", "format": "date-time", "maxLength": 32},
+        "ended_at": {"type": "string", "format": "date-time", "maxLength": 32},
+        "duration_seconds": {"type": "integer", "minimum": 1, "maximum": 604800},
+        "cadence_seconds": {"type": "integer", "minimum": 1, "maximum": 86400},
+        "sample_count": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "phase": {"enum": ["idle", "startup", "steady", "peak", "backfill", "backup", "recovery", "gpu"]}
+      }
+    },
+    "workload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["representative", "consumer_id", "data_owner_id", "failure_cost"],
+      "properties": {
+        "representative": {"type": "boolean"},
+        "consumer_id": {"$ref": "#/$defs/public_id"},
+        "data_owner_id": {"$ref": "#/$defs/public_id"},
+        "failure_cost": {"enum": ["none", "degraded-optional-capability", "degraded-home-capability", "home-outage", "data-loss-risk"]}
+      }
+    },
+    "fact": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["status", "value", "unit"], "properties": {"status": {"const": "known"}, "value": {"type": "number", "minimum": 0, "maximum": 1000000000000000}, "unit": {"$ref": "#/$defs/unit"}}},
+        {"type": "object", "additionalProperties": false, "required": ["status", "unit"], "properties": {"status": {"const": "unknown"}, "unit": {"$ref": "#/$defs/unit"}}},
+        {"type": "object", "additionalProperties": false, "required": ["status", "unit", "reason_code"], "properties": {"status": {"const": "not_applicable"}, "unit": {"$ref": "#/$defs/unit"}, "reason_code": {"enum": ["not-applicable-to-service", "not-applicable-to-phase"]}}}
+      ]
+    },
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cpu_throttled_seconds", "cpu_throttled_periods", "rss_bytes", "heap_bytes", "work_mem_bytes", "connections", "tmpfs_bytes", "shm_bytes", "cache_bytes", "off_heap_bytes", "resource_overhead_bytes", "worker_count", "pid_peak", "oom_events", "exit_events", "latency_p95_ms", "throughput_per_second", "recovery_seconds", "gpu_memory_bytes", "gpu_utilization_ratio"],
+      "properties": {
+        "cpu_throttled_seconds": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "seconds"}}}]}, "cpu_throttled_periods": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "count"}}}]},
+        "rss_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}, "heap_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}, "work_mem_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]},
+        "connections": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "count"}}}]}, "tmpfs_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}, "shm_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]},
+        "cache_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}, "off_heap_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}, "resource_overhead_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]},
+        "worker_count": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "count"}}}]}, "pid_peak": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "count"}}}]}, "oom_events": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "count"}}}]}, "exit_events": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "count"}}}]},
+        "latency_p95_ms": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "milliseconds"}}}]}, "throughput_per_second": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "per_second"}}}]}, "recovery_seconds": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "seconds"}}}]},
+        "gpu_memory_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}, "gpu_utilization_ratio": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "ratio"}}}]}
+      }
+    },
+    "budgets": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cpu_limit_cores", "memory_limit_bytes", "connection_limit", "tmpfs_limit_bytes", "shm_limit_bytes", "worker_limit", "pid_limit", "latency_p95_budget_ms", "throughput_floor_per_second", "recovery_budget_seconds", "gpu_memory_limit_bytes"],
+      "properties": {
+        "cpu_limit_cores": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "cores"}}}]}, "memory_limit_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}, "connection_limit": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "count"}}}]},
+        "tmpfs_limit_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}, "shm_limit_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}, "worker_limit": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "count"}}}]},
+        "pid_limit": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "count"}}}]}, "latency_p95_budget_ms": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "milliseconds"}}}]}, "throughput_floor_per_second": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "per_second"}}}]},
+        "recovery_budget_seconds": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "seconds"}}}]}, "gpu_memory_limit_bytes": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"unit": {"const": "bytes"}}}]}
+      }
+    },
+    "effective_service": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "security_opt": {"type": "array", "maxItems": 1, "items": {"enum": ["no-new-privileges:true", "no-new-privileges:false"]}},
+        "cap_drop": {"type": "array", "maxItems": 64, "items": {"type": "string", "pattern": "^[A-Z0-9_]+$", "maxLength": 40}},
+        "cap_add": {"type": "array", "maxItems": 64, "items": {"type": "string", "pattern": "^[A-Z0-9_]+$", "maxLength": 40}},
+        "privileged": {"type": "boolean"}, "init": {"type": "boolean"},
+        "group_add": {"type": "array", "maxItems": 32, "items": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 2147483647}, {"type": "string", "pattern": "^[0-9]{1,10}$"}]}},
+        "secrets": {"type": "array", "maxItems": 64, "items": {"type": "string", "pattern": "^synthetic-[a-z0-9._-]+$", "maxLength": 80}},
+        "volumes": {"type": "array", "maxItems": 128, "items": {"$ref": "#/$defs/volume"}},
+        "restart": {"enum": ["no", "always", "unless-stopped", "on-failure"]},
+        "healthcheck": {"$ref": "#/$defs/healthcheck"},
+        "cpus": {"anyOf": [{"type": "number", "minimum": 0}, {"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)?$"}]},
+        "mem_limit": {"anyOf": [{"type": "integer", "minimum": 0}, {"type": "string", "pattern": "^[0-9]+(?:[bkmg]i?b?)?$"}]},
+        "pids_limit": {"anyOf": [{"type": "integer", "minimum": 1}, {"type": "string", "pattern": "^[1-9][0-9]*$"}]},
+        "deploy": {"$ref": "#/$defs/deploy"}, "gpus": {"enum": ["all"]}, "runtime": {"enum": ["nvidia"]}
+      }
+    },
+    "volume": {
+      "type": "object", "additionalProperties": false, "required": ["type", "source"],
+      "properties": {
+        "type": {"enum": ["bind", "volume", "tmpfs"]},
+        "source": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)/synthetic-public/[A-Za-z0-9._/-]+$", "maxLength": 160},
+        "target": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)/[A-Za-z0-9._/-]+$", "maxLength": 160}, "read_only": {"type": "boolean"}
+      }
+    },
+    "healthcheck": {
+      "type": "object", "additionalProperties": false,
+      "properties": {"disable": {"type": "boolean"}, "test": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string", "pattern": "^[A-Za-z0-9._:/-]+$", "maxLength": 120}}}
+    },
+    "deploy": {
+      "type": "object", "additionalProperties": false,
+      "properties": {"resources": {"type": "object", "additionalProperties": false, "properties": {
+        "limits": {"type": "object", "additionalProperties": false, "properties": {
+          "cpus": {"anyOf": [{"type": "number", "minimum": 0}, {"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)?$"}]},
+          "memory": {"anyOf": [{"type": "integer", "minimum": 0}, {"type": "string", "pattern": "^[0-9]+(?:[bkmg]i?b?)?$"}]},
+          "pids": {"anyOf": [{"type": "integer", "minimum": 1}, {"type": "string", "pattern": "^[1-9][0-9]*$"}]}
+        }},
+        "reservations": {"type": "object", "additionalProperties": false, "properties": {"devices": {"type": "array", "maxItems": 16, "items": {"type": "object", "additionalProperties": false, "properties": {"capabilities": {"type": "array", "maxItems": 16, "items": {"const": "gpu"}}}}}}}
+      }}}
+    },
+    "safe_text": {"type": "string", "minLength": 1, "maxLength": 1000, "pattern": "^[A-Za-z0-9 .,;:()_/@+-]+$"},
+    "safe_value": {"oneOf": [
+      {"type": ["boolean", "null"]},
+      {"type": "number", "minimum": 0, "maximum": 1000000000000000},
+      {"type": "string", "pattern": "^[A-Za-z0-9._:-]+$", "maxLength": 120},
+      {"type": "array", "maxItems": 64, "items": {"type": "string", "pattern": "^[A-Z0-9_]+$", "maxLength": 40}}
+    ]},
+    "exception": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scope", "compose_file", "service", "control", "allowed_value", "kind", "owner", "reason", "impact", "mitigation", "verification", "reviewed", "review_by", "release_condition"],
+      "properties": {
+        "scope": {"const": "root"}, "compose_file": {"$ref": "#/$defs/repo_path"},
+        "service": {"$ref": "#/$defs/public_id"}, "control": {"$ref": "#/$defs/public_id"},
+        "allowed_value": {"$ref": "#/$defs/safe_value"}, "kind": {"enum": ["weakening", "compatibility"]},
+        "owner": {"type": "string", "pattern": "^@[A-Za-z0-9._-]+$", "maxLength": 80},
+        "reason": {"$ref": "#/$defs/safe_text"}, "impact": {"$ref": "#/$defs/safe_text"},
+        "mitigation": {"$ref": "#/$defs/safe_text"}, "verification": {"$ref": "#/$defs/safe_text"},
+        "reviewed": {"type": "string", "format": "date"}, "review_by": {"type": "string", "format": "date"},
+        "release_condition": {"$ref": "#/$defs/safe_text"}
+      }
+    },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": ["as_of", "compose_file", "secret_roots", "effective_service", "registry"],
+      "properties": {
+        "as_of": {"type": "string", "format": "date"}, "compose_file": {"$ref": "#/$defs/repo_path"},
+        "secret_roots": {"type": "array", "maxItems": 16, "items": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)/synthetic-public/[A-Za-z0-9._/-]+/$", "maxLength": 160}},
+        "effective_service": {"$ref": "#/$defs/effective_service"},
+        "registry": {
+          "type": "object", "additionalProperties": false, "required": ["schema_version", "policy_id", "template_source", "controls", "exceptions"],
+          "properties": {
+            "schema_version": {"const": 2},
+            "policy_id": {"const": "OPS-TPL-EXCEPTIONS-001"},
+            "template_source": {"const": "infra/common-optimizations.yml"},
+            "controls": {"type": "object", "additionalProperties": false, "required": ["no_new_privileges", "cap_drop_all", "cap_add", "privileged", "restart", "healthcheck", "cpus", "mem_limit", "secrets_group", "init", "gpu", "pids_limit"], "properties": {
+              "no_new_privileges": {"$ref": "#/$defs/safe_text"}, "cap_drop_all": {"$ref": "#/$defs/safe_text"}, "cap_add": {"$ref": "#/$defs/safe_text"},
+              "privileged": {"$ref": "#/$defs/safe_text"}, "restart": {"$ref": "#/$defs/safe_text"}, "healthcheck": {"$ref": "#/$defs/safe_text"},
+              "cpus": {"$ref": "#/$defs/safe_text"}, "mem_limit": {"$ref": "#/$defs/safe_text"}, "secrets_group": {"$ref": "#/$defs/safe_text"},
+              "init": {"$ref": "#/$defs/safe_text"}, "gpu": {"$ref": "#/$defs/safe_text"}, "pids_limit": {"$ref": "#/$defs/safe_text"}
+            }},
+            "exceptions": {"type": "array", "maxItems": 128, "items": {"$ref": "#/$defs/exception"}}
+          }
+        }
+      }
+    },
+    "proposal": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "lower_memory_limit", "lower_cpu_limit"],
+      "properties": {"kind": {"const": "assessment_only"}, "lower_memory_limit": {"type": "boolean"}, "lower_cpu_limit": {"type": "boolean"}}
+    }
+  }
+}
