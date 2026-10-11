@@ -1020,6 +1020,130 @@ changed input after commit, fresh digest and preflight. No metadata retry or HOM
 is included. The running aggregate gate retains the earlier frozen QA input;
 the corrected fixture/test must receive focused revalidation before final delivery.
 
+### W22 Changed-Input Server Diagnostic — 2026-10-11
+
+The config-mode correction index was
+`8367b28a257c1d948c635ce70c30ce740108057f`. The immediately following staged
+controller (`/tmp/p01-config-mode-staged.log`) exited 0; Markdown, Ruff format/check
+and hardcoded-secret checks passed. Commit message validation exited 0.
+`rtk git commit -m 'test(openbao): Preserve owned config group write under umask'`
+exited 0, commit `9130b69894bb8ac3673ac969a72111d855299f98`, changing only the
+fixture, rehearsal test and execution Task.
+
+Fresh preflight commands all exited 0: exact tag's linux/amd64 cached image ID
+`sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005`,
+public label v2.7.1, daemon 29.8.2, available memory 7.7 GiB, /tmp free 25 GiB.
+Fresh input digest was
+`868e44af22ecf1f5be5c1e6d3b38a292f37a7838141c15bdf00ee07ad490ca0b`.
+
+```bash
+rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; export HYHOME_OPENBAO_REHEARSAL=1; rtk proxy python3 -m unittest tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests.test_native_server_start_diagnostic -v > /tmp/p01-server-diagnostic-mode-fixed.log 2>&1'
+```
+
+Exit 0, one test / 16.504 seconds, owner
+`p01-0783b9e193874c51beffc218eea5dc15`, result
+`SERVER_START_VERSION_TCP_DIAGNOSTIC: PASS`. This is version/raw TCP evidence
+only. No init/API/metadata/Agent/snapshot/HOME ran. Owner-filtered
+container/network/volume listings and owner-prefix temporary directory count
+all exited 0 and were empty. Earlier failed attempts remain separate receipts.
+
+Independent IaC then admitted exactly one changed-input
+`test_native_versioned_issuance_reconciliation` attempt, conditional on the
+empty cleanup above. The exact helper/test input remained unchanged; recomputed
+digest matched `868e44af...`, exit 0. Fresh image/tag/amd64, daemon, memory and
+/tmp checks all exited 0 (6.7 GiB available, /tmp 25 GiB free). The existing
+exclusive native assignment persists. This is reviewed regression execution
+after a concrete fixture fix, not an unchanged-input automatic retry. It excludes
+the broader class, `DockerAPI.deliver`, Agent start, HOME, snapshot and recovery.
+
+### W22 Changed-Input Native Metadata Receipt — 2026-10-11
+
+```bash
+rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; export HYHOME_OPENBAO_REHEARSAL=1; rtk proxy python3 -m unittest tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests.test_native_versioned_issuance_reconciliation -v > /tmp/p01-versioned-native-mode-fixed.log 2>&1'
+```
+
+Exit 0, one test / 55.098 seconds, source commit
+`9130b69894bb8ac3673ac969a72111d855299f98`, input digest
+`868e44af22ecf1f5be5c1e6d3b38a292f37a7838141c15bdf00ee07ad490ca0b`, owner
+`p01-1b8caa953f69402aaad68d48ed22c3e7`. Recorded native v1 exact reconciliation,
+v2 exact reconciliation, and v2 wrapped API login / single-use replay denial:
+PASS. The installed helper reconciled the corresponding version-specific actual
+accessor metadata with bounded cleanup identity. No secret output was disclosed.
+Owner-filtered container/network/volume listings and exact owner-prefix temporary
+directory count exited 0 and were empty. No Agent start/delivery, HOME, snapshot,
+migration, rotation or real recovery ran. Historical native proofs and the first
+failed metadata/diagnostic receipts are retained with their distinct inputs.
+
+Current acceptance lanes: SOURCE implemented / independently approved; UNIT 47
+issuance tests and seven fixture tests PASS, helper coverage 90%; STATIC final
+registered fallback timed out; ISOLATED changed v1/v2/API contract PASS within the
+method above; HOME / MIGRATION / ROTATION / RECOVERY NOT_RUN, inputs undetermined;
+DELIVERY commits present, owning-Spec PR/head CI/merge pending. Actual HOME and
+other operational resources changed: 0. W23 and P06 holds remain in effect.
+
+### W22 Registered Diagnostic Candidate Timeout — 2026-10-11
+
+```bash
+rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; rtk proxy python3 scripts/validation/run-ci-gate.py --profile changed --local-only > /tmp/p01-diagnostic-gate.log 2>&1'
+```
+
+The 17-leaf full fallback exited 124. Its input was detached
+`9f36cbfa47c0759b4500169dbdac291eab2a79d6` plus the then-frozen seven-owned-path
+patch: fixture `8bda42ab...`, rehearsal `69d349a9...`, four final doc blobs and
+the Task checkpoint. The fallback selected by the existing fixture path was not
+bypassed. Metadata selected five documents with zero violations; all links
+checked 1193 documents / 11582 links with zero failures and one historical
+warning. The 15 lifecycle regressions passed in 138.017 seconds, after which the
+local metadata regression leaf reached its registered 10-minute timeout. The
+known child was runnable; at 9:54 wall time it had 1:41 CPU time. No assertion
+failure receipt was emitted for that leaf, and no aggregate PASS is claimed.
+Common timeout/mapping remained unchanged. Later leaves not reached by this
+candidate are NOT_RUN for that invocation; the earlier aligned candidate PASS
+is a distinct input receipt. Current exact fixture tests and independent reviews
+passed after the config-mode correction; latest-head hosted QA remains required.
+
+Read-only discovery attempts for absent QA `.agent-work` and the wrong
+`scripts/lib/gate/ci_gate_runner.py` path exited 2; `rg --files scripts` located
+the actual `scripts/validation/ci_gate_runner.py`. No report was invented from
+missing paths. The coordinator proposal names the exact existing fixture path
+for possible future changed/root mapping, with no common source mutation here.
+
+Final Task metadata initially exited 1, selected five documents / 146 violations:
+the new Evidence row used unknown combined Work Unit `W20/W22`; its two new
+Acceptance cells also used noncanonical scope prose. Independent review identified
+the exact contracts, and the rows now use assigned `W22` and canonical `pending`.
+Source/isolated scope remains in the narratives. The metadata reference loader
+computes legacy archive aliases only after successful Spec Package validation;
+that package failure also produced 145 unchanged-archive type findings. Those
+files were not edited. A corrected metadata check remains required; no reduction
+of the Acceptance domain or archive validation was made.
+
+Remote mutation authority is the user's P01 attachment, permitting this existing
+Task's logical commits / owning-Spec PR / independent review / merge. Target is
+`buenhyden/hy-home.docker`, feature branch `codex/p01-openbao-recovery`, base `main`.
+Before-state queries each exited 0: no remote feature branch, no open PR for this
+head; current remote main `4e26a5a8022a7307c7461af60337442912955df1`. Protection
+readback has strict status checks but empty contexts/checks, zero required reviews
+and no enforced owner review. CODEOWNERS routes all changed paths to @buenhyden.
+The user still requires actual latest-head CI and independent review. No main push,
+protection mutation, self-approval or bypass is authorized or performed. Git source
+commits preserve recovery; operational rollback is NOT_RUN because HOME is untouched.
+
+After both Evidence corrections, the following exited 0 on the five final
+documents: zero metadata violations, zero legacy exceptions and zero transition
+overrides; the unchanged archive cascade disappeared.
+
+```bash
+rtk bash -c 'export PATH=/tmp/hy-home-p09-qa/bin:$PATH; rtk proxy python3 scripts/validation/check-document-metadata.py --mode check-changed > /tmp/p01-corrected-evidence-metadata.log 2>&1'
+```
+
+The intermediate rerun (`/tmp/p01-final-metadata.log`) had still captured the
+uncorrected Acceptance cells and exited 1 / 146 findings. Its failure is retained,
+not treated as the final result. The earlier document-only staged controller
+exited 0, but subsequent index corrections require a new final-index controller.
+This result-only paragraph adds no link or metadata identity. Final source/docs
+delivery remains an owning-Spec PR candidate; latest-head hosted CI is pending.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1029,6 +1153,8 @@ the corrected fixture/test must receive focused revalidation before final delive
 | Audit and recovery | 11 | W21 | Native audit-full denial, snapshot save/empty restore/unseal | e4bde131a34928e19266ddc6dbe86ecc78ccc4ef895d44f39666f60e2e2a9fee | PASS | W21 and W22 | pending |
 | Public source review | 11 | W22 | Independent security and IaC; code review delta | ef22f5f377a13185fb396e3b65e33debedf67108257dd3098a579c0292b1c35a | PASS | W22 and W22 Regression Contract Follow-up | pending |
 | HOME preconditions | 11 | W23 | Named host, CA and independent custody | User P01 and `ok` | NOT_RUN | W23 HOME Boundary and P06 Hold | pending |
+| Versioned journal source | 11 | W22 | Independent code/security; 47 unit tests, 90% coverage | helper `be2343a0...` | PASS | W22 Source Commit and Isolated Attempt | pending |
+| Changed fixture native metadata | 11 | W22 | v1/v2 exact reconciliation, wrapped login/replay denial | `868e44af22ecf1f5be5c1e6d3b38a292f37a7838141c15bdf00ee07ad490ca0b` | PASS | W22 Changed-Input Native Metadata Receipt | pending |
 
 ## Review and Completion
 
