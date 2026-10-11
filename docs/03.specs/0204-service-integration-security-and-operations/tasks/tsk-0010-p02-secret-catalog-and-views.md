@@ -1,6 +1,6 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -58,7 +58,8 @@ NO_CHANGE/reuse check:
   `infra/03-security/openbao/secret-catalog.schema.json` as the single catalog
   and closed production metadata contract, not a second service inventory.
 - `scripts/lib/ops/secret_catalog.py` for parsing, classification and view
-  generation, plus `scripts/operations/secret-catalog.py` as its narrow CLI.
+  generation, with private `_secret_catalog_io.py` for fixed public-file and
+  staging primitives, plus `scripts/operations/secret-catalog.py` as its narrow CLI.
   Reuse SMTP01 and existing metadata parsing rather than copying them.
 - `tests/lib/ops/test_secret_catalog.py` and
   `tests/validation/test_secret_catalog_contract.py`, with synthetic fixtures
@@ -117,6 +118,51 @@ independent review; only names, paths, modes and consumer metadata may leave it.
 
 ## Work Log
 
+### Worker Execution Plan
+
+The user assigned this session as the single P02 implementation owner and then
+required local `main` as the baseline for implementation and shared drafts.
+The issued worker worktree was clean at `953a6c10e5ea7d7883b11f6d7f1a9f6f2104be2d`.
+It was advanced with `git merge --ff-only main` to local main
+`728ec6379f193256cee342550e38479cf3ebfc56`; exit 0. The two new helper/test files
+were preserved. The subsequent SEC01 commit is baseline context, not a P02 edit.
+A later local-main ownership update was reconciled at
+`6da5e3bf380d5002e0e28181136fde8c016e49ce` with all owned drafts preserved.
+OpenBao document drafts were saved as an ignored patch, following P01 sole
+writer ownership. Before remote delivery, the coordinator must reconcile local-main publication
+so an owning-Spec PR does not deliver unrelated baseline commits.
+
+The worker remains on `codex/p02-secret-catalog` in the issued worktree.
+The parent exclusively writes catalog/schema, the contract test, this Task and
+ignored integration proposals. A bounded helper worker owns the library, CLI
+and unit tests; a documentation worker prepares subject-0085 and OpenBao README
+catalog proposals for the P01 sole writer. Inventory and independent review workers are read-only.
+Request, token, elapsed-time, retry ceilings and shared-budget allocation are
+UNKNOWN; no enforcement of an unspecified budget is claimed. Six concurrent
+workers is a scheduling limit, not a runtime-provider guarantee.
+
+W32 is implemented in three reviewable units: catalog/schema and per-ID source
+contracts; tooling/staging views and regeneration refusal; subject-0085 usage
+and verification evidence. Each new behavior gets a witnessed RED, focused
+GREEN and negative boundary coverage. Shared generator/parser/view/index/gate
+changes are proposed against local-main blob IDs before final integration;
+the coordinator remains their sole final writer. No production values, source
+secret files or real dotenv state are inspected. P01 delivery and recovery
+contracts and P06 migration/consumption remain prerequisites for runtime lanes.
+The user subsequently supplied the complete P02 execution input and reference
+code/tests. All supplied file bodies were read before reconciliation. Existing
+SMTP parsing and metadata consumers are reused. The reference migration HTTP
+client and real value-copy lane belong to P06 and are not installed in this
+public-source preparation slice. Its filename-only retirement heuristic does
+not override CLN01 positive initialization and rollback consumers. The reference
+eight-cell view is adapted to the existing ten-pipe-cell scanner contract, and
+reference view/classification tests are mapped to canonical unittest guards rather than installing
+a second `reference/` tool tree. The closed production schema is extended with
+per-ID owner, action, public evidence and blocked mount/field/UID/GID/mode/rotation
+plans; these fields are contracts, not observations or deployment evidence.
+
+### Issuance and Worker Receipts
+
 Task issuance has a measured RED probe on input `2b9f5ec82`: no Task 0010,
 criterion 16 or W32 existed. This documentation-only unit supplies those
 contracts; the matching availability probe passed after issuance. The first
@@ -128,13 +174,157 @@ implementation, full per-ID acceptance and all runtime
 lanes remain unexecuted at issuance. Do not mark this Task completed merely
 because it is issued.
 
+The helper parser RED used `/tmp/hy-home-p09-qa/bin/python -m unittest discover
+-s tests/lib/ops -p test_secret_catalog.py -v` on input `953a6c10` plus the new
+minimal test: exit 1, missing module. The minimal parser GREEN used the same
+command plus the new library: one test, exit 0. These are historical focused
+results; checks after reconciliation use `728ec637` plus owned changes.
+A proposal-preparation invocation of `rtk proxy python` failed with exit 1
+because this host provides `python3`; it made no edits. The corrected command
+uses `rtk proxy python3`.
+
+The worker subsequently fast-forwarded to local main
+`74feff9429d302233d2475b31beed3dbf2ac07c9` with `git merge --ff-only main`,
+exit 0. This includes P03 ownership issuance; no P03 files are worker edits.
+The catalog derives the active issued IDs and alias from the existing public
+source table, without a fixed service inventory. Original source dates use
+`source_recorded_at`; they do not claim review, rotation or delivery dates.
+Known Compose/environment grants and all nine `process_htpasswd` input/output
+IDs record declared source/job consumers. Runtime, manual/external clients and
+actual recovery remain UNKNOWN until P01/P06 receipts. Positive initialization,
+rollback, independent backup custody, PG-020 and crypto history remain retained.
+No proven UNUSED_DELETE target was identified in this public-source slice.
+Unknown consumer facts must be reconciled by P01/P06 with CLN01 by 2026-10-18;
+this review deadline authorizes no deletion or default migration.
+
+The action contract binds DELETE bidirectionally to UNUSED_DELETE and
+OUT_OF_SCOPE to LAB exclusion. UNKNOWN_BLOCKED requires BLOCKED_FACTS;
+IMPLEMENT requires root kv_static ACTIVE_KEEP with declared source consumers.
+VERIFY_RUNTIME preserves active/recovery rows with source consumers; NO_CHANGE
+preserves known active or retained recovery rows. Only IMPLEMENT may enter the
+initial generation guard, and all other crypto/custody/automation/lifecycle
+conditions still apply. These actions never authorize a private operation.
+The owner/evidence pointers and blocked mount/field/UID/GID/mode/ACL/delivery/
+reload/restart/rotation plans are explicit metadata, not accepted runtime facts.
+
+Independent code/security review found missing source/job consumers, action
+contradictions and an earlier single-read I/O assumption. Bounded EOF reads now
+validate size and identity. On input `74feff942` plus the owned RED tests,
+`/tmp/hy-home-p09-qa/bin/python -m unittest
+ tests.validation.test_secret_catalog_contract.SecretCatalogContractTests.test_generator_htpasswd_inputs_are_declared_consumers
+ tests.validation.test_secret_catalog_contract.SecretCatalogContractTests.test_schema_rejects_contradictory_action_authority -q`
+failed with 13 subtest failures, exit 1. After catalog/schema correction,
+`/tmp/hy-home-p09-qa/bin/python -m unittest
+ tests.validation.test_secret_catalog_contract -q` passed nine tests, exit 0.
+The prior `6da5e3bf` helper/contract run passed 34 tests and branch coverage 91%;
+it is superseded by final post-review results below, not reused as final-head proof.
+
+Four generated files remain confined to `.agent-work/p02-views`: compatible
+public example, value-free local staging table, summary and Korean README.
+The actual private sensitive table and dotenv are neither read nor overwritten.
+Reference view/classification boundaries use canonical unittest tests.
+The reference HTTP/CAS copy tests are NOT_RUN and remain P06 work; no migration
+mock or network result is claimed. The complete reference pytest command is
+NOT_RUN because pytest is absent in the isolated QA environment.
+Real HTTP/KV migration is NOT_RUN and belongs to P06; no mock equals delivery proof.
+
+Shared generator, workflow/manifest/index and P01 documentation changes remain
+ignored exact-base proposals. The final generator proposal has 13 synthetic tests, exit 0, on library
+`89602c6d` SHA256. Its 147-test compatibility overlay passed, exit 0, on the
+preceding `6382d9f3` library; this older input is explicitly retained and is not
+claimed as latest-library evidence. The last correction only aligns malformed
+LAB consumer validation with the unchanged schema. Its apply path performs
+no COMM-003 unlink; SMTP01 owns its executor, proof and lock contract. Generic
+CLN01 deletion still requires a writer-stop boundary because its lock is
+separate. No claim of coordinated private maintenance is made.
+
+A first selected metadata run failed on a forbidden level-two heading, exit 1.
+The execution and receipt headings were nested under Work Log as required.
+A search command with an unmatched shell glob failed before execution, exit 1;
+explicit validator paths corrected discovery. Document gates run after the
+final body update. SOURCE/UNIT/STATIC results are scoped public-source evidence;
+ISOLATED denotes synthetic tests. HOME/MIGRATION/ROTATION/RECOVERY/DELIVERY remain
+NOT_RUN pending their owning operational and coordinator integration gates.
+
+### Final Source Receipts and Integration Handoff
+
+All material independent code/security findings were closed against library
+SHA256 `89602c6da2c48b341d913c7582780c29ca9bcd3b44f5d8946105551c62eeb52d`.
+A declared active or recovery consumer must name at least one source path.
+The sole empty-list exception is the exact unused_delete/UNUSED_DELETE/DELETE
+metadata triple; this known-zero source declaration is not a CLN01 operational
+five-axis absence receipt. No production row uses this exception. The library
+and schema reject malformed LAB declarations consistently with and without the
+schema. Positive LAB fixtures are synthetic source metadata only.
+
+The final tooling unit passed 30 unittest cases, exit 0, on `74feff942` plus
+owned source. It was committed as
+`d82f6fc825e2b7e97c335dd4f49283c8a7428ea5`. While separating logical commits,
+the production catalog/schema were temporarily absent from the Git index;
+combined checks stopped with `public_input_not_tracked`, exit 1. This expected
+fail-closed result was corrected by staging only the three owned public files.
+The catalog/schema/production contract unit was committed as
+`1148592d8e6152667a08bc90c02f7d9d960f2d04` after final 40-test GREEN, exit 0.
+Both units passed `bash scripts/validation/run-ci-precommit.sh --mode local-staged`
+on their actual indexes, exit 0. Unrelated file-type hooks were SKIP because
+no matching staged files existed. No hook bypass was used.
+
+Final commands used `/tmp/hy-home-p09-qa/bin/python` (QA) unless indicated:
+
+- `-m coverage run --branch --include='*/scripts/lib/ops/*secret_catalog*.py,*/scripts/operations/secret-catalog.py' --data-file=/tmp/p02-secret-catalog-root-final.coverage -m unittest tests.lib.ops.test_secret_catalog tests.validation.test_secret_catalog_contract -q`: 40 PASS, exit 0, input `d82f6fc82` plus the staged catalog unit.
+- `-m coverage run --append --branch --include='*/scripts/lib/ops/*secret_catalog*.py,*/scripts/operations/secret-catalog.py' --data-file=/tmp/p02-secret-catalog-root-final.coverage scripts/operations/secret-catalog.py --root <worker-worktree> render`: four staging files, exit 0.
+- `-m coverage report --data-file=/tmp/p02-secret-catalog-root-final.coverage --fail-under=80`: total 91%, CLI 88%, library/I/O 91%, exit 0.
+- `scripts/operations/secret-catalog.py --root <worker-worktree> check` and `check-views`: valid public metadata and matching views, exit 0.
+- Ruff `check` and `format --check` on all five owned Python files: PASS, exit 0. `git diff --check HEAD` and staged diff checks: PASS, exit 0.
+- `scripts/validation/check-document-metadata.py --mode check-changed --changed-path docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0010-p02-secret-catalog-and-views.md --base-ref main`: selected=1, violations=0, exit 0, input `74feff942` plus the prior Task body. Final evidence additions require the same gate again.
+- `scripts/validation/check-document-corpus-lifecycle.py --base-ref main`: violations=0, exit 0. `scripts/validation/check-document-links.py --mode all`: failures=0, exit 0; one existing warning for unverified historical archive links.
+- QA `-m pip_audit -r scripts/requirements.txt` failed, exit 1, because the module was absent. `uv tool run pip-audit -r scripts/requirements.txt` failed, exit 1, because ensurepip is unavailable. `uv pip compile scripts/requirements.txt --output-file /tmp/p02-validation-audit.lock`, followed by `uv tool run pip-audit --disable-pip --no-deps -r /tmp/p02-validation-audit.lock`, audited the fully resolved validator dependency graph and passed, exit 0. Repository dependency files were unchanged.
+- `scripts/validation/check-script-manifest.py --check-generated`: FAIL, exit 1, exactly three missing registrations on `1148592d8`. The ignored manifest patch is required; its initial generator kind/order and proof declarations were corrected in the proposal. Existing short-read tests now import the actual private companion rather than its library re-export, to provide genuine manifest test-use evidence.
+
+`<worker-worktree>` means the exact issued P02 worktree above. The fixed
+public staging directory is ignored; there is no production deployment effect.
+The previous unmodified-generator 147-case SOURCE/UNIT compatibility command
+and the proposal's final synthetic command are recorded with their exact
+inputs in `.agent-work/integration-proposal/generator/README.md`. Independent
+document review confirmed proposal-only ownership and runtime boundaries;
+its pending-receipt concern is resolved by these scoped final receipts.
+
+The integration coordinator receives `.agent-work/integration-proposal/README.md`
+and exact-base patches for manifest, workflow, indexes and generator/regressions;
+P01 receives the preserved four-file catalog documentation patch. Shared
+tracked files remain untouched. Apply each only after matching its recorded
+blob to current local main, then run registered changed checks, script manifest,
+40 P02 tests, affected generator regressions, metadata/links/lifecycle and
+independent latest-head review. P01/P03/P06/P08/P10 receive schema version 1.0.0,
+issued ID/alias mapping, provisional destination/recovery graph and all blocked
+runtime facts from the committed catalog. Their final ACL, delivery, restart,
+retention/RPO/RTO and migration receipts remain unresolved owning contracts.
+
+`git ls-remote --heads origin main` confirmed remote main
+`6da5e3bf380d5002e0e28181136fde8c016e49ce`, exit 0; that receipt used local main
+`74feff9429d302233d2475b31beed3dbf2ac07c9`. No P02 remote push, PR or merge has
+occurred. DELIVERY is NOT_RUN until shared integration and publication align;
+an owning-Spec PR must exclude unrelated P03 baseline work. HOME, MIGRATION,
+ROTATION and RECOVERY are NOT_RUN. No real values, source secret files, volumes,
+services, credentials or LAB runtime were changed or deleted. Tracked source
+commits support Git rollback; no nonexistent private recovery is promised.
+
+Before handoff, local main advanced to
+`4e26a5a8022a7307c7461af60337442912955df1` (P04 ownership issuance).
+`git rebase main` preserved all four unpublished P02 logical units without
+conflicts, exit 0; only upstream Spec/Plan/P04 Task changed. The original commit
+SHAs above identify historical measured inputs, not the final delivery list.
+The current four commits and latest-base receipts are in the ignored integration
+handoff. Shared proposal base blob IDs are unchanged and are rechecked against
+this local main. No force push, reset, stash or clean occurred.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Issuance baseline | 16, 8 | W32 | Task/criterion/work-unit availability probe | 2b9f5ec82 | FAIL | Coordinator private issuance RED receipt; no values | pending |
 | Issuance source contract | 16, 8 | W32 | Availability GREEN and selected metadata after dependency/status correction | 2b9f5ec82 plus three issuance documents | PASS | Coordinator GREEN and metadata retry receipts; exit 0 | pending |
-| P02 source implementation | 16 | W32 | Complete catalog, schema, aliases and generated views | Worker issuance commit pending | NOT_RUN | This Task and worker handoff | pending |
+| P02 source implementation | 16 | W32 | Catalog, closed schema, four staging views and source consumer regression | 74feff942 plus owned changes | PASS | Tooling d82f6fc82 and catalog 1148592d8; 40 scoped tests and coverage 91%, exit 0; shared integration pending | pending |
 | Private migration and consumption | 16 | W32 | Selected P06 runtime contract and actual receipt | Final P01/SEC01 contract pending | NOT_RUN | P06 owner | pending |
 
 ## Review and Completion
