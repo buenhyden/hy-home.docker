@@ -1,0 +1,12 @@
+{
+  "host": "dev-pg",
+  "port": 5432,
+  "dbname": "opsflow_dev",
+  "user": "opsflow_ingest",
+  "password": null,
+  "connect_timeout": 5,
+  "statement_timeout_ms": 30000,
+  "lock_timeout_ms": 5000,
+  "sslmode": "disable",
+  "sslrootcert": null
+}

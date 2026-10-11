@@ -1,0 +1,57 @@
+# Reviewed root model + this override only; no standalone deployment.
+# The coordinator supplies a locally available immutable SEC01-approved image.
+x-workflow-code: &workflow-code
+  - type: bind
+    source: ${OPSFLOW_CODE_DIR:?}/dags/source_manifest_ingest.py
+    target: /opt/airflow/dags/source_manifest_ingest.py
+    read_only: true
+    bind: {create_host_path: false}
+  - type: bind
+    source: ${OPSFLOW_CODE_DIR:?}/workflow_lib
+    target: /opt/airflow/dags/workflow_lib
+    read_only: true
+    bind: {create_host_path: false}
+
+x-workflow-image: &workflow-image
+  image: ${OPSFLOW_AIRFLOW_IMAGE:?}
+  build: !reset null
+  pull_policy: never
+
+services:
+  airflow-apiserver:
+    <<: *workflow-image
+    volumes: *workflow-code
+  airflow-scheduler:
+    <<: *workflow-image
+    volumes: *workflow-code
+  airflow-dag-processor:
+    <<: *workflow-image
+    volumes: *workflow-code
+  airflow-triggerer:
+    <<: *workflow-image
+    volumes: *workflow-code
+  airflow-init:
+    <<: *workflow-image
+  flower:
+    <<: *workflow-image
+  airflow-worker:
+    <<: *workflow-image
+    networks:
+      dev_data_net: {}
+      object_net: {}
+    volumes:
+      - type: bind
+        source: ${OPSFLOW_CODE_DIR:?}/dags/source_manifest_ingest.py
+        target: /opt/airflow/dags/source_manifest_ingest.py
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${OPSFLOW_CODE_DIR:?}/workflow_lib
+        target: /opt/airflow/dags/workflow_lib
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${OPSFLOW_SECRET_DIR:?}
+        target: /run/opsflow
+        read_only: true
+        bind: {create_host_path: false}
