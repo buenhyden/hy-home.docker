@@ -348,7 +348,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
     def test_n8n_entrypoints_reject_wrong_or_empty_selected_broker_secret(self):
         for entrypoint in ("docker-entrypoint.sh", "docker-entrypoint.dev.sh"):
             source = (N8N / entrypoint).read_text(encoding="utf-8")
-            guard = source[: source.index("if [ -d /opt/custom-certificates ]")]
+            guard = source[: source.index("# OPSFLOW PACKAGE BRIDGE")]
             with tempfile.TemporaryDirectory() as temporary:
                 mount = Path(temporary)
                 guard = guard.replace("/run/secrets", str(mount))

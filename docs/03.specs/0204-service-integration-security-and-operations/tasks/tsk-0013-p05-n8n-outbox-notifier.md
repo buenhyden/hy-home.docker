@@ -1,10 +1,10 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.3.2"
+version: "0.3.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0013"
 parent_ids:
@@ -832,3 +832,160 @@ collection, external workspace and blog-data writes remain excluded.
 - [Official external secret stores](https://docs.n8n.io/external-secrets/)
 - [Official queue execution](https://docs.n8n.io/hosting/scaling/queue-mode/)
 - [Selected SMTP node source](https://github.com/n8n-io/n8n/blob/34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7/packages/nodes-base/nodes/EmailSend/v2/send.operation.ts)
+
+### W42 image-owned package bridge source increment — 2026-10-12
+
+The coordinator assigned one writer at `codex/p05-install-completion`, clean
+baseline `241a470d246191751a7a5655a86d5ec4f679a0ff`, with an explicit lease for
+both n8n Dockerfiles and existing entrypoints, a worker-only workload overlay,
+this Task and the two existing offline validation modules. SEC01 version/digest
+selection and other workers' changes are preserved. No root Compose, secret,
+CI, catalog, workflow builder, TypeScript transport or old staged P05 change
+is overwritten. The Task remains in-progress; criterion 19 is not accepted.
+
+The selected [exact upstream loader](https://github.com/n8n-io/n8n/blob/n8n%402.42.6/packages/cli/src/load-nodes-and-credentials.ts)
+loads the default custom directory before additional directories; each custom
+loader uses the `CUSTOM` package name and replaces that loader slot. An added
+custom-directory env alone would hide default nodes and change the tracked
+`n8n-nodes-opsflow.opsflowSmtp` identity. That proposed route is rejected.
+[Community module loading](https://github.com/n8n-io/n8n/blob/n8n%402.42.6/packages/cli/src/modules/community-packages/community-packages.module.ts)
+uses the instance settings nodes directory and
+[package scanning](https://github.com/n8n-io/n8n/blob/n8n%402.42.6/packages/core/src/nodes-loader/scan-directory-for-packages.ts)
+selects the canonical package through an API compatibility guard.
+The [folder utility](https://github.com/n8n-io/n8n/blob/n8n%402.42.6/packages/%40n8n/config/src/utils/utils.ts)
+uses `N8N_USER_FOLDER`, then the existing HOME, then cwd, with `.n8n` appended.
+The bridge does not modify HOME or read credentials for this discovery check.
+
+Both Dockerfiles use the latest stable Current Node builder identified by SEC01
+on 2026-10-12 from the [official release channel](https://nodejs.org/en/blog)
+and [release directory](https://nodejs.org/download/release/v26.11.1/),
+`node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a`.
+SEC01 supplied a successful immutable index inspection and amd64 manifest
+`sha256:7b6a85d8b6e3c3d931431979884a97b99bad974cc686097915cec3c07d462ad7`.
+This is an attributed SEC01 observation; the P05 writer did not repeat it. The
+[exact upstream Dockerfile](https://github.com/n8n-io/n8n/blob/n8n%402.42.6/docker/images/n8n/Dockerfile)
+uses an earlier Node builder and does not exempt this new input from latest
+stable evaluation. Exact new-builder compatibility remains unexecuted.
+This new build input requires SEC01 supply-chain/image acceptance; its immutable
+reference is not a vulnerability scan or selected runtime proof. The existing
+package/lock is installed without dependency lifecycle scripts, compiled through
+the explicit TypeScript CLI, and pruned without lifecycle scripts. Only package
+metadata, compiled output and production dependencies enter the final immutable
+`/opt/hyhome/n8n-custom/opsflow` artifact with a complete SHA256SUMS receipt.
+The declared n8n service and runner versions/digests are unchanged.
+
+Both entrypoints verify image-owned, non-writable, non-symlink artifact metadata,
+receipt uniqueness/completeness, every deployed hash and canonical package/API
+identity before publishing exactly one symlink under the configured n8n nodes
+package directory. Unknown files/directories, foreign/dangling links, unsafe
+parents, tampering and mismatch fail with a static code, without deletion or
+replacement. Atomic symlink creation plus exact recheck accommodates two starters.
+There is no runtime npm install, download or database package registration.
+Existing custom mounts and all sibling community packages remain untouched.
+The optional overlay attaches only `n8n-worker` to DEV and capture networks;
+main and task runners receive neither attachment. Network membership is not a
+firewall, authentication or native capture proof; actual Mailpit/egress/UID/TLS
+acceptance still requires the P03 and coordinator runtime boundary.
+
+Witnessed pre-change RED: the worker-placement class failed once because its
+optional overlay was absent; the image-bridge class failed twice because the
+unmasked locked artifact and bridge were absent. First GREEN failed on a synthetic
+fixture's writable mode; strict source checks were retained and fixture modes
+were corrected. The first three-module regression failed once because an older
+credential-only probe included the new bridge without any image artifact. Its
+boundary now ends at the bridge marker; the bridge has separately executed
+negative fixtures. These failures are not native service failures.
+
+Actual `rtk proxy python3 -m unittest -v
+ tests.validation.test_service_runtime_compatibility
+ tests.validation.test_workflow_version_bundle
+ tests.validation.test_n8n_outbox_contract` ran 41 tests: 38 passed and three
+explicit image-native opt-in tests were skipped, exit 0. The ten-test P05 module
+includes seven prior contracts and three new image/placement fixtures. Synthetic
+inputs substitute only the image path/owner and ancestor paths, never deployed
+files. Covered behaviors include sibling/default-node preservation, repeat and
+concurrent exact-link creation, unknown asset preservation, altered hashes,
+symlinked dependencies, duplicate receipts, extra unlisted files, writable
+packages, unsafe folder paths and the official fallback selection. This is not
+actual package discovery inside the selected image.
+
+The initial registered-run controller incorrectly selected four internal leaves
+as public roots and exited 1 before executing any child. Corrected invocation
+used the real registered `ci.opsflow-smtp-node-package` root with unmodified
+node argv/order/env/timeout: setup, dependency audit, production audit, compiled
+source coverage, then pack. All five nodes completed, aggregate exit 0.
+The existing host tool was Node v26.10.0; it is not the image Node receipt.
+There were 24 Node tests PASS; compiled Opsflow source coverage was line 97.33%,
+branch 94.83%, function 87.88%, with both audits reporting zero vulnerabilities.
+Pack dry-run included eight files and preserved canonical package name/version.
+These are source-package receipts, not image supply-chain or HOME acceptance.
+
+SOURCE is implemented; UNIT/source-package checks passed. Final STATIC/review/
+commit admission is pending coordinator acceptance of the exact frozen unit.
+ISOLATED native discovery, HOME, P04 publication/outbox consumption, actual SMTP
+capture, MIGRATION, ROTATION and RECOVERY remain NOT_RUN for this increment.
+No Docker pull/build/start, workflow import/schedule, credential, DB or runtime
+state change occurred. When separately deployed, the bridge may create bounded
+`.n8n/nodes/node_modules` directory scaffolding and its exact one-package link.
+Rollback first deactivates the selected workflow and stops affected consumers,
+restores the reviewed image, and removes only that exact link after ownership
+validation. Directory cleanup requires an operator receipt identifying newly
+created directories and matching filesystem identity; only those directories
+may be removed while empty. Pre-existing, nonempty and unknown assets are
+preserved; the source bridge provides no automatic cleanup executor.
+
+The first staged gate exited 2: Markdown formatter changed one blank line and
+hadolint reported DL3003 for a build-directory `cd`. The second retry still
+reported that blank line because the admission wrapper restores candidate bytes;
+the source was explicitly corrected and Docker WORKDIR now owns that switch.
+No lint exemption was added. Final staged checks are recorded after review.
+A copied public package production-prune probe exited 0 (165 packages removed,
+169 artifact files, no symlinks) and its closed hash receipt/bridge passed with
+fixture path/owner substitutions. A direct compiled-export probe without the
+n8n loader environment exited 1: `n8n-workflow` is a runtime peer after pruning.
+The exact upstream loader initializes NODE_PATH from its module resolution paths;
+selected-image peer resolution and actual discovery remain NOT_RUN. No dependency
+was silently copied from host global installations into the final artifact.
+
+Final source admission used the frozen eight-path candidate at
+`241a470d246191751a7a5655a86d5ec4f679a0ff` with pre-receipt staged diff SHA256
+`3e12d2e145860f29f8c12b7612d0344cca7dfe5e7007e457460e9384cbb578a5`.
+Independent final code/security review approved the source-only patch with no
+Critical or Important findings. Its Minor directory-scaffolding wording finding
+was corrected above; this receipt delta does not change production/test inputs.
+Native image, loader discovery, runtime API peer, DB, SMTP, HOME and recovery
+acceptance remain open. The bridge source itself has no measured coverage claim;
+the registered Node coverage numbers above apply only to the existing Opsflow
+package compiled source.
+
+The actual `infra-validate` skill helper exited 2 with 11 PASS, four BLOCKED and
+two NOT_RUN: the whole input graph rejected an external absolute path, so its
+Compose plugin/render/structure prerequisites remained blocked. No exception,
+script alteration or PASS relabel was used. Separately, the coordinator used
+existing bounded `port_inventory._run_config` on the public root Compose plus
+this optional overlay, explicit `.env.example` and a child environment limited
+to PATH/DOCKER_CONFIG/COMPOSE_DISABLE_ENV_FILE. Actual Docker Compose config
+exited 0; no actual `.env` or private inputs were read and HOME was not modified.
+The coordinator command was `docker compose --project-directory <this worktree>
+--env-file <this worktree>/.env.example --profile '*'
+-f <this worktree>/docker-compose.yml
+-f <this worktree>/infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
+config --format json`. The resulting public model had 124 services at observation;
+this count is not a fixed inventory contract. Only the queue worker gained DEV
+and capture memberships, retaining its original management/queue memberships.
+Main and both task runners retained their original networks. This is attributed
+coordinator STATIC evidence, not a P05 author rerun or native resource action.
+Render SHA256 is `2bf962df6569b44e42cdb9f4fde09d45ef36ef5d34d3e819139eb92354453d0a`;
+base Compose SHA256 is `2cd210e4e35671fedc1cfd497d23bdf627def6cf35cf852fbba74ca24b958721`;
+overlay SHA256 is `7d2280fb5e3e28ab490bb68d8625347f8818659aa063129e8642dcf044d096b9`.
+
+After the last source hardening, the P05 ten-test module passed, exit 0. Final
+source staged checks passed, exit 0; metadata selected this Task with zero
+violations, lifecycle violations were zero, and all-document links had zero
+failures and one existing archive-capture warning, each exit 0. The isolated
+production-pruned export also passed with the explicit locked fixture API
+`n8n-workflow` version 2.42.3 supplied through NODE_PATH, exit 0. The explicit
+Docker builder compiler command was checked against existing locked host
+dependencies and exited 0. Neither result proves the selected image runtime or
+latest builder. Final receipt-only metadata/lifecycle/staged checks and commit
+admission are completed separately after focused review.
