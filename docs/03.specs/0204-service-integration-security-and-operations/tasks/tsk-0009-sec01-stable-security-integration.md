@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.6"
+version: "0.4.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -870,6 +870,111 @@ registered domain. Its pending correction needs a logical commit before the
 clone-based regression can see it. Other completed checks retain their individual
 results, but the aggregates remain FAIL until a fresh complete run passes. No
 validator exception or false aggregate PASS is permitted.
+
+### Current Native and Public Scanner Failure Receipts
+
+The third isolated datastore attempt used committed input
+`85033fb8526889fbd20d5b7b765be5ad8bade14d` and boundary
+`bcf4ef40efe895e564aebb94be561b8f265005b92a0e2792a14df24c23a72af0`.
+It exited 1 after 514.418 seconds: 23 of 24 functional methods passed, while
+the wrong-password method and teardown rejected Docker's exact missing-object
+response (`[]` stdout and case-variable exact full-ID stderr). Immutable receipt
+SHA-256 is
+`3f64d701fe08d284d82a254155af71905cef369d77f59dbbabba41132563954f`.
+A same-daemon follow-up confirmed all ten exact owned IDs absent, without any
+removal command; receipt SHA-256
+`2f94217b087366ffe562369072ed1a657138af939d1c457cf7e2e17f574aba81`
+is PASS only for absence. Preserve the original native FAIL. The independent
+source fix `c70050a9fe2b93fc514d37f35d9f5b1687c2d383` changes two files;
+RED was witnessed for both exact dialects, then 19 source tests passed with
+11 opt-in native tests skipped. Boundary coverage was 81 percent, staged gates
+passed and independent review accepted. A fresh native run remains required.
+
+The third public GoTrue scan failed after 120.465 seconds at archive binding,
+receipt `238dac6e9aa0468a5ee9759aa89733848b8dc53467c1b1320dbbe90681b49b4f`.
+The exact official OCI index binds one platform image and one public attestation.
+A narrow reviewed validator checks that graph rather than accepting extra files.
+The fourth actual attempt validated the saved configuration, six layers and
+one index-bound attestation, and actual Syft and Grype processes both exited 0.
+However, post-scan identity validation rejected Grype's `source.target` JSON
+dialect while expecting Syft's `source.metadata`; the attempt remains FAIL,
+category `scanner-json-public-image-binding-invalid`, after 132.079 seconds.
+Its immutable receipt SHA-256 is
+`e4b5796e382821d832e56cba7289194301cc9c2df65f457672fe35024e8ee39e`.
+The preserved public SBOM is 386818 bytes, SHA-256
+`cc8adb815eda5f241734ff44d00d1e4f2e036417442bf75d6b5e08fe479bf0ba`;
+Grype output is 342433 bytes, SHA-256
+`2a00bbf83e3d9d514f199d8b75ad9908da67ef41a50931858fd97eff036fd210`.
+Authenticated database import/status exited 0 and exact utility cleanup was
+verified absent. Image signatures remain UNKNOWN. A repaired validator and
+its review can supply a separately labeled offline binding observation, never
+rewrite this failed operational receipt or prove all 124 service entries safe.
+
+### Superseding Isolated and Scanner Binding Observations
+
+A fresh native run after source fix integration used input
+`c3165279c72154fb109a70956c66838e6f2de6d6`. All 24 datastore methods and
+teardown passed, exit 0, in 318.350 seconds. Receipt SHA-256 is
+`d8631ac1e6dee743a8c869fd5f3b6cf36847545e9681a8f4febec4ef11e61c2e`.
+This is synthetic ISOLATED acceptance only; HOME, migration, secret rotation,
+application recovery and actual image deployment remain unverified.
+
+The independently accepted scanner repair pins exact Syft `source.metadata`
+and Grype `source.target` dialects, with 40 tests passing. The preserved fourth
+attempt's public archive, SBOM and Grype outputs passed a new read-only offline
+binding verification against their recorded sizes, hashes and approved image.
+That observation does not rewrite the original failed attempt. It reports
+173 packages and 80 vulnerability matches: 7 Critical, 39 High, 16 Medium,
+13 Low and 5 Unknown. The database reports fix versions for 48 matches,
+not-fixed for 2 and unknown/empty fix information for 30. These are scanner
+findings rather than confirmed exploitability or remediation. The image remains
+blocked for security acceptance; signatures are UNKNOWN and all 124 entries
+remain subject to the stable/security gate. SEC01 owns validation of supplier
+fixes, applicability and compatible rebuilt or updated artifacts before rollout.
+
+The complete registered Compose leaf now passes in 170.940 seconds under the
+unchanged 600-second bound, receipt
+`c7fddaf47e574da6c2399a625c9e64844814458ed4a501fc9f21529026ed4c46`.
+Each profile and HOME uses one JSON render for the unchanged service, port and
+storage checks. Independent RED/GREEN and review preceded commit `583d35952`.
+The existing aggregate failures remain FAIL/124; this is a separately bound
+source leaf result, not an aggregate PASS. The 521-test Compose baseline leaf
+passed with 69 optional runtime skips, receipt
+`e72ec1031c381f32471c0b4f984ff41e89dd84b944013094944f54516e14933c`.
+Control-plane commit `52456c4f887353d44db606655d1382eccd6ad36f` aligns
+only the synthetic Docker fixture with its declared `app` service and adds
+empty/malformed JSON rejection cases. The corrected module passed 59 tests,
+including independent review. K6 consumer commit
+`396b2d907c662dff91c7939caeb5d27908bbac0b` aligns the existing delivery
+rehearsal with the 2.3.0 candidate and adds a consumer-version regression;
+eight source tests and independent review passed. Actual K6 2.3.0 native
+execution remains NOT_RUN; historical 2.2.0 receipts are unchanged.
+
+The registered remaining-leaf replay on `396b2d907` passed control-plane,
+pre-commit regressions, workflow contract, Storybook contract and release
+regressions. Control-plane receipt SHA-256 is
+`f8e495a133d84e36021bba70cfb1489b1c168419669128637ad9f7fc1ba5165a`.
+The final repository-integrity leaf initially failed: 317 tests, seven errors
+because the coordinator's PATH omitted installed Node. Receipt SHA-256 is
+`6e416fc9c7cb222b8656a3e0bbfc4f161bd836bb02caf99972b2d9736a8d4136`.
+Its exact registered invocation then passed all 317 tests in 61.504 seconds
+with installed Node v26.10.0 on PATH. Receipt SHA-256 is
+`28979b95fb7844dc32564358ce2c7e8a81ce70be80d243fb7cad6fa56e2f209c`.
+No assertion, tool contract or timeout was weakened. The separate original
+aggregate failures and the Node-path failure remain immutable. This composite
+set of bound leaf observations supports SOURCE delivery; it is not a newly
+executed aggregate PASS or SEC01 operational completion.
+
+The priority branch `codex/smtp01-request-contract` was detached and removed
+first after exact worktree/index/status/untracked/ignored fingerprints matched.
+Receipt SHA-256 is
+`30e2e98bff307599b6ab45a81189af0f97a913ce3818dccbcec44fb7d2172c30`.
+Its root checkout's 24 foreign dirty paths were retained. No reset, stash,
+clean, force push or private deletion was used. Current local `main` delivery
+preserves the original logical task commits; no `dev` branch or PR is used.
+Merged clean worktrees may be moved whole into a private retained-evidence
+archive and detached before exact-SHA branch deletion. Dirty or active operator
+worktrees retain their path and bytes; ignored evidence must not be discarded.
 
 ## Evidence
 

@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.7.0"
+version: "1.7.1"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -97,13 +97,13 @@ out of scope.
 | W22 | 8, 11 | Changed QA, independent IaC/security/code review, scoped commits/PR | W21 | TSK-0006 | Registered local/hosted candidate checks and actual delivery receipt |
 | W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
 | W24 | 12 | Assess consumers and implement the narrow private-unlink helper for material retired by another owner after SMTP01 evidence | W19 | TSK-0007 | Helper unit tests and document gates; private apply only after Task preflight |
-| W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Replacement frozen QA: 35 PASS in 11.490s (exit 0), 99-percent coverage (292 statements, 2 misses, 44 branches, 0 partial; exit 0); manifest/workflow registration complete. Latest-head CI, independent review and PR delivery remain pending; resource changes 0 |
+| W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Frozen preparation QA: 35 PASS, 99-percent coverage; registration integrated. Historical candidate CI failure retained in Task 0008; current local-main source gates/review support delivery, resource changes 0 |
 | W26 | 14 | SMTP01 baseline, consumer/source map and failing regressions | None | TSK-0005 | Source SHA and RED command receipts |
 | W27 | 14 | Canonical root source and Supabase SMTP-only wrapper/target alias | W26 | TSK-0005 | Unit and synthetic selected Compose model |
 | W28 | 14 | COMM-002 ownership, COMM-003 tombstone and guarded retirement helper | W27 | TSK-0005 | Equal/mismatch/idempotency/race/privacy tests; no HOME mutation |
 | W29 | 14 | Exact-image synthetic SMTP authentication, capture and failure cases | W27 | TSK-0005 | Opt-in isolated native rehearsal, separate from HOME |
-| W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Logical commits/owning PR; no unilateral common-file merge |
-| W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and pending common repairs without deployment | None | TSK-0009 | Historical source/unit/static/isolated receipts retained; latest/security gate, common repairs, review and delivery remain blocked/pending |
+| W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Preserve logical commits; reviewed local-main delivery under the superseding user instruction; HOME send/authentication and operational retirement acceptance remain separate |
+| W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Source/common repairs, isolated datastore and current local leaf receipts integrated. Global latest/security evidence, HOME deployment and complete recovery remain pending/blocked; SOURCE delivery does not close SEC01 |
 
 ### SMTP01 sequence and private-operation boundary
 

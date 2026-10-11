@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.6.0"
+version: "1.6.1"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -93,8 +93,11 @@ W7's removal of hosted public validation was a historical maintenance slice,
 preserved in the existing Task and Git history. Current CI responsibility comes
 from the quality policy and `.github/workflow-contract.yml`: the remote PR
 candidate owns aggregate changed QA, while main security is separate. Follow
-actual remote checks and independent review before merge; do not copy W7's
-old CI disposition into current execution. SPEC-0221 already owns the request
+actual remote checks and independent review for remote delivery; do not copy
+W7's old CI disposition into current execution. The superseding 2026-10-11
+user instruction instead selects reviewed local `main` delivery without PRs
+and prohibits `dev`. Preserve logical commits, run the required local checks,
+and retain historical hosted failures without relabeling them. SPEC-0221 already owns the request
 precedence policy, hooks and validator. Change an enforcer with its regression
 only when a current conflict is found; otherwise record NO_CHANGE.
 
@@ -129,8 +132,9 @@ claims, missing WAL/backups, and projection drift. Preserve unrelated worker
 changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
 credential rotation, DNS/firewall edit or HOME restart without the named target
 and recovery boundary. The current request authorizes its source/docs/tests,
-logical commits, branch push, PR and merge after required checks and review;
-missing permission or target defers only the dependent operation.
+logical commits and reviewed local `main` integration after required checks;
+PRs, remote pushes and `dev` are excluded from this current delivery request.
+Missing permission or target defers only the dependent operation.
 
 ### Open Questions
 
@@ -359,7 +363,9 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     source merge as a deployed update. It preserves actual source/unit/static
     receipts and failures, integrates common validator, inventory, manifest
     and navigation changes through their single writer, and records a fresh
-    latest/security gate and independent review at the final PR head. HOME,
+    latest/security gate and independent review at the final delivery head. Local
+    source delivery preserves a blocked latest/security result as pending
+    operational acceptance rather than claiming full SEC01 completion. HOME,
     migration, rotation, real service recovery and deployment remain `NOT_RUN`
     until a named target, consumer, backup and recovery boundary exist. Image
     signature/SBOM/scan acceptance separately awaits the named tool, cache/DB

@@ -1,6 +1,6 @@
 ---
 title: "LLM Wiki Preparation Task"
-version: "0.2.4"
+version: "0.2.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -408,6 +408,28 @@ links with `--root . --mode all`, and `git diff --check`. Re-run those commands
 on the final staged input before delivery; no implementation or runtime command
 is implied by this documentation issuance.
 
+### Historical Delivery Status and Superseding Local Integration
+
+Read-only GitHub API verification confirmed that [PR #417](https://github.com/buenhyden/hy-home.docker/pull/417)
+was merged at `abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9` on
+2026-10-10T14:51:45Z. Its [hosted candidate run](https://github.com/buenhyden/hy-home.docker/actions/runs/38060606376)
+finished with failure at source head
+`0e696adc9733b081cc9e47477d8f66eaaa4b3433`. The receiving worker attributed
+the lifecycle diagnostic to SEC01 Task 0009; that diagnostic detail is the
+worker's report, while the API independently confirms the merge and failed run.
+Neither the merge nor later local repairs turn that historical CI result into
+PASS. Preserve the coordinator's lifecycle reconciliation above together with
+this later received failure evidence; do not replace this Task with the older
+foreign working copy.
+
+The current user instruction requires local `main` integration without PRs,
+remote push or remote merge and prohibits dev. It supersedes the prospective PR
+sequence below for this continuation. Keep reviewed source commits, validate the
+current affected documents and registered local gates, and preserve operational
+NOT_RUN boundaries. This is preparation only: actual Wiki application and
+operational resources remain unimplemented; no external workspace, collection,
+credential, runtime client or schedule is created by this receipt.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -423,7 +445,7 @@ is implied by this documentation issuance.
 | Revoked frozen source QA | 13 | W25 | 34 tests in 4.670s; functions below 50 lines; Ruff/JSON/diff | Superseded pre-replacement public/private helper and unit/contract/job inputs | PASS | W25 revoked frozen source QA receipt | rejected |
 | Replacement frozen source QA | 13 | W25 | Qdrant parity RED/GREEN; 35 tests in 11.490s exit 0; 99-percent coverage exit 0; Ruff/diff | Replacement public/private helper and unit/contract inputs in W25 receipt | PASS | W25 replacement frozen source QA receipt | pending |
 | Replacement security review | 13 | W25 | Independent review and narrow Gitleaks exceptions | Replacement frozen source input; runtime and delivery remain NOT_RUN | PASS | W25 replacement frozen source QA receipt | pending |
-| Common registration and delivery | 13 | W25 | Script manifest, workflow routing, changed gate, latest-head CI and owning-Spec PR | Registration source complete; replacement QA and owning-Spec PR delivery pending | NOT_RUN | Integration proposal | pending |
+| Common registration and delivery | 13 | W25 | Historical script registration and owning-Spec delivery; current local continuation is separate | PR #417 merge `abe2b8b19`; hosted candidate run `38060606376` at `0e696adc` failed | FAIL | Historical Delivery Status and Superseding Local Integration | pending |
 | HOME, migration, rotation and recovery | 13 | W25 | No operational action is authorized by preparation | No concrete operational target | NOT_RUN | Future exact Task | pending |
 
 ## Review and Completion

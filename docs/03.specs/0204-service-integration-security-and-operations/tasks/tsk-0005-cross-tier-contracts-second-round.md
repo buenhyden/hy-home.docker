@@ -1,6 +1,6 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.4"
+version: "0.6.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1163,6 +1163,89 @@ that cell with registered `pending` preserves its unaccepted status; re-run the
 regression and aggregate after this correction is committed. This failure does
 not justify weakening the validator or changing unrelated fixtures.
 
+### Fresh Single-Use Isolated Recovery Attempt
+
+The independently reviewed first-attempt contract used snapshot
+`b52564b8466037a57655b7993f398eecdd8c1236ba4edd04352c2142eaaa44b5`
+and exactly two historical 20-byte SMTP files. The current first-attempt
+recovery skill permits prior restoreability and measured first-attempt outcomes
+as `NOT_RUN_BY_DESIGN`; this does not waive production recovery requirements.
+The fresh attempt `smtp01-isolated-867c38745a6f4250` ran from reviewed operator
+`ca0320c6e1a7af021f32d4029d76b954034bbd3351d92087a6f3ea5f106d5ced`
+and contract `778e8901a73ecf3c7622dd227d81bb9cdf55cc92e1dcf6926fb57ac69789bf37`.
+Its immutable outcome is FAILED, category `CONTAINER_ADMISSION`, after 2.570
+seconds on 2026-10-10 at 20:38 UTC. Outcome SHA-256 is
+`0e90c3439e135fe8da145f90bbaa2b2ccb7ee9728e23843e056b8f2ed81869f0`.
+No restore process, native reader lease, accepted file result or SMTP action
+ran. Preserve the consumed attempt, empty isolated target and four-file ledger.
+
+Creation succeeded but pre-start validation expected materialized tmpfs mounts
+before Docker start; the failed outcome's `container_id=NOT_CREATED` did not
+prove absence. Independent ownership review bound the exact never-started
+container to its attempt, contract, image, security settings and three bind
+mounts. The coordinator rechecked that binding and removed only its full ID.
+Cleanup receipt SHA-256
+`5561c0cafd7bf1562da5fd97d0e82b767b6046f776c99c8b019a95297d32cd89`
+is PASS with exact post-removal absence. The temporary client configuration was
+also removed as its exact owned empty inode. No target, ledger, source, native
+lock or live SMTP file was removed. These cleanup facts never relabel the
+failed restore as successful. A repaired source requires independent review
+and a fresh reviewed single-use selection before another actual attempt.
+
+### Preserved Retry Failures and Docker 29 Kernel Admission
+
+Attempt `smtp01-isolated-8c80414b2d4a492a` aborted before claim because ROOT
+put prose in the constrained public-reference field. Pure replay confirmed
+`CONTRACT_PUBLIC_REFERENCE`. No target, ledger, container or private I/O was
+created; the selected ID is retained as aborted and was never reused.
+
+Attempt `smtp01-isolated-f2ee513d3a6a4c23` failed `CONTAINER_ADMISSION` in
+2.895 seconds, outcome SHA-256
+`6acb57145862e813133f56945e111bd7da70736a5b29f4d93f19152c66791566`.
+No native reader lease or restore ran. Docker 29 also exposes only the three
+binds in running-container `Mounts`, while declaring two tmpfs mounts in
+HostConfig. Independent ownership review preceded removal of only the exact
+owned container. A bounded metadata-only kernel probe confirmed the two tmpfs
+mounts and sizes before removal; cleanup/absence receipt SHA-256 is
+`2ce774a3bf2f3e829ce7eead8454e07b30b60d14f7eaf3a4aba1b5a80ab726a7`.
+The failed target and immutable four-file ledger remain preserved.
+
+Latest operator SHA-256
+`ef62bac4ed6edc97123730312e9405f096c246241d9b1d201f233b6e18a9984c`
+and admission SHA-256
+`b46fe6f44617bd9a6d4fb98b7b2a12ba705db6c5f0538fc7a62b66c10b934119`
+passed 46 synthetic tests, 91-percent coverage and independent source review.
+Before any private Restic command, bounded kernel mountinfo and statfs now
+verify the exact tmpfs root, type, source, security options, sizes and mode;
+unsafe, missing, alias, nested and malformed metadata aborts. Source PASS
+never supplies an actual restore receipt.
+
+### Actual Two-file Isolated Restoreability Receipt
+
+The independently reviewed fourth selection used fresh attempt
+`smtp01-isolated-27b990afd8114c67` and contract SHA-256
+`71c00b2c4fbc80b8a8b5a73e87c3cf750a34f91dd9c5cd0040e14e2ca16339ec`.
+The coordinator executed `/usr/bin/python3.12 -I -S` with the frozen operator,
+`--contract` and `--reviewed-contract-sha256`; client exit 0. The immutable
+outcome SHA-256 is
+`74794448811aa3632b707ec8043e67e84033510d6731cb96a3335717a0690699`.
+It is SUCCEEDED/NONE, from `2026-10-11T00:13:17.957401Z` to
+`2026-10-11T00:13:36.512231Z`, measured 18.555 seconds. Runtime tmpfs,
+source identity, fresh repository integrity/exact scope, restored tree/equality
+and two-file host-copy/equality checks passed. Exactly two files and 40 bytes
+were retained in the owned isolated mode-0700 target; values were not printed,
+exported or committed. Source extended attributes were not observed and restore
+xattrs are excluded by design; no preservation claim is made for them.
+
+The native reader lease was released, the exact owned container removed and
+the exact owned empty client configuration removed. The four-file immutable
+attempt ledger and isolated private files remain preserved. Earlier failed and
+aborted attempts remain unchanged. This proves dated restoreability/usability
+of only these two files in the selected immutable historical snapshot. It is
+not application recovery, SMTP authentication/send, live activation, production
+RPO/RTO, offsite custody, migration, rotation or external-consumer absence.
+Those lanes and independent operational retirement acceptance remain open.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1196,7 +1279,8 @@ Not complete. These remain open, each with its owner action:
   it lacks database URLs. Terrakube's 9 keys need Spring `configtree`, not
   yet verified. Both stay outside the HOME selection by test.
 - The canonical SMTP file remains and the duplicate is absent. Assignee-reported
-  retirement/recovery still needs independent backup/restore verification;
+  retirement still needs external-consumer and exact unlink evidence; dated
+  two-file isolated restoreability is now observed under the bounded contract;
   source delivery uses current local gates/review without PRs. Supabase HOME
   activation and external-host absence remain unverified.
 - Create the OpenBao snapshot token (RUN-0021) after unsealing; until then
