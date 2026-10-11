@@ -24,6 +24,26 @@ KINDS = ("owner", "migrator", "runtime", "reader")
 LOGIN_KINDS = KINDS[1:]
 # Per-role connection budgets inside dev-pg max_connections=100.
 CONNECTION_LIMITS = {"migrator": 2, "runtime": 10, "reader": 5}
+FUNCTION_KINDS = ("owner", "migrator", "ingest", "notifier", "reader")
+FUNCTION_LOGIN_KINDS = FUNCTION_KINDS[1:]
+FUNCTION_CONNECTION_LIMITS = {
+    "migrator": 2,
+    "ingest": 10,
+    "notifier": 5,
+    "reader": 5,
+}
+OPSFLOW_IDENTITY = {
+    "project_id": "hyhome-opsflow",
+    "database": "opsflow_dev",
+    "schema": "ops_flow",
+    "roles": {
+        "owner": "opsflow_owner",
+        "migrator": "opsflow_migrator",
+        "ingest": "opsflow_ingest",
+        "notifier": "opsflow_notifier",
+        "reader": "opsflow_reader",
+    },
+}
 FIELDS = {
     "schema_version",
     "project_id",
@@ -50,8 +70,7 @@ def _name(value, pattern, label):
     return value
 
 
-def validate(value):
-    """Return a fresh validated manifest or fail before reading secrets/connecting."""
+def _validate_v1(value):
     _keys(value, FIELDS, "manifest")
     if type(value["schema_version"]) is not int or value["schema_version"] != 1:
         raise ValueError("unsupported manifest schema")
@@ -91,8 +110,58 @@ def validate(value):
     }
 
 
-def sql_for(project):
-    """Generate psql input only from validated identifier-shaped metadata."""
+def _validate_function_only(value):
+    _keys(value, FIELDS, "manifest")
+    if type(value["schema_version"]) is not int or value["schema_version"] != 2:
+        raise ValueError("unsupported manifest schema")
+    if value["environment"] != "development":
+        raise ValueError("dev-pg only accepts the development environment")
+    project = _name(value["project_id"], PROJECT_ID, "project_id")
+    database = _name(value["database"], IDENT, "database")
+    schema = _name(value["schema"], IDENT, "schema")
+    if (project, database, schema) != (
+        OPSFLOW_IDENTITY["project_id"],
+        OPSFLOW_IDENTITY["database"],
+        OPSFLOW_IDENTITY["schema"],
+    ):
+        raise ValueError("function-only identity does not match opsflow contract")
+    _keys(value["roles"], FUNCTION_KINDS, "roles")
+    roles = {kind: _name(value["roles"][kind], IDENT, kind) for kind in FUNCTION_KINDS}
+    if roles != OPSFLOW_IDENTITY["roles"]:
+        raise ValueError("function-only roles do not match opsflow contract")
+    raw_secrets = value["password_secrets"]
+    secrets = None
+    if raw_secrets is not None:
+        _keys(raw_secrets, FUNCTION_LOGIN_KINDS, "password_secrets")
+        secrets = {
+            kind: _name(raw_secrets[kind], SECRET, kind + " secret")
+            for kind in FUNCTION_LOGIN_KINDS
+        }
+        if len(set(secrets.values())) != len(FUNCTION_LOGIN_KINDS):
+            raise ValueError("login roles need distinct secret references")
+    return {
+        "schema_version": 2,
+        "project_id": project,
+        "environment": "development",
+        "database": database,
+        "schema": schema,
+        "roles": roles,
+        "password_secrets": secrets,
+    }
+
+
+def validate(value):
+    """Return a fresh validated manifest or fail before reading secrets/connecting."""
+    if not isinstance(value, dict) or type(value.get("schema_version")) is not int:
+        raise ValueError("unsupported manifest schema")
+    if value["schema_version"] == 1:
+        return _validate_v1(value)
+    if value["schema_version"] == 2:
+        return _validate_function_only(value)
+    raise ValueError("unsupported manifest schema")
+
+
+def _sql_v1(project):
     p = validate({"schema_version": 1, **project})
     db, schema = p["database"], p["schema"]
     roles = p["roles"]
@@ -127,7 +196,7 @@ def sql_for(project):
                 f"SELECT CASE WHEN rolcanlogin THEN 'false' ELSE 'true' END AS activate_{kind} FROM pg_roles WHERE rolname = '{role}' \\gset",
                 f"\\if :activate_{kind}",
                 f"\\getenv {kind}_password DEV_{kind.upper()}_PASSWORD",
-                (f"ALTER ROLE {role} WITH PASSWORD :'{kind}_password' LOGIN;"),
+                f"ALTER ROLE {role} WITH PASSWORD " + f":'{kind}_password' LOGIN;",
                 f"\\unset {kind}_password",
                 "\\endif",
                 f"ALTER ROLE {role} CONNECTION LIMIT {CONNECTION_LIMITS[kind]};",
@@ -199,6 +268,193 @@ def sql_for(project):
     return "\n".join(lines) + "\n"
 
 
+def _sql_function_only(project):
+    p = validate(project)
+    if p["password_secrets"] is None:
+        raise ValueError("credential bindings pending")
+    db, schema = p["database"], p["schema"]
+    roles = p["roles"]
+    marker = f"dev-pg:{p['environment']}:{p['project_id']}"
+    client_roles = ", ".join(roles[kind] for kind in FUNCTION_LOGIN_KINDS)
+    runtime_roles = ", ".join(roles[kind] for kind in ("ingest", "notifier", "reader"))
+    role_names = ",".join(f"'{roles[kind]}'" for kind in FUNCTION_KINDS)
+    lines = [
+        "\\set ON_ERROR_STOP on",
+        "SET log_statement = 'none';",
+        "SET log_min_error_statement = 'panic';",
+        "SET search_path = pg_catalog;",
+        f"SELECT pg_advisory_lock(hashtext('dev-pg:{db}'));",
+        "DO $check$ BEGIN",
+        "  IF EXISTS (SELECT 1 FROM pg_roles r",
+        f"      WHERE r.rolname IN ({role_names}) AND",
+        "        (r.rolsuper OR r.rolcreatedb OR r.rolcreaterole OR r.rolreplication OR r.rolbypassrls",
+        f"         OR (r.rolname='{roles['owner']}' AND r.rolcanlogin)",
+        f"         OR shobj_description(r.oid, 'pg_authid') IS DISTINCT FROM '{marker}:' || substring(r.rolname from length('opsflow_') + 1)))",
+        "     OR EXISTS (SELECT 1 FROM pg_auth_members m",
+        f"      WHERE (m.roleid IN (SELECT oid FROM pg_roles WHERE rolname IN ({role_names}))",
+        f"         OR m.member IN (SELECT oid FROM pg_roles WHERE rolname IN ({role_names})))",
+        f"        AND NOT (m.roleid=(SELECT oid FROM pg_roles WHERE rolname='{roles['owner']}')",
+        f"          AND m.member=(SELECT oid FROM pg_roles WHERE rolname='{roles['migrator']}')",
+        "          AND NOT m.inherit_option AND NOT m.admin_option AND m.set_option)) THEN",
+        "    RAISE EXCEPTION 'existing role or membership conflict';",
+        "  END IF;",
+        "END $check$;",
+    ]
+    for kind in FUNCTION_KINDS:
+        role = roles[kind]
+        role_marker = f"{marker}:{kind}"
+        lines += [
+            f"SELECT CASE WHEN EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '{role}') THEN 'false' ELSE 'true' END AS create_{kind} \\gset",
+            f"\\if :create_{kind}",
+            "BEGIN;",
+            f"CREATE ROLE {role} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;",
+            f"COMMENT ON ROLE {role} IS '{role_marker}';",
+            "COMMIT;",
+            "\\endif",
+            "DO $check$ BEGIN",
+            f"  IF NOT EXISTS (SELECT 1 FROM pg_roles r WHERE r.rolname = '{role}' AND {'NOT r.rolcanlogin AND ' if kind == 'owner' else ''}NOT (r.rolsuper OR r.rolcreatedb OR r.rolcreaterole OR r.rolreplication OR r.rolbypassrls) AND shobj_description(r.oid, 'pg_authid') = '{role_marker}') THEN",
+            "    RAISE EXCEPTION 'role ownership mismatch';",
+            "  END IF;",
+            "END $check$;",
+        ]
+    owner, migrator = roles["owner"], roles["migrator"]
+    lines += [
+        "DO $check$ BEGIN",
+        "  IF EXISTS (SELECT 1 FROM pg_auth_members m",
+        f"      WHERE (m.roleid IN (SELECT oid FROM pg_roles WHERE rolname IN ({role_names}))",
+        f"         OR m.member IN (SELECT oid FROM pg_roles WHERE rolname IN ({role_names})))",
+        f"        AND NOT (m.roleid=(SELECT oid FROM pg_roles WHERE rolname='{owner}')",
+        f"          AND m.member=(SELECT oid FROM pg_roles WHERE rolname='{migrator}')",
+        "          AND NOT m.inherit_option AND NOT m.admin_option AND m.set_option)) THEN",
+        "    RAISE EXCEPTION 'unknown role membership';",
+        "  END IF;",
+        "END $check$;",
+        f"SELECT CASE WHEN EXISTS (SELECT 1 FROM pg_database WHERE datname = '{db}') THEN 'false' ELSE 'true' END AS create_db \\gset",
+        "\\if :create_db",
+        f"SELECT 'CREATE DATABASE {db} OWNER {owner} TEMPLATE template0' \\gexec",
+        "\\endif",
+        f"\\connect {db}",
+        "SET search_path = pg_catalog;",
+        f"SELECT pg_advisory_lock(hashtext('dev-pg:{db}'));",
+        "SELECT CASE WHEN :'create_db'::boolean THEN 'true' ELSE 'false' END AS initialize_db \\gset",
+        "\\if :create_db",
+        f"COMMENT ON DATABASE {db} IS '{marker}';",
+        "\\else",
+        "DO $check$ BEGIN",
+        f"  IF NOT EXISTS (SELECT 1 FROM pg_database d WHERE d.datname='{db}' AND shobj_description(d.oid, 'pg_database')='{marker}') THEN",
+        "    RAISE EXCEPTION 'unmarked database requires reviewed recovery';",
+        "  END IF;",
+        "END $check$;",
+        "\\endif",
+        "DO $check$ BEGIN",
+        f"  IF NOT EXISTS (SELECT 1 FROM pg_database d WHERE d.datname = '{db}' AND pg_get_userbyid(d.datdba) = '{owner}' AND shobj_description(d.oid, 'pg_database') = '{marker}') THEN",
+        "    RAISE EXCEPTION 'database ownership mismatch';",
+        "  END IF;",
+        "END $check$;",
+        "\\if :initialize_db",
+        "\\else",
+        "DO $check$ BEGIN",
+        "  IF EXISTS (SELECT 1 FROM pg_database d, LATERAL aclexplode(COALESCE(d.datacl,acldefault('d',d.datdba))) a",
+        f"      WHERE d.datname='{db}' AND a.grantee<>d.datdba AND",
+        f"        (a.grantee NOT IN (SELECT oid FROM pg_roles WHERE rolname IN ({','.join(repr(roles[k]) for k in FUNCTION_LOGIN_KINDS)}))",
+        "         OR a.privilege_type<>'CONNECT' OR a.is_grantable))",
+        f"     OR EXISTS (SELECT 1 FROM pg_roles r WHERE r.rolname IN ({','.join(repr(roles[k]) for k in FUNCTION_LOGIN_KINDS)})",
+        f"        AND (NOT has_database_privilege(r.rolname,'{db}','CONNECT')",
+        f"          OR has_database_privilege(r.rolname,'{db}','CREATE')",
+        f"          OR has_database_privilege(r.rolname,'{db}','TEMP'))) THEN",
+        "    RAISE EXCEPTION 'database ACL mismatch';",
+        "  END IF;",
+        "END $check$;",
+        "\\endif",
+        "\\if :initialize_db",
+        f"REVOKE ALL ON DATABASE {db} FROM PUBLIC;",
+        f"GRANT CONNECT ON DATABASE {db} TO {client_roles};",
+        "\\endif",
+        "DO $check$ BEGIN",
+        "  IF NOT EXISTS (SELECT 1 FROM pg_namespace n WHERE n.nspname='public' AND pg_get_userbyid(n.nspowner)='pg_database_owner')",
+        "     OR EXISTS (SELECT 1 FROM pg_namespace n WHERE n.nspname NOT IN ('public','information_schema') AND n.nspname !~ '^pg_'",
+        f"        AND n.nspname<>'{schema}')",
+        "     OR EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public')",
+        "     OR EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public')",
+        "     OR EXISTS (SELECT 1 FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace WHERE n.nspname='public') THEN",
+        "    RAISE EXCEPTION 'public schema contains objects or has unexpected owner';",
+        "  END IF;",
+        "  IF EXISTS (SELECT 1 FROM pg_default_acl d, LATERAL aclexplode(d.defaclacl) a",
+        f"      WHERE d.defaclrole=(SELECT oid FROM pg_roles WHERE rolname='{owner}') AND a.grantee<>d.defaclrole) THEN",
+        "    RAISE EXCEPTION 'default ACL mismatch';",
+        "  END IF;",
+        "END $check$;",
+        f"SELECT CASE WHEN EXISTS (SELECT 1 FROM pg_namespace WHERE nspname='{schema}') THEN 'false' ELSE 'true' END AS create_schema \\gset",
+        "DO $check$ BEGIN",
+        "  IF EXISTS (SELECT 1 FROM pg_namespace n, LATERAL aclexplode(COALESCE(n.nspacl,acldefault('n',n.nspowner))) a",
+        "      WHERE n.nspname='public' AND a.grantee<>n.nspowner",
+        "        AND (a.grantee<>0 OR NOT :'create_schema'::boolean)) THEN",
+        "    RAISE EXCEPTION 'public schema ACL mismatch';",
+        "  END IF;",
+        "END $check$;",
+        "\\if :create_schema",
+        "\\else",
+        "DO $check$ BEGIN",
+        f"  IF NOT EXISTS (SELECT 1 FROM pg_namespace n WHERE n.nspname='{schema}' AND pg_get_userbyid(n.nspowner)='{owner}' AND obj_description(n.oid,'pg_namespace')='{marker}:schema')",
+        "     OR EXISTS (SELECT 1 FROM pg_namespace n, LATERAL aclexplode(COALESCE(n.nspacl,acldefault('n',n.nspowner))) a",
+        f"      WHERE n.nspname='{schema}' AND a.grantee<>n.nspowner AND",
+        f"        (a.grantee NOT IN (SELECT oid FROM pg_roles WHERE rolname IN ('{roles['ingest']}','{roles['notifier']}','{roles['reader']}'))",
+        "         OR a.privilege_type<>'USAGE' OR a.is_grantable))",
+        f"     OR EXISTS (SELECT 1 FROM pg_roles r WHERE r.rolname IN ('{roles['ingest']}','{roles['notifier']}','{roles['reader']}')",
+        f"        AND (NOT has_schema_privilege(r.rolname,'{schema}','USAGE') OR has_schema_privilege(r.rolname,'{schema}','CREATE')))",
+        "     OR EXISTS (SELECT 1 FROM pg_namespace n, LATERAL aclexplode(COALESCE(n.nspacl,acldefault('n',n.nspowner))) a WHERE n.nspname='public' AND a.grantee<>n.nspowner) THEN",
+        "    RAISE EXCEPTION 'schema ACL mismatch';",
+        "  END IF;",
+        "END $check$;",
+        "\\endif",
+        "\\if :create_schema",
+        "BEGIN;",
+        f"CREATE SCHEMA {schema} AUTHORIZATION {owner};",
+        f"COMMENT ON SCHEMA {schema} IS '{marker}:schema';",
+        "REVOKE ALL ON SCHEMA public FROM PUBLIC;",
+        f"REVOKE ALL ON SCHEMA {schema} FROM PUBLIC;",
+        f"GRANT USAGE ON SCHEMA {schema} TO {runtime_roles};",
+        "COMMIT;",
+        "\\endif",
+        "DO $check$ BEGIN",
+        f"  IF NOT EXISTS (SELECT 1 FROM pg_namespace n WHERE n.nspname='{schema}' AND pg_get_userbyid(n.nspowner)='{owner}' AND obj_description(n.oid,'pg_namespace')='{marker}:schema') THEN",
+        "    RAISE EXCEPTION 'schema ownership mismatch';",
+        "  END IF;",
+        "END $check$;",
+        f"ALTER DEFAULT PRIVILEGES FOR ROLE {owner} REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;",
+        f"SELECT CASE WHEN EXISTS (SELECT 1 FROM pg_auth_members WHERE roleid=(SELECT oid FROM pg_roles WHERE rolname='{owner}') AND member=(SELECT oid FROM pg_roles WHERE rolname='{migrator}') AND NOT inherit_option AND NOT admin_option AND set_option) THEN 'false' ELSE 'true' END AS create_owner_membership \\gset",
+        "\\if :create_owner_membership",
+        f"GRANT {owner} TO {migrator} WITH INHERIT FALSE, SET TRUE;",
+        "\\endif",
+    ]
+    for kind in FUNCTION_LOGIN_KINDS:
+        role = roles[kind]
+        lines += [
+            f"SELECT CASE WHEN rolcanlogin THEN 'false' ELSE 'true' END AS activate_{kind} FROM pg_roles WHERE rolname = '{role}' \\gset",
+            f"\\if :activate_{kind}",
+            f"\\getenv {kind}_password DEV_{kind.upper()}_PASSWORD",
+            f"ALTER ROLE {role} WITH PASSWORD " + f":'{kind}_password' LOGIN;",
+            f"\\unset {kind}_password",
+            "\\endif",
+            f"ALTER ROLE {role} CONNECTION LIMIT {FUNCTION_CONNECTION_LIMITS[kind]};",
+            "DO $check$ BEGIN",
+            f"  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='{role}' AND rolcanlogin AND rolconnlimit={FUNCTION_CONNECTION_LIMITS[kind]}) THEN",
+            "    RAISE EXCEPTION 'login role activation mismatch';",
+            "  END IF;",
+            "END $check$;",
+            f"ALTER ROLE {role} IN DATABASE {db} SET search_path = {schema}, pg_catalog;",
+            f"ALTER ROLE {role} IN DATABASE {db} SET statement_timeout = '30s';",
+        ]
+    return "\n".join(lines) + "\n"
+
+
+def sql_for(project):
+    """Generate psql input only from validated identifier-shaped metadata."""
+    if project.get("schema_version", 1) == 2:
+        return _sql_function_only(project)
+    return _sql_v1(project)
+
+
 def read_secret(path):
     if (
         path.is_symlink()
@@ -223,13 +479,24 @@ def main():
     args = parser.parse_args()
     try:
         project = validate(json.loads(args.manifest.read_text(encoding="utf-8")))
-        sql = sql_for(project)
         if args.validate_only:
-            print("project manifest valid")
+            if (
+                project.get("schema_version") == 2
+                and project["password_secrets"] is None
+            ):
+                print(
+                    "project manifest structurally valid; credential bindings pending"
+                )
+            else:
+                print("project manifest valid")
             return 0
+        sql = sql_for(project)
         env = os.environ.copy()
         env["PGPASSWORD"] = read_secret(Path("/run/secrets/dev_pg_admin_password"))
-        for kind in LOGIN_KINDS:
+        login_kinds = (
+            FUNCTION_LOGIN_KINDS if project.get("schema_version") == 2 else LOGIN_KINDS
+        )
+        for kind in login_kinds:
             env[f"DEV_{kind.upper()}_PASSWORD"] = read_secret(
                 Path("/run/secrets") / project["password_secrets"][kind]
             )

@@ -1,10 +1,12 @@
 """Fail-closed project metadata and SQL contract for the dev PostgreSQL job."""
 
+import hashlib
 import importlib.util
 import json
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SOURCE = (
     Path(__file__).resolve().parents[2] / "infra/04-data/dev-db/pg/provision/project.py"
@@ -35,7 +37,171 @@ def manifest():
     }
 
 
+def opsflow_manifest(*, bound=True):
+    password_secrets = None
+    if bound:
+        password_secrets = {
+            "migrator": "synthetic_opsflow_migrator_password",
+            "ingest": "synthetic_opsflow_ingest_password",
+            "notifier": "synthetic_opsflow_notifier_password",
+            "reader": "synthetic_opsflow_reader_password",
+        }
+    return {
+        "schema_version": 2,
+        "project_id": "hyhome-opsflow",
+        "environment": "development",
+        "database": "opsflow_dev",
+        "schema": "ops_flow",
+        "roles": {
+            "owner": "opsflow_owner",
+            "migrator": "opsflow_migrator",
+            "ingest": "opsflow_ingest",
+            "notifier": "opsflow_notifier",
+            "reader": "opsflow_reader",
+        },
+        "password_secrets": password_secrets,
+    }
+
+
 class ProjectProvisionTests(unittest.TestCase):
+    def test_v1_generated_sql_is_byte_stable(self):
+        sql = MODULE.sql_for(MODULE.validate(manifest())).encode()
+        self.assertEqual(
+            "6c5a395271102d1db425900562bbcb9651df0f36cf409ff8f3d1ca303acc3b6f",
+            hashlib.sha256(sql).hexdigest(),
+        )
+
+    def test_pending_opsflow_fixture_validates_but_cannot_emit_sql(self):
+        fixture = SOURCE.parent / "opsflow.json"
+        project = MODULE.validate(json.loads(fixture.read_text()))
+        self.assertEqual(2, project["schema_version"])
+        self.assertIsNone(project["password_secrets"])
+        self.assertEqual(opsflow_manifest(bound=False)["roles"], project["roles"])
+        with self.assertRaisesRegex(ValueError, "credential bindings pending"):
+            MODULE.sql_for(project)
+
+    def test_pending_opsflow_cli_stops_before_secret_or_sql_access(self):
+        fixture = SOURCE.parent / "opsflow.json"
+        with (
+            mock.patch.object(sys, "argv", [str(SOURCE), str(fixture)]),
+            mock.patch.object(MODULE, "read_secret") as read_secret,
+        ):
+            self.assertEqual(64, MODULE.main())
+        read_secret.assert_not_called()
+
+    def test_pending_opsflow_validate_only_is_structural(self):
+        fixture = SOURCE.parent / "opsflow.json"
+        with (
+            mock.patch.object(
+                sys, "argv", [str(SOURCE), str(fixture), "--validate-only"]
+            ),
+            mock.patch.object(MODULE, "read_secret") as read_secret,
+            mock.patch("builtins.print") as output,
+        ):
+            self.assertEqual(0, MODULE.main())
+        read_secret.assert_not_called()
+        output.assert_called_once_with(
+            "project manifest structurally valid; credential bindings pending"
+        )
+
+    def test_function_only_sql_has_exact_roles_and_no_broad_acl(self):
+        sql = MODULE.sql_for(MODULE.validate(opsflow_manifest()))
+        for kind, role in opsflow_manifest()["roles"].items():
+            self.assertIn(f"CREATE ROLE {role} NOLOGIN", sql, kind)
+        self.assertIn(
+            "GRANT CONNECT ON DATABASE opsflow_dev TO opsflow_migrator, opsflow_ingest, opsflow_notifier, opsflow_reader;",
+            sql,
+        )
+        self.assertIn(
+            "GRANT opsflow_owner TO opsflow_migrator WITH INHERIT FALSE, SET TRUE;",
+            sql,
+        )
+        self.assertIn(
+            "GRANT USAGE ON SCHEMA ops_flow TO opsflow_ingest, opsflow_notifier, opsflow_reader;",
+            sql,
+        )
+        for forbidden in (
+            "GRANT SELECT ON ALL TABLES",
+            "GRANT SELECT, INSERT, UPDATE, DELETE",
+            "GRANT USAGE, SELECT ON ALL SEQUENCES",
+            "ALTER DEFAULT PRIVILEGES FOR ROLE opsflow_owner IN SCHEMA ops_flow GRANT",
+            "CREATE EXTENSION IF NOT EXISTS timescaledb",
+        ):
+            self.assertNotIn(forbidden, sql)
+        self.assertIn(
+            "ALTER DEFAULT PRIVILEGES FOR ROLE opsflow_owner REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;",
+            sql,
+        )
+
+    def test_function_only_contract_rejects_names_shape_and_secret_reuse(self):
+        base = opsflow_manifest()
+        for invalid in (None, {}, {"schema_version": True}, {"schema_version": 3}):
+            with (
+                self.subTest(invalid=invalid),
+                self.assertRaisesRegex(ValueError, "unsupported manifest schema"),
+            ):
+                MODULE.validate(invalid)
+        changes = (
+            {"database": "other_dev"},
+            {"schema": "other_schema"},
+            {"extra": "ignored"},
+            {"roles": {**base["roles"], "runtime": "opsflow_runtime"}},
+            {"roles": {**base["roles"], "notifier": "opsflow_ingest"}},
+            {
+                "password_secrets": {
+                    **base["password_secrets"],
+                    "notifier": base["password_secrets"]["ingest"],
+                }
+            },
+            {"password_secrets": {"migrator": "synthetic_only"}},
+        )
+        for changed in changes:
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                MODULE.validate({**base, **changed})
+
+    def test_function_only_sql_checks_existing_acl_before_mutation(self):
+        sql = MODULE.sql_for(MODULE.validate(opsflow_manifest()))
+        database_guard = sql.index("database ACL mismatch")
+        schema_guard = sql.index("schema ACL mismatch")
+        default_guard = sql.index("default ACL mismatch")
+        public_object_guard = sql.index("public schema contains objects")
+        first_login = sql.index("ALTER ROLE opsflow_migrator WITH PASSWORD")
+        first_budget = sql.index("ALTER ROLE opsflow_migrator CONNECTION LIMIT")
+        membership = sql.index(
+            "GRANT opsflow_owner TO opsflow_migrator WITH INHERIT FALSE, SET TRUE"
+        )
+        role_preflight = sql.index("existing role or membership conflict")
+        self.assertLess(role_preflight, sql.index("CREATE ROLE opsflow_owner"))
+        self.assertLess(database_guard, sql.index("GRANT CONNECT ON DATABASE"))
+        self.assertLess(schema_guard, sql.index("GRANT USAGE ON SCHEMA"))
+        for guard in (
+            database_guard,
+            schema_guard,
+            default_guard,
+            public_object_guard,
+        ):
+            self.assertLess(guard, first_login)
+            self.assertLess(guard, first_budget)
+            self.assertLess(guard, membership)
+        self.assertIn("unknown role membership", sql)
+        self.assertIn("AS initialize_db", sql)
+        self.assertIn("\\if :initialize_db", sql)
+        self.assertIn("n.nspname='public' AND a.grantee<>n.nspowner", sql)
+        self.assertIn("pg_type", sql)
+
+    def test_function_only_does_not_adopt_an_unmarked_database(self):
+        sql = MODULE.sql_for(MODULE.validate(opsflow_manifest()))
+        self.assertNotIn("database_recoverable", sql)
+        self.assertIn("\\if :create_db", sql)
+        self.assertIn("unmarked database requires reviewed recovery", sql)
+        branch = sql.index("\\if :create_db", sql.index("\\connect opsflow_dev"))
+        comment = sql.index("COMMENT ON DATABASE opsflow_dev", branch)
+        existing = sql.index("\\else", comment)
+        rejection = sql.index("unmarked database requires reviewed recovery", existing)
+        self.assertLess(branch, comment)
+        self.assertLess(comment, existing)
+        self.assertLess(existing, rejection)
+
     def test_login_roles_get_connection_budgets_on_every_run(self):
         sql = MODULE.sql_for(MODULE.validate(manifest()))
         for role, limit in (

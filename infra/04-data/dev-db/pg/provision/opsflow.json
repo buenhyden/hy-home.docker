@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "project_id": "hyhome-opsflow",
+  "environment": "development",
+  "database": "opsflow_dev",
+  "schema": "ops_flow",
+  "roles": {
+    "owner": "opsflow_owner",
+    "migrator": "opsflow_migrator",
+    "ingest": "opsflow_ingest",
+    "notifier": "opsflow_notifier",
+    "reader": "opsflow_reader"
+  },
+  "password_secrets": null
+}

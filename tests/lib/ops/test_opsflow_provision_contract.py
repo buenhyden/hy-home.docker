@@ -1,5 +1,7 @@
 """Source-only migration boundary checks; these do not execute PostgreSQL."""
 
+import importlib.util
+import json
 import re
 import unittest
 from pathlib import Path
@@ -8,9 +10,45 @@ SQL = (
     Path(__file__).resolve().parents[3]
     / "infra/07-workflow/airflow/workloads/manifest-pipeline/sql"
 )
+PROVISIONER = (
+    Path(__file__).resolve().parents[3] / "infra/04-data/dev-db/pg/provision/project.py"
+)
+SPEC = importlib.util.spec_from_file_location("opsflow_dev_pg_project", PROVISIONER)
+PROJECT = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(PROJECT)
 
 
 class OpsflowProvisionContractTests(unittest.TestCase):
+    def test_function_only_provisioner_matches_migration_identity(self):
+        fixture = json.loads((PROVISIONER.parent / "opsflow.json").read_text())
+        pending = PROJECT.validate(fixture)
+        self.assertEqual(
+            {
+                "owner": "opsflow_owner",
+                "migrator": "opsflow_migrator",
+                "ingest": "opsflow_ingest",
+                "notifier": "opsflow_notifier",
+                "reader": "opsflow_reader",
+            },
+            pending["roles"],
+        )
+        bound = {
+            **fixture,
+            "password_secrets": {
+                kind: f"synthetic_opsflow_{kind}_password"
+                for kind in ("migrator", "ingest", "notifier", "reader")
+            },
+        }
+        provision_sql = PROJECT.sql_for(PROJECT.validate(bound))
+        migration = (SQL / "001_opsflow.sql").read_text()
+        for role in pending["roles"].values():
+            self.assertIn(role, provision_sql)
+            self.assertIn(role, migration)
+        self.assertNotRegex(
+            provision_sql,
+            r"GRANT\s+(?:ALL|INSERT|UPDATE|DELETE).*TO opsflow_(?:ingest|notifier|reader)",
+        )
+
     def test_atomic_fail_closed_migration(self):
         source = (SQL / "001_opsflow.sql").read_text()
         self.assertTrue(source.startswith("\\set ON_ERROR_STOP on"))

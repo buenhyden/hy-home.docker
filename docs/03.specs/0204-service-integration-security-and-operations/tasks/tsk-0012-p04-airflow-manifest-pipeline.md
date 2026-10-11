@@ -1,10 +1,10 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0012"
 parent_ids:
@@ -959,6 +959,60 @@ control59/26.571s, precommit wrapper, workflow5/7/8 declarations, Storybook,
 release18/0.023s and final repository494/127.874s. Native criterion18/W38,
 ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY and remote delivery remain open or
 NOT_RUN as previously recorded; segmented source checks do not close this Task.
+
+### Function-only Provision Source Completion — 2026-10-12
+
+Baseline `241a470d246191751a7a5655a86d5ec4f679a0ff` now has a closed
+schema-v2 source contract for the five fixed Opsflow identities. The existing
+schema-v1 platform manifest and its generated SQL remain byte-identical; the
+generated v1 SQL SHA256 is
+`6c5a395271102d1db425900562bbcb9651df0f36cf409ff8f3d1ca303acc3b6f`.
+The tracked `opsflow.json` contains no credential name or value. Its null
+binding is valid only for structural validation and cannot generate SQL or
+reach secret reads. P02 catalog binding therefore remains an explicit input,
+not an invented catalog identifier.
+
+The v2 SQL creates only `opsflow_owner`, `opsflow_migrator`,
+`opsflow_ingest`, `opsflow_notifier` and `opsflow_reader`. It grants database
+CONNECT, runtime schema USAGE and the non-inheriting migrator-to-owner
+membership needed by the reviewed migration. It grants no table, sequence or
+default object access. Existing role/member drift is checked before role
+creation. Existing DB, public objects and owner, schema and default ACL drift
+are checked before LOGIN/password, connection-limit or owner-membership
+changes. An existing unmarked database is rejected pending a separately
+reviewed recovery input; an empty shape alone is not accepted as creation
+provenance. Public `pg_class`, `pg_proc` and `pg_type` objects are part of that
+fail-closed check.
+
+The initial test-first input produced four expected errors: schema v2 was not
+supported and `opsflow.json` did not exist. The first completed candidate
+passed 28 focused tests, then independent code and security reviews both found
+the same two Important ordering/recovery defects. Two focused correction tests
+reproduced one failure and one error before the fix. The corrected input passes
+29 focused tests, with branch coverage 81% for `project.py`. Ruff lint and
+format checks plus `git diff --check` pass. Actual CLI validation exits 0 with
+`project manifest structurally valid; credential bindings pending`; ordinary
+execution of that unbound fixture exits 64 before any secret read or SQL. The
+security and code-quality re-reviews approve the correction with no remaining
+Critical or Important finding.
+
+Frozen pre-document hashes are `55138bf6d3bf6aa9eed3e047d3f8a9af5814cdf46cf16eaedceab146f6f02512`
+for `project.py`, `df4a32efe1c0acf14f822781b910825da05eec63b510911c67ae049fd00a1754`
+for `opsflow.json`, `19bd902277bc0b07c6cf0ff4d30bce2c7a891acc0eb56bce1d96e277fe878d11`
+for the provision validation test and
+`432783cacc22c7cda0be677859ce8d45d33209c2305bca8f7bfed28aaf0a7368`
+for the SQL/provision bridge test. PostgreSQL, Docker, credentials, DEV/HOME,
+migration, rotation, backup and recovery were not accessed or changed.
+Criterion 18/W38 and the Task remain in-progress pending the bound credential
+contract, native function-only privilege proof, approved image and empty
+restore target.
+
+The first ordinary commit attempt exited 1 because the ECC hook treated the
+public psql variable name in the `ALTER ROLE ... PASSWORD` template as a
+generic credential assignment. No value was present and no bypass was used.
+Splitting the SQL keyword from the psql placeholder with normal Python string
+concatenation preserves the generated v1 bytes and v2 quoting while allowing
+the same hook to inspect the staged source without that false positive.
 
 ## Evidence
 
