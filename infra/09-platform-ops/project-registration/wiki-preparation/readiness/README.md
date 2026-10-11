@@ -1,10 +1,10 @@
 ---
 title: "Readiness matrix와 인계 경계"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-12"
 ---
 
 # Readiness matrix와 인계 경계
@@ -14,8 +14,8 @@ updated: "2026-10-10"
 | 영역 | 현재 처분 | 후속 소유·전제 |
 |---|---|---|
 | 기존 엔진·Traefik·OIDC 계약 | VERIFY_RUNTIME | P03의 기존 서비스 endpoint·port 조건과 미래 Wiki exact Task |
-| 네 schema·합성 fixture·pure helper | IMPLEMENT | P09 순수 검증 및 기존 generic validator harness 실행 |
-| 공통 등록·gate 등록 | IMPLEMENT | manifest·workflow·changed/staged controller 통합 및 Qdrant parity 수정 후 replacement frozen QA 35 PASS 완료; latest-head CI·독립 review·PR·merge 대기 |
+| 네 schema·합성 fixture·pure helper | NO_CHANGE | 준비 산출물 소스 수용; 현재 P09 35개와 기존 generic 등록 8개 시험 PASS. 실제 원천·권리·ACL 검증은 미래 구현의 조건 |
+| 공통 등록·gate 등록 | NO_CHANGE | 로컬 main에 통합된 manifest·workflow 등록을 실제 검사해 PASS. 현재 준비 범위 독립 검토 승인. 원래 hosted CI 실패는 이력으로 보존하며 현재 전달 경로는 로컬 main |
 | 제품 brief/license/main release | BLOCKED_FACTS | 원문·권리·검증된 release 확인 전 bootstrap 금지 |
 | 실제 source 권리·ACL·credentials | BLOCKED_FACTS | 독립 승인·발급·회전·복구 경계 |
 | 앱/API/UI/검색·embedding·crawler | OUT_OF_SCOPE | 이번 준비 범위에 생성하지 않음 |
@@ -52,7 +52,7 @@ P02에는 canonical SMTP secret catalog 경계만, P03에는 기존 서비스 en
 
 ## Usage
 
-총괄의 공통 계약 통합 후 해당 증거를 Task에 연결합니다.
+현재 산출물은 준비 계약과 합성 검증에 재사용합니다. 앱과 운영 자원 생성은 별도 구현 요청에서 정확한 소유·대상·검증·복구 경계를 정한 뒤 수행합니다.
 
 ## Related Documents
 

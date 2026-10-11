@@ -1,10 +1,10 @@
 ---
 title: "LLM Wiki Preparation Task"
-version: "0.2.5"
+version: "0.2.6"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0008"
 parent_ids:
@@ -35,9 +35,9 @@ The approval source is the direct user request for
 `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`. It authorizes no settings,
 release or runtime write. Before main integration, the recovery action was a
 logical revert of these three issuance documents. The issuance PR #414 was
-merged at `cac9e10fa584754706598d624654e07e8d6531f4`. Required latest-head
-checks, PR review and delivery remain pending only for the later P09 source
-integration.
+merged at `cac9e10fa584754706598d624654e07e8d6531f4`. At issuance, latest-head checks, review and delivery remained pending for the
+later P09 source integration; the dated local preparation completion below
+records their superseding current source boundary.
 
 The preparation input records future source allowlists for `blog-data/dev`,
 `Project-Template/dev`, `hy-home.docker/main` and `hy-home.k8s/main`. A future
@@ -69,6 +69,7 @@ not this Task, owns any later Stage 05 LAB documentation move.
 | SPEC-0204-TSK-0008 | ready | in-progress | #w25-received-execution-handoff |
 | SPEC-0204 | blocked | in-progress | #w25-received-execution-handoff |
 | SPEC-0204-PLAN-0001 | blocked | in-progress | #w25-received-execution-handoff |
+| SPEC-0204-TSK-0008 | in-progress | completed | #w25-local-preparation-completion |
 
 ### Lifecycle Event Reconciliation
 
@@ -430,6 +431,83 @@ NOT_RUN boundaries. This is preparation only: actual Wiki application and
 operational resources remain unimplemented; no external workspace, collection,
 credential, runtime client or schedule is created by this receipt.
 
+### W25 Local Preparation Completion
+
+The direct continuation request completes P09 preparation only and uses reviewed
+local-main integration without dev, push or a required PR. Baseline and source
+input is `241a470d246191751a7a5655a86d5ec4f679a0ff`; actual remote main
+remains `c26c3b93f4e73034ddad4d08ba9da8eaa9fec0c7`. The independent
+closure worktree is `codex/p09-completion`. The public helper, private semantics,
+unit and contract hashes exactly match the replacement frozen source receipt
+above. No helper, schema, fixture, registration or operational source changed.
+The current readiness matrix is corrected to the actual integrated source
+state; its old PR/review-pending wording was a documentation finding, not a
+missing Wiki implementation.
+
+The coordinator actually ran, using the existing QA environment:
+
+```sh
+env COVERAGE_FILE=.agent-work/p09-final-coverage \
+  /tmp/hy-home-p09-qa/bin/python -m coverage run --branch \
+  --include='scripts/lib/ops/wiki_preparation.py,scripts/lib/ops/wiki_preparation_semantics.py' \
+  -m unittest tests.lib.ops.test_wiki_preparation \
+  tests.validation.test_wiki_preparation_contracts \
+  tests.validation.test_project_registration -v
+env COVERAGE_FILE=.agent-work/p09-final-coverage \
+  /tmp/hy-home-p09-qa/bin/python -m coverage report --fail-under=80
+```
+
+The combined suite passed 43 tests in 20.828 seconds, exit 0: 35 dedicated
+preparation tests plus eight existing generic-registration regressions. Coverage
+exited 0 at 99 percent for the two preparation helpers only: 292 statements,
+two misses, 44 branches, zero partial branches. No application, SQL, runtime or
+repository-wide coverage is inferred. An initial output-redirection attempt
+exited 1 before test launch because the ignored evidence directory was absent.
+The directory was created and the real suite executed; no source was changed
+and that failed launch is not a production RED.
+
+Actual `python3 scripts/validation/check-script-manifest.py` exited 0 and
+`python3 scripts/validation/check-github-workflow-contract.py` exited 0
+(workflows 5, jobs 7, actions 8). Existing helper and generic validator records,
+consumer links, mandatory test modules and changed routing are preserved.
+Registered local source gates already executed for the unchanged integrated
+source, including the real 503-test repository-integrity receipt in Task0016,
+are bound source inputs rather than fresh P09 runtime or remote CI. Result-only
+closure documents receive current metadata/lifecycle/links/staged checks.
+
+Gitleaks 8.30.0 actually scanned six exact public inputs, all exit 0:
+`infra/09-platform-ops/project-registration/wiki-preparation`, both preparation
+helper files, both dedicated test files and the generic-registration test.
+Each command was `gitleaks dir --config .gitleaks.toml --redact=100 --no-banner
+--exit-code 23 <exact-public-path>`. The existing narrow checksum/path/rule
+exceptions were not expanded. This does not inspect private material or claim
+actual secret, license, ACL, store-completeness or live revocation proof.
+
+Independent preparation/code/security/specification review found no Critical
+or Important output gap. The package contains product intake and non-goals,
+closed consumer/provenance/job/handoff schemas and semantic fixtures, pure
+parsed-input validation, exact selected Literature write sets, future UI/error/
+E2E scenarios and the readiness matrix. Project-Template verified release,
+license, full shared-brief body, budget/operator and actual source/ACL facts
+remain future bootstrap gates; they do not block this preparation-only Task.
+The previous hosted candidate failure remains FAIL in its historical row.
+No old CI result is converted into PASS, and no current remote CI is claimed.
+
+W25 and criterion 13 are satisfied at SOURCE/UNIT/STATIC for preparation only.
+Wiki app/API/UI/search/embedding/collector, DB/role/collection/bucket/credential,
+external workspace/schedule and blog-data writes remain unimplemented by design.
+Learning applications and LAB runtime changes are absent. ISOLATED native,
+HOME, MIGRATION, ROTATION and RECOVERY remain NOT_RUN and outside P09's completed
+preparation boundary. Actual runtime, data and credential changes are zero.
+The Spec and Plan remain in-progress for their other owning Tasks.
+
+The two authored closure documents require final exact-byte metadata, lifecycle,
+link, staged and independent document review before their ordinary logical
+commit and local-main fast-forward. Delivery of that final receipt is observed
+separately, not inferred from this authored candidate. Rollback is a reviewed
+revert of the documentation-only closure commit; no operational rollback is
+needed. Other workers' root, SEC, SMTP and staged P05 copies remain preserved.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -446,23 +524,21 @@ credential, runtime client or schedule is created by this receipt.
 | Replacement frozen source QA | 13 | W25 | Qdrant parity RED/GREEN; 35 tests in 11.490s exit 0; 99-percent coverage exit 0; Ruff/diff | Replacement public/private helper and unit/contract inputs in W25 receipt | PASS | W25 replacement frozen source QA receipt | pending |
 | Replacement security review | 13 | W25 | Independent review and narrow Gitleaks exceptions | Replacement frozen source input; runtime and delivery remain NOT_RUN | PASS | W25 replacement frozen source QA receipt | pending |
 | Common registration and delivery | 13 | W25 | Historical script registration and owning-Spec delivery; current local continuation is separate | PR #417 merge `abe2b8b19`; hosted candidate run `38060606376` at `0e696adc` failed | FAIL | Historical Delivery Status and Superseding Local Integration | pending |
+| Current preparation acceptance | 13 | W25 | Unchanged source; fresh 43 tests, 99-percent scoped coverage, manifest/workflow/Gitleaks and independent preparation review | Main 241a470d2; replacement hashes above | PASS | W25 Local Preparation Completion | accepted |
 | HOME, migration, rotation and recovery | 13 | W25 | No operational action is authorized by preparation | No concrete operational target | NOT_RUN | Future exact Task | pending |
 
 ## Review and Completion
 
-The replacement implementation met its frozen source-level QA target, but this
-Task remains in progress. Run the current 35-test coverage plus the unchanged
-eight registration regressions, changed document metadata/link checks,
-manifest/workflow checks, `git diff --check` and the registered changed gate on
-the final integration input. Record command, input SHA, exit code and failures
-here. Candidate CI, independent review and delivery remain required. Do not
-substitute synthetic results for application/runtime evidence.
+P09 preparation is completed for criterion 13/W25 at the scoped source boundary
+recorded above. The earlier prospective PR sequence is superseded by the current
+local-main instruction; historical hosted failure, revoked freezes and their
+corrections remain preserved. Current authored document closure checks, ordinary
+commit and local-main readback are required before declaring this last receipt
+delivered. Other SPEC-0204 Tasks and the parent package remain in-progress.
 
-Use logical Conventional Commits, an owning SPEC-0204 PR, latest-head required
-CI and independent contract/code/security review before coordinator-directed
-merge. Review records must separate SOURCE, UNIT, STATIC and ISOLATED evidence
-from HOME, MIGRATION, ROTATION, RECOVERY and DELIVERY. No latter category is
-complete from preparation evidence; actual runtime resource changes remain 0.
+No Wiki resource or learning/LAB runtime is created. Future implementation must
+resolve the recorded bootstrap/rights/operator and exact runtime/backup/custody
+facts in its own approved Task; preparation completion does not grant that work.
 
 ## Related Documents
 
