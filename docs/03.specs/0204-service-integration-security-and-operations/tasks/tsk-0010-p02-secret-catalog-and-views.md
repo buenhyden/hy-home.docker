@@ -1,6 +1,6 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -63,9 +63,11 @@ NO_CHANGE/reuse check:
 - `tests/lib/ops/test_secret_catalog.py` and
   `tests/validation/test_secret_catalog_contract.py`, with synthetic fixtures
   in `tests/fixtures/secret-catalog/` and its Korean README if needed.
-- Existing `docs/05.operations/{guides,policies,runbooks}/0085-openbao.md` for
-  the single secret-management owner, and the catalog paragraph in
-  `infra/03-security/openbao/README.md`.
+- Catalog-related additions to existing
+  `docs/05.operations/{guides,policies,runbooks}/0085-openbao.md` and
+  `infra/03-security/openbao/README.md` are proposals only. P01/TSK-0006 is
+  the sole writer of these files during its active continuation; it integrates
+  reviewed P02 paragraphs without replacing operational/auth/recovery text.
 
 The worker prepares an ignored `.agent-work/integration-proposal/README.md` with exact
 base blob IDs and patches for `scripts/operations/gen-secrets.sh`,
@@ -82,7 +84,7 @@ added to the proposal before implementation and reviewed against current head.
 
 Proceed now with public-source inventory, value-free catalog/schema, aliases,
 classification, provisional destination plans, generated staging views,
-regeneration guards, synthetic tests and subject-0085 documentation. Preserve
+regeneration guards, synthetic tests and subject-0085 documentation proposals. Preserve
 COMM-002 at `secrets/communication/smtp/smtp_password.txt`; COMM-003 is an
 alias/tombstone without another source/value/KV entry. Never renumber IDs.
 

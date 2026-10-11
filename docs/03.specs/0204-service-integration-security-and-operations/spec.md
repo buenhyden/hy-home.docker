@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.0"
+version: "1.7.1"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -306,8 +306,11 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
 
 11. P01 completes one coherent native TLS endpoint/CA contract for OpenBao,
     Agent, metrics, operational clients and Traefik backend; bootstrap trust
-    and the server key are provisioned independently of that OpenBao. Exact
-    2.6.2 isolated tests exercise wrong CA/SAN, expiry/denial, sealing, fresh
+    and the server key are provisioned independently of that OpenBao. Historical
+    exact 2.6.2 isolated proof is preserved; final verification uses SEC01's
+    current stable server/Agent/snapshot CLI contract (2.7.1 at the current
+    assessment), with fresh input binding. The tests exercise wrong CA/SAN,
+    expiry/denial, sealing, fresh
     Agent process/cold start, wrapped SecretID reissue, restricted snapshot
     issuance/renewal/save/empty Raft restore/unseal, HMAC audit and audit failure.
     HOME cold boot, custody and real snapshot acceptance require the named
@@ -315,7 +318,10 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
     defer only that lane. P06 expansion remains blocked until those conditions
     pass, including known SecretID expiry and malformed-audit-input residuals on
     the selected runtime; fixed-version verification and abandoned wrapped
-    issuance cleanup remain acceptance prerequisites. No new KMS/engine, LAB action or learning-app planning is included.
+    issuance cleanup remain acceptance prerequisites. Existing nonce-based
+    cleanup is reused; the requested issuance_id metadata contract requires
+    explicit journal compatibility, never blind renaming of outstanding receipts.
+    No new KMS/engine, LAB action or learning-app planning is included.
     TSK-0006 owns this increment; TSK-0005/0229's applied snapshot source is
     NO_CHANGE and their historical results are never a fresh P01 PASS.
 12. CLN01 owns the consumer assessment and narrow private-unlink helper for

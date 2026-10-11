@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.0"
+version: "1.8.1"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -151,10 +151,49 @@ Unclear facts or mismatched values stop only that operation. RUN-0029 owns
 exact check/apply commands and canonical-only recovery; SMTP01 does not execute
 private comparison, unlink, broad sync/prune, rotation or HOME deployment.
 
-### P01 exact scope and sequence
+### P01 current continuation ownership and sequence
 
-Current input is main/origin/main `1ee5d6707e3b75b61222baad0c51050c64e1b10d`,
-clean at start. Compared with d19fbfde6, only P00 documentation changed;
+The 2026-10-11 assessment continues existing blocked TSK-0006/W19-W23;
+it allocates no new Task or Spec. Assessment input is clean local main
+`728ec6379f193256cee342550e38479cf3ebfc56`, remote main `2b9f5ec82`.
+Server/Agent declaration is SEC01's exact 2.7.1 contract; fresh HOME metadata
+still reports both on 2.6.2. Historical source and isolated receipts are retained.
+Task-0006's current continuation section owns the exact worker instructions.
+
+One P01 writer owns OpenBao scripts/config except P02's catalog/schema,
+its named Agent/issuance/candidate/rehearsal tests, Task-0006 and subject-0085
+Guide/Policy/Runbook plus the OpenBao README. P02 retains catalog/schema,
+classification/views and its own tooling/tests; its 0085/README paragraphs are
+proposals to P01. SEC01 owns image selection, signature/SBOM/CVE decisions and
+version projection; it does not concurrently edit P01 helpers/tests.
+The coordinator alone integrates OpenBao Compose, root/environment, gateway,
+Prometheus/Gatus/Alloy, backup, shared CI/manifest/validators, Registry/inventory
+and Spec/Plan. Proposed shared changes bind exact base blob IDs and are reviewed
+once; same-file writers never overwrite one another.
+
+Reuse implemented TLS/wrapping/readiness/audit/snapshot and restricted cleanup.
+Change only proven residuals, including issuance_id metadata/journal compatibility.
+Current source preparation and needed synthetic isolation can proceed without
+closing W23. The P01 operational contract must bind the exact HOME containers,
+source runtime/image, credential and TLS paths, snapshot artifact, independent
+custody, owned empty restore target, limits, operator/independent reviewer,
+existing human authorization, rollback and retained result before any action.
+No production fault injection, real consumer migration or P06 release occurs.
+SEC01's image/security acceptance and actual backup/custody/empty-restore
+preconditions gate only HOME activation; do not wait for unrelated images to
+finish before doing P01 source/isolated work.
+
+The later P01 prompt requests an owning-Spec PR after implementation. Preserve
+logical commits and align preceding local-only coordinator documentation with
+remote main before a P01-only diff is submitted; do not mix unrelated SEC/P02
+implementation or bypass latest-head CI/review. This assessment creates no PR,
+remote push or runtime change. P02 and P01 use separate clean worktrees; dev is
+unused. The following original scope is historical, not a current writer lease.
+
+### P01 historical source scope and sequence
+
+The original source input was main/origin/main
+`1ee5d6707e3b75b61222baad0c51050c64e1b10d`, clean at start. Compared with d19fbfde6, only P00 documentation changed;
 OpenBao executable source is unchanged. This request authorizes source,
 synthetic isolated 2.6.2 tests, documentation, commits and checked PR delivery.
 The user's `ok` accepts isolation first and supplies no HOME host/CA/custody

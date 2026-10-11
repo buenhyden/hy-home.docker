@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -435,6 +435,162 @@ rollback must retain native TLS, audit declaration/log custody and verified
 client trust through a reviewed override or fix-forward; never revert to HTTP
 or remove audit to restore requests. Fixture cleanup removes only owned
 names/paths and leaves HOME, LAB and user work untouched.
+
+### Current P01 Continuation — 2026-10-11
+
+This is the existing blocked P01 Task, not a new issuance or implementation
+restart. Its artifact ID, created date, historical failures/receipts and W23
+hold remain. The current user supplies a full P01 execution prompt and requests
+prerequisite assessment, an independent worker branch, ownership and delivery
+instructions. The assessment itself executes no real credential, backup,
+restore or HOME action. Later matching operational authorization is reused
+only after the concrete admission contract and independent review exist.
+
+**Verified baseline.** Clean local main is
+`728ec6379f193256cee342550e38479cf3ebfc56`; a fresh remote query confirms
+`2b9f5ec82cb73ea148fb27bfbd2d35c10e328e51`, with no open PRs observed.
+Local main has two coordinator documentation commits not yet on remote.
+Root is detached at `a03c8930a` with 24 foreign entries; SEC/SMTP/P09 foreign
+worktrees and their source changes are preserved. Do not stage, reset, stash,
+clean or force-push them. The legacy `codex/p01-openbao-trust` at `bb63f27ed`
+is retained; its inventory correction was already cherry-picked as `633d285eb`
+and delivered via PR410. Do not reapply those patches or resume that stale
+branch as the current source baseline.
+
+The official stable release query reports v2.7.1, draft=false,
+prerelease=false, published 2026-10-01T14:03:19Z; see
+[the official release](https://github.com/openbao/openbao/releases/tag/v2.7.1).
+Both declared server and Agent use
+`openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf`.
+The separately selected linux/amd64 fixture input is
+`sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005`;
+never confuse that platform/admission input with the multi-platform digest.
+SEC01 owns final image trust and CVE decisions; no newer-version result
+waives security or HOME verification. Fresh value-free runtime metadata at
+2026-10-11T01:17:52Z observes both HOME containers running/healthy on the
+2.6.2 image identity. Healthy is not candidate deployment or recovery.
+
+**Reuse and residuals.** NO_CHANGE applies to implemented native TLS/CA binds,
+wrapped reissue, immutable target/source receipt checks, limited issuer and
+separate cleanup policy, durable nonce journal, functional byte/version/0600
+readiness, audit/HMAC declaration, snapshot and empty synthetic restore.
+SEC01's submitted 2.7.1 isolated result (two tests, 177.078 seconds) remains
+attributed to its submitted input; do not copy it into a current-head PASS.
+Historical 2.6.2 proof and known bad expiry behavior remain preserved.
+
+The current helper is `scripts/renderer-issuance.py` under the OpenBao family,
+using `sec01_nonce`, `sec01_role`, `sec01_issued_at`, exact-role lookup/destroy
+and a creation window. The prompt requests `issuance_id`; this naming/receipt
+contract is a bounded IMPLEMENT residual, not a reason to replace cleanup.
+Use a tested versioned compatibility change that preserves existing active
+journals and receipts, rejects contradictory or duplicate metadata, and never
+falls back to broad tidy/list deletion, wrap-revoke assumptions or admin rights.
+Verify response loss/interruption/accessor destruction in the exact candidate
+before HOME admission; stub policy matching is not native authorization proof.
+Malformed JSON nonexposure is a specific case, not every malformed-audit advisory.
+
+**Worker branch.** Prepare `codex/p01-openbao-recovery` at
+`/home/hyunyoun/data/hy-home.docker/.worktrees/p01-openbao-recovery` from the
+coordinator handoff commit after local-main delivery. Record its full SHA,
+HEAD and clean state. Exactly one separately assigned P01 worker owns source
+continuation; assessment reviewers are not additional implementers.
+
+**Exclusive file ownership.** P01 owns OpenBao `scripts/` and `config/`, this
+Task, `infra/03-security/openbao/README.md`, existing subject-0085 Guide/Policy/
+Runbook, and these existing tests:
+
+- `tests/validation/test_openbao_agent_contract.py`;
+- `tests/lib/ops/test_openbao_issuance.py` and `test_openbao_issuance_trust.py`;
+- `tests/validation/test_openbao_candidate.py`, `test_openbao_rehearsal.py`,
+  `_openbao_rehearsal_fixture.py`, `_openbao_rehearsal_clients.py` and
+  `tests/validation/fixtures/openbao-audit-alerts.test.yml`.
+
+P02 exclusively owns catalog/schema and its dedicated tools/tests; it submits
+0085/README catalog paragraphs to P01 instead of editing the same files.
+SEC01 stops simultaneous edits of P01 helpers/tests and owns stable selection,
+image trust/SBOM/CVE triage, ledger and generated version projection. SMTP01
+owns COMM-002/COMM-003 conversion/retirement; CLN01 owns general deletion
+eligibility. Both positive initialization/rollback consumers stay retained.
+The coordinator is the sole final writer of OpenBao Compose, root Compose,
+environment, gateway, Prometheus/Gatus/Alloy, backup/RUN-0021/RUN-0098,
+shared validators/manifest/workflow, inventory/Registry and Spec/Plan.
+P01 places exact-base proposals in ignored
+`.agent-work/integration-proposal/README.md`; no last-writer replacement.
+
+**Parallel now.** Public source/role/template review, versioned journal
+compatibility, synthetic regression fixes, exact isolated-contract review,
+HOME operator/receipt preparation and bounded 0085 documentation may proceed.
+Native isolation uses only invocation-generated credentials and owned empty
+volumes, internal network, exact cached candidate and existing cleanup; it
+requires available host capacity, reviewed daemon/input identities and a
+single native-job lease. Reuse unchanged-input receipts; rerun only when changed
+source/admission inputs or missing coverage require it. Do not run concurrent
+SEC scans, SMTP recovery or another P01 native fixture on the same capacity.
+Independent IaC/security review precedes changed fixture execution.
+
+**Wait before HOME.** SEC01 must accept this exact OpenBao artifact's
+signature/SBOM/CVE applicability. Bind the existing host
+`/home/hyunyoun/data/hy-home.docker`, exact server/Agent IDs and source images,
+TLS/snapshot-token paths and journal mounts in a fresh sanitized operator
+contract. Obtain a restricted snapshot-only credential, prove ordinary-secret
+read denial and renewal/save, and identify a fresh authenticated pre-upgrade
+Raft snapshot. The observed missing
+`secrets/backup/openbao/snapshot_token.txt` is a blocker, not a successful skip.
+Prove independent/off-host unseal and CA/server-key custody, actual successful
+backup/catalog scope, and exact empty restore/unseal/canary/renderer reauth.
+Old `2b9f5ec8` HOME readiness receipts and the bounded SMTP two-file restore
+cannot satisfy this current OpenBao/full HOME gate. Never place bootstrap or
+recovery material only inside the OpenBao it must recover.
+
+Review a mode-specific stateful recovery contract with the actual trusted user
+instruction, implementer, independent reviewer, exact source artifact and empty
+target, limits, prior attempt/result retention and rollback before execution.
+First-isolated evidence generation may use its existing bounded review mode;
+production readiness cannot inherit that waiver. Do not invent admin input,
+independent key custody or a ready verdict. Keep unavailable operations BLOCKED
+with the exact missing input; continue unaffected source work.
+
+After admission, stage selected services sequentially: authenticated snapshot
+and verified recovery boundary, server upgrade, manual unseal/native readiness,
+then Agent upgrade/fresh wrapped reauthentication and current-consumer proof.
+No in-place Raft downgrade, HTTP/audit bypass, HOME fault injection, whole-host
+reboot, global stack restart, prune, broad chown, credential rotation, P06
+migration, LAB runtime, learning-app planning or actual Wiki implementation.
+A cold-start simulation and a real reboot are distinct evidence lanes.
+
+**Actual checks in this assessment.** On input `728ec6379`, the focused command
+below passed 64 tests in 14.866 seconds, exit 0, without native opt-ins:
+
+```bash
+python3 -m unittest tests.validation.test_openbao_agent_contract tests.lib.ops.test_openbao_issuance tests.lib.ops.test_openbao_issuance_trust tests.validation.test_openbao_candidate.ExpiryRegression tests.validation.test_sec01_version_contract -v
+```
+
+The registered native commands remain NOT_RUN in this assessment:
+
+```bash
+HYHOME_OPENBAO_CANDIDATE=1 python3 -m unittest tests.validation.test_openbao_candidate.CandidateNative -v
+HYHOME_OPENBAO_REHEARSAL=1 python3 -m unittest tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests -v
+```
+
+A real unit change requires meaningful RED/GREEN, focused coverage, Ruff/
+shell checks, affected metadata/links/catalog/version drift and registered
+changed/staged gates. Native opt-in skips are not native PASS. Preserve small
+logical commits for proven source residuals, fixture/isolated evidence, shared
+integration and operational documents. The coordinator integrates common
+patches once and reruns affected gates. Before a SPEC-0204 P01 PR, align the
+local-only coordinator prefix with fresh remote main so the functional PR
+contains only P01 changes. Require actual latest-head CI and independent
+code/security/IaC/recovery review; no admin bypass or future PASS. No PR/push
+occurs during this assessment. Only merged clean worker resources may later
+be removed after evidence preservation; the old foreign worktrees stay intact.
+
+Deliver P02/P03/P06/P08/P10 the final main/input SHA, server/Agent/snapshot CLI
+index/platform identities, role/ACL/template/cold-boot graph, journal schema
+and issuance_id compatibility, snapshot/offsite/restore/custody references,
+measured audit/alert/recovery results and each BLOCKED/NOT_RUN lane. Keep
+SOURCE/UNIT/STATIC/ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY/DELIVERY separate.
+W23 and this Task stay blocked until their actual conditions pass; catalogue
+preparation and source delivery do not release P06.
 
 ## Evidence
 
