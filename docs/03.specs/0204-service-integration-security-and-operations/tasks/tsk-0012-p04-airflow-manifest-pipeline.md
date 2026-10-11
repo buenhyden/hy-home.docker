@@ -1,6 +1,6 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -838,6 +838,82 @@ owning-Spec/current-head checks and independent review. W38 and criterion18
 remain open; only the relevant accepted image and exact resource/recovery
 contract can enable the native batch and P05's subsequent notification proof.
 
+### Required-image-input projection repair — 2026-10-11
+
+The first overlay classification unit was committed as
+`f1a7726c4a77220d7dddc5f0b027b7fedcfe879d`. The subsequent registered local
+changed gate failed, exit1, when `sync-tech-stack-versions.sh --check` rejected
+the typed overlay's `${OPSFLOW_AIRFLOW_IMAGE:?}` image declaration. The public
+failure is retained in `.agent-work/p04-registered-local-changed.log`. Earlier
+classification, formatting and test receipts remain bound to their inputs;
+this later aggregate FAIL was not replaced by a component PASS.
+
+The second source unit reuses the central overlay classifier and derives
+`required_image_inputs` in the existing version registry. It records required
+variables without reading environment/private values, resolving an image or
+treating an unresolved declaration as a pin. Every concrete image pin stays
+in the existing registry; no parallel inventory or image authority is added.
+
+QA witnessed RED for the valid `${REQUIRED_IMAGE:?}` typed-overlay fixture,
+exit1, before the script change. The old script reported invalid Compose
+declaration for the synthetic `infra/example/compose.workflow.override.yml`.
+The exact RED command was:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.validation.test_tech_stack_version_contract.TechStackSynchronizationTests.test_typed_overlay_projects_required_image_input_without_resolving_it -v
+```
+
+QA then reported six focused refusal/projection tests PASS, exit0, 14.880
+seconds, followed by all 33 TechStackSynchronizationTests PASS, exit0, 34.712
+seconds. The latter's public output is `/tmp/p04-tech-stack-required-input-unit.log`.
+The final class command was:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.validation.test_tech_stack_version_contract.TechStackSynchronizationTests -v
+```
+
+The frozen script SHA256 is
+`d2c0014be61f0b46dbf2154294c042de36958817fb2f64d436ae0308cdbfae46`;
+the test SHA256 is
+`50779bf5356088e62b73de2dd13fb1aaa2e08d3526de9b3db8009ba410b6641c`.
+QA reported scoped Ruff check/format, `bash -n` and diff-check exit0. New
+coverage for this inline shell/Python projection is NOT_MEASURED; the earlier
+classification module coverage does not measure this source unit.
+
+With QA tools on PATH and `PYTHONDONTWRITEBYTECODE=1`, the coordinator executed
+`bash scripts/operations/sync-tech-stack-versions.sh --write`, exit0. The
+public `.agent-work/p04-required-input-projection.json` records registry change
+from `9ca1dfbf0b257ad5a136d0cbc31fccae72d8f65558ec744ad76eb3251c579b04`
+to `8b95290672195e0bc61796adeb4fc33eb87ad73cc0a65d2921bcd82d3e5dea67`.
+JSON equality proved all 88 concrete entries and every other pre-existing field
+unchanged. Exactly one overlay source record names `OPSFLOW_AIRFLOW_IMAGE`;
+its status is unresolved-not-pin. The subsequent `--check` passed, exit0,
+reporting 91 repositories/72 external/19 local-custom/one required input in
+`.agent-work/p04-required-input-check.log`. These are observed projection
+counts, not a fixed service census or accepted runtime image.
+
+The coordinator's script manifest check passed, exit0, and the command below
+passed 63 tests, exit0, 39.055 seconds. Public outputs are
+`.agent-work/p04-required-input-manifest.log` and
+`.agent-work/p04-required-input-regressions.log`.
+
+```sh
+/tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.validation.test_tech_stack_version_contract \
+  tests.validation.test_validator_entrypoints -q
+```
+
+Independent review of the four-file source unit accepted it without Critical
+or Important findings. Final combined registered changed/staged checks and
+local-main merge remain pending. The latest direct user local-main lane
+overrides the older PR expectation for this integration receipt only; remote
+push, a new P04 PR and hosted CI remain NOT_RUN. Source projection does not
+accept SEC01's image, installed dependencies or grants. Criterion18/W38,
+native image import, DEV execution, HOME, migration, rotation and recovery
+remain open or NOT_RUN under their exact resource/image/restore contracts.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -849,6 +925,7 @@ contract can enable the native batch and P05's subsequent notification proof.
 | New SQL contract | 18 | W36 | Source guards for migration and outbox | Latest SQL hashes in Work Log | PASS | Nine source tests, exit0; PostgreSQL native NOT_RUN | pending |
 | New DAG contract | 18 | W37 | Synthetic SDK import and public overlay model | Frozen DAG/overlay hashes in Work Log | PASS | Five synthetic tests and independent Compose render, exit0 | pending |
 | Typed optional overlay candidate | 18 | W37 | RED/GREEN profile/inventory boundaries, coverage and official catalog | Main 4c83f14b plus final classifier/test/overlay hashes in Work Log | PASS | 59 focused and 102 full-module tests; catalog exit0; SOURCE/UNIT/STATIC only, review/delivery pending | pending |
+| Required image projection candidate | 18 | W37 | RED/GREEN required-input projection and concrete-pin preservation | f1a7726 plus frozen script/test/registry hashes in Work Log | PASS | 33 class tests, root63 regressions, generator/check and manifest exit0; unresolved image, combined delivery pending | pending |
 | Native batch and recovery | 18 | W38 | ISOLATED/HOME/MIGRATION/RECOVERY | No selected ready execution contract | NOT_RUN | No DB/role/bucket creation or deployment | pending |
 | Rotation | 18 | W38 | Credential rotation | No rotation required | NOT_APPLICABLE | No rotation authorized by issuance | not-required |
 | Delivery | 8, 18 | W39 | Latest-head CI/review/PR/merge | Local source commits; no P04 PR | NOT_RUN | Local checks do not satisfy remote CI/merge | pending |

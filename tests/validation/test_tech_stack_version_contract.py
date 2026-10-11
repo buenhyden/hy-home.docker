@@ -800,6 +800,16 @@ class TechStackSynchronizationTests(unittest.TestCase):
         shutil.copyfile(
             ROOT / "scripts/operations/sync-tech-stack-versions.sh", self.script
         )
+        for package in ("scripts", "scripts/lib"):
+            package_root = self.root / package
+            package_root.mkdir(parents=True, exist_ok=True)
+            source_init = ROOT / package / "__init__.py"
+            if source_init.exists():
+                shutil.copyfile(source_init, package_root / "__init__.py")
+        shutil.copytree(
+            ROOT / "scripts/lib/document_governance",
+            self.root / "scripts/lib/document_governance",
+        )
         self.registry = self.root / "infra/tech-stack.versions.json"
         self.registry.parent.mkdir()
         self.compose = self.root / "infra/example/docker-compose.yml"
@@ -876,6 +886,28 @@ class TechStackSynchronizationTests(unittest.TestCase):
                 self.assertNotEqual(0, result.returncode, result.stdout)
                 self.assertIn(expected, result.stderr)
                 self.assertEqual(before, self.registry.read_bytes())
+
+    def add_typed_overlay(
+        self,
+        services: str,
+        *,
+        annotation: str = (
+            "x-hyhome-overlay:\n"
+            "  version: 1\n"
+            "  base: infra/example/docker-compose.yml\n"
+        ),
+    ) -> pathlib.Path:
+        (self.root / "docker-compose.yml").write_text(
+            "include:\n  - infra/example/docker-compose.yml\n",
+            encoding="utf-8",
+        )
+        overlay = self.root / "infra/example/compose.workflow.override.yml"
+        overlay.write_text(
+            annotation + "services:\n" + services,
+            encoding="utf-8",
+        )
+        subprocess.run(["git", "add", str(overlay)], cwd=self.root, check=True)
+        return overlay
 
     def test_missing_compose_file_fails_closed(self) -> None:
         self.compose.unlink()
@@ -1168,6 +1200,216 @@ class TechStackSynchronizationTests(unittest.TestCase):
         result = self.run_sync("--write")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn('"example/app:2"', self.registry.read_text())
+
+    def test_registry_without_required_inputs_stays_byte_identical_when_aligned(
+        self,
+    ) -> None:
+        self.write_registry("example/app:2")
+        before = self.registry.read_bytes()
+        result = self.run_sync("--check")
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(before, self.registry.read_bytes())
+        self.assertNotIn("required_image_inputs", json.loads(before))
+
+    def test_removed_required_input_retains_explicit_empty_projection(self) -> None:
+        overlay = self.add_typed_overlay("  app:\n    image: ${REQUIRED_IMAGE:?}\n")
+        added = self.run_sync("--write")
+        self.assertEqual(0, added.returncode, added.stderr)
+        self.assertEqual(
+            ["REQUIRED_IMAGE"],
+            json.loads(self.registry.read_text())["required_image_inputs"][0][
+                "variables"
+            ],
+        )
+        subprocess.run(
+            ["git", "rm", "--cached", str(overlay)],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+        )
+        overlay.unlink()
+
+        removed = self.run_sync("--write")
+        self.assertEqual(0, removed.returncode, removed.stderr)
+        self.assertEqual(
+            [], json.loads(self.registry.read_text())["required_image_inputs"]
+        )
+
+    def test_typed_overlay_projects_required_image_input_without_resolving_it(
+        self,
+    ) -> None:
+        baseline = self.run_sync("--write")
+        self.assertEqual(0, baseline.returncode, baseline.stderr)
+        baseline_entries = json.loads(self.registry.read_text())["entries"]
+        overlay = self.add_typed_overlay("  app:\n    image: ${REQUIRED_IMAGE:?}\n")
+
+        result = self.run_sync(
+            "--write", extra_env={"REQUIRED_IMAGE": "ignored/example:9.9.9"}
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        registry = json.loads(self.registry.read_text())
+        self.assertEqual(baseline_entries, registry["entries"])
+        self.assertEqual(
+            [
+                {
+                    "compose_file": overlay.relative_to(self.root).as_posix(),
+                    "variables": ["REQUIRED_IMAGE"],
+                }
+            ],
+            registry["required_image_inputs"],
+        )
+        checked = self.run_sync("--check")
+        self.assertEqual(0, checked.returncode, checked.stderr)
+        self.assertIn(
+            "required-image-input "
+            "source=infra/example/compose.workflow.override.yml "
+            "variables=REQUIRED_IMAGE status=unresolved-not-pin",
+            checked.stdout,
+        )
+
+    def test_required_image_input_is_rejected_outside_typed_infra_overlay(
+        self,
+    ) -> None:
+        for relative in (
+            pathlib.Path("infra/example/docker-compose.yml"),
+            pathlib.Path("labs/example.yml"),
+        ):
+            with self.subTest(relative=relative):
+                target = self.root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(
+                    "services:\n  app:\n    image: ${REQUIRED_IMAGE:?}\n",
+                    encoding="utf-8",
+                )
+                subprocess.run(["git", "add", str(target)], cwd=self.root, check=True)
+                self.assert_rejected_without_write("compose")
+                if target != self.compose:
+                    subprocess.run(
+                        ["git", "rm", "--cached", str(target)],
+                        cwd=self.root,
+                        check=True,
+                        capture_output=True,
+                    )
+                    target.unlink()
+                self.compose.write_text(
+                    "services:\n  app:\n    image: example/app:2\n",
+                    encoding="utf-8",
+                )
+
+    def test_malformed_required_image_expressions_fail_closed(self) -> None:
+        overlay = self.add_typed_overlay("  app:\n    image: ${REQUIRED_IMAGE:?}\n")
+        for image in (
+            "${REQUIRED_IMAGE}",
+            "${REQUIRED_IMAGE:?message}",
+            "${REQUIRED_IMAGE:-}",
+            "example/app:${REQUIRED_TAG:?}",
+        ):
+            with self.subTest(image=image):
+                overlay.write_text(
+                    "x-hyhome-overlay:\n"
+                    "  version: 1\n"
+                    "  base: infra/example/docker-compose.yml\n"
+                    "services:\n"
+                    f"  app:\n    image: {image}\n",
+                    encoding="utf-8",
+                )
+                self.assert_rejected_without_write("compose")
+
+    def test_typed_overlay_keeps_concrete_default_projection(self) -> None:
+        self.add_typed_overlay("  app:\n    image: ${OVERLAY_IMAGE:-example/app:3}\n")
+        result = self.run_sync(
+            "--write", extra_env={"OVERLAY_IMAGE": "ignored/example:9.9.9"}
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        registry = json.loads(self.registry.read_text())
+        self.assertEqual([], registry.get("required_image_inputs", []))
+        entry = registry["entries"][0]
+        self.assertEqual(["example/app:2", "example/app:3"], entry["images"])
+
+    def test_overlay_classifier_failures_are_enforced_by_sync(self) -> None:
+        overlay = self.add_typed_overlay("  app:\n    image: ${REQUIRED_IMAGE:?}\n")
+        cases = (
+            (
+                "root-included-overlay",
+                "include:\n"
+                "  - infra/example/docker-compose.yml\n"
+                "  - infra/example/compose.workflow.override.yml\n",
+                None,
+            ),
+            (
+                "service-outside-base",
+                None,
+                "  new-service:\n    image: ${REQUIRED_IMAGE:?}\n",
+            ),
+            (
+                "profile-override",
+                None,
+                "  app:\n    profiles: [dev]\n    image: ${REQUIRED_IMAGE:?}\n",
+            ),
+            (
+                "unsafe-base",
+                None,
+                "  app:\n    image: ${REQUIRED_IMAGE:?}\n",
+            ),
+        )
+        valid_root = "include:\n  - infra/example/docker-compose.yml\n"
+        for label, root_text, services in cases:
+            with self.subTest(label=label):
+                (self.root / "docker-compose.yml").write_text(
+                    root_text or valid_root,
+                    encoding="utf-8",
+                )
+                annotation = (
+                    "x-hyhome-overlay:\n"
+                    "  version: 1\n"
+                    "  base: ../example/docker-compose.yml\n"
+                    if label == "unsafe-base"
+                    else (
+                        "x-hyhome-overlay:\n"
+                        "  version: 1\n"
+                        "  base: infra/example/docker-compose.yml\n"
+                    )
+                )
+                overlay.write_text(
+                    annotation
+                    + "services:\n"
+                    + (services or "  app:\n    image: ${REQUIRED_IMAGE:?}\n"),
+                    encoding="utf-8",
+                )
+                self.assert_rejected_without_write("overlay contract")
+
+    def test_required_image_input_registry_shape_fails_closed(self) -> None:
+        invalid_records = (
+            "invalid",
+            [{"compose_file": "../escape.yml", "variables": ["IMAGE"]}],
+            [{"compose_file": "/infra/example/compose.yml", "variables": ["IMAGE"]}],
+            [{"compose_file": "labs/example.yml", "variables": ["IMAGE"]}],
+            [{"compose_file": "infra/example/not-compose.yml", "variables": ["IMAGE"]}],
+            [{"compose_file": "infra/example/compose.yml", "variables": []}],
+            [{"compose_file": "infra/example/compose.yml", "variables": ["9IMAGE"]}],
+            [{"compose_file": "infra/example/compose.yml", "variables": [{}]}],
+            [{"compose_file": "infra/example/compose.yml", "variables": ["Z", "A"]}],
+            [
+                {
+                    "compose_file": "infra/example/compose.yml",
+                    "variables": ["IMAGE", "IMAGE"],
+                }
+            ],
+            [
+                {
+                    "compose_file": "infra/example/compose.yml",
+                    "variables": ["IMAGE"],
+                    "unexpected": True,
+                }
+            ],
+        )
+        for records in invalid_records:
+            with self.subTest(records=records):
+                body = json.loads(self.registry.read_text())
+                body["required_image_inputs"] = records
+                self.registry.write_text(json.dumps(body), encoding="utf-8")
+                self.assert_rejected_without_write("required_image_inputs")
+                self.write_registry()
 
     def test_write_preserves_registry_line_endings(self) -> None:
         before = self.registry.read_bytes().replace(b"\n", b"\r\n")
