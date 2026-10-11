@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.5"
+version: "0.2.6"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -1229,6 +1229,115 @@ NOT_RUN. Full native rehearsal, latest-image expiry/advisory/snapshot reacceptan
 and Agent delivery are not proved by the narrow metadata method. W23/P06 retain
 their named-target, custody, snapshot/empty-restore and rollback prerequisites.
 Actual HOME / other operational resource changes: 0.
+
+### W22 P02 Catalog Documentation Reconciliation — 2026-10-11
+
+The user handed over P02's reviewed public catalog proposal to this P01 sole
+writer. Source commit is `962e11be50260a3dce2e2700b22951fce1b3f4f7`, synthetic
+integration commit is `ab346b2c9a329731af3fff74be651531d87067cc`, and assessed
+integrated main is `08b009a9ce0f288926f2edc4eebcbc5fb475d1e5`. The handoff said
+remote delivery was pending, but the fresh actual `rtk git ls-remote origin
+refs/heads/main` returned 08b009a9, exit 0. This observed result supersedes only
+that historical remote-state statement, not P02's unexecuted operational lanes.
+
+Root checkout HEAD remains a03c8930 with foreign SMTP/CLN/coordinator changes.
+The existing P01 worktree started clean at 6d1d6960; `rtk git fetch origin main`
+and `rtk git merge --ff-only origin/main` both exited 0. The nineteen integrated
+P02 paths were inspected; none changes the four P01 documents. No foreign file,
+coordinator main, common manifest/workflow, Spec/Plan or Task0010 was authored.
+
+The frozen historical proposal is
+`.agent-work/p02-frozen-handoff/p02-openbao-docs.patch` in the P02 integration
+worktree. Its SHA-256 is
+`71907ca6135cee7ad60df3868b92214967ef19822cf17b715810b3bb7419b7f4`.
+Its older patch bases differ from current input blobs below. It was read for
+comparison and was not applied, overwritten or deleted.
+
+| Owned document | Current input blob at 08b009a9 |
+| --- | --- |
+| GDE-0085 | f1a16868ddaa29fef1722d566cc4c0affe70b534 |
+| POL-0085 | 0ff09df88e82fd44beebf9462287afbf1acfdbf9 |
+| RUN-0085 | 15d8c4ef57e2233d527b15e1cc87dde0c88939b9 |
+| OpenBao README | 312cd463ba9f2c8160e71b753133fa4645da872c |
+
+Four in-place Korean document additions explain the single public catalog,
+classification/lifecycle versus actual acceptance, cooperative lock boundary,
+source-retired alias versus physical deletion, and exact public-only CLI calls.
+IDs, created dates, existing v1/v2 issuance, TLS/wrapping/readiness/audit/snapshot
+and recovery sources are preserved. Actual destinations/ACL/delivery/reload and
+RPO/RTO remain unaccepted. No opsflow ID, credential or operational target is
+invented. Schema is 1.0.0; fresh CLI finds 145 entries and one alias. COMM-002
+and COMM-003 regeneration is rejected; SMTP01 alone owns actual COMM-003
+retirement. PG-020 retention and HOME/P06 holds remain.
+
+The four immutable public CLI input SHA-256 values are:
+
+- catalog: `a069d84360fdad0da16bd415c80019aa78859a137cdb1ba1fe50aa2882f7e141`;
+- schema: `c044474d26a7f6f16f41d32fe07ca2dd34c08c0a3a3513f890717a7cf510582d`;
+- public example: `c9b644730f5b963bc1a6b5af4d42de0eef858ed815857aa185f4a2cab1f756ca`;
+- support matrix: `0eab707f24b88d891618441b8b768accfb370c7b29950deefb0d68cb2ab47654`.
+
+CLI verification used existing `/tmp/hy-home-p09-qa`: Python3.12.3,
+jsonschema4.26.0, referencing0.37.0, pre-commit4.6.2, Commitizen4.15.1.
+The fixed public CLI and existing behavioral tests are unchanged. No new RED
+or coverage run applies to this document-only change; earlier helper coverage
+is not relabeled as a new measurement.
+
+| Exact command or input-bound invocation | Exit | Observed result |
+| --- | --- | --- |
+| `rtk proxy /tmp/hy-home-p09-qa/bin/python scripts/operations/secret-catalog.py --root /home/hyunyoun/data/hy-home.docker/.worktrees/p01-openbao-recovery check` | 0 | P02_METADATA_VALID, 145 entries, 1 alias |
+| `rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest tests.lib.ops.test_secret_catalog.SyntheticRepositoryTests.test_cli_check_render_guard_and_drift -v` | 0 | One existing actual-subprocess synthetic regression PASS |
+| `rtk bash -c 'umask 022; rtk git worktree add --detach /tmp/hy-home-p01-catalog-doc-qa 08b009a9ce0f288926f2edc4eebcbc5fb475d1e5'` | 0 | New absent-before-create isolated public QA checkout |
+| `rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check` | 0 | P02_METADATA_VALID, 145 entries, 1 alias |
+| `rtk python3 scripts/operations/secret-catalog.py --root "$PWD" render` | 0 | STAGING_RENDERED, exactly four public staging files |
+| `rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-views` | 0 | P02_VIEWS_MATCH |
+| `rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-generation COMM-002` | 2 | Expected P02_GENERATION_BLOCKED refusal |
+| `rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-generation COMM-003` | 2 | Expected P02_GENERATION_BLOCKED refusal |
+| `rtk python3 scripts/validation/check-document-metadata.py --mode check-changed` | 0 | Selected 9, violations 0, legacy exceptions 0, transition overrides 0; source=local upstream, merge-base 26e37a22 |
+| `rtk python3 scripts/validation/check-document-links.py --mode all` | 0 | 1195 documents, 11611 links, failures 0, one existing historical warning |
+| `rtk python3 scripts/validation/check-script-manifest.py` | 0 | Existing catalog authority/behavioral consumer registration valid |
+| `rtk python3 scripts/validation/run-ci-gate.py --profile changed --local-only --explain` | 0 | Selected registered local preflight, links, supply-chain, Conftest, Compose and repository-integrity leaves; explain only |
+| `rtk git diff --check` | 0 | No whitespace errors |
+
+The five direct public staging calls ran sequentially in the new QA checkout,
+with PATH `/tmp/hy-home-p09-qa/bin` first. Its new owner-owned `.agent-work`
+and regular single-link README were created exclusively, exit 0. Outputs are
+`SENSITIVE_ENV_VARS.md.example`, `secret-catalog-summary.json`, `README.md` and
+`SENSITIVE_ENV_VARS.md` only inside ignored `.agent-work/p02-views`; the last
+name is a value-free public projection, not the private metadata source.
+Source public input bytes remain unchanged. Rendering is per-file replacement,
+not an atomic four-file transaction. The QA artifact is preserved for review.
+
+Several initial tool-wrapper attempts exited 1 with the sandbox's bwrap
+loopback error before the requested Git/Python check executed. Authorized
+escalated retries completed as recorded above; these are not test failures or
+RED. An initial `apply_patch` to the dedicated /tmp QA README was rejected by
+the project-root hook. The explicit scoped exclusive file creation was then
+approved and succeeded; no hook or global setting was changed. The earlier
+local full gate exit124 is still historical failure evidence; no aggregate
+rerun was substituted for this document change. Remote candidate QA owns the
+new PR's aggregate result.
+
+Independent four-document security review approved the frozen hashes with no
+findings. Exact contract/documentation review and final staged controller are
+recorded in the ensuing delivery receipt. Implementation and common files
+remain unchanged. The coordinator receives a narrow proposal to add RUN-0085
+to the CLI's proven consumers after these actual calls are accepted, while
+keeping `tests/lib/ops/test_secret_catalog.py`, RUN authority and P02 regression
+registration. This P01 author does not change the common manifest.
+
+SOURCE is reconciled documentation; UNIT is one reused synthetic CLI regression;
+STATIC is the observed document/manifest evidence above; public staging QA is
+not OpenBao native ISOLATED or application E2E. HOME, MIGRATION, ROTATION and
+real RECOVERY are NOT_RUN. Actual operational changes are zero; missing actual
+HOME/snapshot/custody/empty restore/rollback inputs keep this Task blocked.
+
+The first Task-only metadata invocation exited 1: the new receipt was placed
+under Evidence, interrupting its registered contiguous table. Moving this
+receipt into Work Log preserves the unchanged Evidence rows. The 145 archive
+profile findings were a package-validation cascade, not archive changes; no
+archive or validator was edited. The affected metadata and staged checks are
+re-run on the corrected input before committing.
 
 ## Evidence
 
