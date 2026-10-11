@@ -24,7 +24,13 @@ authority입니다. script manifest는 Task가 아니라 이 README를 authority
 ## Scope
 
 root include closure의 서비스와 선택된 custom build 입력을 조사합니다.
-LAB runtime, 학습 앱, 실제 HOME 변경·비밀값 변경·자료 삭제는 포함하지 않습니다.
+이 경로의 장부·시험은 source 증거를 보관합니다. 현재 사용자는 SEC01의 전체
+이미지 검증과 HOME 배포 후속 실행을 승인했으며, 실제 대상·백업·복구·실행
+증거는 SPEC-0204-TSK-0009가 별도로 기록합니다. 장부가 유효하다는 것만으로
+배포나 복구를 PASS로 처리하지 않습니다. LAB runtime과 학습 앱은 제외합니다.
+공식 안정 채널 조회가 성공하고 새 버전이 없음을 확인하면 최신화 항목은
+PASS이며 강제 버전 변경은 필요하지 않습니다. 조회 실패·UNKNOWN·시험판은
+같은 판정이 아니며 서명·취약점·호환·복구·HOME 검증도 각각 남습니다.
 관찰 시점의 서비스 개수는 결과이며 검사 상수로 사용하지 않습니다.
 
 ## Structure

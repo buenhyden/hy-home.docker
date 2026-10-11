@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.14"
+version: "1.4.15"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -181,9 +181,12 @@ docker exec -i openbao sh -ec 'BAO_TOKEN="$(tr -d "\r\n")"; export BAO_TOKEN
 실패하면 `$out.new`를 지우고 sealed 상태와 관리자 token 권한을 확인한다.
 
 매 run은 token을 stdin으로 넘겨 갱신한 뒤 snapshot을 staging에 받는다. token
-파일이 없으면 "OpenBao snapshot token absent: snapshot skipped (recovery gap)"만
-남기고 run을 실패시키지 않는다. sealed, 잘못된 token, 300초 초과 시에는 파일을
-지우고 exit 1로 끝난다. run이 30일 넘게 멈추면 token이 만료되므로 다시 만든다.
+파일이 없으면 "OpenBao snapshot token absent: snapshot failed (recovery gap)"을
+남기고 이 백업 단위를 실패 처리한다(`status=1`). 시작할 때 이전 staging
+snapshot을 제거하므로 오래된 파일을 이번 성공으로 사용할 수 없다. sealed,
+잘못된 token, 300초 초과나 빈 snapshot도 실패 처리하며 불완전한 snapshot을
+제거한다. 다른 백업 단계는 계속될 수 있지만 최종 실행은 exit 1이며 전체
+복구 지점으로 수용하지 않는다. run이 30일 넘게 멈추면 token이 만료되므로 다시 만든다.
 
 snapshot은 barrier 암호화된 상태라 원래 unseal key 없이는 열 수 없다. 따라서
 unseal key는 snapshot과 다른 곳에 따로 보관한다. 복구는 새로 초기화한 OpenBao에서

@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.8"
+version: "0.4.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1048,6 +1048,123 @@ It proves only dated two-file restoreability; SMTP send/authentication,
 application/production recovery, external-consumer absence, migration and
 rotation remain unaccepted. Current operational retirement is not inferred
 from duplicate-file absence. No LAB runtime or learning app change occurred.
+
+### Full Image and HOME Continuation — 2026-10-11
+
+The current user explicitly requests full image validation and HOME deployment,
+with latest-version PASS when a successful official stable-channel query proves
+that no newer version exists. Existing equal-version gate behavior already
+supports that result; nine focused latest/security tests passed. A failed query,
+UNKNOWN, a test/RC channel or an unverified submitted claim is not that evidence.
+The ledger gate validates submitted completeness, not supplier authentication;
+security, compatibility, recovery and actual HOME acceptance remain separate.
+
+The current source baseline is `2b9f5ec82cb73ea148fb27bfbd2d35c10e328e51`.
+The first cleanup preflight detected remote main changing from `a31a38ca` and
+stopped before any mutation. A fresh `ls-remote` and fetch confirmed remote
+main at `2b9f5ec82`; ROOT did not push main in this continuation. Independently
+reviewed refreshed cleanup then removed seven merged remote refs, four merged
+local refs and eleven clean detached worktrees. Exact lease/CAS checks and
+non-force worktree removal were used. All 832 ignored leaves were relocated
+with inode/mode/size/link identity preserved under private retained evidence;
+the four foreign dirty source states remained unchanged. Receipt SHA-256 is
+`67472676503512f3c98833d51af7f6d139f02179adcb00eddec975438e71058f`.
+Independent post-review confirmed the result; full `git fetch --prune origin`
+then removed six older stale remote-tracking refs. The unmerged OpenBao branch
+`bb63f27e` retains one unique commit and was preserved. Its retention is not a
+claim that the P01 runtime contract passed.
+
+The fifth GoTrue scan used the previously reviewed exact manifest and frozen
+scanner contracts; originals and four failed attempts were preserved. Actual
+receipt `/tmp/hy-home-sec01-scan.eppsc3db/scan-receipt.json` has SHA-256
+`76615d0daa6619c9c634b8dc4b36abc4f7e7481430f5484c5316840c87e3835b`.
+It reports SCAN_COMPLETED in 124.51 seconds, 173 packages and 80 matches:
+Critical 7, High 39, Medium 16, Low 13, Unknown 5. Exact owned container absence
+was confirmed and independently reviewed. Signatures remain UNKNOWN and DB
+trust remains same-source HTTPS/SHA256 integrity without a DB publisher
+signature. This completes one scan's execution evidence, not security acceptance.
+The official current Auth release remains v2.197.0; no forced version bump is
+required, but the unresolved findings are not waived by that fact.
+
+Fresh official-channel investigation made 79 fixed public requests: 74 succeeded
+and five failures were preserved. The 51 previously unresolved rows were
+classified as 24 declared matches, eight new direct candidates, three custom
+base matches, two Community/Platform matches and 14 custom/bundle/source
+contract cases. Reconciliation receipt SHA-256 is
+`01bcddbde5b46643253985fe87665cf27e9b883efff88b0835b092bef39076ad`.
+Supabase's current self-hosted bundle and independently newer components have
+different pins; this does not authorize a silent downgrade or untested mix.
+Gatus's source/hardening patch and custom dependency/base updates remain tasks.
+
+Full public/cache preparation on the same input observed 124 ledger entries,
+85 distinct current references and 152 references across current/candidate/build
+roles. Its receipt SHA-256 is
+`aadc48beb745dae295d51be7129b2e8fa06d243a179a9e769f1a93c5724cabc6`.
+This is prepared coverage, not completed scanning. Eighteen unique subjects
+were schema-ready; absent cache, custom builds, attestation graph, large-image,
+authentication and unresolved inputs remain explicit. The existing 1GiB-image,
+2GiB-archive and resource/capacity bounds are not silently widened. The Node
+Exporter public/cache subject independently matched, but its actual Quay Docker
+schema2 archive was rejected by the OCI/Docker-Hub-only contract. Separate v2
+contract/operator copies subsequently passed 44 synthetic tests, 92% combined
+coverage, Ruff and independent SOURCE review; frozen originals were retained.
+The v2 contract SHA-256 is
+`33f3dcdf19e7ef69567fb48736a06b22ba326dee91374d53cfb4ca6927169961`
+and the operator SHA-256 is
+`c033adbefbeeb6d43c4112384060b7f73469b645a0cab8d12f63cc20aac822c2`.
+ROOT's authorized native retry then failed before scanning because the host
+memory budget was insufficient; receipt
+`/tmp/hy-home-sec01-scan.xtsaz4ym/scan-receipt.json` SHA-256 is
+`8345aed4ceea5717c6b2e191eaffa05992bdde901c188cffc29dfa5cfd5c82e2`,
+exit 1. This is not completed Node scanning or HOME acceptance. Capacity bounds
+were retained and no live service was stopped to free memory. An auto-review
+rejected the preparation worker's attempted public archive
+export as exceeding its initial inspect-only scope; no such export ran there,
+and unaffected public metadata/synthetic SOURCE work continued.
+
+The 18 ready subjects were split into sequential 8/8/2 manifests within the
+existing disk gate; none of those batches has executed. Initial build-path
+reconciliation resolved 29 tracked Dockerfiles and left one inline declaration
+unresolved, preserving Compose-relative contexts. A separate inline supplement
+then recorded its exact Dockerfile hash and two public base proofs, both absent
+from cache; receipt SHA-256 is
+`9c29b5c79a9c84d6a86210489897db2c9b79457392342666608b495c5a7dfe0b`.
+Supplemental public metadata preparation for 25
+build-base references completed (21 absent cache, three attestation blockers,
+one size blocker); receipt SHA-256 is
+`4376edefaf71bcae67ceb829a049d275a0f2306e84d12d5de9ca4fd9cbea0f83`.
+This metadata neither creates custom images nor closes full scan coverage.
+
+HOME read-only readiness receipt SHA-256 is
+`5514c567a1249fec742c0ff282c31ca0f9bc2e0092242682ce1d445433a11cd3`;
+the follow-up remediation contract is
+`bd0f7b609d9b2ffc6506b71d22f4b20d67cda8e10f190bde76cc16be0d4ff5a1`.
+At that observation 59 of 63 root containers were running, 58 were healthy,
+none unhealthy, and five had no health/completed-job status. Thirty-one service
+references differed from source targets. The last full backup failed with exit 1
+and last whole-backup success was stale; the OpenBao snapshot token was absent.
+Current state/host catalogs, unseal custody and exact full-service restore
+acceptance were unverified. Thus stateful HOME deployment is blocked by actual
+backup/restore facts; OpenBao additionally needs its snapshot-only credential
+and authenticated snapshot/empty restore contract. The existing two-file SMTP
+restore does not close those gaps. Stateless canary preparation selects only
+`mng-valkey-exporter`, subject to its exact scan/security and independent
+deployment/rollback review; no HOME recreation is claimed here.
+
+RUN-0021 incorrectly described token absence as a successful skip. The source
+sets `status=1` and prevents stale staging snapshot reuse. The existing missing
+token regression passed after correcting an initial test class-name invocation
+error; the runbook now records failure of that unit and final whole-run exit 1,
+even when other steps continue. No backup script, secret or live service changed.
+
+P02 Task issuance is a separate logical commit
+`953a6c10e5ea7d7883b11f6d7f1a9f6f2104be2d`, delivered to local main with
+metadata, staged and independent review. Its dedicated clean branch/worktree
+starts at that commit. P02 public catalog/schema/view preparation may proceed;
+final runtime mappings and actual migration wait for P01/SEC01/P06/CLN01
+contracts. SOURCE/UNIT/STATIC/ISOLATED/DELIVERY observations above do not
+assert HOME/MIGRATION/ROTATION/full RECOVERY acceptance. LAB runtime, learning
+apps and actual Wiki remain excluded.
 
 ## Evidence
 
