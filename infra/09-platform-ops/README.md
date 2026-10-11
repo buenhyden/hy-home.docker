@@ -1,10 +1,10 @@
 ---
 title: "09-platform-ops: Platform Operations Tier"
-version: "1.2.2"
+version: "1.2.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-11"
 created: "2025-11-12"
 ---
 
@@ -63,6 +63,8 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
   source 검증 장부를 보관합니다. 장부와 isolated 시험은 실제 이미지 배포,
   HOME 복구 또는 scanner acceptance를 뜻하지 않습니다.
 
+- [서비스 연결·포트 계약](service-integration/README.md)은 비밀값 없는 네 위치 선언과 합성 시험을 제공합니다. 실제 listener·HOME 검증은 별도입니다.
+
 ## Structure
 
 ```text
@@ -73,6 +75,7 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 ├── renovate/    # dependency-update job
 ├── restic/      # backup jobs, exclude lists, host orchestrator and timer
 ├── security-updates/ # stable/security source ledger and verification records
+├── service-integration/ # four-location source port contracts
 └── README.md
 ```
 

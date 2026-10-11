@@ -1,10 +1,10 @@
 ---
 title: "Operations Library Tests"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 created: "2026-10-10"
 ---
 
@@ -25,6 +25,8 @@ created: "2026-10-10"
 - 단위 결과는 native SMTP, 실제 파일 삭제나 HOME 복구 증거가 아닙니다.
 
 - `test_secret_catalog.py`: malformed metadata·별칭·복구/암호화/LAB 보호·재생성 거부와 합성 Git 루트의 staging/CLI 경계를 검증합니다.
+
+- `test_port_inventory.py`: IPv6·범위·unknown·DEV/MNG 독립성 및 bounded 합성 렌더 경계를 검증합니다.
 
 ## Related Documents
 

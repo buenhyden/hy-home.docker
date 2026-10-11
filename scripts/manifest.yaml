@@ -544,6 +544,20 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_compose_core_readiness.py
+- path: scripts/lib/ops/port_inventory.py
+  kind: library
+  authority: infra/09-platform-ops/service-integration/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/port-inventory.py
+  - tests/lib/ops/test_port_inventory.py
+  - tests/validation/test_port_contract.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_port_inventory.py
+  - tests/validation/test_port_contract.py
 - path: scripts/lib/ops/retire_materials.py
   kind: library
   authority: docs/05.operations/runbooks/0009-release-management.md
@@ -701,6 +715,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_lab_controller.py
+- path: scripts/operations/port-inventory.py
+  kind: operations
+  authority: infra/09-platform-ops/service-integration/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - infra/09-platform-ops/service-integration/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_port_contract.py
 - path: scripts/operations/provider_surface_renderer.py
   kind: operations
   authority: .agents/governance/providers/registry.yaml

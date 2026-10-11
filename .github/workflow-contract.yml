@@ -782,6 +782,8 @@
         "tests.validation.test_smtp_lock_inheritance",
         "tests.lib.ops.test_secret_catalog",
         "tests.validation.test_secret_catalog_contract",
+        "tests.lib.ops.test_port_inventory",
+        "tests.validation.test_port_contract",
         "-v"
       ],
       "cwd": ".",
@@ -1556,6 +1558,19 @@
           "operations",
           "repository-integrity"
         ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/port_inventory.py",
+          "scripts/operations/port-inventory.py",
+          "infra/09-platform-ops/service-integration/",
+          "tests/lib/ops/test_port_inventory.py",
+          "tests/validation/test_port_contract.py",
+          "tests/fixtures/port-contract/"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
       }
     ],
     "changed_root_rules": [
@@ -1801,6 +1816,19 @@
         "prefixes": [
           "tests/validation/_supabase_smtp_fixture_storage.py",
           "tests/validation/test_supabase_smtp_fixture_storage.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/port_inventory.py",
+          "scripts/operations/port-inventory.py",
+          "infra/09-platform-ops/service-integration/",
+          "tests/lib/ops/test_port_inventory.py",
+          "tests/validation/test_port_contract.py",
+          "tests/fixtures/port-contract/"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

@@ -1,10 +1,10 @@
 ---
 title: "Operations Library"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 created: "2026-10-10"
 ---
 
@@ -39,6 +39,8 @@ SMTP01과 CLN01의 잠금은 별개이므로 공통 잠금 검증으로 해석�
 실제 삭제는 현재 소비자·백업·복구 및 운영자 실행 권한 확인 전까지 미실행입니다.
 
 - `secret_catalog.py`: P02의 값 없는 공개 카탈로그·분류·별칭·재생성 거부와 staging view를 검증합니다. 실제 secret/env/KV를 읽거나 변경하지 않습니다.
+
+- `port_inventory.py`: 공개 선언의 네 위치 포트 metadata와 명명된 합성 Compose config를 검증합니다. 실제 listener·인증·HOME 수용은 별도입니다.
 
 ## Related Documents
 
