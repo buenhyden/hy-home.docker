@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.5.2"
+version: "0.5.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -193,6 +193,21 @@ health가 성공해도 audit 성공을 뜻하지 않는다. 값·raw audit/auth 
 KV version/결과만 전달한다. 정확한 실행·복구는 [Runbook](../runbooks/0085-openbao.md)의
 Native TLS, Audit and Recovery Gate를 따른다. HOME custody·cold boot·실제 복구는
 현재 미검증이며 격리 synthetic PASS를 복사하지 않는다.
+
+### P01 versioned issuance journal
+
+새 renderer 발급은 journal에 `schema_version: 2`와 `issuance_id`를 남긴다.
+`issuance_id`는 기존 `nonce`의 동일한 호환 별칭이다. accessor metadata에는 문자열
+`issuance_schema: "2"`, `issuance_id`, 기존 `sec01_nonce`가 함께 있으며 두 identity 값은
+같아야 한다. 반면 과거 v1 journal과 anchor는 version 필드 없이 기존 정확한 문서 형태를
+그대로 유지한다.
+
+재실행은 journal과 활성 anchor의 version·identity, 그리고 실제 accessor metadata와 그
+journal version에서 유도한 전체 metadata가 정확할 때만 이전 발급을 정합화한다. completion
+witness는 중단된 정리 복구를 허용하는 별도 기록이다. v1/v2 혼합, 별칭 불일치, 중복 accessor는
+폐기 전에 중단하며, 이전 발급을 정합화한 같은 실행은 새 SecretID를 발급하지 않는다. 이 계약은
+source와 합성 검증의 범위이고, HOME 대상·custody·복원 입력이 미확정인 현재 상태를 실제 적용
+증거로 바꾸지 않는다.
 
 ## Related Documents
 
