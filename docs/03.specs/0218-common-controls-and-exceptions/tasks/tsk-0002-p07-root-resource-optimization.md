@@ -1,6 +1,6 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -343,6 +343,17 @@ Each command exited0. The first used base
 with merge base `854ccc249b05ae17a9eb650a091676cdcf7e87e0`. The commit created
 `b84f7514590bd1889fc9c3e92fb831d58dd094fa` with the same two paths. No
 `cz` message-file command was executed for that already-created commit.
+
+The global Node `cz` inspected during the later result-only correction was not
+the configured checker. The post-audit used the isolated QA environment's
+Python checker and succeeded, exit0:
+
+```sh
+/tmp/hyhome-coord-qa/bin/cz check --message-length-limit 75 --rev-range 854ccc249b05ae17a9eb650a091676cdcf7e87e0..242ed0abe7037dc5dc5cda1b548666dc2a8d9aac
+```
+
+This validates the commit range after the fact; it does not assert an earlier
+pre-commit `cz` invocation.
 
 ### Admission Document Validation History
 
