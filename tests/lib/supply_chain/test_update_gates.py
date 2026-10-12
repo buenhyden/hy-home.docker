@@ -260,6 +260,27 @@ class SecurityUpdateGateTests(unittest.TestCase):
 
 
 class UpdateEvidencePackageTests(unittest.TestCase):
+    def test_current_rows_match_root_compose_source(self):
+        from scripts.lib.document_governance.operations_catalog import (
+            _compose_mapping,
+        )
+
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        for row in ledger["entries"]:
+            service = _compose_mapping(root, Path(row["compose_file"]))["services"][
+                row["service"]
+            ]
+            with self.subTest(service=row["service"]):
+                self.assertEqual(
+                    service.get("image", "UNKNOWN"), row["current_declared"]
+                )
+                self.assertEqual(service.get("build"), row["build_source"])
+
     def test_current_root_census_excludes_relocated_lab_history(self):
         from scripts.lib.supply_chain.latest_version_gate import expected_from_root
 
