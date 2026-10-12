@@ -1325,6 +1325,19 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
         subprocess.run(["git", "add", str(overlay)], cwd=root, check=True)
         return overlay
 
+    def _add_overlay_text(
+        self,
+        root: pathlib.Path,
+        text: str,
+        *,
+        name: str = "infra/a/compose.workflow.override.yml",
+    ) -> pathlib.Path:
+        overlay = root / name
+        overlay.parent.mkdir(parents=True, exist_ok=True)
+        overlay.write_text(text, encoding="utf-8")
+        subprocess.run(["git", "add", str(overlay)], cwd=root, check=True)
+        return overlay
+
     def test_standalone_lab_profile_is_catalogued_but_excluded_from_root(self) -> None:
         root = self._repo()
         lab = root / "labs/cluster.yml"
@@ -1406,6 +1419,421 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
         )
 
         self.assertEqual([], self._findings(root))
+
+    def test_root_overlay_can_join_root_services_to_new_internal_network(
+        self,
+    ) -> None:
+        root = self._repo()
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {"version": 1, "base": "docker-compose.yml"},
+                "services": {
+                    "x": {"networks": {"capture": {}}},
+                    "z": {"networks": {"capture": {}}},
+                },
+                "networks": {"capture": {"internal": True}},
+            },
+        )
+
+        self.assertEqual([], self._findings(root))
+
+    def test_root_overlay_rejects_compose_replacement_tags(self) -> None:
+        tagged_documents = (
+            """x-hyhome-overlay:
+  version: 1
+  base: docker-compose.yml
+services: !override
+  x:
+    networks:
+      capture: {}
+networks:
+  capture:
+    internal: true
+""",
+            """x-hyhome-overlay:
+  version: 1
+  base: docker-compose.yml
+services:
+  x: !reset
+    networks:
+      capture: {}
+networks:
+  capture:
+    internal: true
+""",
+            """x-hyhome-overlay:
+  version: 1
+  base: docker-compose.yml
+services:
+  x:
+    networks: !override
+      capture: {}
+networks:
+  capture:
+    internal: true
+""",
+            """x-hyhome-overlay:
+  version: 1
+  base: docker-compose.yml
+services:
+  x:
+    networks:
+      capture: {}
+networks: !reset
+  capture:
+    internal: true
+""",
+        )
+        for index, document in enumerate(tagged_documents):
+            with self.subTest(index=index):
+                root = self._repo()
+                self._add_overlay_text(root, document)
+
+                with self.assertRaises(OperationsAuthorityError) as raised:
+                    validate_compose_profile_vocabulary(root)
+                self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_compose_tag_lookalikes_and_leaf_overlay_tags_remain_compatible(
+        self,
+    ) -> None:
+        root = self._repo()
+        self._add_overlay_text(
+            root,
+            """# !reset is documentation, not a YAML tag.
+x-hyhome-overlay:
+  version: 1
+  base: docker-compose.yml
+x-note: "!override"
+services:
+  x:
+    networks:
+      capture: {}
+networks:
+  capture:
+    internal: true
+""",
+        )
+        self.assertEqual([], self._findings(root))
+
+        root = self._repo()
+        self._add_overlay_text(
+            root,
+            """x-hyhome-overlay:
+  version: 1
+  base: infra/a/docker-compose.yml
+services:
+  x:
+    build: !reset
+      context: .
+""",
+        )
+        self.assertEqual([], self._findings(root))
+
+    def test_root_overlay_is_validated_from_an_infra_only_caller_subset(self) -> None:
+        root = self._repo()
+        overlay = self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {"version": 1, "base": "docker-compose.yml"},
+                "services": {
+                    "x": {"networks": {"capture": {}}},
+                    "z": {"networks": {"capture": {}}},
+                },
+                "networks": {"capture": {"internal": True}},
+            },
+        )
+        sources = operations_catalog._compose_sources(
+            root,
+            (
+                pathlib.PurePosixPath("infra/a/docker-compose.yml"),
+                pathlib.PurePosixPath("infra/b/docker-compose.cluster.yaml"),
+                pathlib.PurePosixPath(overlay.relative_to(root).as_posix()),
+            ),
+        )
+
+        self.assertEqual(
+            (pathlib.PurePosixPath("infra/a/compose.workflow.override.yml"),),
+            sources.overlays,
+        )
+
+    def test_compose_sources_without_overlays_do_not_require_a_root_model(
+        self,
+    ) -> None:
+        root = self._repo()
+        (root / "docker-compose.yml").unlink()
+
+        sources = operations_catalog._compose_sources(
+            root,
+            (
+                pathlib.PurePosixPath("infra/a/docker-compose.yml"),
+                pathlib.PurePosixPath("infra/b/docker-compose.cluster.yaml"),
+            ),
+        )
+
+        self.assertEqual((), sources.overlays)
+
+    def test_root_overlay_network_and_membership_fail_closed(self) -> None:
+        annotation = {"version": 1, "base": "docker-compose.yml"}
+        invalid_models = (
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"networks": {"capture": {}}}},
+                "networks": [],
+            },
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"networks": {"capture": {}}}},
+                "networks": {},
+            },
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"networks": {"capture": {}}}},
+                "networks": None,
+            },
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"networks": {"capture": {}}}},
+                "networks": {"capture": None},
+            },
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"networks": {"capture": {}}}},
+                "networks": {"capture": {"internal": False}},
+            },
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"networks": {"capture": {}}}},
+                "networks": {"capture": {"internal": 1}},
+            },
+            *(
+                {
+                    "x-hyhome-overlay": annotation,
+                    "services": {"x": {"networks": {"capture": {}}}},
+                    "networks": {"capture": {"internal": True, field: value}},
+                }
+                for field, value in (
+                    ("external", True),
+                    ("name", "capture"),
+                    ("driver", "bridge"),
+                    ("driver_opts", {}),
+                    ("ipam", {}),
+                    ("attachable", True),
+                    ("unknown", True),
+                )
+            ),
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"image": "example/x:2.0.0"}},
+                "networks": {"capture": {"internal": True}},
+            },
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"image": "example/x:2.0.0"}},
+            },
+            *(
+                {
+                    "x-hyhome-overlay": annotation,
+                    "services": {"x": {"networks": {"capture": {}}, field: value}},
+                    "networks": {"capture": {"internal": True}},
+                }
+                for field, value in (
+                    ("privileged", True),
+                    ("image", "example/x:2.0.0"),
+                    ("build", "."),
+                    ("command", ["worker"]),
+                    ("entrypoint", ["/entrypoint"]),
+                    ("ports", ["10000:10000"]),
+                    ("volumes", ["./data:/data"]),
+                    ("secrets", ["worker_secret"]),
+                    ("depends_on", ["z"]),
+                    ("network_mode", "host"),
+                )
+            ),
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {
+                    "x": {"networks": {"capture": {"aliases": ["capture-x"]}}}
+                },
+                "networks": {"capture": {"internal": True}},
+            },
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"networks": ["capture"]}},
+                "networks": {"capture": {"internal": True}},
+            },
+            *(
+                {
+                    "x-hyhome-overlay": annotation,
+                    "services": {"x": {"networks": {"capture": {field: value}}}},
+                    "networks": {"capture": {"internal": True}},
+                }
+                for field, value in (
+                    ("aliases", ["capture-x"]),
+                    ("ipv4_address", "10.0.0.2"),
+                    ("priority", 1),
+                )
+            ),
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"networks": {"undeclared": {}}}},
+            },
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"new-service": {"networks": {"capture": {}}}},
+                "networks": {"capture": {"internal": True}},
+            },
+            {
+                "x-hyhome-overlay": annotation,
+                "services": {"x": {"profiles": ["alpha"]}},
+            },
+            {
+                "x-hyhome-overlay": {"version": 1, "base": "compose.yml"},
+                "services": {"x": {"image": "example/x:2.0.0"}},
+            },
+        )
+        for index, model in enumerate(invalid_models):
+            with self.subTest(index=index):
+                root = self._repo()
+                self._add_overlay(root, model)
+                with self.assertRaises(OperationsAuthorityError) as raised:
+                    validate_compose_profile_vocabulary(root)
+                self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_root_overlay_cannot_redefine_a_root_network(self) -> None:
+        root = self._repo()
+        compose = root / "docker-compose.yml"
+        compose.write_text(
+            compose.read_text(encoding="utf-8")
+            + "networks:\n  root_net:\n    internal: true\n",
+            encoding="utf-8",
+        )
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {"version": 1, "base": "docker-compose.yml"},
+                "services": {"x": {"networks": {"root_net": {}}}},
+                "networks": {"root_net": {"internal": True}},
+            },
+        )
+
+        with self.assertRaises(OperationsAuthorityError) as raised:
+            validate_compose_profile_vocabulary(root)
+        self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_root_overlay_cannot_redefine_an_included_leaf_network(self) -> None:
+        root = self._repo()
+        leaf = root / "infra/a/docker-compose.yml"
+        leaf.write_text(
+            leaf.read_text(encoding="utf-8") + "networks:\n  leaf_net: {}\n",
+            encoding="utf-8",
+        )
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {"version": 1, "base": "docker-compose.yml"},
+                "services": {"x": {"networks": {"leaf_net": {}}}},
+                "networks": {"leaf_net": {"internal": True}},
+            },
+        )
+
+        with self.assertRaises(OperationsAuthorityError) as raised:
+            validate_compose_profile_vocabulary(root)
+        self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_root_overlay_cannot_redefine_the_implicit_default_network(self) -> None:
+        root = self._repo()
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {"version": 1, "base": "docker-compose.yml"},
+                "services": {"x": {"networks": {"default": {}}}},
+                "networks": {"default": {"internal": True}},
+            },
+        )
+
+        with self.assertRaises(OperationsAuthorityError) as raised:
+            validate_compose_profile_vocabulary(root)
+        self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_each_root_overlay_service_must_join_a_new_internal_network(
+        self,
+    ) -> None:
+        root = self._repo()
+        compose = root / "docker-compose.yml"
+        compose.write_text(
+            compose.read_text(encoding="utf-8") + "networks:\n  root_net: {}\n",
+            encoding="utf-8",
+        )
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {"version": 1, "base": "docker-compose.yml"},
+                "services": {
+                    "x": {"networks": {"capture": {}}},
+                    "z": {"networks": {"root_net": {}}},
+                },
+                "networks": {"capture": {"internal": True}},
+            },
+        )
+
+        with self.assertRaises(OperationsAuthorityError) as raised:
+            validate_compose_profile_vocabulary(root)
+        self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_root_overlay_cannot_target_a_root_direct_service(self) -> None:
+        root = self._repo()
+        compose = root / "docker-compose.yml"
+        compose.write_text(
+            compose.read_text(encoding="utf-8")
+            + "services:\n  root-only:\n    profiles: [alpha]\n",
+            encoding="utf-8",
+        )
+        self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {"version": 1, "base": "docker-compose.yml"},
+                "services": {"root-only": {"networks": {"capture": {}}}},
+                "networks": {"capture": {"internal": True}},
+            },
+        )
+
+        with self.assertRaises(OperationsAuthorityError) as raised:
+            validate_compose_profile_vocabulary(root)
+        self.assertEqual("compose-overlay-invalid", raised.exception.code)
+
+    def test_root_overlay_base_must_be_tracked_and_non_overlay(self) -> None:
+        for mutation in ("untracked", "overlay"):
+            with self.subTest(mutation=mutation):
+                root = self._repo()
+                if mutation == "untracked":
+                    subprocess.run(
+                        ["git", "rm", "--cached", "docker-compose.yml"],
+                        cwd=root,
+                        check=True,
+                        capture_output=True,
+                    )
+                else:
+                    compose = root / "docker-compose.yml"
+                    compose.write_text(
+                        compose.read_text(encoding="utf-8")
+                        + "x-hyhome-overlay:\n  version: 1\n  base: docker-compose.yml\n",
+                        encoding="utf-8",
+                    )
+                self._add_overlay(
+                    root,
+                    {
+                        "x-hyhome-overlay": {
+                            "version": 1,
+                            "base": "docker-compose.yml",
+                        },
+                        "services": {"x": {"image": "example/x:2.0.0"}},
+                    },
+                )
+
+                with self.assertRaises(OperationsAuthorityError) as raised:
+                    validate_compose_profile_vocabulary(root)
+                self.assertEqual("compose-overlay-invalid", raised.exception.code)
 
     def test_overlay_annotation_version_and_base_fail_closed(self) -> None:
         invalid_annotations = (
