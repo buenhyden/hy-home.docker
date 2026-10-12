@@ -21,13 +21,16 @@ lab = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(lab)
 
 
-def model(project, services, volumes=None, networks=None):
-    return {
+def model(project, services, volumes=None, networks=None, data_root=None):
+    rendered = {
         "name": project,
         "services": services,
         "volumes": volumes or {},
         "networks": networks or {},
     }
+    if data_root is not None:
+        rendered["x-hyhome-data-root"] = data_root
+    return rendered
 
 
 def service(container=None, ports=(), binds=(), cpus=1, memory=2**30, replicas=None):
@@ -42,6 +45,25 @@ def service(container=None, ports=(), binds=(), cpus=1, memory=2**30, replicas=N
     if replicas:
         spec["deploy"] = {"replicas": replicas}
     return spec
+
+
+def read_only_service(container, source, target="/etc/example/config.yml"):
+    spec = service(container)
+    spec["volumes"] = [
+        {"type": "bind", "source": source, "target": target, "read_only": True}
+    ]
+    return spec
+
+
+def container_record(project, *, name="", ports=(), cpus=0.0, memory=0, running=True):
+    return {
+        "name": name,
+        "project": project,
+        "ports": set(ports),
+        "cpus": cpus,
+        "memory": memory,
+        "running": running,
+    }
 
 
 class LabSourceContainmentTests(unittest.TestCase):
@@ -117,9 +139,13 @@ class FootprintTests(unittest.TestCase):
         replicas = {f"hy-home-lab-x-b-{i}" for i in (1, 2, 3)}
         self.assertEqual({"lab-a"} | replicas, found["containers"])
         self.assertEqual({"127.0.0.1:35000"}, found["ports"])
-        self.assertEqual({"/lab/x/a", "/lab/x/v", "/lab/x/scenario"}, found["paths"])
+        self.assertEqual(
+            {"/lab/x/a", "/lab/x/v", "/lab/x/scenario", "/repo/config"},
+            found["paths"],
+        )
         # A read-only input collides like state but is never a cleanup target.
         self.assertEqual({"/lab/x/a", "/lab/x/v"}, found["state"])
+        self.assertEqual({"/lab/x/scenario", "/repo/config"}, found["inputs"])
         self.assertEqual({"hy-home-lab-x-core"}, found["networks"])
         self.assertEqual(2.5, found["cpus"])
         self.assertEqual(2**30 + 3 * 2**20, found["memory"])
@@ -234,11 +260,115 @@ class CollisionAndBudgetTests(unittest.TestCase):
 
     def test_running_name_and_port_are_refused_but_own_project_is_not(self) -> None:
         running = [
-            {"name": "lab-one-x", "project": "other", "ports": {"0.0.0.0:35001"}},
-            {"name": "lab-one-x", "project": "hy-home-lab-one", "ports": set()},
+            container_record("other", name="lab-one-x", ports=["0.0.0.0:35001"]),
+            container_record("hy-home-lab-one", name="lab-one-x", running=False),
         ]
         problems = lab.collisions({"one": self.lab1}, self.root, running)
         self.assertEqual(2, len(problems))
+
+    def test_stopped_container_name_is_reserved_but_its_port_is_not(self) -> None:
+        stopped = [
+            container_record(
+                "other",
+                name="lab-one-x",
+                ports=["0.0.0.0:35001"],
+                cpus=50.0,
+                memory=2**40,
+                running=False,
+            )
+        ]
+        problems = lab.collisions({"one": self.lab1}, self.root, stopped)
+        self.assertEqual(["one: container lab-one-x already exists"], problems)
+        stopped[0]["project"] = "hy-home-lab-one"
+        self.assertEqual([], lab.collisions({"one": self.lab1}, self.root, stopped))
+        stopped[0]["project"] = "hy-home-lab-old"
+        env = {
+            "LAB_HOST_BUDGET_CPUS": "1",
+            "LAB_HOST_BUDGET_MEMORY_MIB": "1024",
+            "LAB_MAX_CONCURRENT": "1",
+        }
+        self.assertEqual([], lab.budget({"one": self.lab1}, stopped, env))
+
+    def test_shared_public_read_only_config_is_allowed_but_state_is_not(self) -> None:
+        def readonly(project, name, source, target="/etc/example/config.yml"):
+            return lab.footprint(
+                model(project, {"x": read_only_service(name, source, target)})
+            )
+
+        shared = str(ROOT / "infra/common-optimizations.yml")
+        one = readonly("hy-home-lab-one", "lab-one-x", shared)
+        two = readonly("hy-home-lab-two", "lab-two-x", shared)
+        self.assertEqual([], lab.collisions({"one": one, "two": two}, self.root, []))
+
+        writable = lab.footprint(
+            model(
+                "hy-home-lab-two",
+                {"x": service("lab-two-x", binds=[str(ROOT / "infra")])},
+            )
+        )
+        self.assertIn(
+            f"one: data path {shared} overlaps lab two",
+            lab.collisions({"one": one, "two": writable}, self.root, []),
+        )
+
+        external_one = readonly("hy-home-lab-one", "lab-one-x", "/external/shared.yml")
+        external_two = readonly("hy-home-lab-two", "lab-two-x", "/external/shared.yml")
+        self.assertTrue(
+            lab.collisions({"one": external_one, "two": external_two}, self.root, [])
+        )
+
+        for unsafe in (ROOT, ROOT / ".env"):
+            with self.subTest(unsafe=unsafe):
+                unsafe_one = readonly("hy-home-lab-one", "lab-one-x", str(unsafe))
+                unsafe_two = readonly("hy-home-lab-two", "lab-two-x", str(unsafe))
+                self.assertTrue(
+                    lab.collisions(
+                        {"one": unsafe_one, "two": unsafe_two}, self.root, []
+                    )
+                )
+
+    def test_mixed_read_write_path_cannot_use_public_share_exception(self) -> None:
+        shared = str(ROOT / "infra/common-optimizations.yml")
+        mixed_spec = service("lab-one-x")
+        mixed_spec["volumes"] = [
+            {
+                "type": "bind",
+                "source": shared,
+                "target": "/config/read-only.yml",
+                "read_only": True,
+            },
+            {
+                "type": "bind",
+                "source": shared,
+                "target": "/config/writable.yml",
+            },
+        ]
+        readonly_spec = read_only_service("lab-two-x", shared, "/config/read-only.yml")
+        mixed = lab.footprint(model("hy-home-lab-one", {"x": mixed_spec}))
+        readonly = lab.footprint(model("hy-home-lab-two", {"x": readonly_spec}))
+
+        self.assertIn(shared, mixed["state"])
+        self.assertTrue(
+            lab.collisions({"mixed": mixed, "readonly": readonly}, self.root, [])
+        )
+
+    def test_shared_secret_or_socket_input_is_refused(self) -> None:
+        def readonly(project, name, source, target):
+            return lab.footprint(
+                model(project, {"x": read_only_service(name, source, target)})
+            )
+
+        for source, target in (
+            ("/repo/secrets/token", "/run/secrets/token"),
+            ("/var/run/docker.sock", "/var/run/docker.sock"),
+        ):
+            with self.subTest(target=target):
+                one = readonly("hy-home-lab-one", "lab-one-x", source, target)
+                two = readonly("hy-home-lab-two", "lab-two-x", source, target)
+                text = "\n".join(
+                    lab.collisions({"one": one, "two": two}, self.root, [])
+                )
+                self.assertIn("sensitive read-only path", text)
 
     def test_budget_sums_running_and_selected_and_limits_concurrency(self) -> None:
         env = {
@@ -247,8 +377,8 @@ class CollisionAndBudgetTests(unittest.TestCase):
             "LAB_MAX_CONCURRENT": "1",
         }
         running = [
-            {"project": "hy-home-infra", "cpus": 2.0, "memory": 2 * 2**30},
-            {"project": "hy-home-lab-old", "cpus": 0.5, "memory": 2**29},
+            container_record("hy-home-infra", cpus=2.0, memory=2 * 2**30),
+            container_record("hy-home-lab-old", cpus=0.5, memory=2**29),
         ]
         problems = lab.budget({"one": self.lab1}, running, env)
         self.assertEqual(["2 LABs would run; limit is 1"], problems)
@@ -259,10 +389,108 @@ class CollisionAndBudgetTests(unittest.TestCase):
         with self.assertRaises(lab.LabError):
             lab.budget({"one": self.lab1}, running, {"LAB_HOST_BUDGET_CPUS": ""})
         # The selected LAB's own running containers are not counted twice.
-        own = [{"project": "hy-home-lab-one", "cpus": 50.0, "memory": 2**40}]
+        own = [container_record("hy-home-lab-one", cpus=50.0, memory=2**40)]
         env["LAB_HOST_BUDGET_CPUS"] = "1"
         env["LAB_HOST_BUDGET_MEMORY_MIB"] = "1024"
         self.assertEqual([], lab.budget({"one": self.lab1}, own, env))
+
+        stopped = [
+            container_record("hy-home-lab-old", cpus=50.0, memory=2**40, running=False)
+        ]
+        self.assertEqual([], lab.budget({"one": self.lab1}, stopped, env))
+
+
+class AdmissionGuardTests(unittest.TestCase):
+    def test_root_marker_is_required_and_must_be_absolute(self) -> None:
+        for marker in (None, "relative/home"):
+            with self.subTest(marker=marker), self.assertRaises(lab.LabError):
+                lab.root_footprint(model("hy-home-infra", {}, data_root=marker))
+
+    def test_lab_data_root_must_not_equal_or_nest_with_home_in_either_direction(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = pathlib.Path(tmp)
+            home = base / "home"
+            home.mkdir()
+            alias = base / "home-alias"
+            alias.symlink_to(home)
+            root = lab.root_footprint(model("hy-home-infra", {}, data_root=str(home)))
+            for candidate in (
+                home,
+                home / "labs",
+                base,
+                alias / "labs",
+                pathlib.Path("/"),
+            ):
+                with self.subTest(candidate=candidate):
+                    problems = lab.data_root_problems(
+                        {"LAB_DATA_DIR": str(candidate)}, root
+                    )
+                    self.assertEqual(1, len(problems))
+                    self.assertIn("LAB_DATA_DIR", problems[0])
+
+            separate = base / "separate-labs"
+            self.assertEqual(
+                [], lab.data_root_problems({"LAB_DATA_DIR": str(separate)}, root)
+            )
+
+    def test_read_only_sources_must_exist_without_symlink_components(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = pathlib.Path(tmp)
+            real = base / "real"
+            real.mkdir()
+            alias = base / "alias"
+            alias.symlink_to(real)
+
+            spec = service("lab-x")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": str(alias),
+                    "target": "/config",
+                    "read_only": True,
+                },
+                {
+                    "type": "bind",
+                    "source": str(base / "missing"),
+                    "target": "/fixtures",
+                    "read_only": True,
+                },
+            ]
+            found = lab.footprint(model("hy-home-lab-x", {"x": spec}))
+            problems = lab.path_integrity_problems({"x": found})
+            self.assertTrue(any("symlink" in problem for problem in problems))
+            self.assertTrue(any("does not exist" in problem for problem in problems))
+            self.assertEqual(set(), found["state"])
+
+    def test_running_container_inventory_includes_stopped_state(self) -> None:
+        listed = subprocess.CompletedProcess(
+            ["docker", "ps", "--all", "--quiet"], 0, "run\nstop\n", ""
+        )
+        records = [
+            {
+                "Name": "/running",
+                "Config": {"Labels": {"com.docker.compose.project": "other"}},
+                "HostConfig": {"NanoCpus": 10**9, "Memory": 2**30},
+                "State": {"Running": True},
+            },
+            {
+                "Name": "/stopped",
+                "Config": {"Labels": {"com.docker.compose.project": "other"}},
+                "HostConfig": {"NanoCpus": 9 * 10**9, "Memory": 9 * 2**30},
+                "State": {"Running": False},
+            },
+        ]
+        inspected = subprocess.CompletedProcess(
+            ["docker", "inspect", "run", "stop"], 0, json.dumps(records), ""
+        )
+        with mock.patch.object(lab, "run", side_effect=[listed, inspected]) as called:
+            found = lab.running_containers("docker")
+        self.assertEqual(
+            ["docker", "ps", "--all", "--quiet"], called.call_args_list[0].args[0]
+        )
+        self.assertEqual([True, False], [item["running"] for item in found])
 
 
 class LifecycleTests(unittest.TestCase):
@@ -277,6 +505,7 @@ class LifecycleTests(unittest.TestCase):
         )
         self.calls: list[list[str]] = []
         self.outside = pathlib.Path(self.tmp.name) / "outside"
+        self.home_data = pathlib.Path(self.tmp.name) / "home-data"
         self.rendered = model(
             "hy-home-lab-cassandra",
             {"c": service("lab-cassandra-c", [("127.0.0.1", "39042")])},
@@ -305,8 +534,14 @@ class LifecycleTests(unittest.TestCase):
             # The ledger must exist before anything starts.
             self.assertEqual("starting", self.ledger()["state"])
         if "config" in command:
-            payload = self.rendered if "-f" in command else model("hy-home-infra", {})
+            payload = (
+                self.rendered
+                if "-f" in command
+                else model("hy-home-infra", {}, data_root=str(self.home_data))
+            )
             return subprocess.CompletedProcess(command, 0, json.dumps(payload), "")
+        if command[1:] == ["ps", "--all", "--quiet"]:
+            return subprocess.CompletedProcess(command, 0, "", "")
         if command[1:3] == ["ps", "--all"]:
             # Readiness poll of the started project.
             ids = "\n".join(record["Id"] for record in self.ready)
@@ -365,6 +600,25 @@ class LifecycleTests(unittest.TestCase):
         self.assertFalse({"-v", "--volumes", "--rmi"} & set(down))
         self.assertEqual("stopped", self.ledger()["state"])
 
+    def test_existing_read_only_input_is_never_created_or_recorded_for_cleanup(
+        self,
+    ) -> None:
+        fixture = pathlib.Path(self.tmp.name) / "fixture.json"
+        fixture.write_text('{"input":true}\n', encoding="utf-8")
+        before = (fixture.read_bytes(), fixture.stat().st_mode)
+        self.rendered["services"]["c"]["volumes"].append(
+            {
+                "type": "bind",
+                "source": str(fixture),
+                "target": "/fixtures/input.json",
+                "read_only": True,
+            }
+        )
+
+        self.assertEqual(0, self.up())
+        self.assertNotIn(str(fixture), self.ledger()["cleanup"]["paths"])
+        self.assertEqual(before, (fixture.read_bytes(), fixture.stat().st_mode))
+
     def test_up_waits_for_health_and_accepts_a_finished_init_job(self) -> None:
         # compose `up --wait` fails when an init job exits 0; lab.py does not.
         self.assertEqual(0, self.up())
@@ -402,6 +656,28 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(3, self.up())
         self.assertFalse(self.started())
         self.assertFalse((self.data / ".ledger/cassandra.json").exists())
+
+    def test_missing_or_symlinked_read_only_input_is_refused_before_ledger(
+        self,
+    ) -> None:
+        real = pathlib.Path(self.tmp.name) / "fixture"
+        real.write_text("public fixture", encoding="utf-8")
+        alias = pathlib.Path(self.tmp.name) / "fixture-link"
+        alias.symlink_to(real)
+        for source in (pathlib.Path(self.tmp.name) / "missing", alias):
+            with self.subTest(source=source):
+                self.calls.clear()
+                self.rendered["services"]["c"]["volumes"] = [
+                    {
+                        "type": "bind",
+                        "source": str(source),
+                        "target": "/fixtures/input",
+                        "read_only": True,
+                    }
+                ]
+                self.assertEqual(3, self.up())
+                self.assertFalse(self.started())
+                self.assertFalse((self.data / ".ledger/cassandra.json").exists())
 
     def test_reap_retries_a_failed_stop_and_refuses_non_lab_ledgers(self) -> None:
         self.assertEqual(0, self.up())

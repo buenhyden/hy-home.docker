@@ -1,10 +1,10 @@
 ---
 title: "Supabase Stack Health Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-12"
 layer: "operations"
 artifact_id: "RUN-0029"
 parent_ids:
@@ -16,7 +16,12 @@ created: "2026-05-17"
 
 ## Overview
 
-이 런북은 health triage와 별도 승인 후 수행할 coherent Supabase backup의 격리 복원 rehearsal 계약을 제공한다. Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경로, 주요 로그를 안전하게 확인하고, secret 노출이나 destructive recovery가 필요한 경우 빠르게 escalation한다. 아래 database/storage/config 복원은 이번 문서 변경에서 실행하지 않았다.
+이 런북은 health triage와 별도 승인 후 수행할 coherent Supabase backup의 격리 복원
+rehearsal 계약을 제공한다. 정상 root와 분리된 `labs/supabase.yml` LAB의 controller
+preflight, lease 상태, Kong 접근 경로를 안전하게 확인하고, secret 노출이나 destructive
+recovery가 필요한 경우 빠르게 escalation한다. 아래 native 기동과
+database/storage/config 복원, secret 읽기·이동·복제·삭제는 이번 문서 변경에서
+실행하지 않았다.
 
 ## Trigger and Preconditions
 
@@ -29,55 +34,70 @@ created: "2026-05-17"
 
 - 이 task가 destructive restore나 secret rotation이 아니라 health/access 검증 task인지 확인한다.
 - compose secret ref에 대응하는 Docker Secret 파일이 존재하는지 값을 출력하지 않고 확인한다.
-- `${DEFAULT_DATA_DIR}/supabase/...` runtime mount가 승인된 호스트에 존재하는지 확인한다.
+- `${LAB_DATA_DIR}/supabase/...` runtime mount가 승인된 격리 경로이며 HOME data
+  root와 동일하거나 상하위 realpath가 아닌지 확인한다.
+- 비공개 `labs/.env`에 `LAB_DATA_DIR`, `LAB_SECRETS_GID`와 필요한
+  `LAB_SUPABASE_*` 공개 입력이 있는지 값 출력 없이 확인한다.
 - 생성된 config 검사가 내장된 secret 값을 복사하지 않도록 확인한다.
 
 ### Execution and stop boundary
 
 대상: `analytics`, `auth`, `db`, `functions`, `imgproxy`, `kong`, `meta`, `realtime`, `rest`, `storage`, `studio`, `supavisor`, `vector`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
-기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
+기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와
+[POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의
+consumer 영향·graceful shutdown 계약을 적용하고 `scripts/operations/lab.py`만 사용한다.
+controller의 `up`에는 승인된 목적과 제한된 lease가 필요하다. init SQL과 mounted
+configuration은 database identity와 동작을 바꾸므로 source render나 process 생존으로
+기능 readiness를 인정하지 않는다.
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
 
-1. 현재 compose configuration을 렌더링한다.
+1. 현재 source와 root/LAB 충돌을 controller로 검사한다. 이 명령은 service를
+   시작하지 않는다.
 
    ```bash
-   docker compose --profile supabase config --quiet
+   python3 scripts/operations/lab.py check supabase
    ```
 
-2. 서비스 상태를 확인한다.
+2. controller ledger와 실행 상태를 확인한다.
 
    ```bash
-   docker compose --profile supabase ps studio kong auth rest realtime storage db analytics supavisor
+   python3 scripts/operations/lab.py status
    ```
 
-3. 관련 서비스 로그를 검사한다. secret 값을 evidence에 복사하지 않는다.
+3. 실제 기동이 승인된 경우에만 목적과 lease를 명시한다. 이 문서 변경에서는
+   실행하지 않았다.
 
    ```bash
-   docker compose --profile supabase logs kong auth rest storage db analytics supavisor
+   python3 scripts/operations/lab.py up supabase \
+     --purpose "<approved-purpose>" --lease "<minutes>m"
    ```
 
-4. compose가 선언한 공개 Kong 접근 경로를 검증한다.
+4. 실행 중인 승인된 LAB에서 Compose가 선언한 공개 Kong 접근 경로를 검증한다.
+   비공개 env 전체를 shell source하지 않고, 승인된 `labs/.env`에서 공개 port 하나만
+   확인해 현재 shell에 export한다. 값이 없으면 기본 port를 추측하지 않고 중단한다.
 
    ```bash
-   curl -fsS "http://localhost:${SUPABASE_KONG_HTTP_HOST_PORT:-8000}/" >/dev/null
+   : "${LAB_SUPABASE_KONG_HTTP_HOST_PORT:?export effective LAB public port}"
+   curl -fsS "http://localhost:${LAB_SUPABASE_KONG_HTTP_HOST_PORT}/" >/dev/null
    ```
 
 5. dashboard 접근을 확인할 경우 승인된 Kong/stack route를 사용한다. Studio용 직접 local host port가 있다고 가정하지 않는다. 현재 compose 파일은 Studio를 직접 publish하지 않는다.
 
-6. 최종 상태 스냅샷을 캡처한다.
+6. 확인을 마치면 controller로 이 LAB project만 정지한다. volume과 `${LAB_DATA_DIR}`
+   state는 삭제하지 않는다.
 
    ```bash
-   docker compose --profile supabase ps
+   python3 scripts/operations/lab.py down supabase
    ```
 
 ### Planned Isolated Restore Rehearsal
 
 1. 사전 승인 후 Compose image declarations, PostgreSQL version/extensions, roles and databases, Storage buckets/object counts, mounted config/functions, Auth providers, JWT issuer expectations와 free capacity를 inventory한다. secret values는 manifest에 넣지 않는다.
-2. PostgreSQL globals/roles, schema and data를 protected logical artifacts로 export하고 checksum한다. Storage metadata tables와 `${DEFAULT_DATA_DIR}/supabase/storage` object files는 같은 recovery point로 보존한다. Kong, functions, pooler, DB init and analytics/vector config는 별도 configuration artifact로 보존한다.
+2. PostgreSQL globals/roles, schema and data를 protected logical artifacts로 export하고 checksum한다. Storage metadata tables와 `${LAB_DATA_DIR}/supabase/storage` object files는 같은 recovery point로 보존한다. Kong, functions, pooler, DB init and analytics/vector config는 별도 configuration artifact로 보존한다.
 3. JWT, anon/service-role keys, SMTP/provider credentials, database passwords, vault and crypto keys는 backup data와 분리된 approved secret store에서 동일 identifier/version으로 참조한다.
 4. production network, ports and volumes를 공유하지 않는 compatible empty stack을 별도 test credentials로 준비한다. roles/globals, schema, data 순서로 PostgreSQL을 복원하고 Storage objects와 metadata를 함께 배치한 후 mounted configuration을 적용한다.
 5. Kong API, Auth signup/login policy, REST read, Realtime subscription, Storage object read, Function invocation, Studio metadata, analytics ingestion과 Supavisor connection을 synthetic data로 확인한다. object-count/metadata mismatch나 missing key가 있으면 승격하지 않는다.
@@ -85,20 +105,23 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Verification
 
-- `docker compose --profile supabase config --quiet`
-- `docker compose --profile supabase ps`
-- 기대 결과: compose가 렌더링되고, 서비스가 존재하며, Kong route 상태가 기록되고, secret 값이 캡처되지 않는다.
+- `python3 scripts/operations/lab.py check supabase`
+- `python3 scripts/operations/lab.py status`
+- 기대 결과: controller가 source와 충돌 경계를 검사하고 ledger 상태를 보고한다.
+  native 기동을 승인·실행한 경우에만 Kong route 결과를 별도로 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker compose --profile supabase logs ...`
-- **Health**: Supabase 서비스 집합에 대한 compose `ps` 상태
-- **Access**: compose 변수를 사용한 Kong HTTP/HTTPS host-port 확인
-- **Evidence to Capture**: 명령 이름, timestamp, 서비스 상태 요약, Kong route 결과, 생략한 destructive action
+- **Controller**: `lab.py check/status`의 값 없는 결과와 exact source revision
+- **Health**: 승인된 native 실행이 있을 때만 13개 서비스의 상태 요약
+- **Access**: `LAB_SUPABASE_*` 변수를 사용한 Kong HTTP/HTTPS host-port 확인
+- **Evidence to Capture**: 명령 이름, timestamp, project/lease 상태, Kong route 결과,
+  생략한 native·destructive action
 
 ### 증거 기록
 
-- 실행한 compose 명령, 서비스 상태, Kong route 결과, destructive recovery나 credential rotation을 생략한 이유를 기록한다.
+- 실행한 controller 명령, 서비스/lease 상태, Kong route 결과, native 기동이나
+  destructive recovery·credential rotation을 생략한 이유를 기록한다.
 - 실패한 검증 출력이나 서비스 증상은 secret 값을 복사하지 않고 관련 task나 incident evidence에 첨부한다.
 
 ## Rollback and Escalation
@@ -216,7 +239,7 @@ quarantine을 제한된 로컬 프로세스에서 확인합니다. 평문 복제
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peer: [Guide](../guides/0029-supabase.md) (`GDE-0029`), [Policy](../policies/0029-supabase.md) (`POL-0029`)
 
-- [Compose implementation: infra/04-data/supabase/docker-compose.yml](../../../infra/04-data/supabase/docker-compose.yml)
+- [Compose implementation: labs/supabase.yml](../../../labs/supabase.yml)
 
 - [Supabase self-hosted restore guidance](https://supabase.com/docs/guides/self-hosting/restore-from-platform)
 - [Supabase self-hosted update guidance](https://supabase.com/docs/guides/self-hosting/updating)
@@ -225,4 +248,4 @@ quarantine을 제한된 로컬 프로세스에서 확인합니다. 평문 복제
 - [Operations index](../README.md)
 - [Usage guide](../guides/0029-supabase.md)
 - [Operations policy](../policies/0029-supabase.md)
-- [Infrastructure service README](../../../infra/04-data/supabase/README.md)
+- [Supabase LAB source README](../../../labs/supabase/README.md)

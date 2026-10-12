@@ -1,4 +1,5 @@
 name: hy-home-infra
+x-hyhome-data-root: ${DEFAULT_DATA_DIR}
 # Hy-Home Docker Infrastructure Root
 networks:
   # Segmented networks (SPEC-0180 S05, AD-0026). Each carries only the flows
@@ -57,11 +58,6 @@ networks:
     ipam:
       config:
         - subnet: 10.250.11.0/24
-  supabase_net:
-    name: supabase_net
-    ipam:
-      config:
-        - subnet: 10.250.12.0/24
   terrakube_net:
     name: terrakube_net
     ipam:
@@ -199,8 +195,6 @@ secrets:
     file: ./secrets/db/mng-pg/sonarqube_password.txt
   terrakube_db_password:
     file: ./secrets/db/mng-pg/terrakube_password.txt
-  supabase_db_password:
-    file: ./secrets/db/mng-pg/supabase_password.txt
 
   # ── PostgreSQL (Patroni / Spilo) ───────────────────────
   # ── Cassandra ───────────────────────────────────────────
@@ -278,26 +272,6 @@ secrets:
     file: ./secrets/tools/terrakube/terrakube_pat_secret.txt
   terrakube_internal_secret:
     file: ./secrets/tools/terrakube/terrakube_internal_secret.txt
-
-  # ── Data: Supabase ──────────────────────────────────────
-  supabase_jwt_secret:
-    file: ./secrets/data/supabase/supabase_jwt_secret.txt
-  supabase_anon_key:
-    file: ./secrets/data/supabase/supabase_anon_key.txt
-  supabase_service_key:
-    file: ./secrets/data/supabase/supabase_service_key.txt
-  supabase_dashboard_password:
-    file: ./secrets/data/supabase/supabase_dashboard_password.txt
-  supabase_secret_key_base:
-    file: ./secrets/data/supabase/supabase_secret_key_base.txt
-  supabase_vault_enc_key:
-    file: ./secrets/data/supabase/supabase_vault_enc_key.txt
-  supabase_pg_meta_crypto_key:
-    file: ./secrets/data/supabase/supabase_pg_meta_crypto_key.txt
-  supabase_openai_api_key:
-    file: ./secrets/data/supabase/supabase_openai_api_key.txt
-  supabase_logflare_private_token:
-    file: ./secrets/data/supabase/supabase_logflare_private_token.txt
 
   # ── Data: SURREAL DB ──────────────────────────────────────
   surreal_db_password:
@@ -392,7 +366,6 @@ include:
   - infra/04-data/qdrant/docker-compose.yml
   - infra/04-data/redisinsight/docker-compose.yml
   - infra/04-data/seaweedfs/docker-compose.yml
-  - infra/04-data/supabase/docker-compose.yml
   # 05-messaging
   - infra/05-messaging/kafka/docker-compose.yml
   # 06-observability

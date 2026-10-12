@@ -1,6 +1,6 @@
 ---
 title: "독립 LAB source"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -31,6 +31,7 @@ source 경로와 공개 구성의 탐색입니다. 실제 기동, 이미지 업�
 | --- | --- | --- |
 | PostgreSQL HA | [Compose](postgresql-ha.yml), [안내](postgresql-ha.md) | [config·wrapper·초기화 SQL](postgresql-ha/README.md) |
 | Valkey Cluster | [Compose](valkey-cluster.yml), [안내](valkey-cluster.md) | [config·scripts](valkey-cluster/README.md) |
+| Supabase | [Compose](supabase.yml), [안내](supabase/README.md) | 독립 13개 서비스·canonical SMTP 소비자 |
 | Locust | [Compose](locust.yml), [안내](locust.md) | [build source](locust/README.md) |
 | Cassandra | [Compose](cassandra.yml), [안내](cassandra.md) | 독립 Compose source |
 | CouchDB | [Compose](couchdb.yml), [안내](couchdb.md) | [initializer](couchdb-cluster-init.sh) |
@@ -54,6 +55,7 @@ source 경로와 공개 구성의 탐색입니다. 실제 기동, 이미지 업�
 | [CouchDB](couchdb.md) | 문서 동기화 저장소 | `couchdb` | 독립 LAB |
 | [MongoDB](mongodb.md) | 문서 저장소·replica set | `mongodb` | 독립 LAB |
 | [OpenSearch Cluster](opensearch-cluster.md) | 세 노드 검색 토폴로지 | `opensearch-cluster` | HOME 단일 노드와 별개 |
+| [Supabase](supabase/README.md) | 독립 백엔드 플랫폼·GoTrue | `supabase` | LAB 상태·입력과 HOME canonical 시크릿 소비 계약 |
 | [Locust](locust/README.md) | 독립 부하 검증 image source | `labs/locust.yml` | root include와 HOME 상태를 공유하지 않음 |
 
 Locust 전용 공개 입력은 [.env.example](.env.example)의 `LAB_LOCUST_*`를

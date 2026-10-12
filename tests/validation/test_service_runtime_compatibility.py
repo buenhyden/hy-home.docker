@@ -19,6 +19,43 @@ def compose(path: str) -> dict:
 
 
 class RuntimeCompatibilityTests(unittest.TestCase):
+    def test_supabase_source_is_independent_from_home_composition(self):
+        root = compose("docker-compose.yml")
+        self.assertNotIn("infra/04-data/supabase/docker-compose.yml", root["include"])
+        self.assertNotIn("supabase_net", root.get("networks", {}))
+        self.assertFalse(
+            any(name.startswith("supabase_") for name in root.get("secrets", {}))
+        )
+        self.assertIn("smtp_password", root["secrets"])
+        self.assertFalse((ROOT / "infra/04-data/supabase").exists())
+        self.assertTrue((ROOT / "labs/supabase.yml").is_file())
+
+    def test_supabase_lab_keeps_canonical_smtp_and_isolated_state(self):
+        lab = compose("labs/supabase.yml")
+        self.assertEqual("hy-home-lab-supabase", lab["name"])
+        self.assertEqual(
+            "../secrets/communication/smtp/smtp_password.txt",
+            lab["secrets"]["smtp_password"]["file"],
+        )
+        self.assertEqual(
+            {"source": "smtp_password", "target": "supabase_smtp_password"},
+            lab["services"]["auth"]["secrets"][-1],
+        )
+        self.assertNotIn("supabase_smtp_password", lab["secrets"])
+        for service in lab["services"].values():
+            self.assertEqual(["supabase"], service["profiles"])
+            self.assertEqual("lab", service["labels"]["hy-home.tier"])
+            self.assertEqual(
+                "../infra/common-optimizations.yml", service["extends"]["file"]
+            )
+            for mount in service.get("volumes", []):
+                source = (
+                    mount["source"] if isinstance(mount, dict) else mount.split(":/")[0]
+                )
+                self.assertNotIn("DEFAULT_DATA_DIR", source)
+                if "/supabase/" in source:
+                    self.assertTrue(source.startswith("${LAB_DATA_DIR:?"), source)
+
     def test_openbao_native_tls_and_backend_ca_share_endpoint(self):
         services = compose("infra/03-security/openbao/docker-compose.yml")["services"]
         server = services["openbao"]
@@ -496,16 +533,44 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         self.assertEqual([], offenders)
 
     def test_every_secret_file_key_names_how_its_image_reads_it(self):
-        import json
+        from scripts.lib.ops.port_inventory import _run_config
 
-        with tempfile.TemporaryDirectory() as home:
-            rendered = subprocess.run(
-                ["docker", "compose", "--env-file", ".env.example",
-                 "--profile", "*", "config", "--format", "json"],
-                cwd=ROOT, env={"PATH": os.environ["PATH"], "HOME": home},
-                capture_output=True, text=True, check=True, timeout=120,
-            )  # fmt: skip
-        services = json.loads(rendered.stdout)["services"]
+        services = {}
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Path(directory)
+            lab_env = fixture / "lab-public.env"
+            lab_env.write_text(
+                re.sub(
+                    r"^LAB_DATA_DIR=.*$",
+                    f'LAB_DATA_DIR="{fixture / "lab-data"}"',
+                    (ROOT / "labs/.env.example").read_text(),
+                    flags=re.MULTILINE,
+                ),
+                encoding="utf-8",
+            )
+            public_env = {
+                "PATH": os.environ["PATH"],
+                "DOCKER_CONFIG": str(fixture),
+                "COMPOSE_DISABLE_ENV_FILE": "1",
+            }
+            for source, env_file in (
+                ("docker-compose.yml", ROOT / ".env.example"),
+                ("labs/supabase.yml", lab_env),
+            ):
+                rendered = _run_config(
+                    ["docker", "compose", "--env-file", str(env_file), "-f", source,
+                     "--profile", "*", "config", "--format", "json"],
+                    cwd=ROOT, env=public_env,
+                )  # fmt: skip
+                self.assertEqual(0, rendered.returncode, source)
+                services.update(
+                    {
+                        f"{source}:{name}": service
+                        for name, service in json.loads(rendered.stdout)[
+                            "services"
+                        ].items()
+                    }
+                )
         used = {}
         for name, spec in services.items():
             for key in spec.get("environment") or {}:
@@ -537,7 +602,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
                         self.assertTrue(profiles)
                         self.assertFalse(profiles & home, service)
                 path = row["evidence"].split()[0]
-                if row["support"] == "wrapper" and path.startswith("infra/"):
+                if row["support"] == "wrapper" and path.startswith(("infra/", "labs/")):
                     wrapper = (ROOT / path).read_text(encoding="utf-8")
                     self.assertIn(pair[1].removesuffix("_FILE"), wrapper)
 
@@ -562,9 +627,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         self.assertFalse([e for e in service["environment"] if "PASSWORD_FILE" in e])
 
     def test_supabase_smtp_wrapper_consumes_file_and_preserves_arguments(self):
-        service = compose("infra/04-data/supabase/docker-compose.yml")["services"][
-            "auth"
-        ]
+        service = compose("labs/supabase.yml")["services"]["auth"]
         self.assertEqual(["auth"], service.get("command"))
         script = service["entrypoint"][2].replace("$$", "$")
         with tempfile.TemporaryDirectory() as directory:

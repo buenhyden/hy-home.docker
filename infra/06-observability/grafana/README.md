@@ -1,6 +1,6 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.6"
+version: "1.1.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -114,16 +114,9 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 02-auth | `oauth2-proxy-valkey-exporter` | `oauth2-proxy-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 03-security | `openbao` | `openbao` | `Security/openbao`, `Infrastructure/containers` |  |
 | 03-security | `openbao-agent` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `analytics` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `auth` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `db` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `flink-jobmanager` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `flink-taskmanager` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `functions` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `great-expectations` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `imgproxy` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `kong` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `meta` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `mng-pg` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-exporter` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-init` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -134,8 +127,6 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 04-data | `opensearch` | `opensearch` | `Infrastructure/opensearch-cluster`, `Infrastructure/opensearch-node`, `Infrastructure/opensearch-search-and-index`, `Infrastructure/containers` |  |
 | 04-data | `opensearch-dashboards` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `qdrant` | `qdrant` | `Infrastructure/qdrant-overview`, `Infrastructure/containers` |  |
-| 04-data | `realtime` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `rest` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `seaweedfs-buckets` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `seaweedfs-filer` | `seaweedfs-filer` | `Infrastructure/seaweedfs`, `Infrastructure/containers` | scraped over `seaweedfs_metrics_net` |
 | 04-data | `seaweedfs-master` | `seaweedfs-master` | `Infrastructure/seaweedfs`, `Infrastructure/containers` | scraped over `seaweedfs_metrics_net` |
@@ -143,16 +134,12 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 04-data | `seaweedfs-table-bucket` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `seaweedfs-volume` | `seaweedfs-volume` | `Infrastructure/seaweedfs`, `Infrastructure/containers` | scraped over `seaweedfs_metrics_net` |
 | 12-analytics | `spark` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `storage` | none | `Infrastructure/containers` | container metrics and logs only |
 | 13-experience | `storybook` | none | `Infrastructure/containers` | 소스 선언만; 지표 scrape 미정의 |
 | 13-experience | `storybook-mcp` | none | `Infrastructure/containers` | 소스 선언만; 지표 scrape 미정의 |
-| 04-data | `studio` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `supavisor` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `superset` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `superset-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `superset-init` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `vector` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `dev-pg` | `dev-pg-exporter` | `Infrastructure/postgresql`, `Infrastructure/containers` | statistics-and-settings-only `dev_pg_monitor` role |
 | 04-data | `dev-pg-exporter` | `dev-pg-exporter` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `dev-pg-monitor-provision` | none | `Infrastructure/containers` | container metrics and logs only |

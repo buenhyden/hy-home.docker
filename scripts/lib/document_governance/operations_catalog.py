@@ -2289,12 +2289,18 @@ def _role_siblings(
     return siblings
 
 
+def _is_lab_compose_file(path: str | pathlib.PurePosixPath) -> bool:
+    """The controller's flat LAB source family; no nested or escaping path."""
+    return bool(re.fullmatch(r"labs/[a-z0-9]+(?:-[a-z0-9]+)*\.yml", str(path)))
+
+
 def _inventory_bindings(
     root: pathlib.Path,
     paths: tuple[pathlib.PurePosixPath, ...],
     services: Mapping[tuple[str, str], object],
 ) -> tuple[dict[tuple[str, str], pathlib.PurePosixPath], list[CatalogFinding]]:
     owners: dict[tuple[str, str], pathlib.PurePosixPath] = {}
+    required_lab_services: set[tuple[str, str]] = set()
     findings: list[CatalogFinding] = []
     tracked = frozenset(paths)
     regular_compose = frozenset(_compose_sources(root, paths).regular)
@@ -2318,10 +2324,15 @@ def _inventory_bindings(
             )
             continue
         for compose, names in bindings.items():
-            if (
-                not isinstance(compose, str)
-                or not _is_infra_compose_file(compose)
-                or pathlib.PurePosixPath(compose) not in regular_compose
+            if not isinstance(compose, str) or not (
+                (
+                    _is_infra_compose_file(compose)
+                    and pathlib.PurePosixPath(compose) in regular_compose
+                )
+                or (
+                    _is_lab_compose_file(compose)
+                    and pathlib.PurePosixPath(compose) in tracked
+                )
             ):
                 findings.append(
                     _finding(
@@ -2331,6 +2342,34 @@ def _inventory_bindings(
                     )
                 )
                 continue
+            binding_services = services
+            if _is_lab_compose_file(compose):
+                model = _compose_mapping(root, pathlib.PurePosixPath(compose))
+                declared = model.get("services")
+                if (
+                    "x-hyhome-overlay" in model
+                    or not isinstance(declared, Mapping)
+                    or any(
+                        not isinstance(name, str)
+                        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", name)
+                        or not isinstance(service, Mapping)
+                        for name, service in declared.items()
+                    )
+                ):
+                    findings.append(
+                        _finding(
+                            "service-operations-removed",
+                            guide,
+                            "LAB binding requires a regular source with mapped services",
+                        )
+                    )
+                    continue
+                binding_services = {
+                    (compose, str(name)): service
+                    for name, service in declared.items()
+                    if isinstance(service, Mapping)
+                }
+                required_lab_services = required_lab_services | set(binding_services)
             links = _inventory_source_links(text, guide)
             if compose not in links or not (root / compose).is_file():
                 findings.append(
@@ -2355,7 +2394,7 @@ def _inventory_bindings(
                 continue
             for name in names:
                 identity = (compose, name)
-                if identity not in services:
+                if identity not in binding_services:
                     findings.append(
                         _finding(
                             "service-operations-removed",
@@ -2408,7 +2447,7 @@ def _inventory_bindings(
                         "service ownership requires a current Guide/Policy/Runbook triplet",
                     )
                 )
-    for compose, name in sorted(set(services) - set(owners)):
+    for compose, name in sorted((set(services) | required_lab_services) - set(owners)):
         findings.append(
             _finding(
                 "service-operations-missing",
