@@ -409,7 +409,7 @@ class OwnedFixture:
             "--mount",
             f"type=bind,src={SOURCE / 'scripts'},dst=/openbao/scripts,readonly",
             "--mount",
-            f"type=bind,src={self.tls},dst=/openbao/tls,readonly",
+            f"type=bind,src={self.tls / 'ca.pem'},dst=/openbao/tls/ca.pem,readonly",
             "--mount",
             f"type=volume,src={self.auth_volume},dst=/openbao/agent",
             "--mount",

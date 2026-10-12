@@ -50,7 +50,21 @@ services:
       - opensearch_security_cookie
     volumes:
       - opensearch-data:/usr/share/opensearch/data:rw
-      - ${DEFAULT_CERT_DIR}:/usr/share/opensearch/config/certs:ro
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/cert.pem
+        target: /usr/share/opensearch/config/certs/cert.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/key.pem
+        target: /usr/share/opensearch/config/certs/key.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/rootCA.pem
+        target: /usr/share/opensearch/config/certs/rootCA.pem
+        read_only: true
+        bind: {create_host_path: false}
       - ./opensearch/config/opensearch-security/config.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
       - ./opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro
       - ./opensearch/config/opensearch-security/internal_users.template.yml:/usr/share/opensearch/config/opensearch-security/internal_users.template.yml:ro
@@ -102,7 +116,21 @@ services:
     expose:
       - '${KIBANA_PORT:-5601}'
     volumes:
-      - ${DEFAULT_CERT_DIR}:/usr/share/opensearch-dashboards/config/certs:ro
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/cert.pem
+        target: /usr/share/opensearch-dashboards/config/certs/cert.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/key.pem
+        target: /usr/share/opensearch-dashboards/config/certs/key.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/rootCA.pem
+        target: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
+        read_only: true
+        bind: {create_host_path: false}
       - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
       - opensearch-dashboards-data:/usr/share/opensearch-dashboards/data
     environment:

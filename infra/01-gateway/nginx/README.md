@@ -58,7 +58,7 @@ nginx/
 | Config values | profiles: `nginx` |
 | Compose linkage | 루트 [docker-compose.yml](../../../docker-compose.yml)이 이 파일을 무조건 include하고 `nginx` profile이 서비스를 선택함; 파일 단독 검증에도 루트 네트워크와 백엔드 의존성에 대한 명시적 컨텍스트가 필요함 |
 | Networks | `edge_net`, `object_net` |
-| Volumes | `./config/nginx.conf:/etc/nginx/nginx.conf:ro`, `${DEFAULT_CERT_DIR}:/etc/nginx/certs:ro` |
+| Volumes | `./config/nginx.conf:/etc/nginx/nginx.conf:ro`, `${DEFAULT_CERT_DIR}/{cert.pem,key.pem,rootCA.pem}`을 각각 `/etc/nginx/certs/{cert.pem,key.pem,rootCA.pem}`에 읽기 전용 mount |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | 선언되지 않음 |
 | Secret refs | 선언되지 않음 |

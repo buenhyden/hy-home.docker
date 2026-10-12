@@ -21,7 +21,21 @@ services:
       - ${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${DEFAULT_CERT_DIR}:/certs:ro
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/cert.pem
+        target: /certs/cert.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/key.pem
+        target: /certs/key.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/rootCA.pem
+        target: /certs/rootCA.pem
+        read_only: true
+        bind: {create_host_path: false}
       - type: bind
         source: ${DEFAULT_SECURITY_DIR}/openbao/tls/ca.pem
         target: /openbao-ca/ca.pem
