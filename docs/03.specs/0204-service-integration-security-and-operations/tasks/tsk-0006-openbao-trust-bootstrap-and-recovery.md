@@ -1788,12 +1788,165 @@ NOT_RUN; HOME_COLD_BOOT, INDEPENDENT_CUSTODY, SELECTED_EMPTY_RESTORE and
 RECOVERY are also NOT_RUN. QA file layout proof and final independent readiness
 review are pending, and Task status remains blocked.
 
+### W23 Merged-Source Readiness Checkpoint — 2026-10-13
+
+SOURCE_DELIVERY is PASS: the reviewed ten-path P01 diff is in integration
+commit `14ae4282948ef7a43ad54c16f5628bc6b15a8520`, merged as
+`7620f2d22d6331566b7d14df7ccd536d011235cb`, with shared tree
+`282180b7ae188444670d0b847f5574004cdf646f`. Required head-14 CI passed.
+Post-main Quality Gates 38299450330 and CodeQL 38299449909 succeeded;
+main-security passed and candidate-quality was intentionally skipped. GitHub
+formal reviews are none and required reviews are zero; separate IaC and security
+agents approved the final operations packet. This source delivery does not
+complete any HOME lane.
+
+The published 58,396-byte snapshot remains integrity evidence only. Isolated
+FILE_USABILITY QA passed in 71.4s and the probe passed in 61s; neither is a
+HOME restore. The final operations packet is READY with public input hashes:
+source/main `89d9fb4be12d0551e6f06d68e4a3f55368660d8bf8864712ecb60df4537fb01a`,
+monitor `76336a1d6b08e3b40073b1054f8674c7b0501816665b7a48a2abc99e3f437c2c`,
+tests `a5f66b2b7dcf9808005e085969d6f1bdeced32cdd8bfe3073d18ba869e05d3c2` and
+launcher `d08a585559c213649f2a1ef7036ba15b8e815599ab58a7c54bd4da5dc8ff7878`.
+
+The same UNUSED first FILE_USABILITY attempt retains its selected empty target
+`/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013`,
+container `p01-home-restore-20261013`, snapshot and guarded coordinator
+receipt `/home/hyunyoun/backups/p01-openbao-20261013/p01-home-empty-restore-20261013-01`.
+Read-only absence checks passed and the four operation names remain absent;
+mandatory execution preflight and source-hash checks are NOT_RUN_BY_DESIGN while
+awaiting an ACTIVE operator availability reply. No operation write has occurred.
+A normal coordinator has a 900-second limit including handled SIGINT/TERM/HUP
+and its 180-second reserve; the monitor's 1 GiB/64 postcondition is not a quota.
+SIGKILL,
+host-loss and CID-window residuals require manual stop-and-preserve by exact
+name/ID, with no automatic retry.
+
+CURRENT_VERSION_AUTH, CONSUMER_READ, HOME_COLD_BOOT, INDEPENDENT_CUSTODY,
+SELECTED_EMPTY_RESTORE, SEALED_AUTHENTICITY, cutover and RECOVERY remain
+NOT_RUN. An earlier PR-description patch was rejected; the merged-state draft
+at `/tmp/p01-pr-body-merged.md` is prepared locally and awaits explicit
+approval. Task status remains blocked awaiting human input.
+
 Checkpoint validation passed: Task metadata selected 1 document with 0
 violations, and `check-script-manifest` and `git diff --check` each exited 0.
 These are SOURCE/DOC checks, not runtime acceptance. The OpenBao 2.7.1
 pin/scanner and unrelated service configuration are NO_CHANGE; the only
 recorded P01 source exceptions are the client certificate bindings in three
 Compose files and their fixture, test and documentation receipts.
+
+### W23 Actual Pre-Restore Outcomes 01/02 — 2026-10-13
+
+Actual attempt 01 was ABORTED_PREFLIGHT, consumed=false, exit 2 in about
+0.25 seconds. Its helper mode was 0775 where 0755 is required. The mode-only
+FD correction completed from 22:23:57.790134Z to 22:23:57.803510Z with bytes
+and inode unchanged: device 64512, inode 2372835, UID/GID 1000, nlink 1,
+size 1,859,732 and post-mode 0755. All four reserved names were absent; no
+new restore artifact, target, receipt or container was created. The abort wall
+clock is NOT_CAPTURED; contemporaneous root clock was 2026-10-12T22:21:33Z,
+before the repair upper bound.
+
+Attempt 02 followed reviewed READY evidence but is
+BLOCKED_PRE_RESTORE_PARTIAL, not FAILED_RESTORE or FILE_USABILITY failure:
+exit 2 after 0.959 seconds, consumed=true, preserved=true and
+cleanup_failed=false. Pre-start capability comparison blocked on expected
+`CHOWN` versus Docker `CAP_CHOWN`. Coordinator T0 is NOT_CAPTURED. The
+root-observed operation window is
+2026-10-12T22:30:03Z–2026-10-12T22:30:59Z; the blocked receipt file mtime
+2026-10-12T22:30:35.136449541Z is metadata rather than exact durable
+completion, and recorded monotonic blocked elapsed is 0.959 seconds. The CHOWN helper
+`p01-home-restore-20261013-chown`
+(`326a586711e9a1f31d4c9688c718ca64314e582a7253052d241c80e4dafaec3f`) remains
+Created and never started. The target is device 2064, inode 115610180,
+UID/GID 1000, mode 0750, with exactly empty `audit` (inode 115628621, 0700)
+and `raft` (inode 115624583, 0700) directories. This is exclusive target
+creation/consumption evidence only. FILE_USABILITY, restore API, CHOWN and
+chmod helper execution, watcher, server/bootstrap and original-unseal checks
+are NOT_RUN. `cleanup_failed=false` means only that its cleanup call did not
+error; it does not claim residual removal. All 02 objects are preserved and
+must not be reused; live 2.6 remains running, unsealed, Raft active, restart 0.
+Independent drift preservation verification passed with the target IDs/modes,
+the two named empty children, the same Created helper, DropAll/no network/
+read-only-root/no-new-privileges, the other three reserved names absent and
+the live server/Agent state. Its correction observation clock is NOT_CAPTURED.
+The operational receipt is
+`/home/hyunyoun/backups/p01-openbao-20261013/p01-home-empty-restore-20261013-02`;
+it has regular non-symlink `attempt.json` (0400), `chown.cid` (0600) and
+`receipt.jsonl` (0600). No receipt content was read.
+
+The canonical lanes HOME_COLD_BOOT, INDEPENDENT_CUSTODY,
+SELECTED_EMPTY_RESTORE, CURRENT_VERSION_AUTH, CONSUMER_READ,
+SEALED_AUTHENTICITY and RECOVERY remain NOT_RUN. At the 01/02 checkpoint,
+attempt 03 had not executed. A
+minimal local CAP_CHOWN source-fix preparation is authorized, but a new target,
+container and receipt require fresh independent review and user approval.
+
+The approved PR #431 description update is present remotely at
+`1088f196bd9aa72ae42c2d8f22c7214e9e700aaf7d84cb0d43c3e0419c0c91fc`
+(6,339 bytes), superseding the earlier pending-approval statement. SOURCE_DELIVERY
+for PR #431 is PASS; operational delivery remains blocked on this failure and
+future execution review/approval.
+
+### W23 Actual Pre-Restore Outcome 03 — 2026-10-13
+
+Attempt `p01-home-empty-restore-20261013-03` is
+BLOCKED_PRE_RESTORE_PARTIAL: consumed=true, preserved=true and
+cleanup_failed=false. Its SERVER_ENTRYPOINT_LOCAL_CONFIG_READONLY cause is
+that the image entrypoint attempted to materialize `BAO_LOCAL_CONFIG` at
+`/openbao/config/local.json` while the root filesystem was read-only. The
+server exited 1 before Bao server/bootstrap/restore; raw logs are suppressed.
+The preserved server
+`857395112de2734454864711a15498d435315779af6f911a32a67e8f40997666` has
+OOM=false and empty State.Error. Container start passed, but Bao/native
+application start was blocked.
+
+ATTEMPT_CONSUMED monotonic time is 0.012 seconds and FILE_USABILITY_BLOCKED is
+18.506 seconds at `operation-blocked`; neither is a wall-clock elapsed time.
+T0 is NOT_CAPTURED. Durable metadata bounds are attempt.json mtime
+2026-10-12T22:42:02.410478Z, target-root mtime 22:42:02.440478Z, server
+StartedAt 22:42:19.832086160Z, FinishedAt 22:42:20.311839536Z and final receipt
+mtime 22:42:20.945514Z. The root-observed operation window is
+2026-10-12T22:41:13Z–2026-10-12T22:43:23Z; file mtimes are metadata only, not
+a durability clock.
+
+The preserved target
+`/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013-03`
+is device 2064, inode 115626592, UID/GID 1000, mode 0700, nlink 4. Its receipt
+directory is device 64512, inode 5383336, UID/GID 1000, mode 0700, with regular
+non-symlink `attempt.json` (0400), `chown.cid`, `chmod.cid`, `watcher.cid` and
+`server.cid` (0600), and `receipt.jsonl` (0600); `bootstrap.json` is absent.
+CHOWN, chmod and watcher helpers were removed. `cleanup_failed=false` records
+only their successful cleanup, not removal of the preserved target, server or
+receipt. Bootstrap/init, snapshot restore API, original-share unseal,
+FILE_USABILITY, CURRENT_VERSION_AUTH and CONSUMER_READ are NOT_RUN. The live
+OpenBao 2.6 image remains running with restart 0 and OOM=false. Task status
+remains blocked; the 19-case local CAP_CHOWN source validation is SOURCE-only.
+
+### W23 Public Native Preparation Receipt — 2026-10-13
+
+Public native preparation is SOURCE-only: the command exited 0 within the
+actual native bounds 2026-10-12T23:24:35.376695330Z–2026-10-12T23:25:45.455258032Z.
+It preserved OLD03's public RED `configRO` case and showed GREEN for the fixed
+functions on OpenBao 2.7.1 amd64 image `a36...`: read-only root, no network,
+DropAll, no-new-privileges, UID 100, exact 64 KiB config tmpfs, 16 MiB tmpfs
+and mount guards. The native server remained initialized=false and sealed=true
+with Raft 2.7.1; CA verification passed and GET health returned 501. This is
+not a HOME bootstrap or restore result.
+
+Strict cleanup removed all five names and the scratch root. The archived public
+packet is `.agent-work/p01-config-tmpfs-public-native-pass/`, with main input
+`0b6d835b5417a4350a8e491a9785df5c3bc2737ce89dff80558ab5cc2081945d` and
+driver `c0491cff0b52e25521815b5f1253ef5f77af77e19094ab20a5c9d4967cea4a3d`.
+`rtk python3 .agent-work/p01_config_tmpfs_public_fixture.py` exited 0 in
+70.078562702s; `rtk python3 .agent-work/p01_home_restore_file_attempt_test.py`
+exited 0 with 21 tests (the latest 04-literal packet in 0.033s). Both are
+public source preparation; actual 04 was not run.
+Earlier `b111`/`896` reports are SUPERSEDED without changing their historical
+outcomes. The public native IaC/security packet records the minimal literal 04
+proposal; at this public-native checkpoint, attempt 04 had not executed, its
+authorization was pending and its execution review was not READY. Unit 21 and
+syntax/lint passed. PRIVATE, HOME, FILE_USABILITY, RECOVERY,
+CURRENT_VERSION_AUTH and CONSUMER_READ remain NOT_RUN; Task status remains
+blocked.
 
 ## Evidence
 
@@ -1809,12 +1962,16 @@ Compose files and their fixture, test and documentation receipts.
 | Scoped regression | 11 | W23 | Five public modules, 77 PASS / 4 skipped | base `62556dc63b66c828c27e9c33017d26cdf70b8542`; patched input `95dc53a900fe7d22ea49e830adc0ff5f69b7a82ab9b4daedd66f33edf5b512ff` | PASS | W23 Current Acceptance Assessment | pending |
 | Synthetic full rehearsal | 11 | W23 | Exact-image full trust and recovery fixture | `95dc53a900fe7d22ea49e830adc0ff5f69b7a82ab9b4daedd66f33edf5b512ff` | PASS | W23 Current Acceptance Assessment | pending |
 | Client-mount repair | 11 | W23 | RED/GREEN, selected suite, public Compose render, YAML lint and independent IaC/security review | `f42ea58a66214b32bb1c8d7be589b3ba838d59abbe7610e5e1515008670b4f8e` | PASS | W23 Client-Mount Correction Admission | pending |
+| Actual pre-restore 01/02 | 11 | W23 | Mode preflight then bounded capability gate; no server start | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcomes 01/02 | pending |
+| Actual pre-restore 03 | 11 | W23 | Entry-point local-config write blocked before bootstrap/restore | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcome 03 | pending |
+| Public native preparation | 11 | W23 | 2.7.1 isolated config-tmpfs preparation and cleanup | archived public packet | PASS | W23 Public Native Preparation Receipt | pending |
 
 ## Review and Completion
 
-Source delivery is merged in PR 421; the current Task remains blocked on the
-named W23 target/custody and runtime residuals. Source and isolated proof do not complete HOME custody/boot/recovery
-acceptance or authorize P06. No secret migration or consumer switch is claimed.
+Source delivery is merged in PR 421 and passed for PR #431; the current Task
+remains blocked on the named W23 target/custody and runtime residuals. Source
+and isolated proof do not complete HOME custody/boot/recovery acceptance or
+authorize P06. No secret migration or consumer switch is claimed.
 
 ## Related Documents
 
