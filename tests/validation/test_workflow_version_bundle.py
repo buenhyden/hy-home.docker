@@ -94,22 +94,26 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         compose = yaml.safe_load((N8N / "docker-compose.yml").read_text())
         for name in ("n8n", "n8n-worker"):
             service = compose["services"][name]
-            self.assertEqual("2.42.6", str(service["build"]["args"]["N8N_VERSION"]))
-            self.assertEqual("hyhome/n8n:2.42.6-local", service["image"])
+            self.assertEqual("2.42.7", str(service["build"]["args"]["N8N_VERSION"]))
+            self.assertEqual("hyhome/n8n:2.42.7-local", service["image"])
         runners = {
             compose["services"][n]["image"]
             for n in ("n8n-task-runner", "n8n-task-runner-worker")
         }
         self.assertEqual(1, len(runners))
-        self.assertRegex(runners.pop(), r"^n8nio/runners:2\.42\.6@sha256:[0-9a-f]{64}$")
+        self.assertEqual(
+            "n8nio/runners:2.42.7@sha256:c74f7fe2a9acaf08d78d2d2ad9359c897ad0270883ba959d57150cc9bbdc48e1",
+            runners.pop(),
+        )
         for name in ("Dockerfile", "dev.Dockerfile"):
             source = (N8N / name).read_text()
             self.assertEqual(
-                {"2.42.6"}, set(re.findall(r"^ARG N8N_VERSION=(\S+)$", source, re.M))
+                {"2.42.7"}, set(re.findall(r"^ARG N8N_VERSION=(\S+)$", source, re.M))
             )
             self.assertIn('RUN test "$(n8n --version)" = "${N8N_VERSION}"', source)
-            self.assertRegex(
-                source, r"FROM n8nio/n8n:\$\{N8N_VERSION\}@sha256:[0-9a-f]{64}"
+            self.assertIn(
+                "FROM n8nio/n8n:${N8N_VERSION}@sha256:906dd7fb0a2f23869001d1767168359489c518ff34d4f67427abf2dc59e868fe",
+                source,
             )
             self.assertRegex(
                 source, r"FROM alpine:3\.24\.2@sha256:[0-9a-f]{64} AS font-builder"
