@@ -4,7 +4,7 @@ version: "0.2.8"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -1443,6 +1443,358 @@ the manifest-consumer proposal and public QA artifacts are preserved for
 the coordinator. No new Task or source implementation is introduced by
 this result-only delivery receipt.
 
+### W23 Current Acceptance Assessment — 2026-10-13
+
+This assessment is bound to `origin/main` and the isolated worktree HEAD
+`62556dc63b66c828c27e9c33017d26cdf70b8542`; the supplied baseline is
+`23e37362b72e98028a4675f282819c0346ae59dc`. The fresh fetch, ref, status,
+worktree and pull-request observations are recorded by the coordinator: fetched
+`origin/main` equals this HEAD, no open PR was observed, and the ten existing
+foreign worktrees were clean. This writer used only
+`codex/p01-current-acceptance` and did not alter main or another worktree.
+
+| Classification | Current result | Boundary |
+| --- | --- | --- |
+| SOURCE_APPLIED | Client-mount correction, fixture/rehearsal regressions, two stale Korean volume tables and this value-free W23 receipt | Nine owned paths; no image, secret, data or runtime change |
+| NO_CHANGE | OpenBao server/Agent 2.7.1 pin `6d2b9385...`; source and the five named modules were unchanged at the starting SHA | The current fixture helper and rehearsal module are the separate SOURCE_APPLIED correction; SEC01 owns any image/security disposition |
+| CONFIRMED_GAP | Initial default-context observation found the initialized Raft server sealed with failing streak 1799; the later operator unseal resolved that state and the latest value-free status is sealed=false. Server and Agent remain 2.6.2 rather than declared 2.7.1; expected source TLS files are absent, Traefik's whole-directory client mount includes the private CA-key path, and Agent stale/auth notification has no Prometheus/Gatus producer/consumer | This is neither cold-boot nor recovery acceptance. Agent failing streak is 0. Values, raw logs, secrets and private files were not read; existing generic snapshot-stale status is not a missing-gap finding |
+| CONSUMER_DEPENDENT | Keycloak/Grafana and the later P06 pilot require a named consumer, its least-privilege ACL and an approved runtime boundary | No consumer file/content or KV value was read; P06 migration remains held |
+| RUNTIME_UNVERIFIED | Agent has exit code 0 and failing streak 0 but exposes only `agent.hcl`, templates and agent/output volumes; no public CA or script bind was observed | A health state does not prove rendered freshness, current-version authentication or consumer read |
+| SECURITY_WARNING_CONFIRMED | Whole-directory client mount including a private CA-key path violates the source trust-scope contract; actual byte access or disclosure is NOT_RUN and unconfirmed. No current 2.7.1 image warning is confirmed | Cached index digest `6d2b9385...` resolves to linux/amd64 platform image `a36ea8c2...`; SEC01 ledger applicability is UNKNOWN and signature/SBOM checks are NOT_RUN. The eight source-code paths are independently approved; this Task receipt remains pending review |
+| OUT_OF_SCOPE | Runtime/service/data/secret/image changes, rotation, migration, deletion, LAB and learning-app work | No change beyond this Task receipt |
+
+The historical starting-SHA run discovered 80 cases: 76 PASS and four explicit
+native opt-in skips in 17.919s (exit 0). After the fixture correction, the
+current command is:
+
+`python3 -m unittest tests.validation.test_openbao_rehearsal
+tests.validation.test_openbao_agent_contract tests.validation.test_openbao_candidate
+tests.lib.ops.test_openbao_issuance tests.lib.ops.test_openbao_issuance_trust`
+discovered 81 cases: 77 PASS and four explicit native opt-in skips in 19.802s
+(exit 0). This is a fresh source/synthetic result only. It does not establish a
+current 2.7.1 image, HOME Agent render, functional consumer authentication,
+or any recovery result.
+
+Eight OpenBao-only runtime-compatibility static tests also passed in 0.336s
+(exit 0).
+The public five-service Compose projection first refused missing public
+Gatus variables and duplicate group `1000/1000`; after its owner supplied
+public defaults from the existing `.env.example`, the projection passed (exit
+0) without reading a private env. `.env.example` was not edited here.
+
+The separate reviewed linux/amd64 candidate native check on `a36ea8c2...`
+completed 1 test PASS in 116.362s (exit 0). It exercised wrong-CA,
+expired-SecretID, short-role, audit-full and snapshot-to-empty-target cases
+with synthetic data only.
+The full-class rehearsal on original reviewed input
+`ac34e89d1f0d177933dbd96d24044e18b287e3e366a30be3d749bcfe4db3fe2e`
+timed out at its 240-second outer limit (exit 124) while restoration was
+running. Its preceding observed checks are retained as partial evidence only;
+they do not make the full isolated lane PASS. Existing labelled/path-bound
+cleanup then passed for exact owner `70c1...`: 16 containers, four volumes,
+one network and the invocation temporary directory were removed through the
+existing helper, with no HOME mutation.
+
+On fixed input
+`95dc53a900fe7d22ea49e830adc0ff5f69b7a82ab9b4daedd66f33edf5b512ff`, the
+narrow v1/v2 receipt is `HYHOME_OPENBAO_REHEARSAL=1 timeout 240 python3 -m
+unittest tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests.test_native_versioned_issuance_reconciliation
+-v`: 1 PASS in 89.661s (exit 0). The full-trust receipt is
+`HYHOME_OPENBAO_REHEARSAL=1 timeout 480 python3 -m unittest
+tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests.test_native_trust_auth_audit_and_recovery
+-v`: 1 PASS in 247.084s (exit 0). It observed Agent render mode 0600,
+start/restart/cold boot, current version 1, snapshot renewal/save,
+malformed-audit nonexposure, empty-Raft restore with foreign-share
+denial/original unseal, audit-full HTTP 500 with health 200, and sealed-readiness
+denial. The `finally` cleanup passed. `scripts/validation/check-script-manifest.py`
+and `git diff --check` also passed (exit 0). All of these use synthetic material.
+
+The audit case covers malformed-JSON request nonexposure, ordinary HMAC-SHA256
+output and raw-marker absence. Tampered/invalid-HMAC verification is NOT_RUN:
+there is no audit-hash producer in this contract. This is a coverage limit, not
+an audit-integrity PASS.
+
+The registered broad local selector
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only` is
+NOT_RUN. Its `--explain` selection includes LAB credential, isolation,
+controller and Supabase SMTP rehearsal leaves through
+`.github/workflow-contract.yml` lines 678–741, which this request excludes.
+The selector and its workflow contract were not changed. The scoped five-module
+command above is not a substitute for that aggregate gate; required hosted CI
+remains pending for any later draft PR.
+
+| Lane | Synthetic / isolated target | HOME / operational target | Boundary |
+| --- | --- | --- | --- |
+| ISOLATED | PASS (synthetic only): candidate, fixed v1/v2 and fixed full-trust rehearsals passed | NOT_RUN | Fixture results do not establish HOME, a physical cold boot or application consumption |
+| HOME_COLD_BOOT | NOT_APPLICABLE | NOT_RUN | Host and replacement intent are selected and authorized; actual TLS and restricted snapshot-credential/artifact preconditions remain missing |
+| INDEPENDENT_CUSTODY | NOT_APPLICABLE | NOT_RUN | Synthetic unseal shares do not establish independently held actual unseal/snapshot-key custody; the later readiness declaration is not verification |
+| WRAPPED_REISSUE | PASS: fixed v1/v2 fixture | NOT_RUN | No selected runtime issuer, role or cleanup target |
+| CURRENT_VERSION_AUTH | PASS: candidate and full synthetic authentication | NOT_RUN | HOME target is selected but has no 2.7 current-version or consumer authentication result |
+| SELECTED_EMPTY_RESTORE | PASS: candidate synthetic empty-target case | NOT_RUN | Exact empty-Raft target is selected but not created/exercised; actual snapshot credential/artifact, capacity/RPO/RTO and custody checks remain |
+| CONSUMER_READ | NOT_RUN | NOT_RUN | Agent render-file validation is not a Keycloak/Grafana application read; no named consumer/ACL/runtime target and no values were read |
+| DELIVERY | NOT_APPLICABLE | DRAFT_ONLY / BLOCKED | This receipt is uncommitted; the broad local gate is excluded by its LAB leaves, and no PR, exact-head CI, independent review or merge exists |
+
+The observed runtime is not an upgrade instruction. The verified rollback for
+this receipt is a Git revert of the nine-path logical commit to source baseline
+`62556dc63b66c828c27e9c33017d26cdf70b8542`. A future runtime rollback requires
+the exact verified image, CA/role/journal, compatible storage snapshot and
+independently held unseal material; it must not restore the old no-TLS endpoint.
+
+The later operator declaration supersedes the earlier statement that HOME
+recovery/custody preparation was unready: the intended operation is replacement
+of the named running OpenBao 2.6.2 server and Agent with declared 2.7.1.
+It is a readiness declaration, not verified custody or runtime acceptance.
+HOME remains NOT_RUN until dedicated TLS execution/verification, a restricted
+snapshot credential and created integrity-bound artifact, independent custody,
+empty-restore and consumer checks complete. The host, paths, window and
+unseal/decrypt owner are selected. No runtime cutover has begun. The first KV
+migration remains P06-owned; P01 does not copy or rotate values.
+
+The value-free actual inventory identifies `hy-home-server` through the default
+Docker context. Docker is 29.8.2, and the actual 2.6.2 server image is known:
+`sha256:11fd73a2102cda9c55d5d881a8c3210303146a7ec1e8ac76f526e175c6d24641`
+on linux/amd64. The current server data and Agent/output volumes resolve to
+`/home/hyunyoun/storage/volumes/security/openbao/{data,agent,out}`. The supplied
+certificate leaf chain and expiry checks pass, but its SAN lacks `openbao`
+(while `127.0.0.1` is present). The source-required public TLS paths
+`storage/volumes/security/openbao/tls/{ca.pem,server.pem,server-key.pem}` are
+absent. Current Traefik mounts the repository's `secrets/certs` directory at
+`/certs:ro`; its private `rootCA-key.pem` is mode 0400 but lies inside that
+client-visible mount. The mount scope violates the intended contract, but byte
+access/disclosure is not confirmed: Traefik has default root user, `cap_drop:
+ALL`, `no-new-privileges`, and a read-only root filesystem, while the key is
+owned by UID 1000/GID 1001 at mode 0400. The metadata-only unseal file (0600)
+and token file (0640) exist but are not independent-custody proof. Public
+certificate metadata was parsed; private-key, authentication-secret, KV-value
+and raw-log contents were not read. This is an upgrade preparation mapping
+only; execution waits for TLS-key isolation, a dedicated `openbao` SAN
+certificate, restricted snapshot credential/artifact preparation and actual
+custody/restore checks. The backup, empty-restore and downtime selections are
+already recorded above.
+
+Value-free `bao status -format=json` on the actual server exited 2 and reports
+initialized=true, sealed=true, storage_type=raft, version=2.6.2,
+ha_enabled=true and migration=false. This identifies sealing as the current
+unhealthy cause; it neither unseals the server nor proves recovery. The public
+source path `secrets/backup/openbao/snapshot_token.txt` is absent. A guessed
+host backup path is not evidence that no actual backup exists, because the
+rendered staging path depends on a private environment input that was not read.
+The actual Raft storage means the 2.7.1 file-backend removal does not require a
+storage-backend migration, but the 2.6.2-to-2.7.1 private backup/restore test is
+NOT_RUN.
+
+The operator subsequently completed the source unseal. A fresh value-free root
+status exited 0 and reports initialized=true, sealed=false, storage_type=raft,
+version=2.6.2, ha_enabled=true and migration=false. It accepts the initial
+source status only; it is neither cold-boot, restore nor 2.7.1 acceptance.
+
+Value-free `stat`/`findmnt` inspection confirms the selected, but not created,
+`/home/hyunyoun/backups/p01-openbao-20261013/raft-pre-2.7.1.snap` for a fresh
+authenticated 2.6.2 snapshot after `buenhyden` unseals and writes are quiesced.
+`/home/hyunyoun/backups` is an existing non-symlink ext4 path with about 51.2
+GiB free; it is a different device from live Raft data, whose filesystem has
+about 2.49 TiB free. It is not offsite or independent-custody proof, and
+automatic Restic inclusion is unknown. The existing staging candidate
+`/home/hyunyoun/backups/staging/openbao-raft.snap` is absent; no Restic
+repository was inspected, so this does not prove no backup exists. The live
+snapshot size is UNKNOWN because no actual snapshot exists. The host disk-usage
+check was denied and its error is withheld, while a bounded read-only container
+check reports current allocated Raft data of 39,728 KiB (about 38.8 MiB).
+
+The proposed fresh empty restore target is
+`/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013`,
+with internal no-egress container name `p01-home-restore-20261013`. Both
+candidate paths were confirmed absent and were not created. Before execution,
+preflight must set/verify a private 0700 directory and 0600 snapshot file
+owned by UID/GID 1000, confirm the exact restore size/capacity and never reuse
+the live volume. `/home/hyunyoun/storage/backups` shares the live-data device
+and is therefore not an independent-disk backup candidate. Plan a 30-minute
+service cutover plus a 60-minute maintenance window and a fresh-snapshot,
+quiesced-write RPO objective as planning estimates, not observed RTO/RPO.
+Reserve a 1 GiB restore work budget for startup and growth; it is a
+recommendation, not a measured snapshot-capacity maximum.
+
+The named operator (`buenhyden`) must unseal/decrypt and confirm independent
+custody. Upstream's [upgrade guide](https://openbao.org/docs/guides/upgrade/)
+requires a backup before upgrade and does not promise backward data
+compatibility; rollback requires compatible storage and image, so replacing the
+image alone is unsafe. The operator selected the proposed snapshot path
+`/home/hyunyoun/backups/p01-openbao-20261013/raft-pre-2.7.1.snap`, empty restore
+path `/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013`
+and container `p01-home-restore-20261013`, with the 1 GiB work budget, a
+60-minute maintenance window and a 30-minute cutover goal. `buenhyden` owns
+unseal/decrypt. Replacement intent is already authorized; no cutover action has
+begun because TLS material and snapshot credential/artifact facts remain missing.
+
+The operator explicitly authorizes Codex to sign only the existing
+`rootCA-key.pem`, without output, to provision the source TLS-path files for
+DNS `openbao` and loopback. That TLS operation has not executed and will be
+delegated to the actual credential-preparation owner. The restricted snapshot
+identity/token is still missing and remains an operator-preparation prerequisite.
+
+Independent IaC review found the nine-path source correction ready with no
+source finding, but production readiness is BLOCKED on dedicated TLS execution/
+verification, restricted snapshot credential plus created integrity-bound
+artifact, independent custody, and unexecuted empty-restore/consumer checks.
+The target and maintenance window are selected but RTO remains unmeasured. The
+existing replacement request supplies intent, so no second permission is
+needed once those checks are available. A first actual isolated restoration may
+later create its own restoreability receipt through the registered
+`first_isolated_restoreability` mode; synthetic evidence supplies no actual
+artifact proof.
+
+### W23 Client-Mount Correction Admission — 2026-10-13
+
+Independent security review closes the mount-scope finding as HIGH for source
+correction. The user's private-key separation request authorizes the minimal
+source repair: four client certificate binds across the Traefik, Nginx and
+OpenSearch (including Dashboard) Compose documents, with the existing runtime
+compatibility regression. The assigned infra implementer is the exclusive
+writer for those three YAML files and its test. This logical commit owns nine
+paths: those four source/test paths, two fixture tests, these two stale Korean
+volume tables and this Task. The receipt will record its RED/GREEN, YAML render,
+nine client static tests and independent source review once complete. No runtime
+action, image pin/scanner change or secret-value read is authorized by that repair.
+
+The frozen four-file source repair has exact diff hash
+`f42ea58a66214b32bb1c8d7be589b3ba838d59abbe7610e5e1515008670b4f8e`.
+Its focused RED was one expected failure (exit 1); the corrected focused case
+passed in 0.066s (exit 0), and the selected OpenBao suite passed 9 cases in
+0.399s (exit 0). Public-only core, Nginx and OpenSearch Compose projections
+using `.env.example` plus public Gatus UID/GID overrides each rendered (exit
+0). The registered `.yamllint` passed (exit 0); the initial guessed
+`.yamllint.yml` invocation failed (exit 1) because that file is absent and is
+preserved as discovery evidence. The repair requires `DEFAULT_CERT_DIR` and
+uses twelve exact read-only leaf binds with host-path creation disabled.
+Independent exact-diff IaC and security review both PASS with no findings.
+No ROOT image, scanner, version or runtime change occurred.
+
+The source rollback is a nine-path Git revert. That revert would restore the
+confirmed private-CA parent mount, so a future HOME rollback must use its
+reviewed TLS/recovery contract and must not blindly revert this source repair.
+
+The fixed native input `95dc53a...` remains valid Agent-fixture evidence: the
+Traefik Compose file is outside its input digest, and the physical fixture uses
+the independently corrected CA-only mount with unchanged images/dynamic
+configuration. A full native rerun is therefore not required solely for the
+client-bind YAML repair. Related Korean README bind descriptions may be changed
+only if their inspected volume-contract tables are stale. The inspected Traefik
+and Nginx README tables are stale and now enumerate the same three explicit
+read-only certificate paths as the reviewed bind contract. OpenSearch's general
+certificate-directory statement makes no whole-mount claim and is NO_CHANGE.
+The operator selected the recommended backup artifact, empty target and
+downtime choice above. This earlier receipt predates the current TLS and
+artifact-preparation results below; P01 remains blocked on custody and restore
+execution checks.
+
+### W23 Current TLS and Snapshot Retry Receipt — 2026-10-13
+
+Implementation commit is `b8d3ea818c91b6e3f3da078906e70c361842c5d5`
+(parent `a4d8c9cf4`, tree `cb08b7c65da984d8915a14a6216836b0cb2ae294`);
+current checkout/PR #431 head is `69f9b06162c99f555b4589d276fbbf476f2c6da1`.
+The first candidate run on `b8d3ea8` failed at the catalog receipt. Candidate run
+38285415072 failed at the catalog receipt, before operations or any LAB module;
+the local-only aggregate remains NOT_RUN. The catalog correction is separate.
+
+At 2026-10-12T18:26:42Z, user `buenhyden` marked PR #431 READY_FOR_REVIEW
+(`isDraft=false`). The latest-head candidate-quality run 38289397982 passed in
+7m49s; CodeQL, triage and GitGuardian passed, while main-security was skipped.
+PR #431 is open, mergeable and clean, with no formal review and no merge. The
+failed `b8d3ea8` run remains historical. DELIVERY is not PASS until independent
+review and merge occur.
+
+TLS_PREPARED / NOT_DEPLOYED: authorized preparation completed without emitting private material: three
+regular TLS files exist at the source path with the recorded directory/file
+ownership and modes; public certificate checks pass. The CA private key was
+not copied or mounted, and no server restart or image change occurred.
+
+OIDC preflight corrected the configured container user to UID/GID 1000 and
+the loopback health interpretation to `standby=false`; neither correction made
+an API call. The protected operator file was mode 0664 and was changed to 0600
+before read. Its bounded capabilities permit snapshot read/sudo but deny generic
+or role token creation; permanent backup identity issuance remains BLOCKED.
+The ephemeral packet validator first failed (RED), then passed all nine cases
+after three minimal fixes; its public code hash is
+`16a4d06ce4b97ca910b31dec0bb13cbaca73e808e38f322d7abd02bfea4280d3`.
+Independent security review passed. No token, accessor, secret, private-key or
+raw-log value is recorded.
+
+The designated retry is BLOCKED: fresh OIDC authorization TTL is below 600
+seconds. No renewal or snapshot API call was made. The selected restore target
+remains absent, temporary staging is empty, and host-stage cleanup passed. The
+earlier save result is retained as historical but cannot establish a valid
+artifact because native inspect is unsupported; it is not relabeled corrupt or
+successful recovery. The first restore ledger remains unused/prospective:
+`p01-home-empty-restore-20261013-01`, selected 2026-10-12T17:47:08Z, human
+`buenhyden`, implementer `p01_home_tls`, independent reviewer
+`home_readiness`; no restore executed. Task status remains blocked.
+
+### W23 Snapshot Salvage Receipt — 2026-10-13
+
+The refreshed-OIDC attempt made exactly one native save successfully, then
+remained PARTIAL because BusyBox `find -printf` is unsupported in the guard and
+cleanup counter. Its owned temporary artifact was preserved; this is neither a
+corrupt-snapshot finding nor a recovery PASS. Approved no-token/no-API salvage
+then completed in 2.134s: pre/post structural integrity and private hash match,
+atomic directory publish, and cleanup all passed.
+
+The final value-free artifact is
+`/home/hyunyoun/backups/p01-openbao-20261013/raft-pre-2.7.1.snap` (58,396
+bytes). Its directory is device 64512, inode 5382803, UID/GID 1000, mode 0700;
+the snapshot is inode 5382808, mode 0600, nlink 1. The private-hash sidecar is
+inode 5382809, mode 0600, nlink 1; its value is not disclosed. Runtime remains
+the unsealed active 2.6.2 image `11fd...`. Available backup capacity is
+55,284,146,176 bytes, above the 1,073,741,824-byte work budget. Filesystem
+total is 266,918,543,360 bytes and is not a requirement. Salvage started at
+2026-10-13T03:16:15+09:00 and took 2.134s. Snapshot mtime is
+2026-10-12T18:10:33Z; it is the
+native saved-file timestamp, not a precise Raft atomic-capture instant or a
+verification time.
+
+Independent `p01_snapshot_drift` verification passed all guard, structural,
+private-hash and path-stability checks in 10.937ms without private output.
+Its `observed_at` is NOT_CAPTURED; activation/completion is bounded after
+2026-10-12T18:16:15Z and before 18:18:34Z by the root clock. Native save is
+bounded by root-clock times [18:06:27Z, 18:14:39Z], not an exact capture time.
+NATIVE_INSPECT, SEALED_AUTHENTICITY and SEMANTIC_RESTOREABILITY are NOT_RUN.
+This is prepared artifact evidence only, not HOME recovery, cold boot,
+current-2.7 consumer authentication or independent-custody acceptance.
+The first restore remains contract planning only: target absent, no restore
+execution, permanent backup issuer denied and its file absent. Task status
+remains blocked.
+
+### W23 Pre-Execution FILE_USABILITY Checkpoint — 2026-10-13
+
+At receipt head `08891676e031d8900efe6250c1cc53260855e608`, candidate-quality
+failed with exit 2 in `leaf.local-diff-hygiene`: the pull-request-range adapter
+used event base `6de86f9dc36b087cb3a56f0ac7b346c56b58b291` while the checkout
+merge parent was `0a00d34bc0c8df30120100be181fee0f4ca49ceb`. This is a CI
+base-race receipt, not a source or runtime failure; earlier public leaves,
+CodeQL and GitGuardian passed. The fetch/main and root-HEAD observation window
+was 2026-10-12T19:03:53Z–2026-10-12T19:06:29Z; an exact wall-clock capture is
+NOT_CAPTURED. The freshly fetched main was the same
+`0a00d34bc0c8df30120100be181fee0f4ca49ceb`; its 11 foreign P03 paths have no
+P01-owned ten-path overlap, and the catalog renderer is unchanged.
+
+Before any target write, the full-App first plan was BLOCKED because fresh OIDC
+TTL was 1,166 seconds, below its 1,500-second requirement. After that block, no
+renewal, target credential mount/use, snapshot save or restore retry occurred.
+The canonical
+`first_isolated_restoreability_evidence_generation` FILE_USABILITY form keeps
+the same first attempt `p01-home-empty-restore-20261013-01`, selected path,
+container and snapshot as UNUSED and excludes OIDC use; it records neither a
+target write nor custody proof. CURRENT_VERSION_AUTH and CONSUMER_READ remain
+NOT_RUN; HOME_COLD_BOOT, INDEPENDENT_CUSTODY, SELECTED_EMPTY_RESTORE and
+RECOVERY are also NOT_RUN. QA file layout proof and final independent readiness
+review are pending, and Task status remains blocked.
+
+Checkpoint validation passed: Task metadata selected 1 document with 0
+violations, and `check-script-manifest` and `git diff --check` each exited 0.
+These are SOURCE/DOC checks, not runtime acceptance. The OpenBao 2.7.1
+pin/scanner and unrelated service configuration are NO_CHANGE; the only
+recorded P01 source exceptions are the client certificate bindings in three
+Compose files and their fixture, test and documentation receipts.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1454,6 +1806,9 @@ this result-only delivery receipt.
 | HOME preconditions | 11 | W23 | Named host, CA and independent custody | User P01 and `ok` | NOT_RUN | W23 HOME Boundary and P06 Hold | pending |
 | Versioned journal source | 11 | W22 | Independent code/security; 47 unit tests, 90% coverage | helper `be2343a0...` | PASS | W22 Source Commit and Isolated Attempt | pending |
 | Changed fixture native metadata | 11 | W22 | v1/v2 exact reconciliation, wrapped login/replay denial | `868e44af22ecf1f5be5c1e6d3b38a292f37a7838141c15bdf00ee07ad490ca0b` | PASS | W22 Changed-Input Native Metadata Receipt | pending |
+| Scoped regression | 11 | W23 | Five public modules, 77 PASS / 4 skipped | base `62556dc63b66c828c27e9c33017d26cdf70b8542`; patched input `95dc53a900fe7d22ea49e830adc0ff5f69b7a82ab9b4daedd66f33edf5b512ff` | PASS | W23 Current Acceptance Assessment | pending |
+| Synthetic full rehearsal | 11 | W23 | Exact-image full trust and recovery fixture | `95dc53a900fe7d22ea49e830adc0ff5f69b7a82ab9b4daedd66f33edf5b512ff` | PASS | W23 Current Acceptance Assessment | pending |
+| Client-mount repair | 11 | W23 | RED/GREEN, selected suite, public Compose render, YAML lint and independent IaC/security review | `f42ea58a66214b32bb1c8d7be589b3ba838d59abbe7610e5e1515008670b4f8e` | PASS | W23 Client-Mount Correction Admission | pending |
 
 ## Review and Completion
 

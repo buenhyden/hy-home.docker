@@ -64,7 +64,7 @@ traefik/
 | Config values | profiles: `core`, `dev` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml)을 통해 root include가 활성화됨 -> `infra/01-gateway/traefik/docker-compose.yml` |
 | Networks | `edge_net`, `obs_net` |
-| Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `${DEFAULT_CERT_DIR}:/certs:ro`, `./dynamic:/dynamic:ro`, `./config/traefik.yml:/etc/traefik/traefik.yml:ro` |
+| Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `${DEFAULT_CERT_DIR}/{cert.pem,key.pem,rootCA.pem}`을 각각 `/certs/{cert.pem,key.pem,rootCA.pem}`에 읽기 전용 mount, `./dynamic:/dynamic:ro`, `./config/traefik.yml:/etc/traefik/traefik.yml:ro` |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |
 | Secret refs | names: `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`; mounts: `/run/secrets/traefik_basicauth_password`, `/run/secrets/traefik_opensearch_basicauth_password`, `/run/secrets/traefik_prometheus_api_htpasswd` |

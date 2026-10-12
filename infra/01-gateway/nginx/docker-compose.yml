@@ -13,7 +13,21 @@ services:
       - ${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ${DEFAULT_CERT_DIR}:/etc/nginx/certs:ro
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/cert.pem
+        target: /etc/nginx/certs/cert.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/key.pem
+        target: /etc/nginx/certs/key.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/rootCA.pem
+        target: /etc/nginx/certs/rootCA.pem
+        read_only: true
+        bind: {create_host_path: false}
     tmpfs:
       - /var/cache/nginx
       - /var/log/nginx

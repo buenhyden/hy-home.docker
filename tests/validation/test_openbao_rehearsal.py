@@ -47,6 +47,33 @@ else:
 
 
 class OpenBaoCleanupTests(unittest.TestCase):
+    def test_agent_mounts_only_public_ca_from_tls_material(self):
+        fixture = object.__new__(OwnedFixture)
+        fixture.tls = Path("/synthetic/tls")
+        fixture.auth_volume = "p01-owned-auth"
+        fixture.out = Path("/synthetic/out")
+        fixture.owner = "p01-owned"
+        fixture.network = "p01-owned-net"
+        fixture.image = "sha256:synthetic"
+        fixture.containers = []
+
+        with mock.patch.object(
+            fixture,
+            "docker",
+            return_value=SimpleNamespace(returncode=0, stdout=b""),
+        ) as docker:
+            fixture.agent("agent", start=False)
+
+        create = docker.call_args.args
+        self.assertIn(
+            "type=bind,src=/synthetic/tls/ca.pem,dst=/openbao/tls/ca.pem,readonly",
+            create,
+        )
+        self.assertNotIn(
+            "type=bind,src=/synthetic/tls,dst=/openbao/tls,readonly", create
+        )
+        self.assertFalse(any("server-key.pem" in arg for arg in create))
+
     def test_server_config_bind_preserves_group_write_under_safe_umask(self):
         fixture = OwnedFixture()
         previous = os.umask(0o022)

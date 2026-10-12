@@ -119,6 +119,57 @@ class RuntimeCompatibilityTests(unittest.TestCase):
                     if "${DEFAULT_SECURITY_DIR}/openbao/tls" in source:
                         self.assertTrue(source.endswith("/ca.pem"), source)
 
+    def test_openbao_clients_mount_only_named_certificate_files(self):
+        clients = (
+            ("infra/01-gateway/traefik/docker-compose.yml", "traefik", "/certs"),
+            (
+                "infra/01-gateway/nginx/docker-compose.yml",
+                "nginx",
+                "/etc/nginx/certs",
+            ),
+            (
+                "infra/04-data/opensearch/docker-compose.yml",
+                "opensearch",
+                "/usr/share/opensearch/config/certs",
+            ),
+            (
+                "infra/04-data/opensearch/docker-compose.yml",
+                "opensearch-dashboards",
+                "/usr/share/opensearch-dashboards/config/certs",
+            ),
+        )
+        for path, service_name, target_dir in clients:
+            mounts = []
+            for mount in compose(path)["services"][service_name]["volumes"]:
+                if isinstance(mount, dict):
+                    source = mount.get("source", "")
+                    target = mount.get("target", "")
+                    relevant = (
+                        source.startswith("${DEFAULT_CERT_DIR")
+                        or target == target_dir
+                        or target.startswith(f"{target_dir}/")
+                    )
+                else:
+                    relevant = mount.startswith("${DEFAULT_CERT_DIR") or (
+                        f":{target_dir}" in mount
+                    )
+                if relevant:
+                    mounts.append(mount)
+            expected = [
+                {
+                    "type": "bind",
+                    "source": (
+                        "${DEFAULT_CERT_DIR:?DEFAULT_CERT_DIR is required}/" + name
+                    ),
+                    "target": f"{target_dir}/{name}",
+                    "read_only": True,
+                    "bind": {"create_host_path": False},
+                }
+                for name in ("cert.pem", "key.pem", "rootCA.pem")
+            ]
+            self.assertEqual(expected, mounts, service_name)
+            self.assertFalse(any("rootCA-key.pem" in str(mount) for mount in mounts))
+
     def test_renderer_issuer_policy_requires_wrapping(self):
         policy = (
             ROOT / "infra/03-security/openbao/config/policies/renderer-issuer.hcl"
