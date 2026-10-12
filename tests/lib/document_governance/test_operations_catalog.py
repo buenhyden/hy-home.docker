@@ -98,6 +98,165 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     self._track(root, member.parent)
                     self.assertIn("role-path-invalid", finding_codes(root))
 
+    def _lab_fixture(
+        self, domain: str = "labs"
+    ) -> tuple[contextlib.ExitStack, pathlib.Path]:
+        context, root = self._fixture()
+        for family in ROLE_DIRECTORIES:
+            family_root = root / "docs/05.operations" / family
+            index = family_root / "README.md"
+            index_text = index.read_text(encoding="utf-8")
+            # 0099 is a synthetic fixture identity, not a copy of a real subject.
+            for existing in family_root.glob("0099-*.md"):
+                index_text = "".join(
+                    line
+                    for line in index_text.splitlines(keepends=True)
+                    if f"({existing.name})" not in line
+                )
+                existing.unlink()
+            source = next(
+                path for path in self.role_paths if path.parent.name == family
+            )
+            text = (root / source).read_text(encoding="utf-8")
+            old_id = yaml.safe_load(text.split("---\n", 2)[1])["artifact_id"]
+            prefix = old_id.split("-", 1)[0]
+            folder = family_root / domain
+            folder.mkdir()
+            (folder / "0099-lab-example.md").write_text(
+                text.replace(old_id, f"{prefix}-0099", 1), encoding="utf-8"
+            )
+            (folder / "README.md").write_text(
+                "# 실험 문서\n\n[합성 예제](0099-lab-example.md)\n",
+                encoding="utf-8",
+            )
+            index.write_text(
+                index_text + f"\n[합성 문서]({domain}/README.md)\n",
+                encoding="utf-8",
+            )
+        self._track(root, root / "docs/05.operations")
+        return context, root
+
+    def test_typed_lab_folders_with_direct_child_indexes_are_accepted(self) -> None:
+        context, root = self._lab_fixture()
+        with context:
+            self.assertEqual(set(), finding_codes(root))
+
+    def test_registered_domain_folders_with_direct_child_indexes_are_accepted(
+        self,
+    ) -> None:
+        for domain in ("common", "security-and-secrets"):
+            with self.subTest(domain=domain):
+                context, root = self._lab_fixture(domain)
+                with context:
+                    self.assertEqual(set(), finding_codes(root))
+
+    def test_unknown_case_variant_and_deeper_domain_folders_are_rejected(self) -> None:
+        for domain in ("unknown-domain", "Labs", "labs/nested"):
+            with self.subTest(domain=domain):
+                context, root = self._lab_fixture()
+                with context:
+                    folder = root / "docs/05.operations/guides/labs"
+                    target = folder.parent / domain
+                    if domain == "labs/nested":
+                        target.mkdir()
+                        member = folder / "0099-lab-example.md"
+                        member.rename(target / member.name)
+                    else:
+                        folder.rename(target)
+                    self._track(root, folder.parent)
+                    self.assertIn("role-path-invalid", finding_codes(root))
+
+    def test_lab_index_requires_exact_member_coverage(self) -> None:
+        for mutation in ("missing", "duplicate", "stale", "missing-readme"):
+            with self.subTest(mutation=mutation):
+                context, root = self._lab_fixture()
+                with context:
+                    index = root / "docs/05.operations/guides/labs/README.md"
+                    row = "[합성 예제](0099-lab-example.md)\n"
+                    if mutation == "missing-readme":
+                        index.unlink()
+                    else:
+                        replacement = {
+                            "missing": "",
+                            "duplicate": row + row,
+                            "stale": "[합성 예제](0098-gone.md)\n",
+                        }[mutation]
+                        index.write_text(
+                            "# 실험 문서\n\n" + replacement, encoding="utf-8"
+                        )
+                    self._track(root, index.parent)
+                    codes = finding_codes(root)
+                    self.assertTrue(
+                        {"role-index-invalid", "role-index-membership-invalid"} & codes,
+                        codes,
+                    )
+
+    def test_domain_and_readme_symlinks_and_untracked_members_are_rejected(
+        self,
+    ) -> None:
+        for mutation in (
+            "directory-symlink",
+            "readme-symlink",
+            "untracked",
+            "unregistered-readme",
+        ):
+            with self.subTest(mutation=mutation):
+                context, root = self._lab_fixture()
+                with context:
+                    folder = root / "docs/05.operations/guides/labs"
+                    if mutation == "directory-symlink":
+                        target = root / "outside-domain"
+                        folder.rename(target)
+                        folder.symlink_to(target, target_is_directory=True)
+                        self._track(root, folder.parent)
+                    elif mutation == "readme-symlink":
+                        index = folder / "README.md"
+                        index.unlink()
+                        index.symlink_to(folder.parent / "README.md")
+                        self._track(root, folder.parent)
+                    elif mutation == "unregistered-readme":
+                        registry_path = root / REGISTRY_PATH
+                        raw = json.loads(registry_path.read_text(encoding="utf-8"))
+                        owner = next(p for p in raw["profiles"] if p["id"] == "readme")
+                        owner["additional_paths"].remove(
+                            "docs/05.operations/guides/labs/README.md"
+                        )
+                        registry_path.write_text(json.dumps(raw), encoding="utf-8")
+                    else:
+                        subprocess.run(
+                            [
+                                "git",
+                                "rm",
+                                "--cached",
+                                str(folder / "0099-lab-example.md"),
+                            ],
+                            cwd=root,
+                            check=True,
+                            capture_output=True,
+                        )
+                    self.assertTrue(finding_codes(root))
+
+    def test_role_entry_budget_covers_parent_and_domains_together(self) -> None:
+        context, root = self._lab_fixture()
+        with context:
+            entries = len(list((root / "docs/05.operations/guides").iterdir()))
+            with mock.patch.object(operations_catalog, "MAX_ROLE_ENTRIES", entries + 1):
+                self.assertIn("role-bounds", finding_codes(root))
+
+    def test_lab_identity_is_unique_across_domains_within_its_family(self) -> None:
+        context, root = self._lab_fixture()
+        with context:
+            member = root / "docs/05.operations/guides/labs/0099-lab-example.md"
+            duplicate = member.parent.parent / "0099-other.md"
+            duplicate.write_text(member.read_text(encoding="utf-8"), encoding="utf-8")
+            index = duplicate.parent / "README.md"
+            index.write_text(
+                index.read_text(encoding="utf-8") + "\n[복제](0099-other.md)\n",
+                encoding="utf-8",
+            )
+            self._track(root, duplicate.parent)
+            self.assertIn("role-identity-duplicate", finding_codes(root))
+
     def test_file_number_must_equal_the_kept_artifact_number(self) -> None:
         context, root = self._fixture()
         with context:

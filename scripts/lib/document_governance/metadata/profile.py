@@ -881,8 +881,10 @@ def infer_artifact_type(
         return "spec"
     if normalized.startswith("docs/05.operations/"):
         role = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}.get(
-            pathlib.PurePosixPath(normalized).parent.name
+            pathlib.PurePosixPath(normalized).parts[2]
         )
+        if role is not None and classify_registered_path(normalized) != role:
+            return "unsupported"
         if role is not None:
             return role
     if normalized.startswith("docs/05.operations/incidents/"):
@@ -2187,6 +2189,8 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
             # from a preserved record whose contract was met while it was live.
             "frontmatter_policy": profile.get("frontmatter_policy"),
             "path_pattern": profile.get("path_pattern"),
+            "additional_path_patterns": profile.get("additional_path_patterns", ()),
+            "additional_paths": profile.get("additional_paths", ()),
             "artifact_id_pattern": profile.get("artifact_id_pattern"),
             "identity_relation": profile.get("identity_relation"),
             "transitions": transitions,
@@ -2211,7 +2215,7 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
         if not isinstance(profile, Mapping) or not isinstance(path_pattern, str):
             continue
         additional_paths = profile.get("additional_paths", ())
-        target_patterns = [path_pattern]
+        target_patterns = [path_pattern, *profile.get("additional_path_patterns", ())]
         if isinstance(additional_paths, Sequence) and not isinstance(
             additional_paths, (str, bytes, bytearray)
         ):

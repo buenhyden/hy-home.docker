@@ -1,6 +1,6 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -658,13 +658,73 @@ study, full-corpus move map, helper tests, path-contract changes or relocation.
 Functional source-gate input remains separate at `c7d56a383`; its original
 aggregate exit 124 is preserved. No remote or operational command was executed.
 
+### W58 reused-owner source acceptance — 2026-10-12
+
+The independently reviewed logical source commit is
+`77a7dfca296fa6fd28223e6294a1bdc35d4a57ca`, based on
+`8057588c278aab6d620d330c85fe24595c7c273e`; its eight-path raw staged diff
+SHA-256 is `65232031e3b5f24d1b1c1defe58a2bb9bc9edd1dc12e471e88d3fe1f336f8e17`.
+It changes the existing document profile schema and Registry, metadata profile,
+registry, taxonomy and operations catalog owners, and their two existing
+Registry/catalog test files. No new helper or duplicate domain owner is added.
+The coordinator merged it without conflicts over main `8ea7eb6fb` as an
+uncommitted candidate and checked all eight index blobs against the exact source
+commit; the accepted SMTP Task was unchanged.
+
+The flat primary paths remain. Registry alone declares 45 explicit domain
+patterns and 45 matching exact README routes across the three families.
+Nested admission is exactly one approved domain deep, including
+`docs/05.operations/{guides,policies,runbooks}/labs/`. It rejects traversal,
+unknown/case-fold paths, duplicate identities/slugs, overlapping patterns,
+untracked/symlinked members and missing or indirect README coverage. Catalog
+bounds apply to each direct directory and the entire family. A pure bounded
+LRU caches at most 4096 `(left pattern string, right pattern string)` boolean
+results; it never caches Registry, profile or authority objects.
+
+Initial contract RED reported five failures in three tests, exit 1. An earlier
+full coverage invocation used the wrong `test_profile` module: 359 collected,
+358 passed and one import error, 1032.014 seconds, exit 1. The corrected earlier
+candidate passed 376 tests, 549.469 seconds. The later cache RED required two
+NFA constructions but observed four, exit 1; its two GREEN/cache-bound tests
+passed in 0.813 seconds. The final optimized source input passed 379 tests in
+1172.132 seconds, exit 0, using the QA Python coverage command with existing
+Registry, operations catalog, taxonomy, `metadata.test_profile` and links test
+modules. The exact full command is retained in the public receipt. Deterministic
+NFA reuse is proven; whole-lane wall-time improvement is not claimed.
+
+Final changed-source coverage is 46/47 executable lines (97.87%) and 32/34
+branch arcs (94.12%). Combined pre-existing owner coverage is separately 71.95%,
+with the broad metadata profile at 35.24%; no whole-owner 80% claim is made.
+The author ran actual operations catalog and staged gates, exit 0, and links
+checked 1227 documents/11676 links with zero failures and one existing historical
+capture warning, exit 0. JSON-only changed metadata selected zero Markdown
+files, exit 0; that selection is not a document acceptance receipt. Independent
+exact-source review found no Critical, Important or Minor issue and reran 17
+selected contract/cache checks successfully. The coordinator preserved the
+three public source receipts byte-identically under
+`.agent-work/p08-w58-accepted-source-77a7dfca2/`; verification receipt SHA-256 is
+`c6e78648088ffed2ba0f8b2c16aead4f3905c2ac170721507a614beda10e41b2`.
+
+The corrected W57 preparation draft has 230 exact unique targets, 21 LAB rows
+and 45 populated destination directories. Its SHA-256 is
+`eeef0a52b1f75be4f517f8a516604ff36bbc7d1a1a07209d123185e294b133d5`.
+Independent draft review corrected the old Supabase service binding, four stale
+review-required statuses and 75 stale raw-heading fields; all 230 link arrays
+were refreshed through the existing parser. This remains a preparation artifact,
+not a registered lease or move receipt. The active RUN-0029 SMTP writer must
+finish and its source/link hashes must be refreshed before W59/W60. Actual
+renames, destination README creation, native/HOME/migration/rotation/recovery,
+remote delivery and W62 completion remain NOT_RUN. Final combined candidate
+metadata/staged/catalog and independent receipt review precede local main
+commit; earlier authored-source receipts are not coordinator native evidence.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Admission and reuse audit | 8 | W56 | Fixed-input reuse and ownership audit found a pure preflight gap; no source test or criterion completion is claimed | Fresh local/remote observation c26c3b93; source candidate c7d56a383 retained separately | PASS | W56 admission and reuse audit; continuation baseline | accepted |
 | Semantic move map | 8 | W57 | Historical draft-review FAIL was corrected for the draft; final exact review, approval and writer leases remain pending | Actual tracked operations corpus at adopted source SHA | NOT_RUN | W57 exact semantic mapping; continuation baseline; source preparation receipts | pending |
-| Path-contract regressions | 8 | W58 | RED/GREEN, scoped coverage and independent review of reused/new consumers | Frozen helper/tests/shared proposal hashes | NOT_RUN | W58 path contract and regression unit | pending |
+| Path-contract regressions | 8 | W58 | Reused-owner source RED/GREEN, 379 final regressions, scoped coverage and independent review; no document move or runtime claim | Source commit 77a7dfca296fa6fd28223e6294a1bdc35d4a57ca | PASS | W58 reused-owner source acceptance | accepted |
 | Preservation and rollback proof | 8 | W59 | Bind source hashes, original content, anchors, leases and inverse mapping | Reviewed exact source/target map | NOT_RUN | W59 preservation and move lease | pending |
 | Atomic document relocation | 8 | W60 | One active location, coupled references and LAB runtime/source diff zero | Fixed feature-owner SHAs and transferred writer leases | NOT_RUN | W60 exact rename and coupled references | pending |
 | Populated README coverage | 8 | W61 | Korean content, metadata selection, meaningful descriptions and navigation | Actual destination corpus and parent families | NOT_RUN | W61 populated READMEs | pending |

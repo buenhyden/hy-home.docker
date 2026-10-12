@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import PurePosixPath
 
 _YEAR_PART_PATTERN = re.compile(r"[0-9]{4}")
@@ -101,7 +102,14 @@ def _epsilon_closure(
     return frozenset(closure)
 
 
+@lru_cache(maxsize=4096)
 def _segment_patterns_overlap(left: str, right: str) -> bool:
+    """Cache only bounded immutable pattern-pair results, never authority data."""
+
+    if left == right:
+        return True
+    if "{" not in left and "{" not in right:
+        return False
     left_nfa, left_final = _segment_nfa(left)
     right_nfa, right_final = _segment_nfa(right)
     alphabet = sorted(
@@ -228,9 +236,15 @@ def classify_path(
     for artifact_type, profile in profiles.items():
         path_pattern = profile.get("path_pattern")
         if isinstance(path_pattern, str):
-            from scripts.lib.document_governance.registry import _path_regex
+            from scripts.lib.document_governance.registry import (
+                _path_regex,
+                profile_path_patterns,
+            )
 
-            if _path_regex(path_pattern).fullmatch(path.as_posix()):
+            if path.as_posix() in profile.get("additional_paths", ()) or any(
+                _path_regex(pattern).fullmatch(path.as_posix())
+                for pattern in profile_path_patterns(profile)
+            ):
                 candidates.append(artifact_type)
             continue
         globs = profile.get("path_globs", ())
@@ -353,12 +367,14 @@ def validate_stable_identity(
         or (
             isinstance(profile.get("path_pattern"), str)
             and isinstance(artifact_pattern, str)
-            and _numeric_identity_matches(
-                path,
-                artifact_id,
-                str(profile["path_pattern"]),
-                artifact_pattern,
-                str(identity_relation),
+            and any(
+                _numeric_identity_matches(
+                    path, artifact_id, pattern, artifact_pattern, str(identity_relation)
+                )
+                for pattern in (
+                    str(profile["path_pattern"]),
+                    *profile.get("additional_path_patterns", ()),
+                )
             )
         )
         or _matches_path_identity(path, artifact_id, profile)
