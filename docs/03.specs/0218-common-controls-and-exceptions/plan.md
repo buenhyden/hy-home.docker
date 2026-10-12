@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions Plan"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0218-PLAN-0001"
 parent_ids:
@@ -82,13 +82,13 @@ Prefer exact root leaf changes. A proposed common-template change requires
 a static comparison proving zero LAB effective-config delta and preservation
 of existing LAB exception rows; no LAB runtime execution is authorized.
 
-Current delivery uses reviewed local main, with no dev merge, PR or push.
-Formal Task issuance is a logical commit on the isolated admission branch;
-its reviewed SHA can start public source/synthetic preparation. Do not merge
-that admission to main before the P04/coordinator repair and relevant
-current-head gates and independent review. Source admission is not full main
-gate acceptance. A later remote PR lane would require owning-Spec scope,
-current-head CI and independent review before merge.
+Future delivery uses one PR for its owning Spec. Before that PR merges, refresh
+it to the current target head and obtain its applicable current-head CI and an
+independent review. Formal Task issuance remains a logical commit on the
+isolated admission branch; its reviewed SHA can start public source/synthetic
+preparation, not delivery acceptance. Do not merge before the P04/coordinator
+repair and relevant gates and review. Source admission is not full main-gate
+acceptance.
 
 ## Risks and Rollback
 

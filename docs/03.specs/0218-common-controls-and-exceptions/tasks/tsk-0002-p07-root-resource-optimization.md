@@ -1,10 +1,10 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0002"
 parent_ids:
@@ -25,8 +25,10 @@ source preparation do not close this Task or prove runtime savings.
 ## Inputs and Authorization
 
 The user's P07 execution prompt and subsequent coordinator instructions
-authorize public preparation, scoped implementation, tests and local main
-delivery. Do not create a new Spec or repeat implemented controls v2,
+authorize public preparation, scoped implementation, and tests. Future delivery
+uses one PR for its owning Spec; before merge, refresh it to the current target
+head and obtain applicable current-head CI and an independent review. Do not
+create a new Spec or repeat implemented controls v2,
 DEV/MNG, Influx retirement, k6/OTLP or Wiki preparation. Learning apps and
 actual Wiki engines, clients, collection, DB, schedules, model pulls and
 external workspaces are excluded. LAB runtime, images, secrets and data are
@@ -280,15 +282,44 @@ tools, timeout, exit codes, failures and independent code/security review.
 Per-service IaC review precedes any mutation. All unexecuted operational
 checks remain NOT_RUN with a concrete next command/input in this Task.
 
-Keep logical commits by service/source unit. The current delivery lane is
-reviewed local main, with no dev merge and no required PR, remote push or
-remote merge. Formal issuance is a logical commit on the isolated admission
-branch, and its reviewed SHA can start public source/synthetic preparation.
-Do not merge admission to main before the P04/coordinator repair and relevant
-current-head gates and independent review. Source admission does not mean full
-main gate acceptance. Run local-staged after staging the reviewed candidate;
-a later remote PR lane requires owning-Spec scope, current-head CI and
-independent review. Do not create or push a PR at admission.
+Keep logical commits by service/source unit. Future delivery uses one PR for
+its owning Spec. Before that PR merges, refresh it to the current target head
+and obtain applicable current-head CI and an independent review. Formal
+issuance remains a logical commit on the isolated admission branch, and its
+reviewed SHA can start public source/synthetic preparation, not delivery
+acceptance. Do not merge before the P04/coordinator repair and relevant gates
+and review. Run local-staged after staging the reviewed candidate.
+
+### Scope Reconciliation Receipt — 2026-10-12
+
+Baseline: `23e37362b72e98028a4675f282819c0346ae59dc` (the coordinator's
+current main input). This receipt changes only the future delivery instruction:
+an owning-Spec PR, current-target-head CI, and independent review are required
+before merge. It does not rewrite prior issuance, validation, or delivery
+receipts.
+
+P07 common-control source and helpers are `NO_CHANGE`; no infra, image,
+resource, LAB runtime/service/data/secret, or test change is authorized by this
+receipt. Source demand classification, measurement, and native HOME observation
+remain `NOT_RUN` pending their existing exact target, owner, permission,
+window, workload, backup, and recovery bindings. The correction is reversible
+by reverting its logical documentation commit; that revert does not change
+runtime state, delivery state, data, secrets, or recovery evidence.
+
+The coordinator's selected metadata check covered this Plan and Task with two
+selected documents and zero violations, exit0. The changed-profile local-only
+gate failed on two existing baseline image-projection pins, not a P07 resource
+change. SPEC-0204 is the sole metadata writer for the prepared correction;
+independent review is pending, and its approved metadata commit must be
+fast-forwarded into P07 before final checks. This is neither a local-gate GREEN
+result nor remote CI evidence.
+
+After that approved metadata commit was fast-forwarded to
+`854ccc249b05ae17a9eb650a091676cdcf7e87e0`, the changed-profile local-only
+gate against base `23e37362b72e98028a4675f282819c0346ae59dc` passed. Two final
+independent reviewers approved this exact P07 Plan/Task source and schema diff
+with no findings. Their review covers neither HOME nor runtime, migration,
+recovery, or remote CI acceptance.
 
 ### Admission Document Validation History
 
@@ -330,14 +361,17 @@ exit1,1.769s; GREEN:39 tests,exit0,7.492s; Ruff/staged checks exit0 and independ
 review ACCEPT. The registered workflow contract SHA256 remains
 `bdb1941e522865a9a381b0913f4a8e266dfb613cbb832ca35889ff26ac3ecfc5`.
 
+### Historical Local-Main Source-Preparation Receipt — 2026-10-11
+
 Receipts are `.agent-work/p04-p07-registered-suffix-final-fixture-result.json`,
 `.agent-work/p04-p07-checkout-permissions-repair.json` and
 `.agent-work/p05-fixture-cwd-receipt.json`; final output is
 `.agent-work/p04-p07-registered-suffix-final-fixture.log`. Earlier aggregate and
 suffix logs remain preserved. These SOURCE/UNIT/STATIC checks do not complete
-operational criteria. Local-main source integration awaits final documentation
-checks and review; its delivery SHA is not yet known. Current direct-user
-local-main delivery uses no dev, remote push, PR or hosted execution.
+operational criteria. At this historical point, local-main source integration
+awaited final documentation checks and review; its delivery SHA was not yet
+known. The then-current direct-user local-main delivery lane used no dev,
+remote push, PR, or hosted execution.
 
 Worker source `8d3569b67e1283e9344f036854658ac0b9f53f15` is preserved; this
 receipt keeps this Task's actual draft lifecycle and records source preparation
@@ -355,8 +389,9 @@ coverage is not remeasured here. The final repository leaf passed494 tests/
 127.874s, exit0. No current deployed demand, performance, exception authority,
 permission/read-only configuration, benchmark or HOME rollout is accepted.
 W11–W15 and criteria3 HOME residual/6–10 remain open as recorded; no LAB runtime
-change occurred. Final documentation review and local-main source delivery are
-pending and confer no operational acceptance or lifecycle closure.
+change occurred. At this historical point, final documentation review and
+local-main source delivery were pending and conferred no operational acceptance
+or lifecycle closure.
 
 ## Evidence
 
@@ -384,7 +419,7 @@ pending and confer no operational acceptance or lifecycle closure.
 | Dependency audit | 7 | W10 | `uv tool run --no-config --cache-dir /tmp/p07-audit-cache pip-audit --path /tmp/hy-home-p09-qa/lib/python3.12/site-packages --cache-dir /tmp/p07-audit-http --progress-spinner off --strict` | Existing isolated QA environment | PASS | exit0, no known vulnerabilities; bounded to QA installed dependencies, not image/runtime or requirements-resolution. Earlier resolver attempts unavailable: missing `pip_audit`/ensurepip; unhashed requirements invocation was setup failure | pending |
 | Common integration | 9 | W14 | Effective root model and exact exceptions | Owner proposals not applied | NOT_RUN | Coordinator single-writer boundary | pending |
 | Scoped rollout and recovery | 3, 10 | W15 | Changed-service functionality, backup and empty restore | Exact target/image/workload/recovery pending | NOT_RUN | No HOME, migration, rotation or recovery execution | pending |
-| Projection and delivery | 9, 10 | W16 | Current-head gates, local-staged and independent review | Issuance and source integration pending | NOT_RUN | Local-main delivery; no dev/PR/push at admission | pending |
+| Projection and delivery | 9, 10 | W16 | Current-target-head CI and independent review before owning-Spec PR merge | Issuance and source integration pending | NOT_RUN | Future delivery contract above; no PR/push/merge receipt | pending |
 | Segmented source checks | 9, 10 | W16 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
 
 ## Review and Completion
