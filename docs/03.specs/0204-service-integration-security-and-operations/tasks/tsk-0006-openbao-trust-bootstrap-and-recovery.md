@@ -1683,8 +1683,92 @@ and Nginx README tables are stale and now enumerate the same three explicit
 read-only certificate paths as the reviewed bind contract. OpenSearch's general
 certificate-directory statement makes no whole-mount claim and is NO_CHANGE.
 The operator selected the recommended backup artifact, empty target and
-downtime choice above; no operation has executed. P01 remains blocked on the
-remaining actual TLS, snapshot credential/artifact and custody/restore checks.
+downtime choice above. This earlier receipt predates the current TLS and
+artifact-preparation results below; P01 remains blocked on custody and restore
+execution checks.
+
+### W23 Current TLS and Snapshot Retry Receipt — 2026-10-13
+
+Implementation commit is `b8d3ea818c91b6e3f3da078906e70c361842c5d5`
+(parent `a4d8c9cf4`, tree `cb08b7c65da984d8915a14a6216836b0cb2ae294`);
+current checkout/PR #431 head is `69f9b06162c99f555b4589d276fbbf476f2c6da1`.
+The first candidate run on `b8d3ea8` failed at the catalog receipt. Candidate run
+38285415072 failed at the catalog receipt, before operations or any LAB module;
+the local-only aggregate remains NOT_RUN. The catalog correction is separate.
+
+At 2026-10-12T18:26:42Z, user `buenhyden` marked PR #431 READY_FOR_REVIEW
+(`isDraft=false`). The latest-head candidate-quality run 38289397982 passed in
+7m49s; CodeQL, triage and GitGuardian passed, while main-security was skipped.
+PR #431 is open, mergeable and clean, with no formal review and no merge. The
+failed `b8d3ea8` run remains historical. DELIVERY is not PASS until independent
+review and merge occur.
+
+TLS_PREPARED / NOT_DEPLOYED: authorized preparation completed without emitting private material: three
+regular TLS files exist at the source path with the recorded directory/file
+ownership and modes; public certificate checks pass. The CA private key was
+not copied or mounted, and no server restart or image change occurred.
+
+OIDC preflight corrected the configured container user to UID/GID 1000 and
+the loopback health interpretation to `standby=false`; neither correction made
+an API call. The protected operator file was mode 0664 and was changed to 0600
+before read. Its bounded capabilities permit snapshot read/sudo but deny generic
+or role token creation; permanent backup identity issuance remains BLOCKED.
+The ephemeral packet validator first failed (RED), then passed all nine cases
+after three minimal fixes; its public code hash is
+`16a4d06ce4b97ca910b31dec0bb13cbaca73e808e38f322d7abd02bfea4280d3`.
+Independent security review passed. No token, accessor, secret, private-key or
+raw-log value is recorded.
+
+The designated retry is BLOCKED: fresh OIDC authorization TTL is below 600
+seconds. No renewal or snapshot API call was made. The selected restore target
+remains absent, temporary staging is empty, and host-stage cleanup passed. The
+earlier save result is retained as historical but cannot establish a valid
+artifact because native inspect is unsupported; it is not relabeled corrupt or
+successful recovery. The first restore ledger remains unused/prospective:
+`p01-home-empty-restore-20261013-01`, selected 2026-10-12T17:47:08Z, human
+`buenhyden`, implementer `p01_home_tls`, independent reviewer
+`home_readiness`; no restore executed. Task status remains blocked.
+
+### W23 Snapshot Salvage Receipt — 2026-10-13
+
+The refreshed-OIDC attempt made exactly one native save successfully, then
+remained PARTIAL because BusyBox `find -printf` is unsupported in the guard and
+cleanup counter. Its owned temporary artifact was preserved; this is neither a
+corrupt-snapshot finding nor a recovery PASS. Approved no-token/no-API salvage
+then completed in 2.134s: pre/post structural integrity and private hash match,
+atomic directory publish, and cleanup all passed.
+
+The final value-free artifact is
+`/home/hyunyoun/backups/p01-openbao-20261013/raft-pre-2.7.1.snap` (58,396
+bytes). Its directory is device 64512, inode 5382803, UID/GID 1000, mode 0700;
+the snapshot is inode 5382808, mode 0600, nlink 1. The private-hash sidecar is
+inode 5382809, mode 0600, nlink 1; its value is not disclosed. Runtime remains
+the unsealed active 2.6.2 image `11fd...`. Available backup capacity is
+55,284,146,176 bytes, above the 1,073,741,824-byte work budget. Filesystem
+total is 266,918,543,360 bytes and is not a requirement. Salvage started at
+2026-10-13T03:16:15+09:00 and took 2.134s. Snapshot mtime is
+2026-10-12T18:10:33Z; it is the
+native saved-file timestamp, not a precise Raft atomic-capture instant or a
+verification time.
+
+Independent `p01_snapshot_drift` verification passed all guard, structural,
+private-hash and path-stability checks in 10.937ms without private output.
+Its `observed_at` is NOT_CAPTURED; activation/completion is bounded after
+2026-10-12T18:16:15Z and before 18:18:34Z by the root clock. Native save is
+bounded by root-clock times [18:06:27Z, 18:14:39Z], not an exact capture time.
+NATIVE_INSPECT, SEALED_AUTHENTICITY and SEMANTIC_RESTOREABILITY are NOT_RUN.
+This is prepared artifact evidence only, not HOME recovery, cold boot,
+current-2.7 consumer authentication or independent-custody acceptance.
+The first restore remains contract planning only: target absent, no restore
+execution, permanent backup issuer denied and its file absent. Task status
+remains blocked.
+
+Checkpoint validation passed: Task metadata selected 1 document with 0
+violations, and `check-script-manifest` and `git diff --check` each exited 0.
+These are SOURCE/DOC checks, not runtime acceptance. The OpenBao 2.7.1
+pin/scanner and unrelated service configuration are NO_CHANGE; the only
+recorded P01 source exceptions are the client certificate bindings in three
+Compose files and their fixture, test and documentation receipts.
 
 ## Evidence
 
