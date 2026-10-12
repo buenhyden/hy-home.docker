@@ -1,10 +1,10 @@
 ---
 title: "CLN01 Material Retirement Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0007"
 parent_ids:
@@ -746,6 +746,132 @@ materials remain unknown and require their own bounded disposition; this
 user acceptance does not fabricate a private deletion or recovery receipt.
 No private file, service, credential or LAB runtime changed in this unit.
 
+### Fresh deletion reassessment — 2026-10-13
+
+The current request selects an owning-Spec PR with latest-head checks and
+independent review, superseding the earlier local-main-only delivery instruction
+for this receipt. Criterion 12/W24 remains the acceptance owner. Preserve all
+accepted implementation and prior evidence; this reassessment does not claim
+completion of actual deletion. The user explicitly confirmed that current public
+evidence approves no new ROOT deletion candidate. Actual deletion is
+`BLOCKED_FACTS`; private plan/apply and tracked deletion are `NOT_RUN`.
+
+| Input / surface | Fresh observation | Classification |
+| --- | --- | --- |
+| Supplied investigation revision | `23e37362b72e98028a4675f282819c0346ae59dc` | Historical comparison input |
+| Initial operator checkout HEAD | `98144b2c0b5738f272b6a628246c901945ba15bf`; clean | RUNTIME_UNVERIFIED; initially behind remote main |
+| Fetched origin/main and independently queried remote main | `328871a94b42c13f676e61b40f026c906ebbc13d`; open PR list empty | SOURCE_APPLIED |
+| Isolated authoring checkout | `.worktrees/cln01-delete-verification`, branch `codex/cln01-delete-verification`, at fetched main | One writer for this Task only |
+| Original-revision source delta | 373 changed paths, including 281 Stage 05 paths; CLN helper, CLI, both test owners, this Task and accepted SMTP marker/README have zero delta | NO_CHANGE for accepted CLN source; other owners' changes preserved |
+| Existing worktrees | Six other worktrees at entry; later a seventh foreign SEC01 worktree appeared. All status queries succeeded with zero dirty entries | Preserved; no reset, stash, clean, index change or branch disposal |
+| CLN01 PR #415 / SMTP01 PR #413 | Both currently MERGED; merge objects `1bf7c2043da2d61dce98f53e2f64bdfc1a162520` / `34c7d4644fee6541d0d969390abf1bb54c16fd27` | SOURCE_APPLIED, not fresh deletion or recovery evidence |
+
+Fresh metadata-only observation bound the original operator checkout to
+`328871a94b42c13f676e61b40f026c906ebbc13d` before and after the probe. Traefik's
+working-directory label matches that checkout; source stability and every Docker,
+Git and systemd subprocess returned exit 0. This does not prove deployed-source
+parity or functional readiness. The probe used `lstat`, `docker ps -aq`,
+`docker inspect --format` restricted to mounts/service/working-directory labels,
+`systemctl is-enabled/is-active hyhome-backup.timer`, and `systemctl show
+hyhome-backup.service --property=WorkingDirectory --property=ExecStart`.
+Captured raw metadata was not printed or tracked; output contained public IDs,
+presence, regular-file/link counts, mount counts and checkout-match booleans only.
+No secret value, private environment, vault, credential hash, raw log or user
+data was read. No container was started, stopped, recreated or tested.
+
+All rows below use source revision `328871a94b42c13f676e61b40f026c906ebbc13d`
+and owner `@buenhyden`. Re-review unresolved rows by 2026-10-17 with that owner
+and the named acceptance owner. No unknown axis is recorded as zero.
+
+| Exact path / material | Source consumer graph | Current mounts | Jobs / backup / external / prior custody | Disposition |
+| --- | --- | --- | --- | --- |
+| `secrets/communication/smtp/smtp_password.txt` / COMM-002 | Canonical root SMTP source; Alertmanager and SMTP01 own consumption | Present regular, nlink 1; one exact bind, two read-only ancestor binds, zero writable ancestor binds | Backup timer active/enabled; whole-secrets backup declared. Latest independent custody, functional restore and external absence not certified | NO_CHANGE / ACTIVE_KEEP; unconditional protection |
+| `secrets/communication/supabase/supabase_smtp_password.txt` / COMM-003 | Catalog alias/tombstone; generic helper refuses ID/path; SMTP01 remains sole executor | Absent; zero exact binds, two read-only ancestor binds, zero writable ancestor binds | User accepts earlier absence/scope. Historical two-file isolated restore does not prove current canonical recovery, deletion-time backup or external absence | NO_CHANGE / ALREADY_ABSENT observation; zero new deletion credit |
+| `secrets/db/legacy-app/service_password.txt` / PG-020 and tracked parent `.gitkeep` | Public catalog and rollback contract retain PG-020; marker supports its directory. ROOT management init already excludes SERVICE_POSTGRES business provisioning | Present regular, nlink 2; zero exact binds, two read-only ancestor binds, zero writable ancestor binds | Other hardlink identity/ownership and jobs/external facts unresolved; positive rollback dependency remains | CONSUMER_DEPENDENT / RETAINED_FOR_RECOVERY; no marker or private deletion |
+| `secrets/db/surrealdb/surreal_db_password.txt` / AI-003 | Root secret, public catalog, SurrealDB entrypoint and Open Notebook Compose grants | Present regular, nlink 1; zero exact binds, two read-only ancestor binds, zero writable ancestor binds | Scheduled/manual and external absence unknown; whole-secrets backup and RUN-0073/0080 recovery contracts remain; independent custody unverified | CONSUMER_DEPENDENT / BLOCKED_FACTS |
+| `secrets/tools/open-notebook/open_notebook_password.txt` / AI-004 | Root secret, public catalog and Open Notebook Compose/password-file input | Present regular, nlink 1; zero exact binds, two read-only ancestor binds, zero writable ancestor binds | Scheduled/manual and external absence unknown; whole-secrets backup and RUN-0073 recovery remain; independent custody unverified | CONSUMER_DEPENDENT / BLOCKED_FACTS |
+| `infra/01-gateway/nginx/config/nginx.conf` / unregistered file ID | Tracked optional Nginx mount and RUN-0011 manual operating contract | File-specific mount observation NOT_RUN | Jobs, external consumers and independent backup/restore not certified; positive source/manual consumer remains | CONSUMER_DEPENDENT / BLOCKED_FACTS |
+| `secrets/communication/supabase/.gitkeep` / unregistered file ID | Already removed by accepted logical commit `ff383d4fb`; no new target | Not a private-deletion lane | Accepted tracked cleanup retained in Git history | NO_CHANGE; zero new deletion credit |
+| AI-005 encryption key, OpenBao/CA/backup/offsite recovery material, historical archives and LAB runtime/config/secret/data/image | Protected or excluded by the current request | Not inspected for retirement | Existing custody/recovery preserved | OUT_OF_SCOPE / PROTECTED_KEEP |
+
+The metadata-only backup observation confirms an enabled/active timer and the
+installed service's original-checkout/registered-script match. Source
+`infra/09-platform-ops/restic/sets/host-exclude.txt` has no exclusions and Restic
+mounts whole `secrets` for host backup. This is a positive scheduled backup
+reference, not proof of snapshot success or independent custody. The dated
+2026-10-11 [two-file isolated restore](tsk-0005-cross-tier-contracts-second-round.md#actual-two-file-isolated-restoreability-receipt)
+keeps its historical acceptance and limits; no new restore or vault access ran.
+
+The current CLI was verified with `python3 scripts/operations/retire-materials.py
+--help` (exit 0): required `--root` and `--manifest`, optional `--apply`.
+No manifest was fabricated, and neither plan nor apply was invoked against
+operator materials. Shared-lock integration is already present in current source
+and its synthetic cross-executor regression passed; earlier failed-lock receipts
+remain historical. No helper, runner registration, root Compose, generator,
+image/scanner, Spec/Plan or completed Task implementation is rewritten.
+
+Fresh `python3 -m unittest tests.lib.ops.test_retirement
+tests.validation.test_retirement_cli -v` passed 51 tests on the input main
+(exit 0). These tests cover synthetic deletion/retry, no-follow paths, hardlinks,
+identity drift, unknown consumers, locks, manifest permissions and partial
+failure; they do not prove HOME/private deletion. The independent source/security
+reviewer separately reran the 51 CLN tests and 61 SMTP/lock tests (exit 0),
+confirmed unchanged source and reported no helper correction. Independent source
+tracing found no safely deletable tracked ROOT target. Review caught a stale
+present-tense local-main-only delivery sentence; it was corrected to historical
+wording and scoped metadata was rerun successfully.
+
+Fresh document checks used input main plus this reassessment text. Scoped metadata
+passed for one selected Task with zero violations, including the delivery wording
+correction (exit 0). `python3 scripts/validation/check-document-links.py --root .
+--mode all` passed (exit 0, zero failures), retaining one existing warning for
+2,870 legacy archive links without capture source. The registered
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only`
+passed (exit 0): local candidate metadata/version preflight and document links.
+Version projection reported the existing unresolved OPSFLOW_AIRFLOW_IMAGE input;
+it did not claim a pinned image or current-image security verdict. The staged
+classifier selected one authored Markdown file, zero generated files, and
+`bash scripts/validation/run-ci-precommit.sh --mode local-staged` passed
+(exit 0, applicable style and secret checks). `git diff --check` passed (exit 0).
+The ROOT-init boundary regression
+`python3 -m unittest tests.validation.test_dev_data_boundary.DevDataBoundaryTests.test_management_init_does_not_create_new_business_database -v`
+also passed (one test, exit 0).
+
+These final result-only additions preserve the reviewed disposition and link
+destinations. The final index still requires the staged controller immediately
+before commit; latest-head remote CI/review and merge remain a separate delivery
+receipt. Compose render is `NOT_RUN` for this documentation-only diff; existing
+source render evidence is not relabelled as a new run. No new behavior or tests
+were authored and no current coverage percentage is invented from historical
+coverage.
+
+The initial remote candidate at `4434fd8208613f6798164b73c2d458de5ac07bbc`
+failed candidate-quality (exit 1). The result-only Evidence additions below
+had used compound Result values and non-domain Acceptance labels. The registered
+Spec Package parser rejected them and dependent metadata reported one
+`spec-package-invalid` plus 145 archive `type-mismatch` findings. Earlier local
+metadata PASS preceded those additions and is not final-candidate acceptance.
+Use the existing Registry's exact Result and Acceptance domains; classifications
+and lane limits stay in Check/Location prose. No validator, historical archive,
+CI contract or deletion guard is changed to address this authoring error.
+The existing registered regression
+`python3 -m unittest tests.lib.document_governance.test_spec_packages.SpecPackageTests.test_current_repository_spec_packages_cover_spec_directories -v`
+reproduced RED before correction (exit 1) and passed GREEN after correction
+(one test, exit 0). No test was weakened or added to mirror this prose change.
+The corrected candidate also passed the registered changed local-only gate
+(exit 0, one selected Task, zero metadata violations, version projection in sync,
+links with the same retained archive warning) and independent correction review.
+The reviewed final index passed the staged style/secret controller (exit 0).
+
+The next deletion release needs one exact ROOT target/ID and its source revision,
+five-axis absence or accepted cutover, stopped/cooperating writers, fresh private
+manifest, independent pre-delete backup custody and canonical restore acceptance.
+COMM-003 stays SMTP01-only; COMM-002, PG-020 and cryptographic recovery material
+stay protected. No new deletion target is authorized by this receipt. A Git
+revert of this documentation commit restores only this receipt's text; it neither
+recreates private files nor undoes historical deletion. HOME functional acceptance,
+MIGRATION, ROTATION, RECOVERY and new actual deletion remain `NOT_RUN`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -754,6 +880,10 @@ No private file, service, credential or LAB runtime changed in this unit.
 | Helper source acceptance | 12 | W24 | 50 focused tests, 98% combined coverage with branch measurement, Ruff and independent code/security review | Recorded helper input `e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284` | PASS | CLN01 implementation patch; user-accepted delivered source | accepted |
 | Candidate classification | 12 | W24 | partial five-axis assessment; BLOCKED_FACTS until missing ownership/recovery facts close | current source and read-only observations on named host | DEFER | #read-only-host-observations | pending |
 | Private deletion acceptance | 12 | W24 | manifest preflight and idempotent reinspection | operator manifest under `/tmp/cln01-<run>/` | NOT_RUN | operator host | pending |
+| Fresh source/helper reassessment | 12 | W24 | NO_CHANGE: 51 CLN tests; one ROOT-init boundary test; independent source/security review with 61 SMTP/lock tests; no safely deletable tracked target | Main `328871a94b42c13f676e61b40f026c906ebbc13d`; 2026-10-13 request | PASS | Fresh deletion reassessment; source only | pending |
+| Fresh document validation | 12 | W24 | Scoped metadata, links (one retained archive warning), changed local-only gate, staged style/secret checks and diff check; all exit 0 before result-only recording | Input main plus reassessment text; preceding result-only recording | PASS | Fresh deletion reassessment; document only, remote delivery separate | pending |
+| Fresh actual deletion disposition | 12 | W24 | BLOCKED_FACTS: current user confirms no approved new ROOT candidate; metadata observation cannot close five axes or independent custody | Original checkout `328871a94b42c13f676e61b40f026c906ebbc13d` stable before/after probe | NOT_RUN | Exact path/material table above; COMM-003 already absent; zero new actual deletions | pending |
+| Initial remote candidate validation | 12 | W24 | Candidate-quality metadata: malformed Evidence Result/Acceptance values; exit 1; CodeQL and GitGuardian passed separately | PR #427 head `4434fd8208613f6798164b73c2d458de5ac07bbc`; run `38271931877` | FAIL | Fresh deletion reassessment; authoring error corrected in the next logical commit | rejected |
 
 ## Review and Completion
 
@@ -765,9 +895,10 @@ original attribution; separate candidate checks are not a new LAB requirement.
 SOURCE and UNIT passed on the frozen helper input; ISOLATED passed using only
 synthetic fixtures. STATIC includes Manifest/workflow validation, active metadata, full links and
 corpus lifecycle PASS (exit 0); the registered staged controller passed after
-explicit blank-line corrections. SOURCE delivery is included in local main
-`2773a20c1` and is user-accepted; a new remote PR is not required by the current
-local-main delivery instruction. HOME, MIGRATION, ROTATION and RECOVERY retain
+explicit blank-line corrections. Historical SOURCE delivery is included in local main
+`2773a20c1` and is user-accepted; the then-current local-main instruction did
+not require a new remote PR. The 2026-10-13 reassessment follows the current
+owning-Spec PR instruction recorded above. HOME, MIGRATION, ROTATION and RECOVERY retain
 their recorded NOT_RUN states. Private apply, functional runtime proof and
 recovery remain NOT_RUN; the limited
 checkout-to-host label observation above does not satisfy those criteria.
