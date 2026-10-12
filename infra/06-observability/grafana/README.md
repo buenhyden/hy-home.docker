@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.7"
+version: "1.1.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 created: "2026-01-12"
 ---
 
@@ -217,6 +217,8 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 08-ai | `open_notebook` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `redisinsight` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `surrealdb` | none | `Infrastructure/containers` | container metrics and logs only |
+
+독립 LAB의 `lab-locust-master`와 `lab-locust-worker`는 이 root 관측 범위에 포함하지 않으며, 위 표는 `hy-home-infra`만 유지한다.
 
 ### perf_db 읽기 계약
 

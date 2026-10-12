@@ -1,10 +1,10 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.10"
+version: "0.6.11"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0005"
 parent_ids:
@@ -1524,6 +1524,92 @@ metadata/staged checks before the normal local-main commit. Implementation
 UNIT, native/provider, recovery and HOME checks were not rerun for this
 text-only correction; no new result is attributed to those lanes.
 
+### SMTP01 latest-main reassessment — 2026-10-13
+
+The current request supersedes the earlier local-only delivery instruction for
+this increment: an owning-Spec PR needs fresh candidate checks and independent
+review before merge. It does not reopen user-accepted source or completed Tasks.
+`git fetch origin main` succeeded; the starting remote main was
+`328871a94b42c13f676e61b40f026c906ebbc13d`, compared with supplied input
+`23e37362b72e98028a4675f282819c0346ae59dc`. The original checkout was clean at
+`98144b2`; concurrent dirty CLN01/SEC01 worktrees were preserved. No open remote
+PR was observed. During the audit, main advanced to
+`9fd0a396c4e0246be778c90fb5ef31435c08e977` through CLN01 PR #427; this receipt's
+branch was fast-forwarded before editing. That change touched TSK-0007 only,
+so the SMTP source checks below retain their actual `328871a` input.
+Before delivery, the branch was fast-forwarded again to
+`62556dc63b66c828c27e9c33017d26cdf70b8542` after SEC01 PR #428; its five
+owned files changed no SMTP implementation or this Task.
+
+| Scope | Classification | Owner / consumer / target | Recovery boundary |
+| --- | --- | --- | --- |
+| Root canonical source, public catalog, generator and preserved wrapper/alias | NO_CHANGE | SMTP01; COMM-002 sole value source; COMM-003 alias/tombstone | Preserve canonical file and exact consumer mapping |
+| Fresh native/HOME authentication | RUNTIME_UNVERIFIED | Named HOME consumer and operator proof required | No send, restart or deployment performed |
+| Private retirement and restore | CONSUMER_DEPENDENT | SMTP01 executor after CLN01 lease and consumer/custody proof | Independent canonical restore acceptance required |
+| LAB runtime/tests, Wiki/apps, root images/scanner | OUT_OF_SCOPE | LAB excluded; Wiki preparation complete; no security warning confirmed | No resource or version change |
+
+Root `smtp_password` still has one source at
+`secrets/communication/smtp/smtp_password.txt`. The former
+`infra/04-data/supabase/docker-compose.yml` is absent; current source is
+`labs/supabase.yml`, retaining the target alias and wrapper. LAB execution is
+excluded. Relative to supplied input, the selected SMTP files changed only
+root Compose documentation routing and `test_smtp_proof.py` runbook routing;
+no SMTP behavior fix was needed. PR #413 merged as
+`34c7d4644fee6541d0d969390abf1bb54c16fd27`; that fact supplies no fresh delivery,
+native authentication or private deletion receipt.
+
+Read-only metadata identified `hy-home-server`, the matching default Docker
+engine, checkout `/home/hyunyoun/data/hy-home.docker` and executor UID/GID 1000.
+The canonical file was regular, not a symlink, UID/GID 1000, mode 0640,
+link count 1 and executor-readable. The exact old file was absent.
+Alertmanager was running with the matching checkout label and one canonical
+read-only bind; no Supabase Auth consumer was observed. Exact old-path mounts
+were zero; two read-only ancestor binds belonged to node-exporter/cadvisor,
+with zero writable ancestor binds. No values, hashes, lengths or private rows
+were read or recorded. Absence proves no new unlink, equality or row retirement.
+
+The coordinator ran the SMTP-only unittest selection (contract, proof, public
+source, generator, lock inheritance, captured-output safety and cleanup-timeout
+cases) at `328871a`: 103 synthetic tests PASS, exit 0; LAB source/native cases
+were excluded. Root Compose `config --quiet` with `.env.example` and
+`git diff --check` passed, exit 0. Full document-link validation passed, exit 0,
+with one retained historical-links-unrecorded warning. Independent source review
+found no defects. Candidate documentation gates and remote delivery remain
+separate from those baseline results. Independent security review at `62556dc6`
+first returned exit 1 in 99 tests because system Python lacked `referencing`.
+The same five SMTP modules then passed 99 tests, exit 0, with the installed
+QA Python and system dist-packages used below; no source correction was needed.
+Independent code/security reviews passed. Code review corrected a stale active
+local-only delivery clause to historical wording without rewriting its evidence.
+
+The exact SMTP-only command was:
+
+```bash
+rtk proxy env PYTHONPATH=/usr/lib/python3/dist-packages /home/hyunyoun/.hy-home-qa-tools/spec-0107-20261007/bin/python -m unittest tests.lib.ops.test_smtp_contract tests.lib.ops.test_smtp_proof tests.lib.ops.test_smtp_public_source tests.validation.test_smtp_generator tests.validation.test_smtp_lock_inheritance tests.validation.test_supabase_smtp_rehearsal.CapturedOutputSafetyTests tests.validation.test_supabase_smtp_rehearsal.FixtureCleanupTimeoutTests -q
+```
+
+Scoped Task metadata passed (one selected, zero violations, exit 0).
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only`
+passed using that installed QA environment at `62556dc6` plus this receipt
+before result-only recording (exit 0): candidate metadata/version preflight
+and document links. The existing unresolved `OPSFLOW_AIRFLOW_IMAGE` input
+remained an unresolved input, not a pin or security verdict. The historical
+archive-link warning remained. The final reviewed index still requires
+`bash scripts/validation/run-ci-precommit.sh --mode local-staged` immediately
+before the logical commit; remote candidate checks and merge remain separate.
+
+`COMPOSE_CANONICAL_PASS` is source-graph PASS. `OLD_PATH_ZERO` records only exact
+old-path absence. `WRAPPER_NATIVE_PASS`, `HOME_CONSUMPTION_PASS`,
+`PRIVATE_DELETION_PASS`, `RESTORE_PASS`, HOME/MIGRATION/RECOVERY and new
+`DELIVERY_PASS` are NOT_RUN in this receipt; historical receipts are preserved.
+The retirement check was NOT_RUN because it reads canonical bytes/private
+metadata. Two ancestor binds, missing CLN01 lease and unconfirmed jobs,
+external consumers and restore custody prevent fresh helper apply.
+The next bounded operation needs that lease and truthful consumer/recovery
+proof. Preserve the canonical file/mapping; never implicitly recreate the old
+plaintext duplicate. Reverting this logical receipt commit restores only text,
+without claiming private data or runtime recovery.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1560,7 +1646,8 @@ GoTrue connection/activation is not an SMTP01 completion condition.
 - The canonical SMTP file remains and the duplicate is absent. Assignee-reported
   retirement still needs external-consumer and exact unlink evidence; dated
   two-file isolated restoreability is now observed under the bounded contract;
-  source delivery uses current local gates/review without PRs. External-host
+  historical source delivery used local gates/review without PRs. This
+  reassessment follows the current owning-Spec PR contract above. External-host
   absence remains unverified; excluded Supabase LAB activation is not required.
 - Create the OpenBao snapshot token (RUN-0021) after unsealing; until then
   each run reports the recovery gap.

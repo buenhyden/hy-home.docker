@@ -44,7 +44,11 @@ main과 worker는 같은 custom node artifact와 encryption key를 사용해야 
 공통 custom bind가 이미지 설치를 가릴 수 있으므로 실제 등록을 검증해야 합니다.
 [queue mode](https://docs.n8n.io/hosting/scaling/queue-mode/)의 선언과 실제 manual·예약
 executor 배치는 별도 증거입니다. P03이 확정한 executor만 DEV와 capture 접근권한을
-받습니다. 기존 Stalwart 공유 mail network를 Mailpit 전용 경계로 간주하지 않습니다.
+받습니다. 선택 root-model overlay는 `n8n-worker`와 Mailpit만 내부
+`opsflow_capture_net`에 연결하고 worker를 Stalwart 공유 `mail_net`에 연결하지
+않습니다. 기존 n8n 관리·queue network와 Mailpit의 다른 consumer network는
+유지됩니다. 이 source topology만으로 실제 peer 거부나 native SMTP capture를
+증명하지 않습니다.
 
 ## Usage
 

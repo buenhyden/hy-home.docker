@@ -16,7 +16,7 @@ import stat
 import subprocess
 import time
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 
 import yaml
 from markdown_it import MarkdownIt
@@ -775,12 +775,32 @@ def _required_compose_dependencies(service: object) -> frozenset[str]:
     return frozenset(_string_items(depends_on))
 
 
+@dataclasses.dataclass(frozen=True)
+class _ComposeDocument(Mapping[str, object]):
+    content: Mapping[str, object]
+    replacement_tags: frozenset[str]
+
+    def __getitem__(self, key: str) -> object:
+        return self.content[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self.content)
+
+    def __len__(self) -> int:
+        return len(self.content)
+
+
 class _ComposeLoader(yaml.SafeLoader):
     """Safe loader that also reads the merge tags Compose defines."""
 
+    def __init__(self, stream: str) -> None:
+        super().__init__(stream)
+        self.replacement_tags = frozenset[str]()
 
-def _construct_compose_tag(loader: yaml.SafeLoader, node: yaml.Node) -> object:
+
+def _construct_compose_tag(loader: _ComposeLoader, node: yaml.Node) -> object:
     # Only plain data comes back, so the loader stays as safe as SafeLoader.
+    loader.replacement_tags = loader.replacement_tags | {node.tag}
     if isinstance(node, yaml.MappingNode):
         return loader.construct_mapping(node)
     if isinstance(node, yaml.SequenceNode):
@@ -797,19 +817,25 @@ for _compose_tag in ("!reset", "!override"):
 def _compose_mapping(
     root: pathlib.Path, path: pathlib.PurePosixPath
 ) -> Mapping[str, object]:
+    loader: _ComposeLoader | None = None
     try:
-        value = yaml.load(_read_text(root, path), Loader=_ComposeLoader)
+        loader = _ComposeLoader(_read_text(root, path))
+        value = loader.get_single_data()
+        replacement_tags = loader.replacement_tags
     except yaml.YAMLError as error:
         raise OperationsAuthorityError(
             "compose-yaml-invalid", f"{path}: {error}"
         ) from error
+    finally:
+        if loader is not None:
+            loader.dispose()
     if value is None:
-        return {}
+        return _ComposeDocument({}, replacement_tags)
     if not isinstance(value, Mapping):
         raise OperationsAuthorityError(
             "compose-yaml-invalid", f"{path}: top level is not a mapping"
         )
-    return value
+    return _ComposeDocument(value, replacement_tags)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -848,7 +874,20 @@ def _validate_overlay_base(
     tracked: frozenset[pathlib.PurePosixPath],
     regular: frozenset[pathlib.PurePosixPath],
     included: frozenset[pathlib.PurePosixPath],
+    root_model: Mapping[str, object],
 ) -> None:
+    if path in included:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay cannot be included by {COMPOSE_ROOT}",
+        )
+    if base == COMPOSE_ROOT:
+        if base not in tracked or "x-hyhome-overlay" in root_model:
+            raise OperationsAuthorityError(
+                "compose-overlay-invalid",
+                f"{path}: root overlay base must be a tracked non-overlay {COMPOSE_ROOT}",
+            )
+        return
     if not _is_infra_compose_file(base) or base not in tracked:
         raise OperationsAuthorityError(
             "compose-overlay-invalid",
@@ -864,22 +903,123 @@ def _validate_overlay_base(
             "compose-overlay-invalid",
             f"{path}: overlay base must be included by {COMPOSE_ROOT}",
         )
-    if path in included:
+
+
+def _overlay_service_networks(
+    path: pathlib.PurePosixPath,
+    services: Mapping[object, object],
+    declared_names: frozenset[str],
+) -> frozenset[str]:
+    names = frozenset[str]()
+    for service_name, service in services.items():
+        if not isinstance(service, Mapping) or set(service) != {"networks"}:
+            raise OperationsAuthorityError(
+                "compose-overlay-invalid",
+                f"{path}: root overlay services may only declare networks",
+            )
+        networks = service["networks"]
+        if not isinstance(networks, Mapping) or not networks:
+            raise OperationsAuthorityError(
+                "compose-overlay-invalid",
+                f"{path}: root overlay service networks must be a nonempty mapping",
+            )
+        if any(
+            not isinstance(name, str)
+            or not name
+            or not isinstance(attachment, Mapping)
+            or bool(attachment)
+            for name, attachment in networks.items()
+        ):
+            raise OperationsAuthorityError(
+                "compose-overlay-invalid",
+                f"{path}: root overlay service networks require name: {{}} attachments",
+            )
+        service_networks = frozenset(networks)
+        if not service_networks & declared_names:
+            raise OperationsAuthorityError(
+                "compose-overlay-invalid",
+                f"{path}: root overlay service {service_name} must join a new network",
+            )
+        names = names | service_networks
+    return names
+
+
+def _validate_root_overlay_networks(
+    path: pathlib.PurePosixPath,
+    model: Mapping[str, object],
+    services: Mapping[object, object],
+    root_networks: frozenset[str],
+) -> None:
+    networks = model.get("networks")
+    if not isinstance(networks, Mapping) or not networks:
         raise OperationsAuthorityError(
             "compose-overlay-invalid",
-            f"{path}: overlay cannot be included by {COMPOSE_ROOT}",
+            f"{path}: overlay networks must be a nonempty mapping",
+        )
+    declared = networks
+    if any(not isinstance(name, str) or not name for name in declared):
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay networks require nonempty names",
+        )
+    invalid_definitions = sorted(
+        str(name)
+        for name, definition in declared.items()
+        if not isinstance(definition, Mapping)
+        or set(definition) != {"internal"}
+        or definition["internal"] is not True
+    )
+    if invalid_definitions:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay networks require only boolean internal: true: "
+            f"{invalid_definitions}",
+        )
+    declared_names = frozenset(str(name) for name in declared)
+    redefined = sorted(declared_names & root_networks)
+    if redefined:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay networks already exist in {COMPOSE_ROOT}: {redefined}",
+        )
+    referenced = _overlay_service_networks(path, services, declared_names)
+    unknown = sorted(referenced - root_networks - declared_names)
+    if unknown:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay services reference undeclared networks: {unknown}",
+        )
+    unreferenced = sorted(declared_names - referenced)
+    if unreferenced:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: overlay networks are not referenced by a service: {unreferenced}",
         )
 
 
 def _validate_overlay_model(
     path: pathlib.PurePosixPath,
     model: Mapping[str, object],
-    base_model: Mapping[str, object],
+    base_names: frozenset[str],
+    *,
+    root_networks: frozenset[str] | None = None,
 ) -> None:
+    if (
+        root_networks is not None
+        and isinstance(model, _ComposeDocument)
+        and model.replacement_tags
+    ):
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid",
+            f"{path}: root overlay cannot use Compose replacement tags: "
+            f"{sorted(model.replacement_tags)}",
+        )
     invalid_top_level = tuple(
         str(key)
         for key in model
-        if key != "services" and not (isinstance(key, str) and key.startswith("x-"))
+        if key != "services"
+        and not (root_networks is not None and key == "networks")
+        and not (isinstance(key, str) and key.startswith("x-"))
     )
     if invalid_top_level:
         raise OperationsAuthorityError(
@@ -905,18 +1045,14 @@ def _validate_overlay_model(
             "compose-overlay-invalid",
             f"{path}: overlay services cannot override profiles",
         )
-    base_services = base_model.get("services")
-    base_names = (
-        frozenset(name for name in base_services if isinstance(name, str) and name)
-        if isinstance(base_services, Mapping)
-        else frozenset()
-    )
     unknown = sorted(set(services) - base_names)
     if unknown:
         raise OperationsAuthorityError(
             "compose-overlay-invalid",
             f"{path}: overlay services are absent from base: {unknown}",
         )
+    if root_networks is not None:
+        _validate_root_overlay_networks(path, model, services, root_networks)
 
 
 def _compose_sources(
@@ -932,29 +1068,71 @@ def _compose_sources(
     overlay_set = frozenset(overlays)
     regular = tuple(path for path in compose_files if path not in overlay_set)
     regular_set = frozenset(regular)
-    tracked_set = frozenset(compose_files)
+    tracked_set = frozenset(paths)
+    overlay_bases = {path: _overlay_annotation(path, models[path]) for path in overlays}
+    root_model = _compose_mapping(root, COMPOSE_ROOT) if overlays else {}
+    if any(base == COMPOSE_ROOT for base in overlay_bases.values()):
+        authoritative_paths = frozenset(_tracked_paths(root, MAX_TRACKED_FILES))
+        if COMPOSE_ROOT in authoritative_paths:
+            tracked_set = tracked_set | {COMPOSE_ROOT}
     included = (
         frozenset(
             pathlib.PurePosixPath(value)
-            for value in _include_paths(
-                _compose_mapping(root, COMPOSE_ROOT).get("include")
-            )
+            for value in _include_paths(root_model.get("include"))
         )
         if overlays
         else frozenset()
     )
+    service_models = tuple(
+        models[source].get("services") for source in included & regular_set
+    )
+    root_base_names = frozenset(
+        name
+        for services in service_models
+        if isinstance(services, Mapping)
+        for name in services
+        if isinstance(name, str) and name
+    )
+    network_models = (
+        root_model.get("networks"),
+        *(models[source].get("networks") for source in included & regular_set),
+    )
+    root_networks = frozenset({"default"}) | frozenset(
+        name
+        for network_model in network_models
+        if isinstance(network_model, Mapping)
+        for name in network_model
+        if isinstance(name, str) and name
+    )
 
     for path in overlays:
         model = models[path]
-        base = _overlay_annotation(path, model)
+        base = overlay_bases[path]
         _validate_overlay_base(
             path,
             base,
             tracked=tracked_set,
             regular=regular_set,
             included=included,
+            root_model=root_model,
         )
-        _validate_overlay_model(path, model, models[base])
+        if base == COMPOSE_ROOT:
+            _validate_overlay_model(
+                path,
+                model,
+                root_base_names,
+                root_networks=root_networks,
+            )
+        else:
+            base_services = models[base].get("services")
+            base_names = (
+                frozenset(
+                    name for name in base_services if isinstance(name, str) and name
+                )
+                if isinstance(base_services, Mapping)
+                else frozenset()
+            )
+            _validate_overlay_model(path, model, base_names)
     return _ComposeSources(regular=regular, overlays=overlays)
 
 

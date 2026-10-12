@@ -1,10 +1,10 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.3"
+version: "0.2.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0011"
 parent_ids:
@@ -582,6 +582,265 @@ the full future delivery route is
 executed as a new full aggregate here. Rollback is a reviewed logical source
 revert; no operational rollback was performed or implied.
 
+### Root Acceptance Continuation — 2026-10-13
+
+Current root and `origin/main`: `62556dc63b66c828c27e9c33017d26cdf70b8542`; the assigned worktree was clean before this Task-only change. The 377-path diff from `23e37362b72e98028a4675f282819c0346ae59dc` is context, not copied PASS. No current-image warning evidence was collected; image/scanner changes are NO_CHANGE and `SECURITY_WARNING_CONFIRMED` is not asserted.
+
+| Surface | Disposition | Owner / boundary |
+| --- | --- | --- |
+| This Task; existing P03 source | SOURCE_APPLIED / NO_CHANGE | P03; no tool/schema/test rewrite |
+| P03 validator augmentation; P05 capture overlay and its narrow policy correction | CONFIRMED_GAP / pending validation | QA owns the two validator/test paths; infra owns the three overlay/README/n8n-test paths; this Task and POL-0078 record scope only. Root Compose, catalog, registry, workflow and CI remain read-only. |
+| Compose, dotenv, gateway, OpenBao, backup, catalog, Registry/workflow | NO_CHANGE / read-only | Coordinator; P01/P02/SEC/SMTP/P04/P05/P06 |
+| LAB, private dotenv, host realpath/inode, data/secrets | OUT_OF_SCOPE / NOT_RUN | No private/LAB read or mutation |
+| Native auth, peer denial, readiness, OTLP, restore/delivery | CONSUMER_DEPENDENT / RUNTIME_UNVERIFIED | Exact owner/target/recovery needed |
+
+The first root-form validator was too broad: independent IAC/code review
+reproduced admission of privileged and host-bind fields. A separate review also
+reproduced incorrect root absence in version tracking because its caller passed
+only an `infra`/`labs` subset. QA is correcting these as RED/GREEN with the
+root network-only contract and bounded authoritative root tracking (root stays
+outside image discovery). This Task now owns the policy correction as the eighth
+owned path; the corrected validation, source/security review, and final gate
+remain pending. Earlier review/format results and hashes are not final
+acceptance.
+
+#### 111-service four-location supplement
+
+This dated supplement is a compact projection, not a second inventory. It binds the 111 current `m0021` rows, one unique `(Compose path, Service)`, to `project_root`/`expected_from_root`: 44 hashed root-plus-leaf inputs and 43 included leaves. `m0021` remains authority for tier/name/image or build/profile, declared dependency/reverse edge, network/mount/UID/read-only/capability, value-free secret support metadata, metrics, backup and ownership.
+
+Legend: `U` unknown; `D` declared; `A` absent; `N` unpublished; `B` Traefik disabled. Endpoint syntax is `network/name:port/protocol`, `host-IP published->target/protocol`, and `kind/name@network:port/scheme`; `?` is an unresolved public-source field. Listener is `U` for every row. The table is source-only and every native/runtime/recovery result is `NOT_RUN`; `DNS=U` is not a live DNS failure and host publication is not a listener. `_FILE` support remains image-parser dependent.
+
+| Service | Listener | Internal DNS declaration | Host publication declaration | Traefik backend declaration | Native state |
+| --- | --- | --- | --- | --- | --- |
+| `airflow-apiserver` | U | D; airflow_net/airflow-apiserver:?/tcp, edge_net/airflow-apiserver:?/tcp, mng_data_net/airflow-apiserver:?/tcp | N | U; http/airflow@?:?/? | NOT_RUN |
+| `airflow-dag-processor` | U | D; airflow_net/airflow-dag-processor:?/tcp, mng_data_net/airflow-dag-processor:?/tcp | N | U | NOT_RUN |
+| `airflow-init` | U | D; airflow_net/airflow-init:?/tcp, mng_data_net/airflow-init:?/tcp | N | U | NOT_RUN |
+| `airflow-scheduler` | U | D; airflow_net/airflow-scheduler:?/tcp, mng_data_net/airflow-scheduler:?/tcp | N | U | NOT_RUN |
+| `airflow-statsd-exporter` | U | D; airflow_net/airflow-statsd-exporter:?/tcp, obs_net/airflow-statsd-exporter:?/tcp | N | U | NOT_RUN |
+| `airflow-triggerer` | U | D; airflow_net/airflow-triggerer:?/tcp, mng_data_net/airflow-triggerer:?/tcp | N | U | NOT_RUN |
+| `airflow-valkey` | U | D; airflow_net/airflow-valkey:?/tcp | N | U | NOT_RUN |
+| `airflow-valkey-exporter` | U | D; airflow_net/airflow-valkey-exporter:?/tcp, obs_net/airflow-valkey-exporter:?/tcp | N | U | NOT_RUN |
+| `airflow-worker` | U | D; airflow_net/airflow-worker:?/tcp, mng_data_net/airflow-worker:?/tcp | N | U | NOT_RUN |
+| `alertmanager` | U | D; edge_net/alertmanager:?/tcp, obs_net/alertmanager:?/tcp | N | U; http/alertmanager@?:?/? | NOT_RUN |
+| `alloy` | U | D; edge_net/alloy:?/tcp, obs_net/alloy:?/tcp, quality_otlp_net/alloy:?/tcp | D; ? ?->?/tcp | U; http/alloy@?:?/? | NOT_RUN |
+| `backup-sqlite-export` | U | A | N | U | NOT_RUN |
+| `cadvisor` | U | D; edge_net/cadvisor:?/tcp, obs_net/cadvisor:?/tcp | N | U; http/cadvisor@?:?/? | NOT_RUN |
+| `comfyui` | U | D; edge_net/comfyui:?/tcp | D; 127.0.0.1 ?->?/tcp | U; http/comfyui@?:?/? | NOT_RUN |
+| `conftest` | U | A | N | U | NOT_RUN |
+| `crawl4ai` | U | D; crawl4ai_egress_net/crawl4ai:11235/tcp, crawl4ai_net/crawl4ai:11235/tcp | N | B | NOT_RUN |
+| `crawl4ai-egress` | U | D; crawl4ai_egress_net/crawl4ai-egress:?/tcp, crawl4ai_outbound_net/crawl4ai-egress:?/tcp | N | B | NOT_RUN |
+| `dbt` | U | D; dev_data_net/dbt:?/tcp | N | U | NOT_RUN |
+| `dbt-db-provision` | U | D; dev_data_net/dbt-db-provision:?/tcp | N | B | NOT_RUN |
+| `dcgm-exporter` | U | D; obs_net/dcgm-exporter:?/tcp | N | U | NOT_RUN |
+| `debezium-db-provision` | U | D; dev_data_net/debezium-db-provision:?/tcp | N | B | NOT_RUN |
+| `dev-perf-provision` | U | D; dev_data_net/dev-perf-provision:?/tcp | N | B | NOT_RUN |
+| `dev-pg` | U | D; dev_data_net/dev-pg:5432/tcp | D; 127.0.0.1 ?->5432/tcp | B | NOT_RUN |
+| `dev-pg-exporter` | U | D; dev_data_net/dev-pg-exporter:9187/tcp, obs_net/dev-pg-exporter:9187/tcp | N | B | NOT_RUN |
+| `dev-pg-monitor-provision` | U | D; dev_data_net/dev-pg-monitor-provision:?/tcp | N | B | NOT_RUN |
+| `dev-platform-provision` | U | D; dev_data_net/dev-platform-provision:?/tcp | N | B | NOT_RUN |
+| `dev-valkey` | U | D; dev_data_net/dev-valkey:6379/tcp | N | B | NOT_RUN |
+| `dev-valkey-exporter` | U | D; dev_data_net/dev-valkey-exporter:9121/tcp, obs_net/dev-valkey-exporter:9121/tcp | N | B | NOT_RUN |
+| `dozzle` | U | D; edge_net/dozzle:?/tcp | N | U; http/dozzle@?:?/? | NOT_RUN |
+| `flink-jobmanager` | U | D; kafka_net/flink-jobmanager:8081/tcp, object_net/flink-jobmanager:8081/tcp | D; 127.0.0.1 ?->8081/tcp | U | NOT_RUN |
+| `flink-taskmanager` | U | D; kafka_net/flink-taskmanager:?/tcp, object_net/flink-taskmanager:?/tcp | N | U | NOT_RUN |
+| `flower` | U | D; airflow_net/flower:?/tcp, edge_net/flower:?/tcp, mng_data_net/flower:?/tcp, obs_net/flower:?/tcp | N | U; http/flower@?:?/? | NOT_RUN |
+| `gatus` | U | D; edge_net/gatus:?/tcp, mng_data_net/gatus:?/tcp, obs_net/gatus:?/tcp | N | U; http/gatus@?:?/? | NOT_RUN |
+| `grafana` | U | D; edge_net/grafana:?/tcp, mng_data_net/grafana:?/tcp, obs_net/grafana:?/tcp | N | U; http/grafana-svc@?:?/? | NOT_RUN |
+| `grafana-db-provision` | U | D; mng_data_net/grafana-db-provision:?/tcp | N | B | NOT_RUN |
+| `great-expectations` | U | D; object_net/great-expectations:?/tcp | N | U | NOT_RUN |
+| `jupyterlab` | U | D; ai_net/jupyterlab:?/tcp, edge_net/jupyterlab:?/tcp | N | U; http/jupyter@?:?/? | NOT_RUN |
+| `k6` | U | D; obs_net/k6:?/tcp | N | U | NOT_RUN |
+| `kafbat-ui` | U | D; edge_net/kafbat-ui:?/tcp, kafka_net/kafbat-ui:?/tcp | N | U; http/kafka-ui@?:?/? | NOT_RUN |
+| `kafka-1` | U | D; kafka_net/kafka-1:?/tcp, obs_net/kafka-1:?/tcp | D; 127.0.0.1 ?->?/tcp | U | NOT_RUN |
+| `kafka-connect` | U | D; dev_data_net/kafka-connect:?/tcp, edge_net/kafka-connect:?/tcp, kafka_net/kafka-connect:?/tcp, obs_net/kafka-connect:?/tcp | N | U; http/kafka-connect@?:?/? | NOT_RUN |
+| `kafka-exporter` | U | D; kafka_net/kafka-exporter:?/tcp, obs_net/kafka-exporter:?/tcp | N | U | NOT_RUN |
+| `kafka-init` | U | D; kafka_net/kafka-init:?/tcp | N | U | NOT_RUN |
+| `kafka-rest-proxy` | U | D; edge_net/kafka-rest-proxy:?/tcp, kafka_net/kafka-rest-proxy:?/tcp | N | U; http/kafka-rest@?:?/? | NOT_RUN |
+| `keycloak` | U | D; edge_net/keycloak:?/tcp, mng_data_net/keycloak:?/tcp, obs_net/keycloak:?/tcp | N | U; http/keycloak@?:?/? | NOT_RUN |
+| `loki` | U | D; edge_net/loki:?/tcp, object_net/loki:?/tcp, obs_net/loki:?/tcp | D; ? ?->?/tcp | U; http/loki@?:?/? | NOT_RUN |
+| `mailpit` | U | D; edge_net/mailpit:?/tcp, mail_net/mailpit:?/tcp | D; 127.0.0.1 ?->?/tcp | U; http/mailpit-ui@?:?/? | NOT_RUN |
+| `mlflow` | U | D; ai_net/mlflow:?/tcp, edge_net/mlflow:?/tcp, mng_data_net/mlflow:?/tcp, object_net/mlflow:?/tcp | N | U; http/mlflow@?:?/? | NOT_RUN |
+| `mlflow-db-provision` | U | D; mng_data_net/mlflow-db-provision:?/tcp | N | B | NOT_RUN |
+| `mng-pg` | U | D; mng_data_net/mng-pg:?/tcp | D; 127.0.0.1 ?->?/tcp | U | NOT_RUN |
+| `mng-pg-exporter` | U | D; mng_data_net/mng-pg-exporter:?/tcp, obs_net/mng-pg-exporter:?/tcp | N | B | NOT_RUN |
+| `mng-pg-init` | U | D; mng_data_net/mng-pg-init:?/tcp | N | B | NOT_RUN |
+| `mng-pg-monitor-provision` | U | D; mng_data_net/mng-pg-monitor-provision:?/tcp | N | B | NOT_RUN |
+| `mng-valkey` | U | D; mng_data_net/mng-valkey:?/tcp | D; ? ?->?/tcp | B | NOT_RUN |
+| `mng-valkey-exporter` | U | D; mng_data_net/mng-valkey-exporter:?/tcp, obs_net/mng-valkey-exporter:?/tcp | N | B | NOT_RUN |
+| `n8n` | U | D; edge_net/n8n:?/tcp, mng_data_net/n8n:?/tcp, n8n_net/n8n:?/tcp, obs_net/n8n:?/tcp | N | U; http/n8n@?:?/? | NOT_RUN |
+| `n8n-task-runner` | U | D; n8n_net/n8n-task-runner:?/tcp | N | U | NOT_RUN |
+| `n8n-task-runner-worker` | U | D; n8n_net/n8n-task-runner-worker:?/tcp | N | U | NOT_RUN |
+| `n8n-valkey` | U | D; n8n_net/n8n-valkey:?/tcp | N | U | NOT_RUN |
+| `n8n-valkey-exporter` | U | D; n8n_net/n8n-valkey-exporter:?/tcp, obs_net/n8n-valkey-exporter:?/tcp | N | U | NOT_RUN |
+| `n8n-worker` | U | D; mng_data_net/n8n-worker:?/tcp, n8n_net/n8n-worker:?/tcp | N | U | NOT_RUN |
+| `neo4j` | U | D; edge_net/neo4j:?/tcp | N | U; http/neo4j@?:?/? | NOT_RUN |
+| `nginx` | U | D; edge_net/nginx:?/tcp, object_net/nginx:?/tcp | D; ? ?->?/tcp | U | NOT_RUN |
+| `node-exporter` | U | A | N | U | NOT_RUN |
+| `oauth2-proxy` | U | D; edge_net/oauth2-proxy:?/tcp, mng_data_net/oauth2-proxy:?/tcp, obs_net/oauth2-proxy:?/tcp | N | D; http/oauth2-proxy-svc@edge_net:?/? | NOT_RUN |
+| `oauth2-proxy-valkey` | U | D; mng_data_net/oauth2-proxy-valkey:?/tcp | N | B | NOT_RUN |
+| `oauth2-proxy-valkey-exporter` | U | D; mng_data_net/oauth2-proxy-valkey-exporter:?/tcp, obs_net/oauth2-proxy-valkey-exporter:?/tcp | N | B | NOT_RUN |
+| `ollama` | U | D; ai_net/ollama:?/tcp, edge_net/ollama:?/tcp | D; 127.0.0.1 ?->?/tcp | U; http/ollama@?:?/? | NOT_RUN |
+| `ollama-exporter` | U | D; ai_net/ollama-exporter:?/tcp, obs_net/ollama-exporter:?/tcp | N | U | NOT_RUN |
+| `open-webui` | U | D; ai_net/open-webui:?/tcp, edge_net/open-webui:?/tcp | N | U; http/open-webui@?:?/? | NOT_RUN |
+| `open_notebook` | U | D; ai_net/open_notebook:5055/tcp, ai_net/open_notebook:?/tcp, edge_net/open_notebook:5055/tcp, edge_net/open_notebook:?/tcp | D; 127.0.0.1 ?->5055/tcp | U; http/open-notebook@?:?/? | NOT_RUN |
+| `openbao` | U | D; edge_net/openbao:?/tcp, obs_net/openbao:?/tcp, secrets_net/openbao:?/tcp | N | U; http/openbao@?:?/https | NOT_RUN |
+| `openbao-agent` | U | D; secrets_net/openbao-agent:?/tcp | N | U | NOT_RUN |
+| `opensearch` | U | D; edge_net/opensearch:?/tcp, obs_net/opensearch:?/tcp | N | U; http/opensearch@?:9200/https | NOT_RUN |
+| `opensearch-dashboards` | U | D; edge_net/opensearch-dashboards:?/tcp | N | U; http/opensearch-dashboards@?:?/https | NOT_RUN |
+| `opentofu` | U | U; default/opentofu:?/tcp | N | U | NOT_RUN |
+| `pact-broker` | U | D; mng_data_net/pact-broker:9292/tcp | D; 127.0.0.1 ?->9292/tcp | U | NOT_RUN |
+| `pact-broker-db-provision` | U | D; mng_data_net/pact-broker-db-provision:?/tcp | N | B | NOT_RUN |
+| `prometheus` | U | D; edge_net/prometheus:?/tcp, obs_net/prometheus:?/tcp, seaweedfs_metrics_net/prometheus:?/tcp | N | U; http/prometheus@?:?/? | NOT_RUN |
+| `pushgateway` | U | D; edge_net/pushgateway:?/tcp, obs_net/pushgateway:?/tcp | N | U; http/pushgateway@?:?/? | NOT_RUN |
+| `pyroscope` | U | D; edge_net/pyroscope:?/tcp, obs_net/pyroscope:?/tcp | D; 127.0.0.1 ?->?/tcp | U; http/pyroscope@?:?/? | NOT_RUN |
+| `qdrant` | U | D; ai_net/qdrant:?/tcp, edge_net/qdrant:?/tcp, obs_net/qdrant:?/tcp | N | U; http/qdrant@?:?/? | NOT_RUN |
+| `redisinsight` | U | D; dev_data_net/redisinsight:?/tcp, mng_data_net/redisinsight:?/tcp, redisinsight_ingress_net/redisinsight:?/tcp | N | D; http/redisinsight-svc@redisinsight_ingress_net:?/? | NOT_RUN |
+| `registry` | U | D; obs_net/registry:5000/tcp | D; 127.0.0.1 ?->5000/tcp | U | NOT_RUN |
+| `renovate` | U | U; default/renovate:?/tcp | N | U | NOT_RUN |
+| `restic` | U | A | N | U | NOT_RUN |
+| `restic-offsite` | U | D; restic_offsite_net/restic-offsite:?/tcp | N | U | NOT_RUN |
+| `schema-registry` | U | D; edge_net/schema-registry:?/tcp, kafka_net/schema-registry:?/tcp, obs_net/schema-registry:?/tcp | N | U; http/schema-registry@?:?/? | NOT_RUN |
+| `seaweedfs-buckets` | U | D; object_net/seaweedfs-buckets:?/tcp | N | U | NOT_RUN |
+| `seaweedfs-filer` | U | D; seaweed_internal/seaweedfs-filer:9326/tcp, seaweed_internal/seaweedfs-filer:?/tcp, seaweedfs_metrics_net/seaweedfs-filer:9326/tcp, seaweedfs_metrics_net/seaweedfs-filer:?/tcp | N | U | NOT_RUN |
+| `seaweedfs-master` | U | D; seaweed_internal/seaweedfs-master:9324/tcp, seaweed_internal/seaweedfs-master:?/tcp, seaweedfs_metrics_net/seaweedfs-master:9324/tcp, seaweedfs_metrics_net/seaweedfs-master:?/tcp | N | U | NOT_RUN |
+| `seaweedfs-s3` | U | D; edge_net/seaweedfs-s3:?/tcp, object_net/seaweedfs-s3:?/tcp, seaweed_internal/seaweedfs-s3:?/tcp | N | U; http/s3@?:?/? | NOT_RUN |
+| `seaweedfs-table-bucket` | U | D; object_net/seaweedfs-table-bucket:?/tcp | N | U | NOT_RUN |
+| `seaweedfs-volume` | U | D; seaweed_internal/seaweedfs-volume:9325/tcp, seaweed_internal/seaweedfs-volume:?/tcp, seaweedfs_metrics_net/seaweedfs-volume:9325/tcp, seaweedfs_metrics_net/seaweedfs-volume:?/tcp | N | U | NOT_RUN |
+| `sonarqube` | U | D; edge_net/sonarqube:?/tcp, mng_data_net/sonarqube:?/tcp | N | U; http/sonarqube@?:?/? | NOT_RUN |
+| `spark` | U | D; object_net/spark:?/tcp | N | U | NOT_RUN |
+| `stalwart` | U | D; edge_net/stalwart:?/tcp, mail_net/stalwart:?/tcp | N | U; http/stalwart-ui@?:8080/? | NOT_RUN |
+| `stalwart-config` | U | D; mail_net/stalwart-config:?/tcp | N | B | NOT_RUN |
+| `storybook` | U | D; experience_ingress_net/storybook:8080/tcp | N | D; http/storybook@experience_ingress_net:8080/? | NOT_RUN |
+| `storybook-mcp` | U | D; edge_net/storybook-mcp:7613/tcp | N | D; http/storybook-mcp@edge_net:7613/? | NOT_RUN |
+| `superset` | U | D; edge_net/superset:?/tcp, mng_data_net/superset:?/tcp, object_net/superset:?/tcp | N | U; http/superset@?:8088/? | NOT_RUN |
+| `superset-db-provision` | U | D; mng_data_net/superset-db-provision:?/tcp | N | B | NOT_RUN |
+| `superset-init` | U | D; mng_data_net/superset-init:?/tcp | N | B | NOT_RUN |
+| `surrealdb` | U | D; ai_net/surrealdb:8000/tcp | N | U | NOT_RUN |
+| `tempo` | U | D; edge_net/tempo:?/tcp, object_net/tempo:?/tcp, obs_net/tempo:?/tcp | D; ? ?->?/tcp | U; http/tempo@?:?/? | NOT_RUN |
+| `terrakube-api` | U | D; edge_net/terrakube-api:?/tcp, mng_data_net/terrakube-api:?/tcp, object_net/terrakube-api:?/tcp, terrakube_net/terrakube-api:?/tcp | N | U; http/terrakube-api@?:8080/? | NOT_RUN |
+| `terrakube-executor` | U | D; edge_net/terrakube-executor:?/tcp, mng_data_net/terrakube-executor:?/tcp, object_net/terrakube-executor:?/tcp, terrakube_net/terrakube-executor:?/tcp | N | U; http/terrakube-executor@?:?/? | NOT_RUN |
+| `terrakube-ui` | U | D; edge_net/terrakube-ui:?/tcp, terrakube_net/terrakube-ui:?/tcp | N | U; http/terrakube-ui@?:?/? | NOT_RUN |
+| `traefik` | U | U; edge_net/?:?/tcp, edge_net/?:?/tcp, edge_net/traefik:?/tcp, experience_ingress_net/traefik:?/tcp, obs_net/traefik:?/tcp, redisinsight_ingress_net/traefik:?/tcp | D; ? ?->?/tcp | U | NOT_RUN |
+| `trino` | U | D; object_net/trino:8080/tcp | D; 127.0.0.1 ?->8080/tcp | U | NOT_RUN |
+| `wiremock` | U | U; default/wiremock:8080/tcp | D; 127.0.0.1 ?->8080/tcp | B | NOT_RUN |
+
+Source identity grouping is limited to declared evidence: browser SSO is represented by `keycloak`, `oauth2-proxy`, and inventory rows with source router middleware; app JWT by the inventory `authentication_env_keys` (including Airflow source declarations); webhook HMAC and machine-token consumers have no confirmed P03 binding. Native user targets, issuer/audience/expiry and direct-backend denials are unknown.
+
+Source audit: Host `D/N` 19/92; DNS `D/U/A` 103/4/4; Traefik `D/B/U` 4/25/82; 38 backend endpoints have an unknown selector/network. These are source limits, not native acceptance. Membership differences were empty; no membership edit is required.
+
+#### Fresh source receipts and handoff
+
+Catalog/version projection/port CLI checks and 42 P03 tests exited 0 (42, 4.770s). A cross-owner source/synthetic suite exited 0 (55, 5.340s), covering declared DEV/MNG and P04/P05 contracts. The root negative source suite exited 0 (27, 23.015s), covering synthetic collisions, named bind nesting/empty declarations, root network/auth and Alloy. It does not prove peer denial, issuer/audience expiry, OTLP query/freshness or host realpath/inode. Default Compose static validation exited 0 with public example/dummy secrets (66 selections, 316 services); no daemon started.
+
+P04/P05/P06 receive this SHA and schema 1.0.0 only. `opsflow_dev`, S3 prefix, Airflow worker, Node API and mail endpoint require consumer, identity, image/security, network and recovery receipts. Rollback is a logical revert of this Task evidence only.
+
+#### Consumer audit addendum — 2026-10-13
+
+The value-free source audit at `62556dc63b66c828c27e9c33017d26cdf70b8542`
+found that `opsflow.json` declares `password_secrets: null`; current
+`dev-platform-provision` invokes only `platform.json`, and no current service
+applies `opsflow.json` or SQL 001/002. This is a confirmed source gap, not a
+license to infer a credential, role, bucket, or grant. P04 and the coordinator
+own a named one-shot and the four login-secret references after P02 freezes its
+catalog; MNG remains untouched.
+
+`opsflow_dev` must be handed off as a declared schema with five function-only role
+contracts and canonical source SQL. An operational one-shot may provision roles,
+database, and reviewed `001_opsflow.sql` only. `002_checks.sql` remains an
+isolated disposable-DB check: it must never become an operational DEV provision
+hook because its rollback does not undo sequence advance. Native DEV checks need
+separate bounded queries and denials.
+
+The source declares no `opsflow-dev` bucket and its S3 identities configuration
+has no identity/prefix ACL; action-only rendering cannot establish prefix
+enforcement. P04/storage must select vendor-supported policy before native
+cross-prefix denial; this lane is `NOT_RUN`. Airflow's overlay has readonly
+worker/run/opsflow mounts, but source lacks delivered `pg.json`/`s3.json`/CA
+mode-and-UID facts and pool creation. P04/P02/P06 own that delivery boundary.
+
+P05's SQL source-reference hashes match the approved P04 reviewed SQL, while
+its native binding is deliberately null: source compatibility is `NO_CHANGE`,
+not native binding. Its Node SDK source locks OpsflowSmtp transport to Mailpit
+port 1025 with empty auth/no TLS; private worker API credential IDs remain
+unbound. The P03 worktree has a separate infra-implementer change for a
+dedicated internal capture network between worker and Mailpit; it does not
+modify the root/base n8n or Mailpit leaves here. Await its RED/GREEN receipt
+before any source-resolved claim.
+
+MLflow, SonarQube, and Terrakube native-auth proposals remain optional without a
+runtime consumer target. P06 has no exact restore artifact, target, or custody
+contract. All endpoints are only declared or unknown; no actual endpoint,
+machine identity, native auth, migration, delivery, or recovery result is
+claimed. The frozen QA receipt `b80a4…` reports 43 PASS tests in 10.190s and is
+source-only; no fake RED or final-gate PASS is recorded. Actor/budget remains
+UNKNOWN.
+
+#### Current source receipt — 2026-10-13
+
+The P03 checkout fast-forwarded to
+`6de86f9dc36b087cb3a56f0ac7b346c56b58b291`, the then-current remote main.
+Its P02 private-staging/SMTP documentation changes do not overlap this unit;
+the P03 core source hashes remain unchanged. The reviewed document patch
+`237a426…` applies three narrow corrections: GDE-0029's 13-service project
+fact, a Supabase-only document-path method with unchanged assertions, and an
+explicit root Grafana LAB exclusion. Independent source and rules review
+approved that patch with no finding.
+
+The public entrypoints had tracked Git mode `100755` and actual mode `775`; the
+owned files were corrected to `755` only. This is a repository-mode correction,
+not a runtime chmod or a service change. The focused source suite at `6de86…`
+exited 0 with 145 PASS tests in 17.866 seconds: 43 P03 port inventory/contract,
+53 Compose profile vocabulary, 10 n8n outbox, the latest P02 secret-catalog
+coverage, three mode/root-quality checks, and one registered document method
+against a tracked YAML fixture. It is a document-only wrapper and performs no
+LAB render. Statement-line coverage remains 152/163 (93.25 percent), limited
+to the new executable lines; it is neither module nor branch coverage.
+
+The compiled gate evidence at historical input `62556…` is retained without
+relabelling it as current-head acceptance. Candidate preflight, sync, links and
+lifecycle passed; links observed 1,272 documents/11,440 links with zero
+failures and one existing archive-capture warning. The six-module metadata leaf
+timed out (exit 124 after 600 seconds) with no adapter output; the document
+library leaf timed out (exit 124 after 900.153 seconds) likewise. Their causes
+are not verified. Supply passed 265 tests (117.877 seconds; controller 118.304)
+and integrity passed 558 (170.406 seconds; controller 171.011). The old Compose
+leaf failed 3/errors 1/skips 71 (137.803 seconds) from two checkout modes and
+two document contracts now covered by the focused receipt; the whole leaf was
+not rerun because it would render excluded LAB inputs. These facts leave the
+full aggregate `NOT_RUN`, not partially PASS. Conftest is `NOT_RUN`: there is
+no owned isolated daemon and the runner strips `DOCKER_HOST`.
+
+Four core source/security/contract/IAC reviews are APPROVE. Criterion 17/W33
+remains open: source declarations and focused tests do not establish a listener,
+network peer denial, SSO/JWT/HMAC/machine-token acceptance, runtime identity,
+HOME, migration, rotation or recovery. At this pre-documentation-commit
+checkpoint, only the third documentation commit, final-head affected rerun,
+final-head hosted CI and merge remain pending. P04/P05/P06 receive only the
+source SHA/schema/declaration handoff already stated above; no endpoint,
+credential, consumer or restore authority is issued.
+
+Rollback is a reviewed logical revert of the owned source/document increment;
+it does not restore runtime state, data, secret material or rotation. The next
+owner action is to record and push the documentation commit to Draft PR 432,
+rerun final-head affected gates, and capture hosted CI/merge evidence. The live
+PR metadata owns later delivery facts; this checkpoint does not complete P03.
+
+Two logical commits are now recorded: test
+`98fdf07b83855d67cff5c426f2453cb7d264beaa` and source
+`a1323bd2ebe4a1b17e153df51f8d11cec75f7885`. Each was a normal Git commit
+after canonical local-staged and pinned Commitizen 4.15.1 PASS, with no hook
+bypass. The non-forced upstream push created owning
+[Draft PR 432](https://github.com/buenhyden/hy-home.docker/pull/432); its live
+metadata is the authoritative hosted receipt location. Candidate run
+`38288943924` began on `a132…`; any successful checks there are superseded by
+the next documentation head and are not final-head CI, delivery or merge PASS.
+The third documentation commit, current-head affected rerun, hosted CI and
+merge remain pending.
+
+Rollback for these two commits is a logical revert of their test/source SHAs;
+the pending documentation commit needs its own logical revert. Neither action
+rolls back live services, data, secrets, rotations, HOME, migration or recovery.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -594,6 +853,13 @@ revert; no operational rollback was performed or implied.
 | Coordinator affected gates | 17 | W33 | Twelve registered affected leaves | Twenty public input hashes and canonical plan digests above | PASS | Each exit 0; repository-integrity 407 tests; no new full aggregate or hosted CI | pending |
 | Initial private/runtime lanes | 4, 6, 17 | W33 | ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY | No exact selected action | NOT_RUN | Owning follow-up needed; no operational acceptance | pending |
 | Delivery | 8, 17 | W33 | Latest-head CI/review/PR/merge | No P03 PR | NOT_RUN | Future PR; no remote delivery claim | pending |
+| Root four-location matrix | 17 | W33 | `project_root` and inventory membership audit | 62556dc63; 44 inputs, 43 leaves, 111 services | PASS | Work Log 2026-10-13; source mapping only | pending |
+| DEV/MNG and P04/P05 source boundary | 17 | W33 | Six-module source/synthetic unittest suite | 62556dc63 | PASS | 55 tests, 5.340s, exit 0; no daemon/private input | pending |
+| Root negative source contracts | 17 | W33 | Selected Compose baseline/network/auth/Alloy unittest suite | 62556dc63 | PASS | 27 tests, 23.015s, exit 0; native lanes NOT_RUN | pending |
+| Current focused source suite | 17 | W33 | Port/profile/n8n/catalog/mode/root-quality/document-method suite | 6de86f9d | PASS | 145 PASS, 17.866s, exit 0; tracked fixture only, no LAB render | pending |
+| Historical registered metadata and document leaves | 17 | W33 | Compiled local gate leaves | 62556dc63 | FAIL | Metadata exit 124/600s and document library exit 124/900.153s; no adapter output, cause unverified | pending |
+| Historical registered supply and integrity leaves | 17 | W33 | Compiled local gate leaves | 62556dc63 | PASS | Supply 265 PASS; integrity 558 PASS; historical input only | pending |
+| Full aggregate and Conftest daemon | 17 | W33 | Aggregate/local controller and isolated daemon leaf | No current complete aggregate or owned daemon | NOT_RUN | Compose whole leaf was not rerun because it would render excluded LAB inputs; no `DOCKER_HOST` daemon route | pending |
 
 The first issuance metadata check exited 1 on Result-cell detail text; the
 second exited 1 on Acceptance-cell detail text. Both columns use registered

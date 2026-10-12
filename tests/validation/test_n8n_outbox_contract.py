@@ -157,17 +157,45 @@ class OutboxWorkerPlacementTests(unittest.TestCase):
 
     def test_only_queue_worker_receives_dev_and_capture_networks(self):
         overlay = WORKLOAD / "compose.workflow.override.yml"
-        self.assertTrue(overlay.is_file(), "worker-only workload overlay is missing")
+        self.assertTrue(overlay.is_file(), "workload overlay is missing")
         data = yaml.safe_load(overlay.read_text())
-        self.assertEqual({"n8n-worker"}, set(data["services"]))
+        capture_network = "opsflow_capture_net"
+        self.assertEqual(
+            {"version": 1, "base": "docker-compose.yml"},
+            data["x-hyhome-overlay"],
+        )
+        self.assertEqual({"n8n-worker", "mailpit"}, set(data["services"]))
+        self.assertEqual({capture_network: {"internal": True}}, data["networks"])
         worker = data["services"]["n8n-worker"]
-        self.assertEqual({"dev_data_net", "mail_net"}, set(worker["networks"]))
+        self.assertEqual({"dev_data_net", capture_network}, set(worker["networks"]))
         self.assertNotIn("ports", worker)
         self.assertNotIn("secrets", worker)
+        self.assertEqual(
+            {capture_network}, set(data["services"]["mailpit"]["networks"])
+        )
+        self.assertEqual(
+            {"n8n-worker", "mailpit"},
+            {
+                name
+                for name, service in data["services"].items()
+                if capture_network in service["networks"]
+            },
+        )
         base = yaml.safe_load((WORKLOAD.parents[1] / "docker-compose.yml").read_text())
         for name in ("n8n", "n8n-worker", "n8n-task-runner", "n8n-task-runner-worker"):
             networks = set(base["services"][name]["networks"])
-            self.assertFalse(networks & {"dev_data_net", "mail_net"}, name)
+            self.assertFalse(
+                networks & {"dev_data_net", "mail_net", capture_network}, name
+            )
+        self.assertNotIn("ports", base["services"]["n8n-worker"])
+        mailpit = yaml.safe_load(
+            (ROOT / "infra/11-quality/mailpit/docker-compose.yml").read_text()
+        )["services"]["mailpit"]
+        self.assertEqual({"edge_net", "mail_net"}, set(mailpit["networks"]))
+        self.assertIn(
+            "127.0.0.1:${MAILPIT_SMTP_HOST_PORT:-1025}:${MAILPIT_SMTP_PORT:-1025}",
+            mailpit["ports"],
+        )
         self.assertNotIn("stalwart", overlay.read_text().lower())
 
 
