@@ -1483,9 +1483,28 @@ rules. All five paths still route to `@buenhyden`; no human approval is invented
 The produced candidate-quality and external checks still require actual hosted
 observation before any requested source merge; no protection setting changed.
 
-Local staged style, commit, PR and latest-head hosted delivery remain pending
-until their actual receipts. Source rollback is a revert of this increment;
-because no deployed artifact/data changed, it provides no HOME data recovery.
+The reviewed five-file index passed
+`bash scripts/validation/run-ci-precommit.sh --mode local-staged`, exit 0,
+including Markdown, JSON, Ruff and the hardcoded-secret guard. Ordinary commit
+`256d5f833af0ead3287832bac9278e1d42aecabc` and
+`git push -u origin codex/sec01-warning-audit` both exited 0. The observed
+pre-push hook reported no supported checks; that skip is not a QA receipt.
+[PR #428](https://github.com/buenhyden/hy-home.docker/pull/428) was opened
+against main `328871a94b42c13f676e61b40f026c906ebbc13d` with that head and
+attached to the current chat. At this receipt's observation, candidate-quality
+run `38273509572` and CodeQL were IN_PROGRESS, GitGuardian was SUCCESS and
+PR-context main-security was SKIPPED; GitHub reviews were empty, consistent
+with the verified zero-required-approval setting. No final hosted PASS or merge
+is inferred. This result-only Task receipt requires its own staged check and
+latest PR head CI; prior-head observations are not reused as current acceptance.
+Source rollback is a revert of this increment; because no deployed artifact/data
+changed, it provides no HOME data recovery.
+
+#### Commit ledger for the current increment
+
+| Commit | Owner / scope | Actual disposition |
+| --- | --- | --- |
+| `256d5f833af0ead3287832bac9278e1d42aecabc` | SPEC-0204 / W31; five metadata/docs/test paths | Committed and pushed to PR #428; hosted candidate pending at the observation above |
 
 ## Evidence
 
