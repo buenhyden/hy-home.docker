@@ -211,7 +211,7 @@ def _staging_fd(root, stack, create):
     return fd
 
 
-def _target_safe(fd, name):
+def _target_safe(fd, name, *, required_mode=None):
     try:
         info = os.stat(name, dir_fd=fd, follow_symlinks=False)
     except FileNotFoundError:
@@ -220,5 +220,6 @@ def _target_safe(fd, name):
         not stat.S_ISREG(info.st_mode)
         or info.st_nlink != 1
         or info.st_uid != os.getuid()
+        or (required_mode is not None and stat.S_IMODE(info.st_mode) != required_mode)
     ):
         raise CatalogError("unsafe_staging_target")

@@ -705,7 +705,7 @@ def write_views(root, output=None):
     with ExitStack() as stack:
         fd = _staging_fd(path, stack, create=True)
         for name in views:
-            _target_safe(fd, name)
+            _target_safe(fd, name, required_mode=0o600)
         if root_identity(path) != expected:
             raise CatalogError("repository_identity_changed")
         for index, (name, data) in enumerate(views.items()):
@@ -718,10 +718,11 @@ def write_views(root, output=None):
             )
             try:
                 with os.fdopen(opened, "wb") as stream:
+                    os.fchmod(stream.fileno(), 0o600)
                     stream.write(data)
                     stream.flush()
                     os.fsync(stream.fileno())
-                _target_safe(fd, name)
+                _target_safe(fd, name, required_mode=0o600)
                 os.replace(temporary, name, src_dir_fd=fd, dst_dir_fd=fd)
                 os.fsync(fd)
             finally:
@@ -740,7 +741,7 @@ def check_views(root, output=None):
         with ExitStack() as stack:
             fd = _staging_fd(path, stack, create=False)
             for name, expected_bytes in views.items():
-                _target_safe(fd, name)
+                _target_safe(fd, name, required_mode=0o600)
                 if _read_file(fd, name) != expected_bytes:
                     return False
     except FileNotFoundError:

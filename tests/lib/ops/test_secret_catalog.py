@@ -2,6 +2,7 @@
 
 import json
 import os
+import stat
 import subprocess
 import sys
 import tempfile
@@ -610,6 +611,35 @@ class SyntheticRepositoryTests(unittest.TestCase):
         view = self.root / catalog.OUTPUT_PATH / catalog.VIEW_NAMES[0]
         view.write_bytes(view.read_bytes() + b"drift\n")
         self.assertFalse(catalog.check_views(self.root))
+
+    def test_generated_views_require_exact_private_mode(self):
+        (self.root / ".agent-work/README.md").chmod(0o644)
+        catalog.write_views(self.root)
+        staging = self.root / catalog.OUTPUT_PATH
+        for name in catalog.VIEW_NAMES:
+            with self.subTest(name=name):
+                view = staging / name
+                view.chmod(0o644)
+                try:
+                    with self.assertRaises(catalog.CatalogError):
+                        catalog.check_views(self.root)
+                    with self.assertRaises(catalog.CatalogError):
+                        catalog.write_views(self.root)
+                finally:
+                    view.chmod(0o600)
+
+    def test_generated_views_are_private_under_restrictive_umask(self):
+        catalog.write_views(self.root)
+        staging = self.root / catalog.OUTPUT_PATH
+        for name in catalog.VIEW_NAMES:
+            (staging / name).unlink()
+        previous = os.umask(0o777)
+        try:
+            catalog.write_views(self.root)
+        finally:
+            os.umask(previous)
+        for name in catalog.VIEW_NAMES:
+            self.assertEqual(stat.S_IMODE((staging / name).stat().st_mode), 0o600)
 
     def test_staging_requires_operator_owned_family_readme(self):
         readme = self.root / ".agent-work/README.md"
