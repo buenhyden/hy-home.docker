@@ -16,12 +16,50 @@ from unittest.mock import patch
 
 from jsonschema import Draft202012Validator
 
-from scripts.lib.ops.port_inventory import PortContractError, project, render_synthetic
+from scripts.lib.ops.port_inventory import (
+    PortContractError,
+    _run_config,
+    project,
+    render_synthetic,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "tests/fixtures/port-contract"
 CLI = ROOT / "scripts/operations/port-inventory.py"
 SCHEMA = ROOT / "infra/09-platform-ops/service-integration/port-contract.schema.json"
+
+
+def _render_public_root(env_file, temp_root):
+    result = _run_config(
+        [
+            "/usr/bin/docker",
+            "compose",
+            "--project-directory",
+            str(ROOT),
+            "--env-file",
+            str(env_file),
+            "-f",
+            str(ROOT / "docker-compose.yml"),
+            "--profile",
+            "dev-data",
+            "--profile",
+            "mng",
+            "config",
+            "--format",
+            "json",
+        ],
+        cwd=ROOT,
+        env={
+            "COMPOSE_DISABLE_ENV_FILE": "1",
+            "DOCKER_CONFIG": str(temp_root / "docker-config"),
+            "DOCKER_HOST": f"unix://{temp_root / 'no-daemon.sock'}",
+            "HOME": str(temp_root),
+            "PATH": "/usr/bin:/bin",
+        },
+    )
+    if result.returncode:
+        raise AssertionError("public root config failed")
+    return json.loads(result.stdout)["services"]
 
 
 class PortSchemaTests(unittest.TestCase):
@@ -255,6 +293,106 @@ class SyntheticRenderTests(unittest.TestCase):
         )
         self.assertEqual(
             first["dev-db"]["traefik_backend"], second["dev-db"]["traefik_backend"]
+        )
+
+    def test_public_root_dev_and_mng_changes_are_bidirectionally_isolated(self):
+        public_env = (ROOT / ".env.example").read_bytes()
+        fields = ("environment", "ports", "expose", "networks", "secrets", "volumes")
+
+        with tempfile.TemporaryDirectory() as temp:
+            temp_root = Path(temp)
+            env_file = temp_root / "public.env"
+
+            def render(overrides):
+                env_file.write_bytes(
+                    public_env
+                    + b"\n"
+                    + "".join(
+                        f"{key}={value}\n" for key, value in overrides.items()
+                    ).encode()
+                )
+                return _render_public_root(env_file, temp_root)
+
+            baseline = render({})
+            dev_changed = render(
+                {
+                    "DEV_PG_ADMIN_USER": "p03_dev_probe",
+                    "DEV_PG_HOST_PORT": "35433",
+                    "DEV_VALKEY_PROJECTS_FILE": str(temp_root / "projects.tsv"),
+                    "DEV_VALKEY_PROJECT_SECRETS_DIR": str(
+                        temp_root / "project-secrets"
+                    ),
+                }
+            )
+            mng_changed = render(
+                {
+                    "POSTGRES_DEFAULT_DB": "p03_mng_probe",
+                    "POSTGRES_DEFAULT_USER": "p03_mng_probe",
+                    "POSTGRES_HOST_PORT": "35432",
+                    "VALKEY_MNG_HOST_PORT": "36379",
+                    "VALKEY_PORT": "6380",
+                }
+            )
+
+        def boundary(services, names):
+            return {
+                name: {field: services[name].get(field) for field in fields}
+                for name in names
+            }
+
+        dev_servers = ("dev-pg", "dev-valkey")
+        mng_servers = ("mng-pg", "mng-valkey")
+        dev_names = tuple(
+            sorted(
+                name
+                for name, service in baseline.items()
+                if "dev_data_net" in (service.get("networks") or {})
+            )
+        )
+        mng_names = tuple(
+            sorted(
+                name
+                for name, service in baseline.items()
+                if "mng_data_net" in (service.get("networks") or {})
+            )
+        )
+        self.assertTrue(dev_names)
+        self.assertTrue(mng_names)
+        self.assertTrue(set(dev_names).isdisjoint(mng_names))
+        for name in (*dev_servers, *mng_servers):
+            self.assertTrue(baseline[name]["networks"])
+            self.assertTrue(baseline[name]["secrets"])
+        self.assertEqual(
+            dev_changed["dev-pg"]["environment"]["POSTGRES_USER"], "p03_dev_probe"
+        )
+        self.assertEqual(dev_changed["dev-pg"]["ports"][0]["published"], "35433")
+        dev_valkey_mounts = {
+            volume["target"]: volume["source"]
+            for volume in dev_changed["dev-valkey"]["volumes"]
+        }
+        self.assertEqual(
+            dev_valkey_mounts["/run/valkey-project-secrets"],
+            str(temp_root / "project-secrets"),
+        )
+        self.assertEqual(
+            mng_changed["mng-pg"]["environment"]["POSTGRES_DB"], "p03_mng_probe"
+        )
+        self.assertEqual(mng_changed["mng-pg"]["ports"][0]["published"], "35432")
+        self.assertEqual(
+            mng_changed["mng-valkey"]["environment"]["MNG_VALKEY_PORT"], "6380"
+        )
+        self.assertEqual(mng_changed["mng-valkey"]["ports"][0]["published"], "36379")
+        self.assertNotEqual(
+            boundary(baseline, dev_servers), boundary(dev_changed, dev_servers)
+        )
+        self.assertEqual(
+            boundary(baseline, mng_names), boundary(dev_changed, mng_names)
+        )
+        self.assertNotEqual(
+            boundary(baseline, mng_servers), boundary(mng_changed, mng_servers)
+        )
+        self.assertEqual(
+            boundary(baseline, dev_names), boundary(mng_changed, dev_names)
         )
 
 
