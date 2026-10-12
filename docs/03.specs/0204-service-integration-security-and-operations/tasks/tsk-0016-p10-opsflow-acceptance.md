@@ -1,6 +1,6 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.15"
+version: "0.1.16"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -897,6 +897,82 @@ staged, Ruff, RED/GREEN and diff receipts passed, and independent source and
 security reviews approved the exact one-line test change. This is a CRC/source
 receipt for the approved test boundary, not a broader gate PASS, runtime result
 or delivery receipt.
+
+### M2 current source and coordination receipt — 2026-10-12
+
+The ordinary ancestry-preserving merge is
+`4b9c9ba1cc17956934349973c6a715a0732e42fd`, with parents
+`227a82e8a56e767a642649a13609d90637e213a3` and
+`057c5d3307dd1b0aa663c663fd51e1ae81c530e0`; its source tree is
+`20695ec60d245a47467983bf256e0fcaf4c075a5`. It preserved the accepted numbered
+P08 paths without source-code changes. W68 consumes the Task0015 canonical
+numbered-path receipt (230 leaves, 45 domain READMEs, the normalized aggregate
+`37f97a582635adb36dda1e39acf93a3e420a7d882fa8a5adb81e05da282d24ca`, and
+the `6056788a51e59726202f40377d407c1408aaddce` source commit). Its directory
+dry run and delivery remain NOT_RUN.
+
+Fresh `git fetch origin main` and GitHub reads found `origin/main`, remote main
+and the root HEAD at `23e37362b72e98028a4675f282819c0346ae59dc`; open PRs were
+empty. The P08 start was `227a82e8a56e767a642649a13609d90637e213a3`, P07 was
+`a69bda497`, and the coordinator input was `057c5d330`. The root's protected
+foreign index remains `6d788fa89b5c7b1af87ce1a89ad62859eca16371` with nine
+paths. GitHub protection reads reported `strict=true`, empty required contexts,
+zero approving reviews, `CODEOWNER=false` and no rulesets. Those facts do not
+bypass the required user approval, CI and independent review for any future PR.
+
+A ROOT-only census at main 23, whose source set is unchanged at M2, found 111 unique service keys from 43
+includes and 44 inputs, matching the 111-row, 20-field inventory: HOME 46, DEV
+17 and OPTIONAL 48. Membership, field drift and missing Guide owner counts were
+zero. Consumer 83, security 111, backup 77 and disposition 25 remain explicitly
+unverified; cost and runtime acceptance are unknown. Full catalog validation is
+NOT_RUN because its reader reaches LAB bindings. This is a source census only,
+not an image, service, native, HOME, migration, rotation or recovery result.
+
+At M2, the fresh permitted source command was
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 -m unittest tests.lib.ops.test_secret_catalog tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters tests.lib.ops.test_n8n_outbox_workflow tests.lib.ops.test_openbao_consumer_migration tests.lib.ops.test_retirement tests.validation.test_secret_catalog_contract tests.validation.test_n8n_outbox_contract tests.validation.test_openbao_consumer_migration_contract -q`;
+it passed 172 tests in 19.065 seconds, exit 0. The fresh integration command
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 -m unittest tests.validation.test_opsflow_e2e_acceptance tests.lib.ops.test_port_inventory tests.lib.ops.test_root_resource_assessment tests.validation.test_root_resource_contract -q`
+passed 62 tests in 5.778 seconds, exit 0. The approved exact ROOT command
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 -m unittest tests.validation.test_lab_isolation.RootClosureTests.test_wildcard_root_render_selects_no_lab_service -v`
+passed once in 3.465 seconds, exit 0. The QA environment used Python 3.12.3.
+These are source/unit or static receipts only; the historical 223-test result
+retains its dated scope.
+
+`tests.lib.ops.test_smtp_contract` (51 tests) is NOT_RUN in this fresh run
+because it reads `labs/supabase.yml` and GoTrue consumer/image-pin paths. It is
+not replaced by the 235 executed tests. The full aggregate and remote PR gate
+remain NOT_RUN: their selected routes include infrastructure hardening's
+`04Supabase`, template controls' LAB renders and `labs` environment example,
+conftest corpus `find labs`/test routes, and version projection's LAB image
+routes. No remote PR was opened or pushed.
+
+The M2 local-staged command
+`bash scripts/validation/run-ci-precommit.sh --mode local-staged` had empty
+selection and exited 2 with `ERROR: local staged input is empty`; this process
+is FAIL and its style applicability is N/A, not PASS. Task0015 was dirty only
+with its pending documentation clarification during these checks, so this does
+not claim a clean documentation worktree.
+
+Fresh active-spec frontmatter parsing found 25 Specs: completed SPEC-0208,
+SPEC-0209, SPEC-0210 and SPEC-0212; active SPEC-0182 (blocked), SPEC-0204,
+SPEC-0207 and SPEC-0211 (in-progress); and SPEC-0213 through SPEC-0229 (draft).
+SPEC-0204 and SPEC-0218 are direct coordination owners; SPEC-0227 supplies
+completed-body evidence only. SPEC-0207, SPEC-0211, SPEC-0213, SPEC-0214,
+SPEC-0216, SPEC-0221, SPEC-0224, SPEC-0228 and SPEC-0229 are supporting
+references. Implementation under SPEC-0215, SPEC-0217, SPEC-0219, SPEC-0220,
+SPEC-0222, SPEC-0223, SPEC-0225 and SPEC-0226 is OUT_OF_SCOPE and retains its
+lifecycle. This routing does not reopen completed P00, Wiki preparation, or any
+historical Stage05 body.
+
+The protected SEC01 ledger remains a CONFIRMED_GAP under its foreign writer.
+At `$.root_scope_reconciliation.modernization_policy`, Task0009 must review the
+following not-applied replacement: “Future ROOT image/Dockerfile version changes
+and scanner source changes are limited to actual confirmed security warnings
+affecting the current image, with supplier, package and platform applicability
+evidence. Preserve already accepted safe source pins; do not perform blanket
+latest-stable upgrades. Keep source, scan, native, HOME, migration, rotation,
+recovery and delivery acceptance separate; UNKNOWN is not clean.” No ledger,
+image, scanner, native or HOME mutation is made by this receipt.
 
 ## Evidence
 

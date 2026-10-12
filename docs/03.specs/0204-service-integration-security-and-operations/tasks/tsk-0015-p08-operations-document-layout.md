@@ -1,6 +1,6 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -830,14 +830,15 @@ for root check-only work and does not change hook policy.
 
 ## Review and Completion
 
-This issuance and continuation deliver bounded documentation preparation only.
-The source commit, scoped helper UNIT and source STATIC receipt are accepted as
-recorded above. The coordinator will emit receipt-only document-check and
-local-main delivery results after the actual required checks complete; no future
-PASS is claimed here. W57–W62 UNIT, STATIC and DELIVERY remain NOT_RUN. ISOLATED,
-HOME, MIGRATION, ROTATION and RECOVERY are NOT_RUN, and no operational effect or
-service recovery is claimed. Current parent status and historical P00/refresh
-evidence remain unchanged.
+This continuation delivers bounded operations-document source and preparation.
+The dated numbered-path source and local-commit receipts supersede only the
+historical issuance/source-pending states for W59–W61: SOURCE and their focused
+UNIT/STATIC checks are accepted as recorded above. The coordinator will emit
+receipt-only document-check and delivery results after the actual required
+checks complete; no future PASS is claimed here. W62 global DELIVERY, remote
+PR/CI/merge, current aggregate, ISOLATED, HOME, MIGRATION, ROTATION and RECOVERY
+remain NOT_RUN, and no operational effect or service recovery is claimed.
+Current parent status and historical P00/refresh evidence remain unchanged.
 
 Use separate reversible logical commits for path-contract/tests, coupled exact
 rename/link changes, populated README content and final validation/handoff.
