@@ -1,10 +1,10 @@
 ---
 title: "Operations Library"
-version: "0.1.3"
+version: "0.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 created: "2026-10-10"
 ---
 
@@ -26,6 +26,8 @@ created: "2026-10-10"
   접근하지 않으며, 합성 receipt의 PASS는 운영 승인이나 pilot 수용이 아닙니다.
 - `smtp_contract.py`: SMTP Compose 모델 검사와 정확한 중복 파일 퇴역 처리.
   모델·비밀값은 출력하지 않고 canonical 파일은 변경하지 않습니다.
+- `smtp_public_source.py`: ROOT·LAB의 추적된 공개 Compose와 선택된 상속
+  설정을 검증합니다. 비밀값을 읽지 않으며 인증·발송·운영 수용을 증명하지 않습니다.
 - `wiki_preparation.py`: P09의 parsed 계약·caller 정책·합성 bytes를 오프라인으로
   검증하는 유일한 공개 API이며 `PreparationError`를 re-export합니다.
 - `wiki_preparation_semantics.py`: 위 공개 helper가 사용하는 private validator

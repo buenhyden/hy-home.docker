@@ -105,6 +105,65 @@ class SMTPProofTests(unittest.TestCase):
             "expires_at": "2026-10-10T10:05:00Z",
         }
 
+    def _add_lab_source(self):
+        common = self.root / "infra/common-optimizations.yml"
+        common.write_text(
+            yaml.safe_dump(
+                {
+                    "services": {
+                        "template-infra-med": {
+                            "init": True,
+                            "labels": {"hy-home.managed": "true"},
+                        }
+                    }
+                }
+            )
+        )
+        lab = self.root / "labs/supabase.yml"
+        lab.parent.mkdir(parents=True, exist_ok=True)
+        lab.write_text(
+            yaml.safe_dump(
+                {
+                    "name": "hy-home-lab-supabase",
+                    "secrets": {
+                        "smtp_password": {
+                            "file": "../secrets/communication/smtp/smtp_password.txt"
+                        }
+                    },
+                    "services": {
+                        "auth": {
+                            "profiles": ["supabase"],
+                            "image": "supabase/gotrue:v2.197.0",
+                            "labels": {"hy-home.tier": "lab"},
+                            "extends": {
+                                "file": "../infra/common-optimizations.yml",
+                                "service": "template-infra-med",
+                            },
+                            "entrypoint": [
+                                "/bin/sh",
+                                "-ec",
+                                'fail() { echo \'SMTP secret input rejected\' >&2; exit 1; }\n[ "$${GOTRUE_SMTP_PASS+x}" != x ] || fail\n[ -n "$${GOTRUE_SMTP_PASS_FILE:-}" ] || fail\n[ -f "$$GOTRUE_SMTP_PASS_FILE" ] && [ -r "$$GOTRUE_SMTP_PASS_FILE" ] && [ -s "$$GOTRUE_SMTP_PASS_FILE" ] || fail\nGOTRUE_SMTP_PASS="$$(cat "$$GOTRUE_SMTP_PASS_FILE" 2>/dev/null)" || fail\n[ -n "$$GOTRUE_SMTP_PASS" ] || fail\nexport GOTRUE_SMTP_PASS\n[ "$$#" -gt 0 ] || fail\nexec "$$@"\n',
+                                "--",
+                            ],
+                            "command": ["auth"],
+                            "secrets": [
+                                {
+                                    "source": "smtp_password",
+                                    "target": "supabase_smtp_password",
+                                }
+                            ],
+                            "environment": {
+                                "GOTRUE_SMTP_PASS_FILE": (
+                                    "/run/secrets/supabase_smtp_password"
+                                )
+                            },
+                        }
+                    },
+                }
+            )
+        )
+        return lab
+
     def _run(self, arguments, root=None):
         if arguments[0] == "git":
             return b"synthetic-sha\n"
@@ -123,6 +182,17 @@ class SMTPProofTests(unittest.TestCase):
             verify_proof(self.root, path or self.proof)
 
     def test_fresh_external_owner_only_receipt_is_accepted(self):
+        verify_proof(self.root, self.proof)
+
+    def test_root_only_source_receipt_is_rejected_when_lab_source_exists(self):
+        old_receipt = dict(self.receipt)
+        self._add_lab_source()
+        self._write(old_receipt)
+        self._reject()
+
+    def test_lab_source_receipt_is_accepted_when_digest_matches(self):
+        self._add_lab_source()
+        self._write({**self.receipt, "source_sha256": source_hashes(self.root)})
         verify_proof(self.root, self.proof)
 
     def test_proof_path_rejects_links_modes_location_and_unsafe_parent(self):

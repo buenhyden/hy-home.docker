@@ -193,6 +193,15 @@ receipt는 관찰 후 5분 이내여야 하고 30초를 넘는 미래 시각을 
 최대 15분입니다. 세 번의 verifier 각각에서 만료까지 최소 5분이 남아야 합니다. 위 준비와
 적용 명령, 현재 HOME 사실과 receipt 발급은 NOT_RUN입니다.
 
+`source_sha256`은 값이나 private 환경이 아니라 tracked public source 파일의
+상대경로→SHA-256 map입니다. root Compose include graph와, 존재하는 경우
+`labs/supabase.yml` 및 Auth가 고정 참조하는 `infra/common-optimizations.yml`
+public source digest를 함께 묶습니다. LAB Auth proof는 canonical SMTP source,
+`supabase_smtp_password` target alias, exact common `extends`, public GoTrue image,
+profile, command, tier label, `_FILE` environment declaration, and previously native-vetted
+entrypoint declaration digest만 증명합니다. GoTrue를 ROOT service로 되돌리거나 LAB 실행,
+SMTP delivery, HOME activation 또는 credential rotation을 증명하지 않습니다.
+
 proof는 repository root 밖의 절대 경로에 둡니다. 정확한 parent는 현재 실행 UID 소유의
 0700 directory, 파일은 같은 UID 소유의 단일 regular file·단일 link·0600이어야 하며
 32 KiB를 넘지 않습니다. helper는 symlink를 따르지 않고 descriptor로 전체 파일을 읽어

@@ -775,6 +775,7 @@
         "tests.validation.test_secret_metadata_sync",
         "tests.validation.test_smtp_generator",
         "tests.lib.ops.test_smtp_contract",
+        "tests.lib.ops.test_smtp_public_source",
         "tests.lib.ops.test_retirement",
         "tests.validation.test_retirement_cli",
         "tests.validation.test_project_registration",
@@ -1630,6 +1631,8 @@
       {
         "prefixes": [
           "scripts/lib/ops/smtp_contract.py",
+          "scripts/lib/ops/smtp_public_source.py",
+          "tests/lib/ops/test_smtp_public_source.py",
           "tests/lib/ops/test_smtp_contract.py",
           "tests/lib/ops/test_smtp_proof.py",
           "tests/validation/test_smtp_generator.py",
@@ -1955,6 +1958,8 @@
       {
         "prefixes": [
           "scripts/lib/ops/smtp_contract.py",
+          "scripts/lib/ops/smtp_public_source.py",
+          "tests/lib/ops/test_smtp_public_source.py",
           "tests/lib/ops/test_smtp_contract.py",
           "tests/lib/ops/test_smtp_proof.py",
           "tests/validation/test_smtp_generator.py",

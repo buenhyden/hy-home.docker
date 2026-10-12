@@ -1,6 +1,6 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.8"
+version: "0.6.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1444,6 +1444,46 @@ password unlink remains COMM-003's exact old Supabase file; canonical COMM-002,
 SMTP account files and other Supabase secrets remain protected. No new unlink,
 password rotation, provider send, production recovery or final retirement
 acceptance occurred in this review.
+
+### W30 selected ROOT/LAB source proof correction — 2026-10-12
+
+Source commit `5fd53971120c68e242f48f1582a519e371ec3999` contains six author files and three coordinator
+registration files. The public Compose reader binds tracked, bounded,
+no-follow ROOT includes, selected extends chains and independent LAB sources.
+Unused parent services cannot satisfy consumer presence; child overrides are
+resolved. Selected ROOT image interpolation fails closed and registry-qualified
+GoTrue images are rejected with or without LAB source. LAB source requires the
+canonical password grant/target alias, exact file-loader declaration, command,
+profile, image and selected common template. This is source wiring validation,
+not configured SMTP endpoint/account or runtime readiness.
+
+The coordinator witnessed the missing-helper manifest RED, then registration
+GREEN. Independent review found and the author corrected unused-parent and
+child-override errors, Docker Hub alias bypass and an interpolated/registry
+GoTrue bypass. The direct-file unittest guard was moved after all test classes.
+The first final staged gate failed Ruff formatting on four Python files; official
+formatting preserved their ASTs. Fresh formatted-input rerun passed 229 tests
+in 42.494 seconds, exit 0. Dedicated combined statement/branch coverage is
+95% for `smtp_contract.py`, 82% for `smtp_public_source.py`, 90% overall.
+A pre-format coverage database interpreted against formatted line numbers was
+not a valid measurement and is not used for acceptance.
+
+The actual changed metadata gate selected one governed document with zero
+violations; the supplied Runbook and common README paths are not represented
+as two selected governed records. Actual staged style/secret checks passed.
+Manifest and workflow validators passed; existing SMTP/catalog routing and
+permissions were preserved. Independent final specification/quality review
+approved the exact staged source, including its semantic-equivalent formatting.
+Main candidate checks and logical merge follow separately; no hosted CI or
+remote delivery is inferred from these local checks.
+
+The public real-source probe binds 46 files and selected ROOT images contain
+no unresolved interpolation. It does not read private files or actual rendered
+container configuration. Canonical COMM-002 stays protected; COMM-003 remains
+the only proposed password-file unlink. Provider authentication/delivery, LAB
+activation, external/job closure, current production recovery, rotation and
+final operational retirement acceptance remain open. No new private unlink or
+credential/runtime change occurred in this source correction.
 
 ## Evidence
 

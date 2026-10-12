@@ -6,7 +6,6 @@ import argparse
 import ctypes
 import errno
 import fcntl
-import hashlib
 import json
 import os
 import re
@@ -27,6 +26,7 @@ CANONICAL_PATH = "secrets/communication/smtp/smtp_password.txt"
 OLD_PATH = "secrets/communication/supabase/supabase_smtp_password.txt"
 METADATA_PATH = "secrets/SENSITIVE_ENV_VARS.md"
 LOCK_PATH = "secrets/.smtp01-retirement.lock"
+LAB_SUPABASE_PATH = "labs/supabase.yml"
 ALIAS_HEADER = b"| Retired ID | Canonical ID |\n| --- | --- |\n"
 ALIAS_ROW = b"| COMM-003 | COMM-002 |\n"
 MAX_PROOF_BYTES = 32_768
@@ -325,97 +325,57 @@ def _unchanged(parent, name, snapshot):
         raise ContractError("concurrent_file_change")
 
 
-def _source_documents(root):
-    import yaml
+def _public_source_helper():
+    from scripts.lib.ops import smtp_public_source
 
-    from scripts.lib.document_governance.operations_catalog import _ComposeLoader
-
-    pending, hashes, documents = ["docker-compose.yml"], {}, []
-    while pending:
-        relative = pending.pop()
-        if relative in hashes:
-            continue
-        path = root / relative
-        if not path.is_relative_to(root) or ".." in path.relative_to(root).parts:
-            raise ContractError("unsafe_compose_path")
-        if any(part.is_symlink() for part in (path, *path.parents)):
-            raise ContractError("unsafe_compose_path")
-        data = path.read_bytes()
-        hashes[relative] = hashlib.sha256(data).hexdigest()
-        try:
-            document = yaml.load(data, Loader=_ComposeLoader)
-        except yaml.YAMLError:
-            raise ContractError("invalid_compose_document") from None
-        if not isinstance(document, dict):
-            raise ContractError("invalid_compose_document")
-        if relative != "docker-compose.yml":
-            definitions = document.get("secrets", {})
-            if not isinstance(definitions, dict):
-                raise ContractError("invalid_secret_definition")
-            for _name, entry in definitions.items():
-                filename = entry.get("file") if isinstance(entry, dict) else None
-                if isinstance(filename, str):
-                    resolved = Path(os.path.abspath(path.parent / filename))
-                    if resolved in (root / CANONICAL_PATH, root / OLD_PATH):
-                        raise ContractError("included_smtp_redefinition")
-        documents.append(document)
-        for include in document.get("include", []):
-            item = (
-                include
-                if isinstance(include, str)
-                else (include.get("path") if isinstance(include, dict) else None)
-            )
-            if not isinstance(item, str):
-                raise ContractError("unsafe_compose_path")
-            resolved = path.parent / item
-            pending.append(str(resolved.relative_to(root)))
-    return hashes, documents
+    return smtp_public_source
 
 
-def _validate_source_documents(documents):
-    root_document = documents[0]
-    unified = unify(root_document)
-    if unified != root_document:
-        raise ContractError("source_cutover_pending")
-    auth_seen = False
-    for document in documents:
-        if OLD_PATH in json.dumps(document):
-            raise ContractError("source_cutover_pending")
-        if OLD in document.get("secrets", {}):
-            raise ContractError("source_cutover_pending")
-        definitions = document.get("secrets", {})
-        if not isinstance(definitions, dict):
-            raise ContractError("invalid_secret_definition")
-        if document is not root_document:
-            for name, entry in definitions.items():
-                filename = entry.get("file") if isinstance(entry, dict) else None
-                if name == CANONICAL or filename in (
-                    CANONICAL_PATH,
-                    "./" + CANONICAL_PATH,
-                    OLD_PATH,
-                    "./" + OLD_PATH,
-                ):
-                    raise ContractError("included_smtp_redefinition")
-        services = document.get("services", {})
-        if not isinstance(services, dict):
-            raise ContractError("invalid_services")
-        for name, service in services.items():
-            if not isinstance(service, dict):
-                raise ContractError("invalid_service")
-            for source, target in grants(service):
-                if source == OLD:
-                    raise ContractError("source_cutover_pending")
-                if name == "auth" and source == CANONICAL and target == OLD:
-                    auth_seen = True
-    if not auth_seen:
-        raise ContractError("auth_alias_missing")
+def _validate_source_documents(
+    documents, *, require_auth=True, selected_auth_alias=None
+):
+    return _public_source_helper().validate_root_documents(
+        documents,
+        require_auth=require_auth,
+        canonical=CANONICAL,
+        canonical_path=CANONICAL_PATH,
+        old=OLD,
+        old_path=OLD_PATH,
+        grants=grants,
+        unify=unify,
+        error=ContractError,
+        selected_auth_alias=selected_auth_alias,
+    )
 
 
 def source_hashes(root):
-    """Hash only public root and included Compose source, never secret files."""
-    root = Path(root)
-    hashes, documents = _source_documents(root)
-    _validate_source_documents(documents)
+    root = Path(root).absolute()
+    helper = _public_source_helper()
+    hashes, documents, selected = helper.source_documents(
+        root,
+        canonical=CANONICAL,
+        canonical_path=CANONICAL_PATH,
+        old=OLD,
+        old_path=OLD_PATH,
+        grants=grants,
+        error=ContractError,
+    )
+    lab_hashes, lab_present = helper.validate_lab_sources(
+        root,
+        canonical=CANONICAL,
+        canonical_path=CANONICAL_PATH,
+        old=OLD,
+        old_path=OLD_PATH,
+        grants=grants,
+        error=ContractError,
+    )
+    hashes.update(lab_hashes)
+    if helper.has_root_gotrue_service(documents, selected):
+        raise ContractError("root_gotrue_forbidden")
+    selected_auth = selected.get("auth_alias") if not lab_present else None
+    _validate_source_documents(
+        documents, require_auth=not lab_present, selected_auth_alias=selected_auth
+    )
     return hashes
 
 
