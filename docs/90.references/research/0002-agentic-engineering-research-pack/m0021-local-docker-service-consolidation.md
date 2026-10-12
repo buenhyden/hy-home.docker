@@ -1,6 +1,6 @@
 ---
 title: "Reference: Local Docker Service Consolidation"
-version: "0.9.3"
+version: "0.9.4"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
@@ -959,6 +959,38 @@ The older 2026-09-19 execution snapshot below remains dated historical evidence.
 | 13-experience | storybook | infra/13-experience/storybook/docker-compose.yml | storybook | ["experience"] | OPTIONAL | Operator/admin shared UI review; no declared reverse dependency; declared reverse edges=none | none | {"experience_ingress_net":{}} | {"exposed":["8080"],"published":[]} | {"mounts":[],"volume_sources":{}} | none | none | {"cpus":"0.50","mem_limit":"256m","pids_limit":256} | leaf={"authentication_env_keys":[],"router_middlewares":{"traefik.http.routers.storybook.middlewares":"req-rate-limit@file,gateway-standard-chain@file,sso-auth@file"},"user":"101:101"}; inherited-defaults={"cap_drop":["ALL"],"read_only":true,"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-infra-readonly-low"}; runtime unverified; [Policy](../../../05.operations/policies/0101-storybook.md) | No persistent service data; image and source reproducibility owned by Storybook package/Dockerfile | [guide](../../../05.operations/guides/0101-storybook.md); [policy](../../../05.operations/policies/0101-storybook.md); [runbook](../../../05.operations/runbooks/0101-storybook.md) | [infra/13-experience/storybook/docker-compose.yml](../../../../infra/13-experience/storybook/docker-compose.yml) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | Retain as an opt-in shared UI documentation origin; HOME activation requires separate approval. |
 | 13-experience | storybook | infra/13-experience/storybook/docker-compose.yml | storybook-mcp | ["experience"] | OPTIONAL | Remote read-only docs MCP for other workspaces' Codex and Claude Code clients; no declared reverse dependency; declared reverse edges=none | none | {"edge_net":{}} | {"exposed":["7613"],"published":[]} | {"mounts":["${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro"],"volume_sources":{}} | ["NODE_EXTRA_CA_CERTS","STORYBOOK_MCP_ISSUER","STORYBOOK_MCP_READER_GROUP","STORYBOOK_MCP_RESOURCE","STORYBOOK_MCP_SCOPE"] | none | {"cpus":"0.50","mem_limit":"256m","pids_limit":256} | leaf={"authentication_env_keys":[],"router_middlewares":{"traefik.http.routers.storybook-mcp.middlewares":"req-rate-limit@file,gateway-standard-chain@file"},"user":"1000:1000"}; inherited-defaults={"cap_drop":["ALL"],"read_only":true,"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-infra-readonly-low"}; runtime unverified; [Policy](../../../05.operations/policies/0101-storybook.md) | No persistent service data; image and source reproducibility owned by Storybook package/Dockerfile | [guide](../../../05.operations/guides/0101-storybook.md); [policy](../../../05.operations/policies/0101-storybook.md); [runbook](../../../05.operations/runbooks/0101-storybook.md) | [infra/13-experience/storybook/docker-compose.yml](../../../../infra/13-experience/storybook/docker-compose.yml) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | Retain as the opt-in remote docs MCP behind Keycloak bearer tokens; HOME activation and the Keycloak client require separate approval. |
 <!-- current-service-inventory:end -->
+
+### 2026-10-12 Current source findings
+
+The assessment baseline is `23e37362b72e98028a4675f282819c0346ae59dc`.
+Current ROOT discovery finds 111 unique services from 44 inputs; its discovery
+manifest SHA-256 is `af3ad26a32d8504e87af14bd99dae3b8a6cc8593b2a6e6da6f1e4734b1b0b8f6`.
+The current `expected_from_root` and update-ledger service sets agree. Thirteen
+historical LAB rows remain excluded from ROOT, which does not assess LAB runtime
+or data state.
+
+Current main has four stale include-input hashes for Traefik, SeaweedFS, n8n and
+Renovate, so it remains `CONFIRMED_GAP`. Independently reviewed isolated commit
+`854ccc249b05ae17a9eb650a091676cdcf7e87e0` binds the prepared tech-stack
+projection and four matching ledger hashes; it is `SOURCE_PREPARED`, not merged
+delivery. This assessment changed no ledger, scanner or image.
+
+[Qdrant GHSA-3gph-6c29-p29v](https://github.com/qdrant/qdrant/security/advisories/GHSA-3gph-6c29-p29v)
+lists source 1.19.2 as patched, so its source disposition is `NO_CHANGE`.
+[SeaweedFS GHSA-99q7-x53r-6j4g](https://github.com/seaweedfs/seaweedfs/security/advisories/GHSA-99q7-x53r-6j4g)/CVE-2026-77368
+includes source 4.48 in the supplier range but has no patched release; the TUS
+disable source and focused two-test receipt already exist. Both signatures, SBOM,
+full scan, native, HOME and restore lanes are `NOT_RUN`. The historical runtime
+Qdrant 1.19.1 observation is `RUNTIME_UNVERIFIED`, not fresh HOME or
+exploitability evidence.
+
+P01–P07, SMTP01 and CLN01 source states remain with their owning Tasks. CLN01's
+refusal helper is not deletion evidence and is not `DELETE_VERIFIED`. A P08
+Stage05 document move may integrate only after an exact dirty-worktree writer
+path/hash handoff. Wiki preparation is completed `NO_CHANGE`; Wiki API/UI,
+external workspaces and learning applications are outside this assessment. The
+[P10 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0016-p10-opsflow-acceptance.md#coord-request-1130-source-reconciliation-2026-10-12)
+is the single authority for execution state and follow-up order.
 
 >
 

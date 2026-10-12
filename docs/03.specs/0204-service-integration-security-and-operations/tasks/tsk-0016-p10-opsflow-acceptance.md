@@ -1,6 +1,6 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.4"
+version: "0.1.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -30,8 +30,10 @@ documents only into the corresponding Stage05 family `labs/` paths.
 
 ## Inputs and Authorization
 
-The direct P10 request authorizes an owning Task, source/test preparation,
-logical commits, review and reviewed local-main delivery. The historical analysis
+The direct P10 request authorized an owning Task, source/test preparation,
+logical commits, review and reviewed local-main delivery; that delivery direction
+is historical and superseded for remaining work by the current COORD request.
+The historical analysis
 baseline is `860ac1c3633eac9ad416fb1abd8a61a6e617ebd8`; it is context, not a
 runtime target. The initial P10 worktree branch is
 `codex/p10-opsflow-acceptance` at local HEAD
@@ -44,10 +46,8 @@ secret values were read. Recheck the exact input refs, dirty paths and relevant
 owner heads before every implementation unit. Never reset, stash, clean or
 stage another worker's changes.
 
-The direct delivery lane is local `main`, without `dev` or a required PR.
-The supplied prompt's future PR language does not authorize a remote action in
-this lane. A later explicit remote lane must recheck its current ruleset, CI and
-independent review at the actual head. No secret value, raw environment file,
+Remaining delivery uses the owning-Spec PR, exact-head CI, independent review
+and merge. No secret value, raw environment file,
 credential, production client or external SMTP send is permitted in preparation.
 
 One owner may prepare only this Task, the acceptance test
@@ -301,8 +301,8 @@ only synthetic bytes/IDs, source allowlist names and expected bounded outcomes.
 The first eight-file staged gate exited 1 solely because Ruff format-check
 requested formatting of the new test. Ruff was applied only to that owned file;
 all other selected lint/secret checks had passed. Final staged/common-head
-checks and independent source/security review are required before local-main
-delivery; they are recorded separately below.
+checks and independent source/security review are required before the
+owning-Spec PR delivery; they are recorded separately below.
 
 ### W64 exact fixture README gate correction
 
@@ -569,9 +569,11 @@ At the actual final head, report every owner criterion and the separate SOURCE,
 UNIT, STATIC, ISOLATED, HOME, MIGRATION, ROTATION, RECOVERY and DELIVERY result.
 Run affected syntax/schema/Registry/link/secret-leak checks, selected unit and
 native acceptance, staged gates and independent review. Record exact commands,
-input SHA, exit status, failures/corrections, rollback proof and local-main
-receipt. Tests do not establish deployment, deletion, migration or recovery
-without their actual evidence.
+input SHA, exit status, failures/corrections and rollback proof. For future
+delivery, use the owning-Spec PR, exact-head CI and independent review before
+merge; historical local-main receipts remain historical evidence only. Tests do
+not establish deployment, deletion, migration or recovery without their actual
+evidence.
 
 ### W69 completed-source worktree cleanup — 2026-10-12
 
@@ -641,12 +643,10 @@ publication, P05 native notifier, P06 actual pilot/recovery, P07 representative
 workload/rollout, P08 W59–W62 moves and P10 W65–W68 remain open under their
 owning Tasks. They are not complete merely because source was merged.
 
-The latest user resume instruction restores stable-version updates and their
-associated official-documentation/compatibility investigation; it supersedes
-the intervening warning-only modernization restriction. UNKNOWN stays unknown,
-and no-newer stable lookup requires no version bump. P10 consumes its selected
-artifact's version/security evidence and exact native/recovery contract;
-unrelated global SEC completion is not an isolated-lane start prerequisite.
+Current image/scanner maintenance requires an actual confirmed current-image
+security warning. UNKNOWN remains unknown. P10 consumes its selected artifact's
+version/security evidence and exact native/recovery contract; unrelated global
+SEC completion is not an isolated-lane start prerequisite.
 The current ROOT source census excludes relocated LAB Supabase/GoTrue.
 
 The original checkout was confirmed clean on main before this increment, rather than detached a03.
@@ -707,6 +707,128 @@ evidence; native execution is blocked pending exact-source recovery or fresh
 review. TSK-0009 records the missing hashes and current memory observation.
 No scan PASS, deployment or complete SEC01 acceptance is inferred.
 
+### COORD request 11–30 source reconciliation — 2026-10-12
+
+At source baseline `23e37362b72e98028a4675f282819c0346ae59dc`, current ROOT
+discovery reports 111 unique service rows across 44 inputs; its discovery
+manifest SHA-256 is
+`af3ad26a32d8504e87af14bd99dae3b8a6cc8593b2a6e6da6f1e4734b1b0b8f6`.
+The expected ROOT set and update-ledger service entries agree, while thirteen
+historical LAB rows remain excluded from ROOT. This is source metadata only:
+it does not prove a consumer, running service, HOME state, migration, rotation
+or recovery.
+
+At the baseline, the committed ledger had four stale include-input hashes for Traefik, SeaweedFS,
+n8n and Renovate. The root's nine staged foreign paths already contain an
+unreviewed update-ledger correction whose 44 input hashes match the current
+files; that is `SOURCE_PREPARED`, not delivery. It remains under its existing
+writer, review and rollback boundary. That initial audit did not create another
+ledger, scanner or image implementation; the later metadata binding integration
+is recorded below.
+
+On this exact baseline, the coordinator's source-contract command
+`/tmp/hyhome-coord-qa/bin/python -m unittest tests.lib.ops.test_secret_catalog tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters tests.lib.ops.test_n8n_outbox_workflow tests.lib.ops.test_openbao_consumer_migration tests.lib.ops.test_smtp_contract tests.lib.ops.test_retirement tests.validation.test_secret_catalog_contract tests.validation.test_n8n_outbox_contract tests.validation.test_openbao_consumer_migration_contract -q`
+passed 223 tests, exit 0. The integration-contract command
+`/tmp/hyhome-coord-qa/bin/python -m unittest tests.validation.test_opsflow_e2e_acceptance tests.lib.ops.test_port_inventory tests.lib.ops.test_root_resource_assessment tests.validation.test_root_resource_contract -q`
+passed 62 tests, exit 0. Both are source/unit or synthetic receipts only, not
+native, HOME, migration, rotation, deletion or recovery evidence.
+
+An earlier source-contract attempt failed because `referencing` was unavailable;
+a narrower retry also exited 1 because of an incorrect unittest selector;
+neither attempt was accepted.
+The changed local-only gate also exited 1 on the baseline because the committed
+versions projection retained n8n 2.42.6 and Renovate 44.151.0 while source had
+newer values. The sole metadata writer reused only the prepared tech-stack
+projection and four ledger include-input hashes, committed them as
+`854ccc249b05ae17a9eb650a091676cdcf7e87e0`, and recorded independent source
+and security metadata approval, 33 focused tests exit 0,
+`bash scripts/operations/sync-tech-stack-versions.sh --check`
+exit 0, and staged validation exit 0. This remains `SOURCE_PREPARED` pending a
+fresh final-head gate and delivery; it adopted neither the full foreign ledger
+payload nor any image, scanner, native or HOME change.
+
+P01–P07 and SMTP01/CLN01 source receipts are `NO_CHANGE` unless named below;
+their native, HOME, migration, rotation, deletion and recovery lanes retain
+their owners. P08's move candidate is in a separate dirty worktree and needs an
+exact writer path/hash handoff before W68. The active-spec audit observed 25
+Specs (four completed, 21 active or draft); it does not transfer ownership or
+reopen completed P00, P09 preparation, SMTP01/CLN01 acceptance, or Stage05 body
+evidence.
+
+The P08 handoff may cover only typed Stage05 LAB-document moves, README and path
+contracts; existing merged LAB service/source work is not a P08 or P10 input.
+The P08 owner must bind exact old/new paths, hashes, link checks and rollback
+before this Task performs W68's directory dry run. A later owning-Spec PR,
+exact-head CI and independent review are delivery prerequisites. This does not
+rewrite accepted W70 source evidence or authorize LAB runtime work.
+
+| Request | Primary owner | Source classification | Runtime classification | Exact target / next input |
+| --- | --- | --- | --- | --- |
+| 11 | P07 / SPEC-0218 | NO_CHANGE | NOT_RUN | Measured workload and rollout boundary |
+| 12 | P03; P04/P05 consumers | NO_CHANGE | NOT_RUN | Named native consumer and endpoint contract |
+| 13 | P02 | NO_CHANGE | NOT_RUN / BLOCKED_P01 | P01 delivery and recovery contract |
+| 14 | P03 | NO_CHANGE | NOT_RUN | Native listener, DNS and auth facts |
+| 15 | P10 | SOURCE_PREPARED | NOT_RUN | W65–W68 exact native, HOME and restore inputs |
+| 16 | P04 | NO_CHANGE | NOT_RUN | Airflow/DEV/S3 publication target |
+| 17 | P05 / SEC01 metadata | P05 production code NO_CHANGE; shared SEC metadata SOURCE_APPLIED | NOT_RUN | P04 publication then native n8n target |
+| 18 | P07 | NO_CHANGE | NOT_RUN | Representative workload and rollout evidence |
+| 19 | P07 / SPEC-0218 | NO_CHANGE | NOT_RUN | Confirmed common-control need |
+| 20 | SPEC-0227 | NO_CHANGE | NOT_RUN | Completed Stage05 body refresh; no new work |
+| 21 | SPEC-0212 routing | SOURCE_APPLIED | NOT_APPLICABLE | Existing owner closes its residual |
+| 22 | P01 | NO_CHANGE | BLOCKED / NOT_RUN | Named TLS, custody and restore boundary |
+| 23 | P03 | NO_CHANGE | NOT_RUN | Four-location listener/consumer facts |
+| 24 | SPEC-0204 | SOURCE_APPLIED | NOT_APPLICABLE | Prospective Spec/Plan reconciliation |
+| 25 | P08 | SOURCE_PREPARED | NOT_RUN | Exact Stage05 path/hash writer handoff |
+| 26 | SPEC-0212 exclusion | NO_CHANGE | NOT_APPLICABLE | No learning-application work admitted |
+| 27 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
+| 28 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
+| 29 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
+| 30 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
+
+### COORD final-gate component receipt — 2026-10-12
+
+At the frozen five-document candidate, registered local-only process `86838`
+exited 1: 628 selected tests had six failures, one error and 71 skips. Three
+failures are inherited ROOT metadata `8`-versus-`9` count assertions; the other
+three failures and one error have no captured reproducible cause here and remain
+`UNKNOWN`. Its completed components selected five documents with zero metadata
+violations; the tech-stack projection
+was in sync for 91 repositories, with optional `OPSFLOW_AIRFLOW_IMAGE` unresolved
+and not treated as an image pin or native acceptance; and full link validation
+checked 1,227 documents and 11,677 links with zero failures and one existing
+`2870` legacy-unrecorded warning. A previous full-link run exited 1 only because
+the m0021 P10 anchor omitted its date; the canonical heading helper supplied the
+correct anchor, and the changed P10/m0021 anchor assertion then passed, exit 0.
+These component receipts preserve the earlier failure and do not close delivery,
+HOME, migration, rotation or recovery.
+
+The parent command was
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 scripts/validation/run-ci-gate.py --profile changed --local-only`.
+Within that same parent process, `leaf.supply-chain-fixture-policy` ran its
+unchanged nine-module workflow-contract argv and passed 264 tests, exit 0.
+`leaf.conftest-policy-tests` ran
+`scripts/validation/check-conftest-policy.sh --mode verify` and passed 18 of 18
+tests, exit 0. These are not separate CLI executions: the registered fail-fast
+execution plan proceeded to the later failing compose-baseline leaf, establishing
+that both earlier child leaves returned zero. They are source/unit receipts only,
+with no live scanner, HOME or delivery result.
+
+The user explicitly approved only the ROOT-excludes-LAB metadata test correction
+in `tests/validation/test_lab_isolation.py`. The QA owner changed its expected
+count from eight to nine after focused RED exit 1 and GREEN exit 0, with Ruff and
+diff checks passing. That correction changes no LAB execution, service source,
+image or functional test. Independent source and security reviews approved the
+one-line test. This Task records the approval boundary and result only; it does not
+assert an aggregate PASS or a delivery result.
+
+The ROOT metadata correction was committed separately as
+`fde4b8c4f3f71d0399492378923071b8abb8fc7e`, parent
+`854ccc249b05ae17a9eb650a091676cdcf7e87e0`. Its absolute `/tmp` QA Commitizen,
+staged, Ruff, RED/GREEN and diff receipts passed, and independent source and
+security reviews approved the exact one-line test change. This is a CRC/source
+receipt for the approved test boundary, not a broader gate PASS, runtime result
+or delivery receipt.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -719,7 +841,16 @@ No scan PASS, deployment or complete SEC01 acceptance is inferred.
 | Selected HOME acceptance | 21 | W66 | Selected host rollout and authenticated service evidence | Named host, resources, backups and rollback | NOT_RUN | W66 selected HOME acceptance | pending |
 | Fault, backup and restore | 21 | W67 | Fault receipt, complete set and exact empty-target restore | Named fault scope and snapshot custody | NOT_RUN | W67 failure, backup and empty-target restore | pending |
 | P08 path handoff | 21 | W68 | Hash-bound path/README handoff and command-directory dry run | P08 final receipt | NOT_RUN | W68 P08 path handoff and dry run | pending |
-| Final owner report | 21 | W69 | Exact-head checks, review and local-main delivery evidence | Final candidate and owner receipts | NOT_RUN | W69 final owner report and delivery | pending |
+| Final owner report | 21 | W69 | Exact-head checks, review and owning-Spec PR delivery evidence | Final candidate and owner receipts | NOT_RUN | W69 final owner report and delivery | pending |
+| Coordinator source-contract suite | 21 | W63 | P01/P02/P04/P05/P06/SMTP/CLN source contracts | Baseline 23e37362b72e98028a4675f282819c0346ae59dc; 223 tests, exit 0 | PASS | COORD request 11–30 source reconciliation | accepted |
+| Coordinator integration-contract suite | 21 | W63 | P03 port, P07 resource and P10 acceptance contracts | Baseline 23e37362b72e98028a4675f282819c0346ae59dc; 62 tests, exit 0 | PASS | COORD request 11–30 source reconciliation | accepted |
+| Final-gate metadata component | 21 | W69 | Registered local-only component selected governed documents | Frozen five-document candidate; zero violations | PASS | COORD final-gate component receipt | accepted |
+| Final-gate tech-stack component | 21 | W69 | Registered projection synchronization check | 91 repositories; optional OPSFLOW_AIRFLOW_IMAGE unresolved | PASS | COORD final-gate component receipt | accepted |
+| Final-gate link component | 21 | W69 | Full links and corrected changed-anchor assertion | 1,227 documents, 11,677 links, zero failures, one existing warning; anchor assertion exit 0 | PASS | COORD final-gate component receipt | accepted |
+| Final-gate supply-chain fixture component | 21 | W69 | `leaf.supply-chain-fixture-policy` in process 86838 | Registered nine-module argv; 264 tests, exit 0; child result established by fail-fast runner progress | PASS | COORD final-gate component receipt | accepted |
+| Final-gate conftest component | 21 | W69 | `leaf.conftest-policy-tests` in process 86838 | `scripts/validation/check-conftest-policy.sh --mode verify`; 18 of 18 tests, exit 0; child result established by fail-fast runner progress | PASS | COORD final-gate component receipt | accepted |
+| Final-gate aggregate | 21 | W69 | Registered local-only process | Process 86838: 628 selected; six failures, one error, 71 skips; component checks retained separately | FAIL | COORD final-gate component receipt | pending |
+| ROOT-excludes-LAB metadata test correction | 21 | W69 | Narrow user-approved expected-count correction | `tests/validation/test_lab_isolation.py`: 8 to 9; focused RED/GREEN, Ruff and diff PASS; independent source/security review APPROVE | PASS | COORD final-gate component receipt | accepted |
 
 ## Review and Completion
 
