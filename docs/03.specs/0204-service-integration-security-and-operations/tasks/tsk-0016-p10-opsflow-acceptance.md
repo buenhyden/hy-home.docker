@@ -1,6 +1,6 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.16"
+version: "0.1.17"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -952,6 +952,17 @@ selection and exited 2 with `ERROR: local staged input is empty`; this process
 is FAIL and its style applicability is N/A, not PASS. Task0015 was dirty only
 with its pending documentation clarification during these checks, so this does
 not claim a clean documentation worktree.
+
+At C `590da0e25a5d63f21af79f7973b556b2baa51f08`, existing
+`links.build_document_graph` then `check_commands` ran through inline
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3` standard-library
+calls. The 275 tracked numbered Stage05 documents (230 leaves and 45 READMEs)
+yielded 311 shell fences with zero path or input failures, exit 0; the Stage05
+source was equivalent to M2. A first M2-head guard exited 1 after C committed
+concurrently, before graph construction or path checks ran; one current-C retry
+then passed. This STATIC repository-path
+check does not model `cd`, shell working directory, environment or external
+host behavior, so W68 directory dry run remains NOT_RUN.
 
 Fresh active-spec frontmatter parsing found 25 Specs: completed SPEC-0208,
 SPEC-0209, SPEC-0210 and SPEC-0212; active SPEC-0182 (blocked), SPEC-0204,
