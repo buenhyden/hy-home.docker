@@ -127,6 +127,283 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
 
 
 class DocumentRegistryTests(unittest.TestCase):
+    def test_additional_operation_patterns_preserve_flat_route_and_reject_overlap(
+        self,
+    ) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        guide = next(profile for profile in raw["profiles"] if profile["id"] == "guide")
+        nested = "docs/05.operations/guides/labs/{number:4}-{slug}.md"
+        guide["additional_path_patterns"] = [nested]
+        self.assertEqual((), validate_registry(raw))
+        primary = guide["path_pattern"]
+        self.assertEqual("docs/05.operations/guides/{number:4}-{slug}.md", primary)
+        for value in (
+            [],
+            [nested, nested],
+            [""],
+            [None],
+            ["docs/05.operations/guides/../{slug}.md"],
+        ):
+            with self.subTest(value=value):
+                candidate = json.loads(json.dumps(raw))
+                target = next(
+                    profile
+                    for profile in candidate["profiles"]
+                    if profile["id"] == "guide"
+                )
+                target["additional_path_patterns"] = value
+                self.assertTrue(validate_registry(candidate))
+        candidate = json.loads(json.dumps(raw))
+        policy = next(
+            profile for profile in candidate["profiles"] if profile["id"] == "policy"
+        )
+        policy["additional_path_patterns"] = [nested]
+        self.assertIn(
+            "profile-path-overlap",
+            {finding.code for finding in validate_registry(candidate)},
+        )
+        guide["additional_path_patterns"] = [primary]
+        self.assertTrue(validate_registry(raw))
+
+    def test_registered_operations_domains_keep_the_typed_identity(self) -> None:
+        registry = load_registry()
+        for domain in (
+            "common",
+            "gateway-and-networking",
+            "identity-and-access",
+            "security-and-secrets",
+            "databases-and-storage",
+            "messaging-and-cdc",
+            "observability",
+            "workflows-and-automation",
+            "ai-and-search",
+            "platform-and-backup",
+            "mail-and-notifications",
+            "testing-and-quality",
+            "analytics-and-data-quality",
+            "design-system",
+            "labs",
+        ):
+            for family, profile, prefix in (
+                ("guides", "guide", "GDE"),
+                ("policies", "policy", "POL"),
+                ("runbooks", "runbook", "RUN"),
+            ):
+                with self.subTest(domain=domain, family=family):
+                    path = pathlib.PurePosixPath(
+                        f"docs/05.operations/{family}/{domain}/0099-example.md"
+                    )
+                    self.assertEqual(profile, classify_path(path, registry))
+                    metadata = {
+                        "type": f"operation/{profile}",
+                        "artifact_id": f"{prefix}-0099",
+                    }
+                    self.assertEqual(
+                        [], validate_stable_identity(path, metadata, registry.profiles)
+                    )
+                    self.assertTrue(
+                        validate_stable_identity(
+                            path,
+                            {**metadata, "artifact_id": f"{prefix}-0098"},
+                            registry.profiles,
+                        )
+                    )
+                    readme = path.with_name("README.md")
+                    readme_profile = classify_path(readme, registry)
+                    self.assertIsNotNone(readme_profile)
+                    self.assertEqual(
+                        "common/readme", registry.profiles[readme_profile]["type"]
+                    )
+
+    def test_typed_lab_readmes_are_governed_navigation(self) -> None:
+        registry = load_registry()
+        profiles = build_registry_profiles(registry)
+        for family in ("guides", "policies", "runbooks"):
+            with self.subTest(family=family):
+                path = f"docs/05.operations/{family}/labs/README.md"
+                profile_id = classify_path(path, registry)
+                self.assertIsNotNone(profile_id)
+                self.assertEqual("common/readme", registry.profiles[profile_id]["type"])
+                self.assertEqual(
+                    profile_id, infer_artifact_type(pathlib.Path(path), profiles)
+                )
+
+    def test_typed_nested_operations_do_not_admit_arbitrary_directories(self) -> None:
+        registry = load_registry()
+        for suffix in (
+            "unknown-domain/0099-lab-example.md",
+            "unknown-domain/README.md",
+            "Labs/0099-lab-example.md",
+            "labs/nested/0099-lab-example.md",
+            "labs/nested/README.md",
+            "labs/../0099-lab-example.md",
+            "labs//0099-lab-example.md",
+            "./labs/0099-lab-example.md",
+            "labs/0099-Lab-Example.md",
+            "labs/ops-0099-lab-example.md",
+        ):
+            with self.subTest(suffix=suffix):
+                self.assertIsNone(
+                    classify_path(f"docs/05.operations/guides/{suffix}", registry)
+                )
+
+    def test_typed_operations_lab_paths_keep_the_family_profile(self) -> None:
+        registry = load_registry()
+        profiles = build_registry_profiles(registry)
+        for family, profile, prefix in (
+            ("guides", "guide", "GDE"),
+            ("policies", "policy", "POL"),
+            ("runbooks", "runbook", "RUN"),
+        ):
+            with self.subTest(family=family):
+                path = pathlib.PurePosixPath(
+                    f"docs/05.operations/{family}/labs/0099-lab-example.md"
+                )
+                self.assertEqual(profile, classify_path(path, registry))
+                self.assertEqual(
+                    profile, infer_artifact_type(pathlib.Path(path), profiles)
+                )
+                self.assertEqual(
+                    [],
+                    validate_stable_identity(
+                        path,
+                        {
+                            "type": f"operation/{profile}",
+                            "artifact_id": f"{prefix}-0099",
+                        },
+                        profiles["profiles"],
+                        profile_id=profile,
+                    ),
+                )
+
+    def test_additional_pattern_safety_and_exact_route_collisions(self) -> None:
+        for pattern in (
+            "docs/05.operations/guides/labs/*-example.md",
+            "docs/05.operations/guides/./{number:4}-{slug}.md",
+            "docs/05.operations/guides/labs/{unknown}.md",
+            "/docs/05.operations/guides/labs/{number:4}-{slug}.md",
+            "docs/05.operations/guides/labs/{number:4}-?.md",
+        ):
+            with self.subTest(pattern=pattern):
+                raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+                guide = next(p for p in raw["profiles"] if p["id"] == "guide")
+                guide["additional_path_patterns"] = [pattern]
+                self.assertTrue(validate_registry(raw))
+        for owner in ("readme", "package-readme"):
+            with self.subTest(owner=owner):
+                raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+                profile = next(p for p in raw["profiles"] if p["id"] == owner)
+                profile["additional_paths"] = [
+                    *profile.get("additional_paths", ()),
+                    "docs/05.operations/guides/labs/0099-example.md",
+                ]
+                self.assertIn(
+                    "profile-path-overlap",
+                    {finding.code for finding in validate_registry(raw)},
+                )
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        readme = next(p for p in raw["profiles"] if p["id"] == "readme")
+        readme["additional_paths"] = [
+            *readme["additional_paths"],
+            readme["path_pattern"],
+        ]
+        self.assertIn(
+            "profile-path-overlap", {finding.code for finding in validate_registry(raw)}
+        )
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        guide = next(p for p in raw["profiles"] if p["id"] == "guide")
+        guide["additional_path_patterns"] = [
+            "docs/05.operations/guides/labs/{number:4}-{slug}.md",
+            "docs/05.operations/guides/{domain}/{number:4}-{slug}.md",
+        ]
+        self.assertIn(
+            "profile-path-overlap", {finding.code for finding in validate_registry(raw)}
+        )
+
+    def test_projected_patterns_support_identity_and_template_routes(self) -> None:
+        registry = load_registry()
+        adapted = build_registry_profiles(registry)
+        for role, family in (
+            ("guide", "guides"),
+            ("policy", "policies"),
+            ("runbook", "runbooks"),
+        ):
+            with self.subTest(role=role):
+                path = pathlib.PurePosixPath(
+                    f"docs/05.operations/{family}/labs/0099-example.md"
+                )
+                self.assertEqual(role, infer_artifact_type(pathlib.Path(path)))
+                self.assertIn(
+                    f"docs/05.operations/{family}/labs/[0-9][0-9][0-9][0-9]-*.md",
+                    adapted["template_roles"][f"operation/{role}"]["target_globs"],
+                )
+
+    def test_taxonomy_projection_and_legacy_inference_agree_on_nested_routes(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.taxonomy import (
+            classify_path as classify_taxonomy,
+        )
+
+        registry = load_registry()
+        adapted = build_registry_profiles(registry)
+        path = pathlib.PurePosixPath("docs/05.operations/guides/labs/0099-example.md")
+        self.assertEqual("guide", classify_taxonomy(path, registry.profiles))
+        self.assertEqual("guide", classify_taxonomy(path, adapted["profiles"]))
+        readme = path.with_name("README.md")
+        self.assertEqual("readme", classify_taxonomy(readme, registry.profiles))
+        self.assertEqual("readme", classify_taxonomy(readme, adapted["profiles"]))
+        self.assertEqual(
+            "unsupported",
+            infer_artifact_type(
+                pathlib.Path("docs/05.operations/guides/unknown-domain/0099-example.md")
+            ),
+        )
+        self.assertEqual(
+            "unsupported",
+            infer_artifact_type(
+                pathlib.Path("docs/05.operations/guides/labs/nested/0099-example.md")
+            ),
+        )
+
+    def test_repeated_overlap_reuses_only_pure_pattern_results(self) -> None:
+        from scripts.lib.document_governance import taxonomy
+
+        overlap = taxonomy._segment_patterns_overlap
+        if hasattr(overlap, "cache_clear"):
+            overlap.cache_clear()
+            self.addCleanup(overlap.cache_clear)
+        with mock.patch.object(
+            taxonomy, "_segment_nfa", wraps=taxonomy._segment_nfa
+        ) as nfa:
+            self.assertTrue(overlap("a{slug}", "abc"))
+            self.assertTrue(overlap("a{slug}", "abc"))
+            self.assertEqual(2, nfa.call_count)
+
+    def test_overlap_cache_is_bounded_and_changed_registry_still_rejects_conflicts(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance import taxonomy
+
+        overlap = taxonomy._segment_patterns_overlap
+        overlap.cache_clear()
+        self.addCleanup(overlap.cache_clear)
+        self.assertFalse(overlap("a{slug}", "bcd"))
+        self.assertTrue(overlap("b{slug}", "bcd"))
+        for index in range(4097):
+            self.assertIs(False, overlap(f"literal-{index}", "different"))
+        self.assertEqual(4096, overlap.cache_info().maxsize)
+        self.assertEqual(4096, overlap.cache_info().currsize)
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        self.assertEqual((), validate_registry(raw))
+        policy = next(p for p in raw["profiles"] if p["id"] == "policy")
+        policy["additional_path_patterns"] = [
+            "docs/05.operations/guides/labs/{number:4}-{slug}.md",
+        ]
+        self.assertIn(
+            "profile-path-overlap", {finding.code for finding in validate_registry(raw)}
+        )
+
     def test_generation5_common_contract_is_exact(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         self.assertEqual((), validate_registry(raw))

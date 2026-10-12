@@ -597,6 +597,30 @@ def validate_registry(
                         "path-pattern-invalid", f"profiles.{index}", path_pattern
                     )
                 )
+            extra_patterns = profile.get("additional_path_patterns", ())
+            if isinstance(extra_patterns, (list, tuple)):
+                for extra in extra_patterns:
+                    if isinstance(extra, str) and (
+                        not _safe_path_pattern(extra) or "*" in extra or "?" in extra
+                    ):
+                        findings.append(
+                            RegistryFinding(
+                                "path-pattern-invalid", f"profiles.{index}", extra
+                            )
+                        )
+                valid_patterns = profile_path_patterns(profile)
+                for offset, pattern in enumerate(valid_patterns):
+                    if any(
+                        _path_patterns_overlap(pattern, other)
+                        for other in valid_patterns[offset + 1 :]
+                    ):
+                        findings.append(
+                            RegistryFinding(
+                                "profile-path-overlap",
+                                f"profiles.{index}",
+                                "one profile has intersecting path patterns",
+                            )
+                        )
             artifact_pattern = profile.get("artifact_id_pattern")
             if isinstance(artifact_pattern, str) and not _safe_artifact_pattern(
                 artifact_pattern
@@ -659,7 +683,11 @@ def validate_registry(
                 # A provider-owned binding is a narrower runtime-owned surface
                 # inside a generic document route; its runtime owner resolves it.
                 continue
-            if _path_patterns_overlap(left_pattern, right_pattern):
+            if any(
+                _path_patterns_overlap(a, b)
+                for a in profile_path_patterns(left)
+                for b in profile_path_patterns(right)
+            ):
                 findings.append(
                     RegistryFinding(
                         "profile-path-overlap",
@@ -693,10 +721,11 @@ def validate_registry(
             owners = [
                 other.get("id")
                 for _, other in profile_entries
-                if other is not profile
-                and other.get("id") != "unsupported"
-                and isinstance(other.get("path_pattern"), str)
-                and _path_regex(other["path_pattern"]).fullmatch(path)
+                if other.get("id") != "unsupported"
+                and any(
+                    path_matches_pattern(path, pattern)
+                    for pattern in profile_path_patterns(other)
+                )
             ]
             if owners or path in additional_owners:
                 findings.append(
@@ -2395,6 +2424,18 @@ def artifact_identifier_regex(patterns: tuple[str, ...]) -> re.Pattern[str]:
     return re.compile(rf"(?<![A-Za-z0-9-])(?:{'|'.join(bodies)})(?![A-Za-z0-9-])")
 
 
+def profile_path_patterns(profile: Mapping[str, object]) -> tuple[str, ...]:
+    """Project the primary and optional patterns from one Registry owner."""
+
+    primary = profile.get("path_pattern")
+    extra = profile.get("additional_path_patterns", ())
+    return tuple(
+        pattern
+        for pattern in (primary, *(extra if isinstance(extra, (list, tuple)) else ()))
+        if isinstance(pattern, str)
+    )
+
+
 def classify_path(
     path: str | pathlib.PurePosixPath,
     registry: DocumentRegistry | None = None,
@@ -2403,11 +2444,20 @@ def classify_path(
 
     active = registry or load_registry()
     normalized = pathlib.PurePosixPath(path).as_posix()
+    if (
+        str(path) != normalized
+        or ".." in pathlib.PurePosixPath(path).parts
+        or "\\" in normalized
+    ):
+        return None
     matches = [
         profile_id
         for profile_id, profile in active.profiles.items()
         if normalized in profile.get("additional_paths", ())
-        or path_matches_pattern(normalized, profile.get("path_pattern"))
+        or any(
+            path_matches_pattern(normalized, pattern)
+            for pattern in profile_path_patterns(profile)
+        )
     ]
     specific = [item for item in matches if item not in FALLBACK_PROFILE_IDS]
     if len(specific) > 1:

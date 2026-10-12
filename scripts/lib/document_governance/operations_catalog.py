@@ -30,6 +30,7 @@ from scripts.lib.document_governance.registry import (
     document_type,
     load_registry_document,
     path_matches_pattern,
+    profile_path_patterns,
 )
 from scripts.lib.document_governance.registry import (
     validate_registry as validate_canonical_registry,
@@ -1658,7 +1659,13 @@ def _index_member_links(text: str) -> Counter[str]:
                 continue
             href = str(token.attrGet("href") or "").split("#", 1)[0]
             href = href.removeprefix("./")
-            if href and "/" not in href and href != "README.md":
+            if (
+                href
+                and href != "README.md"
+                and (
+                    "/" not in href or re.fullmatch(r"[a-z][a-z0-9-]*/README\.md", href)
+                )
+            ):
                 counts[href] += 1
     return counts
 
@@ -1671,20 +1678,28 @@ def _validate_role_directory(
     registry: Mapping[str, object],
     seen_artifacts: dict[str, pathlib.PurePosixPath],
     require_tracked,
+    *,
+    domain: str | None = None,
+    seen_slugs: dict[str, pathlib.PurePosixPath] | None = None,
+    remaining: list[int] | None = None,
 ) -> list[CatalogFinding]:
     """Validate one role directory: its index, member names, and identities."""
 
     findings: list[CatalogFinding] = []
     relative = OPERATIONS_ROOT / directory
+    if domain is not None:
+        relative /= domain
+    remaining = remaining if remaining is not None else [MAX_ROLE_ENTRIES]
+    if remaining[0] < 1:
+        return [_finding("role-bounds", relative, "family entry budget exhausted")]
     try:
-        entries = _directory_entries_bounded(
-            root, relative, max_entries=MAX_ROLE_ENTRIES
-        )
+        entries = _directory_entries_bounded(root, relative, max_entries=remaining[0])
     except OperationsAuthorityError as error:
         code = (
             "role-bounds" if error.code == "directory-bounds" else "role-root-invalid"
         )
         return [_finding(code, relative, str(error))]
+    remaining[0] -= len(entries)
     by_name = {entry.name: entry for entry in entries}
     index_entry = by_name.get("README.md")
     index_links: Counter[str] | None = None
@@ -1703,11 +1718,53 @@ def _validate_role_directory(
     if not isinstance(profile, Mapping):
         return [*findings, _finding("role-profile-invalid", relative, role)]
     members: list[str] = []
-    seen_slugs: dict[str, pathlib.PurePosixPath] = {}
+    seen_slugs = seen_slugs if seen_slugs is not None else {}
+    domains = {
+        parts[3]
+        for pattern in profile_path_patterns(profile)
+        if len(parts := pattern.split("/")) == 5
+        and parts[:3] == ["docs", "05.operations", directory]
+        and re.fullmatch(r"[a-z][a-z0-9-]*", parts[3])
+        and parts[4] == "{number:4}-{slug}.md"
+    }
+    readme_profiles = [
+        p
+        for p in _registry_profiles(registry).values()
+        if p.get("type") == "common/readme"
+    ]
     for entry in sorted(entries):
         if entry.name == "README.md":
             continue
         member = relative / entry.name
+        if domain is None and entry.name in domains and entry.is_directory:
+            readme = member / "README.md"
+            if not any(
+                str(readme) in p.get("additional_paths", ()) for p in readme_profiles
+            ):
+                findings.append(
+                    _finding(
+                        "role-index-invalid",
+                        readme,
+                        "domain README must have a Registry owner",
+                    )
+                )
+                continue
+            members.append(f"{entry.name}/README.md")
+            findings.extend(
+                _validate_role_directory(
+                    root,
+                    directory,
+                    role,
+                    profile,
+                    registry,
+                    seen_artifacts,
+                    require_tracked,
+                    domain=entry.name,
+                    seen_slugs=seen_slugs,
+                    remaining=remaining,
+                )
+            )
+            continue
         match = _MEMBER.fullmatch(entry.name)
         if match is None:
             findings.append(
@@ -1733,7 +1790,10 @@ def _validate_role_directory(
             findings.append(_finding(error.code, member, str(error)))
             continue
         artifact = metadata.get("artifact_id")
-        if not path_matches_pattern(member, profile.get("path_pattern")):
+        if not any(
+            path_matches_pattern(member, pattern)
+            for pattern in profile_path_patterns(profile)
+        ):
             findings.append(_finding("role-path-profile-mismatch", member, role))
         if profile.get("identity_relation") != "direct":
             findings.append(
