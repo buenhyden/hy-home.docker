@@ -1921,6 +1921,33 @@ FILE_USABILITY, CURRENT_VERSION_AUTH and CONSUMER_READ are NOT_RUN. The live
 OpenBao 2.6 image remains running with restart 0 and OOM=false. Task status
 remains blocked; the 19-case local CAP_CHOWN source validation is SOURCE-only.
 
+### W23 Public Native Preparation Receipt — 2026-10-13
+
+Public native preparation is SOURCE-only: the command exited 0 within the
+actual native bounds 2026-10-12T23:24:35.376695330Z–2026-10-12T23:25:45.455258032Z.
+It preserved OLD03's public RED `configRO` case and showed GREEN for the fixed
+functions on OpenBao 2.7.1 amd64 image `a36...`: read-only root, no network,
+DropAll, no-new-privileges, UID 100, exact 64 KiB config tmpfs, 16 MiB tmpfs
+and mount guards. The native server remained initialized=false and sealed=true
+with Raft 2.7.1; CA verification passed and GET health returned 501. This is
+not a HOME bootstrap or restore result.
+
+Strict cleanup removed all five names and the scratch root. The archived public
+packet is `.agent-work/p01-config-tmpfs-public-native-pass/`, with main input
+`0b6d835b5417a4350a8e491a9785df5c3bc2737ce89dff80558ab5cc2081945d` and
+driver `c0491cff0b52e25521815b5f1253ef5f77af77e19094ab20a5c9d4967cea4a3d`.
+`rtk python3 .agent-work/p01_config_tmpfs_public_fixture.py` exited 0 in
+70.078562702s; `rtk python3 .agent-work/p01_home_restore_file_attempt_test.py`
+exited 0 with 21 tests (the latest 04-literal packet in 0.033s). Both are
+public source preparation; actual 04 was not run.
+Earlier `b111`/`896` reports are SUPERSEDED without changing their historical
+outcomes. The public native IaC/security packet records the minimal literal 04
+proposal; at this public-native checkpoint, attempt 04 had not executed, its
+authorization was pending and its execution review was not READY. Unit 21 and
+syntax/lint passed. PRIVATE, HOME, FILE_USABILITY, RECOVERY,
+CURRENT_VERSION_AUTH and CONSUMER_READ remain NOT_RUN; Task status remains
+blocked.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1937,6 +1964,7 @@ remains blocked; the 19-case local CAP_CHOWN source validation is SOURCE-only.
 | Client-mount repair | 11 | W23 | RED/GREEN, selected suite, public Compose render, YAML lint and independent IaC/security review | `f42ea58a66214b32bb1c8d7be589b3ba838d59abbe7610e5e1515008670b4f8e` | PASS | W23 Client-Mount Correction Admission | pending |
 | Actual pre-restore 01/02 | 11 | W23 | Mode preflight then bounded capability gate; no server start | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcomes 01/02 | pending |
 | Actual pre-restore 03 | 11 | W23 | Entry-point local-config write blocked before bootstrap/restore | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcome 03 | pending |
+| Public native preparation | 11 | W23 | 2.7.1 isolated config-tmpfs preparation and cleanup | archived public packet | PASS | W23 Public Native Preparation Receipt | pending |
 
 ## Review and Completion
 
