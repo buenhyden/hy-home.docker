@@ -19,6 +19,8 @@ from copy import deepcopy
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
+from scripts.lib.ops import retire_materials
+
 CANONICAL = "smtp_password"
 OLD = "supabase_smtp_password"
 CANONICAL_PATH = "secrets/communication/smtp/smtp_password.txt"
@@ -199,29 +201,58 @@ def _directory(root, relative, stack):
 
 def root_identity(root):
     """Return public filesystem identity; never resolves private file content."""
+    raw = os.fspath(root)
+    held = os.environ.get("HYHOME_GENERATOR_HELD_ROOT")
+    match = re.fullmatch(r"/proc/self/fd/([0-9]+)", raw)
+    held_match = re.fullmatch(r"/proc/self/fd/([0-9]+)", held or "")
+    if match is not None and held_match is not None:
+        info = os.fstat(int(match.group(1)))
+        held_info = os.fstat(int(held_match.group(1)))
+        if not stat.S_ISDIR(info.st_mode) or (info.st_dev, info.st_ino) != (
+            held_info.st_dev,
+            held_info.st_ino,
+        ):
+            raise ContractError("unsafe_root_path")
+        return {"st_dev": info.st_dev, "st_ino": info.st_ino}
     with ExitStack() as stack:
         info = os.fstat(_directory(Path(root).absolute(), "", stack))
         return {"st_dev": info.st_dev, "st_ino": info.st_ino}
 
 
 @contextmanager
-def retirement_lock(root, expected_identity=None, *, with_fd=False):
+def retirement_lock(
+    root, expected_identity=None, *, with_fd=False, with_fds=False, with_child_fds=False
+):
     """SMTP01 cooperative exclusive lock on this exact root.
 
-    The persistent lock is nofollow, owner-only and single-link. Quiescence
-    receipts remain necessary for actors that do not honor this protocol.
-    Opt-in with_fd yields (identity, fd) for subprocess pass_fds. The caller
-    must keep this context open through child startup and pass the held open
-    file description; closing the parent copy leaves an inherited lock held.
+    The CLN01 root retirement lock is acquired first, followed by the
+    SMTP-local persistent lock. Quiescence receipts remain necessary for actors
+    that do not honor this protocol. Opt-in with_fd preserves the historical
+    SMTP-local fd API. Opt-in with_fds yields both lock descriptors. Opt-in
+    with_child_fds yields both lock descriptors and the retained root directory
+    descriptor so a mutating child can bind all path operations to that inode.
     """
-    if type(with_fd) is not bool:
+    if (
+        type(with_fd) is not bool
+        or type(with_fds) is not bool
+        or type(with_child_fds) is not bool
+        or sum((with_fd, with_fds, with_child_fds)) > 1
+    ):
         raise ContractError("invalid_lock_fd_option")
     root = Path(root).absolute()
     with ExitStack() as stack:
-        rootfd = _directory(root, "", stack)
-        info = os.fstat(rootfd)
-        identity = {"st_dev": info.st_dev, "st_ino": info.st_ino}
+        try:
+            root_binding = stack.enter_context(
+                retire_materials.retirement_lock(root, with_binding=True)
+            )
+        except BlockingIOError:
+            raise ContractError("retirement_lock_busy") from None
+        root_lock_fd = root_binding["lock_fd"]
+        rootfd = root_binding["root_fd"]
+        identity = root_binding["identity"]
         if expected_identity is not None and identity != expected_identity:
+            raise ContractError("root_identity_mismatch")
+        if root_identity(root) != identity:
             raise ContractError("root_identity_mismatch")
         parent = os.open(
             "secrets", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=rootfd
@@ -251,7 +282,14 @@ def retirement_lock(root, expected_identity=None, *, with_fd=False):
             raise ContractError("retirement_lock_replaced")
         if root_identity(root) != identity:
             raise ContractError("root_identity_mismatch")
-        yield (identity, fd) if with_fd else identity
+        if with_child_fds:
+            yield identity, (root_lock_fd, fd, rootfd), rootfd
+        elif with_fds:
+            yield identity, (root_lock_fd, fd)
+        elif with_fd:
+            yield identity, fd
+        else:
+            yield identity
         named = os.stat(Path(LOCK_PATH).name, dir_fd=parent, follow_symlinks=False)
         if (named.st_dev, named.st_ino) != (lock.st_dev, lock.st_ino):
             raise ContractError("retirement_lock_replaced")

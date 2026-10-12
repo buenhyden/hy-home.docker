@@ -1,10 +1,10 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.5"
+version: "0.6.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0005"
 parent_ids:
@@ -1245,6 +1245,125 @@ of only these two files in the selected immutable historical snapshot. It is
 not application recovery, SMTP authentication/send, live activation, production
 RPO/RTO, offsite custody, migration, rotation or external-consumer absence.
 Those lanes and independent operational retirement acceptance remain open.
+
+### SMTP/CLN Shared Root Lock Source Completion
+
+Source-only shared-lock completion now makes SMTP acquire the existing CLN01
+opened-root retirement lock before the SMTP-local persistent lock, in that fixed
+order. `scripts.lib.ops.retire_materials.retirement_lock` keeps its existing
+`/tmp/cln01-retirement-<uid>-<root-dev-ino-digest>/lock` namespace, retains the
+opened root fd for the lock context, and exposes a bounded binding only for
+callers that must prove and pass the held root lock.
+`scripts.lib.ops.smtp_contract.retirement_lock` reuses that opened-root binding,
+compares the live root path identity before the SMTP-local lock, preserves the
+existing `with_fd=True` SMTP-local descriptor API, keeps `with_fds=True` as a
+two-lock descriptor API, and adds a bounded `with_child_fds=True` path for the
+generator wrapper so the mutating child inherits the root lock, SMTP-local lock
+and retained root directory fd. `scripts/operations/gen-secrets.sh` now dispatches
+through the inherited root fd instead of the mutable root pathname.
+
+The first RED regressions failed against the prior source because SMTP did not
+block CLN, CLN did not block SMTP, the dual-descriptor API was absent, and the
+parent-death fixture proved only the SMTP-local descriptor survived. Independent
+source review then found an additional root-replacement race: the CLN helper
+computed the root inode and closed that fd before SMTP reopened the root path,
+so a rename-and-replacement between those steps let SMTP enter the replacement
+while holding the old-root CLN lock. A new synthetic regression reproduces that
+window and now fails closed with `root_identity_mismatch` before the SMTP-local
+lock.
+
+After the reviewed source change, the focused race/cross-lock set passed: six
+tests in 0.137 seconds. The relevant existing source run also passed:
+`PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest
+tests.lib.ops.test_smtp_contract tests.lib.ops.test_retirement
+tests.validation.test_smtp_lock_inheritance tests.validation.test_smtp_generator`
+reported 91 tests OK in 2.072 seconds, `bash -n scripts/operations/gen-secrets.sh`
+passed, and `/tmp/hy-home-p09-qa/bin/ruff check` passed for the changed Python
+files. A second independent source review found a post-yield dispatch gap: after
+SMTP lock context entry, `gen-secrets.sh` still sourced and dispatched by root
+pathname, so a rename-and-replacement before child mutation could mutate the
+replacement while the inherited lock fds still belonged to the old root. The
+wrapper now sources the script through the inherited root fd, sets the child
+`REPO_ROOT` to that guarded fd root, runs with cwd on that fd root, and passes
+the two lock fds plus the retained root fd to the child. New synthetic
+regressions cover post-yield replacement before child mutation and parent death
+after root replacement; the focused replacement/cross-lock set reported eight
+tests OK in 0.332 seconds.
+
+A third independent source review found that the actual public catalog route
+still rejected fd-root execution before mutation: `load_generation_bindings` calls
+`scripts.lib.ops.secret_catalog.load_catalog`, whose public input reader delegated
+root identity to the SMTP helper and rejected `/proc/self/fd/<rootfd>` roots as
+unsafe. The metadata sync/prune embedded Python also resolved the fd-root back to
+the renameable physical path. The bounded P02 I/O lease therefore adds fd-root
+support only to `scripts.lib.ops._secret_catalog_io`: default path callers still
+reject symlink roots and still require Git-tracked public inputs, while a borrowed
+fd-root is accepted only when it matches `HYHOME_GENERATOR_HELD_ROOT` by open
+directory fd identity. A fourth review found that this borrowed-root route still
+skipped Git tracked-input validation, so a public catalog removed from the index
+could load through fd-root even though the normal route rejected it. The catalog
+reader now runs `git -C /proc/self/fd/<borrowed-root-fd> ls-files
+--error-unmatch` with the borrowed root fd passed to the Git child and with
+`GIT_*` stripped, then opens the approved public input by directory fd. Metadata
+sync/prune now retain the fd-root path for public catalog loading and keep the
+old `resolve()` containment check for normal path roots.
+
+Current validation on the revised source reported
+`PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest
+tests.lib.ops.test_smtp_contract tests.lib.ops.test_retirement
+tests.lib.ops.test_secret_catalog tests.validation.test_smtp_lock_inheritance
+tests.validation.test_smtp_generator`: 130 tests OK in 5.532 seconds. The four
+new tracked-input regressions passed in 0.786 seconds: direct borrowed fd-root
+untracked catalog rejection plus actual synthetic run, sync metadata and prune
+metadata routes after root replacement. `bash -n scripts/operations/gen-secrets.sh`
+passed. `/tmp/hy-home-p09-qa/bin/ruff check` passed for the touched helper and
+test files. Coverage over `scripts.lib.ops.smtp_contract`,
+`scripts.lib.ops.retire_materials` and `scripts.lib.ops._secret_catalog_io`,
+with the existing SMTP proof tests included, reported 141 tests OK in 7.134
+seconds and 94-percent total coverage: `_secret_catalog_io.py` 95 percent,
+`retire_materials.py` 94 percent and `smtp_contract.py` 95 percent. These are
+synthetic source tests only; they do not prove actual SMTP retirement, CLN
+deletion, runtime consumer absence, HOME activation, SMTP delivery, restore,
+migration, rotation, any private unlink, or any unused-source inference from the
+root compose graph. Root/LAB consumer binding remains a separate coordinated
+audit.
+
+### Current main lock integration receipt — 2026-10-12
+
+The coordinator integrated the reviewed ten-file source commit
+`04c7f69c16fe725c2419d5df12ba90f87526d846` over main
+`8057588c278aab6d620d330c85fe24595c7c273e`, which already accepts Supabase
+and GoTrue only in the independent LAB source. The main candidate's five-module
+lock/catalog/generator regression run returned 130 PASS, 5.790 seconds, exit 0.
+The first staged check failed only Ruff formatting in two existing synthetic
+test files; both were formatted without changing expectations or source logic.
+
+The coupled six-module source/consumer/catalog/proof lane initially collected
+116 tests and failed 14, with 6 native opt-in skips (31.154 seconds, exit 1).
+The metadata fixture invoked the external generator while its synthetic owner
+root differed. The new FD-bound generator correctly rejects that external
+implementation. Installing the five exact public generator/library files alone
+was insufficient: the second run retained the same 14 failures (30.125 seconds,
+exit 1). The fixture now invokes its own identical installed public script in
+all three paths. No production root, lock, tracked-catalog or secret guard is
+relaxed. The identical six-module rerun collected 116 tests: 110 PASS,
+6 native opt-in SKIP, 48.230 seconds, exit 0. The persistent tests remain owned
+regressions rather than disposable invocation scripts.
+
+Fresh selected runtime metadata observations found the canonical SMTP file
+present and the duplicate path absent, without reading values. Alertmanager
+uses the canonical bind; Supabase Auth is not present on the current Docker
+host. Broad read-only host-root mounts remain separately evaluated, and job,
+backup and external consumer closure is not inferred from the root graph.
+Supabase LAB consumer proof must bind its independent source as well as ROOT;
+the old root-only proof is insufficient for final retirement acceptance.
+Dated two-file isolated restoreability above remains accepted within its exact
+historical snapshot scope. Current SMTP provider authentication/send, LAB
+activation, production recovery, external absence, rotation and final private
+retirement acceptance remain open. The observed duplicate absence is not a new
+coordinator unlink receipt. Final receipt-bearing metadata/staged checks and
+independent combined-tree review precede the local merge commit; no remote
+push or hosted CI is claimed.
 
 ## Evidence
 

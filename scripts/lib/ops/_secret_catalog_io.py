@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import os
+import re
 import stat
 import subprocess
 from contextlib import ExitStack
 from pathlib import Path, PurePosixPath
 
-from scripts.lib.ops.smtp_contract import root_identity
+from scripts.lib.ops.smtp_contract import ContractError, root_identity
 
 CATALOG_PATH = "infra/03-security/openbao/secret-catalog.json"
 
@@ -38,24 +39,55 @@ class CatalogError(ValueError):
     """Only a fixed code is safe to report; never interpolate input."""
 
 
+def _borrowed_root_fd(root):
+    raw = os.fspath(root)
+    held = os.environ.get("HYHOME_GENERATOR_HELD_ROOT")
+    match = re.fullmatch(r"/proc/self/fd/([0-9]+)", raw)
+    held_match = re.fullmatch(r"/proc/self/fd/([0-9]+)", held or "")
+    if match is None or held_match is None:
+        return None
+    fd = int(match.group(1))
+    held_fd = int(held_match.group(1))
+    info = os.fstat(fd)
+    held_info = os.fstat(held_fd)
+    if not stat.S_ISDIR(info.st_mode) or (info.st_dev, info.st_ino) != (
+        held_info.st_dev,
+        held_info.st_ino,
+    ):
+        raise CatalogError("unsafe_repository_root")
+    return os.dup(fd)
+
+
+def _is_borrowed_root(root):
+    fd = _borrowed_root_fd(root)
+    if fd is None:
+        return False
+    os.close(fd)
+    return True
+
+
 def _root(root):
     raw = os.fspath(root)
     path = Path(raw)
     if path.anchor != "/" or raw != str(path) or ".." in path.parts:
         raise CatalogError("unsafe_repository_root")
-    expected = root_identity(path)
+    try:
+        expected = root_identity(path)
+    except ContractError as exc:
+        raise CatalogError("unsafe_repository_root") from exc
     environment = {
         key: value for key, value in os.environ.items() if not key.startswith("GIT_")
     }
-    result = subprocess.run(
-        ["git", "-C", str(path), "rev-parse", "--show-toplevel"],
-        capture_output=True,
-        text=True,
-        check=False,
-        env=environment,
-    )
-    if result.returncode != 0 or Path(result.stdout.strip()) != path:
-        raise CatalogError("repository_root_mismatch")
+    if not _is_borrowed_root(path):
+        result = subprocess.run(
+            ["git", "-C", str(path), "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=False,
+            env=environment,
+        )
+        if result.returncode != 0 or Path(result.stdout.strip()) != path:
+            raise CatalogError("repository_root_mismatch")
     return path, expected, environment
 
 
@@ -69,7 +101,8 @@ def _directory(root, relative, stack):
     }
     if relative not in allowed:
         raise CatalogError("unapproved_public_directory")
-    fd = os.open(root, DIR_FLAGS)
+    borrowed = _borrowed_root_fd(root)
+    fd = borrowed if borrowed is not None else os.open(root, DIR_FLAGS)
     stack.callback(os.close, fd)
     for part in PurePosixPath(relative).parts:
         fd = os.open(part, DIR_FLAGS, dir_fd=fd)
@@ -118,15 +151,26 @@ def _read_file(fd, name):
 def _public_bytes(root, relative, environment):
     if relative not in {CATALOG_PATH, SCHEMA_PATH, METADATA_PATH, SUPPORT_PATH}:
         raise CatalogError("unapproved_public_input")
-    tracked = subprocess.run(
-        ["git", "-C", str(root), "ls-files", "--error-unmatch", "--", relative],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
-        env=environment,
-    )
-    if tracked.returncode != 0:
-        raise CatalogError("public_input_not_tracked")
+    borrowed = _borrowed_root_fd(root)
+    try:
+        git_root = str(root)
+        pass_fds = ()
+        if borrowed is not None:
+            git_root = f"/proc/self/fd/{borrowed}"
+            pass_fds = (borrowed,)
+        tracked = subprocess.run(
+            ["git", "-C", git_root, "ls-files", "--error-unmatch", "--", relative],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+            env=environment,
+            pass_fds=pass_fds,
+        )
+        if tracked.returncode != 0:
+            raise CatalogError("public_input_not_tracked")
+    finally:
+        if borrowed is not None:
+            os.close(borrowed)
     with ExitStack() as stack:
         path = PurePosixPath(relative)
         fd = _directory(root, str(path.parent), stack)

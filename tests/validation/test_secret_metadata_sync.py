@@ -654,6 +654,18 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        # The FD-bound generator executes the public implementation owned by
+        # this synthetic root, rather than reopening the external source root.
+        for relative in (
+            "scripts/operations/gen-secrets.sh",
+            "scripts/lib/ops/smtp_contract.py",
+            "scripts/lib/ops/retire_materials.py",
+            "scripts/lib/ops/secret_catalog.py",
+            "scripts/lib/ops/_secret_catalog_io.py",
+        ):
+            destination = self.root / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes((ROOT / relative).read_bytes())
         (self.root / "secrets").mkdir()
         self.example = self.root / "secrets/SENSITIVE_ENV_VARS.md.example"
         self.target = self.root / "secrets/SENSITIVE_ENV_VARS.md"
@@ -777,7 +789,11 @@ class SecretMetadataSyncTests(unittest.TestCase):
     def run_mode(self, mode="--sync-metadata"):
         self.prepare_catalog()
         result = subprocess.run(
-            ["bash", str(SCRIPT), *([mode] if mode else [])],
+            [
+                "bash",
+                str(self.root / "scripts/operations/gen-secrets.sh"),
+                *([mode] if mode else []),
+            ],
             cwd=self.root,
             capture_output=True,
             text=True,
@@ -805,7 +821,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         }
         args = [
             "bash",
-            str(SCRIPT),
+            str(self.root / "scripts/operations/gen-secrets.sh"),
             "--sync-metadata-prune",
             "--metadata-source-root",
             str(source),
@@ -842,7 +858,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
             result = subprocess.run(
                 [
                     "bash",
-                    str(SCRIPT),
+                    str(self.root / "scripts/operations/gen-secrets.sh"),
                     *([mode] if mode else []),
                     "--metadata-source-root",
                     str(self.root),

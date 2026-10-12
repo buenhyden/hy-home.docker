@@ -337,19 +337,26 @@ def _private_info(info, mode):
 
 
 @contextmanager
-def retirement_lock(root: Path):
-    _, fd = _exact_root(root)
-    info = os.fstat(fd)
-    os.close(fd)
-    digest = hashlib.sha256(f"{info.st_dev}:{info.st_ino}".encode("ascii")).hexdigest()
+def retirement_lock(root: Path, *, with_fd: bool = False, with_binding: bool = False):
+    if type(with_fd) is not bool or type(with_binding) is not bool:
+        raise ValueError("invalid_lock_fd_option")
+    if with_fd and with_binding:
+        raise ValueError("invalid_lock_fd_option")
+    _, root_fd = _exact_root(root)
+    root_info = os.fstat(root_fd)
+    root_identity = {"st_dev": root_info.st_dev, "st_ino": root_info.st_ino}
+    digest = hashlib.sha256(
+        f"{root_info.st_dev}:{root_info.st_ino}".encode("ascii")
+    ).hexdigest()
     directory = Path("/tmp") / f"cln01-retirement-{os.getuid()}-{digest}"
-    try:
-        directory.mkdir(mode=0o700)
-    except FileExistsError:
-        pass
-    directory_fd = os.open(directory, DIR_FLAGS)
+    directory_fd = None
     lock_fd = None
     try:
+        try:
+            directory.mkdir(mode=0o700)
+        except FileExistsError:
+            pass
+        directory_fd = os.open(directory, DIR_FLAGS)
         if not _private_info(os.fstat(directory_fd), 0o700):
             raise ValueError("unsafe_lock_directory")
         lock_fd = os.open(
@@ -366,11 +373,18 @@ def retirement_lock(root: Path):
         ):
             raise ValueError("unsafe_lock_file")
         fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        yield
+        if with_binding:
+            yield {"identity": root_identity, "root_fd": root_fd, "lock_fd": lock_fd}
+        elif with_fd:
+            yield lock_fd
+        else:
+            yield None
     finally:
         if lock_fd is not None:
             os.close(lock_fd)
-        os.close(directory_fd)
+        if directory_fd is not None:
+            os.close(directory_fd)
+        os.close(root_fd)
 
 
 def load_manifest(root: Path, path: Path):

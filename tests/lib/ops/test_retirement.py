@@ -11,6 +11,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.lib.ops import retire_materials as retirement
+from scripts.lib.ops import smtp_contract
 
 NOW = datetime(2026, 10, 10, 10, tzinfo=UTC)
 
@@ -433,6 +434,15 @@ class RetirementTests(unittest.TestCase):
             with self.assertRaises(OSError):
                 with retirement.retirement_lock(self.root):
                     pass
+
+    def test_cln_root_lock_blocks_smtp_retirement_lock(self):
+        (self.root / "secrets").mkdir(exist_ok=True)
+        with retirement.retirement_lock(self.root):
+            with self.assertRaisesRegex(
+                smtp_contract.ContractError, "retirement_lock_busy"
+            ):
+                with smtp_contract.retirement_lock(self.root):
+                    self.fail("SMTP acquired while CLN held the shared root lock")
 
     def test_lock_file_permissions_and_symlink_refused(self):
         info = self.root.stat()

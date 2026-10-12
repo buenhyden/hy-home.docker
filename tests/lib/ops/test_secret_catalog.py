@@ -720,6 +720,55 @@ class SyntheticRepositoryTests(unittest.TestCase):
             with patch.dict(os.environ, overrides):
                 self.assertEqual(catalog.load_catalog(self.root), self.document)
 
+    def test_borrowed_root_fd_loads_catalog_from_held_inode(self):
+        fd = os.open(self.root, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            fd_root = f"/proc/self/fd/{fd}"
+            with patch.dict(os.environ, {"HYHOME_GENERATOR_HELD_ROOT": fd_root}):
+                self.assertEqual(catalog.load_catalog(Path(fd_root)), self.document)
+        finally:
+            os.close(fd)
+
+    def test_borrowed_root_fd_rejects_unmatched_held_root(self):
+        fd = os.open(self.root, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                other_fd = os.open(tmp, os.O_RDONLY | os.O_DIRECTORY)
+                try:
+                    with patch.dict(
+                        os.environ,
+                        {"HYHOME_GENERATOR_HELD_ROOT": f"/proc/self/fd/{other_fd}"},
+                    ):
+                        with self.assertRaises(catalog.CatalogError):
+                            catalog.load_catalog(Path(f"/proc/self/fd/{fd}"))
+                finally:
+                    os.close(other_fd)
+        finally:
+            os.close(fd)
+
+    def test_borrowed_root_fd_rejects_untracked_public_input(self):
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.root),
+                "rm",
+                "--cached",
+                "-q",
+                "--",
+                catalog.CATALOG_PATH,
+            ],
+            check=True,
+        )
+        fd = os.open(self.root, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            fd_root = f"/proc/self/fd/{fd}"
+            with patch.dict(os.environ, {"HYHOME_GENERATOR_HELD_ROOT": fd_root}):
+                with self.assertRaises(catalog.CatalogError):
+                    catalog.load_catalog(Path(fd_root))
+        finally:
+            os.close(fd)
+
     def test_public_read_accepts_complete_short_chunks_and_rejects_short_eof(self):
         target = self.root / catalog.CATALOG_PATH
         expected = target.read_bytes()
