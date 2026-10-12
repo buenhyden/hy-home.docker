@@ -1,6 +1,6 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -790,6 +790,30 @@ The W57–W62 rows below record the pre-numbering preparation state. The current
 W59–W61 source/path/README acceptance above supersedes only that source lane;
 W62 commit, PR, CI and merge delivery remains pending. The detailed final QA
 result receipt is owned by [P10 Task 0016](tsk-0016-p10-opsflow-acceptance.md).
+
+### Consolidation receipt — 2026-10-12
+
+The canonical numbered-document source commit is
+`6056788a51e59726202f40377d407c1408aaddce`; the normal consolidation commit
+is `e0c2cf5209818decde2cd2afa7aa796243713fa2`, with canonical tree
+`2b03d4e1203adb75991013e77ea91349c1e85af2`. The consolidation retained the
+approved P08 source and root metadata input, and independent source and security
+review accepted the exact source set. Post-consolidation metadata selected two
+documents with zero violations; catalog, manifest, link, version-projection,
+approved ROOT and real-staged gates passed as recorded by their owning receipts.
+
+Cleanup retained `codex/p08-document-moves`: the duplicate prototype audit
+found no unique intent, then restored its bounded 396 public task paths to the
+consolidated source, fast-forwarded it to the consolidation commit, and removed
+the normal worktree and `codex/p08-numbered-ops` branch with `git branch -d`.
+Those cleanup commands each exited 0; the duplicate path and ref are absent.
+
+This records local source consolidation only. It does not mark global DELIVERY
+PASS: remote PR, hosted CI, remote merge, full LAB, native, HOME, rotation,
+migration and recovery remain NOT_RUN. The foreign root's nine staged paths are
+outside this Task; their handoff is recorded for the root owner and this Task
+cannot commit them. `AGENT_ALLOW_UNCOMMITTED_STOP=1` is a scoped stop exception
+for root check-only work and does not change hook policy.
 
 ## Evidence
 
