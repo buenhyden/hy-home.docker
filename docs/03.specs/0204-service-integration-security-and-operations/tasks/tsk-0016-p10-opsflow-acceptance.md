@@ -1,6 +1,6 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.18"
+version: "0.1.19"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -973,6 +973,19 @@ input is D `a9f26e2cc2ca4c8920b9a94b566973c6f8383f74`, with no source change.
 After latest-head source/security review and passing CI, this authorizes the
 already requested push, PR creation and merge without another approval; no
 remote CI, push, PR or merge has run yet, so they remain NOT_RUN.
+
+PR [#425](https://github.com/buenhyden/hy-home.docker/pull/425) was created
+after the `-u` branch push (both exit 0) at head
+`77afd472dd047fa0541e63d7d6e39965b90e81b6`, tree
+`50bc90662e9c17eeb97336de775d5b2630f65e17`. Quality Gates run
+`38262980582`, candidate job `114857954100`, succeeded in 5m41s; CodeQL and
+GitGuardian succeeded, while main-security and issue-greeting were expected
+SKIPPED. Independent source/security review approved the E head; remote and
+local agree across 372 paths and 17 helper blobs are unchanged. Protection
+still has strict branch update, zero required contexts/reviews, no CODEOWNER and
+no rulesets; this does not invent human approval. This is a source candidate
+delivery receipt only: native, aggregate LAB, HOME, migration, rotation and
+recovery remain NOT_RUN. The F head must pass CI again before ordinary merge.
 
 Fresh active-spec frontmatter parsing found 25 Specs: completed SPEC-0208,
 SPEC-0209, SPEC-0210 and SPEC-0212; active SPEC-0182 (blocked), SPEC-0204,
