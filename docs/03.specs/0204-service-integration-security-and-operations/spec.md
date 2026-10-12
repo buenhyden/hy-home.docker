@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.7"
+version: "1.7.8"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -54,8 +54,13 @@ No business project ID, external deployment topology, application endpoint,
 OIDC client, S3 identity, search authority, traffic budget, or speech product
 scope is approved here. Registering metadata is not a grant of network
 access, credentials, runtime deployment, or storage. Civil-service exam, English and Japanese learning applications are excluded,
-including planning, code, databases, collection and resources. All LAB-specific
-runtime code, configuration, data, secrets and execution are excluded. P08 may
+including planning, code, databases, collection and resources. The direct
+2026-10-12 request additionally authorizes relocating the complete Supabase
+service source, including GoTrue, and remaining infra-owned LAB service assets
+into repository-root `labs/`. TSK-0015 owns the reviewed path/dependency closure
+and coupled source checks. This source relocation creates no running resource,
+credential or data migration. Other LAB image, secret, data and execution changes
+remain excluded unless separately authorized with concrete operational bounds. P08 may
 move typed LAB documents to their `labs/` destinations with required folder and
 parent README navigation, Registry links and path checks; that documentation
 work authorizes no LAB runtime action. Do not read secret values, private environment
@@ -269,7 +274,8 @@ Guide, Policy and Runbook's actual type, artifact ID, title, service bindings,
 body and links before selecting one exact meaningful destination. Numeric IDs
 alone do not identify a subject or LAB membership. Populated domains belong
 within `docs/05.operations/{guides,policies,runbooks}/`; LAB documents go only
-to each family's `labs/`. Root `labs/` remains runtime OUT_OF_SCOPE.
+to each family's `labs/`. Repository-root `labs/` owns the separately authorized
+2026-10-12 service-source relocation; it is not a destination for Stage05 documents.
 
 Each populated domain and parent family requires a Korean, profile-valid README
 with exact links, roles, scope, owners and verification. Create no empty domain
@@ -322,6 +328,11 @@ operational acceptance are not inferred from document relocation.
 8. Documentation, generated projections, focused checks and independent
    review match the exact diff. The final report separately records source,
    static, isolation, HOME and migration statuses with SHA and exit evidence.
+   The 2026-10-12 LAB relocation leaves Supabase, including GoTrue, and each
+   confirmed LAB-only infra asset in one root `labs/` source location, with
+   independent LAB entrypoints, updated consumers and populated READMEs.
+   Shared live initialization/recovery assets are retained under their actual
+   owner; a filename alone does not establish exclusive LAB consumption.
 9. The second round (TSK-0005) closes contracts 11 and 12 in source with
    tests that fail against the previous source, records HOME observations
    for authentication, CDC, workflow and backup without changing HOME

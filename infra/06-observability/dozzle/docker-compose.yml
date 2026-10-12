@@ -21,7 +21,7 @@ services:
     hostname: dozzle
     group_add:
       - '${SECRETS_GID:-1000}'
-    image: amir20/dozzle:v11.3.0@sha256:a7d69d20891d3dcc82636e24afa4c1c162b41d0673ef798b14f09e6b69accc5a
+    image: amir20/dozzle:v11.3.1@sha256:ba65da5af3d2147cfc2ee68ea5a6e35b75d2dff7eeff226151a65c9d77831c02
     secrets:
       - dozzle_client_secret
     volumes:
@@ -35,6 +35,14 @@ services:
       DOZZLE_AUTH_OIDC_ISSUER: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
       DOZZLE_AUTH_OIDC_CLIENT_ID: ${DOZZLE_OIDC_CLIENT_ID}
       DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE: /run/secrets/dozzle_client_secret
+      DOZZLE_ENABLE_ACTIONS: 'false'
+      DOZZLE_ENABLE_SHELL: 'false'
+      DOZZLE_ENABLE_MCP: 'false'
+      DOZZLE_AUTO_UPDATE: 'off'
+      DOZZLE_UPDATE_CONTAINERS: 'off'
+      DOZZLE_RELEASE_CHECK_MODE: 'manual'
+      DOZZLE_IMAGE_CHECK_MODE: 'off'
+      DOZZLE_DISABLE_SETUP_WIZARD: 'true'
     healthcheck:
       test: [ 'CMD', '/dozzle', 'healthcheck' ]
       interval: 3s

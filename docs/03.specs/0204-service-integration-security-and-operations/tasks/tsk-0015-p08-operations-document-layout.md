@@ -1,10 +1,10 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0015"
 parent_ids:
@@ -16,11 +16,13 @@ created: "2026-10-11"
 
 ## Objective
 
-Deliver SPEC-0212 requirement 25 through Plan W56–W62 and Spec criterion 8: one
+Deliver SPEC-0212 requirement 25 through Plan W56–W62, W70 and Spec criterion 8: one
 meaningful location for each current Stage05 Guide, Policy and Runbook, populated
 folder READMEs, synchronized path consumers and a verified owner handoff.
-Perform actual LAB document moves within the three operations families while
-excluding LAB runtime/source/secret/data changes. Reuse completed SPEC-0227 body
+Perform actual LAB document moves within the three operations families and the
+subsequently authorized root `labs/` service-source relocations. Preserve running
+resources, secret values and data until separately reviewed operational execution.
+Reuse completed SPEC-0227 body
 refresh and preserve completed P00 Tasks, issued identities and created dates.
 
 ## Inputs and Authorization
@@ -68,8 +70,9 @@ reviewers inspect exact changes without editing the implementation.
 
 The exact LAB destinations are `docs/05.operations/guides/labs/`,
 `docs/05.operations/policies/labs/` and `docs/05.operations/runbooks/labs/`.
-Repository-root `labs/`, LAB services/Compose/images/secrets/data and all native
-execution remain OUT_OF_SCOPE. Learning applications are excluded even from
+At issuance, repository-root `labs/`, LAB services/Compose/images/secrets/data and
+all native execution were OUT_OF_SCOPE. The source-only amendment below is the
+current direct-user exception; prior issuance evidence is preserved. Learning applications are excluded even from
 planning; Wiki stays preparation only. This Task creates no application,
 workspace, DB, credential, consumer or operational workload.
 
@@ -77,6 +80,46 @@ The latest direct-user delivery lane is local main, without dev or required PR.
 Keep logical owning-Spec commits, exact-head checks and independent review.
 Do not push or create a PR during issuance. If a later remote route is adopted,
 report its actual PR/check/merge evidence separately from local results.
+
+### 2026-10-12 service-source relocation authorization
+
+The direct user now requests the complete Supabase service source, including
+GoTrue, in repository-root `labs/`, and LAB-only service assets remaining in
+`infra/` in that same runtime-source family. The coordinator also receives the
+instruction to remove invocation-only tests, scripts and scratch after final
+acceptance and canonical evidence recording. Continuing registered regressions
+and operational tools retain their owners.
+
+The new exclusive coordinator worktree `codex/lab-service-source-relocation`
+starts at local main `c67a8acd90675d66617257fb2cdbe00c9fc6e6c6`. The SEC01 writer
+finishes its leased Supabase imgproxy image update first; relocation consumes
+that exact logical commit without replacing SMTP settings or the canonical
+`secrets/communication/smtp/smtp_password.txt` source. Completed SPEC-0212/P00
+remains historical, byte-preserved routing; this active package owns the amendment.
+
+Plan W70 is the separately ordered source-relocation unit. Its per-asset audit
+can proceed before the feature-dependent Stage05 move freeze; the Supabase move
+waits for its exact SEC01 image commit. Task closure requires both W62 document
+acceptance and W70 source-path acceptance; W70 does not rewrite an earlier W62
+input receipt. Work-unit issuance does not mark any move or operational test PASS.
+
+Initial confirmed source families are Supabase, PostgreSQL HA, Valkey cluster
+and Locust. Existing independent `labs/<name>.yml` entrypoints and the registered
+LAB controller are reused. Map Supabase to `labs/supabase.yml` and its authored
+README/environment example to `labs/supabase/`; map exclusively LAB PostgreSQL HA,
+Valkey cluster and Locust assets to their matching `labs/` folders. These are
+prospective exact destinations pending reference/render review, not executed moves.
+Audit additional infra assets against their actual source/runtime/job/recovery
+consumers before calling them LAB-only. Shared common controls remain with infra.
+
+One writer updates root include exclusion, LAB project/profile/dependency closure,
+relative build/config/script paths, catalog/secret support metadata, generators,
+validation and current navigation together. No private dotenv, secret value or
+persisted data is moved by a source rename. Existing running containers are not
+deleted merely because their authored source moved. Independent review and
+public synthetic Compose render precede integration; real service actions retain
+their exact-host backup/restore boundary. Stage05 LAB documents continue to use
+only `docs/05.operations/{guides,policies,runbooks}/labs/`.
 
 ## Work Log
 
@@ -86,6 +129,22 @@ report its actual PR/check/merge evidence separately from local results.
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0015 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0015 | ready | in-progress | #continuation-baseline-and-w56-reuse-result |
+
+### W70 admission validation correction
+
+The first three-document metadata check on the 2026-10-12 amendment exited 1:
+selected 3, reported violations 146. Its initiating package diagnostic was
+`Plan Dependencies must reference earlier Work Units`: adding future W70 to
+the earlier W62 row invalidated the package and produced archive-profile
+fallback diagnostics. No archived bytes or validator rules were changed.
+The corrected Plan preserves W62's existing W61 dependency; this Task's closure
+requires W62 document acceptance and the separately issued W70 source acceptance.
+The second check also exited 1 with the same selected/reported counts: its
+initiating error rejected prose in W70's dependency cell. That cell now contains
+only existing Work Unit W56; exact SEC01 image and per-asset audit conditions
+remain explicit in the work, verification and authorization contracts.
+The initial staged check exited 0. Corrected metadata and final staged checks
+are rerun on the revised bytes before committing; no earlier PASS is substituted.
 
 ### Admission correction history
 
@@ -343,6 +402,7 @@ aggregate exit 124 is preserved. No remote or operational command was executed.
 | Atomic document relocation | 8 | W60 | One active location, coupled references and LAB runtime/source diff zero | Fixed feature-owner SHAs and transferred writer leases | NOT_RUN | W60 exact rename and coupled references | pending |
 | Populated README coverage | 8 | W61 | Korean content, metadata selection, meaningful descriptions and navigation | Actual destination corpus and parent families | NOT_RUN | W61 populated READMEs | pending |
 | Exact-head delivery and handoff | 8 | W62 | Actual affected gates, staged checks, independent review and local-main receipt | Final candidate/main SHA and exact inverse map | NOT_RUN | W62 final validation, delivery and handoff | pending |
+| LAB service-source relocation | 8 | W70 | Supabase including GoTrue and audited infra LAB-only assets have one root labs location with coupled path, SMTP, catalog/generator and independent model validation | Exact pre/post source SHA and inverse path map; running resource, secret-value and persisted-data effects zero | NOT_RUN | 2026-10-12 service-source relocation authorization | pending |
 
 ## Review and Completion
 

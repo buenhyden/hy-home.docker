@@ -1,0 +1,11 @@
+# Reviewed root model plus this optional worker-only workload overlay.
+# Network attachment is capability, not SMTP egress isolation or native acceptance.
+x-hyhome-overlay:
+  version: 1
+  base: infra/07-workflow/n8n/docker-compose.yml
+
+services:
+  n8n-worker:
+    networks:
+      dev_data_net: {}
+      mail_net: {}

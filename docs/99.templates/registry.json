@@ -2030,6 +2030,7 @@
         "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md",
         "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md",
         "labs/README.md",
+        "labs/supabase/README.md",
         "labs/locust/README.md",
         "labs/postgresql-ha/README.md",
         "labs/postgresql-ha/config/README.md",
