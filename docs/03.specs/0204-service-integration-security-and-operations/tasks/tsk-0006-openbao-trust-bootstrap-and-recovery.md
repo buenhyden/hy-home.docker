@@ -1834,6 +1834,93 @@ pin/scanner and unrelated service configuration are NO_CHANGE; the only
 recorded P01 source exceptions are the client certificate bindings in three
 Compose files and their fixture, test and documentation receipts.
 
+### W23 Actual Pre-Restore Outcomes 01/02 — 2026-10-13
+
+Actual attempt 01 was ABORTED_PREFLIGHT, consumed=false, exit 2 in about
+0.25 seconds. Its helper mode was 0775 where 0755 is required. The mode-only
+FD correction completed from 22:23:57.790134Z to 22:23:57.803510Z with bytes
+and inode unchanged: device 64512, inode 2372835, UID/GID 1000, nlink 1,
+size 1,859,732 and post-mode 0755. All four reserved names were absent; no
+new restore artifact, target, receipt or container was created. The abort wall
+clock is NOT_CAPTURED; contemporaneous root clock was 2026-10-12T22:21:33Z,
+before the repair upper bound.
+
+Attempt 02 followed reviewed READY evidence but is
+BLOCKED_PRE_RESTORE_PARTIAL, not FAILED_RESTORE or FILE_USABILITY failure:
+exit 2 after 0.959 seconds, consumed=true, preserved=true and
+cleanup_failed=false. Pre-start capability comparison blocked on expected
+`CHOWN` versus Docker `CAP_CHOWN`. Coordinator T0 is NOT_CAPTURED. The
+root-observed operation window is
+2026-10-12T22:30:03Z–2026-10-12T22:30:59Z; the blocked receipt file mtime
+2026-10-12T22:30:35.136449541Z is metadata rather than exact durable
+completion, and recorded monotonic blocked elapsed is 0.959 seconds. The CHOWN helper
+`p01-home-restore-20261013-chown`
+(`326a586711e9a1f31d4c9688c718ca64314e582a7253052d241c80e4dafaec3f`) remains
+Created and never started. The target is device 2064, inode 115610180,
+UID/GID 1000, mode 0750, with exactly empty `audit` (inode 115628621, 0700)
+and `raft` (inode 115624583, 0700) directories. This is exclusive target
+creation/consumption evidence only. FILE_USABILITY, restore API, CHOWN and
+chmod helper execution, watcher, server/bootstrap and original-unseal checks
+are NOT_RUN. `cleanup_failed=false` means only that its cleanup call did not
+error; it does not claim residual removal. All 02 objects are preserved and
+must not be reused; live 2.6 remains running, unsealed, Raft active, restart 0.
+Independent drift preservation verification passed with the target IDs/modes,
+the two named empty children, the same Created helper, DropAll/no network/
+read-only-root/no-new-privileges, the other three reserved names absent and
+the live server/Agent state. Its correction observation clock is NOT_CAPTURED.
+The operational receipt is
+`/home/hyunyoun/backups/p01-openbao-20261013/p01-home-empty-restore-20261013-02`;
+it has regular non-symlink `attempt.json` (0400), `chown.cid` (0600) and
+`receipt.jsonl` (0600). No receipt content was read.
+
+The canonical lanes HOME_COLD_BOOT, INDEPENDENT_CUSTODY,
+SELECTED_EMPTY_RESTORE, CURRENT_VERSION_AUTH, CONSUMER_READ,
+SEALED_AUTHENTICITY and RECOVERY remain NOT_RUN. At the 01/02 checkpoint,
+attempt 03 had not executed. A
+minimal local CAP_CHOWN source-fix preparation is authorized, but a new target,
+container and receipt require fresh independent review and user approval.
+
+The approved PR #431 description update is present remotely at
+`1088f196bd9aa72ae42c2d8f22c7214e9e700aaf7d84cb0d43c3e0419c0c91fc`
+(6,339 bytes), superseding the earlier pending-approval statement. SOURCE_DELIVERY
+for PR #431 is PASS; operational delivery remains blocked on this failure and
+future execution review/approval.
+
+### W23 Actual Pre-Restore Outcome 03 — 2026-10-13
+
+Attempt `p01-home-empty-restore-20261013-03` is
+BLOCKED_PRE_RESTORE_PARTIAL: consumed=true, preserved=true and
+cleanup_failed=false. Its SERVER_ENTRYPOINT_LOCAL_CONFIG_READONLY cause is
+that the image entrypoint attempted to materialize `BAO_LOCAL_CONFIG` at
+`/openbao/config/local.json` while the root filesystem was read-only. The
+server exited 1 before Bao server/bootstrap/restore; raw logs are suppressed.
+The preserved server
+`857395112de2734454864711a15498d435315779af6f911a32a67e8f40997666` has
+OOM=false and empty State.Error. Container start passed, but Bao/native
+application start was blocked.
+
+ATTEMPT_CONSUMED monotonic time is 0.012 seconds and FILE_USABILITY_BLOCKED is
+18.506 seconds at `operation-blocked`; neither is a wall-clock elapsed time.
+T0 is NOT_CAPTURED. Durable metadata bounds are attempt.json mtime
+2026-10-12T22:42:02.410478Z, target-root mtime 22:42:02.440478Z, server
+StartedAt 22:42:19.832086160Z, FinishedAt 22:42:20.311839536Z and final receipt
+mtime 22:42:20.945514Z. The root-observed operation window is
+2026-10-12T22:41:13Z–2026-10-12T22:43:23Z; file mtimes are metadata only, not
+a durability clock.
+
+The preserved target
+`/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013-03`
+is device 2064, inode 115626592, UID/GID 1000, mode 0700, nlink 4. Its receipt
+directory is device 64512, inode 5383336, UID/GID 1000, mode 0700, with regular
+non-symlink `attempt.json` (0400), `chown.cid`, `chmod.cid`, `watcher.cid` and
+`server.cid` (0600), and `receipt.jsonl` (0600); `bootstrap.json` is absent.
+CHOWN, chmod and watcher helpers were removed. `cleanup_failed=false` records
+only their successful cleanup, not removal of the preserved target, server or
+receipt. Bootstrap/init, snapshot restore API, original-share unseal,
+FILE_USABILITY, CURRENT_VERSION_AUTH and CONSUMER_READ are NOT_RUN. The live
+OpenBao 2.6 image remains running with restart 0 and OOM=false. Task status
+remains blocked; the 19-case local CAP_CHOWN source validation is SOURCE-only.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1848,12 +1935,15 @@ Compose files and their fixture, test and documentation receipts.
 | Scoped regression | 11 | W23 | Five public modules, 77 PASS / 4 skipped | base `62556dc63b66c828c27e9c33017d26cdf70b8542`; patched input `95dc53a900fe7d22ea49e830adc0ff5f69b7a82ab9b4daedd66f33edf5b512ff` | PASS | W23 Current Acceptance Assessment | pending |
 | Synthetic full rehearsal | 11 | W23 | Exact-image full trust and recovery fixture | `95dc53a900fe7d22ea49e830adc0ff5f69b7a82ab9b4daedd66f33edf5b512ff` | PASS | W23 Current Acceptance Assessment | pending |
 | Client-mount repair | 11 | W23 | RED/GREEN, selected suite, public Compose render, YAML lint and independent IaC/security review | `f42ea58a66214b32bb1c8d7be589b3ba838d59abbe7610e5e1515008670b4f8e` | PASS | W23 Client-Mount Correction Admission | pending |
+| Actual pre-restore 01/02 | 11 | W23 | Mode preflight then bounded capability gate; no server start | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcomes 01/02 | pending |
+| Actual pre-restore 03 | 11 | W23 | Entry-point local-config write blocked before bootstrap/restore | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcome 03 | pending |
 
 ## Review and Completion
 
-Source delivery is merged in PR 421; the current Task remains blocked on the
-named W23 target/custody and runtime residuals. Source and isolated proof do not complete HOME custody/boot/recovery
-acceptance or authorize P06. No secret migration or consumer switch is claimed.
+Source delivery is merged in PR 421 and passed for PR #431; the current Task
+remains blocked on the named W23 target/custody and runtime residuals. Source
+and isolated proof do not complete HOME custody/boot/recovery acceptance or
+authorize P06. No secret migration or consumer switch is claimed.
 
 ## Related Documents
 
