@@ -33,14 +33,209 @@ from tests.validation._supabase_smtp_fixture_storage import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "infra/04-data/supabase/docker-compose.yml"
+SOURCE = ROOT / "labs/supabase.yml"
+LEGACY_SOURCE = ROOT / "infra/04-data/supabase/docker-compose.yml"
 AUTH = "supabase/gotrue:v2.197.0@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
 MAIL = "axllent/mailpit:v1.31.2@sha256:74d609a42ec279aa63c6b4622a6fa9b5408d1ad5b1d76a1c4be40a265ce0863d"
 POSTGRES = "postgres:18.6-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873"
 
+EXPECTED_SERVICES = {
+    "studio",
+    "kong",
+    "auth",
+    "rest",
+    "realtime",
+    "storage",
+    "imgproxy",
+    "meta",
+    "functions",
+    "analytics",
+    "db",
+    "vector",
+    "supavisor",
+}
+EXPECTED_SECRET_FILES = {
+    "smtp_password": "../secrets/communication/smtp/smtp_password.txt",
+    "supabase_db_password": "../secrets/db/mng-pg/supabase_password.txt",
+    "supabase_jwt_secret": "../secrets/data/supabase/supabase_jwt_secret.txt",
+    "supabase_anon_key": "../secrets/data/supabase/supabase_anon_key.txt",
+    "supabase_service_key": "../secrets/data/supabase/supabase_service_key.txt",
+    "supabase_dashboard_password": "../secrets/data/supabase/supabase_dashboard_password.txt",
+    "supabase_secret_key_base": "../secrets/data/supabase/supabase_secret_key_base.txt",
+    "supabase_vault_enc_key": "../secrets/data/supabase/supabase_vault_enc_key.txt",
+    "supabase_pg_meta_crypto_key": "../secrets/data/supabase/supabase_pg_meta_crypto_key.txt",
+    "supabase_openai_api_key": "../secrets/data/supabase/supabase_openai_api_key.txt",
+    "supabase_logflare_private_token": "../secrets/data/supabase/supabase_logflare_private_token.txt",
+}
+EXPECTED_IMAGES = {
+    "studio": "supabase/studio:2026.09.14-sha-4dd8a95",
+    "kong": "kong:3.9.3",
+    "auth": "supabase/gotrue:v2.197.0",
+    "rest": "postgrest/postgrest:v16.3",
+    "realtime": "supabase/realtime:v2.138.1",
+    "storage": "supabase/storage-api:v1.79.4",
+    "imgproxy": "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d",
+    "meta": "supabase/postgres-meta:v0.99.0",
+    "functions": "supabase/edge-runtime:v1.76.2",
+    "analytics": "supabase/logflare:1.50.15",
+    "db": "supabase/postgres:17.6.1.173",
+    "vector": "timberio/vector:0.58.0-alpine",
+    "supavisor": "supabase/supavisor:2.9.13",
+}
+EXPECTED_CONTAINER_NAMES = {
+    "studio": "supabase-studio",
+    "kong": "supabase-kong",
+    "auth": "supabase-auth",
+    "rest": "supabase-rest",
+    "realtime": "realtime-dev.supabase-realtime",
+    "storage": "supabase-storage",
+    "imgproxy": "supabase-imgproxy",
+    "meta": "supabase-meta",
+    "functions": "supabase-edge-functions",
+    "analytics": "supabase-analytics",
+    "db": "supabase-db",
+    "vector": "supabase-vector",
+    "supavisor": "supabase-pooler",
+}
+EXPECTED_PUBLIC_EXAMPLE_KEYS = {
+    "LAB_DATA_DIR",
+    "LAB_SECRETS_GID",
+    "LAB_HOST_BUDGET_CPUS",
+    "LAB_HOST_BUDGET_MEMORY_MIB",
+    "LAB_MAX_CONCURRENT",
+    "LAB_MAX_LEASE_MINUTES",
+    "LAB_READY_TIMEOUT_SECONDS",
+    "LAB_SUPABASE_KONG_HTTP_HOST_PORT",
+    "LAB_SUPABASE_KONG_HTTPS_HOST_PORT",
+    "LAB_SUPABASE_ANALYTICS_HOST_PORT",
+    "LAB_SUPABASE_POSTGRES_HOST_PORT",
+    "LAB_SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT",
+    "LAB_SUPABASE_DASHBOARD_USERNAME",
+    "LAB_SUPABASE_DOCKER_SOCKET_LOCATION",
+}
+
 
 class RehearsalFailure(AssertionError):
     """Safe status-only exception; never attach command output."""
+
+
+class SupabaseLabSourceContractTests(unittest.TestCase):
+    def setUp(self):
+        self.assertTrue(SOURCE.is_file(), "independent Supabase LAB source is missing")
+        self.model = yaml.safe_load(SOURCE.read_text(encoding="utf-8"))
+
+    def test_supabase_has_one_independent_lab_source(self):
+        self.assertFalse(LEGACY_SOURCE.exists(), "legacy infra Supabase source remains")
+        self.assertEqual("hy-home-lab-supabase", self.model.get("name"))
+        self.assertEqual(EXPECTED_SERVICES, set(self.model.get("services", {})))
+        self.assertEqual(
+            EXPECTED_IMAGES,
+            {
+                name: service.get("image")
+                for name, service in self.model["services"].items()
+            },
+        )
+        self.assertEqual(
+            EXPECTED_CONTAINER_NAMES,
+            {
+                name: service.get("container_name")
+                for name, service in self.model["services"].items()
+            },
+        )
+
+    def test_every_service_is_lab_scoped_on_one_local_network(self):
+        for name, service in self.model["services"].items():
+            with self.subTest(service=name):
+                self.assertEqual(["supabase"], service.get("profiles"))
+                self.assertEqual("lab", service.get("labels", {}).get("hy-home.tier"))
+                self.assertEqual({"supabase_net": {}}, service.get("networks"))
+                self.assertEqual(
+                    "../infra/common-optimizations.yml",
+                    service.get("extends", {}).get("file"),
+                )
+                if "group_add" in service:
+                    self.assertEqual(["${LAB_SECRETS_GID:-1000}"], service["group_add"])
+        self.assertEqual(
+            {"name": "hy-home-lab-supabase-core"},
+            self.model.get("networks", {}).get("supabase_net"),
+        )
+
+    def test_secret_sources_are_canonical_and_value_free(self):
+        self.assertEqual(
+            EXPECTED_SECRET_FILES,
+            {
+                name: declaration.get("file")
+                for name, declaration in self.model.get("secrets", {}).items()
+            },
+        )
+        env_example = (ROOT / "labs/supabase/.env.example").read_text(encoding="utf-8")
+        self.assertEqual(
+            EXPECTED_PUBLIC_EXAMPLE_KEYS,
+            {
+                line.split("=", 1)[0]
+                for line in env_example.splitlines()
+                if line and not line.startswith("#")
+            },
+        )
+        for forbidden in (
+            "SMTP_PASS",
+            "POSTGRES_PASSWORD",
+            "JWT_SECRET",
+            "ANON_KEY",
+            "SERVICE_ROLE_KEY",
+            "DASHBOARD_PASSWORD",
+            "SECRET_KEY_BASE",
+            "VAULT_ENC_KEY",
+            "PG_META_CRYPTO_KEY",
+            "OPENAI_API_KEY",
+            "LOGFLARE_PUBLIC_ACCESS_TOKEN",
+            "LOGFLARE_PRIVATE_ACCESS_TOKEN",
+            "<REPLACE_ME>",
+        ):
+            self.assertNotIn(forbidden, env_example)
+
+    def test_bind_sources_are_isolated_and_inputs_fail_closed(self):
+        serialized = SOURCE.read_text(encoding="utf-8")
+        self.assertNotIn("DEFAULT_DATA_DIR", serialized)
+        self.assertEqual(
+            {
+                "driver": "local",
+                "driver_opts": {
+                    "o": "bind",
+                    "type": "none",
+                    "device": "${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/config",
+                },
+            },
+            self.model.get("volumes", {}).get("db-config"),
+        )
+        writable_targets = {
+            "/var/lib/storage",
+            "/home/deno/functions",
+            "/var/lib/postgresql/data",
+        }
+        for name, service in self.model["services"].items():
+            for volume in service.get("volumes", []):
+                if not isinstance(volume, dict) or volume.get("type") != "bind":
+                    continue
+                with self.subTest(service=name, target=volume.get("target")):
+                    source = volume.get("source", "")
+                    if source == (
+                        "${LAB_SUPABASE_DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}"
+                    ):
+                        self.assertTrue(volume.get("read_only"))
+                    else:
+                        self.assertTrue(
+                            source.startswith(
+                                "${LAB_DATA_DIR:?set isolated LAB data root}/supabase/"
+                            )
+                        )
+                    if volume.get("target") in writable_targets:
+                        self.assertFalse(volume.get("read_only", False))
+                    else:
+                        self.assertTrue(volume.get("read_only"))
+                        self.assertFalse(
+                            volume.get("bind", {}).get("create_host_path", True)
+                        )
 
 
 def captured(args, *, check=True, timeout=180, input_=None, env=None):

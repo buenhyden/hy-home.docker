@@ -1,20 +1,55 @@
+name: hy-home-lab-supabase
+
 x-tier-label: &tier-label
-  hy-home.tier: data
+  hy-home.tier: lab
 
 volumes:
   db-config:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/config
+
+networks:
+  supabase_net:
+    name: hy-home-lab-supabase-core
+
+secrets:
+  smtp_password:
+    file: ../secrets/communication/smtp/smtp_password.txt
+  supabase_db_password:
+    file: ../secrets/db/mng-pg/supabase_password.txt
+  supabase_jwt_secret:
+    file: ../secrets/data/supabase/supabase_jwt_secret.txt
+  supabase_anon_key:
+    file: ../secrets/data/supabase/supabase_anon_key.txt
+  supabase_service_key:
+    file: ../secrets/data/supabase/supabase_service_key.txt
+  supabase_dashboard_password:
+    file: ../secrets/data/supabase/supabase_dashboard_password.txt
+  supabase_secret_key_base:
+    file: ../secrets/data/supabase/supabase_secret_key_base.txt
+  supabase_vault_enc_key:
+    file: ../secrets/data/supabase/supabase_vault_enc_key.txt
+  supabase_pg_meta_crypto_key:
+    file: ../secrets/data/supabase/supabase_pg_meta_crypto_key.txt
+  supabase_openai_api_key:
+    file: ../secrets/data/supabase/supabase_openai_api_key.txt
+  supabase_logflare_private_token:
+    file: ../secrets/data/supabase/supabase_logflare_private_token.txt
 
 services:
   studio:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-studio
     hostname: studio
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: supabase/studio:2026.09.14-sha-4dd8a95
     restart: unless-stopped
     depends_on:
@@ -51,22 +86,27 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-kong
     hostname: kong
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: kong:3.9.3
     tmpfs:
       - /tmp
       - /var/run/kong
     restart: unless-stopped
     ports:
-      - 127.0.0.1:${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp
-      - 127.0.0.1:${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp
+      - 127.0.0.1:${LAB_SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp
+      - 127.0.0.1:${LAB_SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp
     volumes:
-      - ${DEFAULT_DATA_DIR}/supabase/api/kong.yml:/home/kong/temp.yml:ro
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/api/kong.yml
+        target: /home/kong/temp.yml
+        read_only: true
+        bind:
+          create_host_path: false
     secrets:
       - supabase_anon_key
       - supabase_service_key
@@ -74,7 +114,7 @@ services:
     environment:
       SUPABASE_ANON_KEY_FILE: /run/secrets/supabase_anon_key
       SUPABASE_SERVICE_KEY_FILE: /run/secrets/supabase_service_key
-      DASHBOARD_USERNAME: ${SUPABASE_DASHBOARD_USERNAME:-supabase_admin}
+      DASHBOARD_USERNAME: ${LAB_SUPABASE_DASHBOARD_USERNAME:-supabase_admin}
       DASHBOARD_PASSWORD_FILE: /run/secrets/supabase_dashboard_password
     networks:
       supabase_net: {}
@@ -91,12 +131,12 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-auth
     hostname: auth
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: supabase/gotrue:v2.197.0
     # GoTrue reads GOTRUE_SMTP_PASS; this wrapper owns the _FILE interface.
     entrypoint:
@@ -146,12 +186,12 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-low
     container_name: supabase-rest
     hostname: rest
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: postgrest/postgrest:v16.3
     tmpfs:
       - /tmp
@@ -182,12 +222,12 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
     hostname: realtime
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: supabase/realtime:v2.138.1
     restart: unless-stopped
     depends_on:
@@ -219,17 +259,19 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-storage
     hostname: storage
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: supabase/storage-api:v1.79.4
     restart: unless-stopped
     read_only: false
     volumes:
-      - ${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/storage
+        target: /var/lib/storage
     depends_on:
       db:
         condition: service_healthy
@@ -262,7 +304,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-low
     container_name: supabase-imgproxy
     hostname: imgproxy
@@ -271,7 +313,9 @@ services:
       - /tmp
     restart: unless-stopped
     volumes:
-      - ${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/storage
+        target: /var/lib/storage
     networks:
       supabase_net: {}
     labels:
@@ -287,12 +331,12 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-low
     container_name: supabase-meta
     hostname: meta
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: supabase/postgres-meta:v0.99.0
     restart: unless-stopped
     depends_on:
@@ -321,16 +365,18 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-high
     container_name: supabase-edge-functions
     hostname: functions
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: supabase/edge-runtime:v1.76.2
     restart: unless-stopped
     volumes:
-      - ${DEFAULT_DATA_DIR}/supabase/functions:/home/deno/functions
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/functions
+        target: /home/deno/functions
     depends_on:
       analytics:
         condition: service_healthy
@@ -359,16 +405,16 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-high
     container_name: supabase-analytics
     hostname: analytics
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: supabase/logflare:1.50.15
     restart: unless-stopped
     ports:
-      - 127.0.0.1:${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
+      - 127.0.0.1:${LAB_SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
     depends_on:
       db:
         condition: service_healthy
@@ -393,24 +439,61 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-high
     container_name: supabase-db
     hostname: db
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: supabase/postgres:17.6.1.173
     restart: unless-stopped
     read_only: false
     volumes:
-      - ${DEFAULT_DATA_DIR}/supabase/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql
-      - ${DEFAULT_DATA_DIR}/supabase/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql
-      - ${DEFAULT_DATA_DIR}/supabase/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql
-      - ${DEFAULT_DATA_DIR}/supabase/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql
-      - ${DEFAULT_DATA_DIR}/supabase/db/data:/var/lib/postgresql/data
-      - ${DEFAULT_DATA_DIR}/supabase/db/_supabase.sql:/docker-entrypoint-initdb.d/migrations/97-_supabase.sql
-      - ${DEFAULT_DATA_DIR}/supabase/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql
-      - ${DEFAULT_DATA_DIR}/supabase/db/pooler.sql:/docker-entrypoint-initdb.d/migrations/99-pooler.sql
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/realtime.sql
+        target: /docker-entrypoint-initdb.d/migrations/99-realtime.sql
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/webhooks.sql
+        target: /docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/roles.sql
+        target: /docker-entrypoint-initdb.d/init-scripts/99-roles.sql
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/jwt.sql
+        target: /docker-entrypoint-initdb.d/init-scripts/99-jwt.sql
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/data
+        target: /var/lib/postgresql/data
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/_supabase.sql
+        target: /docker-entrypoint-initdb.d/migrations/97-_supabase.sql
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/logs.sql
+        target: /docker-entrypoint-initdb.d/migrations/99-logs.sql
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/db/pooler.sql
+        target: /docker-entrypoint-initdb.d/migrations/99-pooler.sql
+        read_only: true
+        bind:
+          create_host_path: false
       - db-config:/etc/postgresql-custom
     depends_on:
       vector:
@@ -436,15 +519,25 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-vector
     hostname: vector
     image: timberio/vector:0.58.0-alpine
     restart: unless-stopped
     volumes:
-      - ${DEFAULT_DATA_DIR}/supabase/logs/vector.yml:/etc/vector/vector.yml:ro
-      - ${DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}:/var/run/docker.sock:ro
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/logs/vector.yml
+        target: /etc/vector/vector.yml
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LAB_SUPABASE_DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}
+        target: /var/run/docker.sock
+        read_only: true
+        bind:
+          create_host_path: false
     command: [ '--config', '/etc/vector/vector.yml' ]
     networks:
       supabase_net: {}
@@ -461,19 +554,24 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../../common-optimizations.yml
+      file: ../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-pooler
     hostname: supavisor
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     image: supabase/supavisor:2.9.13
     restart: unless-stopped
     ports:
-      - 127.0.0.1:${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432
-      - 127.0.0.1:${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543
+      - 127.0.0.1:${LAB_SUPABASE_POSTGRES_HOST_PORT:-5432}:5432
+      - 127.0.0.1:${LAB_SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543
     volumes:
-      - ${DEFAULT_DATA_DIR}/supabase/pooler/pooler.exs:/etc/pooler/pooler.exs:ro
+      - type: bind
+        source: ${LAB_DATA_DIR:?set isolated LAB data root}/supabase/pooler/pooler.exs
+        target: /etc/pooler/pooler.exs
+        read_only: true
+        bind:
+          create_host_path: false
     depends_on:
       db:
         condition: service_healthy
