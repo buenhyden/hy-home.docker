@@ -156,7 +156,7 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
 - 현재 identity-recovery owner: [SPEC-0173 Task 1](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md);
   [완료된 SPEC-0172 결과](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)가 날짜가 있는 구현 결과를 보존.
 - Operations authority: [Stage 05](../../../05.operations/README.md).
-- Audit/data 증거: implementation overview, [k6 guide](../../../05.operations/guides/0061-k6.md),
+- Audit/data 증거: implementation overview, [k6 guide](../../../05.operations/guides/12-testing-and-quality/0061-k6.md),
   LLM Wiki index, repository map.
 - Package registry: [Research index](../README.md)와
   [Stage 99 Registry](../../../99.templates/registry.json).

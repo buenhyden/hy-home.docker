@@ -1,6 +1,6 @@
 ---
 title: "운영 가이드"
-version: "0.2.2"
+version: "0.2.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -38,162 +38,87 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 
 ### Cross-cutting system and lifecycle
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [시스템 운영](0099-system-operations.md) | `GDE-0099` | [Runbook](../runbooks/0099-system-operations.md); 공통 Policy는 Guide에서 연결 |
-| [Dependency version management](0086-dependency-version-management.md) | `GDE-0086` | [Policy](../policies/0086-dependency-version-management.md), [Runbook](../runbooks/0086-dependency-version-management.md) |
-| [Backup and restore](0021-backup-and-restore.md) | `GDE-0021` | [Policy](../policies/0021-backup-and-restore.md), [Runbook](../runbooks/0021-backup-and-restore.md) |
-| [Optimization hardening](0074-laboratory-optimization-hardening.md) | `GDE-0074` | [Policy](../policies/0074-laboratory-optimization-hardening.md), [Runbook](../runbooks/0074-laboratory-optimization-hardening.md) |
+현재 문서는 아래의 목적별 번호 폴더에서 찾습니다.
 
 ### Cross-cutting workspace
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [developer environment](0002-developer-environment.md) | `GDE-0002` | — |
-| [environment-key comparison](0003-env-key-comparison.md) | `GDE-0003` | — |
-| [harness engineering](0004-harness-agent-first-engineering.md) | `GDE-0004` | [Policy](../policies/0004-harness-agent-first-engineering.md), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) |
-| [new-service onboarding](0008-new-service-onboarding.md) | `GDE-0008` | — |
-| [sensitive environment comparison](0010-sensitive-env-vars-comparison.md) | `GDE-0010` | — |
+작업 공간과 공통 운영 문서도 해당 번호 폴더에서 찾습니다.
 
 ### 01 Gateway
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Nginx](0011-nginx.md) | `GDE-0011` | [Policy](../policies/0011-nginx.md), [Runbook](../runbooks/0011-nginx.md) |
-| [edge routing stack](0012-edge-routing-stack.md) | `GDE-0012` | — |
-| [Traefik](0013-traefik.md) | `GDE-0013` | [Policy](../policies/0013-traefik.md), [Runbook](../runbooks/0013-traefik.md) |
+게이트웨이와 네트워크 문서는 `02-gateway-and-networking/`에 있습니다.
 
 ### 02 Auth
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Keycloak](0014-keycloak.md) | `GDE-0014` | [Policy](../policies/0014-keycloak.md), [Runbook](../runbooks/0014-keycloak.md) |
-| [OAuth2 Proxy](0015-oauth2-proxy.md) | `GDE-0015` | [Policy](../policies/0015-oauth2-proxy.md), [Runbook](../runbooks/0015-oauth2-proxy.md) |
-| [Application authentication integration](0079-application-auth-integration.md) | `GDE-0079` | [Policy](../policies/0079-application-auth-integration.md) |
+인증과 접근 문서는 `03-identity-and-access/`에 있습니다.
 
 ### 03 Security
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [OpenBao](0085-openbao.md) | `GDE-0085` | [Policy](../policies/0085-openbao.md), [Runbook](../runbooks/0085-openbao.md) |
+보안과 비밀값 문서는 `04-security-and-secrets/`에 있습니다.
 
 ### 04 Data
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Analytics — OpenSearch](0019-opensearch.md) | `GDE-0019` | [Policy](../policies/0019-opensearch.md), [Runbook](../runbooks/0019-opensearch.md) |
-| [Cache and KV — Valkey Cluster](0022-valkey-cluster.md) | `GDE-0022` | [Policy](../policies/0022-valkey-cluster.md), [Runbook](../runbooks/0022-valkey-cluster.md) |
-| [Lake and Object — SeaweedFS](0024-seaweedfs.md) | `GDE-0024` | [Policy](../policies/0024-seaweedfs.md), [Runbook](../runbooks/0024-seaweedfs.md) |
-| [NoSQL — Cassandra](0025-cassandra.md) | `GDE-0025` | [Policy](../policies/0025-cassandra.md), [Runbook](../runbooks/0025-cassandra.md) |
-| [NoSQL — CouchDB](0026-couchdb.md) | `GDE-0026` | [Policy](../policies/0026-couchdb.md), [Runbook](../runbooks/0026-couchdb.md) |
-| [NoSQL — MongoDB](0027-mongodb.md) | `GDE-0027` | [Policy](../policies/0027-mongodb.md), [Runbook](../runbooks/0027-mongodb.md) |
-| [Operational — MNG-DB](0028-management-database.md) | `GDE-0028` | [Policy](../policies/0028-management-database.md), [Runbook](../runbooks/0028-management-database.md) |
-| [Operational — Development database](0100-development-database.md) | `GDE-0100` | [Policy](../policies/0100-development-database.md), [Runbook](../runbooks/0100-development-database.md) |
-| [Operational — Supabase](0029-supabase.md) | `GDE-0029` | [Policy](../policies/0029-supabase.md), [Runbook](../runbooks/0029-supabase.md) |
-| [Optimization hardening](0030-data-optimization-hardening.md) | `GDE-0030` | [Policy](../policies/0030-data-optimization-hardening.md), [Runbook](../runbooks/0030-data-optimization-hardening.md) |
-| [Relational — PostgreSQL Cluster](0031-postgresql-cluster.md) | `GDE-0031` | [Policy](../policies/0031-postgresql-cluster.md), [Runbook](../runbooks/0031-postgresql-cluster.md) |
-| [Specialized — Neo4j](0033-neo4j.md) | `GDE-0033` | [Policy](../policies/0033-neo4j.md), [Runbook](../runbooks/0033-neo4j.md) |
-| [Specialized — Qdrant](0034-qdrant.md) | `GDE-0034` | [Policy](../policies/0034-qdrant.md), [Runbook](../runbooks/0034-qdrant.md) |
-| [RedisInsight](0076-redisinsight.md) | `GDE-0076` | [Policy](../policies/0076-redisinsight.md), [Runbook](../runbooks/0076-redisinsight.md) |
+데이터베이스와 저장소 문서는 `05-databases-and-storage/`에 있습니다.
 
 ### 05 Messaging
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Kafka](0036-kafka.md) | `GDE-0036` | [Policy](../policies/0036-kafka.md), [Runbook](../runbooks/0036-kafka.md) |
-| [Messaging hardening](0037-messaging-optimization-hardening.md) | `GDE-0037` | [Policy](../policies/0037-messaging-optimization-hardening.md), [Runbook](../runbooks/0037-messaging-optimization-hardening.md) |
+메시징과 CDC 문서는 `06-messaging-and-cdc/`에 있습니다.
 
 ### 06 Observability
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Alertmanager](0039-alertmanager.md) | `GDE-0039` | [Policy](../policies/0039-alertmanager.md), [Runbook](../runbooks/0039-alertmanager.md) |
-| [Alloy](0040-alloy.md) | `GDE-0040` | [Policy](../policies/0040-alloy.md), [Runbook](../runbooks/0040-alloy.md) |
-| [Grafana](0041-grafana.md) | `GDE-0041` | [Policy](../policies/0041-grafana.md), [Runbook](../runbooks/0041-grafana.md) |
-| [LGTM stack](0042-lgtm-stack.md) | `GDE-0042` | — |
-| [Loki](0043-loki.md) | `GDE-0043` | [Policy](../policies/0043-loki.md), [Runbook](../runbooks/0043-loki.md) |
-| [Optimization hardening](0044-observability-optimization-hardening.md) | `GDE-0044` | [Policy](../policies/0044-observability-optimization-hardening.md), [Runbook](../runbooks/0044-observability-optimization-hardening.md) |
-| [Prometheus](0045-prometheus.md) | `GDE-0045` | [Policy](../policies/0045-prometheus.md), [Runbook](../runbooks/0045-prometheus.md) |
-| [Pushgateway](0046-pushgateway.md) | `GDE-0046` | [Policy](../policies/0046-pushgateway.md), [Runbook](../runbooks/0046-pushgateway.md) |
-| [Pyroscope](0047-pyroscope.md) | `GDE-0047` | [Policy](../policies/0047-pyroscope.md), [Runbook](../runbooks/0047-pyroscope.md) |
-| [Tempo](0049-tempo.md) | `GDE-0049` | [Policy](../policies/0049-tempo.md), [Runbook](../runbooks/0049-tempo.md) |
-| [Gatus](0087-gatus.md) | `GDE-0087` | [Policy](../policies/0087-gatus.md), [Runbook](../runbooks/0087-gatus.md) |
-| [Dozzle](0072-dozzle.md) | `GDE-0072` | [Policy](../policies/0072-dozzle.md), [Runbook](../runbooks/0072-dozzle.md) |
+관측 문서는 `07-observability/`에 있습니다.
 
 ### 07 Workflow
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Airflow](0050-airflow.md) | `GDE-0050` | [Policy](../policies/0050-airflow.md), [Runbook](../runbooks/0050-airflow.md) |
-| [DAG deployment](0051-airflow-dag-lifecycle.md) | `GDE-0051` | [Policy](../policies/0052-airflow-dag-lifecycle.md) |
-| [n8n](0053-n8n.md) | `GDE-0053` | [Policy](../policies/0053-n8n.md), [Runbook](../runbooks/0053-n8n.md) |
-| [Optimization hardening](0054-workflow-optimization-hardening.md) | `GDE-0054` | [Policy](../policies/0054-workflow-optimization-hardening.md), [Runbook](../runbooks/0054-workflow-optimization-hardening.md) |
+워크플로와 자동화 문서는 `08-workflows-and-automation/`에 있습니다.
 
 ### 08 AI
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Ollama](0056-ollama.md) | `GDE-0056` | [Policy](../policies/0056-ollama.md), [Runbook](../runbooks/0056-ollama.md) |
-| [Open WebUI](0057-open-webui.md) | `GDE-0057` | [Policy](../policies/0057-open-webui.md), [Runbook](../runbooks/0057-open-webui.md) |
-| [Optimization hardening](0058-ai-optimization-hardening.md) | `GDE-0058` | [Policy](../policies/0058-ai-optimization-hardening.md), [Runbook](../runbooks/0058-ai-optimization-hardening.md) |
-| [RAG workflow](0059-rag-workflow.md) | `GDE-0059` | — |
-| [ComfyUI](0081-comfyui.md) | `GDE-0081` | [Policy](../policies/0081-comfyui.md), [Runbook](../runbooks/0081-comfyui.md) |
-| [Crawl4AI](0091-crawl4ai.md) | `GDE-0091` | [Policy](../policies/0091-crawl4ai.md), [Runbook](../runbooks/0091-crawl4ai.md) |
-| [Open Notebook](0073-open-notebook.md) | `GDE-0073` | [Policy](../policies/0073-open-notebook.md), [Runbook](../runbooks/0073-open-notebook.md) |
-| [SurrealDB](0080-surrealdb.md) | `GDE-0080` | [Policy](../policies/0080-surrealdb.md), [Runbook](../runbooks/0080-surrealdb.md) |
-| [MLflow](0088-mlflow.md) | `GDE-0088` | [Policy](../policies/0088-mlflow.md), [Runbook](../runbooks/0088-mlflow.md) |
+AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 
 ### 09 Platform Operations
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Optimization hardening](0063-tooling-optimization-hardening.md) | `GDE-0063` | [Policy](../policies/0063-tooling-optimization-hardening.md), [Runbook](../runbooks/0063-tooling-optimization-hardening.md) |
-| [Registry](0065-registry.md) | `GDE-0065` | [Policy](../policies/0065-registry.md), [Runbook](../runbooks/0065-registry.md) |
-| [Terraform](0068-terraform.md) | `GDE-0068` | [Policy](../policies/0068-terraform.md), [Runbook](../runbooks/0068-terraform.md) |
-| [Terrakube](0069-terrakube.md) | `GDE-0069` | [Policy](../policies/0069-terrakube.md), [Runbook](../runbooks/0069-terrakube.md) |
-| [OpenTofu](0082-opentofu.md) | `GDE-0082` | [Policy](../policies/0082-opentofu.md), [Runbook](../runbooks/0082-opentofu.md) |
-| [Renovate](0083-renovate.md) | `GDE-0083` | [Policy](../policies/0083-renovate.md), [Runbook](../runbooks/0083-renovate.md) |
+플랫폼과 백업 문서는 `10-platform-and-backup/`에 있습니다.
 
 ### 10 Communication
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Stalwart mail](0070-mail.md) | `GDE-0070` | [Policy](../policies/0070-mail.md), [Runbook](../runbooks/0070-mail.md) |
+메일과 통지 문서는 `11-mail-and-notifications/`에 있습니다.
 
 ### 11 Quality
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [k6](0061-k6.md) | `GDE-0061` | [Policy](../policies/0061-k6.md), [Runbook](../runbooks/0061-k6.md) |
-| [Locust](0062-locust.md) | `GDE-0062` | [Policy](../policies/0062-locust.md), [Runbook](../runbooks/0062-locust.md) |
-| [Performance testing](0064-performance-testing.md) | `GDE-0064` | [Policy](../policies/0064-performance-testing.md), [Runbook](../runbooks/0064-performance-testing.md) |
-| [SonarQube](0066-sonarqube.md) | `GDE-0066` | [Policy](../policies/0066-sonarqube.md), [Runbook](../runbooks/0066-sonarqube.md) |
-| [WireMock](0092-wiremock.md) | `GDE-0092` | [Policy](../policies/0092-wiremock.md), [Runbook](../runbooks/0092-wiremock.md) |
-| [Pact Broker](0093-pact-broker.md) | `GDE-0093` | [Policy](../policies/0093-pact-broker.md), [Runbook](../runbooks/0093-pact-broker.md) |
-| [Conftest](0095-conftest.md) | `GDE-0095` | [Policy](../policies/0095-conftest.md), [Runbook](../runbooks/0095-conftest.md) |
-| [Mailpit](0084-mailpit.md) | `GDE-0084` | [Policy](../policies/0084-mailpit.md), [Runbook](../runbooks/0084-mailpit.md) |
+시험과 품질 문서는 `12-testing-and-quality/`에 있습니다.
 
 ### 12 Analytics
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Lakehouse — Iceberg engines](0094-lakehouse.md) | `GDE-0094` | [Policy](../policies/0094-lakehouse.md), [Runbook](../runbooks/0094-lakehouse.md) |
-| [Analytics — Superset](0097-superset.md) | `GDE-0097` | [Policy](../policies/0097-superset.md), [Runbook](../runbooks/0097-superset.md) |
-| [dbt](0090-dbt.md) | `GDE-0090` | [Policy](../policies/0090-dbt.md), [Runbook](../runbooks/0090-dbt.md) |
-| [JupyterLab](0089-jupyterlab.md) | `GDE-0089` | [Policy](../policies/0089-jupyterlab.md), [Runbook](../runbooks/0089-jupyterlab.md) |
+분석과 데이터 품질 문서는 `13-analytics-and-data-quality/`에 있습니다.
 
 ### 13 Experience
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Shared Storybook](0101-storybook.md) | `GDE-0101` | [Policy](../policies/0101-storybook.md), [Runbook](../runbooks/0101-storybook.md) |
+디자인 시스템 문서는 `14-design-system/`에 있습니다.
 
 ### Cross-cutting connectivity
 
-| Guide | ID | 관련 문서 |
-| --- | --- | --- |
-| [Compose network membership](0077-ip-address-management.md) | `GDE-0077` | [Policy](../policies/0077-ip-address-management.md), [Runbook](../runbooks/0077-ip-address-management.md) |
-| [hy-home.k8s integration](0096-k8s-integration.md) | `GDE-0096` | [Policy](../policies/0096-k8s-integration.md), [Runbook](../runbooks/0096-k8s-integration.md) |
+교차 연결 문서는 해당 번호 폴더에서 찾습니다.
+
+### 목적별 폴더
+
+| 운영 범위 | 문서 역할 |
+| --- | --- |
+| [공통 운영](01-common/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [게이트웨이와 네트워크](02-gateway-and-networking/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [인증과 접근](03-identity-and-access/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [보안과 비밀값](04-security-and-secrets/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [데이터베이스와 저장소](05-databases-and-storage/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [메시징과 CDC](06-messaging-and-cdc/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [관측](07-observability/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [워크플로와 자동화](08-workflows-and-automation/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [AI와 검색](09-ai-and-search/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [플랫폼과 백업](10-platform-and-backup/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [메일과 통지](11-mail-and-notifications/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [시험과 품질](12-testing-and-quality/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [분석과 데이터 품질](13-analytics-and-data-quality/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [디자인 시스템](14-design-system/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [독립 LAB 문서](15-labs/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
 
 ## Usage
 

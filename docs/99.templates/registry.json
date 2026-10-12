@@ -1112,21 +1112,21 @@
         ]
       },
       "additional_path_patterns": [
-        "docs/05.operations/guides/common/{number:4}-{slug}.md",
-        "docs/05.operations/guides/gateway-and-networking/{number:4}-{slug}.md",
-        "docs/05.operations/guides/identity-and-access/{number:4}-{slug}.md",
-        "docs/05.operations/guides/security-and-secrets/{number:4}-{slug}.md",
-        "docs/05.operations/guides/databases-and-storage/{number:4}-{slug}.md",
-        "docs/05.operations/guides/messaging-and-cdc/{number:4}-{slug}.md",
-        "docs/05.operations/guides/observability/{number:4}-{slug}.md",
-        "docs/05.operations/guides/workflows-and-automation/{number:4}-{slug}.md",
-        "docs/05.operations/guides/ai-and-search/{number:4}-{slug}.md",
-        "docs/05.operations/guides/platform-and-backup/{number:4}-{slug}.md",
-        "docs/05.operations/guides/mail-and-notifications/{number:4}-{slug}.md",
-        "docs/05.operations/guides/testing-and-quality/{number:4}-{slug}.md",
-        "docs/05.operations/guides/analytics-and-data-quality/{number:4}-{slug}.md",
-        "docs/05.operations/guides/design-system/{number:4}-{slug}.md",
-        "docs/05.operations/guides/labs/{number:4}-{slug}.md"
+        "docs/05.operations/guides/01-common/{number:4}-{slug}.md",
+        "docs/05.operations/guides/02-gateway-and-networking/{number:4}-{slug}.md",
+        "docs/05.operations/guides/03-identity-and-access/{number:4}-{slug}.md",
+        "docs/05.operations/guides/04-security-and-secrets/{number:4}-{slug}.md",
+        "docs/05.operations/guides/05-databases-and-storage/{number:4}-{slug}.md",
+        "docs/05.operations/guides/06-messaging-and-cdc/{number:4}-{slug}.md",
+        "docs/05.operations/guides/07-observability/{number:4}-{slug}.md",
+        "docs/05.operations/guides/08-workflows-and-automation/{number:4}-{slug}.md",
+        "docs/05.operations/guides/09-ai-and-search/{number:4}-{slug}.md",
+        "docs/05.operations/guides/10-platform-and-backup/{number:4}-{slug}.md",
+        "docs/05.operations/guides/11-mail-and-notifications/{number:4}-{slug}.md",
+        "docs/05.operations/guides/12-testing-and-quality/{number:4}-{slug}.md",
+        "docs/05.operations/guides/13-analytics-and-data-quality/{number:4}-{slug}.md",
+        "docs/05.operations/guides/14-design-system/{number:4}-{slug}.md",
+        "docs/05.operations/guides/15-labs/{number:4}-{slug}.md"
       ]
     },
     {
@@ -1187,21 +1187,21 @@
         ]
       },
       "additional_path_patterns": [
-        "docs/05.operations/policies/common/{number:4}-{slug}.md",
-        "docs/05.operations/policies/gateway-and-networking/{number:4}-{slug}.md",
-        "docs/05.operations/policies/identity-and-access/{number:4}-{slug}.md",
-        "docs/05.operations/policies/security-and-secrets/{number:4}-{slug}.md",
-        "docs/05.operations/policies/databases-and-storage/{number:4}-{slug}.md",
-        "docs/05.operations/policies/messaging-and-cdc/{number:4}-{slug}.md",
-        "docs/05.operations/policies/observability/{number:4}-{slug}.md",
-        "docs/05.operations/policies/workflows-and-automation/{number:4}-{slug}.md",
-        "docs/05.operations/policies/ai-and-search/{number:4}-{slug}.md",
-        "docs/05.operations/policies/platform-and-backup/{number:4}-{slug}.md",
-        "docs/05.operations/policies/mail-and-notifications/{number:4}-{slug}.md",
-        "docs/05.operations/policies/testing-and-quality/{number:4}-{slug}.md",
-        "docs/05.operations/policies/analytics-and-data-quality/{number:4}-{slug}.md",
-        "docs/05.operations/policies/design-system/{number:4}-{slug}.md",
-        "docs/05.operations/policies/labs/{number:4}-{slug}.md"
+        "docs/05.operations/policies/01-common/{number:4}-{slug}.md",
+        "docs/05.operations/policies/02-gateway-and-networking/{number:4}-{slug}.md",
+        "docs/05.operations/policies/03-identity-and-access/{number:4}-{slug}.md",
+        "docs/05.operations/policies/04-security-and-secrets/{number:4}-{slug}.md",
+        "docs/05.operations/policies/05-databases-and-storage/{number:4}-{slug}.md",
+        "docs/05.operations/policies/06-messaging-and-cdc/{number:4}-{slug}.md",
+        "docs/05.operations/policies/07-observability/{number:4}-{slug}.md",
+        "docs/05.operations/policies/08-workflows-and-automation/{number:4}-{slug}.md",
+        "docs/05.operations/policies/09-ai-and-search/{number:4}-{slug}.md",
+        "docs/05.operations/policies/10-platform-and-backup/{number:4}-{slug}.md",
+        "docs/05.operations/policies/11-mail-and-notifications/{number:4}-{slug}.md",
+        "docs/05.operations/policies/12-testing-and-quality/{number:4}-{slug}.md",
+        "docs/05.operations/policies/13-analytics-and-data-quality/{number:4}-{slug}.md",
+        "docs/05.operations/policies/14-design-system/{number:4}-{slug}.md",
+        "docs/05.operations/policies/15-labs/{number:4}-{slug}.md"
       ]
     },
     {
@@ -1269,21 +1269,21 @@
         ]
       },
       "additional_path_patterns": [
-        "docs/05.operations/runbooks/common/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/gateway-and-networking/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/identity-and-access/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/security-and-secrets/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/databases-and-storage/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/messaging-and-cdc/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/observability/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/workflows-and-automation/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/ai-and-search/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/platform-and-backup/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/mail-and-notifications/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/testing-and-quality/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/analytics-and-data-quality/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/design-system/{number:4}-{slug}.md",
-        "docs/05.operations/runbooks/labs/{number:4}-{slug}.md"
+        "docs/05.operations/runbooks/01-common/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/02-gateway-and-networking/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/03-identity-and-access/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/04-security-and-secrets/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/05-databases-and-storage/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/06-messaging-and-cdc/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/07-observability/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/08-workflows-and-automation/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/09-ai-and-search/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/10-platform-and-backup/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/11-mail-and-notifications/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/12-testing-and-quality/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/13-analytics-and-data-quality/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/14-design-system/{number:4}-{slug}.md",
+        "docs/05.operations/runbooks/15-labs/{number:4}-{slug}.md"
       ]
     },
     {
@@ -2219,51 +2219,51 @@
         "docs/99.templates/README.md",
         "docs/99.templates/templates/README.md",
         ".agents/README.md",
-        "docs/05.operations/guides/common/README.md",
-        "docs/05.operations/guides/gateway-and-networking/README.md",
-        "docs/05.operations/guides/identity-and-access/README.md",
-        "docs/05.operations/guides/security-and-secrets/README.md",
-        "docs/05.operations/guides/databases-and-storage/README.md",
-        "docs/05.operations/guides/messaging-and-cdc/README.md",
-        "docs/05.operations/guides/observability/README.md",
-        "docs/05.operations/guides/workflows-and-automation/README.md",
-        "docs/05.operations/guides/ai-and-search/README.md",
-        "docs/05.operations/guides/platform-and-backup/README.md",
-        "docs/05.operations/guides/mail-and-notifications/README.md",
-        "docs/05.operations/guides/testing-and-quality/README.md",
-        "docs/05.operations/guides/analytics-and-data-quality/README.md",
-        "docs/05.operations/guides/design-system/README.md",
-        "docs/05.operations/guides/labs/README.md",
-        "docs/05.operations/policies/common/README.md",
-        "docs/05.operations/policies/gateway-and-networking/README.md",
-        "docs/05.operations/policies/identity-and-access/README.md",
-        "docs/05.operations/policies/security-and-secrets/README.md",
-        "docs/05.operations/policies/databases-and-storage/README.md",
-        "docs/05.operations/policies/messaging-and-cdc/README.md",
-        "docs/05.operations/policies/observability/README.md",
-        "docs/05.operations/policies/workflows-and-automation/README.md",
-        "docs/05.operations/policies/ai-and-search/README.md",
-        "docs/05.operations/policies/platform-and-backup/README.md",
-        "docs/05.operations/policies/mail-and-notifications/README.md",
-        "docs/05.operations/policies/testing-and-quality/README.md",
-        "docs/05.operations/policies/analytics-and-data-quality/README.md",
-        "docs/05.operations/policies/design-system/README.md",
-        "docs/05.operations/policies/labs/README.md",
-        "docs/05.operations/runbooks/common/README.md",
-        "docs/05.operations/runbooks/gateway-and-networking/README.md",
-        "docs/05.operations/runbooks/identity-and-access/README.md",
-        "docs/05.operations/runbooks/security-and-secrets/README.md",
-        "docs/05.operations/runbooks/databases-and-storage/README.md",
-        "docs/05.operations/runbooks/messaging-and-cdc/README.md",
-        "docs/05.operations/runbooks/observability/README.md",
-        "docs/05.operations/runbooks/workflows-and-automation/README.md",
-        "docs/05.operations/runbooks/ai-and-search/README.md",
-        "docs/05.operations/runbooks/platform-and-backup/README.md",
-        "docs/05.operations/runbooks/mail-and-notifications/README.md",
-        "docs/05.operations/runbooks/testing-and-quality/README.md",
-        "docs/05.operations/runbooks/analytics-and-data-quality/README.md",
-        "docs/05.operations/runbooks/design-system/README.md",
-        "docs/05.operations/runbooks/labs/README.md"
+        "docs/05.operations/guides/01-common/README.md",
+        "docs/05.operations/guides/02-gateway-and-networking/README.md",
+        "docs/05.operations/guides/03-identity-and-access/README.md",
+        "docs/05.operations/guides/04-security-and-secrets/README.md",
+        "docs/05.operations/guides/05-databases-and-storage/README.md",
+        "docs/05.operations/guides/06-messaging-and-cdc/README.md",
+        "docs/05.operations/guides/07-observability/README.md",
+        "docs/05.operations/guides/08-workflows-and-automation/README.md",
+        "docs/05.operations/guides/09-ai-and-search/README.md",
+        "docs/05.operations/guides/10-platform-and-backup/README.md",
+        "docs/05.operations/guides/11-mail-and-notifications/README.md",
+        "docs/05.operations/guides/12-testing-and-quality/README.md",
+        "docs/05.operations/guides/13-analytics-and-data-quality/README.md",
+        "docs/05.operations/guides/14-design-system/README.md",
+        "docs/05.operations/guides/15-labs/README.md",
+        "docs/05.operations/policies/01-common/README.md",
+        "docs/05.operations/policies/02-gateway-and-networking/README.md",
+        "docs/05.operations/policies/03-identity-and-access/README.md",
+        "docs/05.operations/policies/04-security-and-secrets/README.md",
+        "docs/05.operations/policies/05-databases-and-storage/README.md",
+        "docs/05.operations/policies/06-messaging-and-cdc/README.md",
+        "docs/05.operations/policies/07-observability/README.md",
+        "docs/05.operations/policies/08-workflows-and-automation/README.md",
+        "docs/05.operations/policies/09-ai-and-search/README.md",
+        "docs/05.operations/policies/10-platform-and-backup/README.md",
+        "docs/05.operations/policies/11-mail-and-notifications/README.md",
+        "docs/05.operations/policies/12-testing-and-quality/README.md",
+        "docs/05.operations/policies/13-analytics-and-data-quality/README.md",
+        "docs/05.operations/policies/14-design-system/README.md",
+        "docs/05.operations/policies/15-labs/README.md",
+        "docs/05.operations/runbooks/01-common/README.md",
+        "docs/05.operations/runbooks/02-gateway-and-networking/README.md",
+        "docs/05.operations/runbooks/03-identity-and-access/README.md",
+        "docs/05.operations/runbooks/04-security-and-secrets/README.md",
+        "docs/05.operations/runbooks/05-databases-and-storage/README.md",
+        "docs/05.operations/runbooks/06-messaging-and-cdc/README.md",
+        "docs/05.operations/runbooks/07-observability/README.md",
+        "docs/05.operations/runbooks/08-workflows-and-automation/README.md",
+        "docs/05.operations/runbooks/09-ai-and-search/README.md",
+        "docs/05.operations/runbooks/10-platform-and-backup/README.md",
+        "docs/05.operations/runbooks/11-mail-and-notifications/README.md",
+        "docs/05.operations/runbooks/12-testing-and-quality/README.md",
+        "docs/05.operations/runbooks/13-analytics-and-data-quality/README.md",
+        "docs/05.operations/runbooks/14-design-system/README.md",
+        "docs/05.operations/runbooks/15-labs/README.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
@@ -2330,6 +2330,141 @@
           "layer": "operations"
         },
         "docs/05.operations/runbooks/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/01-common/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/02-gateway-and-networking/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/03-identity-and-access/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/04-security-and-secrets/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/05-databases-and-storage/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/06-messaging-and-cdc/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/07-observability/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/08-workflows-and-automation/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/09-ai-and-search/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/10-platform-and-backup/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/11-mail-and-notifications/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/12-testing-and-quality/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/13-analytics-and-data-quality/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/14-design-system/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/guides/15-labs/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/01-common/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/02-gateway-and-networking/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/03-identity-and-access/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/04-security-and-secrets/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/05-databases-and-storage/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/06-messaging-and-cdc/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/07-observability/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/08-workflows-and-automation/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/09-ai-and-search/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/10-platform-and-backup/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/11-mail-and-notifications/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/12-testing-and-quality/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/13-analytics-and-data-quality/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/14-design-system/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/15-labs/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/01-common/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/02-gateway-and-networking/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/03-identity-and-access/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/04-security-and-secrets/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/05-databases-and-storage/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/06-messaging-and-cdc/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/07-observability/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/08-workflows-and-automation/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/09-ai-and-search/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/10-platform-and-backup/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/11-mail-and-notifications/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/12-testing-and-quality/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/13-analytics-and-data-quality/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/14-design-system/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/15-labs/README.md": {
           "layer": "operations"
         },
         "docs/05.operations/incidents/README.md": {

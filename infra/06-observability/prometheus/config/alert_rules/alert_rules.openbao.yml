@@ -12,7 +12,7 @@ groups:
         annotations:
           summary: 'OpenBao sealed ({{ $labels.instance }})'
           description: 'OpenBao가 sealed 상태입니다. 수동 unseal 절차(ADR-0042)를 따르세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'
 
       - alert: OpenBaoTooManyPendingTokens
         expr: avg(vault_token_create_count{job="openbao"} - vault_token_store_count{job="openbao"}) > 0
@@ -23,7 +23,7 @@ groups:
         annotations:
           summary: 'OpenBao 저장 대기 토큰 존재'
           description: '생성됐지만 저장되지 않은 토큰이 {{ $value }}개 있습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'
 
       - alert: OpenBaoTooManyInfinityTokens
         expr: vault_token_count_by_ttl{job="openbao", creation_ttl="+Inf"} > 3
@@ -34,7 +34,7 @@ groups:
         annotations:
           summary: 'OpenBao 만료 없는 토큰 3개 초과'
           description: 'TTL이 없는 토큰이 {{ $value }}개 있습니다. root 또는 장기 토큰 발급을 검토하세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'
 
       - alert: OpenBaoMetricsScrapeFailing
         expr: up{job="openbao"} == 0
@@ -45,7 +45,7 @@ groups:
         annotations:
           summary: 'OpenBao 메트릭 수집 실패'
           description: 'Prometheus가 OpenBao /v1/sys/metrics를 읽지 못합니다. 메트릭 토큰(SEC-002)의 만료나 sealed 상태를 확인하세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'
 
       # Counters observed from the pinned native image in SPEC-0204 TSK-0006.
       - alert: OpenBaoAuditFailure
@@ -57,4 +57,4 @@ groups:
         annotations:
           summary: 'OpenBao 감사 기록 실패'
           description: '감사 backend의 쓰기 실패를 확인하세요. 모든 backend 실패 시 audited 요청은 차단되지만 health는 정상 응답할 수 있습니다. 감사 검사를 비활성화하지 마세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'

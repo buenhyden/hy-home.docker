@@ -49,9 +49,9 @@ security boundary rather than a harmless dashboard layer.
 
 ### Traceability
 
-- [Dozzle operations](../../05.operations/guides/0072-dozzle.md)
-- [Open Notebook operations](../../05.operations/guides/0073-open-notebook.md)
-- [RedisInsight operations](../../05.operations/guides/0076-redisinsight.md)
+- [Dozzle operations](../../05.operations/guides/07-observability/0072-dozzle.md)
+- [Open Notebook operations](../../05.operations/guides/09-ai-and-search/0073-open-notebook.md)
+- [RedisInsight operations](../../05.operations/guides/05-databases-and-storage/0076-redisinsight.md)
 
 ## Architecture
 

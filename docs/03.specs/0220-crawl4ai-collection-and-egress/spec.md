@@ -120,7 +120,7 @@ changes, and any application, learning database, GPU, ASR or TTS service in
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-crawl4ai-collection-and-egress.md)
-- [Crawl4AI policy](../../05.operations/policies/0091-crawl4ai.md)
+- [Crawl4AI policy](../../05.operations/policies/09-ai-and-search/0091-crawl4ai.md)
 - [AI architecture](../../02.architecture/descriptions/0008-ai-architecture.md)
 - [Request baseline](../0212-request-baseline-and-reconciliation/spec.md)
 - [Service integration](../0204-service-integration-security-and-operations/spec.md)

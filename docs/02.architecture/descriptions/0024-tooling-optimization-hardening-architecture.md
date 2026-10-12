@@ -156,8 +156,8 @@ execution evidence is owned by the related Spec and Operations documents.
 - **PRD**: [../01.requirements/0010-tooling.md](../../01.requirements/0010-tooling.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](0009-tooling-architecture.md)
 - **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/09-platform-ops/optimization-hardening.md](../../05.operations/guides/0063-tooling-optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/09-platform-ops/optimization-hardening.md](../../05.operations/policies/0063-tooling-optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/09-platform-ops/optimization-hardening.md](../../05.operations/runbooks/0063-tooling-optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/09-platform-ops/optimization-hardening.md](../../05.operations/guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)
+- **Operation**: [../../05.operations/policies/09-platform-ops/optimization-hardening.md](../../05.operations/policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/09-platform-ops/optimization-hardening.md](../../05.operations/runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

@@ -757,7 +757,10 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
         (repo / ".shellcheckrc").write_text(
             "external-sources=true\nsource-path=SCRIPTDIR\n", encoding="utf-8"
         )
-        policy = repo / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+        policy = (
+            repo
+            / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
+        )
         policy.parent.mkdir(parents=True)
         policy.write_text(
             "| Named selection | Profiles |\n| --- | --- |\n| HOME | `core` |\n",

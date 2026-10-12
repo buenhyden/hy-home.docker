@@ -1,6 +1,6 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.1.6"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -26,6 +26,18 @@ Reuse completed SPEC-0227 body
 refresh and preserve completed P00 Tasks, issued identities and created dates.
 
 ## Inputs and Authorization
+
+### Current numbering amendment — 2026-10-12
+
+The current user instruction narrows this continuation to Stage05 document
+navigation: keep every existing P08 classification, filename, ID, created value
+and revised body, and prefix the fifteen existing directories with `01` through
+`15`; LAB documentation is exactly `15-labs/` in each operations family.
+Repository-root LAB source, runtime, services, data, secrets, images and
+functional testing remain excluded. W70's dated source-relocation history is
+unchanged. This amendment supersedes the earlier local-main-only delivery
+wording for this path unit: future commit, PR and CI status is reported only
+from actually observed delivery evidence.
 
 The coordinator issues SPEC-0204-TSK-0015 through this reviewed documentation
 commit after observing maximum issued Task number 14 across Git history and
@@ -718,6 +730,67 @@ remote delivery and W62 completion remain NOT_RUN. Final combined candidate
 metadata/staged/catalog and independent receipt review precede local main
 commit; earlier authored-source receipts are not coordinator native evidence.
 
+### Numbered-domain continuation — 2026-10-12
+
+The existing P08 moved corpus keeps its approved classifications, document
+filenames, IDs, created metadata and revised bodies. The user-authorized
+continuation prefixes only the current fifteen domain directories in every
+family: `01-common`, `02-gateway-and-networking`,
+`03-identity-and-access`, `04-security-and-secrets`,
+`05-databases-and-storage`, `06-messaging-and-cdc`, `07-observability`,
+`08-workflows-and-automation`, `09-ai-and-search`,
+`10-platform-and-backup`, `11-mail-and-notifications`,
+`12-testing-and-quality`, `13-analytics-and-data-quality`,
+`14-design-system`, and `15-labs`. The last is confined to Stage05 document
+folders; it does not move LAB runtime or service source.
+
+The corpus remains 230 leaves (79 Guides, 76 Policies, 75 Runbooks) and 45
+populated domain READMEs. The resulting path map is the existing P08 map with
+that prefix substitution; the previously reviewed content bodies are retained.
+This amendment is a source-layout continuation only. Current catalog/link/
+metadata validation, review, commit and any future PR/CI delivery retain their
+separate actual-head evidence requirements. Rollback removes the prefixes and
+reapplies the same internal navigation map; it has no runtime, data, secret,
+HOME, migration, rotation or recovery effect.
+
+### W59–W61 current source acceptance receipt — 2026-10-12
+
+The accepted temporary candidate is
+`a90cecd400c70e20d3f19c37a44e0f4ec0ace145`, prepared from HEAD
+`eb11172fbea69e015e078b1f17bab5d66119674d` while preserving index tree
+`1a69a7c563a0c3bc836f147141581372ad2d4e8c`. It retains the reviewed 230
+leaves and 45 domain READMEs with the same classifications, IDs and created
+values; normalized preservation proof reports the same aggregate hash
+`37f97a582635adb36dda1e39acf93a3e420a7d882fa8a5adb81e05da282d24ca`, and every family parent README has exactly 15 direct numbered
+README links.
+
+The final temporary index session `/tmp/hyhome-p08-candidate-0c90jjaf.index`
+recorded `run-ci-precommit.sh --mode local-staged` as exit 0 with all hooks
+passing and no resulting changes. The metadata process `43225` on tree
+`70fd83f584707ac1899f8ac9c2930c683d3249bf` selected 328 documents with zero violations, exit 0; its source
+contract was identical before later style-only work. `check-document-links.py
+--mode all` on the same tree exited 0 (1,272 documents, 11,437 links, zero
+failures, one historical unrecorded-2870 warning). Catalog and manifest
+`--check-generated` checks exited 0. The focused contract modules reported 194
+passes; the security (4), move (2), and traceability (8) observations overlap
+and are not added into a synthetic total. Independent source and security
+reviews approved the exact stable helper/blob set (17/17 blobs bound to the
+candidate). The approved ROOT metadata case process `85114` ran one case in
+3.835 seconds and exited 0; it exercised static setup only, including nine LAB
+renders.
+
+This is SOURCE acceptance for W59–W61 only. W62 delivery, logical source
+commit, PR, hosted CI and merge are NOT_RUN. LAB runtime beyond the stated
+static setup, native execution, HOME, rotation, migration, recovery, and the
+whole aggregate are NOT_RUN. No secret, runtime, data or service action is
+claimed; the dated W58/W70 receipts and historical evidence above are
+unchanged.
+
+The W57–W62 rows below record the pre-numbering preparation state. The current
+W59–W61 source/path/README acceptance above supersedes only that source lane;
+W62 commit, PR, CI and merge delivery remains pending. The detailed final QA
+result receipt is owned by [P10 Task 0016](tsk-0016-p10-opsflow-acceptance.md).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -755,6 +828,7 @@ Remote push/PR/hosted CI is NOT_RUN unless actually executed in an adopted lane.
 
 - [Spec](../spec.md)
 - [Plan](../plan.md)
+- [P10 Task 0016 final QA receipt](tsk-0016-p10-opsflow-acceptance.md)
 - [Completed P00 Task](../../0212-request-baseline-and-reconciliation/tasks/tsk-0003-active-contract-and-exclusions.md)
 - [Operations documentation navigation](../../../05.operations/README.md)
 - [Stage05 refresh owner](../../0227-stage05-format-refresh/spec.md)

@@ -1466,5 +1466,5 @@ acceptance or authorize P06. No secret migration or consumer switch is claimed.
 - [Spec](../spec.md)
 - [Plan](../plan.md)
 - [P00 Task](../../0212-request-baseline-and-reconciliation/tasks/tsk-0003-active-contract-and-exclusions.md)
-- [OpenBao Runbook](../../../05.operations/runbooks/0085-openbao.md)
-- [Backup Runbook](../../../05.operations/runbooks/0021-backup-and-restore.md)
+- [OpenBao Runbook](../../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+- [Backup Runbook](../../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md)

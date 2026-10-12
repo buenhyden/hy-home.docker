@@ -92,6 +92,10 @@ _ROOT_FILES = frozenset(
     }
 )
 _MAX_ANCHOR_BYTES = 4 * 1024 * 1024
+_LEGACY_FLAT_OPERATION_ROLE = re.compile(
+    r"^docs/05\.operations/(?P<family>guides|policies|runbooks)/"
+    r"(?P<name>[0-9]{4}-[a-z0-9][a-z0-9-]*\.md)$"
+)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -881,6 +885,39 @@ def _target_headings(
         return None, "link-target-unreadable"
 
 
+def _historical_operations_target(
+    graph: DocumentGraph,
+    nodes: Mapping[pathlib.PurePosixPath, DocumentNode],
+    link: DocumentLink,
+) -> pathlib.PurePosixPath | None:
+    """Resolve one moved role document for immutable historical sources only."""
+
+    node = nodes.get(link.source)
+    if node is None:
+        return None
+    source_profile = {
+        ("operation/postmortem", "published"): "postmortem",
+        ("sdlc/task", "completed"): "task",
+    }.get((node.metadata.get("type"), node.metadata.get("status")))
+    if source_profile is None or classify_path(link.source) != source_profile:
+        return None
+    matched = _LEGACY_FLAT_OPERATION_ROLE.fullmatch(link.target.as_posix())
+    if matched is None:
+        return None
+    family = matched.group("family")
+    profile = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}[family]
+    role_root = pathlib.PurePosixPath("docs/05.operations") / family
+    candidates = [
+        path
+        for path in nodes
+        if path.parent.parent == role_root
+        and path.name == matched.group("name")
+        and classify_path(path) == profile
+        and _regular_target(graph, path)[0] is not None
+    ]
+    return candidates[0] if len(candidates) == 1 else None
+
+
 def _historical_headings(root, provenance):
     """Select the same directory index as current links, at the original tree."""
     from scripts.lib.document_governance.git_provenance import _run_git
@@ -1436,7 +1473,13 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             )
         ):
             findings.append(_finding(link, "active-archive-link", link.raw_target))
-        target_path, target_error = _regular_target(graph, link.target)
+        resolved_target = link.target
+        target_path, target_error = _regular_target(graph, resolved_target)
+        if target_path is None and target_error == "missing-link-target":
+            historical_target = _historical_operations_target(graph, nodes, link)
+            if historical_target is not None:
+                resolved_target = historical_target
+                target_path, target_error = _regular_target(graph, resolved_target)
         if target_path is None:
             if target_error == "missing-link-target":
                 historical, finding = evidence_links.missing_finding(link)
@@ -1449,7 +1492,7 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             )
             continue
         if link.fragment:
-            headings, heading_error = _target_headings(graph, nodes, link.target)
+            headings, heading_error = _target_headings(graph, nodes, resolved_target)
             if heading_error is not None:
                 findings.append(_finding(link, heading_error, link.raw_target))
             elif headings is not None and link.fragment not in headings:
@@ -1477,7 +1520,7 @@ def _link_targets(graph: DocumentGraph, source: pathlib.PurePosixPath) -> set[st
 
 def traceability_pair_total(graph: DocumentGraph) -> int:
     catalog = pathlib.PurePosixPath(
-        "docs/05.operations/policies/0006-infrastructure-optimization-governance.md"
+        "docs/05.operations/policies/01-common/0006-infrastructure-optimization-governance.md"
     )
     node = _node_map(graph).get(catalog)
     return 0 if node is None else len(_CATALOG_PAIR.findall(node.text))
@@ -1513,7 +1556,7 @@ def check_traceability(graph: DocumentGraph) -> list[LinkFinding]:
     specs = pathlib.PurePosixPath("docs/03.specs/README.md")
     operations = pathlib.PurePosixPath("docs/05.operations/README.md")
     catalog = pathlib.PurePosixPath(
-        "docs/05.operations/policies/0006-infrastructure-optimization-governance.md"
+        "docs/05.operations/policies/01-common/0006-infrastructure-optimization-governance.md"
     )
     for path in (specs, operations, catalog):
         if path not in nodes:

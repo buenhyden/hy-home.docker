@@ -17,7 +17,7 @@ groups:
         annotations:
           summary: 'CPU 과부하 지속: {{ $labels.name }}'
           description: "{{ $labels.name }} 컨테이너가 CPU 90% 이상을 점유 중입니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0044-observability-optimization-hardening.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0044-observability-optimization-hardening.md'
 
       # [What] High Memory Usage / 메모리 사용률 높음
       - alert: ContainerHighMemoryUsage
@@ -31,7 +31,7 @@ groups:
         annotations:
           summary: '메모리 사용량 높음: {{ $labels.name }}'
           description: "{{ $labels.name }} 컨테이너가 메모리 리밋의 90% 이상을 사용 중입니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0044-observability-optimization-hardening.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0044-observability-optimization-hardening.md'
 
       # [What] Container Memory Critical / 메모리 위험 수준
       - alert: ContainerMemoryCritical
@@ -45,7 +45,7 @@ groups:
         annotations:
           summary: '메모리 부족 임박: {{ $labels.name }}'
           description: "{{ $labels.name }} 컨테이너가 메모리 리밋의 95% 이상을 사용 중입니다. OOM 위험이 있습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0044-observability-optimization-hardening.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0044-observability-optimization-hardening.md'
 
       # [What] Container CPU Throttled / CPU 쓰로틀링
       - alert: ContainerHighThrottleRate
@@ -59,7 +59,7 @@ groups:
         annotations:
           summary: '컨테이너 CPU 쓰로틀링: {{ $labels.name }}'
           description: "컨테이너가 25% 이상 CPU 쓰로틀링되고 있습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0044-observability-optimization-hardening.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0044-observability-optimization-hardening.md'
 
   # ============================================================================
   # [2] n8n Automation
@@ -75,7 +75,7 @@ groups:
         annotations:
           summary: 'n8n 리더 인스턴스 없음'
           description: 'n8n 리더가 감지되지 않습니다. (HA 구성/리더 선출/메트릭 노출 상태를 확인하세요.)'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0053-n8n.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md'
 
   # ============================================================================
   # [3] Host backup and system disk (SPEC-0192)
@@ -96,7 +96,7 @@ groups:
         annotations:
           summary: '26시간 넘게 성공한 야간 백업이 없음'
           description: 'hyhome-backup.service가 최근 26시간 동안 정상 종료하지 않았습니다. 타이머와 서비스 상태, journal의 상태 줄을 확인하세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0021-backup-and-restore.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md'
 
       # [What] R2 offsite repository near the free tier / R2 무료 한도 근접
       # R2 bills stored bytes above 10 GB a month; 8 GB leaves room for the
@@ -110,7 +110,7 @@ groups:
         annotations:
           summary: 'R2 오프사이트 저장소가 8 GB를 넘음'
           description: 'R2 Restic 저장소가 {{ $value | humanize1024 }}B입니다. 무료 한도 10 GB를 넘기 전에 RUN-0021 8.5의 원격 forget-prune을 실행하세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0021-backup-and-restore.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md'
 
       # [What] System disk under 25 GiB free / 시스템 디스크 여유 25GiB 미만
       # The backup refuses to start under 20 GiB free on this disk.
@@ -123,4 +123,4 @@ groups:
         annotations:
           summary: '시스템 디스크 여유 공간 25GiB 미만'
           description: '/ 여유 공간이 {{ $value | humanize1024 }}B입니다. 20GiB 아래로 내려가면 야간 백업이 시작되지 않습니다. 쓰지 않는 Docker 이미지와 빌드 캐시를 먼저 확인하세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0021-backup-and-restore.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md'

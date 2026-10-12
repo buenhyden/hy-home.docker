@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.11"
+version: "0.4.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1348,8 +1348,9 @@ run the registered changed gate, current common validator/inventory/manifest
 checks, existing ROOT latest-version/security-disposition gates and independent
 security/code review at that head. A fresh successful stable-channel query with
 no newer release needs no version bump. Preserve failed, blocked and unknown
-results; source/latest evidence does not prove a deployment. Apply the current
-local-main delivery lane without a new PR or a claimed hosted CI run.
+results; source/latest evidence does not prove a deployment. For remaining
+future SEC01 work, use the owning-Spec PR after exact-head CI and independent
+review; historical local-main receipts remain unchanged.
 Source rollback is a logical revert of owning commits; HOME rollback requires a
 separately approved pre-upgrade backup and recovery proof.
 

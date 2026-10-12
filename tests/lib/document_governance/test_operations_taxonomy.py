@@ -131,8 +131,8 @@ class OperationsAuthorityTests(unittest.TestCase):
 
     def test_current_drift_guides_exist_at_canonical_role_paths(self) -> None:
         expected = (
-            "docs/05.operations/guides/0003-env-key-comparison.md",
-            "docs/05.operations/guides/0010-sensitive-env-vars-comparison.md",
+            "docs/05.operations/guides/10-platform-and-backup/0003-env-key-comparison.md",
+            "docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md",
         )
         for relative in expected:
             with self.subTest(path=relative):

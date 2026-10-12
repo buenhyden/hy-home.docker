@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.10"
+version: "1.8.11"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -67,11 +67,11 @@ needed when the current enforcer already meets the request.
 Shared root, gateway, Alloy, environment and backup files have one writer at a
 time. Complete feature edits before the P08 document move writer starts, then
 update references/checks and hand the destination SHA back. P08 may move typed
-LAB documents to their `labs/` destinations with required folder and parent
-README navigation, Registry links and path checks. The direct 2026-10-12 request
-adds Supabase, including GoTrue, and confirmed infra LAB-only service-source
-relocations to root `labs/` under TSK-0015. This does not move live data or secrets
-or start/stop a LAB resource.
+LAB documents to their Stage05 family `labs/` destinations with required folder
+and parent README navigation, Registry links and path checks. Existing merged
+LAB service/source relocation is out of scope for future units and is neither
+revalidated nor reversed; this documentation exception does not move live data
+or secrets or start/stop a LAB resource.
 
 The 2026-10-12 user clarification accepts the delivered SMTP01/CLN01 changes.
 Actual LAB GoTrue SMTP connection configuration, activation and sending are
@@ -83,18 +83,17 @@ clarification selects that mailbox but does not dispatch a message, provision
 a LAB account or start a LAB service. Remaining ROOT/P05 operational receipts
 and independently scoped material checks keep their existing owners.
 
-### Resumed stable-version and security continuation — 2026-10-12
+### Current security-warning and delivery continuation — 2026-10-12
 
-The latest resume instruction restores stable-version updates and investigation
-of their official documentation, compatibility, migrations and recovery.
 Use the existing latest-version and security gates plus independent ROOT include
-authority; do not add a new gate, API, scanner or optional bypass. A successful
-current stable-channel lookup with no newer release requires no version bump;
-absent/stale evidence remains UNKNOWN. Scanner corrections remain limited to
-actual reviewed warnings/defects. Reconcile relocated LAB rows out of current
-ROOT acceptance while retaining dated evidence. Existing feature/native/recovery
-Tasks retain exact scopes; user-accepted SMTP01/CLN01 and completed P09 stay
-accepted. Version/source acceptance is distinct from deployed-service acceptance.
+authority; do not add a new gate, API, scanner or optional bypass. A root-image
+version change or scanner correction is permitted only for an actual confirmed
+current-image security warning. A successful current stable-channel lookup with
+no newer release requires no version bump; absent/stale evidence remains
+UNKNOWN. Existing feature/native/recovery Tasks retain exact scopes;
+user-accepted SMTP01/CLN01 and completed P09 stay accepted. Version/source
+acceptance is distinct from deployed-service acceptance. Each future delivery
+uses the owning-Spec PR, exact-head CI and independent review before merge.
 
 ## Work Breakdown
 
@@ -169,7 +168,7 @@ accepted. Version/source acceptance is distinct from deployed-service acceptance
 | W67 | 7, 11, 12, 14, 20, 21 | Reconcile bounded failures and verify complete backup set and empty-target restoration | W65 | TSK-0016 | Isolated faults use synthetic targets; HOME recovery requires W66 facts; feature owners retain migration/deletion/rotation/recovery execution |
 | W68 | 8, 21 | Consume final P08 paths and revalidate manual working directories and README coverage | W62 | TSK-0016 | Final path/hash handoff and actual dry-run receipts; no concurrent moves |
 | W69 | 8, 21 | Final requirement 11–30 report, required checks/review and owning-Spec delivery | W66, W67, W68 | TSK-0016 | Actual evidence from all relevant owners; no duplicated test counts or inferred runtime PASS |
-| W70 | 8 | Audit and relocate Supabase including GoTrue and confirmed infra LAB-only sources with one writer; consume the exact SEC01 Supabase image commit first | W56 | TSK-0015 | Permanent source-containment regressions, independent LAB model renders, preserved SMTP source, catalog/generator/reference closure and inverse path map; runtime effects zero |
+| W70 | 8 | Keep existing merged LAB service/source relocation out of this request; limit P08 to typed Stage05 LAB-document moves, README and path contracts | W56 | TSK-0015 | Exact writer path/hash handoff, profile/link/navigation checks; no LAB runtime, service-source, image, secret or data change |
 
 ### P10 staged admission and acceptance ownership
 
@@ -211,11 +210,8 @@ moves belong under `docs/05.operations/{guides,policies,runbooks}/labs/`.
 
 Preserve logical source/test, public contract, actual native receipt and final
 acceptance commits. Run current registered changed/staged gates and independent
-code/security/recovery review on their exact inputs before reviewed local-main
-integration. The current direct-user local-main/no-PR lane continues for this
-admission; no push or PR occurs here. If a remote lane is later explicitly
-adopted, read actual ruleset/checks, create the owning-Spec PR, verify its latest
-head and merge ref, and report that delivery separately. Never infer remote CI.
+code/security/recovery review on their exact inputs before the owning-Spec PR,
+exact-head CI and merge. Never infer remote CI.
 Rollback of issuance reverts only these three owned documents; future runtime
 rollback needs its reviewed data-aware recovery contract. No private value,
 service, DB, object, credential, schedule or document path changes on issuance.
@@ -243,12 +239,9 @@ one number across families. LAB destinations are exactly
 Retain correctly arranged documents; ambiguities remain review-required rather
 than being assigned to common. Corpus counts are observations, not constants.
 
-The subsequent 2026-10-12 source-relocation unit is separate from those Stage05
-destinations. The coordinator first consumes SEC01's reviewed Supabase imgproxy
-commit, then relocates the complete Supabase definition, including GoTrue, to
-the independent `labs/supabase.yml` entrypoint with authored support under
-`labs/supabase/`. Existing LAB PostgreSQL HA, Valkey cluster and Locust assets
-move from infra into matching root `labs/` folders after an exact consumer audit.
+Existing LAB service/source relocation is historical merged source and is
+NO_CHANGE for this request. P08's remaining future unit is limited to typed
+Stage05 LAB-document destinations, README navigation and path contracts.
 Preserve shared common controls and live initialization/recovery inputs under
 their real owner. Root includes exclude independent LAB projects; their
 project/profile/network/dependency/data-path closure is validated with public
@@ -272,10 +265,8 @@ consumer checks, without runtime/secret/data operations or foreign reset/clean.
 Final checks cover metadata selection of new READMEs, ID/profile/language/body/
 lifecycle, active links/anchors, command working directories, catalog/service
 bindings, changed-CI regressions and staged changes. Record failures and input
-SHAs; local-main delivery needs actual exact-head checks and independent review.
-Current direct-user local-main instructions override earlier PR expectations
-for P08 only; dev is excluded and remote push/PR/hosted CI remains NOT_RUN unless
-actually performed. No native or operational acceptance follows from a move.
+SHAs; future delivery needs an owning-Spec PR, exact-head CI and independent
+review before merge. No native or operational acceptance follows from a move.
 
 ### P06 parallel preparation and per-consumer admission
 

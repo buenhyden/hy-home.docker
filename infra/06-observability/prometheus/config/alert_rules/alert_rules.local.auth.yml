@@ -13,4 +13,4 @@ groups:
         annotations:
           summary: 'Keycloak 다운'
           description: 'Keycloak 인증 서버가 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/03-identity-and-access/0014-keycloak.md'

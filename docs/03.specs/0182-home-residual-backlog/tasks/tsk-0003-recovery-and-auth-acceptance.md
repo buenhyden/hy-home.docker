@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.15"
+version: "0.7.16"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -401,8 +401,8 @@ budget decisions and a separately approved rollout/re-measurement.
 
 W7/criterion 7 is not closed by the historical PostgreSQL PASS row above.
 That row is preserved as the 2026-09-25 report, but the current
-[POL-0021](../../../05.operations/policies/0021-backup-and-restore.md) and
-[RUN-0021](../../../05.operations/runbooks/0021-backup-and-restore.md)
+[POL-0021](../../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md) and
+[RUN-0021](../../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md)
 supersede its time-target/RPO claim. SPEC-0201 W7.4 Phase A was held before
 repository verification or scratch creation; the later owner hold superseded
 the earlier verification approval. Verify, restore and PITR remain NOT_RUN. A new isolated
@@ -416,11 +416,11 @@ Task is blocked while the Spec package remains active.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Current Task status: blocked | 7 | W7 | Current recovery evidence | [Backup policy](../../../05.operations/policies/0021-backup-and-restore.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 7 | W7 | Current recovery evidence | [Backup policy](../../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md) | NOT_RUN | This Task, Evidence | pending |
 | Current Task status: completed | 8 | W8 | Measurement evidence | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) | PASS | This Task, Evidence | pending |
 | Current Task status: completed | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | pending |
 | Current Task status: blocked | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | pending |
-| Current Task status: completed | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | pending |
+| Current Task status: completed | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/01-common/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | pending |
 | Current Task status: completed | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | pending |
 
 ## Review and Completion

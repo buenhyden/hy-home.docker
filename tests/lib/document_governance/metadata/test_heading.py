@@ -1398,7 +1398,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         )
         record = metadata.Record(
             pathlib.Path(
-                "docs/05.operations/guides/0079-application-auth-integration.md"
+                "docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md"
             ),
             {},
             "operation/guide",
@@ -1562,7 +1562,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
 
             cases = (
                 (
-                    "docs/05.operations/policies/0025-cassandra.md",
+                    "docs/05.operations/policies/15-labs/0025-cassandra.md",
                     "[Runtime](/infra/04-data/cassandra/docker-compose.yml)\n"
                     "Cassandra 5.0.8 compatibility boundary.\n",
                 ),

@@ -480,4 +480,4 @@ criterion result, commit/delivery input and next actionable blocker here.
 - [Earlier common-controls evidence](tsk-0001-common-controls-and-exceptions.md)
 - [Shared-service integration package](../../0204-service-integration-security-and-operations/spec.md)
 - [Canonical service inventory](../../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
-- [Exceptions policy](../../../05.operations/policies/0001-common-optimizations-template-exceptions.md)
+- [Exceptions policy](../../../05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md)

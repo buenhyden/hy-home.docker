@@ -18,7 +18,7 @@ groups:
         annotations:
           summary: 'Keycloak 로그인 실패율 5% 초과 (realm {{ $labels.realm }})'
           description: 'realm {{ $labels.realm }}의 로그인 중 {{ $value | humanizePercentage }}가 실패합니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/03-identity-and-access/0014-keycloak.md'
 
       - alert: KeycloakHighTokenRefreshErrorRate
         expr: |
@@ -32,7 +32,7 @@ groups:
         annotations:
           summary: 'Keycloak 토큰 갱신 오류율 10% 초과 (realm {{ $labels.realm }})'
           description: 'realm {{ $labels.realm }}의 토큰 갱신 중 {{ $value | humanizePercentage }}가 실패합니다. 세션 만료나 캐시 문제를 확인하세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/03-identity-and-access/0014-keycloak.md'
 
       - alert: KeycloakHighCodeToTokenErrorRate
         expr: |
@@ -46,7 +46,7 @@ groups:
         annotations:
           summary: 'Keycloak code-to-token 교환 오류율 10% 초과 (realm {{ $labels.realm }})'
           description: 'OIDC 클라이언트의 code 교환 중 {{ $value | humanizePercentage }}가 실패합니다. 클라이언트 secret과 redirect URI를 확인하세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/03-identity-and-access/0014-keycloak.md'
 
       - alert: KeycloakSlowRequests
         expr: |
@@ -58,4 +58,4 @@ groups:
         annotations:
           summary: 'Keycloak p95 응답 시간 2초 초과'
           description: 'Keycloak HTTP 요청의 p95가 {{ $value | humanizeDuration }}입니다. DB 연결과 캐시를 확인하세요.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/03-identity-and-access/0014-keycloak.md'

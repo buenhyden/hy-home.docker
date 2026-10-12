@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import importlib.util
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -120,12 +119,7 @@ def reference_proves_use(reference: str, target: str, *, is_test: bool = False) 
 
 
 def is_runbook_authority(path: str) -> bool:
-    return bool(
-        re.fullmatch(
-            r"docs/05\.operations/runbooks/[0-9]{4}-[a-z0-9-]+\.md",
-            path,
-        )
-    )
+    return load_manifest_checker()._registered_runbook_authority(ROOT, path)
 
 
 __all__ = tuple(name for name in globals() if not name.startswith("__"))

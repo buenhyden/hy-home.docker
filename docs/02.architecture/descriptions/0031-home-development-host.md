@@ -34,7 +34,7 @@ consumer does not push its always-on startup cost onto HOME.
 
 The root Compose owns include, and the service profile owns activation. The
 canonical owner of the vocabulary is
-[POL-0078](../../05.operations/policies/0078-compose-profile-vocabulary.md).
+[POL-0078](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md).
 Distinguish the current host, which holds operational data, from a separate
 Compose project for experiments. Profiles are not a security isolation
 boundary and share the same Docker daemon failure. The shared Compose network
@@ -77,7 +77,7 @@ adapters, workflows, fixtures, E2E and application Compose. Infrastructure
 owns engines, shared ingress/identity, observability, backup and bounded
 resource registration. Root Compose never includes external application source.
 The [registration contract](../../../infra/09-platform-ops/project-registration/README.md)
-and [development database policy](../../05.operations/policies/0100-development-database.md)
+and [development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md)
 own the current interfaces; metadata approval does not deploy or issue secrets.
 The independent 07/08 product-planning tracks grant no runtime resource authority.
 

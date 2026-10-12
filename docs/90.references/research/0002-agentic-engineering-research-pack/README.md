@@ -530,7 +530,7 @@ package 수준 목록은 범주 전반에 공유되는 source만 담습니다.
   [현재 lifecycle reconciliation](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - Operations: [Stage 05](../../../05.operations/README.md).
 - Audit/data: AUD-0026,
-  [k6 guide](../../../05.operations/guides/0061-k6.md), DATA-0082, DATA-0083.
+  [k6 guide](../../../05.operations/guides/12-testing-and-quality/0061-k6.md), DATA-0082, DATA-0083.
 - Package/index/template authority: [research index](../README.md),
   [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   [research-member template](../../../99.templates/templates/references/research.template.md),

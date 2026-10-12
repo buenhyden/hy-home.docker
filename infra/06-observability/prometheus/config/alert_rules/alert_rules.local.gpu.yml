@@ -19,7 +19,7 @@ groups:
         annotations:
           summary: 'GPU 온도 높음: GPU {{ $labels.gpu }}'
           description: "GPU {{ $labels.gpu }} ({{ $labels.modelName }}) 온도가 10분 이상 85°C를 넘었습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0055-gpu-recovery.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/09-ai-and-search/0055-gpu-recovery.md'
 
       # [What] GPU framebuffer nearly full / GPU 메모리 부족
       - alert: GpuMemoryNearlyFull
@@ -31,4 +31,4 @@ groups:
         annotations:
           summary: 'GPU 메모리 95% 초과: GPU {{ $labels.gpu }}'
           description: "GPU {{ $labels.gpu }} framebuffer 사용률이 15분 이상 95%를 넘었습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0055-gpu-recovery.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/09-ai-and-search/0055-gpu-recovery.md'

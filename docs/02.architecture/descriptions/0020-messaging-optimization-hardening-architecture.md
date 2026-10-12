@@ -147,8 +147,8 @@ execution evidence is owned by the related Spec and Operations documents.
 - **PRD**: [../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](0005-messaging-architecture.md)
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/0037-messaging-optimization-hardening.md)
-- **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/0037-messaging-optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/runbooks/0037-messaging-optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.17"
+version: "1.0.18"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -1305,12 +1305,12 @@ rewriting or cancellation of already-completed work.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Current Task status: in-progress | 1 | W1 | Source evidence | Task receipt | PASS | This Task, Evidence | pending |
 | Current Task status: blocked | 1 | W5 | Runtime handoff evidence | Task receipt | NOT_RUN | This Task, Evidence | pending |
-| Current Task status: blocked | 2 | W2 | n8n source evidence | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) | PASS | This Task, Evidence | pending |
-| Current Task status: blocked | 2 | W5 | n8n runtime evidence | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) | NOT_RUN | This Task, Evidence | pending |
-| Current Task status: blocked | 3 | W2 | Crawl4AI evidence | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) | NOT_RUN | This Task, Evidence | pending |
-| Current Task status: blocked | 3 | W5 | Crawl4AI runtime evidence | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) | NOT_RUN | This Task, Evidence | pending |
-| Current Task status: blocked | 4 | W2 | OpenBao evidence | [RUN-0085](../../../05.operations/runbooks/0085-openbao.md) | NOT_RUN | This Task, Evidence | pending |
-| Current Task status: blocked | 4 | W5 | External connection evidence | [POL-0079](../../../05.operations/policies/0079-application-auth-integration.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 2 | W2 | n8n source evidence | [RUN-0053](../../../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md) | PASS | This Task, Evidence | pending |
+| Current Task status: blocked | 2 | W5 | n8n runtime evidence | [RUN-0053](../../../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 3 | W2 | Crawl4AI evidence | [RUN-0091](../../../05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 3 | W5 | Crawl4AI runtime evidence | [RUN-0091](../../../05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 4 | W2 | OpenBao evidence | [RUN-0085](../../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 4 | W5 | External connection evidence | [POL-0079](../../../05.operations/policies/03-identity-and-access/0079-application-auth-integration.md) | NOT_RUN | This Task, Evidence | pending |
 | Current Task status: in-progress | 8 | W1 | Prerequisite reconciliation | Plan W1; Task 0002 receipt | NOT_RUN | This Task, Evidence | pending |
 | Migration-only QA topology RED | 8 | W6 | Current lifecycle owner regression | `main@92e2a702f`; frozen test input `6040297d93f8` | FAIL | `/tmp/hy-home-p04-red-current-owner-topology-6040297d93f8-20261006T005359Z.log` | pending |
 | Current lifecycle owner GREEN | 8 | W6 | Five focused owner and reachability regressions | Frozen input `0a8c4239bc0b` | PASS | `/tmp/hy-home-p04-green-current-owner-routing-0a8c4239bc0b-20261006T005707Z.log` | pending |

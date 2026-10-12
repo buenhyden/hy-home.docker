@@ -620,7 +620,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         # candidate preflight locally, which hosted runs never execute twice.
         service_change = (
             "infra/08-ai/crawl4ai/docker-compose.yml",
-            "docs/05.operations/guides/0091-crawl4ai.md",
+            "docs/05.operations/guides/09-ai-and-search/0091-crawl4ai.md",
         )
         service_plan = build_public_plan(
             "changed", runner.ExecutionContext.LOCAL, service_change

@@ -89,8 +89,8 @@ Requirement and ADR.
 - [REQ-0004](../../01.requirements/0004-data.md)
 - [ADR-0040](../decisions/0040-data-hardening-gate-and-staged-expansion.md) (supersedes ADR-0019)
 - [SPEC-0004](0004-data-architecture.md)
-- [Data hardening guide](../../05.operations/guides/0030-data-optimization-hardening.md)
-- [Data hardening policy](../../05.operations/policies/0030-data-optimization-hardening.md)
-- [Data hardening runbook](../../05.operations/runbooks/0030-data-optimization-hardening.md)
+- [Data hardening guide](../../05.operations/guides/05-databases-and-storage/0030-data-optimization-hardening.md)
+- [Data hardening policy](../../05.operations/policies/05-databases-and-storage/0030-data-optimization-hardening.md)
+- [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

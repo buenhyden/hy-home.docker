@@ -112,8 +112,8 @@ Quality scenarios point to the existing configuration these attributes apply to 
 
 - **PRD**: [010-tooling.md](../../01.requirements/0010-tooling.md)
 - [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
-- [OpenTofu operations](../../05.operations/guides/0082-opentofu.md)
-- [Terraform migration handoff](../../05.operations/guides/0068-terraform.md)
+- [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
+- [Terraform migration handoff](../../05.operations/guides/10-platform-and-backup/0068-terraform.md)
 - **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

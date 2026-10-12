@@ -43,8 +43,8 @@ DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 
 ### Traceability
 
-- [Mailpit operations](../../05.operations/guides/0084-mailpit.md)
-- [Stalwart operations](../../05.operations/guides/0070-mail.md)
+- [Mailpit operations](../../05.operations/guides/11-mail-and-notifications/0084-mailpit.md)
+- [Stalwart operations](../../05.operations/guides/11-mail-and-notifications/0070-mail.md)
 
 ## Architecture
 
