@@ -127,7 +127,7 @@
     },
     {
       "path": "infra/01-gateway/traefik/docker-compose.yml",
-      "sha256": "e78675373c31856f1a6e0dcac191024303fc9da0c4c8cd52e6be9c0b10efc1e6"
+      "sha256": "c7f4c8efdba12b87728fb68c4c572f2c9b9b812865cd35e485107702388d8141"
     },
     {
       "path": "infra/02-auth/keycloak/docker-compose.yml",
@@ -167,7 +167,7 @@
     },
     {
       "path": "infra/04-data/seaweedfs/docker-compose.yml",
-      "sha256": "70ef3a3c1e9c8c088bcdef7e7c80934c4735d147bfce894b6e0a736bf277dbf7"
+      "sha256": "c70174e82d61607f7562e52e0a73a423e41ddc79f5f52f6ef598c69483346f53"
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
@@ -187,7 +187,7 @@
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "2cd210e4e35671fedc1cfd497d23bdf627def6cf35cf852fbba74ca24b958721"
+      "sha256": "505e6d3e341c50f812525e15b11832dbb2718ef1ae10277ea1d41b8305276fa6"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -223,7 +223,7 @@
     },
     {
       "path": "infra/09-platform-ops/renovate/docker-compose.yml",
-      "sha256": "8519463a6408e8089190c8d211a9832a639312e2dab57a2f1ee5f18340b3579b"
+      "sha256": "e51da00556f4daa005f9cf96c2febc18c67e78a1a1ccbdb687139f726684aa2f"
     },
     {
       "path": "infra/09-platform-ops/restic/docker-compose.yml",
