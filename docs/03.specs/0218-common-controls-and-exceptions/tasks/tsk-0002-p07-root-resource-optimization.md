@@ -316,10 +316,33 @@ result nor remote CI evidence.
 
 After that approved metadata commit was fast-forwarded to
 `854ccc249b05ae17a9eb650a091676cdcf7e87e0`, the changed-profile local-only
-gate against base `23e37362b72e98028a4675f282819c0346ae59dc` passed. Two final
-independent reviewers approved this exact P07 Plan/Task source and schema diff
-with no findings. Their review covers neither HOME nor runtime, migration,
-recovery, or remote CI acceptance.
+gate against base `23e37362b72e98028a4675f282819c0346ae59dc` passed. Two
+independent reviewers approved the preceding P07 Plan/Task source and schema
+diff with no findings. Re-review of this result-only receipt is APPROVE with
+no findings. Their review covers neither HOME nor runtime, migration, recovery,
+or remote CI acceptance.
+
+Result-only validation receipt: candidate HEAD was
+`854ccc249b05ae17a9eb650a091676cdcf7e87e0`; the exact two-file candidate
+blobs were Plan `81b62987de551d7576e8845ddccf84801902b6e7` and Task
+`907b5a507cd21e4466272677db8fbdfae39bafff`. The staged index contained only
+those two paths and was observed unchanged after validation; its tree hash was
+not recorded and is `UNKNOWN`. The commands below wrote no tracked receipt;
+their terminal output and this Task are the evidence location:
+
+```sh
+env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 scripts/validation/run-ci-gate.py --profile changed --local-only
+python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD
+git diff --check
+env PATH=/tmp/hyhome-coord-qa/bin:$PATH bash scripts/validation/run-ci-precommit.sh --mode local-staged
+git commit -m 'docs(p07): Align future delivery with reviewed PRs'
+```
+
+Each command exited0. The first used base
+`23e37362b72e98028a4675f282819c0346ae59dc`; metadata used explicit `HEAD`
+with merge base `854ccc249b05ae17a9eb650a091676cdcf7e87e0`. The commit created
+`b84f7514590bd1889fc9c3e92fb831d58dd094fa` with the same two paths. No
+`cz` message-file command was executed for that already-created commit.
 
 ### Admission Document Validation History
 
