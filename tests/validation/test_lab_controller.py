@@ -11,6 +11,8 @@ import tempfile
 import unittest
 from unittest import mock
 
+import yaml
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "lab_controller", ROOT / "scripts/operations/lab.py"
@@ -40,6 +42,56 @@ def service(container=None, ports=(), binds=(), cpus=1, memory=2**30, replicas=N
     if replicas:
         spec["deploy"] = {"replicas": replicas}
     return spec
+
+
+class LabSourceContainmentTests(unittest.TestCase):
+    """Permanent path contracts; no secret file, runtime or data access."""
+
+    def test_lab_only_build_and_bind_assets_are_inside_root_labs(self) -> None:
+        family = ROOT / "labs"
+        for name in ("postgresql-ha", "valkey-cluster", "locust"):
+            with self.subTest(lab=name):
+                self.assertEqual(f"labs/{name}.yml", lab.lab_file(name))
+                source = family / f"{name}.yml"
+                document = yaml.safe_load(source.read_text())
+                self.assertTrue(document["services"])
+                for service in document["services"].values():
+                    if "build" in service:
+                        context = (family / service["build"]["context"]).resolve()
+                        self.assertTrue(context.is_relative_to(family))
+                        self.assertTrue((context / "Dockerfile").is_file())
+                    for mount in service.get("volumes", []):
+                        if not isinstance(mount, str):
+                            continue
+                        asset = mount.split(":", 1)[0]
+                        if not asset.startswith("."):
+                            continue  # Named state volumes are not source artifacts.
+                        path = (family / asset).resolve()
+                        self.assertTrue(path.is_relative_to(family), path)
+                        self.assertTrue(path.is_file(), path)
+                        self.assertTrue(mount.endswith(":ro"), mount)
+                    if "extends" in service:
+                        shared = (family / service["extends"]["file"]).resolve()
+                        self.assertEqual(
+                            ROOT / "infra/common-optimizations.yml", shared
+                        )
+
+    def test_each_moved_family_has_one_source_home_and_populated_readmes(self) -> None:
+        for old, name in (
+            ("infra/04-data/postgresql-cluster", "postgresql-ha"),
+            ("infra/04-data/valkey-cluster", "valkey-cluster"),
+            ("infra/11-quality/locust", "locust"),
+        ):
+            with self.subTest(lab=name):
+                self.assertFalse((ROOT / old).exists(), old)
+                family = ROOT / "labs" / name
+                self.assertTrue(family.is_dir(), family)
+                directories = [family, *(p for p in family.rglob("*") if p.is_dir())]
+                for directory in directories:
+                    readme = directory / "README.md"
+                    self.assertTrue(readme.is_file(), directory)
+                    self.assertIn("## Overview", readme.read_text())
+                    self.assertIn("## Scope", readme.read_text())
 
 
 class FootprintTests(unittest.TestCase):

@@ -37,7 +37,7 @@ OTel exporter 전달과 perf_db import는 이 시험이 증명하지 않습니�
 
 ## Tech Stack
 
-[현재 Locust 이미지 원본](../../../infra/11-quality/locust/Dockerfile)의 2.46.6 및 기존
+[현재 Locust 이미지 원본](../../../labs/locust/Dockerfile)의 2.46.6 및 기존
 WireMock 이미지의 실행 시 확인한 linux/amd64 digest를 사용합니다. 구성 원본은
 [labs/locust.yml](../../../labs/locust.yml)입니다. 공식
 [request-event](https://docs.locust.io/en/stable/extending-locust.html)와
@@ -91,5 +91,5 @@ controller scratch를 정리하며, 실제 Docker 정리가 실패한 경우에�
 ## Related Documents
 
 - [Locust LAB 계약](../../../labs/locust.md)
-- [품질 문서](../../../infra/11-quality/locust/README.md)
+- [품질 문서](../../../labs/locust/README.md)
 - [문서 허브](../../../docs/README.md)

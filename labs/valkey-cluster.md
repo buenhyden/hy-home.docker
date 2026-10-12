@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster LAB"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-12"
 created: "2025-11-12"
 ---
 
@@ -27,7 +27,7 @@ created: "2025-11-12"
 ### In Scope
 
 - 6-node Valkey cluster, initializer, exporter의 학습·render 계약
-- 보조 config/script: `../infra/04-data/valkey-cluster/`
+- 보조 config/script: `./valkey-cluster/`
 
 ### Out of Scope
 
@@ -62,7 +62,7 @@ labs/
 | Networks | `lab_valkey_core_net`, `lab_valkey_obs_net` |
 | Secret refs | `lab_valkey_password` |
 | Host exposure | loopback의 `LAB_VALKEY0_HOST_PORT`~`LAB_VALKEY5_HOST_PORT` (default 17379~17384; 내부 6379~6384 고정) |
-| Helper assets | `../infra/04-data/valkey-cluster/config/`, `scripts/` |
+| Helper assets | `./valkey-cluster/config/`, `scripts/` |
 | Readiness | Compose healthcheck/one-shot dependency declarations only; runtime result is unverified |
 
 ## Usage

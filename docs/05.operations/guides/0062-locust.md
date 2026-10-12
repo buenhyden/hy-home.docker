@@ -35,7 +35,7 @@ target-owner 승인, limit, stop condition이 필요하다.
 ### Implementation and data flow
 
 - Source: [Locust LAB Compose](../../../labs/locust.yml)와
-  [실행 이미지](../../../infra/11-quality/locust/Dockerfile). Dockerfile/build 선언이
+  [실행 이미지](../../../labs/locust/Dockerfile). Dockerfile/build 선언이
   image source를 소유하며, LAB Compose가 master/worker closure를 소유한다.
 - LAB selection: repository root에서 `docker compose -f labs/locust.yml --env-file labs/.env ...`.
   root HOME project, network, volume, secret을 공유하지 않는다.

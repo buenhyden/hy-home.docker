@@ -189,7 +189,7 @@ services:
     tmpfs:
       - /tmp
     volumes:
-      - ../infra/04-data/postgresql-cluster/config/haproxy.cfg.tpl:/tmp/haproxy.cfg.tpl:ro
+      - ./postgresql-ha/config/haproxy.cfg.tpl:/tmp/haproxy.cfg.tpl:ro
     secrets:
       - lab_pg_haproxy_stats_password
     ports:
@@ -285,7 +285,7 @@ services:
           -f /tmp/lab-secret-vars.sql \
           -f /work/init_users_dbs.sql
     volumes:
-      - ../infra/04-data/postgresql-cluster/init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
+      - ./postgresql-ha/init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
     depends_on:
       pg-router:
         condition: service_started
@@ -323,7 +323,7 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:5432
     volumes:
       - pg0-data:/home/postgres/pgdata:rw
-      - ../infra/04-data/postgresql-cluster/scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+      - ./postgresql-ha/scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     secrets:
       - lab_pg_superuser_password
       - lab_pg_replication_password
@@ -373,7 +373,7 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:5432
     volumes:
       - pg1-data:/home/postgres/pgdata:rw
-      - ../infra/04-data/postgresql-cluster/scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+      - ./postgresql-ha/scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     secrets:
       - lab_pg_superuser_password
       - lab_pg_replication_password
@@ -423,7 +423,7 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:5432
     volumes:
       - pg2-data:/home/postgres/pgdata:rw
-      - ../infra/04-data/postgresql-cluster/scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+      - ./postgresql-ha/scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     secrets:
       - lab_pg_superuser_password
       - lab_pg_replication_password

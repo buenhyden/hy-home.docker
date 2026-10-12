@@ -635,6 +635,7 @@ TYPED_EXAMPLE_FIXTURE_PARENT_IDS = (
 TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES: frozenset[str] = frozenset()
 TARGET_MARKDOWN_PREFIXES = (
     ".agents/",
+    "labs/",
     "docs/01.requirements/",
     "docs/02.architecture/",
     "docs/03.specs/",
