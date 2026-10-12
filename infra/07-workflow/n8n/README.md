@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.7"
+version: "1.2.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 created: "2025-11-12"
 ---
 
@@ -115,8 +115,10 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 
 ### SEC01 안정판 묶음
 
-2026-10-10 [공식 Docker 설치 문서](https://docs.n8n.io/hosting/installation/docker/)의 stable channel과
-[release API](https://github.com/n8n-io/n8n/releases/tag/n8n%402.42.6)를 대조했습니다. <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+2026-10-12 [공식 릴리스](https://github.com/n8n-io/n8n/releases/tag/n8n%402.42.7), <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+[npm stable 배포](https://registry.npmjs.org/n8n/latest)와 Docker stable channel의 OCI index를 대조했습니다.
+공식 Docker 설치 문서의 이전 stable 표기는 아직 갱신되지 않아 배포 채널의 동일 digest를 확인했습니다.
+이번 패치는 credential 시험의 공유 node registry와 deferred tool 호출 재개를 수정합니다.
 main·worker와 두 task runner를 같은 vendor stable로 맞추고 두 custom Dockerfile의 base·font builder
 OCI index digest를 고정합니다. platform manifest·custom build image ID·실제 running digest는 별도 증거입니다.
 fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정 채널의 명시 버전으로 설치합니다.
@@ -133,7 +135,7 @@ HOME 전환 전 MNG DB와 n8n data, 동일 encryption key의 독립 보관, queu
 빈 이전 이미지 환경에 복원해야 하며 이미지 태그 변경만으로 DB 복구를 주장하지 않습니다.
 실제 backup·15분 중단 한도·복원·HOME 전환은 NOT_RUN이며 총괄 통합 순서를 따릅니다.
 
-이번 후보는 공개 allowlist build context에서 두 Dockerfile을 각각 빌드했습니다.
+2026-10-10 당시 후보는 공개 allowlist build context에서 두 Dockerfile을 각각 빌드했습니다.
 `HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle`는
 2026-10-10 UNIT 5건과 ISOLATED 3건 PASS(EXIT 0)였습니다. 두 variant의 실제 UID·n8n
 버전·font package inventory를 network none/read-only 임시 container에서 확인했습니다.
@@ -151,6 +153,9 @@ linux/amd64 manifest를 대조한 뒤 같은 index로 실행합니다. digest/ar
 Airflow의 명시 shell lint 보완으로 해당 후보만 다시 빌드한 후, n8n 두 variant를 포함한
 전체 immutable-candidate 시험 8건을 새로 수행해 PASS(EXIT 0)였습니다. n8n 이미지 내용은
 그 보완에서 변경하지 않았으며, 최신 시험 입력과 새 Airflow artifact는 연결된 검증 기록에 있습니다.
+
+위 후보 build·native 결과는 과거 고정 입력의 기록입니다. 이번 패치 입력의 custom build·
+workflow import·runner 실행·scan·HOME·DB 복원은 NOT_RUN입니다.
 
 ### 독립 DEV 통지 워크로드
 

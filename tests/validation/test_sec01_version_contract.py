@@ -28,7 +28,7 @@ PATCH_STABLE_IMAGES = {
     (
         "infra/09-platform-ops/renovate/docker-compose.yml",
         "renovate",
-    ): "renovate/renovate:44.151.0-full@sha256:9d38d3a725173d812529add2bbeae8120711a06c9db51feb0070f7ba0ea27fde",
+    ): "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1",
     (
         "infra/10-communication/stalwart/docker-compose.yml",
         "stalwart",
