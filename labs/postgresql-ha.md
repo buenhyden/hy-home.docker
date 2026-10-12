@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL HA LAB"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-12"
 created: "2025-11-12"
 ---
 
@@ -27,7 +27,7 @@ created: "2025-11-12"
 ### In Scope
 
 - Patroni/etcd/HAProxy와 exporter/init topology의 학습·render 계약
-- 보조 config·init SQL: `../infra/04-data/postgresql-cluster/`
+- 보조 config·init SQL: `./postgresql-ha/`
 
 ### Out of Scope
 
@@ -62,7 +62,7 @@ labs/
 | Networks | `lab_pg_core_net`, `lab_pg_edge_net`, `lab_pg_obs_net` |
 | Secret refs | `lab_pg_haproxy_stats_password`, `lab_pg_superuser_password`, `lab_pg_replication_password`, `lab_pg_exporter_password`, `lab_pg_service_password` |
 | Host exposure | `${LAB_HOST_BIND_IP}`와 `LAB_PG_*_HOST_PORT`만 사용 |
-| Helper assets | `../infra/04-data/postgresql-cluster/config/`, `pg/`, `scripts/` |
+| Helper assets | `./postgresql-ha/config/`, `init-scripts/`, `scripts/` |
 | Readiness | Compose healthcheck/one-shot dependency declarations only; runtime result is unverified |
 
 ## Usage

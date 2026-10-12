@@ -80,8 +80,8 @@ services:
       - 16379
     volumes:
       - valkey0-data:/data:rw
-      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
-      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - ./valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
       lab_valkey_core_net: {}
       lab_valkey_obs_net: {}
@@ -100,8 +100,8 @@ services:
       - 16380
     volumes:
       - valkey1-data:/data:rw
-      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
-      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - ./valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
       lab_valkey_core_net: {}
       lab_valkey_obs_net: {}
@@ -120,8 +120,8 @@ services:
       - 16381
     volumes:
       - valkey2-data:/data:rw
-      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
-      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - ./valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
       lab_valkey_core_net: {}
       lab_valkey_obs_net: {}
@@ -140,8 +140,8 @@ services:
       - 16382
     volumes:
       - valkey3-data:/data:rw
-      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
-      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - ./valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
       lab_valkey_core_net: {}
       lab_valkey_obs_net: {}
@@ -160,8 +160,8 @@ services:
       - 16383
     volumes:
       - valkey4-data:/data:rw
-      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
-      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - ./valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
       lab_valkey_core_net: {}
       lab_valkey_obs_net: {}
@@ -180,8 +180,8 @@ services:
       - 16384
     volumes:
       - valkey5-data:/data:rw
-      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
-      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - ./valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
       lab_valkey_core_net: {}
       lab_valkey_obs_net: {}
@@ -199,7 +199,7 @@ services:
       - '${LAB_SECRETS_GID:-1000}'
     entrypoint: [ '/bin/sh', '/usr/local/bin/valkey-cluster-init.sh' ]
     volumes:
-      - ../infra/04-data/valkey-cluster/scripts/valkey-cluster-init.sh:/usr/local/bin/valkey-cluster-init.sh:ro
+      - ./valkey-cluster/scripts/valkey-cluster-init.sh:/usr/local/bin/valkey-cluster-init.sh:ro
     secrets:
       - lab_valkey_password
     depends_on:

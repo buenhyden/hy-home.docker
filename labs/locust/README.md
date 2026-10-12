@@ -1,10 +1,10 @@
 ---
 title: "Locust LAB 실행 이미지"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-12"
 created: "2025-11-24"
 ---
 
@@ -15,7 +15,7 @@ created: "2025-11-24"
 
 이 패키지는 독립 Locust LAB가 빌드하는 고정 실행 이미지만 소유한다. master,
 worker, scenario, result, network 계약은 root에 포함되지 않는
-[LAB Compose](../../../labs/locust.yml)가 소유한다.
+[LAB Compose](../locust.yml)가 소유한다.
 
 ## Audience
 
@@ -49,7 +49,7 @@ locust/
 | Category | Source | Boundary |
 | --- | --- | --- |
 | Runtime | [Dockerfile](Dockerfile) | 기반 이미지 tag의 권위 |
-| Orchestration | [labs/locust.yml](../../../labs/locust.yml) | master/worker 전체 closure |
+| Orchestration | [labs/locust.yml](../locust.yml) | master/worker 전체 closure |
 | Inputs | 승인된 scenario directory | 읽기 전용 mount |
 | Outputs | 실행별 fresh result directory | master만 쓰기 가능 |
 
@@ -57,7 +57,7 @@ locust/
 
 이 디렉터리는 Compose entrypoint를 갖지 않는다. 정상 root의 모든 profile과
 **--profile '*'**는 Locust를 선택할 수 없다. 독립 LAB의 환경 변수, network,
-volume, headless 제한은 [LAB README](../../../labs/locust.md)를 따른다.
+volume, headless 제한은 [LAB README](../locust.md)를 따른다.
 
 ## Validation
 
@@ -76,5 +76,5 @@ python3 -m unittest tests.validation.test_quality_mock_lab -v
 
 ## Related Documents
 
-- [Locust LAB](../../../labs/locust.md)
-- [문서 진입점](../../../docs/README.md) (`GDE-0062`, `POL-0062`, `RUN-0062`)
+- [Locust LAB](../locust.md)
+- [문서 진입점](../../docs/README.md) (`GDE-0062`, `POL-0062`, `RUN-0062`)

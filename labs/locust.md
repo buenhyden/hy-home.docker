@@ -1,10 +1,10 @@
 ---
 title: "Locust 분산 부하 LAB"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-12"
 created: "2026-10-03"
 ---
 
@@ -48,7 +48,7 @@ labs/
 └── locust.md
 ~~~
 
-실행 이미지는 [Locust 패키지](../infra/11-quality/locust/)가 소유한다.
+실행 이미지는 [Locust 패키지](./locust/)가 소유한다.
 
 ## Tech Stack
 
@@ -120,5 +120,5 @@ client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로
 
 ## Related Documents
 
-- [Locust 실행 이미지](../infra/11-quality/locust/README.md)
+- [Locust 실행 이미지](./locust/README.md)
 - [운영 문서 색인](../docs/05.operations/README.md) — `GDE-0062`, `POL-0062`, `RUN-0062`

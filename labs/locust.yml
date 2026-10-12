@@ -10,7 +10,7 @@ x-locust: &locust
     file: ../infra/common-optimizations.yml
     service: template-job-med
   build:
-    context: ../infra/11-quality/locust
+    context: ./locust
   read_only: true
   volumes:
     - lab-locust-scenario:/mnt/locust/scenario:ro
