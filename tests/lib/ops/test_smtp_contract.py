@@ -3,8 +3,10 @@
 import io
 import json
 import os
+import subprocess
 import tempfile
 import unittest
+from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
@@ -12,6 +14,7 @@ from unittest.mock import patch
 
 import yaml
 
+from scripts.lib.ops import retire_materials
 from scripts.lib.ops import smtp_contract as module
 from scripts.lib.ops.smtp_contract import (
     ALIAS_ROW,
@@ -621,6 +624,85 @@ class SMTPContractTests(unittest.TestCase):
                 self.tree, dict(identity, st_ino=identity["st_ino"] + 1)
             ):
                 self.fail("wrong root identity must fail")
+
+    def test_smtp_lock_blocks_cln_root_retirement_lock(self):
+        self._prepare()
+        with retirement_lock(self.tree):
+            with self.assertRaises(OSError):
+                with retire_materials.retirement_lock(self.tree):
+                    self.fail("CLN acquired while SMTP held the shared root lock")
+
+    def test_root_replacement_between_shared_and_smtp_lock_fails_closed(self):
+        self._prepare()
+        original = retire_materials.retirement_lock
+        displaced = self.root.with_name(self.root.name + "-displaced")
+
+        @contextmanager
+        def replace_root_after_shared_lock(root, *args, **kwargs):
+            with original(root, *args, **kwargs) as shared:
+                Path(root).rename(displaced)
+                Path(root).mkdir()
+                (Path(root) / "secrets").mkdir()
+                yield shared
+
+        with patch.object(
+            module.retire_materials,
+            "retirement_lock",
+            side_effect=replace_root_after_shared_lock,
+        ):
+            with self.assertRaisesRegex(ContractError, "root_identity_mismatch"):
+                with retirement_lock(self.tree):
+                    self.fail("SMTP entered a replacement root")
+        self.assertFalse((self.tree / LOCK_PATH).exists())
+
+    def test_with_fds_closes_root_and_smtp_descriptors(self):
+        self._prepare()
+        with module.retirement_lock(self.tree, with_fds=True) as (identity, fds):
+            self.assertEqual(root_identity(self.tree), identity)
+            self.assertEqual(2, len(fds))
+            for fd in fds:
+                os.fstat(fd)
+                self.assertFalse(os.get_inheritable(fd))
+            with self.assertRaisesRegex(ContractError, "retirement_lock_busy"):
+                with retirement_lock(self.tree):
+                    self.fail("SMTP lock was not held")
+            with self.assertRaises(OSError):
+                with retire_materials.retirement_lock(self.tree):
+                    self.fail("CLN root lock was not held")
+        for fd in fds:
+            with self.assertRaises(OSError):
+                os.fstat(fd)
+
+    def test_child_root_fd_binds_dispatch_after_path_replacement(self):
+        self._prepare()
+        displaced = self.root.with_name(self.root.name + "-displaced")
+        with self.assertRaisesRegex(ContractError, "root_identity_mismatch"):
+            with module.retirement_lock(self.tree, with_child_fds=True) as (
+                identity,
+                fds,
+                root_fd,
+            ):
+                self.assertEqual(root_identity(self.tree), identity)
+                self.assertEqual(3, len(fds))
+                self.assertEqual(root_fd, fds[2])
+                self.root.rename(displaced)
+                self.root.mkdir()
+                (self.tree / "secrets").mkdir()
+                with retire_materials.retirement_lock(self.tree):
+                    pass
+                result = subprocess.run(
+                    [
+                        __import__("sys").executable,
+                        "-c",
+                        "from pathlib import Path; Path('old-root-marker').write_text('ok')",
+                    ],
+                    cwd=f"/proc/self/fd/{root_fd}",
+                    pass_fds=fds,
+                    check=False,
+                )
+                self.assertEqual(0, result.returncode)
+        self.assertTrue((displaced / "old-root-marker").exists())
+        self.assertFalse((self.root / "old-root-marker").exists())
 
     def test_smtp_lock_rejects_symlink_hardlink_and_wrong_mode(self):
         for unsafe in ("symlink", "hardlink", "mode"):

@@ -8,7 +8,13 @@ set -euo pipefail
 IFS=$'\n\t'
 umask 077
 
-REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+if [[ "${HYHOME_GENERATOR_HELD_ROOT-}" =~ ^/proc/self/fd/[0-9]+$ ]]; then
+    exec {HYHOME_GENERATOR_ROOT_FD}<"$HYHOME_GENERATOR_HELD_ROOT"
+    REPO_ROOT="/proc/self/fd/${HYHOME_GENERATOR_ROOT_FD}"
+    export HYHOME_GENERATOR_HELD_ROOT="$REPO_ROOT"
+else
+    REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+fi
 EXAMPLE_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md.example"
 TARGET_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md"
 ENV_FILE="${REPO_ROOT}/.env"
@@ -652,7 +658,7 @@ import stat
 import sys
 import tempfile
 
-root = Path(sys.argv[1]).resolve()
+root = Path(sys.argv[1])
 mode = sys.argv[2]
 check_only = mode.endswith("-check")
 prune = mode.startswith("sync-metadata-prune")
@@ -670,7 +676,8 @@ def safe_path(relative, base=root):
             break
         if item.is_symlink():
             raise ValueError("symlink metadata path")
-    if not target.resolve().is_relative_to(base):
+    fd_base = re.fullmatch(r"/proc/self/fd/[0-9]+", str(base)) is not None
+    if not fd_base and not target.resolve().is_relative_to(base):
         raise ValueError("metadata path escapes repository")
     return target
 
@@ -833,9 +840,11 @@ def replace(path, payload, mode):
 
 def main():
     public_root = Path(os.path.abspath(sys.argv[3]))
-    if not public_root.is_dir() or any(item.is_symlink() for item in (public_root, *public_root.parents)):
+    fd_root = re.fullmatch(r"/proc/self/fd/[0-9]+", str(public_root)) is not None
+    if not public_root.is_dir():
         raise ValueError("invalid public metadata root")
-    public_root = public_root.resolve()
+    if not fd_root and any(item.is_symlink() for item in (public_root, *public_root.parents)):
+        raise ValueError("invalid public metadata root")
     load_catalog(public_root)
     specifications = [("secrets/SENSITIVE_ENV_VARS.md.example", "secrets/SENSITIVE_ENV_VARS.md", registry_plan),
                       (".env.example", ".env", env_plan)]
@@ -930,14 +939,36 @@ main() {
             # Reuse SMTP01's cooperative lock; its receipt and sole deletion
             # executor stay unchanged. CLN01 requires independent writer stop.
             python3 - "$SCRIPT_SOURCE" "$REPO_ROOT" "$@" <<'PY_LOCK'
+import os
 import subprocess
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(sys.argv[1]).resolve().parents[2]))
+script_source = Path(sys.argv[1]).absolute()
+repo_root = Path(sys.argv[2]).absolute()
+sys.path.insert(0, str(script_source.parents[2]))
 try:
+    relative_source = script_source.relative_to(repo_root)
     from scripts.lib.ops.smtp_contract import retirement_lock
-    with retirement_lock(Path(sys.argv[2]), with_fd=True) as (_, held_fd):
-        result = subprocess.run(["bash", "-c", 'source "$1"; shift; dispatch "$@"', "generator", sys.argv[1], *sys.argv[3:]], pass_fds=(held_fd,))
+    with retirement_lock(repo_root, with_child_fds=True) as (_, held_fds, root_fd):
+        fd_root = Path(f"/proc/self/fd/{root_fd}")
+        fd_source = fd_root / relative_source
+        child_env = {
+            key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+        }
+        child_env["HYHOME_GENERATOR_HELD_ROOT"] = str(fd_root)
+        result = subprocess.run(
+            [
+                "bash",
+                "-c",
+                'source "$1"; shift; dispatch "$@"',
+                "generator",
+                str(fd_source),
+                *sys.argv[3:],
+            ],
+            cwd=fd_root,
+            env=child_env,
+            pass_fds=held_fds,
+        )
     raise SystemExit(result.returncode)
 except Exception:
     print("GENERATION rejected: unsafe or busy SMTP01 lock; no values logged", file=sys.stderr)

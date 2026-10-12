@@ -11,6 +11,8 @@ import time
 import unittest
 from pathlib import Path
 
+from scripts.lib.ops import retire_materials
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -31,6 +33,8 @@ class LockInheritanceTests(unittest.TestCase):
             (self.root / directory / "__init__.py").write_text("")
         helper = self.root / "scripts/lib/ops/smtp_contract.py"
         helper.write_bytes((ROOT / "scripts/lib/ops/smtp_contract.py").read_bytes())
+        retire_helper = self.root / "scripts/lib/ops/retire_materials.py"
+        retire_helper.write_bytes((ROOT / "scripts/lib/ops/retire_materials.py").read_bytes())
         spec = importlib.util.spec_from_file_location("synthetic_lock", helper)
         self.module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.module)
@@ -38,7 +42,8 @@ class LockInheritanceTests(unittest.TestCase):
         self.wrapper = re.search(r"<<'PY_LOCK'\n(.*?)\nPY_LOCK", source, re.S).group(1)
         self.stub = self.root / "scripts/operations/gen-secrets.sh"
         self.stub.write_text(
-            'dispatch() { printf "%s" "$BASHPID" > "$1/mutator.pid"; while [[ ! -f "$1/release" ]]; do sleep 0.02; done; printf continued > "$1/continued"; }\n'
+            'REPO_ROOT="${HYHOME_GENERATOR_HELD_ROOT:?}"\n'
+            'dispatch() { printf "%s" "$BASHPID" > "$REPO_ROOT/mutator.pid"; while [[ ! -f "$REPO_ROOT/release" ]]; do sleep 0.02; done; printf continued > "$REPO_ROOT/continued"; }\n'
         )
         self.holder = None
         self.addCleanup(self.stop_holder)
@@ -59,13 +64,23 @@ class LockInheritanceTests(unittest.TestCase):
                 self.fail("synthetic child deadline")
             time.sleep(0.01)
 
-    def busy(self):
+    def smtp_busy(self):
         try:
             with self.module.retirement_lock(self.root):
                 return False
         except self.module.ContractError as error:
             self.assertEqual("retirement_lock_busy", str(error))
             return True
+
+    def cln_busy(self):
+        try:
+            with retire_materials.retirement_lock(self.root):
+                return False
+        except OSError:
+            return True
+
+    def busy(self):
+        return self.smtp_busy() and self.cln_busy()
 
     def start_holder(self):
         self.holder = subprocess.Popen(
@@ -97,6 +112,23 @@ class LockInheritanceTests(unittest.TestCase):
         self.wait_for(lambda: (self.root / "continued").exists())
         self.wait_for(lambda: not self.busy())
 
+    def test_parent_death_after_root_replacement_keeps_mutator_on_held_inode(self):
+        mutator = self.start_holder()
+        displaced = self.root.with_name(self.root.name + "-displaced")
+        self.root.rename(displaced)
+        self.root.mkdir()
+        (self.root / "secrets").mkdir()
+        with retire_materials.retirement_lock(self.root):
+            pass
+        self.holder.kill()
+        self.assertEqual(-signal.SIGKILL, self.holder.wait(timeout=5))
+        os.kill(mutator, 0)
+        self.assertTrue((displaced / "mutator.pid").exists())
+        self.assertFalse((self.root / "mutator.pid").exists())
+        (displaced / "release").touch()
+        self.wait_for(lambda: (displaced / "continued").exists())
+        self.assertFalse((self.root / "continued").exists())
+
     def test_normal_child_exit_releases_lock(self):
         self.start_holder()
         (self.root / "release").touch()
@@ -119,10 +151,25 @@ class LockInheritanceTests(unittest.TestCase):
             named = (self.root / self.module.LOCK_PATH).stat()
             self.assertEqual((held.st_dev, held.st_ino), (named.st_dev, named.st_ino))
             self.assertFalse(os.get_inheritable(fd))
-            self.assertTrue(self.busy())
+            self.assertTrue(self.smtp_busy())
         with self.assertRaises(OSError):
             os.fstat(fd)
-        self.assertFalse(self.busy())
+        self.assertFalse(self.smtp_busy())
+
+    def test_opt_in_fds_include_root_and_smtp_and_close_on_exit(self):
+        with self.module.retirement_lock(self.root, with_fds=True) as (identity, fds):
+            self.assertEqual(self.module.root_identity(self.root), identity)
+            self.assertEqual(2, len(fds))
+            for fd in fds:
+                os.fstat(fd)
+                self.assertFalse(os.get_inheritable(fd))
+            self.assertTrue(self.smtp_busy())
+            self.assertTrue(self.cln_busy())
+        for fd in fds:
+            with self.assertRaises(OSError):
+                os.fstat(fd)
+        self.assertFalse(self.smtp_busy())
+        self.assertFalse(self.cln_busy())
 
     def test_opt_in_exception_closes_fd_and_releases(self):
         fd = None
