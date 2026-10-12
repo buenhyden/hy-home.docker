@@ -1,6 +1,6 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.6"
+version: "0.6.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1364,6 +1364,49 @@ retirement acceptance remain open. The observed duplicate absence is not a new
 coordinator unlink receipt. Final receipt-bearing metadata/staged checks and
 independent combined-tree review precede the local merge commit; no remote
 push or hosted CI is claimed.
+
+### Current SMTP consumer boundary observation — 2026-10-12
+
+The user's current question separates consumer verification from password-file
+retirement. SMTP01 changes source references, the Supabase GoTrue file-loader
+wrapper, catalog/generator retirement and their regressions as well as the
+single proposed unlink. The only password-file retirement target is
+`secrets/communication/supabase/supabase_smtp_password.txt`. The canonical
+`secrets/communication/smtp/smtp_password.txt` remains; the in-container target
+name `supabase_smtp_password` is an alias, not another generated source value.
+Other Supabase secrets, account values and credential rotation are outside this
+unlink. GoTrue remains only the independent Supabase LAB consumer.
+
+At main `c8a9c013242ef298d769db7893c9e3e64cb4334e`, the coordinator's fresh
+read-only observation at `2026-10-12T03:58:58.161557+00:00` found the canonical
+file regular, single-linked and mode 0640, and the duplicate absent. Running,
+healthy Alertmanager `prom/alertmanager:v0.34.1` has the exact canonical bind
+read-only at `/run/secrets/smtp_password`. Running, healthy Mailpit
+`axllent/mailpit:v1.31.2` has no such bind. No Supabase Auth container or exact
+old-file bind was observed. Node-exporter and cAdvisor retain read-only host
+ancestor mounts; those are possible read surfaces, not proof of intentional
+SMTP consumption or proof of external-consumer absence. Neither password bytes
+nor their hashes or lengths were read. No runtime mutation occurred.
+
+The public receipt SHA-256 is
+`ee2191de511ec1b1f4429fdd315595af7dd84237c9b4a0b93ce02ba052f967d6`,
+preserved in the coordinator's ignored
+`.agent-work/smtp-consumer-observation-20261012/fresh-observation.json`.
+The observation proves mount/file metadata only. Healthy state does not prove
+current rendered-password equality, actual supplier authentication or delivery.
+The dated six-case native GoTrue/Mailpit authenticated STARTTLS and capture
+receipt and the dated two-file isolated restore above retain their exact
+synthetic/historical scope; neither is a fresh provider or LAB activation test.
+
+The four-path LAB source-proof candidate is staged in the independent
+`codex/smtp-lab-consumer-proof` worktree and is not yet accepted into main.
+Its declared hash map covers ROOT includes and LAB Supabase public source;
+shared `extends` coverage is not claimed. Independent review and final current
+head gates precede its source acceptance. Current provider authentication/send,
+LAB activation, job/backup/external closure, production recovery and final
+private retirement acceptance remain open. The already-absent duplicate is
+never reported as a new coordinator unlink or as a reason to rotate the
+canonical password.
 
 ## Evidence
 
