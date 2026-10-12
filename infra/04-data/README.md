@@ -1,6 +1,6 @@
 ---
 title: "데이터 계층 (04-data)"
-version: "1.3.2"
+version: "1.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -30,7 +30,6 @@ HOME 공유 상태와 개발 DB, 오브젝트·벡터 저장소, OPTIONAL 데이
 | --- | --- | --- | --- |
 | [mng-db](mng-db/) | 공유 PostgreSQL·Valkey | HOME | 관리 metadata·세션·큐; 패키지의 profile 참조 |
 | [dev-db](dev-db/) | 개발 PostgreSQL·Valkey | OPTIONAL | `dev-data`; 프로젝트별 업무 데이터 provision |
-| [supabase](supabase/) | 별도 데이터 플랫폼 | OPTIONAL | `supabase`; 공유 mng-db와 스키마·볼륨을 합치지 않음 |
 | [seaweedfs](seaweedfs/) | 공유 S3·Iceberg REST catalog | HOME | `storage`; 관측·AI·Analytics가 함께 사용 |
 | [opensearch](opensearch/) | 단일 검색·인덱스 저장소 | OPTIONAL | `opensearch` |
 | [neo4j](neo4j/) | 그래프 저장소 | OPTIONAL | `graph` |

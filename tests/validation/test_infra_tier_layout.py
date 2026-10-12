@@ -17,7 +17,6 @@ ROOT = Path(__file__).resolve().parents[2]
 DATA = (
     "mng-db",
     "dev-db",
-    "supabase",
     "seaweedfs",
     "opensearch",
     "neo4j",
@@ -54,6 +53,26 @@ class TierLayoutTests(unittest.TestCase):
                         exceptions.get(name, name), service.get("container_name")
                     )
         self.assertLessEqual(set(exceptions), seen)
+
+    def test_supabase_naming_exceptions_have_one_lab_owner(self):
+        model = yaml.safe_load((ROOT / "labs/supabase.yml").read_text())
+        rows = json.loads((ROOT / "labs/supabase/naming-exceptions.json").read_text())[
+            "naming_exceptions"
+        ]
+        exceptions = {row["service"]: row for row in rows}
+        self.assertEqual(len(rows), len(exceptions))
+        self.assertEqual(set(model["services"]), set(exceptions))
+        root_rows = json.loads(
+            (ROOT / "infra/common-optimizations.exceptions.json").read_text()
+        )["naming_exceptions"]
+        self.assertFalse(set(exceptions) & {row["service"] for row in root_rows})
+        for name, service in model["services"].items():
+            with self.subTest(service=name):
+                self.assertTrue(exceptions[name]["reason"].strip())
+                self.assertEqual(name, service["hostname"])
+                self.assertEqual(
+                    exceptions[name]["container_name"], service["container_name"]
+                )
 
     def test_retired_influxdb_has_no_active_deployment(self):
         # ADR-0047: absence from the deployable model, not a repository-wide
@@ -131,7 +150,7 @@ class TierLayoutTests(unittest.TestCase):
         fixtures = (
             "scripts/lib/hardening-lib.sh",
             "infra/tech-stack.versions.json",
-            "infra/04-data/supabase/docker-compose.yml",
+            "labs/supabase.yml",
             "infra/04-data/dev-db/docker-compose.yml",
             "infra/04-data/seaweedfs/config/seaweedfs-table-bucket.sh",
             "infra/06-observability/docker-compose.yml",

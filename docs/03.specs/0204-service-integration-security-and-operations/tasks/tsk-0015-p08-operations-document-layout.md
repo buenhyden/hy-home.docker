@@ -1,6 +1,6 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -123,12 +123,229 @@ only `docs/05.operations/{guides,policies,runbooks}/labs/`.
 
 ## Work Log
 
+### W70 Supabase companion integration — 2026-10-12
+
+Local main accepted the preceding PostgreSQL HA/Valkey/Locust source unit at
+`511b390db054f32fbed1eb7ef79fe71d78c40ebe`. The coordinator preserved 18 public JSON
+receipts under its main worktree `.agent-work/lab3-accepted-511b390db/`, then removed
+only that accepted worker's one-off scratch/cache, dedicated worktree and merged
+local branch without force. Foreign root/older worker changes remain untouched.
+Remote main was independently reobserved at
+`2edb9692e6d4f5cda8623d27a8c3c843e89d6e95`; local delivery is not remote delivery.
+
+The reviewed Supabase worker source `85fd9adafa5afdcb36492f412b81f2e78aaef727`
+is preserved as logical cherry-pick `99957fb0142bd32da13ce74a190bd457f01d3c44`.
+The companion baseline is `5580a4693f3841df2b976c6d7ab5ee213213dd1e`. The sole
+source is `labs/supabase.yml`, with public README/env and exact naming exception
+records under `labs/supabase/`. All thirteen service keys, image pins, container
+names and dependency edges are preserved. Root include/network and Supabase-only
+secret declarations are removed; actual secret files and stored data are retained.
+Canonical SMTP remains `secrets/communication/smtp/smtp_password.txt` for both
+root observability and the independent LAB auth consumer. Removing a root service
+edge is not proof that a secret has no LAB, external or recovery consumer.
+
+Pure Supabase catalog rows SUPA-002 through SUPA-011 and AI-001 use the existing
+`lab` / `lab_excluded` / `LAB_EXCLUDED` / `OUT_OF_SCOPE` contract. Previous
+classifications were: SUPA-002/004/007 `kv_static`, SUPA-003
+`public_configuration`, SUPA-005/006/008/010 `stable_crypto`, SUPA-009/011
+`derived_runtime`, and AI-001 `bootstrap_external`. The original `recovery`
+objects, source paths, recorded dates, lifecycle and runtime evidence are unchanged;
+LAB exclusion does not authorize deleting crypto/bootstrap material. Mixed
+COMM-002 remains root `kv_static` and active, with both current consumers.
+PG-020, SEC-003 and all BKP holds are preserved. The public metadata table keeps
+its sections and notes; only the dashboard username key changes to
+`LAB_SUPABASE_DASHBOARD_USERNAME`. No private metadata or dotenv is read.
+
+The infra family/root READMEs now retain only shared navigation and HOME/DEV
+contracts. Thirteen Supabase naming exceptions are moved once to
+`labs/supabase/naming-exceptions.json`; thirteen observability rows are transferred
+from the HOME index into the LAB README, explicitly unverified in runtime.
+Historical Stage90 material outside the bounded current-service-inventory marker
+is preserved. The managed current projection removes the thirteen old ROOT
+Supabase identities after their exact LAB source transition; their preimage is
+reproducible from the baseline Git blob. The old R decision ledger remains dated
+owner evidence. The existing tech-stack generator changes thirteen source
+bindings, not image versions. Root extension `x-hyhome-data-root` exposes the rendered HOME data root
+for the separate controller containment check.
+
+Actual source regression observations:
+
+- Two new root/LAB compatibility assertions failed before root exclusion and LAB
+  source integration; their corrected assertions pass in the pinned QA lane.
+- Existing tier hardening and package-placement assertions failed on the removed
+  Supabase path; naming and HOME dashboard membership also failed before their
+  exact LAB ownership corrections. One initially requested test name did not
+  exist; that loader ERROR is not a contract RED. The corrected exact test names
+  reproduced the path failures.
+- An initial system-Python run lacked `referencing`; a concurrent intermediate
+  public-table formatting correction also changed its input. This mixed-input
+  run is not acceptance evidence. The restored table preserves existing sections.
+- With the existing pinned QA environment and its child Python path, six modules
+  collected 135 tests: 129 PASS and six native opt-in SKIP, 49.891s, exit 0.
+  Modules: secret_metadata_sync, service_runtime_compatibility,
+  supabase_smtp_rehearsal, sec01_version_contract, secret_catalog, and
+  secret_catalog_contract in their existing tests packages.
+- A broader first lane collected 185: four ownership/path FAIL, seven missing
+  Node executable ERROR, and thirty native SKIP. The supplied PATH had excluded
+  the installed Node provider. After scope/path fixes and restoring that provider
+  in the bounded QA PATH, the same modules plus the added naming regression
+  collected 186: 156 PASS, thirty native SKIP, 58.029s, exit 0. Modules:
+  compose_baseline_gates, tech_stack_version_contract, infra_tier_layout,
+  lab_credential_argv and quality_mock_lab.
+- Ruff on the three coordinator-owned regression modules and `git diff --check`
+  returned exit 0. First links scan after source removal reported 22 missing
+  current-document links and one preexisting archive warning; the leased document
+  owner is correcting those exact active consumers.
+
+The first five-document metadata lane selected five and failed on one forbidden
+README top-level `Observability` heading. Moving that unchanged content under
+`Configuration` as a third-level heading corrected the contract; the subsequent
+six-document lane, including this Task, returned selected six, violations zero,
+overrides zero, exit 0. Independent companion review accepted the exact naming,
+root/LAB, catalog, history and Task scope; its minor folder inventory omission was
+corrected. The coordinator staged only its twenty owned paths. Actual
+`run-ci-precommit.sh --mode local-staged` returned exit 0: applicable JSON, YAML,
+Markdown, shell, Ruff and hardcoded-secret gates passed. An initial Ruff format
+probe identified one tier-test formatting deficit; formatting that owned file
+corrected it without changing assertions. Shell syntax and tech-stack `--check`
+returned exit 0; the latter separately reports the existing unresolved required
+Airflow image input, not a resolved pin.
+
+The explicitly invoked infra-validate static helper returned exit 2: eleven PASS,
+four BLOCKED, two NOT_RUN, no executed FAIL. Its input graph rejected an external
+absolute path before Compose; plugin/render/structure were prerequisite-blocked.
+Fixture cleanup passed. This separate isolated helper result is incomplete and
+is not substituted for actual Compose render, native execution or an aggregate
+PASS. Its next investigation is the existing helper's `input-graph` path contract;
+no validator or secret/input boundary was weakened to make it green.
+
+Further actual metadata exposed the current Guide's infra-only implementation
+binding schema, even when the selected path was this Task. The coordinator added
+expected-contract regressions in the existing Registry/catalog tests: three
+focused tests produced two FAIL before the binding change. The existing schema
+and catalog parser now admit only a flat lowercase tracked `labs/<name>.yml`
+source, reject overlays and invalid mapped services, keep no-follow reads, and
+validate LAB service identities without adding them to HOME inventory. A new
+malformed-services-list probe produced one ERROR; adding the explicit Mapping
+guard corrected it. Escape/nested/case/wildcard/untracked/removed/overlay/symlink
+negative tests remain rejecting. Full Registry and operations-catalog unit lanes
+returned 220 PASS, 174.661s, exit 0. The previous twenty-path staging review does
+not automatically approve these four additional source/schema/test paths.
+
+Actual catalog validation then reported fourteen findings: thirteen removed ROOT
+Supabase memberships plus the existing stale Dozzle Env projection. The first
+renderer call correctly refused unmatched authored membership. After authoring
+only the exact relocated identities against the current LAB service map and
+verifying the remaining current set, the renderer returned its bounded section.
+The coordinator initially treated that section as a whole document; the outside
+marker preservation assertion caught the error after the temporary worktree
+write. The reviewed staged full preimage was immediately restored and only the
+bounded section was spliced. Prefix/footer byte hashes are identical to that
+staged preimage in `.agent-work/w70-supabase-public-receipts/current-inventory.json`.
+The generator refreshes the existing Dozzle derived Env cell; it does not update
+its image or invent traffic/security/backup evidence. The corrected catalog lane returned `operations-catalog: PASS`, exit 0. No lost history or whole-file truncation is staged.
+The infra-validate helper on actual main `511b390db` independently returned the
+same eleven PASS/four BLOCKED/two NOT_RUN, exit 2, distinguishing its preexisting
+external-absolute-path limitation from the LAB move's executed regressions.
+
+Final independent common review found two additional Important issues: the
+current-inventory preamble's stale 119 count/baseline, and a LAB source's unlisted
+valid or invalid services being ignored. The preamble now describes a dynamic
+ROOT set and the 2026-10-12 W70 candidate baseline, while retaining the original
+section anchor. This authored-prefix hunk is intentionally changed; the earlier
+prefix/footer hash receipt applies to the bounded-render restoration step, not
+to the final authored prefix. The ownership regression reproduced two FAIL.
+The parser now rejects invalid entries and requires the union of every declared
+service in each referenced LAB source to have exactly one Guide owner. ROOT
+inventory membership remains ROOT-only. The corrected focus returned 24 PASS,
+2.277s, exit 0; the independent complete Registry/catalog rerun returned 221 PASS,
+154.392s, exit 0, and actual operations-catalog CLI PASS.
+
+The five leased current Supabase operational documents are frozen, independently
+approved and staged; exact staged diff SHA-256 is
+`1cb4f60a4b5c0df523793300d86a257931a442779442db494525a1e3525eaa02`.
+Their owner recorded actual metadata selected five/zero, links zero failures
+with one existing archive warning, operations-catalog and Markdown/diff PASS.
+The initial documentation review's two Important and one Minor findings were
+corrected: synthetic-env controller checking, fail-closed effective Kong port,
+and Compose authority for eleven exact secret paths. A coordinator combined
+metadata lane selected eleven/zero, exit 0; links covered 1227 documents and
+11675 links, zero failures/one existing archive warning, exit 0. These results
+precede the final receipt/source freeze and do not substitute for final HEAD gates.
+
+The controller source and tests are frozen at SHA-256
+`84226fbdd0af6250c188027028e4599110cbafaf80638c54488f562226fdb958` and
+`c2d95290e4fc47ac4c779ce997061e0740dc1e489d65eff1a8faa4308ef773d2`.
+Initial expected-contract tests produced seven FAIL and four ERROR. The first
+independent review reproduced Important mixed RO/RW and arbitrary-repository
+sharing defects; the source now allows only the explicit regular public
+`infra/common-optimizations.yml` input and only when neither side is writable
+state. ROOT directory, dotenv, secret/socket/external equality and mixed RO/RW
+are rejected. The final author and independent controller lanes each returned
+33 PASS; author branch coverage is 92 percent. Missing or symlink read-only
+inputs are rejected before ledger/start, read-only paths never become writable
+state or cleanup targets, HOME/LAB realpath nesting and aliases are rejected,
+and stopped names are reserved without counting their resources or ports.
+Existing same-project containers retain their normal owned lifecycle. The final
+fixture-only compaction preserves expectations; final implementation/test lengths
+are 738/800 lines. Exact source/core/controller independent verdict is APPROVE,
+with no remaining Critical or Important finding. A local operator can still
+change a preflight input before a later Compose action; no native atomicity claim
+is made. No controller start or resource mutation was executed in this unit.
+
+Controller read-only-input, HOME/LAB realpath and stopped-name guards, current
+Supabase Guide/Policy/Runbook contracts, exact combined-head metadata/staged/link
+checks and independent final review remain integration conditions at this entry.
+No native `_FILE` readiness is claimed. SOURCE is prepared; UNIT is synthetic;
+STATIC results above apply only to their described inputs. ISOLATED/native,
+HOME, MIGRATION, ROTATION and RECOVERY are NOT_RUN. No service start/stop, secret
+rotation, private-file deletion or data move occurred. W62 and Task closure remain
+open. Rollback is a reviewed source revert; running HOME data retains its original
+location and cannot be adopted or removed by this source rename.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0015 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0015 | ready | in-progress | #continuation-baseline-and-w56-reuse-result |
+
+### W70 Supabase final source-gate receipt — 2026-10-12
+
+The coordinator froze the 31 owned staged paths at source tree
+`b2e5b5cacc8b99b34d46727d810c5d57a8bc2119`, based on
+`5580a4693f3841df2b976c6d7ab5ee213213dd1e`. The final pinned Python/Node
+execution of the fifteen recorded regression modules collected 575 tests:
+539 PASS and 36 native opt-in SKIP, 285.523 seconds, exit 0. Skipped native
+cases do not prove deployed Supabase, SMTP delivery, HOME or recovery acceptance.
+`check-document-metadata.py --mode check-changed --base-ref HEAD` selected 11
+eligible documents, violations 0, overrides 0, exit 0. The final
+`run-ci-precommit.sh --mode local-staged` returned exit 0 across its applicable
+style, structured-file, shell, Ruff and secret-leak checks. `git diff --cached
+--check` returned exit 0. Link and actual operations-catalog gates passed as
+recorded above; the historical archive warning remains unresolved.
+
+The first receipt-only metadata rerun failed because the Evidence Result cell
+used unregistered `SOURCE_ACCEPTED`; it also emitted 145 archive profile
+findings after that package failure. The cell now uses registered `PASS`
+with source-only scope in Check. The next rerun failed on the similarly
+unregistered Acceptance phrase; that cell now uses registered `accepted`,
+while Check keeps local-main delivery pending. No archive file or result domain
+is changed; the actual corrected metadata outcome must be confirmed.
+
+These receipts supersede the earlier pending combined source checks only.
+The static infra helper still returns exit 2 on both baseline main and candidate:
+11 PASS, 4 BLOCKED, 2 NOT_RUN and no executed FAIL. Its external absolute-path
+prerequisite is not waived. Tech-stack validation exit 0 retains the unresolved
+required Airflow image input. SOURCE and the executed UNIT/STATIC checks are
+accepted for this bounded relocation; the entire STATIC aggregate is not PASS.
+Final receipt-only edits require metadata/staged rechecks and independent
+readback before the logical source commit and local-main merge. Remote CI,
+ISOLATED native, HOME, MIGRATION, ROTATION and RECOVERY remain NOT_RUN. W57–W62
+Stage05 semantic moves, populated README acceptance and exact-head delivery
+remain open. No runtime, credential, persisted-data or backup changes occur in
+this source unit. Permanent regression tests remain; disposable invocation
+scripts are removed only after accepted public receipts are preserved.
 
 ### W70 first source relocation unit — 2026-10-12
 
@@ -452,7 +669,7 @@ aggregate exit 124 is preserved. No remote or operational command was executed.
 | Atomic document relocation | 8 | W60 | One active location, coupled references and LAB runtime/source diff zero | Fixed feature-owner SHAs and transferred writer leases | NOT_RUN | W60 exact rename and coupled references | pending |
 | Populated README coverage | 8 | W61 | Korean content, metadata selection, meaningful descriptions and navigation | Actual destination corpus and parent families | NOT_RUN | W61 populated READMEs | pending |
 | Exact-head delivery and handoff | 8 | W62 | Actual affected gates, staged checks, independent review and local-main receipt | Final candidate/main SHA and exact inverse map | NOT_RUN | W62 final validation, delivery and handoff | pending |
-| LAB service-source relocation | 8 | W70 | Supabase including GoTrue and audited infra LAB-only assets have one root labs location with coupled path, SMTP, catalog/generator and independent model validation | Exact pre/post source SHA and inverse path map; running resource, secret-value and persisted-data effects zero | NOT_RUN | 2026-10-12 service-source relocation authorization | pending |
+| LAB service-source relocation | 8 | W70 | Source relocation and executed regression/static lanes accepted; static helper prerequisites and local-main delivery remain explicit | Source tree b2e5b5cacc8b99b34d46727d810c5d57a8bc2119; 539 PASS, 36 native SKIP; runtime, credential and persisted-data effects zero | PASS | W70 first source relocation unit; Supabase companion and final source-gate receipt | accepted |
 
 ## Review and Completion
 

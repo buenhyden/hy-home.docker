@@ -37,6 +37,9 @@ import time
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 LAB_PROJECT_PREFIX = "hy-home-lab-"
 LEASE = re.compile(r"^([1-9][0-9]*)([mh])$")
+SHARED_PUBLIC_INPUTS = frozenset(
+    {os.path.realpath(ROOT / "infra/common-optimizations.yml")}
+)
 
 
 class LabError(Exception):
@@ -79,7 +82,16 @@ def render(docker: str, env_file: pathlib.Path, compose_file: str | None) -> dic
 def footprint(model: dict) -> dict:
     """Names, ports, writable state paths and declared limits of one model."""
     project = model.get("name", "")
-    containers, ports, paths, state, written = set(), set(), set(), set(), set()
+    containers, ports, paths, state, inputs, written = (
+        set(),
+        set(),
+        set(),
+        set(),
+        set(),
+        set(),
+    )
+    sensitive_inputs, public_inputs = set(), set()
+    sources = []
     cluster_ids = set()
     cpus = memory = 0.0
     for name, service in model.get("services", {}).items():
@@ -92,15 +104,26 @@ def footprint(model: dict) -> dict:
             if port.get("published"):
                 ports.add(f"{port.get('host_ip', '0.0.0.0')}:{port['published']}")
         for mount in service.get("volumes", []) or []:
-            if mount.get("read_only"):
-                continue
             if mount.get("type") == "bind":
                 # realpath: a symlinked root must not hide an overlap.
-                path = os.path.realpath(mount["source"])
+                declared = mount["source"]
+                path = os.path.realpath(declared)
+                read_only = bool(mount.get("read_only"))
                 paths.add(path)
-                state.add(path)
+                if read_only:
+                    inputs.add(path)
+                    if _sensitive_input(path, mount.get("target")):
+                        sensitive_inputs.add(path)
+                    elif path in SHARED_PUBLIC_INPUTS and pathlib.Path(path).is_file():
+                        public_inputs.add(path)
+                else:
+                    state.add(path)
+                sources.append(
+                    {"declared": declared, "real": path, "read_only": read_only}
+                )
             elif mount.get("type") == "volume":
-                written.add(mount.get("source"))
+                if not mount.get("read_only"):
+                    written.add(mount.get("source"))
         # A KRaft cluster ID shared with HOME would let a LAB broker join or
         # confuse HOME metadata; every LAB needs its own.
         environment = service.get("environment") or {}
@@ -118,6 +141,15 @@ def footprint(model: dict) -> dict:
             # Read-only inputs (a scenario source) are never cleanup targets.
             if key in written:
                 state.add(path)
+                read_only = False
+            else:
+                inputs.add(path)
+                read_only = True
+                if _sensitive_input(path, None):
+                    sensitive_inputs.add(path)
+                elif path in SHARED_PUBLIC_INPUTS and pathlib.Path(path).is_file():
+                    public_inputs.add(path)
+            sources.append({"declared": device, "real": path, "read_only": read_only})
     networks = {net.get("name") for net in (model.get("networks") or {}).values()}
     return {
         "project": project,
@@ -125,6 +157,10 @@ def footprint(model: dict) -> dict:
         "ports": ports,
         "paths": paths,
         "state": state,
+        "inputs": inputs,
+        "sensitive_inputs": sensitive_inputs,
+        "public_inputs": public_inputs,
+        "sources": sources,
         "networks": networks - {None},
         "cluster_ids": cluster_ids,
         "volume_devices": devices,
@@ -133,8 +169,35 @@ def footprint(model: dict) -> dict:
     }
 
 
+def _sensitive_input(source: str, target: object) -> bool:
+    target_path = os.path.normpath(target) if isinstance(target, str) else ""
+    source_path = pathlib.Path(source)
+    lexical_secret = "secrets" in source_path.parts
+    protected_target = target_path == "/var/run/docker.sock" or (
+        target_path == "/run/secrets" or target_path.startswith("/run/secrets/")
+    )
+    source_is_socket = source == "/var/run/docker.sock" or source_path.suffix == ".sock"
+    return lexical_secret or protected_target or source_is_socket
+
+
+def root_footprint(model: dict) -> dict:
+    """Root footprint bound to Compose's rendered DEFAULT_DATA_DIR marker."""
+    marker = model.get("x-hyhome-data-root")
+    if not isinstance(marker, str) or not os.path.isabs(marker):
+        raise LabError("root x-hyhome-data-root must be an absolute path")
+    found = footprint(model)
+    home_data_root = os.path.realpath(marker)
+    found["home_data_root"] = home_data_root
+    found["paths"].add(home_data_root)
+    found["state"].add(home_data_root)
+    return found
+
+
 def _nested(a: str, b: str) -> bool:
-    return a == b or a.startswith(b + os.sep) or b.startswith(a + os.sep)
+    try:
+        return os.path.commonpath((a, b)) in {a, b}
+    except ValueError:
+        return False
 
 
 def _port_clash(a: str, b: str) -> bool:
@@ -142,6 +205,23 @@ def _port_clash(a: str, b: str) -> bool:
     host_b, port_b = b.rsplit(":", 1)
     wildcard = {"0.0.0.0", "::", ""}
     return port_a == port_b and bool(host_a == host_b or {host_a, host_b} & wildcard)
+
+
+def _path_conflict(path: str, owner: dict, other_path: str, other: dict) -> bool:
+    if not _nested(path, other_path):
+        return False
+    shared_public_input = (
+        path == other_path
+        and path in owner["inputs"]
+        and other_path in other["inputs"]
+        and path in owner["public_inputs"]
+        and other_path in other["public_inputs"]
+        and path not in owner["state"]
+        and other_path not in other["state"]
+        and path not in owner["sensitive_inputs"]
+        and other_path not in other["sensitive_inputs"]
+    )
+    return not shared_public_input
 
 
 def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> list[str]:
@@ -159,18 +239,34 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
                 if any(_port_clash(port, p) for p in other["ports"]):
                     problems.append(f"{name}: host port {port} also in {other_name}")
             for path in sorted(lab["paths"]):
-                if any(_nested(path, p) for p in other["paths"]):
-                    problems.append(f"{name}: data path {path} overlaps {other_name}")
+                conflicts = [
+                    p for p in other["paths"] if _path_conflict(path, lab, p, other)
+                ]
+                if conflicts:
+                    if (
+                        path in lab["sensitive_inputs"]
+                        and path in conflicts
+                        and path in other["sensitive_inputs"]
+                    ):
+                        problems.append(
+                            f"{name}: sensitive read-only path {path} also in "
+                            f"{other_name}"
+                        )
+                    else:
+                        problems.append(
+                            f"{name}: data path {path} overlaps {other_name}"
+                        )
         for container in running:
             if container["project"] == lab["project"]:
                 continue
             if container["name"] in lab["containers"]:
-                problems.append(f"{name}: container {container['name']} already runs")
-            for port in sorted(lab["ports"]):
-                if any(_port_clash(port, p) for p in container["ports"]):
-                    problems.append(
-                        f"{name}: host port {port} held by {container['name']}"
-                    )
+                problems.append(f"{name}: container {container['name']} already exists")
+            if container.get("running", True):
+                for port in sorted(lab["ports"]):
+                    if any(_port_clash(port, p) for p in container["ports"]):
+                        problems.append(
+                            f"{name}: host port {port} held by {container['name']}"
+                        )
     return problems
 
 
@@ -184,7 +280,9 @@ def budget(
     except (KeyError, ValueError) as exc:
         raise LabError(f"set a numeric LAB host budget: {exc}") from exc
     projects = {lab["project"] for lab in selected.values()}
-    kept = [c for c in running if c["project"] not in projects]
+    kept = [
+        c for c in running if c["project"] not in projects and c.get("running", True)
+    ]
     cpus = sum(c["cpus"] for c in kept) + sum(x["cpus"] for x in selected.values())
     memory = sum(c["memory"] for c in kept) + sum(
         x["memory"] for x in selected.values()
@@ -204,7 +302,7 @@ def budget(
 
 
 def running_containers(docker: str) -> list[dict]:
-    listed = run([docker, "ps", "-q"])
+    listed = run([docker, "ps", "--all", "--quiet"])
     if listed.returncode != 0:
         raise LabError(f"docker ps failed: {listed.stderr.strip()}", 1)
     ids = listed.stdout.split()
@@ -230,9 +328,45 @@ def running_containers(docker: str) -> list[dict]:
                 "ports": ports,
                 "cpus": (host.get("NanoCpus") or 0) / 1e9,
                 "memory": host.get("Memory") or 0,
+                "running": (item.get("State") or {}).get("Running") is True,
             }
         )
     return containers
+
+
+def _has_symlink_component(path: pathlib.Path) -> bool:
+    return any(candidate.is_symlink() for candidate in (path, *path.parents))
+
+
+def path_integrity_problems(selected: dict[str, dict]) -> list[str]:
+    """Refuse missing or symlinked immutable inputs without touching state."""
+    problems = []
+    for name, lab in selected.items():
+        for source in lab["sources"]:
+            if not source["read_only"]:
+                continue
+            declared = pathlib.Path(source["declared"])
+            if not declared.is_absolute():
+                problems.append(f"{name}: read-only source must be absolute")
+                continue
+            if not os.path.lexists(declared):
+                problems.append(f"{name}: read-only source does not exist")
+                continue
+            if _has_symlink_component(declared):
+                problems.append(f"{name}: read-only source contains a symlink")
+            if not declared.exists():
+                problems.append(f"{name}: read-only source target does not exist")
+    return problems
+
+
+def data_root_problems(env: dict[str, str], root: dict) -> list[str]:
+    data = env.get("LAB_DATA_DIR")
+    if not data or not os.path.isabs(data):
+        raise LabError("LAB_DATA_DIR must be an absolute path")
+    lab_data_root = os.path.realpath(data)
+    if _nested(lab_data_root, root["home_data_root"]):
+        return ["LAB_DATA_DIR overlaps the rendered DEFAULT_DATA_DIR"]
+    return []
 
 
 def lab_file(name: str) -> str:
@@ -280,7 +414,7 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         name: footprint(render(args.docker, args.env_file, lab_file(name)))
         for name in args.labs
     }
-    root = footprint(render(args.docker, args.root_env_file, None))
+    root = root_footprint(render(args.docker, args.root_env_file, None))
     running = running_containers(args.docker)
     report = {
         "labs": {
@@ -293,9 +427,13 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         },
         # Unlimited containers cannot be summed; they are listed, not counted.
         "running_without_limits": sorted(
-            c["name"] for c in running if not c["cpus"] or not c["memory"]
+            c["name"]
+            for c in running
+            if c["running"] and (not c["cpus"] or not c["memory"])
         ),
-        "problems": collisions(selected, root, running)
+        "problems": data_root_problems(env, root)
+        + path_integrity_problems(selected)
+        + collisions(selected, root, running)
         + budget(selected, running, env)
         + stale_volumes(args.docker, selected),
     }
@@ -580,7 +718,9 @@ def main(argv: list[str] | None = None) -> int:
             return stop(args, env, args.lab)
         if args.command == "reap":
             return cmd_reap(args, env)
-        projects = {c["project"] for c in running_containers(args.docker)}
+        projects = {
+            c["project"] for c in running_containers(args.docker) if c["running"]
+        }
         for entry in entries(env):
             entry["project_running"] = entry["project"] in projects
             print(json.dumps(entry))

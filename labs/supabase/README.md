@@ -26,6 +26,7 @@ labs/
 ├── supabase.yml         # 독립 Compose 프로젝트
 └── supabase/
     ├── .env.example     # labs/.env에 옮길 public key 안내
+    ├── naming-exceptions.json # 이 LAB의 정확한 container 이름 예외
     └── README.md        # 이 문서
 ```
 
@@ -100,6 +101,28 @@ DB URL 및 DB/JWT 입력 결함은 별도이며 SMTP alias나 격리 시험은 �
 운영 증거가 필요합니다. 절차와 복구는
 `docs/05.operations/runbooks/0029-supabase.md`의 `RUN-0029`에서 확인합니다.
 
+### Observability
+
+아래 표는 소스 이동 직전 HOME 서비스 인덱스의 Supabase 행을 보존한 것입니다.
+현재는 독립 LAB 서비스이며, 실제 실행·scrape·로그 수집은 NOT_RUN입니다.
+`Infrastructure/containers`는 공유 관측 자산 참조이며 LAB 전용 image/상태 소유자가 아닙니다.
+
+| Layer | Service | Metrics source | Dashboards | Note |
+| --- | --- | --- | --- | --- |
+| LAB | `analytics` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `auth` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `db` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `functions` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `imgproxy` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `kong` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `meta` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `realtime` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `rest` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `storage` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `studio` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `supavisor` | none | `Infrastructure/containers` | container metrics and logs only |
+| LAB | `vector` | none | `Infrastructure/containers` | container metrics and logs only |
+
 ## Validation
 
 공개 합성 입력으로 Compose 전체 모델을 렌더하고 이전 13-service graph, container
@@ -115,6 +138,8 @@ local network, 11개 secret source와 read-only input guard만 승인된 차이�
 - PostgreSQL, Storage object와 설정의 빈-target 복구가 없으면 readiness를 주장하지 않습니다.
 
 ## Related Documents
+
+- [LAB container naming 예외](naming-exceptions.json)
 
 - Guide: `docs/05.operations/guides/0029-supabase.md` (`GDE-0029`)
 - Policy: `docs/05.operations/policies/0029-supabase.md` (`POL-0029`)

@@ -34,7 +34,7 @@ PATCH_STABLE_IMAGES = {
         "stalwart",
     ): "stalwartlabs/stalwart:v0.16.26@sha256:254ce5d7f3dbe4bb628ce2c7912e664ecb1c3466db79907f4a44d9a00117776b",
     (
-        "infra/04-data/supabase/docker-compose.yml",
+        "labs/supabase.yml",
         "imgproxy",
     ): "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d",
 }

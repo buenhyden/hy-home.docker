@@ -516,7 +516,7 @@ check_04_data() {
   local tier="04-data"
   start_tier "$tier"
 
-  local supabase_compose="infra/04-data/supabase/docker-compose.yml"
+  local supabase_compose="labs/supabase.yml"
   local valkey_compose="infra/04-data/dev-db/docker-compose.yml"
 
   check_file "$supabase_compose"

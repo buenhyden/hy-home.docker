@@ -1640,6 +1640,31 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertIn("Service Guides", template)
         self.assertIn("workspace and process Guides omit", template)
 
+    def test_guide_lab_binding_is_flat_and_cannot_escape_its_source_family(self):
+        schema = ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
+        self.assertEqual(
+            (),
+            validate_frontmatter(
+                {"implementation_services": {"labs/supabase.yml": ["auth"]}}, schema
+            ),
+        )
+        for source in (
+            "labs/nested/supabase.yml",
+            "labs/../supabase.yml",
+            "/labs/supabase.yml",
+            "Labs/supabase.yml",
+            "labs/Supabase.yml",
+            "labs/.supabase.yml",
+            "labs/supabase.yaml",
+            "labs/*.yml",
+        ):
+            with self.subTest(source=source):
+                self.assertTrue(
+                    validate_frontmatter(
+                        {"implementation_services": {source: ["auth"]}}, schema
+                    )
+                )
+
     def test_registered_templates_use_one_placeholder_grammar(self) -> None:
         registry = load_registry()
 

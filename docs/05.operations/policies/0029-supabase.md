@@ -1,10 +1,10 @@
 ---
 title: "Supabase Operations Policy"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-12"
 layer: "operations"
 artifact_id: "POL-0029"
 parent_ids:
@@ -16,25 +16,34 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `infra/04-data/supabase`의 exact `supabase` profile stack 운영 기준을 정의한다. 핵심 통제는 Kong 중심 공개 접근, Docker Secrets, `${DEFAULT_DATA_DIR}/supabase/...` runtime mounts와 database/storage/config를 하나의 recovery unit으로 관리하는 것이다.
+이 정책은 정상 root에서 분리된 `labs/supabase.yml`의 exact `supabase` profile LAB
+운영 기준을 정의한다. 핵심 통제는 controller lease, Kong 중심 공개 접근, canonical
+Docker Secrets, `${LAB_DATA_DIR}/supabase/...` 격리 mount와
+database/storage/config를 하나의 recovery unit으로 관리하는 것이다.
 
 ## Scope
 
 - **Systems**: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`
-- **Configs**: `infra/04-data/supabase/docker-compose.yml`, `${DEFAULT_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config
-- **Networks**: `supabase_net`
-- **Ports**: Kong `8000`/`8443`, analytics `4000`, Supavisor session `5432`, transaction `6543`, 모두 Compose host-port 변수로 `127.0.0.1`에만 게시한다
+- **Configs**: `labs/supabase.yml`, `${LAB_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config
+- **Networks**: project `hy-home-lab-supabase`, network `hy-home-lab-supabase-core`
+- **Ports**: Kong `8000`/`8443`, analytics `4000`, Supavisor session `5432`, transaction `6543`, 모두 `LAB_SUPABASE_*` host-port 변수로 `127.0.0.1`에만 게시한다
 
 ## Rules
 
 - **Required**:
-  - Supabase secret은 `/run/secrets/`의 Docker Secrets로 공급하고 실제 image가 secret을 소비하는 안전한 방법을 검증해야 한다. 현재 `_FILE` 선언만 있고 generic 변환 wrapper가 없어 전체 수용은 미검증이다. process health나 file mount만으로 통제 충족을 인정하지 않는다.
+  - Supabase secret은 `/run/secrets/`의 Docker Secrets로 공급하고 실제 image가
+    secret을 소비하는 안전한 방법을 검증해야 한다. GoTrue SMTP만 좁은 wrapper가
+    `_FILE`을 변환한다. 나머지 DB/JWT/config `_FILE` 입력의 native 수용과 전체
+    readiness는 미검증이다. process health나 file mount만으로 통제 충족을 인정하지 않는다.
   - Public API와 dashboard 접근은 compose에 선언된 Kong route와 연결된 stack
     config를 따라야 한다.
   - 문서는 현재 compose 파일에서 Studio가 direct host port를 갖지 않는다고
     명시해야 한다.
-  - `${DEFAULT_DATA_DIR}/supabase/...` 아래 runtime mount는 구현 state로
-    다루고 infra README 및 운영 문서와 동기화해야 한다.
+  - `${LAB_DATA_DIR}/supabase/...` 아래 runtime mount는 격리 LAB state로
+    다루고 [LAB source README](../../../labs/supabase/README.md) 및 운영 문서와
+    동기화해야 한다. HOME data root와의 동일·상하위 realpath는 거부한다.
+  - 기동·정지·상태·lease는 `scripts/operations/lab.py`가 소유한다. root Compose에
+    LAB entrypoint를 include하거나 직접 root profile로 선택하지 않는다.
   - JWT, anon, service-role, dashboard, SMTP, database, vault, crypto key 값은
     문서나 evidence에 절대 기록해서는 안 된다.
   - Backup 세트는 PostgreSQL globals/role, schema, data; Storage metadata와
@@ -49,11 +58,11 @@ created: "2026-05-17"
     Upgrade/removal은 일관된 restore-tested 세트, 호환성 검토, 용량 확인,
     명시적 승인을 요구한다.
 - **Allowed**:
-  - `docker compose ... config --quiet`를 사용한 metadata-only compose 검증.
+  - `python3 scripts/operations/lab.py check supabase`를 사용한 controller preflight.
   - Secret 값을 노출하지 않는 read-only 서비스 health/log 확인.
   - Task/incident evidence와 해당 runbook 단계로 뒷받침되는 승인된 JWT나
     dashboard credential rotation.
-  - 선언된 `SUPABASE_KONG_HTTP_HOST_PORT`와 `SUPABASE_KONG_HTTPS_HOST_PORT`
+  - 선언된 `LAB_SUPABASE_KONG_HTTP_HOST_PORT`와 `LAB_SUPABASE_KONG_HTTPS_HOST_PORT`
     변수를 사용한, `127.0.0.1`로 제한된 Kong host-port 접근.
 - **Disallowed**:
   - 게시되지 않은 local host port를 통한 direct Studio 접근을 가정하는 것.
@@ -62,6 +71,7 @@ created: "2026-05-17"
   - Secret 값이 포함된 생성된 Kong config를 commit하는 것.
   - 문서 전용 조치로 파괴적 database restore, storage 삭제, credential
     rotation을 수행하는 것.
+  - 목적·lease·collision preflight 없이 direct Compose 명령으로 LAB를 시작하는 것.
 
 ### Accountable lifecycle boundary
 
@@ -69,8 +79,10 @@ created: "2026-05-17"
 
 ### SMTP 원본 소유권
 
-- COMM-002와 공용 SMTP password 파일이 유일한 값 원본입니다. COMM-003은 값·경로
+- COMM-002와 `secrets/communication/smtp/smtp_password.txt`가 유일한 값 원본입니다. COMM-003은 값·경로
   없는 alias이며 별도 발급, 평문 복사, symlink/hardlink 원본을 유지하지 않습니다.
+- LAB source 이동은 SMTP를 포함한 11개 canonical secret 파일을 읽거나 이동·복제·삭제하지
+  않습니다. relative source 변경은 credential migration이나 rotation 증거가 아닙니다.
 - Auth mount target은 기존 이름을 유지하며 다른 SMTP 소비자·username·host·account는
   SMTP01에서 변경하지 않습니다. 직접 값과 파일 입력이 겹치거나 파일을 읽지 못하면
   Auth wrapper는 시작을 거부합니다.
@@ -87,7 +99,7 @@ created: "2026-05-17"
 
 ### Verification
 
-- Compose 관련 문서를 변경한 뒤 `docker compose --profile supabase config --quiet`를 실행한다.
+- Compose 관련 문서를 변경한 뒤 `python3 scripts/operations/lab.py check supabase`를 실행한다.
 - 정책, guide, runbook, README, 링크 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 - Commit 전에 갱신된 문서에서 direct Studio host-port 가정, 오래된 Compose CLI
   표기, template copyright 잔여물, secret 자료를 검색한다.
@@ -105,7 +117,7 @@ Stage 05 운영 audit 동안 검토한다.
 
 ## Related Documents
 
-- [Compose implementation: infra/04-data/supabase/docker-compose.yml](../../../infra/04-data/supabase/docker-compose.yml)
+- [Compose implementation: labs/supabase.yml](../../../labs/supabase.yml)
 
 - [Supabase self-hosted restore guidance](https://supabase.com/docs/guides/self-hosting/restore-from-platform)
 - [Supabase self-hosted update guidance](https://supabase.com/docs/guides/self-hosting/updating)
@@ -114,4 +126,4 @@ Stage 05 운영 audit 동안 검토한다.
 - [Operations index](../README.md)
 - [Usage guide](../guides/0029-supabase.md)
 - [Recovery runbook](../runbooks/0029-supabase.md)
-- [Infrastructure service README](../../../infra/04-data/supabase/README.md)
+- [Supabase LAB source README](../../../labs/supabase/README.md)

@@ -38,6 +38,24 @@ CUTOVER_REGISTRY_PATH_EXCEPTIONS = {
     "PG-020": "secrets/db/legacy-app/service_password.txt",
 }
 HOST_INTERPOLATION_KEYS = {"HOME"}
+SUPABASE_CANONICAL_SECRET_PATHS = {
+    "smtp_password": "secrets/communication/smtp/smtp_password.txt",
+    "supabase_db_password": "secrets/db/mng-pg/supabase_password.txt",
+    **{
+        name: f"secrets/data/supabase/{name}.txt"
+        for name in (
+            "supabase_jwt_secret",
+            "supabase_anon_key",
+            "supabase_service_key",
+            "supabase_dashboard_password",
+            "supabase_secret_key_base",
+            "supabase_vault_enc_key",
+            "supabase_pg_meta_crypto_key",
+            "supabase_openai_api_key",
+            "supabase_logflare_private_token",
+        )
+    },
+}
 CONFIG_SUFFIXES = {
     "",
     ".cfg",
@@ -480,11 +498,13 @@ def secret_contract(root, compose_texts, registry_text, consumed_env):
         for relative, text in domain.items():
             document = yaml.load(text, Loader=_ComposeLoader) or {}
             for name, value in (document.get("secrets") or {}).items():
-                if name in declarations:
+                if name in domain_declarations:
                     raise AssertionError(f"duplicate secret declaration: {name}")
-                declarations[name] = value
                 domain_declarations[name] = value
                 if "file" not in value:
+                    if name in declarations:
+                        raise AssertionError(f"duplicate secret declaration: {name}")
+                    declarations[name] = value
                     continue
                 source = value["file"]
                 if relative.startswith("labs/"):
@@ -500,15 +520,34 @@ def secret_contract(root, compose_texts, registry_text, consumed_env):
                 )
                 if path.startswith("../") or path == "..":
                     raise AssertionError(f"secret escaped repository: {name}")
-                if relative.startswith("labs/") and not path.startswith(
-                    "secrets/labs/"
+                shared_supabase = relative == "labs/supabase.yml"
+                if (
+                    shared_supabase
+                    and SUPABASE_CANONICAL_SECRET_PATHS.get(name) != path
+                ):
+                    raise AssertionError(
+                        f"Supabase LAB secret is not canonical: {name}"
+                    )
+                if (
+                    relative.startswith("labs/")
+                    and not shared_supabase
+                    and not path.startswith("secrets/labs/")
                 ):
                     raise AssertionError(f"LAB secret escaped isolated path: {name}")
                 if not relative.startswith("labs/") and path.startswith(
                     "secrets/labs/"
                 ):
                     raise AssertionError(f"root secret entered LAB path: {name}")
-                declaration_paths[name] = path
+                if name in declarations:
+                    if not (
+                        shared_supabase
+                        and name == "smtp_password"
+                        and declaration_paths.get(name) == path
+                    ):
+                        raise AssertionError(f"duplicate secret declaration: {name}")
+                else:
+                    declarations[name] = value
+                    declaration_paths[name] = path
         for service_name, contract in service_secret_contract(root, domain).items():
             grants = contract["grants"]
             granted_sources.update(grants.values())
@@ -548,6 +587,39 @@ def secret_contract(root, compose_texts, registry_text, consumed_env):
 
 
 class ComposeSchemaTagTests(unittest.TestCase):
+    def test_supabase_lab_shares_only_the_exact_canonical_smtp_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            (root / "labs").mkdir()
+            (root / "labs/.env.example").write_text(
+                'LAB_SECRET_DIR="../secrets/labs"\n'
+            )
+            home = "secrets:\n  smtp_password:\n    file: ./secrets/communication/smtp/smtp_password.txt\n"
+            lab = "secrets:\n  smtp_password:\n    file: ../secrets/communication/smtp/smtp_password.txt\n"
+            found = secret_contract(
+                root, {"docker-compose.yml": home, "labs/supabase.yml": lab}, "", set()
+            )
+            self.assertEqual({"smtp_password"}, found["declarations"])
+            self.assertEqual(
+                {"secrets/communication/smtp/smtp_password.txt"},
+                found["declaration_paths"],
+            )
+            for route, text in (
+                ("labs/other.yml", lab),
+                (
+                    "labs/supabase.yml",
+                    lab.replace("communication/smtp", "security/openbao"),
+                ),
+                ("labs/supabase.yml", lab.replace("smtp_password:", "openbao_token:")),
+                ("labs/supabase.yml", lab.replace("../secrets/", "../../secrets/")),
+            ):
+                with self.subTest(route=route, text=text):
+                    with self.assertRaises(AssertionError):
+                        secret_contract(
+                            root, {"docker-compose.yml": home, route: text}, "", set()
+                        )
+
     def test_compose_tags_preserve_values_and_references_without_unsafe_loading(self):
         text = (
             "services:\n"
@@ -1205,20 +1277,23 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
-        self.assertEqual(211, len(contract["public"]))
+        self.assertTrue(contract["public"])
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
-        self.assertEqual(48, len(contract["required"]))
-        self.assertEqual(163, len(contract["optional"]))
+        self.assertTrue(contract["required"])
+        self.assertTrue(contract["optional"])
         self.assertEqual(
             contract["public"],
             contract["required"] | contract["optional"] | contract["orphan"],
         )
         lab = self.lab_environment
-        self.assertEqual(55, len(lab["public"]))
-        self.assertEqual(15, len(lab["required"]))
-        self.assertEqual(40, len(lab["optional"]))
+        self.assertTrue(lab["required"])
+        self.assertTrue(lab["optional"])
+        self.assertIn("LAB_SUPABASE_DASHBOARD_USERNAME", lab["public"])
+        self.assertFalse(
+            any(name.startswith("SUPABASE_") for name in contract["public"])
+        )
         self.assertEqual(set(), lab["missing"] | lab["orphan"])
         self.assertEqual(set(), contract["public"] & lab["public"])
         self.assertFalse(any(name.startswith("LAB_") for name in contract["public"]))

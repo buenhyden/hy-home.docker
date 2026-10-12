@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.0.4"
+version: "2.0.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-12"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -48,7 +48,17 @@ created: "2026-06-04"
 - Compose/Dockerfile declarations own runtime pins. `infra/tech-stack.versions.json`은
   Compose image declaration에서 파생한 projection이며 Dockerfile build pin 전체를
   대체하지 않는다.
-- 정상 서비스 추가는 root include, POL-0078 profile membership, 공용 환경·secret 계약, image projection/update owner, package README와 Guide/Policy/Runbook을 함께 갱신한다. 정상 service를 소유한 Guide의 `implementation_services`는 root가 include하는 `infra/` Compose path와 정확한 service identity만 매핑한다. LAB 서비스는 root에서 제외한 독립 `labs/<topology>.yml`, 함께 둔 `labs/<topology>.md`, `labs/.env.example`/비공개 `labs/.env` 및 `secrets/labs/` 경로를 갱신하고 Guide 본문에서 직접 연결한다. LAB를 정상 service 매핑에 허위 등록하지 않는다. operations-catalog validator의 현재 graph 검증을 사용하며 별도 registry는 만들지 않는다.
+- 정상 서비스 추가는 root include, POL-0078 profile membership, 공용 환경·secret 계약,
+  image projection/update owner, package README와 Guide/Policy/Runbook을 함께 갱신한다.
+  정상 service를 소유한 Guide의 `implementation_services`는 root가 include하는 `infra/`
+  Compose path와 정확한 service identity만 매핑한다. LAB 서비스는 root에서 제외한 독립
+  `labs/<topology>.yml`, 함께 둔 `labs/<topology>.md` 또는
+  `labs/<topology>/README.md`, `labs/.env.example`/비공개 `labs/.env`와 필요한 LAB
+  source를 함께 갱신한다. LAB 전용 secret은 `secrets/labs/`에 두되 기존 canonical
+  secret을 소비하는 경우 값을 복제하지 않고 검토된 상대 경로만 참조한다. Supabase의
+  COMM-002 SMTP 원본과 10개 기존 secret source가 이 공유 참조 계약을 사용한다.
+  Guide는 독립 LAB Compose와 정확한 service identity를 직접 연결하며 별도 registry를
+  만들지 않는다.
 - HOME profile membership과 LAB 분리 vocabulary는 [POL-0078](0078-compose-profile-vocabulary.md)에서 관리한다. root의 전체 profile render도 LAB를 선택할 수 없다. root include 제외는 실행 중 container의 정지·재시작 정책 변경이나 데이터 삭제가 아니다.
 - **Recreate on edit**: 단일 파일 bind configuration을 수정해 inode가 교체되면
   기존 container가 이전 byte를 유지할 수 있다. 승인된 해당 service 재생성이
@@ -147,7 +157,8 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 - Operational
   - [mng-db](../../../infra/04-data/mng-db/README.md): 운영 DB 파라미터 baseline 확정, 슬로우쿼리 게이트와 회귀 점검 추가
     ([OPER](../guides/0028-management-database.md), [RUN](../runbooks/0028-management-database.md))
-  - [supabase](../../../infra/04-data/supabase/README.md): 현재 헬스체크 갭 보강, 내부 서비스별 최소 자원 상한 지정, 핵심 컴포넌트 외부노출 재검토
+  - [supabase LAB](../../../labs/supabase/README.md): 독립 13-service source의 현재
+    헬스체크 갭 보강, 내부 서비스별 최소 자원 상한 지정, 핵심 컴포넌트 외부노출 재검토
     ([OPER](../guides/0029-supabase.md), [RUN](../runbooks/0029-supabase.md))
 - Relational
   - [postgresql-cluster](../../../labs/postgresql-ha.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
