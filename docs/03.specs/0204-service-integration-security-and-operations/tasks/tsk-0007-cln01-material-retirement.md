@@ -845,6 +845,24 @@ source render evidence is not relabelled as a new run. No new behavior or tests
 were authored and no current coverage percentage is invented from historical
 coverage.
 
+The initial remote candidate at `4434fd8208613f6798164b73c2d458de5ac07bbc`
+failed candidate-quality (exit 1). The result-only Evidence additions below
+had used compound Result values and non-domain Acceptance labels. The registered
+Spec Package parser rejected them and dependent metadata reported one
+`spec-package-invalid` plus 145 archive `type-mismatch` findings. Earlier local
+metadata PASS preceded those additions and is not final-candidate acceptance.
+Use the existing Registry's exact Result and Acceptance domains; classifications
+and lane limits stay in Check/Location prose. No validator, historical archive,
+CI contract or deletion guard is changed to address this authoring error.
+The existing registered regression
+`python3 -m unittest tests.lib.document_governance.test_spec_packages.SpecPackageTests.test_current_repository_spec_packages_cover_spec_directories -v`
+reproduced RED before correction (exit 1) and passed GREEN after correction
+(one test, exit 0). No test was weakened or added to mirror this prose change.
+The corrected candidate also passed the registered changed local-only gate
+(exit 0, one selected Task, zero metadata violations, version projection in sync,
+links with the same retained archive warning) and independent correction review.
+The reviewed final index passed the staged style/secret controller (exit 0).
+
 The next deletion release needs one exact ROOT target/ID and its source revision,
 five-axis absence or accepted cutover, stopped/cooperating writers, fresh private
 manifest, independent pre-delete backup custody and canonical restore acceptance.
@@ -862,9 +880,10 @@ MIGRATION, ROTATION, RECOVERY and new actual deletion remain `NOT_RUN`.
 | Helper source acceptance | 12 | W24 | 50 focused tests, 98% combined coverage with branch measurement, Ruff and independent code/security review | Recorded helper input `e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284` | PASS | CLN01 implementation patch; user-accepted delivered source | accepted |
 | Candidate classification | 12 | W24 | partial five-axis assessment; BLOCKED_FACTS until missing ownership/recovery facts close | current source and read-only observations on named host | DEFER | #read-only-host-observations | pending |
 | Private deletion acceptance | 12 | W24 | manifest preflight and idempotent reinspection | operator manifest under `/tmp/cln01-<run>/` | NOT_RUN | operator host | pending |
-| Fresh source/helper reassessment | 12 | W24 | 51 CLN tests; one ROOT-init boundary test; independent source/security review with 61 SMTP/lock tests; no safely deletable tracked target | Main `328871a94b42c13f676e61b40f026c906ebbc13d`; 2026-10-13 request | PASS / NO_CHANGE | Fresh deletion reassessment | source only |
-| Fresh document validation | 12 | W24 | Scoped metadata, links (one retained archive warning), changed local-only gate, staged style/secret checks and diff check; all exit 0 | Input main plus reassessment text; final result-only recording | PASS | Fresh deletion reassessment | document only; remote delivery separate |
-| Fresh actual deletion disposition | 12 | W24 | Current user confirms no approved new ROOT candidate; metadata observation cannot close five axes or independent custody | Original checkout `328871a94b42c13f676e61b40f026c906ebbc13d` stable before/after probe | BLOCKED_FACTS / NOT_RUN | Exact path/material table above; COMM-003 already absent | pending; zero new actual deletions |
+| Fresh source/helper reassessment | 12 | W24 | NO_CHANGE: 51 CLN tests; one ROOT-init boundary test; independent source/security review with 61 SMTP/lock tests; no safely deletable tracked target | Main `328871a94b42c13f676e61b40f026c906ebbc13d`; 2026-10-13 request | PASS | Fresh deletion reassessment; source only | pending |
+| Fresh document validation | 12 | W24 | Scoped metadata, links (one retained archive warning), changed local-only gate, staged style/secret checks and diff check; all exit 0 before result-only recording | Input main plus reassessment text; preceding result-only recording | PASS | Fresh deletion reassessment; document only, remote delivery separate | pending |
+| Fresh actual deletion disposition | 12 | W24 | BLOCKED_FACTS: current user confirms no approved new ROOT candidate; metadata observation cannot close five axes or independent custody | Original checkout `328871a94b42c13f676e61b40f026c906ebbc13d` stable before/after probe | NOT_RUN | Exact path/material table above; COMM-003 already absent; zero new actual deletions | pending |
+| Initial remote candidate validation | 12 | W24 | Candidate-quality metadata: malformed Evidence Result/Acceptance values; exit 1; CodeQL and GitGuardian passed separately | PR #427 head `4434fd8208613f6798164b73c2d458de5ac07bbc`; run `38271931877` | FAIL | Fresh deletion reassessment; authoring error corrected in the next logical commit | rejected |
 
 ## Review and Completion
 
