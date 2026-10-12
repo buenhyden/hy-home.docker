@@ -151,7 +151,8 @@ services:
       - ${SEAWEEDFS_FILER_GRPC_PORT:-18888}
     # Embedded leveldb2 store (image filer.toml: /data/filerldb2). No route:
     # direct filer HTTP needs a filer JWT, so objects are reached only via S3.
-    command: [ 'filer', '-ip=seaweedfs-filer', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_FILER_HTTP_PORT:-8888}', '-port.grpc=${SEAWEEDFS_FILER_GRPC_PORT:-18888}', '-master=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}', '-metricsPort=9326' ]
+    # Disable unused TUS: GHSA-99q7-x53r-6j4g bypasses JWT path scope.
+    command: [ 'filer', '-tusBasePath=', '-ip=seaweedfs-filer', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_FILER_HTTP_PORT:-8888}', '-port.grpc=${SEAWEEDFS_FILER_GRPC_PORT:-18888}', '-master=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}', '-metricsPort=9326' ]
     volumes:
       - ./config/hyhome-seaweedfs.sh:/opt/hyhome/hyhome-seaweedfs.sh:ro
       - type: bind
