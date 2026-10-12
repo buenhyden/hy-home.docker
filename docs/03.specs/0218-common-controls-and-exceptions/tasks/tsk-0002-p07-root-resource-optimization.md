@@ -1,10 +1,10 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0002"
 parent_ids:
@@ -367,6 +367,25 @@ no benchmark, native/HOME, runtime, deployment, LAB runtime/testing, secret or
 data action ran. Delivery remains pending the owning SPEC-0218 PR, its
 current-head CI, and independent review; reverting the later P07-only commit
 removes this continuation record without rolling back delivered main.
+
+### Remote Source Adoption Audit — 2026-10-13
+
+At observation, the integration started from delivered main
+`b70bc01b58ae35a486860377519155a882af3d76`; the current remote main is
+`98144b2c0b5738f272b6a628246c901945ba15bf`, the same P07 integration. The
+pre-audit source blobs are Plan `81b62987de551d7576e8845ddccf84801902b6e7`
+and Task `721e373de619cf30e9dad3f8260dd5d46dfebc00`. The CI owner observed a
+successful branch push and a `gh pr create` exit1 because there were no commits
+between the feature branch and main; no P07 PR was observed. The source-adoption
+route is therefore `UNVERIFIED`, not retroactive PR delivery or human approval.
+
+This is a source-only audit: P07 source is `NO_CHANGE` on current main, with no
+resource, image, native, LAB-testing, deployment, secret, or data action. The
+observed main-security result is SOURCE/SARIF evidence, not a PR-candidate
+acceptance. A new owning SPEC-0218 receipt PR is planned; its current-head CI
+can validate only this receipt and current boundary, while original source-route
+proof remains unproved. Native/HOME, runtime, migration, rotation and recovery
+remain `NOT_RUN`.
 
 ### Admission Document Validation History
 
