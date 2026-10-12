@@ -1505,6 +1505,21 @@ changed, it provides no HOME data recovery.
 | Commit | Owner / scope | Actual disposition |
 | --- | --- | --- |
 | `256d5f833af0ead3287832bac9278e1d42aecabc` | SPEC-0204 / W31; five metadata/docs/test paths | Committed and pushed to PR #428; hosted candidate pending at the observation above |
+| `eaacf6bb0eb5225471db10ecbff5f2b47517a857` | SPEC-0204 / W31; result-only Task receipt | Staged style and secret guard passed again; committed/pushed, exact-head independent review approved |
+
+Before source merge, fresh check-runs read-back for `eaacf6bb0` confirmed
+candidate-quality run `38273774053` SUCCESS, CodeQL including all three Analyze
+checks SUCCESS, and GitGuardian SUCCESS. PR-context main-security remained
+SKIPPED, not a ROOT scan. A simultaneous `git fetch origin main` found main had
+advanced to `9fd0a396c4e0246be778c90fb5ef31435c08e977`. Its only changed path
+since the source input was TSK-0007's delivered CLN01 evidence; ROOT Compose,
+image/build inputs and the SEC01 five-file source boundary were unchanged.
+The coordinator integrates that published main through an ordinary merge,
+preserving the other Task body. This receipt records the successful earlier
+head, not the new merge head's CI: the updated PR still needs actual latest-head
+candidate results, independent evidence-delta review and current-main read-back
+before source merge. All blocked local/security and NOT_RUN operational states
+above remain unchanged.
 
 ## Evidence
 
