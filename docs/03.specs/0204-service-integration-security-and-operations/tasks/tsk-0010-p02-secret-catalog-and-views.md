@@ -1,10 +1,10 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -531,6 +531,154 @@ commit. P06 can use the integrated guard API for source/synthetic binding work;
 actual pilot still needs issued consumer IDs/destinations/ACL/delivery from the
 catalog and P01/P03/P04 operational acceptance. The closed catalog is not
 permission to invent opsflow entries or issue credentials.
+
+### Current Public-Source Reconciliation — 2026-10-13
+
+The current user authorizes P02 reconciliation, scoped logical commit and its
+owning-Spec PR/merge after current checks and independent review. This receipt
+supersedes historical pending-source statements only where fresh evidence below
+supports it. It preserves issued identities, dates, lifecycle and prior receipts.
+Criterion 16 / W32 remains owned by SPEC-0204-TSK-0010; P06 / TSK-0014 owns real
+copy and delivery. Completed Tasks are not rewritten.
+
+`git fetch origin main` returned exit 0. Both current HEAD and fetched
+`origin/main` were `62556dc63b66c828c27e9c33017d26cdf70b8542`; the supplied
+investigation SHA was `23e37362b72e98028a4675f282819c0346ae59dc`.
+`git status --short` was empty. `git worktree list --porcelain` and individual
+`git -C <worktree> status --short` inspected the existing worktrees; all inspected
+statuses were empty and no foreign index or checkout was modified. GitHub
+`gh pr list --repo buenhyden/hy-home.docker --state open` returned an empty list,
+exit 0. The sole current writer uses `codex/p02-current-reconciliation` in
+`.worktrees/p02-current-reconciliation`, created from that fetched main.
+
+| Source / consumer | Acceptance owner and classification | Target and recovery boundary |
+| --- | --- | --- |
+| Catalog/schema, public example/support, CLI and generator | TSK-0010 criterion 16/W32; SOURCE_APPLIED / NO_CHANGE; byte-identical to the investigation SHA | Fixed tracked public inputs; preserve existing source and generation contracts |
+| View I/O/library and focused unit tests | TSK-0010 criterion 16/W32; CONFIRMED_GAP | Existing `check-views` accepted mode 0644; enforce exact 0600 for generated targets and preserve the parent README compatibility |
+| Current 0085 guide/policy/runbook and OpenBao README | P01/TSK-0006; SOURCE_APPLIED / NO_CHANGE | Existing Korean catalog instructions are applied; preserve that sole writer; Stage05 paths moved under `04-security-and-secrets` since the investigation SHA |
+| Current Task | TSK-0010; CONFIRMED_GAP in current-SHA evidence and explicit handoff | Add only this receipt; revert this logical documentation commit to restore prior text |
+| Consumer metadata and proposed destinations | P01/P03/P06; CONSUMER_DEPENDENT / RUNTIME_UNVERIFIED | Source declarations do not establish actual UID, ACL, reload, custody or RTO; no KV provisioning |
+| COMM-002 / COMM-003 | SMTP01; SOURCE_APPLIED / NO_CHANGE | One canonical source and one value-free source-retired alias; actual old-file deletion is NOT_RUN in this execution |
+| PG-020, stable crypto, bootstrap and recovery materials | P01/P06/CLN01; SOURCE_APPLIED / NO_CHANGE | Retain independent/consumer-owned custody and history; no automatic reissue or deletion |
+| LAB runtime, learning apps, actual Wiki, image/scanner edits | OUT_OF_SCOPE | LAB metadata classification only; no current-image warning investigated or asserted here |
+
+Catalog schema version is `1.0.0`; fresh public validation reports 145 entries
+and one alias. Observed classifications are 66 kv_static, 10 stable_crypto,
+9 bootstrap_external, 23 public_configuration, 3 derived_runtime and
+34 lab_excluded; unused_delete has no current row. These counts are observations,
+not new inventory invariants. UNKNOWN_BLOCKED/BLOCKED_FACTS remains a fail-closed
+contract, not proof of consumer absence. `source_recorded_at` remains the first
+public source date, not a current observation or rotation date.
+
+#### Value-Free P06 Handoff
+
+The existing catalog and P01 renderer name the following source identities.
+The renderer paths below are already declared source, not new approved catalog
+destinations or evidence of successful delivery. The catalog retains its blocked
+proposals pending exact consumer authorization, failure and recovery facts.
+All catalog mount/field/UID/GID/mode bindings remain null; ACL, delivery,
+reload/restart and rotation remain BLOCKED_P01. No second mapping authority or
+catalog copy is created.
+
+| ID | Catalog proposed KV / existing renderer source | Consumer role / file target | Rotation / recovery / blocked facts |
+| --- | --- | --- | --- |
+| IAM-002 | `secret/planned/root/iam-002`; existing `secret/data/hy-home/02-auth/keycloak` | Keycloak admin; renderer `/openbao/out/auth/keycloak_admin_password.txt`; declared consumer `infra/02-auth/keycloak/docker-compose.yml` | P01 renderer reads `admin_password` with 0600 output; actual delivery, consumer UID, restart, custody and RTO unresolved; history retained |
+| OBS-002 | `secret/planned/root/obs-002`; existing `secret/data/hy-home/06-observability/grafana` | Grafana admin; renderer `/openbao/out/observability/grafana_admin_password.txt`; declared consumer `infra/06-observability/docker-compose.yml` | Same P01/P06 boundaries; read-only renderer ACL covers only the two declared data and corresponding metadata paths |
+| COMM-002 | `secret/planned/root/comm-002`; no renderer binding | ROOT observability source consumer; `secrets/communication/smtp/smtp_password.txt`; LAB declaration is metadata only | Generation guard refuses canonical SMTP; destination/rotation/recovery remain unaccepted; no SMTP delivery operation |
+| COMM-003 | Alias to COMM-002; no KV destination or generator | No independent consumer/value/file target approved by P02 | Source tombstone does not prove private old-file deletion; SMTP01 owns that operation |
+| PG-020 | No KV destination | Retained recovery reference; no inferred live consumer | NO_CHANGE / RETAINED_FOR_RECOVERY; custody UNKNOWN; no reissue/delete |
+
+P06 consumes the catalog's existing issued IDs through the integrated validation
+API. Neither a planned path nor renderer source authorizes copying a value.
+The next actual approval must name the selected ID, HOME target/consumer,
+KV mount/path/key, actor/ACL, delivery target and UID/mode, restart/rotation,
+independent recovery materials and rollback before the dependent lane runs.
+
+#### Fresh Verification Inputs and Outcomes
+
+The initial checks below bind to clean source `62556dc63` in the worker worktree.
+The first system-Python run of the three requested modules ran 90 tests and
+failed with 15 failures and 10 errors, exit 1, including missing `referencing`.
+That environment failure is retained, not reclassified as PASS. Historical
+`/tmp/hy-home-p09-qa` is absent on this host; `python3 -m venv` also failed
+because ensurepip is absent. The current writer used uv to create its own
+`/tmp/p02-current-qa` and install the unchanged registered
+`scripts/requirements.txt` and `scripts/requirements-pre-commit.txt`, plus
+coverage. No system Python, repository dependency contract or private config
+was changed. Some initial commands did not start because the sandbox reported
+a namespace error; scoped native escalation allowed the recorded retries.
+
+With `/tmp/p02-current-qa/bin` first in PATH for synthetic child interpreters:
+
+- `python -m unittest tests.lib.ops.test_secret_catalog tests.validation.test_secret_catalog_contract tests.validation.test_secret_metadata_sync -q`:
+  90 PASS, 65.321 seconds, exit 0.
+- `python -m unittest tests.validation.test_smtp_generator tests.validation.test_smtp_lock_inheritance -q`:
+  18 PASS, 3.184 seconds, exit 0; all private inputs are synthetic.
+- `python scripts/operations/secret-catalog.py --root <worker-root> check`:
+  P02_METADATA_VALID, 145 entries / one alias, exit 0.
+
+Independent security inspection reproduced one source gap: after chmod 0644,
+`check_views` returned true on the original source. New synthetic tests
+`SyntheticRepositoryTests.test_generated_views_require_exact_private_mode`
+and `test_generated_views_are_private_under_restrictive_umask` first failed
+with missing refusal and mode 000 instead of 0600, exit 1. The same focused
+command passed two tests after the minimum fix, exit 0. Every generated target
+now requires exact 0600 in render and check; the opened temporary inode receives
+fchmod inside its managed stream before writing. The ordinary parent README
+retains compatibility. No new dependency, CLI option or source mapping is added.
+
+Final functional source is commit
+`8e46188bd665292abd7d2ecb22ca9df3f189a2d1`, exactly three files, +36/-4:
+`_secret_catalog_io.py`, `secret_catalog.py` and `test_secret_catalog.py`.
+Both independent code and security reviewers approved those exact bytes with
+no remaining findings; independent unit review passed 35 tests, and the security
+reviewer independently passed the two permission regressions, exit 0.
+Public catalog/schema/support/example blobs remain unchanged from the baseline.
+
+On that exact source candidate, with the same QA environment:
+
+- `python -m coverage run --branch --include='*/scripts/lib/ops/*secret_catalog*.py' --data-file=/tmp/p02-final.coverage -m unittest tests.lib.ops.test_secret_catalog tests.validation.test_secret_catalog_contract tests.validation.test_secret_metadata_sync tests.validation.test_smtp_generator tests.validation.test_smtp_lock_inheritance tests.lib.ops.test_openbao_consumer_migration.PublicCatalogBindingTests -q`:
+  116 PASS, 108.720 seconds, exit 0. P06's six public-binding checks are synthetic,
+  not KV import or delivery.
+- `python -m coverage report --data-file=/tmp/p02-final.coverage --fail-under=80`:
+  total 90% branch-aware coverage, exit 0.
+- Public CLI `render` / `check-views`: STAGING_RENDERED / P02_VIEWS_MATCH,
+  exit 0; all four newly rendered staging files were observed at 0600.
+- Ruff check and format check on the three source/test files, `git diff --check`,
+  Commitizen message check and
+  `bash scripts/validation/run-ci-precommit.sh --mode local-staged` on the exact
+  three-file index: PASS, exit 0; unmatched file-type hooks were explicitly SKIP.
+- `docker compose --env-file .env.example config --no-env-resolution --no-interpolate --quiet`:
+  static render PASS, exit 0; no dotenv/secret payload or daemon mutation.
+- Initial Task selected metadata: one selected / zero violations, exit 0.
+  `check-document-links.py --mode all`: 1,272 documents / 11,440 links,
+  failures 0, exit 0; one existing historical-capture warning is retained.
+
+The source-only commit passed the staged gate and preserves its recovery object.
+The current Task receipt is a separate documentation unit. Remote main protection
+read-back has zero required status contexts and zero required approvals, with
+CODEOWNERS review unenforced and no rulesets. This is a point-in-time observation;
+the request still requires actual candidate-quality success and independent review
+before the P02 PR merges, without bypass or protection changes. Remote delivery
+is pending at receipt authoring and must be reported from actual PR read-back.
+
+Final `python scripts/validation/run-ci-gate.py --profile changed --local-only`
+passed, exit 0, on `8e46188b` plus this result-only Task receipt. Its selected
+leaves were local-candidate-preflight, docs-traceability and
+repository-integrity-regressions; the last ran 559 tests in 149.379 seconds,
+all PASS. Final selected Task metadata again returned selected=1 / violations=0,
+exit 0. This last result-only addition introduces no link or lifecycle change;
+its independent delta review, diff hygiene and exact staged documentation gate
+precede the documentation commit. Hosted CI and merge remain separate receipts.
+
+HOME, KV IMPORT/CONSUMPTION, MIGRATION, ROTATION and RECOVERY are NOT_RUN.
+This run never opens private dotenv/table/auth inputs, real secret files, raw
+logs or application data. `secrets/` and unknown local rows are preserved.
+Source rollback uses `git revert 8e46188bd665292abd7d2ecb22ca9df3f189a2d1`
+for the permission fix, and reverts the separate documentation commit for this
+receipt. The code revert restores the known 0600 validation gap; neither action
+rolls back a data format, credential rotation or deployed service. The Task stays in progress while
+its separately owned operational dependencies remain unresolved.
 
 ## Evidence
 
