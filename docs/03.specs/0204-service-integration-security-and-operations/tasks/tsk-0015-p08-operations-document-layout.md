@@ -1,6 +1,6 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -129,6 +129,56 @@ only `docs/05.operations/{guides,policies,runbooks}/labs/`.
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0015 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0015 | ready | in-progress | #continuation-baseline-and-w56-reuse-result |
+
+### W70 first source relocation unit — 2026-10-12
+
+The user additionally required LAB-only content, including README detail, to live
+under repository-root `labs/`. Source commit
+`db0ef0417712c96c11d52acb46be969b5683e433` preserves 25 logical paths for
+PostgreSQL HA, Valkey Cluster and Locust; common-consumer commit
+`e95e2faba4e94c8f13d687700b97b1d6ea6f7b3f` preserves seven separately reviewed
+paths. Seven non-README assets retain their exact bytes and Git modes. Three
+public Compose models are equal after the authorized raw and resolved path maps;
+the initial Locust extension-path and physical/Git-mode comparator errors were
+corrected without changing asset contents or omitting model fields.
+
+The existing Registry classified LAB paths, but metadata discovery excluded
+them. The new staged/unstaged collection regression witnessed two RED failures,
+then GREEN after the bounded discovery fix `943a7c9cf26e55dad677395573b56336e83a39f1`.
+Metadata and Registry regression modules reported 126 PASS, exit 0. Newly
+selected legacy dashboard README fields then failed actual metadata; commit
+`8dd14bfd1` repairs its source-document status and moves Kafka/Grafana LAB details
+out of infra READMEs. Its initial five-document check failed on a noncanonical
+Kafka heading, corrected to `Configuration`; the rerun selected 5 with zero
+violations and zero transition overrides, exit 0. No lifecycle rule was waived.
+
+The final worker candidate selected 12 explicit LAB documents and 16 eligible
+changed documents, both zero violations. Links reported 1,227 documents and
+11,789 links, zero failures and one existing unrecorded archive-link warning.
+Lifecycle, staged, three model comparisons and independent code/security/IaC
+review passed. The existing dashboard-coverage consumer failed after its old
+infra LAB section moved; its corrected test keeps HOME coverage and checks LAB
+JSON inventory against the LAB README separately. The final worker regression
+reported 150 tests: 120 PASS and 30 opt-in native SKIP, exit 0.
+
+The coordinator merged the candidate without committing onto local main
+`2edb9692e6d4f5cda8623d27a8c3c843e89d6e95`; its fresh affected regression reported
+the same 120 PASS / 30 SKIP in 25.053 seconds, exit 0, and its staged gate passed.
+The complete changed-document metadata check selected 24 documents with zero
+violations, exit 0. The separate updated Task receipt check selected 1 with zero
+violations, exit 0. Final staged/diff and independent receipt review remain the
+merge-commit conditions. Worker commit receipt
+SHA-256 is `2014423f28a298e32c9bcb318b72f23246a375ef30f4e16b397851e37aa6f76a`;
+final check receipt SHA-256 is
+`5916b1b42f2c1833e10471d8c154edd20e9967309a516a017fbd30b5857857cd`.
+
+SOURCE acceptance is limited to these three asset families and their README
+consumers. Supabase source and controller/catalog closure remain in progress;
+Stage05 document moves and W62 acceptance remain pending. ISOLATED native,
+HOME, MIGRATION, ROTATION and RECOVERY are NOT_RUN. No running resource,
+credential value or persisted data was changed. Keep this Task in-progress.
+Temporary proposal/test scripts are removed after canonical evidence and final
+main acceptance; permanent registered regressions and operational assets remain.
 
 ### W70 admission validation correction
 
