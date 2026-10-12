@@ -49,6 +49,8 @@ class QualityMockLabContractTest(unittest.TestCase):
         self.assertNotIn("infra/11-quality/locust/docker-compose.yml", includes)
         self.assertFalse((ROOT / "infra/11-quality/locust/docker-compose.yml").exists())
 
+        self.assertFalse((ROOT / "infra/11-quality/locust").exists())
+        self.assertTrue((ROOT / "labs/locust/Dockerfile").is_file())
         lab = yaml.safe_load((ROOT / "labs/locust.yml").read_text())
         self.assertEqual(lab["name"], "hy-home-lab-locust")
         self.assertEqual(

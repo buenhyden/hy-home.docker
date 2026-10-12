@@ -68,7 +68,7 @@ class LabCredentialArgvTest(unittest.TestCase):
     def test_postgres_password_sql_suppresses_statement_logging(self):
         for relative_path in (
             "infra/04-data/mng-db/pg/init-scripts/init_users_dbs.sql",
-            "infra/04-data/postgresql-cluster/init-scripts/init_users_dbs.sql",
+            "labs/postgresql-ha/init-scripts/init_users_dbs.sql",
         ):
             with self.subTest(path=relative_path):
                 sql = (ROOT / relative_path).read_text()
@@ -98,10 +98,10 @@ class LabCredentialArgvTest(unittest.TestCase):
         couch = (ROOT / "labs/couchdb.yml").read_text()
         opensearch = (ROOT / "labs/opensearch-cluster.yml").read_text()
         valkey_start = (
-            ROOT / "infra/04-data/valkey-cluster/scripts/valkey-start.sh"
+            ROOT / "labs/valkey-cluster/scripts/valkey-start.sh"
         ).read_text()
         valkey_init = (
-            ROOT / "infra/04-data/valkey-cluster/scripts/valkey-cluster-init.sh"
+            ROOT / "labs/valkey-cluster/scripts/valkey-cluster-init.sh"
         ).read_text()
         couch_init = (ROOT / "labs/couchdb-cluster-init.sh").read_text()
 
@@ -205,7 +205,7 @@ class LabCredentialArgvTest(unittest.TestCase):
         mongo = (ROOT / "labs/mongodb.yml").read_text()
         couch_init = (ROOT / "labs/couchdb-cluster-init.sh").read_text()
         valkey_init = (
-            ROOT / "infra/04-data/valkey-cluster/scripts/valkey-cluster-init.sh"
+            ROOT / "labs/valkey-cluster/scripts/valkey-cluster-init.sh"
         ).read_text()
 
         self.assertIn("cassandra-node1-volume:/var/lib/cassandra:rw", cassandra)

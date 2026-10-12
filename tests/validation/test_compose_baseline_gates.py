@@ -694,9 +694,7 @@ class PostgresInitializationContractTests(unittest.TestCase):
     def init_scripts(self) -> list[str]:
         return [
             (ROOT / path).read_text(encoding="utf-8")
-            for path in (
-                "infra/04-data/postgresql-cluster/init-scripts/init_users_dbs.sql",
-            )
+            for path in ("labs/postgresql-ha/init-scripts/init_users_dbs.sql",)
         ]
 
     def test_schema_permissions_follow_a_direct_fail_closed_connection(self) -> None:
@@ -1042,7 +1040,7 @@ class FeatureProvisioningContractTests(unittest.TestCase):
             (
                 PG_CLUSTER_COMPOSE,
                 "pg-cluster-init",
-                "infra/04-data/postgresql-cluster/init-scripts/init_users_dbs.sql",
+                "labs/postgresql-ha/init-scripts/init_users_dbs.sql",
             ),
         ):
             with self.subTest(job=job):
@@ -5515,13 +5513,15 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
         referenced = {
             d for row in rows for d in re.findall(r"`([A-Z]\w+/[a-z0-9-]+)`", row[3])
         }
-        lab_section = readme[
-            readme.index("### LAB Dashboard Coverage") : readme.index(
-                "### Dashboard Sources"
-            )
-        ]
-        lab_referenced = set(re.findall(r"`([A-Z]\w+/[a-z0-9-]+)`", lab_section))
-        self.assertEqual(set(self._dashboards()), referenced | lab_referenced)
+        self.assertEqual(set(self._dashboards()), referenced)
+        lab_dashboards = ROOT / "labs/dashboards"
+        lab_readme = (lab_dashboards / "README.md").read_text(encoding="utf-8")
+        lab_referenced = set(
+            re.findall(r"^\| `([a-z0-9-]+)` \|", lab_readme, re.MULTILINE)
+        )
+        self.assertEqual(
+            {path.stem for path in lab_dashboards.glob("*.json")}, lab_referenced
+        )
 
     def test_both_prometheus_files_hold_one_labelled_scrape_set(self) -> None:
         import yaml

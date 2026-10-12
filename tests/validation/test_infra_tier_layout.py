@@ -102,10 +102,10 @@ class TierLayoutTests(unittest.TestCase):
         quality = ROOT / "infra/11-quality"
         self.assertTrue(quality.is_dir())
         self.assertEqual(
-            set(placements["11-quality"]) | {"locust"},
+            set(placements["11-quality"]),
             {p.name for p in quality.iterdir() if p.is_dir()},
         )
-        locust = quality / "locust"
+        locust = ROOT / "labs/locust"
         self.assertTrue((locust / "Dockerfile").is_file())
         self.assertTrue((locust / "README.md").is_file())
         self.assertFalse((locust / "docker-compose.yml").exists())
