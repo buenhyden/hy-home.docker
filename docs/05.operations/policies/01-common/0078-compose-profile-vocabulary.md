@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.13.4"
+version: "1.13.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -139,9 +139,23 @@ host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
 - overlay 자신은 정상 root include에 들어가지 않는다. `services`는 비어 있지 않은
   mapping이며 모든 서비스 이름이 해당 base의 서비스 집합 안에 있어야 한다.
   새 서비스 이름이나 서비스별 `profiles` 재정의는 거부한다.
-- top-level network·volume·secret·config 선언, `include` 및 독립 project 선언을
-  추가하지 않는다. 서비스 변경과 YAML 재사용용 `x-` extension만 허용하며,
-  extension이 별도 profile 또는 서비스 분류 권한을 만들지 않는다.
+- `base: docker-compose.yml`인 예외는 정상 root가 include하는 추적된 일반 서비스
+  membership만 대상으로 한다. 이 root-base form은 network-only service override다.
+  각 `services.<name>` mapping은 정확히 비어 있지 않은 `networks` key 하나만 가지며,
+  attachment는 `network-name: {}` 형식만 허용한다. 변경된 각 서비스는 새 internal
+  network 하나 이상에 연결해야 하고, 기존 root network 참조는 worker의 `dev_data_net`
+  처럼 함께 둘 수 있다. image, build, privileged, command, entrypoint, volumes, ports,
+  secrets, depends_on, network_mode 및 다른 runtime field는 금지한다. Compose의
+  `!reset` 및 `!override` replacement/reset tag도 이 root-base form에서는 금지한다.
+- 이 경우에만 overlay는 기존 root network 정의에 없는 비어 있지 않은 새 이름의
+  top-level network를 `internal: true`만으로 선언할 수 있다. 모든 새 network는 위
+  서비스에서 참조해야 한다. `external`, `name`, `driver`, `driver_opts`, `ipam` 또는
+  다른 network 속성 및 기존 root network 정의의 수정은 허용하지 않는다. 이 예외는
+  profile, root `include`, service inventory 권한을 만들지 않는다. leaf-base overlay는
+  기존 runtime 및 Compose tag semantics를 그대로 따른다.
+- 위의 좁은 경우 외에는 top-level network·volume·secret·config 선언, `include` 및
+  독립 project 선언을 추가하지 않는다. 서비스 변경과 YAML 재사용용 `x-` extension만
+  허용하며, extension이 별도 profile 또는 서비스 분류 권한을 만들지 않는다.
 - 검토한 root와 overlay를 순서대로 명시한 `-f` 조합에서 기존 서비스 profile을
   상속한다. overlay만으로 기동하지 않으며, 상속 대상 서비스의 Guide와 inventory
   행을 중복 생성하지 않는다. 실제 조합의 선택·렌더링 검증은 별도로 수행한다.
