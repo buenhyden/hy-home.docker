@@ -2015,6 +2015,7 @@
         "labs/couchdb.md",
         "labs/dashboards/README.md",
         "labs/kafka-cluster.md",
+        "labs/locust.md",
         "labs/mongodb.md",
         "labs/opensearch-cluster.md",
         "labs/postgresql-ha.md",
