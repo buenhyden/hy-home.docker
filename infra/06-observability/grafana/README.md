@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.5"
+version: "1.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-12"
 created: "2026-01-12"
 ---
 
@@ -256,19 +256,6 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 공식 [Grafana PostgreSQL 권한·provisioning 안내](https://grafana.com/docs/grafana/latest/datasources/postgres/configure/)와
 [PostgreSQL security-invoker view 안내](https://www.postgresql.org/docs/current/sql-createview.html)를
 2026-10-03 확인했습니다.
-
-### LAB Dashboard Coverage
-
-독립 LAB 전용 대시보드(Cassandra, etcd, HAProxy, MongoDB, Valkey Cluster)는
-[`labs/dashboards/`](../../../labs/dashboards/README.md)로 옮겨 Grafana provisioning에서
-제외했습니다. 정상 root의 Prometheus는 LAB 서비스를 수집하지 않으므로 HOME Grafana에는
-빈 대시보드로만 보였습니다. LAB 관측 연결과 실행 검증은 별도 계약입니다.
-
-`hy-home-lab-locust` 프로젝트의 `lab-locust-master`와
-`lab-locust-worker`도 정상 root 서비스 표에서 제외합니다. HOME Alloy
-Docker discovery는 Compose 프로젝트 `hy-home-infra`만 유지하므로 이 LAB의
-컨테이너 메트릭과 로그를 수집하지 않습니다. Locust LAB 관측 연결은 별도 계약과
-검증 전까지 대시보드에 연결하지 않습니다.
 
 ### Dashboard Sources
 

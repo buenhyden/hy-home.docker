@@ -1,10 +1,10 @@
 ---
 title: "LAB Dashboards"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-12"
 created: "2026-10-09"
 ---
 
@@ -53,6 +53,13 @@ labs/dashboards/
 
 LAB 관측을 연결하는 별도 계약이 승인되면, 그 LAB의 Prometheus·Grafana가 이
 파일을 읽도록 구성합니다. HOME provisioning 경로로 되돌려 놓지 않습니다.
+
+`hy-home-lab-locust` 프로젝트의 `lab-locust-master`와 `lab-locust-worker`는
+HOME 서비스 표에 속하지 않습니다. HOME Alloy의 Docker discovery는
+`hy-home-infra`만 유지하므로 LAB 컨테이너의 메트릭과 로그를 수집하지 않습니다.
+Locust의 관측 연결은 별도 계약과 실제 검증을 마친 뒤 구성합니다.
+이 README의 `active`는 현행 source 안내의 상태이며 관측 stack 기동·연결의
+성공을 뜻하지 않습니다.
 
 ## Related Documents
 

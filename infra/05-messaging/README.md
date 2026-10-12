@@ -1,10 +1,10 @@
 ---
 title: "메시징 계층 (05-messaging)"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-12"
 created: "2025-11-12"
 ---
 
@@ -33,11 +33,11 @@ Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 �
 
 ## Configuration
 
-루트 include는 정상 선택형 구성만 포함합니다. 다중 브로커 LAB의 독립 환경·상태는 [`labs/kafka-cluster.yml`](../../labs/kafka-cluster.yml)이 소유합니다.
+루트 include는 정상 선택형 구성만 포함합니다.
 
 ## Validation
 
-정상 선택자와 LAB 진입점을 각각 Compose 렌더로 확인하고, 실제 기동 결과는 별도로 기록합니다.
+정상 선택자를 Compose 렌더로 확인하고, 실제 기동 결과는 별도로 기록합니다.
 
 ## Usage
 
@@ -45,8 +45,7 @@ Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 �
 `messaging-schema`, `messaging-connect`, `messaging-rest`,
 `messaging-admin`입니다. 각 selector가 선택하는 서비스는 패키지 맵을
 참고하십시오. 활성화 전에는 named producer/consumer, retention/capacity
-계획, plaintext-listener 위험 수용, 완전한 복구 계획이 필요합니다. 한
-별도 `labs/kafka-cluster.yml`의 세 broker도 한 호스트에서는 host availability가 아닙니다.
+계획, plaintext-listener 위험 수용, 완전한 복구 계획이 필요합니다.
 
 ## Related Documents
 

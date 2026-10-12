@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-12"
 created: "2026-10-03"
 ---
 
@@ -30,7 +30,7 @@ created: "2026-10-03"
 
 `kafka-cluster.yml`이 전체 LAB closure를 정의하고 이 문서가 사용·복구 경계를 소유한다.
 
-## 상태와 접근 계약
+## Configuration
 
 | Field | Evidence |
 | --- | --- |
@@ -51,6 +51,12 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 ```
 
 실행 전 Docker context, project name, 모든 port·network·volume, 가용 CPU/RAM/디스크, host bind UID/GID와 정확한 정리 대상이 별도로 승인되어야 합니다. 기동·종료는 `python3 scripts/operations/lab.py up kafka-cluster --purpose "<목적>" --lease <기간>`과 `lab.py down kafka-cluster`로 하며 충돌·예산 검사와 정리 대상 ledger를 남깁니다. 이 문서 갱신에서 LAB를 실행·정지하거나 상태를 삭제하지 않았습니다. `down -v` 또는 volume prune은 사용하지 않습니다. source 선언만으로 이전 정상 root의 broker 2/3 컨테이너가 정지되지는 않습니다.
+
+복구에는 topic record/config, partition, consumer offset와 KRaft metadata를
+포함합니다. 별도 Schema Registry·Connect를 실험에 연결하는 경우 그 이력·ID,
+정의와 내부 상태도 복구 범위를 확정합니다. 승인된 replay/replication으로 새
+격리 cluster에 복원하며 기존 KRaft identity나 개별 broker directory를 그대로
+재사용하지 않습니다. source 안내 갱신은 실제 복구 검증이 아닙니다.
 
 ## Related Documents
 
