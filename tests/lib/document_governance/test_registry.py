@@ -132,7 +132,7 @@ class DocumentRegistryTests(unittest.TestCase):
     ) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         guide = next(profile for profile in raw["profiles"] if profile["id"] == "guide")
-        nested = "docs/05.operations/guides/labs/{number:4}-{slug}.md"
+        nested = "docs/05.operations/guides/15-labs/{number:4}-{slug}.md"
         guide["additional_path_patterns"] = [nested]
         self.assertEqual((), validate_registry(raw))
         primary = guide["path_pattern"]
@@ -168,21 +168,21 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_registered_operations_domains_keep_the_typed_identity(self) -> None:
         registry = load_registry()
         for domain in (
-            "common",
-            "gateway-and-networking",
-            "identity-and-access",
-            "security-and-secrets",
-            "databases-and-storage",
-            "messaging-and-cdc",
-            "observability",
-            "workflows-and-automation",
-            "ai-and-search",
-            "platform-and-backup",
-            "mail-and-notifications",
-            "testing-and-quality",
-            "analytics-and-data-quality",
-            "design-system",
-            "labs",
+            "01-common",
+            "02-gateway-and-networking",
+            "03-identity-and-access",
+            "04-security-and-secrets",
+            "05-databases-and-storage",
+            "06-messaging-and-cdc",
+            "07-observability",
+            "08-workflows-and-automation",
+            "09-ai-and-search",
+            "10-platform-and-backup",
+            "11-mail-and-notifications",
+            "12-testing-and-quality",
+            "13-analytics-and-data-quality",
+            "14-design-system",
+            "15-labs",
         ):
             for family, profile, prefix in (
                 ("guides", "guide", "GDE"),
@@ -215,12 +215,33 @@ class DocumentRegistryTests(unittest.TestCase):
                         "common/readme", registry.profiles[readme_profile]["type"]
                     )
 
+    def test_numbered_operations_readmes_have_literal_frontmatter_routes(self) -> None:
+        registry = load_registry()
+        readme = registry.profiles["readme"]
+        paths = (
+            path
+            for path in readme["additional_paths"]
+            if re.fullmatch(
+                r"docs/05\.operations/(?:guides|policies|runbooks)/"
+                r"[0-9]{2}-[a-z0-9-]+/README\.md",
+                path,
+            )
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                self.assertEqual(
+                    (),
+                    registry_module.validate_profile_values(
+                        {"layer": "operations"}, readme, path
+                    ),
+                )
+
     def test_typed_lab_readmes_are_governed_navigation(self) -> None:
         registry = load_registry()
         profiles = build_registry_profiles(registry)
         for family in ("guides", "policies", "runbooks"):
             with self.subTest(family=family):
-                path = f"docs/05.operations/{family}/labs/README.md"
+                path = f"docs/05.operations/{family}/15-labs/README.md"
                 profile_id = classify_path(path, registry)
                 self.assertIsNotNone(profile_id)
                 self.assertEqual("common/readme", registry.profiles[profile_id]["type"])
@@ -234,13 +255,13 @@ class DocumentRegistryTests(unittest.TestCase):
             "unknown-domain/0099-lab-example.md",
             "unknown-domain/README.md",
             "Labs/0099-lab-example.md",
-            "labs/nested/0099-lab-example.md",
-            "labs/nested/README.md",
-            "labs/../0099-lab-example.md",
-            "labs//0099-lab-example.md",
-            "./labs/0099-lab-example.md",
-            "labs/0099-Lab-Example.md",
-            "labs/ops-0099-lab-example.md",
+            "15-labs/nested/0099-lab-example.md",
+            "15-labs/nested/README.md",
+            "15-labs/../0099-lab-example.md",
+            "15-labs//0099-lab-example.md",
+            "./15-labs/0099-lab-example.md",
+            "15-labs/0099-Lab-Example.md",
+            "15-labs/ops-0099-lab-example.md",
         ):
             with self.subTest(suffix=suffix):
                 self.assertIsNone(
@@ -257,7 +278,7 @@ class DocumentRegistryTests(unittest.TestCase):
         ):
             with self.subTest(family=family):
                 path = pathlib.PurePosixPath(
-                    f"docs/05.operations/{family}/labs/0099-lab-example.md"
+                    f"docs/05.operations/{family}/15-labs/0099-lab-example.md"
                 )
                 self.assertEqual(profile, classify_path(path, registry))
                 self.assertEqual(
@@ -278,11 +299,11 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_additional_pattern_safety_and_exact_route_collisions(self) -> None:
         for pattern in (
-            "docs/05.operations/guides/labs/*-example.md",
+            "docs/05.operations/guides/15-labs/*-example.md",
             "docs/05.operations/guides/./{number:4}-{slug}.md",
-            "docs/05.operations/guides/labs/{unknown}.md",
-            "/docs/05.operations/guides/labs/{number:4}-{slug}.md",
-            "docs/05.operations/guides/labs/{number:4}-?.md",
+            "docs/05.operations/guides/15-labs/{unknown}.md",
+            "/docs/05.operations/guides/15-labs/{number:4}-{slug}.md",
+            "docs/05.operations/guides/15-labs/{number:4}-?.md",
         ):
             with self.subTest(pattern=pattern):
                 raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
@@ -295,7 +316,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 profile = next(p for p in raw["profiles"] if p["id"] == owner)
                 profile["additional_paths"] = [
                     *profile.get("additional_paths", ()),
-                    "docs/05.operations/guides/labs/0099-example.md",
+                    "docs/05.operations/guides/15-labs/0099-example.md",
                 ]
                 self.assertIn(
                     "profile-path-overlap",
@@ -313,7 +334,7 @@ class DocumentRegistryTests(unittest.TestCase):
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         guide = next(p for p in raw["profiles"] if p["id"] == "guide")
         guide["additional_path_patterns"] = [
-            "docs/05.operations/guides/labs/{number:4}-{slug}.md",
+            "docs/05.operations/guides/15-labs/{number:4}-{slug}.md",
             "docs/05.operations/guides/{domain}/{number:4}-{slug}.md",
         ]
         self.assertIn(
@@ -330,11 +351,11 @@ class DocumentRegistryTests(unittest.TestCase):
         ):
             with self.subTest(role=role):
                 path = pathlib.PurePosixPath(
-                    f"docs/05.operations/{family}/labs/0099-example.md"
+                    f"docs/05.operations/{family}/15-labs/0099-example.md"
                 )
                 self.assertEqual(role, infer_artifact_type(pathlib.Path(path)))
                 self.assertIn(
-                    f"docs/05.operations/{family}/labs/[0-9][0-9][0-9][0-9]-*.md",
+                    f"docs/05.operations/{family}/15-labs/[0-9][0-9][0-9][0-9]-*.md",
                     adapted["template_roles"][f"operation/{role}"]["target_globs"],
                 )
 
@@ -347,7 +368,9 @@ class DocumentRegistryTests(unittest.TestCase):
 
         registry = load_registry()
         adapted = build_registry_profiles(registry)
-        path = pathlib.PurePosixPath("docs/05.operations/guides/labs/0099-example.md")
+        path = pathlib.PurePosixPath(
+            "docs/05.operations/guides/15-labs/0099-example.md"
+        )
         self.assertEqual("guide", classify_taxonomy(path, registry.profiles))
         self.assertEqual("guide", classify_taxonomy(path, adapted["profiles"]))
         readme = path.with_name("README.md")
@@ -362,7 +385,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual(
             "unsupported",
             infer_artifact_type(
-                pathlib.Path("docs/05.operations/guides/labs/nested/0099-example.md")
+                pathlib.Path("docs/05.operations/guides/15-labs/nested/0099-example.md")
             ),
         )
 
@@ -398,7 +421,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual((), validate_registry(raw))
         policy = next(p for p in raw["profiles"] if p["id"] == "policy")
         policy["additional_path_patterns"] = [
-            "docs/05.operations/guides/labs/{number:4}-{slug}.md",
+            "docs/05.operations/guides/15-labs/{number:4}-{slug}.md",
         ]
         self.assertIn(
             "profile-path-overlap", {finding.code for finding in validate_registry(raw)}
@@ -780,7 +803,8 @@ class DocumentRegistryTests(unittest.TestCase):
 
         profiles = build_registry_profiles(load_registry())
         target = pathlib.Path(
-            "docs/05.operations/policies/0052-airflow-dag-lifecycle.md"
+            "docs/05.operations/policies/08-workflows-and-automation/"
+            "0052-airflow-dag-lifecycle.md"
         )
         source = pathlib.Path(
             "docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/policy.md"
@@ -809,7 +833,8 @@ class DocumentRegistryTests(unittest.TestCase):
             renamed, _ = lifecycle._operations_moved_body_baseline(
                 ROOT,
                 pathlib.Path(
-                    "docs/05.operations/policies/0030-data-optimization-hardening.md"
+                    "docs/05.operations/policies/05-databases-and-storage/"
+                    "0030-data-optimization-hardening.md"
                 ),
                 profiles,
                 base(
@@ -841,6 +866,55 @@ class DocumentRegistryTests(unittest.TestCase):
                 base(
                     (pathlib.Path("docs/05.operations/policies/0052-x.md"), "POL-0052")
                 ),
+            ):
+                with self.subTest(records=records):
+                    self.assertEqual(
+                        (None, None),
+                        lifecycle._operations_moved_body_baseline(
+                            ROOT, target, profiles, records, "a" * 40
+                        ),
+                    )
+
+    def test_numbered_operations_move_keeps_exact_role_basename_and_identity(self):
+        from scripts.lib.document_governance.metadata import lifecycle
+
+        profiles = build_registry_profiles(load_registry())
+        target = pathlib.Path(
+            "docs/05.operations/policies/08-workflows-and-automation/"
+            "0052-airflow-dag-lifecycle.md"
+        )
+        historical = (
+            '---\ntype: "operation/policy"\nstatus: "active"\n'
+            'artifact_id: "POL-0052"\n---\n# Policy\n'
+        )
+        values = {"type": "operation/policy", "artifact_id": "POL-0052"}
+        flat = target.parent.parent / target.name
+        unnumbered = target.parent.parent / "workflows-and-automation" / target.name
+
+        def base(path, metadata=values):
+            return lifecycle.Record(path, metadata, "policy")
+
+        with (
+            mock.patch.object(lifecycle, "_text_at_ref", return_value=historical),
+            mock.patch.object(
+                lifecycle, "read_bounded_regular", return_value=historical.encode()
+            ),
+        ):
+            for source in (flat, unnumbered):
+                with self.subTest(source=source):
+                    record, text = lifecycle._operations_moved_body_baseline(
+                        ROOT, target, profiles, [base(source)], "a" * 40
+                    )
+                    self.assertIsNotNone(record)
+                    self.assertEqual("active", record.metadata["status"])
+                    self.assertEqual(historical, text)
+            for records in (
+                [base(flat.with_name("0052-another.md"))],
+                [base(flat, {**values, "artifact_id": "POL-0053"})],
+                [base(flat, {**values, "type": "operation/guide"})],
+                [base(pathlib.Path(str(flat).replace("/policies/", "/guides/")))],
+                [base(unnumbered.parent.parent / "another" / target.name)],
+                [base(flat), base(unnumbered)],
             ):
                 with self.subTest(records=records):
                     self.assertEqual(

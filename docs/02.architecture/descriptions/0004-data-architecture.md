@@ -105,6 +105,6 @@ restart containers or reconcile existing source mounts.
 
 - [Data packages](../../../infra/04-data/README.md)
 - [Analytics architecture](0012-data-analytics-architecture.md)
-- [Backup policy](../../05.operations/policies/0021-backup-and-restore.md)
-- [Profile vocabulary](../../05.operations/policies/0078-compose-profile-vocabulary.md)
-- [Development database policy](../../05.operations/policies/0100-development-database.md)
+- [Backup policy](../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md)
+- [Profile vocabulary](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
+- [Development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md)

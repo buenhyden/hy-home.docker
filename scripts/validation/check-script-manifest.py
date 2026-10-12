@@ -82,7 +82,8 @@ REQUIRED_LOCAL_PATHS = frozenset(
 )
 APPROVED_TEST_PREFIXES = ("tests/lib/", "tests/validation/")
 RUNBOOK_AUTHORITY = re.compile(
-    r"docs/05\.operations/runbooks/[0-9]{4}-[a-z0-9][a-z0-9-]*\.md"
+    r"docs/05\.operations/runbooks/[0-9]{2}-[a-z0-9][a-z0-9-]*/"
+    r"[0-9]{4}-[a-z0-9][a-z0-9-]*\.md"
 )
 MACHINE_AUTHORITIES = frozenset(
     {
@@ -1093,6 +1094,15 @@ def _authority_findings(repo_root: Path, document: object) -> list[Finding]:
         authority = row.get("authority")
         if not isinstance(authority, str):
             continue
+        if not _registered_runbook_authority(repo_root, authority):
+            findings.append(
+                _finding(
+                    "runtime-authority-invalid",
+                    row["path"],
+                    f"{authority} is not a registered Operations Runbook path",
+                )
+            )
+            continue
         try:
             text = read_repository_text(repo_root, authority)
         except (ContractLoadError, OSError, UnicodeError):
@@ -1131,6 +1141,18 @@ def _authority_findings(repo_root: Path, document: object) -> list[Finding]:
                 )
             )
     return findings
+
+
+def _registered_runbook_authority(repo_root: Path, authority: str) -> bool:
+    """Require both the canonical leaf shape and a Registry-owned domain."""
+
+    if RUNBOOK_AUTHORITY.fullmatch(authority) is None:
+        return False
+    try:
+        registry = load_registry(repo_root / "docs/99.templates/registry.json")
+    except (OSError, ValueError, TypeError, KeyError):
+        return False
+    return classify_path(PurePosixPath(authority), registry) == "runbook"
 
 
 def check_manifest(repo_root: Path, manifest_path: Path) -> list[Finding]:

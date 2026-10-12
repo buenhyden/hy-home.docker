@@ -16,7 +16,7 @@ groups:
         annotations:
           summary: 'MNG Valkey 다운: {{ $labels.instance }}'
           description: 'exporter는 응답하지만 mng-valkey에 2분 이상 접속하지 못했습니다(서버 중단, 비밀번호 또는 ACL 불일치).'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
       - alert: DevValkeyDown
         expr: redis_up{db_scope="dev", expected_state="on"} == 0
@@ -27,7 +27,7 @@ groups:
         annotations:
           summary: 'DEV Valkey 다운: {{ $labels.instance }}'
           description: 'DEV를 켜 둔 상태(PROMETHEUS_DEV_DATA_EXPECTED=on)에서 dev-valkey에 5분 이상 접속하지 못했습니다(서버 중단, 비밀번호 또는 ACL 불일치).'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0100-development-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md'
 
       - alert: ValkeyMemoryCritical
         expr: |
@@ -39,7 +39,7 @@ groups:
         annotations:
           summary: 'Valkey 메모리 90% 초과: {{ $labels.instance }}'
           description: 'Valkey 인스턴스 메모리 사용률이 90%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
       - alert: ValkeyRejectedConnections
         expr: |
@@ -51,7 +51,7 @@ groups:
         annotations:
           summary: 'Valkey 연결 거부 발생: {{ $labels.instance }}'
           description: 'Valkey가 연결을 거부하고 있습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
   # ============================================================================
   # [4] Databases (PostgreSQL)
@@ -67,7 +67,7 @@ groups:
         annotations:
           summary: 'MNG PostgreSQL 다운: {{ $labels.instance }}'
           description: 'exporter는 응답하지만 mng-pg에 2분 이상 접속하지 못했습니다(서버 중단, 비밀번호 또는 pg_hba 거부).'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
       - alert: DevPostgresDown
         expr: pg_up{db_scope="dev", expected_state="on"} == 0
@@ -78,7 +78,7 @@ groups:
         annotations:
           summary: 'DEV PostgreSQL 다운: {{ $labels.instance }}'
           description: 'DEV를 켜 둔 상태(PROMETHEUS_DEV_DATA_EXPECTED=on)에서 dev-pg에 5분 이상 접속하지 못했습니다(서버 중단, 비밀번호 또는 pg_hba 거부).'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0100-development-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md'
 
       - alert: PostgresqlRestarted
         expr: time() - pg_postmaster_start_time_seconds < 60
@@ -89,7 +89,7 @@ groups:
         annotations:
           summary: 'PostgreSQL 재시작됨: {{ $labels.instance }}'
           description: 'PostgreSQL이 최근 재시작되었습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
       - alert: PostgresqlExporterError
         # A database outage also sets this; PostgresDown reports that case.
@@ -101,7 +101,7 @@ groups:
         annotations:
           summary: 'MNG PostgreSQL 익스포터 에러: {{ $labels.instance }}'
           description: 'mng-pg-exporter의 마지막 수집에서 오류가 났습니다. collector별 결과는 pg_scrape_collector_success로 확인합니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
       - alert: PostgresTooManyConnections
         expr: sum by (instance, job, server) (pg_stat_activity_count) > min by
@@ -113,7 +113,7 @@ groups:
           summary: 'DB 연결 수 80% 초과: {{ $labels.instance }}'
           description: 'PostgreSQL 인스턴스 {{ $labels.instance }} 활성 세션이
             max_connections의 80%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
       - alert: PostgresDeadlocks
         expr: increase(pg_stat_database_deadlocks{datname!~"template.*|postgres"}[1m])
@@ -125,7 +125,7 @@ groups:
         annotations:
           summary: 'Postgres 교착 상태 발생: {{ $labels.instance }}'
           description: '최근 1분간 {{ $value }} 개의 데드락이 발생했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
       - alert: PostgresHighRollbackRate
         expr: >
@@ -142,7 +142,7 @@ groups:
         annotations:
           summary: 'Postgres 롤백 비율 높음'
           description: '롤백 비율이 2%를 초과했습니다 (DB: {{ $labels.datname }}).'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
       - alert: PostgresqlReplicationLag
         expr: |
@@ -153,7 +153,7 @@ groups:
         annotations:
           summary: 'PostgreSQL 복제 지연: {{ $labels.instance }}'
           description: 'PostgreSQL 복제 지연이 30초를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0031-postgresql-cluster.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/15-labs/0031-postgresql-cluster.md'
 
   # ============================================================================
   # [5] Datastore observation (SPEC-0224)
@@ -172,7 +172,7 @@ groups:
         annotations:
           summary: 'MNG {{ $labels.db_engine }} exporter scrape 실패: {{ $labels.instance }}'
           description: 'Prometheus가 {{ $labels.job }}를 2분 이상 수집하지 못했습니다. exporter 중지·재시작 반복 또는 obs_net 연결을 확인합니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
       - alert: DevDatastoreExporterDown
         expr: up{db_scope="dev", expected_state="on"} == 0
@@ -183,7 +183,7 @@ groups:
         annotations:
           summary: 'DEV {{ $labels.db_engine }} exporter scrape 실패: {{ $labels.instance }}'
           description: 'DEV를 켜 둔 상태에서 {{ $labels.job }}를 5분 이상 수집하지 못했습니다. 의도적으로 껐다면 PROMETHEUS_DEV_DATA_EXPECTED=off로 바꾸고 Prometheus를 재생성합니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0100-development-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md'
 
       - alert: DevDatastoreUpWhileDeclaredOff
         expr: up{db_scope="dev", expected_state="off"} == 1
@@ -194,7 +194,7 @@ groups:
         annotations:
           summary: 'DEV {{ $labels.db_engine }}가 off 선언 중 실행 중'
           description: 'PROMETHEUS_DEV_DATA_EXPECTED=off인데 {{ $labels.job }}가 1시간 넘게 응답합니다. 이 상태에서는 DEV 장애가 경보되지 않으므로 선언을 on으로 고칩니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0100-development-database.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md'
 
       - alert: DatastoreScrapeTargetMissing
         expr: |
@@ -209,7 +209,7 @@ groups:
         annotations:
           summary: 'Datastore scrape 대상 없음: {{ $labels.job }}'
           description: '{{ $labels.job }} job의 대상이 사라졌습니다. 설정 또는 DEV 대상 렌더링(prometheus/scripts/start.sh) 실패를 확인합니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md'
 
       - alert: DatastoreCollectorFailed
         # redis_exporter has no per-collector signal: its scrape error is set
@@ -222,7 +222,7 @@ groups:
         annotations:
           summary: '{{ $labels.db_scope }} PostgreSQL collector 실패: {{ $labels.instance }}'
           description: 'DB에는 접속했지만 일부 지표를 읽지 못했습니다(collector {{ $labels.collector }}). 관측 역할의 권한이 빠졌는지 확인합니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md'
 
       - alert: DatastoreScrapeSlow
         expr: scrape_duration_seconds{db_engine=~"postgresql|valkey"} > 5
@@ -233,7 +233,7 @@ groups:
         annotations:
           summary: '{{ $labels.db_scope }} {{ $labels.db_engine }} scrape 지연: {{ $labels.instance }}'
           description: '수집 한 번에 5초 넘게 걸립니다(기본 제한 10초). DB 부하나 statement_timeout 근접을 확인합니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md'
 
   # ============================================================================
   # [6] Vector DB (Qdrant)
@@ -250,7 +250,7 @@ groups:
         annotations:
           summary: 'Qdrant 서비스 다운'
           description: 'Qdrant 인스턴스 {{ $labels.instance }} 가 2분 이상 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0034-qdrant.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/09-ai-and-search/0034-qdrant.md'
 
       - alert: QdrantHighMemoryUsage
         expr: memory_resident_bytes > 2 * 1024 * 1024 * 1024
@@ -261,7 +261,7 @@ groups:
         annotations:
           summary: 'Qdrant 메모리 사용량 높음'
           description: "Qdrant 프로세스 메모리(resident)가 2GiB를 초과했습니다. 현재 값: {{ $value | humanize1024 }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0034-qdrant.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/09-ai-and-search/0034-qdrant.md'
 
       - alert: QdrantHighOpenFds
         expr: process_open_fds / process_max_fds > 0.8
@@ -272,7 +272,7 @@ groups:
         annotations:
           summary: 'Qdrant 파일 디스크립터 사용률 80% 초과'
           description: 'Qdrant 프로세스의 FD 사용률이 80%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0034-qdrant.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/09-ai-and-search/0034-qdrant.md'
 
   # ============================================================================
   # [7] Object Storage (SeaweedFS)
@@ -289,7 +289,7 @@ groups:
         annotations:
           summary: 'SeaweedFS S3 게이트웨이 다운'
           description: 'SeaweedFS S3 {{ $labels.instance }} 메트릭(9327)이 2분 이상 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0024-seaweedfs.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0024-seaweedfs.md'
 
       - alert: SeaweedFSNodeMetricsDown
         expr: up{job=~"seaweedfs-(master|volume|filer)"} == 0
@@ -300,7 +300,7 @@ groups:
         annotations:
           summary: 'SeaweedFS {{ $labels.job }} 지표 수집 실패'
           description: '{{ $labels.instance }} 지표를 5분 이상 수집하지 못했습니다. 노드 중단 또는 seaweedfs_metrics_net 연결을 확인합니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0024-seaweedfs.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0024-seaweedfs.md'
 
       # The volume data lives under ${DEFAULT_DATA_DIR}/seaweedfs/volume, whose
       # filesystem is mounted at /home/hyunyoun/storage on this host. Change the
@@ -316,4 +316,4 @@ groups:
         annotations:
           summary: 'SeaweedFS 데이터 디스크 여유 공간 15% 미만'
           description: '{{ $labels.mountpoint }} 여유 공간이 {{ $value | humanizePercentage }} 입니다. 볼륨 서버는 20GiB 미만에서 쓰기를 멈춥니다(-minFreeSpace).'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0024-seaweedfs.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0024-seaweedfs.md'

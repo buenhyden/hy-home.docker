@@ -87,6 +87,6 @@ static source validation. Runtime version pins remain in Compose/Dockerfiles.
 
 - [Analytics packages](../../../infra/12-analytics/README.md)
 - [Data architecture](0004-data-architecture.md)
-- [Lakehouse guide](../../05.operations/guides/0094-lakehouse.md)
-- [Superset guide](../../05.operations/guides/0097-superset.md)
-- [dbt guide](../../05.operations/guides/0090-dbt.md)
+- [Lakehouse guide](../../05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md)
+- [Superset guide](../../05.operations/guides/13-analytics-and-data-quality/0097-superset.md)
+- [dbt guide](../../05.operations/guides/13-analytics-and-data-quality/0090-dbt.md)

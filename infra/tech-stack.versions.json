@@ -392,8 +392,8 @@
         "n8nio/runners": "external"
       },
       "images": [
-        "hyhome/n8n:2.42.6-local",
-        "n8nio/runners:2.42.6@sha256:b78816286beb0a14e874abfda31eb4621d47f5ebb38f194271df7e39b7bd63a7"
+        "hyhome/n8n:2.42.7-local",
+        "n8nio/runners:2.42.7@sha256:c74f7fe2a9acaf08d78d2d2ad9359c897ad0270883ba959d57150cc9bbdc48e1"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
@@ -402,13 +402,13 @@
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "hyhome/n8n:2.42.6-local"
+            "hyhome/n8n:2.42.7-local"
           ]
         },
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "n8nio/runners:2.42.6@sha256:b78816286beb0a14e874abfda31eb4621d47f5ebb38f194271df7e39b7bd63a7"
+            "n8nio/runners:2.42.7@sha256:c74f7fe2a9acaf08d78d2d2ad9359c897ad0270883ba959d57150cc9bbdc48e1"
           ]
         }
       ]
@@ -575,7 +575,7 @@
         "renovate/renovate": "external"
       },
       "images": [
-        "renovate/renovate:44.151.0-full@sha256:9d38d3a725173d812529add2bbeae8120711a06c9db51feb0070f7ba0ea27fde"
+        "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1"
       ],
       "compose_files": [
         "infra/09-platform-ops/renovate/docker-compose.yml"
@@ -584,7 +584,7 @@
         {
           "compose_file": "infra/09-platform-ops/renovate/docker-compose.yml",
           "images": [
-            "renovate/renovate:44.151.0-full@sha256:9d38d3a725173d812529add2bbeae8120711a06c9db51feb0070f7ba0ea27fde"
+            "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1"
           ]
         }
       ]

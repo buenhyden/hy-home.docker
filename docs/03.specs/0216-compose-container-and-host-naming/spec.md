@@ -57,4 +57,4 @@ service-to-service addresses, which already use service keys.
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-compose-container-and-host-naming.md)
-- [Template exceptions policy](../../05.operations/policies/0001-common-optimizations-template-exceptions.md)
+- [Template exceptions policy](../../05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md)

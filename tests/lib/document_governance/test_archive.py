@@ -50,14 +50,17 @@ class MigrationStateTests(unittest.TestCase):
         # filename, so a member whose number differs from its subject keeps it.
         for retired, expected in (
             (
-                "docs/05.operations/guides/0051-airflow-dag-lifecycle.md",
+                "docs/05.operations/guides/08-workflows-and-automation/0051-airflow-dag-lifecycle.md",
                 "tomb-GDE-0051",
             ),
             (
-                "docs/05.operations/policies/0052-airflow-dag-lifecycle.md",
+                "docs/05.operations/policies/08-workflows-and-automation/0052-airflow-dag-lifecycle.md",
                 "tomb-POL-0052",
             ),
-            ("docs/05.operations/runbooks/0009-release-management.md", "tomb-RUN-0009"),
+            (
+                "docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md",
+                "tomb-RUN-0009",
+            ),
         ):
             with self.subTest(retired=retired):
                 self.assertEqual(

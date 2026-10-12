@@ -679,7 +679,7 @@ def validate_active_operations_references(
 
 COMPOSE_ROOT = pathlib.PurePosixPath("docker-compose.yml")
 PROFILE_VOCABULARY_POLICY = pathlib.PurePosixPath(
-    "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+    "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
 )
 _COMPOSE_FILE_NAME = re.compile(r"(?:docker-)?compose[^/]*\.ya?ml")
 # A profile row is a table row whose first cell is exactly one backticked name.
@@ -1663,7 +1663,8 @@ def _index_member_links(text: str) -> Counter[str]:
                 href
                 and href != "README.md"
                 and (
-                    "/" not in href or re.fullmatch(r"[a-z][a-z0-9-]*/README\.md", href)
+                    "/" not in href
+                    or re.fullmatch(r"[0-9]{2}-[a-z][a-z0-9-]*/README\.md", href)
                 )
             ):
                 counts[href] += 1
@@ -1724,7 +1725,7 @@ def _validate_role_directory(
         for pattern in profile_path_patterns(profile)
         if len(parts := pattern.split("/")) == 5
         and parts[:3] == ["docs", "05.operations", directory]
-        and re.fullmatch(r"[a-z][a-z0-9-]*", parts[3])
+        and re.fullmatch(r"[0-9]{2}-[a-z][a-z0-9-]*", parts[3])
         and parts[4] == "{number:4}-{slug}.md"
     }
     readme_profiles = [
@@ -2340,13 +2341,24 @@ def _role_siblings(
     # Sorted input keeps the result independent of set iteration order; a
     # duplicate slug is rejected separately as `role-slug-duplicate`.
     for path in sorted(paths):
-        if path.parent.parent != OPERATIONS_ROOT:
+        family = _role_family(path)
+        if family is None:
             continue
-        role = _ROLE_DIRECTORY.get(path.parent.name)
+        role = _ROLE_DIRECTORY.get(family.name)
         match = _MEMBER.fullmatch(path.name)
         if role is not None and match is not None:
             siblings.setdefault(match["slug"], {}).setdefault(role, path)
     return siblings
+
+
+def _role_family(path: pathlib.PurePosixPath) -> pathlib.PurePosixPath | None:
+    """Return a flat or one-domain-deep role family directory."""
+
+    if path.parent.parent == OPERATIONS_ROOT:
+        return path.parent
+    if path.parent.parent.parent == OPERATIONS_ROOT:
+        return path.parent.parent
+    return None
 
 
 def _is_lab_compose_file(path: str | pathlib.PurePosixPath) -> bool:
@@ -2367,7 +2379,7 @@ def _inventory_bindings(
     siblings = _role_siblings(paths)
     for guide in paths:
         match = _MEMBER.fullmatch(guide.name)
-        if guide.parent != OPERATIONS_ROOT / "guides" or match is None:
+        if _role_family(guide) != OPERATIONS_ROOT / "guides" or match is None:
             continue
         text = _read_text(root, guide)
         metadata = _frontmatter(text, guide)

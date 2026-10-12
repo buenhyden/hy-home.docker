@@ -60,7 +60,7 @@ class RootClosureTests(unittest.TestCase):
         }
 
     def test_wildcard_root_render_selects_no_lab_service(self) -> None:
-        self.assertEqual(8, len(self.labs))
+        self.assertEqual(9, len(self.labs))
         root_services = set(self.root["services"])
         for name, lab in self.labs.items():
             with self.subTest(lab=name):
@@ -225,7 +225,8 @@ class LabInventoryAndSelectionTests(RootClosureTests):
         import re
 
         policy = (
-            ROOT / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+            ROOT
+            / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
         ).read_text(encoding="utf-8")
         row = next(line for line in policy.splitlines() if line.startswith("| HOME |"))
         profiles = re.findall(r"`([A-Za-z0-9][A-Za-z0-9_.-]*)`", row)

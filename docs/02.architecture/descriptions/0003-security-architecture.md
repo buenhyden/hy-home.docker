@@ -45,7 +45,7 @@ consumer tiers own the least-privilege paths they request.
 
 ### Traceability
 
-Operational detail lives in [OpenBao operations](../../05.operations/guides/0085-openbao.md).
+Operational detail lives in [OpenBao operations](../../05.operations/guides/04-security-and-secrets/0085-openbao.md).
 
 ## Architecture
 

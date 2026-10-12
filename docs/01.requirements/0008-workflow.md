@@ -118,6 +118,6 @@ When the runtime is running, check the internal health of Airflow and n8n in the
 - **Spec**: [008-workflow/spec.md](../02.architecture/descriptions/0007-workflow-architecture.md)
 - **Plan**: 2026-03-26-07-workflow-standardization.md
 - **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
-- **Guide**: [airflow.md](../05.operations/guides/0050-airflow.md), [n8n.md](../05.operations/guides/0053-n8n.md)
-- **Policy**: [airflow.md](../05.operations/policies/0050-airflow.md), [n8n.md](../05.operations/policies/0053-n8n.md)
-- **Runbook**: [airflow.md](../05.operations/runbooks/0050-airflow.md), [n8n.md](../05.operations/runbooks/0053-n8n.md)
+- **Guide**: [airflow.md](../05.operations/guides/08-workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/guides/08-workflows-and-automation/0053-n8n.md)
+- **Policy**: [airflow.md](../05.operations/policies/08-workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/policies/08-workflows-and-automation/0053-n8n.md)
+- **Runbook**: [airflow.md](../05.operations/runbooks/08-workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md)

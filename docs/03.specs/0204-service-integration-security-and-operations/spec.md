@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.10"
+version: "1.7.11"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -53,17 +53,15 @@ SPEC-0199/0200 provide no current approval.
 No business project ID, external deployment topology, application endpoint,
 OIDC client, S3 identity, search authority, traffic budget, or speech product
 scope is approved here. Registering metadata is not a grant of network
-access, credentials, runtime deployment, or storage. Civil-service exam, English and Japanese learning applications are excluded,
-including planning, code, databases, collection and resources. The direct
-2026-10-12 request additionally authorizes relocating the complete Supabase
-service source, including GoTrue, and remaining infra-owned LAB service assets
-into repository-root `labs/`. TSK-0015 owns the reviewed path/dependency closure
-and coupled source checks. This source relocation creates no running resource,
-credential or data migration. Other LAB image, secret, data and execution changes
-remain excluded unless separately authorized with concrete operational bounds. P08 may
-move typed LAB documents to their `labs/` destinations with required folder and
-parent README navigation, Registry links and path checks; that documentation
-work authorizes no LAB runtime action. Do not read secret values, private environment
+access, credentials, runtime deployment, or storage. Civil-service exam, English
+and Japanese learning applications are excluded, including planning, code,
+databases, collection and resources. The current request does not reopen merged
+LAB service/source relocation, image, secret, data or execution work; existing
+pins and source remain untouched unless a separate request establishes a
+concrete operational boundary. P08 may move typed LAB documents to their
+Stage05 family `labs/` destinations with required folder and parent README
+navigation, Registry links and path checks; that documentation exception
+authorizes no LAB runtime action. Do not read secret values, private environment
 files, authentication files, raw HOME logs, or user data.
 
 ### Technical Approach
@@ -99,10 +97,11 @@ preserved in the existing Task and Git history. Current CI responsibility comes
 from the quality policy and `.github/workflow-contract.yml`: the remote PR
 candidate owns aggregate changed QA, while main security is separate. Follow
 actual remote checks and independent review for remote delivery; do not copy
-W7's old CI disposition into current execution. The superseding 2026-10-11
-user instruction instead selects reviewed local `main` delivery without PRs
-and prohibits `dev`. Preserve logical commits, run the required local checks,
-and retain historical hosted failures without relabeling them. SPEC-0221 already owns the request
+W7's old CI disposition into current execution. For remaining future units,
+the current request selects an owning-Spec PR after exact-head CI and
+independent review; delivery is recorded only after that PR is merged. Preserve
+logical commits, run the required local checks, and retain historical hosted
+failures without relabeling them. SPEC-0221 already owns the request
 precedence policy, hooks and validator. Change an enforcer with its regression
 only when a current conflict is found; otherwise record NO_CHANGE.
 
@@ -136,12 +135,11 @@ label, cross-project read/write, unbounded crawler egress, sealed-is-healthy
 claims, missing WAL/backups, and projection drift. Preserve unrelated worker
 changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
 credential rotation, DNS/firewall edit or HOME restart without the named target
-and recovery boundary. The current request authorizes its source/docs/tests,
-logical commits and reviewed local `main` integration after required checks;
-PRs and remote pushes are excluded from that SEC01/SMTP01/CLN01 integration
-delivery; `dev` is excluded throughout. The subsequently supplied P02-P05
-execution prompts select their own SPEC-0204 PRs after implementation, latest-head CI and
-independent review, without absorbing unrelated integration/runtime commits.
+and recovery boundary. The current request authorizes source/docs/tests and
+logical commits; each remaining owning-Spec delivery uses its PR, exact-head CI
+and independent review before merge. `dev` is excluded throughout. This does
+not reclassify historical local-main receipts or absorb unrelated
+integration/runtime commits.
 Missing permission or target defers only the dependent operation.
 
 ### Open Questions
@@ -290,9 +288,9 @@ together, rejecting unsafe paths, unknown domains, duplicate IDs and case
 collisions. Historical old-path resolution, if needed, is bounded metadata and
 never a second active copy. Source preparation can proceed while feature
 delivery is pending; actual rename/link integration requires exact single-writer
-leases and fixed feature-owner SHAs. Current local-main delivery requires
-exact-head checks and independent review; dev/remote/PR/hosted execution and
-operational acceptance are not inferred from document relocation.
+leases and fixed feature-owner SHAs. Future delivery requires an owning-Spec PR,
+exact-head CI and independent review before merge; operational acceptance is not
+inferred from document relocation.
 
 ## Acceptance Criteria
 
@@ -328,11 +326,10 @@ operational acceptance are not inferred from document relocation.
 8. Documentation, generated projections, focused checks and independent
    review match the exact diff. The final report separately records source,
    static, isolation, HOME and migration statuses with SHA and exit evidence.
-   The 2026-10-12 LAB relocation leaves Supabase, including GoTrue, and each
-   confirmed LAB-only infra asset in one root `labs/` source location, with
-   independent LAB entrypoints, updated consumers and populated READMEs.
-   Shared live initialization/recovery assets are retained under their actual
-   owner; a filename alone does not establish exclusive LAB consumption.
+   Future work is limited to typed Stage05 LAB-document moves, their READMEs
+   and path contracts. Existing merged LAB service/source relocation is
+   preserved as NO_CHANGE and is neither an acceptance target nor a reason to
+   change LAB images, secrets, data or runtime resources.
 9. The second round (TSK-0005) closes contracts 11 and 12 in source with
    tests that fail against the previous source, records HOME observations
    for authentication, CDC, workflow and backup without changing HOME
@@ -414,8 +411,8 @@ operational acceptance are not inferred from document relocation.
     under its bounded ROOT or P05 lane, without publishing the address here.
 
 <!-- markdownlint-disable MD029 -->
-15. SEC01 maintains a current stable/security integration ledger and its
-    version projections without representing a candidate pin, isolated test or
+15. SEC01 maintains a current security integration ledger and its version
+    projections without representing a candidate pin, isolated test or
     source merge as a deployed update. It preserves actual source/unit/static
     receipts and failures, integrates common validator, inventory, manifest
     and navigation changes through their single writer, and records a fresh
@@ -428,13 +425,10 @@ operational acceptance are not inferred from document relocation.
     and trust facts; it is not inferred from a missing HOME target. TSK-0009
     owns this increment; LAB runtime and
     learning applications remain out of scope.
-    The latest 2026-10-12 resume instruction restores current stable-version
-    updates and their official-documentation/compatibility investigation.
-    Reuse the existing latest-version and reviewed security-disposition gates;
-    a fresh successful stable-channel query with no newer release requires no
-    version bump. Missing or stale evidence remains UNKNOWN, never a clean
-    verdict. Scanner source corrections remain bounded to actual reviewed
-    warnings or defects; do not invent a replacement scanner or optional gate.
+    Root-image version changes and scanner source corrections require an actual
+    confirmed current-image security warning. Reuse the existing reviewed
+    security-disposition gates; missing or stale evidence remains UNKNOWN,
+    never a clean verdict. Do not invent a replacement scanner or optional gate.
     Bind current ROOT inputs independently and exclude relocated LAB
     Supabase/GoTrue rows. Existing completed source and baseline evidence is
     preserved. Native acceptance, migration and recovery retain their own

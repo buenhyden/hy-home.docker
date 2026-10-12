@@ -48,8 +48,8 @@ application's own OIDC and authorization features.
 
 - [ADR-0002](0002-keycloak-oauth2-proxy-choice.md)
 - [Auth Architecture](../descriptions/0002-auth-architecture.md)
-- [Application Auth Integration Policy](../../05.operations/policies/0079-application-auth-integration.md)
-- [Application Auth Integration Guide](../../05.operations/guides/0079-application-auth-integration.md)
+- [Application Auth Integration Policy](../../05.operations/policies/03-identity-and-access/0079-application-auth-integration.md)
+- [Application Auth Integration Guide](../../05.operations/guides/03-identity-and-access/0079-application-auth-integration.md)
 
 ## Decision
 

@@ -1,9 +1,9 @@
 {
   "purpose": "synthetic",
   "domains": [
-    "security",
-    "workflow",
-    "labs"
+    "04-security-and-secrets",
+    "08-workflows-and-automation",
+    "15-labs"
   ],
   "documents": [
     {
@@ -15,7 +15,7 @@
       "text": "---\ntitle: Synthetic\ntype: operation/runbook\nartifact_id: RUN-0031\n---\n# 합성 문서\n"
     },
     {
-      "path": "docs/05.operations/policies/security/0032-example.md",
+      "path": "docs/05.operations/policies/04-security-and-secrets/0032-example.md",
       "text": "---\ntitle: Synthetic\ntype: operation/policy\nartifact_id: POL-0032\n---\n# 합성 문서\n"
     },
     {
@@ -27,22 +27,22 @@
     {
       "source": "docs/05.operations/guides/0031-example-note.md",
       "artifact_id": "GDE-0031",
-      "target": "docs/05.operations/guides/labs/0031-example-note.md",
-      "domain": "labs",
+      "target": "docs/05.operations/guides/15-labs/0031-example-note.md",
+      "domain": "15-labs",
       "lab": true
     },
     {
       "source": "docs/05.operations/runbooks/0031-example.md",
       "artifact_id": "RUN-0031",
-      "target": "docs/05.operations/runbooks/workflow/0031-example.md",
-      "domain": "workflow",
+      "target": "docs/05.operations/runbooks/08-workflows-and-automation/0031-example.md",
+      "domain": "08-workflows-and-automation",
       "lab": false
     },
     {
-      "source": "docs/05.operations/policies/security/0032-example.md",
+      "source": "docs/05.operations/policies/04-security-and-secrets/0032-example.md",
       "artifact_id": "POL-0032",
-      "target": "docs/05.operations/policies/security/0032-example.md",
-      "domain": "security",
+      "target": "docs/05.operations/policies/04-security-and-secrets/0032-example.md",
+      "domain": "04-security-and-secrets",
       "lab": false
     }
   ]

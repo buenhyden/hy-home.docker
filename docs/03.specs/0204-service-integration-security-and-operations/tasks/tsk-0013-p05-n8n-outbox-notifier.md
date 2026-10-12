@@ -826,7 +826,7 @@ collection, external workspace and blog-data writes remain excluded.
 - [CLN01 consumer assessment](tsk-0007-cln01-material-retirement.md)
 - [P02 catalog](tsk-0010-p02-secret-catalog-and-views.md)
 - [P03 integration](tsk-0011-p03-service-integration-contracts.md)
-- [n8n guide](../../../05.operations/guides/0053-n8n.md)
+- [n8n guide](../../../05.operations/guides/08-workflows-and-automation/0053-n8n.md)
 - [n8n source](../../../../infra/07-workflow/n8n/README.md)
 - [Mailpit source](../../../../infra/11-quality/mailpit/README.md)
 - [Official external secret stores](https://docs.n8n.io/external-secrets/)

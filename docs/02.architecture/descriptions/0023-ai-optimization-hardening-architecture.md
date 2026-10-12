@@ -154,8 +154,8 @@ execution evidence is owned by the related Spec and Operations documents.
 - **PRD**: [../01.requirements/0009-ai.md](../../01.requirements/0009-ai.md)
 - **Spec**: [../03.specs/009-ai/spec.md](0008-ai-architecture.md)
 - **ADR**: [../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/guides/0058-ai-optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/policies/0058-ai-optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/08-ai/optimization-hardening.md](../../05.operations/runbooks/0058-ai-optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/guides/09-ai-and-search/0058-ai-optimization-hardening.md)
+- **Operation**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/policies/09-ai-and-search/0058-ai-optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/08-ai/optimization-hardening.md](../../05.operations/runbooks/09-ai-and-search/0058-ai-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

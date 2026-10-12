@@ -95,4 +95,4 @@ TypeScript 7 upgrade, which waits for `typescript-eslint` support, and a
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-storybook-build-and-delivery.md)
-- [Storybook policy](../../05.operations/policies/0101-storybook.md)
+- [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md)

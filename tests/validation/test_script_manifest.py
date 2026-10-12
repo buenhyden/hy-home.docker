@@ -376,8 +376,8 @@ class ScriptManifestTests(unittest.TestCase):
 
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
-            "docs/05.operations/runbooks/03-security/vault.md",
-            "docs/05.operations/runbooks/0031-postgresql-cluster.md",
+            "docs/05.operations/runbooks/04-security-and-secrets/0031-vault.md",
+            "docs/05.operations/runbooks/15-labs/0031-postgresql-cluster.md",
         }
         for row in self.rows:
             with self.subTest(path=row["path"]):
@@ -423,15 +423,21 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertTrue(
             is_runbook_authority(
                 "docs/05.operations/runbooks/"
+                "05-databases-and-storage/"
                 "0032-postgresql-logical-upgrade-restore-rehearsal.md"
             )
         )
         rejected = (
             "docs/05.operations/04-data/ops-0032-example/runbook.md",
             "docs/05.operations/runbooks/04-data/example.md",
+            "docs/05.operations/runbooks/04-security-and-secrets.md",
+            "docs/05.operations/runbooks/security-and-secrets/0032-example.md",
             "docs/05.operations/runbooks/032-example.md",
             "docs/05.operations/runbooks/ops-0032-example.md",
             "docs/05.operations/runbooks/nested/0032-example.md",
+            "docs/05.operations/runbooks/04-Security-and-secrets/0032-example.md",
+            "docs/05.operations/runbooks/04-security-and-secrets/deeper/0032-example.md",
+            "docs/05.operations/runbooks/99-unknown/0032-example.md",
             "docs/05.operations/guides/0032-example.md",
             "docs/05.operations/catalog/04-data/0032-example/runbook.md",
         )

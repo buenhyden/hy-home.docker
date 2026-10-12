@@ -109,4 +109,4 @@ or HOME data, and observing which services run on the HOME host.
 - [Closure and HOME LAB run Task](tasks/tsk-0002-lab-closure-and-home-runs.md)
 - [Data requirement](../../01.requirements/0004-data.md)
 - [HOME development host requirement](../../01.requirements/0027-home-development-host.md)
-- [Profile vocabulary policy](../../05.operations/policies/0078-compose-profile-vocabulary.md)
+- [Profile vocabulary policy](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)

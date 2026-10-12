@@ -1,8 +1,8 @@
 """Pure, caller-reviewed Stage05 mapping checks; no move or approval authority.
 
-Source admission uses caller-owned current Registry profiles. Nested proposed
-routes are checked through their original flat identity, never admitted into
-that Registry. This unit does not classify subjects from numbers or content.
+Source admission uses caller-owned current Registry profiles. Numbered family
+routes retain the original flat identity and use the registered domain paths.
+This unit does not classify subjects from numbers or content.
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ from scripts.lib.document_governance.taxonomy import (
 
 _ROOT = ("docs", "05.operations")
 _FAMILIES = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}
-_DOMAIN = re.compile(r"[a-z0-9][a-z0-9-]*")
+_DOMAIN = re.compile(r"[0-9]{2}-[a-z0-9][a-z0-9-]*")
 
 
 class MoveError(ValueError):
@@ -153,7 +153,7 @@ def _review_rows(
             raise MoveError("review-source-not-operation", row.source)
         if row.domain not in domains:
             raise MoveError("unknown-domain", row.source)
-        if not isinstance(row.lab, bool) or row.lab != (row.domain == "labs"):
+        if not isinstance(row.lab, bool) or row.lab != (row.domain == "15-labs"):
             raise MoveError("lab-domain-mismatch", row.source)
         result[row.source] = row
     return result

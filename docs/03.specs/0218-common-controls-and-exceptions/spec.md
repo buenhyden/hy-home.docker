@@ -138,4 +138,4 @@ with P08. Consumer retirement remains with CLN01 and the owning executor.
 - [Task](tasks/tsk-0001-common-controls-and-exceptions.md)
 - [P07 root resource optimization](tasks/tsk-0002-p07-root-resource-optimization.md)
 - [HOME development host requirement](../../01.requirements/0027-home-development-host.md)
-- [Exceptions policy](../../05.operations/policies/0001-common-optimizations-template-exceptions.md)
+- [Exceptions policy](../../05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md)
