@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.9"
+version: "1.8.10"
 type: "sdlc/plan"
 status: "in-progress"
 owner: "@buenhyden"
@@ -83,6 +83,19 @@ clarification selects that mailbox but does not dispatch a message, provision
 a LAB account or start a LAB service. Remaining ROOT/P05 operational receipts
 and independently scoped material checks keep their existing owners.
 
+### Resumed stable-version and security continuation — 2026-10-12
+
+The latest resume instruction restores stable-version updates and investigation
+of their official documentation, compatibility, migrations and recovery.
+Use the existing latest-version and security gates plus independent ROOT include
+authority; do not add a new gate, API, scanner or optional bypass. A successful
+current stable-channel lookup with no newer release requires no version bump;
+absent/stale evidence remains UNKNOWN. Scanner corrections remain limited to
+actual reviewed warnings/defects. Reconcile relocated LAB rows out of current
+ROOT acceptance while retaining dated evidence. Existing feature/native/recovery
+Tasks retain exact scopes; user-accepted SMTP01/CLN01 and completed P09 stay
+accepted. Version/source acceptance is distinct from deployed-service acceptance.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -117,7 +130,7 @@ and independently scoped material checks keep their existing owners.
 | W28 | 14 | COMM-002 ownership, COMM-003 tombstone and guarded retirement helper | W27 | TSK-0005 | Equal/mismatch/idempotency/race/privacy tests; no HOME mutation |
 | W29 | 14 | Exact-image synthetic SMTP authentication, capture and failure cases | W27 | TSK-0005 | Opt-in isolated native rehearsal, separate from HOME |
 | W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Preserve logical commits; reviewed local-main delivery under the superseding user instruction; user-accepted delivered SMTP01/CLN01 scope; LAB GoTrue connection/activation excluded; any separately scoped ROOT/P05 operational receipt remains distinct |
-| W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Source/common repairs, isolated datastore and current local leaf receipts integrated. Global latest/security evidence, HOME deployment and complete recovery remain pending/blocked; SOURCE delivery does not close SEC01 |
+| W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Source/common repairs, isolated datastore and current local leaf receipts integrated. Current ROOT stable-version and reviewed security evidence; successful no-newer lookup needs no bump; HOME/recovery retain exact owner prerequisites; unknown evidence is not a clean PASS |
 | W32 | 16, 8 | P02 single value-free catalog, classification, generated views and reissuance guards | W27, W28 | TSK-0010 | Existing source/schema reuse, alias and privacy RED/GREEN, scoped changed/staged checks and independent review; real migration/recovery are separate lanes |
 | W33 | 1, 4, 6, 8, 17 | P03 current service/endpoint/environment and four-location port contracts; independent source preparation before consumer-specific runtime acceptance | W27, W28 | TSK-0011 | Existing inventory/tool reuse, synthetic RED/GREEN, privacy and DEV/MNG independence; final mappings and native/HOME checks follow their exact owning prerequisites |
 | W34 | 1, 8, 18 | P04 baseline, source reuse, exclusive ownership and RED cases | None | TSK-0012 | Current SHA/consumer ledger; reference audit is not native acceptance |

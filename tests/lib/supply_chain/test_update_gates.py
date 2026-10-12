@@ -260,6 +260,44 @@ class SecurityUpdateGateTests(unittest.TestCase):
 
 
 class UpdateEvidencePackageTests(unittest.TestCase):
+    def test_current_root_census_excludes_relocated_lab_history(self):
+        from scripts.lib.supply_chain.latest_version_gate import expected_from_root
+
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        expected, inventory = expected_from_root(root)
+        self.assertEqual(set(expected), {row["service"] for row in ledger["entries"]})
+        self.assertEqual(set(expected), set(ledger["expected_services"]))
+        self.assertEqual(inventory["input_files"], ledger["include_inputs"])
+        historical = ledger["historical_lab_entries"]
+        self.assertTrue(historical)
+        old_census = ledger["historical_root_census"]
+        old_inputs = {row["path"] for row in old_census["include_inputs"]}
+        current_inputs = {row["path"] for row in inventory["input_files"]}
+        self.assertEqual(
+            {"infra/04-data/supabase/docker-compose.yml"}, old_inputs - current_inputs
+        )
+        self.assertFalse(current_inputs - old_inputs)
+        self.assertEqual(len(old_inputs), len(current_inputs) + 1)
+        historical_services = {row["service"] for row in historical}
+        self.assertEqual(
+            set(old_census["expected_services"]) - set(expected), historical_services
+        )
+        self.assertEqual(len(historical_services), len(historical))
+        self.assertFalse(set(expected) & historical_services)
+        self.assertEqual(
+            len(old_census["expected_services"]), len(expected) + len(historical)
+        )
+        for row in historical:
+            self.assertEqual("lab", row["current_scope"])
+            self.assertEqual("labs/supabase.yml", row["current_compose_file"])
+            self.assertEqual("root", row["original_root_row"]["scope"])
+            self.assertEqual(row["service"], row["original_root_row"]["service"])
+
     def test_runtime_candidates_report_their_own_upstream_tag(self):
         root = Path(__file__).resolve().parents[3]
         ledger = json.loads(

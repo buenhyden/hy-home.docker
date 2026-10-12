@@ -1,6 +1,6 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -523,7 +523,8 @@ access, cross-project A-to-B access and empty key material.
 
 Do not perform a full-stack startup or broad cleanup. Credential rotation
 retains its selected feature owner and exact operational boundary. The final
-report consumes SEC01 whole-image gates; unrelated global completion is not a
+report consumes relevant ROOT stable-version/security evidence under the resumed
+instruction; unrelated global completion is not a
 start gate for one admitted isolated consumer. This Task cannot select a HOME
 target by inference.
 
@@ -631,6 +632,54 @@ message and user acceptance does not create a native/provider/restore result.
 The prior source/isolated receipts remain attributed to their actual inputs.
 No runtime, secret, account, message or data changed in this clarification.
 
+### Current completion reconciliation and draft cleanup — 2026-10-12
+
+At main `69b070b759e9ca235d5aa9ee31c2ab311df4dffc`, user-accepted SMTP01/CLN01
+scope and completed P09 preparation remain accepted. P01 HOME/recovery, P02
+private issuance/delivery, P03 native identity/TLS/consumer use, P04 DEV/S3
+publication, P05 native notifier, P06 actual pilot/recovery, P07 representative
+workload/rollout, P08 W59–W62 moves and P10 W65–W68 remain open under their
+owning Tasks. They are not complete merely because source was merged.
+
+The latest user resume instruction restores stable-version updates and their
+associated official-documentation/compatibility investigation; it supersedes
+the intervening warning-only modernization restriction. UNKNOWN stays unknown,
+and no-newer stable lookup requires no version bump. P10 consumes its selected
+artifact's version/security evidence and exact native/recovery contract;
+unrelated global SEC completion is not an isolated-lane start prerequisite.
+The current ROOT source census excludes relocated LAB Supabase/GoTrue.
+
+The original checkout was confirmed clean on main before this increment, rather than detached a03.
+Its prior twenty-four paths were privately archived and reconciled against
+accepted main: one exact state, twenty-two corrected/superseded public drafts,
+and one disposable coverage artifact. Obsolete generic retirement prototypes
+and colliding Task drafts were rejected, not falsely described as byte-merges.
+Four changed public bind-source files match main; Kafka YAML semantics were
+unchanged, Grafana's version metadata changed, and Tempo preserves vParquet4.
+No reload/restart/recreate or private env/password change was performed;
+host-source equality does not prove running-container application.
+
+The already merged SMTP proof branch/worktree was removed normally after
+preserving its public handoff; forty-nine one-off coverage/cache paths were
+removed, while permanent regressions and source commit 5fd5397 remain in main.
+Two independent read-only audits then found no missing meaningful source in
+twelve older dirty/staged QA/integration worktrees. Their 131 public draft paths
+were verified against private ZIP rollback copies and scoped reconciliation;
+normal `git worktree remove` removed those twelve plus the clean P06 parent.
+Normal `git branch -d` removed P05 notifier, P06 migration and P08 path-contract
+branches. No force/reset/stash/clean, private data or runtime deletion occurred.
+The non-ancestor c940c2ac P06 admission document was superseded in intent, not
+claimed merged as a commit; its history was retained in a verified private Git
+bundle. A first bare-SHA bundle command exited 128 before source cleanup; the
+QA HEAD-ref bundle succeeded and was verified before removal.
+
+The canonical ignored receipts are `.agent-work/root-main-transition-20261012/`,
+`.agent-work/completed-worktree-handoffs-20261012/` and
+`.agent-work/reconciled-draft-cleanup-20261012/`. Raw drafts, opaque previews,
+logs and rollback artifacts are not Git or execution authorities. Pending
+source/runtime acceptance stays in the owning Tasks; removed development
+worktrees are not required to keep those criteria open.
+
 ### Dependency Matrix
 
 | Owner | Required handoff before dependent runtime | P10 preparation boundary |
@@ -646,6 +695,17 @@ No runtime, secret, account, message or data changed in this clarification.
 | P06 / TSK-0014 | Accepted consumer wave and recovery/rotation evidence | Pre-migration DEV preparation can proceed; copier and deletion remain owner-gated. |
 | P07 / SPEC-0218 | Selected capacity/least-privilege baseline where relevant | No resource or permission change is accepted by a fixture. |
 | P08 / TSK-0015 | Final path/hash and README coverage handoff | W68 waits; no document move is inferred. |
+
+### Cleanup correction: unfinished scanner execution source
+
+The later SEC01 reuse audit found that two ignored v2 scanner execution sources
+in the removed SEC01 worktree were not included in the retained draft archive.
+The claim of reconciled tracked drafts does not establish preservation of all
+unfinished operational tooling. This is an actual cleanup error, not a completed
+scanner task. The preserved preparation receipt and 8/8/2 manifests remain input
+evidence; native execution is blocked pending exact-source recovery or fresh
+review. TSK-0009 records the missing hashes and current memory observation.
+No scan PASS, deployment or complete SEC01 acceptance is inferred.
 
 ## Evidence
 

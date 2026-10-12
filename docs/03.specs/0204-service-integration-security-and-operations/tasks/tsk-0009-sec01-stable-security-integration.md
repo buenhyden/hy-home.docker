@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.10"
+version: "0.4.11"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1226,6 +1226,102 @@ secret-key backup, empty restore and pre-migration rollback must be accepted.
 All native pulls/builds/start, signatures/SBOM/scans, HOME, MIGRATION, ROTATION
 and full RECOVERY for this increment remain NOT_RUN. Task0009 stays in-progress.
 
+### Resumed stable-version and ROOT ledger reconciliation — 2026-10-12
+
+The latest user resume instruction restores current stable-version updates and
+investigation of their official documentation and related compatibility/recovery
+contracts. This supersedes the intervening warning-only version-update restriction.
+Keep existing supply-chain gates and completed P00/source history; no new gate or
+scanner framework is introduced. A fresh successful official stable-channel
+lookup with no newer release needs no version bump. UNKNOWN or missing/stale
+scan/advisory evidence is not a clean result. Scanner source corrections remain
+bounded to actual reviewed warnings/defects. Existing reviewed not-affected
+security dispositions do not substitute for current stable-version evidence.
+
+At main input `69b070b759e9ca235d5aa9ee31c2ab311df4dffc`, the existing
+`expected_from_root` authority independently observed 111 ROOT services across
+44 Compose inputs, manifest SHA-256
+`f6f30b50738c8ac33e4b6f651082ee1612d4661faa8ad906c89e65deefa29564`.
+Those counts are observations, not checker constants. Thirteen former Supabase
+ROOT rows now belong to `labs/supabase.yml`; their original rows and former
+include census are preserved in the ledger's historical fields. Current rows,
+expected set and include hashes match ROOT only. GoTrue's historical scan and
+LAB SMTP readiness are excluded from current ROOT completion. This source
+scope reconciliation reruns no supplier lookup, native scan or deployment.
+
+The new permanent regression in existing `test_update_gates` independently
+compares the submitted ledger with ROOT include discovery and retained LAB
+history. RED exited 1 on all thirteen stale LAB rows; after reconciliation,
+`python -m unittest tests.lib.supply_chain.test_update_gates tests.validation.test_sec01_next_tool_candidates -q`
+passed 33 tests in 1.763 seconds, exit 0. The initial reconciliation inferred a
+nonexistent LAB filename and stopped before writing; the current tree/README
+supplied the actual `labs/supabase.yml`. No scanner or gate implementation was
+changed to satisfy the user instruction.
+
+Independent review required exact historical service/input preservation, rather
+than merely a nonempty LAB archive. The permanent regression now compares old
+minus current service/input sets, uniqueness/count relations, original row
+identity and exact `labs/supabase.yml`. Three in-memory corruption probes
+(dropped LAB row, changed LAB path, changed old census) each produced the
+expected single assertion failure without changing the ledger. Final system
+Python execution passed the same 33 tests in 1.773 seconds; Ruff check and
+format-check exited 0. The old temporary QA interpreter was absent and its
+three attempted commands exited 1 before execution; no result from that absent
+environment is claimed. Final independent seven-file review is APPROVE.
+
+Primary advisory triage identifies Qdrant GHSA-3gph-6c29-p29v, patched in
+1.19.2, and SeaweedFS GHSA-99q7-x53r-6j4g, affecting versions from 4.39 with
+no listed patched version. Source declares Qdrant 1.19.2 and SeaweedFS 4.48.
+Fresh read-only Config.Image/Image/State inspection found running Qdrant
+1.19.1 and SeaweedFS filer 4.47; the version warning remains relevant pending
+feature/exposure and recovery review. Those observations do not read keys,
+render private configuration or prove exploitability. The SeaweedFS TUS-only
+mitigation is prepared separately through its existing source/test owners;
+the later stable-version update request remains separate from this advisory
+triage, and scanner corrections still need a concrete warning/defect.
+
+- [Qdrant advisory](https://github.com/qdrant/qdrant/security/advisories/GHSA-3gph-6c29-p29v)
+- [SeaweedFS advisory](https://github.com/seaweedfs/seaweedfs/security/advisories/GHSA-99q7-x53r-6j4g)
+
+A separately approved, freshly hash-checked HOST-only backup metadata query
+ran once from controller bf4d9876/operator fc2c6f67/loader d9bf6543. It reused
+the pinned earlier STATE receipt 93222aea without a STATE rerun. Restic's query
+exited 0; the unchanged strict metadata parser rejected the returned path class
+with the closed reason `unexpected_path_class`, so controller and operator
+exited 1/FAIL_CLOSED. One owned container was created, started, normally removed
+and verified absent; its temporary Docker configuration was CLEANED, with zero
+residual blockers. No snapshot/repository write, restore, init, prune, unlock,
+rotation or retry ran. Full JSON is private0600; the sanitized result is in
+`.agent-work/backup-catalog-actual-20261012/public-summary.json`.
+
+The public backup source explicitly names `/src/host`, while this existing
+metadata parser admits only descendants `/src/host/`. The failed reason makes
+that declared-source boundary a concrete follow-up; it is not proof of actual
+snapshot content or permission to widen accepted paths. Any corrected source
+needs negative path tests and independent review before a new exact HOST query.
+Backup availability and real restoration are still not accepted.
+
+A subsequent read-only reuse audit found that the approved v2 scanner execution
+sources were not preserved when the old SEC01 worktree was removed. This was a
+cleanup error: preparation receipts remain, but execution is blocked until the
+exact sources are recovered or a current source is freshly reviewed. The missing
+operator/contract hashes are c033adbefbeeb6d43c4112384060b7f73469b645a0cab8d12f63cc20aac822c2
+and 33f3dcdf19e7ef69567fb48736a06b22ba326dee91374d53cfb4ca6927169961.
+The preserved preparation receipt aadc48beb745dae295d51be7129b2e8fa06d243a179a9e769f1a93c5724cabc6
+and 8/8/2 subject manifests are input evidence only. The permanent sample-service
+script is sample-specific and cannot substitute for the ROOT batch scanner.
+A fresh memory observation shows approximately 15 GiB available, so the earlier
+12 GiB host-admission failure is historical, not the current blocker. No native
+scan was executed after this discovery, and no replacement source is admitted
+under the old hashes.
+
+Current ledger advisory applicability and complete image/dependency scan
+coverage remain unaccepted. Checked upstream advisory ranges alone cannot
+certify an image or its embedded packages clean. Actual ROOT patch/deployment,
+P01 authentication/custody, complete backup/restore and P04/P05 native receipts
+keep their own unresolved boundaries. SMTP01/CLN01 accepted delivered scope
+and P09 preparation remain accepted; no new LAB execution is added.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
@@ -1236,7 +1332,7 @@ and its later observations are recorded above.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | SEC01 source and isolated receipts | 15 | W31 | Received six-commit source, focused tests and isolated rehearsal | Recorded branch/input hashes in integration handoff | PASS | security-updates handoff | pending |
 | Common validator and manifest state | 15 | W31 | Current shared suite and manifest registration | 20 PASS/2 FAIL; two records missing | FAIL | integration handoff | pending |
-| Latest/security evidence gates | 15 | W31 | Current root-bound stable and security gate commands | Both `BLOCKED_EVIDENCE`, exit 2; latest `ready=false`, security `ledger_complete=false`; manifest SHA recorded above | DEFER | SEC01 received handoff | pending |
+| Reviewed ROOT stable/security evidence | 15 | W31 | Existing stable-version and security-disposition gates | Current ROOT source set; no completed reviewed security ledger | DEFER | Resumed stable-version and ROOT ledger reconciliation | pending |
 | PR #416 candidate CI | 15 | W31 | candidate-quality, CodeQL, GitGuardian and main-security | Run `38052766613`; candidate-quality failed | FAIL | PR #416 handoff | pending |
 | Coordinator shared repair | 15 | W31 | Runtime/wiring, inventory, manifest and candidate regression registration | e93e0c822 plus reviewed integration; 93 and 39 tests exit 0 | PASS | #coordinator-common-repair-receipt | pending |
 | Public Cosign release bootstrap | 15 | W31 | Offline wheel preparation, TUF refresh, OpenSSL-before-execution, KMS/keyless verification and version | Public receipts under `/tmp/hy-home-sec01-trust.*`; bounded public v3.1.3 binary only | PASS | Public Cosign Bootstrap Receipt | pending |
@@ -1249,8 +1345,11 @@ and its later observations are recorded above.
 Before delivery, integrate only reviewed common changes through their assigned
 single writer; regenerate the version projection after preceding SMTP/CLN work;
 run the registered changed gate, current common validator/inventory/manifest
-checks, both latest/security gates and latest-head CI. Require independent
-security and code review at that head. Preserve failed and blocked receipts.
+checks, existing ROOT latest-version/security-disposition gates and independent
+security/code review at that head. A fresh successful stable-channel query with
+no newer release needs no version bump. Preserve failed, blocked and unknown
+results; source/latest evidence does not prove a deployment. Apply the current
+local-main delivery lane without a new PR or a claimed hosted CI run.
 Source rollback is a logical revert of owning commits; HOME rollback requires a
 separately approved pre-upgrade backup and recovery proof.
 

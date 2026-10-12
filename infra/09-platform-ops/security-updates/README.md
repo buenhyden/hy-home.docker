@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 ---
 
 # 보안 업데이트 조사 증거
@@ -32,6 +32,17 @@ root include closure의 서비스와 선택된 custom build 입력을 조사합�
 PASS이며 강제 버전 변경은 필요하지 않습니다. 조회 실패·UNKNOWN·시험판은
 같은 판정이 아니며 서명·취약점·호환·복구·HOME 검증도 각각 남습니다.
 관찰 시점의 서비스 개수는 결과이며 검사 상수로 사용하지 않습니다.
+
+2026-10-12 최신 재개 지시에 따라 안정판 업데이트와 공식 문서·호환·복구 조사를
+다시 진행합니다. 이 지시는 앞선 경고 기반 버전 업데이트 제한을 대체합니다.
+기존 latest/security gate를 재사용하고, 공식 안정 채널에 더 새 버전이 없으면
+버전 변경은 하지 않습니다. 미조회·오래된 결과·`UNKNOWN`은 경고 없음이나
+최신판 확인으로 바꾸지 않습니다. scanner 소스 수정은 실제 경고·결함에 한하며,
+새 scanner·gate를 만들거나 source 수용을 실제 배포로 표시하지 않습니다.
+현재 ROOT include 조사에서는 111개 서비스와 44개 입력이 관측됐습니다.
+Supabase/GoTrue 13개 행은 `labs/supabase.yml`에 속하므로 현재 ROOT 장부에서
+제외하고 원래 행은 `historical_lab_entries`에 보존했습니다. 이 정합화는 실제
+scan·공급자 재조회·HOME 배포 결과를 만들지 않습니다.
 
 ## Structure
 
@@ -89,7 +100,7 @@ Compose 입력별 SHA와 입력 집합 SHA를 남깁니다. 장부의 항목과 
 동시에 서비스를 제거해도 실제 source 집합 대비 누락으로 실패합니다.
 이 source 집합은 활성 profile·runtime 관찰을 대신하지 않습니다.
 
-현재 총괄 입력은 여전히 DEFER 영수증이다. latest gate는 `ready=false`,
+다음 수치·hash는 LAB 이동 전의 역사적 DEFER 영수증입니다. latest gate는 `ready=false`,
 `deployed=false`, `externalfacts=false`, exit 2와 missing/unexpected 서비스 없음을
 반환한다. security gate는 `ledger_complete=false`, `coverage_checked=true`, exit 2와
 관측된 124개 `blocked-evidence` 항목을 반환한다. latest gate의 전체 후보 중

@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.9"
+version: "1.7.10"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -428,6 +428,17 @@ operational acceptance are not inferred from document relocation.
     and trust facts; it is not inferred from a missing HOME target. TSK-0009
     owns this increment; LAB runtime and
     learning applications remain out of scope.
+    The latest 2026-10-12 resume instruction restores current stable-version
+    updates and their official-documentation/compatibility investigation.
+    Reuse the existing latest-version and reviewed security-disposition gates;
+    a fresh successful stable-channel query with no newer release requires no
+    version bump. Missing or stale evidence remains UNKNOWN, never a clean
+    verdict. Scanner source corrections remain bounded to actual reviewed
+    warnings or defects; do not invent a replacement scanner or optional gate.
+    Bind current ROOT inputs independently and exclude relocated LAB
+    Supabase/GoTrue rows. Existing completed source and baseline evidence is
+    preserved. Native acceptance, migration and recovery retain their own
+    Tasks; user-accepted SMTP01/CLN01 scope and P09 preparation are not reopened.
 16. P02 provides one value-free secret catalog with preserved issued IDs,
     canonical COMM-002 and an alias/tombstone for COMM-003, explicit
     classification, consumers, delivery and independent recovery dependencies.

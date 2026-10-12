@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "source_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+  "source_revision": "69b070b759e9ca235d5aa9ee31c2ab311df4dffc",
   "collected_at": "2026-10-10T10:23:40.053333+00:00",
   "selection_profiles": "UNKNOWN: source defaults and observed runtime only; operator-selected profiles not inferred.",
   "expected_services": [
@@ -15,15 +15,12 @@
     "airflow-worker",
     "alertmanager",
     "alloy",
-    "analytics",
-    "auth",
     "backup-sqlite-export",
     "cadvisor",
     "comfyui",
     "conftest",
     "crawl4ai",
     "crawl4ai-egress",
-    "db",
     "dbt",
     "dbt-db-provision",
     "dcgm-exporter",
@@ -39,12 +36,10 @@
     "flink-jobmanager",
     "flink-taskmanager",
     "flower",
-    "functions",
     "gatus",
     "grafana",
     "grafana-db-provision",
     "great-expectations",
-    "imgproxy",
     "jupyterlab",
     "k6",
     "kafbat-ui",
@@ -54,10 +49,8 @@
     "kafka-init",
     "kafka-rest-proxy",
     "keycloak",
-    "kong",
     "loki",
     "mailpit",
-    "meta",
     "mlflow",
     "mlflow-db-provision",
     "mng-pg",
@@ -93,11 +86,9 @@
     "pushgateway",
     "pyroscope",
     "qdrant",
-    "realtime",
     "redisinsight",
     "registry",
     "renovate",
-    "rest",
     "restic",
     "restic-offsite",
     "schema-registry",
@@ -111,11 +102,8 @@
     "spark",
     "stalwart",
     "stalwart-config",
-    "storage",
     "storybook",
     "storybook-mcp",
-    "studio",
-    "supavisor",
     "superset",
     "superset-db-provision",
     "superset-init",
@@ -126,13 +114,12 @@
     "terrakube-ui",
     "traefik",
     "trino",
-    "vector",
     "wiremock"
   ],
   "include_inputs": [
     {
       "path": "docker-compose.yml",
-      "sha256": "a3c5d8fff3eca41801ecbea829dcb93c3d0680ae0132b0656341c1bc4bbc7a47"
+      "sha256": "6a010ac9960b273d4643ad8e4f4742d7c3bf70e2b3c80a090aa8969cfb2fdb99"
     },
     {
       "path": "infra/01-gateway/nginx/docker-compose.yml",
@@ -148,7 +135,7 @@
     },
     {
       "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-      "sha256": "6f5b1cb368d86a977c0b8fbba5bfda6bf10b6fa8c6c8de11b305415d7caa5c63"
+      "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
     },
     {
       "path": "infra/03-security/openbao/docker-compose.yml",
@@ -156,11 +143,11 @@
     },
     {
       "path": "infra/04-data/dev-db/docker-compose.yml",
-      "sha256": "01c45f339cf57b7a40917462a4dcac20f74e095768d9bac961e8c2776148fb24"
+      "sha256": "4098a59404206d97b4566d5ea3014cc807f92ecc917be14c45b01cfe41a0f506"
     },
     {
       "path": "infra/04-data/mng-db/docker-compose.yml",
-      "sha256": "261fb6f3ea97598556839b47d095434e67d696b70f0e0e0b34f3dffe326057b0"
+      "sha256": "f509a6feb2f574dfc3cf79a69d98508d7478c48102e7e3d91df374d0e4e46f6d"
     },
     {
       "path": "infra/04-data/neo4j/docker-compose.yml",
@@ -172,7 +159,7 @@
     },
     {
       "path": "infra/04-data/qdrant/docker-compose.yml",
-      "sha256": "d6d84d0e49b68d0f4e6e066c3370253cb6b1e828ad03b65aa2cd072713dafb75"
+      "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
     },
     {
       "path": "infra/04-data/redisinsight/docker-compose.yml",
@@ -180,11 +167,7 @@
     },
     {
       "path": "infra/04-data/seaweedfs/docker-compose.yml",
-      "sha256": "6e681a53ad7a32d17087c555ee78618d4938047a2c9a507d227c9f3c7d752abc"
-    },
-    {
-      "path": "infra/04-data/supabase/docker-compose.yml",
-      "sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce"
+      "sha256": "70ef3a3c1e9c8c088bcdef7e7c80934c4735d147bfce894b6e0a736bf277dbf7"
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
@@ -192,19 +175,19 @@
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
-      "sha256": "2be8dddfe6452a558b572e8139c523bb773a2fd8bd5dffb1f221d938a8988eed"
+      "sha256": "18bea09d82d71b9b6d6cccaee3ded38b09ae0fc4e0e61e2597ce4caf97daaa95"
     },
     {
       "path": "infra/06-observability/dozzle/docker-compose.yml",
-      "sha256": "3a4955d11b479f81e9a7190a147e3234401bca30985795c4ff39fe17e37a2c95"
+      "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
     },
     {
       "path": "infra/07-workflow/airflow/docker-compose.yml",
-      "sha256": "bed0afcbfc2aa692330816e7465f60373bb07319fe92181fba6a28b52ad356fa"
+      "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "9709ad7f17d10912c0d10fa8ffd2da63b2c536d6b2f20ac99a3c6fac1e62f023"
+      "sha256": "2cd210e4e35671fedc1cfd497d23bdf627def6cf35cf852fbba74ca24b958721"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -220,27 +203,27 @@
     },
     {
       "path": "infra/08-ai/ollama/docker-compose.yml",
-      "sha256": "224428c71c55d19366ad0def25a5b98031b3164e0c805ac1a891bb05ecad01c8"
+      "sha256": "40d55823ea0793004a479b930fbbaf1d06dce3600b48763d19ad221df28be4c1"
     },
     {
       "path": "infra/08-ai/open-notebook/docker-compose.yml",
-      "sha256": "5b05b3fc817fac037c4520a08377ba5950bfc123be56b43558683e732bb32d38"
+      "sha256": "780ebabe132c9c3c82041c2ce91fa11d78463e2c4abb6c8b9cc4a1c72f6998e4"
     },
     {
       "path": "infra/08-ai/open-webui/docker-compose.yml",
-      "sha256": "8419f17727da84ea18399efcb9900ace4df35af2a2f19420182827d3b0b61554"
+      "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
     },
     {
       "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
-      "sha256": "2e72f697b21b45e175639049d8ad680be2c99f5be403743753d7bab76ef88e79"
+      "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
     },
     {
       "path": "infra/09-platform-ops/registry/docker-compose.yml",
-      "sha256": "587a47acb8b9b8b238e4da38028d22bf4dd2b505207b9aba4ebe457d05084c7c"
+      "sha256": "ee186d89e880c81fc93346c70771f59898f76d1b85fa4fd86353e1d834a89a3c"
     },
     {
       "path": "infra/09-platform-ops/renovate/docker-compose.yml",
-      "sha256": "fcd4471f61896a46215fc6d8dca634b40c1574304d423864e36ffa5719ceca8c"
+      "sha256": "8519463a6408e8089190c8d211a9832a639312e2dab57a2f1ee5f18340b3579b"
     },
     {
       "path": "infra/09-platform-ops/restic/docker-compose.yml",
@@ -252,11 +235,11 @@
     },
     {
       "path": "infra/10-communication/stalwart/docker-compose.yml",
-      "sha256": "2d6378e072270ab40c3b1cd72c3012eab299d250cd17ba856e2d3db52daa0a0f"
+      "sha256": "d7c03436d45d01af3fa134d089a7c50b548918bdff5e044ba944371c7ed201c9"
     },
     {
       "path": "infra/11-quality/conftest/docker-compose.yml",
-      "sha256": "d80fb3c591dd9133207d7cdaf022ea14721ca09028d68479269fdc187e181561"
+      "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
     },
     {
       "path": "infra/11-quality/k6/docker-compose.yml",
@@ -264,7 +247,7 @@
     },
     {
       "path": "infra/11-quality/mailpit/docker-compose.yml",
-      "sha256": "6f3b08b45acf2e0d94e3055d6a244073cb7a2b4f99d26e254267c4acfa9265f1"
+      "sha256": "b5c0110557e5e8c82e12224cbfd9152b6a6186ba431fcd930f8a1774b6c41b76"
     },
     {
       "path": "infra/11-quality/pact-broker/docker-compose.yml",
@@ -288,7 +271,7 @@
     },
     {
       "path": "infra/12-analytics/great-expectations/docker-compose.yml",
-      "sha256": "6d11f67675e1d65f88e8ce5451e22ead103737f5457be9e86fc5e41bef651f0d"
+      "sha256": "57895faf9051375ae61956ce9be3ed294b436556bbeb5badf8bf69e77a7b70d5"
     },
     {
       "path": "infra/12-analytics/jupyterlab/docker-compose.yml",
@@ -1310,118 +1293,6 @@
       "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
-      "service": "analytics",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "supabase/logflare:1.50.15",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "supabase/logflare:1.50.15",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
-      "service": "auth",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "supabase/gotrue:v2.197.0",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "supabase/gotrue:v2.197.0",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
       "service": "backup-sqlite-export",
       "scope": "root",
       "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
@@ -1813,62 +1684,6 @@
       ],
       "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
       "source_input_sha256": "9e20a755429a361a7eafa3e95218039445c47440a70327cb66861cda218085d2",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
-      "service": "db",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "supabase/postgres:17.6.1.173",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "supabase/postgres:17.6.1.173",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
     },
@@ -2884,62 +2699,6 @@
       }
     },
     {
-      "service": "functions",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "supabase/edge-runtime:v1.76.2",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "supabase/edge-runtime:v1.76.2",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
       "service": "gatus",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
@@ -3228,55 +2987,6 @@
       "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
       "target_declared_digest": "UNKNOWN: final custom build requires a separate build receipt",
       "target_digest_evidence": "Upstream materials are publicly bound; final local candidate image digest remains unverified."
-    },
-    {
-      "service": "imgproxy",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "darthsim/imgproxy:v4.0.15",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.856450+00:00",
-      "release_url": "https://github.com/imgproxy/imgproxy/releases/tag/v4.0.17",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-09-30T16:10:58Z",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "VERIFY_RUNTIME",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
-      },
-      "source_owner_repository": "imgproxy/imgproxy",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "v4.0.17",
-      "next_fact_command": "gh release view --repo imgproxy/imgproxy --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
     },
     {
       "service": "jupyterlab",
@@ -3922,62 +3632,6 @@
       "target_candidate_reference_status": "Proposed supplier reference only; image/platform metadata NOT_RUN"
     },
     {
-      "service": "kong",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "kong:3.9.3",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "kong:3.9.3",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
       "service": "loki",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
@@ -4119,62 +3773,6 @@
       "target_source_image": "axllent/mailpit:v1.31.4",
       "target_declared_digest": "sha256:b68349e3a014b90c5610bfb26b2ae36f3892d7b8cf25ee140c6c71c98d2fcf48",
       "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
-    },
-    {
-      "service": "meta",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "supabase/postgres-meta:v0.99.0",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "supabase/postgres-meta:v0.99.0",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
     },
     {
       "service": "mlflow",
@@ -6771,63 +6369,22 @@
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "qdrant/qdrant:v1.19.2-unprivileged",
       "target_declared_digest": "sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
-      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
-    },
-    {
-      "service": "realtime",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "supabase/realtime:v2.138.1",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "supabase/realtime:v2.138.1",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed.",
+      "security_warning_review": {
+        "advisory_url": "https://github.com/qdrant/qdrant/security/advisories/GHSA-3gph-6c29-p29v",
+        "affected_upstream_versions": ">=1.18.0, <1.19.2",
+        "patched_upstream_version": "1.19.2",
+        "source_declared_version": "1.19.2",
+        "fresh_runtime_image_observation": {
+          "observed_at": "2026-10-12T07:59:59.926630+00:00",
+          "declared_image": "qdrant/qdrant:v1.19.1-unprivileged",
+          "image_id": "sha256:801777072776dc81b2a9dd2007b2ed487571f21ecd30efffd15ddb1671f2193d",
+          "state": "running",
+          "scope": "Config.Image/Image/State metadata only"
+        },
+        "decision": "WARNING_REQUIRES_RUNTIME_APPLICABILITY_AND_ROLLOUT_REVIEW",
+        "scan_verified": false
+      }
     },
     {
       "service": "redisinsight",
@@ -7018,62 +6575,6 @@
       "target_source_image": "renovate/renovate:44.149.2-full",
       "target_declared_digest": "sha256:fc07a2877ce78abcaba5ac19e5bebb47b228785b6a74bf9834ff6119112bf260",
       "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
-    },
-    {
-      "service": "rest",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "postgrest/postgrest:v16.3",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "postgrest/postgrest:v16.3",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
     },
     {
       "service": "restic",
@@ -7390,7 +6891,23 @@
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
       "target_declared_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
-      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
+      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed.",
+      "security_warning_review": {
+        "advisory_url": "https://github.com/seaweedfs/seaweedfs/security/advisories/GHSA-99q7-x53r-6j4g",
+        "affected_upstream_versions": ">=4.39",
+        "patched_upstream_version": null,
+        "source_declared_version": "4.48",
+        "fresh_runtime_image_observation": {
+          "observed_at": "2026-10-12T07:59:59.926630+00:00",
+          "declared_image": "chrislusf/seaweedfs:4.47",
+          "image_id": "sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882",
+          "state": "running",
+          "scope": "Config.Image/Image/State metadata only"
+        },
+        "decision": "WARNING_REQUIRES_TUS_EXPOSURE_MITIGATION_REVIEW",
+        "mitigation_source": "Independent reviewed proposal to disable unused TUS only; no version bump or runtime change",
+        "scan_verified": false
+      }
     },
     {
       "service": "seaweedfs-master",
@@ -7898,62 +7415,6 @@
       "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed."
     },
     {
-      "service": "storage",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "supabase/storage-api:v1.79.4",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "supabase/storage-api:v1.79.4",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
       "service": "storybook",
       "scope": "root",
       "compose_file": "infra/13-experience/storybook/docker-compose.yml",
@@ -8102,118 +7563,6 @@
       ],
       "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
       "source_input_sha256": "48abf33e7d9e3222f722107b28adcc258f10d87dc15023babe9ea815243d5262",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
-      "service": "studio",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "supabase/studio:2026.09.14-sha-4dd8a95",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "supabase/studio:2026.09.14-sha-4dd8a95",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
-      "service": "supavisor",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "supabase/supavisor:2.9.13",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": null,
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED_FACTS",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "supabase/supavisor:2.9.13",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
     },
@@ -8791,62 +8140,6 @@
       "next_fact_command": "gh release view --repo trinodb/trino --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
       "source_input_sha256": "c802c07053ad4aeaa3e832ce81cf8ef6e2a667703536af1ada5c2385137c0085",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
-    },
-    {
-      "service": "vector",
-      "scope": "root",
-      "compose_file": "infra/04-data/supabase/docker-compose.yml",
-      "current_declared": "timberio/vector:0.58.0-alpine",
-      "profiles_declared": [
-        "supabase"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "0.59.0",
-      "target_version": "0.59.0",
-      "channel": "stable",
-      "checked_at": "2026-10-10T10:33:46.214718+00:00",
-      "release_url": "https://vector.dev/releases/",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-06",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "IMPLEMENT",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-10T10:23:40.053333+00:00",
-        "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Vendor stable resolved; exact image/platform artifact, installed OS/language/provider dependencies, compatibility, native recovery and coordinator-approved HOME rollout are unverified."
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "timberio/vector:0.58.0-alpine",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
     },
@@ -12636,5 +11929,1130 @@
     "native_runtime_meaning": "No deployment or native consumer conclusion",
     "proposal": "service-inventory-integration.patch",
     "common_document_modified": false
+  },
+  "historical_root_census": {
+    "source_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+    "expected_services": [
+      "airflow-apiserver",
+      "airflow-dag-processor",
+      "airflow-init",
+      "airflow-scheduler",
+      "airflow-statsd-exporter",
+      "airflow-triggerer",
+      "airflow-valkey",
+      "airflow-valkey-exporter",
+      "airflow-worker",
+      "alertmanager",
+      "alloy",
+      "analytics",
+      "auth",
+      "backup-sqlite-export",
+      "cadvisor",
+      "comfyui",
+      "conftest",
+      "crawl4ai",
+      "crawl4ai-egress",
+      "db",
+      "dbt",
+      "dbt-db-provision",
+      "dcgm-exporter",
+      "debezium-db-provision",
+      "dev-perf-provision",
+      "dev-pg",
+      "dev-pg-exporter",
+      "dev-pg-monitor-provision",
+      "dev-platform-provision",
+      "dev-valkey",
+      "dev-valkey-exporter",
+      "dozzle",
+      "flink-jobmanager",
+      "flink-taskmanager",
+      "flower",
+      "functions",
+      "gatus",
+      "grafana",
+      "grafana-db-provision",
+      "great-expectations",
+      "imgproxy",
+      "jupyterlab",
+      "k6",
+      "kafbat-ui",
+      "kafka-1",
+      "kafka-connect",
+      "kafka-exporter",
+      "kafka-init",
+      "kafka-rest-proxy",
+      "keycloak",
+      "kong",
+      "loki",
+      "mailpit",
+      "meta",
+      "mlflow",
+      "mlflow-db-provision",
+      "mng-pg",
+      "mng-pg-exporter",
+      "mng-pg-init",
+      "mng-pg-monitor-provision",
+      "mng-valkey",
+      "mng-valkey-exporter",
+      "n8n",
+      "n8n-task-runner",
+      "n8n-task-runner-worker",
+      "n8n-valkey",
+      "n8n-valkey-exporter",
+      "n8n-worker",
+      "neo4j",
+      "nginx",
+      "node-exporter",
+      "oauth2-proxy",
+      "oauth2-proxy-valkey",
+      "oauth2-proxy-valkey-exporter",
+      "ollama",
+      "ollama-exporter",
+      "open-webui",
+      "open_notebook",
+      "openbao",
+      "openbao-agent",
+      "opensearch",
+      "opensearch-dashboards",
+      "opentofu",
+      "pact-broker",
+      "pact-broker-db-provision",
+      "prometheus",
+      "pushgateway",
+      "pyroscope",
+      "qdrant",
+      "realtime",
+      "redisinsight",
+      "registry",
+      "renovate",
+      "rest",
+      "restic",
+      "restic-offsite",
+      "schema-registry",
+      "seaweedfs-buckets",
+      "seaweedfs-filer",
+      "seaweedfs-master",
+      "seaweedfs-s3",
+      "seaweedfs-table-bucket",
+      "seaweedfs-volume",
+      "sonarqube",
+      "spark",
+      "stalwart",
+      "stalwart-config",
+      "storage",
+      "storybook",
+      "storybook-mcp",
+      "studio",
+      "supavisor",
+      "superset",
+      "superset-db-provision",
+      "superset-init",
+      "surrealdb",
+      "tempo",
+      "terrakube-api",
+      "terrakube-executor",
+      "terrakube-ui",
+      "traefik",
+      "trino",
+      "vector",
+      "wiremock"
+    ],
+    "include_inputs": [
+      {
+        "path": "docker-compose.yml",
+        "sha256": "a3c5d8fff3eca41801ecbea829dcb93c3d0680ae0132b0656341c1bc4bbc7a47"
+      },
+      {
+        "path": "infra/01-gateway/nginx/docker-compose.yml",
+        "sha256": "fea2ab70f28d48a36bb0b44a2626e0191c0b8598f26fa047c3bf4a2ab92d4500"
+      },
+      {
+        "path": "infra/01-gateway/traefik/docker-compose.yml",
+        "sha256": "e78675373c31856f1a6e0dcac191024303fc9da0c4c8cd52e6be9c0b10efc1e6"
+      },
+      {
+        "path": "infra/02-auth/keycloak/docker-compose.yml",
+        "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+      },
+      {
+        "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+        "sha256": "6f5b1cb368d86a977c0b8fbba5bfda6bf10b6fa8c6c8de11b305415d7caa5c63"
+      },
+      {
+        "path": "infra/03-security/openbao/docker-compose.yml",
+        "sha256": "4115f5b7e78ed2f125a22f0b9464b5383e72fc8bbbb8c7fbe9b0c86843de9b0c"
+      },
+      {
+        "path": "infra/04-data/dev-db/docker-compose.yml",
+        "sha256": "01c45f339cf57b7a40917462a4dcac20f74e095768d9bac961e8c2776148fb24"
+      },
+      {
+        "path": "infra/04-data/mng-db/docker-compose.yml",
+        "sha256": "261fb6f3ea97598556839b47d095434e67d696b70f0e0e0b34f3dffe326057b0"
+      },
+      {
+        "path": "infra/04-data/neo4j/docker-compose.yml",
+        "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+      },
+      {
+        "path": "infra/04-data/opensearch/docker-compose.yml",
+        "sha256": "6f23979c299a0af280cbcdab69af8f924ed9fa07ed4b899e28b030cc9eab8bd2"
+      },
+      {
+        "path": "infra/04-data/qdrant/docker-compose.yml",
+        "sha256": "d6d84d0e49b68d0f4e6e066c3370253cb6b1e828ad03b65aa2cd072713dafb75"
+      },
+      {
+        "path": "infra/04-data/redisinsight/docker-compose.yml",
+        "sha256": "1e2aae21929c1ba22fd3a18856d99ff9dcbef93bb500ade703505659867fd961"
+      },
+      {
+        "path": "infra/04-data/seaweedfs/docker-compose.yml",
+        "sha256": "6e681a53ad7a32d17087c555ee78618d4938047a2c9a507d227c9f3c7d752abc"
+      },
+      {
+        "path": "infra/04-data/supabase/docker-compose.yml",
+        "sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce"
+      },
+      {
+        "path": "infra/05-messaging/kafka/docker-compose.yml",
+        "sha256": "db19c32edc8da77a1063539fee94cbe88a877ccd33d059b4d5e7c078892213a5"
+      },
+      {
+        "path": "infra/06-observability/docker-compose.yml",
+        "sha256": "2be8dddfe6452a558b572e8139c523bb773a2fd8bd5dffb1f221d938a8988eed"
+      },
+      {
+        "path": "infra/06-observability/dozzle/docker-compose.yml",
+        "sha256": "3a4955d11b479f81e9a7190a147e3234401bca30985795c4ff39fe17e37a2c95"
+      },
+      {
+        "path": "infra/07-workflow/airflow/docker-compose.yml",
+        "sha256": "bed0afcbfc2aa692330816e7465f60373bb07319fe92181fba6a28b52ad356fa"
+      },
+      {
+        "path": "infra/07-workflow/n8n/docker-compose.yml",
+        "sha256": "9709ad7f17d10912c0d10fa8ffd2da63b2c536d6b2f20ac99a3c6fac1e62f023"
+      },
+      {
+        "path": "infra/08-ai/comfyui/docker-compose.yml",
+        "sha256": "f603ed35a889029a1eee9071d26c0de3e650e7fe8c4e18226e0778998a81827e"
+      },
+      {
+        "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+        "sha256": "9e20a755429a361a7eafa3e95218039445c47440a70327cb66861cda218085d2"
+      },
+      {
+        "path": "infra/08-ai/mlflow/docker-compose.yml",
+        "sha256": "f12df92d55c6ed8cb1c4b85f768e3fdc21cf146233495c51ce3299394ab123e0"
+      },
+      {
+        "path": "infra/08-ai/ollama/docker-compose.yml",
+        "sha256": "224428c71c55d19366ad0def25a5b98031b3164e0c805ac1a891bb05ecad01c8"
+      },
+      {
+        "path": "infra/08-ai/open-notebook/docker-compose.yml",
+        "sha256": "5b05b3fc817fac037c4520a08377ba5950bfc123be56b43558683e732bb32d38"
+      },
+      {
+        "path": "infra/08-ai/open-webui/docker-compose.yml",
+        "sha256": "8419f17727da84ea18399efcb9900ace4df35af2a2f19420182827d3b0b61554"
+      },
+      {
+        "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+        "sha256": "2e72f697b21b45e175639049d8ad680be2c99f5be403743753d7bab76ef88e79"
+      },
+      {
+        "path": "infra/09-platform-ops/registry/docker-compose.yml",
+        "sha256": "587a47acb8b9b8b238e4da38028d22bf4dd2b505207b9aba4ebe457d05084c7c"
+      },
+      {
+        "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+        "sha256": "fcd4471f61896a46215fc6d8dca634b40c1574304d423864e36ffa5719ceca8c"
+      },
+      {
+        "path": "infra/09-platform-ops/restic/docker-compose.yml",
+        "sha256": "ad3975ee1f8a839b53025bc1f7010e5462229e563ae7b599d013492d2e0c8563"
+      },
+      {
+        "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+        "sha256": "49b086010504cc2f4a62983e658f5df3313019d47ae888e3381cbcc3c9037e81"
+      },
+      {
+        "path": "infra/10-communication/stalwart/docker-compose.yml",
+        "sha256": "2d6378e072270ab40c3b1cd72c3012eab299d250cd17ba856e2d3db52daa0a0f"
+      },
+      {
+        "path": "infra/11-quality/conftest/docker-compose.yml",
+        "sha256": "d80fb3c591dd9133207d7cdaf022ea14721ca09028d68479269fdc187e181561"
+      },
+      {
+        "path": "infra/11-quality/k6/docker-compose.yml",
+        "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+      },
+      {
+        "path": "infra/11-quality/mailpit/docker-compose.yml",
+        "sha256": "6f3b08b45acf2e0d94e3055d6a244073cb7a2b4f99d26e254267c4acfa9265f1"
+      },
+      {
+        "path": "infra/11-quality/pact-broker/docker-compose.yml",
+        "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+      },
+      {
+        "path": "infra/11-quality/sonarqube/docker-compose.yml",
+        "sha256": "3b339109cec8a59af343d0f77ee7a2aba8c07eac986ee279d0ac798d43d1966d"
+      },
+      {
+        "path": "infra/11-quality/wiremock/docker-compose.yml",
+        "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+      },
+      {
+        "path": "infra/12-analytics/dbt/docker-compose.yml",
+        "sha256": "7e8148601f9e60410c40e39cb19e431ad8ceabd7a0075ed1ac0aa7cde05de13b"
+      },
+      {
+        "path": "infra/12-analytics/flink/docker-compose.yml",
+        "sha256": "1392ea2fd3940c84578adeb2443f3af9d45f2296b5a29fb1610707101b99a88f"
+      },
+      {
+        "path": "infra/12-analytics/great-expectations/docker-compose.yml",
+        "sha256": "6d11f67675e1d65f88e8ce5451e22ead103737f5457be9e86fc5e41bef651f0d"
+      },
+      {
+        "path": "infra/12-analytics/jupyterlab/docker-compose.yml",
+        "sha256": "fa6b255010f7eb4012677c00ea31c549aef40bb3dba8aa563b3411547749751a"
+      },
+      {
+        "path": "infra/12-analytics/spark/docker-compose.yml",
+        "sha256": "eeb983b22d99fde28ac4bd134926bdea9d334abffdc55ff6b9d6f514670b76cf"
+      },
+      {
+        "path": "infra/12-analytics/superset/docker-compose.yml",
+        "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+      },
+      {
+        "path": "infra/12-analytics/trino/docker-compose.yml",
+        "sha256": "c802c07053ad4aeaa3e832ce81cf8ef6e2a667703536af1ada5c2385137c0085"
+      },
+      {
+        "path": "infra/13-experience/storybook/docker-compose.yml",
+        "sha256": "48abf33e7d9e3222f722107b28adcc258f10d87dc15023babe9ea815243d5262"
+      }
+    ],
+    "meaning": "Preserved former root membership; relocated LAB rows are not current ROOT acceptance inputs."
+  },
+  "historical_lab_entries": [
+    {
+      "service": "analytics",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "analytics",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "supabase/logflare:1.50.15",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "supabase/logflare:1.50.15",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "auth",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "auth",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "supabase/gotrue:v2.197.0",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "supabase/gotrue:v2.197.0",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "db",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "db",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "supabase/postgres:17.6.1.173",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "supabase/postgres:17.6.1.173",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "functions",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "functions",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "supabase/edge-runtime:v1.76.2",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "supabase/edge-runtime:v1.76.2",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "imgproxy",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "imgproxy",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "darthsim/imgproxy:v4.0.15",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": "2026-10-10T10:28:22.856450+00:00",
+        "release_url": "https://github.com/imgproxy/imgproxy/releases/tag/v4.0.17",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": "2026-09-30T16:10:58Z",
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "VERIFY_RUNTIME",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        },
+        "source_owner_repository": "imgproxy/imgproxy",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "upstream_reported_tag": "v4.0.17",
+        "next_fact_command": "gh release view --repo imgproxy/imgproxy --json tagName,publishedAt,isPrerelease,url",
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "kong",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "kong",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "kong:3.9.3",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "kong:3.9.3",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "meta",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "meta",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "supabase/postgres-meta:v0.99.0",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "supabase/postgres-meta:v0.99.0",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "realtime",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "realtime",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "supabase/realtime:v2.138.1",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "supabase/realtime:v2.138.1",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "rest",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "rest",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "postgrest/postgrest:v16.3",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "postgrest/postgrest:v16.3",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "storage",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "storage",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "supabase/storage-api:v1.79.4",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "supabase/storage-api:v1.79.4",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "studio",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "studio",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "supabase/studio:2026.09.14-sha-4dd8a95",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "supabase/studio:2026.09.14-sha-4dd8a95",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "supavisor",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "supavisor",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "supabase/supavisor:2.9.13",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "UNKNOWN",
+        "target_version": "UNKNOWN",
+        "channel": "UNKNOWN",
+        "checked_at": null,
+        "release_url": null,
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": null,
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "BLOCKED_FACTS",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "supabase/supavisor:2.9.13",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    },
+    {
+      "service": "vector",
+      "current_scope": "lab",
+      "current_compose_file": "labs/supabase.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "vector",
+        "scope": "root",
+        "compose_file": "infra/04-data/supabase/docker-compose.yml",
+        "current_declared": "timberio/vector:0.58.0-alpine",
+        "profiles_declared": [
+          "supabase"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "0.59.0",
+        "target_version": "0.59.0",
+        "channel": "stable",
+        "checked_at": "2026-10-10T10:33:46.214718+00:00",
+        "release_url": "https://vector.dev/releases/",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": "2026-10-06",
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "IMPLEMENT",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-10T10:23:40.053333+00:00",
+          "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
+          "reason": "Vendor stable resolved; exact image/platform artifact, installed OS/language/provider dependencies, compatibility, native recovery and coordinator-approved HOME rollout are unverified."
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "timberio/vector:0.58.0-alpine",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+        "source_input_sha256": "7b16b53c1d56234dd2c1fef85be8fb6203af38c7c82c49384c8f8710b1c65dce",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      }
+    }
+  ],
+  "root_scope_reconciliation": {
+    "observed_at": "2026-10-12T07:42:27.839683+00:00",
+    "source_revision": "69b070b759e9ca235d5aa9ee31c2ab311df4dffc",
+    "input_manifest_sha256": "f6f30b50738c8ac33e4b6f651082ee1612d4661faa8ad906c89e65deefa29564",
+    "root_service_count": 111,
+    "excluded_lab_count": 13,
+    "modernization_policy": "Latest user resume restores current stable-version updates and official documentation/compatibility/recovery investigation; no-newer verified stable lookup requires no bump; scanner source corrections remain limited to concrete reviewed warnings/defects; UNKNOWN is not clean.",
+    "vendor_lookups_rerun": false,
+    "native_scans_rerun": false,
+    "deployment_rerun": false,
+    "meaning": "Current public source scope only; existing dated vendor/runtime/scan fields preserve their original observations."
   }
 }
