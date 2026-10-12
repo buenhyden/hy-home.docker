@@ -1,10 +1,10 @@
 ---
 title: "Kafka 메시징"
-version: "1.2.2"
+version: "1.2.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-12"
 created: "2025-11-12"
 ---
 
@@ -25,9 +25,6 @@ Kafka와 그 companion 서비스들의 operator 및 maintainer를 대상으로 �
 `kafka-exporter`, `kafka-init`, `debezium-db-provision`을 정의합니다. 정상
 selector는 `messaging`, `messaging-broker`, `messaging-schema`,
 `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc`입니다.
-[`labs/kafka-cluster.yml`](../../../labs/kafka-cluster.yml)은 독립된
-`lab-kafka` 프로파일의 브로커 3개, exporter와 init job을 정의합니다.
-정상 root는 LAB 파일을 include하지 않으며 LAB는 독립 Compose project입니다.
 
 Connect는 Debezium PostgreSQL 플러그인을 사용해
 [`Dockerfile.connect`](Dockerfile.connect)로부터 빌드됩니다.
@@ -41,9 +38,7 @@ Connect는 Debezium PostgreSQL 플러그인을 사용해
 ## Structure
 
 정상 broker와 Connect 상태는 `${DEFAULT_MESSAGE_BROKER_DIR}/kafka` 아래의 별도
-bind 기반 volume을 사용합니다. LAB 브로커는 `${LAB_DATA_DIR}/kafka`의
-별도 디렉터리와 LAB 전용 network·cluster ID를 사용하며 정상 offset과
-상태를 공유하지 않습니다. 서비스들은 `kafka_net`에 참여하고 라우팅되는
+bind 기반 volume을 사용합니다. 서비스들은 `kafka_net`에 참여하고 라우팅되는
 서비스는 `edge_net`에도 참여합니다. Broker, controller, 게시된 broker/JMX
 listener는 PLAINTEXT이며 broker TLS/클라이언트 인증은 선언되어 있지
 않습니다. Schema Registry, Connect, REST, Kafbat HTTP 포트는 내부용으로
@@ -65,24 +60,21 @@ Traefik 라우트는 `gateway-standard-chain@file`을 사용하며 forwarding-au
 
 ## Configuration
 
-정상 `kafka_net`과 별도 LAB network·cluster ID·상태 경로를 구분합니다. secret, 라우트, 포트 및 healthcheck 계약은 위 구조와 각 Compose에 따릅니다.
+정상 `kafka_net`의 secret, 라우트, 포트 및 healthcheck 계약은 위 구조와 Compose에 따릅니다.
 
 ## Validation
 
-아래 명령으로 정상 구성과 LAB 구성을 각각 렌더합니다. 렌더 성공은 브로커 복구나 CDC 재처리 성공을 증명하지 않습니다.
+아래 명령으로 정상 구성을 렌더합니다. 렌더 성공은 브로커 복구나 CDC 재처리 성공을 증명하지 않습니다.
 
 ## Usage
 
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet
 docker compose --env-file .env.example --profile messaging config --services
-docker compose --env-file .env.example -f labs/kafka-cluster.yml --profile lab-kafka config --quiet
 ```
 
-정상 `kafka-init`은 복제 계수 1로 토픽을 만들고, LAB
-`lab-kafka-init`은 독립된 세 브로커에 복제 계수 3으로 LAB 토픽을 만듭니다.
-`LAB_KAFKA_CLUSTER_ID`는 정상 `KAFKA_CLUSTER_ID`와 다른 유효한 KRaft ID여야
-합니다. 이 명령은 정적 render이며 서비스와 topic을 시작·생성하지 않습니다.
+정상 `kafka-init`은 복제 계수 1로 토픽을 만듭니다. 위 명령은 정적 render이며
+서비스와 topic을 시작·생성하지 않습니다.
 
 복구에는 토픽 record/config, 파티션, consumer offset, KRaft metadata, Schema
 Registry 이력/ID, Connect 정의, 내부 상태가 포함되어야 합니다. 승인된
