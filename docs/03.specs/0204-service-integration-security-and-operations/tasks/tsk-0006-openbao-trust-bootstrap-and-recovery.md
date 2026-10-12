@@ -1763,6 +1763,31 @@ The first restore remains contract planning only: target absent, no restore
 execution, permanent backup issuer denied and its file absent. Task status
 remains blocked.
 
+### W23 Pre-Execution FILE_USABILITY Checkpoint — 2026-10-13
+
+At receipt head `08891676e031d8900efe6250c1cc53260855e608`, candidate-quality
+failed with exit 2 in `leaf.local-diff-hygiene`: the pull-request-range adapter
+used event base `6de86f9dc36b087cb3a56f0ac7b346c56b58b291` while the checkout
+merge parent was `0a00d34bc0c8df30120100be181fee0f4ca49ceb`. This is a CI
+base-race receipt, not a source or runtime failure; earlier public leaves,
+CodeQL and GitGuardian passed. The fetch/main and root-HEAD observation window
+was 2026-10-12T19:03:53Z–2026-10-12T19:06:29Z; an exact wall-clock capture is
+NOT_CAPTURED. The freshly fetched main was the same
+`0a00d34bc0c8df30120100be181fee0f4ca49ceb`; its 11 foreign P03 paths have no
+P01-owned ten-path overlap, and the catalog renderer is unchanged.
+
+Before any target write, the full-App first plan was BLOCKED because fresh OIDC
+TTL was 1,166 seconds, below its 1,500-second requirement. After that block, no
+renewal, target credential mount/use, snapshot save or restore retry occurred.
+The canonical
+`first_isolated_restoreability_evidence_generation` FILE_USABILITY form keeps
+the same first attempt `p01-home-empty-restore-20261013-01`, selected path,
+container and snapshot as UNUSED and excludes OIDC use; it records neither a
+target write nor custody proof. CURRENT_VERSION_AUTH and CONSUMER_READ remain
+NOT_RUN; HOME_COLD_BOOT, INDEPENDENT_CUSTODY, SELECTED_EMPTY_RESTORE and
+RECOVERY are also NOT_RUN. QA file layout proof and final independent readiness
+review are pending, and Task status remains blocked.
+
 Checkpoint validation passed: Task metadata selected 1 document with 0
 violations, and `check-script-manifest` and `git diff --check` each exited 0.
 These are SOURCE/DOC checks, not runtime acceptance. The OpenBao 2.7.1
