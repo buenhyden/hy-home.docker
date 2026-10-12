@@ -23,6 +23,54 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 PROFILES = ROOT / "docs/99.templates/registry.json"
 
 
+class LabDocumentSelectionTests(unittest.TestCase):
+    def test_registered_lab_documents_are_collected_before_and_after_staging(self):
+        from scripts.lib.document_governance.metadata.lifecycle import collect_records
+        from scripts.lib.document_governance.metadata.profile import (
+            build_registry_profiles,
+        )
+        from scripts.lib.document_governance.registry import load_registry
+
+        profiles = build_registry_profiles(load_registry(PROFILES))
+        routes = ("labs/locust/README.md", "labs/postgresql-ha.md")
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            for route in routes:
+                path = root / route
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(
+                    '---\ntitle: "LAB fixture"\ntype: "common/readme"\n'
+                    'status: "active"\nowner: "@fixture"\n---\n# LAB fixture\n',
+                    encoding="utf-8",
+                )
+            for staged in (False, True):
+                with self.subTest(staged=staged):
+                    if staged:
+                        subprocess.run(
+                            ["git", "-C", str(root), "add", "--", *routes], check=True
+                        )
+                    records = collect_records(root, profiles, selected_paths=routes)
+                    self.assertEqual(set(routes), {r.path.as_posix() for r in records})
+                    self.assertEqual(
+                        {"package-readme"}, {r.artifact_type for r in records}
+                    )
+
+    def test_lab_selection_does_not_accept_parent_traversal(self):
+        from scripts.lib.document_governance.metadata.profile import (
+            _normalized_target_path,
+        )
+
+        for path in (
+            "../labs/README.md",
+            "labs/../README.md",
+            "/labs/README.md",
+            "labs\\README.md",
+        ):
+            with self.subTest(path=path):
+                self.assertIsNone(_normalized_target_path(path))
+
+
 class FourDigitDocumentIdentityTests(unittest.TestCase):
     def test_native_migration_compaction_requires_both_exact_provenance_states(
         self,
