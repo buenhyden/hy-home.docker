@@ -1,6 +1,6 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -571,6 +571,49 @@ native acceptance, staged gates and independent review. Record exact commands,
 input SHA, exit status, failures/corrections, rollback proof and local-main
 receipt. Tests do not establish deployment, deletion, migration or recovery
 without their actual evidence.
+
+### W69 completed-source worktree cleanup — 2026-10-12
+
+The user's current instruction prioritizes integration and removal of completed
+worktrees and development branches. At main
+`fc3a03e5f2a22750118b929d1f099bf5a32bed33`, twelve clean source branches
+already had every commit in main; no content merge was needed. Normal
+`git worktree remove` and `git branch -d` removed their twelve worktrees and
+local branches: P01 recovery, P02 catalog, both P03 branches, P04 pipeline,
+three accepted P05 branches, P07 optimization, P08 layout, P10 preparation and
+workflow source integration. The clean, merged, detached P01 catalog-document
+QA worktree was also removed. Total: thirteen worktrees and twelve local
+branches. Their disposable scripts, test invocations, logs and caches were
+removed with the worktrees; permanent regressions remain tracked in main.
+
+Before removal, the coordinator rechecked exact HEAD/branch, empty index and
+worktree status, and ancestry. Sixty-nine selected public handoff records were
+copied byte-for-byte into the ignored private directory
+`.agent-work/accepted-worktree-handoffs/20261012/`. Four unknown-content P02
+preview documents were preserved separately as opaque private copies, without
+interpretation or published hashes. They were not imported into Git. The
+preservation index SHA-256 is
+`41ab4fea415625fcf08537cedf8b14e775b1c7371344de2b52fbd3038d72a4e3`.
+The two cleanup result receipts in that directory retain exact removed paths,
+branch names and input SHAs. No forced worktree removal, reset, stash, clean,
+force push, service change, credential change or data deletion was used.
+
+Fresh remote verification confirmed P01 recovery's exact head was an ancestor
+of remote main before deleting only that remote development ref. An initial
+P01 trust ancestry check failed, but the coordinator incorrectly continued its
+local and remote ref deletion. The original ref
+`bb63f27ed62ccf860aa8af2b8e5603dce481b12e` was restored locally and remotely,
+including its tracking relationship; remote equality was rechecked. No commit
+was lost. P01 trust remains excluded until its squash/reconciliation history is
+independently verified. Subsequent cleanup executes deletion only after every
+prerequisite succeeds in the same guarded sequence.
+
+The shared root's twenty-four foreign paths, old P05's twenty-eight staged
+paths, dirty SEC01/SMTP01 worktrees, dirty nested QA, and active operator or
+source-review workspaces remain preserved. Clean source delivery does not close
+operational Tasks. W65–W68, full SEC01/HOME, actual SMTP provider delivery,
+OpenBao authentication/recovery and the remaining owning runtime criteria stay
+open. This cleanup is not native E2E, migration, rotation or recovery evidence.
 
 ### Dependency Matrix
 
