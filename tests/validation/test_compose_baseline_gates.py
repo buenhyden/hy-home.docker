@@ -3580,6 +3580,35 @@ class SeaweedfsContractTests(unittest.TestCase):
             )
             self.assertIn("seaweedfs_jwt_filer_key", service["secrets"], name)
 
+    def test_unused_tus_is_disabled_without_losing_filer_or_s3_health(self) -> None:
+        services = self.services()
+        filer = services["seaweedfs-filer"]
+        command = filer["command"]
+        self.assertEqual(
+            ["-tusBasePath="],
+            [flag for flag in command if flag.startswith("-tusBasePath")],
+            "TUS must stay disabled until its cross-prefix JWT flaw is resolved",
+        )
+        self.assertFalse(any(flag.startswith("-disableHttp") for flag in command))
+        self.assertIn("-port=${SEAWEEDFS_FILER_HTTP_PORT:-8888}", command)
+        self.assertIn("-port.grpc=${SEAWEEDFS_FILER_GRPC_PORT:-18888}", command)
+        self.assertIn(
+            "http://localhost:${SEAWEEDFS_FILER_HTTP_PORT:-8888}/healthz",
+            " ".join(filer["healthcheck"]["test"]),
+        )
+        s3 = services["seaweedfs-s3"]
+        self.assertIn(
+            "-filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}",
+            s3["command"],
+        )
+        self.assertEqual(
+            "service_healthy", s3["depends_on"]["seaweedfs-filer"]["condition"]
+        )
+        self.assertIn(
+            "http://localhost:${SEAWEEDFS_S3_HTTP_PORT:-8333}/healthz",
+            " ".join(s3["healthcheck"]["test"]),
+        )
+
     def test_state_is_persistent_and_only_s3_is_routed(self) -> None:
         services = self.services()
         commands = {
