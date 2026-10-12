@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-12"
 created: "2025-11-24"
 ---
 
@@ -90,7 +90,7 @@ AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와
 | `tracing profiling obs-gpu` | HOME Alloy, Traefik, Grafana, Prometheus가 이미 전송하거나 스크레이프하는 HOME 트레이스(Tempo), 프로파일(Pyroscope), GPU 메트릭(DCGM exporter) |
 | `registry` | HOME 개발용 컨테이너 레지스트리 |
 | `tooling` | Registry와 SonarQube; HOME에서 제외됨(registry만 `registry`를 통해 HOME에 합류) |
-| `testing` | k6와 Locust master/worker 쌍; HOME에서 제외됨 |
+| `testing` | k6의 1회성 작업; HOME에서 제외됨 |
 | `iac` | OpenTofu와 Terrakube API/UI/executor; HOME에서 제외됨 |
 | `dependency-update` | Renovate 업데이트 작업만; `tooling`과 HOME에서 제외됨 |
 | `experience` | 공유 Storybook 정적 origin; HOME에서 제외되고 관리자 로그인 필요 |
@@ -127,14 +127,14 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 | **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / 선택적; disposition 참고 |
 | **03** | **Security** | [OpenBao](./03-security/openbao) | HOME 부트스트랩 |
 | **04** | **Data** | [mng-db](./04-data/mng-db), [SeaweedFS](./04-data/seaweedfs), [Qdrant](./04-data/qdrant), [RedisInsight](./04-data/redisinsight) | HOME / 선택적; disposition 참고 |
-| **05** | **Messaging** | [Kafka](./05-messaging/kafka) | 선택적; 클러스터는 LAB |
+| **05** | **Messaging** | [Kafka](./05-messaging/kafka) | 선택적; 패키지의 profile 참조 |
 | **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo), [Dozzle](./06-observability/dozzle) | HOME / 선택적; disposition 참고 |
 | **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / 선택적; disposition 참고 |
 | **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui), [ComfyUI](./08-ai/comfyui), [Open Notebook](./08-ai/open-notebook), [MLflow](./08-ai/mlflow) | HOME / 선택적 |
 | **09** | **Platform Operations** | [OpenTofu](./09-platform-ops/opentofu), [Terrakube](./09-platform-ops/terrakube), [Registry](./09-platform-ops/registry), [Renovate](./09-platform-ops/renovate), [Restic](./09-platform-ops/restic) | HOME / 명시적 작업 |
 | **10** | **Communication** | [Stalwart](./10-communication/stalwart) | 선택적 내부 메일 |
-| **11** | **Quality** | [k6](./11-quality/k6), [Locust](./11-quality/locust), [SonarQube](./11-quality/sonarqube), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |
-| **12** | **Analytics** | [Flink](./12-analytics/flink), [Trino](./12-analytics/trino), [Superset](./12-analytics/superset), [dbt](./12-analytics/dbt), [JupyterLab](./12-analytics/jupyterlab) | OPTIONAL / LAB |
+| **11** | **Quality** | [k6](./11-quality/k6), [SonarQube](./11-quality/sonarqube), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |
+| **12** | **Analytics** | [Flink](./12-analytics/flink), [Trino](./12-analytics/trino), [Superset](./12-analytics/superset), [dbt](./12-analytics/dbt), [JupyterLab](./12-analytics/jupyterlab) | OPTIONAL; 패키지의 profile 참조 |
 | **13** | **Experience** | [Storybook](./13-experience/storybook) | OPTIONAL / `experience`; HOME 제외 |
 
 ```text
@@ -198,6 +198,8 @@ tier Compose가 여러 하위 설정 폴더를 묶고 Dozzle만 별도 leaf Comp
 4. 이 README의 "Infrastructure Tiers" 테이블을 업데이트하여 추적성을 유지한다.
 
 ## Related Documents
+
+- [독립 LAB 인덱스](../labs/README.md)
 
 - Official Guides (`docs/05.operations/README.md`)
 - Operation Specs (`docs/05.operations/README.md`)
