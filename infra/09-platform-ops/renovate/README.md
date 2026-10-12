@@ -1,10 +1,10 @@
 ---
 title: "Renovate Implementation"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-12"
 ---
 
 # Renovate
@@ -41,6 +41,13 @@ renovate/
 ## Tech Stack
 
 런타임 고정 값은 [Compose](docker-compose.yml)에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션이며 배포 매니페스트가 아닙니다.
+
+2026-10-12 [공식 릴리스](https://github.com/renovatebot/renovate/releases/tag/44.151.3)와 <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+[공식 배포 안내](https://docs.renovatebot.com/getting-started/running/)를 대조하고, Docker `full` channel과
+명시적 패치 태그의 OCI index가 같은지 확인했습니다. GitLab tag digest 조회의 실패 캐시와 ref 인코딩을
+수정한 패치이며 기존 full 변형·설정·예약 실행·토큰 참조를 보존합니다. 실제 유지보수 실행과
+원격 변경은 미실행입니다. 복구 시 이전 검토된 이미지 고정을 되돌리고, 실패한 실행의 캐시 처리와
+이미 생성된 원격 변경을 별도로 확인해야 합니다.
 
 ## Configuration
 
