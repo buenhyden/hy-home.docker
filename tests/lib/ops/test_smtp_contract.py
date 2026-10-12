@@ -1,5 +1,6 @@
 """Synthetic SMTP source and retirement regressions; unittest CI compatible."""
 
+import hashlib
 import io
 import json
 import os
@@ -91,6 +92,76 @@ def public_source(tree):
         yaml.safe_dump({"services": unify(model())["services"]})
     )
     return tree
+
+
+def common_source(tree, *, old_path=False, service="template-infra-med"):
+    common = tree / "infra/common-optimizations.yml"
+    common.parent.mkdir(parents=True, exist_ok=True)
+    template = {"init": True, "labels": {"hy-home.managed": "true"}}
+    if old_path:
+        template["environment"] = {"OLD_SMTP": OLD_PATH}
+    common.write_text(yaml.safe_dump({"services": {service: template}}))
+    return common
+
+
+def lab_source(
+    tree,
+    *,
+    old_source=False,
+    missing_wrapper=False,
+    image="supabase/gotrue:v2.197.0",
+    entrypoint=None,
+    environment=None,
+    profiles=None,
+    labels=None,
+    extends=None,
+    command=None,
+    write_common=True,
+):
+    if write_common:
+        common_source(tree)
+    lab = tree / "labs/supabase.yml"
+    lab.parent.mkdir(parents=True, exist_ok=True)
+    if entrypoint is None:
+        entrypoint = [
+            "/bin/sh",
+            "-ec",
+            'fail() { echo \'SMTP secret input rejected\' >&2; exit 1; }\n[ "$${GOTRUE_SMTP_PASS+x}" != x ] || fail\n[ -n "$${GOTRUE_SMTP_PASS_FILE:-}" ] || fail\n[ -f "$$GOTRUE_SMTP_PASS_FILE" ] && [ -r "$$GOTRUE_SMTP_PASS_FILE" ] && [ -s "$$GOTRUE_SMTP_PASS_FILE" ] || fail\nGOTRUE_SMTP_PASS="$$(cat "$$GOTRUE_SMTP_PASS_FILE" 2>/dev/null)" || fail\n[ -n "$$GOTRUE_SMTP_PASS" ] || fail\nexport GOTRUE_SMTP_PASS\n[ "$$#" -gt 0 ] || fail\nexec "$$@"\n',
+            "--",
+        ]
+    if environment is None:
+        environment = {"GOTRUE_SMTP_PASS_FILE": "/run/secrets/supabase_smtp_password"}
+    service = {
+        "profiles": ["supabase"] if profiles is None else profiles,
+        "extends": {
+            "file": "../infra/common-optimizations.yml",
+            "service": "template-infra-med",
+        }
+        if extends is None
+        else extends,
+        "image": image,
+        "labels": {"hy-home.tier": "lab"} if labels is None else labels,
+        "secrets": [{"source": "smtp_password", "target": "supabase_smtp_password"}],
+        "environment": environment,
+        "entrypoint": entrypoint,
+    }
+    selected_command = ["auth"] if command is None else command
+    if not missing_wrapper:
+        service["command"] = selected_command
+    secrets = {"smtp_password": {"file": "../" + CANONICAL_PATH}}
+    if old_source:
+        secrets["supabase_smtp_password"] = {"file": "../" + OLD_PATH}
+        service["secrets"] = ["supabase_smtp_password"]
+    lab.write_text(
+        yaml.safe_dump(
+            {
+                "name": "hy-home-lab-supabase",
+                "secrets": secrets,
+                "services": {"auth": service},
+            }
+        )
+    )
+    return lab
 
 
 class SMTPContractTests(unittest.TestCase):
@@ -388,6 +459,237 @@ class SMTPContractTests(unittest.TestCase):
         rootfile.write_text(yaml.safe_dump(document))
         (self.root / "infra/legacy.yml").write_text(
             yaml.safe_dump({"x-legacy": OLD_PATH})
+        )
+        with self.assertRaises(ContractError):
+            source_hashes(self.root)
+
+    def test_source_hashes_include_valid_lab_supabase_public_source_digest(self):
+        self._prepare()
+        lab = lab_source(self.root)
+        hashes = source_hashes(self.root)
+        self.assertEqual(
+            hashlib.sha256(lab.read_bytes()).hexdigest(), hashes["labs/supabase.yml"]
+        )
+        self.assertTrue(set(hashes) >= {"docker-compose.yml", "infra/auth.yml"})
+
+    def test_lab_auth_satisfies_consumer_when_root_auth_is_not_included(self):
+        self._prepare()
+        rootfile = self.root / "docker-compose.yml"
+        document = yaml.safe_load(rootfile.read_text())
+        document["include"] = []
+        rootfile.write_text(yaml.safe_dump(document))
+        lab_source(self.root)
+        hashes = source_hashes(self.root)
+        self.assertIn("labs/supabase.yml", hashes)
+
+    def test_lab_source_rejects_root_gotrue_reintroduction(self):
+        self._prepare()
+        include = self.root / "infra/auth.yml"
+        document = yaml.safe_load(include.read_text())
+        document["services"]["auth"]["image"] = "supabase/gotrue:v2.197.0"
+        include.write_text(yaml.safe_dump(document))
+        lab_source(self.root)
+        with self.assertRaisesRegex(ContractError, "root_gotrue_forbidden"):
+            source_hashes(self.root)
+
+    def test_root_gotrue_rejected_without_lab_source(self):
+        self._prepare()
+        include = self.root / "infra/auth.yml"
+        document = yaml.safe_load(include.read_text())
+        document["services"]["auth"]["image"] = "docker.io/supabase/gotrue:v2.197.0"
+        include.write_text(yaml.safe_dump(document))
+        with self.assertRaisesRegex(ContractError, "root_gotrue_forbidden"):
+            source_hashes(self.root)
+
+    def test_root_gotrue_interpolated_image_fails_closed(self):
+        self._prepare()
+        include = self.root / "infra/auth.yml"
+        document = yaml.safe_load(include.read_text())
+        document["services"]["auth"]["image"] = (
+            "${GOTRUE_IMAGE:-supabase/gotrue:v2.197.0}"
+        )
+        include.write_text(yaml.safe_dump(document))
+        with self.assertRaises(ContractError):
+            source_hashes(self.root)
+
+    def test_root_registry_qualified_gotrue_rejected_without_lab_source(self):
+        self._prepare()
+        include = self.root / "infra/auth.yml"
+        document = yaml.safe_load(include.read_text())
+        document["services"]["auth"]["image"] = "ghcr.io/supabase/gotrue:v2.197.0"
+        include.write_text(yaml.safe_dump(document))
+        with self.assertRaisesRegex(ContractError, "root_gotrue_forbidden"):
+            source_hashes(self.root)
+
+    def test_lab_source_rejects_root_extends_inherited_gotrue(self):
+        self._prepare()
+        parent = self.root / "infra/root-auth-parent.yml"
+        parent.write_text(
+            yaml.safe_dump(
+                {"services": {"template-auth": {"image": "supabase/gotrue:v2.197.0"}}}
+            )
+        )
+        include = self.root / "infra/auth.yml"
+        document = yaml.safe_load(include.read_text())
+        document["services"]["auth"].pop("image", None)
+        document["services"]["auth"]["extends"] = {
+            "file": "root-auth-parent.yml",
+            "service": "template-auth",
+        }
+        include.write_text(yaml.safe_dump(document))
+        lab_source(self.root)
+        with self.assertRaisesRegex(ContractError, "root_gotrue_forbidden"):
+            source_hashes(self.root)
+
+    def test_lab_supabase_public_shape_rejects_old_source_and_missing_wrapper(self):
+        for case, kwargs in (
+            ("old_source", {"old_source": True}),
+            ("missing_wrapper", {"missing_wrapper": True}),
+            ("wrong_image", {"image": "example.invalid/gotrue:v2.197.0"}),
+        ):
+            with self.subTest(case=case):
+                self._prepare()
+                lab_source(self.root, **kwargs)
+                with self.assertRaises(ContractError):
+                    source_hashes(self.root)
+
+    def test_lab_supabase_public_shape_rejects_reviewer_negative_probes(self):
+        cases = (
+            ("entrypoint_true", {"entrypoint": ["/bin/true"]}),
+            (
+                "wrong_file_env",
+                {"environment": {"GOTRUE_SMTP_PASS_FILE": "/run/secrets/unrelated"}},
+            ),
+            ("scalar_profiles", {"profiles": "prefix-supabase-suffix"}),
+            (
+                "direct_secret_env",
+                {
+                    "environment": {
+                        "GOTRUE_SMTP_PASS_FILE": "/run/secrets/supabase_smtp_password",
+                        "GOTRUE_SMTP_PASS": "inline",
+                    }
+                },
+            ),
+            ("malformed_labels", {"labels": ["hy-home.tier=lab"]}),
+            ("malformed_env", {"environment": ["GOTRUE_SMTP_PASS_FILE=x"]}),
+            ("empty_entrypoint_body", {"entrypoint": ["/bin/sh", "-ec", "", "--"]}),
+            (
+                "arbitrary_entrypoint_body",
+                {
+                    "entrypoint": [
+                        "/bin/sh",
+                        "-ec",
+                        'GOTRUE_SMTP_PASS_FILE=ok; cat "$$GOTRUE_SMTP_PASS_FILE"; export GOTRUE_SMTP_PASS; exec "$$@"',
+                        "--",
+                    ]
+                },
+            ),
+            ("wrong_command", {"command": ["/bin/true"]}),
+        )
+        for case, kwargs in cases:
+            with self.subTest(case=case):
+                self._prepare()
+                lab_source(self.root, **kwargs)
+                with self.assertRaises(ContractError):
+                    source_hashes(self.root)
+
+    def test_lab_source_hashes_include_exact_common_extends_parent(self):
+        self._prepare()
+        common = common_source(self.root)
+        lab = lab_source(self.root, write_common=False)
+        hashes = source_hashes(self.root)
+        self.assertEqual(
+            hashlib.sha256(lab.read_bytes()).hexdigest(), hashes["labs/supabase.yml"]
+        )
+        self.assertEqual(
+            hashlib.sha256(common.read_bytes()).hexdigest(),
+            hashes["infra/common-optimizations.yml"],
+        )
+
+    def test_lab_source_rejects_unsafe_common_extends_parent(self):
+        cases = (
+            (
+                "escape",
+                {
+                    "file": "../../infra/common-optimizations.yml",
+                    "service": "template-infra-med",
+                },
+                {},
+            ),
+            (
+                "wrong_service",
+                {
+                    "file": "../infra/common-optimizations.yml",
+                    "service": "template-infra-low",
+                },
+                {},
+            ),
+            (
+                "old_path",
+                {
+                    "file": "../infra/common-optimizations.yml",
+                    "service": "template-infra-med",
+                },
+                {"old_path": True},
+            ),
+        )
+        for case, extends, common_kwargs in cases:
+            with self.subTest(case=case):
+                self._prepare()
+                common_source(self.root, **common_kwargs)
+                lab_source(self.root, extends=extends, write_common=False)
+                with self.assertRaises(ContractError):
+                    source_hashes(self.root)
+
+    def test_lab_common_extends_symlink_is_rejected(self):
+        self._prepare()
+        common = common_source(self.root)
+        target = self.root / "infra/common-target.yml"
+        target.write_text(common.read_text())
+        common.unlink()
+        common.symlink_to(target)
+        lab_source(self.root, write_common=False)
+        with self.assertRaises(ContractError):
+            source_hashes(self.root)
+
+    def test_lab_common_extends_untracked_file_is_rejected_when_git_root(self):
+        self._prepare()
+        common_source(self.root)
+        lab_source(self.root, write_common=False)
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(
+            [
+                "git",
+                "add",
+                "--",
+                "docker-compose.yml",
+                "infra/auth.yml",
+                "labs/supabase.yml",
+            ],
+            cwd=self.root,
+            check=True,
+        )
+        with self.assertRaises(ContractError):
+            source_hashes(self.root)
+
+    def test_lab_supabase_symlink_is_rejected(self):
+        self._prepare()
+        lab = lab_source(self.root)
+        target = self.root / "labs/elsewhere.yml"
+        target.write_text(lab.read_text())
+        lab.unlink()
+        lab.symlink_to(target)
+        with self.assertRaises(ContractError):
+            source_hashes(self.root)
+
+    def test_lab_supabase_untracked_file_is_rejected_when_git_root(self):
+        self._prepare()
+        lab_source(self.root)
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(
+            ["git", "add", "--", "docker-compose.yml", "infra/auth.yml"],
+            cwd=self.root,
+            check=True,
         )
         with self.assertRaises(ContractError):
             source_hashes(self.root)

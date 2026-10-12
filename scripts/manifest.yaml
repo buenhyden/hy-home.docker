@@ -634,6 +634,18 @@ files:
   - tests/lib/ops/test_smtp_contract.py
   - tests/lib/ops/test_smtp_proof.py
   - tests/validation/test_smtp_lock_inheritance.py
+- path: scripts/lib/ops/smtp_public_source.py
+  kind: library
+  authority: docs/05.operations/runbooks/0029-supabase.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/ops/smtp_contract.py
+  - tests/lib/ops/test_smtp_public_source.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_smtp_public_source.py
 - path: scripts/lib/ops/wiki_preparation.py
   kind: library
   authority: infra/09-platform-ops/project-registration/wiki-preparation/README.md
