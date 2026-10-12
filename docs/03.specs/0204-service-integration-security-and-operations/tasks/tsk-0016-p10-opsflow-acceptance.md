@@ -1,6 +1,6 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.4"
+version: "0.1.19"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -30,8 +30,10 @@ documents only into the corresponding Stage05 family `labs/` paths.
 
 ## Inputs and Authorization
 
-The direct P10 request authorizes an owning Task, source/test preparation,
-logical commits, review and reviewed local-main delivery. The historical analysis
+The direct P10 request authorized an owning Task, source/test preparation,
+logical commits, review and reviewed local-main delivery; that delivery direction
+is historical and superseded for remaining work by the current COORD request.
+The historical analysis
 baseline is `860ac1c3633eac9ad416fb1abd8a61a6e617ebd8`; it is context, not a
 runtime target. The initial P10 worktree branch is
 `codex/p10-opsflow-acceptance` at local HEAD
@@ -44,10 +46,8 @@ secret values were read. Recheck the exact input refs, dirty paths and relevant
 owner heads before every implementation unit. Never reset, stash, clean or
 stage another worker's changes.
 
-The direct delivery lane is local `main`, without `dev` or a required PR.
-The supplied prompt's future PR language does not authorize a remote action in
-this lane. A later explicit remote lane must recheck its current ruleset, CI and
-independent review at the actual head. No secret value, raw environment file,
+Remaining delivery uses the owning-Spec PR, exact-head CI, independent review
+and merge. No secret value, raw environment file,
 credential, production client or external SMTP send is permitted in preparation.
 
 One owner may prepare only this Task, the acceptance test
@@ -301,8 +301,8 @@ only synthetic bytes/IDs, source allowlist names and expected bounded outcomes.
 The first eight-file staged gate exited 1 solely because Ruff format-check
 requested formatting of the new test. Ruff was applied only to that owned file;
 all other selected lint/secret checks had passed. Final staged/common-head
-checks and independent source/security review are required before local-main
-delivery; they are recorded separately below.
+checks and independent source/security review are required before the
+owning-Spec PR delivery; they are recorded separately below.
 
 ### W64 exact fixture README gate correction
 
@@ -569,9 +569,11 @@ At the actual final head, report every owner criterion and the separate SOURCE,
 UNIT, STATIC, ISOLATED, HOME, MIGRATION, ROTATION, RECOVERY and DELIVERY result.
 Run affected syntax/schema/Registry/link/secret-leak checks, selected unit and
 native acceptance, staged gates and independent review. Record exact commands,
-input SHA, exit status, failures/corrections, rollback proof and local-main
-receipt. Tests do not establish deployment, deletion, migration or recovery
-without their actual evidence.
+input SHA, exit status, failures/corrections and rollback proof. For future
+delivery, use the owning-Spec PR, exact-head CI and independent review before
+merge; historical local-main receipts remain historical evidence only. Tests do
+not establish deployment, deletion, migration or recovery without their actual
+evidence.
 
 ### W69 completed-source worktree cleanup — 2026-10-12
 
@@ -641,12 +643,10 @@ publication, P05 native notifier, P06 actual pilot/recovery, P07 representative
 workload/rollout, P08 W59–W62 moves and P10 W65–W68 remain open under their
 owning Tasks. They are not complete merely because source was merged.
 
-The latest user resume instruction restores stable-version updates and their
-associated official-documentation/compatibility investigation; it supersedes
-the intervening warning-only modernization restriction. UNKNOWN stays unknown,
-and no-newer stable lookup requires no version bump. P10 consumes its selected
-artifact's version/security evidence and exact native/recovery contract;
-unrelated global SEC completion is not an isolated-lane start prerequisite.
+Current image/scanner maintenance requires an actual confirmed current-image
+security warning. UNKNOWN remains unknown. P10 consumes its selected artifact's
+version/security evidence and exact native/recovery contract; unrelated global
+SEC completion is not an isolated-lane start prerequisite.
 The current ROOT source census excludes relocated LAB Supabase/GoTrue.
 
 The original checkout was confirmed clean on main before this increment, rather than detached a03.
@@ -707,6 +707,307 @@ evidence; native execution is blocked pending exact-source recovery or fresh
 review. TSK-0009 records the missing hashes and current memory observation.
 No scan PASS, deployment or complete SEC01 acceptance is inferred.
 
+### COORD request 11–30 source reconciliation — 2026-10-12
+
+At source baseline `23e37362b72e98028a4675f282819c0346ae59dc`, current ROOT
+discovery reports 111 unique service rows across 44 inputs; its discovery
+manifest SHA-256 is
+`af3ad26a32d8504e87af14bd99dae3b8a6cc8593b2a6e6da6f1e4734b1b0b8f6`.
+The expected ROOT set and update-ledger service entries agree, while thirteen
+historical LAB rows remain excluded from ROOT. This is source metadata only:
+it does not prove a consumer, running service, HOME state, migration, rotation
+or recovery.
+
+At the baseline, the committed ledger had four stale include-input hashes for Traefik, SeaweedFS,
+n8n and Renovate. The root's nine staged foreign paths already contain an
+unreviewed update-ledger correction whose 44 input hashes match the current
+files; that is `SOURCE_PREPARED`, not delivery. It remains under its existing
+writer, review and rollback boundary. That initial audit did not create another
+ledger, scanner or image implementation; the later metadata binding integration
+is recorded below.
+
+On this exact baseline, the coordinator's source-contract command
+`/tmp/hyhome-coord-qa/bin/python -m unittest tests.lib.ops.test_secret_catalog tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters tests.lib.ops.test_n8n_outbox_workflow tests.lib.ops.test_openbao_consumer_migration tests.lib.ops.test_smtp_contract tests.lib.ops.test_retirement tests.validation.test_secret_catalog_contract tests.validation.test_n8n_outbox_contract tests.validation.test_openbao_consumer_migration_contract -q`
+passed 223 tests, exit 0. The integration-contract command
+`/tmp/hyhome-coord-qa/bin/python -m unittest tests.validation.test_opsflow_e2e_acceptance tests.lib.ops.test_port_inventory tests.lib.ops.test_root_resource_assessment tests.validation.test_root_resource_contract -q`
+passed 62 tests, exit 0. Both are source/unit or synthetic receipts only, not
+native, HOME, migration, rotation, deletion or recovery evidence.
+
+An earlier source-contract attempt failed because `referencing` was unavailable;
+a narrower retry also exited 1 because of an incorrect unittest selector;
+neither attempt was accepted.
+The changed local-only gate also exited 1 on the baseline because the committed
+versions projection retained n8n 2.42.6 and Renovate 44.151.0 while source had
+newer values. The sole metadata writer reused only the prepared tech-stack
+projection and four ledger include-input hashes, committed them as
+`854ccc249b05ae17a9eb650a091676cdcf7e87e0`, and recorded independent source
+and security metadata approval, 33 focused tests exit 0,
+`bash scripts/operations/sync-tech-stack-versions.sh --check`
+exit 0, and staged validation exit 0. This remains `SOURCE_PREPARED` pending a
+fresh final-head gate and delivery; it adopted neither the full foreign ledger
+payload nor any image, scanner, native or HOME change.
+
+P01–P07 and SMTP01/CLN01 source receipts are `NO_CHANGE` unless named below;
+their native, HOME, migration, rotation, deletion and recovery lanes retain
+their owners. P08's move candidate is in a separate dirty worktree and needs an
+exact writer path/hash handoff before W68. The active-spec audit observed 25
+Specs (four completed, 21 active or draft); it does not transfer ownership or
+reopen completed P00, P09 preparation, SMTP01/CLN01 acceptance, or Stage05 body
+evidence.
+
+The P08 handoff may cover only typed Stage05 LAB-document moves, README and path
+contracts; existing merged LAB service/source work is not a P08 or P10 input.
+The P08 owner must bind exact old/new paths, hashes, link checks and rollback
+before this Task performs W68's directory dry run. A later owning-Spec PR,
+exact-head CI and independent review are delivery prerequisites. This does not
+rewrite accepted W70 source evidence or authorize LAB runtime work.
+
+For the current numbered-path candidate, the P08 worktree HEAD is
+`eb11172fbea69e015e078b1f17bab5d66119674d` and its staged index tree is
+`1a69a7c563a0c3bc836f147141581372ad2d4e8c`; neither is remote main. The
+registered command
+`env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 scripts/validation/run-ci-gate.py --profile changed --explain --local-only`
+exited 0 and selected 17 leaves, including `leaf.compose-baseline-regressions`.
+Its registered workflow-contract argv includes `test_supabase_smtp_rehearsal`
+and `test_lab_isolation`, so the full aggregate and hosted CI are `NOT_RUN` for
+this LAB-functional-test-excluded documentation scope. They are not replaced by
+the focused navigation checks. Remote push, PR, CI and merge have not run; the
+numbered path receipt remains source-only until the exact final candidate has
+its required review and delivery evidence.
+
+At that P08 candidate, an earlier selected metadata command was
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD`
+from the P08 worktree. Process `81158` examined 602 documents and exited 1 with
+378 violations; its input was HEAD
+`eb11172fbea69e015e078b1f17bab5d66119674d` and the preserved index tree
+`1a69a7c563a0c3bc836f147141581372ad2d4e8c`. This `FAIL` is distinct from the
+earlier five-document baseline component receipt above and remains pending the
+assigned frontmatter/path corrections; it is not a documentation, runtime or
+delivery PASS.
+
+The latest recorded run of the same metadata command used
+`/tmp/hyhome-p08-candidate-0c90jjaf.index` (tree `b69`, before this W69 routing
+correction), selected 328 documents and exited 1 with 332 violations. It is a
+`FAIL` receipt pending a QA rerun after this correction and the assigned
+predecessor fixes. The initial-status and archive diagnostics are not treated as
+permanent findings here; this Task does not edit archived records or turn them
+into a runtime or delivery result.
+
+An earlier all-links command was
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 scripts/validation/check-document-links.py --mode all`.
+It exited 1 after checking 997 documents and 8,930 links, with 576 failures,
+one warning and 56 historical cases. The candidate index graph did not include
+new untracked numbered documents, so this remains a `FAIL` pending final QA;
+the focused active-target repairs do not replace that result.
+
+The earlier auto-review rejection of the ROOT metadata test is historical and
+was resolved by explicit user approval for this exact case only. Process
+`85114` ran
+`env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 -m unittest tests.validation.test_lab_isolation.RootClosureTests.test_wildcard_root_render_selects_no_lab_service -v`
+at the P08 HEAD and passed one test in 3.835 seconds, exit 0. The approval
+permitted its `setUpClass` static render of nine LAB Compose files; it did not
+run services or access native data, secrets or private environment values.
+The full LAB suite, aggregate gate, hosted CI and all runtime lanes remain
+`NOT_RUN`.
+
+The final alternate-index source candidate is
+`a90cecd400c70e20d3f19c37a44e0f4ec0ace145`. After the six QA-owned Ruff line
+wraps and this m0021 formatting correction, metadata process `43225` at tree
+`70fd83f584707ac1899f8ac9c2930c683d3249bf` passed with 328 selected documents,
+zero violations, zero legacy exceptions and zero overrides. The post-security
+all-links run at the same tree passed with 1,272 documents, 11,437 links, zero
+errors and one inherited `2870` unrecorded warning. The generated operations
+catalog and script manifest checks passed. Alternate-index local-staged process
+`64469` passed every applicable hook without auto-changes. These are final
+source/static receipts only: the real staged index remains
+`1a69a7c563a0c3bc836f147141581372ad2d4e8c`, and no remote, native, HOME,
+migration, rotation, recovery or full aggregate result follows.
+
+The source and code review binds 17 of 17 reviewed blobs to `a90cecd` and
+approves the source helper; the independent security review records eight
+security tests passing and four fail-closed exception cases. Focused suites
+reported 194 source tests, four security tests, two move tests and eight trace
+tests; these overlap and are not summed. The explicitly approved ROOT case is
+the single test already recorded above; it does not authorize the full LAB
+suite.
+
+| Request | Primary owner | Source classification | Runtime classification | Exact target / next input |
+| --- | --- | --- | --- | --- |
+| 11 | P07 / SPEC-0218 | NO_CHANGE | NOT_RUN | Measured workload and rollout boundary |
+| 12 | P03; P04/P05 consumers | NO_CHANGE | NOT_RUN | Named native consumer and endpoint contract |
+| 13 | P02 | NO_CHANGE | NOT_RUN / BLOCKED_P01 | P01 delivery and recovery contract |
+| 14 | P03 | NO_CHANGE | NOT_RUN | Native listener, DNS and auth facts |
+| 15 | P10 | SOURCE_PREPARED | NOT_RUN | W65–W68 exact native, HOME and restore inputs |
+| 16 | P04 | NO_CHANGE | NOT_RUN | Airflow/DEV/S3 publication target |
+| 17 | P05 / SEC01 metadata | P05 production code NO_CHANGE; shared SEC metadata SOURCE_APPLIED | NOT_RUN | P04 publication then native n8n target |
+| 18 | P07 | NO_CHANGE | NOT_RUN | Representative workload and rollout evidence |
+| 19 | P07 / SPEC-0218 | NO_CHANGE | NOT_RUN | Confirmed common-control need |
+| 20 | SPEC-0227 | NO_CHANGE | NOT_RUN | Completed Stage05 body refresh; no new work |
+| 21 | SPEC-0212 routing | SOURCE_APPLIED | NOT_APPLICABLE | Existing owner closes its residual |
+| 22 | P01 | NO_CHANGE | BLOCKED / NOT_RUN | Named TLS, custody and restore boundary |
+| 23 | P03 | NO_CHANGE | NOT_RUN | Four-location listener/consumer facts |
+| 24 | SPEC-0204 | SOURCE_APPLIED | NOT_APPLICABLE | Prospective Spec/Plan reconciliation |
+| 25 | P08 | SOURCE_APPLIED | NOT_APPLICABLE | Numbered Stage05 document source; W62 commit/PR/hosted-CI/merge and exact path/hash delivery handoff remain NOT_RUN/separate |
+| 26 | SPEC-0212 exclusion | NO_CHANGE | NOT_APPLICABLE | No learning-application work admitted |
+| 27 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
+| 28 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
+| 29 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
+| 30 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
+
+### COORD final-gate component receipt — 2026-10-12
+
+At the frozen five-document candidate, registered local-only process `86838`
+exited 1: 628 selected tests had six failures, one error and 71 skips. Three
+failures are inherited ROOT metadata `8`-versus-`9` count assertions; the other
+three failures and one error have no captured reproducible cause here and remain
+`UNKNOWN`. Its completed components selected five documents with zero metadata
+violations; the tech-stack projection
+was in sync for 91 repositories, with optional `OPSFLOW_AIRFLOW_IMAGE` unresolved
+and not treated as an image pin or native acceptance; and full link validation
+checked 1,227 documents and 11,677 links with zero failures and one existing
+`2870` legacy-unrecorded warning. A previous full-link run exited 1 only because
+the m0021 P10 anchor omitted its date; the canonical heading helper supplied the
+correct anchor, and the changed P10/m0021 anchor assertion then passed, exit 0.
+These component receipts preserve the earlier failure and do not close delivery,
+HOME, migration, rotation or recovery.
+
+The parent command was
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 scripts/validation/run-ci-gate.py --profile changed --local-only`.
+Within that same parent process, `leaf.supply-chain-fixture-policy` ran its
+unchanged nine-module workflow-contract argv and passed 264 tests, exit 0.
+`leaf.conftest-policy-tests` ran
+`scripts/validation/check-conftest-policy.sh --mode verify` and passed 18 of 18
+tests, exit 0. These are not separate CLI executions: the registered fail-fast
+execution plan proceeded to the later failing compose-baseline leaf, establishing
+that both earlier child leaves returned zero. They are source/unit receipts only,
+with no live scanner, HOME or delivery result.
+
+The user explicitly approved only the ROOT-excludes-LAB metadata test correction
+in `tests/validation/test_lab_isolation.py`. The QA owner changed its expected
+count from eight to nine after focused RED exit 1 and GREEN exit 0, with Ruff and
+diff checks passing. That correction changes no LAB execution, service source,
+image or functional test. Independent source and security reviews approved the
+one-line test. This Task records the approval boundary and result only; it does not
+assert an aggregate PASS or a delivery result.
+
+The ROOT metadata correction was committed separately as
+`fde4b8c4f3f71d0399492378923071b8abb8fc7e`, parent
+`854ccc249b05ae17a9eb650a091676cdcf7e87e0`. Its absolute `/tmp` QA Commitizen,
+staged, Ruff, RED/GREEN and diff receipts passed, and independent source and
+security reviews approved the exact one-line test change. This is a CRC/source
+receipt for the approved test boundary, not a broader gate PASS, runtime result
+or delivery receipt.
+
+### M2 current source and coordination receipt — 2026-10-12
+
+The ordinary ancestry-preserving merge is
+`4b9c9ba1cc17956934349973c6a715a0732e42fd`, with parents
+`227a82e8a56e767a642649a13609d90637e213a3` and
+`057c5d3307dd1b0aa663c663fd51e1ae81c530e0`; its source tree is
+`20695ec60d245a47467983bf256e0fcaf4c075a5`. It preserved the accepted numbered
+P08 paths without source-code changes. W68 consumes the Task0015 canonical
+numbered-path receipt (230 leaves, 45 domain READMEs, the normalized aggregate
+`37f97a582635adb36dda1e39acf93a3e420a7d882fa8a5adb81e05da282d24ca`, and
+the `6056788a51e59726202f40377d407c1408aaddce` source commit). Its directory
+dry run and delivery remain NOT_RUN.
+
+Fresh `git fetch origin main` and GitHub reads found `origin/main`, remote main
+and the root HEAD at `23e37362b72e98028a4675f282819c0346ae59dc`; open PRs were
+empty. The P08 start was `227a82e8a56e767a642649a13609d90637e213a3`, P07 was
+`a69bda497`, and the coordinator input was `057c5d330`. The root's protected
+foreign index remains `6d788fa89b5c7b1af87ce1a89ad62859eca16371` with nine
+paths. GitHub protection reads reported `strict=true`, empty required contexts,
+zero approving reviews, `CODEOWNER=false` and no rulesets. Those facts do not
+bypass the required user approval, CI and independent review for any future PR.
+
+A ROOT-only census at main 23, whose source set is unchanged at M2, found 111 unique service keys from 43
+includes and 44 inputs, matching the 111-row, 20-field inventory: HOME 46, DEV
+17 and OPTIONAL 48. Membership, field drift and missing Guide owner counts were
+zero. Consumer 83, security 111, backup 77 and disposition 25 remain explicitly
+unverified; cost and runtime acceptance are unknown. Full catalog validation is
+NOT_RUN because its reader reaches LAB bindings. This is a source census only,
+not an image, service, native, HOME, migration, rotation or recovery result.
+
+At M2, the fresh permitted source command was
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 -m unittest tests.lib.ops.test_secret_catalog tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters tests.lib.ops.test_n8n_outbox_workflow tests.lib.ops.test_openbao_consumer_migration tests.lib.ops.test_retirement tests.validation.test_secret_catalog_contract tests.validation.test_n8n_outbox_contract tests.validation.test_openbao_consumer_migration_contract -q`;
+it passed 172 tests in 19.065 seconds, exit 0. The fresh integration command
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 -m unittest tests.validation.test_opsflow_e2e_acceptance tests.lib.ops.test_port_inventory tests.lib.ops.test_root_resource_assessment tests.validation.test_root_resource_contract -q`
+passed 62 tests in 5.778 seconds, exit 0. The approved exact ROOT command
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3 -m unittest tests.validation.test_lab_isolation.RootClosureTests.test_wildcard_root_render_selects_no_lab_service -v`
+passed once in 3.465 seconds, exit 0. The QA environment used Python 3.12.3.
+These are source/unit or static receipts only; the historical 223-test result
+retains its dated scope.
+
+`tests.lib.ops.test_smtp_contract` (51 tests) is NOT_RUN in this fresh run
+because it reads `labs/supabase.yml` and GoTrue consumer/image-pin paths. It is
+not replaced by the 235 executed tests. The full aggregate and remote PR gate
+remain NOT_RUN: their selected routes include infrastructure hardening's
+`04Supabase`, template controls' LAB renders and `labs` environment example,
+conftest corpus `find labs`/test routes, and version projection's LAB image
+routes. No remote PR was opened or pushed.
+
+The M2 local-staged command
+`bash scripts/validation/run-ci-precommit.sh --mode local-staged` had empty
+selection and exited 2 with `ERROR: local staged input is empty`; this process
+is FAIL and its style applicability is N/A, not PASS. Task0015 was dirty only
+with its pending documentation clarification during these checks, so this does
+not claim a clean documentation worktree.
+
+At C `590da0e25a5d63f21af79f7973b556b2baa51f08`, existing
+`links.build_document_graph` then `check_commands` ran through inline
+`rtk proxy env PATH=/tmp/hyhome-coord-qa/bin:$PATH python3` standard-library
+calls. The 275 tracked numbered Stage05 documents (230 leaves and 45 READMEs)
+yielded 311 shell fences with zero path or input failures, exit 0; the Stage05
+source was equivalent to M2. A first M2-head guard exited 1 after C committed
+concurrently, before graph construction or path checks ran; one current-C retry
+then passed. This STATIC repository-path
+check does not model `cd`, shell working directory, environment or external
+host behavior, so W68 directory dry run remains NOT_RUN.
+
+The latest trusted user answer authorizes only four STATIC LAB routes for the
+`buenhyden/hy-home.docker` `codex/p08-document-moves` to `main` PR
+continuation: infrastructure-hardening Supabase inputs, synthetic LAB Compose
+rendering, conftest LAB-corpus enumeration, and LAB image-declaration reads.
+All other LAB unit, native, service, data and secret work remains excluded. The
+input is D `a9f26e2cc2ca4c8920b9a94b566973c6f8383f74`, with no source change.
+After latest-head source/security review and passing CI, this authorizes the
+already requested push, PR creation and merge without another approval; no
+remote CI, push, PR or merge has run yet, so they remain NOT_RUN.
+
+PR [#425](https://github.com/buenhyden/hy-home.docker/pull/425) was created
+after the `-u` branch push (both exit 0) at head
+`77afd472dd047fa0541e63d7d6e39965b90e81b6`, tree
+`50bc90662e9c17eeb97336de775d5b2630f65e17`. Quality Gates run
+`38262980582`, candidate job `114857954100`, succeeded in 5m41s; CodeQL and
+GitGuardian succeeded, while main-security and issue-greeting were expected
+SKIPPED. Independent source/security review approved the E head; remote and
+local agree across 372 paths and 17 helper blobs are unchanged. Protection
+still has strict branch update, zero required contexts/reviews, no CODEOWNER and
+no rulesets; this does not invent human approval. This is a source candidate
+delivery receipt only: native, aggregate LAB, HOME, migration, rotation and
+recovery remain NOT_RUN. The F head must pass CI again before ordinary merge.
+
+Fresh active-spec frontmatter parsing found 25 Specs: completed SPEC-0208,
+SPEC-0209, SPEC-0210 and SPEC-0212; active SPEC-0182 (blocked), SPEC-0204,
+SPEC-0207 and SPEC-0211 (in-progress); and SPEC-0213 through SPEC-0229 (draft).
+SPEC-0204 and SPEC-0218 are direct coordination owners; SPEC-0227 supplies
+completed-body evidence only. SPEC-0207, SPEC-0211, SPEC-0213, SPEC-0214,
+SPEC-0216, SPEC-0221, SPEC-0224, SPEC-0228 and SPEC-0229 are supporting
+references. Implementation under SPEC-0215, SPEC-0217, SPEC-0219, SPEC-0220,
+SPEC-0222, SPEC-0223, SPEC-0225 and SPEC-0226 is OUT_OF_SCOPE and retains its
+lifecycle. This routing does not reopen completed P00, Wiki preparation, or any
+historical Stage05 body.
+
+The protected SEC01 ledger remains a CONFIRMED_GAP under its foreign writer.
+At `$.root_scope_reconciliation.modernization_policy`, Task0009 must review the
+following not-applied replacement: “Future ROOT image/Dockerfile version changes
+and scanner source changes are limited to actual confirmed security warnings
+affecting the current image, with supplier, package and platform applicability
+evidence. Preserve already accepted safe source pins; do not perform blanket
+latest-stable upgrades. Keep source, scan, native, HOME, migration, rotation,
+recovery and delivery acceptance separate; UNKNOWN is not clean.” No ledger,
+image, scanner, native or HOME mutation is made by this receipt.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -719,7 +1020,25 @@ No scan PASS, deployment or complete SEC01 acceptance is inferred.
 | Selected HOME acceptance | 21 | W66 | Selected host rollout and authenticated service evidence | Named host, resources, backups and rollback | NOT_RUN | W66 selected HOME acceptance | pending |
 | Fault, backup and restore | 21 | W67 | Fault receipt, complete set and exact empty-target restore | Named fault scope and snapshot custody | NOT_RUN | W67 failure, backup and empty-target restore | pending |
 | P08 path handoff | 21 | W68 | Hash-bound path/README handoff and command-directory dry run | P08 final receipt | NOT_RUN | W68 P08 path handoff and dry run | pending |
-| Final owner report | 21 | W69 | Exact-head checks, review and local-main delivery evidence | Final candidate and owner receipts | NOT_RUN | W69 final owner report and delivery | pending |
+| Final owner report | 21 | W69 | Exact-head checks, review and owning-Spec PR delivery evidence | Final candidate and owner receipts | NOT_RUN | W69 final owner report and delivery | pending |
+| Coordinator source-contract suite | 21 | W63 | P01/P02/P04/P05/P06/SMTP/CLN source contracts | Baseline 23e37362b72e98028a4675f282819c0346ae59dc; 223 tests, exit 0 | PASS | COORD request 11–30 source reconciliation | accepted |
+| Coordinator integration-contract suite | 21 | W63 | P03 port, P07 resource and P10 acceptance contracts | Baseline 23e37362b72e98028a4675f282819c0346ae59dc; 62 tests, exit 0 | PASS | COORD request 11–30 source reconciliation | accepted |
+| Final-gate metadata component | 21 | W69 | Registered local-only component selected governed documents | Frozen five-document candidate; zero violations | PASS | COORD final-gate component receipt | accepted |
+| Final-gate tech-stack component | 21 | W69 | Registered projection synchronization check | 91 repositories; optional OPSFLOW_AIRFLOW_IMAGE unresolved | PASS | COORD final-gate component receipt | accepted |
+| Final-gate link component | 21 | W69 | Full links and corrected changed-anchor assertion | 1,227 documents, 11,677 links, zero failures, one existing warning; anchor assertion exit 0 | PASS | COORD final-gate component receipt | accepted |
+| Final-gate supply-chain fixture component | 21 | W69 | `leaf.supply-chain-fixture-policy` in process 86838 | Registered nine-module argv; 264 tests, exit 0; child result established by fail-fast runner progress | PASS | COORD final-gate component receipt | accepted |
+| Final-gate conftest component | 21 | W69 | `leaf.conftest-policy-tests` in process 86838 | `scripts/validation/check-conftest-policy.sh --mode verify`; 18 of 18 tests, exit 0; child result established by fail-fast runner progress | PASS | COORD final-gate component receipt | accepted |
+| Final-gate aggregate | 21 | W69 | Registered local-only process | Process 86838: 628 selected; six failures, one error, 71 skips; component checks retained separately | FAIL | COORD final-gate component receipt | pending |
+| ROOT-excludes-LAB metadata test correction | 21 | W69 | Narrow user-approved expected-count correction | `tests/validation/test_lab_isolation.py`: 8 to 9; focused RED/GREEN, Ruff and diff PASS; independent source/security review APPROVE | PASS | COORD final-gate component receipt | accepted |
+| P08 numbered navigation | 21 | W68 | 82 current inbound Markdown targets | Numbered P08 working candidate; 82 checked, zero missing | PASS | P08 numbered-path source receipt | accepted |
+| P08 earlier candidate metadata | 21 | W68 | `check-document-metadata.py --mode check-changed --base-ref HEAD` | Process `81158`; HEAD `eb11172fbea69e015e078b1f17bab5d66119674d`, index `1a69a7c563a0c3bc836f147141581372ad2d4e8c`; 602 documents, 378 violations, exit 1 | FAIL | P08 numbered-path source receipt | pending |
+| P08 pre-fix candidate metadata | 21 | W68 | `check-document-metadata.py --mode check-changed --base-ref HEAD` | `/tmp/hyhome-p08-candidate-0c90jjaf.index` tree `b69`, before W69 correction; 328 documents, 332 violations, exit 1 | FAIL | P08 numbered-path source receipt | pending |
+| P08 earlier candidate links | 21 | W68 | `check-document-links.py --mode all` | 997 documents, 8,930 links, 576 failures, one warning, 56 historical cases; exit 1 | FAIL | P08 numbered-path source receipt | pending |
+| P08 final candidate metadata | 21 | W68 | `check-document-metadata.py --mode check-changed --base-ref HEAD` | Process `43225`, tree `70fd83f584707ac1899f8ac9c2930c683d3249bf`; 328 selected, zero violations, exceptions and overrides, exit 0 | PASS | P08 final alternate-index source receipt | accepted |
+| P08 final candidate links | 21 | W68 | `check-document-links.py --mode all` | Tree `70fd83f584707ac1899f8ac9c2930c683d3249bf`; 1,272 documents, 11,437 links, zero errors, one inherited `2870` warning, exit 0 | PASS | P08 final alternate-index source receipt | accepted |
+| P08 final source checks | 21 | W68 | Catalog, manifest, focused source/security/move/trace and local-staged hooks | Catalog and manifest `--check-generated` PASS; process `64469` hooks PASS without auto-changes; focused suites overlap | PASS | P08 final alternate-index source receipt | accepted |
+| Approved ROOT metadata case | 21 | W68 | `RootClosureTests.test_wildcard_root_render_selects_no_lab_service` | Process `85114`; one test, 3.835 seconds, exit 0; static render only | PASS | P08 numbered-path source receipt | accepted |
+| P08 full gate and delivery | 21 | W69 | Registered aggregate and remote delivery | Explain plan selects LAB functional leaves excluded from this scope; no push, PR, hosted CI or merge | NOT_RUN | P08 numbered-path source receipt | pending |
 
 ## Review and Completion
 

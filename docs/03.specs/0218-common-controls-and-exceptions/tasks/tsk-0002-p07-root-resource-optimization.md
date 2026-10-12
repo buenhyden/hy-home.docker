@@ -1,6 +1,6 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -355,6 +355,19 @@ Python checker and succeeded, exit0:
 This validates the commit range after the fact; it does not assert an earlier
 pre-commit `cz` invocation.
 
+### Main Integration Continuation — 2026-10-12
+
+Input is delivered main `b70bc01b58ae35a486860377519155a882af3d76`, produced
+through [SPEC-0204 PR #425](https://github.com/buenhyden/hy-home.docker/pull/425).
+This P07 branch merges that main normally from `a69bda497c170d28416705e7656402f8774d7675`;
+it retains delivered shared version and security-ledger content from main. Its
+continuation owns only this Plan and Task, with the exceptions-policy reference
+resolved under P08's numbered layout. P07 helpers/resources are `NO_CHANGE`;
+no benchmark, native/HOME, runtime, deployment, LAB runtime/testing, secret or
+data action ran. Delivery remains pending the owning SPEC-0218 PR, its
+current-head CI, and independent review; reverting the later P07-only commit
+removes this continuation record without rolling back delivered main.
+
 ### Admission Document Validation History
 
 The initial selected metadata check failed with exit1 and 146 violations
@@ -453,7 +466,7 @@ or lifecycle closure.
 | Dependency audit | 7 | W10 | `uv tool run --no-config --cache-dir /tmp/p07-audit-cache pip-audit --path /tmp/hy-home-p09-qa/lib/python3.12/site-packages --cache-dir /tmp/p07-audit-http --progress-spinner off --strict` | Existing isolated QA environment | PASS | exit0, no known vulnerabilities; bounded to QA installed dependencies, not image/runtime or requirements-resolution. Earlier resolver attempts unavailable: missing `pip_audit`/ensurepip; unhashed requirements invocation was setup failure | pending |
 | Common integration | 9 | W14 | Effective root model and exact exceptions | Owner proposals not applied | NOT_RUN | Coordinator single-writer boundary | pending |
 | Scoped rollout and recovery | 3, 10 | W15 | Changed-service functionality, backup and empty restore | Exact target/image/workload/recovery pending | NOT_RUN | No HOME, migration, rotation or recovery execution | pending |
-| Projection and delivery | 9, 10 | W16 | Current-target-head CI and independent review before owning-Spec PR merge | Issuance and source integration pending | NOT_RUN | Future delivery contract above; no PR/push/merge receipt | pending |
+| Projection and delivery | 9, 10 | W16 | Current-target-head CI and independent review before owning-Spec PR merge | P07 source/helpers present and `NO_CHANGE`; SPEC-0218 docs PR/CI/review/merge pending | NOT_RUN | Future delivery contract above; no SPEC-0218 PR/push/merge receipt | pending |
 | Segmented source checks | 9, 10 | W16 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
 
 ## Review and Completion
@@ -549,4 +562,4 @@ criterion result, commit/delivery input and next actionable blocker here.
 - [Earlier common-controls evidence](tsk-0001-common-controls-and-exceptions.md)
 - [Shared-service integration package](../../0204-service-integration-security-and-operations/spec.md)
 - [Canonical service inventory](../../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
-- [Exceptions policy](../../../05.operations/policies/0001-common-optimizations-template-exceptions.md)
+- [Exceptions policy](../../../05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md)

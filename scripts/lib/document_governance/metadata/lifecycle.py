@@ -1191,12 +1191,12 @@ def _operations_moved_body_baseline(
     base_records: Sequence[Record],
     base_ref: str | None,
 ) -> tuple[Record | None, str | None]:
-    """Recover an Operations member's catalog predecessor from a verified blob.
+    """Recover an Operations member's moved predecessor from a verified blob.
 
     This is a historical path translation, never a current loading alias. The
-    move kept each member's type and artifact identity, so exactly one catalog
-    record at the base carrying both is the predecessor whose status and body
-    the member inherits; zero or several matches recover nothing.
+    catalog move kept the slug and identity; numbered family moves keep the
+    exact basename, role and identity. Only one matching base record may supply
+    the inherited status and body.
     """
 
     registry = profiles.get("_registry")
@@ -1220,15 +1220,28 @@ def _operations_moved_body_baseline(
     # kept the slug or, for a generic slug, prefixed its domain word. A reused
     # identifier under any other slug is a new document, not a predecessor.
     slug = target.stem.split("-", 1)[-1]
+    family_predecessors = (
+        {
+            target.parent.parent / target.name,
+            target.parent.parent / target.parent.name[3:] / target.name,
+        }
+        if len(target.parts) == 5
+        else set()
+    )
     matches = [
         record
         for record in base_records
-        if record.path.as_posix().startswith(_RETIRED_OPERATIONS_CATALOG)
-        and slug
-        in {
-            (subject := record.path.parent.name.split("-", 1)[-1]),
-            f"{record.path.parent.parent.name.split('-', 1)[-1]}-{subject}",
-        }
+        if (
+            record.path in family_predecessors
+            or (
+                record.path.as_posix().startswith(_RETIRED_OPERATIONS_CATALOG)
+                and slug
+                in {
+                    (subject := record.path.parent.name.split("-", 1)[-1]),
+                    f"{record.path.parent.parent.name.split('-', 1)[-1]}-{subject}",
+                }
+            )
+        )
         and record.metadata.get("type") == current.get("type")
         and record.metadata.get("artifact_id") == current.get("artifact_id")
     ]

@@ -1117,7 +1117,7 @@ learning-app planning or LAB runtime action is included.
 - [P01 OpenBao continuation](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
 - [P02 catalog](tsk-0010-p02-secret-catalog-and-views.md)
 - [P03 integration contracts](tsk-0011-p03-service-integration-contracts.md)
-- [Airflow guide](../../../05.operations/guides/0050-airflow.md)
+- [Airflow guide](../../../05.operations/guides/08-workflows-and-automation/0050-airflow.md)
 - [Airflow source](../../../../infra/07-workflow/airflow/README.md)
 - [DEV database source](../../../../infra/04-data/dev-db/README.md)
 - [SeaweedFS source](../../../../infra/04-data/seaweedfs/README.md)

@@ -54,7 +54,8 @@ class ComposeSelectionValidationTests(unittest.TestCase):
             existing_secret.parent.mkdir()
             existing_secret.write_text("existing-synthetic\n", encoding="utf-8")
             policy = (
-                root / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+                root
+                / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
             )
             policy.parent.mkdir(parents=True)
             policy.write_text(
@@ -277,7 +278,8 @@ elif "--format" in args:
             )
             (root / ".env.example").write_text("EXAMPLE=1\n", encoding="utf-8")
             policy = (
-                root / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+                root
+                / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
             )
             policy.parent.mkdir(parents=True)
             policy.write_text(
@@ -4676,7 +4678,8 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         home = re.search(
             r"^\| HOME \| (.+?) \|",
             (
-                ROOT / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+                ROOT
+                / "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md"
             ).read_text(encoding="utf-8"),
             re.M,
         )

@@ -19,7 +19,11 @@ PROFILES = {
         "profiles"
     ]
 }
-DOMAINS = ("security", "workflow", "labs")
+DOMAINS = (
+    "04-security-and-secrets",
+    "08-workflows-and-automation",
+    "15-labs",
+)
 
 
 def document(
@@ -33,7 +37,7 @@ def document(
     )
 
 
-def reviewed(doc, domain="security", lab=False):
+def reviewed(doc, domain="04-security-and-secrets", lab=False):
     family = doc.path.split("/")[2]
     name = doc.path.split("/")[-1]
     return ReviewedMove(
@@ -56,19 +60,19 @@ class OperationsMovesTests(unittest.TestCase):
         result = self.run_plan([doc], [reviewed(doc)])
         self.assertEqual("MOVE", result.entries[0].state)
         self.assertEqual(
-            "docs/05.operations/guides/security/0031-example-note.md",
+            "docs/05.operations/guides/04-security-and-secrets/0031-example-note.md",
             result.entries[0].target,
         )
         self.assertEqual(
             (
                 "docs/05.operations",
                 "docs/05.operations/guides",
-                "docs/05.operations/guides/security",
+                "docs/05.operations/guides/04-security-and-secrets",
             ),
             result.required_readme_folders,
         )
         self.assertTrue(result.entries[0].source_registered)
-        self.assertFalse(result.entries[0].target_registered)
+        self.assertTrue(result.entries[0].target_registered)
 
     def test_unknown_subject_is_review_required_without_numeric_fallback(self):
         result = self.run_plan([document()])
@@ -82,18 +86,19 @@ class OperationsMovesTests(unittest.TestCase):
             "docs/05.operations/runbooks/0031-example.md", "RUN-0031", "runbook"
         )
         rows = [
-            reviewed(guide, "labs", True),
+            reviewed(guide, "15-labs", True),
             ReviewedMove(
                 run.path,
                 "RUN-0031",
-                "docs/05.operations/runbooks/workflow/0031-example.md",
-                "workflow",
+                "docs/05.operations/runbooks/08-workflows-and-automation/0031-example.md",
+                "08-workflows-and-automation",
                 False,
             ),
         ]
         result = self.run_plan([guide, run], rows)
         self.assertEqual(
-            ["labs", "workflow"], [entry.domain for entry in result.entries]
+            ["15-labs", "08-workflows-and-automation"],
+            [entry.domain for entry in result.entries],
         )
 
     def test_lab_targets_are_inside_each_operations_family(self):
@@ -111,22 +116,26 @@ class OperationsMovesTests(unittest.TestCase):
                 row = ReviewedMove(
                     doc.path,
                     f"{prefix}-0031",
-                    f"docs/05.operations/{family}/labs/0031-example.md",
-                    "labs",
+                    f"docs/05.operations/{family}/15-labs/0031-example.md",
+                    "15-labs",
                     True,
                 )
                 self.assertEqual(
                     row.target, self.run_plan([doc], [row]).entries[0].target
                 )
 
-    def test_arranged_source_is_proposal_not_current_registry_admission(self):
-        doc = document("docs/05.operations/guides/security/0031-example-note.md")
+    def test_arranged_source_is_current_registry_admission(self):
+        doc = document(
+            "docs/05.operations/guides/04-security-and-secrets/0031-example-note.md"
+        )
         entry = self.run_plan([doc], [reviewed(doc)]).entries[0]
         self.assertEqual("ALREADY_ARRANGED", entry.state)
-        self.assertFalse(entry.source_registered)
+        self.assertTrue(entry.source_registered)
 
     def test_wrong_existing_domain_requires_review_instead_of_silent_move(self):
-        doc = document("docs/05.operations/guides/workflow/0031-example-note.md")
+        doc = document(
+            "docs/05.operations/guides/08-workflows-and-automation/0031-example-note.md"
+        )
         entry = self.run_plan([doc], [reviewed(doc)]).entries[0]
         self.assertEqual("REVIEW_REQUIRED", entry.state)
         self.assertEqual("existing-domain-conflict", entry.reason)
@@ -170,7 +179,7 @@ class OperationsMovesTests(unittest.TestCase):
                 "unsafe-path", [doc], [replace(row, **{field: "../escape.md"})]
             )
         self.assert_refused("unknown-domain", [doc], [replace(row, domain="unknown")])
-        for domain in ("../labs", "", "Security", "security/tools"):
+        for domain in ("../15-labs", "", "04-Security", "04-security/tools"):
             self.assert_refused("invalid-domain", [doc], [row], (domain,))
 
     def test_type_identity_and_parser_failures_propagate(self):
@@ -214,9 +223,9 @@ class OperationsMovesTests(unittest.TestCase):
         row = reviewed(doc)
         for target in (
             "labs/0031-example-note.md",
-            "docs/05.operations/runbooks/security/0031-example-note.md",
-            "docs/05.operations/guides/security/0031-renamed.md",
-            "docs/05.operations/guides/security/deeper/0031-example-note.md",
+            "docs/05.operations/runbooks/04-security-and-secrets/0031-example-note.md",
+            "docs/05.operations/guides/04-security-and-secrets/0031-renamed.md",
+            "docs/05.operations/guides/04-security-and-secrets/deeper/0031-example-note.md",
         ):
             with self.subTest(target=target):
                 self.assert_refused(
@@ -224,7 +233,7 @@ class OperationsMovesTests(unittest.TestCase):
                 )
         self.assert_refused("lab-domain-mismatch", [doc], [replace(row, lab=True)])
         self.assert_refused(
-            "lab-domain-mismatch", [doc], [reviewed(doc, "labs", False)]
+            "lab-domain-mismatch", [doc], [reviewed(doc, "15-labs", False)]
         )
 
     def test_source_review_and_identity_duplicates_refused(self):
@@ -255,7 +264,7 @@ class OperationsMovesTests(unittest.TestCase):
         result = self.run_plan([doc], [row])
         with self.assertRaises(FrozenInstanceError):
             result.entries[0].state = "APPROVED"
-        self.assertEqual("security", row.domain)
+        self.assertEqual("04-security-and-secrets", row.domain)
         self.assertEqual(document(), doc)
 
     def test_unadmitted_source_filename_and_excess_nesting_refused(self):
@@ -265,7 +274,11 @@ class OperationsMovesTests(unittest.TestCase):
         )
         self.assert_refused(
             "source-contract",
-            [document("docs/05.operations/guides/security/deeper/0031-example.md")],
+            [
+                document(
+                    "docs/05.operations/guides/04-security-and-secrets/deeper/0031-example.md"
+                )
+            ],
         )
 
     def test_review_cannot_classify_out_of_scope_input(self):
@@ -273,8 +286,8 @@ class OperationsMovesTests(unittest.TestCase):
         row = ReviewedMove(
             doc.path,
             "GDE-0031",
-            "docs/05.operations/guides/labs/0031-example.md",
-            "labs",
+            "docs/05.operations/guides/15-labs/0031-example.md",
+            "15-labs",
             True,
         )
         self.assert_refused("review-source-not-operation", [doc], [row])

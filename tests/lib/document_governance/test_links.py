@@ -1602,6 +1602,190 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
         self.assertIn("missing-link-target", codes)
         self.assertIn("active-archive-link", codes)
 
+    def test_historical_operations_sources_resolve_unique_numbered_role_target(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        for source_type, status, allowed in (
+            ("operation/postmortem", "published", True),
+            ("sdlc/task", "completed", True),
+            ("operation/runbook", "published", False),
+            ("sdlc/task", "blocked", False),
+        ):
+            with (
+                self.subTest(source_type=source_type, status=status),
+                tempfile.TemporaryDirectory() as temp,
+            ):
+                root = pathlib.Path(temp)
+                source = (
+                    root
+                    / "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md"
+                )
+                if source_type == "sdlc/task":
+                    source = (
+                        root
+                        / "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0001-example.md"
+                    )
+                target = (
+                    root
+                    / "docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md"
+                )
+                source.parent.mkdir(parents=True)
+                target.parent.mkdir(parents=True)
+                raw = os.path.relpath(
+                    root / "docs/05.operations/runbooks/0050-airflow.md", source.parent
+                )
+                source.write_text(
+                    "---\n"
+                    f'type: "{source_type}"\n'
+                    f'status: "{status}"\n'
+                    "---\n\n"
+                    f"[Airflow]({raw}#recovery)\n",
+                    encoding="utf-8",
+                )
+                target.write_text("# Recovery\n", encoding="utf-8")
+                graph = build_document_graph([source, target], repo_root=root)
+                codes = {finding.code for finding in check_alignment(graph)}
+                self.assertEqual(allowed, "missing-link-target" not in codes)
+                if allowed:
+                    self.assertNotIn("missing-link-anchor", codes)
+
+    def test_historical_operations_resolution_requires_registered_source_and_graph_target(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        for mutation in ("wrong-source-profile", "target-absent-from-graph"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temp:
+                root = pathlib.Path(temp)
+                source = (
+                    root
+                    / "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md"
+                )
+                if mutation == "wrong-source-profile":
+                    source = (
+                        root
+                        / "docs/05.operations/guides/01-common/0099-system-operations.md"
+                    )
+                target = (
+                    root
+                    / "docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md"
+                )
+                source.parent.mkdir(parents=True)
+                target.parent.mkdir(parents=True)
+                raw = os.path.relpath(
+                    root / "docs/05.operations/runbooks/0050-airflow.md", source.parent
+                )
+                source.write_text(
+                    '---\ntype: "operation/postmortem"\nstatus: "published"\n---\n'
+                    f"[Airflow]({raw})\n",
+                    encoding="utf-8",
+                )
+                target.write_text("# Airflow\n", encoding="utf-8")
+                paths = (
+                    [source, target] if mutation == "wrong-source-profile" else [source]
+                )
+                graph = build_document_graph(paths, repo_root=root)
+                codes = {finding.code for finding in check_alignment(graph)}
+                self.assertIn("missing-link-target", codes)
+
+    def test_historical_operations_resolution_rejects_ambiguous_numbered_target(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = (
+                root
+                / "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md"
+            )
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "---\n"
+                'type: "operation/postmortem"\n'
+                'status: "published"\n'
+                "---\n\n"
+                "[Airflow](../../../runbooks/0050-airflow.md)\n",
+                encoding="utf-8",
+            )
+            targets = []
+            for domain in ("08-workflows-and-automation", "09-ai-and-search"):
+                target = root / f"docs/05.operations/runbooks/{domain}/0050-airflow.md"
+                target.parent.mkdir(parents=True)
+                target.write_text("# Airflow\n", encoding="utf-8")
+                targets.append(target)
+            graph = build_document_graph([source, *targets], repo_root=root)
+            codes = {finding.code for finding in check_alignment(graph)}
+        self.assertIn("missing-link-target", codes)
+
+    def test_historical_operations_resolution_rejects_unregistered_case_and_symlink(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        for mutation, raw, expected in (
+            (
+                "unregistered",
+                "../../../runbooks/0050-airflow.md",
+                "missing-link-target",
+            ),
+            (
+                "case",
+                "../../../Runbooks/0050-airflow.md",
+                "missing-link-target",
+            ),
+            (
+                "symlink",
+                "../../../runbooks/0050-airflow.md",
+                "missing-link-target",
+            ),
+        ):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temp:
+                root = pathlib.Path(temp)
+                source = (
+                    root
+                    / "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md"
+                )
+                source.parent.mkdir(parents=True)
+                source.write_text(
+                    "---\n"
+                    'type: "operation/postmortem"\n'
+                    'status: "published"\n'
+                    "---\n\n"
+                    f"[Airflow]({raw})\n",
+                    encoding="utf-8",
+                )
+                domain = (
+                    "08-workflows-and-automation"
+                    if mutation == "symlink"
+                    else "99-unregistered"
+                )
+                target = root / f"docs/05.operations/runbooks/{domain}/0050-airflow.md"
+                target.parent.mkdir(parents=True)
+                if mutation == "symlink":
+                    real = root / "real.md"
+                    real.write_text("# Airflow\n", encoding="utf-8")
+                    target.symlink_to(real)
+                else:
+                    target.write_text("# Airflow\n", encoding="utf-8")
+                graph = build_document_graph([source, target], repo_root=root)
+                codes = {finding.code for finding in check_alignment(graph)}
+                self.assertIn(expected, codes)
+
     def test_alignment_allows_only_the_archive_index_and_completed_bodies(
         self,
     ) -> None:
@@ -1989,16 +2173,17 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
             ops = root / "docs/05.operations/README.md"
             catalog = (
                 root
-                / "docs/05.operations/policies/0006-infrastructure-optimization-governance.md"
+                / "docs/05.operations/policies/01-common/0006-infrastructure-optimization-governance.md"
             )
-            guide = root / "docs/05.operations/guides/0001-subject.md"
-            runbook = root / "docs/05.operations/runbooks/0001-subject.md"
+            guide = root / "docs/05.operations/guides/01-common/0001-subject.md"
+            runbook = root / "docs/05.operations/runbooks/01-common/0001-subject.md"
             for path in (specs, ops, catalog, guide, runbook):
                 path.parent.mkdir(parents=True, exist_ok=True)
             specs.write_text("[Operations](../05.operations/README.md)\n")
             ops.write_text("[Specs](../03.specs/README.md)\n")
             catalog.write_text(
-                "[OPER](../guides/0001-subject.md), [RUN](../runbooks/0001-subject.md)\n"
+                "[OPER](../../guides/01-common/0001-subject.md), "
+                "[RUN](../../runbooks/01-common/0001-subject.md)\n"
             )
             guide.write_text("# Guide\n")
             runbook.write_text("# Runbook\n")

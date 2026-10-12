@@ -13,7 +13,7 @@ groups:
         annotations:
           summary: 'Traefik 다운'
           description: 'Traefik 로드밸런서가 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0013-traefik.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/02-gateway-and-networking/0013-traefik.md'
 
       - alert: TraefikHighHttp4xxErrorRateService
         expr: sum(rate(traefik_service_requests_total{code=~"4.*"}[3m])) by
@@ -26,7 +26,7 @@ groups:
           summary: 'Traefik 4xx 에러율 높음: {{ $labels.service }}'
           description: 'Traefik 서비스 {{ $labels.service }}의 4xx 에러율이 20%를
             초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0013-traefik.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/02-gateway-and-networking/0013-traefik.md'
 
       - alert: TraefikHighHttp5xxErrorRateService
         expr: sum(rate(traefik_service_requests_total{code=~"5.*"}[3m])) by
@@ -39,5 +39,5 @@ groups:
         annotations:
           summary: 'Traefik 5xx 에러율 높음: {{ $labels.service }}'
           description: 'Traefik 서비스 {{ $labels.service }}의 5xx 에러율이 5%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0013-traefik.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/02-gateway-and-networking/0013-traefik.md'
           dashboard_url: 'https://grafana.example.com/d/traefik'

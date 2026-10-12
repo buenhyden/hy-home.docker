@@ -473,7 +473,7 @@ def main() -> None:
         ".env.example",
         "docker-compose.yml",
         "scripts/validation/validate-docker-compose.sh",
-        "docs/05.operations/policies/0078-compose-profile-vocabulary.md",
+        "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md",
     )
     if any(relative not in tracked_set for relative in required_inputs):
         add("tracked-snapshot", "BLOCKED", "missing-graph-input")

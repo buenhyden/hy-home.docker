@@ -244,5 +244,5 @@ PITR on HOME and offsite (R2) restore stay `NOT_RUN`.
 - [Spec](../spec.md)
 - [Plan](../plan.md)
 - [Task 0001](tsk-0001-dev-data-and-influx-retirement.md)
-- [Backup policy](../../../05.operations/policies/0021-backup-and-restore.md)
-- [Backup runbook](../../../05.operations/runbooks/0021-backup-and-restore.md)
+- [Backup policy](../../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md)
+- [Backup runbook](../../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md)

@@ -46,7 +46,7 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 - `kafka-1` participates in `messaging` and role-specific HOME selectors.
 - `lab-kafka-1/2/3` participate only in the separate `labs/kafka-cluster.yml` project.
 - Schema Registry, Connect, REST, Kafbat, exporter and init have the current
-  selectors documented in [GDE-0036](../../05.operations/guides/0036-kafka.md).
+  selectors documented in [GDE-0036](../../05.operations/guides/06-messaging-and-cdc/0036-kafka.md).
 - The HOME init job declares replication factor 1; the LAB init job declares
   replication factor 3 and requires three healthy LAB brokers.
 
@@ -101,5 +101,5 @@ assumed from the selected images.
 
 - **Requirement:** [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
 - **Decision:** [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- **Operations:** [Kafka Guide](../../05.operations/guides/0036-kafka.md)
+- **Operations:** [Kafka Guide](../../05.operations/guides/06-messaging-and-cdc/0036-kafka.md)
 - **Runtime source:** [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)

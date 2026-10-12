@@ -656,5 +656,5 @@ command. Unsupported budgets are unknown; do not invent token/time/retry grants.
 - [CLN01 consumer assessment](tsk-0007-cln01-material-retirement.md)
 - [SEC01 stable/security integration](tsk-0009-sec01-stable-security-integration.md)
 - [P02 catalog](tsk-0010-p02-secret-catalog-and-views.md)
-- [Traefik guide](../../../05.operations/guides/0013-traefik.md)
-- [Service onboarding](../../../05.operations/guides/0008-new-service-onboarding.md)
+- [Traefik guide](../../../05.operations/guides/02-gateway-and-networking/0013-traefik.md)
+- [Service onboarding](../../../05.operations/guides/10-platform-and-backup/0008-new-service-onboarding.md)

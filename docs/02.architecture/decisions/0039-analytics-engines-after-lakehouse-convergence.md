@@ -97,4 +97,4 @@ Tracked Compose files fix the runtime image tags, and
 - **Superseded ADR**: `ADR-0015` (preserved under `docs/98.archive/superseded/`)
 - **Architecture Description**: [0012-data-analytics-architecture.md](../descriptions/0012-data-analytics-architecture.md)
 - **Requirements**: [0005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
-- **Lakehouse policy**: [POL-0094](../../05.operations/policies/0094-lakehouse.md)
+- **Lakehouse policy**: [POL-0094](../../05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md)
