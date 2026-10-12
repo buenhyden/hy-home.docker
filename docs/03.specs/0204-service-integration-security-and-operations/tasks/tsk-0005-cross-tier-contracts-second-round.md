@@ -1,6 +1,6 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.7"
+version: "0.6.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1407,6 +1407,43 @@ LAB activation, job/backup/external closure, production recovery and final
 private retirement acceptance remain open. The already-absent duplicate is
 never reported as a new coordinator unlink or as a reason to rotate the
 canonical password.
+
+### Public consumer readiness review — 2026-10-12
+
+At input main `319861b112cf37028c9cee8ab78aac5e0c6e9120`, the coordinator
+parsed only tracked public declarations at `2026-10-12T05:26:27.418972+00:00`.
+Alertmanager's template contains zero active `email_configs`; the email
+receiver remains commented out. Its canonical read-only mount is therefore
+not evidence of an active email delivery consumer. The independent LAB Auth
+environment declares `GOTRUE_SMTP_PASS_FILE`, but no `GOTRUE_SMTP_HOST`,
+`GOTRUE_SMTP_PORT` or `GOTRUE_SMTP_USER`. That loader contract alone does not
+establish a usable LAB SMTP connection. Current rendered runtime configuration,
+supplier authentication, delivery and LAB activation remain unverified. No
+receiver or LAB service was enabled during this review.
+
+The value-free public configuration receipt is
+`.agent-work/smtp-consumer-observation-20261012/public-consumer-config.json`,
+SHA-256 `1621f1a3b9e771d211edf803591da6fcdee029283d3ce07365ab4e8da9a6da78`.
+Private value reads and runtime mutations were both zero. The previous file
+metadata observation remains dated evidence; this parse does not refresh it.
+
+The source-proof candidate now has six author paths and three coordinator
+registration paths. The actual manifest check first failed on its one missing
+new helper record, then passed after registration; the workflow validator
+passed. A combined synthetic SMTP/catalog/generator/routing/manifest rerun
+passed 223 tests in 19.777 seconds, exit 0. This is source evidence only.
+Independent review approved the three registration files in isolation but
+found a selected-service resolution defect: an unused extends-parent service
+could satisfy consumer presence, and a child image override could be ignored.
+The candidate remains uncommitted and unaccepted pending correction and fresh
+review. Passing unit tests do not supersede that finding.
+
+SMTP01 therefore includes canonical source references, the loader, catalog,
+generator, guarded retirement and consumer/recovery evidence. The sole proposed
+password unlink remains COMM-003's exact old Supabase file; canonical COMM-002,
+SMTP account files and other Supabase secrets remain protected. No new unlink,
+password rotation, provider send, production recovery or final retirement
+acceptance occurred in this review.
 
 ## Evidence
 
