@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.12"
+version: "0.4.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -1321,6 +1321,205 @@ certify an image or its embedded packages clean. Actual ROOT patch/deployment,
 P01 authentication/custody, complete backup/restore and P04/P05 native receipts
 keep their own unresolved boundaries. SMTP01/CLN01 accepted delivered scope
 and P09 preparation remain accepted; no new LAB execution is added.
+
+### Current warning-only ROOT audit — 2026-10-13 KST
+
+The current direct SEC01 request, reiterated as latest-main execution, restricts
+future image changes and scanner corrections to confirmed current ROOT-image
+security warnings. It supersedes the preceding stable-update continuation for
+future work only; its historical observations and completed Tasks are preserved.
+Criterion 15 and W31 remain the sole acceptance owner. SPEC and Plan already
+state this restriction and are NO_CHANGE. The security-updates README still
+allowed blanket stable updates; only that conflicting prospective text changes.
+
+Fresh `git fetch origin main` succeeded twice. Remote main and the isolated
+`codex/sec01-warning-audit` input are
+`328871a94b42c13f676e61b40f026c906ebbc13d`; the original supplied baseline is
+`23e37362b72e98028a4675f282819c0346ae59dc`. The user's original checkout was
+clean at `98144b2c0b5738f272b6a628246c901945ba15bf`. All six other existing
+worktrees were observed clean and preserved, including both SEC01 worktrees.
+GitHub connector open-PR search returned no open PRs. The original-to-current
+diff includes Stage 05 document moves, source reconciliation and already
+delivered n8n/Renovate projection changes; it does not authorize replaying them.
+
+The existing `expected_from_root` helper independently recalculated 111 services
+from 44 public Compose inputs, with manifest SHA-256
+`957a9ac7be7d4519107490fc5183a63d093d4afcfd4f5933326f7005c633cb29`.
+Submitted ROOT rows have no missing/unexpected services. Source comparison
+identified 12 stale image declarations in the evidence ledger: Dozzle, Mailpit,
+four n8n services, Ollama, Open WebUI, Renovate, two Stalwart services and
+Traefik. Build-only rows without an image field retain UNKNOWN; they are not
+evidence of missing services. Current-source metadata reconciliation does not
+refresh supplier releases, authenticate packages or promote old candidate
+digests, running metadata or tests to a new result.
+
+| Surface / consumer | Current classification | Target / recovery boundary |
+| --- | --- | --- |
+| Existing ROOT Compose, Dockerfiles, version projection and controls | SOURCE_APPLIED / NO_CHANGE | No image bump, profile/network/role/secret or data change; existing source rollback remains with its owning commit |
+| Current-source ledger declarations and README scope | CONFIRMED_GAP | SEC01 is the sole writer; preserve previous evidence and revert this increment's logical commit for source rollback |
+| Qdrant source and internal gRPC authentication | NO_CHANGE for GHSA-3gph-6c29-p29v version range | Source already selects the official fixed release; current image package scan and native authentication remain unverified |
+| SeaweedFS filer TUS authorization / S3 consumers | SECURITY_WARNING_CONFIRMED at vendor version-range level; source mitigation NO_CHANGE | Advisory has no patched version; source disables unused TUS while retaining filer/S3; effective HOME mitigation is RUNTIME_UNVERIFIED |
+| MNG metadata/queue and DEV business data / P04-P05 | NO_CHANGE / CONSUMER_DEPENDENT | Preserve separate roles, networks, secrets and backup owners; no new consumer or native receipt |
+| ROOT signature, SBOM and current Grype DB scan | NOT_RUN | Authenticated scanner subjects, fresh validated DB and a preserved independently reviewed ROOT execution route are required |
+| LAB runtime, learning apps, Wiki implementation | OUT_OF_SCOPE | No LAB resource mutation or native activation; completed Wiki preparation stays NO_CHANGE |
+
+Fresh read-only Docker observation used `/usr/bin/docker`, explicit
+`unix:///var/run/docker.sock`, a new empty client configuration and a minimal
+environment. Server metadata returned exit 0, Linux/amd64. ROOT-label discovery
+and bounded Config.Image/Image/State/platform/RepoDigests reads found 63 current
+ROOT containers: 59 running and four exited. This is a new observation, not a
+copy of the old `current_running` fields. No Env, secret, auth file, raw log,
+private data, daemon container execution, restart or deployment was read/run.
+
+Qdrant currently reports `v1.19.1-unprivileged`, config/image ID
+`sha256:801777072776dc81b2a9dd2007b2ed487571f21ecd30efffd15ddb1671f2193d`.
+Its source already selects 1.19.2, outside the advisory's affected range
+`>=1.18.0,<1.19.2`. This proves a source-level fixed-version selection, not
+the current image's packages or effective internal-auth setting. SeaweedFS
+filer reports 4.47, config/image ID
+`sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882`;
+source selects 4.48, within the advisory range `>=4.39`. Both disclosures
+were freshly read from their official vendor advisories:
+[Qdrant GHSA-3gph-6c29-p29v](https://github.com/qdrant/qdrant/security/advisories/GHSA-3gph-6c29-p29v)
+and [SeaweedFS CVE-2026-77368 / GHSA-99q7-x53r-6j4g](https://github.com/seaweedfs/seaweedfs/security/advisories/GHSA-99q7-x53r-6j4g).
+The SeaweedFS advisory lists no patched release. The attack concerns
+cross-prefix authorization on an existing TUS upload session, requiring a
+valid filer write JWT and another session's identifier. A boolean-only Args
+query did not observe the explicit `-tusBasePath=` flag on the running filer;
+absence of that flag does not prove TUS is enabled or that this attack path
+is reachable. No active exploit or private JWT/config query occurred.
+
+Fresh public `docker buildx imagetools inspect <pinned-index> --raw` queries
+both exited 0. Response SHA-256 matched the requested indices. Qdrant index
+`efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b`
+selects Linux/amd64 manifest `390ca16351185f9913c23d0c95ded0cdf2ce17e525dd7fbe58d3339c9c80e633`;
+SeaweedFS index `4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d`
+selects manifest `aba492e2a4e4c90bff795745e8e660affa1f09e7650f5981bd7bccd1a06cd931`.
+These are public descriptor/integrity receipts, without publisher signatures,
+layer pulls, SBOM or native execution. The metadata wrapper's first cleanup
+failed because buildx populated its owned client directory; separate exact-path,
+owner-checked cleanup exited 0. No Docker service resource was created.
+
+No Syft, Grype or Cosign executable is on PATH. Historical authenticated
+extraction receipts do not establish that their subjects or a fresh database
+are currently available. The preserved Task records missing ROOT scanner
+operator/contract sources; the registered sample-service scanner cannot replace
+that ROOT route. Current scan absence remains UNKNOWN / NOT_RUN, not a clean
+verdict. No scanner, gate, skip policy or exception is changed.
+
+HOME rollout, data-format migration, rotation, empty restore and real recovery
+remain NOT_RUN. The next runtime target is the current ROOT Qdrant/filer
+artifact and its owning S3/internal-auth consumers, but a concrete consistent
+backup, empty-restore proof, exact artifact scan and approved per-target rollout
+contract are still required. Start with the existing value-free read-only
+image/flag observations above; stop on digest mismatch or absent recovery input.
+No source revert or image tag downgrade guarantees data restoration.
+
+Verification, independent review and delivery receipts for this increment are
+recorded below when actually executed; Task status remains in-progress because
+global security/native/recovery acceptance has not been achieved.
+
+#### Current source verification and independent review
+
+All following source checks bind main `328871a94b42c13f676e61b40f026c906ebbc13d`
+plus the five-file increment. No Compose, Dockerfile, version projection,
+scanner, network, role, secret or dependency source changed. The ledger's new
+source-only refresh exposed a second test assumption: the old candidate test
+treated the last refresh as a vendor lookup. RED reproduced its missing
+`public_metadata_receipt_sha256` error. The correction selects the newest
+receipt-bearing refresh, retaining exact historical receipt/source assertions;
+an independent removal probe still failed with StopIteration. No old vendor
+receipt was attached to the new source observation.
+
+| Command / check | Exit | Actual result and limit |
+| --- | --- | --- |
+| `python3 -m unittest tests.lib.supply_chain.test_update_gates.UpdateEvidencePackageTests.test_current_rows_match_root_compose_source -v` before reconciliation | 1 | RED: exactly 12 stale declaration failures |
+| `python3 -m unittest tests.lib.supply_chain.test_update_gates -q` after reconciliation | 0 | GREEN: 26 tests; current declaration/build comparison has zero mismatches |
+| `python3 -m unittest tests.validation.test_sec01_next_tool_candidates -q` before/after selector correction | 1 / 0 | RED: KeyError; GREEN: eight tests; independent missing-receipt probe still fails |
+| Existing six-module bundle: `test_grype_db_seed`, `test_supply_chain_policy`, `test_sec01_version_contract`, `test_sec01_next_stable_candidates`, `test_sec01_next_tool_candidates`, `test_workflow_version_bundle` | 0 | 86 tests, three native skips, before the appended source-only refresh; later affected module replay above supersedes its candidate-selector slice |
+| `python3 -m unittest tests.validation.test_compose_baseline_gates.SeaweedfsContractTests -q` | 0 | Four source mitigation tests; no native TUS/S3 test |
+| `bash scripts/operations/sync-tech-stack-versions.sh --check` | 0 | Current projection matches tracked images; one required OPSFLOW image remains an unresolved operator input |
+| Empty-client `docker compose --env-file .env.example --profile core --profile seaweedfs --profile qdrant config --quiet` | 0 | Public example-only static render; no private .env, up or secret creation |
+| `python3 -m scripts.lib.supply_chain.latest_version_gate --input infra/09-platform-ops/security-updates/update-ledger.json` | 2 | BLOCKED_EVIDENCE: ready=false, no missing/unexpected ROOT rows |
+| `python3 -m scripts.lib.supply_chain.security_update_gate --input infra/09-platform-ops/security-updates/update-ledger.json` | 2 | BLOCKED_EVIDENCE: 111 blocked rows, no missing/unexpected services; no current CVE scan |
+| `python3 scripts/validation/run-ci-gate.py --profile changed --local-only` | 1 | FAIL, retained below; not an aggregate PASS |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 328871a94b42c13f676e61b40f026c906ebbc13d` with the two changed document paths | 0 | Two selected documents, zero violations |
+| `ruff check` and `ruff format --check` on the two changed test modules; `git diff --check` | 0 | Scoped deterministic source checks |
+| `uvx --offline --from commitizen==4.15.1 cz check --message-length-limit 75 --message 'fix(sec01): Reconcile current root security evidence'` | 0 | Actual repository-pinned Python Commitizen; PATH's unrelated Node cz first rejected the options and created no commit |
+
+The local aggregate completed supply-chain fixture policy (265 tests),
+Conftest policy (18 tests) and document links (1,272 documents, 11,439 links,
+zero failures). Links retained one baseline warning: 2,870 legacy historical
+links have no capture source and remain unverified. The Compose regression
+leaf ran 628 tests with 71 explicitly optional native skips, three failures
+and one error. It stopped the aggregate before repository-integrity regression
+execution; that leaf is NOT_RUN, not PASS. The diagnostic replay used the same
+registered module set and reproduced the same four failing IDs without native
+opt-ins. The two changed SEC01 modules were separately GREEN after the fix.
+
+Two failures were local checkout permissions: Open WebUI and Gatus entrypoint
+files had mode 0775, although their Git modes are 100755. Only these two
+current-user-owned files in the new SEC01 worktree were restored to 0755;
+their targeted permission tests passed, exit 0, with no tracked diff. The
+remaining unchanged failure is
+`QualityObservabilityContractTest.test_locust_lab_is_not_claimed_as_root_observability_coverage`
+(Grafana README lacks the test's literal LAB disclaimer). The unchanged error is
+`LabInventoryAndSelectionTests.test_each_lab_guide_names_exactly_its_project_and_services`
+(the test still opens absent `labs/supabase.md`). Both reproduced in a clean
+detached checkout of the exact latest main, two tests, exit 1. These are
+existing public documentation/contract debt, not new image warnings or current
+remediation. No LAB runtime, image, secret, data or native test ran, and neither
+test was skipped or weakened to manufacture an aggregate PASS.
+
+Independent code review approved the original four-file slice and the later
+candidate-selector delta, with no findings. Independent security review initially
+blocked the stale selector, then approved the corrected five-file diff with no
+findings. Both reviewers independently replayed the relevant 26/eight tests;
+security recomputed all 44 include hashes without a mismatch. Their approval
+covers this metadata/docs/test increment only, not ROOT vulnerability remediation
+or HOME acceptance. Current remote protection read-back has zero required
+approval count, CODEOWNERS enforcement false and empty required contexts/effective
+rules. All five paths still route to `@buenhyden`; no human approval is invented.
+The produced candidate-quality and external checks still require actual hosted
+observation before any requested source merge; no protection setting changed.
+
+The reviewed five-file index passed
+`bash scripts/validation/run-ci-precommit.sh --mode local-staged`, exit 0,
+including Markdown, JSON, Ruff and the hardcoded-secret guard. Ordinary commit
+`256d5f833af0ead3287832bac9278e1d42aecabc` and
+`git push -u origin codex/sec01-warning-audit` both exited 0. The observed
+pre-push hook reported no supported checks; that skip is not a QA receipt.
+[PR #428](https://github.com/buenhyden/hy-home.docker/pull/428) was opened
+against main `328871a94b42c13f676e61b40f026c906ebbc13d` with that head and
+attached to the current chat. At this receipt's observation, candidate-quality
+run `38273509572` and CodeQL were IN_PROGRESS, GitGuardian was SUCCESS and
+PR-context main-security was SKIPPED; GitHub reviews were empty, consistent
+with the verified zero-required-approval setting. No final hosted PASS or merge
+is inferred. This result-only Task receipt requires its own staged check and
+latest PR head CI; prior-head observations are not reused as current acceptance.
+Source rollback is a revert of this increment; because no deployed artifact/data
+changed, it provides no HOME data recovery.
+
+#### Commit ledger for the current increment
+
+| Commit | Owner / scope | Actual disposition |
+| --- | --- | --- |
+| `256d5f833af0ead3287832bac9278e1d42aecabc` | SPEC-0204 / W31; five metadata/docs/test paths | Committed and pushed to PR #428; hosted candidate pending at the observation above |
+| `eaacf6bb0eb5225471db10ecbff5f2b47517a857` | SPEC-0204 / W31; result-only Task receipt | Staged style and secret guard passed again; committed/pushed, exact-head independent review approved |
+
+Before source merge, fresh check-runs read-back for `eaacf6bb0` confirmed
+candidate-quality run `38273774053` SUCCESS, CodeQL including all three Analyze
+checks SUCCESS, and GitGuardian SUCCESS. PR-context main-security remained
+SKIPPED, not a ROOT scan. A simultaneous `git fetch origin main` found main had
+advanced to `9fd0a396c4e0246be778c90fb5ef31435c08e977`. Its only changed path
+since the source input was TSK-0007's delivered CLN01 evidence; ROOT Compose,
+image/build inputs and the SEC01 five-file source boundary were unchanged.
+The coordinator integrates that published main through an ordinary merge,
+preserving the other Task body. This receipt records the successful earlier
+head, not the new merge head's CI: the updated PR still needs actual latest-head
+candidate results, independent evidence-delta review and current-main read-back
+before source merge. All blocked local/security and NOT_RUN operational states
+above remain unchanged.
 
 ## Evidence
 

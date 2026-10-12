@@ -58,7 +58,11 @@ class NextToolCandidates(unittest.TestCase):
             ).read_text()
         )["coordinator_current_public_refresh"]
         receipt = releases["receipt_sha256"]
-        refresh = updates["source_refreshes"][-1]
+        refresh = next(
+            row
+            for row in reversed(updates["source_refreshes"])
+            if "public_metadata_receipt_sha256" in row
+        )
         self.assertEqual(refresh["public_metadata_receipt_sha256"], receipt)
         self.assertEqual(images["receipt_sha256"], receipt)
         self.assertEqual(images["source_revision"], refresh["source_revision"])
