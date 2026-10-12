@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.8"
+version: "1.7.9"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -404,6 +404,14 @@ operational acceptance are not inferred from document relocation.
     backup/restore and external consumers are verified. Missing private facts
     defer migration/deletion alone. Rollback uses the canonical source mapping
     and only the affected consumer; no volume reset or broad rotation occurs.
+    The 2026-10-12 user clarification accepts the delivered SMTP01/CLN01
+    changes and excludes actual LAB GoTrue SMTP connection configuration,
+    activation and sending from criteria 12 and 14. Missing LAB readiness
+    cannot reopen that acceptance. Existing source mapping and isolated
+    fixture evidence remain valid within their recorded scope; user acceptance
+    is not a new provider authentication, send or recovery receipt. Any later
+    genuine send uses the operator-supplied designated sender/recipient mailbox
+    under its bounded ROOT or P05 lane, without publishing the address here.
 
 <!-- markdownlint-disable MD029 -->
 15. SEC01 maintains a current stable/security integration ledger and its

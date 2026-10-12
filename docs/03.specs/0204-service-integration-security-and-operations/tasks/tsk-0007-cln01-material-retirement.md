@@ -1,10 +1,10 @@
 ---
 title: "CLN01 Material Retirement Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-12"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0007"
 parent_ids:
@@ -730,24 +730,46 @@ UNUSED_DELETE candidate has independently closed all current-consumer and recove
 axes, so private apply and recovery remain NOT_RUN. Preserve positive initialization,
 manual and rollback consumers and foreign dirty worktrees during local integration.
 
+### User-accepted scope and LAB exclusion — 2026-10-12
+
+At input main `2773a20c1c24ce1b70f64b36fe8f6f5108f49542`, the user confirmed
+acceptance of the delivered CLN01/SMTP01 changes. Actual LAB GoTrue SMTP
+connection configuration, activation and sending are outside this Task and
+are not a missing consumer-cutover condition. Do not reopen the accepted
+increment merely because LAB connection settings are absent.
+
+The reviewed source/helper, canonical SMTP mapping and public marker cleanup
+remain accepted delivered changes. COMM-003 stays with SMTP01's sole executor;
+canonical COMM-002 and live PG-020 initialization/recovery remain protected.
+Previously unknown private/job/backup/external facts for other candidate
+materials remain unknown and require their own bounded disposition; this
+user acceptance does not fabricate a private deletion or recovery receipt.
+No private file, service, credential or LAB runtime changed in this unit.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| SMTP01 dependency | 12 | W24 | merged delivery plus source and operational cutover evidence | SMTP01 source PR #413 draft; merged delivery and cutover pending | NOT_RUN | SMTP01 owner evidence | pending |
-| Helper source acceptance | 12 | W24 | 50 focused tests, 98% combined coverage with branch measurement, Ruff and independent code/security review | current helper input `e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284` | PASS | CLN01 implementation patch | pending |
+| SMTP01 delivered-scope dependency | 12 | W24 | Integrated source handoff and user acceptance; actual LAB GoTrue configuration excluded | Main `2773a20c1`; user clarification 2026-10-12 | PASS | User-accepted scope and LAB exclusion | accepted |
+| Helper source acceptance | 12 | W24 | 50 focused tests, 98% combined coverage with branch measurement, Ruff and independent code/security review | Recorded helper input `e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284` | PASS | CLN01 implementation patch; user-accepted delivered source | accepted |
 | Candidate classification | 12 | W24 | partial five-axis assessment; BLOCKED_FACTS until missing ownership/recovery facts close | current source and read-only observations on named host | DEFER | #read-only-host-observations | pending |
 | Private deletion acceptance | 12 | W24 | manifest preflight and idempotent reinspection | operator manifest under `/tmp/cln01-<run>/` | NOT_RUN | operator host | pending |
 
 ## Review and Completion
 
+The delivered CLN01/SMTP01 increment is user-accepted under the clarification
+above. LAB GoTrue connection/activation is excluded, not a pending completion
+condition. The historical source and operational evidence below keeps its
+original attribution; separate candidate checks are not a new LAB requirement.
+
 SOURCE and UNIT passed on the frozen helper input; ISOLATED passed using only
 synthetic fixtures. STATIC includes Manifest/workflow validation, active metadata, full links and
 corpus lifecycle PASS (exit 0); the registered staged controller passed after
-explicit blank-line corrections. Final staged input and delivery are separate. HOME, MIGRATION,
-ROTATION and RECOVERY remain NOT_RUN. DELIVERY has the logical source commit
-above; remote PR acceptance and coordinated merge remain pending. Private
-apply, functional runtime proof and recovery remain NOT_RUN; the limited
+explicit blank-line corrections. SOURCE delivery is included in local main
+`2773a20c1` and is user-accepted; a new remote PR is not required by the current
+local-main delivery instruction. HOME, MIGRATION, ROTATION and RECOVERY retain
+their recorded NOT_RUN states. Private apply, functional runtime proof and
+recovery remain NOT_RUN; the limited
 checkout-to-host label observation above does not satisfy those criteria.
 A Git logical revert can restore tracked source; it cannot restore private
 material. Private recovery is limited to a pre-existing encrypted recovery

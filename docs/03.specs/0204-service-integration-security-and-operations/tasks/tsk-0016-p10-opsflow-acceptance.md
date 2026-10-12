@@ -1,6 +1,6 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -614,6 +614,22 @@ source-review workspaces remain preserved. Clean source delivery does not close
 operational Tasks. W65–W68, full SEC01/HOME, actual SMTP provider delivery,
 OpenBao authentication/recovery and the remaining owning runtime criteria stay
 open. This cleanup is not native E2E, migration, rotation or recovery evidence.
+
+### Current user-accepted SMTP/CLN boundary — 2026-10-12
+
+At clean root main `2773a20c1c24ce1b70f64b36fe8f6f5108f49542`, the user confirmed
+acceptance of the delivered SMTP01/CLN01 changes and excluded actual LAB GoTrue
+SMTP connection configuration from their Spec/Plan/Task scope. Missing LAB
+connection/activation/send readiness is not a remaining acceptance condition.
+P10 must not start GoTrue or repair LAB SMTP to obtain its Opsflow receipt.
+P04/P05 native publication/notifier acceptance keeps its independent scope.
+
+A genuine future sender/recipient test uses the mailbox designated in the
+current user instruction. The personal address is not published in Git,
+fixtures, workflow exports or this ledger. This selection does not dispatch a
+message and user acceptance does not create a native/provider/restore result.
+The prior source/isolated receipts remain attributed to their actual inputs.
+No runtime, secret, account, message or data changed in this clarification.
 
 ### Dependency Matrix
 

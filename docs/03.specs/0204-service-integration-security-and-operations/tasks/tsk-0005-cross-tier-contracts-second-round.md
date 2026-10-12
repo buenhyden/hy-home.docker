@@ -1,6 +1,6 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.9"
+version: "0.6.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1485,6 +1485,45 @@ activation, external/job closure, current production recovery, rotation and
 final operational retirement acceptance remain open. No new private unlink or
 credential/runtime change occurred in this source correction.
 
+### User acceptance and LAB GoTrue exclusion — 2026-10-12
+
+At clean main `2773a20c1c24ce1b70f64b36fe8f6f5108f49542`, the user confirmed
+acceptance of the delivered SMTP01/CLN01 changes and clarified that actual LAB
+GoTrue SMTP connection configuration is not assigned by this Spec/Plan/Task.
+The earlier coordinator summaries incorrectly listed missing LAB connection
+settings and activation as outstanding SMTP01 completion conditions. They are
+superseded here; no GoTrue connection, account provisioning, LAB activation or
+LAB send is required to close this accepted increment.
+
+Canonical COMM-002 wiring, the preserved LAB-only source mapping/wrapper,
+COMM-003 retirement ownership and the attributed isolated test/restore
+receipts retain their exact scopes. The 229-test combined source receipt and
+local-main merge `2773a20c1` remain actual evidence; this user acceptance is not
+another unit/native run, provider authentication, send, unlink or restore.
+The canonical password remains protected and the already-absent duplicate is
+not counted as a new deletion. Unresolved independently scoped material or
+ROOT/P05 operational evidence is not silently converted to PASS.
+
+The user also selected one existing mailbox for genuine sender/recipient tests.
+Its address is held in the current user instruction, not reproduced in Git,
+public fixtures or workflow exports. Selection does not itself send a message.
+A future bounded ROOT/P05 send must record its actual provider outcome and
+recipient/capture result; it must not enable LAB GoTrue to obtain that receipt.
+No secret, runtime, account, credential, message or data changed in this unit.
+
+Documentation verification used
+`python scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD`
+with the five explicit owned document paths: five selected, zero violations,
+exit 0. `bash .agents/skills/style-validation/scripts/classify-changed-files.sh`
+selected only five authored Markdown files, exit 0. The existing
+`bash scripts/validation/run-ci-precommit.sh --mode local-staged` passed style
+and secret-leak checks, exit 0. Independent review found stale CLN source/PR
+acceptance and SMTP W26 acceptance cells; they were corrected without changing
+operational results. The final corrected document input requires its scoped
+metadata/staged checks before the normal local-main commit. Implementation
+UNIT, native/provider, recovery and HOME checks were not rerun for this
+text-only correction; no new result is attributed to those lanes.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1501,27 +1540,28 @@ credential/runtime change occurred in this source correction.
 | SonarQube secret | 4, 9 | W17 | Isolated database login; empty-secret refusal; test | `a677d609c` | PASS | W17 SonarQube Secret | accepted |
 | Third-round validation | 8 | W18 | Changed gate in a clean worktree | `9bf20d195` | PASS | W18 Validation | accepted |
 | Validation | 8 | W12 | Changed gate in a clean worktree; pre-commit over the range | `c68df1daa` | PASS | W12 Validation and Handoff | accepted |
-| SMTP01 baseline and RED | 14 | W26 | New source regressions failed on prior implementation | `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`; public source | PASS | W26–W30 SMTP01 Current Increment | pending |
+| SMTP01 baseline and RED | 14 | W26 | New source regressions failed on prior implementation | `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`; public source | PASS | W26–W30 SMTP01 Current Increment | accepted |
 | SMTP source and wrapper | 14 | W27 | Canonical source/target, wrapper and fresh 141-test unit run | `3181921be795c5439e5ac77e462f62e47db6fa5d` | PASS | Current-source verification and delivery receipt | accepted |
 | Catalog and guarded retirement | 14 | W28 | Exact alias, lock/root identity, race regressions and independent approval | `3d0a8a1b07c1f2df29c0f04f88ba8fa815fbd1bf`; synthetic files | PASS | Current session ownership and interfaces | accepted |
 | Native SMTP boundary | 14 | W29 | Fresh six native plus four unit cases; exact image/platform and review | Fixture `794e314f`; digest-fixed synthetic inputs | PASS | Final native receipt | accepted |
-| SMTP delivery and handoff | 8, 14 | W30 | Fresh aggregate, independent review, logical commits and owning PR | Current SMTP01 branch | NOT_RUN | W26–W30 SMTP01 Current Increment | pending |
+| SMTP delivery and handoff | 8, 14 | W30 | Reviewed local-main source delivery and explicit user acceptance of the delivered scope | Main `2773a20c1`; user clarification 2026-10-12 | PASS | User acceptance and LAB GoTrue exclusion | accepted |
 | Reported duplicate SMTP retirement | 14 | W30 | Assignee report of snapshot, restore, comparison and unlink; current canonical presence/duplicate absence independently observed only | Assignee commit `39ff7f915`; no independent restore receipt | DEFER | Reported SMTP Duplicate Retirement — 2026-10-11 KST | pending |
 
 ## Review and Completion
 
-Not complete. These remain open, each with its owner action:
+The delivered SMTP01/CLN01 increment is user-accepted. This broader
+second-round Task still contains separate owner work below; excluded LAB
+GoTrue connection/activation is not an SMTP01 completion condition.
 
-- Historical W10 result: the Supabase stack ignored 35 secret keys. SMTP01
-  supplies only GoTrue SMTP consumption; DB/JWT/other support is still unresolved.
-  Rebuild or retire the remaining stack source, which
-  it lacks database URLs. Terrakube's 9 keys need Spring `configtree`, not
-  yet verified. Both stay outside the HOME selection by test.
+- Historical W10 Supabase secret-support gaps remain dated LAB evidence,
+  outside the accepted SMTP01 increment; they require no LAB repair or
+  activation here. Terrakube's 9 keys still need its separately owned Spring
+  `configtree` verification and remain outside the HOME selection by test.
 - The canonical SMTP file remains and the duplicate is absent. Assignee-reported
   retirement still needs external-consumer and exact unlink evidence; dated
   two-file isolated restoreability is now observed under the bounded contract;
-  source delivery uses current local gates/review without PRs. Supabase HOME
-  activation and external-host absence remain unverified.
+  source delivery uses current local gates/review without PRs. External-host
+  absence remains unverified; excluded Supabase LAB activation is not required.
 - Create the OpenBao snapshot token (RUN-0021) after unsealing; until then
   each run reports the recovery gap.
 - Decide whether `home-airflow` needs the password grant and which service
