@@ -11,6 +11,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 LABS = sorted((ROOT / "labs").glob("*.yml"))
+LAB_GUIDE_PATHS = {
+    "supabase.yml": ROOT / "docs/05.operations/guides/15-labs/0029-supabase.md",
+}
 # Synthetic, non-HOME inputs: only enough to render each LAB model.
 LAB_INPUTS = {
     "LAB_DATA_DIR": "/nonexistent/lab-data",
@@ -147,9 +150,10 @@ class LabInventoryAndSelectionTests(RootClosureTests):
         import re
 
         for name, lab in self.labs.items():
-            guide = (
-                (ROOT / "labs" / name).with_suffix(".md").read_text(encoding="utf-8")
+            guide_path = LAB_GUIDE_PATHS.get(
+                name, (ROOT / "labs" / name).with_suffix(".md")
             )
+            guide = guide_path.read_text(encoding="utf-8")
             with self.subTest(lab=name):
                 project = re.search(
                     r"^\| Project \| [`*]+([^`*]+)[`*]+ \|$", guide, re.M

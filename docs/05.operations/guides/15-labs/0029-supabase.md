@@ -1,10 +1,10 @@
 ---
 title: "Supabase Usage Guide"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 layer: "operations"
 artifact_id: "GDE-0029"
 parent_ids:
@@ -61,6 +61,8 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
 
 | 항목 | 이 저장소의 구현 결정 |
 | --- | --- |
+| Project | `hy-home-lab-supabase` |
+| Services | `analytics`, `auth`, `db`, `functions`, `imgproxy`, `kong`, `meta`, `realtime`, `rest`, `storage`, `studio`, `supavisor`, `vector` |
 | Consumer and data rationale | PostgreSQL, Auth, API, Realtime, object, function, pooling을 격리 검증하는 독립 LAB. 현재 이름 있는 production consumer는 없다. |
 | Source / updater | [Compose](../../../../labs/supabase.yml)가 13개 이미지 선언을 소유하며, 조율된 upstream 호환성 검토가 필요하다. |
 | Services / profile | frontmatter에 매핑된 13개 서비스; exact `supabase`. |
