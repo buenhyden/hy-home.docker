@@ -1788,6 +1788,45 @@ NOT_RUN; HOME_COLD_BOOT, INDEPENDENT_CUSTODY, SELECTED_EMPTY_RESTORE and
 RECOVERY are also NOT_RUN. QA file layout proof and final independent readiness
 review are pending, and Task status remains blocked.
 
+### W23 Merged-Source Readiness Checkpoint — 2026-10-13
+
+SOURCE_DELIVERY is PASS: the reviewed ten-path P01 diff is in integration
+commit `14ae4282948ef7a43ad54c16f5628bc6b15a8520`, merged as
+`7620f2d22d6331566b7d14df7ccd536d011235cb`, with shared tree
+`282180b7ae188444670d0b847f5574004cdf646f`. Required head-14 CI passed.
+Post-main Quality Gates 38299450330 and CodeQL 38299449909 succeeded;
+main-security passed and candidate-quality was intentionally skipped. GitHub
+formal reviews are none and required reviews are zero; separate IaC and security
+agents approved the final operations packet. This source delivery does not
+complete any HOME lane.
+
+The published 58,396-byte snapshot remains integrity evidence only. Isolated
+FILE_USABILITY QA passed in 71.4s and the probe passed in 61s; neither is a
+HOME restore. The final operations packet is READY with public input hashes:
+source/main `89d9fb4be12d0551e6f06d68e4a3f55368660d8bf8864712ecb60df4537fb01a`,
+monitor `76336a1d6b08e3b40073b1054f8674c7b0501816665b7a48a2abc99e3f437c2c`,
+tests `a5f66b2b7dcf9808005e085969d6f1bdeced32cdd8bfe3073d18ba869e05d3c2` and
+launcher `d08a585559c213649f2a1ef7036ba15b8e815599ab58a7c54bd4da5dc8ff7878`.
+
+The same UNUSED first FILE_USABILITY attempt retains its selected empty target
+`/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013`,
+container `p01-home-restore-20261013`, snapshot and guarded coordinator
+receipt `/home/hyunyoun/backups/p01-openbao-20261013/p01-home-empty-restore-20261013-01`.
+Read-only absence checks passed and the four operation names remain absent;
+mandatory execution preflight and source-hash checks are NOT_RUN_BY_DESIGN while
+awaiting an ACTIVE operator availability reply. No operation write has occurred.
+A normal coordinator has a 900-second limit including handled SIGINT/TERM/HUP
+and its 180-second reserve; the monitor's 1 GiB/64 postcondition is not a quota.
+SIGKILL,
+host-loss and CID-window residuals require manual stop-and-preserve by exact
+name/ID, with no automatic retry.
+
+CURRENT_VERSION_AUTH, CONSUMER_READ, HOME_COLD_BOOT, INDEPENDENT_CUSTODY,
+SELECTED_EMPTY_RESTORE, SEALED_AUTHENTICITY, cutover and RECOVERY remain
+NOT_RUN. An earlier PR-description patch was rejected; the merged-state draft
+at `/tmp/p01-pr-body-merged.md` is prepared locally and awaits explicit
+approval. Task status remains blocked awaiting human input.
+
 Checkpoint validation passed: Task metadata selected 1 document with 0
 violations, and `check-script-manifest` and `git diff --check` each exited 0.
 These are SOURCE/DOC checks, not runtime acceptance. The OpenBao 2.7.1
