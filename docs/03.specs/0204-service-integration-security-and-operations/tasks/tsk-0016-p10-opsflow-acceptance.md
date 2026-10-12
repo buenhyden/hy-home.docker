@@ -1,6 +1,6 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.17"
+version: "0.1.18"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -963,6 +963,16 @@ concurrently, before graph construction or path checks ran; one current-C retry
 then passed. This STATIC repository-path
 check does not model `cd`, shell working directory, environment or external
 host behavior, so W68 directory dry run remains NOT_RUN.
+
+The latest trusted user answer authorizes only four STATIC LAB routes for the
+`buenhyden/hy-home.docker` `codex/p08-document-moves` to `main` PR
+continuation: infrastructure-hardening Supabase inputs, synthetic LAB Compose
+rendering, conftest LAB-corpus enumeration, and LAB image-declaration reads.
+All other LAB unit, native, service, data and secret work remains excluded. The
+input is D `a9f26e2cc2ca4c8920b9a94b566973c6f8383f74`, with no source change.
+After latest-head source/security review and passing CI, this authorizes the
+already requested push, PR creation and merge without another approval; no
+remote CI, push, PR or merge has run yet, so they remain NOT_RUN.
 
 Fresh active-spec frontmatter parsing found 25 Specs: completed SPEC-0208,
 SPEC-0209, SPEC-0210 and SPEC-0212; active SPEC-0182 (blocked), SPEC-0204,
