@@ -95,8 +95,7 @@ byte-identical.
 
 Proposed on 2026-10-13 from the owner's choice of these options. SPEC-0231
 implements and verifies it, and SPEC-0233 corrects its reader and text. The
-owner accepted this decision on 2026-10-13, after reviewing the merged result
-of SPEC-0233 (#447).
+owner accepted this decision on 2026-10-13.
 
 ## Related Documents
 

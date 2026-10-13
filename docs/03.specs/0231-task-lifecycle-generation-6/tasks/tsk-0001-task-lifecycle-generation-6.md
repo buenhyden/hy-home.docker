@@ -184,7 +184,6 @@ The owner merged pull request #441 with a merge commit, `ffd201182` (parents
 | --- | --- | --- |
 | 2026-10-13 | 2a57d4122dc8dac954afca364b838e4bf97fd44a | #starting-state: generation 5 Registry and corpus read before the migration |
 
-
 ### Governance Suite
 
 The full document governance suite (`python3 -m unittest discover -s

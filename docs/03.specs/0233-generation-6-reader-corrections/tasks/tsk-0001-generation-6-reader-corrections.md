@@ -154,7 +154,8 @@ A read-only audit of Stages 01 to 03 against the corrected rules, on
 Not changed here: ADR-0037 still reads as accepted without a note that
 ADR-0048 replaces part of it. The decisions README records the partial
 replacement, and a note in ADR-0037 belongs with ADR-0048's acceptance, which
-is the owner's decision.
+is the owner's decision. The owner accepted ADR-0048 on 2026-10-13, and the
+note was added to ADR-0037 then (Owner Decisions).
 
 An independent `rules-engineer` review of the W7 branch returned changes
 required: REQ-0026 said readiness "must hold before any move" and that a
@@ -193,6 +194,7 @@ lists the criteria and why the rest stay `pending`.
 | Alignment checks | 5 | W7 | Changed metadata (10 documents) and corpus lifecycle, 0 violations; governance contract PASS | Branch on `338c607d8` | PASS | W7 Stage Alignment | - |
 | Alignment review | 5 | W7 | Independent `rules-engineer` review | `78526dbfd` | FAIL | W7 Stage Alignment | - |
 | Alignment re-review | 5 | W7 | Independent `rules-engineer` review of the corrected text: approve with notes, notes applied | `4ebfa6e8f` | PASS | W7 Stage Alignment | Alignment review |
+| Decision record checks | 5 | W7 | After the owner decision records: changed metadata (19 documents) and corpus lifecycle, 0 violations; links `--mode all` PASS; markdownlint 0 errors | `a6b541026` plus review notes | PASS | W7 Stage Alignment | - |
 | Candidate | 6 | W6 | Hosted `candidate-quality`, run 38380353911 | `5b95ed942` | PASS | W6 Gate | - |
 | Local gate | 6 | W6 | `run-ci-gate.py --profile changed`; exit 124 at the governance unittest node's 15-minute timeout | `5b95ed942` | FAIL | W6 Gate | - |
 
