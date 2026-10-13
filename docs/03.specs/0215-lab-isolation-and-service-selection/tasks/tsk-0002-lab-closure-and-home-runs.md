@@ -185,6 +185,8 @@ Measured with a counting `docker` wrapper on `PATH`: 12 tests in 50 s and 20
 call count was not measured; the code implies 58 (three class setups of ten
 renders, three times nine target probes, one HOME render).
 
+PR #439 head `58ae9cf6d`: `candidate-quality` passed in run `38344705466` (4m16s).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -197,6 +199,7 @@ renders, three times nine target probes, one HOME render).
 | Real LAB runs | 7 | W8 | `lab.py up`, probe, `down`, leftover count for six LABs | Synthetic roots; `231e070ac` | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
 | OpenSearch LAB run | 7 | W8 | `lab.py up`, cluster health, `down`, leftover count | Synthetic roots; host disk 66%; `e0e19cdcf` | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
 | Single collection and exact path list | 6 | W6 | Module run with a counting `docker` wrapper; scratch space-path check | `test_lab_isolation.py` on `5bf0e9479`, rebased on `4af41f1a8` | PASS | W6 Follow-up: Single Collection and Exact Path List | pending |
+| W6 follow-up remote candidate | 6 | W6 | `candidate-quality` on PR #439 | `58ae9cf6d` | PASS | W6 Follow-up: Single Collection and Exact Path List | pending |
 
 ## Review and Completion
 
