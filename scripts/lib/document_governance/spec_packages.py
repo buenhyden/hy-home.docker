@@ -1712,6 +1712,22 @@ def _v6_evidence_contract(
     unresolved = frozenset(
         criterion for criterion, open_rows in failures.items() if open_rows
     )
+    deciding = {
+        task.artifact_id for task in current_tasks if task.status != "cancelled"
+    }
+    missing_rows = sorted(
+        {
+            criterion
+            for (criterion, _), assigned_tasks in assignments.items()
+            if assigned_tasks & deciding
+        }
+        - set(acceptance),
+        key=int,
+    )
+    if missing_rows:
+        raise SpecPackageError(
+            f"criterion {missing_rows[0]} has no Criterion Acceptance row"
+        )
     for criterion, decision in acceptance.items():
         if decision != "accepted":
             continue
@@ -1763,6 +1779,7 @@ def _v6_evidence_contract(
                 )
         else:
             groups = [(task.status, assigned_pairs)]
+        owned_here = owned.get(task.artifact_id, set())
         for status, pairs in groups:
             if status != "completed":
                 continue
@@ -1775,13 +1792,10 @@ def _v6_evidence_contract(
                 raise SpecPackageError(
                     f"{task.path}: completed work requires PASS evidence"
                 )
-        if (
-            task.status == "completed"
-            and not owned.get(task.artifact_id, set()) <= closed
-        ):
-            raise SpecPackageError(
-                f"{task.path}: completed Task requires its criteria accepted"
-            )
+            if not {criterion for criterion, _ in pairs} & owned_here <= closed:
+                raise SpecPackageError(
+                    f"{task.path}: completed work requires its criteria accepted"
+                )
     historically_closed = frozenset(
         criterion
         for criterion in criteria - set(acceptance)
@@ -5202,21 +5216,17 @@ def _ordinary_preserved_paths(
         if source.spec.path.parts[2] in current_names:
             continue
         generation_6 = registry.common.get("lifecycle_generation") == 6
-        if (
-            generation_6
-            and source.spec.status == "approved"
-            and (
-                source.evidence is None
-                or archive_readiness_findings(source, source.evidence)
-            )
-        ):
-            # Generation 6: a package leaves Stage 03 only when its base
-            # revision was ready for archive review.
-            continue
+        # Generation 6: a package enters the completed archive only when its
+        # base revision was ready for archive review, whatever its status.
+        ready = source.evidence is not None and not archive_readiness_findings(
+            source, source.evidence
+        )
         for disposition, packages, required_status in (
             ("completed", completed, "approved" if generation_6 else "completed"),
             ("superseded", (), "superseded"),
         ):
+            if generation_6 and disposition == "completed" and not ready:
+                continue
             if _preserved_package_is_terminal(
                 root,
                 source,
