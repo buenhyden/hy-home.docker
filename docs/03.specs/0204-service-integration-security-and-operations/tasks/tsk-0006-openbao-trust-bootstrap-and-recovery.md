@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.11"
+version: "0.2.12"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -2188,6 +2188,25 @@ gap.
 the unseal shares, the offsite key or the CA key exists. Checklist step 5 is
 NOT_RUN for that reason, and P01 stays blocked.
 
+### Maintenance Window Plan — 2026-10-13
+
+The owner chose on 2026-10-13 (AskUserQuestion) to prepare a maintenance
+window for the remaining HOME steps. RUN-0085 now has "HOME 유지보수 창 계획":
+off-host custody (step 5) as the precondition, then W0 pre-flight, W1 root
+ceremony through `bao operator generate-root` with two shares on hidden input,
+W2 the RUN-0021 snapshot token with denial and renewal checks, W3 a fresh
+pre-upgrade snapshot with the Agent stopped, W4 server upgrade to the compose
+pin and manual unseal, W5 Agent upgrade and wrapped SecretID reissue, W6 audit
+mount and logrotate, W7 post-checks and root revocation, and W8 cold boot in a
+separate window. Each step names its command, expected signal, stop condition,
+rollback limit (no in-place Raft downgrade; a failed upgrade restores the W3
+snapshot to an empty target with the previous image) and approver. The
+`generate-root` flags were checked against the OpenBao command reference on
+2026-10-13. The timing table keeps the recorded 30-minute cutover inside the
+60-minute window as planning estimates. The semantic restore (step 6), the P06
+consumer and ACL (step 10) and the Agent alert Spec stay after the window.
+This is a document; no HOME step ran.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -2217,6 +2236,7 @@ NOT_RUN for that reason, and P01 stays blocked.
 | Audit logrotate registration | 11 | W23 | Deferred: the running server has no audit mount, so registration waits for the upgrade window | HOME check 2026-10-13 | NOT_RUN | Preserved Attempt Cleanup — 2026-10-13 | - |
 | Leftover target cleanup | 11 | W23 | Empty base target removed with `rmdir`; `-04` target deleted by the owner; no `p01-*` directory left, live server and Agent healthy; pre-2.7.1 snapshot kept | HOME, value-free metadata | PASS | Owner Decisions — 2026-10-13 | - |
 | Agent alert gap | 11 | W23 | No Agent metrics or alert; gap recorded, telemetry and alert deferred to a separate Spec | `agent.hcl`, Prometheus config | NOT_RUN | Owner Decisions — 2026-10-13 | - |
+| Maintenance window plan | 11 | W23 | RUN-0085 window plan with commands, signals, stops, rollback and approvers; HOME execution NOT_RUN | Branch on `origin/main` | PASS | Maintenance Window Plan — 2026-10-13 | - |
 
 ## Criterion Acceptance
 
