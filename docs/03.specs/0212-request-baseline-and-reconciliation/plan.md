@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -36,13 +36,15 @@ SMTP01 owns the source transition second, and CLN01 deletes the old file third.
 | W11 | 2, 4 | Observe contract RED; update SPEC-0212 Spec/Plan and SPEC-0204 Spec/Plan current routing | W10 | TSK-0003 | Contract GREEN; current authority checker |
 | W12 | 4, 5 | Record writers/order/rollback, validate final documents, independent review, logical commits and protected PR delivery | W11 | TSK-0003 | Document checks; staged checks; actual hosted observations |
 | W13 | 8 | Record current routing and SEC01 → SMTP01 → CLN01 ordering | W12 | TSK-0005 | Value-free contract probe; Stage 99 checks |
+| W14 | 10 | Bind current main, supplied COORD input, observed worktree/PR state and active-package inventory; retain PR #457's merged receipt as input only | None | TSK-0006 | Value-free Git/source and lifecycle audit |
+| W15 | 9 | Map requirements 11–30, reconcile active routing conflicts, record writer locks/recovery boundaries, run Stage99 selectors and hand off exact current inputs | W14 | TSK-0006 | Cross-package source, Task and document audit |
 
 ### Exact writer map
 
-The P00 doc-writer owns only this Spec, this Plan, TSK-0003, and
-`../0204-service-integration-security-and-operations/{spec,plan}.md` and
-`../0220-crawl4ai-collection-and-egress/plan.md` in the first reviewable
-current-contract unit. The latter removes an active learning-app candidate. Existing Tasks, operations bodies,
+The historical P00 doc-writer owned this Spec, this Plan and TSK-0003 for the
+first reviewable current-contract unit. The current COORD writer owns only this
+Spec, this Plan and TSK-0006. TSK-0001, TSK-0002, TSK-0003 and TSK-0005 are
+completed historical bodies and remain immutable. Existing operations bodies,
 inventory, Registry, runtime and governance sources are read-only here.
 No new Spec number is issued. Independent reviewers do not edit the patch. A delivery-receipt unit after
 actual P00 merge may reconcile the frontmatter of TSK-0001/TSK-0002 from their
@@ -68,6 +70,16 @@ Stage 99 Registry, document indexes, shared Alloy/gateway/backup configuration,
 and both `infra/common-optimizations.yml` and
 `infra/common-optimizations.exceptions.json`. P00 owns none of their implementation.
 P07 reuses SPEC-0218 v2; no full common-file rewrite follows from this Plan.
+
+For W14–W15, the coordinator writes only this package's Spec, Plan and
+TSK-0006. Existing worktrees are evidence of possible concurrent ownership, not
+permission to edit their paths. The lock map is: SEC01 image/digest/build;
+P01 OpenBao TLS/custody; P02 catalog; SMTP01 canonical SMTP/alias; CLN01 exact
+retirement; P03 common connection/port contracts; P04 SQL/DAG; P05 workflow and
+SMTP node; P06 migration; P07 measurements/root leaves; P08 Stage05 moves; P10
+acceptance fixtures; SPEC01 active-contract documents. The coordinator may
+propose a shared-file change, but the lease holder integrates it after the
+preceding source identity and review are fixed.
 
 ### Dependency and P08 integration order
 
@@ -106,6 +118,14 @@ run for the hosted PR. Run the existing agent-authority checker to establish
 whether SPEC-0221 already meets the request. No public full/private env render,
 LAB check, container run or secret read is part of P00.
 
+W14–W15 add no live validation. They use tracked source and public Git metadata
+only. HOME, migration, rotation, deletion, native workflow execution and empty
+target restoration remain NOT_RUN until their owning Task identifies the exact
+resource, approved operator/window, backup set and recovery boundary. A P08
+document move waits for the feature-owner path freeze and a single move writer;
+the confirmed duplicate README headings and stale domain wording are source
+findings, not permission to move LAB runtime assets.
+
 After independent review, validate the Conventional Commit message and run
 `scripts/validation/run-ci-precommit.sh --mode local-staged` on the exact
 staged set. Read actual branch protection and PR checks. Push this request's
@@ -125,6 +145,7 @@ change invalidates affected inputs and requires a fresh scoped check.
 
 - [Spec](spec.md)
 - [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
+- [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
 - [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
 - [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
