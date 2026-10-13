@@ -73,57 +73,37 @@ class NativeEditPayloadTests(unittest.TestCase):
                     self.root, {"tool_name": "Write", "tool_input": {"file_path": path}}
                 )
 
-    def test_project_memory_file_is_not_a_repository_target(self) -> None:
+    def test_native_memory_files_are_not_exempt(self) -> None:
+        """Native memory is off; its directory is outside the project like any other."""
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         home = Path(directory.name).resolve().as_posix()
         slug = re.sub(r"[^A-Za-z0-9]", "-", self.root.as_posix())
         memory = f"{home}/.claude/projects/{slug}/memory"
         Path(memory).mkdir(parents=True)
-        Path(memory, "gate-base.md").write_text("kept")
-        (self.root / "policy.md").write_text("protected")
-        Path(memory, "symlink.md").symlink_to(self.root / "policy.md")
-        os.link(self.root / "policy.md", Path(memory, "hardlink.md"))
         with unittest.mock.patch.dict(os.environ, {"HOME": home}):
-            for path in (f"{memory}/MEMORY.md", f"{memory}/gate-base.md"):
-                with self.subTest(path=path):
-                    self.assertEqual(
-                        (),
-                        edit_targets(
-                            self.root,
-                            {"tool_name": "Write", "tool_input": {"file_path": path}},
-                        ),
-                    )
-            for path in (
-                f"{memory}/nested/note.md",
-                f"{memory}/notes.txt",
-                f"{memory}/../settings.json",
-                f"{home}/.claude/projects/-other-repo/memory/note.md",
-                f"{home}/.claude/settings.json",
-                f"{memory}/symlink.md",
-                f"{memory}/hardlink.md",
-            ):
+            for path in (f"{memory}/MEMORY.md", f"{memory}/note.md"):
                 with self.subTest(path=path), self.assertRaises(PayloadError):
                     edit_targets(
                         self.root,
                         {"tool_name": "Write", "tool_input": {"file_path": path}},
                     )
 
-    def test_symlinked_memory_directory_is_not_exempt(self) -> None:
-        directory = tempfile.TemporaryDirectory()
-        self.addCleanup(directory.cleanup)
-        home = Path(directory.name).resolve()
-        slug = re.sub(r"[^A-Za-z0-9]", "-", self.root.as_posix())
-        (home / ".claude/projects" / slug).mkdir(parents=True)
-        (home / ".claude/projects" / slug / "memory").symlink_to(
-            self.root, target_is_directory=True
-        )
-        path = f"{home}/.claude/projects/{slug}/memory/note.md"
-        with unittest.mock.patch.dict(os.environ, {"HOME": str(home)}):
-            with self.assertRaises(PayloadError):
-                edit_targets(
-                    self.root, {"tool_name": "Write", "tool_input": {"file_path": path}}
-                )
+    def test_shared_memory_store_is_written_only_by_its_cli(self) -> None:
+        store = self.root / ".workspace-memory"
+        store.mkdir()
+        (store / "memory.sqlite3").write_bytes(b"")
+        for path in (
+            ".workspace-memory/memory.sqlite3",
+            str(store / "memory.sqlite3"),
+            ".workspace-memory/notes.md",
+        ):
+            with self.subTest(path=path):
+                with self.assertRaisesRegex(PayloadError, "memory CLI"):
+                    edit_targets(
+                        self.root,
+                        {"tool_name": "Edit", "tool_input": {"file_path": path}},
+                    )
 
     def test_unsafe_paths_fail_before_consumers_can_write(self) -> None:
         outside = self.root.parent / "outside.txt"
