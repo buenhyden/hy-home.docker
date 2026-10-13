@@ -191,7 +191,7 @@
       "resolved_at",
       "archived_at"
     ],
-    "contract_id": "SDLC-COMMON-v4",
+    "contract_id": "SDLC-COMMON-v5",
     "result_domain": [
       "NOT_RUN",
       "PASS",
@@ -213,7 +213,7 @@
       "Input",
       "Result",
       "Location",
-      "Acceptance"
+      "Resolves"
     ],
     "plan_columns": [
       "Work Unit",
@@ -226,6 +226,26 @@
     "spec_section": "Acceptance Criteria",
     "plan_section": "Work Breakdown",
     "task_section": "Evidence",
+    "criterion_acceptance_section": "Criterion Acceptance",
+    "criterion_acceptance_columns": [
+      "Criterion",
+      "Acceptance",
+      "Evidence",
+      "Decision"
+    ],
+    "execution_items": {
+      "section": "Work Log",
+      "subsection": "Execution Items",
+      "table_headers": [
+        "Item",
+        "Work Unit",
+        "Scope",
+        "Owner",
+        "Status",
+        "Blocker"
+      ],
+      "minimum_rows": 2
+    },
     "readme_documents_columns": [
       "Path",
       "Purpose"
@@ -234,7 +254,7 @@
       "Owner"
     ],
     "template_initial_version": "0.1.0",
-    "lifecycle_generation": 5,
+    "lifecycle_generation": 6,
     "task_lifecycle_events": {
       "section": "Work Log",
       "subsection": "Lifecycle Events",
@@ -277,6 +297,36 @@
             "lifecycle_id": "publication",
             "from_status": "review",
             "to_status": "in-review"
+          },
+          {
+            "lifecycle_id": "spec",
+            "from_status": "in-progress",
+            "to_status": "approved"
+          },
+          {
+            "lifecycle_id": "spec",
+            "from_status": "blocked",
+            "to_status": "approved"
+          },
+          {
+            "lifecycle_id": "spec",
+            "from_status": "completed",
+            "to_status": "approved"
+          },
+          {
+            "lifecycle_id": "plan",
+            "from_status": "in-progress",
+            "to_status": "approved"
+          },
+          {
+            "lifecycle_id": "plan",
+            "from_status": "blocked",
+            "to_status": "approved"
+          },
+          {
+            "lifecycle_id": "plan",
+            "from_status": "completed",
+            "to_status": "approved"
           }
         ]
       }
@@ -353,6 +403,7 @@
           "retired"
         ],
         "spec": [
+          "approved",
           "completed",
           "cancelled",
           "superseded",
@@ -365,6 +416,7 @@
           "retired"
         ],
         "plan": [
+          "approved",
           "completed",
           "cancelled",
           "superseded",
@@ -1030,6 +1082,7 @@
         "Inputs and Authorization",
         "Work Log",
         "Evidence",
+        "Criterion Acceptance",
         "Review and Completion",
         "Related Documents"
       ],
@@ -3684,9 +3737,6 @@
         "draft",
         "in-review",
         "approved",
-        "in-progress",
-        "blocked",
-        "completed",
         "cancelled",
         "superseded"
       ],
@@ -3704,24 +3754,8 @@
           "superseded"
         ],
         "approved": [
-          "in-progress",
-          "completed",
+          "in-review",
           "cancelled",
-          "superseded"
-        ],
-        "in-progress": [
-          "completed",
-          "blocked",
-          "cancelled",
-          "superseded"
-        ],
-        "blocked": [
-          "in-progress",
-          "completed",
-          "cancelled",
-          "superseded"
-        ],
-        "completed": [
           "superseded"
         ],
         "cancelled": [],
@@ -3738,9 +3772,6 @@
         "draft",
         "in-review",
         "approved",
-        "in-progress",
-        "blocked",
-        "completed",
         "cancelled",
         "superseded"
       ],
@@ -3758,24 +3789,8 @@
           "superseded"
         ],
         "approved": [
-          "in-progress",
-          "completed",
+          "in-review",
           "cancelled",
-          "superseded"
-        ],
-        "in-progress": [
-          "completed",
-          "blocked",
-          "cancelled",
-          "superseded"
-        ],
-        "blocked": [
-          "in-progress",
-          "completed",
-          "cancelled",
-          "superseded"
-        ],
-        "completed": [
           "superseded"
         ],
         "cancelled": [],

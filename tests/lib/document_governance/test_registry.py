@@ -3380,15 +3380,19 @@ class ExecutionLifecycleTests(unittest.TestCase):
         self.assertIn("in-progress", transitions["ready"])
         self.assertIn("completed", transitions["in-progress"])
 
-    def test_plan_lifecycle_requires_approval_before_activation(self) -> None:
+    def test_plan_lifecycle_records_authority_only(self) -> None:
+        # Generation 6: execution state belongs to Tasks, never to the Plan.
         transitions = self._transitions("plan")
         self.assertEqual(
             ["in-review", "approved", "cancelled", "superseded"],
             transitions["draft"],
         )
         self.assertIn("approved", transitions["in-review"])
-        self.assertIn("in-progress", transitions["approved"])
-        self.assertIn("completed", transitions["in-progress"])
+        self.assertEqual(
+            ["in-review", "cancelled", "superseded"], transitions["approved"]
+        )
+        for status in ("in-progress", "blocked", "completed"):
+            self.assertNotIn(status, transitions)
 
     def test_execution_lifecycle_still_refuses_to_reopen(self) -> None:
         self.assertEqual([], self._transitions("task")["completed"])
