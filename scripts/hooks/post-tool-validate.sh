@@ -117,6 +117,7 @@ format_text_file_basics() {
   python3 - "$file" "$frozen_pattern" <<'PY'
 from __future__ import annotations
 
+import io
 import pathlib
 import re
 import sys
@@ -138,12 +139,21 @@ except UnicodeDecodeError:
 if "\x00" in text:
     raise SystemExit(0)
 
-lines = text.splitlines()
-formatted = "\n".join(line.rstrip(" \t") for line in lines)
-if formatted or text.endswith(("\n", "\r")):
-    formatted += "\n"
+# Mirror pre-commit-hooks trailing-whitespace and end-of-file-fixer: lines
+# split on LF only, a CRLF ending is kept for mixed-line-ending, and every
+# trailing ASCII whitespace byte goes. A form feed or U+2028 inside a line
+# stays where it is. This hook never removes extra final blank lines.
+def strip_line(line: bytes) -> bytes:
+    if line.endswith(b"\r\n"):
+        return line[:-2].rstrip() + b"\r\n"
+    if line.endswith(b"\n"):
+        return line[:-1].rstrip() + b"\n"
+    return line.rstrip()
 
-new_data = formatted.encode("utf-8")
+
+new_data = b"".join(strip_line(line) for line in io.BytesIO(data).readlines())
+if new_data and not new_data.endswith((b"\n", b"\r")):
+    new_data += b"\n"
 if new_data != data:
     path.write_bytes(new_data)
 PY
