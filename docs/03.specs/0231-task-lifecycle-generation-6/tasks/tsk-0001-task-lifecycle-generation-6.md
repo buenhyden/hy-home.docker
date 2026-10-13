@@ -166,6 +166,18 @@ governance suite and was stopped (exit 124). That suite's local result is
 `NOT_RUN`; the hosted `candidate-quality` run on the pull request decides
 criterion 6.
 
+Hosted `candidate-quality` on pull request #441 (head `f38fd2ea5`, base
+`e931417be`, run 38359942268) passed: governance contract, provider renderer,
+metadata check (68 documents, 0 violations), corpus lifecycle and archive
+recovery (0 violations), workflow contract, every pre-commit hook and commit
+validation. The hosted changed profile runs no unit suite, so the governance
+suite on the rebased branch stays `NOT_RUN`; its last full run is the one in
+Test Suite.
+
+The owner merged pull request #441 with a merge commit, `ffd201182` (parents
+`e931417be` and `f38fd2ea5`), the one first-parent integration the generation
+6 proof requires.
+
 ### Contract Migration
 
 | Date | Source revision | Evidence |
@@ -182,7 +194,7 @@ criterion 6.
 | Migration | 4 | W4 | Corpus load; terminal Task byte identity; metadata check on synthetic merge | Branch on `2a57d4122` | PASS | W4 Migration | - |
 | Text | 5 | W5 | Independent rules review; metadata check | Branch | PASS | W5 Text and Review | - |
 | Gate | 6 | W6 | Changed gate on synthetic merge; stopped at local 3000 s limit in the governance suite | `d28b15c1c` | NOT_RUN | W6 Gate | - |
-| Candidate | 6 | W6 | Hosted `candidate-quality` | Pull request | NOT_RUN | W6 Gate | - |
+| Candidate | 6 | W6 | Hosted `candidate-quality`, changed profile | PR #441 at `f38fd2ea5` | PASS | W6 Gate | - |
 
 ## Criterion Acceptance
 
