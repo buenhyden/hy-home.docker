@@ -179,7 +179,7 @@ class IdentityBehaviorTests(unittest.TestCase):
         child = metadata.Record(
             pathlib.Path("docs/03.specs/0123-child/spec.md"),
             {
-                "status": "completed",
+                "status": "approved",
                 "artifact_id": "SPEC-0123",
                 "artifact_type": "spec",
                 "parent_ids": ["AD-0123"],
@@ -187,7 +187,7 @@ class IdentityBehaviorTests(unittest.TestCase):
                 "updated": "2026-08-07",
             },
             "spec",
-            previous_status="in-progress",
+            previous_status="in-review",
             frontmatter_present=True,
         )
         records = [parent, child]
@@ -206,4 +206,4 @@ class IdentityBehaviorTests(unittest.TestCase):
             "| valid | parents=resolved:1; order=declared-list; supersedes=not-provided |",
             child_row,
         )
-        self.assertIn("available:in-progress->completed; valid", child_row)
+        self.assertIn("available:in-review->approved; valid", child_row)
