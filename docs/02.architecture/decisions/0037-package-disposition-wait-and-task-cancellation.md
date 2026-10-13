@@ -1,10 +1,10 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-13"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
@@ -44,6 +44,12 @@ SPEC-0179 owns implementation and local verification. Its lifecycle must still f
 registered integration edges; the adoption approval does not fabricate intervening
 commits or authorize remote integration. A real unit disposition remains a separate
 scoped operation after recoverability and consumer checks.
+
+[ADR-0048](0048-authority-parents-and-criterion-acceptance.md), accepted on
+2026-10-13, replaces decision 1 except its last sentence, and the
+completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
+the completed Spec's PASS receipt, and that completion receipts are checked
+before moving. The rest of this decision stays in force.
 
 ## Decision
 
@@ -150,6 +156,7 @@ scoped operation after recoverability and consumer checks.
 ### Traceability
 
 - [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
 - [SPEC-0179](../../98.archive/completed/03.specs/0179-package-disposition-wait-and-task-cancellation/spec.md)
 - [Archive index, including predecessor ADR-0036](../../98.archive/README.md)
