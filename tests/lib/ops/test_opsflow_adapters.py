@@ -6,6 +6,7 @@ import importlib
 import io
 import json
 import os
+import ssl
 import stat
 import sys
 import tempfile
@@ -24,6 +25,15 @@ ContractError = adapters.ContractError
 SYNTHETIC_CREDENTIAL = "synthetic-only"
 SYNTHETIC_CHANGED_CREDENTIAL = "changed-only"
 SYNTHETIC_REPR_CANARY = "private-repr-canary"
+MAX_CA_BYTES = 1024 * 1024
+
+
+def test_ca_bytes():
+    """Return one public system trust anchor as a certificate-only PEM bundle."""
+    certificates = ssl.create_default_context().get_ca_certs(binary_form=True)
+    if not certificates:
+        raise RuntimeError("test_ca_unavailable")
+    return ssl.DER_cert_to_PEM_cert(certificates[0]).encode("ascii")
 
 
 def pg_config():
@@ -53,6 +63,15 @@ def s3_config():
         connect_timeout=5,
         read_timeout=20,
         endpoint_contract="seaweedfs-s3-internal-v1",
+    )
+
+
+def secure_s3_config(directory):
+    return dict(
+        s3_config(),
+        endpoint_url="https://seaweedfs-s3:443",
+        endpoint_contract="https:seaweedfs-s3:443",
+        ca_bundle=str(directory / "ca.pem"),
     )
 
 
@@ -277,6 +296,14 @@ class Body(io.BytesIO):
     pass
 
 
+class EventsDouble:
+    def __init__(self):
+        self.handlers = {}
+
+    def register_first(self, name, handler, **kwargs):
+        self.handlers[name] = handler
+
+
 class S3Double:
     def __init__(self):
         self.objects = {}
@@ -285,6 +312,8 @@ class S3Double:
         self.failure = None
         self.corrupt = False
         self.race = False
+        self.closed = False
+        self.meta = types.SimpleNamespace(events=EventsDouble())
 
     def head_object(self, **kwargs):
         self.requests.append(("head", kwargs))
@@ -312,6 +341,9 @@ class S3Double:
         self.objects[kwargs["Key"]] = kwargs["Body"]
         return {"ETag": '"fixed"'}
 
+    def close(self):
+        self.closed = True
+
 
 class ObjectAdapter(unittest.TestCase):
     def setUp(self):
@@ -328,19 +360,110 @@ class ObjectAdapter(unittest.TestCase):
         self.modules.start()
         self.addCleanup(self.modules.stop)
         self.store = adapters.S3Store(s3_config())
+        self.addCleanup(self.store.close)
 
-    def test_tls_delivery_is_blocked_before_s3_driver_use(self):
-        self.factory.reset_mock()
-        config = dict(
-            s3_config(),
-            endpoint_url="https://objects.internal:443",
-            endpoint_contract="https:objects.internal:443",
-            ca_bundle="/run/opsflow/ca.pem",
-        )
-        with self.assertRaises(ContractError) as caught:
-            adapters.S3Store(config)
-        self.assertEqual(str(caught.exception), "tls_delivery_not_ready")
-        self.factory.assert_not_called()
+    def test_https_uses_sealed_ca_disables_proxy_and_closes_deterministically(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            directory.chmod(0o700)
+            ca = directory / "ca.pem"
+            original = test_ca_bytes()
+            ca.write_bytes(original)
+            ca.chmod(0o600)
+            with (
+                patch.object(adapters, "PRIVATE_DIRECTORY", str(directory)),
+                patch.dict(os.environ, {"HTTPS_PROXY": "http://proxy.invalid:8080"}),
+            ):
+                store = adapters.S3Store(secure_s3_config(directory))
+            verify_path = self.factory.call_args.kwargs["verify"]
+            self.assertRegex(verify_path, r"^/proc/self/fd/[0-9]+$")
+            ca.write_bytes(b"changed-after-client")
+            self.assertEqual(Path(verify_path).read_bytes(), original)
+            self.assertEqual(self.config_factory.call_args.kwargs["proxies"], {})
+            self.assertIn("before-send.s3", self.client.meta.events.handlers)
+            self.assertIn("needs-retry.s3", self.client.meta.events.handlers)
+            store.close()
+            store.close()
+            self.assertTrue(self.client.closed)
+            with self.assertRaises(FileNotFoundError):
+                Path(verify_path).read_bytes()
+
+    def test_https_endpoint_and_redirects_fail_closed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            directory.chmod(0o700)
+            ca = directory / "ca.pem"
+            ca.write_bytes(test_ca_bytes())
+            ca.chmod(0o600)
+            with patch.object(adapters, "PRIVATE_DIRECTORY", str(directory)):
+                for endpoint in (
+                    "https://evil.example:443",
+                    "https://seaweedfs-s3",
+                    "https://seaweedfs-s3.:443",
+                    "https://127.0.0.1:443",
+                    "https://seaweedfs-s3:443/path",
+                    "https://user@seaweedfs-s3:443",
+                ):
+                    with self.subTest(endpoint=endpoint):
+                        with self.assertRaises(ContractError):
+                            adapters.S3Store(
+                                dict(secure_s3_config(directory), endpoint_url=endpoint)
+                            )
+                store = adapters.S3Store(secure_s3_config(directory))
+            before_send = self.client.meta.events.handlers["before-send.s3"]
+            needs_retry = self.client.meta.events.handlers["needs-retry.s3"]
+            before_send(
+                request=types.SimpleNamespace(
+                    url="https://seaweedfs-s3:443/opsflow-dev/key"
+                )
+            )
+            for url in (
+                "https://evil.example:443/opsflow-dev/key",
+                "http://seaweedfs-s3:443/opsflow-dev/key",
+                "https://seaweedfs-s3:444/opsflow-dev/key",
+            ):
+                with self.subTest(url=url):
+                    with self.assertRaises(adapters.DependencyError):
+                        before_send(request=types.SimpleNamespace(url=url))
+            for status, headers in ((301, {}), (200, {"Location": "/other"})):
+                response = (
+                    types.SimpleNamespace(status_code=status, headers=headers),
+                    {},
+                )
+                with self.assertRaises(adapters.DependencyError):
+                    needs_retry(response=response)
+            store.close()
+
+    def test_https_creation_and_close_failures_still_close_ca(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            directory.chmod(0o700)
+            ca = directory / "ca.pem"
+            ca.write_bytes(test_ca_bytes())
+            ca.chmod(0o600)
+            observed = {}
+
+            def fail_create(*args, **kwargs):
+                observed["path"] = kwargs["verify"]
+                raise RuntimeError("synthetic-client-failure")
+
+            self.factory.side_effect = fail_create
+            with patch.object(adapters, "PRIVATE_DIRECTORY", str(directory)):
+                with self.assertRaises(adapters.DependencyError):
+                    adapters.S3Store(secure_s3_config(directory))
+            with self.assertRaises(FileNotFoundError):
+                Path(observed["path"]).read_bytes()
+
+            self.factory.side_effect = None
+            self.factory.return_value = self.client
+            with patch.object(adapters, "PRIVATE_DIRECTORY", str(directory)):
+                store = adapters.S3Store(secure_s3_config(directory))
+            verify_path = self.factory.call_args.kwargs["verify"]
+            with patch.object(self.client, "close", side_effect=RuntimeError("close")):
+                with self.assertRaises(adapters.DependencyError):
+                    store.close()
+            with self.assertRaises(FileNotFoundError):
+                Path(verify_path).read_bytes()
 
     def test_explicit_credentials_path_style_timeouts_and_input_etag(self):
         kwargs = self.factory.call_args.kwargs
@@ -366,14 +489,19 @@ class ObjectAdapter(unittest.TestCase):
             {"endpoint_url": "http://seaweedfs-s3:wrong"},
             {"endpoint_contract": "unapproved"},
             {"endpoint_url": "https://seaweedfs-s3", "ca_bundle": None},
+            {
+                "endpoint_url": "https://evil.example:443",
+                "endpoint_contract": "https:evil.example:443",
+                "ca_bundle": "/run/opsflow/ca.pem",
+            },
         ):
             with self.subTest(delta_keys=tuple(delta)):
                 with self.assertRaises(ContractError):
                     adapters.S3Store(dict(s3_config(), **delta))
         config = dict(
             s3_config(),
-            endpoint_url="https://objects.internal:443",
-            endpoint_contract="https:objects.internal:443",
+            endpoint_url="https://seaweedfs-s3:443",
+            endpoint_contract="https:seaweedfs-s3:443",
             ca_bundle="/run/opsflow/ca.pem",
         )
         with self.assertRaises(ContractError):
@@ -491,6 +619,8 @@ class CursorDouble:
 
 
 class ConnectionDouble:
+    """Shared offline fixture imported by the registered P04/P05 seam tests."""
+
     def __init__(self):
         self.closed = False
         self.committed = False
@@ -511,146 +641,6 @@ class ConnectionDouble:
 
     def close(self):
         self.closed = True
-
-
-class PostgresAdapter(unittest.TestCase):
-    def setUp(self):
-        self.connection = ConnectionDouble()
-        self.connect = unittest.mock.Mock(return_value=self.connection)
-        self.modules = patch.dict(
-            sys.modules,
-            {
-                "psycopg2": types.SimpleNamespace(connect=self.connect),
-                "psycopg2.extras": types.SimpleNamespace(Json=lambda value: value),
-            },
-        )
-        self.modules.start()
-        self.addCleanup(self.modules.stop)
-        self.manifest = types.SimpleNamespace(
-            source="hy-home", captured_at="2026-10-11", records=({"path": "x"},)
-        )
-
-    def test_publisher_config_repr_is_redacted(self):
-        config = dict(pg_config(), password=SYNTHETIC_REPR_CANARY)
-        publisher = adapters.PgPublisher(config)
-        self.assertNotIn(SYNTHETIC_REPR_CANARY, repr(publisher))
-        self.assertNotIn(SYNTHETIC_REPR_CANARY, repr(publisher.config))
-        self.assertNotIn(SYNTHETIC_REPR_CANARY, str(publisher.config))
-
-    def test_tls_delivery_is_blocked_before_pg_driver_use(self):
-        with self.assertRaises(ContractError) as caught:
-            adapters.PgPublisher(
-                dict(
-                    pg_config(),
-                    sslmode="verify-full",
-                    sslrootcert="/run/opsflow/ca.pem",
-                )
-            )
-        self.assertEqual(str(caught.exception), "tls_delivery_not_ready")
-        self.connect.assert_not_called()
-
-    def test_exact_target_closed_schema_and_no_constructor_connect(self):
-        config = pg_config()
-        publisher = adapters.PgPublisher(config)
-        config["host"] = "elsewhere"
-        self.connect.assert_not_called()
-        for delta in (
-            {"host": "mng-pg"},
-            {"port": True},
-            {"port": 5433},
-            {"user": "admin"},
-            {"dbname": "postgres"},
-            {"password": ""},
-            {"connect_timeout": 0},
-            {"sslmode": "allow"},
-            {"extra": "canary"},
-            {"statement_timeout_ms": False},
-        ):
-            with self.subTest(keys=tuple(delta)):
-                with self.assertRaises(ContractError):
-                    adapters.PgPublisher(dict(pg_config(), **delta))
-        self.assertEqual(
-            publisher.publish(
-                self.manifest, "a" * 64, "b" * 64, "manifest-validated/a.json"
-            ),
-            "published",
-        )
-        self.assertEqual(self.connect.call_args.kwargs["host"], "dev-pg")
-
-    def test_parameterized_transaction_and_immutable_records_to_json(self):
-        publisher = adapters.PgPublisher(pg_config())
-        self.assertEqual(
-            publisher.publish(
-                self.manifest, "a" * 64, "b" * 64, "manifest-validated/a.json"
-            ),
-            "published",
-        )
-        self.assertIn("%s", self.connection.query)
-        self.assertNotIn("synthetic-only", self.connection.query)
-        self.assertEqual(self.connection.params[4], [{"path": "x"}])
-        self.assertTrue(self.connection.closed and self.connection.committed)
-        self.assertIn(
-            "statement_timeout=30000", self.connect.call_args.kwargs["options"]
-        )
-
-    def test_failure_rolls_back_closes_and_redacts(self):
-        self.connection.fail = True
-        with self.assertRaises(adapters.DependencyError) as caught:
-            adapters.PgPublisher(pg_config()).publish(
-                self.manifest, "a" * 64, "b" * 64, "manifest-validated/a.json"
-            )
-        self.assertTrue(self.connection.closed and self.connection.rolled_back)
-        self.assertNotIn("sensitive-driver-canary", str(caught.exception))
-        self.assertIsNone(caught.exception.__context__)
-
-    def test_invalid_status_and_publish_inputs_fail_closed(self):
-        self.connection.status = "unexpected-canary"
-        with self.assertRaises(adapters.DependencyError):
-            adapters.PgPublisher(pg_config()).publish(
-                self.manifest, "a" * 64, "b" * 64, "manifest-validated/a.json"
-            )
-        self.assertTrue(self.connection.rolled_back)
-        for identifier, digest, artifact in (
-            ("short", "b" * 64, "manifest-validated/a.json"),
-            ("a" * 64, "UPPER", "manifest-validated/a.json"),
-            ("a" * 64, "b" * 64, "other/a"),
-        ):
-            with self.assertRaises(ContractError):
-                adapters.PgPublisher(pg_config()).publish(
-                    self.manifest, identifier, digest, artifact
-                )
-
-    def test_status_and_connection_failure(self):
-        publisher = adapters.PgPublisher(pg_config())
-        for status in ("historical", "replayed"):
-            self.connection.status = status
-            self.assertEqual(
-                publisher.publish(
-                    self.manifest, "a" * 64, "b" * 64, "manifest-validated/a.json"
-                ),
-                status,
-            )
-        with self.assertRaises(TypeError):
-            publisher.config["password"] = "different-only"
-        for config in (
-            dict(pg_config(), sslmode="verify-full"),
-            dict(pg_config(), sslrootcert="/tmp/ca.pem"),
-            [],
-            dict(pg_config(), lock_timeout_ms=-1),
-        ):
-            with self.assertRaises(ContractError):
-                adapters.PgPublisher(config)
-        self.connect.side_effect = RuntimeError("sensitive-driver-canary")
-        with self.assertRaises(adapters.DependencyError) as caught:
-            publisher.publish(
-                self.manifest, "a" * 64, "b" * 64, "manifest-validated/a.json"
-            )
-        self.assertIsNone(caught.exception.__context__)
-        with patch.dict(sys.modules, {"psycopg2": None}):
-            with self.assertRaises(adapters.DependencyError):
-                publisher.publish(
-                    self.manifest, "a" * 64, "b" * 64, "manifest-validated/a.json"
-                )
 
 
 if __name__ == "__main__":

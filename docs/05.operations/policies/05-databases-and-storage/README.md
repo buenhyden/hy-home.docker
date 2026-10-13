@@ -1,10 +1,10 @@
 ---
 title: "데이터베이스와 저장소 정책"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-14"
 layer: "operations"
 ---
 
@@ -28,7 +28,7 @@ layer: "operations"
 | [SeaweedFS Operations Policy](0024-seaweedfs.md) | `POL-0024` | 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한 운영 통제에 묶는다. |
 | [Management Database Operations Policy](0028-management-database.md) | `POL-0028` | 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한 운영 통제에 묶는다. |
 | [04-Data Optimization Hardening Operations Policy](0030-data-optimization-hardening.md) | `POL-0030` | 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한 운영 통제에 묶는다. |
-| [Neo4j Operations Policy](0033-neo4j.md) | `POL-0033` | 이 정책은 root-active `OPTIONAL` Neo4j 운영 기준을 정의한다. 기준은 Neo4j Compose 구현의 단일 Community service, exact `graph` profile, `edge_net`, `neo4j_passwo |
+| [Neo4j Operations Policy](0033-neo4j.md) | `POL-0033` | 이 정책은 root-active `OPTIONAL` Neo4j 운영 기준을 정의한다. |
 | [RedisInsight Operations Policy](0076-redisinsight.md) | `POL-0076` | RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gateway 접근은 각 대상 데이터베이스에 대한 최소 권한 부여를 대체하지 않는다. |
 | [SurrealDB Policy](0080-surrealdb.md) | `POL-0080` | 이 정책은 `08-ai` 티어 내에서 Open Notebook이 사용하는 `OPTIONAL` 단일 서비스 SurrealDB 배포를 다룬다. |
 | [Development Database Operations Policy](0100-development-database.md) | `POL-0100` | 현재 source 인계 소유자는 SPEC-0204이며, SPEC-0202의 합성 검증은 보관된 역사적 근거이다. 이 정책은 source-only `dev-pg`와 `dev-valkey`의 관리 데이터 분리, 최소 권한 provision, 그리고 승인  |

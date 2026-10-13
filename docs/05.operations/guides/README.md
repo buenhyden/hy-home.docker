@@ -1,10 +1,10 @@
 ---
 title: "운영 가이드"
-version: "0.2.3"
+version: "0.2.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-14"
 layer: "operations"
 ---
 
@@ -12,29 +12,22 @@ layer: "operations"
 
 ## Overview
 
-### Overview
-
-Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하는 데 필요한 맥락을 소유한다. 실행 절차가 필요하면 같은 slug의 Runbook으로 넘긴다. 아래 표는 도메인별로 등록된 모든 Guide를 한 번씩 나열하며 각 행의 관련 문서 열에서 같은 subject의 Policy와 Runbook을 찾을 수 있다.
+Guide는 서비스와 작업 공간의 정상 사용 맥락을 소유한다. 이 인덱스는 현재 목적별 폴더의 README로 연결하고, 개별 문서와 같은 subject의 Policy·Runbook은 각 폴더에서 찾는다.
 
 ## Scope
 
-### Scope
-
-- 이 디렉터리의 모든 Guide를 도메인별로 한 번씩 나열한다.
-- 파일 이름은 `####-<slug>.md`이고 `####`는 문서 자신의 artifact 번호다.
-- 같은 slug는 다른 역할 디렉터리에서 같은 subject를 가리킨다.
+- 포함: 아래 15개 목적별 폴더의 현재 문서와 폴더 README.
+- 각 폴더에서 subject 번호·slug와 문서 역할로 대상을 찾는다. 같은 subject는
+  Guide·Policy·Runbook에서 같은 번호와 slug를 사용한다.
+- LAB는 문서 형식·경로·설명만 포함한다. LAB runtime·서비스 설정·이미지·비밀값·
+  데이터의 변경이나 실행을 이 인덱스가 승인하지 않는다.
 
 ## Structure
 
-### Structure
-
-도메인은 경로가 아니라 이 인덱스의 분류다. `관련 문서` 열은 같은 subject의
-다른 역할 문서를 가리킨다.
-
-시스템 전반의 기동·인증·복구·용량·업데이트는 아래 공통 분류에서 시작한다.
-티어별 서비스는 01–13 분류에서 찾고, 행의 관련 문서로 같은 subject의 다른 역할을
-확인한다. 작업 공간과 공통 연결은 번호 없는 분류이며 별도 인프라 티어가 아니다.
-서비스와 공통 문서의 연결은 적용 범위를 설명하며 서비스 소유권을 추가하지 않는다.
+현재 문서는 아래 표의 `01-common/`부터 `15-labs/`까지 실제 번호 폴더에 있다.
+폴더 README가 개별 문서 목록을 소유하고 서비스별 적용 조건·다른 역할·구현 원본을
+연결한다. 기존 01–13 서비스 티어 제목은 `infra/` 분류의 탐색 anchor이며, 문서
+목적 폴더의 번호와 구분한다. 이 인덱스는 subject나 구현 소유권을 추가하지 않는다.
 
 ### Cross-cutting system and lifecycle
 
@@ -102,23 +95,23 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 
 ### 목적별 폴더
 
-| 운영 범위 | 문서 역할 |
+| Path | Purpose |
 | --- | --- |
-| [공통 운영](01-common/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [게이트웨이와 네트워크](02-gateway-and-networking/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [인증과 접근](03-identity-and-access/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [보안과 비밀값](04-security-and-secrets/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [데이터베이스와 저장소](05-databases-and-storage/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [메시징과 CDC](06-messaging-and-cdc/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [관측](07-observability/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [워크플로와 자동화](08-workflows-and-automation/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [AI와 검색](09-ai-and-search/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [플랫폼과 백업](10-platform-and-backup/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [메일과 통지](11-mail-and-notifications/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [시험과 품질](12-testing-and-quality/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [분석과 데이터 품질](13-analytics-and-data-quality/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [디자인 시스템](14-design-system/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
-| [독립 LAB 문서](15-labs/README.md) | 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다. |
+| [공통 운영](01-common/README.md) | 기동 선택, 명명·환경·버전 관리와 작업 공간의 공통 전제를 확인한다. |
+| [게이트웨이와 네트워크](02-gateway-and-networking/README.md) | Traefik 기본 gateway, 선택 Nginx와 네트워크·포트의 역할을 이해한다. |
+| [인증과 접근](03-identity-and-access/README.md) | Keycloak·OAuth2 Proxy의 SSO, OIDC와 기계 인증 경계를 이해한다. |
+| [보안과 비밀값](04-security-and-secrets/README.md) | OpenBao, 제한 자격 전달과 독립 복구 자료의 역할을 이해한다. |
+| [데이터베이스와 저장소](05-databases-and-storage/README.md) | DEV·MNG 데이터 소유권과 PostgreSQL·Valkey·객체 저장의 용도를 구분한다. |
+| [메시징과 CDC](06-messaging-and-cdc/README.md) | Kafka·CDC의 원천, topic·slot·offset과 소비 흐름을 이해한다. |
+| [관측](07-observability/README.md) | Alloy·Prometheus·Grafana와 로그·추적·프로파일 신호의 의미를 이해한다. |
+| [워크플로와 자동화](08-workflows-and-automation/README.md) | Airflow 배치와 n8n 통지, 실행 주체·재시도·outbox 의미를 이해한다. |
+| [AI와 검색](09-ai-and-search/README.md) | 기존 Ollama·Open WebUI·Qdrant·ComfyUI의 사용·데이터·GPU 경계를 이해한다. |
+| [플랫폼과 백업](10-platform-and-backup/README.md) | 플랫폼 도구, 이미지 공급망과 backup·restore의 사용 전제를 이해한다. |
+| [메일과 통지](11-mail-and-notifications/README.md) | 공용 SMTP, mail capture와 수락·외부 배달 상태를 구분한다. |
+| [시험과 품질](12-testing-and-quality/README.md) | k6·WireMock·Pact·SonarQube·Mailpit의 시험 역할을 이해한다. |
+| [분석과 데이터 품질](13-analytics-and-data-quality/README.md) | DEV 분석·dbt·BI의 데이터 소유권과 품질 확인 흐름을 이해한다. |
+| [디자인 시스템](14-design-system/README.md) | Storybook, 공유 UI와 문서 MCP의 사용 전제를 이해한다. |
+| [독립 LAB 문서](15-labs/README.md) | 기존 독립 LAB의 목적·한계와 문서상 운영 경계를 확인한다. |
 
 ## Usage
 
@@ -129,8 +122,6 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 - SREs
 - 보안 담당자
 - AI 에이전트
-
-### Usage
 
 1. 새 Guide는 [Guide template](../../99.templates/templates/operations/guide.template.md)으로 시작한다.
 2. 새 subject 번호는 subject마다 하나를 발급하고 그 subject의 역할 문서가 같은 번호와 slug를 쓴다.

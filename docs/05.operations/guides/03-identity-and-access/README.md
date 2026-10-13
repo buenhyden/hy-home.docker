@@ -1,10 +1,10 @@
 ---
 title: "인증과 접근 가이드"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-14"
 layer: "operations"
 ---
 
@@ -25,7 +25,7 @@ layer: "operations"
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
 | [02-Auth Keycloak Usage Guide](0014-keycloak.md) | `GDE-0014` | 이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. Keycloak의 lifecycle class는 **HOME**이다. DB/관리자 시크릿 주입, hostname/proxy header, health endp |
-| [02-Auth OAuth2 Proxy Usage Guide](0015-oauth2-proxy.md) | `GDE-0015` | 이 문서는 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하는 방법을 설명한다. `oauth2-proxy`의 lifecycle class는 **HOME**이고, `oauth2-proxy-valkey`와 `oauth2-pr |
+| [02-Auth OAuth2 Proxy Usage Guide](0015-oauth2-proxy.md) | `GDE-0015` | 이 문서는 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하는 방법을 설명한다. |
 | [Application Authentication Integration Guide](0079-application-auth-integration.md) | `GDE-0079` | Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연결하고 서비스별 authorization model을 유지하는 방법을 설명한다. |
 
 ## Usage

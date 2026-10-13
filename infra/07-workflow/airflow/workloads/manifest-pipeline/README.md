@@ -1,10 +1,10 @@
 ---
 title: "Independent Manifest Pipeline"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-14"
 ---
 
 # Independent Manifest Pipeline
@@ -19,8 +19,8 @@ updated: "2026-10-11"
 
 DAG `source_manifest_ingest`, pool `manifest_ingest`, DB `opsflow_dev`, schema
 `ops_flow`, bucket `opsflow-dev`의 전용 배치입니다. P04가 SQL 단독 작성자이며
-P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다. 현재 계약은
-소스 초안이며 실제 권한·배포·복구 수용과 P05 통지는 NOT_RUN입니다.
+P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다. 소스 회귀시험은
+실제 권한·배포·복구 수용과 별개이며 P05 실제 통지는 NOT_RUN입니다.
 
 ## Structure
 
@@ -57,10 +57,22 @@ Override의 `OPSFLOW_AIRFLOW_IMAGE`에는 검토한 로컬 immutable 이미지,
 자동 pull을 막습니다. 기존 command·user·management network·volume는 유지하며
 worker에만 DEV/object network와 `/run/opsflow`를 추가합니다. n8n 변경은 없습니다.
 
-Worker는 `pg.json`, `s3.json`만 읽습니다. TLS schema는 같은 보호 폴더의
-`ca.pem` 계약을 요구하지만, 보호된 CA를 driver에 안전하게 전달하는 계약이
-미확정이어서 TLS 연결은 현재 차단합니다. CA 경로 문자열 검사는 실제 신뢰
-검증 증거가 아닙니다. Admin·reader·notifier 자격 증명은 이 폴더에 두지 않습니다.
+Worker는 `pg.json`, `s3.json`과 TLS를 선택한 경우 같은 보호 폴더의
+`ca.pem`을 읽습니다. [CA 전달](workflow_lib/tls.py)은 보호된 경로·소유자·권한·
+단일 regular file·크기·PEM 인증서를 확인하고, 검증한 bytes를 쓰기 금지한
+메모리 사본으로 고정해 driver에 전달합니다. Linux memfd·seal·procfs가 없거나
+검증에 실패하면 연결을 거부합니다. TLS를 선택한 PostgreSQL은 `verify-full`만 지원하며,
+접속을 바꾸는 libpq 환경 변수도 거부합니다. GSS 암호화가 TLS를 대신하지 않도록
+`gssencmode=disable`을 명시합니다.
+
+S3 TLS 소스 계약은 명시적 `https://seaweedfs-s3:443`과 고정
+`https:seaweedfs-s3:443` token만 허용합니다. Proxy와 redirect를 통한 다른
+대상 연결을 막고 DAG의 성공·실패 모두에서 client와 CA 사본을 닫습니다.
+현재 SeaweedFS 소스의 내부 listener는 평문 `:8333`이며 이 변경은 TLS listener를
+배포하지 않습니다. 실제 `:443` listener·CA/SAN·잘못된 CA·만료 인증서·고정 이미지의
+실제 driver·worker UID/GID·재인증·복구는 NOT_RUN입니다. 기존 승인된 내부 평문
+경로를 보존하며, P03의 실제 endpoint·인증서 수용 전에 TLS 설정을 활성화하지 않습니다.
+Admin·reader·notifier 자격 증명은 이 폴더에 두지 않습니다.
 기존 DEV provisioner의 넓은 table grant를 실행하지 말고 함수 전용 권한 확장을
 총괄이 먼저 통합해야 합니다. Pool 한 slot 생성도 별도 실행 대상입니다.
 

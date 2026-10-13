@@ -1,10 +1,10 @@
 ---
 title: "Manifest Pipeline Library"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-14"
 ---
 
 # Manifest Pipeline Library
@@ -22,6 +22,7 @@ S3 readback·PG 게시를 소유합니다. 다른 DB·객체·자격 증명은 �
 
 - [manifest.py](manifest.py): parser·ID·partition·게시 순서.
 - [adapters.py](adapters.py): 보호 JSON·S3·parameterized PostgreSQL.
+- [tls.py](tls.py): 보호된 CA 검증과 쓰기 금지한 메모리 사본의 수명 관리.
 
 ## Usage
 

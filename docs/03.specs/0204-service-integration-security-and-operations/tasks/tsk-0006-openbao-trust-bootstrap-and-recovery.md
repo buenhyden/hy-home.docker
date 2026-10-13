@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.12"
+version: "0.2.13"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -2207,6 +2207,37 @@ snapshot to an empty target with the previous image) and approver. The
 consumer and ACL (step 10) and the Agent alert Spec stay after the window.
 This is a document; no HOME step ran.
 
+### Maintenance-window input correction — 2026-10-14
+
+Current ALL_PROMPTS authorizes a safe Runbook correction only. Independent
+security review found that the window promised stdin-only sensitive values,
+then passed OTP through CLI arguments and assumed the running server container
+had no observing process. This is a source-plan defect; W1 was NOT_RUN and no
+credential exposure, issuance or rotation is claimed.
+
+The unsafe CLI block is removed. W1 now delegates to the existing protected
+authenticated API contract and remains blocked until an actual reviewed client,
+exact target/permissions/recovery and independent custody exist. Neither a
+container shell nor encoded-token stdin makes the OTP argument private. The
+original maintenance-plan and owner-decision receipts remain historical;
+off-host custody, snapshot token, upgrade, audit, cold boot and semantic restore
+remain NOT_RUN, and criterion 11/Task state remain pending/blocked.
+
+The controller owns only RUN-0085 and this Task for this logical document unit.
+No helper, policy, credential, container, backup or host state is changed.
+
+Independent security review approved RUN-0085 SHA256
+`81ce399fead9074dd92f06b37094e9cc30a987709fa5cbe24e6e209e4d03521b` and
+this Task's pre-receipt SHA256
+`526a6916eb5847cd6b2a0b7a597156e6209683fd801ad8572a297d47f8ca0cdc`.
+The reviewer verified the protected API/client/custody preconditions, no
+executable OTP argv block, no runtime claim, and pending criterion 11/blocked
+Task. QA's explicit metadata selection of these two plus twelve P08 documents
+passed 14/0; operations catalog and navigation checks passed, exit 0. These
+checks precede this result-only receipt, whose final document validation and
+staged hooks remain required. Source correction acceptance does not admit W1
+or supersede any HOME, maintenance or recovery finding.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -2237,6 +2268,9 @@ This is a document; no HOME step ran.
 | Leftover target cleanup | 11 | W23 | Empty base target removed with `rmdir`; `-04` target deleted by the owner; no `p01-*` directory left, live server and Agent healthy; pre-2.7.1 snapshot kept | HOME, value-free metadata | PASS | Owner Decisions — 2026-10-13 | - |
 | Agent alert gap | 11 | W23 | No Agent metrics or alert; gap recorded, telemetry and alert deferred to a separate Spec | `agent.hcl`, Prometheus config | NOT_RUN | Owner Decisions — 2026-10-13 | - |
 | Maintenance window plan | 11 | W23 | RUN-0085 window plan with commands, signals, stops, rollback and approvers; HOME execution NOT_RUN | Branch on `origin/main` | PASS | Maintenance Window Plan — 2026-10-13 | - |
+| Maintenance OTP argument defect | 11 | W22 | Independent source inspection: stdin-only claim conflicted with executable OTP arguments and unsupported process-isolation assumption | RUN-0085 SHA256 0db6f3d23ec0e93a00a1276c29d57603937294c543b4546c623f5c7baa9a9785 | FAIL | Maintenance-window input correction | - |
+| Maintenance protected-input correction | 11 | W22 | Remove unsafe OTP CLI block; retain protected authenticated API/custody boundary and explicit BLOCKED/NOT_RUN | RUN-0085 SHA256 81ce399fead9074dd92f06b37094e9cc30a987709fa5cbe24e6e209e4d03521b | PASS | Maintenance-window input correction | Maintenance OTP argument defect |
+| Maintenance correction review and frozen QA | 11 | W22 | Independent exact-hash security approval and metadata selection 14/0; catalog/navigation exit 0; no credential/native action | RUN-0085 81ce399fead9074dd92f06b37094e9cc30a987709fa5cbe24e6e209e4d03521b; Task pre-receipt 526a6916eb5847cd6b2a0b7a597156e6209683fd801ad8572a297d47f8ca0cdc | PASS | Maintenance-window input correction | - |
 
 ## Criterion Acceptance
 

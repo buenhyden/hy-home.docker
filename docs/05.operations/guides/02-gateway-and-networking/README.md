@@ -1,10 +1,10 @@
 ---
 title: "게이트웨이와 네트워크 가이드"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-14"
 layer: "operations"
 ---
 
@@ -25,7 +25,7 @@ layer: "operations"
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
 | [01-Gateway Nginx Usage Guide](0011-nginx.md) | `GDE-0011` | 이 문서는 01-gateway의 Nginx 특수 경로 프록시 구성과 하드닝 포인트를 설명한다. Nginx의 lifecycle class는 **OPTIONAL** alternative gateway다. readonly/tmpfs 운영, timeout/f |
-| [Edge Routing Stack Operations](0012-edge-routing-stack.md) | `GDE-0012` | 이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 루트 stack은 두 파일을 모두 무조건 include하고 profile이 기동을 가른다. Traefik은 `core`/`dev`/`local`이, Nginx는 전용 `nginx |
+| [Edge Routing Stack Operations](0012-edge-routing-stack.md) | `GDE-0012` | 이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. |
 | [01-Gateway Traefik Usage Guide](0013-traefik.md) | `GDE-0013` | 이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. Traefik의 lifecycle class는 **HOME**이다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다. |
 | [Compose Network Membership Usage Guide](0077-ip-address-management.md) | `GDE-0077` | 이 가이드는 Compose 서비스의 Docker network 소속과 고정 주소 사용 기준을 설명한다. |
 

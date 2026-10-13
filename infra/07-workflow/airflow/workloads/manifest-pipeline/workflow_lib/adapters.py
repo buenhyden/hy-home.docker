@@ -18,9 +18,22 @@ from types import MappingProxyType
 from urllib.parse import urlsplit
 
 from .manifest import MAX_BYTES, ContractError
+from .tls import pin_ca
 
 PRIVATE_DIRECTORY = "/run/opsflow"
 MAX_CONFIG_BYTES = 16384
+S3_TLS_ENDPOINT = "https://seaweedfs-s3:443"
+S3_TLS_CONTRACT = "https:seaweedfs-s3:443"
+LIBPQ_ENVIRONMENT = frozenset(
+    """PGAPPNAME PGCHANNELBINDING PGCLIENTENCODING PGCONNECT_TIMEOUT PGDATABASE
+    PGGSSDELEGATION PGGSSENCMODE PGGSSLIB PGHOST PGHOSTADDR PGKRBSRVNAME
+    PGLOADBALANCEHOSTS PGMAXPROTOCOLVERSION PGMINPROTOCOLVERSION PGOPTIONS
+    PGPASSFILE PGPASSWORD PGPORT PGREQUIREAUTH PGREQUIREPEER PGREQUIRESSL
+    PGSERVICE PGSERVICEFILE PGSSLCERT PGSSLCERTMODE PGSSLCOMPRESSION PGSSLCRL
+    PGSSLCRLDIR PGSSLKEY PGSSLMAXPROTOCOLVERSION PGSSLMINPROTOCOLVERSION
+    PGSSLMODE PGSSLNEGOTIATION PGSSLROOTCERT PGSSLSNI PGSYSCONFDIR
+    PGTARGETSESSIONATTRS PGUSER SSL_CERT_DIR SSL_CERT_FILE""".split()
+)
 PG_FIELDS = frozenset(
     {
         "host",
@@ -126,9 +139,11 @@ def _s3_config(config):
         and config["ca_bundle"] is None
     )
     secure = (
-        endpoint.scheme == "https"
+        config["endpoint_url"] == S3_TLS_ENDPOINT
+        and endpoint.scheme == "https"
+        and endpoint.hostname == "seaweedfs-s3"
         and port == 443
-        and config["endpoint_contract"] == f"https:{endpoint.hostname}:443"
+        and config["endpoint_contract"] == S3_TLS_CONTRACT
         and _ca_path(config["ca_bundle"])
     )
     if not (internal or secure):
@@ -312,6 +327,10 @@ def read_private_json(
     return result
 
 
+def _pin_ca(path):
+    return pin_ca(path, expected_directory=PRIVATE_DIRECTORY)
+
+
 def _key(key, prefix):
     if not isinstance(key, str) or not key.startswith(prefix + "/") or len(key) > 512:
         raise ContractError("s3_key")
@@ -363,36 +382,121 @@ def _task_action(action, code):
     return result
 
 
+def _require_s3_origin(request, **_):
+    try:
+        endpoint = urlsplit(request.url)
+        valid = (
+            endpoint.scheme == "https"
+            and endpoint.hostname == "seaweedfs-s3"
+            and endpoint.port == 443
+            and not endpoint.username
+            and not endpoint.password
+            and not endpoint.query
+            and not endpoint.fragment
+        )
+    except Exception:
+        valid = False
+    if not valid:
+        raise DependencyError("s3_endpoint_changed")
+
+
+def _reject_s3_redirect(response=None, **_):
+    if not response or not isinstance(response, tuple) or not response:
+        return
+    raw = response[0]
+    status = getattr(raw, "status_code", None)
+    headers = getattr(raw, "headers", {})
+    location = isinstance(headers, Mapping) and any(
+        str(name).lower() == "location" for name in headers
+    )
+    if (type(status) is int and 300 <= status < 400) or location:
+        raise DependencyError("s3_redirect_rejected")
+
+
 class S3Store:
     """Restricted input reader and conditional verified artifact writer."""
 
     def __init__(self, config):
         config = _validated(config, "s3")
-        if config["endpoint_url"].startswith("https:"):
-            raise ContractError("tls_delivery_not_ready")
+        ca = _pin_ca(config["ca_bundle"]) if config["ca_bundle"] else None
 
         def create():
             import boto3
             from botocore.config import Config
 
-            return boto3.client(
+            client = boto3.client(
                 "s3",
                 endpoint_url=config["endpoint_url"],
                 region_name=config["region"],
                 aws_access_key_id=config["access_key_id"],
                 aws_secret_access_key=config["secret_access_key"],
-                verify=config["ca_bundle"] or True,
+                verify=ca.path if ca else True,
                 config=Config(
                     signature_version="s3v4",
                     connect_timeout=config["connect_timeout"],
                     read_timeout=config["read_timeout"],
                     retries={"mode": "standard", "max_attempts": 2},
                     s3={"addressing_style": "path"},
+                    proxies={},
                 ),
             )
+            try:
+                if ca:
+                    client.meta.events.register_first(
+                        "before-send.s3",
+                        _require_s3_origin,
+                        unique_id="opsflow-exact-s3-origin",
+                    )
+                    client.meta.events.register_first(
+                        "needs-retry.s3",
+                        _reject_s3_redirect,
+                        unique_id="opsflow-deny-s3-redirect",
+                    )
+            except Exception:
+                client.close()
+                raise
+            return client
 
-        self.client = _task_action(create, "s3_dependency_unavailable")
+        try:
+            self.client = _task_action(create, "s3_dependency_unavailable")
+        except Exception:
+            if ca:
+                ca.close()
+            raise
+        self._ca = ca
+        self._closed = False
         self.bucket = config["bucket"]
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, kind, *_):
+        try:
+            self.close()
+        except DependencyError:
+            if kind is None:
+                raise
+        return False
+
+    def close(self):
+        if self._closed:
+            return
+        self._closed = True
+        failed = False
+        try:
+            self.client.close()
+        except Exception:
+            failed = True
+        finally:
+            self.client = None
+            if self._ca:
+                try:
+                    self._ca.close()
+                except ContractError:
+                    failed = True
+                self._ca = None
+        if failed:
+            raise DependencyError("s3_close_failed")
 
     def _read(self, key, head):
         if not isinstance(head, dict) or type(head.get("ContentLength")) is not int:
@@ -485,8 +589,6 @@ class PgPublisher:
 
     def __init__(self, config):
         config = _validated(config, "pg")
-        if config["sslmode"] != "disable":
-            raise ContractError("tls_delivery_not_ready")
         self._config = _ProtectedConfig(MappingProxyType(config))
 
     @property
@@ -501,11 +603,15 @@ class PgPublisher:
         _key(artifact, "manifest-validated")
         failed = False
         result = None
+        ca = None
         try:
+            if any(name in os.environ for name in LIBPQ_ENVIRONMENT):
+                raise ValueError("libpq_environment")
+            config = self.config
+            ca = _pin_ca(config["sslrootcert"]) if config["sslrootcert"] else None
             import psycopg2
             from psycopg2.extras import Json
 
-            config = self.config
             connection = psycopg2.connect(
                 **{
                     key: config[key]
@@ -517,9 +623,10 @@ class PgPublisher:
                         "password",
                         "connect_timeout",
                         "sslmode",
-                        "sslrootcert",
                     )
                 },
+                sslrootcert=ca.path if ca else None,
+                gssencmode="disable",
                 application_name="source_manifest_ingest",
                 options=f"-c statement_timeout={config['statement_timeout_ms']} "
                 f"-c lock_timeout={config['lock_timeout_ms']}",
@@ -550,6 +657,12 @@ class PgPublisher:
                 connection.close()
         except Exception:
             failed = True
+        finally:
+            if ca:
+                try:
+                    ca.close()
+                except ContractError:
+                    failed = True
         if failed:
             raise DependencyError("pg_publish_failed")
         return result
