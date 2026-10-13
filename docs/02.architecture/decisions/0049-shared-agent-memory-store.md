@@ -1,8 +1,8 @@
 ---
 title: "Shared Agent Memory Store"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "architecture"
@@ -79,7 +79,8 @@ acceptance is separate evidence.
 Proposed on 2026-10-13 from the owner's decisions. SPEC-0236 implements and
 verifies it. The owner decided on 2026-10-13 to accept it ("Accept both", for
 ADR-0048 and ADR-0049). A new ADR must enter the repository as `proposed`, so
-the status changes to `accepted` in the first change after SPEC-0236 merges.
+the status changed to `accepted` in the first change after SPEC-0236 merged
+(#450, `40f194e99`).
 
 ## Related Documents
 

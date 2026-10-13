@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.6"
+version: "1.6.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -122,7 +122,7 @@ docs/02.architecture/decisions/
   소유한다.
 - [`ADR-0049`](./0049-shared-agent-memory-store.md):
   Claude와 Codex가 main checkout의 SQLite 저장소 하나를 함께 쓰고 native
-  memory를 끄는 proposed decision. CLI만 쓰고 rollback journal과 논리 한도를
+  memory를 끄는 accepted decision. CLI만 쓰고 rollback journal과 논리 한도를
   쓴다. ADR-0032의 memory·`.codex/config.toml` 금지를 이 두 항목에 한해 좁히며
   SPEC-0236가 구현·검증을 소유한다.
 

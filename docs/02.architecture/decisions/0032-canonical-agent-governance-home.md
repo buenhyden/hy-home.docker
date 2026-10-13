@@ -1,6 +1,6 @@
 ---
 title: "Canonical Agent Governance Home"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -115,8 +115,8 @@ Adopt the following location model after an independent design review.
   relative links together.
 - New plugins, servers, memory, `.codex/config.toml`, or additional common
   directories are not created for formal symmetry. Model, permission, and hook
-  trust are not changed. ADR-0049, once accepted, narrows this for shared
-  memory and `.codex/config.toml` only.
+  trust are not changed. ADR-0049 narrows this for shared memory and
+  `.codex/config.toml` only.
 - Local syntax/contract success, native discovery, invocation, permission
   enforcement, and actual hook receipt are separate pieces of evidence.
 
