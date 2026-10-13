@@ -1,6 +1,6 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.6.0"
+version: "1.6.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -166,8 +166,11 @@ main-push security remains a post-merge observation.
 - **Before local commit**: run
   `scripts/validation/run-ci-precommit.sh --mode local-staged` immediately after
   staging the reviewed candidate and before the ordinary commit. It reads the
-  index's configuration and staged paths, derives read-only lint/format checks
-  from the shared registered pins, and fails on source/index drift. Formatting
+  index's configuration and staged paths, runs every registered hook from the
+  shared pins on an isolated copy, with check modes where a hook has one, and
+  fails on source/index drift. A fixer without a check mode may change only
+  that copy, and any change fails the run; a hook that changes the copy and
+  still passes fails as a hidden mutator. Formatting
   defects require an explicit reviewed fix and restaging. Any subsequent index
   change requires a new check. Keep the effective secret guard; do not install
   or replace a user-global hook as part of this route.

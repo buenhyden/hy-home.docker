@@ -46,8 +46,8 @@ for repository in config["repos"]:
     hooks = []
     for hook in repository["hooks"]:
         hook_id = hook["id"]
-        if hook_id in {"end-of-file-fixer", "trailing-whitespace"}:
-            continue
+        # Every hook is kept. Fixers without a check mode run only on the
+        # isolated checkout, where any change they make fails the run.
         arguments = {
             "mixed-line-ending": ["--fix=no"],
             "ruff-format": ["--check"],
@@ -114,11 +114,19 @@ run_pr_merge() {
     "$checkout/.pre-commit-config.yaml" \
     "$checkout/.markdownlint-cli2.yaml"
   require_registered_pre_commit "$checkout"
+  snapshot_candidate_state before
+
+  set +e
   (
     cd "$checkout"
     pre-commit run --config "$scratch/pre-commit-check.yaml" \
       --from-ref "$PR_BASE_SHA" --to-ref "$PR_HEAD_SHA" --show-diff-on-failure
   )
+  local child_exit=$?
+  set -e
+
+  require_unchanged_candidate "$child_exit" "PR style validation"
+  return "$child_exit"
 }
 
 snapshot_candidate_state() {
@@ -129,6 +137,20 @@ snapshot_candidate_state() {
     >"$scratch/worktree.$suffix" || die "local worktree snapshot failed"
   git -C "$checkout" status --porcelain=v2 -z --untracked-files=all \
     >"$scratch/status.$suffix" || die "local status snapshot failed"
+}
+
+# A hook that changed the isolated candidate and failed has reported its own
+# defect; one that changed it and still passed is a hidden mutator.
+require_unchanged_candidate() {
+  local child_exit="$1"
+  local label="$2"
+  snapshot_candidate_state after
+  if ! cmp -s "$scratch/index.before" "$scratch/index.after" || \
+    ! cmp -s "$scratch/worktree.before" "$scratch/worktree.after" || \
+    ! cmp -s "$scratch/status.before" "$scratch/status.after"; then
+    [[ "$child_exit" -ne 0 ]] || die "$label changed repository state"
+    echo "$label: a hook changed the isolated candidate; fix the reported files explicitly" >&2
+  fi
 }
 
 run_local_staged() {
@@ -171,12 +193,7 @@ run_local_staged() {
   local child_exit=$?
   set -e
 
-  snapshot_candidate_state after
-  if ! cmp -s "$scratch/index.before" "$scratch/index.after" || \
-    ! cmp -s "$scratch/worktree.before" "$scratch/worktree.after" || \
-    ! cmp -s "$scratch/status.before" "$scratch/status.after"; then
-    die "local style validation changed repository state"
-  fi
+  require_unchanged_candidate "$child_exit" "local style validation"
   return "$child_exit"
 }
 

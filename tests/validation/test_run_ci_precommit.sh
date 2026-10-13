@@ -60,8 +60,7 @@ printf '%s\n' \
   '  test "$(git show :interaction.md)" = "staged-side"' \
   '  test "$(cat interaction.md)" = "staged-side"' \
   'fi' \
-  '! grep -q "id: end-of-file-fixer" "$readonly_config"' \
-  '! grep -q "id: trailing-whitespace" "$readonly_config"' \
+  'test "$(grep -o "id: [a-z0-9-]*" .pre-commit-config.yaml)" = "$(grep -o "id: [a-z0-9-]*" "$readonly_config")"' \
   'grep -A8 "id: mixed-line-ending" "$readonly_config" | grep -q -- "--fix=no"' \
   'grep -A8 "id: ruff-format" "$readonly_config" | grep -q -- "--check"' \
   'grep -A8 "id: markdownlint-cli2" "$readonly_config" | grep -q "$markdown_config"' \
@@ -184,6 +183,31 @@ child_exit=$?
 set -e
 [[ "$child_exit" -eq 37 ]] || fail "child exit was not propagated"
 
+# A hook that changes the isolated candidate yet reports success is a hidden
+# mutator; one that changes it and fails reports its own failure.
+for case_exit in 0 1; do
+  set +e
+  (
+    cd "$CANDIDATE_REPO"
+    env \
+      PATH="$FAKE_BIN:$PATH" \
+      FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
+      FAKE_PRECOMMIT_MUTATION=worktree \
+      FAKE_PRECOMMIT_EXIT="$case_exit" \
+      EXPECTED_STYLE_MODE=pr-merge \
+      EXPECTED_MERGE_SHA="$MERGE_SHA" \
+      GITHUB_ACTIONS=true \
+      CI=true \
+      PR_BASE_SHA="$BASE_SHA" \
+      PR_HEAD_SHA="$HEAD_SHA" \
+      "$WRAPPER" --mode pr-merge
+  )
+  pr_mutation_exit=$?
+  set -e
+  expected=$([[ "$case_exit" -eq 0 ]] && echo 2 || echo 1)
+  [[ "$pr_mutation_exit" -eq "$expected" ]] || fail "pr-merge mutation with hook exit $case_exit returned $pr_mutation_exit"
+done
+
 # Local mode must derive its check configuration from the index while leaving
 # both the index and the tracked working tree untouched.
 git -C "$CANDIDATE_REPO" switch -q --detach "$BASE_SHA"
@@ -268,6 +292,21 @@ for mutation in worktree index; do
   mutation_exit=$?
   set -e
   [[ "$mutation_exit" -eq 2 ]] || fail "$mutation mutation was not rejected"
+  set +e
+  (
+    cd "$CANDIDATE_REPO"
+    env \
+      PATH="$FAKE_BIN:$PATH" \
+      FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
+      FAKE_PRECOMMIT_MUTATION="$mutation" \
+      FAKE_PRECOMMIT_EXIT=1 \
+      EXPECTED_STYLE_MODE=local-staged \
+      EXPECTED_LOCAL_REPO="$CANDIDATE_REPO" \
+      "$WRAPPER" --mode local-staged
+  )
+  failed_mutation_exit=$?
+  set -e
+  [[ "$failed_mutation_exit" -eq 1 ]] || fail "$mutation mutation by a failing hook returned $failed_mutation_exit"
   [[ "$index_before" == "$(git -C "$CANDIDATE_REPO" diff --cached --binary HEAD)" ]] || fail "$mutation mutation escaped into the source index"
   [[ "$worktree_before" == "$(git -C "$CANDIDATE_REPO" diff --binary)" ]] || fail "$mutation mutation escaped into tracked source bytes"
   [[ "$(cat "$CANDIDATE_REPO/untracked.txt")" == "untracked" ]] || fail "$mutation mutation escaped into untracked source bytes"
