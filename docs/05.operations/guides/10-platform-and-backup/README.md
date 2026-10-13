@@ -1,10 +1,10 @@
 ---
 title: "플랫폼과 백업 가이드"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-14"
 layer: "operations"
 ---
 
@@ -26,7 +26,7 @@ layer: "operations"
 | --- | --- | --- |
 | [Developer Environment Operations](0002-developer-environment.md) | `GDE-0002` | 이 가이드는 로컬 개발 환경의 도구, 환경 파일, 인증서 설정과 검증 범위를 설명한다. |
 | [`.env.example` vs `.env` Key Comparison](0003-env-key-comparison.md) | `GDE-0003` | 이 가이드는 공개 `.env.example`과 로컬 `.env`의 키 집합을 비교하는 기준과 방법을 설명한다. |
-| [New Service Onboarding Guide](0008-new-service-onboarding.md) | `GDE-0008` | 이 가이드는 새 컨테이너 서비스를 `hy-home.docker`에 추가할 때 참조한다. 복사 가능한 시드(`examples/sample-web-service/`)와 bounded-change Spec 템플릿 (`docs/99.templates/temp |
+| [New Service Onboarding Guide](0008-new-service-onboarding.md) | `GDE-0008` | 이 가이드는 새 컨테이너 서비스를 `hy-home.docker`에 추가할 때 참조한다. |
 | [Backup and Restore Guide](0021-backup-and-restore.md) | `GDE-0021` | HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackRest, Restic, R2 오프사이트 사본, SQLite export, host orchestrator가 각각 무엇을 보호하고 무엇을 보호하지 않는지 설명한다. |
 | [Platform Operations and Quality Optimization Hardening Usage Guide](0063-tooling-optimization-hardening.md) | `GDE-0063` | 이 가이드는 `09-platform-ops`와 `11-quality`의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다. 공개 경계 보안, 네트워크 경계 표준화, 테스트 도구 안정성 계약, 검증 절차를 다룬다. `system-guide \| ho |
 | [Docker Registry Usage Guide](0065-registry.md) | `GDE-0065` | Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하는 HOME OCI 이미지 저장소다. `registry` 또는 `tooling` profile에서 선택된다. |
@@ -36,7 +36,7 @@ layer: "operations"
 | [OpenTofu Guide](0082-opentofu.md) | `GDE-0082` | OpenTofu는 `infra/09-platform-ops/opentofu/`의 `opentofu` service로 요청 시 실행하는 DEV IaC CLI 작업이다. `iac` profile에서만 선택된다. |
 | [Renovate Guide](0083-renovate.md) | `GDE-0083` | Renovate는 `infra/09-platform-ops/renovate/`의 `renovate` service로 실행하는 의존성 갱신 작업이다. `dependency-update` profile에서만 선택된다. |
 | [Dependency Version Management Guide](0086-dependency-version-management.md) | `GDE-0086` | 이 가이드는 Compose 이미지, Dockerfile, 파생 버전 projection의 버전 선언을 어떻게 찾고 확인하는지 설명한다. 버전 변경은 선언 소유자를 먼저 찾은 뒤에 시작한다. |
-| [hy-home.k8s Integration Usage Guide](0096-k8s-integration.md) | `GDE-0096` | hy-home.k8s 저장소는 같은 호스트에서 k3d 클러스터(`hyhome`)를 실행한다. k3d 제거 이후로는 어떤 Compose 서비스도 이와 Docker 네트워크를 공유하지 않는다. 클러스터는 승인된 호스트 LAN 주소(`HOST_LAN_BIN |
+| [hy-home.k8s Integration Usage Guide](0096-k8s-integration.md) | `GDE-0096` | hy-home.k8s 저장소는 같은 호스트에서 k3d 클러스터(`hyhome`)를 실행한다. |
 
 ## Usage
 

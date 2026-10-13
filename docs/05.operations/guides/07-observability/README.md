@@ -1,10 +1,10 @@
 ---
 title: "관측 가이드"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-14"
 layer: "operations"
 ---
 
@@ -33,7 +33,7 @@ layer: "operations"
 | [Prometheus Usage Guide](0045-prometheus.md) | `GDE-0045` | 이 가이드는 `06-observability` 계층의 Prometheus 사용 맥락과 설정 확인 방법을 설명한다. Prometheus는 `infra/06-observability/prometheus/config/prometheus.yml`의 scrap |
 | [Pushgateway Usage Guide](0046-pushgateway.md) | `GDE-0046` | 이 문서는 Pushgateway의 역할과 기본 사용법을 설명한다. Pushgateway는 Prometheus pull 모델이 직접 적용되기 어려운 단기 실행·배치 작업의 metric을 일시적으로 받아 두는 버퍼다. 장기 실행 서비스의 일반 metric |
 | [Pyroscope Usage Guide](0047-pyroscope.md) | `GDE-0047` | 이 가이드는 `06-observability` 계층의 Pyroscope 사용 맥락과 설정 확인 방법을 설명한다. Pyroscope는 profile 데이터를 로컬 filesystem backend `/var/lib/pyroscope`에 저장하고, Gra |
-| [Tempo Usage Guide](0049-tempo.md) | `GDE-0049` | 이 가이드는 `06-observability` 계층의 Tempo 사용 맥락과 설정 확인 방법을 설명한다. Tempo는 Alloy가 전달한 OTLP trace를 수집하고, SeaweedFS S3 backend의 `tempo-bucket`에 저장하며, ` |
+| [Tempo Usage Guide](0049-tempo.md) | `GDE-0049` | 이 가이드는 `06-observability` 계층의 Tempo 사용 맥락과 설정 확인 방법을 설명한다. |
 | [Dozzle Usage Guide](0072-dozzle.md) | `GDE-0072` | 이 가이드는 OPTIONAL admin 로그 뷰어 Dozzle의 구성, 인증 경계, 일반 사용 방법을 설명한다. `admin`과 `admin-logs` profile에서만 선택된다. |
 | [Gatus Guide](0087-gatus.md) | `GDE-0087` | Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability monitor이다. native Keycloak OIDC로 보호되는 status UI와 SQLite probe history를 제공한 |
 

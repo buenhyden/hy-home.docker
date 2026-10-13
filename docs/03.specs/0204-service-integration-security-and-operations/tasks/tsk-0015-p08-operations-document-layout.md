@@ -1,10 +1,10 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0015"
 parent_ids:
@@ -815,6 +815,42 @@ outside this Task; their handoff is recorded for the root owner and this Task
 cannot commit them. `AGENT_ALLOW_UNCOMMITTED_STOP=1` is a scoped stop exception
 for root check-only work and does not change hook policy.
 
+### Current README correction — 2026-10-14
+
+The current ALL_PROMPTS P08 request authorizes document correction, not another
+relocation. Current numbered folders and 45 domain READMEs were inspected;
+no document ID, path, Stage99 contract, service source or runtime is moved.
+The three parent family READMEs had duplicate scaffold headings, a false
+pre-move statement that domains were not paths, and identical purpose text
+for different domains. They now describe the actual 15 purpose folders and
+role-specific navigation while preserving the published infra-tier and
+cross-cutting anchors.
+
+Fourteen domain-row descriptions had unmatched code/bold markup caused by
+truncation. Only those descriptions in eight domain READMEs were restored to
+complete first sentences from their current subject Overviews; existing IDs,
+links, created dates and other row content remain. The source audit covers
+all 45 domain indexes but claims correction only for these witnessed defects.
+LAB participation is document inspection/formatting only, with no LAB
+functional test, image, credentials, data or runtime mutation.
+
+The controller is the sole writer of the eleven README files and this Task.
+Criterion 8 remains with its existing decision owner, TSK-0001; this Task adds
+no duplicate Criterion Acceptance row.
+
+Independent QA bound the original twelve P08 documents together with two P01
+documents at source HEAD `667dcd9328ca6aa2923ad14a012967931877931b`.
+The explicit selected metadata command passed 14/0, operations catalog passed,
+and navigation checked 1,295 documents/11,536 links with zero failures/warnings;
+all child exits were 0. Those inputs preceded the cosmetic removal of duplicate
+blank lines in the three parent indexes and this result-only Task addition.
+The eight domain README hashes remain unchanged. Independent code review
+confirmed fifteen unique folder targets in each parent, preserved infra-tier
+and cross-cutting headings, and all fourteen repaired descriptions against
+current subject Overviews, with no semantic finding. Final changed-document
+checks and staged hooks still bind the final receipt before its logical commit.
+Owning-Spec push/PR/CI/merge is separate and not yet claimed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -827,6 +863,8 @@ for root check-only work and does not change hook policy.
 | Populated README coverage | 8 | W61 | Korean content, metadata selection, meaningful descriptions and navigation | Actual destination corpus and parent families | NOT_RUN | W61 populated READMEs | - |
 | Exact-head delivery and handoff | 8 | W62 | Actual affected gates, staged checks, independent review and local-main receipt | Final candidate/main SHA and exact inverse map | NOT_RUN | W62 final validation, delivery and handoff | - |
 | LAB service-source relocation | 8 | W70 | Source relocation and executed regression/static lanes accepted; static helper prerequisites and local-main delivery remain explicit | Source tree b2e5b5cacc8b99b34d46727d810c5d57a8bc2119; 539 PASS, 36 native SKIP; runtime, credential and persisted-data effects zero | PASS | W70 first source relocation unit; Supabase companion and final source-gate receipt | - |
+| Current README source audit | 8 | W61 | Inspect three parent/45 domain indexes: duplicate scaffold/stale paths/14 unmatched inline descriptions witnessed; 3 parent and 8 domain READMEs corrected, zero path/runtime change | Branch after P04 source commit 667dcd9328ca6aa2923ad14a012967931877931b | PASS | Current README correction | - |
+| Current README frozen QA | 8 | W61 | Explicit changed-path metadata selected 14/0; operations catalog PASS; navigation 1295 documents/11536 links, zero failures/warnings; independent semantic review clean | Original P08 twelve-doc freeze plus P01 two-doc freeze at HEAD 667dcd9, before final blank-line/result-only additions | PASS | Current README correction | - |
 
 ## Criterion Acceptance
 

@@ -1,10 +1,10 @@
 ---
 title: "데이터베이스와 저장소 가이드"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-14"
 layer: "operations"
 ---
 
@@ -25,11 +25,11 @@ layer: "operations"
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
 | [OpenSearch Usage Guide](0019-opensearch.md) | `GDE-0019` | 정상 `opensearch`는 선택형 단일 노드다. 정상 root는 `infra/04-data/opensearch/docker-compose.yml`의 `opensearch`와 `opensearch-dashboards`만 include한다. 세 노드  |
-| [SeaweedFS Usage Guide](0024-seaweedfs.md) | `GDE-0024` | SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다. consumer profile을 통해 HOME에 속한다. `http://seaweedfs-s3:8333` (path-style, region `us |
-| [Management Database Usage Guide](0028-management-database.md) | `GDE-0028` | management database는 인증, 워크플로, 도구를 위한 6개 서비스(PG 엔진·init·monitor provision·exporter, Valkey 엔진·exporter)로 구성된 HOME 의존성이다. `mng-pg`는 `n8n`, `k |
+| [SeaweedFS Usage Guide](0024-seaweedfs.md) | `GDE-0024` | SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다. |
+| [Management Database Usage Guide](0028-management-database.md) | `GDE-0028` | management database는 인증, 워크플로, 도구를 위한 6개 서비스(PG 엔진·init·monitor provision·exporter, Valkey 엔진·exporter)로 구성된 HOME 의존성이다. |
 | [04-Data Optimization Hardening Usage Guide](0030-data-optimization-hardening.md) | `GDE-0030` | 이 subject는 data tier 전반의 static 제어를 검증한다: root profile 유효성, 명시적 persistence 소유권, secret, healthcheck, 리소스, 네트워크 경계, 복구 소유권. service 활성화, 데이터 |
-| [Neo4j Usage Guide](0033-neo4j.md) | `GDE-0033` | 이 문서는 root compose에 active include된 Neo4j Compose 구현을 설명한다. 현재 구현은 `OPTIONAL` 단일 Community `neo4j` 서비스, exact `graph` profile, `edge_net`, ` |
-| [RedisInsight Usage Guide](0076-redisinsight.md) | `GDE-0076` | RedisInsight는 `admin`과 `admin-data` 하위의 OPTIONAL admin UI이다. Redis/Valkey 서버가 아니며 대상 데이터베이스를 백업하지 않는다. `/data`에 마운트된 `${DEFAULT_MANAGEMENT_D |
+| [Neo4j Usage Guide](0033-neo4j.md) | `GDE-0033` | 이 문서는 root compose에 active include된 [Neo4j Compose 구현](../../../../infra/04-data/neo4j/docker-compose.yml)을 설명한다. |
+| [RedisInsight Usage Guide](0076-redisinsight.md) | `GDE-0076` | RedisInsight는 `admin`과 `admin-data` 하위의 OPTIONAL admin UI이다. |
 | [SurrealDB Guide](0080-surrealdb.md) | `GDE-0080` | SurrealDB는 Open Notebook을 위한 `OPTIONAL` 데이터베이스로, 업스트림 호환성을 위해 운영 계약이 SurrealDB v2로 제한되어 있다. Compose 구현은 정확히 `surrealdb`와 `notebook` profile  |
 | [Development Database Usage Guide](0100-development-database.md) | `GDE-0100` | `dev-db`는 미래 외부 프로젝트의 업무 데이터를 위한 선택형 개발 엔진이다. 관리 서비스 metadata·세션·관리 queue는 `mng-db`에 계속 남는다. `app_db`는 신규 프로젝트의 공용 DB가 아니며, 현재 source integr |
 
