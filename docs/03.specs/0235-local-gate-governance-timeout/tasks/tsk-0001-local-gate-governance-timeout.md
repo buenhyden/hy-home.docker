@@ -33,9 +33,16 @@ only node timeout, as SPEC-0235 states.
 
 ### W1 Measured Runtime
 
-The node's 19 argv modules are run with `python3 -m unittest` in a detached
-scratch worktree of `338c607d8`. The result is recorded below when the run
-ends.
+The node's 19 argv modules ran with `python3 -m unittest` in a detached
+scratch worktree of `338c607d8` on 2026-10-13: 763 tests in 1333 s, 1336 s
+wall time, about 22.3 minutes. So 15 minutes cannot hold the batch on this
+host, and 45 minutes leaves about twice the measured time.
+
+One test failed: `test_registry_high_water_is_not_below_repository_history`
+reads every local ref, and the unmerged local branches for SPEC-0234 and this
+SPEC-0235 issue numbers above `main`'s Registry high water of 233. That test
+passes on the SPEC-0234 branch, whose Registry records 234; it is rerun on
+`main` once these branches merge. The failure does not bear on the timing.
 
 ### W2 Timeout Change
 
@@ -52,7 +59,7 @@ pass.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Contract | 1 | W2 | CI gate contract tests (28); workflow contract and adapter tests (85); workflow contract check | Branch on `338c607d8` | PASS | W2 Timeout Change | - |
-| Runtime | 2 | W1 | Node module batch on this host | `338c607d8` | NOT_RUN | W1 Measured Runtime | - |
+| Runtime | 2 | W1 | Node module batch on this host: 763 tests, 1336 s | `338c607d8` | PASS | W1 Measured Runtime | - |
 | Local gate | 3 | W3 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
