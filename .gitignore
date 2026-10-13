@@ -139,3 +139,6 @@ volumes/
 # no longer need their own lines. Re-tracking anything here needs `git add -f`
 # and a stated reason.
 graphify-out/
+
+# Shared agent memory store (scripts/operations/agent_memory.py)
+.workspace-memory/

@@ -1,5 +1,6 @@
 {
   "outputStyle": "hy-home",
+  "autoMemoryEnabled": false,
   "permissions": {
     "allow": [
       "$defaults",

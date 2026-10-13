@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.15"
+version: "1.4.18"
 type: "operation/runbook"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-13"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -16,14 +16,15 @@ created: "2026-09-22"
 
 ## Overview
 
-pgBackRest, Restic, SQLite export, R2 오프사이트 사본의 설정·실행·검증·복구 절차를 다룬다. 정책은 [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md), 설명은 [GDE-0021](../../guides/10-platform-and-backup/0021-backup-and-restore.md)이 소유한다.
+pgBackRest, Restic, SQLite export, R2 오프사이트 사본과 공유 에이전트 memory 저장소의 설정·실행·검증·복구 절차를 다룬다. 정책은 [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md), 설명은 [GDE-0021](../../guides/10-platform-and-backup/0021-backup-and-restore.md)이 소유한다.
 
 ## Trigger and Preconditions
 
 backup repository를 준비하거나, `mng-pg`를 pgBackRest image로 전환하거나,
 backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 시점으로
 복원하거나, Restic에서 파일을 복원하거나, 오래된 snapshot을 삭제하거나,
-R2 오프사이트 사본을 설정하거나 그 사본에서 복원할 때 사용한다. service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
+R2 오프사이트 사본을 설정하거나 그 사본에서 복원하거나, 공유 에이전트 memory 저장소를
+backup·restore할 때 사용한다. service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
 모든 단계는 target을 명시한 별도의 approval이 필요하다.
 
 ### Execution and stop boundary
@@ -460,6 +461,36 @@ OpenBao 복구 지점이 있다고 표시하지 않는다. 실제 token 발급/�
 실행 증거다. 빈 대상 restore/unseal은 원본 share와 독립 offsite key, 선정 snapshot의
 identity/checksum·일관성·용량·rollback 경계가 확인된 후만 실행한다. P01 synthetic
 restore는 HOME/offsite custody를 대신하지 않는다.
+
+### 공유 에이전트 memory 저장소
+
+Claude와 Codex가 함께 쓰는 memory 저장소(`.workspace-memory/memory.sqlite3`,
+규칙은 [환경 제약](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory))는
+Git이 무시하므로 Git으로 복구되지 않는다. 저장소 checkout 안에서 SQLite online
+backup으로 백업 파일 하나를 갱신한다.
+
+```bash
+python3 scripts/operations/agent_memory.py backup --output "$HOME/backups/agent-memory/memory.sqlite3"
+```
+
+먼저 `$HOME/backups/agent-memory`를 0700으로 만든다. 0700이 아니거나 심볼릭
+링크인 디렉터리, 저장소 자체를 가리키는 출력은 거절한다. 명령은 0600 임시 파일에
+쓰고 `integrity_check`를 통과하면 원자적으로 바꾼다. 실패하면 exit 7과
+`MEMORY_BACKUP_FAILED`를 남기고 이전 백업을 그대로 둔다. 이 파일은 아직
+`hyhome-backup.service`의 Restic snapshot에 포함되지 않는다.
+
+복구는 저장소가 없을 때만 한다. 다른 에이전트 세션을 모두 멈춘 뒤 다음을
+실행한다. 저장소가 이미 있으면 exit 3으로 거절하며 기존 기록을 덮어쓰지 않는다.
+백업의 schema가 저장소 schema와 다르면 거절하고, 복사가 실패하면 만들던 저장소를
+지운다.
+
+```bash
+python3 scripts/operations/agent_memory.py restore --input "$HOME/backups/agent-memory/memory.sqlite3"
+python3 scripts/operations/agent_memory.py usage
+```
+
+복구는 기록만 되살린다. 기록이 무엇이 될 수 없는지는
+[환경 제약 5절](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory)이 정한다.
 
 ## Verification
 

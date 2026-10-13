@@ -717,6 +717,18 @@ files:
   successor: null
   tests:
   - tests/validation/test_script_manifest.py
+- path: scripts/operations/agent_memory.py
+  kind: operations
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - .agents/governance/environment-constraints.md
+  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/hooks/test_agent_memory.py
 - path: scripts/operations/check-compose-core-readiness.sh
   kind: operations
   authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
