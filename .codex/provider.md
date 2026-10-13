@@ -1,10 +1,10 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.1.1"
+version: "1.1.2"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-13"
 runtime: "codex"
 ---
 
@@ -42,7 +42,11 @@ read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
 - This `provider.md` is an authored input; `.codex/README.md` is a generated
   pointer and never a renderer input. Canonical sources cannot be renderer output.
 - `.codex/hooks.json` and existing repository-local configuration provide native
-  mechanics only. This adapter does not require a new `.codex/config.toml`.
+  mechanics only. `.codex/config.toml` only turns native memory off, as the
+  [shared memory rule](../.agents/governance/environment-constraints.md#5-shared-agent-memory)
+  requires, and Codex reads it only in a trusted project. It is authored, not
+  rendered: the Registry's single `native_config_path` names the hook
+  configuration the renderer projects, so it does not list this file.
 - Provider/model selections, reasoning controls, and sandbox translations come
   only from the [Provider Registry](../.agents/governance/providers/registry.yaml).
 - Generated files adapt syntax and cannot own shared policy, role intent,

@@ -472,20 +472,24 @@ backup으로 백업 파일 하나를 갱신한다.
 python3 scripts/operations/agent_memory.py backup --output "$HOME/backups/agent-memory/memory.sqlite3"
 ```
 
-먼저 `$HOME/backups/agent-memory`를 0700으로 만든다. 명령은 임시 파일에 쓰고
-`integrity_check`를 통과하면 원자적으로 바꾼다. 실패하면 exit 7과
+먼저 `$HOME/backups/agent-memory`를 0700으로 만든다. 0700이 아니거나 심볼릭
+링크인 디렉터리, 저장소 자체를 가리키는 출력은 거절한다. 명령은 0600 임시 파일에
+쓰고 `integrity_check`를 통과하면 원자적으로 바꾼다. 실패하면 exit 7과
 `MEMORY_BACKUP_FAILED`를 남기고 이전 백업을 그대로 둔다. 이 파일은 아직
 `hyhome-backup.service`의 Restic snapshot에 포함되지 않는다.
 
 복구는 저장소가 없을 때만 한다. 다른 에이전트 세션을 모두 멈춘 뒤 다음을
 실행한다. 저장소가 이미 있으면 exit 3으로 거절하며 기존 기록을 덮어쓰지 않는다.
+백업의 schema가 저장소 schema와 다르면 거절하고, 복사가 실패하면 만들던 저장소를
+지운다.
 
 ```bash
 python3 scripts/operations/agent_memory.py restore --input "$HOME/backups/agent-memory/memory.sqlite3"
 python3 scripts/operations/agent_memory.py usage
 ```
 
-복구는 기록만 되살린다. 기록은 Task 상태·QA 결과·승인 증거가 아니다.
+복구는 기록만 되살린다. 기록이 무엇이 될 수 없는지는
+[환경 제약 5절](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory)이 정한다.
 
 ## Verification
 
