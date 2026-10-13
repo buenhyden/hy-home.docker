@@ -168,16 +168,26 @@ ledger item maps to this package alone.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Validator and schema | 1, 2 | W1 | Ten unit tests; validator on the tree | `9fada6380` | PASS | W1 Schema v2 and Validator | accepted |
-| Healthchecks | 3 | W2 | Exact-image commands; MongoDB LAB healthy | `e00181953` | PASS | W2 Healthchecks | accepted |
-| Secrets group | 3 | W3 | Group comparison and mount scan of running HOME services | `e87d4f6c3` | PASS | W3 Secrets Group | accepted |
-| URL credentials | 4 | W4 | Policy tests RED then GREEN; corpus | `558f1fcee` | PASS | W4 Conftest URL Credentials | accepted |
-| Capabilities | 2, 3 | W5 | LAB runs with none, four and five capabilities | `6d7026084` | PASS | W5 Capabilities and Data Group | accepted |
-| GPU template | 3 | W6 | Exact-image GPU run | `23b40d548` | PASS | W6 GPU Template | accepted |
-| PID budgets | 3 | W7 | All LABs under the limits; HOME headroom | `e0741bd28` | PASS | W7 Process Limits | accepted |
-| Validation | 5 | W8 | Changed gate, exit 0 | `3aed94faa` | PASS | W8 Documents and Validation | accepted |
+| Validator and schema | 1, 2 | W1 | Ten unit tests; validator on the tree | `9fada6380` | PASS | W1 Schema v2 and Validator | - |
+| Healthchecks | 3 | W2 | Exact-image commands; MongoDB LAB healthy | `e00181953` | PASS | W2 Healthchecks | - |
+| Secrets group | 3 | W3 | Group comparison and mount scan of running HOME services | `e87d4f6c3` | PASS | W3 Secrets Group | - |
+| URL credentials | 4 | W4 | Policy tests RED then GREEN; corpus | `558f1fcee` | PASS | W4 Conftest URL Credentials | - |
+| Capabilities | 2, 3 | W5 | LAB runs with none, four and five capabilities | `6d7026084` | PASS | W5 Capabilities and Data Group | - |
+| GPU template | 3 | W6 | Exact-image GPU run | `23b40d548` | PASS | W6 GPU Template | - |
+| PID budgets | 3 | W7 | All LABs under the limits; HOME headroom | `e0741bd28` | PASS | W7 Process Limits | - |
+| Validation | 5 | W8 | Changed gate, exit 0 | `3aed94faa` | PASS | W8 Documents and Validation | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Validator and schema | Generation 5 row acceptance |
+| 2 | accepted | Validator and schema, Capabilities | Generation 5 row acceptance |
+| 3 | accepted | Healthchecks, Secrets group, Capabilities, GPU template, PID budgets | Generation 5 row acceptance |
+| 4 | accepted | URL credentials | Generation 5 row acceptance |
+| 5 | accepted | Validation | Generation 5 row acceptance |
 
 ## Review and Completion
 

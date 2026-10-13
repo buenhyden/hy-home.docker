@@ -66,14 +66,23 @@ started by hand.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Dry run and tests | 1, 2 | W1 | Restic dry run; restic tests | `80f882f1e` | PASS | W1 Exclusion and Budget | accepted |
-| Documents | 2 | W2 | markdownlint; metadata; links | `0e1701950` | PASS | W2 Documents | accepted |
-| HOME | 3 | W3 | `.env` value; next scheduled run | — | NOT_RUN | W3 HOME | pending |
-| Changed gate | 4 | W4 | Hardening; `run-ci-gate.py --profile changed --local-only`, base `39126d5bf`; operations catalog | `60917e9e7` | PASS | Review and Completion | accepted |
-| Staged style check | 4 | W4 | `run-ci-precommit.sh --mode local-staged` | `60917e9e7` | PASS | Review and Completion | accepted |
-| Remote candidate | 4 | W4 | `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
+| Dry run and tests | 1, 2 | W1 | Restic dry run; restic tests | `80f882f1e` | PASS | W1 Exclusion and Budget | - |
+| Documents | 2 | W2 | markdownlint; metadata; links | `0e1701950` | PASS | W2 Documents | - |
+| HOME | 3 | W3 | `.env` value; next scheduled run | — | NOT_RUN | W3 HOME | - |
+| Changed gate | 4 | W4 | Hardening; `run-ci-gate.py --profile changed --local-only`, base `39126d5bf`; operations catalog | `60917e9e7` | PASS | Review and Completion | - |
+| Staged style check | 4 | W4 | `run-ci-precommit.sh --mode local-staged` | `60917e9e7` | PASS | Review and Completion | - |
+| Remote candidate | 4 | W4 | `candidate-quality` | — | NOT_RUN | Review and Completion | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Dry run and tests | Generation 5 row acceptance |
+| 2 | accepted | Dry run and tests, Documents | Generation 5 row acceptance |
+| 3 | pending | - | - |
+| 4 | pending | - | - |
 
 ## Review and Completion
 

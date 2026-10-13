@@ -108,19 +108,29 @@ resolved on re-review, and the further approval text recorded as R12 to R15.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Conflict inventory | 4 | W1 | Read-only search; table closure | `5710435ef` | PASS | W1 Inventory and Conflict Table | accepted |
-| Local candidate parity | 2, 3 | W2 | Gate contract, plan and entrypoint tests | `26c73db6c` | PASS | W2 Local Candidate Parity | accepted |
-| Policy text | 4 | W3 | Contract check | `49911c730` | PASS | W3 Precedence and Approval Text | accepted |
-| Contract enforcement | 1 | W4 | Contract tests; repository contract | `421ed39f6` | PASS | W4 Contract Enforcement | accepted |
-| Memory-file exemption | 4 | W1 | `test_tool_payload` (15 tests, with symlinked directory, symlinked and hardlinked file cases) | `fb94a902c`, `c727fc33e` | PASS | W1 row R5 | accepted |
-| Stop gate loader removal | 4 | W1 | `test_agent_governance_ci_routing` (51 tests, including Stop cases) | `9f5dd9cd0` | PASS | W1 row R4 | accepted |
-| Role and checklist wording | 4 | W1 | Contract check; renderer `--check` `drift=0` | `146726778` | PASS | W1 row R3b | accepted |
-| Review fixes | 2, 3 | W2 | Preflight pinned to `refs/remotes/origin/main`; argument refusal tested with a base; hosted plan from the same change; 49 tests | `b5aa8571b` | PASS | W2 Local Candidate Parity | accepted |
-| Remaining approval text | 4 | W1 | Contract check; renderer `--check` `drift=0` | `de2db1d72` | PASS | W1 row R12 | accepted |
-| Release and operational wording | 4 | W1 | Contract check | `684e1f01f` | PASS | W1 row R13 | accepted |
-| Local validation | 5 | W5 | Changed gate with preflight; staged style check; independent review and re-review | final branch head | PASS | W5 Validation | accepted |
+| Conflict inventory | 4 | W1 | Read-only search; table closure | `5710435ef` | PASS | W1 Inventory and Conflict Table | - |
+| Local candidate parity | 2, 3 | W2 | Gate contract, plan and entrypoint tests | `26c73db6c` | PASS | W2 Local Candidate Parity | - |
+| Policy text | 4 | W3 | Contract check | `49911c730` | PASS | W3 Precedence and Approval Text | - |
+| Contract enforcement | 1 | W4 | Contract tests; repository contract | `421ed39f6` | PASS | W4 Contract Enforcement | - |
+| Memory-file exemption | 4 | W1 | `test_tool_payload` (15 tests, with symlinked directory, symlinked and hardlinked file cases) | `fb94a902c`, `c727fc33e` | PASS | W1 row R5 | - |
+| Stop gate loader removal | 4 | W1 | `test_agent_governance_ci_routing` (51 tests, including Stop cases) | `9f5dd9cd0` | PASS | W1 row R4 | - |
+| Role and checklist wording | 4 | W1 | Contract check; renderer `--check` `drift=0` | `146726778` | PASS | W1 row R3b | - |
+| Review fixes | 2, 3 | W2 | Preflight pinned to `refs/remotes/origin/main`; argument refusal tested with a base; hosted plan from the same change; 49 tests | `b5aa8571b` | PASS | W2 Local Candidate Parity | - |
+| Remaining approval text | 4 | W1 | Contract check; renderer `--check` `drift=0` | `de2db1d72` | PASS | W1 row R12 | - |
+| Release and operational wording | 4 | W1 | Contract check | `684e1f01f` | PASS | W1 row R13 | - |
+| Local validation | 5 | W5 | Changed gate with preflight; staged style check; independent review and re-review | final branch head | PASS | W5 Validation | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Contract enforcement | Generation 5 row acceptance |
+| 2 | accepted | Local candidate parity, Review fixes | Generation 5 row acceptance |
+| 3 | accepted | Local candidate parity, Review fixes | Generation 5 row acceptance |
+| 4 | accepted | Conflict inventory, Policy text, Memory-file exemption, Stop gate loader removal, Role and checklist wording, Remaining approval text, Release and operational wording | Generation 5 row acceptance |
+| 5 | accepted | Local validation | Generation 5 row acceptance |
 
 ## Review and Completion
 

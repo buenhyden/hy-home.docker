@@ -874,16 +874,22 @@ MIGRATION, ROTATION, RECOVERY and new actual deletion remain `NOT_RUN`.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| SMTP01 delivered-scope dependency | 12 | W24 | Integrated source handoff and user acceptance; actual LAB GoTrue configuration excluded | Main `2773a20c1`; user clarification 2026-10-12 | PASS | User-accepted scope and LAB exclusion | accepted |
-| Helper source acceptance | 12 | W24 | 50 focused tests, 98% combined coverage with branch measurement, Ruff and independent code/security review | Recorded helper input `e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284` | PASS | CLN01 implementation patch; user-accepted delivered source | accepted |
-| Candidate classification | 12 | W24 | partial five-axis assessment; BLOCKED_FACTS until missing ownership/recovery facts close | current source and read-only observations on named host | DEFER | #read-only-host-observations | pending |
-| Private deletion acceptance | 12 | W24 | manifest preflight and idempotent reinspection | operator manifest under `/tmp/cln01-<run>/` | NOT_RUN | operator host | pending |
-| Fresh source/helper reassessment | 12 | W24 | NO_CHANGE: 51 CLN tests; one ROOT-init boundary test; independent source/security review with 61 SMTP/lock tests; no safely deletable tracked target | Main `328871a94b42c13f676e61b40f026c906ebbc13d`; 2026-10-13 request | PASS | Fresh deletion reassessment; source only | pending |
-| Fresh document validation | 12 | W24 | Scoped metadata, links (one retained archive warning), changed local-only gate, staged style/secret checks and diff check; all exit 0 before result-only recording | Input main plus reassessment text; preceding result-only recording | PASS | Fresh deletion reassessment; document only, remote delivery separate | pending |
-| Fresh actual deletion disposition | 12 | W24 | BLOCKED_FACTS: current user confirms no approved new ROOT candidate; metadata observation cannot close five axes or independent custody | Original checkout `328871a94b42c13f676e61b40f026c906ebbc13d` stable before/after probe | NOT_RUN | Exact path/material table above; COMM-003 already absent; zero new actual deletions | pending |
-| Initial remote candidate validation | 12 | W24 | Candidate-quality metadata: malformed Evidence Result/Acceptance values; exit 1; CodeQL and GitGuardian passed separately | PR #427 head `4434fd8208613f6798164b73c2d458de5ac07bbc`; run `38271931877` | FAIL | Fresh deletion reassessment; authoring error corrected in the next logical commit | rejected |
+| SMTP01 delivered-scope dependency | 12 | W24 | Integrated source handoff and user acceptance; actual LAB GoTrue configuration excluded | Main `2773a20c1`; user clarification 2026-10-12 | PASS | User-accepted scope and LAB exclusion | - |
+| Helper source acceptance | 12 | W24 | 50 focused tests, 98% combined coverage with branch measurement, Ruff and independent code/security review | Recorded helper input `e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284` | PASS | CLN01 implementation patch; user-accepted delivered source | - |
+| Candidate classification | 12 | W24 | partial five-axis assessment; BLOCKED_FACTS until missing ownership/recovery facts close | current source and read-only observations on named host | DEFER | #read-only-host-observations | - |
+| Private deletion acceptance | 12 | W24 | manifest preflight and idempotent reinspection | operator manifest under `/tmp/cln01-<run>/` | NOT_RUN | operator host | - |
+| Fresh source/helper reassessment | 12 | W24 | NO_CHANGE: 51 CLN tests; one ROOT-init boundary test; independent source/security review with 61 SMTP/lock tests; no safely deletable tracked target | Main `328871a94b42c13f676e61b40f026c906ebbc13d`; 2026-10-13 request | PASS | Fresh deletion reassessment; source only | - |
+| Fresh document validation | 12 | W24 | Scoped metadata, links (one retained archive warning), changed local-only gate, staged style/secret checks and diff check; all exit 0 before result-only recording | Input main plus reassessment text; preceding result-only recording | PASS | Fresh deletion reassessment; document only, remote delivery separate | - |
+| Fresh actual deletion disposition | 12 | W24 | BLOCKED_FACTS: current user confirms no approved new ROOT candidate; metadata observation cannot close five axes or independent custody | Original checkout `328871a94b42c13f676e61b40f026c906ebbc13d` stable before/after probe | NOT_RUN | Exact path/material table above; COMM-003 already absent; zero new actual deletions | - |
+| Initial remote candidate validation | 12 | W24 | Candidate-quality metadata: malformed Evidence Result/Acceptance values; exit 1; CodeQL and GitGuardian passed separately | PR #427 head `4434fd8208613f6798164b73c2d458de5ac07bbc`; run `38271931877` | FAIL | Fresh deletion reassessment; authoring error corrected in the next logical commit | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 12 | rejected | Initial remote candidate validation | Generation 5 Evidence row rejected |
 
 ## Review and Completion
 

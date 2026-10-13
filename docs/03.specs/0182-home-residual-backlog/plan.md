@@ -2,7 +2,7 @@
 title: "HOME Residual Backlog Plan"
 version: "0.4.2"
 type: "sdlc/plan"
-status: "blocked"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"

@@ -2,7 +2,7 @@
 title: "HOME Residual Backlog Specification"
 version: "0.5.2"
 type: "sdlc/spec"
-status: "blocked"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"

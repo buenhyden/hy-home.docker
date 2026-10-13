@@ -73,12 +73,20 @@ request.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Contract window | 1 | W1 | Contract and adapter tests | `7258d2bfb` | PASS | W1 Contract Window | accepted |
-| Extension rule | 2 | W2 | Agent-governance contract; markdownlint | `ad12a1a6d` | PASS | W2 Quality Standard Rule | accepted |
-| Review fixes | 1 | W1 | Contract and adapter tests | `921d2f6a8` | PASS | Review | accepted |
-| Local validation | 3 | W3 | Changed gate with preflight; staged style check | final branch head | PASS | W3 Validation | accepted |
+| Contract window | 1 | W1 | Contract and adapter tests | `7258d2bfb` | PASS | W1 Contract Window | - |
+| Extension rule | 2 | W2 | Agent-governance contract; markdownlint | `ad12a1a6d` | PASS | W2 Quality Standard Rule | - |
+| Review fixes | 1 | W1 | Contract and adapter tests | `921d2f6a8` | PASS | Review | - |
+| Local validation | 3 | W3 | Changed gate with preflight; staged style check | final branch head | PASS | W3 Validation | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Contract window, Review fixes | Generation 5 row acceptance |
+| 2 | accepted | Extension rule | Generation 5 row acceptance |
+| 3 | accepted | Local validation | Generation 5 row acceptance |
 
 ## Review and Completion
 

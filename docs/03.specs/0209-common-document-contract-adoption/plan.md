@@ -2,7 +2,7 @@
 title: "Common Document Contract Adoption Plan"
 version: "0.1.1"
 type: "sdlc/plan"
-status: "completed"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"

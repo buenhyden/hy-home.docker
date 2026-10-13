@@ -189,17 +189,24 @@ PR #439 head `58ae9cf6d`: `candidate-quality` passed in run `38344705466` (4m16s
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Exporter retirement | 6 | W5 | Image tag check; renders; catalog and tech-stack sync | `3bc108834` | PASS | W5 MongoDB Exporter Retirement | accepted |
-| Inventory and selection tests | 6 | W6 | New tests RED then GREEN; changed-profile gate | `5a16f1844` | PASS | W6 Inventory, Cluster ID, Observability and Selection Tests | accepted |
-| Disposition columns | 4 | W7 | Policy text; HOME selection test; link and metadata checks | `add4cc598` | PASS | W7 Disposition Columns | accepted |
-| HOME residue audit | 5 | W8 | Read-only `docker ps`, restart policies, systemd units, crontab | HOME host 2026-10-08 | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
-| Local gate | 6 | W6 | Changed-profile gate in a clean worktree; pre-commit over the range | `137650df8` | PASS | Validation | accepted |
-| Real LAB runs | 7 | W8 | `lab.py up`, probe, `down`, leftover count for six LABs | Synthetic roots; `231e070ac` | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
-| OpenSearch LAB run | 7 | W8 | `lab.py up`, cluster health, `down`, leftover count | Synthetic roots; host disk 66%; `e0e19cdcf` | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
-| Single collection and exact path list | 6 | W6 | Module run with a counting `docker` wrapper; scratch space-path check | `test_lab_isolation.py` on `5bf0e9479`, rebased on `4af41f1a8` | PASS | W6 Follow-up: Single Collection and Exact Path List | pending |
-| W6 follow-up remote candidate | 6 | W6 | `candidate-quality` on PR #439 | `58ae9cf6d` | PASS | W6 Follow-up: Single Collection and Exact Path List | pending |
+| Exporter retirement | 6 | W5 | Image tag check; renders; catalog and tech-stack sync | `3bc108834` | PASS | W5 MongoDB Exporter Retirement | - |
+| Inventory and selection tests | 6 | W6 | New tests RED then GREEN; changed-profile gate | `5a16f1844` | PASS | W6 Inventory, Cluster ID, Observability and Selection Tests | - |
+| Disposition columns | 4 | W7 | Policy text; HOME selection test; link and metadata checks | `add4cc598` | PASS | W7 Disposition Columns | - |
+| HOME residue audit | 5 | W8 | Read-only `docker ps`, restart policies, systemd units, crontab | HOME host 2026-10-08 | PASS | W8 HOME Residue Audit and Real LAB Runs | - |
+| Local gate | 6 | W6 | Changed-profile gate in a clean worktree; pre-commit over the range | `137650df8` | PASS | Validation | - |
+| Real LAB runs | 7 | W8 | `lab.py up`, probe, `down`, leftover count for six LABs | Synthetic roots; `231e070ac` | PASS | W8 HOME Residue Audit and Real LAB Runs | - |
+| OpenSearch LAB run | 7 | W8 | `lab.py up`, cluster health, `down`, leftover count | Synthetic roots; host disk 66%; `e0e19cdcf` | PASS | W8 HOME Residue Audit and Real LAB Runs | - |
+| Single collection and exact path list | 6 | W6 | Module run with a counting `docker` wrapper; scratch space-path check | `test_lab_isolation.py` on `5bf0e9479`, rebased on `4af41f1a8` | PASS | W6 Follow-up: Single Collection and Exact Path List | - |
+| W6 follow-up remote candidate | 6 | W6 | `candidate-quality` on PR #439 | `58ae9cf6d` | PASS | W6 Follow-up: Single Collection and Exact Path List | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 6 | pending | - | - |
+| 7 | accepted | Real LAB runs, OpenSearch LAB run | Generation 5 row acceptance |
 
 ## Review and Completion
 

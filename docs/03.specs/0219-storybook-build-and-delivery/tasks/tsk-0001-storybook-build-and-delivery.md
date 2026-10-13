@@ -217,18 +217,28 @@ steps for the root CA, `NODE_EXTRA_CA_CERTS` and `CODEX_CA_CERTIFICATE`.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Build contract | 1 | W1 | Unit tests; Alpine SHA check; trial build and verify | `cdbf5768a` | PASS | W1 Build Contract | accepted |
-| Ingress checks | 2 | W2 | Static tests; missing-image failure | `f1ae14eb0` | PASS | W2 Ingress Regression | accepted |
-| Shared UI | 3 | W3 | Story tests RED and GREEN; parity test (removed with `DESIGN.md`); tarball consumer | `73beaa382` | PASS | W3 Shared UI | accepted |
-| Dependencies | 3 | W4 | Full checks on TypeScript 6.0.3; TypeScript 7 trials | `943108232` | PASS | W4 Dependencies | accepted |
-| Remote MCP and export | 2, 4 | W5 | Node and unit tests; live local server | `f9977d135` | PASS | W5 Remote MCP, Design Export and Documents | accepted |
-| Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9`, `300b12a86` | PASS | W6 Images and Rehearsal | accepted |
-| Validation | 5 | W7 | Changed gate; CI; npm risk amendment | `6169a8f1f`, `412ec8298` | PASS | W7 Validation | accepted |
-| HOME activation | 2 | W8 | Keycloak client and scope read-back; image verify; no-session probes; owner admin login | `0df98f405` | PASS | W8 HOME Activation | accepted |
-| Codex MCP login on HOME | 2 | W8 | Owner's `codex mcp login` after the redirect URI change | `0df98f405` | PASS | W8 HOME Activation | accepted |
-| Remote-device MCP login and tool call | 2 | W8 | Login from another device; `docs-list` | — | NOT_RUN | W8 HOME Activation | pending |
+| Build contract | 1 | W1 | Unit tests; Alpine SHA check; trial build and verify | `cdbf5768a` | PASS | W1 Build Contract | - |
+| Ingress checks | 2 | W2 | Static tests; missing-image failure | `f1ae14eb0` | PASS | W2 Ingress Regression | - |
+| Shared UI | 3 | W3 | Story tests RED and GREEN; parity test (removed with `DESIGN.md`); tarball consumer | `73beaa382` | PASS | W3 Shared UI | - |
+| Dependencies | 3 | W4 | Full checks on TypeScript 6.0.3; TypeScript 7 trials | `943108232` | PASS | W4 Dependencies | - |
+| Remote MCP and export | 2, 4 | W5 | Node and unit tests; live local server | `f9977d135` | PASS | W5 Remote MCP, Design Export and Documents | - |
+| Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9`, `300b12a86` | PASS | W6 Images and Rehearsal | - |
+| Validation | 5 | W7 | Changed gate; CI; npm risk amendment | `6169a8f1f`, `412ec8298` | PASS | W7 Validation | - |
+| HOME activation | 2 | W8 | Keycloak client and scope read-back; image verify; no-session probes; owner admin login | `0df98f405` | PASS | W8 HOME Activation | - |
+| Codex MCP login on HOME | 2 | W8 | Owner's `codex mcp login` after the redirect URI change | `0df98f405` | PASS | W8 HOME Activation | - |
+| Remote-device MCP login and tool call | 2 | W8 | Login from another device; `docs-list` | — | NOT_RUN | W8 HOME Activation | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Build contract, Images and rehearsal | Generation 5 row acceptance |
+| 2 | pending | - | - |
+| 3 | accepted | Shared UI, Dependencies | Generation 5 row acceptance |
+| 4 | accepted | Remote MCP and export | Generation 5 row acceptance |
+| 5 | accepted | Validation | Generation 5 row acceptance |
 
 ## Review and Completion
 

@@ -204,13 +204,23 @@ project label exit 0, no container or network left, 6 data directories kept.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Root closure | 1 | W1 | Root render test RED then GREEN; clean-worktree gate | Working tree at `a5aecc629` | PASS | W1 Root Closure and `lab_net` Retirement | accepted |
-| LAB boundary | 2 | W2 | Boundary tests RED then GREEN; LAB renders | Working tree | PASS | W2 LAB Boundaries and Lease Controller | accepted |
-| Controller | 3 | W2 | Unit tests, mutations, real Docker run of `valkey-cluster` | Synthetic LAB roots | PASS | W2 LAB Boundaries and Lease Controller | accepted |
-| Selection rules | 4 | W3 | Policy text; catalog and link checks; changed-profile gate | Working tree | PASS | W3 Budget, Selection and Disposition Rules | accepted |
-| Records | 5 | W4 | Clean-worktree changed-profile gate and staged lint per unit; independent review; HOME, data moves and MongoDB runtime stay `NOT_RUN` | Working tree at each unit | PASS | W4 HA Wording, Handoffs and Final Validation | accepted |
+| Root closure | 1 | W1 | Root render test RED then GREEN; clean-worktree gate | Working tree at `a5aecc629` | PASS | W1 Root Closure and `lab_net` Retirement | - |
+| LAB boundary | 2 | W2 | Boundary tests RED then GREEN; LAB renders | Working tree | PASS | W2 LAB Boundaries and Lease Controller | - |
+| Controller | 3 | W2 | Unit tests, mutations, real Docker run of `valkey-cluster` | Synthetic LAB roots | PASS | W2 LAB Boundaries and Lease Controller | - |
+| Selection rules | 4 | W3 | Policy text; catalog and link checks; changed-profile gate | Working tree | PASS | W3 Budget, Selection and Disposition Rules | - |
+| Records | 5 | W4 | Clean-worktree changed-profile gate and staged lint per unit; independent review; HOME, data moves and MongoDB runtime stay `NOT_RUN` | Working tree at each unit | PASS | W4 HA Wording, Handoffs and Final Validation | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Root closure | Generation 5 row acceptance |
+| 2 | accepted | LAB boundary | Generation 5 row acceptance |
+| 3 | accepted | Controller | Generation 5 row acceptance |
+| 4 | accepted | Selection rules | Generation 5 row acceptance |
+| 5 | accepted | Records | Generation 5 row acceptance |
 
 ## Review and Completion
 

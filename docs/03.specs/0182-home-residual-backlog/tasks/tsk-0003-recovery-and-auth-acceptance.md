@@ -414,14 +414,25 @@ Task is blocked while the Spec package remains active.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Current Task status: blocked | 7 | W7 | Current recovery evidence | [Backup policy](../../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md) | NOT_RUN | This Task, Evidence | pending |
-| Current Task status: completed | 8 | W8 | Measurement evidence | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) | PASS | This Task, Evidence | pending |
-| Current Task status: completed | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | pending |
-| Current Task status: blocked | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | pending |
-| Current Task status: completed | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/01-common/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | pending |
-| Current Task status: completed | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | pending |
+| Current Task status: blocked | 7 | W7 | Current recovery evidence | [Backup policy](../../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md) | NOT_RUN | This Task, Evidence | - |
+| Current Task status: completed | 8 | W8 | Measurement evidence | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) | PASS | This Task, Evidence | - |
+| Current Task status: completed (2) | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | - |
+| Current Task status: blocked (2) | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | - |
+| Current Task status: completed (3) | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/01-common/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | - |
+| Current Task status: completed (4) | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 7 | pending | - | - |
+| 8 | pending | - | - |
+| 9 | pending | - | - |
+| 10 | pending | - | - |
+| 11 | pending | - | - |
+| 12 | pending | - | - |
 
 ## Review and Completion
 

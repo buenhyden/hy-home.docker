@@ -54,16 +54,33 @@ Read on `2a57d4122`:
   historical bodies. Spec and Plan: draft 18, completed 4, in-progress 3,
   blocked 1 each.
 
+### Contract Migration
+
+| Date | Source revision | Evidence |
+| --- | --- | --- |
+| 2026-10-13 | 2a57d4122dc8dac954afca364b838e4bf97fd44a | #starting-state: generation 5 Registry and corpus read before the migration |
+
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Contract | 1 | W1 | Registry, schema and template checks | Branch | NOT_RUN | Work Log | pending |
-| Reader | 1, 2 | W2 | Generation 6 fixtures RED then GREEN | Branch | NOT_RUN | Work Log | pending |
-| Readiness | 3 | W3 | Shared predicate fixtures | Branch | NOT_RUN | Work Log | pending |
-| Migration | 4 | W4 | Corpus reader run; byte comparison | Branch | NOT_RUN | Work Log | pending |
-| Text | 5 | W5 | Document checks | Branch | NOT_RUN | Work Log | pending |
-| Gate | 6 | W6 | Changed gate; candidate quality | Branch | NOT_RUN | Work Log | pending |
+| Contract | 1 | W1 | Registry, schema and template checks | Branch | NOT_RUN | Work Log | - |
+| Reader | 1, 2 | W2 | Generation 6 fixtures RED then GREEN | Branch | NOT_RUN | Work Log | - |
+| Readiness | 3 | W3 | Shared predicate fixtures | Branch | NOT_RUN | Work Log | - |
+| Migration | 4 | W4 | Corpus reader run; byte comparison | Branch | NOT_RUN | Work Log | - |
+| Text | 5 | W5 | Document checks | Branch | NOT_RUN | Work Log | - |
+| Gate | 6 | W6 | Changed gate; candidate quality | Branch | NOT_RUN | Work Log | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | pending | - | - |
+| 2 | pending | - | - |
+| 3 | pending | - | - |
+| 4 | pending | - | - |
+| 5 | pending | - | - |
+| 6 | pending | - | - |
 
 ## Review and Completion
 

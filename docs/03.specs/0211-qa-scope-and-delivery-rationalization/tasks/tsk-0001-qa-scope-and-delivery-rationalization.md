@@ -1826,32 +1826,42 @@ shared pins do not make different local/PR trust identities interchangeable.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Current source baseline | 5 | W1 | HEAD, clean paths, remote main and identity history | main `849ef009a`; Registry `210/211` | PASS | Actual root and planner read-only observations | accepted |
-| Initial draft validation | 5 | W1 | Metadata, package relationship, links, style and independent review | Corrected five-file draft preserved in `0e0e8f16` | PASS | Initial validation and authoring correction | accepted |
-| QA retirement | 1 | W2 | Focused generic preservation and disposition | Approved patch and current-owner cleanup | PASS | Focused implementation evidence; integrated closure pending | pending |
-| Changed selection | 2 | W3 | Focused behavior regressions and historical context reuse | Frozen pipeline and metadata writer inputs | PASS | Focused implementation evidence | pending |
-| Remote phase validation | 3 | W4 | Candidate manifest and actual hosted validation | PR368 a4e928b66; opened cancelled, ready run failed links | FAIL | First hosted candidate and bounded correction | pending |
-| Commit and release validation | 4 | W5 | Grammar, SemVer, draft assets and read-back regressions | Frozen helper; all remote commands mocked | PASS | Focused implementation evidence | pending |
-| Governance | 5 | W6 | Current policy, evaluation role and alignment | Scoped 16-document PASS; hosted all-mode found 3 new routing failures | FAIL | First hosted candidate and bounded correction; scoped evidence retained | pending |
-| Final review | 1, 2, 3, 4, 5 | W7 | Exact source diff, contract and actual independent reviews | Reviewed source slices; first hosted FAIL, corrective acceptance pending | PASS | Final selector and evaluation-role alignment; candidate validation pending | pending |
-| Corrective hosted validation | 3 | W4 | Actual candidate job result | PR368 2732b47de; run37557391324/job112586668864 | FAIL | Corrective candidate failure and user-directed test retirement | pending |
-| Current test retirement | 1 | W2 | Exact deletion/proof review and focused current boundaries | Reviewed five-file patch 2f54ea47; 18 focused tests | PASS | Test retirement application and focused verification | pending |
-| Retirement hosted result | 3 | W4 | Actual remote validation and approved value-free diagnosis | PR368 549aee5c; run37560655770/job112596913297 | FAIL | Local-only implementation verification ownership | pending |
-| Local-only ownership validation | 2 | W3 | Canonical local-only execution, typed plan and independent review | Frozen13 treec341179b; twelve selected invocations | FAIL | Local-only validation failure and narrow consumer repair | pending |
-| Narrow integrity retry | 2 | W3 | Changed registered leaf only | Frozen16 tree41c3da3e; 174 tests | FAIL | Narrow integrity retry result | pending |
-| Corrected local ownership prerequisite | 2 | W3 | Preserved eleven leaves plus approved changed registered leaf | Frozen17 tree9542ed9f; final174 tests | PASS | Final local ownership result and submission input | pending |
-| Submitted local-only candidate | 3 | W4 | Actual hosted candidate status and time | PR368 head076b976; run37568286266/job112620932425 | FAIL | Submitted local-only candidate and unit followup | pending |
-| Isolated unit ownership prerequisite | 1, 2, 5 | W7 | Exact retirement owners, canonical LOCAL run and bounded continuation | tree519ab7b2 failed workflow; corrected treee4e3d664 five leaves PASS | PASS | Narrow unit prerequisite result and metadata-library extension | pending |
-| Metadata-library retirement prerequisite | 1 | W2 | Exact current-owner disposition, affected LOCAL leaves and one narrow case | tree878ca39f130/647 PASS; tree3c263847 changed case PASS | PASS | Metadata-library actual result and narrow expectation closeout | pending |
-| Local unit closeout documents | 5 | W7 | Result-only Task metadata, read-only style and LOCAL links | Task3b327b2a; other four docs unchanged | PASS | Local unit closeout document evidence | pending |
-| Submitted unit candidate | 3 | W4 | Actual hosted result and approved value-free diagnosis | PR368 head2cf46fb; run37579620261/job112656063347 | FAIL | Submitted unit candidate manifest failure | pending |
-| Manifest owner focused followup | 1, 2, 5 | W7 | Existing fixture, actual manifest and registered read-only statics | HEAD2cf; exact approved two-source after-images | FAIL | Manifest owner focused result and wider QA request | pending |
-| Remaining QA source guarantees | 1, 2, 5 | W7 | Focused RED/GREEN, actual shell, manifest, registered statics and independent review | HEAD2cf; reviewed21file batch, corrected manifest364899b9 | PASS | Remaining QA local source closeout | accepted |
-| Remaining-QA hosted candidate | 3 | W4 | Actual remote job/step status only | PR368 headd46f19685; run37586857030/job112678882658 | FAIL | Submitted remaining-QA candidate failure | pending |
-| Lint phase ownership | 2, 3, 5 | W7 | Focused RED/GREEN, pinned staged isolation, exact-source security/policy review and guidance minimum | Final source receipt506263ea; eight guidance hashes; no aggregate replay | PASS | Local commit and server lint/format ownership | accepted |
-| Conftest lint correction | 2, 5 | W7 | Registered one-file ShellCheck and bash/sh syntax, exact source/proposal review | HEADd46; applied6dd6d3d8, quote-only patch13f1d0fb | PASS | Approved Conftest ShellCheck correction | accepted |
+| Current source baseline | 5 | W1 | HEAD, clean paths, remote main and identity history | main `849ef009a`; Registry `210/211` | PASS | Actual root and planner read-only observations | - |
+| Initial draft validation | 5 | W1 | Metadata, package relationship, links, style and independent review | Corrected five-file draft preserved in `0e0e8f16` | PASS | Initial validation and authoring correction | - |
+| QA retirement | 1 | W2 | Focused generic preservation and disposition | Approved patch and current-owner cleanup | PASS | Focused implementation evidence; integrated closure pending | - |
+| Changed selection | 2 | W3 | Focused behavior regressions and historical context reuse | Frozen pipeline and metadata writer inputs | PASS | Focused implementation evidence | - |
+| Remote phase validation | 3 | W4 | Candidate manifest and actual hosted validation | PR368 a4e928b66; opened cancelled, ready run failed links | FAIL | First hosted candidate and bounded correction | - |
+| Commit and release validation | 4 | W5 | Grammar, SemVer, draft assets and read-back regressions | Frozen helper; all remote commands mocked | PASS | Focused implementation evidence | - |
+| Governance | 5 | W6 | Current policy, evaluation role and alignment | Scoped 16-document PASS; hosted all-mode found 3 new routing failures | FAIL | First hosted candidate and bounded correction; scoped evidence retained | - |
+| Final review | 1, 2, 3, 4, 5 | W7 | Exact source diff, contract and actual independent reviews | Reviewed source slices; first hosted FAIL, corrective acceptance pending | PASS | Final selector and evaluation-role alignment; candidate validation pending | - |
+| Corrective hosted validation | 3 | W4 | Actual candidate job result | PR368 2732b47de; run37557391324/job112586668864 | FAIL | Corrective candidate failure and user-directed test retirement | - |
+| Current test retirement | 1 | W2 | Exact deletion/proof review and focused current boundaries | Reviewed five-file patch 2f54ea47; 18 focused tests | PASS | Test retirement application and focused verification | - |
+| Retirement hosted result | 3 | W4 | Actual remote validation and approved value-free diagnosis | PR368 549aee5c; run37560655770/job112596913297 | FAIL | Local-only implementation verification ownership | - |
+| Local-only ownership validation | 2 | W3 | Canonical local-only execution, typed plan and independent review | Frozen13 treec341179b; twelve selected invocations | FAIL | Local-only validation failure and narrow consumer repair | - |
+| Narrow integrity retry | 2 | W3 | Changed registered leaf only | Frozen16 tree41c3da3e; 174 tests | FAIL | Narrow integrity retry result | - |
+| Corrected local ownership prerequisite | 2 | W3 | Preserved eleven leaves plus approved changed registered leaf | Frozen17 tree9542ed9f; final174 tests | PASS | Final local ownership result and submission input | Local-only ownership validation, Narrow integrity retry |
+| Submitted local-only candidate | 3 | W4 | Actual hosted candidate status and time | PR368 head076b976; run37568286266/job112620932425 | FAIL | Submitted local-only candidate and unit followup | - |
+| Isolated unit ownership prerequisite | 1, 2, 5 | W7 | Exact retirement owners, canonical LOCAL run and bounded continuation | tree519ab7b2 failed workflow; corrected treee4e3d664 five leaves PASS | PASS | Narrow unit prerequisite result and metadata-library extension | - |
+| Metadata-library retirement prerequisite | 1 | W2 | Exact current-owner disposition, affected LOCAL leaves and one narrow case | tree878ca39f130/647 PASS; tree3c263847 changed case PASS | PASS | Metadata-library actual result and narrow expectation closeout | - |
+| Local unit closeout documents | 5 | W7 | Result-only Task metadata, read-only style and LOCAL links | Task3b327b2a; other four docs unchanged | PASS | Local unit closeout document evidence | - |
+| Submitted unit candidate | 3 | W4 | Actual hosted result and approved value-free diagnosis | PR368 head2cf46fb; run37579620261/job112656063347 | FAIL | Submitted unit candidate manifest failure | - |
+| Manifest owner focused followup | 1, 2, 5 | W7 | Existing fixture, actual manifest and registered read-only statics | HEAD2cf; exact approved two-source after-images | FAIL | Manifest owner focused result and wider QA request | - |
+| Remaining QA source guarantees | 1, 2, 5 | W7 | Focused RED/GREEN, actual shell, manifest, registered statics and independent review | HEAD2cf; reviewed21file batch, corrected manifest364899b9 | PASS | Remaining QA local source closeout | Manifest owner focused followup |
+| Remaining-QA hosted candidate | 3 | W4 | Actual remote job/step status only | PR368 headd46f19685; run37586857030/job112678882658 | FAIL | Submitted remaining-QA candidate failure | - |
+| Lint phase ownership | 2, 3, 5 | W7 | Focused RED/GREEN, pinned staged isolation, exact-source security/policy review and guidance minimum | Final source receipt506263ea; eight guidance hashes; no aggregate replay | PASS | Local commit and server lint/format ownership | - |
+| Conftest lint correction | 2, 5 | W7 | Registered one-file ShellCheck and bash/sh syntax, exact source/proposal review | HEADd46; applied6dd6d3d8, quote-only patch13f1d0fb | PASS | Approved Conftest ShellCheck correction | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | pending | - | - |
+| 2 | pending | - | - |
+| 3 | pending | - | - |
+| 4 | pending | - | - |
+| 5 | pending | - | - |
 
 ## Review and Completion
 

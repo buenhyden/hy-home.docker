@@ -155,20 +155,31 @@ the owner's browser session and were not run.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Source facts | 1 | W1 | Registry, release, licence and advisory queries; Ollama GPU log | `c3ce31973` | PASS | W1 Source Facts | accepted |
-| Image scan | 1 | W1 | Pinned Grype, offline, DB built 2026-10-09 (SPEC-0229) | `32fb2e69d` | PASS | W1 Source Facts | pending |
-| Pins and limits | 2 | W2 | Contract tests; Compose rendering; version sync | `41a711771` | PASS | W2 Pins and Limits | accepted |
-| Restore | 3 | W3 | Isolated SQLite, upload, key and catalog restore | `2ac1db09c` | PASS | W3 Backup and Restore | accepted |
-| Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | accepted |
-| Restic snapshot contents | 3 | W3 | State-set backup, then listing the key and catalog paths | — | NOT_RUN | W3 Backup and Restore | pending |
-| HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | accepted |
-| Owner sign-in canary | 5 | W5 | Owner-attested report; Traefik and Keycloak logs | `f75275651` | PASS | Review and Completion | accepted |
-| Hardening baseline | 6 | W6 | `check-all-hardening.sh` | `16c4794a8` | PASS | Review and Completion | accepted |
-| Changed gate | 6 | W6 | `run-ci-gate.py --profile changed --local-only`, base `c3ce31973` | `16c4794a8` | PASS | Review and Completion | accepted |
-| Staged style check | 6 | W6 | `run-ci-precommit.sh --mode local-staged` over `c3ce31973..HEAD` | `16c4794a8` | PASS | Review and Completion | accepted |
-| Remote candidate | 6 | W6 | `candidate-quality` run 37965521891, base `c3ce31973` | `9ff118f08` | PASS | Review and Completion | accepted |
+| Source facts | 1 | W1 | Registry, release, licence and advisory queries; Ollama GPU log | `c3ce31973` | PASS | W1 Source Facts | - |
+| Image scan | 1 | W1 | Pinned Grype, offline, DB built 2026-10-09 (SPEC-0229) | `32fb2e69d` | PASS | W1 Source Facts | - |
+| Pins and limits | 2 | W2 | Contract tests; Compose rendering; version sync | `41a711771` | PASS | W2 Pins and Limits | - |
+| Restore | 3 | W3 | Isolated SQLite, upload, key and catalog restore | `2ac1db09c` | PASS | W3 Backup and Restore | - |
+| Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | - |
+| Restic snapshot contents | 3 | W3 | State-set backup, then listing the key and catalog paths | — | NOT_RUN | W3 Backup and Restore | - |
+| HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | - |
+| Owner sign-in canary | 5 | W5 | Owner-attested report; Traefik and Keycloak logs | `f75275651` | PASS | Review and Completion | - |
+| Hardening baseline | 6 | W6 | `check-all-hardening.sh` | `16c4794a8` | PASS | Review and Completion | - |
+| Changed gate | 6 | W6 | `run-ci-gate.py --profile changed --local-only`, base `c3ce31973` | `16c4794a8` | PASS | Review and Completion | - |
+| Staged style check | 6 | W6 | `run-ci-precommit.sh --mode local-staged` over `c3ce31973..HEAD` | `16c4794a8` | PASS | Review and Completion | - |
+| Remote candidate | 6 | W6 | `candidate-quality` run 37965521891, base `c3ce31973` | `9ff118f08` | PASS | Review and Completion | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | pending | - | - |
+| 2 | accepted | Pins and limits | Generation 5 row acceptance |
+| 3 | pending | - | - |
+| 4 | accepted | Features | Generation 5 row acceptance |
+| 5 | accepted | HOME rollout, Owner sign-in canary | Generation 5 row acceptance |
+| 6 | accepted | Hardening baseline, Changed gate, Staged style check, Remote candidate | Generation 5 row acceptance |
 
 ## Review and Completion
 

@@ -287,16 +287,25 @@ An independent read-only review of the branch returned ten findings:
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Relay contract and controller | 6 | W5 | `test_k6_results` RED (missing module, then nine review mutations) then 28 GREEN | Working tree | PASS | W5 Relay Controller, Relay Contract and Cancel Cleanup | accepted |
-| Dashboard absent vs zero | 6 | W6 | New dashboard test RED then GREEN; k6 drop probe | Pinned k6 digest | PASS | W6 Dashboard Absent-Versus-Zero Rule | accepted |
-| Egress network | 9 | W7 | Render, catalog, compose tests, hardening | Working tree | PASS | W7 Relay Egress Network | accepted |
-| Locust lifecycle | 8 | W8 | Unit tests incl. start failure and cancelled start; `lifecycle.py` six cases | Pinned Locust and WireMock digests | PASS | W8 Locust LAB Supervision | accepted |
-| Isolated end-to-end relay | 7 | W9 | `acceptance.py` with the executor stage | Pinned Alloy, Prometheus, Python, k6, Traefik, WireMock digests | PASS | W9 Isolated End-to-End Relay Run | accepted |
-| Import path | 5 | W10 | Hash comparison with SPEC-0203 real-PostgreSQL evidence; unit tests | Same importer, inspection and schema bytes | PASS | W10 Documents and Reused Import Evidence | accepted |
-| HOME Alloy on `quality_otlp_net` and HOME relay canary | 9 | W10 | Alloy recreation; 4319 without token; `executor_stage.py --home`; live Grafana API | Merged `f9fd05cae`; HOME 2026-10-08 | PASS | W10 HOME Alloy and HOME Relay Canary | accepted |
-| Real application target load | 5 | W10 | Approved target run | No approved target | NOT_RUN | Inputs and Authorization | pending |
+| Relay contract and controller | 6 | W5 | `test_k6_results` RED (missing module, then nine review mutations) then 28 GREEN | Working tree | PASS | W5 Relay Controller, Relay Contract and Cancel Cleanup | - |
+| Dashboard absent vs zero | 6 | W6 | New dashboard test RED then GREEN; k6 drop probe | Pinned k6 digest | PASS | W6 Dashboard Absent-Versus-Zero Rule | - |
+| Egress network | 9 | W7 | Render, catalog, compose tests, hardening | Working tree | PASS | W7 Relay Egress Network | - |
+| Locust lifecycle | 8 | W8 | Unit tests incl. start failure and cancelled start; `lifecycle.py` six cases | Pinned Locust and WireMock digests | PASS | W8 Locust LAB Supervision | - |
+| Isolated end-to-end relay | 7 | W9 | `acceptance.py` with the executor stage | Pinned Alloy, Prometheus, Python, k6, Traefik, WireMock digests | PASS | W9 Isolated End-to-End Relay Run | - |
+| Import path | 5 | W10 | Hash comparison with SPEC-0203 real-PostgreSQL evidence; unit tests | Same importer, inspection and schema bytes | PASS | W10 Documents and Reused Import Evidence | - |
+| HOME Alloy on `quality_otlp_net` and HOME relay canary | 9 | W10 | Alloy recreation; 4319 without token; `executor_stage.py --home`; live Grafana API | Merged `f9fd05cae`; HOME 2026-10-08 | PASS | W10 HOME Alloy and HOME Relay Canary | - |
+| Real application target load | 5 | W10 | Approved target run | No approved target | NOT_RUN | Inputs and Authorization | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 6 | accepted | Relay contract and controller, Dashboard absent vs zero | Generation 5 row acceptance |
+| 7 | accepted | Isolated end-to-end relay | Generation 5 row acceptance |
+| 8 | accepted | Locust lifecycle | Generation 5 row acceptance |
+| 9 | accepted | Egress network, HOME Alloy on `quality_otlp_net` and HOME relay canary | Generation 5 row acceptance |
 
 ## Review and Completion
 

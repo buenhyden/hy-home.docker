@@ -80,14 +80,22 @@ generated output, is accepted: the marker is itself a claim of generation, and
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Description test | 1 | W1 | RED with the earlier renderer (14 failures), GREEN after | Working tree | PASS | W1 Routing Descriptions | accepted |
-| Renderer parity and contract | 2 | W1 | `provider_surface_renderer.py --check`; `check-agent-governance-contract.py`; entrypoint test module | Working tree | PASS | W1 Routing Descriptions | accepted |
-| Renderer parity and contract | 2 | W2 | `provider_surface_renderer.py --check`; `check-agent-governance-contract.py`; entrypoint test module | Working tree | PASS | W2 Model Selections | accepted |
-| Wrapped Use When bullet | 1 | W1 | Synthetic role test RED with the earlier renderer, GREEN after; every case checked in both projections | Working tree | PASS | Review Round 1 | accepted |
-| Renderer parity after review | 2 | W1 | `provider_surface_renderer.py --check`; `check-agent-governance-contract.py`; entrypoint test module | Working tree | PASS | Review Round 1 | accepted |
-| Earlier model IDs | 3 | W2 | `git grep` for `claude-opus-5` and `claude-sonnet-5` outside Stage 90, Stage 98 and this package | Working tree | PASS | W2 Model Selections | accepted |
+| Description test | 1 | W1 | RED with the earlier renderer (14 failures), GREEN after | Working tree | PASS | W1 Routing Descriptions | - |
+| Renderer parity and contract | 2 | W1 | `provider_surface_renderer.py --check`; `check-agent-governance-contract.py`; entrypoint test module | Working tree | PASS | W1 Routing Descriptions | - |
+| Renderer parity and contract (2) | 2 | W2 | `provider_surface_renderer.py --check`; `check-agent-governance-contract.py`; entrypoint test module | Working tree | PASS | W2 Model Selections | - |
+| Wrapped Use When bullet | 1 | W1 | Synthetic role test RED with the earlier renderer, GREEN after; every case checked in both projections | Working tree | PASS | Review Round 1 | - |
+| Renderer parity after review | 2 | W1 | `provider_surface_renderer.py --check`; `check-agent-governance-contract.py`; entrypoint test module | Working tree | PASS | Review Round 1 | - |
+| Earlier model IDs | 3 | W2 | `git grep` for `claude-opus-5` and `claude-sonnet-5` outside Stage 90, Stage 98 and this package | Working tree | PASS | W2 Model Selections | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Description test, Wrapped Use When bullet | Generation 5 row acceptance |
+| 2 | accepted | Renderer parity and contract, Renderer parity and contract (2), Renderer parity after review | Generation 5 row acceptance |
+| 3 | accepted | Earlier model IDs | Generation 5 row acceptance |
 
 ## Review and Completion
 

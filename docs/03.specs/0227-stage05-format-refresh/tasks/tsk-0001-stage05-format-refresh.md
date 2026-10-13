@@ -209,16 +209,26 @@ four returned files have their own commit.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Validator | 1 | W1 | Seven unit tests; governance suite (775); rule over `origin/main` | `c012032e9` | PASS | W1 Validator | accepted |
-| Batches | 2, 3 | W2 | Section rule, markdownlint, loss comparison per batch | `c012032e9..d8920a7fa` (ten batch commits and `c87867aec`) | PASS | W2 Batches | accepted |
-| Links and bindings | 4 | W3 | `check-document-links.py --mode all`; `check-operations-catalog.py` | `567eafecc` | PASS | W3 Links and Bindings | accepted |
-| Full list | 2, 3 | W4 | Rule over 230 files; metadata `check-changed` (230 selected, 0 violations); loss audit | `567eafecc` | PASS | W4 Full List | accepted |
-| Review | 5 | W5 | Independent review; fixes | `deaf151f3` | PASS | Review | accepted |
-| Changed gate | 5 | W5 | `run-ci-gate.py --profile changed --local-only`, base `1f552ac78`; hardening; operations catalog | `deaf151f3` | PASS | Review and Completion | accepted |
-| Staged style check | 5 | W5 | `run-ci-precommit.sh --mode local-staged` over `1f552ac78..HEAD` | `deaf151f3` | PASS | Review and Completion | accepted |
-| Remote candidate | 5 | W5 | `candidate-quality` run 37976670835, base `1f552ac78` | `af5cea75f` | PASS | Review and Completion | accepted |
+| Validator | 1 | W1 | Seven unit tests; governance suite (775); rule over `origin/main` | `c012032e9` | PASS | W1 Validator | - |
+| Batches | 2, 3 | W2 | Section rule, markdownlint, loss comparison per batch | `c012032e9..d8920a7fa` (ten batch commits and `c87867aec`) | PASS | W2 Batches | - |
+| Links and bindings | 4 | W3 | `check-document-links.py --mode all`; `check-operations-catalog.py` | `567eafecc` | PASS | W3 Links and Bindings | - |
+| Full list | 2, 3 | W4 | Rule over 230 files; metadata `check-changed` (230 selected, 0 violations); loss audit | `567eafecc` | PASS | W4 Full List | - |
+| Review | 5 | W5 | Independent review; fixes | `deaf151f3` | PASS | Review | - |
+| Changed gate | 5 | W5 | `run-ci-gate.py --profile changed --local-only`, base `1f552ac78`; hardening; operations catalog | `deaf151f3` | PASS | Review and Completion | - |
+| Staged style check | 5 | W5 | `run-ci-precommit.sh --mode local-staged` over `1f552ac78..HEAD` | `deaf151f3` | PASS | Review and Completion | - |
+| Remote candidate | 5 | W5 | `candidate-quality` run 37976670835, base `1f552ac78` | `af5cea75f` | PASS | Review and Completion | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Validator | Generation 5 row acceptance |
+| 2 | accepted | Batches, Full list | Generation 5 row acceptance |
+| 3 | accepted | Batches, Full list | Generation 5 row acceptance |
+| 4 | accepted | Links and bindings | Generation 5 row acceptance |
+| 5 | accepted | Review, Changed gate, Staged style check, Remote candidate | Generation 5 row acceptance |
 
 ## Review and Completion
 

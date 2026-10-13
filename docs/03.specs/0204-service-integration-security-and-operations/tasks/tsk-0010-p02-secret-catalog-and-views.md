@@ -682,12 +682,18 @@ its separately owned operational dependencies remain unresolved.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Issuance baseline | 16, 8 | W32 | Task/criterion/work-unit availability probe | 2b9f5ec82 | FAIL | Coordinator private issuance RED receipt; no values | pending |
-| Issuance source contract | 16, 8 | W32 | Availability GREEN and selected metadata after dependency/status correction | 2b9f5ec82 plus three issuance documents | PASS | Coordinator GREEN and metadata retry receipts; exit 0 | pending |
-| P02 source implementation | 16 | W32 | Catalog, closed schema, four staging views and source consumer regression | 74feff942 plus owned changes | PASS | Tooling d82f6fc82 and catalog 1148592d8; 40 scoped tests and coverage 91%, exit 0; shared integration pending | pending |
-| Private migration and consumption | 16 | W32 | Selected P06 runtime contract and actual receipt | Final P01/SEC01 contract pending | NOT_RUN | P06 owner | pending |
+| Issuance baseline | 16, 8 | W32 | Task/criterion/work-unit availability probe | 2b9f5ec82 | FAIL | Coordinator private issuance RED receipt; no values | - |
+| Issuance source contract | 16, 8 | W32 | Availability GREEN and selected metadata after dependency/status correction | 2b9f5ec82 plus three issuance documents | PASS | Coordinator GREEN and metadata retry receipts; exit 0 | Issuance baseline |
+| P02 source implementation | 16 | W32 | Catalog, closed schema, four staging views and source consumer regression | 74feff942 plus owned changes | PASS | Tooling d82f6fc82 and catalog 1148592d8; 40 scoped tests and coverage 91%, exit 0; shared integration pending | - |
+| Private migration and consumption | 16 | W32 | Selected P06 runtime contract and actual receipt | Final P01/SEC01 contract pending | NOT_RUN | P06 owner | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 16 | pending | - | - |
 
 ## Review and Completion
 

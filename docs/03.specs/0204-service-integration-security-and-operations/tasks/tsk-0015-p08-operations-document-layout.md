@@ -817,16 +817,20 @@ for root check-only work and does not change hook policy.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Admission and reuse audit | 8 | W56 | Fixed-input reuse and ownership audit found a pure preflight gap; no source test or criterion completion is claimed | Fresh local/remote observation c26c3b93; source candidate c7d56a383 retained separately | PASS | W56 admission and reuse audit; continuation baseline | accepted |
-| Semantic move map | 8 | W57 | Historical draft-review FAIL was corrected for the draft; final exact review, approval and writer leases remain pending | Actual tracked operations corpus at adopted source SHA | NOT_RUN | W57 exact semantic mapping; continuation baseline; source preparation receipts | pending |
-| Path-contract regressions | 8 | W58 | Reused-owner source RED/GREEN, 379 final regressions, scoped coverage and independent review; no document move or runtime claim | Source commit 77a7dfca296fa6fd28223e6294a1bdc35d4a57ca | PASS | W58 reused-owner source acceptance | accepted |
-| Preservation and rollback proof | 8 | W59 | Bind source hashes, original content, anchors, leases and inverse mapping | Reviewed exact source/target map | NOT_RUN | W59 preservation and move lease | pending |
-| Atomic document relocation | 8 | W60 | One active location, coupled references and LAB runtime/source diff zero | Fixed feature-owner SHAs and transferred writer leases | NOT_RUN | W60 exact rename and coupled references | pending |
-| Populated README coverage | 8 | W61 | Korean content, metadata selection, meaningful descriptions and navigation | Actual destination corpus and parent families | NOT_RUN | W61 populated READMEs | pending |
-| Exact-head delivery and handoff | 8 | W62 | Actual affected gates, staged checks, independent review and local-main receipt | Final candidate/main SHA and exact inverse map | NOT_RUN | W62 final validation, delivery and handoff | pending |
-| LAB service-source relocation | 8 | W70 | Source relocation and executed regression/static lanes accepted; static helper prerequisites and local-main delivery remain explicit | Source tree b2e5b5cacc8b99b34d46727d810c5d57a8bc2119; 539 PASS, 36 native SKIP; runtime, credential and persisted-data effects zero | PASS | W70 first source relocation unit; Supabase companion and final source-gate receipt | accepted |
+| Admission and reuse audit | 8 | W56 | Fixed-input reuse and ownership audit found a pure preflight gap; no source test or criterion completion is claimed | Fresh local/remote observation c26c3b93; source candidate c7d56a383 retained separately | PASS | W56 admission and reuse audit; continuation baseline | - |
+| Semantic move map | 8 | W57 | Historical draft-review FAIL was corrected for the draft; final exact review, approval and writer leases remain pending | Actual tracked operations corpus at adopted source SHA | NOT_RUN | W57 exact semantic mapping; continuation baseline; source preparation receipts | - |
+| Path-contract regressions | 8 | W58 | Reused-owner source RED/GREEN, 379 final regressions, scoped coverage and independent review; no document move or runtime claim | Source commit 77a7dfca296fa6fd28223e6294a1bdc35d4a57ca | PASS | W58 reused-owner source acceptance | - |
+| Preservation and rollback proof | 8 | W59 | Bind source hashes, original content, anchors, leases and inverse mapping | Reviewed exact source/target map | NOT_RUN | W59 preservation and move lease | - |
+| Atomic document relocation | 8 | W60 | One active location, coupled references and LAB runtime/source diff zero | Fixed feature-owner SHAs and transferred writer leases | NOT_RUN | W60 exact rename and coupled references | - |
+| Populated README coverage | 8 | W61 | Korean content, metadata selection, meaningful descriptions and navigation | Actual destination corpus and parent families | NOT_RUN | W61 populated READMEs | - |
+| Exact-head delivery and handoff | 8 | W62 | Actual affected gates, staged checks, independent review and local-main receipt | Final candidate/main SHA and exact inverse map | NOT_RUN | W62 final validation, delivery and handoff | - |
+| LAB service-source relocation | 8 | W70 | Source relocation and executed regression/static lanes accepted; static helper prerequisites and local-main delivery remain explicit | Source tree b2e5b5cacc8b99b34d46727d810c5d57a8bc2119; 539 PASS, 36 native SKIP; runtime, credential and persisted-data effects zero | PASS | W70 first source relocation unit; Supabase companion and final source-gate receipt | - |
+
+## Criterion Acceptance
+
+This Task owns no criterion decision; another Task of the package records it.
 
 ## Review and Completion
 

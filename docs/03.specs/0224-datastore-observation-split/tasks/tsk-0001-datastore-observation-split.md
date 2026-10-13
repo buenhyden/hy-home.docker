@@ -196,19 +196,28 @@ monitor role `pg_monitor`-only.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Monitor roles | 1 | W1 | Provision, ACL and secret metadata tests | `e61df0be0` | PASS | W1 Monitor Roles | accepted |
-| Exporter inputs | 1 | W2 | Boundary tests | `9e69fffb9` | PASS | W2 Exporters | accepted |
-| Scrape labels | 1 | W3 | Label and start-script tests; promtool on both configurations | `1543a9d5f` | PASS | W3 Scrape Labels | accepted |
-| Alerts and dashboards | 1 | W4 | Scoping and dashboard contract tests; promtool rule scenarios | `6946bed7f` | PASS | W4 Alerts and Dashboards | accepted |
-| Prometheus tmpfs | 2 | W5 | Static test; rehearsal | `888791520` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
-| Isolated rehearsal | 2 | W5 | 11 rehearsal tests | `917d53fb1` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
-| RedisInsight consumer | 2 | W5 | 9 rehearsal tests | `cdbca234c` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
-| HOME rollout | 3 | W5 | Probes, queries, ACL log, client inventory, exporter stop, declared-off stop, dashboard queries | `cdbca234c` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
-| Documents | 3 | W6 | Metadata check-changed | branch head | PASS | W6 Documents | accepted |
-| Review fixes | 1 | W4 | Unit tests; promtool scenarios; isolated membership checks | branch head | PASS | Review | accepted |
-| Remote candidate | 4 | W7 | `candidate-quality` and CodeQL | `c9606ecf8` | PASS | Review and Completion | accepted |
+| Monitor roles | 1 | W1 | Provision, ACL and secret metadata tests | `e61df0be0` | PASS | W1 Monitor Roles | - |
+| Exporter inputs | 1 | W2 | Boundary tests | `9e69fffb9` | PASS | W2 Exporters | - |
+| Scrape labels | 1 | W3 | Label and start-script tests; promtool on both configurations | `1543a9d5f` | PASS | W3 Scrape Labels | - |
+| Alerts and dashboards | 1 | W4 | Scoping and dashboard contract tests; promtool rule scenarios | `6946bed7f` | PASS | W4 Alerts and Dashboards | - |
+| Prometheus tmpfs | 2 | W5 | Static test; rehearsal | `888791520` | PASS | W5 Rehearsal, Consumers and HOME | - |
+| Isolated rehearsal | 2 | W5 | 11 rehearsal tests | `917d53fb1` | PASS | W5 Rehearsal, Consumers and HOME | - |
+| RedisInsight consumer | 2 | W5 | 9 rehearsal tests | `cdbca234c` | PASS | W5 Rehearsal, Consumers and HOME | - |
+| HOME rollout | 3 | W5 | Probes, queries, ACL log, client inventory, exporter stop, declared-off stop, dashboard queries | `cdbca234c` | PASS | W5 Rehearsal, Consumers and HOME | - |
+| Documents | 3 | W6 | Metadata check-changed | branch head | PASS | W6 Documents | - |
+| Review fixes | 1 | W4 | Unit tests; promtool scenarios; isolated membership checks | branch head | PASS | Review | - |
+| Remote candidate | 4 | W7 | `candidate-quality` and CodeQL | `c9606ecf8` | PASS | Review and Completion | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Monitor roles, Exporter inputs, Scrape labels, Alerts and dashboards, Review fixes | Generation 5 row acceptance |
+| 2 | accepted | Prometheus tmpfs, Isolated rehearsal, RedisInsight consumer | Generation 5 row acceptance |
+| 3 | accepted | HOME rollout, Documents | Generation 5 row acceptance |
+| 4 | accepted | Remote candidate | Generation 5 row acceptance |
 
 ## Review and Completion
 

@@ -96,14 +96,23 @@ hostname `openbao-agent`.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Naming test | 1 | W1 | RED with previous Compose files, GREEN after | Working tree | PASS | W1 Rule, Exceptions, Test and Compose Edits | accepted |
-| Render and catalog | 3 | W1 | Root render; `check-operations-catalog.py`; projection check | `.env.example` | PASS | W1 Rule, Exceptions, Test and Compose Edits | accepted |
-| Document references | 2 | W2 | `git grep` for retired names outside history | Working tree | PASS | W2 Documents | accepted |
-| HOME recreation | 4 | W3 | Recreate running services; health, names, scrape targets | Merged `948fd7e3b`; HOME 2026-10-08 | PASS | W3 HOME Recreation | accepted |
-| OpenBao after recreation | 4 | W3 | `bao status`; container health | HOME 2026-10-08 | FAIL | W3 HOME Recreation | rejected |
-| OpenBao unseal and agent recreation | 4 | W3 | Owner unseal per RUN-0085, then recreate `openbao-agent`; `bao status`; container health | HOME 2026-10-08 | PASS | W3 HOME Recreation | accepted |
+| Naming test | 1 | W1 | RED with previous Compose files, GREEN after | Working tree | PASS | W1 Rule, Exceptions, Test and Compose Edits | - |
+| Render and catalog | 3 | W1 | Root render; `check-operations-catalog.py`; projection check | `.env.example` | PASS | W1 Rule, Exceptions, Test and Compose Edits | - |
+| Document references | 2 | W2 | `git grep` for retired names outside history | Working tree | PASS | W2 Documents | - |
+| HOME recreation | 4 | W3 | Recreate running services; health, names, scrape targets | Merged `948fd7e3b`; HOME 2026-10-08 | PASS | W3 HOME Recreation | - |
+| OpenBao after recreation | 4 | W3 | `bao status`; container health | HOME 2026-10-08 | FAIL | W3 HOME Recreation | - |
+| OpenBao unseal and agent recreation | 4 | W3 | Owner unseal per RUN-0085, then recreate `openbao-agent`; `bao status`; container health | HOME 2026-10-08 | PASS | W3 HOME Recreation | OpenBao after recreation |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Naming test | Generation 5 row acceptance |
+| 2 | accepted | Document references | Generation 5 row acceptance |
+| 3 | accepted | Render and catalog | Generation 5 row acceptance |
+| 4 | rejected | OpenBao after recreation | Generation 5 Evidence row rejected |
 
 ## Review and Completion
 

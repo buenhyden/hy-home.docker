@@ -187,17 +187,28 @@ for the operator to remove.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Decision and documents | 1 | W1 | `check-document-metadata.py --mode check-changed`; link gate | Commit `12aeec76b` | PASS | W1 Decision and Documents | accepted |
-| Variable boundary | 2 | W2 | Non-interference renders; RED/GREEN unit test | `.env.example` with synthetic overrides | PASS | W2 Variable Boundary and Provisioning | accepted |
-| Isolated provisioning | 3 | W2 | Isolated dev-pg run, network-client auth | Project `s0213iso`, synthetic secrets | PASS | W2 Variable Boundary and Provisioning | accepted |
-| Influx source absence | 4 | W3 | Root render, explicit target, reference scan, RED/GREEN absence test | `.env.example`; working tree | PASS | W3 InfluxDB Retirement | accepted |
-| HOME data check | 5 | W3 | `docker ps -a`/volume/image list; directory size, count and file-type scan | HOME host, 2026-10-07 | PASS | HOME Data Check | accepted |
-| Backup chain and canary | 6 | W4 | Source chain read; isolated offline full backup, `--set` restore, row/hash match | Project `s0213iso`, label `20261007-120930F` | PASS | W4 Backup Chain and Restore Canary | accepted |
-| Remote candidate (W2) | 2, 3 | W2 | PR #370 `candidate-quality` run 37628494658 | Head `26d2e9717` | PASS | PR #370 | accepted |
-| Remote candidate (W3) | 4 | W3 | PR #370 `candidate-quality` run 37628494658 | Head `26d2e9717` | PASS | PR #370 | accepted |
-| HOME restore, WAL and PITR | 6 | W4 | HOME stanza, WAL archive and restore | No approved target | NOT_RUN | W4 Backup Chain and Restore Canary | pending |
+| Decision and documents | 1 | W1 | `check-document-metadata.py --mode check-changed`; link gate | Commit `12aeec76b` | PASS | W1 Decision and Documents | - |
+| Variable boundary | 2 | W2 | Non-interference renders; RED/GREEN unit test | `.env.example` with synthetic overrides | PASS | W2 Variable Boundary and Provisioning | - |
+| Isolated provisioning | 3 | W2 | Isolated dev-pg run, network-client auth | Project `s0213iso`, synthetic secrets | PASS | W2 Variable Boundary and Provisioning | - |
+| Influx source absence | 4 | W3 | Root render, explicit target, reference scan, RED/GREEN absence test | `.env.example`; working tree | PASS | W3 InfluxDB Retirement | - |
+| HOME data check | 5 | W3 | `docker ps -a`/volume/image list; directory size, count and file-type scan | HOME host, 2026-10-07 | PASS | HOME Data Check | - |
+| Backup chain and canary | 6 | W4 | Source chain read; isolated offline full backup, `--set` restore, row/hash match | Project `s0213iso`, label `20261007-120930F` | PASS | W4 Backup Chain and Restore Canary | - |
+| Remote candidate (W2) | 2, 3 | W2 | PR #370 `candidate-quality` run 37628494658 | Head `26d2e9717` | PASS | PR #370 | - |
+| Remote candidate (W3) | 4 | W3 | PR #370 `candidate-quality` run 37628494658 | Head `26d2e9717` | PASS | PR #370 | - |
+| HOME restore, WAL and PITR | 6 | W4 | HOME stanza, WAL archive and restore | No approved target | NOT_RUN | W4 Backup Chain and Restore Canary | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Decision and documents | Generation 5 row acceptance |
+| 2 | accepted | Variable boundary, Remote candidate (W2) | Generation 5 row acceptance |
+| 3 | accepted | Isolated provisioning, Remote candidate (W2) | Generation 5 row acceptance |
+| 4 | accepted | Influx source absence, Remote candidate (W3) | Generation 5 row acceptance |
+| 5 | accepted | HOME data check | Generation 5 row acceptance |
+| 6 | pending | - | - |
 
 ## Review and Completion
 
