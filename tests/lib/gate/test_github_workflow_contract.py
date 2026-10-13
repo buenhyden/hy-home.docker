@@ -129,6 +129,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.lib.ops.test_opsflow_adapters",
                 "tests.lib.ops.test_opsflow_provision_contract",
                 "tests.validation.test_opsflow_airflow_contract",
+                "tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests",
             ],
             arguments[1:boundary],
         )
