@@ -719,9 +719,9 @@ files:
   - tests/validation/test_script_manifest.py
 - path: scripts/operations/agent_memory.py
   kind: operations
-  authority: .agents/governance/environment-constraints.md
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
   lifecycle: active
-  mutation: none
+  mutation: runtime
   consumers:
   - .agents/governance/environment-constraints.md
   - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md

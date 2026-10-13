@@ -1,8 +1,8 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.16"
+version: "1.4.17"
 type: "operation/runbook"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "operations"

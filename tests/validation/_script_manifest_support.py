@@ -51,6 +51,7 @@ MUTATION_OVERRIDES = {
     "scripts/operations/gen-secrets.sh": "runtime",
     "scripts/operations/retire-materials.py": "runtime",
     "scripts/operations/lab.py": "runtime",
+    "scripts/operations/agent_memory.py": "runtime",
     "scripts/operations/provider_surface_renderer.py": "check-write",
     "scripts/operations/secret-catalog.py": "check-write",
     "scripts/operations/rehearse-sample-service-delivery.sh": "runtime",
