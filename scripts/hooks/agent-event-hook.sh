@@ -269,7 +269,16 @@ PY
 }
 
 post_tool_use() {
-  printf '%s' "$INPUT" | CODEX_PROJECT_DIR="$PROJECT_DIR" CLAUDE_PROJECT_DIR="$PROJECT_DIR" bash scripts/hooks/post-tool-validate.sh --check
+  # A non-zero exit other than 2 never reaches the model in either provider, and
+  # exit 2 can replace the tool result in Codex. Report failures as context.
+  local report status=0
+  report="$(printf '%s' "$INPUT" | CODEX_PROJECT_DIR="$PROJECT_DIR" CLAUDE_PROJECT_DIR="$PROJECT_DIR" bash scripts/hooks/post-tool-validate.sh --check 2>&1)" || status=$?
+  [[ "$status" -eq 0 ]] && return 0
+  HOOK_REPORT="$report" python3 -c '
+import json, os
+report = os.environ["HOOK_REPORT"][-8000:]
+print(json.dumps({"hookSpecificOutput": {"hookEventName": "PostToolUse",
+    "additionalContext": "Post-edit validation failed; fix before committing:\n" + report}}))'
 }
 
 session_end() {

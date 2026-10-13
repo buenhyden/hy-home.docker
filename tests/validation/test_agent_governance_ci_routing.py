@@ -440,6 +440,44 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         self.assertIn("bash scripts/hooks/post-tool-validate.sh --check", text)
         self.assertNotIn("post-tool-validate.sh --write", text)
 
+    def test_post_tool_failure_reaches_the_model_as_context(self) -> None:
+        """Exit 1 reaches neither provider's model; the dispatcher reports JSON."""
+
+        with tempfile.TemporaryDirectory() as directory:
+            repo = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+            (repo / "scripts").symlink_to(ROOT / "scripts")
+            (repo / ".pre-commit-config.yaml").write_bytes(
+                (ROOT / ".pre-commit-config.yaml").read_bytes()
+            )
+            note = repo / "note.md"
+            for body, reported in ((b"# Note\n\ntext  \n", True), (b"# Note\n", False)):
+                with self.subTest(reported=reported):
+                    note.write_bytes(body)
+                    result = subprocess.run(
+                        [
+                            "bash",
+                            str(ROOT / "scripts/hooks/agent-event-hook.sh"),
+                            "PostToolUse",
+                        ],
+                        cwd=repo,
+                        input=json.dumps({"tool_input": {"file_path": "note.md"}}),
+                        capture_output=True,
+                        text=True,
+                        env={"PATH": "/usr/bin:/bin", "CODEX_PROJECT_DIR": str(repo)},
+                        check=False,
+                    )
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    self.assertEqual(body, note.read_bytes())
+                    if not reported:
+                        self.assertEqual("", result.stdout.strip())
+                        continue
+                    output = json.loads(result.stdout)["hookSpecificOutput"]
+                    self.assertEqual("PostToolUse", output["hookEventName"])
+                    self.assertIn(
+                        "note.md: trailing whitespace", output["additionalContext"]
+                    )
+
     def test_post_tool_check_reports_what_write_would_normalize(self) -> None:
         """An untracked file escapes `git diff --check`; the hook still reports it."""
 

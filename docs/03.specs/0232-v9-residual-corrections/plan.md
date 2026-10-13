@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections Plan"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -28,6 +28,7 @@ Four independent source edits, a governance review, then the gates.
 | W4 | 4 | Three-step `AGENTS.md` | None | TSK-0001 | Task evidence |
 | W5 | 5 | Rules review, changed gate and candidate quality | W1, W2, W3, W4 | TSK-0001 | Task evidence |
 | W6 | 6 | Tombstone identity for classified operations paths | None | TSK-0001 | Task evidence |
+| W7 | 7 | PostToolUse failure as model context | W1 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 
