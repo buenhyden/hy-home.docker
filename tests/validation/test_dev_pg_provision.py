@@ -3,6 +3,7 @@
 import hashlib
 import importlib.util
 import json
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -70,6 +71,20 @@ class ProjectProvisionTests(unittest.TestCase):
             "6c5a395271102d1db425900562bbcb9651df0f36cf409ff8f3d1ca303acc3b6f",
             hashlib.sha256(sql).hexdigest(),
         )
+
+    def test_generated_do_blocks_do_not_contain_psql_variables(self):
+        for project in (manifest(), opsflow_manifest()):
+            with self.subTest(schema_version=project["schema_version"]):
+                sql = MODULE.sql_for(MODULE.validate(project))
+                bodies = re.findall(
+                    r"DO \$check\$ BEGIN\n(.*?)\nEND \$check\$;", sql, re.DOTALL
+                )
+                self.assertTrue(bodies)
+                for body in bodies:
+                    self.assertNotRegex(
+                        body,
+                        r"(?<!:):(?:'[A-Za-z_][A-Za-z0-9_]*'|\"[A-Za-z_][A-Za-z0-9_]*\")",
+                    )
 
     def test_pending_opsflow_fixture_validates_but_cannot_emit_sql(self):
         fixture = SOURCE.parent / "opsflow.json"

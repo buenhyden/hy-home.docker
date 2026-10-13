@@ -1,10 +1,10 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.5"
+version: "0.1.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0012"
 parent_ids:
@@ -1013,6 +1013,281 @@ generic credential assignment. No value was present and no bypass was used.
 Splitting the SQL keyword from the psql placeholder with normal Python string
 concatenation preserves the generated v1 bytes and v2 quoting while allowing
 the same hook to inspect the staged source without that false positive.
+
+### Native acceptance reassessment — 2026-10-13
+
+This reassessment binds the Task to dedicated-worktree HEAD
+`603a7637f77df1b5d63c971453853388a39c7df6`. `git fetch origin main` exited 0;
+the observed remote/main and worktree baseline resolved to that SHA. The
+worktree was clean at assessment, and the branch-specific GitHub open-PR query
+was empty. These observations do not replace prior historical receipts or
+prove remote delivery.
+
+The source comparison is limited to the P04 workload, its DEV provision
+contract, and its four registered test modules. Relative to
+`23e37362b72e98028a4675f282819c0346ae59dc`, that selected source diff is
+empty. The repository-wide comparison contains 393 changed paths outside this
+Task's ownership; they were not inspected, modified, reset, stashed, or
+attributed to P04.
+
+| Assessment item | Classification | Receipt and next boundary |
+| --- | --- | --- |
+| Existing Airflow manifest DAG, workflow library, SQL and provision source | NO_CHANGE | Selected P04 source diff is empty; preserve the existing implementation. |
+| Existing source/unit/static tests | SOURCE_APPLIED | The four P04 modules passed 53 tests, exit 0, in 0.354 seconds. Existing DEV/provision/registration coverage passed 43 tests, exit 0, in 11.624 seconds. These results do not prove a native worker, S3, PostgreSQL, or restore lane. |
+| Same-date publication conflict | CONFIRMED_GAP | Current source permits distinct `p_time` values for the same source and UTC business date to publish. A versioned migration must correct this while preserving schema v1 and P05's six-argument function signature. |
+| P03 worker identity, DEV PostgreSQL/S3 target and protected service files | CONSUMER_DEPENDENT | The requested target identifiers and protected path references are not bound. Do not read values or invent a credential, bucket, role, network, or cleanup target. |
+| SEC01 Airflow 3.3.2 image/provider constraints | RUNTIME_UNVERIFIED | Cached candidate `sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2` is linux/amd64 with Python 3.13.15 and has a SEC01 bounded isolated-bundle receipt. Signature, SBOM, scan, advisory applicability, and HOME approval remain NOT_RUN. HOME runs 3.3.1; do not change the root image or scanner without an actual current-image security warning. |
+| HOME, migration, rotation and empty restore | RUNTIME_UNVERIFIED | No selected HOME target, role grant boundary, object prefix policy, backup input, or empty restore target exists. Rotation remains NOT_APPLICABLE because no credential change is authorized. |
+| Isolated PostgreSQL and Airflow-import preparation | PLANNED | The user selected isolated native validation plus HOME rollout preparation, not rollout. PostgreSQL uses cached linux/amd64 image `sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873`, unique `p04-native-<UUID>` ownership, `--network none`, tmpfs `/var/lib/postgresql`, no host ports, mounts, shared volumes, or credentials. A separate owned restore container must use `pg_dump`/`pg_restore`, not schema reconstruction. The future Airflow import uses `--network none`, read-only source code and no opsflow secret mounts. Neither candidate image is approved for HOME deployment. |
+| Cross-database `PUBLIC CONNECT` review finding | CONFIRMED_GAP | The SQL review found a cross-database `PUBLIC CONNECT` gap. Native role testing must expose and retain that failure; no grant revocation or assertion change may manufacture a PASS. |
+
+W34 assessment is complete only as the source/reuse classification above. W36
+must add the smallest compatible versioned migration for the date-conflict
+defect and its RED/GREEN regression. W38 then requires the selected disposable
+PostgreSQL trial covering migration, role denial, idempotency, concurrency, and
+an empty `pg_dump`/`pg_restore` restore; W39 requires current-head
+source/security review, registered changed/staged gates, and the owning-Spec
+delivery path. Neither planned work nor a passing source test is a native
+acceptance result.
+
+The initial document-check probes used obsolete names
+`check-doc-metadata.py` and `check-doc-links.py`, each exiting 2 because those
+entrypoints do not exist. The correct registered commands are
+`python3 scripts/validation/check-document-metadata.py` and
+`python3 scripts/validation/check-document-links.py`. The corrected metadata
+command passed for the earlier 55-line amendment at `603a7637`, selecting one
+document with zero violations. A later run against this 98-line amendment was
+interrupted during repository-wide lifecycle traversal (exit 130), so it is
+not a PASS and must be rerun after source integration. Link validation also
+remains pending against the final input. The final validation sequence includes
+`git diff --check`,
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only`,
+and `bash scripts/validation/run-ci-precommit.sh --mode local-staged`, each on
+the reconciled owning-Spec head. No result is recorded before it is run.
+
+HOME execution remains NOT_RUN while the operator selects exact target facts:
+Docker context/Compose project, approved Airflow image digest, P03 worker
+UID:GID, protected PG/S3 path references, opsflow DEV bucket identity, and an
+empty restore target. Those facts must exclude values, private `.env` files,
+raw logs, and personal data. Source rollback is a logical revert of the owning
+P04 migration/source commit; it does not reverse a later database migration,
+object write, credential change, or restore action.
+
+#### HOME rollout preparation receipt
+
+The selected preparation target is Docker's default context with Compose project
+`hy-home-infra` and root configuration at the repository's absolute main path.
+Six Airflow roles currently run 3.3.1 on image ID
+`sha256:0388863fe9964d7f2d0d8bacc26dcae0ad5888eadd275c10086a7683bfe46c56`.
+The worker, API server, and processor report UID:GID `1000:0` with supplementary
+group `1000`; `/run/opsflow` is not mounted. Existing DAG and log volumes are
+`hy-home-infra_airflow-dags` and `hy-home-infra_airflow-logs`.
+
+The observed DEV PostgreSQL container is
+`db7edba6ddbf5624c707f4805babc95e59a89ed1eaf810a1f4a33493e23f3ba3` on
+`dev_data_net`, using 18.6-ts2.30.2-pgbackrest2.57-r2, volume
+`hy-home-infra_dev-pg-data`, and the path-only pgBackRest bind
+`/home/hyunyoun/backups/dev-pgbackrest`. SeaweedFS HOME remains 4.47 on the
+edge and `object/seaweed_internal` networks. These are read-only preparation
+facts, not a claim that a P04 bucket, object policy, mount, backup, restore, or
+role is ready.
+
+Before any HOME execution, render the proposed seven-Airflow-role target with
+the local candidate image ID, public `.env.example`, this worktree's source
+directory, and an intentionally absent proposed secret path; record the render
+only if its failure behavior is safe. Then obtain the accepted image/digest,
+MNG metadata backup/migration decision, exact opsflow empty-restore target, S3
+policy, and protected-file path contract. No Home service is changed by this
+preparation, and the local image ID is not a repository digest or SEC01 image
+acceptance.
+
+The public render has completed, exit 0: all seven Airflow roles resolve to the
+same local candidate image ID with `build: none` and `pull: never`; it uses the
+public `.env.example`, no daemon action, and a worker-only unresolved private
+path. The model preserves the Airflow, DEV, MNG, and object network structure.
+This render proves no mount readability, secret delivery, image provenance, or
+HOME readiness.
+
+The only approved native resource envelope is the isolated PostgreSQL trial:
+768 MiB memory, one CPU, 128 PIDs, a 512 MiB tmpfs, six minutes of execution,
+and a separately reserved cleanup interval. The resulting assertion may prove
+only `ISOLATED_PG_EMPTY_RESTORE`; full P04 PostgreSQL plus S3 empty-restore,
+HOME recovery readiness, and authentication remain NOT_RUN. Synthetic roles
+and dump material stay in memory; record only their SHA metadata and the
+generated owned-container ID and attempt labels after execution.
+
+`p04_native_qa` owns the bounded implementation/test execution and
+`p04_runtime_review` owns its independent runtime/IaC review. The trusted human
+authority is the full request and its selected isolated-validation plus
+HOME-preparation scope. Neither role may invent credentials, claim a production
+recovery result, or convert an unsigned/SBOM-unscanned/advisory-unreviewed
+Airflow candidate into a HOME-approved image.
+
+#### P05 schema-v2 source handoff
+
+The reviewed source handoff remains `SOURCE_REVIEW_ONLY`, observed on main
+`603a7637`. Earlier hashes in this Task remain historical receipts. The current
+approved sources are `001_opsflow.sql`
+`a9fecb083d60947a245e437fbbc97a3a5ac82a58d8d1842aff60ddefcfbca79f`,
+`002_checks.sql`
+`49126bd221ae768120d8b2f94627ba938f8e28da3cf24b2e555966e292ee04d8`, and
+`003_business_date.sql`
+`6c7f6fd032e9a0e73a104bc2376f9825f4e1bc28f7618652ebcc44b30abf8301`.
+Schema v2 preserves the six-argument publication function and the six-field
+claim result; ack/retry retains its five-attempt, 600-second contract. P05
+runtime remains UNBOUND.
+
+The final public P05 reference JSON begins `abca285` and has synchronized the
+16-pass consumer contract while preserving provisional/native NOT_RUN state.
+The P05 writer exclusively owns `outbox-contract.json` and its tests; P04 did
+not copy SQL or edit that worktree. The approved hunk updates the `002` and
+`003` hashes while preserving the NULL provisional binding. On new main
+`5bf0e947`, the reviewed P05 binding still names historical `001`
+`57a744cf...`; reconciling it with the approved final hashes requires explicit
+permission outside this public hunk. Integration is therefore BLOCKED. No
+native PostgreSQL, S3, or P05 notifier result follows from this source handoff.
+
+A parent probe of the nonexistent
+`tests.validation.test_n8n_outbox_e2e` module exited 1 with a loader error and
+is NOT_RUN. The registered replacement
+`tests.validation.test_n8n_outbox_contract` plus
+`tests.validation.test_n8n_outbox_rehearsal` passed 13 tests, exit 0, in 1.693
+seconds on base `603a7637`. This receipt is distinct from the earlier verified
+16-pass consumer-contract commands and does not bind a P05 runtime target.
+
+#### Fresh bounded-native and integration receipts
+
+The user explicitly approved the P04 branch's public source-reference JSON
+hunk. P05's foreign dirty diff was preserved. The JSON receipt begins
+`49b26df`; it records the consumer contract and E2E 16 PASS result (parent,
+1.437 seconds), while the worker reported 25 combined SQL/P05 PASS. These are
+public source/consumer-contract checks and do not bind a P05 runtime target.
+
+The initial native-module CI registration proposed an additional optional
+runtime-skip class. Auto-review rejected that weakening. The safe final CI
+change qualifies only BoundaryTests at
+`f5e0783`; the existing skip list is byte-identical. The gate plan, five
+workflows, seven jobs, and eight actions passed. The four P04 source modules
+also passed 58 tests in 0.337 seconds. Independent IaC and security review
+approved the exact harness, SQL/P05 handoff, and CI boundary at source hash
+`ab11ed3`; neither review witnessed a native workload run.
+
+The first positive PostgreSQL attempt used container ID
+`7003bf37a21201f457e72a3310dfeb1ff10171395e06aea53e14df7a246b5418` with
+the selected PostgreSQL 18.6 image. Provisioning failed before migration,
+restore, or dump (exit 1). The harness cleanup then failed. An independent
+manual identity check removed only that owned container and confirmed its
+absence; no data artifact was created. The cleanup parser/status SQLSTATE fix
+is at harness hash `cfe01484` and awaits one bounded retry plus review.
+
+The failure traced to the root provisioner's quoted psql `:'create_schema'`
+form in its `DO` block. It is a source defect, not a runtime privilege result.
+The SQL worker exclusively owns the narrow `project.py` and DEV-PG test repair
+after a worktree collision check found no dirty source. The repair needs a
+source regression and verification before PostgreSQL is retried.
+
+The isolated Airflow import passed with container ID
+`7ef0608c7a65eb5ddcdd8295199a0bb62782e7dfe93c77413e23e517633a3143`; cleanup
+left no orphan. It observed Core 3.3.2, Python 3.13.15, Keycloak provider
+0.11.0, common-compat 1.20.0, Celery 3.24.1, boto3/psycopg2 imports, a passing
+`pip check`, and UID:GID 50000:0. The target remained manual/paused with pool
+one, retry two, and one task. The workload library was not imported and no task
+executed.
+
+The public SDK framework-warmup is separate from strict target checks. The
+strict file/socket/subprocess gate passed after one narrowed retry; it does not
+claim zero interpreter I/O. Earlier two zero-stdin transport failures and the
+strict SDK-lazy-croniter/devnull-instrumentation failure remain preserved.
+There is still no HOME worker S3 GET. The infrastructure helper result is 11
+PASS, four BLOCKED for an external absolute path, and two NOT_RUN (exit 2).
+Worker README metadata passed and the prior link corpus result was 1,272
+documents/11,441 links with one historical warning; both predate this Task
+amendment. Final long gates remain pending and criterion 18 is not closed.
+
+#### PostgreSQL corrective progression
+
+Project source `6cd65c97` corrected the quoted `DO`-block psql interpolation;
+the associated DEV-PG test source begins `37381`. Positive attempt `20f40`
+reached provision GREEN, then migration `001` failed at `42725`; cleanup
+passed. Cross-database attempt `1dc241` showed `opsflow_ingest` could execute
+`SELECT 1` in PostgreSQL, a genuine denial failure that remains FAIL. Diagnostic
+`385df` reproduced `42725`; the public pure-catalog probe confirmed the
+`text || internalchar` ambiguity.
+
+The exact catalog-pair diagnostic driver was
+`df21e0e46d38fb115d6db82881ae46b4ab3647225e241ee78acf7df5d288147b`, exit 0:
+the untyped case produced `42725`, the typed case passed, and kind `r` cleanup
+passed with the label query empty. The driver intentionally neither emitted nor
+persisted an attempt container ID, so no such ID is recorded after cleanup.
+
+The narrow correction adds eight explicit `::text` casts across four
+fingerprints. Independent source and security review approved it. The current
+`001`, `002`, and `003` hashes are those recorded in the P05 handoff above.
+An earlier unaccepted DRAFT `001` changed catalog serialization only; it did
+not change DDL, function, or grant behavior. Its historical hash and receipts
+are preserved without silent repair. At this checkpoint, the positive post-cast
+PostgreSQL attempt was pending; the completed source PASS and empty-restore
+FAIL are recorded below. HOME, S3, and whole PostgreSQL-plus-S3 empty restore
+remain NOT_RUN.
+
+The final combined source/security P05 hunk review, beginning `abca285`,
+approved ten source-consumer and 16 security-consumer checks. Current branch
+coverage ran 79 tests, exit 0: `project.py` 81 percent, adapters 99 percent,
+manifest 100 percent, and the selected directories 92 percent. The unchanged
+monitor contributes 42 percent coverage and is not part of the corrected
+source. The command used
+`PATH=/tmp/hyhome-p04-qa-tools/bin:$PATH COVERAGE_FILE=/tmp/p04-final-source.coverage python3 -m coverage run --branch --source=infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib,infra/04-data/dev-db/pg/provision -m unittest tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters tests.lib.ops.test_opsflow_provision_contract tests.validation.test_opsflow_airflow_contract tests.validation.test_dev_pg_provision`.
+
+The registered local changed aggregate exited 124 by timeout after document
+metadata passed 148 checks in 521.410 seconds. Earlier hook checks passed 15,
+lifecycle checks passed 15 in 136 seconds, and public links passed for 1,272
+documents/11,441 links. Source changed during the aggregate run, so those
+partial receipts are not a final atomic-head result. No gate code was changed
+or bypassed; a hosted candidate must test the committed head.
+
+#### Isolated PostgreSQL empty-restore result
+
+Native source execution reached `001`, `002`, `003`, the business-date v1 RED
+and v2 GREEN cases, idempotent/concurrent/backfill behavior, reader view,
+outbox acknowledgement, wrong-role DML denial, and role/custom-data dumps.
+The source attempt was `6e0b403af39825798681bd83`, container ID
+`9f6cc1fc0521be67540d0f62b0b3ed2115880eecba3aab8548003253dbfc9c74`; the
+restore attempt was `af5f5b1ba93b4aebd0dc5753`, container ID
+`56aae931b150555850fef614c577620b46a1d05e0cfa190df67c426a2962f06a`.
+Both used PostgreSQL 18.6 with plpgsql and had cleanup PASS with each exact
+container absent afterward.
+
+The role dump restore failed before `pg_restore` at psql `42501`. Accordingly,
+`ISOLATED_PG_EMPTY_RESTORE` is FAIL, not NOT_RUN. The harness returned exit 1
+despite four boundary PASS results; its exact branch coverage is 84 percent at
+source hash `3aee`. No dump contains a password: the public synthetic role dump
+is 1,795 bytes with SHA256
+`01f629767e013035d395189d1fc6b5d9cbdf55fd5bb81b55ca5de00d46fa42e1`, and the
+data dump is 27,206 bytes with SHA256
+`7339e9e64ffaa625c6218554f9eeb643f75270bd30be0e17992fd7ed9a625a47`.
+
+Full HOME PostgreSQL-plus-S3 recovery remains NOT_RUN. The current Task and
+README metadata run selected two documents with zero violations before this
+amendment; it is not metadata acceptance for this newer Task revision.
+
+#### Corrected source handoff freeze for C1
+
+The latest fetched origin/main observation begins `5bf0`; P05 PR 435 is merged.
+This freeze prepares the concrete P04 C1 source commit only. It records isolated
+PostgreSQL source success and the empty-restore FAIL above; it makes no native
+full-P04, HOME, S3, or recovery PASS claim.
+
+The P04-owned schema-v2 SQL handoff has one unchanged six-argument publication
+interface and these final hashes: `001_opsflow.sql`
+`a9fecb083d60947a245e437fbbc97a3a5ac82a58d8d1842aff60ddefcfbca79f`,
+`002_checks.sql`
+`49126bd221ae768120d8b2f94627ba938f8e28da3cf24b2e555966e292ee04d8`, and
+`003_business_date.sql`
+`6c7f6fd032e9a0e73a104bc2376f9825f4e1bc28f7618652ebcc44b30abf8301`.
+The corrected source handoff has independent source and security approval.
+The later C1 hash may be referenced by P05 only after the explicit binding
+reconciliation permission; the existing historical P05 consumer heading and
+string remain preserved until that integration is approved.
 
 ## Evidence
 

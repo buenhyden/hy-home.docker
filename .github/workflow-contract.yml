@@ -722,6 +722,7 @@
         "tests.lib.ops.test_opsflow_adapters",
         "tests.lib.ops.test_opsflow_provision_contract",
         "tests.validation.test_opsflow_airflow_contract",
+        "tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",

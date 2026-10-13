@@ -10,12 +10,14 @@
   "owner": "P04",
   "canonical_sql_path": "infra/07-workflow/airflow/workloads/manifest-pipeline/sql",
   "source_reference": {
+    "schema_version": 2,
     "scope": "SOURCE_REVIEW_ONLY",
-    "observed_main": "4c83f14b11a77e13e582eb85d0bf256685472a95",
+    "observed_main": "603a7637f77df1b5d63c971453853388a39c7df6",
     "native_acceptance": "NOT_RUN",
     "sql_sha256": {
-      "001_opsflow.sql": "57a744cf33581bafd73f610b9c18c83d64c9457486a02e02398df56b444ee584",
-      "002_checks.sql": "0a00944569aa05b7a0eec6a555cc3357197b26257ee76a1779c7e258eb9a0b73"
+      "001_opsflow.sql": "a9fecb083d60947a245e437fbbc97a3a5ac82a58d8d1842aff60ddefcfbca79f",
+      "002_checks.sql": "49126bd221ae768120d8b2f94627ba938f8e28da3cf24b2e555966e292ee04d8",
+      "003_business_date.sql": "6c7f6fd032e9a0e73a104bc2376f9825f4e1bc28f7618652ebcc44b30abf8301"
     },
     "claim_output_fields": ["id", "run_id", "source", "row_count", "lease_token", "lease_until"]
   },

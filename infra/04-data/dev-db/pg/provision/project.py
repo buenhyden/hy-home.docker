@@ -388,7 +388,7 @@ def _sql_function_only(project):
         "DO $check$ BEGIN",
         "  IF EXISTS (SELECT 1 FROM pg_namespace n, LATERAL aclexplode(COALESCE(n.nspacl,acldefault('n',n.nspowner))) a",
         "      WHERE n.nspname='public' AND a.grantee<>n.nspowner",
-        "        AND (a.grantee<>0 OR NOT :'create_schema'::boolean)) THEN",
+        f"        AND (a.grantee<>0 OR EXISTS (SELECT 1 FROM pg_namespace WHERE nspname='{schema}'))) THEN",
         "    RAISE EXCEPTION 'public schema ACL mismatch';",
         "  END IF;",
         "END $check$;",
