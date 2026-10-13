@@ -149,7 +149,7 @@ class OutboxContractTests(unittest.TestCase):
         self.assertEqual("NOT_RUN", contract["native_execution"])
         binding = contract["binding"]
         self.assertEqual(
-            "c809153705d583998209330db932cbbe9bbe918f", binding["sql_commit"]
+            "301e55f2b7f2e67aaf4d7916f96778a880e24f90", binding["sql_commit"]
         )
         sql = ROOT / contract["canonical_sql_path"] / "001_opsflow.sql"
         self.assertEqual(
@@ -158,11 +158,12 @@ class OutboxContractTests(unittest.TestCase):
         self.assertEqual(1, binding["interface_version"])
         receipt_path, heading = binding["review_receipt"].split("#")
         receipt = (ROOT / receipt_path).read_text()
-        self.assertEqual("corrected-source-handoff-freeze-for-c1", heading)
-        self.assertIn("#### Corrected source handoff freeze for C1", receipt)
+        self.assertEqual("restore-stable-source-handoff", heading)
+        self.assertIn("#### Restore-stable source handoff", receipt)
         self.assertIn(
-            "The corrected source handoff has independent source and security approval.",
-            receipt,
+            "independent source/security review approved the narrow "
+            "ACL-normalization correction",
+            " ".join(receipt.split()),
         )
         for value in contract["source_reference"]["sql_sha256"].values():
             self.assertIn(value, receipt)

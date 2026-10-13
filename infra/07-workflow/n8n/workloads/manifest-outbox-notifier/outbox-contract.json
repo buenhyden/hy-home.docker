@@ -2,10 +2,10 @@
   "status": "reviewed",
   "native_execution": "NOT_RUN",
   "binding": {
-    "sql_commit": "c809153705d583998209330db932cbbe9bbe918f",
-    "sql_sha256": "a9fecb083d60947a245e437fbbc97a3a5ac82a58d8d1842aff60ddefcfbca79f",
+    "sql_commit": "301e55f2b7f2e67aaf4d7916f96778a880e24f90",
+    "sql_sha256": "82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f",
     "interface_version": 1,
-    "review_receipt": "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0012-p04-airflow-manifest-pipeline.md#corrected-source-handoff-freeze-for-c1"
+    "review_receipt": "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0012-p04-airflow-manifest-pipeline.md#restore-stable-source-handoff"
   },
   "owner": "P04",
   "canonical_sql_path": "infra/07-workflow/airflow/workloads/manifest-pipeline/sql",
@@ -15,9 +15,9 @@
     "observed_main": "5bf0e94795de2020a990756a65b4116a336613fa",
     "native_acceptance": "NOT_RUN",
     "sql_sha256": {
-      "001_opsflow.sql": "a9fecb083d60947a245e437fbbc97a3a5ac82a58d8d1842aff60ddefcfbca79f",
-      "002_checks.sql": "49126bd221ae768120d8b2f94627ba938f8e28da3cf24b2e555966e292ee04d8",
-      "003_business_date.sql": "6c7f6fd032e9a0e73a104bc2376f9825f4e1bc28f7618652ebcc44b30abf8301"
+      "001_opsflow.sql": "82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f",
+      "002_checks.sql": "7ed4bfd5f160e93ad810e8d32ce2221a02f1629946e5e4297817385acbbb13ed",
+      "003_business_date.sql": "830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72"
     },
     "claim_output_fields": ["id", "run_id", "source", "row_count", "lease_token", "lease_until"]
   },
