@@ -1386,8 +1386,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     text = workflow.read_text(encoding="utf-8")
                     workflow.write_text(
                         text.replace(
-                            "name: 'Close Stale Issues & PRs'\n",
-                            "name: 'Close Stale Issues & PRs'\nname: duplicate\n",
+                            "name: 'Mark Stale Issues & PRs'\n",
+                            "name: 'Mark Stale Issues & PRs'\nname: duplicate\n",
                             1,
                         ),
                         encoding="utf-8",

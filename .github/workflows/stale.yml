@@ -1,4 +1,4 @@
-name: 'Close Stale Issues & PRs'
+name: 'Mark Stale Issues & PRs'
 
 on:
   schedule:
@@ -15,14 +15,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Mark and close stale threads
+      - name: Mark stale threads
         uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
         with:
-          stale-issue-message: '이 이슈는 소통이 없어 stale 상태로 표시되었습니다. 7일 내에 답변이
-            없으면 닫힙니다.'
-          stale-pr-message: '이 PR은 소통이 없어 stale 상태로 표시되었습니다. 7일 내에 답변이
-            없으면 닫힙니다.'
+          stale-issue-message: '이 이슈는 30일간 활동이 없어 stale로 표시했습니다. 자동으로 닫지
+            않으며, 닫기는 담당자가 판단합니다.'
+          stale-pr-message: '이 PR은 30일간 활동이 없어 stale로 표시했습니다. 자동으로 닫지
+            않으며, 닫기는 담당자가 판단합니다.'
           days-before-stale: 30
-          days-before-close: 7
+          # Inactivity alone never closes a thread; the owner decides.
+          days-before-close: -1
           stale-issue-label: 'stale'
           stale-pr-label: 'stale'

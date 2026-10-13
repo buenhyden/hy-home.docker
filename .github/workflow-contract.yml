@@ -169,7 +169,7 @@
       }
     },
     ".github/workflows/stale.yml": {
-      "name": "Close Stale Issues & PRs",
+      "name": "Mark Stale Issues & PRs",
       "classification": "non-gating",
       "triggers": {
         "schedule": [
