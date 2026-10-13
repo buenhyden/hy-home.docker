@@ -1,6 +1,6 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "2.1.0"
+version: "2.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -50,11 +50,14 @@ size, and absent incoming links cannot by themselves authorize deletion.
   First use creates the namespace; its absence permits neither unrecorded
   removal nor a blanket prohibition on retirement.
 - **REQ-0026-FR-0009**: Stage 03 occupancy is judged per package using registered
-  Spec, Plan, and Task terminal sets. A package may wait in Stage 03 once it is
-  ready for archive review: approved Spec and Plan, terminal Tasks, every
-  numbered Spec criterion accepted or `not-required`, and no unresolved `FAIL`.
-  Readiness is derived, never stored, and must hold before any move. In an
-  unfinished package, completed and validly cancelled Tasks may
+  Spec, Plan, and Task terminal sets. A package is ready for archive review
+  when its Spec and Plan are approved (or validly cancelled or superseded),
+  every Task or Execution Item is terminal, every numbered Spec criterion is
+  accepted or `not-required`, and no `FAIL` is unresolved. Readiness is
+  derived, never stored, and must hold before any move. A ready package with
+  an approved Spec may wait in Stage 03. It enters the completed archive only
+  from a ready base revision with an approved Spec, and the preserved copy
+  keeps every base member with its status. In an unfinished package, completed and validly cancelled Tasks may
   remain but a terminal Plan may not. A cancelled or superseded Spec keeps no
   member in the active stage. Other stages keep per-document disposition rules.
   Cancellation records a reason, approver, valid approval date, and criterion
@@ -180,6 +183,7 @@ size, and absent incoming links cannot by themselves authorize deletion.
 - [Document lifecycle architecture](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
 - [ADR-0037 Archive lifecycle and preservation decision](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
 
 ## Related Documents
 
