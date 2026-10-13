@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -30,6 +30,12 @@ findings on `main` `baffae4c7` found four that still hold:
   declares what is frozen.
 - F02: root `AGENTS.md` repeats bootstrap step 3 and the Codex adapter.
 
+The same request asks to correct existing QA. On `main`
+`test_tombstone_identity_inherits_the_retired_artifact_id` fails three
+subtests: `6056788a5` moved its role-layout inputs under a numbered
+classification directory, and `tombstone_identity` still matches only the
+flat layout, so those paths take the tombstone number instead of their own.
+
 F18 (non-gating workflows) and F42 (skill adapter routes) no longer hold. On
 2026-10-13 the owner chose a validate-only hook, kept the Stop hook's
 whole-worktree scope, and moved the shared memory work (F24, F27, F36) to a
@@ -40,7 +46,7 @@ later Spec.
 In scope: the PostToolUse dispatcher call, the check mode of
 `post-tool-validate.sh`, the policy and README text describing them; the n8n
 candidate rehearsal; one Registry assertion in the frozen payload test; root
-`AGENTS.md`. Out of scope: the Stop hook, shared memory, historical SEC01
+`AGENTS.md`; the role-layout pattern in `tombstone_identity`. Out of scope: the Stop hook, shared memory, historical SEC01
 receipts and README records, the Airflow candidate rehearsal.
 
 ## Contracts
@@ -56,6 +62,9 @@ receipts and README records, the Airflow candidate rehearsal.
    an unmanaged archive record profile or on a `frozen-legacy-status` path.
 4. `AGENTS.md` keeps exactly its three entry steps and adds nothing beyond
    them.
+5. A retired Stage 05 guide, policy or runbook inherits the artifact number
+   in its filename whether it sat directly in its family directory or in a
+   numbered classification directory under it.
 
 ## Acceptance Criteria
 
@@ -66,6 +75,8 @@ receipts and README records, the Airflow candidate rehearsal.
 3. The frozen payload test fails when the anchor and the Registry disagree.
 4. `AGENTS.md` has three steps and the governance contract passes.
 5. The changed gate and `candidate-quality` pass.
+6. The tombstone identity test passes and archive recovery reports no
+   violation.
 
 ## Related Documents
 
