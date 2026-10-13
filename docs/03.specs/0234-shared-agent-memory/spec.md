@@ -41,8 +41,7 @@ for memory rules:
   `.agents/governance/providers/registry.yaml:44`, warns on governance file
   edits, not memory.
 
-This Spec defines the contract. The owner decisions listed under Scope
-must be made before the Plan's implementation units start.
+This Spec defines the contract and records the owner decisions under Scope.
 
 ## Scope
 
@@ -62,24 +61,23 @@ Out of scope:
 - automatic collection from transcripts or Task evidence;
 - remote databases.
 
-Owner decisions required before any implementation unit starts, not
-decided here:
+The owner decided on 2026-10-13:
 
-1. **Store location:** a repository-ignored root such as the v9 candidate
-   `.workspace-memory/memory.sqlite3` in the main worktree, or another
-   host-local path.
-2. **Existing native memories:** whether `~/.claude/projects/<project>/memory/`
-   records are migrated, copied by the owner, or left in place unread.
-   Turning native memory off stops their loading.
-3. **Limits:** the per-tier, per-revision, database and total storage numbers.
-   v9 proposes 64/128/256 MiB tiers, 256 KiB per revision, a 1 GiB database
-   and 4 GiB total, but these are suggestions, not approved values. Also
-   decide whether any of them must be a hard filesystem quota.
-4. **Backup target:** where the backup container lives, and whether it joins
-   the existing backup runbook.
-5. **Codex activation:** whether to trust the project so `.codex/config.toml`
-   loads at all.
-
+1. **Store location:** `.workspace-memory/memory.sqlite3` in the main
+   checkout, ignored by Git, outside `.worktrees/` and `_workspace/` cleanup,
+   and shared by every worktree of that checkout.
+2. **Existing native memories:** left in place and unread. Turning native
+   memory off stops their loading; anything worth keeping is entered into the
+   shared store again by hand.
+3. **Limits:** logical limits only, enforced by the CLI on row count and byte
+   totals. No filesystem hard quota exists and none is claimed. The numbers
+   are set in W4 and recorded in the Task.
+4. **Backup target:** an SQLite online-backup snapshot added to the existing
+   backup and restore runbook.
+5. **Codex activation:** `.codex/config.toml` sets
+   `memories.generate_memories` and `memories.use_memories` to `false`, and
+   the user marks the project trusted. Whether Codex honors these keys is
+   checked in a live session in W8.
 
 ## Contracts
 

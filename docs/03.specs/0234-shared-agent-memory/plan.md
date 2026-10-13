@@ -16,8 +16,8 @@ created: "2026-10-13"
 
 ## Overview
 
-The investigation is complete. W2 to W7 wait for the owner decisions in the
-Spec. W8 needs two real provider sessions.
+The investigation is complete and the owner decisions are recorded in the
+Spec. W2 to W7 implement them; W8 needs two real provider sessions.
 
 ## Work Breakdown
 

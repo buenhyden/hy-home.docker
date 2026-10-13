@@ -27,6 +27,9 @@ memories, as SPEC-0234 states.
 - **Not done:** no setting, store, native memory file or user-global
   configuration was changed or read beyond what W1 lists.
 - **Baseline:** `main` `b1a6976f4`.
+- **Owner decisions:** answered on 2026-10-13 and recorded in the Spec Scope:
+  ignored store in the main checkout, native memories left unread, logical
+  limits only, the existing backup runbook, project Codex config with trust.
 
 ## Work Log
 
@@ -118,7 +121,7 @@ Open findings:
 
 ## Review and Completion
 
-The owner decisions in the Spec are open, and no implementation unit has
+The owner decisions are recorded in the Spec; no implementation unit has
 started. No criterion is accepted.
 
 ## Related Documents
