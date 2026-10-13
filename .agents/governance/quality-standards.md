@@ -1,6 +1,6 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.6.1"
+version: "1.6.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -176,14 +176,17 @@ main-push security remains a post-merge observation.
   or replace a user-global hook as part of this route.
 - **Server final defense**: the PR candidate runs the same controller with
   `--mode pr-merge` on its authenticated merge input before accepting selected
-  builds. Local staged PASS cannot replace that server result. Build steps in
+  builds. As in local mode, every hook runs on an isolated copy and a fixer
+  without a check mode may change only that copy, which fails the run. Local
+  staged PASS cannot replace that server result. Build steps in
   the same candidate consume its result rather than calling style twice.
   A future deployment must require successful server lint/format evidence for
   its exact promoted revision and configuration before deployment; changed
   inputs require a new server check. The repository currently has no deployment
   workflow, so this rule supplies no deployment execution or acceptance.
-- **Validation**: both style-controller modes use registered check modes and
-  preserve source bytes. Formatting and validation have separate purposes.
+- **Validation**: both style-controller modes use a hook's check mode where it
+  has one, run every hook on an isolated copy, and preserve source bytes.
+  Formatting and validation have separate purposes.
   Direct Agent `pre-commit run` is prohibited; the controlled all-files wrapper
   is an explicitly approved authoring/maintenance lane, never routine PR QA.
 - **Execution identity**: deduplicate an identical leaf within one run using
