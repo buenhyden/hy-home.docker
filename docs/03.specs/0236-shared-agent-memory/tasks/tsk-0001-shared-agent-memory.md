@@ -1,6 +1,6 @@
 ---
 title: "Shared Agent Memory Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -300,16 +300,45 @@ Fixes, after the owner decisions of 2026-10-13:
 
 ### W8 Native Acceptance
 
-Not started. It needs a new Claude session and a new Codex session that
-write and read the same record from two worktrees. The main checkout path is
-already `trusted` in `~/.codex/config.toml`; whether a linked worktree under
-it inherits that trust is `NOT_VERIFIED` and is checked here.
+Run on 2026-10-13 after #450 merged as `40f194e99`, from two detached
+worktrees of that commit under `.claude/worktrees/` (`w8-claude`, `w8-codex`),
+on record `w8-two-provider-probe` (short-term):
+
+1. Claude Code 2.1.296 (this session) wrote revision 1 from `w8-claude`.
+2. codex-cli 0.162.1 (`codex exec --ephemeral`) in `w8-codex` read revision 1
+   with Claude as owner, wrote revision 2 with `--expected-revision 1`, and a
+   second write with `--expected-revision 1` exited 3 with
+   `MEMORY_REVISION_CONFLICT: w8-two-provider-probe is at revision 2, not 1`.
+   Its `git rev-parse --show-toplevel` was the `w8-codex` worktree.
+3. Claude read revision 2 (owner codex) from `w8-claude` and wrote revision 3.
+4. A new Claude Code session (`claude -p`, allowed only the memory CLI) read
+   revision 3 and wrote revision 4.
+
+Neither worktree held a `.workspace-memory/` directory; every call used the
+one store in the main checkout. The probe was then set `ineligible`
+(revision 5), and `w8-codex` was removed.
+
+Codex ran with `-s danger-full-access` because its `bwrap` sandbox cannot
+start on this host (SPEC-0232 W7). Codex project trust reaches linked
+worktrees under the trusted main checkout path: the repository hooks, which
+Codex runs only for a trusted project, ran in such a worktree in the SPEC-0232
+W7 observation. Whether Codex honours `[memories]` in the project
+`config.toml` cannot be observed from outside and stays `NOT_VERIFIED`.
 
 ### W9 Native Memory Migration
 
-Not started. After merge, the main session reads the Claude native memory
-files once, enters each eligible one into the store with `put`, and changes
-no native file.
+Run on 2026-10-13 after #450 merged. The main session read the six Claude
+native memory files once and judged each against §5: none holds a secret,
+Task progress, handoff state, approval or a governance rule copy, so all six
+were eligible. Each entered the store at revision 1 with `--owner claude`, a
+`native-claude-memory:<file>` source reference and `internal` sensitivity:
+`env-key-parity`, `local-gate-metadata-base`, `no-stash-in-background-probes`
+and `translate-with-humanize` as long-term, `umask-permission-test-failures`
+and `local-gate-governance-timeout` as domain. The last one was rewritten to
+its current facts (the 45-minute node timeout of SPEC-0235 and the measured
+22-minute runtime) instead of copying its stale text. No native file was
+changed or removed. `usage` then reported 6 revisions and 5148 body bytes
+under logical limits; the store directory is 0700 and the file 0600.
 
 ### Renumbering
 
@@ -338,14 +367,15 @@ recorded at the time.
 | Stage owners | 6 | W2 | Metadata `check-changed` (11, 0 violations); `test_identity_history` (27); corpus lifecycle (0); links `--mode all` (0 failures); governance contract | Branch | PASS | Stage 01 and 02 Owners | - |
 | Review checks | 7 | W7 | `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (141); manifest, workflow contract, renderer `--check` | Branch | PASS | Review Fixes | - |
 | Restic coverage | 3 | W4 | Memory backup in the `hyhome-backup.service` snapshot | - | NOT_RUN | W4 Limits, Failures and Backup | - |
-| Codex trust | 1 | W6 | Main checkout `trusted`; linked-worktree inheritance | `~/.codex/config.toml` key names and trust value | NOT_RUN | W8 Native Acceptance | - |
+| Codex trust | 1 | W6 | Main checkout `trusted`; repository hooks ran for Codex in a linked worktree | SPEC-0232 W7 observation | PASS | W8 Native Acceptance | - |
 | Security re-review | 7 | W7 | Independent `security-auditor` re-review: pass with notes, low only | `b42117a68` | PASS | Re-reviews at `b42117a68` | Security review |
 | Rules re-review | 7 | W7 | Independent `rules-engineer` re-review: changes required (H1, contract 7, criterion 4) | `b42117a68` | FAIL | Re-reviews at `b42117a68` | - |
 | Re-review fixes | 7 | W7 | New tests RED on `b42117a68` (2 failures, 1 error) then GREEN; `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (145); manifest, workflow contract, renderer `--check` (drift 0), governance contract; metadata `check-changed` (11, 0 violations); corpus lifecycle (0); `test_identity_history` (27) | Branch | PASS | Re-reviews at `b42117a68` | - |
 | Rules final review | 7 | W7 | Independent `rules-engineer` final review: approve; low notes applied (RUN-0021 Overview and Trigger name the memory store) | `f46ea2ee0` | PASS | Work Log | Rules review, Rules re-review |
-| Gate | 7 | W7 | Changed gate; candidate quality | - | NOT_RUN | W7 Verification | - |
-| Native acceptance | 1, 2, 4 | W8 | Two providers, two worktrees, one store | - | NOT_RUN | W8 Native Acceptance | - |
-| Migration | 1 | W9 | Eligible Claude native memories entered once through the CLI | - | NOT_RUN | W9 Native Memory Migration | - |
+| Candidate | 7 | W7 | Hosted `candidate-quality`, run 38393988883 | PR #450 at `4229ac8c4` | PASS | W7 Verification | - |
+| Local gate | 7 | W7 | `run-ci-gate.py --profile changed` | - | NOT_RUN | W7 Verification | - |
+| Native acceptance | 1, 2, 4 | W8 | Claude, Codex and a new Claude session revise one record from two worktrees; stale write refused | `40f194e99` | PASS | W8 Native Acceptance | - |
+| Migration | 1 | W9 | Six eligible Claude native memories entered once through the CLI | `40f194e99` | PASS | W9 Native Memory Migration | - |
 
 ## Criterion Acceptance
 
@@ -361,10 +391,12 @@ recorded at the time.
 
 ## Review and Completion
 
-W2 to W6 are implemented on the branch, with the review and re-review fixes.
-The final rules review, the gates, ADR-0049's status change after merge, the
-two-provider acceptance (W8) and the migration (W9) are open. No criterion is
-accepted.
+ADR-0049 changed to `accepted` after #450 merged, as the owner decided on
+2026-10-13. W8 and W9 passed. Open: the local changed gate and the deferred
+Restic coverage; no criterion is accepted until the owner accepts it.
+
+W2 to W7 merged in #450 with the review and re-review fixes, after the final
+rules review approved.
 
 ## Related Documents
 
