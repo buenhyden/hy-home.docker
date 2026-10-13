@@ -199,7 +199,7 @@ _CATALOG_MEMBER_PREFIXES = {"guide": "GDE", "policy": "POL", "runbook": "RUN"}
 # by filename, so both parts of the identity come from the path itself.
 _ROLE_MEMBER = re.compile(
     r"docs/05\.operations/(?P<directory>guides|policies|runbooks)/"
-    r"(?P<number>[0-9]{4})-[^/]+\.md$"
+    r"(?:[0-9]{2}-[a-z0-9][a-z0-9-]*/)?(?P<number>[0-9]{4})-[^/]+\.md$"
 )
 _ROLE_MEMBER_PREFIXES = {"guides": "GDE", "policies": "POL", "runbooks": "RUN"}
 
