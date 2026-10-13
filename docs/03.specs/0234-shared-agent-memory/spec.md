@@ -1,6 +1,6 @@
 ---
 title: "Shared Agent Memory"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -55,7 +55,8 @@ In scope:
 - the acceptance tests.
 
 Out of scope:
-- reading, moving or deleting existing native memory files;
+- moving or deleting existing native memory files, or reading them outside
+  the one migration in decision 2;
 - user-global or managed provider settings;
 - syncing across machines or clones;
 - automatic collection from transcripts or Task evidence;
@@ -66,18 +67,24 @@ The owner decided on 2026-10-13:
 1. **Store location:** `.workspace-memory/memory.sqlite3` in the main
    checkout, ignored by Git, outside `.worktrees/` and `_workspace/` cleanup,
    and shared by every worktree of that checkout.
-2. **Existing native memories:** left in place and unread. Turning native
-   memory off stops their loading; anything worth keeping is entered into the
-   shared store again by hand.
+2. **Existing native memories:** left in place. Turning native memory off
+   stops their loading. Revised later the same day: after merge, the main
+   session reads the Claude native memory files once and enters each eligible
+   one into the shared store through the CLI (W9). The native files are not
+   changed.
 3. **Limits:** logical limits only, enforced by the CLI on row count and byte
    totals. No filesystem hard quota exists and none is claimed. The numbers
    are set in W4 and recorded in the Task.
 4. **Backup target:** an SQLite online-backup snapshot added to the existing
-   backup and restore runbook.
+   backup and restore runbook. Including that backup in the Restic snapshot of
+   `hyhome-backup.service` is deferred to a separate Spec.
 5. **Codex activation:** `.codex/config.toml` sets
    `memories.generate_memories` and `memories.use_memories` to `false`, and
    the user marks the project trusted. Whether Codex honors these keys is
    checked in a live session in W8.
+6. **Journal mode:** the store uses a rollback journal (`journal_mode=DELETE`)
+   instead of WAL. Ubuntu's libsqlite3 3.45.1-1ubuntu2.8 changelog shows no
+   backport of the WAL-reset fix.
 
 ## Contracts
 
@@ -110,12 +117,16 @@ The owner decided on 2026-10-13:
    - A write succeeds only after commit.
    - A stale expected revision returns a conflict and changes nothing. There
      is no silent last-write-wins.
-5. **Storage safety.** The store uses WAL on a local filesystem with a single
-   writer, `busy_timeout`, and explicit handling of `SQLITE_BUSY`,
-   `SQLITE_FULL` and checkpoint failure.
-   - The linked SQLite library version is recorded when the store ships.
-     Concurrency is accepted only on a library with the WAL-reset fix or a
-     documented distribution backport.
+5. **Storage safety.** The store uses a rollback journal on a local
+   filesystem, takes the single write lock with `BEGIN IMMEDIATE`, sets
+   `busy_timeout`, and handles `SQLITE_BUSY` and `SQLITE_FULL` explicitly.
+   - The linked SQLite library version is recorded when the store ships. WAL
+     is used only on a library with the WAL-reset fix or a documented
+     distribution backport.
+   - The store directory and file are not symbolic links. A backup is created
+     private before data is written, in a 0700 directory, and never over the
+     store. A restore creates the store exclusively, accepts only the store
+     schema, and leaves no partial store.
    - Size limits are reported as hard limits only where a filesystem quota or
      isolated volume enforces them. Otherwise they are logical limits, and the
      report says so.

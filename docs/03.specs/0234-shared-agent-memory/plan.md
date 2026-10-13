@@ -1,6 +1,6 @@
 ---
 title: "Shared Agent Memory Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -17,7 +17,8 @@ created: "2026-10-13"
 ## Overview
 
 The investigation is complete and the owner decisions are recorded in the
-Spec. W2 to W7 implement them; W8 needs two real provider sessions.
+Spec. W2 to W7 implement them; W8 needs two real provider sessions. W9 runs
+once after merge.
 
 ## Work Breakdown
 
@@ -31,6 +32,7 @@ Spec. W2 to W7 implement them; W8 needs two real provider sessions.
 | W6 | 1 | Project settings that turn native memory off | W3 | TSK-0001 | Task evidence |
 | W7 | 7 | Changed gate and candidate quality | W2, W3, W4, W5, W6 | TSK-0001 | Task evidence |
 | W8 | 1, 2, 4 | Two-provider, two-worktree acceptance on one store | W7 | TSK-0001 | Task evidence |
+| W9 | 1 | Enter eligible Claude native memories into the store through the CLI, once, after merge | W7 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 
@@ -46,12 +48,14 @@ Spec. W2 to W7 implement them; W8 needs two real provider sessions.
 
 - **Lost native recall.** Turning native memory off stops what Claude loads
   today. Order W6 after the CLI exists and after the migration decision.
-- **WAL-reset risk.** The library on this host is 3.45.1, which may lack the
-  WAL-reset fix. Keep a single writer until the version or backport is
-  confirmed.
+- **WAL-reset risk.** The library on this host is 3.45.1, and Ubuntu's
+  changelog shows no backport of the WAL-reset fix. The store uses a rollback
+  journal instead, so the bug cannot apply; readers wait during a write.
 - **Codex trust.** An untrusted project ignores `.codex/config.toml`.
+- **Migration.** W9 reads the native memory files once, by owner decision,
+  and copies only eligible records. It never changes or deletes those files.
 - **Rollback.** Revert the commits. The store stays ignored and unread, and
-  native memory files were never touched.
+  native memory files were never changed.
 
 ## Related Documents
 
