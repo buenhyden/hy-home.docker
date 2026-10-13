@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.7.9"
+version: "0.7.10"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -533,23 +533,25 @@ systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
 CVE 결과를 수용했고(위 1단계) 위 TLS preflight가 PASS여야 한다. 하나라도 아니면 중단한다.
 image가 없으면 별도 승인으로 같은 digest만 pull한다.
 
-**W1 root ceremony.** 위 [Human Login and Normal Root Recovery](#human-login-and-normal-root-recovery)를
-따른다. OIDC로 로그인한 operator token을 container 안 단독 shell의 `BAO_TOKEN`으로 둔다.
+**W1 root ceremony.** 위 [Human Login and Normal Root Recovery](#human-login-and-normal-root-recovery)의
+보호된 인증 API 절차를 사용한다. Share·OTP·token은 검토된 클라이언트의 숨겨진
+입력 또는 보호된 stdin/custody로만 다루고 argv·터미널·일반 로그로 전달하지 않는다.
 
-```bash
-docker compose exec openbao sh
-# 이하 container 안. 출력은 보호된 custody로만 옮긴다.
-bao operator generate-root -generate-otp        # OTP는 바로 보호된 custody로
-bao operator generate-root -init -otp="$otp"    # nonce를 기록
-bao operator generate-root -nonce="$nonce" -    # share 보유자 1이 숨겨진 prompt로 입력
-bao operator generate-root -nonce="$nonce" -    # share 보유자 2가 입력, encoded token 반환
-bao operator generate-root -decode=- -otp="$otp" # encoded token을 stdin으로
-```
+현재 [CLI 계약](https://openbao.org/docs/commands/operator/generate-root/)의 OTP
+option은 문자열 인자이며 encoded token의 stdin 입력과 별개다. Container 안 shell이
+실행 중인 server나 다른 process·runtime metadata에서 인자를 숨긴다고 가정하지 않는다.
+이전 window의 OTP 인자 명령은 실행 절차에서 제거했다.
 
-`-otp`는 인자로 전달되므로 다른 process가 없는 container 안 shell에서만, 바로 실행한다.
-encoded token은 decode 전에 보존한다. 기대: 새 root token 하나. 중단: share 불일치,
-`-status`의 진행이 멈춤, decode 실패. 중단하면 `bao operator generate-root -cancel`로
-attempt를 버린다. 기존 상태는 바뀌지 않으므로 rollback이 따로 없다.
+W1은 보호된 [인증 API](https://openbao.org/docs/api/system/generate-root-token/)를
+사용하는 클라이언트의 입력·출력·디코딩·중단 처리가 검토되고, 정확한 대상·권한·
+복구와 독립 custody가 확인되기 전까지 **BLOCKED / NOT_RUN**이다. 이 문서 수정은
+클라이언트 구현, root 발급이나 승인 증거가 아니다. API 응답의 OTP/nonce와 encoded
+응답은 보호된 custody에 먼저 보존하고, 디코딩한 root를 승인된 다음 단계로만 전달한다.
+
+기대: 검토된 절차로 새 root token 하나가 생성되고 정상 관리 인증을 보존한다.
+중단: share 불일치, 진행 정체, 입력·출력 보호 실패, 디코딩 실패. 미완료 attempt는
+같은 보호된 클라이언트의 승인된 취소 경로로 정리하고 실제 잔여 상태를 확인한다.
+값은 기록하지 않으며, 취소가 수행되지 않았다면 성공으로 보고하지 않는다.
 
 **W2 snapshot token.** [RUN-0021](../10-platform-and-backup/0021-backup-and-restore.md)의
 OpenBao token 블록을 별도 터미널에서 실행하고, `OpenBao admin token:` prompt에 임시
