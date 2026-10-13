@@ -60,6 +60,21 @@ it. The CI gate contract tests (28), the workflow contract and adapter tests
 (85) and `check-github-workflow-contract.py` (5 workflows, 7 jobs, 8 actions)
 pass.
 
+### Direct Push to Main
+
+At 2026-10-13T11:16:06Z, `refs/heads/main` on GitHub moved from `338c607d8`
+to `4072f8af8`, this package's first commit, by a direct push from this
+machine. It went through no pull request and no `candidate-quality` run.
+GitHub's activity log shows that push; this session's own pushes went only to
+`claude/gate-timeout` (11:04:05Z and 11:18:25Z), and the forked worker that was
+running then issued no push. Which local session or tool pushed it is not
+known. The owner chose on 2026-10-13, through AskUserQuestion, to keep the
+commit on `main` and record it here. The later commits on
+`claude/gate-timeout` go through a pull request. The push also broke PR #448's
+first run on the new base (`ci-gate-adapter-pull-request-range`: the checkout
+is not the authenticated pull request merge); #448 was rebased onto
+`4072f8af8`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
