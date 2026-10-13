@@ -5216,10 +5216,12 @@ def _ordinary_preserved_paths(
         if source.spec.path.parts[2] in current_names:
             continue
         generation_6 = registry.common.get("lifecycle_generation") == 6
-        # Generation 6: a package enters the completed archive only when its
-        # base revision was ready for archive review, whatever its status.
-        ready = source.evidence is not None and not archive_readiness_findings(
-            source, source.evidence
+        # Generation 6: a package enters the completed archive only from an
+        # approved base revision that was ready for archive review.
+        ready = (
+            source.spec.status == "approved"
+            and source.evidence is not None
+            and not archive_readiness_findings(source, source.evidence)
         )
         for disposition, packages, required_status in (
             ("completed", completed, "approved" if generation_6 else "completed"),
@@ -5248,14 +5250,15 @@ def _preserved_package_is_terminal(
     required_status: str,
     registry: DocumentRegistry,
 ) -> bool:
-    source_members = {
-        member.path.relative_to(source.spec.path.parent)
+    source_state = {
+        member.path.relative_to(source.spec.path.parent): (member.status, member.items)
         for member in (
             source.spec,
             *source.tasks,
             *((source.plan,) if source.plan else ()),
         )
     }
+    source_members = set(source_state)
     package = next(
         (item for item in packages if item.spec.path.parent == source.spec.path.parent),
         None,
@@ -5268,14 +5271,20 @@ def _preserved_package_is_terminal(
         if registry.common.get("lifecycle_generation") == 6:
             # Readiness was judged on the base revision; the preserved copy
             # must carry the same members and statuses.
+            copy_state = {
+                member.path.relative_to(source.spec.path.parent): (
+                    member.status,
+                    member.items,
+                )
+                for member in members
+            }
             return (
                 spec.artifact_id == source.spec.artifact_id
                 and spec.status == required_status
-                and source_members
-                <= {
-                    member.path.relative_to(source.spec.path.parent)
-                    for member in members
-                }
+                and all(
+                    copy_state.get(path) == state
+                    for path, state in source_state.items()
+                )
             )
         try:
             _validate_completion_evidence(

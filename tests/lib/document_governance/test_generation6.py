@@ -385,19 +385,27 @@ class Generation6DepartureTests(unittest.TestCase):
         archived = module.SpecPackage(
             pathlib.Path(ROOT), "0001", "example", SPEC, PLAN, (done,), ()
         )
-        for status, preserved in (("approved", True), ("draft", False)):
+        reopened = dataclasses.replace(
+            archived, tasks=(dataclasses.replace(done, status="in-progress"),)
+        )
+        for status, copy, preserved in (
+            ("approved", archived, True),
+            ("draft", archived, False),
+            ("cancelled", archived, False),
+            ("approved", reopened, False),
+        ):
             source = dataclasses.replace(
                 archived,
                 spec=dataclasses.replace(SPEC, status=status),
                 plan=dataclasses.replace(PLAN, status=status),
                 evidence=evidence,
             )
-            with self.subTest(status=status):
+            with self.subTest(status=status, copy=copy is archived):
                 self.assertEqual(
                     preserved,
                     SPEC.path
                     in module._ordinary_preserved_paths(
-                        pathlib.Path("."), (source,), (), (archived,), self.registry
+                        pathlib.Path("."), (source,), (), (copy,), self.registry
                     ),
                 )
 
