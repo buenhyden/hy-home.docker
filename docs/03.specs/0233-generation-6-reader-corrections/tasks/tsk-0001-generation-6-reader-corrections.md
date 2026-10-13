@@ -156,6 +156,14 @@ ADR-0048 replaces part of it. The decisions README records the partial
 replacement, and a note in ADR-0037 belongs with ADR-0048's acceptance, which
 is the owner's decision.
 
+An independent `rules-engineer` review of the W7 branch returned changes
+required: REQ-0026 said readiness "must hold before any move" and that a
+waiting package "leaves Stage 03 only when it is ready", which is stricter
+than `sdlc.md`, where readiness gates only the completed archive and a
+cancelled or superseded Spec leaves through its own checks. Both sentences now
+tie readiness to the completed archive. The review also asked that this Spec's
+Scope and the Plan name W7; both now do.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -168,6 +176,8 @@ is the owner's decision.
 | Departure status | 3 | W3 | Cancelled-base and changed-copy cases RED on `c1cd329a5` then GREEN; `test_generation6` (28) | Branch | PASS | W3 Departure Gate | - |
 | Rules review | 5 | W5 | Independent `rules-engineer` review | `c1cd329a5` | FAIL | W5 Text | - |
 | Rules re-review | 5 | W5 | Independent `rules-engineer` review of the corrected text: approve with notes, notes applied | Corrected branch | PASS | W5 Text | Rules review |
+| Alignment checks | 5 | W7 | Changed metadata (10 documents) and corpus lifecycle, 0 violations; governance contract PASS | Branch on `338c607d8` | PASS | W7 Stage Alignment | - |
+| Alignment review | 5 | W7 | Independent `rules-engineer` review | `78526dbfd` | FAIL | W7 Stage Alignment | - |
 | Candidate | 6 | W6 | Hosted `candidate-quality`, run 38380353911 | `5b95ed942` | PASS | W6 Gate | - |
 | Local gate | 6 | W6 | `run-ci-gate.py --profile changed`; exit 124 at the governance unittest node's 15-minute timeout | `5b95ed942` | FAIL | W6 Gate | - |
 

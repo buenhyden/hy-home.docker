@@ -54,7 +54,7 @@ size, and absent incoming links cannot by themselves authorize deletion.
   when its Spec and Plan are approved (or validly cancelled or superseded),
   every Task or Execution Item is terminal, every numbered Spec criterion is
   accepted or `not-required`, and no `FAIL` is unresolved. Readiness is
-  derived, never stored, and must hold before any move. A ready package with
+  derived and never stored. A ready package with
   an approved Spec may wait in Stage 03. It enters the completed archive only
   from a ready base revision with an approved Spec, and the preserved copy
   keeps every base member with its status. In an unfinished package, completed and validly cancelled Tasks may
@@ -135,7 +135,8 @@ size, and absent incoming links cannot by themselves authorize deletion.
 - Withdrawal records remain unique and source objects resolve at their original
   paths. History-only approval is verified at its pinned original revision.
 - A waiting package passes occupancy only with terminal members and valid
-  cancellations, and leaves Stage 03 only when it is ready for archive review.
+  cancellations, and enters the completed archive only from a ready base
+  revision with an approved Spec.
   Withdrawal alone never satisfies a still-numbered criterion.
 - Preservation rules can be read from governance without loading a Spec Package.
 - New captures preserve full Git identity; legacy captures and original Task

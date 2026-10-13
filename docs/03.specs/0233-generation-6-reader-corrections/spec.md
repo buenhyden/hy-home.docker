@@ -44,8 +44,9 @@ ADR-0048 state:
 In scope: `scripts/lib/document_governance/spec_packages.py`, its generation 6
 tests, the SDLC policy text for these rules, ADR-0048 (text only, status
 unchanged), the decisions and descriptions READMEs, AD-0030's Related
-Documents, and the acceptance rows the new check requires in the active
-corpus. Out of scope: ADR-0048 acceptance and every Spec or Task status
+Documents, the acceptance rows the new check requires in the active corpus,
+and, in W7, REQ-0026, the Task template and the SPEC-0215 TSK-0002 Review
+wording. Out of scope: ADR-0048 acceptance and every Spec or Task status
 change, which are the owner's decisions.
 
 ## Contracts

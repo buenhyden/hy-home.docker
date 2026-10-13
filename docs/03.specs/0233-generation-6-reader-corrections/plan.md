@@ -18,7 +18,8 @@ created: "2026-10-13"
 
 Fix the three reader gaps with failing fixtures first, complete the corpus
 rows the first fix requires, add the missing rule fixtures, then correct the
-text and run the gates.
+text and run the gates. W7 then aligns REQ-0026, the Task template and stale
+Stage 03 wording with the corrected rules.
 
 ## Work Breakdown
 
@@ -38,7 +39,8 @@ Each new behavior test fails against the `main` reader and passes after the
 fix; the generation 6, Spec package, archive and metadata suites; the active
 metadata and corpus lifecycle checks; the governance contract; an
 independent `rules-engineer` review; the changed gate and the remote
-candidate.
+candidate. W7 adds a second independent review of the Stage 01 to 03
+alignment.
 
 ## Risks and Rollback
 
