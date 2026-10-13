@@ -77,9 +77,9 @@ change, which are the owner's decisions.
    covering the Task's Work Units, a Criterion Acceptance row outside the
    Plan assignment, acceptance Evidence citing another Task's row, and a
    non-`PASS` row that resolves.
-5. SDLC, ADR-0048, the decisions README, AD-0030 and the Stage 02 READMEs
-   state the corrected rules; an independent rules review finds nothing
-   blocking.
+5. SDLC, ADR-0048, the decisions README, AD-0030, the Stage 02 READMEs,
+   REQ-0026 and the Task template state the corrected rules; an independent
+   rules review finds nothing blocking.
 6. The changed gate and `candidate-quality` pass.
 
 ## Related Documents

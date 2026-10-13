@@ -1,6 +1,6 @@
 ---
 title: "Generation 6 Reader Corrections Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -30,6 +30,7 @@ text and run the gates.
 | W4 | 4 | Missing rule fixtures | None | TSK-0001 | Task evidence |
 | W5 | 5 | SDLC, ADR and README text; rules review | W1, W2, W3 | TSK-0001 | Task evidence |
 | W6 | 6 | Changed gate and candidate quality | W1, W2, W3, W4, W5 | TSK-0001 | Task evidence |
+| W7 | 5 | REQ-0026, Task template and stale Stage 03 wording | W5 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 

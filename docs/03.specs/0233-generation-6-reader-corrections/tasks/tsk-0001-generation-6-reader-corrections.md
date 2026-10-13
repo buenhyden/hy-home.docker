@@ -1,6 +1,6 @@
 ---
 title: "Generation 6 Reader Corrections Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -89,8 +89,8 @@ ADR-0048 (0.2.0, still `proposed`) states the exactly-one row, the item rule
 and the completed-archive gate, and replaces only ADR-0037 decision 1, except
 its last sentence, and the completion-receipt clauses of decisions 2 and 3; it
 names the rules from those decisions that stay in force. The decisions README
-(1.6.4) says the
-same, lists ADR-0044, 0045 and 0046 as accepted as their files say, and its
+(1.6.4) says the same, lists ADR-0044, 0045 and 0046 as accepted as their
+files say, and its
 `### Usage` repeats became `### Audience` and `### Authoring Flow`, as did the
 descriptions README (1.1.6). AD-0030 (2.1.1) links ADR-0048.
 
@@ -115,6 +115,47 @@ required:
 
 A second review of the corrected text is recorded in the Evidence.
 
+### W6 Gate
+
+Hosted `candidate-quality` passed on `5b95ed942` (run 38380353911, 4 min 58
+s), with CodeQL and GitGuardian also passing. On the same head, the corpus
+lifecycle and archive recovery checks reported 0 violations, the Spec
+package, archive and generation 6 suites ran 186 tests OK, and the changed
+metadata check selected 11 documents with 0 violations.
+
+The full local changed gate on `5b95ed942` exited 124 after 1143 s. Every step
+before the document governance unittest node passed: agent governance
+contract, active and changed metadata, candidate preflight, document links
+(0 failures), corpus lifecycle and archive recovery (0 violations), and the
+lifecycle contract tests (15). That node is registered in
+`.github/workflow-contract.yml` with a 15-minute timeout, and on this host the
+governance suite alone takes about 31 minutes (1844 s on 2026-10-13), so the
+local changed gate cannot finish here. The hosted changed profile runs no unit
+suites. Under the owner's standing authorization to merge after required
+checks pass, #447 merged as `338c607d8` once its required hosted checks
+passed; this local result stays a FAIL.
+
+### W7 Stage Alignment
+
+A read-only audit of Stages 01 to 03 against the corrected rules, on
+2026-10-13, found these still stating the earlier text; each now matches
+`sdlc.md`:
+
+- REQ-0026 (2.2.0) FR-0009 now states the readiness parents, including
+  validly cancelled or superseded ones, terminal Execution Items, waiting
+  only for an approved Spec, and the completed-archive departure rule; its
+  Traceability links ADR-0048.
+- The Task template's acceptance prompt now states the exemption for a
+  criterion whose assigned Tasks are all historical or cancelled.
+- ADR-0048 links SPEC-0233.
+- SPEC-0215 TSK-0002 (0.1.3) said every evidence row was accepted; it now
+  names criterion acceptance.
+
+Not changed here: ADR-0037 still reads as accepted without a note that
+ADR-0048 replaces part of it. The decisions README records the partial
+replacement, and a note in ADR-0037 belongs with ADR-0048's acceptance, which
+is the owner's decision.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -127,7 +168,8 @@ A second review of the corrected text is recorded in the Evidence.
 | Departure status | 3 | W3 | Cancelled-base and changed-copy cases RED on `c1cd329a5` then GREEN; `test_generation6` (28) | Branch | PASS | W3 Departure Gate | - |
 | Rules review | 5 | W5 | Independent `rules-engineer` review | `c1cd329a5` | FAIL | W5 Text | - |
 | Rules re-review | 5 | W5 | Independent `rules-engineer` review of the corrected text: approve with notes, notes applied | Corrected branch | PASS | W5 Text | Rules review |
-| Gate | 6 | W6 | Changed gate; candidate quality | Branch | NOT_RUN | Work Log | - |
+| Candidate | 6 | W6 | Hosted `candidate-quality`, run 38380353911 | `5b95ed942` | PASS | W6 Gate | - |
+| Local gate | 6 | W6 | `run-ci-gate.py --profile changed`; exit 124 at the governance unittest node's 15-minute timeout | `5b95ed942` | FAIL | W6 Gate | - |
 
 ## Criterion Acceptance
 
