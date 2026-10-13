@@ -154,6 +154,18 @@ and the generation 6 tables, and the identity fixture uses `in-review` to
 `test_tombstone_identity_inherits_the_retired_artifact_id`, fail the same way
 on unchanged `2a57d4122` and are not part of this change.
 
+### W6 Gate
+
+After rebasing onto `e931417be` the branch was merged with `--no-ff` into
+`origin/main` as `d28b15c1c`. There the metadata check selected 68 documents
+with no violation and no archive finding. The changed gate passed the active
+and changed metadata checks, the candidate preflight, the corpus lifecycle
+check (0 violations), archive recovery (0 violations) and the 15-, 15- and
+148-test suites, then hit the local 3000 s limit inside the document
+governance suite and was stopped (exit 124). That suite's local result is
+`NOT_RUN`; the hosted `candidate-quality` run on the pull request decides
+criterion 6.
+
 ### Contract Migration
 
 | Date | Source revision | Evidence |
@@ -169,7 +181,8 @@ on unchanged `2a57d4122` and are not part of this change.
 | Readiness | 3 | W3 | Corpus readiness listing; preservation gate | Branch | PASS | W3 Readiness | - |
 | Migration | 4 | W4 | Corpus load; terminal Task byte identity; metadata check on synthetic merge | Branch on `2a57d4122` | PASS | W4 Migration | - |
 | Text | 5 | W5 | Independent rules review; metadata check | Branch | PASS | W5 Text and Review | - |
-| Gate | 6 | W6 | Changed gate; candidate quality | Branch | NOT_RUN | Work Log | - |
+| Gate | 6 | W6 | Changed gate on synthetic merge; stopped at local 3000 s limit in the governance suite | `d28b15c1c` | NOT_RUN | W6 Gate | - |
+| Candidate | 6 | W6 | Hosted `candidate-quality` | Pull request | NOT_RUN | W6 Gate | - |
 
 ## Criterion Acceptance
 
