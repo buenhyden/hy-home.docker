@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.9"
+version: "0.2.10"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -1445,6 +1445,11 @@ this result-only delivery receipt.
 
 ### W23 Current Acceptance Assessment — 2026-10-13
 
+Superseded in part: the TLS-files-absent finding below is superseded by W23
+Current TLS and Snapshot Retry Receipt (TLS_PREPARED / NOT_DEPLOYED), and the
+DELIVERY lane by W23 Merged-Source Readiness Checkpoint (PR #431 merged as
+`7620f2d22`). The tables are kept as observed at the time.
+
 This assessment is bound to `origin/main` and the isolated worktree HEAD
 `62556dc63b66c828c27e9c33017d26cdf70b8542`; the supplied baseline is
 `23e37362b72e98028a4675f282819c0346ae59dc`. The fresh fetch, ref, status,
@@ -2014,6 +2019,128 @@ is an ISOLATED result only. HOME issuance and use, the snapshot-only
 credential, off-host custody, the reviewed stateful recovery contract and a
 real reboot remain the missing inputs that keep this Task blocked.
 
+### Source Corrections — 2026-10-13
+
+The owner asked on 2026-10-13 to review the P01 HOME lane, correct and extend
+it, and proceed. No HOME operation, credential read or service change was
+made. A read-only review of `main` `338c607d8` found these source points,
+re-verified on `ec0877f10`:
+
+- **Outage timing.** RUN-0085 stated a 15-minute service outage limit that no
+  policy, requirement or Spec owns. The operator selection recorded in W23
+  Current Acceptance Assessment is a 30-minute cutover goal within a
+  60-minute maintenance window, as planning estimates. RUN-0085 now uses that
+  selection and says it is not an observed RTO.
+- **TLS check.** RUN-0085 said the TLS preflight had not run on HOME. W23
+  Current TLS and Snapshot Retry Receipt records TLS_PREPARED / NOT_DEPLOYED:
+  the three files exist and public certificate checks passed, without a
+  server restart. That receipt does not name `check-tls-material.sh`
+  itself, so RUN-0085 says the material is prepared and that this exact
+  command's HOME run is not recorded.
+- **Resolves.** The actual-target FAIL rows 01/02 and 03 were resolved by
+  "Public native preparation", a SOURCE-only run on an archived packet. The
+  PASS on the same selected target is "Actual selected empty restore 04", so
+  that row now resolves them.
+- **Stale statements.** The W23 Current Acceptance Assessment tables carry a
+  superseded note for TLS and DELIVERY; Review and Completion names the #431
+  merge `7620f2d22`.
+- **HOME preconditions.** The old row stays as observed; the lanes that remain
+  NOT_RUN have their own rows.
+- **`.agent-work/` deletion.** The owner decided on 2026-10-13 that the
+  git-ignored `.agent-work/` directory will be deleted and its HOME snapshot
+  and restore tooling will not move into tracked files. This change does not
+  delete it. These Work Log sections and the "Public native preparation"
+  Evidence row (Input "archived public packet") point into it:
+  - Current P01 Continuation — 2026-10-11 (`integration-proposal/README.md`);
+  - W20/W22 Versioned Issuance Continuation — 2026-10-11 (a discovery note);
+  - W22 Source Commit and Isolated Attempt — 2026-10-11
+    (`integration-proposal/p02-openbao-docs.patch`);
+  - W22 Registered Diagnostic Candidate Timeout — 2026-10-11 (a discovery
+    note);
+  - W22 Source PR and Final Staged Receipt and W22 Accepted Source Delivery —
+    2026-10-11 (PR body files, including `p01-pr-body.md`);
+  - W22 P02 Catalog Documentation Reconciliation — 2026-10-11
+    (`p02-frozen-handoff/p02-openbao-docs.patch`, `p02-views`);
+  - W22 P02 Documentation Submission Receipt — 2026-10-11
+    (`p01-catalog-pr-body.md`,
+    `integration-proposal/p02-catalog-consumer.patch`);
+  - W23 Public Native Preparation Receipt — 2026-10-13
+    (`p01-config-tmpfs-public-native-pass/`,
+    `p01_config_tmpfs_public_fixture.py`,
+    `p01_home_restore_file_attempt_test.py`);
+  - W23 Actual Selected Empty Restore 04 — 2026-10-13
+    (`run_p01_home_restore_file_attempt.sh`).
+
+  Those files become unavailable once the owner deletes the directory. Their
+  recorded results stay in this Task as the historical observation; they
+  cannot be rerun from those paths.
+- **Open gaps, not results.** No Prometheus rule covers OpenBao Agent
+  staleness or authentication failure (`alert_rules.openbao.yml`), and
+  tampered-HMAC audit verification is NOT_RUN. Adding a rule is an IaC change
+  for a separate decision.
+
+Owner HOME checklist, in order; each step needs the approval named:
+
+1. SEC01 accepts the 2.7.1 signature, SBOM and CVE results (SEC01 owner).
+2. Decide the preserved attempt targets and containers (explicit approval
+   for any deletion). Partly done: see Preserved Attempt Cleanup — 2026-10-13;
+   the `-04` target, the base restore target and the snapshot file remain
+   undecided.
+3. Issue a restricted snapshot-only identity and token with an OIDC session
+   long enough for the run (credential issuance).
+4. Prove the token cannot read ordinary secrets, prove renewal, then take a
+   fresh pre-upgrade snapshot with writes quiesced (backup run). If this uses
+   anything other than the tracked backup tooling and RUN-0085 commands, it
+   needs a tracked or newly reviewed tool at the time.
+5. Attest off-host custody of the unseal shares, offsite key and CA key
+   without values (owner attestation).
+6. Run a semantic restore to an empty target with a new attempt identity,
+   canary read and renderer reauthentication (independent READY review, then
+   user approval). Attempt 04 used `.agent-work/` scripts, so this step needs
+   a tracked or newly reviewed tool at the time.
+7. Measure audit capacity and register logrotate (host change with sudo).
+   The running server has no audit mount yet, so this moves to the upgrade
+   window in step 8.
+8. In the maintenance window: upgrade the server, manual unseal by the named
+   operator, then upgrade the Agent with a wrapped reissue (fresh review of
+   the authorized runtime-change intent).
+9. HOME cold boot (separate approval).
+10. Select a consumer and its ACL for current-version authentication and
+    consumer read (P06 owner selection).
+
+### Preserved Attempt Cleanup — 2026-10-13
+
+The owner chose "Delete after recording" for the preserved attempt targets
+(AskUserQuestion, 2026-10-13). Auto mode refused the deletion to the agent as
+irreversible, so the owner ran it personally with `!` commands. This metadata
+was captured before deletion; no content was read:
+
+| Object | Identity | Lifecycle | Result | Mounts |
+| --- | --- | --- | --- | --- |
+| Container `p01-home-restore-20261013-03` | `857395112de2734454864711a15498d435315779af6f911a32a67e8f40997666` | Created 2026-10-12T22:42:19.464Z; started 22:42:19.832Z; finished 22:42:20.312Z | Exit 1, OOM false | `-03/audit` and `-03/raft` (rw); snapshot `raft-pre-2.7.1.snap` and its `.sha256` (ro); TLS CA, server and server key (ro) |
+| Container `p01-home-restore-20261013-04` | `2119910549cfc5a20b4e20288b99d06119e2da93013231d69e4ca317cb19f76c` | Created 2026-10-13T00:19:28.244Z; started 00:19:29.031Z; finished 00:22:03.470Z | Exit 0, OOM false | `-04` audit and raft; the same snapshot and TLS mounts |
+| Container `p01-home-restore-20261013-chown` | `326a586711e9a1f31d4c9688c718ca64314e582a7253052d241c80e4dafaec3f` | Created 2026-10-12T22:30:34.419Z; never started | - | `p01-empty-restore-20261013` at `/target` (rw) |
+| Directory `/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013-03` | Device 2064, inode 115626592, UID 100, mode 0700 | No running container mounted it | Contents not read | - |
+
+All three containers use image
+`sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005`.
+
+The owner removed the three containers with `docker rm`, emptied the `-03`
+directory through a network-less container of the same image running as UID
+100, and removed it with `rmdir`. Afterwards no `p01-home-restore-*`
+container remains, the `-03` directory is gone, and the live `openbao` and
+`openbao-agent` stay healthy.
+
+Kept, because the owner did not decide on them: the `-04` target directory
+(UID 100, mode 0700), the base `p01-empty-restore-20261013` target, and
+`/home/hyunyoun/backups/p01-openbao-20261013/raft-pre-2.7.1.snap`.
+
+The HOME check of 2026-10-13 also observed that the running `openbao` (2.6.2,
+started 2026-10-12T08:45:33Z, unsealed, Raft) has no `/openbao/audit` mount.
+The audit file device declared in the repository Compose is therefore not yet
+deployed on HOME, and logrotate registration (checklist step 7) moves to the
+upgrade window. The snapshot token file is still absent.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -2022,7 +2149,7 @@ real reboot remain the missing inputs that keep this Task blocked.
 | Renderer trust | 11 | W20 | Negative token/CA/modes, native clients and Agent restart | e4bde131a34928e19266ddc6dbe86ecc78ccc4ef895d44f39666f60e2e2a9fee | PASS | W20 and W22 | - |
 | Audit and recovery | 11 | W21 | Native audit-full denial, snapshot save/empty restore/unseal | e4bde131a34928e19266ddc6dbe86ecc78ccc4ef895d44f39666f60e2e2a9fee | PASS | W21 and W22 | - |
 | Public source review | 11 | W22 | Independent security and IaC; code review delta | ef22f5f377a13185fb396e3b65e33debedf67108257dd3098a579c0292b1c35a | PASS | W22 and W22 Regression Contract Follow-up | - |
-| HOME preconditions | 11 | W23 | Named host, CA and independent custody | User P01 and `ok` | NOT_RUN | W23 HOME Boundary and P06 Hold | - |
+| HOME preconditions | 11 | W23 | Named host, CA and independent custody; host, target and TLS preparation later observed, the remaining lanes are the rows below | User P01 and `ok` | NOT_RUN | W23 HOME Boundary and P06 Hold | - |
 | Versioned journal source | 11 | W22 | Independent code/security; 47 unit tests, 90% coverage | helper `be2343a0...` | PASS | W22 Source Commit and Isolated Attempt | - |
 | Changed fixture native metadata | 11 | W22 | v1/v2 exact reconciliation, wrapped login/replay denial | `868e44af22ecf1f5be5c1e6d3b38a292f37a7838141c15bdf00ee07ad490ca0b` | PASS | W22 Changed-Input Native Metadata Receipt | - |
 | Scoped regression | 11 | W23 | Five public modules, 77 PASS / 4 skipped | base `62556dc63b66c828c27e9c33017d26cdf70b8542`; patched input `95dc53a900fe7d22ea49e830adc0ff5f69b7a82ab9b4daedd66f33edf5b512ff` | PASS | W23 Current Acceptance Assessment | - |
@@ -2030,9 +2157,17 @@ real reboot remain the missing inputs that keep this Task blocked.
 | Client-mount repair | 11 | W23 | RED/GREEN, selected suite, public Compose render, YAML lint and independent IaC/security review | `f42ea58a66214b32bb1c8d7be589b3ba838d59abbe7610e5e1515008670b4f8e` | PASS | W23 Client-Mount Correction Admission | - |
 | Actual pre-restore 01/02 | 11 | W23 | Mode preflight then bounded capability gate; no server start | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcomes 01/02 | - |
 | Actual pre-restore 03 | 11 | W23 | Entry-point local-config write blocked before bootstrap/restore | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcome 03 | - |
-| Public native preparation | 11 | W23 | 2.7.1 isolated config-tmpfs preparation and cleanup | archived public packet | PASS | W23 Public Native Preparation Receipt | Actual pre-restore 01/02, Actual pre-restore 03 |
-| Actual selected empty restore 04 | 11 | W23 | Selected empty-target FILE_USABILITY; independent IaC actual review | isolated HOME target; value-free receipt | PASS | W23 Actual Selected Empty Restore 04 | - |
+| Public native preparation | 11 | W23 | 2.7.1 isolated config-tmpfs preparation and cleanup | archived public packet | PASS | W23 Public Native Preparation Receipt | - |
+| Actual selected empty restore 04 | 11 | W23 | Selected empty-target FILE_USABILITY; independent IaC actual review | isolated HOME target; value-free receipt | PASS | W23 Actual Selected Empty Restore 04 | Actual pre-restore 01/02, Actual pre-restore 03 |
 | Isolated native rerun | 11 | W23 | Registered CandidateNative (1) and rehearsal (3) opt-in tests, no skips | `958349408` | PASS | Isolated Native Rerun — 2026-10-13 | - |
+| HOME snapshot credential | 11 | W23 | Restricted snapshot-only identity and token; ordinary-secret denial; renewal | Owner checklist steps 3–4 | NOT_RUN | Source Corrections — 2026-10-13 | - |
+| HOME custody attestation | 11 | W23 | Off-host custody of unseal shares, offsite key and CA key, value-free | Owner checklist step 5 | NOT_RUN | Source Corrections — 2026-10-13 | - |
+| HOME semantic restore | 11 | W23 | Empty-target restore with canary read and renderer reauthentication | Owner checklist step 6 | NOT_RUN | Source Corrections — 2026-10-13 | - |
+| HOME audit capacity | 11 | W23 | Audit filesystem capacity and logrotate registration | Owner checklist step 7 | NOT_RUN | Source Corrections — 2026-10-13 | - |
+| HOME upgrade and cold boot | 11 | W23 | Server and Agent 2.7.1 upgrade, manual unseal, wrapped reissue, cold boot | Owner checklist steps 8–9 | NOT_RUN | Source Corrections — 2026-10-13 | - |
+| Source corrections | 11 | W23 | Runbook timing and checklist, Task stale points; changed metadata (2 documents, 0 violations), corpus lifecycle (0), links `--mode all` PASS, `test_operations_catalog` OK, markdownlint passed | Branch on `ec0877f10` | PASS | Source Corrections — 2026-10-13 | - |
+| Attempt cleanup | 11 | W23 | Owner-run removal of attempt 03, 04 and chown containers and the `-03` target; no container left, live server and Agent healthy | HOME, value-free metadata | PASS | Preserved Attempt Cleanup — 2026-10-13 | - |
+| Audit logrotate registration | 11 | W23 | Deferred: the running server has no audit mount, so registration waits for the upgrade window | HOME check 2026-10-13 | NOT_RUN | Preserved Attempt Cleanup — 2026-10-13 | - |
 
 ## Criterion Acceptance
 
@@ -2042,7 +2177,7 @@ real reboot remain the missing inputs that keep this Task blocked.
 
 ## Review and Completion
 
-Source delivery is merged in PR 421 and passed for PR #431; the current Task
+Source delivery is merged in PR 421 and in PR #431 (merge `7620f2d22`); the current Task
 remains blocked on the named W23 target/custody and runtime residuals. Source
 and isolated proof do not complete HOME custody/boot/recovery acceptance or
 authorize P06. No secret migration or consumer switch is claimed.
