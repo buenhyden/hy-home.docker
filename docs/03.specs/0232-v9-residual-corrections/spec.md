@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -46,7 +46,7 @@ later Spec.
 In scope: the PostToolUse dispatcher call, the check mode of
 `post-tool-validate.sh`, the policy and README text describing them; the n8n
 candidate rehearsal; one Registry assertion in the frozen payload test; root
-`AGENTS.md`; the role-layout pattern in `tombstone_identity`. Out of scope: the Stop hook, shared memory, historical SEC01
+`AGENTS.md`; how the dispatcher returns a PostToolUse failure; the role-layout pattern in `tombstone_identity`. Out of scope: the Stop hook, shared memory, historical SEC01
 receipts and README records, the Airflow candidate rehearsal.
 
 ## Contracts
@@ -62,7 +62,9 @@ receipts and README records, the Airflow candidate rehearsal.
    an unmanaged archive record profile or on a `frozen-legacy-status` path.
 4. `AGENTS.md` keeps exactly its three entry steps and adds nothing beyond
    them.
-5. A retired Stage 05 guide, policy or runbook inherits the artifact number
+5. A PostToolUse validation failure reaches the model: the dispatcher exits 0
+   and prints the report as `hookSpecificOutput.additionalContext`.
+6. A retired Stage 05 guide, policy or runbook inherits the artifact number
    in its filename whether it sat directly in its family directory or in a
    numbered classification directory under it.
 
@@ -77,6 +79,8 @@ receipts and README records, the Airflow candidate rehearsal.
 5. The changed gate and `candidate-quality` pass.
 6. The tombstone identity test passes and archive recovery reports no
    violation.
+7. A test shows a whitespace defect producing exit 0 and the context JSON,
+   and a clean file producing no output.
 
 ## Related Documents
 

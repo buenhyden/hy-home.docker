@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -58,7 +58,8 @@ holds: the normalizer is opt-in and agrees with its owner.
 The report reaches the provider the way the hook's existing lint failures
 do: the dispatcher passes the exit status through unchanged, and a status
 other than 2 is a non-blocking error. Whether the agent sees that message in
-a live Claude or Codex session was not observed and is `NOT_RUN`.
+a live Claude or Codex session was not observed and is `NOT_RUN`; W7
+replaces this channel.
 
 ### W2 n8n Candidate Rehearsal
 
@@ -123,7 +124,28 @@ pattern now takes an optional classification segment, spelled as
 record still match. The only production caller is the tombstone identity
 check at `archive.py:924`. `test_archive` went from 3 failures to 71 passing;
 the corpus lifecycle check and archive recovery (140 tombstones) report 0
-violations and `tests.validation.lifecycle.test_recovery` passes.
+violations and `tests.validation.lifecycle.test_recovery` passes. Pull
+request #445 passed hosted `candidate-quality` (run 38372338395) and the
+owner's request merged it as `b1a6976f4`.
+
+### W7 PostToolUse Failure as Context
+
+The owner asked on 2026-10-13 to review the hook's exit status. The Claude
+Code hooks reference (<https://code.claude.com/docs/en/hooks>) shows stderr
+to the model for a PostToolUse exit 2 only; any other non-zero exit is a
+non-blocking error the model does not see, and stdout on exit 0 reaches it
+only as `hookSpecificOutput.additionalContext`. The Codex hooks page
+documents `additionalContext` for PostToolUse, says exit 2 with stderr is
+feedback that replaces the tool result, and does not describe exit 1. So
+every PostToolUse failure, including the shellcheck and yamllint failures
+that predate W1, never reached the model.
+
+`post_tool_use()` now captures the check output and, on failure, prints
+`{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext":
+...}}` with at most the last 8000 characters and exits 0. On a whitespace
+defect the `main` dispatcher exited 1 with stderr only; this one exits 0 with
+that JSON. The agentic policy (1.5.1) states the channel. Live delivery in a
+Claude or Codex session is observed only after merge, from the main checkout.
 
 ## Evidence
 
@@ -135,6 +157,7 @@ violations and `tests.validation.lifecycle.test_recovery` passes.
 | Shim | 4 | W4 | Governance contract (failures=0) | Branch | PASS | W4 Root Shim | - |
 | Gate | 5 | W5 | Local changed gate; stopped at its 3600 s limit in the governance suite | `cc8a880dc` | NOT_RUN | W5 Gate | - |
 | Tombstone | 6 | W6 | `test_archive` RED (3 failures) then GREEN (71); corpus lifecycle; archive recovery; recovery tests | Branch on `7325f1af2` | PASS | W6 Tombstone Identity | - |
+| Context | 7 | W7 | Dispatcher test RED on `main` (exit 1, no JSON) then GREEN; post_tool tests (15) | Branch on `b1a6976f4` | PASS | W7 PostToolUse Failure as Context | - |
 | Candidate | 5 | W5 | Hosted `candidate-quality`, changed profile | PR #443 at `cc8a880dc` | PASS | W5 Gate | - |
 
 ## Criterion Acceptance
@@ -147,6 +170,7 @@ violations and `tests.validation.lifecycle.test_recovery` passes.
 | 4 | pending | - | - |
 | 5 | pending | - | - |
 | 6 | pending | - | - |
+| 7 | pending | - | - |
 
 ## Review and Completion
 
