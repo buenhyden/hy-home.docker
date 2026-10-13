@@ -1,6 +1,6 @@
 ---
 title: "Shared Agent Memory Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -35,7 +35,9 @@ memories, as SPEC-0234 states.
   limits only, the existing backup runbook, project Codex config with trust.
   After the reviews the same day, the owner chose a rollback journal over WAL,
   deferred Restic coverage to a separate Spec, and approved one post-merge
-  migration of eligible Claude native memories (W9).
+  migration of eligible Claude native memories (W9). After the re-reviews the
+  owner promoted RUN-0021 to `active` ("Promote RUN-0021 to active") and
+  decided to accept ADR-0049 ("Accept both").
 
 ## Work Log
 
@@ -173,8 +175,9 @@ session is W8 and `NOT_RUN`. Native memory files were not read or changed.
 ### W7 Verification
 
 `tests/lib/hooks/test_tool_payload.py` was rewritten first and failed 5 cases
-on the old code, then passed (15). `tests/lib/hooks/test_agent_memory.py` (8)
-covered a private WAL store, stale revisions, the three limits, two concurrent
+on the old code, then passed (15). `tests/lib/hooks/test_agent_memory.py`, 8
+tests at that point, covered a private store (then in WAL mode), stale
+revisions, the three limits, two concurrent
 writers racing for the last room (exactly one wins), a full database, a failed
 backup keeping the previous file, restore, and a linked worktree writing the
 main checkout's store that survives `git worktree remove`. The leaf
@@ -231,12 +234,11 @@ part of this change.
   `native_config_path` per provider, the hook configuration the renderer
   projects; listing a second file would need a schema and renderer change, so
   the file is not registered.
-- **Manifest row, not fixed.** `mutation: runtime` needs a current Runbook as
-  authority. RUN-0021 is `draft` (since the operations renumbering on
-  2026-10-12), so `check-script-manifest.py` fails with
-  `runtime-authority-inactive`. The row stays `mutation: none` with the policy
-  as authority until the owner promotes RUN-0021; the rules finding stays
-  open.
+- **Manifest row, open at this point.** `mutation: runtime` needs a current
+  Runbook as authority, and RUN-0021 was `draft` (since the operations
+  renumbering on 2026-10-12), so `check-script-manifest.py` failed with
+  `runtime-authority-inactive`. The row kept `mutation: none` until the owner
+  decision recorded under Re-reviews at `b42117a68`.
 - **Contract 8.** No template-export or site-build tool exists in `scripts/`
   or `.github/workflows/`, so nothing there can copy `.workspace-memory/`.
   Git-based copies skip it because `.gitignore` ignores it.
@@ -246,13 +248,55 @@ part of this change.
 The memory capability had no Stage 01 or 02 owner, which REQ-0026-FR-0005
 requires, and accepted ADR-0032 said no memory or `.codex/config.toml` is
 created for formal symmetry. REQ-0024 (1.5.0) adds REQ-0024-FR-0015 and an
-acceptance criterion for the shared store. ADR-0049 (0.1.0, `proposed`, parent
+acceptance criterion for the shared store. ADR-0049 (`proposed`, parent
 AD-0027) records the one store, native memory off, the CLI as the only
 sanctioned writer, the rollback journal and logical limits, and narrows
 ADR-0032's rule for memory and `.codex/config.toml` only. ADR-0032 (1.0.3)
-stays `accepted` and points to ADR-0049, as does the decisions README (1.6.4)
+stays `accepted` and points to ADR-0049, as does the decisions README (1.6.5)
 inventory and Structure tree. The Registry high water is REQ-0024-FR 15 and
 ADR 49. The Spec now lists ADR-0049 as a parent and links all three owners.
+
+### Re-reviews at `b42117a68`
+
+- **Security re-review** (independent `security-auditor`): pass with notes;
+  every earlier finding fixed, nothing at medium or above. Low notes: N1, the
+  backup directory check did not test the owner, so root writing into a
+  user's 0700 directory could be redirected; N2, restore wrote into the live
+  path, so a session connecting meanwhile could lose its write; N3, no test
+  asserted the journal's 0600 mode; N4, schema validation is structural
+  only; N5, a failed backup left the temporary `-journal`, and a
+  `PermissionError` in restore escaped as a traceback.
+- **Rules re-review** (independent `rules-engineer`): changes required. H1, the
+  manifest row stayed `mutation: none` for a writing CLI. Contract 7 and
+  criterion 4 claimed the hook limits writes to the CLI and that a reviewer
+  cannot write, while section 5 says the shell is not prevented. REQ-0024,
+  ADR-0049 and the Spec each repeated section 5's record exclusions, and
+  ADR-0032 said ADR-0049 narrows it while ADR-0049 was only proposed.
+
+Fixes, after the owner decisions of 2026-10-13:
+
+- **Runbook and manifest.** RUN-0021 (1.4.17) is `active`. The CLI's manifest
+  row is `mutation: runtime` with RUN-0021 as authority, and the manifest
+  test's mutation table lists it as `runtime`.
+- **ADR-0049** (0.2.0) records the owner's acceptance decision. A new ADR must
+  enter as `proposed` (`invalid-initial-status` otherwise), so it stays
+  `proposed` here and becomes `accepted` in the first change after merge.
+  ADR-0032 now says ADR-0049 narrows it once accepted.
+- **Spec** (0.3.0). Contract 7 says the hook refuses Edit and Write on the
+  store and does not cover the shell; criterion 4 says an Edit or Write is
+  refused while the CLI reads and writes. Contract 3 and REQ-0024-FR-0015
+  cite section 5 for what a record may hold, and ADR-0049 decision 6 does the
+  same.
+- **CLI.** `backup` refuses an output directory the caller does not own (N1)
+  and removes the temporary `-journal` on failure (N5). `restore` builds the
+  copy under a temporary name and publishes it with `os.link`, which never
+  replaces a store created meanwhile and never shows a partial file (N2); an
+  `OSError` such as `PermissionError` becomes `MEMORY_RESTORE_FAILED` (N5). A
+  new test asserts the journal is 0600 (N3); it passed before the change.
+  N4 is unchanged: a backup is trusted as far as its contents.
+- **Tests.** Three new tests (directory owner, atomic publish, permission
+  failure) failed on `b42117a68` (2 failures, 1 error); `test_agent_memory`
+  now has 17 tests and all pass.
 
 ### W8 Native Acceptance
 
@@ -286,6 +330,9 @@ no native file.
 | Review checks | 7 | W7 | `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (141); manifest, workflow contract, renderer `--check` | Branch | PASS | Review Fixes | - |
 | Restic coverage | 3 | W4 | Memory backup in the `hyhome-backup.service` snapshot | - | NOT_RUN | W4 Limits, Failures and Backup | - |
 | Codex trust | 1 | W6 | Main checkout `trusted`; linked-worktree inheritance | `~/.codex/config.toml` key names and trust value | NOT_RUN | W8 Native Acceptance | - |
+| Security re-review | 7 | W7 | Independent `security-auditor` re-review: pass with notes, low only | `b42117a68` | PASS | Re-reviews at `b42117a68` | Security review |
+| Rules re-review | 7 | W7 | Independent `rules-engineer` re-review: changes required (H1, contract 7, criterion 4) | `b42117a68` | FAIL | Re-reviews at `b42117a68` | - |
+| Re-review fixes | 7 | W7 | New tests RED on `b42117a68` (2 failures, 1 error) then GREEN; `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (145); manifest, workflow contract, renderer `--check` (drift 0), governance contract; metadata `check-changed` (11, 0 violations); corpus lifecycle (0); `test_identity_history` (27) | Branch | PASS | Re-reviews at `b42117a68` | - |
 | Gate | 7 | W7 | Changed gate; candidate quality | - | NOT_RUN | W7 Verification | - |
 | Native acceptance | 1, 2, 4 | W8 | Two providers, two worktrees, one store | - | NOT_RUN | W8 Native Acceptance | - |
 | Migration | 1 | W9 | Eligible Claude native memories entered once through the CLI | - | NOT_RUN | W9 Native Memory Migration | - |
@@ -304,9 +351,10 @@ no native file.
 
 ## Review and Completion
 
-W2 to W6 are implemented on the branch, with the review fixes. The re-reviews,
-the manifest row, gates, the two-provider acceptance (W8) and the migration
-(W9) are open. No criterion is accepted.
+W2 to W6 are implemented on the branch, with the review and re-review fixes.
+The final rules review, the gates, ADR-0049's status change after merge, the
+two-provider acceptance (W8) and the migration (W9) are open. No criterion is
+accepted.
 
 ## Related Documents
 

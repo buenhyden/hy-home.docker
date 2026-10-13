@@ -1,6 +1,6 @@
 ---
 title: "Shared Agent Memory"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -86,6 +86,12 @@ The owner decided on 2026-10-13:
 6. **Journal mode:** the store uses a rollback journal (`journal_mode=DELETE`)
    instead of WAL. Ubuntu's libsqlite3 3.45.1-1ubuntu2.8 changelog shows no
    backport of the WAL-reset fix.
+7. **Runbook authority:** RUN-0021 is promoted to `active`, and the memory
+   CLI's manifest row is `mutation: runtime` with RUN-0021 as its authority
+   (answer "Promote RUN-0021 to active").
+8. **Decision status:** ADR-0049 is to be accepted (answer "Accept both",
+   which also covers ADR-0048). A new ADR enters as `proposed`, so its status
+   changes in the first change after this Spec merges.
 
 ## Contracts
 
@@ -109,9 +115,9 @@ The owner decided on 2026-10-13:
    `schema_version`, `workspace_id`, `memory_id`, `tier` (`short-term`,
    `long-term`, `domain`), `revision`, `owner`, `created_at`, `source_refs`,
    `eligibility`, `sensitivity` and `body`.
-   - A memory record is never Task status, QA result, approval or acceptance
-     evidence, and never a second copy of a governance rule.
-4. **CLI.** One repository CLI is the only writer. It supports current
+   - What a record may not hold is stated once, in
+     [environment constraints section 5](../../../.agents/governance/environment-constraints.md#5-shared-agent-memory).
+4. **CLI.** One repository CLI is the only sanctioned writer. It supports current
    lookup, bounded history lookup, an update that requires the expected
    revision, eligibility correction, usage report and backup.
    - Both providers call the same command.
@@ -139,8 +145,9 @@ The owner decided on 2026-10-13:
    - A failed backup keeps the previous good backup.
    - Recovery restores the records only. It never revives retired governance
      or QA.
-7. **Hook payload.** `tool_payload.py` treats the shared store path as outside
-   repository edit policy only for the CLI's own writes.
+7. **Hook payload.** `tool_payload.py` refuses an Edit or Write that targets
+   the shared store; the CLI writes it through SQLite, not an edit tool. Shell
+   commands are not covered, as section 5 states.
    - The native memory exemption is removed once contract 1 lands.
    - A read-only reviewer gains no Write, Edit or shell permission because of
      memory.
@@ -159,8 +166,9 @@ The owner decided on 2026-10-13:
 3. A stale expected revision, a concurrent quota race, a full database and a
    failed backup each fail explicitly and leave existing records unchanged.
    This is shown with a small test database.
-4. Removing a worktree and cleaning `_workspace` leave the store intact, and a
-   read-only reviewer can read but not write it.
+4. Removing a worktree and cleaning `_workspace` leave the store intact, and
+   an Edit or Write targeting the store is refused while the CLI still reads
+   and writes it.
 5. `tool_payload.py` has no native memory exemption, and its tests cover the
    store path rule.
 6. One governance owner states the memory rules, and the workspace guidance
