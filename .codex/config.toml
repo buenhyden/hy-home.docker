@@ -1,0 +1,5 @@
+# Codex reads this file only for a trusted project. Native memory stays off;
+# agents share scripts/operations/agent_memory.py instead.
+[memories]
+generate_memories = false
+use_memories = false
