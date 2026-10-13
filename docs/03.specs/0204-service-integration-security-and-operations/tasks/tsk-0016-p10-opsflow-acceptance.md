@@ -1,10 +1,10 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.19"
+version: "0.1.20"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0016"
 parent_ids:
@@ -25,8 +25,10 @@ acceptance contract and evidence ladder before any native or HOME action.
 The slice remains independent of the unimplemented Wiki application. It does not
 create a Wiki core, client, search resource, collection, workspace, schedule or
 blog-data write. Learning applications and LAB runtime services, configuration,
-secrets, data, images and execution are excluded. P08 may move typed LAB
-documents only into the corresponding Stage05 family `labs/` paths.
+secrets, data, images and execution are excluded. P08's numbered document
+moves are already present in the corresponding Stage05 family `15-labs/`
+folders; its current increment corrects README descriptions and navigation only.
+The separate W68 command-directory dry run remains NOT_RUN.
 
 ## Inputs and Authorization
 
@@ -1008,6 +1010,51 @@ latest-stable upgrades. Keep source, scan, native, HOME, migration, rotation,
 recovery and delivery acceptance separate; UNKNOWN is not clean.” No ledger,
 image, scanner, native or HOME mutation is made by this receipt.
 
+### Current source and requirement handoff — 2026-10-14
+
+The earlier 2026-10-12 request table is a dated observation. Its repeated
+“individual numbering unspecified” rows 27–30 are superseded by the current
+ALL_PROMPTS routing; none of its historical tests or delivery receipts is
+rewritten. The current source baseline is main
+`262dc2dde6eea27195f7d8909e9453f5ccc97f66`, after PR #457, and the reviewed
+P04 source correction is commit `667dcd9328ca6aa2923ad14a012967931877931b`.
+The separate SPEC-0212 coordination candidate is PR
+[#459](https://github.com/buenhyden/hy-home.docker/pull/459), head
+`384d9803730354e6c2aba86e9a116df51bb13e24`; it remains an open PR, not main.
+
+| Request | Current owner | Source handoff | Remaining execution boundary |
+| --- | --- | --- | --- |
+| 27 | SEC01 / TSK-0009 | Audit every ROOT image; update only a confirmed security warning, support end or required compatibility issue | Selected immutable image/package/scan/signature evidence, native acceptance and recovery; global evidence is incomplete |
+| 28 | P09 / TSK-0008 | Completed offline Wiki preparation is NO_CHANGE | No Wiki app, workspace, collection, database, collector or reservation admitted |
+| 29 | SMTP01 / TSK-0005 | COMM-002 canonical SMTP source already applied; alias source work is NO_CHANGE | Any new ROOT consumer and actual retirement retain their exact owner; no LAB GoTrue activation |
+| 30 | CLN01 / TSK-0007 | Existing retirement tools are NO_CHANGE absent a reproduced source defect | Fresh source/runtime/job/backup-restore/external consumer proof, exact deletion and recovery; no new deletion authorized |
+
+P04's old `tls_delivery_not_ready` statement above is historical. The current
+source can deliver a protected, parsed CA through a sealed immutable snapshot
+to PostgreSQL verify-full with GSS transport disabled, or to the fixed HTTPS
+S3 origin with proxy/redirect controls. Task0012 owns its 77-case source receipt
+and remaining actual CA/certificate/SAN/driver/worker/image/native boundaries;
+no TLS listener or operational certificate was provisioned here.
+
+The earlier P05 null SQL-binding observation is also historical. Current P04
+SQL and the P05 contract match the source binding introduced by
+`301e55f2`; Task0013 retains native notifier/credential/SMTP acceptance. No SQL
+migration, P05 workflow or notification was changed in this continuation.
+P01 W1 still needs the reviewed protected API client and independent custody.
+P08's bounded README corrections do not prove W68's command-directory dry run.
+Criterion 10/21 and W65–W69 remain pending/NOT_RUN as applicable. This is W63
+source reconciliation only, with no native, HOME, migration, rotation, deletion
+or recovery side effect.
+
+Independent rules review found one remaining active Objective instruction to
+move LAB documents into obsolete `labs/` paths. That instruction now names the
+existing `15-labs/` locations and bounds current work to README/navigation
+correction. All dated historical path/receipt text is preserved. The pre-fix
+seven-document metadata and spec reader/traceability/navigation/catalog checks
+passed on their frozen inputs; they are not relabeled as validation of this
+last wording change. Task-only metadata/link review and staged hooks must bind
+the corrected final hash before its logical commit.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -1039,6 +1086,9 @@ image, scanner, native or HOME mutation is made by this receipt.
 | P08 final source checks | 21 | W68 | Catalog, manifest, focused source/security/move/trace and local-staged hooks | Catalog and manifest `--check-generated` PASS; process `64469` hooks PASS without auto-changes; focused suites overlap | PASS | P08 final alternate-index source receipt | - |
 | Approved ROOT metadata case | 21 | W68 | `RootClosureTests.test_wildcard_root_render_selects_no_lab_service` | Process `85114`; one test, 3.835 seconds, exit 0; static render only | PASS | P08 numbered-path source receipt | - |
 | P08 full gate and delivery | 21 | W69 | Registered aggregate and remote delivery | Explain plan selects LAB functional leaves excluded from this scope; no push, PR, hosted CI or merge | NOT_RUN | P08 numbered-path source receipt | - |
+| Current numbered source handoff | 21 | W63 | Correct dated 27–30 routing and distinguish current P04/P05 source from native acceptance | main 262dc2dde; source 667dcd9; ALL_PROMPTS SHA256 3a8c715ee7d6719535f44ba2d6174fdc2609861915417bb27b2f9d586dd0bdde | PASS | Current source and requirement handoff — 2026-10-14 | - |
+| Active LAB path instruction defect | 21 | W63 | Independent rules review found Objective still instructed a new move into obsolete labs paths | Task pre-fix SHA256 d5c9b4c3ec1de65185c7bc5ba56d614f8009a3f5ed0879ea8df5aca41040be2b | FAIL | Current source and requirement handoff — 2026-10-14 | - |
+| Active LAB path instruction correction | 21 | W63 | Objective names existing 15-labs folders, current README/navigation correction only, W68 dry run NOT_RUN; dated receipts preserved | Corrected Objective in this Task; final scoped checks/review required | PASS | Current source and requirement handoff — 2026-10-14 | Active LAB path instruction defect |
 
 ## Criterion Acceptance
 

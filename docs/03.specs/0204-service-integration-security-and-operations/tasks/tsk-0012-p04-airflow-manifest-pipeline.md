@@ -1,6 +1,6 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.21"
+version: "0.1.22"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1526,6 +1526,33 @@ NOT_RUN. The existing internal plaintext :8333 lane is preserved. Historical
 cross-database CONNECT denial FAIL is a separate privilege gap and is not
 resolved by this source unit. Criterion 18 remains pending.
 
+### Current TLS logical commit receipt — 2026-10-14
+
+The reviewed eight-file source/document unit was committed as
+`667dcd9328ca6aa2923ad14a012967931877931b`,
+`fix(airflow): Enable verified TLS for manifest adapters`, with normal hooks.
+Immediately before the commit, explicit staging contained only its five
+source/test files, two workload/library READMEs and this Task. The registered
+Python Commitizen 4.15.1 check with `.cz.toml` and the 75-character limit passed;
+`rtk bash scripts/validation/run-ci-precommit.sh --mode local-staged` then
+passed all applicable style/secret hooks without edits, exit 0. No index change
+occurred between that PASS and the commit. Push/PR/merge had not run at this
+receipt; current source-only delivery does not close criterion 18.
+
+The prior selected document metadata command used
+`rtk python3 scripts/validation/check-document-metadata.py --mode check-changed
+--base-ref HEAD` with explicit `--changed-path` arguments for the workload
+README, library README and this Task: selected 3, violations 0, exit 0. The
+canonical registry/spec-package reader loaded 32 packages, exit 0.
+`rtk python3 scripts/validation/check-document-links.py --mode traceability`
+checked 1,295 documents/11,534 links with zero failures or warnings, exit 0.
+These structural checks preceded the final wording-only clarification and
+this result-only addition; they are preserved against their actual inputs,
+not relabeled as a check of this new Task hash. Independent final code/security
+review approved the last wording clarification before the staged gate.
+Task-only metadata/links/review must cover this new receipt before commit;
+unchanged source tests are not repeated merely to record their result.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -1551,6 +1578,7 @@ resolved by this source unit. Criterion 18 remains pending.
 | GSS transport assertion RED | 18 | W35 | PostgresAdapter.test_verify_full_driver_reads_sealed_ca_and_closes_it_after_connect; 1 case, KeyError gssencmode; exit 1 | Pre-GSS manifest 3e84f0d935d76841f9ce0abfa5ae36638d985836211b8334483161eb85c6088a | FAIL | Current TLS source correction | - |
 | GSS transport correction GREEN | 18 | W35 | Explicit gssencmode=disable; argument and poisoned PGGSSENCMODE tests; targeted 2 PASS, expanded 77 PASS, skip 0; exit 0 | Final five-file manifest b196ed66fd08ba32d20798f556fe9bd6ebc84d3d5c685af2c56b37a6e5a497d8 | PASS | Current TLS source correction | GSS transport assertion RED |
 | Final TLS source QA and independent review | 18 | W35 | QA expanded 77-case suite; Ruff/check/format/diff; independent code, security and IaC affected-slice approval | Final five-file manifest b196ed66fd08ba32d20798f556fe9bd6ebc84d3d5c685af2c56b37a6e5a497d8 | PASS | Current TLS source correction | - |
+| Current TLS logical commit | 18 | W39 | Explicit reviewed eight-file staging; registered Commitizen 4.15.1 and local-staged hooks PASS without edits, normal commit exit 0 | Commit 667dcd9328ca6aa2923ad14a012967931877931b; final source manifest b196ed66fd08ba32d20798f556fe9bd6ebc84d3d5c685af2c56b37a6e5a497d8 | PASS | Current TLS logical commit receipt — 2026-10-14 | - |
 
 Existing-source command, exit0:
 
