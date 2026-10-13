@@ -10,6 +10,7 @@ artifact_id: "SPEC-0234"
 parent_ids:
 - "REQ-0024"
 - "AD-0027"
+- "ADR-0049"
 created: "2026-10-13"
 ---
 
@@ -168,5 +169,9 @@ The owner decided on 2026-10-13:
 
 ## Related Documents
 
+- [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md),
+  REQ-0024-FR-0015
+- [AD-0027](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
+- [ADR-0049](../../02.architecture/decisions/0049-shared-agent-memory-store.md)
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-shared-agent-memory.md)

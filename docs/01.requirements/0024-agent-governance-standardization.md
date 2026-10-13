@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.4.0"
+version: "1.5.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-13"
 layer: "requirements"
 artifact_id: "REQ-0024"
 created: "2026-06-01"
@@ -82,6 +82,12 @@ independent policy sources.
   Current quality policy owns QA admission, agentic policy owns evaluation
   authority, and the active Task owns execution and acceptance. New evidence
   paths require bounded Stage 99 classification and canonical registration.
+- **REQ-0024-FR-0015**: Claude and Codex must share one repository-local agent
+  memory store that every worktree of a checkout reaches, in place of separate
+  native provider memories. Updates must name the expected revision and never
+  overwrite silently, limits must be stated as what actually enforces them,
+  and a memory record must never hold Task state, approval, acceptance
+  evidence, a governance rule or a secret.
 
 ### Non-functional Requirements
 
@@ -118,6 +124,8 @@ independent policy sources.
   predicates or dependence on historical fixtures.
 - The current authority does not use Stage 98 documents or deleted execution
   ledgers as input.
+- Both providers read and revise the same memory record from different
+  worktrees, and a stale revision changes nothing.
 
 ## Scope
 
@@ -153,5 +161,6 @@ independent policy sources.
 - **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - **Decision**: [ADR-0032 Canonical Agent Governance Home](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - **Decision**: [ADR-0034 Canonical Knowledge and Prompt Surfaces](../02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
+- **Decision**: [ADR-0049 Shared Agent Memory Store](../02.architecture/decisions/0049-shared-agent-memory-store.md)
 - **Historical implementation evidence**: [SPEC-0158](../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - **Governance entry**: [canonical agent governance](../../.agents/README.md)

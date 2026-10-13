@@ -241,6 +241,19 @@ part of this change.
   or `.github/workflows/`, so nothing there can copy `.workspace-memory/`.
   Git-based copies skip it because `.gitignore` ignores it.
 
+### Stage 01 and 02 Owners
+
+The memory capability had no Stage 01 or 02 owner, which REQ-0026-FR-0005
+requires, and accepted ADR-0032 said no memory or `.codex/config.toml` is
+created for formal symmetry. REQ-0024 (1.5.0) adds REQ-0024-FR-0015 and an
+acceptance criterion for the shared store. ADR-0049 (0.1.0, `proposed`, parent
+AD-0027) records the one store, native memory off, the CLI as the only
+sanctioned writer, the rollback journal and logical limits, and narrows
+ADR-0032's rule for memory and `.codex/config.toml` only. ADR-0032 (1.0.3)
+stays `accepted` and points to ADR-0049, as does the decisions README (1.6.4)
+inventory and Structure tree. The Registry high water is REQ-0024-FR 15 and
+ADR 49. The Spec now lists ADR-0049 as a parent and links all three owners.
+
 ### W8 Native Acceptance
 
 Not started. It needs a new Claude session and a new Codex session that
@@ -269,6 +282,8 @@ no native file.
 | Security review | 7 | W7 | Independent `security-auditor` review: pass with notes, two medium findings | `b9c9e3a07` | FAIL | Reviews at `b9c9e3a07` | - |
 | Rules review | 7 | W7 | Independent `rules-engineer` review: changes required | `b9c9e3a07` | FAIL | Reviews at `b9c9e3a07` | - |
 | Review fixes | 3 | W4 | `test_agent_memory` 11 failures and 1 error on `b9c9e3a07`, then 13 pass | Branch | PASS | Review Fixes | - |
+| Stage owners | 6 | W2 | Metadata `check-changed` (11, 0 violations); `test_identity_history` (27); corpus lifecycle (0); links `--mode all` (0 failures); governance contract | Branch | PASS | Stage 01 and 02 Owners | - |
+| Review checks | 7 | W7 | `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (141); manifest, workflow contract, renderer `--check` | Branch | PASS | Review Fixes | - |
 | Restic coverage | 3 | W4 | Memory backup in the `hyhome-backup.service` snapshot | - | NOT_RUN | W4 Limits, Failures and Backup | - |
 | Codex trust | 1 | W6 | Main checkout `trusted`; linked-worktree inheritance | `~/.codex/config.toml` key names and trust value | NOT_RUN | W8 Native Acceptance | - |
 | Gate | 7 | W7 | Changed gate; candidate quality | - | NOT_RUN | W7 Verification | - |

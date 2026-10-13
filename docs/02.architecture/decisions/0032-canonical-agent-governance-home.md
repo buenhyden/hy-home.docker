@@ -1,10 +1,10 @@
 ---
 title: "Canonical Agent Governance Home"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-13"
 layer: "architecture"
 artifact_id: "ADR-0032"
 parent_ids:
@@ -115,7 +115,8 @@ Adopt the following location model after an independent design review.
   relative links together.
 - New plugins, servers, memory, `.codex/config.toml`, or additional common
   directories are not created for formal symmetry. Model, permission, and hook
-  trust are not changed.
+  trust are not changed. ADR-0049 narrows this for shared memory and
+  `.codex/config.toml` only.
 - Local syntax/contract success, native discovery, invocation, permission
   enforcement, and actual hook receipt are separate pieces of evidence.
 
@@ -125,6 +126,7 @@ Adopt the following location model after an independent design review.
 
 - [Agent governance requirement](../../01.requirements/0024-agent-governance-standardization.md)
 - [Canonical adapter architecture](../descriptions/0027-agent-governance-canonical-adapter.md)
+- [Shared agent memory decision](0049-shared-agent-memory-store.md)
 - Predecessor authority decision
 - Preserved-record decision
 - [Owning specification](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md)
