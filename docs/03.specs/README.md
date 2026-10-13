@@ -71,6 +71,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0233 | [6세대 reader 교정](./0233-generation-6-reader-corrections/) | criterion 수용 행 정확히 하나, 실행 항목 완료 판정, 완료 보관 진입 조건과 누락된 규칙 fixture |
 | SPEC-0235 | [로컬 gate 거버넌스 timeout](./0235-local-gate-governance-timeout/) | 로컬 전용 문서 거버넌스 unittest node timeout을 15분에서 45분으로 올리고 실측 시간으로 근거 기록 |
 | SPEC-0236 | [공유 에이전트 기억](./0236-shared-agent-memory/) | Claude·Codex native 기억 비활성화, 등록된 단일 공유 기억 저장소와 CLI, 용량·백업 계약 초안 |
+| SPEC-0237 | [에이전트 memory Restic 포함](./0237-agent-memory-restic-coverage/) | 일일 `hyhome-backup.sh`가 공유 memory 저장소를 staging에 online backup해 Restic snapshot에 포함 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
