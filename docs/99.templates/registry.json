@@ -5135,8 +5135,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 47,
-      "next_number": 48,
+      "high_water": 48,
+      "next_number": 49,
       "child_spaces": {}
     },
     "spec": {

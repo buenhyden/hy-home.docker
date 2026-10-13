@@ -1,10 +1,10 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "2.0.0"
+version: "2.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-10-13"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -50,10 +50,11 @@ size, and absent incoming links cannot by themselves authorize deletion.
   First use creates the namespace; its absence permits neither unrecorded
   removal nor a blanket prohibition on retirement.
 - **REQ-0026-FR-0009**: Stage 03 occupancy is judged per package using registered
-  Spec, Plan, and Task terminal sets. A completed Spec may wait in Stage 03 with
-  a completed Plan and only completed or validly cancelled Tasks. Completion
-  receipts cover every numbered Spec criterion and Plan work unit before any
-  move. In an unfinished package, completed and validly cancelled Tasks may
+  Spec, Plan, and Task terminal sets. A package may wait in Stage 03 once it is
+  ready for archive review: approved Spec and Plan, terminal Tasks, every
+  numbered Spec criterion accepted or `not-required`, and no unresolved `FAIL`.
+  Readiness is derived, never stored, and must hold before any move. In an
+  unfinished package, completed and validly cancelled Tasks may
   remain but a terminal Plan may not. A cancelled or superseded Spec keeps no
   member in the active stage. Other stages keep per-document disposition rules.
   Cancellation records a reason, approver, valid approval date, and criterion
@@ -130,9 +131,9 @@ size, and absent incoming links cannot by themselves authorize deletion.
   removed with the payload.
 - Withdrawal records remain unique and source objects resolve at their original
   paths. History-only approval is verified at its pinned original revision.
-- A waiting completed package passes occupancy only with terminal members,
-  valid cancellations, and complete PASS receipts. Withdrawal alone never
-  satisfies a still-numbered criterion.
+- A waiting package passes occupancy only with terminal members and valid
+  cancellations, and leaves Stage 03 only when it is ready for archive review.
+  Withdrawal alone never satisfies a still-numbered criterion.
 - Preservation rules can be read from governance without loading a Spec Package.
 - New captures preserve full Git identity; legacy captures and original Task
   execution evidence remain unchanged. Whole-package captures include all

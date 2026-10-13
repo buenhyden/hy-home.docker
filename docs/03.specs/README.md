@@ -69,11 +69,9 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0231 | [Task lifecycle 6세대](./0231-task-lifecycle-generation-6/) | Spec·Plan 권한 상태, 기준별 수용 표, 다중 실행 항목 Task, 파생 보관 준비 판정과 활성 문서 이행 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
-Spec·Plan이 approved이고, 모든 Task가 completed이거나 유효하게 cancelled이며,
-모든 criterion이 accepted 또는 not-required이고, 해소되지 않은 `FAIL`이 없으면
-package는 보관 검토 준비 상태입니다. 이 판정은 읽을 때 계산하며 표나
-frontmatter에 적지 않습니다. 새 lifecycle 상태도, 처분 승인도 아닙니다. 준비된
-package에서는 새 실행을 시작하지 않습니다.
+package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
+규칙대로 읽을 때 계산하며 표나 frontmatter에 적지 않습니다. 새 lifecycle
+상태도, 처분 승인도 아닙니다.
 
 ### 역할 계약
 
@@ -99,7 +97,7 @@ package에서는 새 실행을 시작하지 않습니다.
 5. acceptance 대응과 승격 기록은 현재 Task에 남기고 Stage 01·02·05의 오래
    유지할 갱신을 연결하거나 갱신이 필요 없는 이유를 적습니다.
 6. metadata, lifecycle, 링크, 구현 정합성, 등록된 gate profile을 검증합니다.
-7. 승격과 acceptance 검증 뒤 package를 완료합니다. 별도 보관 승인과
+7. 승격과 acceptance 검증으로 package를 보관 검토 준비 상태로 만듭니다. 별도 보관 승인과
    복구·inbound consumer 확인 뒤 전체 단위를 보존합니다. clarify, analyze, 구현, 검증 순서는
    [SDLC](../../.agents/governance/sdlc.md)를 따릅니다.
 
@@ -111,9 +109,8 @@ package에서는 새 실행을 시작하지 않습니다.
 - 완료 전에 acceptance와 실제 검증 결과를 연결하고 오래 유지할 의미를 현재
   Stage 01·02·05 owner로 승격합니다. 승격 근거는 현재 Task의
   `Evidence` 한 곳에 기록합니다.
-- Spec·Plan 상태는 승인 권한만 기록합니다(draft, in-review, approved,
-  cancelled, superseded). 실행 상태는 Task가, 수용 판정은 Task의
-  `Criterion Acceptance` 표가 소유합니다.
+- Spec·Plan 상태는 승인 권한만 기록합니다. 실행 상태는 Task가, 수용 판정은
+  Task의 `Criterion Acceptance` 표가 소유합니다.
 - 보관 검토 준비가 된 package는 그대로 보관 승인을 기다릴 수 있습니다.
   별도 승인을 받은 뒤 Spec·Plan·모든 Task를 Stage 98로 함께 옮깁니다.
   Git 복구만 믿고 실행 본문을 지우거나 동결된 내용을 다시 쓰지 않습니다.

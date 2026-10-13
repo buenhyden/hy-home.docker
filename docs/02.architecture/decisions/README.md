@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.2"
+version: "1.6.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-13"
 layer: "architecture"
 ---
 
@@ -41,6 +41,7 @@ docs/02.architecture/decisions/
 ├── 0042-openbao-unseal-method.md
 ├── 0043-operations-role-layout.md
 ├── 0044-readme-navigation-and-document-language.md
+├── 0048-authority-parents-and-criterion-acceptance.md
 └── README.md
 ```
 
@@ -80,6 +81,7 @@ docs/02.architecture/decisions/
   모든 구성원이 terminal인 완료 package의 처분 대기와, 구조화된 취소 근거를 가진
   cancelled Task, 현재 재평가·history-only 이용 가능성·새 포착의 정확 동일성을
   채택한 accepted decision. ADR-0036을 대체하며 SPEC-0179가 구현·검증을 소유한다.
+  처분 대기·취소·완료 receipt를 다룬 결정 1–3은 ADR-0048이 대체한다.
 - [`ADR-0038`](./0038-selective-native-oidc-for-native-auth-apps.md):
   Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native
   OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는
@@ -109,6 +111,10 @@ docs/02.architecture/decisions/
   Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 proposed decision(SPEC-0197).
 - [`ADR-0047`](./0047-dev-timescale-influx-retirement-and-load-tools.md):
   DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 accepted decision(SPEC-0212, SPEC-0213).
+- [`ADR-0048`](./0048-authority-parents-and-criterion-acceptance.md):
+  Spec·Plan은 승인 권한만, Task는 실행 상태를, criterion마다 하나의 수용 판정을
+  두고 보관 검토 준비를 읽을 때 계산하는 accepted decision. ADR-0037의 결정
+  1–3을 대체하며 SPEC-0231이 구현·검증을 소유한다.
 
 ## Usage
 

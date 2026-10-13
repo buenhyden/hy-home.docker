@@ -33,7 +33,7 @@ created: "{{CREATED}}"
 ## Acceptance Criteria
 
 <!-- Author prompt: Use a numbered list of observable criteria; keep those numbers stable while Plan and Task evidence refers to them. -->
-<!-- Author prompt: A completed criterion needs observed PASS evidence in its Task. Cancellation disposition never waives Spec completion evidence. -->
+<!-- Author prompt: An accepted criterion needs PASS evidence and no unresolved FAIL in its Task; only a `not-required` decision closes it without PASS. Cancellation disposition never closes a criterion. -->
 
 {{ACCEPTANCE_CRITERIA}}
 

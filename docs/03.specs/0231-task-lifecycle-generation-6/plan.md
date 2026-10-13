@@ -28,7 +28,7 @@ the rules. Each unit is one logical commit on one branch with one writer.
 | W2 | 1, 2 | Generation 6 reader: parent authority, single and multi-item Tasks, Evidence `Resolves`, criterion acceptance, completion | W1 | TSK-0001 | Task evidence |
 | W3 | 3 | Shared archive readiness predicate in Stage 03 occupancy and preservation | W2 | TSK-0001 | Task evidence |
 | W4 | 4 | Generation migration proof and normalizations; mechanical migration of active Stage 03 documents | W2, W3 | TSK-0001 | Task evidence |
-| W5 | 5 | Governance, template and README text; repeated `### Usage` headings | W4 | TSK-0001 | Task evidence |
+| W5 | 5 | Governance, template and README text; REQ-0026, AD-0030 and ADR-0048; repeated `### Usage` headings | W4 | TSK-0001 | Task evidence |
 | W6 | 6 | Changed gate, candidate quality and integration | W1, W2, W3, W4, W5 | TSK-0001 | Task evidence |
 
 ## Verification Plan

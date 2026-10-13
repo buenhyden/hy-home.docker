@@ -10,6 +10,7 @@ artifact_id: "SPEC-0231"
 parent_ids:
 - "REQ-0024"
 - "AD-0030"
+- "ADR-0048"
 created: "2026-10-13"
 ---
 
@@ -38,8 +39,9 @@ In scope: the Registry common contract and the `spec`, `plan` and `task`
 lifecycles and profiles; the frontmatter and profile schemas; the Task
 template; the Stage 03 reader in `scripts/lib/document_governance/`
 (`spec_packages.py`, `archive.py` and their callers); the governance and
-README text that states these rules; the migration of active Stage 03
-documents; and the tests that pin these behaviors.
+README text that states these rules; REQ-0026-FR-0009, AD-0030 and a new
+ADR-0048 that replaces ADR-0037 decisions 1 to 3; the migration of active
+Stage 03 documents; and the tests that pin these behaviors.
 
 Out of scope: frozen archive bodies under `docs/98.archive/`, which keep the
 meaning of the generation that wrote them; generation 4 historical Task
@@ -79,11 +81,13 @@ archive approval itself, which stays a separate owner decision.
 7. **Archive readiness.** A package is ready for archive review, a derived
    view that is never stored, when its Spec and Plan are `approved` (or
    validly `cancelled` or `superseded`), every Task or item is terminal, every
-   criterion row is `accepted` or `not-required`, no `FAIL` row is
-   unresolved, and no archive hold names the package. Readiness is not
-   archive approval. A package leaves Stage 03 for the completed archive only
-   when this predicate held on its base revision; Stage 03 occupancy keeps
-   checking only that members are consistent.
+   criterion row is `accepted` or `not-required`, and no `FAIL` row is
+   unresolved. Readiness is not archive approval. Archive holds stay where
+   they are recorded today, on archived units in the archive assessments;
+   Stage 03 has no hold source, so readiness reads none. A package leaves
+   Stage 03 for the completed archive only when this predicate held on its
+   base revision; Stage 03 occupancy keeps checking only that members are
+   consistent.
 8. **Migration.** The Registry moves to lifecycle generation 6 and declares
    its status normalizations: Spec and Plan `in-progress`, `blocked` and
    `completed` become `approved`. A Contract Migration record in this

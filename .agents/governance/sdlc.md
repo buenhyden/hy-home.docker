@@ -36,7 +36,8 @@ Reuse approved Requirement and Architecture inputs when they already cover the
 change. Within Stage 03, clarify unresolved scope before writing the Spec, map
 its acceptance criteria into the Plan and Tasks, and analyze their coverage and
 consistency before implementation. Verify actual results, promote durable meaning
-to its Stage 01/02/05 owner, then complete and preserve the execution package.
+to its Stage 01/02/05 owner, then bring the package to readiness for archive
+review before any separately approved preservation.
 This adapts the [Spec Kit workflow](https://github.com/github/spec-kit) while
 retaining this repository's separate numbered Task records.
 
@@ -58,8 +59,10 @@ retain `draft`, `ready`, `in-progress`, `blocked`, `completed`, and
 catalog remain `active`; route records use `draft` or `sealed`.
 
 A Plan has one Spec parent and a Task has one Plan parent. A Plan is never
-ahead of its Spec, and a Task runs only while both are `approved`; under any
-other parent status a remaining Task stays `draft` or `blocked`. Parent status
+ahead of its Spec and never ends before it. A Task, and each of its items,
+runs only while both are `approved`; under a `draft` or `in-review` parent a
+remaining Task or item stays `draft` or `blocked`. A `cancelled` or
+`superseded` Spec requires a terminal Plan and terminal Tasks. Parent status
 never reflects execution.
 
 Execution state has one owner. A single-mode Task keeps one frontmatter
@@ -73,10 +76,11 @@ Task that a `PASS` row for a shared criterion resolves. Acceptance has one
 owner per criterion: the `Criterion Acceptance` table of one Task the Plan
 assigns it to holds `pending`, `accepted`, `rejected`, or `not-required`.
 `accepted` requires `PASS` evidence for the criterion and no unresolved `FAIL`;
-`rejected` and `not-required` state their decision. A completed Task, or item,
-has `PASS` evidence for every criterion and Work Unit pair it owns unless that
-criterion is `not-required`, and every criterion it owns is accepted or
-`not-required`. Task-result vocabulary is exactly `NOT_RUN`, `PASS`, `FAIL`,
+`rejected` and `not-required` state their decision; only `not-required` closes
+a criterion without `PASS`. A completed Task, or completed item, has `PASS`
+evidence for every criterion and Work Unit pair assigned to it unless that
+criterion is `not-required`, and a completed Task has every criterion it
+decides accepted or `not-required`. Task-result vocabulary is exactly `NOT_RUN`, `PASS`, `FAIL`,
 `DEFER`, and `NOT_APPLICABLE`. Lifecycle events and generation-migration proof
 rows record observed structure only; they do not authenticate approval,
 review, or execution.

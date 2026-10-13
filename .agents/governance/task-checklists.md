@@ -46,9 +46,9 @@ Approved repository edits, ongoing implementation, and completion evidence.
 - [ ] Inspect `git diff --check`, status, and the exact task-owned diff.
 - [ ] Record pass, fail, baseline debt, skipped checks, recovery, and review separately.
 - [ ] Record final criterion acceptance before disposition. A Stage 03 package
-      may wait once it is ready for archive review: approved parents, terminal
-      Tasks, accepted or `not-required` criteria and no unresolved `FAIL`;
-      cancelled criteria do not waive remaining Spec acceptance evidence.
+      may wait once it is [ready for archive review](sdlc.md#sequence);
+      cancelled criteria do not waive remaining Spec acceptance evidence, and
+      only a `not-required` decision closes a criterion without PASS.
 - [ ] Bind any later preservation to its prepared source object and separate
       disposition approval. Preserve Task Commit Ledgers and frozen bodies.
 - [ ] For reassessment or history-only availability, verify the current assessment,
