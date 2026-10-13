@@ -764,7 +764,13 @@ def _validate_parent_authority(
         raise SpecPackageError(f"{plan.path} Plan cannot be ahead of its Spec")
     if spec.status == plan.status == "approved":
         return
-    if any(task.status not in task_terminal | {"draft", "blocked"} for task in tasks):
+    # An item's own status counts: a blocked summary must not hide a running item.
+    statuses = [
+        status
+        for task in tasks
+        for status in ([row[4] for row in task.items] if task.items else [task.status])
+    ]
+    if any(status not in task_terminal | {"draft", "blocked"} for status in statuses):
         raise SpecPackageError(
             f"{plan.path} a Task may run only under an approved Spec and Plan"
         )

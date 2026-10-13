@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import pathlib
 import unittest
 
@@ -231,6 +232,26 @@ class Generation6ParentTests(unittest.TestCase):
         self.parents("in-review", "draft", "draft", "blocked", "completed")
         with self.assertRaisesRegex(module.SpecPackageError, "approved Spec and Plan"):
             self.parents("in-review", "in-review", "in-progress")
+
+    def test_a_running_item_needs_approved_parents(self) -> None:
+        items = (
+            ("A", "W1", "First", "@owner", "in-progress", "-"),
+            ("B", "W2", "Second", "@owner", "blocked", "Waiting on review"),
+        )
+        running = module.SpecDocument(
+            ROOT / "tasks/tsk-0001-x.md",
+            "task",
+            "SPEC-0001-TSK-0001",
+            "blocked",
+            (),
+            items=items,
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "approved Spec and Plan"):
+            module._validate_parent_authority(
+                dataclasses.replace(SPEC, status="in-review"),
+                dataclasses.replace(PLAN, status="in-review"),
+                (running,),
+            )
 
     def test_plan_cannot_be_ahead_of_its_spec(self) -> None:
         with self.assertRaisesRegex(module.SpecPackageError, "ahead"):
