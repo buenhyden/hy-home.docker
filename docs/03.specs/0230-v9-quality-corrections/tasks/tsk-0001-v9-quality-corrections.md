@@ -83,12 +83,15 @@ two files, which Git does not track, both modules passed (19 tests).
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Mark-only inputs | 1 | W1 | Pinned `action.yml` text for `days-before-close`; workflow contract tests | Branch on `4af41f1a8` | PASS | W1 Mark-only Stale Workflow | pending |
 | Check repairs | 2 | W2 | Both tests RED on clean `4af41f1a8`; 65 workflow contract and update-gate tests GREEN | Branch on `4af41f1a8` | PASS | W2 Selector List and Ledger Digests | pending |
+| Remote candidate | 3 | W3 | `candidate-quality` on PR #438 | `0b479b1a4` | PASS | Review and Completion | pending |
 | Changed gate | 3 | W3 | `run-ci-gate.py --profile changed`; rerun of two permission tests | Branch on `4af41f1a8` | PASS | W3 Changed Gate | pending |
 
 ## Review and Completion
 
-`candidate-quality` is recorded here when the pull request has a result. No
-row is accepted until the owner accepts it.
+PR #438 head `0b479b1a4`: `candidate-quality` passed in run `38344684357` (job
+`115123215753`, 4m55s); CodeQL and GitGuardian passed; `main-security` was
+skipped as it runs on `main` only. No row is accepted until the owner
+accepts it.
 
 ## Related Documents
 
