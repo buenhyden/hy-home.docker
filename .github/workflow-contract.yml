@@ -538,6 +538,7 @@
       "argv": [
         "run-unittest",
         "tests.lib.hooks.test_tool_payload",
+        "tests.lib.hooks.test_agent_memory",
         "-v"
       ],
       "cwd": ".",
@@ -1523,6 +1524,7 @@
           "scripts/lib/agent_governance/",
           "scripts/hooks/",
           "scripts/lib/hooks/",
+          "scripts/operations/agent_memory.py",
           "scripts/operations/provider_surface_renderer.py",
           "tests/lib/hooks/",
           "tests/validation/test_agent_governance_ci_routing.py"
