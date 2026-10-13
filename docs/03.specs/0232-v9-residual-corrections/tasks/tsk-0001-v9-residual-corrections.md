@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -111,6 +111,20 @@ suite and was stopped (exit 124). That suite's local result is `NOT_RUN`.
 The owner merged pull request #443 as merge commit `8a3155daa` (parents
 `baffae4c7` and `cc8a880dc`).
 
+### W6 Tombstone Identity
+
+The owner chose this fix next on 2026-10-13. `_ROLE_MEMBER` in
+`scripts/lib/document_governance/archive.py` accepted only
+`docs/05.operations/<family>/NNNN-slug.md`; since `6056788a5` the files sit
+under `<family>/NN-classification/`, so the three role-layout subtests fell
+through to the tombstone number (`tomb-GDE-0235` for `tomb-GDE-0051`). The
+pattern now takes an optional classification segment, spelled as
+`operations_moves._DOMAIN` spells it; flat paths that existing tombstones
+record still match. The only production caller is the tombstone identity
+check at `archive.py:924`. `test_archive` went from 3 failures to 71 passing;
+the corpus lifecycle check and archive recovery (140 tombstones) report 0
+violations and `tests.validation.lifecycle.test_recovery` passes.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -120,6 +134,7 @@ The owner merged pull request #443 as merge commit `8a3155daa` (parents
 | Frozen | 3 | W3 | Registry assertion; anchor mutation shows 149 disagreements | Branch | PASS | W3 Frozen Payload Registry Assertion | - |
 | Shim | 4 | W4 | Governance contract (failures=0) | Branch | PASS | W4 Root Shim | - |
 | Gate | 5 | W5 | Local changed gate; stopped at its 3600 s limit in the governance suite | `cc8a880dc` | NOT_RUN | W5 Gate | - |
+| Tombstone | 6 | W6 | `test_archive` RED (3 failures) then GREEN (71); corpus lifecycle; archive recovery; recovery tests | Branch on `7325f1af2` | PASS | W6 Tombstone Identity | - |
 | Candidate | 5 | W5 | Hosted `candidate-quality`, changed profile | PR #443 at `cc8a880dc` | PASS | W5 Gate | - |
 
 ## Criterion Acceptance
@@ -131,6 +146,7 @@ The owner merged pull request #443 as merge commit `8a3155daa` (parents
 | 3 | pending | - | - |
 | 4 | pending | - | - |
 | 5 | pending | - | - |
+| 6 | pending | - | - |
 
 ## Review and Completion
 
