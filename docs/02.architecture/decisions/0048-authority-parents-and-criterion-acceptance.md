@@ -1,6 +1,6 @@
 ---
 title: "Authority Parents and Criterion Acceptance"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
 status: "proposed"
 owner: "@buenhyden"
@@ -39,17 +39,27 @@ meaning of the generation that wrote them.
 2. A Task owns execution state: one frontmatter `status`, or, in a multi-item
    Task, one status per Execution Items row and no frontmatter `status`.
 3. Evidence rows record observations and which earlier `FAIL` rows a `PASS`
-   resolves. One Criterion Acceptance row per criterion records `pending`,
-   `accepted`, `rejected` or `not-required`; `accepted` needs `PASS` evidence
-   and no unresolved `FAIL`.
+   resolves. Exactly one Criterion Acceptance row per criterion, in a current
+   Task the Plan assigns it to, records `pending`, `accepted`, `rejected` or
+   `not-required`; `accepted` needs `PASS` evidence and no unresolved `FAIL`.
+   A completed Task or item needs every criterion it decides for its work
+   accepted or `not-required`.
 4. A package is ready for archive review when its parents are `approved` (or
    validly `cancelled` or `superseded`), every Task or item is terminal, every
    criterion is accepted or `not-required`, and no `FAIL` is unresolved. It may
-   wait in Stage 03 then and leaves only from a ready base revision. Readiness
-   is derived and is not disposition approval.
+   wait in Stage 03 then, and it enters the completed archive only from a ready
+   base revision, whatever its status there. Readiness is derived and is not
+   disposition approval.
 
-These replace ADR-0037 decisions 1 to 3. ADR-0037 decisions 4 onward, on
-assessments, history-only availability and capture identity, are unchanged.
+These replace ADR-0037 decision 1 and the completion-receipt clauses of
+decisions 2 and 3: that withdrawal never exempts the completed Spec's PASS
+receipt, and that completion receipts are checked before moving. The rest of
+ADR-0037 decisions 2 and 3 stays in force: the structured `cancellation`
+record, that terminal Plans may not remain in an unfinished package, that
+Registry profile lifecycles decide member terminality while disposition-entry
+statuses are registered separately, and that templates do not seed approvals.
+ADR-0037 decisions 4 onward, on assessments, history-only availability and
+capture identity, are unchanged.
 
 ## Alternatives
 

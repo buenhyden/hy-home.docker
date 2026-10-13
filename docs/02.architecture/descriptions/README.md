@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.1.5"
+version: "1.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-13"
 layer: "architecture"
 ---
 
@@ -62,8 +62,6 @@ docs/02.architecture/descriptions/
 
 ## Usage
 
-### Usage
-
 ### Audience
 
 - System Architects
@@ -71,7 +69,7 @@ docs/02.architecture/descriptions/
 - Operators
 - AI Agents
 
-### Usage
+### Authoring Flow
 
 1. 상위 [Requirement Package](../../01.requirements/README.md)를 확인한다.
 2. 같은 system, tier 또는 concern을 설명하는 문서가 있는지 확인한다.

@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.3"
+version: "1.6.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -81,7 +81,8 @@ docs/02.architecture/decisions/
   모든 구성원이 terminal인 완료 package의 처분 대기와, 구조화된 취소 근거를 가진
   cancelled Task, 현재 재평가·history-only 이용 가능성·새 포착의 정확 동일성을
   채택한 accepted decision. ADR-0036을 대체하며 SPEC-0179가 구현·검증을 소유한다.
-  처분 대기·취소·완료 receipt를 다룬 결정 1–3은 ADR-0048이 대체한다.
+  처분 대기를 다룬 결정 1과 결정 2·3의 완료 receipt 조항은 ADR-0048이
+  대체하고, 취소 기록·terminal Plan·terminality 규칙은 그대로 유지된다.
 - [`ADR-0038`](./0038-selective-native-oidc-for-native-auth-apps.md):
   Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native
   OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는
@@ -103,22 +104,21 @@ docs/02.architecture/decisions/
   `incidents/`) 구조로 바꾸는 accepted decision(SPEC-0183).
 - [`ADR-0044`](./0044-readme-navigation-and-document-language.md):
   README navigation과 문서 언어를 워크스페이스 전체에서 하나의 강제 계약으로
-  통합하는 proposed decision(SPEC-0184).
+  통합하는 accepted decision(SPEC-0184).
 
 - [`ADR-0045`](./0045-data-storage-and-analytics-tier-boundary.md):
-  Data 저장소와 Analytics 처리 패키지의 경계를 정한 proposed decision(SPEC-0197).
+  Data 저장소와 Analytics 처리 패키지의 경계를 정한 accepted decision(SPEC-0197).
 - [`ADR-0046`](./0046-capability-tiers-and-quality-boundary.md):
-  Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 proposed decision(SPEC-0197).
+  Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 accepted decision(SPEC-0197).
 - [`ADR-0047`](./0047-dev-timescale-influx-retirement-and-load-tools.md):
   DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 accepted decision(SPEC-0212, SPEC-0213).
 - [`ADR-0048`](./0048-authority-parents-and-criterion-acceptance.md):
   Spec·Plan은 승인 권한만, Task는 실행 상태를, criterion마다 하나의 수용 판정을
-  두고 보관 검토 준비를 읽을 때 계산하는 proposed decision. ADR-0037의 결정
-  1–3을 대체하며 SPEC-0231이 구현·검증을 소유한다.
+  두고 보관 검토 준비를 읽을 때 계산하는 proposed decision. ADR-0037 결정 1과
+  결정 2·3의 완료 receipt 조항을 대체하며 SPEC-0231과 SPEC-0233이 구현·검증을
+  소유한다.
 
 ## Usage
-
-### Usage
 
 ### Audience
 
@@ -127,7 +127,7 @@ docs/02.architecture/decisions/
 - Reviewers
 - AI Agents
 
-### Usage
+### Authoring Flow
 
 1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.
 2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.

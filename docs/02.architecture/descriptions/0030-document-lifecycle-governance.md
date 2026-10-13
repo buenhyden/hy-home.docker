@@ -1,6 +1,6 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "2.1.0"
+version: "2.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -179,3 +179,4 @@ retain their own authorization and execution evidence requirements.
 ## Related Documents
 
 - [ADR-0032 Canonical agent governance home](../decisions/0032-canonical-agent-governance-home.md)
+- [ADR-0048 Authority parents and criterion acceptance](../decisions/0048-authority-parents-and-criterion-acceptance.md)
