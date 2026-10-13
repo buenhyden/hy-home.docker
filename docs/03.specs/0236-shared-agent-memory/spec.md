@@ -47,6 +47,7 @@ This Spec defines the contract and records the owner decisions under Scope.
 ## Scope
 
 In scope:
+
 - project settings that turn native provider memory off;
 - one shared store with a registered persistent runtime root, its schema and a
   CLI that both providers call;
@@ -56,6 +57,7 @@ In scope:
 - the acceptance tests.
 
 Out of scope:
+
 - moving or deleting existing native memory files, or reading them outside
   the one migration in decision 2;
 - user-global or managed provider settings;
