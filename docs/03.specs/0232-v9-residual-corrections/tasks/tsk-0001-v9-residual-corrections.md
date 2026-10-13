@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -291,6 +291,31 @@ Plan (1.1.0) with W8 to W10 and criteria 8 to 10; the new criteria start
 | SPEC-0232 | draft | approved | #owner-decisions |
 | SPEC-0232-PLAN-0001 | draft | approved | #owner-decisions |
 
+### Direct Push and Review — 2026-10-13
+
+W8 to W10 (`273871804`, `5e4689a2c`, `e42655ef8`) reached `main` at
+2026-10-13T12:10:11Z by a direct push of the merge `5a93ea054` ("Merge branch
+'main' ... into claude/v9-residual-closure"), without a pull request. The
+worktree's reflog shows `pull --tags origin main`, the form VS Code Source
+Control sync uses, on a branch that tracked `origin/main`; neither this session
+nor its forked workers issued that pull or push. The owner chose on
+2026-10-13 to keep the commits and review and verify them afterwards, and to
+create every later branch with `--no-track` and push with an explicit refspec.
+
+- Hosted push runs on `5a93ea054`: CI Quality Gates 38395326780 and Push on
+  main 38395326315, both success. `leaf.changed-style` runs only in the PR
+  candidate, so these runs do not exercise the wrapper.
+- An independent `ci-cd-engineer` review of `40f194e99..5a93ea054` approved
+  with notes. It ran the wrapper test (PASS) and the LAB isolation tests (12,
+  OK) in a scratch worktree, and real pre-commit 4.6.2 on a staged file with
+  trailing whitespace and no final newline: the isolated copy was fixed, the
+  wrapper exited non-zero, and the source index and worktree were unchanged.
+  Its notes were applied in `quality-standards.md`: the `pr-merge` bullet now
+  says hooks run on an isolated copy, and the Validation bullet no longer
+  claims every hook has a check mode. Its remaining notes stay open: the
+  test's hook-ID comparison is a loose `grep`, it runs no real fixer, and
+  `pr-merge` index preservation is tested only through the stand-in.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -310,6 +335,7 @@ Plan (1.1.0) with W8 to W10 and criteria 8 to 10; the new criteria start
 | Wrapper | 8 | W8 | Wrapper test RED on `main` then GREEN; shellcheck; real `pre-commit` TOML whitespace case (new exit 1, `main` exit 0) | Branch on `ec0877f10` | PASS | W8 Pre-commit Wrapper (F22) | - |
 | LAB guide | 9 | W9 | Old test RED with the guide rows deleted, GREEN after; `test_lab_isolation` and `test_operations_catalog` (140) | Branch on `ec0877f10` | PASS | W9 LAB Isolation Test (F31) | - |
 | Finding records | 10 | W10 | Per-finding records with file:line evidence; PR #428 and run 38275029067 read with `gh` | Branch on `ec0877f10` | PASS | W10 Finding Records | - |
+| Wrapper review | 8 | W8 | Independent `ci-cd-engineer` review: approve with notes; wrapper test PASS, LAB isolation (12) OK, real pre-commit fixer case kept source bytes | `5a93ea054` | PASS | Direct Push and Review — 2026-10-13 | - |
 
 ## Criterion Acceptance
 
