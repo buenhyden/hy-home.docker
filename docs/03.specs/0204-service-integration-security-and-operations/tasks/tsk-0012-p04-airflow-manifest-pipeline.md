@@ -1,10 +1,10 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.20"
+version: "0.1.21"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0012"
 parent_ids:
@@ -300,6 +300,7 @@ profile is held in ignored `registry-readme.patch`; the shared Registry stays
 untouched. Actual metadata acceptance awaits coordinator integration. Patch
 applicability for that hunk and the README/QA-registration hunks passed, exit0.
 
+Historical W37 source state at worker HEAD4e26a5a, before the current TLS unit:
 Independent security review found that a CA pathname alone did not protect
 against changed/symlinked trust roots at driver open. The adapter's revised
 source fails before driver import/client/connect for HTTPS or verify-full
@@ -1475,6 +1476,56 @@ SQL README SHA256 `cd2f33`; it predates this amendment and is not a PASS for
 this amendment. The prior final local-staged check also passed before C1; neither
 receipt replaces the required check on the final integrated head.
 
+### Current TLS source correction — 2026-10-14
+
+The current user request authorizes safe source fixes, tests and owning-Spec
+PR delivery from `ALL_PROMPTS.md` input SHA256
+`3a8c715ee7d6719535f44ba2d6174fdc2609861915417bb27b2f9d586dd0bdde`.
+This unit uses base `262dc2dde6eea27195f7d8909e9453f5ccc97f66` and
+`codex/p04-tls-ca-delivery`. The worker owns adapters, the new package-local
+`tls.py`, the DAG and the two existing test modules. The controller owns the
+workload/library READMEs and this result receipt. SQL, Compose and P05 binding
+remain byte-for-byte unchanged. The existing workload-prefix selector covers
+the helper; no shared manifest or workflow is changed.
+
+The earlier `tls_delivery_not_ready` guard was an intentional historical
+source limitation, not the current behavior. Current source validates protected
+CA input and pins the verified bytes in a sealed memfd. When TLS is selected,
+PG requires verify-full and rejects ambient connection variables. S3 admits only the fixed future
+`https://seaweedfs-s3:443` origin/contract, disables proxies and redirects, and
+closes its client/CA snapshot on both normal and exceptional DAG exits.
+
+Initial new regression tests ran 35 cases with 7 failures and 10 errors before
+implementation. The initial size-driven test refactor then broke the existing
+E2E `ConnectionDouble` consumer (77 cases, 5 errors); restoring that public
+fixture API corrected it. Neither failure is rewritten as success. Final
+independent QA and security checks ran the expanded registered suite: 77 PASS,
+zero skips, exit 0. Ruff check, format check and diff check passed. Worker
+coverage.py 7.16.2 branch measurement reports total 94%, adapters 94%, TLS 85%
+and DAG 100%; an independent coverage rerun was sandbox-blocked, so those
+percentages are worker-observed rather than independently reproduced.
+
+The first reviewed code manifest was
+`3e84f0d935d76841f9ce0abfa5ae36638d985836211b8334483161eb85c6088a`.
+Independent IaC review then found that libpq may prefer GSS encryption over
+TLS despite verify-full. A new driver-argument assertion failed with KeyError
+`gssencmode` (one case, exit 1). Explicit `gssencmode=disable` plus poisoned
+`PGGSSENCMODE` coverage passed the two targeted cases and the expanded 77-case
+suite. Independent QA, code, security and IaC affected-slice reviews approved
+the corrected source. The final five-file checksum manifest is `b196ed66fd08ba32d20798f556fe9bd6ebc84d3d5c685af2c56b37a6e5a497d8`.
+The manifest hashes UTF-8 rows sorted by repository-relative path, each
+`path`, one ASCII space, file SHA256 and LF, including the final LF. The five
+paths are the adapters, TLS helper, DAG, adapter tests and Airflow contract
+tests named in this unit. This closes the source transport finding only; the
+[libpq connection contract](https://www.postgresql.org/docs/18/libpq-connect.html)
+and exact-image compatibility still require their named native evidence.
+Actual SeaweedFS TLS listener/certificate/SAN, wrong-CA/expired-certificate
+handshakes, frozen driver/image behavior, real Celery worker identity and
+protected-file readability, DB/S3 publication, auth/restart and recovery remain
+NOT_RUN. The existing internal plaintext :8333 lane is preserved. Historical
+cross-database CONNECT denial FAIL is a separate privilege gap and is not
+resolved by this source unit. Criterion 18 remains pending.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -1493,6 +1544,13 @@ receipt replaces the required check on the final integrated head.
 | Rotation | 18 | W38 | Credential rotation | No rotation required | NOT_APPLICABLE | No rotation authorized by issuance | - |
 | Delivery | 8, 18 | W39 | Latest-head CI/review/PR/merge | Draft PR 437 at published head `fc328`; revised head pending | NOT_RUN | Candidate checks passed, but final revised-head CI, independent review, and merge remain pending | - |
 | Segmented source checks | 8 | W39 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | - |
+| Current TLS source RED | 18 | W35 | New adapter/Airflow source regressions; 35 cases, 7 failures and 10 errors; exit 1 | Base 262dc2dde with newly written synthetic regressions; exact RED patch hash not recorded | FAIL | Current TLS source correction | - |
+| Shared fixture compatibility regression | 18 | W35 | Expanded P04/E2E source suite; 77 cases, 5 errors from missing ConnectionDouble; exit 1 | Initial split test freeze; adapter-test SHA 582e9e65ecdd5e5d755d863d7780872ef435623046c27aa14a77be7339139b7f | FAIL | Current TLS source correction | - |
+| Current TLS source and fixture GREEN | 18 | W35 | python3 -m unittest tests.lib.ops.test_opsflow_manifest tests.lib.ops.test_opsflow_adapters tests.lib.ops.test_opsflow_provision_contract tests.validation.test_opsflow_airflow_contract tests.validation.test_opsflow_e2e_acceptance -v; 77 PASS, skip 0; exit 0 | Five-file manifest 3e84f0d935d76841f9ce0abfa5ae36638d985836211b8334483161eb85c6088a | PASS | Current TLS source correction | Current TLS source RED, Shared fixture compatibility regression |
+| Current TLS source style and security review | 18 | W35 | Scoped Ruff check/format, diff check and independent security source review; PASS | Same five-file checksum manifest | PASS | Current TLS source correction | - |
+| GSS transport assertion RED | 18 | W35 | PostgresAdapter.test_verify_full_driver_reads_sealed_ca_and_closes_it_after_connect; 1 case, KeyError gssencmode; exit 1 | Pre-GSS manifest 3e84f0d935d76841f9ce0abfa5ae36638d985836211b8334483161eb85c6088a | FAIL | Current TLS source correction | - |
+| GSS transport correction GREEN | 18 | W35 | Explicit gssencmode=disable; argument and poisoned PGGSSENCMODE tests; targeted 2 PASS, expanded 77 PASS, skip 0; exit 0 | Final five-file manifest b196ed66fd08ba32d20798f556fe9bd6ebc84d3d5c685af2c56b37a6e5a497d8 | PASS | Current TLS source correction | GSS transport assertion RED |
+| Final TLS source QA and independent review | 18 | W35 | QA expanded 77-case suite; Ruff/check/format/diff; independent code, security and IaC affected-slice approval | Final five-file manifest b196ed66fd08ba32d20798f556fe9bd6ebc84d3d5c685af2c56b37a6e5a497d8 | PASS | Current TLS source correction | - |
 
 Existing-source command, exit0:
 

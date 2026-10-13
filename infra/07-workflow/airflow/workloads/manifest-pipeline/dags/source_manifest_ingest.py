@@ -45,11 +45,15 @@ def source_manifest_ingest():
 
         try:
             params = get_current_context()["params"]
-            store = S3Store(read_private_json("/run/opsflow/s3.json", schema="s3"))
-            publisher = PgPublisher(
-                read_private_json("/run/opsflow/pg.json", schema="pg")
-            )
-            return ingest(store, publisher, params["source"], params["business_date"])
+            with S3Store(
+                read_private_json("/run/opsflow/s3.json", schema="s3")
+            ) as store:
+                publisher = PgPublisher(
+                    read_private_json("/run/opsflow/pg.json", schema="pg")
+                )
+                return ingest(
+                    store, publisher, params["source"], params["business_date"]
+                )
         except Exception:
             # Airflow records the exception; preserve only a bounded failure code.
             raise RuntimeError("manifest_task_failed") from None
