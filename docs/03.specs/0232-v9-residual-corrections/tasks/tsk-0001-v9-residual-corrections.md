@@ -96,6 +96,21 @@ live agent visibility of the check-mode report (W1). The review found no other
 current text that says the hook rewrites files, and confirmed every removed
 `AGENTS.md` statement keeps an owner Codex reads.
 
+### W5 Gate
+
+The W1 and W3 test edits share commit `aa5dd3128` because both change
+`tests/validation/test_agent_governance_ci_routing.py`.
+
+Hosted `candidate-quality` on pull request #443 (head `cc8a880dc`, run
+38366462481) passed. The local changed gate on `cc8a880dc` passed the active
+and changed metadata checks (0 violations), the document links, the corpus
+lifecycle and archive recovery (0 violations) and the 15-, 15- and 148-test
+suites, then reached its local 3600 s limit inside the document governance
+suite and was stopped (exit 124). That suite's local result is `NOT_RUN`.
+
+The owner merged pull request #443 as merge commit `8a3155daa` (parents
+`baffae4c7` and `cc8a880dc`).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -104,7 +119,8 @@ current text that says the hook rewrites files, and confirmed every removed
 | Rehearsal | 2 | W2 | Bundle tests (7, 2 skipped); update-gate and SEC01 routing tests (31) | Branch | PASS | W2 n8n Candidate Rehearsal | - |
 | Frozen | 3 | W3 | Registry assertion; anchor mutation shows 149 disagreements | Branch | PASS | W3 Frozen Payload Registry Assertion | - |
 | Shim | 4 | W4 | Governance contract (failures=0) | Branch | PASS | W4 Root Shim | - |
-| Gate | 5 | W5 | Changed gate; candidate quality | Branch | NOT_RUN | Work Log | - |
+| Gate | 5 | W5 | Local changed gate; stopped at its 3600 s limit in the governance suite | `cc8a880dc` | NOT_RUN | W5 Gate | - |
+| Candidate | 5 | W5 | Hosted `candidate-quality`, changed profile | PR #443 at `cc8a880dc` | PASS | W5 Gate | - |
 
 ## Criterion Acceptance
 
