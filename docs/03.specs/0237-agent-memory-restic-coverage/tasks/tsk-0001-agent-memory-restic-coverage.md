@@ -1,6 +1,6 @@
 ---
 title: "Agent Memory Restic Coverage Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -57,13 +57,37 @@ backup and how to restore from a Restic snapshot through the existing
 `restore` command; the manual backup command stays for ad-hoc use. SPEC-0236's
 Task points to this package for the coverage it deferred.
 
+### W3 IaC Review
+
+An independent `iac-reviewer` review of `3a8a8f941` returned READY with notes.
+It confirmed the step runs after `backup-sqlite-export` and before
+`restic backup`, that the EXIT trap removes the file, that a CLI failure inside
+the `elif !` condition cannot trigger `set -e`, and that the service user and
+the main checkout meet the CLI's directory and repository checks. Notes
+applied:
+
+- A dangling symlink at the store path was treated as absent and skipped. The
+  check is now `[[ ! -e && ! -L ]]`, so a symlink reaches the CLI, which
+  refuses it; a new `dangling` test case failed against the old check and
+  passes now. A comment records that `$repo_root` is the main checkout the
+  unit runs and that a write held longer than 5 s fails the step.
+- RUN-0021 (1.4.20) now names the snapshot path
+  `/src/state/exports/agent-memory.sqlite3`, the `hyhome-state` snapshot and
+  section 6's scratch restore, and says `restore` runs from the main checkout.
+
+Left as notes: the test stubs `python3`, so the real directory and owner
+checks are proven only by the W4 real run, and the README's
+`BACKUP_STATE_MAX_GIB` default (8) differs from the compose default (5), which
+predates this change.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Step test | 1 | W1 | Harness test RED on the `main` script, GREEN after; backup contract tests (13) | Branch on `f1214c839` | PASS | W1 Backup Step | - |
 | Checks | 2 | W2 | `bash -n` and shellcheck; script manifest; backup contract and tier layout tests (23); changed metadata (7 documents) and corpus lifecycle, 0 violations; links `--mode all` 0 failures; Registry identity tests; markdownlint | `06da0708f` | PASS | W2 Policy and Runbook | - |
-| IaC review | 3 | W3 | Independent IaC review | - | NOT_RUN | Work Log | - |
+| IaC review | 3 | W3 | Independent `iac-reviewer`: READY with notes, notes applied | `3a8a8f941` | PASS | W3 IaC Review | - |
+| Symlink case | 1 | W1 | `dangling` case RED against the old check, GREEN after; shellcheck | Branch | PASS | W3 IaC Review | - |
 | Real run | 4 | W4 | One `hyhome-backup.service` run includes `agent-memory.sqlite3` | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

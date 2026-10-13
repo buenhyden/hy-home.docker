@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.19"
+version: "1.4.20"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -480,16 +480,19 @@ python3 scripts/operations/agent_memory.py backup --output "$HOME/backups/agent-
 링크인 디렉터리, 저장소 자체를 가리키는 출력은 거절한다. 명령은 0600 임시 파일에
 쓰고 `integrity_check`를 통과하면 원자적으로 바꾼다. 실패하면 exit 7과
 `MEMORY_BACKUP_FAILED`를 남기고 이전 백업을 그대로 둔다. 이 수동 백업 파일은
-Restic snapshot에 들어가지 않는다. 일일 snapshot에서 복구하려면 Restic에서
-`agent-memory.sqlite3`를 꺼낸 뒤 아래 restore를 그 파일로 실행한다.
+Restic snapshot에 들어가지 않는다. 일일 snapshot에서 복구하려면 6절 절차대로
+검토한 `hyhome-state` snapshot에서 `/src/state/exports/agent-memory.sqlite3`만
+소유한 scratch에 꺼내고, 그 파일을 아래 restore의 `--input`으로 쓴다. 일일 실행은
+다른 에이전트가 저장소에 5초보다 오래 쓰고 있으면 이 단계를 실패로 기록한다.
 
-복구는 저장소가 없을 때만 한다. 다른 에이전트 세션을 모두 멈춘 뒤 다음을
-실행한다. 저장소가 이미 있으면 exit 3으로 거절하며 기존 기록을 덮어쓰지 않는다.
+복구는 저장소가 없을 때만 한다. 다른 에이전트 세션을 모두 멈춘 뒤 main
+checkout의 저장소 root에서 다음을 실행한다. CLI는 현재 디렉터리의 저장소가
+스크립트의 저장소와 다르면 거절한다. 저장소가 이미 있으면 exit 3으로 거절하며 기존 기록을 덮어쓰지 않는다.
 백업의 schema가 저장소 schema와 다르면 거절하고, 복사가 실패하면 만들던 저장소를
 지운다.
 
 ```bash
-python3 scripts/operations/agent_memory.py restore --input "$HOME/backups/agent-memory/memory.sqlite3"
+python3 scripts/operations/agent_memory.py restore --input "<수동 백업 또는 Restic에서 꺼낸 agent-memory.sqlite3>"
 python3 scripts/operations/agent_memory.py usage
 ```
 
