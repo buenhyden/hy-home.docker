@@ -21,8 +21,10 @@ The local changed gate cannot finish on the owner's host. The node
 `leaf.document-governance-library-regressions` in
 `.github/workflow-contract.yml` has `timeout_minutes: 15`, but its unittest
 batch takes about half an hour there, so `run-ci-gate.py --profile changed`
-exits 124 after every earlier step passes. SPEC-0231 W6, SPEC-0232 W5 and
-SPEC-0233 W6 all record that result. The node is listed in
+exits 124 after every earlier step passes, as SPEC-0233 W6 records (added in
+PR #448). The earlier SPEC-0231 W6 and SPEC-0232 W5 runs stopped at outer
+3000 s and 3600 s limits around the gate, so they do not show the node's own
+limit, although both stopped inside the same suite. The node is listed in
 `public_gate.local_only_gate_ids`, so hosted `candidate-quality` never runs it
 and is not affected.
 

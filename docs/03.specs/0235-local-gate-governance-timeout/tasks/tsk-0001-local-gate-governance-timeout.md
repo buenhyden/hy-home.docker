@@ -25,17 +25,30 @@ only node timeout, as SPEC-0235 states.
   AskUserQuestion, then asked to review, correct and extend it before
   proceeding.
 - **Baseline:** `main` `338c607d8`.
-- **Evidence of the problem:** SPEC-0233 W6 records the local changed gate on
-  `5b95ed942` exiting 124 after 1143 s at this node; SPEC-0231 W6 and SPEC-0232
-  W5 record earlier timeouts.
+- **Evidence of the problem:** SPEC-0233 W6, as recorded in PR #448, shows
+  the local changed gate on `5b95ed942` exiting 124 after 1143 s at this node.
+  SPEC-0231 W6 and SPEC-0232 W5 stopped at outer 3000 s and 3600 s limits
+  around the gate; the runner returns 124 for both kinds of stop, so those two
+  runs do not prove the node's limit.
+- **Review:** an independent `ci-cd-engineer` review of `682840106` approved
+  with notes: the node is local only, nothing pins the 15-minute value, the
+  runner has no total budget, and the contract accepts node timeouts of 1 to
+  60 minutes.
 
 ## Work Log
 
 ### W1 Measured Runtime
 
-The node's 19 argv modules are run with `python3 -m unittest` in a detached
-scratch worktree of `338c607d8`. The result is recorded below when the run
-ends.
+The node's 19 argv modules ran with `python3 -m unittest` in a detached
+scratch worktree of `338c607d8` on 2026-10-13: 763 tests in 1333 s, 1336 s
+wall time, about 22.3 minutes. So 15 minutes cannot hold the batch on this
+host, and 45 minutes leaves about twice the measured time.
+
+One test failed: `test_registry_high_water_is_not_below_repository_history`
+reads every local ref, and the unmerged local branches for SPEC-0234 and this
+SPEC-0235 issue numbers above `main`'s Registry high water of 233. That test
+passes on the SPEC-0234 branch, whose Registry records 234; it is rerun on
+`main` once these branches merge. The failure does not bear on the timing.
 
 ### W2 Timeout Change
 
@@ -47,12 +60,28 @@ it. The CI gate contract tests (28), the workflow contract and adapter tests
 (85) and `check-github-workflow-contract.py` (5 workflows, 7 jobs, 8 actions)
 pass.
 
+### Direct Push to Main
+
+At 2026-10-13T11:16:06Z, `refs/heads/main` on GitHub moved from `338c607d8`
+to `4072f8af8`, this package's first commit, by a direct push from this
+machine. It went through no pull request and no `candidate-quality` run.
+GitHub's activity log shows that push; this session's own pushes went only to
+`claude/gate-timeout` (11:04:05Z and 11:18:25Z), and the forked worker that was
+running then issued no push. Which local session or tool pushed it is not
+known. The owner chose on 2026-10-13, through AskUserQuestion, to keep the
+commit on `main` and record it here. The later commits on
+`claude/gate-timeout` go through a pull request. The push also broke PR #448's
+first run on the new base (`ci-gate-adapter-pull-request-range`: the checkout
+is not the authenticated pull request merge); #448 was rebased onto
+`4072f8af8`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Contract | 1 | W2 | CI gate contract tests (28); workflow contract and adapter tests (85); workflow contract check | Branch on `338c607d8` | PASS | W2 Timeout Change | - |
-| Runtime | 2 | W1 | Node module batch on this host | `338c607d8` | NOT_RUN | W1 Measured Runtime | - |
+| Runtime | 2 | W1 | Node module batch on this host: 763 tests, 1336 s | `338c607d8` | PASS | W1 Measured Runtime | - |
+| CI review | 1 | W2 | Independent `ci-cd-engineer` review: approve with notes, notes applied | `682840106` | PASS | Inputs and Authorization | - |
 | Local gate | 3 | W3 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
