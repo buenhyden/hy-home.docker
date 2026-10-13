@@ -1,6 +1,6 @@
 ---
 title: "Shared Agent Memory Store"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
 status: "proposed"
 owner: "@buenhyden"
@@ -44,8 +44,8 @@ a second owner of Task state or governance rules.
 4. The store uses a rollback journal, not WAL, because the host's SQLite
    lacks the WAL-reset fix.
 5. Limits are logical, enforced by the CLI, and never presented as a quota.
-6. A memory record is context only. It never holds Task state, approval,
-   acceptance evidence, a governance rule or a secret.
+6. A memory record is context only. What a record may not hold is stated
+   once, in `environment-constraints.md` section 5.
 
 This narrows ADR-0032's rule against creating memory or `.codex/config.toml`
 for these two items only. The rest of that rule, on plugins, servers and
@@ -77,7 +77,9 @@ acceptance is separate evidence.
 ### Follow-up
 
 Proposed on 2026-10-13 from the owner's decisions. SPEC-0234 implements and
-verifies it; acceptance is a separate status change.
+verifies it. The owner decided on 2026-10-13 to accept it ("Accept both", for
+ADR-0048 and ADR-0049). A new ADR must enter the repository as `proposed`, so
+the status changes to `accepted` in the first change after SPEC-0234 merges.
 
 ## Related Documents
 

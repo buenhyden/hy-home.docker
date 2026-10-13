@@ -85,9 +85,9 @@ independent policy sources.
 - **REQ-0024-FR-0015**: Claude and Codex must share one repository-local agent
   memory store that every worktree of a checkout reaches, in place of separate
   native provider memories. Updates must name the expected revision and never
-  overwrite silently, limits must be stated as what actually enforces them,
-  and a memory record must never hold Task state, approval, acceptance
-  evidence, a governance rule or a secret.
+  overwrite silently, and limits must be stated as what actually enforces
+  them. What a record may hold is owned by the environment constraints policy,
+  section 5.
 
 ### Non-functional Requirements
 
