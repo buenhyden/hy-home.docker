@@ -6,9 +6,9 @@ status: "draft"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "specs"
-artifact_id: "SPEC-0234-TSK-0001"
+artifact_id: "SPEC-0236-TSK-0001"
 parent_ids:
-- "SPEC-0234-PLAN-0001"
+- "SPEC-0236-PLAN-0001"
 created: "2026-10-13"
 ---
 
@@ -17,7 +17,7 @@ created: "2026-10-13"
 ## Objective
 
 Give Claude and Codex one shared memory store in place of separate native
-memories, as SPEC-0234 states.
+memories, as SPEC-0236 states.
 
 ## Inputs and Authorization
 
@@ -310,6 +310,15 @@ it inherits that trust is `NOT_VERIFIED` and is checked here.
 Not started. After merge, the main session reads the Claude native memory
 files once, enters each eligible one into the store with `put`, and changes
 no native file.
+
+### Renumbering
+
+This package was drafted as SPEC-0234. SPEC-0235 reached `main` first
+(`4072f8af8`), and the Registry then forbids issuing a number below its high
+water (`identity-reuse-forbidden`), so the package was renumbered to SPEC-0236
+during the rebase onto `ec0877f10`, and every reference in this package and
+in ADR-0049 was updated. Other packages' Tasks keep the SPEC-0234 name they
+recorded at the time.
 
 ## Evidence
 

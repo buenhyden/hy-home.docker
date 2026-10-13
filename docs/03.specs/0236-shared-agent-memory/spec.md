@@ -6,7 +6,7 @@ status: "draft"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "specs"
-artifact_id: "SPEC-0234"
+artifact_id: "SPEC-0236"
 parent_ids:
 - "REQ-0024"
 - "AD-0027"

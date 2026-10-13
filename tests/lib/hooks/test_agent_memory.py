@@ -1,4 +1,4 @@
-"""Shared agent memory store (SPEC-0234); every case uses a temporary store."""
+"""Shared agent memory store (SPEC-0236); every case uses a temporary store."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ def write(
         tier="long-term",
         owner="claude",
         body=body,
-        source_refs=["SPEC-0234"],
+        source_refs=["SPEC-0236"],
     )
 
 

@@ -76,14 +76,14 @@ acceptance is separate evidence.
 
 ### Follow-up
 
-Proposed on 2026-10-13 from the owner's decisions. SPEC-0234 implements and
+Proposed on 2026-10-13 from the owner's decisions. SPEC-0236 implements and
 verifies it. The owner decided on 2026-10-13 to accept it ("Accept both", for
 ADR-0048 and ADR-0049). A new ADR must enter the repository as `proposed`, so
-the status changes to `accepted` in the first change after SPEC-0234 merges.
+the status changes to `accepted` in the first change after SPEC-0236 merges.
 
 ## Related Documents
 
 - [AD-0027](../descriptions/0027-agent-governance-canonical-adapter.md)
 - [ADR-0032](0032-canonical-agent-governance-home.md)
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
-- [SPEC-0234](../../03.specs/0234-shared-agent-memory/spec.md)
+- [SPEC-0236](../../03.specs/0236-shared-agent-memory/spec.md)
