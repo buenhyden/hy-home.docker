@@ -64,6 +64,39 @@ class OpsflowProvisionContractTests(unittest.TestCase):
                         block, rf"\|\|{re.escape(field)}(?!::text)", (filename, field)
                     )
 
+    def test_relation_acl_fingerprint_is_restore_stable_without_losing_rights(self):
+        fingerprint = re.compile(
+            r"FROM \(\n(  SELECT 'column:'.*?)\n \) shape;", re.DOTALL
+        )
+        for filename, expected_blocks in (
+            ("001_opsflow.sql", 1),
+            ("002_checks.sql", 1),
+            ("003_business_date.sql", 2),
+        ):
+            blocks = fingerprint.findall((SQL / filename).read_text())
+            self.assertEqual(expected_blocks, len(blocks), filename)
+            for block in blocks:
+                relation = next(
+                    line for line in block.splitlines() if "SELECT 'relation:'" in line
+                )
+                for boundary in (
+                    "c.relkind IN ('r','p','v','m','f','S')",
+                    "CASE WHEN c.relacl IS NULL THEN pg_catalog.acldefault(",
+                    "CASE WHEN c.relkind='S' THEN 's'::\"char\" ELSE 'r'::\"char\" END",
+                    "pg_catalog.aclexplode",
+                    "pg_catalog.pg_get_userbyid(a.grantor)",
+                    "CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE pg_catalog.pg_get_userbyid(a.grantee) END",
+                    "a.privilege_type",
+                    "a.is_grantable",
+                    "ELSE COALESCE(c.relacl::text,'') END",
+                ):
+                    self.assertIn(boundary, relation, (filename, boundary))
+                self.assertNotIn(
+                    "||COALESCE(c.relacl::text,'') FROM pg_catalog.pg_class",
+                    relation,
+                    filename,
+                )
+
     def test_checks_verify_latest_supported_migration_receipt(self):
         source = (SQL / "002_checks.sql").read_text()
         for boundary in (
@@ -71,7 +104,7 @@ class OpsflowProvisionContractTests(unittest.TestCase):
             "SELECT max(version) INTO current_version",
             "current_version NOT IN (1,2)",
             "count(*) FROM ops_flow.schema_version) <> current_version",
-            "a9fecb083d60947a245e437fbbc97a3a5ac82a58d8d1842aff60ddefcfbca79f",
+            "82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f",
             "WHERE version=current_version AND migration_sha256=",
             "WHERE version=current_version)",
         ):
@@ -89,7 +122,7 @@ class OpsflowProvisionContractTests(unittest.TestCase):
             "session_user",
             "SET LOCAL lock_timeout = '10s'",
             "SET LOCAL statement_timeout = '60s'",
-            "a9fecb083d60947a245e437fbbc97a3a5ac82a58d8d1842aff60ddefcfbca79f",
+            "82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f",
             "pg_advisory_xact_lock",
             "LOCK TABLE ops_flow.runs, ops_flow.documents, ops_flow.current_runs, ops_flow.outbox, ops_flow.schema_version IN ACCESS EXCLUSIVE MODE",
             "schema_fingerprint",
@@ -139,8 +172,10 @@ class OpsflowProvisionContractTests(unittest.TestCase):
             r"FROM \(\n(  SELECT 'column:'.*?)\n \) shape;", re.DOTALL
         )
         baseline = fingerprint.findall((SQL / "001_opsflow.sql").read_text())
+        checker = fingerprint.findall((SQL / "002_checks.sql").read_text())
         migration = fingerprint.findall((SQL / "003_business_date.sql").read_text())
         self.assertEqual(1, len(baseline))
+        self.assertEqual(baseline, checker)
         self.assertEqual([baseline[0], baseline[0]], migration)
 
     def test_function_only_provisioner_matches_migration_identity(self):

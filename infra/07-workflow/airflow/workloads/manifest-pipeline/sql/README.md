@@ -1,6 +1,6 @@
 ---
 title: "Manifest Publication SQL"
-version: "0.2.1"
+version: "0.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -42,6 +42,15 @@ commit되지 않았습니다. 현재 bootstrap은 해당 catalog 값만 명시�
 변환하며 DDL·함수·권한 계약을 바꾸지 않습니다. 실패한 이전 draft hash는 수용된
 version 1 receipt가 아닙니다. 별도 대상에서 이전 hash의 receipt가 발견되면 자동
 승격하지 않고 DAG를 중지한 뒤 backup·schema fingerprint·적용 이력을 검토합니다.
+
+이후 격리 복원 시험에서는 네 table과 한 sequence의 실제 권한이 같지만
+`relacl`의 NULL 표현만 달라져 raw ACL 문자열 fingerprint가 실패했습니다. 현재
+fingerprint는 권한을 가질 수 있는 relation의 NULL ACL을 객체 종류와 owner의
+기본 ACL로 펼친 뒤 grantor·grantee(`PUBLIC` 포함)·권한 종류·grant option을 정렬된
+JSON 배열로 기록합니다. 명시적인 빈 ACL은 기본 ACL로 바꾸지 않으며, index 같은
+비권한 relation의 raw ACL metadata도 지우지 않습니다. Owner와 나머지 relation
+구조 필드는 기존 signature에 그대로 남습니다. 이 수정 전 draft의 실패도 수용된
+receipt가 아니며 기존 receipt를 자동 보정하지 않습니다.
 
 ### Migration boundary
 

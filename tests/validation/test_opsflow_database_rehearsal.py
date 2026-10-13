@@ -34,6 +34,9 @@ OWNER_LABEL = "hyhome.opsflow.rehearsal-owner"
 ATTEMPT_LABEL = "hyhome.opsflow.rehearsal-attempt"
 OWNER = "test_opsflow_database_rehearsal"
 PSQL = "psql -X -qAt -v ON_ERROR_STOP=1 -v VERBOSITY=verbose".split()
+RESTORE_ERROR = re.compile(rb"psql:<stdin>:(\d+): ERROR:\s+([0-9A-Z]{5}):")
+SCHEMA_DRIFT_ERROR = re.compile(rb"ERROR:\s+P0001:\s+schema_drift(?:\r?\n|$)")
+ROLE_NAMES = ("p04_audit", "opsflow_owner", "opsflow_migrator", "opsflow_ingest", "opsflow_notifier", "opsflow_reader")
 
 
 class RehearsalFailure(AssertionError):
@@ -225,6 +228,76 @@ def publish_sql(source: str, digest: str, captured: str) -> tuple[str, str]:
         f"$rows${rows}$rows$::jsonb,'{artifact}');"
     )
     return run_id, sql
+def roles_restore_error_is_expected(roles: bytes, stderr: bytes, returncode: int) -> bool:
+    errors = [(int(line), code) for line, code in RESTORE_ERROR.findall(stderr)]
+    if returncode or stderr.count(b"ERROR:") != 1 or b"FATAL:" in stderr or b"PANIC:" in stderr:
+        return False
+    if len(errors) != 1 or errors[0][1] != b"42710":
+        return False
+    line = errors[0][0]
+    statements = roles.splitlines()
+    return 0 < line <= len(statements) and statements[line - 1].strip() == b"CREATE ROLE p04_audit;"
+def execution_identity(fixture: PgFixture) -> str:
+    uid = fixture.pipe("id", "-u").stdout.strip()
+    gid = fixture.pipe("id", "-g").stdout.strip()
+    if not re.fullmatch(rb"(?:0|[1-9][0-9]*)", uid) or not re.fullmatch(rb"(?:0|[1-9][0-9]*)", gid):
+        raise RehearsalFailure("execution identity shape rejected")
+    return f"{uid.decode()}:{gid.decode()}"
+def role_state(fixture: PgFixture) -> bytes:
+    quoted = ",".join(f"'{role}'" for role in ROLE_NAMES)
+    sql = (
+        "SELECT rolname::text||'|'||rolsuper::int::text||'|'||rolinherit::int::text||'|'||"
+        "rolcreaterole::int::text||'|'||rolcreatedb::int::text||'|'||rolcanlogin::int::text||'|'||"
+        "rolreplication::int::text||'|'||rolbypassrls::int::text||'|'||rolconnlimit::text "
+        f"FROM pg_roles WHERE rolname=ANY(ARRAY[{quoted}]) ORDER BY rolname;"
+        "SELECT grantor.rolname::text||'|'||m.admin_option::int::text||'|'||"
+        "m.inherit_option::int::text||'|'||m.set_option::int::text FROM pg_auth_members m "
+        "JOIN pg_roles granted ON granted.oid=m.roleid JOIN pg_roles member ON member.oid=m.member "
+        "JOIN pg_roles grantor ON grantor.oid=m.grantor WHERE granted.rolname='opsflow_owner' "
+        "AND member.rolname='opsflow_migrator';"
+    )
+    value = fixture.psql("p04_audit", "postgres", sql).stdout.strip()
+    lines = value.splitlines()
+    inventory = lines[: len(ROLE_NAMES)]
+    pattern = rb"([a-z0-9_]+)(?:\|[01]){7}\|-?[0-9]+"
+    matches = [re.fullmatch(pattern, line) for line in inventory]
+    if len(lines) != len(ROLE_NAMES) + 1 or any(match is None for match in matches):
+        raise RehearsalFailure("role inventory shape rejected")
+    if [match[1].decode() for match in matches] != sorted(ROLE_NAMES):
+        raise RehearsalFailure("role inventory names rejected")
+    if lines[-1] != b"p04_audit|0|0|1":
+        raise RehearsalFailure("role membership contract rejected")
+    return value
+def restored_schema_preflight(content: str, migration_digest: str) -> str:
+    boundary = "\n IF EXISTS(SELECT 1 FROM ops_flow.runs)"
+    if content.count(boundary) != 1:
+        raise RehearsalFailure("restored schema preflight boundary changed")
+    readonly, _ = content.split(boundary, 1)
+    return f"\\set migration_sha256 '{migration_digest}'\n{readonly}\nEND $acl$;\nROLLBACK;\n"
+def restored_acl_drift_probes(preflight: str):
+    marker = "SET LOCAL ROLE opsflow_owner;\nDO $acl$"
+    if preflight.count(marker) != 1:
+        raise RehearsalFailure("restored ACL probe boundary changed")
+    statements = (
+        "GRANT SELECT ON ops_flow.runs TO opsflow_reader;",
+        "REVOKE ALL ON ops_flow.runs FROM opsflow_owner;",
+    )
+    return tuple(preflight.replace(marker, f"SET LOCAL ROLE opsflow_owner;\n{statement}\nDO $acl$") for statement in statements)
+def psql_error_is_expected(result: subprocess.CompletedProcess, sqlstate: str) -> bool:
+    diagnostic = psql_diagnostic(result.stderr)
+    return (
+        result.returncode == 3
+        and result.stderr.count(b"ERROR:") == 1
+        and b"FATAL:" not in result.stderr
+        and b"PANIC:" not in result.stderr
+        and diagnostic is not None
+        and diagnostic["sqlstate"] == sqlstate
+    )
+def schema_drift_is_expected(result: subprocess.CompletedProcess) -> bool:
+    return (
+        psql_error_is_expected(result, "P0001")
+        and len(SCHEMA_DRIFT_ERROR.findall(result.stderr)) == 1
+    )
 class OpsflowDatabaseRehearsalBoundaryTests(unittest.TestCase):
     def test_native_selection_is_explicit_and_immutable(self):
         with mock.patch.dict(os.environ, {}, clear=True):
@@ -268,6 +341,54 @@ class OpsflowDatabaseRehearsalBoundaryTests(unittest.TestCase):
         fixture.docker = mock.Mock(side_effect=[subprocess.CompletedProcess([], 0, payload, b""), subprocess.CompletedProcess([], 0, b"", b""), subprocess.CompletedProcess([], 1, b"", b"missing")])
         fixture.cleanup()
         self.assertIsNone(fixture.container_id)
+    def test_roles_restore_allows_only_the_bootstrap_duplicate(self):
+        roles = b"CREATE ROLE p04_audit;\nCREATE ROLE opsflow_owner;\n"
+        expected = b"psql:<stdin>:1: ERROR:  42710: withheld\n"
+        self.assertTrue(roles_restore_error_is_expected(roles, expected, 0))
+        for stderr, returncode in (
+            (expected + b"ERROR:  XX000: extra\n", 0),
+            (expected + b"FATAL:  XX000: extra\n", 0),
+            (b"psql:<stdin>:2: ERROR:  42710: withheld\n", 0),
+            (expected, 1),
+        ):
+            self.assertFalse(roles_restore_error_is_expected(roles, stderr, returncode))
+    def test_restored_schema_preflight_stops_before_workload_checks(self):
+        content = CHECKS.read_text()
+        preflight = restored_schema_preflight(content, "a" * 64)
+        self.assertIn("schema_drift", preflight)
+        self.assertIn("unsafe_postflight_roles", preflight)
+        self.assertNotIn("IF EXISTS(SELECT 1 FROM ops_flow.runs)", preflight)
+        self.assertNotIn("CREATE TEMP TABLE p04_case", preflight)
+        self.assertTrue(preflight.endswith("END $acl$;\nROLLBACK;\n"))
+        boundary = "\n IF EXISTS(SELECT 1 FROM ops_flow.runs)"
+        for changed in (content.replace(boundary, ""), content.replace(boundary, boundary * 2)):
+            with self.assertRaisesRegex(RehearsalFailure, "boundary changed"):
+                restored_schema_preflight(changed, "a" * 64)
+    def test_restored_acl_drift_probes_are_exact_and_fail_closed(self):
+        preflight = restored_schema_preflight(CHECKS.read_text(), "a" * 64)
+        probes = restored_acl_drift_probes(preflight)
+        self.assertEqual(2, len(probes))
+        for probe, statement in zip(probes, ("GRANT SELECT ON ops_flow.runs TO opsflow_reader;", "REVOKE ALL ON ops_flow.runs FROM opsflow_owner;"), strict=True):
+            self.assertEqual(1, probe.count(statement))
+            self.assertLess(probe.index(statement), probe.index("DO $acl$"))
+        with self.assertRaisesRegex(RehearsalFailure, "probe boundary changed"):
+            restored_acl_drift_probes(preflight.replace("DO $acl$", "DO $changed$"))
+        expected = subprocess.CompletedProcess([], 3, b"", b"ERROR:  P0001: schema_drift\n")
+        self.assertTrue(schema_drift_is_expected(expected))
+        for changed in (
+            subprocess.CompletedProcess([], 0, b"", expected.stderr),
+            subprocess.CompletedProcess([], 1, b"", expected.stderr),
+            subprocess.CompletedProcess([], 2, b"", expected.stderr),
+            subprocess.CompletedProcess([], 3, b"", b"ERROR:  P0001: owner_mismatch\n"),
+            subprocess.CompletedProcess([], 3, b"", b"ERROR:  42501: permission denied\n"),
+            subprocess.CompletedProcess([], 3, b"", expected.stderr + b"ERROR:  XX000: extra\n"),
+        ):
+            self.assertFalse(schema_drift_is_expected(changed))
+        reader = subprocess.CompletedProcess([], 3, b"", b"ERROR:  42501: permission denied for table runs\n")
+        self.assertTrue(psql_error_is_expected(reader, "42501"))
+        for returncode in (0, 1, 2):
+            self.assertFalse(psql_error_is_expected(subprocess.CompletedProcess([], returncode, b"", reader.stderr), "42501"))
+        self.assertFalse(psql_error_is_expected(expected, "42501"))
 @unittest.skipUnless(native_selection() is not None, "exact isolated PG opt-in required")
 class OpsflowDatabaseNativeRehearsal(unittest.TestCase):
     def setUp(self):
@@ -313,6 +434,7 @@ class OpsflowDatabaseNativeRehearsal(unittest.TestCase):
         return accepted
     def test_roles_transactions_restore_and_denials(self):
         source = self.fixture("p04_audit")
+        self.receipt["execution_identity"] = {"source": execution_identity(source)}
         inventory = self.output(
             source, "p04_audit",
             "SHOW server_version;SELECT string_agg(extname,',' ORDER BY extname) FROM pg_extension;",
@@ -368,6 +490,7 @@ class OpsflowDatabaseNativeRehearsal(unittest.TestCase):
             roles = source.pipe(
                 "pg_dumpall", "--roles-only", "--no-role-passwords", "-U", "p04_audit"
             ).stdout
+            expected_role_state = role_state(source)
             dump = source.pipe(
                 "pg_dump", "-Fc", "--create", "-U", "p04_audit", "-d", "opsflow_dev"
             ).stdout
@@ -377,9 +500,33 @@ class OpsflowDatabaseNativeRehearsal(unittest.TestCase):
                 "data_sha256": hashlib.sha256(dump).hexdigest(),
                 "data_bytes": len(dump),
             }
-            restore = self.fixture("p04_restore")
-            restore.pipe(*PSQL, "-U", "p04_restore", "-d", "postgres", input_=roles)
-            restore.pipe("pg_restore", "--exit-on-error", "--create", "-U", "p04_restore", "-d", "postgres", input_=dump)
+            restore = self.fixture("p04_audit")
+            self.receipt["execution_identity"]["restore"] = execution_identity(restore)
+            roles_result = restore.pipe(
+                "psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=0", "-v", "VERBOSITY=verbose",
+                "-U", "p04_audit", "-d", "postgres", "-f", "-", input_=roles, check=False,
+            )
+            if not roles_restore_error_is_expected(roles, roles_result.stderr, roles_result.returncode):
+                raise RehearsalFailure("roles restore errors rejected")
+            if role_state(restore) != expected_role_state:
+                raise RehearsalFailure("restored role state changed")
+            self.receipt["roles_restore"] = "PASS"
+            restore.pipe("pg_restore", "--exit-on-error", "--create", "-U", "p04_audit", "-d", "postgres", input_=dump)
+            restored_preflight = restored_schema_preflight(CHECKS.read_text(), digest2)
+            restore.psql("p04_audit", "opsflow_dev", restored_preflight)
+            self.receipt["restored_schema_preflight"] = "RESTORED_SCHEMA_PREFLIGHT"
+            for probe in restored_acl_drift_probes(restored_preflight):
+                if not schema_drift_is_expected(
+                    restore.psql("p04_audit", "opsflow_dev", probe, check=False)
+                ):
+                    raise RehearsalFailure("restored ACL drift denial missing")
+            reader_denial = restore.psql(
+                "opsflow_reader", "opsflow_dev", "SELECT count(*) FROM ops_flow.runs;", check=False
+            )
+            if not psql_error_is_expected(reader_denial, "42501"):
+                raise RehearsalFailure("restored reader denial missing")
+            restore.psql("p04_audit", "opsflow_dev", restored_preflight)
+            self.receipt["restored_acl_drift_denials"] = "PASS"
             state = "SELECT count(*) FROM ops_flow.published_documents;SELECT count(*)=count(*) FILTER(WHERE state='accepted_by_smtp') FROM ops_flow.delivery_status;"
             restored = self.output(restore, "opsflow_reader", state).decode().splitlines()
             self.assertGreater(int(restored[0]), 0)

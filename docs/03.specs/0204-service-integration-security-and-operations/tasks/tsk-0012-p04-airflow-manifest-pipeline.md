@@ -1,6 +1,6 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.12"
+version: "0.1.20"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1144,8 +1144,10 @@ not copy SQL or edit that worktree. The approved hunk updates the `002` and
 `003` hashes while preserving the NULL provisional binding. On new main
 `5bf0e947`, the reviewed P05 binding still names historical `001`
 `57a744cf...`; reconciling it with the approved final hashes requires explicit
-permission outside this public hunk. Integration is therefore BLOCKED. No
-native PostgreSQL, S3, or P05 notifier result follows from this source handoff.
+permission outside this public hunk. That was BLOCKED at the recorded
+checkpoint; the user subsequently granted the minimal reconciliation permission.
+P05 still owns its QA edits and runtime remains unbound. No native PostgreSQL,
+S3, or P05 notifier result follows from this source handoff.
 
 A parent probe of the nonexistent
 `tests.validation.test_n8n_outbox_e2e` module exited 1 with a loader error and
@@ -1285,9 +1287,193 @@ interface and these final hashes: `001_opsflow.sql`
 `003_business_date.sql`
 `6c7f6fd032e9a0e73a104bc2376f9825f4e1bc28f7618652ebcc44b30abf8301`.
 The corrected source handoff has independent source and security approval.
-The later C1 hash may be referenced by P05 only after the explicit binding
-reconciliation permission; the existing historical P05 consumer heading and
-string remain preserved until that integration is approved.
+The user granted the subsequent minimal binding-reconciliation permission.
+P05 may reference C1 only through its own reviewed QA integration; the existing
+historical P05 consumer heading and string remain preserved until then.
+
+#### HOME preparation matrix — proposed, no execution authority
+
+This matrix makes the selected HOME-preparation lane reviewable. Values marked
+`<REQUIRED>` are not observed facts and cannot be inferred from source. The
+candidate Airflow image remains isolation-only pending SEC01 and HOME approval.
+
+| Boundary | Proposed owner and identity | Required evidence before action | Prohibited result |
+| --- | --- | --- | --- |
+| Compose and Airflow | Docker default context; project `hy-home-infra`; seven existing Airflow roles; observed HOME UID:GID `1000:0` is proposal only | Render with `<REQUIRED: OPSFLOW_CODE_DIR>`, candidate `<REQUIRED: OPSFLOW_AIRFLOW_IMAGE>`, and intentionally absent `<REQUIRED: OPSFLOW_SECRET_DIR>`; effective runtime UID:GID/groups remain REQUIRED | Starting or replacing any HOME role from this receipt |
+| Ingest and S3 | `airflow-worker` only; canonical source names `opsflow-dev`, `manifest-input/`, and `manifest-validated/`; endpoint, identity, and existence remain REQUIRED | P03/operator identity, prefix-only HEAD/GET/validated-PUT/readback, SHA/size/version inventory, and retained orphan reuse decision | API server, scheduler, DAG processor, triggerer, Flower, n8n main/runners, reader, or notifier S3 access |
+| PostgreSQL | Canonical database `opsflow_dev`; migrator is operator-only; ingest invokes approved functions; reader is operator-audit-only; P05 worker is notifier-only | Role provenance, approved grants/HBA, migration checksum, extensions and lock result | Owner/admin grants, direct ingest DML, or MNG access |
+| Secret delivery | `<REQUIRED: OPSFLOW_SECRET_DIR>` supplied by P03/operator; inside container `/run/opsflow`; existing adapter-defined filenames only | Directory 0700 and files 0600, effective owner/groups, read-only regular non-symlink checks, and `airflow-worker`-only mount/readability proof | Secret value, filename invention, argv/log/CI/backups exposure, or P05 notifier-secret access outside its worker |
+| Backup and restore | Operator and independent reviewer; separate empty PG and S3 targets | `<REQUIRED: PG backup set/WAL/checksum/extensions/role provenance>` plus raw/validated S3 SHA/size/version/readback inventory | Schema reconstruction, destructive orphan repair, in-place restore, or a HOME recovery claim |
+
+The public-safe proposed commands below are templates, not authorization to
+execute. They use no private environment file or credential value.
+
+```sh
+# Render only; <ROOT_MAIN> is the selected repository main path. The candidate
+# image is isolation-only and <REQUIRED: OPSFLOW_SECRET_DIR> must stay absent.
+OPSFLOW_CODE_DIR='<REQUIRED: public workload source>' \
+OPSFLOW_AIRFLOW_IMAGE='sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2' \
+OPSFLOW_SECRET_DIR='<REQUIRED: intentionally absent public placeholder>' \
+docker --context default compose --project-name hy-home-infra --profile workflow \
+  --env-file <ROOT_MAIN>/.env.example -f <ROOT_MAIN>/docker-compose.yml \
+  -f <ROOT_MAIN>/infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml config
+
+# Metadata/parse observation only, not worker, authentication, paused, or manual-state proof.
+OPSFLOW_CODE_DIR='<REQUIRED: public workload source>' \
+OPSFLOW_AIRFLOW_IMAGE='sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2' \
+OPSFLOW_SECRET_DIR='<REQUIRED: intentionally absent public placeholder>' \
+docker --context default compose --project-name hy-home-infra --profile workflow \
+  --env-file <ROOT_MAIN>/.env.example -f <ROOT_MAIN>/docker-compose.yml \
+  -f <ROOT_MAIN>/infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml \
+  exec airflow-apiserver airflow dags list
+OPSFLOW_CODE_DIR='<REQUIRED: public workload source>' \
+OPSFLOW_AIRFLOW_IMAGE='sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2' \
+OPSFLOW_SECRET_DIR='<REQUIRED: intentionally absent public placeholder>' \
+docker --context default compose --project-name hy-home-infra --profile workflow \
+  --env-file <ROOT_MAIN>/.env.example -f <ROOT_MAIN>/docker-compose.yml \
+  -f <ROOT_MAIN>/infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml \
+  exec airflow-apiserver \
+  airflow dags details source_manifest_ingest
+
+# Execute only after the migration receipt binds every <REQUIRED> input. The
+# migrator connection and SET ROLE happen in the same psql session.
+psql --dbname='<REQUIRED: migrator service>' -X -v ON_ERROR_STOP=1 \
+  -v migration_sha256=82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f \
+  -c 'SET ROLE opsflow_owner' \
+  -f infra/07-workflow/airflow/workloads/manifest-pipeline/sql/001_opsflow.sql
+psql --dbname='<REQUIRED: migrator service>' -X -v ON_ERROR_STOP=1 \
+  -v migration_sha256=830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72 \
+  -c 'SET ROLE opsflow_owner' \
+  -f infra/07-workflow/airflow/workloads/manifest-pipeline/sql/003_business_date.sql
+
+# Verify bounded reader/outbox counts only; 002 checksum verification remains an
+# owner-controlled operator action, never an ingest runtime grant.
+psql --dbname='<REQUIRED: reader service>' -X -v ON_ERROR_STOP=1 \
+  -c 'SELECT count(*) FROM ops_flow.published_documents; SELECT count(*) FROM ops_flow.delivery_status;'
+```
+
+The verified public DAG-state query is NOT_RUN until it is bound to the selected
+3.3.2 image and operator contract; the two commands above establish only
+metadata presence/parse observation. Restore order is paired PG roles/WAL and
+S3 raw/validated artifacts, then separate empty PG and S3 targets, then reader/
+outbox/idempotency and S3 SHA/version validation, followed by separately
+approved rebind/cutover. Use the existing [Airflow guide](../../../05.operations/guides/08-workflows-and-automation/0050-airflow.md) and [RUN-0021](../../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md) rather than inventing a helper.
+
+The following RUN-0021-derived restore references are gated templates, not
+commands to run from this Task. The exact DEV source label, continuous WAL
+range, executor, repository mount, paired filer/volume snapshot, and owned
+empty targets are all REQUIRED. The prior `42501` empty-PG restore failure is a
+historical checkpoint; the final isolated restore passed. Paired HOME PG-plus-S3
+inputs and authorization still block HOME recovery acceptance, and no LAB
+restore is in scope.
+
+```sh
+# RUN-0021 step 5 semantics: restore dev stanza into an owned empty PG target.
+<REQUIRED: approved dev-pg restore executor> pgbackrest --stanza=dev \
+  --set=<REQUIRED: approved backup label> --type=time \
+  --target=<REQUIRED: approved recovery time> --target-action=promote \
+  --archive-mode=off restore
+
+# RUN-0021 step 6 semantics: restore the paired SeaweedFS Restic state set to
+# an owned empty S3 target, then inventory filer metadata and volume tree.
+restic restore <REQUIRED: reviewed paired state snapshot> \
+  --target <REQUIRED: owned empty SeaweedFS target>
+```
+
+#### P05 binding recipe — proposed under explicit user approval
+
+P05's owner verifies the C1 corrected-source-handoff-freeze-for-C1 hashes,
+updates only its approved binding/test inputs, runs its owned QA, and records
+the resulting commit. This Task does not make those edits or claim notifier
+execution. Rollback pauses only the selected DAG, restores only the reviewed
+target database to a separate target, validates it, and rebinds only after
+approval; accepted outbox receipts are retained. It never changes MNG, deletes
+shared volumes, runs `down -v`, or destructively repairs S3 orphans.
+
+#### C2 P05 binding checkpoint
+
+After explicit user approval, P05 committed the narrow reconciliation as
+`fc3289738ee7bca59c22102e52e0b97bae66e001`. Its public JSON, contract-test,
+and caller-test receipts begin `579b66ed`, `7498c409`, and `6d1a57e`,
+respectively. Independent source/security review and registered local-staged
+checks passed; the P05 contract plus E2E result passed 16 tests and the combined
+rehearsal passed 19. C1 `c809153705d583998209330db932cbbe9bbe918f` remains
+immutable, with the reviewed `a9fe` binding and
+`corrected-source-handoff-freeze-for-c1` receipt. P05 native execution remains
+NOT_RUN.
+
+The roles-only bootstrap probe used source attempt
+`5d43c03faf134cfc7ff6753a`, container
+`1cefbe87dcfef41084727d5b1d45284769a2d49b44a5aa23cf54a32fa70cd04a`, restore
+attempt `be93bffa42b5ea9875867a61`, and container
+`b4735a97b679b7b04bccd97bfc0fc07c001ea84c645e770b574ea54a8e16425b`.
+Cleanup passed and both containers are absent. Its single bootstrap call failed
+closed for unknown phase (exit 1), so there is no roles-preservation PASS and
+no database restore. PostgreSQL 18's formatter lookup indicates `SET TRUE` is
+an omitted default; the driver's required `SET TRUE` may therefore reject valid
+grammar. A QA RED/fix candidate is pending strict catalog checks and is not
+accepted. No raw dump is recorded.
+
+#### Restore-stable source handoff
+
+This is the sole current official P05 handoff. The restore-stable schema-v2
+sources are `001_opsflow.sql`
+`82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f`,
+`002_checks.sql`
+`7ed4bfd5f160e93ad810e8d32ce2221a02f1629946e5e4297817385acbbb13ed`, and
+`003_business_date.sql`
+`830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72`.
+They preserve one public interface and schema v2; independent source/security
+review approved the narrow ACL-normalization correction without a DDL,
+function, grant, or API change. C1/C2 references above are historical, not the
+current binding. The immutable C3 source commit is pending; a later C4 binding
+must use this handoff rather than rewriting that history.
+
+The actual isolated harness is
+`e46a8819069bc9c4a05b45d214706192a6db083ff41e8be996bdedd39120db8c`, approved
+by source, security, and IaC review. One positive method passed, exit 0, in
+16.466 seconds, alongside seven boundary PASS results and 87-percent branch
+coverage (425 statements, 42 missed; 94 branches, 26 partial). PostgreSQL 18.6
+with plpgsql used UID:GID 70:70. Source attempt
+`3e71efe4ccb58806cd818087` used container
+`2cfbd1ca3e22e9c880a804bcbf22641c5041adeff7a1c0010c7b25e8d5179ca3`; restore
+attempt `4dfc2afbfb275657a3f654a7` used container
+`efe4202fdb1d6bef21cb239517aa1579a71ec7f332027293d68887077965fe5d`. Cleanup
+passed and both exact IDs are absent.
+
+Roles and custom data restored, `RESTORED_SCHEMA_PREFLIGHT`, reader/outbox/
+replay/pointer, UTC-date concurrency/backfill, and the reader grant/revoke
+denial path all passed. Each of the reader-SELECT grant and owner-ALL revoke
+checks used psql exit 3 with the sole `P0001` schema-drift rollback; the reader
+then received `42501` denial and the baseline passed. The roles dump is 1,795
+synthetic, password-free in-memory bytes with SHA256
+`8898edfd5276d59a3fd15e31a751d64917fd02be279de6f73aef9f09ae37a757`; the data
+dump is 27,205 bytes with SHA256
+`0b2139f2f98c7ce366f95a551c319d7d4c8f633f8b07709559dfbde228da6c1c`.
+
+The `8783` diagnostic proved only five NULL/default ACL representations changed
+(four tables and one sequence) while effective ACLs remained equal. The new
+normalizer covers tables `r`, partitioned tables `p`, views `v`, materialized
+views `m`, foreign tables `f`, and sequences `S`, plus NULL defaults and sorted
+grantor/grantee/PUBLIC/privilege/grantable JSON. Explicit `{}` ACLs preserve
+their semantic `[]`; only non-grantable relation kinds retain raw metadata. It
+does not retroactively repair or accept earlier receipts. The historical
+`42501`, `645/P0001`, and `0797` failures remain preserved.
+
+`ISOLATED_PG_EMPTY_RESTORE` is now PASS. Cross-database CONNECT remains FAIL;
+full HOME PostgreSQL plus S3 recovery, HOME worker S3 GET, and authentication/
+TLS proof remain NOT_RUN. PR 437 is an actual draft at head `fc328`; its source
+candidate quality run `38337706234` passed, as did CodeQL and GitGuardian.
+Final-head CI, independent delivery review, merge, criterion 18 HOME evidence,
+and the Task remain in-progress.
+
+Metadata validation at C1 `c809153705d583998209330db932cbbe9bbe918f` passed,
+exit 0, selecting the then-current Task and SQL README with zero violations.
+Its inputs were Task v0.1.12 SHA256
+`edd74041a86372527ff5c84c6e2ccd993ed2edf46eb4763f1c992ca3f37885e5` and
+SQL README SHA256 `cd2f33`; it predates this amendment and is not a PASS for
+this amendment. The prior final local-staged check also passed before C1; neither
+receipt replaces the required check on the final integrated head.
 
 ## Evidence
 
@@ -1297,13 +1483,15 @@ string remain preserved until that integration is approved.
 | Existing source reuse | 1, 8, 18 | W34 | Focused existing DEV/workflow/registration unittest | Clean74feff942 | PASS | 35 tests, 9.529s, exit0; command below | pending |
 | Supplied reference audit | 18 | W34 | Extracted public reference UNIT only | Prompt c50695e5a46c; isolated Python3.12.3 | PASS | 42 tests, 0.19s, exit0; ignored receipt only | pending |
 | New manifest implementation | 18 | W35 | RED/GREEN parser and protected adapters | b2a46bc88 plus latest SQL inputs in Work Log | PASS | Final52 unit/synthetic/source tests, exit0; native excluded | pending |
-| New SQL contract | 18 | W36 | Source guards for migration and outbox | Latest SQL hashes in Work Log | PASS | Nine source tests, exit0; PostgreSQL native NOT_RUN | pending |
+| New SQL contract | 18 | W36 | Source guards for migration and outbox | Latest SQL hashes in Work Log | PASS | Source checks only; native PostgreSQL evidence is the W38 restore row | pending |
 | New DAG contract | 18 | W37 | Synthetic SDK import and public overlay model | Frozen DAG/overlay hashes in Work Log | PASS | Five synthetic tests and independent Compose render, exit0 | pending |
 | Typed optional overlay candidate | 18 | W37 | RED/GREEN profile/inventory boundaries, coverage and official catalog | Main 4c83f14b plus final classifier/test/overlay hashes in Work Log | PASS | 59 focused and 102 full-module tests; catalog exit0; SOURCE/UNIT/STATIC only, review/delivery pending | pending |
 | Required image projection candidate | 18 | W37 | RED/GREEN required-input projection and concrete-pin preservation | f1a7726 plus frozen script/test/registry hashes in Work Log | PASS | 33 class tests, root63 regressions, generator/check and manifest exit0; unresolved image, combined delivery pending | pending |
-| Native batch and recovery | 18 | W38 | ISOLATED/HOME/MIGRATION/RECOVERY | No selected ready execution contract | NOT_RUN | No DB/role/bucket creation or deployment | pending |
+| Isolated empty PostgreSQL restore | 18 | W38 | `ISOLATED_PG_EMPTY_RESTORE` | Restore-stable isolated PostgreSQL harness | PASS | Roles/custom data, preflight, reader/outbox/replay/pointer, and UTC-date cases passed; cleanup confirmed | pending |
+| Cross-database CONNECT denial | 18 | W38 | Cross-database role boundary | Isolated PostgreSQL role probe | FAIL | `opsflow_ingest` could execute `SELECT 1`; the denial boundary remains open | pending |
+| HOME/S3 recovery | 18 | W38 | HOME, S3, worker GET, full recovery | No bound HOME/S3 target or authorization/TLS proof | NOT_RUN | HOME/S3, worker S3 GET, and full recovery remain unexecuted | pending |
 | Rotation | 18 | W38 | Credential rotation | No rotation required | NOT_APPLICABLE | No rotation authorized by issuance | not-required |
-| Delivery | 8, 18 | W39 | Latest-head CI/review/PR/merge | Local source commits; no P04 PR | NOT_RUN | Local checks do not satisfy remote CI/merge | pending |
+| Delivery | 8, 18 | W39 | Latest-head CI/review/PR/merge | Draft PR 437 at published head `fc328`; revised head pending | NOT_RUN | Candidate checks passed, but final revised-head CI, independent review, and merge remain pending | pending |
 | Segmented source checks | 8 | W39 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
 
 Existing-source command, exit0:
