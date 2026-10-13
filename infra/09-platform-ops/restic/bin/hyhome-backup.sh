@@ -203,7 +203,11 @@ fi
 # Shared agent memory (ADR-0049): one online backup of the store into staging.
 # A host with no store has nothing to save; the CLI would create an empty one,
 # so it is not called then. A failed backup is dropped and fails the run.
-if [[ ! -e "$repo_root/.workspace-memory/memory.sqlite3" ]]; then
+# The unit runs the main checkout, so $repo_root is where the CLI resolves the
+# store; a symlink there is not "absent" and reaches the CLI, which refuses it.
+# The CLI waits 5 s for a busy store; a longer agent write fails the run.
+memory_store="$repo_root/.workspace-memory/memory.sqlite3"
+if [[ ! -e "$memory_store" && ! -L "$memory_store" ]]; then
     echo "agent memory store absent: backup skipped"
 elif ! python3 "$repo_root/scripts/operations/agent_memory.py" backup \
     --output "$staging/agent-memory.sqlite3"; then

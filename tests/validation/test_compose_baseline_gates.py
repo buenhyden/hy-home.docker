@@ -2349,14 +2349,19 @@ python3() {
   echo synthetic >"$staging/agent-memory.sqlite3"
 }
 """
-        for case in ("absent", "present", "backup"):
+        for case in ("absent", "present", "backup", "dangling"):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 staging = root / "staging"
                 staging.mkdir()
-                if case != "absent":
+                if case in ("present", "backup"):
                     (root / ".workspace-memory").mkdir()
                     (root / ".workspace-memory/memory.sqlite3").write_text("")
+                elif case == "dangling":
+                    (root / ".workspace-memory").mkdir()
+                    (root / ".workspace-memory/memory.sqlite3").symlink_to(
+                        root / "missing"
+                    )
                 result = subprocess.run(
                     ["bash", "-c", harness + block + "exit $status"],
                     check=False,
@@ -2374,6 +2379,9 @@ python3() {
                     self.assertEqual(0, result.returncode)
                     self.assertIn("agent memory store absent", result.stdout)
                     self.assertFalse(calls.exists())
+                elif case == "dangling":
+                    # Not treated as absent: the CLI sees it and refuses it.
+                    self.assertTrue(calls.exists())
                 elif case == "present":
                     self.assertEqual(0, result.returncode)
                     self.assertIn(
