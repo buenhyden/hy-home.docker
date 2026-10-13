@@ -1,6 +1,6 @@
 ---
 title: "Task Lifecycle Generation 6 Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -184,6 +184,18 @@ The owner merged pull request #441 with a merge commit, `ffd201182` (parents
 | --- | --- | --- |
 | 2026-10-13 | 2a57d4122dc8dac954afca364b838e4bf97fd44a | #starting-state: generation 5 Registry and corpus read before the migration |
 
+
+### Governance Suite
+
+The full document governance suite (`python3 -m unittest discover -s
+tests/lib/document_governance -t .`) ran with no time limit in a detached
+scratch worktree on `b1a6976f4` on 2026-10-13: 894 tests in 1844 s, 893
+passed and one failed. `test_registry_high_water_is_not_below_repository_history`
+reported `registry high_water=232 observed=234`. That test reads every local
+ref (`--all`), and the unmerged local branches for SPEC-0233 and SPEC-0234
+already issue Spec numbers 233 and 234. That cause is likely but not yet
+verified; the test is rerun once both branches merge.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -195,6 +207,7 @@ The owner merged pull request #441 with a merge commit, `ffd201182` (parents
 | Text | 5 | W5 | Independent rules review; metadata check | Branch | PASS | W5 Text and Review | - |
 | Gate | 6 | W6 | Changed gate on synthetic merge; stopped at local 3000 s limit in the governance suite | `d28b15c1c` | NOT_RUN | W6 Gate | - |
 | Candidate | 6 | W6 | Hosted `candidate-quality`, changed profile | PR #441 at `f38fd2ea5` | PASS | W6 Gate | - |
+| Governance suite | 6 | W6 | Full document governance suite, 893 of 894 passed | `b1a6976f4` | FAIL | Governance Suite | - |
 
 ## Criterion Acceptance
 
