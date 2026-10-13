@@ -333,6 +333,7 @@ no native file.
 | Security re-review | 7 | W7 | Independent `security-auditor` re-review: pass with notes, low only | `b42117a68` | PASS | Re-reviews at `b42117a68` | Security review |
 | Rules re-review | 7 | W7 | Independent `rules-engineer` re-review: changes required (H1, contract 7, criterion 4) | `b42117a68` | FAIL | Re-reviews at `b42117a68` | - |
 | Re-review fixes | 7 | W7 | New tests RED on `b42117a68` (2 failures, 1 error) then GREEN; `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (145); manifest, workflow contract, renderer `--check` (drift 0), governance contract; metadata `check-changed` (11, 0 violations); corpus lifecycle (0); `test_identity_history` (27) | Branch | PASS | Re-reviews at `b42117a68` | - |
+| Rules final review | 7 | W7 | Independent `rules-engineer` final review: approve; low notes applied (RUN-0021 Overview and Trigger name the memory store) | `f46ea2ee0` | PASS | Work Log | Rules review, Rules re-review |
 | Gate | 7 | W7 | Changed gate; candidate quality | - | NOT_RUN | W7 Verification | - |
 | Native acceptance | 1, 2, 4 | W8 | Two providers, two worktrees, one store | - | NOT_RUN | W8 Native Acceptance | - |
 | Migration | 1 | W9 | Eligible Claude native memories entered once through the CLI | - | NOT_RUN | W9 Native Memory Migration | - |
