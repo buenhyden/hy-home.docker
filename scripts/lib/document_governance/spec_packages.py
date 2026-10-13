@@ -590,6 +590,16 @@ def _allowed_statuses(
         raise SpecPackageError(
             f"Stage 99 lifecycle statuses are malformed: {lifecycle_id}"
         )
+    if registry.common.get("lifecycle_generation") == 6:
+        # Preserved and historical packages keep the statuses that generation 6
+        # normalized away; current packages are held to the lifecycle by
+        # _validate_parent_authority.
+        legacy = tuple(
+            source
+            for profile, source, _ in sorted(_registered_normalizations(registry))
+            if profile == lifecycle_id and source not in statuses
+        )
+        return statuses + tuple(dict.fromkeys(legacy))
     return statuses
 
 
@@ -714,6 +724,13 @@ def _validate_parent_authority(
     tasks: tuple[SpecDocument, ...],
 ) -> None:
     """Generation 6: parents record authority; Tasks own execution."""
+    authority = {"draft", "in-review", "approved", "cancelled", "superseded"}
+    for parent in (spec, plan):
+        if parent is not None and parent.status not in authority:
+            raise SpecPackageError(
+                f"{parent.path} status is outside the {parent.profile_id} lifecycle: "
+                f"{parent.status!r}"
+            )
     if plan is None:
         return
     task_terminal = {"completed", "cancelled"}
