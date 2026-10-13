@@ -1191,3 +1191,41 @@ secret detection. The independent code reviewer also approved this result-only
 Task delta and separately recomputed the three stale SEC01 source hashes.
 The logical commit unit is `fix(p05): Bind reviewed P04 outbox SQL source`;
 its exact object and hosted checks are observable through the owning PR.
+
+#### Hosted Candidate Receipt and Latest Main Refresh
+
+The source unit is commit `18dd539765b2b906fc96837e6f9585d2103bae18`.
+Its branch push and [PR435](https://github.com/buenhyden/hy-home.docker/pull/435)
+creation both exited 0. The first hosted
+[candidate run38328314501](https://github.com/buenhyden/hy-home.docker/actions/runs/38328314501)
+completed SUCCESS at that exact head against input main603a7637, with
+candidate-quality passing in 6m51s. CodeQL actions/Python/JavaScript-TypeScript
+and GitGuardian checks also completed SUCCESS. Actual GitHub reviews were
+empty and the observed required approving-review count remained zero; the
+independent agent reviews above are not account approvals.
+
+During CI, remote main advanced to
+`f1d257867ea116c89b76b37394de3ce3a6ed8ff5`. Fresh fetch/diff found only a
+P01 result receipt in Task0006. No P05 implementation, P04 SQL, Compose input,
+ledger or source dependency changed. Latest main was merged into this branch
+without rewriting the reviewed source unit; that commit remains available for
+source rollback. The six-path owning-PR source delta remains unchanged except
+this result-only Task receipt.
+
+The independent code reviewer reapplied the existing typed execution boundary:
+quality policy section4 assigns candidate acceptance to the hosted `changed`
+profile and excludes local-only leaves. The clean-main-reproduced SEC01 census
+failure remains FAIL/baseline debt under its own owner. It does not create a
+new standing P05 merge gate or grant P05 ownership of the shared ledger. This
+is not a waiver or a PASS substitution: focused P05 tests, staged admission,
+independent source/security review and hosted candidate results are distinct.
+The earlier blanket merge-blocked assessment above is superseded for this
+bounded source increment once the refreshed candidate passes. Overall/native
+P05 acceptance remains open.
+
+PR435 may become ready after evidence-delta review and current-index admission,
+then merge only after a fresh hosted candidate SUCCESS for the refreshed head
+and latest main. No local aggregate rerun, shared-source correction, image
+change, scanner change or native operation is included in this refresh.
+Post-refresh head/run/merge identities are observable in this same PR; they
+cannot be inferred from the first run's PASS.
