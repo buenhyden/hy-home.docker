@@ -66,6 +66,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0228 | [백업 telemetry·예산](./0228-backup-telemetry-budget/) | Loki·Tempo SeaweedFS collection 백업 제외와 state 저장소 예산 8 GiB |
 | SPEC-0229 | [소유자 후속 조치](./0229-owner-follow-ups/) | Storybook MCP refresh 오류 원인, Grype DB 상한과 AI 이미지 스캔, OpenBao snapshot token 발급 절차 |
 | SPEC-0230 | [v9 품질 교정](./0230-v9-quality-corrections/) | stale 자동 닫기 제거(표시만 유지), compose-baseline selector 목록과 SEC01 ledger 입력 digest 정정 |
+| SPEC-0231 | [Task lifecycle 6세대](./0231-task-lifecycle-generation-6/) | Spec·Plan 권한 상태, 기준별 수용 표, 다중 실행 항목 Task, 파생 보관 준비 판정과 활성 문서 이행 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
