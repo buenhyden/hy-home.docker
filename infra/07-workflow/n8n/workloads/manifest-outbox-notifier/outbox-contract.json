@@ -1,17 +1,17 @@
 {
-  "status": "provisional",
+  "status": "reviewed",
   "native_execution": "NOT_RUN",
   "binding": {
-    "sql_commit": null,
-    "sql_sha256": null,
-    "interface_version": null,
-    "review_receipt": null
+    "sql_commit": "79dde32059dbf6eae8dacd9f5f2a04aee29f31a5",
+    "sql_sha256": "57a744cf33581bafd73f610b9c18c83d64c9457486a02e02398df56b444ee584",
+    "interface_version": 1,
+    "review_receipt": "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0012-p04-airflow-manifest-pipeline.md#latest-source-handoff"
   },
   "owner": "P04",
   "canonical_sql_path": "infra/07-workflow/airflow/workloads/manifest-pipeline/sql",
   "source_reference": {
     "scope": "SOURCE_REVIEW_ONLY",
-    "observed_main": "4c83f14b11a77e13e582eb85d0bf256685472a95",
+    "observed_main": "603a7637f77df1b5d63c971453853388a39c7df6",
     "native_acceptance": "NOT_RUN",
     "sql_sha256": {
       "001_opsflow.sql": "57a744cf33581bafd73f610b9c18c83d64c9457486a02e02398df56b444ee584",
@@ -20,7 +20,7 @@
     "claim_output_fields": ["id", "run_id", "source", "row_count", "lease_token", "lease_until"]
   },
   "draft": {
-    "provenance": "P04 source at observed main; explicit five-field consumer projection. Native migration/interface/role acceptance remains unbound.",
+    "provenance": "P04 independently reviewed SQL v1 source at observed main; explicit five-field consumer projection. Native migration/role acceptance and transport targets remain unbound.",
     "claim_fields": ["id", "run_id", "source", "row_count", "lease_token"],
     "run_id": "64 lowercase hexadecimal characters",
     "sources": ["hy-home.docker", "hy-home.k8s", "Project-Template", "blog-data"],
@@ -29,7 +29,7 @@
     "lease_token": "lowercase UUID; private capability at runtime",
     "functions": ["claim_notification", "ack_notification", "retry_notification"],
     "ack_retry_result": "strict boolean true for the same current id/token",
-    "role": "function EXECUTE only; no owner/superuser/direct table write",
+    "role": "DB CONNECT and ops_flow USAGE plus claim/ack/retry EXECUTE; no owner/superuser/direct table/column/sequence access",
     "lease_seconds": 600,
     "max_attempts": 5,
     "workflow_timeout_seconds": 120,
@@ -38,7 +38,6 @@
     "delivery": "at-least-once; SMTP acceptance and DB ack are non-atomic"
   },
   "pending": [
-    "P04 W36 independent SQL/security review and exact interface hash",
     "P04 W38 genuine publication/outbox handoff",
     "SEC01 exact main/worker/runner image and installed node/security receipts",
     "P03 executor, endpoint, TLS, timeouts and dedicated Mailpit capture boundary",
