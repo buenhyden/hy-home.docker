@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.5.0"
+version: "1.6.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-13"
 ---
 
 # Agent Quality and Security Standards
@@ -369,8 +369,10 @@ Gate in `.agents/governance/github-governance.md`.
   selection and each exception.
 - Formatting settings are pinned in the repository, not left to a tool default
   or to whichever version a machine has. `ruff.toml` pins Python.
-- An agent editor hook may format a file only in agreement with the registered
-  owner. Where a hook lives outside the repository and cannot be registered,
+- A repository-registered agent editor hook reports formatting defects and
+  does not rewrite files.
+  An explicit fix command may format a file only in agreement with the
+  registered owner. Where a hook lives outside the repository and cannot be registered,
   the repository states its own boundary in the tool's ignore file;
   `.prettierignore` does this for Prettier.
 - Do not add a second tool over a file type that already has an owner. Two

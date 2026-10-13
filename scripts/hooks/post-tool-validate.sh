@@ -16,12 +16,13 @@ while [[ "$#" -gt 0 ]]; do
 Usage: post-tool-validate.sh [--check | --write]
 
 Consumes a hook JSON payload on stdin and validates changed files. The default
-is non-mutating validation: diff, syntax, lint, and repo checks only.
+is non-mutating validation: diff, syntax, lint, and repo checks only, and it
+reports a changed text file that --write would normalize.
 
 Options:
   --check   Non-mutating validation (the default).
-  --write   Also normalize trailing whitespace and final newlines in the
-            changed files. The runtime post-edit hook passes this.
+  --write   Normalize trailing whitespace and final newlines in the changed
+            files. An explicit fix command; the runtime hook passes --check.
 EOF
     exit 0
     ;;
@@ -114,7 +115,8 @@ JSON_SYNTAX_FILES=()
 format_text_file_basics() {
   local file="$1"
   local frozen_pattern="$2"
-  python3 - "$file" "$frozen_pattern" <<'PY'
+  local mode="$3"
+  python3 - "$file" "$frozen_pattern" "$mode" <<'PY'
 from __future__ import annotations
 
 import io
@@ -155,6 +157,11 @@ new_data = b"".join(strip_line(line) for line in io.BytesIO(data).readlines())
 if new_data and not new_data.endswith((b"\n", b"\r")):
     new_data += b"\n"
 if new_data != data:
+    if sys.argv[3] == "check":
+        raise SystemExit(
+            f"{path}: trailing whitespace or a missing final newline; "
+            "fix it, or run post-tool-validate.sh --write"
+        )
     path.write_bytes(new_data)
 PY
 }
@@ -162,13 +169,15 @@ PY
 for rel in "${CHANGED_PATHS[@]}"; do
   if [[ -f "$rel" && "$rel" != graphify-out/* ]]; then
     EXISTING_CHANGED_FILES+=("$rel")
-    if [[ "$check_only" -eq 0 ]]; then
-      case "$rel" in
-      *.md | *.sh | *.yml | *.yaml | *.json)
-        format_text_file_basics "$rel" "$FROZEN_PAYLOAD_PATTERN"
-        ;;
-      esac
-    fi
+    case "$rel" in
+    *.md | *.sh | *.yml | *.yaml | *.json)
+      if [[ "$check_only" -eq 0 ]]; then
+        format_text_file_basics "$rel" "$FROZEN_PAYLOAD_PATTERN" write
+      else
+        format_text_file_basics "$rel" "$FROZEN_PAYLOAD_PATTERN" check
+      fi
+      ;;
+    esac
   fi
 
   if [[ "$rel" =~ \.sh$ && -f "$rel" ]]; then

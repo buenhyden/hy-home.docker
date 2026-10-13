@@ -435,9 +435,33 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             with self.subTest(flags=flags):
                 self._assert_post_tool_is_non_mutating(flags)
 
-    def test_agent_event_hook_requests_post_tool_writes_explicitly(self) -> None:
+    def test_agent_event_hook_validates_without_writing(self) -> None:
         text = (ROOT / "scripts/hooks/agent-event-hook.sh").read_text()
-        self.assertIn("bash scripts/hooks/post-tool-validate.sh --write", text)
+        self.assertIn("bash scripts/hooks/post-tool-validate.sh --check", text)
+        self.assertNotIn("post-tool-validate.sh --write", text)
+
+    def test_post_tool_check_reports_what_write_would_normalize(self) -> None:
+        """An untracked file escapes `git diff --check`; the hook still reports it."""
+
+        with tempfile.TemporaryDirectory() as directory:
+            repo = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+            note = repo / "note.md"
+            for body in (b"# Note\n\ntext  \n", b"# Note\n\ntext"):
+                with self.subTest(body=body):
+                    note.write_bytes(body)
+                    result = subprocess.run(
+                        ["bash", str(POST_TOOL), "--check"],
+                        cwd=repo,
+                        input=json.dumps({"tool_input": {"file_path": "note.md"}}),
+                        capture_output=True,
+                        text=True,
+                        env={"PATH": "/usr/bin:/bin", "CODEX_PROJECT_DIR": str(repo)},
+                        check=False,
+                    )
+                    self.assertNotEqual(0, result.returncode)
+                    self.assertIn("note.md: trailing whitespace", result.stderr)
+                    self.assertEqual(body, note.read_bytes())
 
     def _assert_post_tool_is_non_mutating(self, flags: list[str]) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -2027,6 +2051,36 @@ class PostToolFormattingOwnershipTests(unittest.TestCase):
             if bool(frozen.search(relative)) != markdownlint_ignores(relative)
         ]
         self.assertEqual([], disagreements)
+
+        # The Registry is the source of what is frozen: every unmanaged archive
+        # record profile and every frozen legacy status path. The anchor must
+        # select exactly those tracked files.
+        registry = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        record_roots = tuple(
+            profile["path_pattern"].split("{", 1)[0]
+            for profile in registry["profiles"]
+            if profile.get("frontmatter_policy") == "unmanaged"
+            and profile["path_pattern"].startswith("docs/98.archive/")
+        )
+        legacy = {
+            path
+            for profile in registry["profiles"]
+            for exception in profile.get("exceptions", ())
+            if exception.get("kind") == "frozen-legacy-status"
+            for path in exception["paths"]
+        }
+        self.assertTrue(record_roots and legacy, "the Registry declares no frozen set")
+        self.assertEqual(
+            [],
+            [
+                relative
+                for relative in documents
+                if bool(frozen.search(relative))
+                != (relative.startswith(record_roots) or relative in legacy)
+            ],
+        )
 
     def test_pre_commit_registers_no_shell_formatting_owner(self) -> None:
         """A shell formatter absent from the owner does not govern the repository."""
