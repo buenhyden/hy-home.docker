@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.4.0"
+version: "1.5.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-13"
 ---
 
 # Agentic Engineering Policy
@@ -43,13 +43,14 @@ Provider-neutral agent execution, delegation, capability intake, and Task eviden
 - Generated native role and skill projections are adapters and never own shared
   policy, role intent, or procedure content. Authored native `provider.md` files
   own loading and syntax differences only; `.agents/` is canonical input.
-- The shared PostToolUse hook normalizes changed Markdown, shell, YAML, and JSON
-  text, runs `shellcheck` and `yamllint` on changed files where those tools are
-  available, and runs `git diff --check` before repository validators. It runs
-  no formatter that `.pre-commit-config.yaml` does not register, reads that same
-  owner for the lint arguments and the frozen archive payloads its normalizer
-  must not rewrite, and fails closed when the owner declares no boundary.
-  Inspect the resulting diff before committing.
+- The shared PostToolUse hook validates and never rewrites. It reports changed
+  Markdown, shell, YAML, and JSON text with trailing whitespace or a missing
+  final newline, runs `shellcheck` and `yamllint` on changed files where those
+  tools are available, and runs `git diff --check` before repository
+  validators. It reads `.pre-commit-config.yaml` for the lint arguments and the
+  frozen archive payloads it skips, and fails closed when that owner declares
+  no boundary. `post-tool-validate.sh --write` is the explicit fix, under
+  [formatting ownership](quality-standards.md#10-formatting-and-linting-ownership).
 
 ### Delegation Contract
 

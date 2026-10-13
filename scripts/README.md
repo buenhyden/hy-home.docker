@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.4.1"
+version: "1.4.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-13"
 created: "2026-02-21"
 ---
 
@@ -186,10 +186,11 @@ private offline scan 캐시로 복사합니다.
 `scripts/hooks/post-tool-validate.sh`는 훅 payload consumer입니다. JSON
 payload가 없거나 변경된 경로가 없으면 validator를 실행하지 않고 성공으로
 종료합니다. 기본값은 non-mutating이며 diff, syntax, lint, repo 점검은 쓰기
-없이 실행됩니다. `--write`를 주면 whitespace normalizer가 활성화되며
-`agent-event-hook.sh`의 런타임 post-edit 훅이 이 옵션을 전달합니다.
-`POST_TOOL_VALIDATE_CHECK_ONLY=1`은 `--write`가 있어도 check-only 모드를
-강제합니다. whitespace normalizer가 이 훅의 유일한 mutation이며,
+없이 실행되고, `--write`가 고칠 줄 끝 공백이나 빠진 마지막 줄바꿈이 있으면
+파일을 바꾸지 않고 실패로 알립니다. `agent-event-hook.sh`의 런타임 post-edit
+훅은 `--check`를 전달합니다. `--write`는 명시적으로 실행하는 수정
+명령이며 `POST_TOOL_VALIDATE_CHECK_ONLY=1`은 `--write`가 있어도 check-only
+모드를 강제합니다. whitespace normalizer가 이 스크립트의 유일한 mutation이며,
 `.pre-commit-config.yaml`에 등록된 mutator 경계를 읽으므로 고정된(frozen)
 archive payload는 바이트 그대로 유지됩니다. 이 훅은 호출자가 준비한 도구 탐색
 순서를 그대로 유지하며 `scripts/operations/use-qa-ci-tools.sh`를 자동으로
@@ -351,7 +352,7 @@ printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"comman
 # 포맷팅 쓰기 없이 provider-neutral post-edit 검증을 실행합니다 (기본값)
 printf '{"tool_input":{"file_path":".agents/governance/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh
 
-# post-edit 훅과 동일하게 실행하며 변경된 파일의 whitespace를 정규화합니다
+# 보고된 줄 끝 공백과 마지막 줄바꿈을 명시적으로 고칩니다
 printf '{"tool_input":{"file_path":".agents/governance/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh --write
 
 # 모든 tier 하드닝 baseline을 강제합니다

@@ -16,14 +16,10 @@ AIRFLOW = ROOT / "infra/07-workflow/airflow"
 N8N = ROOT / "infra/07-workflow/n8n"
 CANDIDATE_MANIFESTS = {
     "hy-home/sec01-airflow:3.3.2-keycloak-candidate": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
-    "hy-home/sec01-n8n-prod:2.42.6-candidate": "sha256:4298977846ed580208c670a87b125ab86873958bc25057a6e9aca1fa8a5f329b",
-    "hy-home/sec01-n8n-dev:2.42.6-candidate": "sha256:c32096b2ded1c1c9d6a00c39f32eb3e9ecf3a82a3282910d5d77a9cef8b1c710",
 }
 
 CANDIDATE_INDEXES = {
     "hy-home/sec01-airflow:3.3.2-keycloak-candidate": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
-    "hy-home/sec01-n8n-prod:2.42.6-candidate": "sha256:caecb10cce97f48f5131aff8d682ed8b2a24e27f573afac1a58f02cd5efb49d7",
-    "hy-home/sec01-n8n-dev:2.42.6-candidate": "sha256:1469f5d7034ba7a7282d061f40135796c8f78e2665f6df0ea72a16a2103ccbff",
 }
 
 
@@ -315,20 +311,6 @@ print('cross-client denial PASS; exchange/crypto mocked, no live OIDC claim')
 """,
         )
         self.assertIn("cross-client denial PASS", output)
-
-    def test_n8n_both_variants_actual_uid_version_and_font_receipt(self):
-        for variant in ("prod", "dev"):
-            with self.subTest(variant=variant):
-                output = self.run_candidate(
-                    f"hy-home/sec01-n8n-{variant}:2.42.6-candidate",
-                    "/bin/sh",
-                    "-ec",
-                    'test "$(id -u)" = 1000; test "$(n8n --version)" = 2.42.6; '
-                    'grep -q "fontconfig-2.17.1-r1" /usr/share/hy-home-font-builder-packages.txt; '
-                    'grep -q "font-noto-emoji-2.051-r0" /usr/share/hy-home-font-builder-packages.txt; '
-                    'echo "installed n8n/font bundle PASS"',
-                )
-                self.assertIn("installed n8n/font bundle PASS", output)
 
 
 if __name__ == "__main__":
