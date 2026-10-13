@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.7.6"
+version: "0.7.7"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-13"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -419,7 +419,7 @@ sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DI
 
 명령은 만료·CA chain·정확한 SAN·cert/key 일치와 UID100:GID1000의 읽기를 검증한다.
 마지막 읽기 검사는 pull 없는 network-none 임시 컨테이너와 exact-file readonly bind만 사용한다.
-이 명령의 현재 HOME 실행은 미실행이다. CLI는 `BAO_CACERT`/`BAO_TLS_SERVER_NAME`, Agent는 `VAULT_CACERT`, metrics는
+TLS 자료는 HOME source 경로에 준비되었고 공개 인증서 검사는 통과했다(TLS_PREPARED / NOT_DEPLOYED, server 재시작 없음). 다만 이 명령 자체를 HOME에서 실행한 기록은 없다. CLI는 `BAO_CACERT`/`BAO_TLS_SERVER_NAME`, Agent는 `VAULT_CACERT`, metrics는
 CA/server_name, Traefik은 `openbao-tls@file`로 검증한다. 잘못된 CA/SAN/만료는 차단하며
 `skip_verify`를 정상 경로로 사용하지 않는다. 외부 gateway 인증서와 내부 backend 신뢰는
 별개다. 최초 key/CA를 그 OpenBao Agent가 발급하는 순환은 금지한다.
@@ -464,14 +464,32 @@ snapshot 빈 환경 복원·audit 용량 실패 차단을 확인했다. 이는 �
 이관·복구나 모든 malformed 입력 안전성의 증거가 아니다. 실제 host 적용 전에는 최신
 공급자 channel·같은 플랫폼 SBOM/scan·서명·pre-upgrade snapshot·독립 custody·빈 이전
 버전 환경 복원과 이후 candidate upgrade를 검증한다. 2.7 데이터에 이전 image를 붙이는
-것은 rollback이 아니다. 서비스 묶음 중단 한도 15분 안에 restore/unseal/검증까지 가능한지
-측정하고, 한도를 넘거나 복구 자료가 없으면 HOME만 보류한다. P06 확대도 HOME gate 전에는
+것은 rollback이 아니다. 운영자가 고른 30분 cutover 목표와 60분 maintenance window
+안에 restore/unseal/검증까지 가능한지 측정한다. 두 값은 계획 추정치이며 관측한
+RTO가 아니다. 목표를 넘거나 복구 자료가 없으면 HOME만 보류한다. P06 확대도 HOME gate 전에는
 진행하지 않는다.
 
 HOME 적용 전 source-only rollback은 검토된 revert다. 적용 후에는 TLS·audit 선언과 로그 custody를 유지하는
 검토된 override 또는 fix-forward만 사용한다. client도 검증된 endpoint로만 전환하며 HTTP나 audit 제거로 되돌리지 않는다.
 
 P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지 보류한다.
+
+#### HOME 적용 입력과 승인 순서
+
+값은 기록하지 않는다. 각 단계는 앞 단계가 끝난 뒤에만 진행하며, 괄호 안 승인이 따로 필요하다.
+
+1. SEC01이 현재 candidate image의 서명·SBOM·CVE 결과를 수용한다(SEC01 담당자).
+2. 보존된 attempt 대상과 container의 처리를 정한다(삭제는 명시 승인). attempt 03·04·chown container와 `-03` 대상은 2026-10-13에 owner가 삭제했고, `-04` 대상·기본 restore 대상·snapshot 파일은 아직 정하지 않았다.
+3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인).
+4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
+5. unseal share·offsite key·CA key의 off-host 독립 보관을 값 없이 확인한다(owner 확인).
+6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않으므로 이 단계에는 추적되거나 새로 검토한 도구가 필요하다.
+7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 현재 HOME server에는 audit mount가 없으므로 8단계 업그레이드 window로 미룬다.
+8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
+9. HOME cold boot를 한다(별도 승인).
+10. 현재 버전 인증과 consumer 읽기를 위한 consumer와 ACL을 고른다(P06 담당자 선택).
+
+Agent staleness와 인증 실패를 알리는 Prometheus 규칙이 아직 없고, 변조된 HMAC의 audit 검증도 미실행이다. 규칙 추가는 별도 결정이 필요한 IaC 변경이다.
 
 ## Verification
 
