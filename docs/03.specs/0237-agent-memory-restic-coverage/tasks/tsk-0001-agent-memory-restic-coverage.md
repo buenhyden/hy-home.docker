@@ -62,6 +62,7 @@ Task points to this package for the coverage it deferred.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Step test | 1 | W1 | Harness test RED on the `main` script, GREEN after; backup contract tests (13) | Branch on `f1214c839` | PASS | W1 Backup Step | - |
+| Checks | 2 | W2 | `bash -n` and shellcheck; script manifest; backup contract and tier layout tests (23); changed metadata (7 documents) and corpus lifecycle, 0 violations; links `--mode all` 0 failures; Registry identity tests; markdownlint | `06da0708f` | PASS | W2 Policy and Runbook | - |
 | IaC review | 3 | W3 | Independent IaC review | - | NOT_RUN | Work Log | - |
 | Real run | 4 | W4 | One `hyhome-backup.service` run includes `agent-memory.sqlite3` | - | NOT_RUN | Work Log | - |
 
