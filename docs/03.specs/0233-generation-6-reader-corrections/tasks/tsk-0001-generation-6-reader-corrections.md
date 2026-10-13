@@ -1,6 +1,6 @@
 ---
 title: "Generation 6 Reader Corrections Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -165,6 +165,19 @@ member in Stage 03. Both sentences now
 tie readiness to the completed archive. The review also asked that this Spec's
 Scope and the Plan name W7; both now do.
 
+### Owner Decisions
+
+On 2026-10-13 the owner answered the review question by accepting the
+criteria rated ready and approving this Spec and Plan; Review and Completion
+lists the criteria and why the rest stay `pending`.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0233 | draft | approved | #owner-decisions |
+| SPEC-0233-PLAN-0001 | draft | approved | #owner-decisions |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -187,16 +200,22 @@ Scope and the Plan name W7; both now do.
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
-| 5 | pending | - | - |
+| 1 | accepted | Rows | Owner accepted 2026-10-13 |
+| 2 | accepted | Items | Owner accepted 2026-10-13 |
+| 3 | accepted | Departure, Departure status | Owner accepted 2026-10-13 |
+| 4 | accepted | Fixtures | Owner accepted 2026-10-13 |
+| 5 | accepted | Text, Rules re-review, Alignment checks, Alignment re-review | Owner accepted 2026-10-13 |
 | 6 | pending | - | - |
 
 ## Review and Completion
 
-No criterion is accepted until the owner accepts it.
+On 2026-10-13 the owner, answering the review question, accepted the criteria
+rated ready (criteria 1, 2, 3, 4, 5) and approved this Spec and Plan.
+Criterion 6, the gate, stays `pending`: its local changed gate is recorded as
+FAIL at the governance unittest node's timeout. The owner also
+accepted ADR-0048 on the same date; ADR-0048 is now `accepted` (1.0.0),
+ADR-0037 notes the clauses it replaces, and the decisions README lists
+ADR-0048 as accepted.
 
 ## Related Documents
 

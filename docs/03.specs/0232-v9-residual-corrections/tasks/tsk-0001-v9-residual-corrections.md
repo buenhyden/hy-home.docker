@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -176,6 +176,19 @@ ref (`--all`), and the unmerged local branches for SPEC-0233 and SPEC-0234
 already issue Spec numbers 233 and 234. That cause is likely but not yet
 verified; the test is rerun once both branches merge.
 
+### Owner Decisions
+
+On 2026-10-13 the owner answered the review question by accepting the
+criteria rated ready and approving this Spec and Plan; Review and Completion
+lists the criteria and why the rest stay `pending`.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0232 | draft | approved | #owner-decisions |
+| SPEC-0232-PLAN-0001 | draft | approved | #owner-decisions |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -197,17 +210,20 @@ verified; the test is rerun once both branches merge.
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
+| 1 | accepted | Hook | Owner accepted 2026-10-13 |
+| 2 | accepted | Rehearsal | Owner accepted 2026-10-13 |
+| 3 | accepted | Frozen | Owner accepted 2026-10-13 |
+| 4 | accepted | Shim | Owner accepted 2026-10-13 |
 | 5 | pending | - | - |
-| 6 | pending | - | - |
-| 7 | pending | - | - |
+| 6 | accepted | Tombstone | Owner accepted 2026-10-13 |
+| 7 | accepted | Context, Context candidate, Live Claude, Live Codex | Owner accepted 2026-10-13 |
 
 ## Review and Completion
 
-No criterion is accepted until the owner accepts it.
+On 2026-10-13 the owner, answering the review question, accepted the criteria
+rated ready (criteria 1, 2, 3, 4, 6, 7) and approved this Spec and Plan.
+Criterion 5, the gate, stays `pending`: its local changed gate has no PASS,
+and the governance suite FAIL is unresolved where recorded.
 
 ## Related Documents
 

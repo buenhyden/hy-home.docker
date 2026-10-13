@@ -1,8 +1,8 @@
 ---
 title: "Generation 6 Reader Corrections Plan"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "specs"
