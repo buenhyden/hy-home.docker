@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.8"
+version: "1.2.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 created: "2025-11-12"
 ---
 
@@ -155,7 +155,9 @@ Airflow의 명시 shell lint 보완으로 해당 후보만 다시 빌드한 후,
 그 보완에서 변경하지 않았으며, 최신 시험 입력과 새 Airflow artifact는 연결된 검증 기록에 있습니다.
 
 위 후보 build·native 결과는 과거 고정 입력의 기록입니다. 이번 패치 입력의 custom build·
-workflow import·runner 실행·scan·HOME·DB 복원은 NOT_RUN입니다.
+workflow import·runner 실행·scan·HOME·DB 복원은 NOT_RUN입니다. 위 후보 시험은 현재
+bundle 버전과 맞지 않아 저장소 시험에서 제외했습니다. 현재 bundle 회귀는
+`WorkflowVersionBundleTests`가 계속 검사합니다.
 
 ### 독립 DEV 통지 워크로드
 
