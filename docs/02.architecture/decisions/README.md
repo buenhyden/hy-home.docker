@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.5"
+version: "1.6.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
