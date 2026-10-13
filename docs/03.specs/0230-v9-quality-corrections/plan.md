@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Quality Corrections Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -25,6 +25,7 @@ Change the stale workflow, repair the two failing checks, then validate.
 | W1 | 1 | Mark-only stale inputs, notice, names and contract entry | None | TSK-0001 | Task evidence |
 | W2 | 2 | Selector list and ledger input digests | None | TSK-0001 | Task evidence |
 | W3 | 3 | Changed gate and candidate quality | W1, W2 | TSK-0001 | Task evidence |
+| W4 | 4 | PostToolUse normalizer agreement with its registered owner | None | TSK-0001 | Task evidence |
 
 ## Verification Plan
 

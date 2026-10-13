@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Quality Corrections"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -26,12 +26,15 @@ unrelated to this request: the compose-baseline selector test did not list a
 selector that `c80915370` registered, and the SEC01 update ledger kept the
 input digests of three Compose files that `b8d3ea818` changed after the
 ledger was written. Both fail every branch whose gate selects them.
+Finding F26 asked whether the PostToolUse `--write` text normalizer conflicts
+with the formatter owner that `.pre-commit-config.yaml` registers.
 
 ## Scope
 
 In scope: the stale workflow inputs, its contract entry and test fixture; the
 selector list in the workflow contract test; the three `include_inputs`
-digests in the update ledger. Out of scope: reopening threads closed earlier,
+digests in the update ledger; the PostToolUse normalizer in
+`scripts/hooks/post-tool-validate.sh`. Out of scope: reopening threads closed earlier,
 other non-gating workflows, repository settings, image versions and the
 historical census in the ledger.
 
@@ -45,12 +48,18 @@ historical census in the ledger.
 3. The ledger `include_inputs` equal the census the ledger's own test
    computes; only digests of files whose image and build lines did not change
    are refreshed this way.
+4. The PostToolUse normalizer changes a file only where pre-commit-hooks
+   `trailing-whitespace` and `end-of-file-fixer` would: lines split on LF
+   only, a CRLF ending kept, trailing ASCII whitespace removed, a missing
+   final LF added. It stays opt-in through `--write`, edits only the files
+   in the current edit payload and skips the frozen archive payloads.
 
 ## Acceptance Criteria
 
 1. No workflow input closes a thread on inactivity alone.
 2. The workflow contract tests and the update-gate tests pass on the branch.
 3. The changed gate and `candidate-quality` pass.
+4. The normalizer leaves every file the registered owners accept unchanged.
 
 ## Related Documents
 
