@@ -149,7 +149,7 @@ class OutboxContractTests(unittest.TestCase):
         self.assertEqual("NOT_RUN", contract["native_execution"])
         binding = contract["binding"]
         self.assertEqual(
-            "79dde32059dbf6eae8dacd9f5f2a04aee29f31a5", binding["sql_commit"]
+            "301e55f2b7f2e67aaf4d7916f96778a880e24f90", binding["sql_commit"]
         )
         sql = ROOT / contract["canonical_sql_path"] / "001_opsflow.sql"
         self.assertEqual(
@@ -158,9 +158,13 @@ class OutboxContractTests(unittest.TestCase):
         self.assertEqual(1, binding["interface_version"])
         receipt_path, heading = binding["review_receipt"].split("#")
         receipt = (ROOT / receipt_path).read_text()
-        self.assertEqual("latest-source-handoff", heading)
-        self.assertIn("### Latest Source Handoff", receipt)
-        self.assertIn("Security re-review approved these exact001/002 hashes", receipt)
+        self.assertEqual("restore-stable-source-handoff", heading)
+        self.assertIn("#### Restore-stable source handoff", receipt)
+        self.assertIn(
+            "independent source/security review approved the narrow "
+            "ACL-normalization correction",
+            " ".join(receipt.split()),
+        )
         for value in contract["source_reference"]["sql_sha256"].values():
             self.assertIn(value, receipt)
 
