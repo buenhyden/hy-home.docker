@@ -1,10 +1,10 @@
 ---
 title: "독립 매니페스트 outbox 통지"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-13"
 ---
 
 # 독립 매니페스트 outbox 통지
@@ -18,12 +18,13 @@ P04의 DEV 매니페스트 게시 outbox에서 한 건을 claim하고 제한된 
 ## Scope
 
 SQL·migration·DB role·dead requeue는 P04가 단독 소유합니다.
-[소비자 계약](outbox-contract.json)은 검토된 P04 SHA를 기다리는 초안입니다.
+[소비자 계약](outbox-contract.json)은 P04 Task의 독립 SQL·보안 검토와 일치하는
+v1 commit·migration hash를 연결합니다. `reviewed`는 이 소스 인터페이스의 상태입니다.
 P04 source SQL의 여섯 claim 필드 중 소비자가 쓰는 다섯 필드만 명시적으로
 조회합니다. `lease_until`은 SQL에 남으며 SMTP 입력으로 전달하지 않습니다.
-계약의 source hash는 합성 호환성 검사에만 쓰고 native DB·권한·게시 수용은
-`NOT_RUN`입니다. 실행 binding은 계속 비어 있습니다.
-계약 확정 전 설치하거나 운영 워크플로우로 취급하지 않습니다.
+계약의 source hash는 소스 호환성 검사에만 쓰고 native DB·권한·게시 수용은
+`NOT_RUN`입니다. 실제 실행 대상·credential·DB timeout은 계속 미확정입니다.
+native 인계 전 설치하거나 운영 워크플로우로 취급하지 않습니다.
 
 ## Structure
 
@@ -76,7 +77,7 @@ python -m unittest tests.lib.ops.test_n8n_outbox_workflow \
 ```
 
 합성 시험은 실제 DB claim·SMTP capture·native n8n 동작을 증명하지 않습니다.
-native 실행은 P04 SQL 검토 SHA와 실제 게시 인계, SEC01의 설치 이미지·node 호환성,
+native 실행은 연결된 P04 SQL과 실제 게시 인계, SEC01의 설치 이미지·node 호환성,
 P02 credential 분류, P03 endpoint·실행 worker·접근 경계가 확정된 뒤 진행합니다.
 먼저 inactive import와 manual capture를 확인하고 이후 1분 polling 하나만 활성화합니다.
 두 notifier 경쟁·lease 만료·outage·응답/ack 유실·dead·restart·공식 credential 회전과

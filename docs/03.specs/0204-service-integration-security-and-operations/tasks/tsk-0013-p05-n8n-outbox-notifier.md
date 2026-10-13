@@ -1,10 +1,10 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.3.3"
+version: "0.3.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0013"
 parent_ids:
@@ -989,3 +989,243 @@ Docker builder compiler command was checked against existing locked host
 dependencies and exited 0. Neither result proves the selected image runtime or
 latest builder. Final receipt-only metadata/lifecycle/staged checks and commit
 admission are completed separately after focused review.
+
+### Current P05 Source Binding and Native Preflight — 2026-10-13 KST
+
+The current direct P05 prompt authorizes this bounded source correction,
+logical commit, owning-Spec PR and merge after independent review and latest
+candidate checks. This supersedes the earlier source-only/no-PR instruction
+for this increment; completed work and historical receipts above are preserved.
+The acceptance owner remains criterion19/W42-W44 in this Task. No new workflow,
+SQL migration, service, secret, image version or scanner rule is introduced.
+
+Fresh `git fetch origin main` exited 0. Initial local HEAD and fetched remote
+main both resolve to `603a7637f77df1b5d63c971453853388a39c7df6`, and
+`git status --short` was empty. `gh pr list --state open --json
+number,title,headRefName,headRefOid,url` returned an empty list, exit 0.
+All observed other worktrees were clean and preserved, including the concurrent
+P04 `codex/p04-native-acceptance` at the same input SHA. This writer exclusively
+owns `codex/p05-current-acceptance` at
+`.worktrees/p05-current-acceptance`. Its initially created `/tmp` worktree was
+moved here because the patch hook rejects paths outside the project root.
+No other writer's worktree, index or shared file was changed.
+
+Compared with the supplied baseline
+`23e37362b72e98028a4675f282819c0346ae59dc`, current main already contains
+the root-model dedicated capture overlay, its topology regression and Korean
+navigation, plus Stage05 document-path moves. Those existing changes are
+NO_CHANGE. Initial inspection is a fresh result, not a rerun of historical PASS.
+
+| Surface / consumer | Current classification | Target, owner and rollback |
+| --- | --- | --- |
+| Builder, inactive workflow JSON, custom node, locked package, image bridge and worker-only DEV/capture overlay | SOURCE_APPLIED / NO_CHANGE | Existing P05 source; no duplicate workflow, dependency or network grant |
+| P04 SQL v1 and notifier grants | SOURCE_APPLIED / NO_CHANGE | P04 sole SQL/data owner; consume reviewed source read-only, no migration |
+| P05 null SQL binding and tests that required provisional state | CONFIRMED_GAP | P05 alone binds reviewed source; revert this increment's logical commit |
+| Root Compose, public environment, versions, OpenBao, backup, Registry and gate contracts | NO_CHANGE | Retain their existing owners and configuration |
+| Installed main/worker/runners and discovery/import | RUNTIME_UNVERIFIED | HOME still runs 2.41.6; selected 2.42.7 artifact absent locally |
+| Actual DEV publication, roles, queue/SMTP execution, credential mapping and restore | CONSUMER_DEPENDENT | P04 W38, SEC01, P03 and P02/native operator receipts required |
+| Current ROOT-image vulnerability scan | RUNTIME_UNVERIFIED | No current image warning established here; no image/scanner changes |
+| LAB runtime/data/testing, Wiki implementation and learning applications | OUT_OF_SCOPE | Completed Wiki preparation remains NO_CHANGE; no actions |
+
+#### Reviewed P04 SQL Handoff
+
+Two independent read-only assessments verified that SQL commit
+`79dde32059dbf6eae8dacd9f5f2a04aee29f31a5` is contained in this main and
+that both files match P04's existing independently reviewed receipt at
+[Latest Source Handoff](tsk-0012-p04-airflow-manifest-pipeline.md#latest-source-handoff).
+That receipt approves the exact source/security fix range; it does not prove
+PostgreSQL execution or native publication. The earlier statements above that
+P04 W36 source review is pending are superseded for this source binding only.
+
+| Canonical P04 input | Bound value |
+| --- | --- |
+| `001_opsflow.sql` migration SHA256 / interface | `57a744cf33581bafd73f610b9c18c83d64c9457486a02e02398df56b444ee584` / v1 |
+| `002_checks.sql` source SHA256 | `0a00944569aa05b7a0eec6a555cc3357197b26257ee76a1779c7e258eb9a0b73` |
+| `claim_notification()` result | `id bigint, run_id text, source text, row_count integer, lease_token uuid, lease_until timestamptz` |
+| `ack_notification(bigint,uuid)` / `retry_notification(bigint,uuid)` | Strict boolean result; same current id/token, no SQL interpolation |
+| Consumer projection | Existing five fields; intentionally excludes `lease_until` from SMTP input |
+| Notifier capability | DB CONNECT, `ops_flow` USAGE and only claim/ack/retry EXECUTE; no owner, superuser, membership, direct table/column/sequence access |
+
+`binding.sql_sha256` binds the exact `001` migration bytes; both source hashes
+remain in `source_reference`. `status=reviewed` means reviewed SQL source only.
+`native_execution` and upstream `native_acceptance` stay `NOT_RUN`. The existing
+preflight still requires native receipts/exact targets and current operator
+authorization even for a complete source binding. No P04 SQL, builder, generated
+workflow, node implementation, fixtures, Dockerfile, Compose or secret changed.
+W42 source handoff is PASS; transport/role/native portions remain unverified.
+
+#### Fresh Verification and Acceptance Separation
+
+All source commands used the stated input SHA plus this bounded diff. Package
+builds use the unchanged lock in the owned worktree, without lifecycle scripts.
+The two binding regressions first failed for stale `provisional` and the extra
+`reviewed_p04_sql_binding` prerequisite, exit 1; after the minimum contract
+correction all 19 P05 tests passed, exit 0. Missing/malformed binding and the
+native-authorization refusal cases remain covered.
+
+| Command / observation | Exit / result | Actual scope |
+| --- | --- | --- |
+| `python3 -m unittest tests.validation.test_n8n_outbox_contract.OutboxContractTests.test_tracked_interface_binds_reviewed_p04_source_without_native_authority tests.validation.test_n8n_outbox_rehearsal.OutboxRehearsalPreflightTests.test_reviewed_source_contract_still_cannot_satisfy_native_prerequisites -v` | 1 / RED, two expected failures | Existing binding defect reproduced before production edit |
+| `python3 -m unittest tests.lib.ops.test_n8n_outbox_workflow tests.validation.test_n8n_outbox_contract tests.validation.test_n8n_outbox_rehearsal -v` | 0 / GREEN, 19 tests | SOURCE/UNIT/negative checks; no native rehearsal |
+| `python3 infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/build_workflow.py --output infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/manifest-outbox-mailpit.json --check` | 0 / PASS | Generated bytes unchanged; one inactive workflow |
+| `npm ci --ignore-scripts --no-audit --no-fund` then `npm run test:coverage` in OpsflowSmtp | 0 / PASS, 24 tests | Host compiled-source coverage: line 97.33%, branch 94.83%, function 87.88%; memory-only SMTP |
+| `npm audit` and `npm audit --omit=dev` | 0 / PASS, zero findings each | Locked package dependency audit, not selected ROOT-image security acceptance |
+| `npm pack --dry-run --ignore-scripts --json` after build | 0 / PASS | Eight package entries include compiled node/transport; no package publication |
+| Public root-plus-overlay `docker compose config --format json` with `--profile workflow-n8n --profile mail-dev` | 0 / STATIC PASS | Five selected services; worker-only DEV and internal capture memberships |
+| Explicit-socket Docker inspect of four named n8n containers, filtered to name/image/id/state | 0 / metadata observed | Running main/worker 2.41.6, runners 2.41.6; no Env/logs/data inspected |
+| `docker image inspect hyhome/n8n:2.42.7-local` in an empty client configuration | 1 / absent | NATIVE_CUSTOM_NODE_DISCOVERY and IMPORT NOT_RUN, not failed execution |
+| `git diff --check` | 0 / PASS | Owned source candidate |
+
+The initial host test invocation used `npm ci --bin-links=false`, making
+`npm run test:coverage` fail with `tsc: not found`, exit 127. Reinstalling the
+same lock with the documented normal local bin links resolved this harness
+setup error; no compiler/script pin was changed. The first Compose config
+invocation omitted profiles, so extraction failed with `KeyError: n8n` despite
+render exit 0. The corrected named profiles above passed. Neither initial
+attempt is relabelled PASS.
+
+Compose render used only tracked `.env.example`, explicit root/overlay inputs,
+a fresh client directory and a child environment limited to PATH, HOME,
+DOCKER_CONFIG and COMPOSE_DISABLE_ENV_FILE. It read no private `.env`; no raw
+render was persisted or printed. Only image/network assertions, input hashes
+and counts were returned. The pre-move render SHA256 is
+`357932b4fe8d1b38f045ea6220d3e2af99c41e2984f90ce0f731ad140888116f`;
+root/overlay/public-environment SHA256 are respectively
+`82ddbf764c969648345ea99d2866840398e5097fce284e0b60fc40d84d80ebbd`,
+`80f11033f1ec282e7967c7a86aec0611ec3eac3f14ba18ec1f222a4a238d1d56` and
+`57d67fe51aec15adc50e723dea785039c83524ed3bf6a50f7e6ce80a6308506e`.
+Paths embedded in a render affect its hash; it is not an immutable image ID.
+
+Observed main/worker image ID is
+`sha256:1de3d197f8b6bad00af0b6945a2ede5ec321c93ab5344bf09b9919311650d492`;
+both runners use
+`sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299`.
+Equal declared image IDs do not prove custom package discovery, execution
+placement, peer API compatibility, endpoint/TLS or socket timeout acceptance.
+
+| Acceptance lane | Current result / remaining owner |
+| --- | --- |
+| SOURCE / UNIT / STATIC | PASS for the scoped correction and existing synthetic tests |
+| P04_SQL_HANDOFF | PASS for reviewed v1 source only; P04 W38 is still required |
+| NATIVE_CUSTOM_NODE_DISCOVERY / IMPORT | NOT_RUN: selected image absent; SEC01 artifact/security handoff pending |
+| ACTUAL_DEV_CLAIM / SMTP_ACCEPT / CAS_ACK | NOT_RUN: genuine P04 publication, native credentials and executor/endpoint receipts pending |
+| RETRY / DEAD / LEASE_EXPIRY / duplicate pollers / queue outage | Native NOT_RUN; source and memory transport assertions are not DB concurrency proof |
+| RESTART / RESTORE / ISOLATED / HOME / MIGRATION / RECOVERY | NOT_RUN: paired metadata/key backup receipt and approved empty restore target not supplied; existing HOME metadata observation alone is not acceptance |
+| ROTATION | NOT_RUN: no exact native credential renewal target or operation selected |
+| DELIVERY | Pending this increment's source review, local admission and remote PR checks; runtime delivery remains NOT_RUN |
+
+The next native target must identify the selected SEC01 main/worker/runner
+artifacts, P04 `opsflow_dev/ops_flow` publication/role, private native credential
+references, executor-only DEV access, `mailpit:1025` capture, DB transport
+budget, and independent n8n encryption-key/metadata backup plus an owned empty
+restore target. No private value, constant credential, public webhook or
+unbounded polling is added. Until these facts are supplied, preserve inactivity.
+P04/Airflow owns publication/backfill and does not send this external notification;
+P05 remains the sole outbox notification consumer. SMTP acceptance is only
+`accepted_by_smtp`; send-before-ack crashes may cause duplicate transmission.
+
+Source rollback reverts only this increment's contract/tests/README/Task diff.
+There is no runtime or data mutation to roll back. Future native rollback
+deactivates only this workflow, stops its polling, reconciles selected execution
+and preserves outbox/accepted/uncertain receipts. Image/source revert cannot
+undo DB formats, credential rotation or restore metadata/key consistency.
+
+#### Independent Review and Current Gate Blocker
+
+Independent code and security reviewers approved the exact six-path source
+candidate at the stated input with no remaining Critical, Important or Minor
+findings. The code reviewer independently reran three binding/preflight tests,
+3/3 PASS, exit 0, and checked both SQL blobs against the reviewed ancestor.
+The security reviewer verified source-only binding, accurate CONNECT/USAGE/
+EXECUTE wording, unchanged dependency and runtime boundaries, and
+`git diff --check`, exit 0. These are agent source reviews, not GitHub account
+approvals or native/runtime acceptance.
+
+Scoped document metadata selected three changed documents with zero violations,
+exit 0. Registered local link checks examined 1,272 documents and 11,441 links:
+zero failures and one existing warning concerning 2,870 legacy archive links
+without capture sources, exit 0. Host tools were Python 3.12.3, Node 26.10.0
+and npm 11.19.1; the Node build is not the selected Docker builder/runtime.
+Python Commitizen from the existing `/tmp/hyhome-coord-qa/bin/cz` accepted
+`fix(p05): Bind reviewed P04 outbox SQL source`, exit 0. The ambient `cz`
+executable was npm's different tool and rejected the check arguments; no
+commit-message guard was bypassed.
+
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only`
+exited 1. Candidate preflight, metadata, version projection and local links
+passed, but the selected source/fixture suite ran 265 tests in 111.015 seconds
+with one failure:
+`tests.lib.supply_chain.test_update_gates.UpdateEvidencePackageTests.test_current_root_census_excludes_relocated_lab_history`.
+The same single test fails on the preserved clean main at
+`603a7637f77df1b5d63c971453853388a39c7df6`, exit 1. A fresh fetch still
+returned that remote main. No P05 input is involved in the mismatch.
+
+| SEC01 source-census handoff path | Actual current source SHA256 | Ledger's recorded SHA256 |
+| --- | --- | --- |
+| `infra/01-gateway/nginx/docker-compose.yml` | `d719e16568e1d898bfc0978c405910e118b3bb58cf7f09dfe6615610546624bb` | `fea2ab70f28d48a36bb0b44a2626e0191c0b8598f26fa047c3bf4a2ab92d4500` |
+| `infra/01-gateway/traefik/docker-compose.yml` | `ad9f88fd18c43746e049988a6f4b32475086bfac7d162d9b3ab6a2dd80f13acc` | `c7f4c8efdba12b87728fb68c4c572f2c9b9b812865cd35e485107702388d8141` |
+| `infra/04-data/opensearch/docker-compose.yml` | `ba27ea5a56c57885cdcd00f642044d80b7f1d6b6a636974d277261033a993a1d` | `6f23979c299a0af280cbcdab69af8f924ed9fa07ed4b899e28b030cc9eab8bd2` |
+
+The mismatch is in the existing SEC01
+`infra/09-platform-ops/security-updates/update-ledger.json` source receipt.
+P05 does not modify that common owner, Compose inputs, scanner or test rule to
+silence it. The named owner can reconcile current source metadata using the
+existing `expected_from_root` helper under its own receipt; no image change or
+security acceptance follows from a checksum refresh. The stopped runner's
+later selected leaves remain NOT_RUN. Direct adapter invocation rejects an
+unadmitted environment and is not used as an alternate gate route.
+
+Read-only remote protection inspection found zero required approving reviews,
+no CODEOWNER review requirement and no named required status contexts; the
+ruleset list was empty. This does not waive the user's latest-candidate CI
+requirement. CODEOWNERS routes the changed infra, Task and tests to
+`@buenhyden`. DELIVERY remains BLOCKED for merge until the actual candidate
+gate passes. A source-only draft PR may carry this reviewed increment and the
+exact upstream blocker; it is not runtime or overall P05 completion.
+
+The first `bash scripts/validation/run-ci-precommit.sh --mode local-staged`
+exited 1 solely because Ruff required one line wrap in the new binding test.
+After that explicit formatting-only correction, the same six-path staged
+controller passed, exit 0, including Markdown, JSON, Python lint/format and
+secret detection. The independent code reviewer also approved this result-only
+Task delta and separately recomputed the three stale SEC01 source hashes.
+The logical commit unit is `fix(p05): Bind reviewed P04 outbox SQL source`;
+its exact object and hosted checks are observable through the owning PR.
+
+#### Hosted Candidate Receipt and Latest Main Refresh
+
+The source unit is commit `18dd539765b2b906fc96837e6f9585d2103bae18`.
+Its branch push and [PR435](https://github.com/buenhyden/hy-home.docker/pull/435)
+creation both exited 0. The first hosted
+[candidate run38328314501](https://github.com/buenhyden/hy-home.docker/actions/runs/38328314501)
+completed SUCCESS at that exact head against input main603a7637, with
+candidate-quality passing in 6m51s. CodeQL actions/Python/JavaScript-TypeScript
+and GitGuardian checks also completed SUCCESS. Actual GitHub reviews were
+empty and the observed required approving-review count remained zero; the
+independent agent reviews above are not account approvals.
+
+During CI, remote main advanced to
+`f1d257867ea116c89b76b37394de3ce3a6ed8ff5`. Fresh fetch/diff found only a
+P01 result receipt in Task0006. No P05 implementation, P04 SQL, Compose input,
+ledger or source dependency changed. Latest main was merged into this branch
+without rewriting the reviewed source unit; that commit remains available for
+source rollback. The six-path owning-PR source delta remains unchanged except
+this result-only Task receipt.
+
+The independent code reviewer reapplied the existing typed execution boundary:
+quality policy section4 assigns candidate acceptance to the hosted `changed`
+profile and excludes local-only leaves. The clean-main-reproduced SEC01 census
+failure remains FAIL/baseline debt under its own owner. It does not create a
+new standing P05 merge gate or grant P05 ownership of the shared ledger. This
+is not a waiver or a PASS substitution: focused P05 tests, staged admission,
+independent source/security review and hosted candidate results are distinct.
+The earlier blanket merge-blocked assessment above is superseded for this
+bounded source increment once the refreshed candidate passes. Overall/native
+P05 acceptance remains open.
+
+PR435 may become ready after evidence-delta review and current-index admission,
+then merge only after a fresh hosted candidate SUCCESS for the refreshed head
+and latest main. No local aggregate rerun, shared-source correction, image
+change, scanner change or native operation is included in this refresh.
+Post-refresh head/run/merge identities are observable in this same PR; they
+cannot be inferred from the first run's PASS.

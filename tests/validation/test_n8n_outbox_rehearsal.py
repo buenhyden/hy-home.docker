@@ -35,21 +35,16 @@ class OutboxRehearsalPreflightTests(unittest.TestCase):
             )
         self.assertIn("reviewed_p04_sql_binding", module.pending_prerequisites(None))
 
-    def test_provisional_contract_cannot_satisfy_native_prerequisites(self):
+    def test_reviewed_source_contract_still_cannot_satisfy_native_prerequisites(self):
         spec = importlib.util.spec_from_file_location(
             "p05_preflight", WORKLOAD / "tools/preflight.py"
         )
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         contract = json.loads((WORKLOAD / "outbox-contract.json").read_text())
-        self.assertIn(
-            "reviewed_p04_sql_binding", module.pending_prerequisites(contract)
-        )
-        self.assertIn(
-            "native_receipts_and_exact_targets", module.pending_prerequisites(contract)
-        )
-        self.assertIn(
-            "current_operator_authorization", module.pending_prerequisites(contract)
+        self.assertEqual(
+            ("native_receipts_and_exact_targets", "current_operator_authorization"),
+            module.pending_prerequisites(contract),
         )
 
     def test_hash_only_does_not_claim_sql_review_or_runtime_authorization(self):
