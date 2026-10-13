@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -22,9 +22,11 @@ created: "2026-10-07"
 ## Overview
 
 The current 11–30 request replaces P00's active routing while preserving issued
-IDs, created dates and completed Task bodies. SEC01 delivery is prerequisite to
-the SMTP source transition, which precedes CLN01 old-file deletion. Historical
-Tasks grant no current learning-app planning or execution.
+IDs, created dates and completed Task bodies. The current coordination audit is
+bound to main `262dc2dde6eea27195f7d8909e9453f5ccc97f66`, after PR #457 merged.
+SEC01 delivery is prerequisite to the SMTP source transition, which precedes
+CLN01 old-file deletion. Historical Tasks grant no current learning-app planning
+or execution.
 
 ## Scope
 
@@ -59,19 +61,51 @@ its remaining work; applied sub-items are separately excluded in the Task.
 | 17 | n8n use and implementation | P05 | confirmed-gap | SPEC-0204 owns an independent `opsflow_dev` manifest validation, publication and notification job; it is not Wiki implementation |
 | 18 | Resources and permissions | P07 | confirmed-gap | SPEC-0218 owns common controls; incremental root leaf work requires observed demand and no guessed limits or LAB edits |
 | 19 | Both common controls files | P07 | applied-excluded | SPEC-0218 owns existing v2 and any proven root-leaf/exception increment; preserve both common files |
-| 20 | Template format | P08 | applied-excluded | SPEC-0227 owns completed full Stage 05 body refresh; only changed-document/path checks remain |
-| 21 | Incomplete Specs | P00 | confirmed-gap | SPEC-0212 owns lifecycle/source/evidence/merge/operation reconciliation; each existing Spec owns closure of its residuals |
+| 20 | Template format | P08 | applied-excluded | P08 reuses SPEC-0227 criterion 1/W1/TSK-0001's accepted Stage05 template/schema/reader source; only changed-document/path checks remain |
+| 21 | Incomplete Specs | SPEC01 | confirmed-gap | Current SPEC-0212 criterion 10 and TSK-0006 own lifecycle/source/evidence/merge/operation reconciliation; each existing Spec owns closure of its residuals |
 | 22 | OpenBao migration and maintenance | P01 | consumer-dependent | SPEC-0204 owns per-consumer secret acceptance; P02 mapping and P06 consumption distinguish eligible, conditional, independent custody, unnecessary, candidate and excluded |
 | 23 | Port distinctions | P03 | confirmed-gap | SPEC-0204 owns PORT_CONTRACT and port_inventory.py reconciliation; actual endpoint selection precedes runtime use |
-| 24 | Active contract refresh | P00 | confirmed-gap | SPEC-0212 owns current routing; SPEC-0204 owns its amended integration contract; other changed Specs amend their own acceptance |
+| 24 | Active contract refresh | SPEC01 | confirmed-gap | Current SPEC-0212 criterion 9 and TSK-0006 own routing; SPEC-0204 owns its amended integration contract; other changed Specs amend their own acceptance |
 | 25 | Separate common, domain and LAB documents | P08 | confirmed-gap | P08 moves LAB documents to typed `labs/` destinations with required READMEs and updated links/checks; LAB runtime remains excluded |
-| 26 | Exclude learning applications | P00 | out-of-scope | SPEC-0212 owns the global exclusion; every stage excludes planning, new files and resources for those applications |
+| 26 | Exclude learning applications | COORD | out-of-scope | Current SPEC-0212 criterion 9 and TSK-0006 own the global exclusion; every stage excludes planning, new files and resources for those applications |
 
 Items 27–30 are execution constraints, not new numbered acceptance rows: use
 the latest stable provider release, including compatible major/minor migrations
 with recovery planning; delete legacy material only after source, runtime, jobs,
 backup/restore and external consumers are confirmed absent. Disabled profiles
 or absent traffic are not proof of no consumer.
+
+That historical formulation predates the current audit. Criterion 9 records
+the current numbered routes without changing the accepted meaning of criteria
+1–8: requirement 27 audits all ROOT images, while an actual update is limited
+to a confirmed security warning, support end or required compatibility issue;
+requirement 28 is completed offline Wiki preparation only; requirement 29 is
+the canonical SMTP source; and requirement 30 remains consumer-confirmed
+retirement. A latest stable lookup alone neither requires a broad upgrade nor
+proves deployed security acceptance.
+
+### Current coordination audit
+
+The current audit is a source-routing and handoff record, not a replacement for
+the named owners' source, native, HOME, migration, rotation, recovery or
+delivery evidence. Its classifications are prose results: `SOURCE_APPLIED`
+means the reviewed source is already present; `CONFIRMED_GAP` names a concrete
+source/document discrepancy; `RUNTIME_UNVERIFIED` retains a required target or
+recovery boundary; `COMPLETE_FOR_SCOPE` closes only the stated coordination
+scope; and `OUT_OF_SCOPE` records an excluded lane. They do not alter document
+metadata or acceptance domains.
+
+The coordinator owns this package's routing, source identity and handoff only.
+SEC01 owns image/digest/build evidence; P01 owns OpenBao TLS, custody and
+maintenance boundaries; P02 owns the value-free catalog; SMTP01 owns the
+canonical SMTP source and alias; CLN01 owns the exact deletion assessment; P03
+owns endpoint/port contracts; P04 owns SQL/DAG; P05 owns workflow/SMTP node;
+P06 owns value migration; P07 owns root-leaf measurement; P08 owns Stage05
+document moves; P10 owns the vertical acceptance; and SPEC01 owns active
+contract reconciliation. `docker-compose.yml`, the Stage 99 Registry, shared
+indexes and shared Tasks require an explicit single-writer lease before change.
+Existing worktrees show activity but do not prove a writer is active; unknown
+activity remains a handoff fact rather than an inferred lock release.
 
 ### Evidence and authority
 
@@ -134,11 +168,25 @@ or absent traffic are not proof of no consumer.
 8. The active routing records Wiki preparation, independent `opsflow_dev` jobs,
    P08 LAB document moves, latest-stable planning, consumer-confirmed deletion,
    and the SEC01 → SMTP source transition → CLN01 sequence.
+9. A current Task maps requirements 11–30 to one existing owner, criterion,
+   Plan unit, Task, state/evidence location, source target, verification leaf,
+   unresolved lane and prose classification. It also records writer/lock
+   ownership, open-worktree uncertainty, unsafe-resource and recovery
+   boundaries, and the sequencing before shared files, migrations, rotations,
+   deletions or document moves. The audit uses the current main identity and
+   never treats source or historical evidence as a runtime result.
+10. A current Task inventories every tracked package with a draft or in-review
+    Spec or Plan, a ready, in-progress or blocked Task or Execution Item, and
+    every approved parent with a nonterminal Task or item. It treats Spec/Plan
+    state as approval and Task/item state as execution, records the actual
+    source/static checks it ran, and hands the exact next input to the owner
+    without creating a duplicate acceptance record.
 
 ## Related Documents
 
 - [Plan](plan.md)
 - [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
+- [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
 - [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
 - [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
