@@ -86,10 +86,10 @@ A sealed paired Tombstone and a Retention Catalog row are alternative withdrawal
 records, not duplicate records for one unit.
 
 Completion and disposition are separate. Write permanent outcomes into current
-owners and final evidence into the Task. A package may wait once it is ready
-for archive review: approved Spec and Plan, terminal Tasks, every numbered
-criterion accepted or `not-required`, and no unresolved `FAIL` (ADR-0048). It
-leaves Stage 03 only from a ready base revision. In an
+owners and final evidence into the Task. A package with an approved Spec and
+Plan may wait once it is ready for archive review as ADR-0048 defines it, and
+leaves Stage 03 for the completed archive only from such a ready base
+revision. In an
 unfinished package, completed and validly cancelled Tasks may remain, but a
 terminal Plan may not. Cancelled or superseded Specs keep no members in active
 Stage 03. The occupancy branch reads per-profile terminal sets from Registry;

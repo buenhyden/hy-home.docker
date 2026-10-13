@@ -57,11 +57,12 @@ change, which are the owner's decisions.
 2. A `completed` Task or a `completed` item needs `PASS` evidence for every
    pair of its work, unless the criterion is `not-required`, and every
    criterion its Task decides for that work `accepted` or `not-required`.
-3. Under generation 6 a package enters the completed archive only when the
-   readiness predicate was empty on its base revision, whatever the base
-   Spec status. Superseded preservation keeps its own checks.
-4. ADR-0048 states rules 1 to 3 and replaces only ADR-0037 decision 1 and the
-   completion-receipt clauses of decisions 2 and 3.
+3. Under generation 6 a package enters the completed archive only when its
+   base revision has an approved Spec and an empty readiness predicate, and
+   the preserved copy keeps every base member with its status. Superseded
+   preservation keeps its own checks.
+4. ADR-0048 states rules 1 to 3 and replaces only ADR-0037 decision 1, except
+   its last sentence, and the completion-receipt clauses of decisions 2 and 3.
 
 ## Acceptance Criteria
 

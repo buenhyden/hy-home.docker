@@ -1,6 +1,6 @@
 ---
 title: "Generation 6 Reader Corrections Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -59,11 +59,17 @@ the item rule and exactly one row in a current Task.
 ### W3 Departure Gate
 
 `_ordinary_preserved_paths` computes readiness for every base package and
-skips only the completed disposition when it is not ready, whatever the base
-Spec status. A `draft` base whose archived copy says `approved` is no longer
+skips only the completed disposition when the base is not ready or its Spec is
+not `approved`. A `draft` base whose archived copy says `approved` is no longer
 preserved; an `approved` ready base still is. Superseded preservation keeps
 its own checks, which it skipped before whenever an `approved` base was not
 ready.
+
+After the rules review (W5), the gate also refuses a ready `cancelled` base
+whose copy says `approved`, and a copy whose members differ from the base in
+status or Execution Items. `_preserved_package_is_terminal` now compares each
+base member's status and items with the copy instead of only member paths.
+Both cases fail on the reader before this fix and pass after it.
 
 ### W4 Rule Fixtures
 
@@ -80,16 +86,34 @@ those rules were already enforced.
 ### W5 Text
 
 ADR-0048 (0.2.0, still `proposed`) states the exactly-one row, the item rule
-and the completed-archive gate, and replaces only ADR-0037 decision 1 and the
-completion-receipt clauses of decisions 2 and 3; it names the rules from
-those decisions that stay in force. The decisions README (1.6.4) says the
+and the completed-archive gate, and replaces only ADR-0037 decision 1, except
+its last sentence, and the completion-receipt clauses of decisions 2 and 3; it
+names the rules from those decisions that stay in force. The decisions README
+(1.6.4) says the
 same, lists ADR-0044, 0045 and 0046 as accepted as their files say, and its
 `### Usage` repeats became `### Audience` and `### Authoring Flow`, as did the
 descriptions README (1.1.6). AD-0030 (2.1.1) links ADR-0048.
 
-The worker that wrote this change could not start a reviewer, so the
-independent `rules-engineer` review of this text is `NOT_RUN` here and is
-requested on the pull request.
+An independent `rules-engineer` review of `c1cd329a5` returned changes
+required:
+
+- `sdlc.md` and ADR-0048 said "exactly one row" for every criterion, but the
+  code exempts criteria whose assigned Tasks are all historical or cancelled.
+  Both texts now state the exemption.
+- The completed-archive gate let a ready `cancelled` base enter the completed
+  archive with an `approved` copy, and did not compare member statuses. Fixed
+  in W3.
+- ADR-0048 said a ready `cancelled` or `superseded` package may wait in Stage
+  03, while AD-0030 and the occupancy check keep no member of such a package
+  there. ADR-0048 and `sdlc.md` now let only an approved Spec wait, and AD-0030
+  points to ADR-0048 for the readiness definition instead of restating it.
+- ADR-0048 now keeps in force ADR-0037's whole-package disposition approval
+  and the unfinished-package rule, and defines an unfinished package.
+- The decisions README lost a blank line inside its inventory, lists
+  ADR-0045 to 0047 in its Structure tree, and calls ADR-0032 accepted as its
+  file does.
+
+A second review of the corrected text is recorded in the Evidence.
 
 ## Evidence
 
@@ -100,7 +124,9 @@ requested on the pull request.
 | Departure | 3 | W3 | Departure test RED on `main` then GREEN | Branch on `958349408` | PASS | W3 Departure Gate | - |
 | Fixtures | 4 | W4 | `test_generation6` (28); Spec package and archive suites (158); metadata suites (141) | Branch on `958349408` | PASS | W4 Rule Fixtures | - |
 | Text | 5 | W5 | Governance contract (0 failures); active (573) and changed (11) metadata checks, 0 violations | Branch on `958349408` | PASS | W5 Text | - |
-| Rules review | 5 | W5 | Independent `rules-engineer` review | Branch | NOT_RUN | W5 Text | - |
+| Departure status | 3 | W3 | Cancelled-base and changed-copy cases RED on `c1cd329a5` then GREEN; `test_generation6` (28) | Branch | PASS | W3 Departure Gate | - |
+| Rules review | 5 | W5 | Independent `rules-engineer` review | `c1cd329a5` | FAIL | W5 Text | - |
+| Rules re-review | 5 | W5 | Independent `rules-engineer` review of the corrected text: approve with notes, notes applied | Corrected branch | PASS | W5 Text | Rules review |
 | Gate | 6 | W6 | Changed gate; candidate quality | Branch | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

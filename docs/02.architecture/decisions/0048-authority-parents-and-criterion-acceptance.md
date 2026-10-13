@@ -39,25 +39,31 @@ meaning of the generation that wrote them.
 2. A Task owns execution state: one frontmatter `status`, or, in a multi-item
    Task, one status per Execution Items row and no frontmatter `status`.
 3. Evidence rows record observations and which earlier `FAIL` rows a `PASS`
-   resolves. Exactly one Criterion Acceptance row per criterion, in a current
-   Task the Plan assigns it to, records `pending`, `accepted`, `rejected` or
-   `not-required`; `accepted` needs `PASS` evidence and no unresolved `FAIL`.
+   resolves. A criterion the Plan assigns to a current, non-cancelled Task has
+   exactly one Criterion Acceptance row, in one such Task, recording
+   `pending`, `accepted`, `rejected` or `not-required`; a criterion whose
+   assigned Tasks are all historical or cancelled has none. `accepted` needs
+   `PASS` evidence and no unresolved `FAIL`.
    A completed Task or item needs every criterion it decides for its work
    accepted or `not-required`.
 4. A package is ready for archive review when its parents are `approved` (or
    validly `cancelled` or `superseded`), every Task or item is terminal, every
-   criterion is accepted or `not-required`, and no `FAIL` is unresolved. It may
-   wait in Stage 03 then, and it enters the completed archive only from a ready
-   base revision, whatever its status there. Readiness is derived and is not
-   disposition approval.
+   criterion is accepted or `not-required`, and no `FAIL` is unresolved. A
+   ready package with an approved Spec may wait in Stage 03; a cancelled or
+   superseded Spec keeps no member there. A package enters the completed
+   archive only from a ready base revision with an approved Spec, and the
+   preserved copy keeps every base member with its status. Readiness is
+   derived and is not disposition approval.
 
-These replace ADR-0037 decision 1 and the completion-receipt clauses of
-decisions 2 and 3: that withdrawal never exempts the completed Spec's PASS
-receipt, and that completion receipts are checked before moving. The rest of
-ADR-0037 decisions 2 and 3 stays in force: the structured `cancellation`
-record, that terminal Plans may not remain in an unfinished package, that
-Registry profile lifecycles decide member terminality while disposition-entry
-statuses are registered separately, and that templates do not seed approvals.
+These replace ADR-0037 decision 1, except its last sentence, and the
+completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
+the completed Spec's PASS receipt, and that completion receipts are checked
+before moving. Still in force from ADR-0037: whole-package disposition requires
+approval and preserves every member; in an unfinished package, one with a Task
+or item that is not terminal, completed and validly cancelled Tasks may remain
+and terminal Plans may not; the structured `cancellation` record; that Registry
+profile lifecycles decide member terminality while disposition-entry statuses
+are registered separately; and that templates do not seed approvals.
 ADR-0037 decisions 4 onward, on assessments, history-only availability and
 capture identity, are unchanged.
 

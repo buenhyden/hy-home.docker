@@ -41,6 +41,9 @@ docs/02.architecture/decisions/
 ├── 0042-openbao-unseal-method.md
 ├── 0043-operations-role-layout.md
 ├── 0044-readme-navigation-and-document-language.md
+├── 0045-data-storage-and-analytics-tier-boundary.md
+├── 0046-capability-tiers-and-quality-boundary.md
+├── 0047-dev-timescale-influx-retirement-and-load-tools.md
 ├── 0048-authority-parents-and-criterion-acceptance.md
 └── README.md
 ```
@@ -62,7 +65,7 @@ docs/02.architecture/decisions/
 - `ADR-0031`:
   ADR-0033이 supersede한 Spec-only preservation decision.
 - [`ADR-0032`](./0032-canonical-agent-governance-home.md):
-  공통 정본의 `.agents` 이전과 native 로딩 경계를 채택한 active decision.
+  공통 정본의 `.agents` 이전과 native 로딩 경계를 채택한 accepted decision.
 - `ADR-0033`:
   ADR-0035가 supersede한 full package preservation decision. Spec, Plan, 모든
   Task를 보존 단위로 두는 규칙은 ADR-0035가 다시 적어 유지한다.
@@ -105,7 +108,6 @@ docs/02.architecture/decisions/
 - [`ADR-0044`](./0044-readme-navigation-and-document-language.md):
   README navigation과 문서 언어를 워크스페이스 전체에서 하나의 강제 계약으로
   통합하는 accepted decision(SPEC-0184).
-
 - [`ADR-0045`](./0045-data-storage-and-analytics-tier-boundary.md):
   Data 저장소와 Analytics 처리 패키지의 경계를 정한 accepted decision(SPEC-0197).
 - [`ADR-0046`](./0046-capability-tiers-and-quality-boundary.md):
