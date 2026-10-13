@@ -153,6 +153,19 @@ class SpecDocument:
 
 
 @dataclasses.dataclass(frozen=True)
+class PackageEvidence:
+    """Generation 6 evidence and acceptance read once for one package."""
+
+    criteria: frozenset[str]
+    work: frozenset[str]
+    planned_pairs: frozenset[tuple[str, str]]
+    pass_pairs: frozenset[tuple[str, str]]
+    acceptance: Mapping[str, str]
+    unresolved_failures: frozenset[str]
+    historically_closed: frozenset[str] = frozenset()
+
+
+@dataclasses.dataclass(frozen=True)
 class SpecPackage:
     """One canonical prefixless Stage 03 package."""
 
@@ -163,6 +176,7 @@ class SpecPackage:
     plan: SpecDocument | None
     tasks: tuple[SpecDocument, ...]
     contracts: tuple[pathlib.PurePosixPath, ...]
+    evidence: PackageEvidence | None = None
 
 
 @dataclasses.dataclass(frozen=True, order=True)
@@ -1399,19 +1413,6 @@ def _v5_evidence_contract(
     )
 
 
-@dataclasses.dataclass(frozen=True)
-class PackageEvidence:
-    """Generation 6 evidence and acceptance read once for one package."""
-
-    criteria: frozenset[str]
-    work: frozenset[str]
-    planned_pairs: frozenset[tuple[str, str]]
-    pass_pairs: frozenset[tuple[str, str]]
-    acceptance: Mapping[str, str]
-    unresolved_failures: frozenset[str]
-    historically_closed: frozenset[str] = frozenset()
-
-
 def _subsection_lines(body: str, section: str, subsection: str) -> list[str]:
     try:
         lines = _contract_section(body, section)
@@ -1895,9 +1896,9 @@ def _validate_task_item_evidence(
         pathlib.PurePosixPath, frozenset[tuple[str, str]]
     ]
     | None = None,
-) -> None:
+) -> PackageEvidence | None:
     if registry.common.get("lifecycle_generation") == 6:
-        _v6_evidence_contract(
+        return _v6_evidence_contract(
             spec,
             plan,
             tasks,
@@ -1905,7 +1906,6 @@ def _validate_task_item_evidence(
             historical_tasks,
             historical_completed_pairs,
         )
-        return
     if registry.common.get("lifecycle_generation") == 5:
         _v5_evidence_contract(
             spec,
@@ -2503,6 +2503,7 @@ def _load_package(
             )
         if current_contracts:
             _validate_execution_states(spec, plan, tasks, registry)
+        evidence: PackageEvidence | None = None
         if completion_evidence:
             task_statuses = {task.artifact_id: task.status for task in tasks}
             for task in tasks:
@@ -2526,7 +2527,7 @@ def _load_package(
                 )
                 if findings:
                     raise SpecPackageError(f"{task.path}: {findings[0]}")
-            _validate_task_item_evidence(spec, plan, tasks, registry)
+            evidence = _validate_task_item_evidence(spec, plan, tasks, registry)
             _validate_completion_evidence(
                 spec,
                 plan,
@@ -2549,7 +2550,19 @@ def _load_package(
             snapshot,
             "Stage 03 package",
         )
-        return SpecPackage(package, number, slug, spec, plan, tasks, contracts), current
+        return (
+            SpecPackage(
+                package,
+                number,
+                slug,
+                spec,
+                plan,
+                tasks,
+                contracts,
+                evidence,
+            ),
+            current,
+        )
     finally:
         os.close(descriptor)
 
@@ -2951,7 +2964,7 @@ def load_spec_packages(
                     )
                     if findings:
                         raise SpecPackageError(f"{task.path}: {findings[0]}")
-                _validate_task_item_evidence(
+                evidence = _validate_task_item_evidence(
                     package.spec,
                     package.plan,
                     package.tasks,
@@ -2959,6 +2972,10 @@ def load_spec_packages(
                     historical_tasks,
                     historical_completed_pairs,
                 )
+                if evidence is not None:
+                    packages[packages.index(package)] = dataclasses.replace(
+                        package, evidence=evidence
+                    )
                 source_semantic = source_semantics.get(package.spec.artifact_id)
                 _validate_completion_evidence(
                     package.spec,
@@ -5178,8 +5195,20 @@ def _ordinary_preserved_paths(
     for source in previous:
         if source.spec.path.parts[2] in current_names:
             continue
+        generation_6 = registry.common.get("lifecycle_generation") == 6
+        if (
+            generation_6
+            and source.spec.status == "approved"
+            and (
+                source.evidence is None
+                or archive_readiness_findings(source, source.evidence)
+            )
+        ):
+            # Generation 6: a package leaves Stage 03 only when its base
+            # revision was ready for archive review.
+            continue
         for disposition, packages, required_status in (
-            ("completed", completed, "completed"),
+            ("completed", completed, "approved" if generation_6 else "completed"),
             ("superseded", (), "superseded"),
         ):
             if _preserved_package_is_terminal(
@@ -5220,6 +5249,18 @@ def _preserved_package_is_terminal(
         members = [package.spec, *package.tasks]
         if package.plan is not None:
             members.append(package.plan)
+        if registry.common.get("lifecycle_generation") == 6:
+            # Readiness was judged on the base revision; the preserved copy
+            # must carry the same members and statuses.
+            return (
+                spec.artifact_id == source.spec.artifact_id
+                and spec.status == required_status
+                and source_members
+                <= {
+                    member.path.relative_to(source.spec.path.parent)
+                    for member in members
+                }
+            )
         try:
             _validate_completion_evidence(
                 package.spec,
