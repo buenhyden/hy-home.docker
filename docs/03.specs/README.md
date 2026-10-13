@@ -69,6 +69,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0231 | [Task lifecycle 6세대](./0231-task-lifecycle-generation-6/) | Spec·Plan 권한 상태, 기준별 수용 표, 다중 실행 항목 Task, 파생 보관 준비 판정과 활성 문서 이행 |
 | SPEC-0232 | [v9 잔여 교정](./0232-v9-residual-corrections/) | 검증만 하는 PostToolUse 훅, 낡은 n8n 후보 시험 제거, Registry 기준 동결 경계 검사, 세 단계 `AGENTS.md` |
 | SPEC-0233 | [6세대 reader 교정](./0233-generation-6-reader-corrections/) | criterion 수용 행 정확히 하나, 실행 항목 완료 판정, 완료 보관 진입 조건과 누락된 규칙 fixture |
+| SPEC-0235 | [로컬 gate 거버넌스 timeout](./0235-local-gate-governance-timeout/) | 로컬 전용 문서 거버넌스 unittest node timeout을 15분에서 45분으로 올리고 실측 시간으로 근거 기록 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)

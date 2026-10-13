@@ -338,7 +338,7 @@
       ],
       "cwd": ".",
       "allowed_env_keys": [],
-      "timeout_minutes": 15,
+      "timeout_minutes": 45,
       "opaque": true,
       "suite_key": "document-governance-library-regressions"
     },
