@@ -1,10 +1,10 @@
 ---
 title: "Opsflow SMTP 개발 캡처 노드"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-13"
 ---
 
 # Opsflow SMTP 개발 캡처 노드
@@ -59,11 +59,13 @@ claim은 native parameter `claim`에 object expression으로 전달하며 문자
 받지 않습니다. lease token은 검증에만 쓰며 mail·출력·오류에는 포함하지 않습니다.
 실제 credential ID는 공식 UI/API 경로로 관리하는 private import artifact에서만 해결합니다.
 
-현재 supplied-reference draft는 run_id가 64자리 소문자 hex이고 source는
+연결된 P04 v1 소스는 run_id가 64자리 소문자 hex이고 source는
 `hy-home.docker`, `hy-home.k8s`, `Project-Template`, `blog-data` 중 하나이며
 row_count는 1~5000입니다. id는 양의 safe integer 또는 PostgreSQL bigint 범위의
-정규 십진수 문자열, lease_token은 소문자 UUID입니다. P04의 검토된 SQL hash와
-기능 권한 binding은 아직 없으며 이 source 검사는 최종 DB 계약 수용이 아닙니다.
+정규 십진수 문자열, lease_token은 소문자 UUID입니다. 검토된 SQL hash와
+DB CONNECT·schema USAGE와 세 notifier 함수 EXECUTE만 허용하는 권한 소스는
+상위 소비자 계약에 연결돼 있습니다. table·column·sequence 직접 접근은 거부합니다. 실제 DB 권한·migration
+수용은 `NOT_RUN`이며 이 source 검사만으로 운영 계약을 충족하지 않습니다.
 
 Message-ID는 `<opsflow.RUN@opsflow.invalid>`이며 fresh claim의 token/id가 바뀌어도
 같은 run에서 안정적입니다. 출력은 `{run_id,state}`뿐입니다.

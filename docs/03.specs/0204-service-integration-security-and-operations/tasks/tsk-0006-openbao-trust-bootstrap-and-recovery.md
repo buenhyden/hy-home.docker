@@ -1948,6 +1948,55 @@ syntax/lint passed. PRIVATE, HOME, FILE_USABILITY, RECOVERY,
 CURRENT_VERSION_AUTH and CONSUMER_READ remain NOT_RUN; Task status remains
 blocked.
 
+### W23 Actual Selected Empty Restore 04 — 2026-10-13
+
+User authorization for this single FILE_USABILITY attempt, 900-second limit,
+180-second reserve and 1 GiB/64 postcondition was observed at
+2026-10-13T00:18:01Z (UI timestamp NOT_CAPTURED). No network or live data mount
+was authorized. The single `rtk bash .agent-work/run_p01_home_restore_file_attempt.sh`
+invocation exited 0 within external UTC bounds
+2026-10-13T00:19:10.872801885Z–2026-10-13T00:22:19.787296743Z; actual T0 is
+NOT_CAPTURED. Coordinator monotonic events were consumed 0.159s,
+unseal-required 42.557s, original-share unseal observed 163.845s and FILE pass
+173.108s. The operator entered original shares through the hidden prompt;
+no share values are recorded.
+These durations are not RPO/RTO or a production-recovery measurement.
+
+The preserved selected target is device 2064, inode 115629820, UID/GID 100:1000,
+mode 0700, nlink 4, with nine entries, apparent size 17,093,936 and allocated
+size 241,664. The implementer supplied two required databases and two full EOF
+passes; private-binding and metadata-unchanged booleans are true. The receipt
+directory is device 64512, inode 5383361, UID/GID 1000:1000, mode 0700, with
+seven files including protected `bootstrap.json` (0600, CONTENT_UNREAD).
+No private bootstrap content, link, hash or raw log is recorded. The attempt is
+`p01-home-empty-restore-20261013-04`, target
+`/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013-04`,
+and receipt
+`/home/hyunyoun/backups/p01-openbao-20261013/p01-home-empty-restore-20261013-04`.
+It is bound to frozen coordinator SHA-256
+`2806d41d149b7a610e6f08e3b6f649e48903e4dbffa0f09fc81940a7c8c2b8bf`, selected source
+`7620f2d22d6331566b7d14df7ccd536d011235cb` and tree
+`282180b7ae188444670d0b847f5574004cdf646f`.
+
+The temporary 2.7.1 server `p01-home-restore-20261013-04`, image `a36...`, ID
+`2119910549cfc5a20b4e20288b99d06119e2da93013231d69e4ca317cb19f76c` started at
+2026-10-13T00:19:29.030512028Z and finished at 2026-10-13T00:22:03.469534870Z
+with exit 0, OOM=false,
+empty error and restart 0. The stopped server is the sole remaining attempt
+name; watcher, CHOWN and chmod helpers were removed. Live OpenBao 2.6.2 image
+`11fd...` remains unchanged and running with restart 0; attempts 02/03 remain
+preserved. Independent IaC actual review passed allowlisted receipt/public
+metadata, ledger/limits, no-network/no-port, read-only root, DropAll,
+no-new-privileges, exact-tmpfs, target-metadata and live-preservation checks.
+The reviewer did not read private contents; file guards are implementer evidence.
+
+Disposition is PASS only for ISOLATED(FILE_USABILITY) and
+SELECTED_EMPTY_RESTORE(FILE_USABILITY), with ORIGINAL_SHARE_UNSEAL_OBSERVED.
+INDEPENDENT_CUSTODY, SNAPSHOT_AUTHENTICITY, HOME cold boot, WRAPPED_REISSUE,
+CURRENT_VERSION_AUTH, CONSUMER_READ, MIGRATION, production cutover,
+production RECOVERY and RPO/RTO remain NOT_RUN. W23/P06 holds remain; Task
+status remains blocked.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -1965,6 +2014,7 @@ blocked.
 | Actual pre-restore 01/02 | 11 | W23 | Mode preflight then bounded capability gate; no server start | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcomes 01/02 | pending |
 | Actual pre-restore 03 | 11 | W23 | Entry-point local-config write blocked before bootstrap/restore | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcome 03 | pending |
 | Public native preparation | 11 | W23 | 2.7.1 isolated config-tmpfs preparation and cleanup | archived public packet | PASS | W23 Public Native Preparation Receipt | pending |
+| Actual selected empty restore 04 | 11 | W23 | Selected empty-target FILE_USABILITY; independent IaC actual review | isolated HOME target; value-free receipt | PASS | W23 Actual Selected Empty Restore 04 | pending |
 
 ## Review and Completion
 

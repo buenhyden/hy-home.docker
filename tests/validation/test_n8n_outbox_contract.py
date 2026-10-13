@@ -143,13 +143,26 @@ class OutboxContractTests(unittest.TestCase):
             self.assertEqual(1, module.main(["--output", str(output), "--check"]))
             self.assertEqual("{}\n", output.read_text())
 
-    def test_tracked_interface_is_provisional_without_invented_authority(self):
+    def test_tracked_interface_binds_reviewed_p04_source_without_native_authority(self):
         contract = json.loads((WORKLOAD / "outbox-contract.json").read_text())
-        self.assertEqual("provisional", contract["status"])
+        self.assertEqual("reviewed", contract["status"])
         self.assertEqual("NOT_RUN", contract["native_execution"])
-        self.assertIsNone(contract["binding"]["sql_commit"])
-        self.assertIsNone(contract["binding"]["sql_sha256"])
-        self.assertIsNone(contract["binding"]["interface_version"])
+        binding = contract["binding"]
+        self.assertEqual(
+            "79dde32059dbf6eae8dacd9f5f2a04aee29f31a5", binding["sql_commit"]
+        )
+        sql = ROOT / contract["canonical_sql_path"] / "001_opsflow.sql"
+        self.assertEqual(
+            hashlib.sha256(sql.read_bytes()).hexdigest(), binding["sql_sha256"]
+        )
+        self.assertEqual(1, binding["interface_version"])
+        receipt_path, heading = binding["review_receipt"].split("#")
+        receipt = (ROOT / receipt_path).read_text()
+        self.assertEqual("latest-source-handoff", heading)
+        self.assertIn("### Latest Source Handoff", receipt)
+        self.assertIn("Security re-review approved these exact001/002 hashes", receipt)
+        for value in contract["source_reference"]["sql_sha256"].values():
+            self.assertIn(value, receipt)
 
 
 class OutboxWorkerPlacementTests(unittest.TestCase):
