@@ -185,7 +185,8 @@ main-push security remains a post-merge observation.
   inputs require a new server check. The repository currently has no deployment
   workflow, so this rule supplies no deployment execution or acceptance.
 - **Validation**: both style-controller modes use a hook's check mode where it
-  has one, run every hook on an isolated copy, and preserve source bytes. Formatting and validation have separate purposes.
+  has one, run every hook on an isolated copy, and preserve source bytes.
+  Formatting and validation have separate purposes.
   Direct Agent `pre-commit run` is prohibited; the controlled all-files wrapper
   is an explicitly approved authoring/maintenance lane, never routine PR QA.
 - **Execution identity**: deduplicate an identical leaf within one run using
