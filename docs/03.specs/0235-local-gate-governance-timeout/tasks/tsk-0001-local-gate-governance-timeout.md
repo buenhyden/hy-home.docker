@@ -25,9 +25,15 @@ only node timeout, as SPEC-0235 states.
   AskUserQuestion, then asked to review, correct and extend it before
   proceeding.
 - **Baseline:** `main` `338c607d8`.
-- **Evidence of the problem:** SPEC-0233 W6 records the local changed gate on
-  `5b95ed942` exiting 124 after 1143 s at this node; SPEC-0231 W6 and SPEC-0232
-  W5 record earlier timeouts.
+- **Evidence of the problem:** SPEC-0233 W6, as recorded in PR #448, shows
+  the local changed gate on `5b95ed942` exiting 124 after 1143 s at this node.
+  SPEC-0231 W6 and SPEC-0232 W5 stopped at outer 3000 s and 3600 s limits
+  around the gate; the runner returns 124 for both kinds of stop, so those two
+  runs do not prove the node's limit.
+- **Review:** an independent `ci-cd-engineer` review of `682840106` approved
+  with notes: the node is local only, nothing pins the 15-minute value, the
+  runner has no total budget, and the contract accepts node timeouts of 1 to
+  60 minutes.
 
 ## Work Log
 
@@ -60,6 +66,7 @@ pass.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Contract | 1 | W2 | CI gate contract tests (28); workflow contract and adapter tests (85); workflow contract check | Branch on `338c607d8` | PASS | W2 Timeout Change | - |
 | Runtime | 2 | W1 | Node module batch on this host: 763 tests, 1336 s | `338c607d8` | PASS | W1 Measured Runtime | - |
+| CI review | 1 | W2 | Independent `ci-cd-engineer` review: approve with notes, notes applied | `682840106` | PASS | Inputs and Authorization | - |
 | Local gate | 3 | W3 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
