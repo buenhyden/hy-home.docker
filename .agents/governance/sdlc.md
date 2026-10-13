@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.3.0"
+version: "1.4.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-13"
 ---
 
 # Software Development Lifecycle
@@ -51,45 +51,57 @@ Stage 99 assigns document-family states and legal transitions. Requirements use
 `draft`, `in-review`, `approved`, `superseded`, and `retired`; architecture
 descriptions and operational guidance use `draft`, `in-review`, `active`,
 `deprecated`, `superseded`, and `retired`; ADRs use `proposed`, `accepted`,
-`rejected`, `superseded`, and `retired`. Specs and Plans use `draft`,
-`in-review`, `approved`, `in-progress`, `blocked`, `completed`, `cancelled`,
-and `superseded`; Tasks retain `draft`, `ready`, `in-progress`, `blocked`,
-`completed`, and `cancelled`. Navigation READMEs and the current archive
+`rejected`, `superseded`, and `retired`. Specs and Plans record authority
+only: `draft`, `in-review`, `approved`, `cancelled`, and `superseded`. Tasks
+retain `draft`, `ready`, `in-progress`, `blocked`, `completed`, and
+`cancelled`. Navigation READMEs and the current archive
 catalog remain `active`; route records use `draft` or `sealed`.
 
-A Plan has one Spec parent and a Task has one Plan parent. Task frontmatter is
-the only execution-status source, including Tasks with multiple evidence rows.
-Each row identifies the existing criterion and Plan work unit; it carries a
-result and acceptance, never another status or item identity. Over nonterminal Task
-summaries, any in-progress summary makes the Spec and Plan in-progress; a
-nonempty set of all blocked summaries makes both blocked. A mixed ready/blocked
-set, or a zero/terminal-only set, retains the actual contract status and never
-auto-closes it. An evidence row can record `PASS` while acceptance
-remains pending in a blocked or otherwise nonterminal Task. At Task
-and Spec closure, every numbered criterion requires `PASS` and accepted
-evidence; `not-required` does not waive that requirement. Task-result vocabulary
-is exactly `NOT_RUN`, `PASS`, `FAIL`, `DEFER`, and `NOT_APPLICABLE`. Lifecycle
-events and generation-migration proof rows record observed structure only; they
-do not authenticate approval, review, or execution.
+A Plan has one Spec parent and a Task has one Plan parent. A Plan is never
+ahead of its Spec, and a Task runs only while both are `approved`; under any
+other parent status a remaining Task stays `draft` or `blocked`. Parent status
+never reflects execution.
 
-The Registry supplies the exact eight-column Evidence and six-column Work
-Breakdown shapes. `spec_packages.py` implements their coverage and completion
-meaning. Frozen or already-terminal Task bodies retain their source-generation
-reader, bound by the current migration's exact Git source proof. That
-compatibility does not authorize new legacy receipts. A Task event records only an observed
-direct registered transition with same-Task evidence. Structural event
-validation does not authenticate approval; current authorization remains manual
-under the approval boundary.
+Execution state has one owner. A single-mode Task keeps one frontmatter
+`status`. A multi-item Task has an `Execution Items` table under its Work Log
+with at least two rows, owns one status per row, assigns each Work Unit to one
+item, and declares no frontmatter `status`; its summary is derived on read.
+
+Evidence rows record observations only: criterion, Work Unit, check, input,
+result, location, and `Resolves`, which names earlier `FAIL` rows of the same
+Task that a `PASS` row for a shared criterion resolves. Acceptance has one
+owner per criterion: the `Criterion Acceptance` table of one Task the Plan
+assigns it to holds `pending`, `accepted`, `rejected`, or `not-required`.
+`accepted` requires `PASS` evidence for the criterion and no unresolved `FAIL`;
+`rejected` and `not-required` state their decision. A completed Task, or item,
+has `PASS` evidence for every criterion and Work Unit pair it owns unless that
+criterion is `not-required`, and every criterion it owns is accepted or
+`not-required`. Task-result vocabulary is exactly `NOT_RUN`, `PASS`, `FAIL`,
+`DEFER`, and `NOT_APPLICABLE`. Lifecycle events and generation-migration proof
+rows record observed structure only; they do not authenticate approval,
+review, or execution.
+
+A package is ready for archive review when its Spec and Plan are `approved`
+(or validly `cancelled` or `superseded`), every Task or item is terminal, every
+criterion is accepted or `not-required`, and no `FAIL` is unresolved.
+Readiness is derived on read, is never stored, and is not archive approval; a
+package leaves Stage 03 only from a ready base revision.
+
+The Registry supplies the exact Evidence, Criterion Acceptance, Execution
+Items and Work Breakdown shapes. `spec_packages.py` implements their meaning.
+A terminal Task unchanged since the current generation's migration source keeps
+the reader of the generation that closed it, bound by that migration's exact
+Git source proof. That compatibility does not authorize new legacy receipts. A
+Task event records only an observed direct registered transition with
+same-Task evidence. Structural event validation does not authenticate
+approval; current authorization remains manual under the approval boundary.
 
 Stage 90 supplies evidence and Stage 98 supplies historical path lookup; neither
 overrides current lifecycle authority. Stage 99 defines document shapes and
-identities. Registered scripts implement gates. Terminal package completion requires observed
-PASS evidence for every numbered acceptance criterion and its Plan work unit.
-FAIL, NOT_RUN, DEFER, and NOT_APPLICABLE results remain valid non-completion
-evidence; they do not satisfy terminal acceptance. Stage 99 and its validator own the
-receipt's machine shape, so templates refer here for completion meaning.
-Spec and Plan closure require their registered terminal conditions; Task
-completion evidence alone does not close a package with nonterminal members.
+identities. Registered scripts implement gates. FAIL, NOT_RUN, DEFER, and
+NOT_APPLICABLE results remain valid non-completion evidence; they do not
+satisfy acceptance. Stage 99 and its validator own the machine shapes, so
+templates refer here for completion meaning.
 
 ## Stop Conditions
 

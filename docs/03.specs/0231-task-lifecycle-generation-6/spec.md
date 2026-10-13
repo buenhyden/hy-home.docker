@@ -81,17 +81,21 @@ archive approval itself, which stays a separate owner decision.
    validly `cancelled` or `superseded`), every Task or item is terminal, every
    criterion row is `accepted` or `not-required`, no `FAIL` row is
    unresolved, and no archive hold names the package. Readiness is not
-   archive approval. The Stage 03 occupancy check and the archive preservation
-   check read this one predicate.
+   archive approval. A package leaves Stage 03 for the completed archive only
+   when this predicate held on its base revision; Stage 03 occupancy keeps
+   checking only that members are consistent.
 8. **Migration.** The Registry moves to lifecycle generation 6 and declares
    its status normalizations: Spec and Plan `in-progress`, `blocked` and
    `completed` become `approved`. A Contract Migration record in this
-   package's Task binds the source revision. Active generation 5 Tasks are
-   rewritten mechanically: `Acceptance` becomes `Resolves` with `-`, and each
-   Task gets a Criterion Acceptance row for each criterion it carried
-   evidence for (`rejected` if any row was rejected, `accepted` if every
-   remaining row for it was `PASS` and accepted, otherwise `pending`).
-   Generation 4 historical Tasks and archive bodies are not edited.
+   package's Task binds the source revision. A terminal Task whose bytes
+   equal that source keeps the reader of the generation that closed it and
+   is not edited. Nonterminal generation 5 Tasks are rewritten mechanically:
+   `Acceptance` becomes `Resolves`, a later `PASS` on the same Work Unit and a
+   shared criterion resolves earlier `FAIL` rows, duplicate Evidence names get
+   a numeric suffix, and the lowest-numbered Task carrying evidence for a
+   criterion records its decision (`rejected` if any row was rejected,
+   `accepted` if it had a `PASS` and accepted row and no unresolved `FAIL`,
+   otherwise `pending`). Archive bodies are not edited.
 
 ## Acceptance Criteria
 
@@ -100,9 +104,8 @@ archive approval itself, which stays a separate owner decision.
    each rule.
 2. Single-mode and multi-item Tasks reach the same completion and readiness
    judgment for equivalent work.
-3. Archive readiness is computed by one predicate that the Stage 03
-   occupancy and preservation checks share, and no check requires a
-   `completed` parent.
+3. Archive readiness is computed by one predicate that gates departure from
+   Stage 03, and no check requires a `completed` parent.
 4. Every active Stage 03 document passes the generation 6 reader after
    migration, generation 4 historical Tasks are byte-identical, and archive
    bodies are unchanged.

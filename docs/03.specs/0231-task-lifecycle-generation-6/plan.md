@@ -45,8 +45,10 @@ candidate.
   still writes generation 5 Evidence after this merges fails the reader and
   needs the same mechanical rewrite. The migration helper is a one-off and is
   not kept as a tracked tool.
-- The generation migration proof binds Git revisions; a rebase before merge
-  changes them and the proof must be refreshed.
+- The generation migration proof binds Git revisions and needs exactly one
+  first-parent merge that brings generation 6 onto a generation 5 `main`. The
+  pull request is merged with a merge commit, never squashed or rebased, and
+  local checks run on a synthetic merge of the branch into `main`.
 - Rollback: revert the merge commit; generation 5 documents are restored with
   it.
 

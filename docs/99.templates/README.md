@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.1.1"
+version: "2.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-13"
 layer: "templates"
 ---
 
@@ -107,11 +107,15 @@ fallback과 등록된 frozen archive payload를 포괄하며, 둘 다 현재 작
 
 #### Stage 03 Evidence
 
-Task 상태는 frontmatter에만 둡니다. `Evidence`의 각 행은 기존 criterion과
-Plan work unit, 실제 check와 input, result, location, acceptance를 기록하며 Status
-열을 두지 않습니다. 필수 criterion의 완료에는 `PASS`와 `accepted`가 모두
-필요합니다. Plan의 `Work Breakdown`은 여섯 열이고 Task의 `Evidence`는 여덟
-열입니다. 정확한 열 순서와 vocabulary는 Registry가 소유합니다.
+Task 상태는 frontmatter 하나에 둡니다. 여러 항목을 따로 추적하는 Task는
+Work Log 아래 `Execution Items` 표의 각 행이 상태를 가지며 frontmatter
+`status`를 쓰지 않습니다. `Evidence`의 각 행은 기존 criterion과 Plan work
+unit, 실제 check와 input, result, location, 그리고 앞선 `FAIL` 행을 해소했는지
+나타내는 `Resolves`를 기록합니다. 수용 판정은 criterion마다 한 번, Task의
+`Criterion Acceptance` 표에 둡니다. `accepted`에는 `PASS` evidence가 있고
+해소되지 않은 `FAIL`이 없어야 합니다. Plan의 `Work Breakdown`은 여섯 열이고
+Task의 `Evidence`는 여덟 열입니다. 정확한 열 순서와 vocabulary는 Registry가
+소유합니다.
 Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 기록하며
 승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
 [SDLC](../../.agents/governance/sdlc.md)가 소유합니다.

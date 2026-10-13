@@ -1,10 +1,10 @@
 ---
 title: "Task Checklists"
-version: "1.3.1"
+version: "1.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-13"
 ---
 
 # Task Checklists
@@ -45,9 +45,10 @@ Approved repository edits, ongoing implementation, and completion evidence.
 - [ ] Regenerate registered projections and prove byte-for-byte freshness.
 - [ ] Inspect `git diff --check`, status, and the exact task-owned diff.
 - [ ] Record pass, fail, baseline debt, skipped checks, recovery, and review separately.
-- [ ] Record final completion receipts before disposition. A completed Stage 03
-      package may wait with its completed Plan and completed or validly cancelled
-      Tasks; cancelled criteria do not waive remaining Spec acceptance evidence.
+- [ ] Record final criterion acceptance before disposition. A Stage 03 package
+      may wait once it is ready for archive review: approved parents, terminal
+      Tasks, accepted or `not-required` criteria and no unresolved `FAIL`;
+      cancelled criteria do not waive remaining Spec acceptance evidence.
 - [ ] Bind any later preservation to its prepared source object and separate
       disposition approval. Preserve Task Commit Ledgers and frozen bodies.
 - [ ] For reassessment or history-only availability, verify the current assessment,

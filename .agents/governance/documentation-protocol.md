@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.2.2"
+version: "3.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-13"
 ---
 
 # Documentation Protocol
@@ -428,12 +428,12 @@ record completion or supersession as a withdrawal.
 
 Before package completion, apply the [completion checklist](task-checklists.md#before-completion).
 Record final evidence while the package is still editable. All-files checks
-retain their explicit approval and controlled-wrapper requirements. A completed
-Spec may wait in Stage 03 when its Plan is completed and every Task is completed
-or validly cancelled. Its completion receipt must cover every numbered Spec
-criterion and Plan work unit before disposition. Waiting is neither active work
-nor disposition approval; the Stage 03 index routes to the package without a
-second status ledger. A later authorized move preserves the prepared source
+retain their explicit approval and controlled-wrapper requirements. A package
+may wait in Stage 03 once it is ready for archive review as
+[the SDLC policy](sdlc.md) defines it: approved Spec and Plan, terminal Tasks,
+every criterion accepted or `not-required`, and no unresolved `FAIL`. Readiness
+is derived on read. Waiting is neither active work nor disposition approval;
+the Stage 03 index routes to the package without a second status ledger. A later authorized move preserves the prepared source
 object, including the original Task evidence.
 
 Stage 03 occupancy is a package judgment using the Registry's Spec, Plan, and
