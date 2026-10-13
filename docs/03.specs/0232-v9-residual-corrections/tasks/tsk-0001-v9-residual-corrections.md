@@ -1,0 +1,126 @@
+---
+title: "Prompt v9 Residual Corrections Task"
+version: "0.1.0"
+type: "sdlc/task"
+status: "draft"
+owner: "@buenhyden"
+updated: "2026-10-13"
+layer: "specs"
+artifact_id: "SPEC-0232-TSK-0001"
+parent_ids:
+- "SPEC-0232-PLAN-0001"
+created: "2026-10-13"
+---
+
+# Prompt v9 Residual Corrections Task
+
+## Objective
+
+Close the four prompt v9 findings that still hold on `main` after SPEC-0230
+and SPEC-0231: F26, F20, F22 and F02.
+
+## Inputs and Authorization
+
+The owner pasted the prompt v9 execution request on 2026-10-13 and answered
+"이어서 계속 진행한다" to the SPEC-0231 report. Asked the same day, the owner
+chose a validate-only PostToolUse hook, kept the Stop hook's whole-worktree
+scope, and moved F24, F27 and F36 to a later Spec. The request authorizes
+source, test and document changes, logical commits, the branch push, its pull
+request and per-Spec integration. Baseline `main` `baffae4c7`.
+
+## Work Log
+
+### Starting State
+
+A read-only check of the remaining findings on `baffae4c7`:
+
+- F18 does not hold: `.github/workflow-contract.yml` classifies only
+  `ci-quality.yml` as `required-quality`; greeting, labeler, stale and
+  changelog are `non-gating` and no gate node reads them.
+- F42 does not hold: `.claude/provider.md`, `.codex/provider.md` and the
+  Provider Registry agree that Claude uses generated skill adapters and Codex
+  discovers `.agents/skills` directly.
+- F26, F20, F22 and F02 hold as the Spec states.
+
+### W1 Validate-only Hook
+
+`post_tool_use()` in `scripts/hooks/agent-event-hook.sh` now passes
+`--check`. In check mode `post-tool-validate.sh` runs the same normalization
+in memory and fails with `<path>: trailing whitespace or a missing final
+newline` when it would change the file; it skips frozen payloads as before.
+`git diff --check` alone missed untracked files and a missing final newline.
+On an untracked `note.md` without a final newline the `main` script exited 0
+and this one exits 1, leaving the bytes unchanged. The agentic policy (1.5.0),
+quality standards section 10 (1.6.0) and `scripts/README.md` (1.4.2) say the
+hook validates and `--write` is the explicit fix. SPEC-0230 contract 4 still
+holds: the normalizer is opt-in and agrees with its owner.
+
+The report reaches the provider the way the hook's existing lint failures
+do: the dispatcher passes the exit status through unchanged, and a status
+other than 2 is a non-blocking error. Whether the agent sees that message in
+a live Claude or Codex session was not observed and is `NOT_RUN`.
+
+### W2 n8n Candidate Rehearsal
+
+The two `sec01-n8n-*:2.42.6-candidate` manifest and index pins and
+`test_n8n_both_variants_actual_uid_version_and_font_receipt` are removed. The
+rehearsal ran only with `HYHOME_WORKFLOW_REHEARSAL=1`, CI skips it, and the
+bundle is 2.42.7. The Airflow rehearsal matches its current 3.3.2 bundle and
+stays. The SEC01 ledger and verification records bind earlier bytes of this
+file (`f4c9a775…`, current `main` is `914412e4…`), so they are historical and
+unchanged. The n8n README notes the removal.
+
+### W3 Frozen Payload Registry Assertion
+
+`test_every_text_mutator_excludes_the_same_frozen_payloads` now also compares
+the anchor with the Registry: a tracked archive file must match the anchor
+exactly when it lies under an unmanaged `docs/98.archive/` record profile or
+on a `frozen-legacy-status` path. Dropping `retired` from the anchor makes
+149 files disagree. `resolved/` has no tracked file yet, so the archive README
+rule that its first record adds it to the ignore lists is now enforced.
+
+### W4 Root Shim
+
+`AGENTS.md` keeps its three steps. The removed step 4 repeated bootstrap load
+order step 3 and `.codex/provider.md` lines 22 to 37.
+
+### Review
+
+An independent read-only `rules-engineer` review found nothing blocking and
+four other findings. Fixed: Spec contract 4 now says `AGENTS.md` adds nothing
+beyond its three steps, since step 3 itself repeats bootstrap step 4; the
+section 10 rule covers repository-registered hooks only, because a hook
+outside the repository is what `.prettierignore` handles; `agentic.md` links
+section 10 instead of restating the explicit-fix rule. Recorded, not changed:
+live agent visibility of the check-mode report (W1). The review found no other
+current text that says the hook rewrites files, and confirmed every removed
+`AGENTS.md` statement keeps an owner Codex reads.
+
+## Evidence
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Hook | 1 | W1 | New check-mode test RED on `main` then GREEN; dispatcher test; routing suite (61) | Branch | PASS | W1 Validate-only Hook | - |
+| Rehearsal | 2 | W2 | Bundle tests (7, 2 skipped); update-gate and SEC01 routing tests (31) | Branch | PASS | W2 n8n Candidate Rehearsal | - |
+| Frozen | 3 | W3 | Registry assertion; anchor mutation shows 149 disagreements | Branch | PASS | W3 Frozen Payload Registry Assertion | - |
+| Shim | 4 | W4 | Governance contract (failures=0) | Branch | PASS | W4 Root Shim | - |
+| Gate | 5 | W5 | Changed gate; candidate quality | Branch | NOT_RUN | Work Log | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | pending | - | - |
+| 2 | pending | - | - |
+| 3 | pending | - | - |
+| 4 | pending | - | - |
+| 5 | pending | - | - |
+
+## Review and Completion
+
+No criterion is accepted until the owner accepts it.
+
+## Related Documents
+
+- [Spec](../spec.md)
+- [Plan](../plan.md)
