@@ -2,11 +2,13 @@
 """Shared agent memory: one SQLite store for every worktree and provider.
 
 The store lives at `<main checkout>/.workspace-memory/memory.sqlite3`, found
-through `git rev-parse --git-common-dir`, so every linked worktree uses the
-same file. This CLI is its only writer. Every update names the revision it
-expects; a stale one is refused and nothing changes. Limits are logical: the
-CLI refuses a write that would cross them and never removes existing
-revisions. No filesystem quota enforces them.
+through `git rev-parse --git-common-dir` from this script's own checkout, so
+every linked worktree uses the same file. The edit hooks leave this CLI as the
+only editor; a shell command can still reach the file. Every update names the
+revision it expects; a stale one is refused and nothing changes. The store uses
+a rollback journal, not WAL: the host's SQLite 3.45.1 lacks the WAL-reset fix.
+Limits are logical: the CLI refuses a write that would cross them and never
+removes existing revisions. No filesystem quota enforces them.
 """
 
 from __future__ import annotations
@@ -16,6 +18,7 @@ import datetime as dt
 import json
 import os
 import sqlite3
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -79,8 +82,7 @@ class MemoryStoreError(Exception):
         self.code = code
 
 
-def store_path(cwd: Path | None = None) -> Path:
-    """The one store of the main checkout that owns this Git repository."""
+def _common_dir(cwd: Path) -> Path | None:
     try:
         common = subprocess.run(
             ["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
@@ -89,27 +91,67 @@ def store_path(cwd: Path | None = None) -> Path:
             text=True,
             check=True,
         ).stdout.strip()
-    except (OSError, subprocess.CalledProcessError) as error:
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return Path(common).resolve()
+
+
+def store_path(cwd: Path | None = None) -> Path:
+    """The one store of the main checkout that owns this script.
+
+    The repository comes from the script's location, not the working
+    directory, and the working directory must belong to the same repository,
+    so running the CLI elsewhere never creates a second, unignored store.
+    """
+    own = _common_dir(Path(__file__).resolve().parent)
+    here = _common_dir(Path.cwd() if cwd is None else cwd)
+    if own is None or here is None:
+        raise MemoryStoreError(EXIT_UNAVAILABLE, "MEMORY_UNAVAILABLE: no Git repository")
+    if own != here:
         raise MemoryStoreError(
-            EXIT_UNAVAILABLE, "MEMORY_UNAVAILABLE: no Git repository"
-        ) from error
-    common_dir = Path(common)
-    if common_dir.name != ".git" or not common_dir.is_dir():
+            EXIT_UNAVAILABLE,
+            "MEMORY_UNAVAILABLE: run the CLI of the repository you are in",
+        )
+    if own.name != ".git" or not own.is_dir():
         raise MemoryStoreError(EXIT_UNAVAILABLE, "MEMORY_UNAVAILABLE: no main checkout")
-    return common_dir.parent / STORE_DIRECTORY / STORE_NAME
+    return own.parent / STORE_DIRECTORY / STORE_NAME
+
+
+def _refuse_symlink(path: Path) -> None:
+    if path.is_symlink():
+        raise MemoryStoreError(
+            EXIT_UNAVAILABLE, f"MEMORY_UNAVAILABLE: {path} is a symbolic link"
+        )
+
+
+def _create_private(path: Path) -> None:
+    """Create an empty 0600 file; an existing file or link raises OSError."""
+    os.close(
+        os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    )
+
+
+def _private_directory(path: Path) -> None:
+    _refuse_symlink(path)
+    path.mkdir(mode=0o700, exist_ok=True)
+    _refuse_symlink(path)
+    os.chmod(path, 0o700)
 
 
 def connect(path: Path) -> sqlite3.Connection:
-    path.parent.mkdir(mode=0o700, exist_ok=True)
-    os.chmod(path.parent, 0o700)
-    if not path.exists():
-        path.touch(mode=0o600)
+    _private_directory(path.parent)
+    _refuse_symlink(path)
+    try:
+        _create_private(path)
+    except FileExistsError:
+        pass
     connection = sqlite3.connect(
         path, timeout=BUSY_TIMEOUT_MS / 1000, isolation_level=None
     )
     connection.row_factory = sqlite3.Row
     connection.execute(f"PRAGMA busy_timeout = {BUSY_TIMEOUT_MS}")
-    connection.execute("PRAGMA journal_mode = WAL")
+    # Rollback journal: WAL needs the WAL-reset fix this host's SQLite lacks.
+    connection.execute("PRAGMA journal_mode = DELETE")
     connection.execute(SCHEMA)
     return connection
 
@@ -249,22 +291,35 @@ def put(
                 EXIT_FULL, "MEMORY_STORE_FULL: no space; nothing was written"
             ) from error
         raise
-    try:
-        connection.execute("PRAGMA wal_checkpoint(PASSIVE)")
-    except sqlite3.Error as error:
-        print(
-            f"MEMORY_CHECKPOINT_DEFERRED: {error}; the revision is committed",
-            file=sys.stderr,
-        )
     return current + 1
 
 
 def backup(connection: sqlite3.Connection, output: Path) -> None:
     """Refresh one backup file; a failure keeps the previous good backup."""
     output = output.absolute()
+    store = Path(connection.execute("PRAGMA database_list").fetchone()[2]).resolve()
+    if output.resolve() in {
+        store,
+        store.with_name(store.name + "-journal"),
+        store.with_name(store.name + "-wal"),
+    }:
+        raise MemoryStoreError(
+            EXIT_BACKUP, "MEMORY_BACKUP_FAILED: the output is the store itself"
+        )
+    if output.parent.is_symlink() or not output.parent.is_dir():
+        raise MemoryStoreError(
+            EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {output.parent} is not a directory"
+        )
+    if stat.S_IMODE(output.parent.stat().st_mode) & 0o077:
+        raise MemoryStoreError(
+            EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {output.parent} is not 0700"
+        )
     temporary = output.with_name(f".{output.name}.tmp")
     try:
         temporary.unlink(missing_ok=True)
+        # The file exists as 0600 before SQLite writes a byte into it, and a
+        # link planted at this name is refused rather than followed.
+        _create_private(temporary)
         target = sqlite3.connect(temporary)
         try:
             connection.backup(target)
@@ -272,7 +327,6 @@ def backup(connection: sqlite3.Connection, output: Path) -> None:
                 raise sqlite3.DatabaseError("backup failed integrity_check")
         finally:
             target.close()
-        os.chmod(temporary, 0o600)
         os.replace(temporary, output)
     except (OSError, sqlite3.Error) as error:
         temporary.unlink(missing_ok=True)
@@ -281,23 +335,62 @@ def backup(connection: sqlite3.Connection, output: Path) -> None:
         ) from error
 
 
+def _schema(connection: sqlite3.Connection) -> set[tuple[str, ...]]:
+    return set(
+        connection.execute("SELECT type, name, tbl_name, sql FROM sqlite_master")
+    )
+
+
 def restore(source: Path, path: Path) -> None:
-    """Rebuild a missing store from a backup; an existing store is never replaced."""
-    if path.exists():
-        raise MemoryStoreError(EXIT_CONFLICT, f"MEMORY_RESTORE_REFUSED: {path} exists")
-    backup_db = sqlite3.connect(f"file:{source}?mode=ro", uri=True)
+    """Rebuild a missing store from a backup; an existing store is never replaced.
+
+    Stop every agent session first: a writer that opens the store while it is
+    being rebuilt loses its write.
+    """
+    # ponytail: no lock against a concurrent writer during restore; the
+    # runbook stops sessions first.
+    expected = sqlite3.connect(":memory:")
+    expected.execute(SCHEMA)
+    try:
+        backup_db = sqlite3.connect(source.absolute().as_uri() + "?mode=ro", uri=True)
+    except sqlite3.Error as error:
+        raise MemoryStoreError(
+            EXIT_BACKUP, f"MEMORY_RESTORE_REFUSED: cannot open backup: {error}"
+        ) from error
     try:
         if backup_db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
             raise MemoryStoreError(
                 EXIT_BACKUP, "MEMORY_RESTORE_REFUSED: backup failed integrity_check"
             )
-        connection = connect(path)
+        if _schema(backup_db) != _schema(expected):
+            raise MemoryStoreError(
+                EXIT_BACKUP,
+                "MEMORY_RESTORE_REFUSED: backup schema differs from the store schema",
+            )
+        _private_directory(path.parent)
         try:
-            backup_db.backup(connection)
-        finally:
-            connection.close()
+            _create_private(path)
+        except FileExistsError as error:
+            raise MemoryStoreError(
+                EXIT_CONFLICT, f"MEMORY_RESTORE_REFUSED: {path} exists"
+            ) from error
+        try:
+            target = sqlite3.connect(path)
+            try:
+                backup_db.backup(target)
+            finally:
+                target.close()
+        except BaseException:
+            path.unlink(missing_ok=True)
+            path.with_name(path.name + "-journal").unlink(missing_ok=True)
+            raise
+    except sqlite3.Error as error:
+        raise MemoryStoreError(
+            EXIT_BACKUP, f"MEMORY_RESTORE_FAILED: {error}; no store was left"
+        ) from error
     finally:
         backup_db.close()
+        expected.close()
 
 
 def main(argv: list[str] | None = None) -> int:
