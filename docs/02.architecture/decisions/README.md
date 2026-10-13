@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.4"
+version: "1.6.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -84,7 +84,7 @@ docs/02.architecture/decisions/
   모든 구성원이 terminal인 완료 package의 처분 대기와, 구조화된 취소 근거를 가진
   cancelled Task, 현재 재평가·history-only 이용 가능성·새 포착의 정확 동일성을
   채택한 accepted decision. ADR-0036을 대체하며 SPEC-0179가 구현·검증을 소유한다.
-  처분 대기를 다룬 결정 1과 결정 2·3의 완료 receipt 조항은 ADR-0048이
+  처분 대기를 다룬 결정 1(마지막 문장 제외)과 결정 2·3의 완료 receipt 조항은 ADR-0048이
   대체하고, 취소 기록·terminal Plan·terminality 규칙은 그대로 유지된다.
 - [`ADR-0038`](./0038-selective-native-oidc-for-native-auth-apps.md):
   Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native
@@ -116,8 +116,8 @@ docs/02.architecture/decisions/
   DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 accepted decision(SPEC-0212, SPEC-0213).
 - [`ADR-0048`](./0048-authority-parents-and-criterion-acceptance.md):
   Spec·Plan은 승인 권한만, Task는 실행 상태를, criterion마다 하나의 수용 판정을
-  두고 보관 검토 준비를 읽을 때 계산하는 proposed decision. ADR-0037 결정 1과
-  결정 2·3의 완료 receipt 조항을 대체하며 SPEC-0231과 SPEC-0233이 구현·검증을
+  두고 보관 검토 준비를 읽을 때 계산하는 accepted decision. ADR-0037 결정 1(마지막
+  문장 제외)과 결정 2·3의 완료 receipt 조항을 대체하며 SPEC-0231과 SPEC-0233이 구현·검증을
   소유한다.
 
 ## Usage

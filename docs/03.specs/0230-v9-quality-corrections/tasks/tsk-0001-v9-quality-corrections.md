@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Quality Corrections Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -108,6 +108,19 @@ the previous normalizer and passes now; all 60 tests in
 `test_agent_governance_ci_routing` pass, and `bash -n` and `shellcheck
 --severity=warning` are clean.
 
+### Owner Decisions
+
+On 2026-10-13 the owner answered the review question by accepting the
+criteria rated ready and approving this Spec and Plan; Review and Completion
+lists the criteria and why the rest stay `pending`.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0230 | draft | approved | #owner-decisions |
+| SPEC-0230-PLAN-0001 | draft | approved | #owner-decisions |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -122,17 +135,22 @@ the previous normalizer and passes now; all 60 tests in
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
+| 1 | accepted | Mark-only inputs | Owner accepted 2026-10-13 |
+| 2 | accepted | Check repairs | Owner accepted 2026-10-13 |
 | 3 | pending | - | - |
-| 4 | pending | - | - |
+| 4 | accepted | Normalizer agreement | Owner accepted 2026-10-13 |
 
 ## Review and Completion
 
 PR #438 head `0b479b1a4`: `candidate-quality` passed in run `38344684357` (job
 `115123215753`, 4m55s); CodeQL and GitGuardian passed; `main-security` was
-skipped as it runs on `main` only. No row is accepted until the owner
-accepts it.
+skipped as it runs on `main` only.
+
+On 2026-10-13 the owner, answering the review question, accepted the criteria
+rated ready (criteria 1, 2, 4) and approved this Spec and Plan. Criterion 3,
+the gate, stays `pending`: the Changed gate row records a gate that exited 1
+before only two permission modules were rerun, on a base before W4, so no
+local changed gate covers the normalizer change.
 
 ## Related Documents
 

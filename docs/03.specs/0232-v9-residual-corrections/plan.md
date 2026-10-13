@@ -1,8 +1,8 @@
 ---
 title: "Prompt v9 Residual Corrections Plan"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "specs"

@@ -1,8 +1,8 @@
 ---
 title: "Task Lifecycle Generation 6"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "specs"

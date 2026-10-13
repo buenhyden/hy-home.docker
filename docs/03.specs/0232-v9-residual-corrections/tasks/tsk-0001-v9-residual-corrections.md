@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections Task"
-version: "0.3.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -147,6 +147,48 @@ defect the `main` dispatcher exited 1 with stderr only; this one exits 0 with
 that JSON. The agentic policy (1.5.1) states the channel. Live delivery in a
 Claude or Codex session is observed only after merge, from the main checkout.
 
+PR #446 passed hosted `candidate-quality` (run 38374565260) and merged as
+`958349408`. Live delivery was then observed in both providers on
+2026-10-13:
+
+- **Claude Code 2.1.296**, main checkout at `958349408`: a Write of a probe
+  file with trailing spaces returned `PostToolUse:Write hook additional
+  context: Post-edit validation failed...` to the model, and the file kept
+  its trailing spaces.
+- **codex-cli 0.162.1**, `codex exec` in a disposable worktree of
+  `958349408`: an `apply_patch` appending a line with trailing spaces led the
+  model to quote `Post-edit validation failed; fix before committing:
+  scripts/README.md: trailing whitespace or a missing final newline; fix it,
+  or run post-tool-validate.sh --write` verbatim, and the spaces were kept.
+  Codex's `workspace-write` sandbox cannot start on this host (`bwrap:
+  loopback: Failed RTM_NEWADDR: Operation not permitted`), so every write
+  failed before a hook ran; the observed run used `-s danger-full-access`
+  with a prompt limited to that one edit. The worktree was then removed.
+
+### Governance Suite
+
+The full document governance suite (`python3 -m unittest discover -s
+tests/lib/document_governance -t .`) ran with no time limit in a detached
+scratch worktree on `b1a6976f4` on 2026-10-13: 894 tests in 1844 s, 893
+passed and one failed. `test_registry_high_water_is_not_below_repository_history`
+reported `registry high_water=232 observed=234`. That test reads every local
+ref (`--all`), and the unmerged local branches for SPEC-0233 and SPEC-0234
+already issue Spec numbers 233 and 234. That cause is likely but not yet
+verified; the test is rerun once both branches merge.
+
+### Owner Decisions
+
+On 2026-10-13 the owner answered the review question by accepting the
+criteria rated ready and approving this Spec and Plan; Review and Completion
+lists the criteria and why the rest stay `pending`.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0232 | draft | approved | #owner-decisions |
+| SPEC-0232-PLAN-0001 | draft | approved | #owner-decisions |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -159,22 +201,29 @@ Claude or Codex session is observed only after merge, from the main checkout.
 | Tombstone | 6 | W6 | `test_archive` RED (3 failures) then GREEN (71); corpus lifecycle; archive recovery; recovery tests | Branch on `7325f1af2` | PASS | W6 Tombstone Identity | - |
 | Context | 7 | W7 | Dispatcher test RED on `main` (exit 1, no JSON) then GREEN; post_tool tests (15) | Branch on `b1a6976f4` | PASS | W7 PostToolUse Failure as Context | - |
 | Candidate | 5 | W5 | Hosted `candidate-quality`, changed profile | PR #443 at `cc8a880dc` | PASS | W5 Gate | - |
+| Context candidate | 7 | W7 | Hosted `candidate-quality`, run 38374565260 | PR #446 | PASS | W7 PostToolUse Failure as Context | - |
+| Live Claude | 7 | W7 | Live PostToolUse delivery, Claude Code 2.1.296 | `958349408` | PASS | W7 PostToolUse Failure as Context | - |
+| Live Codex | 7 | W7 | Live PostToolUse delivery, codex-cli 0.162.1, sandbox off | `958349408` | PASS | W7 PostToolUse Failure as Context | - |
+| Governance suite | 5 | W5 | Full document governance suite, 893 of 894 passed | `b1a6976f4` | FAIL | Governance Suite | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
+| 1 | accepted | Hook | Owner accepted 2026-10-13 |
+| 2 | accepted | Rehearsal | Owner accepted 2026-10-13 |
+| 3 | accepted | Frozen | Owner accepted 2026-10-13 |
+| 4 | accepted | Shim | Owner accepted 2026-10-13 |
 | 5 | pending | - | - |
-| 6 | pending | - | - |
-| 7 | pending | - | - |
+| 6 | accepted | Tombstone | Owner accepted 2026-10-13 |
+| 7 | accepted | Context, Context candidate, Live Claude, Live Codex | Owner accepted 2026-10-13 |
 
 ## Review and Completion
 
-No criterion is accepted until the owner accepts it.
+On 2026-10-13 the owner, answering the review question, accepted the criteria
+rated ready (criteria 1, 2, 3, 4, 6, 7) and approved this Spec and Plan.
+Criterion 5, the gate, stays `pending`: its local changed gate has no PASS,
+and the governance suite FAIL is unresolved where recorded.
 
 ## Related Documents
 

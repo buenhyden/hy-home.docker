@@ -1,8 +1,8 @@
 ---
 title: "Generation 6 Reader Corrections Plan"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "specs"
@@ -18,7 +18,8 @@ created: "2026-10-13"
 
 Fix the three reader gaps with failing fixtures first, complete the corpus
 rows the first fix requires, add the missing rule fixtures, then correct the
-text and run the gates.
+text and run the gates. W7 then aligns REQ-0026, the Task template and stale
+Stage 03 wording with the corrected rules.
 
 ## Work Breakdown
 
@@ -30,6 +31,7 @@ text and run the gates.
 | W4 | 4 | Missing rule fixtures | None | TSK-0001 | Task evidence |
 | W5 | 5 | SDLC, ADR and README text; rules review | W1, W2, W3 | TSK-0001 | Task evidence |
 | W6 | 6 | Changed gate and candidate quality | W1, W2, W3, W4, W5 | TSK-0001 | Task evidence |
+| W7 | 5 | REQ-0026, Task template and stale Stage 03 wording | W5 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 
@@ -37,7 +39,8 @@ Each new behavior test fails against the `main` reader and passes after the
 fix; the generation 6, Spec package, archive and metadata suites; the active
 metadata and corpus lifecycle checks; the governance contract; an
 independent `rules-engineer` review; the changed gate and the remote
-candidate.
+candidate. W7 adds a second independent review of the Stage 01 to 03
+alignment.
 
 ## Risks and Rollback
 

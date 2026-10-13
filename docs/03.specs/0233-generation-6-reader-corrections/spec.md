@@ -1,8 +1,8 @@
 ---
 title: "Generation 6 Reader Corrections"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "specs"
@@ -44,8 +44,9 @@ ADR-0048 state:
 In scope: `scripts/lib/document_governance/spec_packages.py`, its generation 6
 tests, the SDLC policy text for these rules, ADR-0048 (text only, status
 unchanged), the decisions and descriptions READMEs, AD-0030's Related
-Documents, and the acceptance rows the new check requires in the active
-corpus. Out of scope: ADR-0048 acceptance and every Spec or Task status
+Documents, the acceptance rows the new check requires in the active corpus,
+and, in W7, REQ-0026, the Task template and the SPEC-0215 TSK-0002 Review
+wording. Out of scope: ADR-0048 acceptance and every Spec or Task status
 change, which are the owner's decisions.
 
 ## Contracts
@@ -77,9 +78,9 @@ change, which are the owner's decisions.
    covering the Task's Work Units, a Criterion Acceptance row outside the
    Plan assignment, acceptance Evidence citing another Task's row, and a
    non-`PASS` row that resolves.
-5. SDLC, ADR-0048, the decisions README, AD-0030 and the Stage 02 READMEs
-   state the corrected rules; an independent rules review finds nothing
-   blocking.
+5. SDLC, ADR-0048, the decisions README, AD-0030, the Stage 02 READMEs,
+   REQ-0026 and the Task template state the corrected rules; an independent
+   rules review finds nothing blocking.
 6. The changed gate and `candidate-quality` pass.
 
 ## Related Documents

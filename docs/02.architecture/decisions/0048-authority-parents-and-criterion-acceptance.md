@@ -1,8 +1,8 @@
 ---
 title: "Authority Parents and Criterion Acceptance"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "architecture"
@@ -94,11 +94,12 @@ byte-identical.
 ### Follow-up
 
 Proposed on 2026-10-13 from the owner's choice of these options. SPEC-0231
-implements and verifies it; acceptance is a separate status change once the
-owner reviews the merged result.
+implements and verifies it, and SPEC-0233 corrects its reader and text. The
+owner accepted this decision on 2026-10-13.
 
 ## Related Documents
 
 - [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037](0037-package-disposition-wait-and-task-cancellation.md)
 - [SPEC-0231](../../03.specs/0231-task-lifecycle-generation-6/spec.md)
+- [SPEC-0233](../../03.specs/0233-generation-6-reader-corrections/spec.md)

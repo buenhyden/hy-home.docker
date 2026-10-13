@@ -1,6 +1,6 @@
 ---
 title: "LAB Closure and HOME LAB Run Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -210,7 +210,7 @@ PR #439 head `58ae9cf6d`: `candidate-quality` passed in run `38344705466` (4m16s
 
 ## Review and Completion
 
-Every evidence row except the W6 follow-up is accepted; that row awaits owner acceptance. The volume cleanup below stays with the owner.
+Criterion 7 is accepted; criterion 6, the W6 follow-up, awaits owner acceptance. The volume cleanup below stays with the owner.
 
 Owner actions, which this session may not take:
 

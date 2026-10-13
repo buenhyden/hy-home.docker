@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.8"
+version: "0.2.9"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -1997,6 +1997,23 @@ CURRENT_VERSION_AUTH, CONSUMER_READ, MIGRATION, production cutover,
 production RECOVERY and RPO/RTO remain NOT_RUN. W23/P06 holds remain; Task
 status remains blocked.
 
+### Isolated Native Rerun — 2026-10-13
+
+The owner asked on 2026-10-13 to review P01 and proceed. On a detached scratch
+worktree of `main` `958349408`, the two registered native opt-in commands ran
+for the first time since the W23 assessment, both against owned synthetic
+`p01-owned-*` containers, volumes and networks, never HOME:
+
+- `HYHOME_OPENBAO_CANDIDATE=1 python3 -m unittest tests.validation.test_openbao_candidate.CandidateNative -v`:
+  1 test, OK, 90.5 s.
+- `HYHOME_OPENBAO_REHEARSAL=1 python3 -m unittest tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests -v`:
+  3 tests, OK, 327.9 s.
+
+No test was skipped, and no `p01-owned-*` container remained afterwards. This
+is an ISOLATED result only. HOME issuance and use, the snapshot-only
+credential, off-host custody, the reviewed stateful recovery contract and a
+real reboot remain the missing inputs that keep this Task blocked.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -2015,6 +2032,7 @@ status remains blocked.
 | Actual pre-restore 03 | 11 | W23 | Entry-point local-config write blocked before bootstrap/restore | live HOME target; value-free receipt | FAIL | W23 Actual Pre-Restore Outcome 03 | - |
 | Public native preparation | 11 | W23 | 2.7.1 isolated config-tmpfs preparation and cleanup | archived public packet | PASS | W23 Public Native Preparation Receipt | Actual pre-restore 01/02, Actual pre-restore 03 |
 | Actual selected empty restore 04 | 11 | W23 | Selected empty-target FILE_USABILITY; independent IaC actual review | isolated HOME target; value-free receipt | PASS | W23 Actual Selected Empty Restore 04 | - |
+| Isolated native rerun | 11 | W23 | Registered CandidateNative (1) and rehearsal (3) opt-in tests, no skips | `958349408` | PASS | Isolated Native Rerun — 2026-10-13 | - |
 
 ## Criterion Acceptance
 
