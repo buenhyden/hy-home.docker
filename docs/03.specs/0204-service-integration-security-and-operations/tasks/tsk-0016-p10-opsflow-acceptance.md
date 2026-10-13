@@ -1044,6 +1044,7 @@ image, scanner, native or HOME mutation is made by this receipt.
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
+| 10 | pending | - | - |
 | 21 | pending | - | - |
 
 ## Review and Completion

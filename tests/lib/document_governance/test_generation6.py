@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import dataclasses
+import os
 import pathlib
+import tempfile
 import unittest
 
 from scripts.lib.document_governance import spec_packages as module
@@ -69,6 +71,31 @@ PASS_BOTH = """| One | 1 | W1 | Unit | fixture | PASS | test | - |
 ACCEPT_BOTH = """| 1 | accepted | One | - |
 | 2 | accepted | Two | - |
 """
+ACCEPT_ONE = "| 1 | accepted | One | - |\n| 2 | pending | - | - |\n"
+PENDING_BOTH = "| 1 | pending | - | - |\n| 2 | pending | - | - |\n"
+# W1 and W2 assigned to two Tasks, so one Task can finish its share early.
+SPLIT_PLAN = dataclasses.replace(
+    PLAN,
+    body=PLAN.body.replace(
+        "| W2 | 2 | Second | W1 | TSK-0001 |", "| W2 | 2 | Second | W1 | TSK-0002 |"
+    ),
+)
+
+
+def second_task(evidence: str, acceptance: str) -> module.SpecDocument:
+    return dataclasses.replace(
+        task(evidence, acceptance),
+        path=ROOT / "tasks/tsk-0002-work.md",
+        artifact_id="SPEC-0001-TSK-0002",
+    )
+
+
+def outcome(call, *args, **kwargs) -> str:
+    try:
+        call(*args, **kwargs)
+    except module.SpecPackageError as error:
+        return f"error: {error}"
+    return "ok"
 
 
 class Generation6EvidenceTests(unittest.TestCase):
@@ -112,7 +139,7 @@ class Generation6EvidenceTests(unittest.TestCase):
     def test_accepted_criterion_needs_pass_evidence(self) -> None:
         rows = "| One | 1 | W1 | Unit | fixture | NOT_RUN | test | - |\n"
         with self.assertRaisesRegex(module.SpecPackageError, "no PASS"):
-            self.contract(task(rows, "| 1 | accepted | One | - |\n"))
+            self.contract(task(rows, ACCEPT_ONE))
 
     def test_rejected_and_not_required_need_a_decision(self) -> None:
         for decision in ("rejected", "not-required"):
@@ -140,10 +167,10 @@ class Generation6EvidenceTests(unittest.TestCase):
         decisions = "| 1 | accepted | One | - |\n| 2 | not-required | - | Dropped |\n"
         self.contract(task(rows, decisions, "completed"))
         with self.assertRaisesRegex(module.SpecPackageError, "PASS evidence"):
-            self.contract(task(rows, "| 1 | accepted | One | - |\n", "completed"))
+            self.contract(task(rows, ACCEPT_ONE, "completed"))
 
     def test_open_criteria_and_tasks_keep_a_package_unready(self) -> None:
-        current = task(PASS_BOTH, "| 1 | accepted | One | - |\n")
+        current = task(PASS_BOTH, ACCEPT_ONE)
         package = module.SpecPackage(
             pathlib.Path(ROOT), "0001", "example", SPEC, PLAN, (current,), ()
         )
@@ -151,6 +178,38 @@ class Generation6EvidenceTests(unittest.TestCase):
             ("SPEC-0001-TSK-0001 is in-progress", "criterion 2 is not accepted"),
             module.archive_readiness_findings(package, self.contract(current)),
         )
+
+    def test_every_assigned_criterion_needs_one_row(self) -> None:
+        self.contract(task(PASS_BOTH, PENDING_BOTH))
+        with self.assertRaisesRegex(module.SpecPackageError, "no Criterion Acceptance"):
+            self.contract(task(PASS_BOTH, "| 1 | pending | - | - |\n"))
+
+    def test_a_row_outside_the_plan_assignment_is_rejected(self) -> None:
+        one = "| One | 1 | W1 | Unit | fixture | PASS | test | - |\n"
+        two = "| Two | 2 | W2 | Unit | fixture | PASS | test | - |\n"
+        second = second_task(two, "| 2 | pending | - | - |\n")
+        first = task(one, "| 1 | pending | - | - |\n")
+        module._v6_evidence_contract(SPEC, SPLIT_PLAN, (first, second), self.registry)
+        stray = task(one, PENDING_BOTH)
+        with self.assertRaisesRegex(module.SpecPackageError, "outside the Plan Task"):
+            module._v6_evidence_contract(
+                SPEC, SPLIT_PLAN, (stray, second), self.registry
+            )
+
+    def test_acceptance_evidence_must_name_this_tasks_rows(self) -> None:
+        self.contract(task(PASS_BOTH, ACCEPT_BOTH))
+        cited = "| 1 | accepted | Missing | - |\n| 2 | pending | - | - |\n"
+        with self.assertRaisesRegex(module.SpecPackageError, "this Task's Evidence"):
+            self.contract(task(PASS_BOTH, cited))
+
+    def test_only_a_pass_row_may_resolve(self) -> None:
+        rows = """| Broken | 1 | W1 | Unit | fixture | FAIL | test | - |
+| Fixed | 1 | W1 | Unit | fixture | PASS | test | Broken |
+"""
+        self.contract(task(rows, PENDING_BOTH))
+        again = rows.replace("| PASS | test | Broken |", "| FAIL | test | Broken |")
+        with self.assertRaisesRegex(module.SpecPackageError, "only a PASS row"):
+            self.contract(task(again, PENDING_BOTH))
 
 
 ITEMS_HEADER = """## Work Log
@@ -195,17 +254,160 @@ class Generation6ItemTests(unittest.TestCase):
         )
         passed = task(
             "| One | 1 | W1 | Unit | fixture | PASS | test | - |\n",
-            "| 1 | accepted | One | - |\n",
+            ACCEPT_ONE,
             items=items,
         )
         module._v6_evidence_contract(SPEC, PLAN, (passed,), self.registry)
         not_run = task(
             "| One | 1 | W1 | Unit | fixture | NOT_RUN | test | - |\n",
-            "| 1 | pending | - | - |\n",
+            PENDING_BOTH,
             items=items,
         )
         with self.assertRaisesRegex(module.SpecPackageError, "PASS evidence"):
             module._v6_evidence_contract(SPEC, PLAN, (not_run,), self.registry)
+
+    def test_a_completed_item_needs_its_criteria_accepted(self) -> None:
+        items = (
+            ("A", "W1", "First", "@owner", "completed", "-"),
+            ("B", "W2", "Second", "@owner", "in-progress", "-"),
+        )
+        module._v6_evidence_contract(
+            SPEC, PLAN, (task(PASS_BOTH, ACCEPT_ONE, items=items),), self.registry
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "criteria accepted"):
+            module._v6_evidence_contract(
+                SPEC, PLAN, (task(PASS_BOTH, PENDING_BOTH, items=items),), self.registry
+            )
+
+    def test_single_mode_and_items_judge_equivalent_work_alike(self) -> None:
+        """A finished first share of the work is judged the same either way."""
+
+        items = (
+            ("A", "W1", "First", "@owner", "completed", "-"),
+            ("B", "W2", "Second", "@owner", "in-progress", "-"),
+        )
+        two_only = "| Two | 2 | W2 | Unit | fixture | PASS | test | - |\n"
+        for evidence, decisions, expected in (
+            (PASS_BOTH, ACCEPT_ONE, True),
+            (PASS_BOTH, PENDING_BOTH, False),
+            (two_only, PENDING_BOTH, False),
+        ):
+            rows = evidence.splitlines(keepends=True)
+            first_row, second_row = decisions.splitlines(keepends=True)
+            first = task(
+                "".join(row for row in rows if "| W1 |" in row),
+                first_row,
+                "completed",
+            )
+            second = second_task(
+                "".join(row for row in rows if "| W2 |" in row), second_row
+            )
+            contract = module._v6_evidence_contract
+            single = outcome(contract, SPEC, SPLIT_PLAN, (first, second), self.registry)
+            multi = outcome(
+                contract,
+                SPEC,
+                PLAN,
+                (task(evidence, decisions, items=items),),
+                self.registry,
+            )
+            with self.subTest(evidence=evidence, decisions=decisions):
+                self.assertEqual(expected, single == "ok", single)
+                self.assertEqual(expected, multi == "ok", multi)
+
+    def test_items_must_cover_exactly_the_tasks_work_units(self) -> None:
+        items = (
+            ("A", "W1", "First", "@owner", "draft", "-"),
+            ("B", "W3", "Third", "@owner", "draft", "-"),
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "cover exactly"):
+            module._v6_evidence_contract(
+                SPEC, PLAN, (task(PASS_BOTH, PENDING_BOTH, items=items),), self.registry
+            )
+
+    def test_execution_items_need_two_rows(self) -> None:
+        body = ITEMS_HEADER + "| A | W1 | First | @owner | draft | - |\n"
+        with self.assertRaisesRegex(module.SpecPackageError, "at least 2 rows"):
+            module._execution_item_rows(body, self.registry, ROOT / "t.md")
+
+    def test_a_multi_item_task_declares_no_frontmatter_status(self) -> None:
+        rows = (
+            "| A | W1 | First | @owner | draft | - |\n"
+            "| B | W2 | Second | @owner | draft | - |\n"
+        )
+        envelope = """---
+title: "Work"
+version: "0.1.0"
+type: "sdlc/task"
+{status}owner: "@owner"
+updated: "2026-10-13"
+layer: "specs"
+artifact_id: "SPEC-0001-TSK-0001"
+parent_ids:
+- "SPEC-0001-PLAN-0001"
+created: "2026-10-13"
+---
+
+# Work
+
+"""
+        for declared, error in (("", None), ('status: "draft"\n', "must not declare")):
+            with self.subTest(declared=declared), tempfile.TemporaryDirectory() as root:
+                path = pathlib.Path(root, "tsk-0001-work.md")
+                path.write_text(envelope.format(status=declared) + ITEMS_HEADER + rows)
+                parent = os.open(root, os.O_RDONLY | os.O_DIRECTORY)
+                try:
+                    result = outcome(
+                        module._parse_document,
+                        parent,
+                        path.name,
+                        path,
+                        ROOT / "tasks" / path.name,
+                        profile_id="task",
+                        expected_artifact_id="SPEC-0001-TSK-0001",
+                        registry=self.registry,
+                        budget=module._LoadBudget(),
+                    )
+                finally:
+                    os.close(parent)
+                if error is None:
+                    self.assertEqual("ok", result)
+                else:
+                    self.assertIn(error, result)
+
+
+class Generation6DepartureTests(unittest.TestCase):
+    registry = load_registry()
+
+    def test_only_a_ready_base_enters_the_completed_archive(self) -> None:
+        done = task(PASS_BOTH, ACCEPT_BOTH, "completed")
+        evidence = module._v6_evidence_contract(SPEC, PLAN, (done,), self.registry)
+        archived = module.SpecPackage(
+            pathlib.Path(ROOT), "0001", "example", SPEC, PLAN, (done,), ()
+        )
+        reopened = dataclasses.replace(
+            archived, tasks=(dataclasses.replace(done, status="in-progress"),)
+        )
+        for status, copy, preserved in (
+            ("approved", archived, True),
+            ("draft", archived, False),
+            ("cancelled", archived, False),
+            ("approved", reopened, False),
+        ):
+            source = dataclasses.replace(
+                archived,
+                spec=dataclasses.replace(SPEC, status=status),
+                plan=dataclasses.replace(PLAN, status=status),
+                evidence=evidence,
+            )
+            with self.subTest(status=status, copy=copy is archived):
+                self.assertEqual(
+                    preserved,
+                    SPEC.path
+                    in module._ordinary_preserved_paths(
+                        pathlib.Path("."), (source,), (), (copy,), self.registry
+                    ),
+                )
 
 
 class Generation6ParentTests(unittest.TestCase):

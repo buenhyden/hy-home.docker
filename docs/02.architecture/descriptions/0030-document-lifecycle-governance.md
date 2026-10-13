@@ -1,6 +1,6 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "2.1.0"
+version: "2.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -86,10 +86,10 @@ A sealed paired Tombstone and a Retention Catalog row are alternative withdrawal
 records, not duplicate records for one unit.
 
 Completion and disposition are separate. Write permanent outcomes into current
-owners and final evidence into the Task. A package may wait once it is ready
-for archive review: approved Spec and Plan, terminal Tasks, every numbered
-criterion accepted or `not-required`, and no unresolved `FAIL` (ADR-0048). It
-leaves Stage 03 only from a ready base revision. In an
+owners and final evidence into the Task. A package with an approved Spec and
+Plan may wait once it is ready for archive review as ADR-0048 defines it, and
+leaves Stage 03 for the completed archive only from such a ready base
+revision. In an
 unfinished package, completed and validly cancelled Tasks may remain, but a
 terminal Plan may not. Cancelled or superseded Specs keep no members in active
 Stage 03. The occupancy branch reads per-profile terminal sets from Registry;
@@ -179,3 +179,4 @@ retain their own authorization and execution evidence requirements.
 ## Related Documents
 
 - [ADR-0032 Canonical agent governance home](../decisions/0032-canonical-agent-governance-home.md)
+- [ADR-0048 Authority parents and criterion acceptance](../decisions/0048-authority-parents-and-criterion-acceptance.md)
