@@ -12,9 +12,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 LABS = sorted((ROOT / "labs").glob("*.yml"))
-LAB_GUIDE_PATHS = {
-    "supabase.yml": ROOT / "docs/05.operations/guides/15-labs/0029-supabase.md",
-}
 # Synthetic, non-HOME inputs: only enough to render each LAB model.
 LAB_INPUTS = {
     "LAB_DATA_DIR": "/nonexistent/lab-data",
@@ -157,15 +154,37 @@ class LabBoundaryTests(RenderedModels):
                     seen[port] = name
 
 
+def guide_bound_labs() -> set[str]:
+    """LAB Compose files a Stage 05 guide binds through implementation_services."""
+    import yaml
+
+    bound: set[str] = set()
+    for guide in (ROOT / "docs/05.operations/guides").rglob("*.md"):
+        text = guide.read_text(encoding="utf-8")
+        if not text.startswith("---\n"):
+            continue
+        metadata = yaml.safe_load(text.split("---\n", 2)[1]) or {}
+        bound |= {
+            path.removeprefix("labs/")
+            for path in metadata.get("implementation_services") or {}
+            if path.startswith("labs/")
+        }
+    return bound
+
+
 class LabInventoryAndSelectionTests(RenderedModels):
     def test_each_lab_guide_names_exactly_its_project_and_services(self) -> None:
         import re
 
+        # The operations catalog already checks a guide-bound LAB's services
+        # against its Compose source; only README-described LABs are read here.
+        bound = guide_bound_labs()
         for name, lab in self.labs.items():
-            guide_path = LAB_GUIDE_PATHS.get(
-                name, (ROOT / "labs" / name).with_suffix(".md")
+            if name in bound:
+                continue
+            guide = (
+                (ROOT / "labs" / name).with_suffix(".md").read_text(encoding="utf-8")
             )
-            guide = guide_path.read_text(encoding="utf-8")
             with self.subTest(lab=name):
                 project = re.search(
                     r"^\| Project \| [`*]+([^`*]+)[`*]+ \|$", guide, re.M
