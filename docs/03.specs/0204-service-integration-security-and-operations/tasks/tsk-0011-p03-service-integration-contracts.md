@@ -843,23 +843,23 @@ rolls back live services, data, secrets, rotations, HOME, migration or recovery.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Git baseline | 1, 17 | W33 | status/log/worktrees, ls-remote and open PR list | Local 6da5e3bf3; remote 2b9f5ec82 | PASS | Assessment above; exit 0, baseline only | pending |
-| Existing source contracts | 1, 4, 8, 17 | W33 | Inventory, wiring, compatibility, version and SMTP unit modules | Clean 6da5e3bf3 | PASS | Exact command below; 84 tests, 8.084s, exit 0, existing source only | pending |
-| P03 implementation | 17 | W33 | New schema/parser/fixtures and RED/GREEN | Final artifact aggregate above | PASS | Source/synthetic slice only; whole criterion remains open | pending |
-| Common source registration | 17 | W33 | Manifest/workflow and navigation reconciliation | 08b009a9c plus preserved P03 commits | PASS | c3fce85d2; two scripts, two modules and both routing tables; local source only | pending |
-| Coordinator dedicated tests | 17 | W33 | Two unchanged P03 unit/contract modules | 4cadd4d7e plus exact seven common staged files | PASS | 42 tests, 3.679s, exit 0; synthetic/config only | pending |
-| Coordinator affected gates | 17 | W33 | Twelve registered affected leaves | Twenty public input hashes and canonical plan digests above | PASS | Each exit 0; repository-integrity 407 tests; no new full aggregate or hosted CI | pending |
-| Initial private/runtime lanes | 4, 6, 17 | W33 | ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY | No exact selected action | NOT_RUN | Owning follow-up needed; no operational acceptance | pending |
-| Delivery | 8, 17 | W33 | Latest-head CI/review/PR/merge | No P03 PR | NOT_RUN | Future PR; no remote delivery claim | pending |
-| Root four-location matrix | 17 | W33 | `project_root` and inventory membership audit | 62556dc63; 44 inputs, 43 leaves, 111 services | PASS | Work Log 2026-10-13; source mapping only | pending |
-| DEV/MNG and P04/P05 source boundary | 17 | W33 | Six-module source/synthetic unittest suite | 62556dc63 | PASS | 55 tests, 5.340s, exit 0; no daemon/private input | pending |
-| Root negative source contracts | 17 | W33 | Selected Compose baseline/network/auth/Alloy unittest suite | 62556dc63 | PASS | 27 tests, 23.015s, exit 0; native lanes NOT_RUN | pending |
-| Current focused source suite | 17 | W33 | Port/profile/n8n/catalog/mode/root-quality/document-method suite | 6de86f9d | PASS | 145 PASS, 17.866s, exit 0; tracked fixture only, no LAB render | pending |
-| Historical registered metadata and document leaves | 17 | W33 | Compiled local gate leaves | 62556dc63 | FAIL | Metadata exit 124/600s and document library exit 124/900.153s; no adapter output, cause unverified | pending |
-| Historical registered supply and integrity leaves | 17 | W33 | Compiled local gate leaves | 62556dc63 | PASS | Supply 265 PASS; integrity 558 PASS; historical input only | pending |
-| Full aggregate and Conftest daemon | 17 | W33 | Aggregate/local controller and isolated daemon leaf | No current complete aggregate or owned daemon | NOT_RUN | Compose whole leaf was not rerun because it would render excluded LAB inputs; no `DOCKER_HOST` daemon route | pending |
+| Git baseline | 1, 17 | W33 | status/log/worktrees, ls-remote and open PR list | Local 6da5e3bf3; remote 2b9f5ec82 | PASS | Assessment above; exit 0, baseline only | - |
+| Existing source contracts | 1, 4, 8, 17 | W33 | Inventory, wiring, compatibility, version and SMTP unit modules | Clean 6da5e3bf3 | PASS | Exact command below; 84 tests, 8.084s, exit 0, existing source only | - |
+| P03 implementation | 17 | W33 | New schema/parser/fixtures and RED/GREEN | Final artifact aggregate above | PASS | Source/synthetic slice only; whole criterion remains open | - |
+| Common source registration | 17 | W33 | Manifest/workflow and navigation reconciliation | 08b009a9c plus preserved P03 commits | PASS | c3fce85d2; two scripts, two modules and both routing tables; local source only | - |
+| Coordinator dedicated tests | 17 | W33 | Two unchanged P03 unit/contract modules | 4cadd4d7e plus exact seven common staged files | PASS | 42 tests, 3.679s, exit 0; synthetic/config only | - |
+| Coordinator affected gates | 17 | W33 | Twelve registered affected leaves | Twenty public input hashes and canonical plan digests above | PASS | Each exit 0; repository-integrity 407 tests; no new full aggregate or hosted CI | - |
+| Initial private/runtime lanes | 4, 6, 17 | W33 | ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY | No exact selected action | NOT_RUN | Owning follow-up needed; no operational acceptance | - |
+| Delivery | 8, 17 | W33 | Latest-head CI/review/PR/merge | No P03 PR | NOT_RUN | Future PR; no remote delivery claim | - |
+| Root four-location matrix | 17 | W33 | `project_root` and inventory membership audit | 62556dc63; 44 inputs, 43 leaves, 111 services | PASS | Work Log 2026-10-13; source mapping only | - |
+| DEV/MNG and P04/P05 source boundary | 17 | W33 | Six-module source/synthetic unittest suite | 62556dc63 | PASS | 55 tests, 5.340s, exit 0; no daemon/private input | - |
+| Root negative source contracts | 17 | W33 | Selected Compose baseline/network/auth/Alloy unittest suite | 62556dc63 | PASS | 27 tests, 23.015s, exit 0; native lanes NOT_RUN | - |
+| Current focused source suite | 17 | W33 | Port/profile/n8n/catalog/mode/root-quality/document-method suite | 6de86f9d | PASS | 145 PASS, 17.866s, exit 0; tracked fixture only, no LAB render | - |
+| Historical registered metadata and document leaves | 17 | W33 | Compiled local gate leaves | 62556dc63 | FAIL | Metadata exit 124/600s and document library exit 124/900.153s; no adapter output, cause unverified | - |
+| Historical registered supply and integrity leaves | 17 | W33 | Compiled local gate leaves | 62556dc63 | PASS | Supply 265 PASS; integrity 558 PASS; historical input only | Historical registered metadata and document leaves |
+| Full aggregate and Conftest daemon | 17 | W33 | Aggregate/local controller and isolated daemon leaf | No current complete aggregate or owned daemon | NOT_RUN | Compose whole leaf was not rerun because it would render excluded LAB inputs; no `DOCKER_HOST` daemon route | - |
 
 The first issuance metadata check exited 1 on Result-cell detail text; the
 second exited 1 on Acceptance-cell detail text. Both columns use registered
@@ -887,6 +887,12 @@ work targets at least 80-percent meaningful coverage. Required registration is
 integrated by the coordinator before the final changed/staged gate; a proposal
 alone is not registered QA. Maintain SOURCE / UNIT / STATIC / ISOLATED / HOME /
 MIGRATION / ROTATION / RECOVERY / DELIVERY separately.
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 17 | pending | - | - |
 
 ## Review and Completion
 

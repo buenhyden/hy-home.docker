@@ -2,7 +2,7 @@
 title: "Task Evidence Table Integrity Plan"
 version: "0.1.0"
 type: "sdlc/plan"
-status: "completed"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-06"
 layer: "specs"

@@ -321,6 +321,7 @@
         "tests.lib.document_governance.test_archive_assessments",
         "tests.lib.document_governance.test_archive_catalog_contract",
         "tests.lib.document_governance.test_archive_snapshots",
+        "tests.lib.document_governance.test_generation6",
         "tests.lib.document_governance.test_identity_history",
         "tests.lib.document_governance.test_language",
         "tests.lib.document_governance.test_links",

@@ -182,18 +182,27 @@ sections; and the Evidence rows below carry the SHAs the HOME steps ran from.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| LAB separation | 1 | W1 | LAB isolation and dashboard contract tests; promtool | `21562bcd0` | PASS | W1 LAB Separation | accepted |
-| Collection | 2 | W2 | Compose, network, SeaweedFS, tier layout and Gatus tests; Compose rendering | `225894242` | PASS | W2 Collection | accepted |
-| Dashboards | 3 | W3 | Dashboard contract tests; HOME query audit | `12e187934` | PASS | W3 Dashboards | accepted |
-| HOME rollout | 3 | W4 | Health, listener, target, rule and Grafana checks | `4420a0514` (rebased `12e187934`) | PASS | W4 HOME Rollout | accepted |
-| Review fixes | 3 | W4 | Network, host-network, gateway and LAB tests; dashboard tests; audit recount | `789fbd525` | PASS | Review | accepted |
-| Alloy on HOME | 3 | W4 | Name resolution; Pyroscope `service_name` list | `b2745167d` (rebased `789fbd525`) | PASS | W4 HOME Rollout | accepted |
-| Changed gate | 4 | W5 | `run-ci-gate.py --profile changed --local-only`, base `acc191655` | `ad33a5b9f` | PASS | Review and Completion | accepted |
-| Staged style check | 4 | W5 | `run-ci-precommit.sh --mode local-staged` over `acc191655..HEAD`; the first run asked for `ruff format` on two tests, applied in `75f66c8f9` | `75f66c8f9` | PASS | Review and Completion | accepted |
-| OpenBao retention on HOME | 3 | W4 | Owner restart and unseal; seal status, running config, Prometheus series | `f75275651` | PASS | Review and Completion | accepted |
-| Remote candidate | 4 | W5 | `candidate-quality` run 37945693271, base `acc191655` | `e26c7d439` | PASS | Review and Completion | accepted |
+| LAB separation | 1 | W1 | LAB isolation and dashboard contract tests; promtool | `21562bcd0` | PASS | W1 LAB Separation | - |
+| Collection | 2 | W2 | Compose, network, SeaweedFS, tier layout and Gatus tests; Compose rendering | `225894242` | PASS | W2 Collection | - |
+| Dashboards | 3 | W3 | Dashboard contract tests; HOME query audit | `12e187934` | PASS | W3 Dashboards | - |
+| HOME rollout | 3 | W4 | Health, listener, target, rule and Grafana checks | `4420a0514` (rebased `12e187934`) | PASS | W4 HOME Rollout | - |
+| Review fixes | 3 | W4 | Network, host-network, gateway and LAB tests; dashboard tests; audit recount | `789fbd525` | PASS | Review | - |
+| Alloy on HOME | 3 | W4 | Name resolution; Pyroscope `service_name` list | `b2745167d` (rebased `789fbd525`) | PASS | W4 HOME Rollout | - |
+| Changed gate | 4 | W5 | `run-ci-gate.py --profile changed --local-only`, base `acc191655` | `ad33a5b9f` | PASS | Review and Completion | - |
+| Staged style check | 4 | W5 | `run-ci-precommit.sh --mode local-staged` over `acc191655..HEAD`; the first run asked for `ruff format` on two tests, applied in `75f66c8f9` | `75f66c8f9` | PASS | Review and Completion | - |
+| OpenBao retention on HOME | 3 | W4 | Owner restart and unseal; seal status, running config, Prometheus series | `f75275651` | PASS | Review and Completion | - |
+| Remote candidate | 4 | W5 | `candidate-quality` run 37945693271, base `acc191655` | `e26c7d439` | PASS | Review and Completion | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | LAB separation | Generation 5 row acceptance |
+| 2 | accepted | Collection | Generation 5 row acceptance |
+| 3 | accepted | Dashboards, HOME rollout, Review fixes, Alloy on HOME, OpenBao retention on HOME | Generation 5 row acceptance |
+| 4 | accepted | Changed gate, Staged style check, Remote candidate | Generation 5 row acceptance |
 
 ## Review and Completion
 

@@ -152,20 +152,30 @@ Rehearsal with a host check: 9 pass.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| DEV inspector | 1 | W1 | ACL and secret metadata tests | `878c2fa1d` | PASS | W1 DEV Inspector | accepted |
-| MNG ACL | 1 | W2 | MNG renderer tests | `48d3d548d` | PASS | W2 MNG ACL | accepted |
-| RedisInsight wiring | 2 | W3 | Catalog, hardening, Compose tests | `d635a67a0` | PASS | W3 RedisInsight | accepted |
-| Isolated rehearsal | 2 | W4 | Eight rehearsal tests | `5a9562395` | PASS | W4 Isolated Rehearsal | accepted |
-| HOME rollout | 3 | W5 | Probes, outage, rotation, store scan | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
-| Consumer review | 4 | W5 | Compose references; client inventory | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
-| Review fixes: renderers | 1 | W1 | Signal traps; MNG and DEV ACL tests | `601a715f6` | PASS | Review | accepted |
-| Review fixes: rehearsal | 2 | W4 | Nine rehearsal tests with controls | `a92639aa6` | PASS | Review | accepted |
-| Review fixes: ingress | 3 | W5 | Compose test; HOME bypass probes from `edge_net`, both data networks and the host | `8a2285f70` | PASS | Review | accepted |
-| Admin browser login | 3 | W5 | Owner signed in and saw only the two pre-set connections | `a89bae80f` | PASS | W5 HOME Rollout and Consumer Review | accepted |
-| Non-admin refusal | 3 | W5 | Owner confirmed a non-`/admins` account is refused | `a89bae80f` | PASS | W5 HOME Rollout and Consumer Review | accepted |
-| Validation and merge | 5 | W6 | Changed gate, staged style check, `candidate-quality` | `6746a995a` | PASS | Review and Completion | accepted |
+| DEV inspector | 1 | W1 | ACL and secret metadata tests | `878c2fa1d` | PASS | W1 DEV Inspector | - |
+| MNG ACL | 1 | W2 | MNG renderer tests | `48d3d548d` | PASS | W2 MNG ACL | - |
+| RedisInsight wiring | 2 | W3 | Catalog, hardening, Compose tests | `d635a67a0` | PASS | W3 RedisInsight | - |
+| Isolated rehearsal | 2 | W4 | Eight rehearsal tests | `5a9562395` | PASS | W4 Isolated Rehearsal | - |
+| HOME rollout | 3 | W5 | Probes, outage, rotation, store scan | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | - |
+| Consumer review | 4 | W5 | Compose references; client inventory | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | - |
+| Review fixes: renderers | 1 | W1 | Signal traps; MNG and DEV ACL tests | `601a715f6` | PASS | Review | - |
+| Review fixes: rehearsal | 2 | W4 | Nine rehearsal tests with controls | `a92639aa6` | PASS | Review | - |
+| Review fixes: ingress | 3 | W5 | Compose test; HOME bypass probes from `edge_net`, both data networks and the host | `8a2285f70` | PASS | Review | - |
+| Admin browser login | 3 | W5 | Owner signed in and saw only the two pre-set connections | `a89bae80f` | PASS | W5 HOME Rollout and Consumer Review | - |
+| Non-admin refusal | 3 | W5 | Owner confirmed a non-`/admins` account is refused | `a89bae80f` | PASS | W5 HOME Rollout and Consumer Review | - |
+| Validation and merge | 5 | W6 | Changed gate, staged style check, `candidate-quality` | `6746a995a` | PASS | Review and Completion | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | DEV inspector, MNG ACL, Review fixes: renderers | Generation 5 row acceptance |
+| 2 | accepted | RedisInsight wiring, Isolated rehearsal, Review fixes: rehearsal | Generation 5 row acceptance |
+| 3 | accepted | HOME rollout, Review fixes: ingress, Admin browser login, Non-admin refusal | Generation 5 row acceptance |
+| 4 | accepted | Consumer review | Generation 5 row acceptance |
+| 5 | accepted | Validation and merge | Generation 5 row acceptance |
 
 ## Review and Completion
 

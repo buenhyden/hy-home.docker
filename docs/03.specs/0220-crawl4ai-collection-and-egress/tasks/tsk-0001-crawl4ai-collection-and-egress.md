@@ -254,16 +254,26 @@ port 443. No consumer is connected and nothing was collected beyond that page.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Baseline and contracts | 4, 5 | W1 | Advisory and tag reads; DNS probe | `5f4832a74` | PASS | W1 Baseline and Contracts | accepted |
-| Egress gateway | 1 | W2 | Gateway, relay and Compose unit tests; catalog checks | `8cd81db4b` | PASS | W2 Egress Gateway | accepted |
-| Reference adapter | 3 | W3 | Adapter tests against a synthetic endpoint | `b72476aed` | PASS | W3 Reference Adapter | accepted |
-| Isolated rehearsal | 2 | W4 | Real image behind the gateway, six tests | `f20f626ce` | PASS | W4 Isolated Rehearsal | accepted |
-| Operations documents | 5 | W5 | Link, metadata and catalog checks | `27895b78b` | PASS | W5 Operations Documents | accepted |
-| Independent review | 1, 2, 3 | W6 | Security and correctness review; fix tests; rehearsal rerun | `42b719d22` | PASS | W6 Independent Review | accepted |
-| Validation | 5 | W7 | Changed gate; staged style check | `ae490cbb4`, `72a37e1e9` | PASS | W7 Validation | accepted |
-| HOME activation | 2, 5 | W8 | Health, token, allowed and refused targets, no direct route, gateway log | `0df98f405` | PASS | W8 HOME Activation | accepted |
+| Baseline and contracts | 4, 5 | W1 | Advisory and tag reads; DNS probe | `5f4832a74` | PASS | W1 Baseline and Contracts | - |
+| Egress gateway | 1 | W2 | Gateway, relay and Compose unit tests; catalog checks | `8cd81db4b` | PASS | W2 Egress Gateway | - |
+| Reference adapter | 3 | W3 | Adapter tests against a synthetic endpoint | `b72476aed` | PASS | W3 Reference Adapter | - |
+| Isolated rehearsal | 2 | W4 | Real image behind the gateway, six tests | `f20f626ce` | PASS | W4 Isolated Rehearsal | - |
+| Operations documents | 5 | W5 | Link, metadata and catalog checks | `27895b78b` | PASS | W5 Operations Documents | - |
+| Independent review | 1, 2, 3 | W6 | Security and correctness review; fix tests; rehearsal rerun | `42b719d22` | PASS | W6 Independent Review | - |
+| Validation | 5 | W7 | Changed gate; staged style check | `ae490cbb4`, `72a37e1e9` | PASS | W7 Validation | - |
+| HOME activation | 2, 5 | W8 | Health, token, allowed and refused targets, no direct route, gateway log | `0df98f405` | PASS | W8 HOME Activation | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Egress gateway, Independent review | Generation 5 row acceptance |
+| 2 | accepted | Isolated rehearsal, Independent review, HOME activation | Generation 5 row acceptance |
+| 3 | accepted | Reference adapter, Independent review | Generation 5 row acceptance |
+| 4 | accepted | Baseline and contracts | Generation 5 row acceptance |
+| 5 | accepted | Baseline and contracts, Operations documents, Validation, HOME activation | Generation 5 row acceptance |
 
 ## Review and Completion
 

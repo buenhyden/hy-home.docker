@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-13"
 layer: "architecture"
 ---
 
@@ -42,8 +42,6 @@ docs/02.architecture/
 
 ## Usage
 
-### Usage
-
 ### Audience
 
 - System Architects
@@ -51,7 +49,7 @@ docs/02.architecture/
 - Reviewers
 - AI Agents
 
-### Usage
+### Authoring Flow
 
 1. 상위 [Product Requirements](../01.requirements/README.md)를 확인한다.
 2. 새 설명은

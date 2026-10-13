@@ -1,10 +1,10 @@
 ---
 title: "Requirement Packages"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-13"
 layer: "requirements"
 ---
 
@@ -59,8 +59,6 @@ high-water를 낮추지 않는다.
 
 ## Usage
 
-### Usage
-
 ### Audience
 
 - Product Owners
@@ -68,7 +66,7 @@ high-water를 낮추지 않는다.
 - Developers
 - AI Agents
 
-### Usage
+### Authoring Flow
 
 1. [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)를 사용한다.
 2. 동일한 문제와 범위를 소유하는 Requirement Package가 있는지 먼저 확인한다.

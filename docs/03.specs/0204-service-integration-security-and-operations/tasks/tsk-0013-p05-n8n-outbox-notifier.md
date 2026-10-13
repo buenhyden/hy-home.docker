@@ -738,21 +738,21 @@ is inferred. Final Task checks and local-main source delivery remain pending.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Git and owner baseline | 1, 19 | W40 | status/worktrees/fetch/open PR list | Local/remote4e26a5a80 | PASS | Baseline only; no remote or runtime write by this assessment | pending |
-| Existing source contracts | 1, 8, 19 | W40 | Workflow version, SMTP and service wiring unittest | Clean4e26a5a80 | PASS | 45 tests, 3.023s, exit0; command below | pending |
-| Supplied reference audit | 19 | W40 | Six public files, four static tests and JSON generator parity | Prompt669a86c89a76 | PASS | 4 tests, 0.02s, exit0; generator semantic parity; no native proof | pending |
-| New notifier source | 19 | W41 | RED/GREEN builder/workflow/transport/privacy | Source snapshot 496e59646b17 | PASS | 15 Python and 24 offline node tests; coverage and audit above; native acceptance is separate | pending |
-| Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | Actual Registry at issuance; exact proposal only | FAIL | Links/precommit pass; actual metadata has ten findings on two node README paths; candidate-only metadata passes; shared CI registration pending | pending |
-| Independent source reviews | 19 | W41 | Code/specification and source-security review | Source snapshot 496e59646b17 | PASS | Code approved with follow-up; security approved; no remaining source findings; runtime/delivery excluded | pending |
-| Integrated source checks | 19 | W41 | Default Registry metadata, synthetic tests/coverage/audit/build/pack, links and staged gate | Source snapshot 55856ce4aa2f; base4c83f14b11 | PASS | Integrated work log and ignored receipts above; native and combined-head acceptance excluded | pending |
-| Integrated independent reviews | 19 | W41 | Code and security review | Source snapshot 55856ce4aa2f | PASS | No source findings; code approved with follow-up; security approves source-only scope | pending |
-| Frozen P04 binding | 19 | W42 | Reviewed SQL/version/hash and roles | P04 W36 pending | NOT_RUN | P04 remains sole SQL owner | pending |
-| Native import and manual execution | 19 | W43 | Exact image, credential and worker/SMTP proof | P04 W38 and relevant readiness pending | NOT_RUN | No import/credential/network/DB action | pending |
-| Scheduled failures and recovery | 19 | W44 | Polling, outages, restart/rotation and empty restoration | No exact action selected | NOT_RUN | No operational acceptance | pending |
-| Delivery | 8, 19 | W45 | Latest-head CI/review/PR/merge | Integrated source phase | NOT_RUN | Two source commits recorded above; final Task commit and combined-head registration/CI remain separate; native holds are unchanged | pending |
-| Segmented source checks | 8 | W45 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
+| Git and owner baseline | 1, 19 | W40 | status/worktrees/fetch/open PR list | Local/remote4e26a5a80 | PASS | Baseline only; no remote or runtime write by this assessment | - |
+| Existing source contracts | 1, 8, 19 | W40 | Workflow version, SMTP and service wiring unittest | Clean4e26a5a80 | PASS | 45 tests, 3.023s, exit0; command below | - |
+| Supplied reference audit | 19 | W40 | Six public files, four static tests and JSON generator parity | Prompt669a86c89a76 | PASS | 4 tests, 0.02s, exit0; generator semantic parity; no native proof | - |
+| New notifier source | 19 | W41 | RED/GREEN builder/workflow/transport/privacy | Source snapshot 496e59646b17 | PASS | 15 Python and 24 offline node tests; coverage and audit above; native acceptance is separate | - |
+| Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | Actual Registry at issuance; exact proposal only | FAIL | Links/precommit pass; actual metadata has ten findings on two node README paths; candidate-only metadata passes; shared CI registration pending | - |
+| Independent source reviews | 19 | W41 | Code/specification and source-security review | Source snapshot 496e59646b17 | PASS | Code approved with follow-up; security approved; no remaining source findings; runtime/delivery excluded | Document and shared gate integration |
+| Integrated source checks | 19 | W41 | Default Registry metadata, synthetic tests/coverage/audit/build/pack, links and staged gate | Source snapshot 55856ce4aa2f; base4c83f14b11 | PASS | Integrated work log and ignored receipts above; native and combined-head acceptance excluded | - |
+| Integrated independent reviews | 19 | W41 | Code and security review | Source snapshot 55856ce4aa2f | PASS | No source findings; code approved with follow-up; security approves source-only scope | - |
+| Frozen P04 binding | 19 | W42 | Reviewed SQL/version/hash and roles | P04 W36 pending | NOT_RUN | P04 remains sole SQL owner | - |
+| Native import and manual execution | 19 | W43 | Exact image, credential and worker/SMTP proof | P04 W38 and relevant readiness pending | NOT_RUN | No import/credential/network/DB action | - |
+| Scheduled failures and recovery | 19 | W44 | Polling, outages, restart/rotation and empty restoration | No exact action selected | NOT_RUN | No operational acceptance | - |
+| Delivery | 8, 19 | W45 | Latest-head CI/review/PR/merge | Integrated source phase | NOT_RUN | Two source commits recorded above; final Task commit and combined-head registration/CI remain separate; native holds are unchanged | - |
+| Segmented source checks | 8 | W45 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | - |
 
 Actual existing-source command, exit0:
 
@@ -787,6 +787,12 @@ issuance HEAD (attempt exited2). The current controller is
 `scripts/validation/run-ci-gate.py --profile changed --explain`; executable
 local leaves use its `--local-only` route and hosted aggregate acceptance stays
 separate. No shared harness was created or replaced to satisfy the stale text.
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 19 | pending | - | - |
 
 ## Review and Completion
 

@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.2.2"
+version: "3.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-13"
 ---
 
 # Documentation Protocol
@@ -132,14 +132,12 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
     that owns the implementation.
 13. Update cross-links in the same logical change.
 14. Record execution evidence in the co-located Stage 03 Task.
-    Task status belongs only in frontmatter. Every evidence row keeps its
-    existing acceptance-criterion/work-unit identity and records result and
-    acceptance; it has no Status column or second progress ledger. Record
-    an optional lifecycle event only for an observed direct registered edge and
-    same-Task evidence. A Plan has one Spec parent and a Task has one Plan
-    parent where their Registry profiles require it. Task results and evidence
-    acceptance use the Registry vocabulary; structural records do not authenticate
-    approval, review, or execution.
+    [SDLC](sdlc.md#sequence) owns the meaning of execution state, Evidence,
+    Criterion Acceptance and archive readiness; the Registry owns their shapes
+    and vocabulary. Record an optional lifecycle event only for an observed
+    direct registered edge and same-Task evidence. A Plan has one Spec parent
+    and a Task has one Plan parent where their Registry profiles require it.
+    Structural records do not authenticate approval, review, or execution.
 15. Validate metadata, links, and stage-specific contracts before completion.
 16. Keep a fenced command block runnable: every repository path it names must be
     a path a reader can open. Where a block's paths illustrate a rule or a shape
@@ -426,14 +424,13 @@ age or a folder count. Completed packages and superseded documents move to their
 registered frozen archive routes, and withdrawn ones move to `retired/`. Do not
 record completion or supersession as a withdrawal.
 
-Before package completion, apply the [completion checklist](task-checklists.md#before-completion).
+Before a package becomes ready for archive review, apply the [completion checklist](task-checklists.md#before-completion).
 Record final evidence while the package is still editable. All-files checks
-retain their explicit approval and controlled-wrapper requirements. A completed
-Spec may wait in Stage 03 when its Plan is completed and every Task is completed
-or validly cancelled. Its completion receipt must cover every numbered Spec
-criterion and Plan work unit before disposition. Waiting is neither active work
-nor disposition approval; the Stage 03 index routes to the package without a
-second status ledger. A later authorized move preserves the prepared source
+retain their explicit approval and controlled-wrapper requirements. A package
+may wait in Stage 03 once it is
+[ready for archive review](sdlc.md#sequence). Readiness is derived on read and
+never stored. Waiting is neither active work nor disposition approval;
+the Stage 03 index routes to the package without a second status ledger. A later authorized move preserves the prepared source
 object, including the original Task evidence.
 
 Stage 03 occupancy is a package judgment using the Registry's Spec, Plan, and
@@ -443,7 +440,8 @@ nonempty `reason`, an actual `authorization_ref`, and `criteria_disposition`.
 Each item names a Spec acceptance `criterion` and exactly one of another
 non-cancelled Task in the package (`successor`) or an actual approved scope
 withdrawal reference (`withdrawal_ref`). An empty list means no assigned criterion. Withdrawal
-never exempts a criterion still present in the Spec from PASS evidence.
+never exempts a criterion still present in the Spec from PASS evidence; only a
+Criterion Acceptance `not-required` decision closes a criterion without PASS.
 A cancelled or superseded Spec keeps no package members in active Stage 03.
 Standalone documents keep their per-document disposition rule. No rule here
 renames lifecycle statuses or applies a union of terminal sets to other stages.

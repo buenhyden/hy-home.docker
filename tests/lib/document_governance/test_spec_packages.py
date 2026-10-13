@@ -31,6 +31,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 GENERATION_4_SOURCE = "8b85e88fe2dfef54f4cc125ee2687982c86c1942"
 GENERATION_3_SOURCE = "2bba11baa1009e673a763a727b0a9e3d7e0bb5a7"
 INTEGRATION_BASE = "68e0bfd3edb0895235dc628d03d427ca9fd14736"
+# The last generation 5 main revision and the source of the generation 6
+# migration. Tests of the generation 5 proof read this snapshot.
+GENERATION_5_SOURCE = "2a57d4122dc8dac954afca364b838e4bf97fd44a"
 RECONCILIATION_MAINLINE = "a31a38ca29ee8e0683a29e61bf41347bfddc3d62"
 RECONCILIATION_SIDE_HISTORY = "6aff7433c755feacf659f7654a5ad3b9e70f401d"
 RECONCILIATION_BASE = "cac9e10fa584754706598d624654e07e8d6531f4"
@@ -469,6 +472,11 @@ def _history_root(revision: str):
 
 def _mainline_history_root():
     return _history_root(RECONCILIATION_MAINLINE)
+
+
+def _generation_5_snapshot(module):
+    registry = load_registry_at_revision(GENERATION_5_SOURCE, root=ROOT)
+    return registry, module._load_base_spec_packages(ROOT, base_ref=GENERATION_5_SOURCE)
 
 
 def _reconciliation_fixture(module):
@@ -1250,7 +1258,7 @@ No Plan work is assigned to this cancelled Task.
 
     def test_v5_strict_tables_preserve_examples_prose_and_legacy_default(self) -> None:
         module = _spec_packages_module()
-        registry = load_current_registry()
+        registry = load_registry_at_revision(GENERATION_5_SOURCE, root=ROOT)
         row = (
             "First check",
             "1",
@@ -3901,10 +3909,7 @@ Narrative after the registered table.
 
     def test_same_generation_alias_source_preserves_lifecycle_baseline(self) -> None:
         spec_packages = _spec_packages_module()
-        registry = load_current_registry()
-        packages = spec_packages.load_spec_packages(
-            ROOT / "docs/03.specs", registry=registry
-        )
+        registry, packages = _generation_5_snapshot(spec_packages)
         with _mainline_history_root() as history_root:
             lifecycle = (
                 spec_packages.validate_repository_spec_package_lifecycle_details(
@@ -3959,18 +3964,18 @@ Narrative after the registered table.
 
     def test_current_repository_spec_packages_cover_spec_directories(self) -> None:
         spec_packages = _spec_packages_module()
-        registry = load_current_registry()
-        packages = spec_packages.load_spec_packages(
-            ROOT / "docs/03.specs", registry=registry
+        current = spec_packages.load_spec_packages(
+            ROOT / "docs/03.specs", registry=load_current_registry()
         )
+        registry, packages = _generation_5_snapshot(spec_packages)
         expected_paths = {
             path
             for path in (ROOT / "docs/03.specs").iterdir()
             if path.is_dir() and (path / "spec.md").is_file()
         }
-        self.assertEqual(expected_paths, {package.path for package in packages})
+        self.assertEqual(expected_paths, {package.path for package in current})
         self.assertTrue(
-            all(not package.path.name.startswith("spec-") for package in packages)
+            all(not package.path.name.startswith("spec-") for package in current)
         )
         self.assertFalse((ROOT / "docs/04.execution").exists())
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/design.md")))

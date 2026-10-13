@@ -61,15 +61,24 @@ was not run.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Keycloak | 1 | W1 | Event counts by type, client, reason, source | `32fb2e69d` | PASS | W1 Keycloak | accepted |
-| Grype | 2 | W2 | Seed tests; offline scans | `32fb2e69d` | PASS | W2 Grype | accepted |
-| Snapshot token | 3 | W3 | `bash -n` of the RUN-0021 block | `32fb2e69d` | PASS | W3 OpenBao Snapshot Token | accepted |
-| Owner token run | 3 | W3 | Owner runs the RUN-0021 commands; next backup takes a snapshot | — | NOT_RUN | W3 OpenBao Snapshot Token | pending |
-| Changed gate | 4 | W4 | Hardening; `run-ci-gate.py --profile changed --local-only`, base `8594cf406`; operations catalog | `a827e2873` | PASS | Review and Completion | accepted |
-| Staged style check | 4 | W4 | `run-ci-precommit.sh --mode local-staged` | `a827e2873` | PASS | Review and Completion | accepted |
-| Remote candidate | 4 | W4 | `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
+| Keycloak | 1 | W1 | Event counts by type, client, reason, source | `32fb2e69d` | PASS | W1 Keycloak | - |
+| Grype | 2 | W2 | Seed tests; offline scans | `32fb2e69d` | PASS | W2 Grype | - |
+| Snapshot token | 3 | W3 | `bash -n` of the RUN-0021 block | `32fb2e69d` | PASS | W3 OpenBao Snapshot Token | - |
+| Owner token run | 3 | W3 | Owner runs the RUN-0021 commands; next backup takes a snapshot | — | NOT_RUN | W3 OpenBao Snapshot Token | - |
+| Changed gate | 4 | W4 | Hardening; `run-ci-gate.py --profile changed --local-only`, base `8594cf406`; operations catalog | `a827e2873` | PASS | Review and Completion | - |
+| Staged style check | 4 | W4 | `run-ci-precommit.sh --mode local-staged` | `a827e2873` | PASS | Review and Completion | - |
+| Remote candidate | 4 | W4 | `candidate-quality` | — | NOT_RUN | Review and Completion | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Keycloak | Generation 5 row acceptance |
+| 2 | accepted | Grype | Generation 5 row acceptance |
+| 3 | pending | - | - |
+| 4 | pending | - | - |
 
 ## Review and Completion
 

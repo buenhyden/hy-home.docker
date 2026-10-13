@@ -110,13 +110,22 @@ the previous normalizer and passes now; all 60 tests in
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Mark-only inputs | 1 | W1 | Pinned `action.yml` text for `days-before-close`; workflow contract tests | Branch on `4af41f1a8` | PASS | W1 Mark-only Stale Workflow | pending |
-| Check repairs | 2 | W2 | Both tests RED on clean `4af41f1a8`; 65 workflow contract and update-gate tests GREEN | Branch on `4af41f1a8` | PASS | W2 Selector List and Ledger Digests | pending |
-| Normalizer agreement | 4 | W4 | Owner comparison; random comparison; new test RED then GREEN; module tests | Branch on `2a57d4122` | PASS | W4 PostToolUse Normalizer Agreement | pending |
-| Remote candidate | 3 | W3 | `candidate-quality` on PR #438 | `0b479b1a4` | PASS | Review and Completion | pending |
-| Changed gate | 3 | W3 | `run-ci-gate.py --profile changed`; rerun of two permission tests | Branch on `4af41f1a8` | PASS | W3 Changed Gate | pending |
+| Mark-only inputs | 1 | W1 | Pinned `action.yml` text for `days-before-close`; workflow contract tests | Branch on `4af41f1a8` | PASS | W1 Mark-only Stale Workflow | - |
+| Check repairs | 2 | W2 | Both tests RED on clean `4af41f1a8`; 65 workflow contract and update-gate tests GREEN | Branch on `4af41f1a8` | PASS | W2 Selector List and Ledger Digests | - |
+| Normalizer agreement | 4 | W4 | Owner comparison; random comparison; new test RED then GREEN; module tests | Branch on `2a57d4122` | PASS | W4 PostToolUse Normalizer Agreement | - |
+| Remote candidate | 3 | W3 | `candidate-quality` on PR #438 | `0b479b1a4` | PASS | Review and Completion | - |
+| Changed gate | 3 | W3 | `run-ci-gate.py --profile changed`; rerun of two permission tests | Branch on `4af41f1a8` | PASS | W3 Changed Gate | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | pending | - | - |
+| 2 | pending | - | - |
+| 3 | pending | - | - |
+| 4 | pending | - | - |
 
 ## Review and Completion
 

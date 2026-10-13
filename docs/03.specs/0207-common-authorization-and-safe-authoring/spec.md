@@ -2,7 +2,7 @@
 title: "Common Authorization and Safe Authoring Specification"
 version: "1.0.1"
 type: "sdlc/spec"
-status: "in-progress"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"

@@ -493,9 +493,12 @@ def validate_registry(
             _validate_identity_space_bounds(spaces, "identity_spaces", findings)
         return tuple(sorted(set(findings)))
     common = raw.get("common")
-    if isinstance(common, Mapping) and common.get("lifecycle_generation") == 5:
+    generation = (
+        common.get("lifecycle_generation") if isinstance(common, Mapping) else None
+    )
+    if generation in {5, 6}:
         exact_common = {
-            "contract_id": "SDLC-COMMON-v4",
+            "contract_id": "SDLC-COMMON-v4" if generation == 5 else "SDLC-COMMON-v5",
             "spec_section": "Acceptance Criteria",
             "plan_section": "Work Breakdown",
             "task_section": "Evidence",
@@ -520,7 +523,7 @@ def validate_registry(
                 "Input",
                 "Result",
                 "Location",
-                "Acceptance",
+                "Acceptance" if generation == 5 else "Resolves",
             ),
             "plan_columns": (
                 "Work Unit",
@@ -531,6 +534,14 @@ def validate_registry(
                 "Verification",
             ),
         }
+        if generation == 6:
+            exact_common["criterion_acceptance_section"] = "Criterion Acceptance"
+            exact_common["criterion_acceptance_columns"] = (
+                "Criterion",
+                "Acceptance",
+                "Evidence",
+                "Decision",
+            )
         for key, expected in exact_common.items():
             value = common.get(key)
             valid = value == expected or (
@@ -541,7 +552,7 @@ def validate_registry(
                     RegistryFinding(
                         "common-contract-invalid",
                         f"common.{key}",
-                        f"generation 5 requires the canonical {key}",
+                        f"generation {generation} requires the canonical {key}",
                     )
                 )
     contract = raw.get("common", {}).get("archive_retention")

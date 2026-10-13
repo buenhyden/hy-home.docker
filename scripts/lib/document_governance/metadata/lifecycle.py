@@ -262,6 +262,17 @@ def validate_record(
     }
     required = set(raw_profile.get("required", []))
     optional = set(raw_profile.get("optional", []))
+    if _declares_execution_items(record, common):
+        # A multi-item Task derives its status from its rows (SPEC-0231).
+        required.discard("status")
+        if "status" in record.metadata:
+            findings.append(
+                _finding(
+                    record,
+                    "item-mode-status",
+                    "multi-item Task must not declare a frontmatter status",
+                )
+            )
     if not declares_frozen_legacy_record(raw_profile, record.path.as_posix()):
         findings.extend(
             _finding(record, item.code, f"{item.path}: {item.message}")
@@ -1724,3 +1735,21 @@ def _task10_archive_moved_body_baseline(
     if legacy_text is None:
         return None, None
     return _record_from_text(target, legacy_text, profiles=profiles), legacy_text
+
+
+def _declares_execution_items(record: Record, common: Mapping[str, object]) -> bool:
+    contract = common.get("execution_items")
+    if (
+        record.artifact_type != "task"
+        or common.get("lifecycle_generation") != 6
+        or not isinstance(contract, Mapping)
+    ):
+        return False
+    header = "| " + " | ".join(contract.get("table_headers", ())) + " |"
+    marker = "### " + str(contract.get("subsection"))
+    try:
+        lines = pathlib.Path(record.path).read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return False
+    lines = lines.splitlines()
+    return marker in lines and header in lines

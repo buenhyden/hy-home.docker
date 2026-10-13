@@ -219,17 +219,26 @@ were removed by label with zero remaining.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| HOME backup boundary | 10 | W8 | `pgbackrest info`/`check`; journal of `hyhome-backup.service` | HOME 2026-10-08 | PASS | HOME Observation | accepted |
-| Exporter accounts | 7 | W5 | Isolated monitor provision, exporter and ACL denial run | Label `s0213mon`, synthetic secrets | PASS | W5 Exporter Monitor Accounts | accepted |
-| Exporter unit tests | 7 | W5 | `test_dev_pg_provision`, `test_dev_valkey_acl`, `test_dev_data_boundary` | Commit `e5a813e3d` | PASS | W5 Exporter Monitor Accounts | accepted |
-| Data path guard | 8 | W6 | RED/GREEN overlap regression; `validate-docker-compose.sh` | Commit `6fbc3bf99`; `.env.example` | PASS | W6 Data Path Guard | accepted |
-| HOME preflight | 8 | W6 | `validate-docker-compose.sh --preflight` | HOME `.env` | FAIL | W6 Data Path Guard | rejected |
-| HOME resolved-path check | 8 | W6 | `report_storage_overlaps realpath` on the HOME model | HOME `.env` | PASS | W6 Data Path Guard | accepted |
-| WAL and PITR rehearsal | 9 | W7 | Isolated stanza, archive, full/diff backup, time restore | Label `s0213wal`, image `sha256:d2999910…` | PASS | W7 WAL Archive and PITR | accepted |
-| HOME activation | 10 | W8 | Stanza, `check`, first full backup, exporters, scrape, restore canary | Merged `2e484a940`; HOME 2026-10-08 | PASS | W8 HOME Activation | accepted |
-| HOME PITR and R2 restore | 10 | W8 | Restore to a chosen time; offsite copy restore | No approved target | NOT_RUN | Review and Completion | pending |
+| HOME backup boundary | 10 | W8 | `pgbackrest info`/`check`; journal of `hyhome-backup.service` | HOME 2026-10-08 | PASS | HOME Observation | - |
+| Exporter accounts | 7 | W5 | Isolated monitor provision, exporter and ACL denial run | Label `s0213mon`, synthetic secrets | PASS | W5 Exporter Monitor Accounts | - |
+| Exporter unit tests | 7 | W5 | `test_dev_pg_provision`, `test_dev_valkey_acl`, `test_dev_data_boundary` | Commit `e5a813e3d` | PASS | W5 Exporter Monitor Accounts | - |
+| Data path guard | 8 | W6 | RED/GREEN overlap regression; `validate-docker-compose.sh` | Commit `6fbc3bf99`; `.env.example` | PASS | W6 Data Path Guard | - |
+| HOME preflight | 8 | W6 | `validate-docker-compose.sh --preflight` | HOME `.env` | FAIL | W6 Data Path Guard | - |
+| HOME resolved-path check | 8 | W6 | `report_storage_overlaps realpath` on the HOME model | HOME `.env` | PASS | W6 Data Path Guard | HOME preflight |
+| WAL and PITR rehearsal | 9 | W7 | Isolated stanza, archive, full/diff backup, time restore | Label `s0213wal`, image `sha256:d2999910…` | PASS | W7 WAL Archive and PITR | - |
+| HOME activation | 10 | W8 | Stanza, `check`, first full backup, exporters, scrape, restore canary | Merged `2e484a940`; HOME 2026-10-08 | PASS | W8 HOME Activation | - |
+| HOME PITR and R2 restore | 10 | W8 | Restore to a chosen time; offsite copy restore | No approved target | NOT_RUN | Review and Completion | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 7 | accepted | Exporter accounts, Exporter unit tests | Generation 5 row acceptance |
+| 8 | rejected | HOME preflight | Generation 5 Evidence row rejected |
+| 9 | accepted | WAL and PITR rehearsal | Generation 5 row acceptance |
+| 10 | pending | - | - |
 
 ## Review and Completion
 

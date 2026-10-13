@@ -495,7 +495,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 title: "Fixture Evidence Integrity Specification"
 version: "0.1.0"
 type: "sdlc/spec"
-status: "in-progress"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-06"
 layer: "specs"
@@ -539,7 +539,7 @@ The Task Evidence table remains contiguous.
 title: "Fixture Evidence Integrity Plan"
 version: "0.1.0"
 type: "sdlc/plan"
-status: "in-progress"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-06"
 layer: "specs"
@@ -614,17 +614,21 @@ The controlled fixture is in progress.
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0210 | draft | approved | #fixture-authorization |
-| SPEC-0210 | approved | in-progress | #fixture-start |
 | SPEC-0210-PLAN-0001 | draft | approved | #fixture-authorization |
-| SPEC-0210-PLAN-0001 | approved | in-progress | #fixture-start |
 | SPEC-0210-TSK-0001 | draft | ready | #fixture-authorization |
 | SPEC-0210-TSK-0001 | ready | in-progress | #fixture-start |
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Baseline | 1 | W1 | Fixture control | synthetic | NOT_RUN | This Task | pending |
+| Baseline | 1 | W1 | Fixture control | synthetic | NOT_RUN | This Task | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | pending | - | - |
 
 ## Review and Completion
 
@@ -734,8 +738,8 @@ The fixture is intentionally in progress.
                 for package in packages
                 if package.spec.artifact_id == "SPEC-0210"
             )
-            self.assertEqual("in-progress", fixture_package.spec.status)
-            self.assertEqual("in-progress", fixture_package.plan.status)
+            self.assertEqual("approved", fixture_package.spec.status)
+            self.assertEqual("approved", fixture_package.plan.status)
             self.assertEqual(1, len(fixture_package.tasks))
             self.assertEqual("in-progress", fixture_package.tasks[0].status)
             control = self.run_contracts(root, registry_path)
@@ -750,7 +754,7 @@ The fixture is intentionally in progress.
                 / package_relative
                 / ("tasks/tsk-0001-task-evidence-table-integrity.md")
             )
-            marker = "\n## Review and Completion\n"
+            marker = "\n## Criterion Acceptance\n"
             source = task.read_text(encoding="utf-8")
             self.assertEqual(1, source.count(marker))
             task.write_text(
@@ -758,7 +762,7 @@ The fixture is intentionally in progress.
                     marker,
                     "\nDetached evidence fragment.\n\n"
                     "| Hidden failure | 1 | W1 | Source check | fixture | FAIL | "
-                    "detached | rejected |\n" + marker,
+                    "detached | - |\n" + marker,
                     1,
                 ),
                 encoding="utf-8",

@@ -490,7 +490,7 @@ def _validate_repository_contracts(
                 if (
                     alias_candidates
                     and alias_revision is None
-                    and active_registry.common.get("lifecycle_generation") == 5
+                    and active_registry.common.get("lifecycle_generation") in {5, 6}
                 ):
                     try:
                         alias_revision = resolve_contract_migration_source(

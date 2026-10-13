@@ -2,7 +2,7 @@
 title: "Stage 99 Frontmatter and Task Lifecycle Specification"
 version: "1.0.0"
 type: "sdlc/spec"
-status: "completed"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"

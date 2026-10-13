@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "2.0.0"
+version: "2.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-10-13"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -55,8 +55,9 @@ remain separately authorized actions.
   identity spaces, and archive contracts. The Registry is the machine authority
   for their shape and permitted values.
 - `scripts/lib/document_governance/spec_packages.py` loads bounded current and
-  historical package snapshots, validates completion receipts, and supplies the
-  shared cancellation judgment and acceptance-criterion parser.
+  historical package snapshots, judges Evidence, criterion acceptance and
+  archive readiness, and supplies the shared cancellation judgment and
+  acceptance-criterion parser.
 - `scripts/lib/document_governance/archive.py` resolves preservation units,
   occupancy, capture identity, current assessments, and recovery prerequisites.
   Capture facts and current assessment remain separate inputs.
@@ -85,9 +86,10 @@ A sealed paired Tombstone and a Retention Catalog row are alternative withdrawal
 records, not duplicate records for one unit.
 
 Completion and disposition are separate. Write permanent outcomes into current
-owners and final evidence into the Task. A completed Spec may wait with a
-completed Plan and only completed or validly cancelled Tasks. Its receipt must
-already cover every numbered acceptance criterion and Plan work unit. In an
+owners and final evidence into the Task. A package may wait once it is ready
+for archive review: approved Spec and Plan, terminal Tasks, every numbered
+criterion accepted or `not-required`, and no unresolved `FAIL` (ADR-0048). It
+leaves Stage 03 only from a ready base revision. In an
 unfinished package, completed and validly cancelled Tasks may remain, but a
 terminal Plan may not. Cancelled or superseded Specs keep no members in active
 Stage 03. The occupancy branch reads per-profile terminal sets from Registry;

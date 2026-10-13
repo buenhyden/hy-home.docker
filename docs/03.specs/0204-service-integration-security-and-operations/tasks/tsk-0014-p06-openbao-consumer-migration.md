@@ -738,26 +738,26 @@ source integration authenticates production selection or supplies a real copy.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Git baseline | 1, 20 | W46 | status/worktrees/ls-remote/open PR and main CI | Localf754 / remote4e26 | PASS | Read-only baseline; no remote write | pending |
-| Reference audit | 20 | W46 | Eleven files and synthetic pytest | Prompt0d11d0fd04ba; inputf754 | PASS | 10 PASS,0.24s, exit0; command below | pending |
-| Selection schemas | 20 | W47 | RED/GREEN public closed-input cases | c940c2ac plus frozen seven-file hashes above | PASS | 17 synthetic tests; dedicated coverage98percent | pending |
-| Shared proposals | 20 | W47 | Historical worker manifest/workflow/links fixture | c940c2ac plus patch44bae1ef | PASS | Historical isolated fixture; current P2 review supersedes delivery acceptance | pending |
-| Current common proposal review | 20 | W47 | Canonical folder route and manifest relations | 69be0b5e plus patch4b5031a1 | FAIL | Coordinator independent findings; corrected common integration pending | pending |
-| Corrected coordinator common integration | 20 | W47 | Both routing maps, direct graph and registered gates | local02078085 plus worker69be0b5e; common hashes in Work Log | PASS | Source-only: six affected leaves exit0; repository430; full aggregate NOT_RUN | pending |
-| Independent source review | 20 | W47 | Code and security review | Frozen seven source hashes only | PASS | No source findings; common proposal reviewed separately; operational scope unassessed | pending |
-| P02 API compatibility | 20 | W47 | Actual public API load and synthetic binding refusals | P02 source962e11be integrated in08b009a9; candidate42a82e19 | PASS | 23 tests; production selection/approval interface pending | pending |
-| Synthetic KV decisions | 20 | W48 | Pure hypothetical state/phase/version guards | combined4c83f14b plus owned unit delta | PASS | 32 unit/CLI tests;98% coverage; no copier, approval or operational receipt | pending |
-| Copy executor | 20 | W48 | Synthetic CAS/TLS/response/file/privacy failures | Native authorization/catalog prerequisites pending | NOT_RUN | No real copy or client implementation yet | pending |
-| Renderer delivery | 20 | W49 | Version/inode/identity/reload/LKG failure proof | P01/P03 facts pending | NOT_RUN | Reuse their sole-owned contracts | pending |
-| Real pilot | 20 | W50 | Actual DEV ingest/S3 canary | P01/SEC/P02/P03/P04 gates pending | NOT_RUN | No resource, token or value action | pending |
-| Authority and recovery | 20 | W51 | Rollback/snapshot/empty restore/reauth | No reviewed exact target | NOT_RUN | No authority transition | pending |
-| Higher waves | 20 | W52 | Sequential actual consumption/recovery | Pilot acceptance pending | NOT_RUN | No bulk import | pending |
-| Old-copy removal | 12, 20 | W53 | Five-axis evidence and owning executor | No eligible exact target | NOT_RUN | No private unlink or metadata change | pending |
-| Rotation | 20 | W54 | Actual server/native-copy change and denial | No selected exact server | NOT_RUN | Same-value copy is not rotation | pending |
-| Delivery | 8, 20 | W55 | Registered QA/review/latest-head PR/merge | No P06 PR | NOT_RUN | Dedicated source checkpoint; combined registration/CI pending | pending |
-| Segmented source checks | 8 | W55 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
+| Git baseline | 1, 20 | W46 | status/worktrees/ls-remote/open PR and main CI | Localf754 / remote4e26 | PASS | Read-only baseline; no remote write | - |
+| Reference audit | 20 | W46 | Eleven files and synthetic pytest | Prompt0d11d0fd04ba; inputf754 | PASS | 10 PASS,0.24s, exit0; command below | - |
+| Selection schemas | 20 | W47 | RED/GREEN public closed-input cases | c940c2ac plus frozen seven-file hashes above | PASS | 17 synthetic tests; dedicated coverage98percent | - |
+| Shared proposals | 20 | W47 | Historical worker manifest/workflow/links fixture | c940c2ac plus patch44bae1ef | PASS | Historical isolated fixture; current P2 review supersedes delivery acceptance | - |
+| Current common proposal review | 20 | W47 | Canonical folder route and manifest relations | 69be0b5e plus patch4b5031a1 | FAIL | Coordinator independent findings; corrected common integration pending | - |
+| Corrected coordinator common integration | 20 | W47 | Both routing maps, direct graph and registered gates | local02078085 plus worker69be0b5e; common hashes in Work Log | PASS | Source-only: six affected leaves exit0; repository430; full aggregate NOT_RUN | Current common proposal review |
+| Independent source review | 20 | W47 | Code and security review | Frozen seven source hashes only | PASS | No source findings; common proposal reviewed separately; operational scope unassessed | - |
+| P02 API compatibility | 20 | W47 | Actual public API load and synthetic binding refusals | P02 source962e11be integrated in08b009a9; candidate42a82e19 | PASS | 23 tests; production selection/approval interface pending | - |
+| Synthetic KV decisions | 20 | W48 | Pure hypothetical state/phase/version guards | combined4c83f14b plus owned unit delta | PASS | 32 unit/CLI tests;98% coverage; no copier, approval or operational receipt | - |
+| Copy executor | 20 | W48 | Synthetic CAS/TLS/response/file/privacy failures | Native authorization/catalog prerequisites pending | NOT_RUN | No real copy or client implementation yet | - |
+| Renderer delivery | 20 | W49 | Version/inode/identity/reload/LKG failure proof | P01/P03 facts pending | NOT_RUN | Reuse their sole-owned contracts | - |
+| Real pilot | 20 | W50 | Actual DEV ingest/S3 canary | P01/SEC/P02/P03/P04 gates pending | NOT_RUN | No resource, token or value action | - |
+| Authority and recovery | 20 | W51 | Rollback/snapshot/empty restore/reauth | No reviewed exact target | NOT_RUN | No authority transition | - |
+| Higher waves | 20 | W52 | Sequential actual consumption/recovery | Pilot acceptance pending | NOT_RUN | No bulk import | - |
+| Old-copy removal | 12, 20 | W53 | Five-axis evidence and owning executor | No eligible exact target | NOT_RUN | No private unlink or metadata change | - |
+| Rotation | 20 | W54 | Actual server/native-copy change and denial | No selected exact server | NOT_RUN | Same-value copy is not rotation | - |
+| Delivery | 8, 20 | W55 | Registered QA/review/latest-head PR/merge | No P06 PR | NOT_RUN | Dedicated source checkpoint; combined registration/CI pending | - |
+| Segmented source checks | 8 | W55 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | - |
 
 Actual reference command on clean inputf754, exit0:
 
@@ -787,6 +787,12 @@ Native commands are selected only after the implementation CLI/test route and
 exact target/input are frozen; this issuance does not invent an executable
 production migration command. For a blocked lane, record the next exact
 command and missing input once the owner has supplied its real interface.
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 20 | pending | - | - |
 
 ## Review and Completion
 

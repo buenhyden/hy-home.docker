@@ -211,13 +211,23 @@ were handled as follows:
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Metric identity | 3 | W1 | Isolated metrics harness RED then GREEN | Pinned Alloy, Prometheus, Python digests | PASS | W1 Authenticated Receiver and Metric Identity | accepted |
-| Manifest v2 | 1 | W2 | `test_k6_results` RED then GREEN | Working tree | PASS | W2 Manifest Telemetry and Metrics Ingress | accepted |
-| Executor peer | 2 | W2 | Unit tests; isolated k6 OTLP E2E | Pinned k6, Alloy, Prometheus digests | PASS | W2 Manifest Telemetry and Metrics Ingress | accepted |
-| Locust bounds | 4 | W3 | `test_locust_telemetry` RED then GREEN; isolated 1/2/3-worker and shortage runs | Pinned Locust 2.46.6 image, synthetic scenario | PASS | W3 Locust Worker Bounds | accepted |
-| Records | 5 | W4 | Changed-profile local gate, staged lint, operations catalog, metadata, independent review | Working tree at the W4 commit | PASS | W4 Documents, Review and Final Validation | accepted |
+| Metric identity | 3 | W1 | Isolated metrics harness RED then GREEN | Pinned Alloy, Prometheus, Python digests | PASS | W1 Authenticated Receiver and Metric Identity | - |
+| Manifest v2 | 1 | W2 | `test_k6_results` RED then GREEN | Working tree | PASS | W2 Manifest Telemetry and Metrics Ingress | - |
+| Executor peer | 2 | W2 | Unit tests; isolated k6 OTLP E2E | Pinned k6, Alloy, Prometheus digests | PASS | W2 Manifest Telemetry and Metrics Ingress | - |
+| Locust bounds | 4 | W3 | `test_locust_telemetry` RED then GREEN; isolated 1/2/3-worker and shortage runs | Pinned Locust 2.46.6 image, synthetic scenario | PASS | W3 Locust Worker Bounds | - |
+| Records | 5 | W4 | Changed-profile local gate, staged lint, operations catalog, metadata, independent review | Working tree at the W4 commit | PASS | W4 Documents, Review and Final Validation | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 1 | accepted | Manifest v2 | Generation 5 row acceptance |
+| 2 | accepted | Executor peer | Generation 5 row acceptance |
+| 3 | accepted | Metric identity | Generation 5 row acceptance |
+| 4 | accepted | Locust bounds | Generation 5 row acceptance |
+| 5 | accepted | Records | Generation 5 row acceptance |
 
 ## Review and Completion
 

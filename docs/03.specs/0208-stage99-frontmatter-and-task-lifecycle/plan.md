@@ -2,7 +2,7 @@
 title: "Stage 99 Frontmatter and Task Lifecycle Plan"
 version: "1.0.0"
 type: "sdlc/plan"
-status: "completed"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"

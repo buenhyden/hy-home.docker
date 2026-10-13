@@ -1010,35 +1010,41 @@ image, scanner, native or HOME mutation is made by this receipt.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Task admission | 21 | W63 | Verify Task identity, current refs, ownership and preservation boundary | Local 43917df; remote/origin c26c3b93 | PASS | Inputs and Authorization | accepted |
-| Source receipt inventory | 21 | W63 | Reread public owner inputs and hash P04/P05 contracts | 73ebd1ea; source hashes above | PASS | W63 frozen public input audit | accepted |
-| Selected local image tags | 21 | W63 | Read-only image metadata inspection | Three public tags; each child exit 1 / IMAGE_ABSENT | FAIL | W63 frozen public input audit | pending |
-| Synthetic acceptance preparation | 21 | W64 | New caller seam, CI registration and segmented real registered gates | 73ebd1ea plus twelve owned paths; frozen hash above | PASS | W64 registered source acceptance and environment correction | accepted |
-| Isolated vertical slice | 21 | W65 | P04 publication then P05 notifier against reviewed exact contracts | Named isolated resources and owner handoffs | NOT_RUN | W65 isolated vertical slice | pending |
-| Selected HOME acceptance | 21 | W66 | Selected host rollout and authenticated service evidence | Named host, resources, backups and rollback | NOT_RUN | W66 selected HOME acceptance | pending |
-| Fault, backup and restore | 21 | W67 | Fault receipt, complete set and exact empty-target restore | Named fault scope and snapshot custody | NOT_RUN | W67 failure, backup and empty-target restore | pending |
-| P08 path handoff | 21 | W68 | Hash-bound path/README handoff and command-directory dry run | P08 final receipt | NOT_RUN | W68 P08 path handoff and dry run | pending |
-| Final owner report | 21 | W69 | Exact-head checks, review and owning-Spec PR delivery evidence | Final candidate and owner receipts | NOT_RUN | W69 final owner report and delivery | pending |
-| Coordinator source-contract suite | 21 | W63 | P01/P02/P04/P05/P06/SMTP/CLN source contracts | Baseline 23e37362b72e98028a4675f282819c0346ae59dc; 223 tests, exit 0 | PASS | COORD request 11–30 source reconciliation | accepted |
-| Coordinator integration-contract suite | 21 | W63 | P03 port, P07 resource and P10 acceptance contracts | Baseline 23e37362b72e98028a4675f282819c0346ae59dc; 62 tests, exit 0 | PASS | COORD request 11–30 source reconciliation | accepted |
-| Final-gate metadata component | 21 | W69 | Registered local-only component selected governed documents | Frozen five-document candidate; zero violations | PASS | COORD final-gate component receipt | accepted |
-| Final-gate tech-stack component | 21 | W69 | Registered projection synchronization check | 91 repositories; optional OPSFLOW_AIRFLOW_IMAGE unresolved | PASS | COORD final-gate component receipt | accepted |
-| Final-gate link component | 21 | W69 | Full links and corrected changed-anchor assertion | 1,227 documents, 11,677 links, zero failures, one existing warning; anchor assertion exit 0 | PASS | COORD final-gate component receipt | accepted |
-| Final-gate supply-chain fixture component | 21 | W69 | `leaf.supply-chain-fixture-policy` in process 86838 | Registered nine-module argv; 264 tests, exit 0; child result established by fail-fast runner progress | PASS | COORD final-gate component receipt | accepted |
-| Final-gate conftest component | 21 | W69 | `leaf.conftest-policy-tests` in process 86838 | `scripts/validation/check-conftest-policy.sh --mode verify`; 18 of 18 tests, exit 0; child result established by fail-fast runner progress | PASS | COORD final-gate component receipt | accepted |
-| Final-gate aggregate | 21 | W69 | Registered local-only process | Process 86838: 628 selected; six failures, one error, 71 skips; component checks retained separately | FAIL | COORD final-gate component receipt | pending |
-| ROOT-excludes-LAB metadata test correction | 21 | W69 | Narrow user-approved expected-count correction | `tests/validation/test_lab_isolation.py`: 8 to 9; focused RED/GREEN, Ruff and diff PASS; independent source/security review APPROVE | PASS | COORD final-gate component receipt | accepted |
-| P08 numbered navigation | 21 | W68 | 82 current inbound Markdown targets | Numbered P08 working candidate; 82 checked, zero missing | PASS | P08 numbered-path source receipt | accepted |
-| P08 earlier candidate metadata | 21 | W68 | `check-document-metadata.py --mode check-changed --base-ref HEAD` | Process `81158`; HEAD `eb11172fbea69e015e078b1f17bab5d66119674d`, index `1a69a7c563a0c3bc836f147141581372ad2d4e8c`; 602 documents, 378 violations, exit 1 | FAIL | P08 numbered-path source receipt | pending |
-| P08 pre-fix candidate metadata | 21 | W68 | `check-document-metadata.py --mode check-changed --base-ref HEAD` | `/tmp/hyhome-p08-candidate-0c90jjaf.index` tree `b69`, before W69 correction; 328 documents, 332 violations, exit 1 | FAIL | P08 numbered-path source receipt | pending |
-| P08 earlier candidate links | 21 | W68 | `check-document-links.py --mode all` | 997 documents, 8,930 links, 576 failures, one warning, 56 historical cases; exit 1 | FAIL | P08 numbered-path source receipt | pending |
-| P08 final candidate metadata | 21 | W68 | `check-document-metadata.py --mode check-changed --base-ref HEAD` | Process `43225`, tree `70fd83f584707ac1899f8ac9c2930c683d3249bf`; 328 selected, zero violations, exceptions and overrides, exit 0 | PASS | P08 final alternate-index source receipt | accepted |
-| P08 final candidate links | 21 | W68 | `check-document-links.py --mode all` | Tree `70fd83f584707ac1899f8ac9c2930c683d3249bf`; 1,272 documents, 11,437 links, zero errors, one inherited `2870` warning, exit 0 | PASS | P08 final alternate-index source receipt | accepted |
-| P08 final source checks | 21 | W68 | Catalog, manifest, focused source/security/move/trace and local-staged hooks | Catalog and manifest `--check-generated` PASS; process `64469` hooks PASS without auto-changes; focused suites overlap | PASS | P08 final alternate-index source receipt | accepted |
-| Approved ROOT metadata case | 21 | W68 | `RootClosureTests.test_wildcard_root_render_selects_no_lab_service` | Process `85114`; one test, 3.835 seconds, exit 0; static render only | PASS | P08 numbered-path source receipt | accepted |
-| P08 full gate and delivery | 21 | W69 | Registered aggregate and remote delivery | Explain plan selects LAB functional leaves excluded from this scope; no push, PR, hosted CI or merge | NOT_RUN | P08 numbered-path source receipt | pending |
+| Task admission | 21 | W63 | Verify Task identity, current refs, ownership and preservation boundary | Local 43917df; remote/origin c26c3b93 | PASS | Inputs and Authorization | - |
+| Source receipt inventory | 21 | W63 | Reread public owner inputs and hash P04/P05 contracts | 73ebd1ea; source hashes above | PASS | W63 frozen public input audit | - |
+| Selected local image tags | 21 | W63 | Read-only image metadata inspection | Three public tags; each child exit 1 / IMAGE_ABSENT | FAIL | W63 frozen public input audit | - |
+| Synthetic acceptance preparation | 21 | W64 | New caller seam, CI registration and segmented real registered gates | 73ebd1ea plus twelve owned paths; frozen hash above | PASS | W64 registered source acceptance and environment correction | - |
+| Isolated vertical slice | 21 | W65 | P04 publication then P05 notifier against reviewed exact contracts | Named isolated resources and owner handoffs | NOT_RUN | W65 isolated vertical slice | - |
+| Selected HOME acceptance | 21 | W66 | Selected host rollout and authenticated service evidence | Named host, resources, backups and rollback | NOT_RUN | W66 selected HOME acceptance | - |
+| Fault, backup and restore | 21 | W67 | Fault receipt, complete set and exact empty-target restore | Named fault scope and snapshot custody | NOT_RUN | W67 failure, backup and empty-target restore | - |
+| P08 path handoff | 21 | W68 | Hash-bound path/README handoff and command-directory dry run | P08 final receipt | NOT_RUN | W68 P08 path handoff and dry run | - |
+| Final owner report | 21 | W69 | Exact-head checks, review and owning-Spec PR delivery evidence | Final candidate and owner receipts | NOT_RUN | W69 final owner report and delivery | - |
+| Coordinator source-contract suite | 21 | W63 | P01/P02/P04/P05/P06/SMTP/CLN source contracts | Baseline 23e37362b72e98028a4675f282819c0346ae59dc; 223 tests, exit 0 | PASS | COORD request 11–30 source reconciliation | Selected local image tags |
+| Coordinator integration-contract suite | 21 | W63 | P03 port, P07 resource and P10 acceptance contracts | Baseline 23e37362b72e98028a4675f282819c0346ae59dc; 62 tests, exit 0 | PASS | COORD request 11–30 source reconciliation | - |
+| Final-gate metadata component | 21 | W69 | Registered local-only component selected governed documents | Frozen five-document candidate; zero violations | PASS | COORD final-gate component receipt | - |
+| Final-gate tech-stack component | 21 | W69 | Registered projection synchronization check | 91 repositories; optional OPSFLOW_AIRFLOW_IMAGE unresolved | PASS | COORD final-gate component receipt | - |
+| Final-gate link component | 21 | W69 | Full links and corrected changed-anchor assertion | 1,227 documents, 11,677 links, zero failures, one existing warning; anchor assertion exit 0 | PASS | COORD final-gate component receipt | - |
+| Final-gate supply-chain fixture component | 21 | W69 | `leaf.supply-chain-fixture-policy` in process 86838 | Registered nine-module argv; 264 tests, exit 0; child result established by fail-fast runner progress | PASS | COORD final-gate component receipt | - |
+| Final-gate conftest component | 21 | W69 | `leaf.conftest-policy-tests` in process 86838 | `scripts/validation/check-conftest-policy.sh --mode verify`; 18 of 18 tests, exit 0; child result established by fail-fast runner progress | PASS | COORD final-gate component receipt | - |
+| Final-gate aggregate | 21 | W69 | Registered local-only process | Process 86838: 628 selected; six failures, one error, 71 skips; component checks retained separately | FAIL | COORD final-gate component receipt | - |
+| ROOT-excludes-LAB metadata test correction | 21 | W69 | Narrow user-approved expected-count correction | `tests/validation/test_lab_isolation.py`: 8 to 9; focused RED/GREEN, Ruff and diff PASS; independent source/security review APPROVE | PASS | COORD final-gate component receipt | Final-gate aggregate |
+| P08 numbered navigation | 21 | W68 | 82 current inbound Markdown targets | Numbered P08 working candidate; 82 checked, zero missing | PASS | P08 numbered-path source receipt | - |
+| P08 earlier candidate metadata | 21 | W68 | `check-document-metadata.py --mode check-changed --base-ref HEAD` | Process `81158`; HEAD `eb11172fbea69e015e078b1f17bab5d66119674d`, index `1a69a7c563a0c3bc836f147141581372ad2d4e8c`; 602 documents, 378 violations, exit 1 | FAIL | P08 numbered-path source receipt | - |
+| P08 pre-fix candidate metadata | 21 | W68 | `check-document-metadata.py --mode check-changed --base-ref HEAD` | `/tmp/hyhome-p08-candidate-0c90jjaf.index` tree `b69`, before W69 correction; 328 documents, 332 violations, exit 1 | FAIL | P08 numbered-path source receipt | - |
+| P08 earlier candidate links | 21 | W68 | `check-document-links.py --mode all` | 997 documents, 8,930 links, 576 failures, one warning, 56 historical cases; exit 1 | FAIL | P08 numbered-path source receipt | - |
+| P08 final candidate metadata | 21 | W68 | `check-document-metadata.py --mode check-changed --base-ref HEAD` | Process `43225`, tree `70fd83f584707ac1899f8ac9c2930c683d3249bf`; 328 selected, zero violations, exceptions and overrides, exit 0 | PASS | P08 final alternate-index source receipt | P08 earlier candidate metadata, P08 pre-fix candidate metadata, P08 earlier candidate links |
+| P08 final candidate links | 21 | W68 | `check-document-links.py --mode all` | Tree `70fd83f584707ac1899f8ac9c2930c683d3249bf`; 1,272 documents, 11,437 links, zero errors, one inherited `2870` warning, exit 0 | PASS | P08 final alternate-index source receipt | - |
+| P08 final source checks | 21 | W68 | Catalog, manifest, focused source/security/move/trace and local-staged hooks | Catalog and manifest `--check-generated` PASS; process `64469` hooks PASS without auto-changes; focused suites overlap | PASS | P08 final alternate-index source receipt | - |
+| Approved ROOT metadata case | 21 | W68 | `RootClosureTests.test_wildcard_root_render_selects_no_lab_service` | Process `85114`; one test, 3.835 seconds, exit 0; static render only | PASS | P08 numbered-path source receipt | - |
+| P08 full gate and delivery | 21 | W69 | Registered aggregate and remote delivery | Explain plan selects LAB functional leaves excluded from this scope; no push, PR, hosted CI or merge | NOT_RUN | P08 numbered-path source receipt | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 21 | pending | - | - |
 
 ## Review and Completion
 

@@ -1477,22 +1477,22 @@ receipt replaces the required check on the final integrated head.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Git and owner baseline | 1, 18 | W34 | status/worktree/fetch/open PR inspection | Local74feff942; remote6da5e3bf3 | PASS | Assessment above; no remote write or P04 runtime | pending |
-| Existing source reuse | 1, 8, 18 | W34 | Focused existing DEV/workflow/registration unittest | Clean74feff942 | PASS | 35 tests, 9.529s, exit0; command below | pending |
-| Supplied reference audit | 18 | W34 | Extracted public reference UNIT only | Prompt c50695e5a46c; isolated Python3.12.3 | PASS | 42 tests, 0.19s, exit0; ignored receipt only | pending |
-| New manifest implementation | 18 | W35 | RED/GREEN parser and protected adapters | b2a46bc88 plus latest SQL inputs in Work Log | PASS | Final52 unit/synthetic/source tests, exit0; native excluded | pending |
-| New SQL contract | 18 | W36 | Source guards for migration and outbox | Latest SQL hashes in Work Log | PASS | Source checks only; native PostgreSQL evidence is the W38 restore row | pending |
-| New DAG contract | 18 | W37 | Synthetic SDK import and public overlay model | Frozen DAG/overlay hashes in Work Log | PASS | Five synthetic tests and independent Compose render, exit0 | pending |
-| Typed optional overlay candidate | 18 | W37 | RED/GREEN profile/inventory boundaries, coverage and official catalog | Main 4c83f14b plus final classifier/test/overlay hashes in Work Log | PASS | 59 focused and 102 full-module tests; catalog exit0; SOURCE/UNIT/STATIC only, review/delivery pending | pending |
-| Required image projection candidate | 18 | W37 | RED/GREEN required-input projection and concrete-pin preservation | f1a7726 plus frozen script/test/registry hashes in Work Log | PASS | 33 class tests, root63 regressions, generator/check and manifest exit0; unresolved image, combined delivery pending | pending |
-| Isolated empty PostgreSQL restore | 18 | W38 | `ISOLATED_PG_EMPTY_RESTORE` | Restore-stable isolated PostgreSQL harness | PASS | Roles/custom data, preflight, reader/outbox/replay/pointer, and UTC-date cases passed; cleanup confirmed | pending |
-| Cross-database CONNECT denial | 18 | W38 | Cross-database role boundary | Isolated PostgreSQL role probe | FAIL | `opsflow_ingest` could execute `SELECT 1`; the denial boundary remains open | pending |
-| HOME/S3 recovery | 18 | W38 | HOME, S3, worker GET, full recovery | No bound HOME/S3 target or authorization/TLS proof | NOT_RUN | HOME/S3, worker S3 GET, and full recovery remain unexecuted | pending |
-| Rotation | 18 | W38 | Credential rotation | No rotation required | NOT_APPLICABLE | No rotation authorized by issuance | not-required |
-| Delivery | 8, 18 | W39 | Latest-head CI/review/PR/merge | Draft PR 437 at published head `fc328`; revised head pending | NOT_RUN | Candidate checks passed, but final revised-head CI, independent review, and merge remain pending | pending |
-| Segmented source checks | 8 | W39 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | pending |
+| Git and owner baseline | 1, 18 | W34 | status/worktree/fetch/open PR inspection | Local74feff942; remote6da5e3bf3 | PASS | Assessment above; no remote write or P04 runtime | - |
+| Existing source reuse | 1, 8, 18 | W34 | Focused existing DEV/workflow/registration unittest | Clean74feff942 | PASS | 35 tests, 9.529s, exit0; command below | - |
+| Supplied reference audit | 18 | W34 | Extracted public reference UNIT only | Prompt c50695e5a46c; isolated Python3.12.3 | PASS | 42 tests, 0.19s, exit0; ignored receipt only | - |
+| New manifest implementation | 18 | W35 | RED/GREEN parser and protected adapters | b2a46bc88 plus latest SQL inputs in Work Log | PASS | Final52 unit/synthetic/source tests, exit0; native excluded | - |
+| New SQL contract | 18 | W36 | Source guards for migration and outbox | Latest SQL hashes in Work Log | PASS | Source checks only; native PostgreSQL evidence is the W38 restore row | - |
+| New DAG contract | 18 | W37 | Synthetic SDK import and public overlay model | Frozen DAG/overlay hashes in Work Log | PASS | Five synthetic tests and independent Compose render, exit0 | - |
+| Typed optional overlay candidate | 18 | W37 | RED/GREEN profile/inventory boundaries, coverage and official catalog | Main 4c83f14b plus final classifier/test/overlay hashes in Work Log | PASS | 59 focused and 102 full-module tests; catalog exit0; SOURCE/UNIT/STATIC only, review/delivery pending | - |
+| Required image projection candidate | 18 | W37 | RED/GREEN required-input projection and concrete-pin preservation | f1a7726 plus frozen script/test/registry hashes in Work Log | PASS | 33 class tests, root63 regressions, generator/check and manifest exit0; unresolved image, combined delivery pending | - |
+| Isolated empty PostgreSQL restore | 18 | W38 | `ISOLATED_PG_EMPTY_RESTORE` | Restore-stable isolated PostgreSQL harness | PASS | Roles/custom data, preflight, reader/outbox/replay/pointer, and UTC-date cases passed; cleanup confirmed | - |
+| Cross-database CONNECT denial | 18 | W38 | Cross-database role boundary | Isolated PostgreSQL role probe | FAIL | `opsflow_ingest` could execute `SELECT 1`; the denial boundary remains open | - |
+| HOME/S3 recovery | 18 | W38 | HOME, S3, worker GET, full recovery | No bound HOME/S3 target or authorization/TLS proof | NOT_RUN | HOME/S3, worker S3 GET, and full recovery remain unexecuted | - |
+| Rotation | 18 | W38 | Credential rotation | No rotation required | NOT_APPLICABLE | No rotation authorized by issuance | - |
+| Delivery | 8, 18 | W39 | Latest-head CI/review/PR/merge | Draft PR 437 at published head `fc328`; revised head pending | NOT_RUN | Candidate checks passed, but final revised-head CI, independent review, and merge remain pending | - |
+| Segmented source checks | 8 | W39 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | - |
 
 Existing-source command, exit0:
 
@@ -1537,6 +1537,12 @@ Coordinator registers gates in existing manifest/workflow before final
 registration is not a PASS. Run document metadata/links and git diff --check.
 Keep SOURCE / UNIT / STATIC / ISOLATED / HOME / MIGRATION / ROTATION /
 RECOVERY / DELIVERY separate; unit results do not satisfy native acceptance.
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision |
+| --- | --- | --- | --- |
+| 18 | pending | - | - |
 
 ## Review and Completion
 

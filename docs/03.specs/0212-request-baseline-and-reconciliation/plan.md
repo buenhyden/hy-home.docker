@@ -2,7 +2,7 @@
 title: "Request Baseline and Reconciliation Plan"
 version: "1.1.0"
 type: "sdlc/plan"
-status: "completed"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"

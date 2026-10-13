@@ -2,7 +2,7 @@
 title: "QA Scope and Delivery Rationalization Plan"
 version: "0.2.0"
 type: "sdlc/plan"
-status: "in-progress"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-07"
 layer: "specs"

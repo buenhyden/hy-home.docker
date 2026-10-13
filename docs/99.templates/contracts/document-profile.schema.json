@@ -211,7 +211,10 @@
           "$ref": "#/$defs/stringList"
         },
         "contract_id": {
-          "const": "SDLC-COMMON-v4"
+          "enum": [
+            "SDLC-COMMON-v4",
+            "SDLC-COMMON-v5"
+          ]
         },
         "result_domain": {
           "const": [
@@ -239,7 +242,7 @@
             "Input",
             "Result",
             "Location",
-            "Acceptance"
+            "Resolves"
           ]
         },
         "plan_columns": {
@@ -260,6 +263,48 @@
         },
         "task_section": {
           "const": "Evidence"
+        },
+        "criterion_acceptance_section": {
+          "const": "Criterion Acceptance"
+        },
+        "criterion_acceptance_columns": {
+          "const": [
+            "Criterion",
+            "Acceptance",
+            "Evidence",
+            "Decision"
+          ]
+        },
+        "execution_items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "section",
+            "subsection",
+            "table_headers",
+            "minimum_rows"
+          ],
+          "properties": {
+            "section": {
+              "const": "Work Log"
+            },
+            "subsection": {
+              "const": "Execution Items"
+            },
+            "table_headers": {
+              "const": [
+                "Item",
+                "Work Unit",
+                "Scope",
+                "Owner",
+                "Status",
+                "Blocker"
+              ]
+            },
+            "minimum_rows": {
+              "const": 2
+            }
+          }
         },
         "readme_documents_columns": {
           "const": [
@@ -333,7 +378,7 @@
               "uniqueItems": true
             }
           },
-          "description": "Historical generation 1–4 reader contract only; forbidden in the current generation-5 Registry."
+          "description": "Historical generation 1–4 reader contract only; forbidden in generation 5 and later Registries."
         },
         "task_lifecycle_events": {
           "type": "object",
@@ -479,7 +524,7 @@
               "uniqueItems": true
             }
           },
-          "description": "Historical generation 1–4 reader contract only; forbidden in the current generation-5 Registry."
+          "description": "Historical generation 1–4 reader contract only; forbidden in generation 5 and later Registries."
         }
       },
       "required": [
@@ -492,7 +537,7 @@
           "if": {
             "properties": {
               "lifecycle_generation": {
-                "const": 5
+                "minimum": 5
               }
             },
             "required": [
@@ -530,6 +575,25 @@
           "else": {
             "required": [
               "spec_completion_evidence"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "lifecycle_generation": {
+                "minimum": 6
+              }
+            },
+            "required": [
+              "lifecycle_generation"
+            ]
+          },
+          "then": {
+            "required": [
+              "criterion_acceptance_section",
+              "criterion_acceptance_columns",
+              "execution_items"
             ]
           }
         }
