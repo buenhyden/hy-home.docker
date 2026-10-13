@@ -1,10 +1,10 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.5.5"
+version: "1.5.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-13"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -43,6 +43,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | Open WebUI application state | `open-webui` → `${DEFAULT_AI_MODEL_DIR}/open-webui` | `backup-sqlite-export`가 SQLite Online Backup API로 integrity check와 함께 `webui.db`를 복사; upload와 기타 파일은 Restic으로 직접; live database 파일과 cache는 제외 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 8시간; planning target, 미검증 | Synthetic WAL-database export rehearsal 2026-09-22; HOME-data restore 없음. AI operations subject가 isolated validation을 소유한다. |
 | SeaweedFS object와 filer metadata | `seaweedfs-{master,volume,filer}` → `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` | Orchestrator가 vacuum을 일시 중지하고, `fs.meta.save`로 filer metadata를 export하며, Restic이 volume과 master tree를 읽고, 종료 시 vacuum을 재개한다; live leveldb2 filer store는 file-copy하지 않는다 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12; 8 GiB state budget에 포함; `loki-bucket`·`tempo-bucket` collection volume file은 제외 | RPO 24시간, RTO 8시간; planning target | Isolated rehearsal 2026-09-22: 빈 store로의 restore가 동일한 object를 반환; 아직 HOME data 없음. GDE/RUN-0024가 validation을 소유한다. |
 | Gatus availability history | `gatus-data` → `${DEFAULT_OBSERVABILITY_DIR}/gatus`; WAL mode의 `/data/gatus.db`에 SQLite | uncheckpointed WAL page를 포함한 `backup-sqlite-export` Online Backup API 복사, 이후 Restic | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; planning target, 미검증 | Synthetic WAL export rehearsal 2026-09-22; HOME-data restore 없음. Gatus operations subject가 validation을 소유한다. |
+| 공유 에이전트 memory 저장소(Claude·Codex) | main checkout의 `.workspace-memory/memory.sqlite3`; rollback journal의 SQLite, Git이 무시 | `hyhome-backup.sh`가 `scripts/operations/agent_memory.py backup`(SQLite Online Backup API와 integrity check)으로 staging에 복사, 이후 Restic; 저장소가 없으면 건너뜀 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; planning target, 미검증 | 합성 저장소 harness 시험 2026-10-13; HOME 실행·복원 없음. 규칙은 [환경 제약 5절](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory), 절차는 [RUN-0021](../../runbooks/10-platform-and-backup/0021-backup-and-restore.md)이 소유한다. |
 | Grafana database, plugin, mutable state | `grafana-data` → `${DEFAULT_OBSERVABILITY_DIR}/grafana`; 현재 Compose는 external PostgreSQL을 구성하지 않는다 | `grafana.db`의 `backup-sqlite-export` Online Backup API 복사, 이후 Restic; plugin은 provisioning과 plugin list로부터 rebuild 가능; provisioning 파일은 tracked source로 남는다 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; planning target, 미검증 | Synthetic export rehearsal 2026-09-22; HOME-data restore 없음. Grafana operations subject가 validation을 소유한다. |
 | Keycloak theme, provider, runtime configuration | `keycloak-themes` → `${DEFAULT_AUTH_DIR}/keycloak/themes`; `keycloak-providers` → `${DEFAULT_AUTH_DIR}/keycloak/providers`; `keycloak-config` → `${DEFAULT_AUTH_DIR}/keycloak/conf`; 서비스가 read-only로 mount | 가능하면 versioned source/build artifact에 quiesced file snapshot과 hash manifest를 더함; `keycloak` PostgreSQL database, 별도 custody된 secret과 pair | at-rest encryption 미선언; 어떤 backup이든 암호화; weekly 90일, upgrade 전 | RPO 7일, RTO 8시간; planning target, 미검증 | No rehearsal. Auth operations는 provider/theme 호환성과 restore된 database state 대비 realm login을 검증해야 한다. |
 | Airflow schedule과 metadata | `airflow-config`, `airflow-dags`, `airflow-logs`, `airflow-plugins`, PostgreSQL database `airflow`, management Valkey | scheduler/worker 일시 중지 이후 조정된 PostgreSQL logical dump와 file snapshot; DAG/plugin/config 보존; log는 operational retention을 따른다 | Encrypted destination 필수; metadata/파일 daily 30일, log 14일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Airflow operations가 application validation과 Fernet/key custody를 소유한다. |

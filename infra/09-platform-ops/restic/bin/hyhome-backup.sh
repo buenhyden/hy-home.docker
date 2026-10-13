@@ -3,7 +3,8 @@
 #   1. single-run lock and cross-disk preflight
 #   2. pgBackRest physical backup of mng-pg and dev-pg (full on Sunday, else differential)
 #   3. consistent exports: PostgreSQL globals, Valkey RDB, SQLite stores,
-#      SeaweedFS filer metadata (vacuum paused until the run ends)
+#      the shared agent memory store, SeaweedFS filer metadata (vacuum
+#      paused until the run ends)
 #   4. Restic backup and check of both repositories
 #   5. remove the plaintext exports from staging, on success or failure
 #   6. offsite: restic copy of both repositories to Cloudflare R2 once the
@@ -198,6 +199,22 @@ elif ! docker exec -i openbao sh -ec \
 fi
 
 "${compose[@]}" run --rm --no-deps backup-sqlite-export || status=1
+
+# Shared agent memory (ADR-0049): one online backup of the store into staging.
+# A host with no store has nothing to save; the CLI would create an empty one,
+# so it is not called then. A failed backup is dropped and fails the run.
+# The unit runs the main checkout, so $repo_root is where the CLI resolves the
+# store; a symlink there is not "absent" and reaches the CLI, which refuses it.
+# The CLI waits 5 s for a busy store; a longer agent write fails the run.
+memory_store="$repo_root/.workspace-memory/memory.sqlite3"
+if [[ ! -e "$memory_store" && ! -L "$memory_store" ]]; then
+    echo "agent memory store absent: backup skipped"
+elif ! python3 "$repo_root/scripts/operations/agent_memory.py" backup \
+    --output "$staging/agent-memory.sqlite3"; then
+    echo "agent memory backup failed; export dropped" >&2
+    rm -f "$staging/agent-memory.sqlite3"
+    status=1
+fi
 
 # SeaweedFS: needles are append-only, so filer metadata saved before Restic
 # reads the volume files refers to bytes the snapshot contains, except objects

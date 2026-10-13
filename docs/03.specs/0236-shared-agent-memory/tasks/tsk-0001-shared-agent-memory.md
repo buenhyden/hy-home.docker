@@ -1,6 +1,6 @@
 ---
 title: "Shared Agent Memory Task"
-version: "0.5.0"
+version: "0.5.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -339,6 +339,13 @@ its current facts (the 45-minute node timeout of SPEC-0235 and the measured
 22-minute runtime) instead of copying its stale text. No native file was
 changed or removed. `usage` then reported 6 revisions and 5148 body bytes
 under logical limits; the store directory is 0700 and the file 0600.
+
+### Restic Coverage Handoff
+
+The owner asked on 2026-10-13 to proceed with Restic coverage, deferred here
+earlier. SPEC-0237 owns it: the daily `hyhome-backup.sh` run now copies the
+store into staging before Restic. The "Restic coverage" row below keeps the
+result recorded here; SPEC-0237's Task records the new evidence.
 
 ### Renumbering
 

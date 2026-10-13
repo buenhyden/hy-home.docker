@@ -2325,6 +2325,75 @@ docker() {
         # Plaintext exports are gone and SeaweedFS vacuum resumes before upload.
         self.assertLess(script.rindex("\ncleanup\n"), copy)
 
+    def test_orchestrator_backs_up_the_shared_memory_store_into_staging(
+        self,
+    ) -> None:
+        script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("# Shared agent memory (ADR-0049)", script)
+        block = script[
+            script.index("# Shared agent memory (ADR-0049)") : script.index(
+                "# SeaweedFS:"
+            )
+        ]
+        # Saved into staging before Restic reads it; the EXIT trap removes it.
+        self.assertLess(
+            script.index("# Shared agent memory"), script.index("restic backup")
+        )
+        harness = """set -euo pipefail
+status=0
+python3() {
+  printf '%s\n' "$*" >>"$staging/calls"
+  [[ "$FAILURE" != backup ]] || { echo partial >"$staging/agent-memory.sqlite3"; return 7; }
+  echo synthetic >"$staging/agent-memory.sqlite3"
+}
+"""
+        for case in ("absent", "present", "backup", "dangling"):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                staging = root / "staging"
+                staging.mkdir()
+                if case in ("present", "backup"):
+                    (root / ".workspace-memory").mkdir()
+                    (root / ".workspace-memory/memory.sqlite3").write_text("")
+                elif case == "dangling":
+                    (root / ".workspace-memory").mkdir()
+                    (root / ".workspace-memory/memory.sqlite3").symlink_to(
+                        root / "missing"
+                    )
+                result = subprocess.run(
+                    ["bash", "-c", harness + block + "exit $status"],
+                    check=False,
+                    env={
+                        **os.environ,
+                        "repo_root": str(root),
+                        "staging": str(staging),
+                        "FAILURE": case,
+                    },
+                    capture_output=True,
+                    text=True,
+                )
+                calls = staging / "calls"
+                if case == "absent":
+                    self.assertEqual(0, result.returncode)
+                    self.assertIn("agent memory store absent", result.stdout)
+                    self.assertFalse(calls.exists())
+                elif case == "dangling":
+                    # Not treated as absent: the CLI sees it and refuses it.
+                    self.assertTrue(calls.exists())
+                elif case == "present":
+                    self.assertEqual(0, result.returncode)
+                    self.assertIn(
+                        "/scripts/operations/agent_memory.py backup --output "
+                        + str(staging / "agent-memory.sqlite3"),
+                        calls.read_text(),
+                    )
+                    self.assertTrue((staging / "agent-memory.sqlite3").exists())
+                else:
+                    self.assertEqual(1, result.returncode)
+                    self.assertFalse((staging / "agent-memory.sqlite3").exists())
+
 
 CDC_KAFKA_COMPOSE = ROOT / "infra/05-messaging/kafka/docker-compose.yml"
 CDC_CONNECTOR = (
