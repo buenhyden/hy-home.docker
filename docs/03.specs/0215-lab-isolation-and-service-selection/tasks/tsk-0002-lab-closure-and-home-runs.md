@@ -1,6 +1,6 @@
 ---
 title: "LAB Closure and HOME LAB Run Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -231,6 +231,14 @@ With the edits: 3 tests, `FAILED (failures=3)`, one failure per test. After
 `git checkout --` of the three files: 3 tests, OK. Each guard fails when its
 contract is broken.
 
+### Owner Decisions
+
+On 2026-10-13 the owner chose "Count mutation RED and accept" through
+AskUserQuestion. SPEC-0215 criterion 6 (Spec 0.3.0) now counts a targeted
+mutation that fails a guard as its RED when the 0.1.0 source already met the
+contract. The "Contract 11 and 12 mutation" PASS row therefore resolves the
+"Contract 11 and 12 at 0.1.0" FAIL, and the owner accepted criterion 6.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -243,7 +251,7 @@ contract is broken.
 | Real LAB runs | 7 | W8 | `lab.py up`, probe, `down`, leftover count for six LABs | Synthetic roots; `231e070ac` | PASS | W8 HOME Residue Audit and Real LAB Runs | - |
 | OpenSearch LAB run | 7 | W8 | `lab.py up`, cluster health, `down`, leftover count | Synthetic roots; host disk 66%; `e0e19cdcf` | PASS | W8 HOME Residue Audit and Real LAB Runs | - |
 | Contract 11 and 12 at 0.1.0 | 6 | W6 | Current contract 11 and 12 tests run against `ba9bdd3f3` and `f88eb6601`; all pass, so no RED against 0.1.0 | `ba9bdd3f3`, `f88eb6601` | FAIL | W6 RED Proof for Contracts 11 and 12 — 2026-10-13 | - |
-| Contract 11 and 12 mutation | 6 | W6 | One uncommitted mutation per contract: 3 failures; restored: OK | `ec0877f10` | PASS | W6 RED Proof for Contracts 11 and 12 — 2026-10-13 | - |
+| Contract 11 and 12 mutation | 6 | W6 | One uncommitted mutation per contract: 3 failures; restored: OK | `ec0877f10` | PASS | W6 RED Proof for Contracts 11 and 12 — 2026-10-13 | Contract 11 and 12 at 0.1.0 |
 | Single collection and exact path list | 6 | W6 | Module run with a counting `docker` wrapper; scratch space-path check | `test_lab_isolation.py` on `5bf0e9479`, rebased on `4af41f1a8` | PASS | W6 Follow-up: Single Collection and Exact Path List | - |
 | W6 follow-up remote candidate | 6 | W6 | `candidate-quality` on PR #439 | `58ae9cf6d` | PASS | W6 Follow-up: Single Collection and Exact Path List | - |
 
@@ -251,12 +259,12 @@ contract is broken.
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 6 | pending | - | - |
+| 6 | accepted | Exporter retirement, Inventory and selection tests, Local gate, Contract 11 and 12 mutation, Single collection and exact path list, W6 follow-up remote candidate | Owner accepted 2026-10-13 |
 | 7 | accepted | Real LAB runs, OpenSearch LAB run | Generation 5 row acceptance |
 
 ## Review and Completion
 
-Criterion 7 is accepted; criterion 6, the W6 follow-up, awaits owner acceptance. The volume cleanup below stays with the owner.
+Criteria 6 and 7 are accepted. Criterion 6 was accepted by the owner on 2026-10-13 after the contract 11 and 12 mutation RED proof (Owner Decisions). The volume cleanup below stays with the owner.
 
 Owner actions, which this session may not take:
 
