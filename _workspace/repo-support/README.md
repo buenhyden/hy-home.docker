@@ -1,10 +1,10 @@
 ---
 title: "Repository Support Staging"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-13"
 created: "2026-09-27"
 ---
 
@@ -55,8 +55,10 @@ created: "2026-09-27"
 - 안정적인 참조 맥락은 `docs/90.references/`로 옮깁니다.
 - 오래 유지할 거버넌스 규칙은 `.agents/governance/`의 해당 정책 owner로
   옮깁니다.
-- 작업별 맥락은 현재 Task에 남기며 별도의 거버넌스 memory root는 두지
-  않습니다.
+- 작업별 맥락은 현재 Task에 남깁니다. 세션을 넘어 남길 에이전트 기억은
+  `_workspace`가 아니라 공유 memory 저장소에 둡니다. 그 위치와 규칙은
+  [환경 제약](../../.agents/governance/environment-constraints.md#5-shared-agent-memory)이
+  소유합니다.
 
 사용자가 비밀 아닌 산출물의 승격을 명시적으로 승인하지 않는 한, 원본
 임시 산출물은 무시된 상태로 둡니다.

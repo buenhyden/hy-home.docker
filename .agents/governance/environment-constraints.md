@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.2.1"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-13"
 ---
 
 # Environment Constraints
@@ -140,6 +140,27 @@ This project has a graphify knowledge graph at `graphify-out/`.
   to silence a guard that is reporting a smaller corpus. A dated snapshot the
   tool writes alongside a refusal is a byproduct, not a release, and is not
   committed without checking its node count against the tracked graph.
+
+### 5. Shared Agent Memory
+
+- Claude and Codex share one memory store,
+  `.workspace-memory/memory.sqlite3` in the main checkout, which Git ignores.
+  Every linked worktree reaches it through `git rev-parse --git-common-dir`;
+  no worktree keeps its own store. Removing a worktree or cleaning
+  `_workspace` does not touch it, and Git exclusion is not a backup.
+- `scripts/operations/agent_memory.py` is its only writer. Every update names
+  the revision it expects; a stale revision is refused and changes nothing.
+  The edit hooks refuse a direct write to the store.
+- Native provider memory is off: `.claude/settings.json` sets
+  `autoMemoryEnabled` to `false` and `.codex/config.toml` sets
+  `memories.generate_memories` and `memories.use_memories` to `false`. Native
+  memory files are left in place and unread.
+- A memory record is context only. It is never Task status, QA result,
+  approval or acceptance evidence, never a copy of a governance rule, and
+  never a secret.
+- Limits are logical: the CLI refuses a write that would cross them and keeps
+  every existing revision. No filesystem quota enforces them, so none is
+  claimed. The backup and restore runbook refreshes one online backup.
 
 ## Exceptions
 

@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.15"
+version: "1.4.16"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-13"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -460,6 +460,32 @@ OpenBao 복구 지점이 있다고 표시하지 않는다. 실제 token 발급/�
 실행 증거다. 빈 대상 restore/unseal은 원본 share와 독립 offsite key, 선정 snapshot의
 identity/checksum·일관성·용량·rollback 경계가 확인된 후만 실행한다. P01 synthetic
 restore는 HOME/offsite custody를 대신하지 않는다.
+
+### 공유 에이전트 memory 저장소
+
+Claude와 Codex가 함께 쓰는 memory 저장소(`.workspace-memory/memory.sqlite3`,
+규칙은 [환경 제약](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory))는
+Git이 무시하므로 Git으로 복구되지 않는다. 저장소 checkout 안에서 SQLite online
+backup으로 백업 파일 하나를 갱신한다.
+
+```bash
+python3 scripts/operations/agent_memory.py backup --output "$HOME/backups/agent-memory/memory.sqlite3"
+```
+
+먼저 `$HOME/backups/agent-memory`를 0700으로 만든다. 명령은 임시 파일에 쓰고
+`integrity_check`를 통과하면 원자적으로 바꾼다. 실패하면 exit 7과
+`MEMORY_BACKUP_FAILED`를 남기고 이전 백업을 그대로 둔다. 이 파일은 아직
+`hyhome-backup.service`의 Restic snapshot에 포함되지 않는다.
+
+복구는 저장소가 없을 때만 한다. 다른 에이전트 세션을 모두 멈춘 뒤 다음을
+실행한다. 저장소가 이미 있으면 exit 3으로 거절하며 기존 기록을 덮어쓰지 않는다.
+
+```bash
+python3 scripts/operations/agent_memory.py restore --input "$HOME/backups/agent-memory/memory.sqlite3"
+python3 scripts/operations/agent_memory.py usage
+```
+
+복구는 기록만 되살린다. 기록은 Task 상태·QA 결과·승인 증거가 아니다.
 
 ## Verification
 
