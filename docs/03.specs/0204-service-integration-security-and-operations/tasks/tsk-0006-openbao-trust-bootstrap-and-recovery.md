@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.10"
+version: "0.2.11"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -2141,6 +2141,53 @@ The audit file device declared in the repository Compose is therefore not yet
 deployed on HOME, and logrotate registration (checklist step 7) moves to the
 upgrade window. The snapshot token file is still absent.
 
+### Owner Decisions — 2026-10-13
+
+The owner answered four AskUserQuestion prompts on 2026-10-13 after the HOME
+check recorded above.
+
+**Snapshot-only token: combine with the upgrade window.** The owner first ran
+the RUN-0021 issuance block in a terminal with the OIDC operator token.
+`bao policy write backup-snapshot` was refused with HTTP 403 permission
+denied: `operator.hcl` intentionally grants no `sys/policies/acl` write and no
+orphan token creation. The token therefore needs a temporary root token from
+the recovery-share ceremony (RUN-0085 "Human Login and Normal Root
+Recovery"), and the owner chose to issue it in the same ceremony as the fresh
+pre-upgrade snapshot and the upgrade (checklist step 8). No partial file was
+created; `secrets/backup/openbao` was checked by name only. Until then the
+daily backup's OpenBao snapshot keeps failing with "OpenBao snapshot token
+absent", the recorded recovery gap.
+
+**Leftovers: delete the targets, keep the snapshot.**
+
+- Base target `/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013`:
+  uid 1000, mode 0750, inode 115610180, holding only empty `audit/` and
+  `raft/` (uid 1000, mode 0700). No running container mounted it. It was
+  removed with `rmdir` on 2026-10-13.
+- `-04` target `/home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013-04`:
+  device 2064, inode 115629820, uid 100, gid 1000, mode 0700, mtime
+  2026-10-13 09:19:17 +0900; no running container mounted it. The agent's
+  auto mode refuses irreversible deletion, so the owner deleted it on
+  2026-10-13 with
+  `docker run --rm --network none --user 100 --entrypoint /bin/sh -v /home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013-04:/t sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005 -c 'rm -rf /t/* /t/.[!.]*' && rmdir /home/hyunyoun/storage/volumes/security/openbao/p01-empty-restore-20261013-04`.
+  Afterwards no `p01-*` directory remained under
+  `/home/hyunyoun/storage/volumes/security/openbao/`, and live `openbao` and
+  `openbao-agent` were both `Up (healthy)`.
+- Kept: `/home/hyunyoun/backups/p01-openbao-20261013/raft-pre-2.7.1.snap`, as
+  a rollback point until a fresh pre-upgrade snapshot exists.
+
+**Agent alert: record the gap now, separate Spec later.** `openbao-agent`
+exposes no metrics: `agent.hcl` has no telemetry or listener, and Prometheus
+does not scrape it. Its Docker healthcheck (`scripts/health-agent.sh`) checks
+token lookup, KV reads and the rendered byte match, so staleness or auth
+failure appears only as Docker `unhealthy`, with no alert. A future Spec adds
+Agent telemetry, a scrape job and an alert with IaC review; RUN-0085 lists the
+gap.
+
+**Off-host custody: not separated yet.** No independent off-host custody of
+the unseal shares, the offsite key or the CA key exists. Checklist step 5 is
+NOT_RUN for that reason, and P01 stays blocked.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -2160,14 +2207,16 @@ upgrade window. The snapshot token file is still absent.
 | Public native preparation | 11 | W23 | 2.7.1 isolated config-tmpfs preparation and cleanup | archived public packet | PASS | W23 Public Native Preparation Receipt | - |
 | Actual selected empty restore 04 | 11 | W23 | Selected empty-target FILE_USABILITY; independent IaC actual review | isolated HOME target; value-free receipt | PASS | W23 Actual Selected Empty Restore 04 | Actual pre-restore 01/02, Actual pre-restore 03 |
 | Isolated native rerun | 11 | W23 | Registered CandidateNative (1) and rehearsal (3) opt-in tests, no skips | `958349408` | PASS | Isolated Native Rerun — 2026-10-13 | - |
-| HOME snapshot credential | 11 | W23 | Restricted snapshot-only identity and token; ordinary-secret denial; renewal | Owner checklist steps 3–4 | NOT_RUN | Source Corrections — 2026-10-13 | - |
-| HOME custody attestation | 11 | W23 | Off-host custody of unseal shares, offsite key and CA key, value-free | Owner checklist step 5 | NOT_RUN | Source Corrections — 2026-10-13 | - |
+| HOME snapshot credential | 11 | W23 | Restricted snapshot-only identity and token; ordinary-secret denial; renewal. Operator-token attempt refused with HTTP 403; deferred to the upgrade window's root ceremony by owner decision | Owner checklist steps 3–4 | NOT_RUN | Owner Decisions — 2026-10-13 | - |
+| HOME custody attestation | 11 | W23 | Off-host custody of unseal shares, offsite key and CA key, value-free; owner states it is not separated yet | Owner checklist step 5 | NOT_RUN | Owner Decisions — 2026-10-13 | - |
 | HOME semantic restore | 11 | W23 | Empty-target restore with canary read and renderer reauthentication | Owner checklist step 6 | NOT_RUN | Source Corrections — 2026-10-13 | - |
 | HOME audit capacity | 11 | W23 | Audit filesystem capacity and logrotate registration | Owner checklist step 7 | NOT_RUN | Source Corrections — 2026-10-13 | - |
 | HOME upgrade and cold boot | 11 | W23 | Server and Agent 2.7.1 upgrade, manual unseal, wrapped reissue, cold boot | Owner checklist steps 8–9 | NOT_RUN | Source Corrections — 2026-10-13 | - |
 | Source corrections | 11 | W23 | Runbook timing and checklist, Task stale points; changed metadata (2 documents, 0 violations), corpus lifecycle (0), links `--mode all` PASS, `test_operations_catalog` OK, markdownlint passed | Branch on `ec0877f10` | PASS | Source Corrections — 2026-10-13 | - |
 | Attempt cleanup | 11 | W23 | Owner-run removal of attempt 03, 04 and chown containers and the `-03` target; no container left, live server and Agent healthy | HOME, value-free metadata | PASS | Preserved Attempt Cleanup — 2026-10-13 | - |
 | Audit logrotate registration | 11 | W23 | Deferred: the running server has no audit mount, so registration waits for the upgrade window | HOME check 2026-10-13 | NOT_RUN | Preserved Attempt Cleanup — 2026-10-13 | - |
+| Leftover target cleanup | 11 | W23 | Empty base target removed with `rmdir`; `-04` target deleted by the owner; no `p01-*` directory left, live server and Agent healthy; pre-2.7.1 snapshot kept | HOME, value-free metadata | PASS | Owner Decisions — 2026-10-13 | - |
+| Agent alert gap | 11 | W23 | No Agent metrics or alert; gap recorded, telemetry and alert deferred to a separate Spec | `agent.hcl`, Prometheus config | NOT_RUN | Owner Decisions — 2026-10-13 | - |
 
 ## Criterion Acceptance
 

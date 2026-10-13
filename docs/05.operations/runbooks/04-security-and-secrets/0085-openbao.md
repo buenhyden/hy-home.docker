@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.7.7"
+version: "0.7.8"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -479,17 +479,17 @@ P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지
 값은 기록하지 않는다. 각 단계는 앞 단계가 끝난 뒤에만 진행하며, 괄호 안 승인이 따로 필요하다.
 
 1. SEC01이 현재 candidate image의 서명·SBOM·CVE 결과를 수용한다(SEC01 담당자).
-2. 보존된 attempt 대상과 container의 처리를 정한다(삭제는 명시 승인). attempt 03·04·chown container와 `-03` 대상은 2026-10-13에 owner가 삭제했고, `-04` 대상·기본 restore 대상·snapshot 파일은 아직 정하지 않았다.
-3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인).
+2. 보존된 attempt 대상과 container의 처리를 정한다(삭제는 명시 승인). attempt 03·04·chown container와 `-03` 대상은 2026-10-13에 owner가 삭제했다. 같은 날 owner 결정으로 빈 기본 restore 대상과 `-04` 대상도 삭제했고, 기존 업그레이드 전 snapshot 파일은 새 snapshot이 생길 때까지 rollback 지점으로 보존한다.
+3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급하며, 그 전까지 일일 backup의 OpenBao snapshot은 recovery gap으로 계속 실패한다.
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
-5. unseal share·offsite key·CA key의 off-host 독립 보관을 값 없이 확인한다(owner 확인).
+5. unseal share·offsite key·CA key의 off-host 독립 보관을 값 없이 확인한다(owner 확인). 2026-10-13 owner 확인 결과 아직 분리 보관이 없으므로 미실행이며, P01은 계속 차단된다.
 6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않으므로 이 단계에는 추적되거나 새로 검토한 도구가 필요하다.
 7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 현재 HOME server에는 audit mount가 없으므로 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
 9. HOME cold boot를 한다(별도 승인).
 10. 현재 버전 인증과 consumer 읽기를 위한 consumer와 ACL을 고른다(P06 담당자 선택).
 
-Agent staleness와 인증 실패를 알리는 Prometheus 규칙이 아직 없고, 변조된 HMAC의 audit 검증도 미실행이다. 규칙 추가는 별도 결정이 필요한 IaC 변경이다.
+Agent staleness와 인증 실패를 알리는 Prometheus 규칙이 아직 없고, 변조된 HMAC의 audit 검증도 미실행이다. `openbao-agent`는 metric을 노출하지 않는다(`agent.hcl`에 telemetry·listener가 없고 Prometheus도 scrape하지 않는다). Docker healthcheck가 token lookup·KV 읽기·렌더 bytes 일치를 확인하므로 staleness·인증 실패는 Docker `unhealthy`로만 드러나고 알림은 없다. 2026-10-13 owner 결정으로 이 gap을 기록해 두고, Agent telemetry·scrape·alert는 IaC 검토를 거치는 별도 Spec에서 추가한다.
 
 ## Verification
 
