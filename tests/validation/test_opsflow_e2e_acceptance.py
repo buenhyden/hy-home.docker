@@ -108,13 +108,10 @@ class OpsflowAcceptanceSeams(unittest.TestCase):
         )
         # Synthetic publication cannot authorize native notification.
         contract = json.loads((NOTIFIER / "outbox-contract.json").read_text())
-        self.assertIn(
-            "reviewed_p04_sql_binding", preflight.pending_prerequisites(contract)
-        )
-        self.assertIn(
-            "native_receipts_and_exact_targets",
-            preflight.pending_prerequisites(contract),
-        )
+        pending = preflight.pending_prerequisites(contract)
+        self.assertNotIn("reviewed_p04_sql_binding", pending)
+        self.assertIn("native_receipts_and_exact_targets", pending)
+        self.assertIn("current_operator_authorization", pending)
 
     def test_failed_database_keeps_verified_object_and_replay_reuses_it(self):
         self.connection.fail = True
