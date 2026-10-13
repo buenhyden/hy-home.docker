@@ -1,6 +1,6 @@
 ---
 title: "Agent Memory Restic Coverage Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -80,6 +80,17 @@ checks are proven only by the W4 real run, and the README's
 `BACKUP_STATE_MAX_GIB` default (8) differs from the compose default (5), which
 predates this change.
 
+### W4 Real Run
+
+After #455 merged as `caa8f1b96`, the owner started `hyhome-backup.service` on
+2026-10-13; it ended at 22:08:04 KST with `failed`. The journal shows the
+memory step wrote `/home/hyunyoun/backups/staging/agent-memory.sqlite3` with no
+`agent memory backup failed` line. The run's only failure line is the known
+recovery gap, "OpenBao snapshot token absent: snapshot failed". The latest
+`hyhome-state` snapshot `ae96be5f` (2026-10-13 13:06:50 UTC) lists
+`/src/state/exports/agent-memory.sqlite3`; only paths were listed, not
+contents. The offsite copy reported 7 snapshots in R2.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -88,7 +99,7 @@ predates this change.
 | Checks | 2 | W2 | `bash -n` and shellcheck; script manifest; backup contract and tier layout tests (23); changed metadata (7 documents) and corpus lifecycle, 0 violations; links `--mode all` 0 failures; Registry identity tests; markdownlint | `06da0708f` | PASS | W2 Policy and Runbook | - |
 | IaC review | 3 | W3 | Independent `iac-reviewer`: READY with notes, notes applied | `3a8a8f941` | PASS | W3 IaC Review | - |
 | Symlink case | 1 | W1 | `dangling` case RED against the old check, GREEN after; shellcheck | Branch | PASS | W3 IaC Review | - |
-| Real run | 4 | W4 | One `hyhome-backup.service` run includes `agent-memory.sqlite3` | - | NOT_RUN | Work Log | - |
+| Real run | 4 | W4 | One `hyhome-backup.service` run includes `agent-memory.sqlite3`; memory step succeeded, run failed only on the known OpenBao token gap | snapshot `ae96be5f` | PASS | W4 Real Run | - |
 
 ## Criterion Acceptance
 
