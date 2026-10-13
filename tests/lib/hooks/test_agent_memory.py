@@ -57,6 +57,13 @@ class StoreTests(unittest.TestCase):
             "delete", self.connection.execute("PRAGMA journal_mode").fetchone()[0]
         )
 
+    def test_the_rollback_journal_is_private(self) -> None:
+        self.connection.execute("BEGIN IMMEDIATE")
+        self.addCleanup(self.connection.execute, "ROLLBACK")
+        self.connection.execute("PRAGMA user_version = 1")
+        journal = self.path.with_name(self.path.name + "-journal")
+        self.assertEqual(0o600, stat.S_IMODE(journal.stat().st_mode))
+
     def test_a_symbolic_link_store_or_directory_is_refused(self) -> None:
         victim = self.base / "victim"
         victim.mkdir()
@@ -68,9 +75,7 @@ class StoreTests(unittest.TestCase):
         linked_file.symlink_to(victim / "planted.sqlite3")
         for path in (linked_directory / "memory.sqlite3", linked_file):
             with self.subTest(path=path):
-                with self.assertRaisesRegex(
-                    memory.MemoryStoreError, "symbolic link"
-                ):
+                with self.assertRaisesRegex(memory.MemoryStoreError, "symbolic link"):
                     memory.connect(path)
         self.assertEqual([], list(victim.iterdir()))
 
@@ -188,6 +193,14 @@ class StoreTests(unittest.TestCase):
         self.assertEqual([], list(shared.iterdir()))
         self.assertEqual([], list(private.iterdir()))
 
+    def test_backup_refuses_a_directory_another_user_owns(self) -> None:
+        directory = self.base / "theirs"
+        directory.mkdir(mode=0o700)
+        with mock.patch.object(memory.os, "geteuid", return_value=os.geteuid() + 1):
+            with self.assertRaisesRegex(memory.MemoryStoreError, "not owned"):
+                memory.backup(self.connection, directory / "memory.sqlite3")
+        self.assertEqual([], list(directory.iterdir()))
+
     def test_backup_never_follows_a_link_planted_at_its_temporary_name(self) -> None:
         write(self.connection, "gate", 0)
         directory = self.base / "backup"
@@ -254,6 +267,47 @@ class StoreTests(unittest.TestCase):
             with self.assertRaisesRegex(memory.MemoryStoreError, "no store was left"):
                 memory.restore(output, failing)
         self.assertEqual([], list(failing.parent.iterdir()))
+
+    def _backup_file(self) -> Path:
+        write(self.connection, "gate", 0, "kept")
+        directory = self.base / "backup"
+        directory.mkdir(mode=0o700, exist_ok=True)
+        output = directory / "memory.sqlite3"
+        memory.backup(self.connection, output)
+        return output
+
+    def test_restore_publishes_atomically_and_never_replaces_a_store(self) -> None:
+        output = self._backup_file()
+        target = self.base / "race" / "memory.sqlite3"
+        real_connect = sqlite3.connect
+        seen: list[bool] = []
+
+        def racing(database: object, *args: object, **kwargs: object):
+            if not kwargs.get("uri") and str(database) != ":memory:":
+                # The store path stays absent while the copy is built, and a
+                # session creating it meanwhile must win.
+                seen.append(target.exists())
+                target.write_text("other session")
+            return real_connect(database, *args, **kwargs)
+
+        with mock.patch.object(memory.sqlite3, "connect", side_effect=racing):
+            with self.assertRaisesRegex(memory.MemoryStoreError, "exists"):
+                memory.restore(output, target)
+        self.assertEqual([False], seen)
+        self.assertEqual("other session", target.read_text())
+        self.assertEqual([target], list(target.parent.iterdir()))
+
+    def test_restore_reports_a_permission_failure(self) -> None:
+        output = self._backup_file()
+        target = self.base / "denied" / "memory.sqlite3"
+        with mock.patch.object(
+            memory, "_create_private", side_effect=PermissionError("denied")
+        ):
+            with self.assertRaisesRegex(
+                memory.MemoryStoreError, "MEMORY_RESTORE_FAILED"
+            ):
+                memory.restore(output, target)
+        self.assertFalse(target.exists())
 
 
 class WorktreeStoreTests(unittest.TestCase):

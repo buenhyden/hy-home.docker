@@ -106,7 +106,9 @@ def store_path(cwd: Path | None = None) -> Path:
     own = _common_dir(Path(__file__).resolve().parent)
     here = _common_dir(Path.cwd() if cwd is None else cwd)
     if own is None or here is None:
-        raise MemoryStoreError(EXIT_UNAVAILABLE, "MEMORY_UNAVAILABLE: no Git repository")
+        raise MemoryStoreError(
+            EXIT_UNAVAILABLE, "MEMORY_UNAVAILABLE: no Git repository"
+        )
     if own != here:
         raise MemoryStoreError(
             EXIT_UNAVAILABLE,
@@ -126,9 +128,7 @@ def _refuse_symlink(path: Path) -> None:
 
 def _create_private(path: Path) -> None:
     """Create an empty 0600 file; an existing file or link raises OSError."""
-    os.close(
-        os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
-    )
+    os.close(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600))
 
 
 def _private_directory(path: Path) -> None:
@@ -310,7 +310,12 @@ def backup(connection: sqlite3.Connection, output: Path) -> None:
         raise MemoryStoreError(
             EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {output.parent} is not a directory"
         )
-    if stat.S_IMODE(output.parent.stat().st_mode) & 0o077:
+    directory = output.parent.stat()
+    if directory.st_uid != os.geteuid():
+        raise MemoryStoreError(
+            EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {output.parent} is not owned by you"
+        )
+    if stat.S_IMODE(directory.st_mode) & 0o077:
         raise MemoryStoreError(
             EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {output.parent} is not 0700"
         )
@@ -330,6 +335,7 @@ def backup(connection: sqlite3.Connection, output: Path) -> None:
         os.replace(temporary, output)
     except (OSError, sqlite3.Error) as error:
         temporary.unlink(missing_ok=True)
+        temporary.with_name(temporary.name + "-journal").unlink(missing_ok=True)
         raise MemoryStoreError(
             EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {error}; previous backup kept"
         ) from error
@@ -344,11 +350,10 @@ def _schema(connection: sqlite3.Connection) -> set[tuple[str, ...]]:
 def restore(source: Path, path: Path) -> None:
     """Rebuild a missing store from a backup; an existing store is never replaced.
 
-    Stop every agent session first: a writer that opens the store while it is
-    being rebuilt loses its write.
+    The copy is built under a temporary name and published with a hard link,
+    so the store path never shows a partial file and a store created meanwhile
+    is never replaced. Stop agent sessions first all the same.
     """
-    # ponytail: no lock against a concurrent writer during restore; the
-    # runbook stops sessions first.
     expected = sqlite3.connect(":memory:")
     expected.execute(SCHEMA)
     try:
@@ -368,23 +373,29 @@ def restore(source: Path, path: Path) -> None:
                 "MEMORY_RESTORE_REFUSED: backup schema differs from the store schema",
             )
         _private_directory(path.parent)
-        try:
-            _create_private(path)
-        except FileExistsError as error:
+        if path.exists() or path.is_symlink():
             raise MemoryStoreError(
                 EXIT_CONFLICT, f"MEMORY_RESTORE_REFUSED: {path} exists"
-            ) from error
+            )
+        temporary = path.with_name(f".{path.name}.restore")
+        temporary.unlink(missing_ok=True)
         try:
-            target = sqlite3.connect(path)
+            _create_private(temporary)
+            target = sqlite3.connect(temporary)
             try:
                 backup_db.backup(target)
             finally:
                 target.close()
-        except BaseException:
-            path.unlink(missing_ok=True)
-            path.with_name(path.name + "-journal").unlink(missing_ok=True)
-            raise
-    except sqlite3.Error as error:
+            try:
+                os.link(temporary, path, follow_symlinks=False)
+            except FileExistsError as error:
+                raise MemoryStoreError(
+                    EXIT_CONFLICT, f"MEMORY_RESTORE_REFUSED: {path} exists"
+                ) from error
+        finally:
+            temporary.unlink(missing_ok=True)
+            temporary.with_name(temporary.name + "-journal").unlink(missing_ok=True)
+    except (OSError, sqlite3.Error) as error:
         raise MemoryStoreError(
             EXIT_BACKUP, f"MEMORY_RESTORE_FAILED: {error}; no store was left"
         ) from error
