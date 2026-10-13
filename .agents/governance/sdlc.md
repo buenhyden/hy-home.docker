@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.4.0"
+version: "1.4.1"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -73,14 +73,15 @@ item, and declares no frontmatter `status`; its summary is derived on read.
 Evidence rows record observations only: criterion, Work Unit, check, input,
 result, location, and `Resolves`, which names earlier `FAIL` rows of the same
 Task that a `PASS` row for a shared criterion resolves. Acceptance has one
-owner per criterion: the `Criterion Acceptance` table of one Task the Plan
-assigns it to holds `pending`, `accepted`, `rejected`, or `not-required`.
+owner per criterion: exactly one `Criterion Acceptance` row, in one current
+Task the Plan assigns it to, holds `pending`, `accepted`, `rejected`, or
+`not-required`.
 `accepted` requires `PASS` evidence for the criterion and no unresolved `FAIL`;
 `rejected` and `not-required` state their decision; only `not-required` closes
 a criterion without `PASS`. A completed Task, or completed item, has `PASS`
 evidence for every criterion and Work Unit pair assigned to it unless that
-criterion is `not-required`, and a completed Task has every criterion it
-decides accepted or `not-required`. Task-result vocabulary is exactly `NOT_RUN`, `PASS`, `FAIL`,
+criterion is `not-required`, and every criterion that Task decides for that
+work is accepted or `not-required`. Task-result vocabulary is exactly `NOT_RUN`, `PASS`, `FAIL`,
 `DEFER`, and `NOT_APPLICABLE`. Lifecycle events and generation-migration proof
 rows record observed structure only; they do not authenticate approval,
 review, or execution.
@@ -89,7 +90,8 @@ A package is ready for archive review when its Spec and Plan are `approved`
 (or validly `cancelled` or `superseded`), every Task or item is terminal, every
 criterion is accepted or `not-required`, and no `FAIL` is unresolved.
 Readiness is derived on read, is never stored, and is not archive approval; a
-package leaves Stage 03 only from a ready base revision.
+package enters the completed archive only from a ready base revision, whatever
+its status there.
 
 The Registry supplies the exact Evidence, Criterion Acceptance, Execution
 Items and Work Breakdown shapes. `spec_packages.py` implements their meaning.
