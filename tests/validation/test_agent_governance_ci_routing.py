@@ -2077,6 +2077,34 @@ class PostToolFormattingOwnershipTests(unittest.TestCase):
             recorded = (fake_bin / "argv").read_text(encoding="utf-8").split()
             self.assertIn(self._registered_shellcheck_severity(), recorded)
 
+    def test_post_tool_normalizer_agrees_with_the_registered_owner(self) -> None:
+        """Expected bytes are what pre-commit-hooks v6.0.0 leaves.
+
+        trailing-whitespace splits lines on LF only and keeps CRLF, so a form
+        feed or U+2028 inside a line and a CRLF ending must survive the hook.
+        """
+
+        cases = {
+            "a\x0cb\n": b"a\x0cb\n",
+            "a\x0bb\n": b"a\x0bb\n",
+            "a\u2028b\n": "a\u2028b\n".encode(),
+            "a  \r\nb\r\n": b"a\r\nb\r\n",
+            "a \t": b"a\n",
+            "a \nb\t\n": b"a\nb\n",
+        }
+        for original, expected in cases.items():
+            with (
+                self.subTest(original=original),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                repo = self._repo(directory)
+                (repo / "note.md").write_bytes(original.encode())
+
+                result = self._run(repo, "note.md")
+
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                self.assertEqual(expected, (repo / "note.md").read_bytes())
+
     def test_post_tool_mutator_honors_the_declared_frozen_boundary(self) -> None:
         """The boundary is read from the owner, not restated in this hook."""
 

@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Quality Corrections Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -77,12 +77,44 @@ entrypoints. Git records both as `100755`; the worktree was checked out under
 umask 002, which left them group-writable on disk. After `chmod g-w` on the
 two files, which Git does not track, both modules passed (19 tests).
 
+### W4 PostToolUse Normalizer Agreement
+
+The owner asked on 2026-10-13 whether the PostToolUse whitespace cleanup
+conflicts with anything. Policy does not conflict: `quality-standards.md`
+section 10 lets an agent editor hook format "only in agreement with the
+registered owner", `agentic.md` describes this hook, `--check` stays
+non-mutating, and the hook edits only the files in the current edit payload
+and skips the frozen archive payloads it reads from `.pre-commit-config.yaml`.
+
+The bytes did conflict. The normalizer used `str.splitlines()`, which also
+breaks on form feed, vertical tab, U+2028 and other separators, and rejoined
+with LF. Against the cached pre-commit-hooks v6.0.0 fixers on the same inputs:
+`a\x0cb` became two lines, U+2028 became LF, and `a  \r\nb\r\n` lost its CRLF,
+while the owners left all three unchanged. It also stripped only space and
+tab where `trailing-whitespace` strips every trailing ASCII whitespace byte,
+which flipped the `mixed-line-ending` majority in some mixed files.
+
+The normalizer now mirrors `trailing-whitespace` line handling: lines split on
+LF only, a CRLF ending kept, `bytes.rstrip()` on the rest, and one LF added
+when the file does not end in LF or CR. It still leaves extra final blank
+lines to `end-of-file-fixer`. A 3,000-case random comparison against the
+owners' fixed point found 0 divergences on inputs without a bare CR; the 94
+divergences with a bare CR come from `mixed-line-ending` treating CR as a line
+ending, and none of the 1,706 tracked Markdown, shell, YAML and JSON files
+contains a bare CR (`.gitattributes` sets `eol=lf`).
+
+A new test pins six inputs to the owners' bytes. It failed for four inputs on
+the previous normalizer and passes now; all 60 tests in
+`test_agent_governance_ci_routing` pass, and `bash -n` and `shellcheck
+--severity=warning` are clean.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Mark-only inputs | 1 | W1 | Pinned `action.yml` text for `days-before-close`; workflow contract tests | Branch on `4af41f1a8` | PASS | W1 Mark-only Stale Workflow | pending |
 | Check repairs | 2 | W2 | Both tests RED on clean `4af41f1a8`; 65 workflow contract and update-gate tests GREEN | Branch on `4af41f1a8` | PASS | W2 Selector List and Ledger Digests | pending |
+| Normalizer agreement | 4 | W4 | Owner comparison; random comparison; new test RED then GREEN; module tests | Branch on `2a57d4122` | PASS | W4 PostToolUse Normalizer Agreement | pending |
 | Remote candidate | 3 | W3 | `candidate-quality` on PR #438 | `0b479b1a4` | PASS | Review and Completion | pending |
 | Changed gate | 3 | W3 | `run-ci-gate.py --profile changed`; rerun of two permission tests | Branch on `4af41f1a8` | PASS | W3 Changed Gate | pending |
 
