@@ -2,7 +2,7 @@
 title: "Authority Parents and Criterion Acceptance"
 version: "0.1.0"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "proposed"
 owner: "@buenhyden"
 updated: "2026-10-13"
 layer: "architecture"
@@ -77,8 +77,9 @@ byte-identical.
 
 ### Follow-up
 
-Accepted on 2026-10-13 by the owner's choice of these options. SPEC-0231
-implements and verifies it.
+Proposed on 2026-10-13 from the owner's choice of these options. SPEC-0231
+implements and verifies it; acceptance is a separate status change once the
+owner reviews the merged result.
 
 ## Related Documents
 

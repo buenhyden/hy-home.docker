@@ -113,7 +113,7 @@ docs/02.architecture/decisions/
   DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 accepted decision(SPEC-0212, SPEC-0213).
 - [`ADR-0048`](./0048-authority-parents-and-criterion-acceptance.md):
   Spec·Plan은 승인 권한만, Task는 실행 상태를, criterion마다 하나의 수용 판정을
-  두고 보관 검토 준비를 읽을 때 계산하는 accepted decision. ADR-0037의 결정
+  두고 보관 검토 준비를 읽을 때 계산하는 proposed decision. ADR-0037의 결정
   1–3을 대체하며 SPEC-0231이 구현·검증을 소유한다.
 
 ## Usage
