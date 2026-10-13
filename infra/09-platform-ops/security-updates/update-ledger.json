@@ -123,11 +123,11 @@
     },
     {
       "path": "infra/01-gateway/nginx/docker-compose.yml",
-      "sha256": "fea2ab70f28d48a36bb0b44a2626e0191c0b8598f26fa047c3bf4a2ab92d4500"
+      "sha256": "d719e16568e1d898bfc0978c405910e118b3bb58cf7f09dfe6615610546624bb"
     },
     {
       "path": "infra/01-gateway/traefik/docker-compose.yml",
-      "sha256": "c7f4c8efdba12b87728fb68c4c572f2c9b9b812865cd35e485107702388d8141"
+      "sha256": "ad9f88fd18c43746e049988a6f4b32475086bfac7d162d9b3ab6a2dd80f13acc"
     },
     {
       "path": "infra/02-auth/keycloak/docker-compose.yml",
@@ -155,7 +155,7 @@
     },
     {
       "path": "infra/04-data/opensearch/docker-compose.yml",
-      "sha256": "6f23979c299a0af280cbcdab69af8f924ed9fa07ed4b899e28b030cc9eab8bd2"
+      "sha256": "ba27ea5a56c57885cdcd00f642044d80b7f1d6b6a636974d277261033a993a1d"
     },
     {
       "path": "infra/04-data/qdrant/docker-compose.yml",
