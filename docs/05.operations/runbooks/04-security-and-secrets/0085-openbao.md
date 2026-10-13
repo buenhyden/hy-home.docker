@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.7.8"
+version: "0.7.9"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -490,6 +490,127 @@ P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지
 10. 현재 버전 인증과 consumer 읽기를 위한 consumer와 ACL을 고른다(P06 담당자 선택).
 
 Agent staleness와 인증 실패를 알리는 Prometheus 규칙이 아직 없고, 변조된 HMAC의 audit 검증도 미실행이다. `openbao-agent`는 metric을 노출하지 않는다(`agent.hcl`에 telemetry·listener가 없고 Prometheus도 scrape하지 않는다). Docker healthcheck가 token lookup·KV 읽기·렌더 bytes 일치를 확인하므로 staleness·인증 실패는 Docker `unhealthy`로만 드러나고 알림은 없다. 2026-10-13 owner 결정으로 이 gap을 기록해 두고, Agent telemetry·scrape·alert는 IaC 검토를 거치는 별도 Spec에서 추가한다.
+
+### HOME 유지보수 창 계획
+
+2026-10-13 owner 결정으로 남은 HOME 단계를 한 번의 maintenance window로 묶는다. 이
+계획은 문서일 뿐 실행 증거가 아니다. 모든 값(share·OTP·token·key)은 숨겨진 prompt나
+stdin으로만 다루고, 명령 인자·터미널 기록·채팅에 남기지 않는다. 각 단계의 결과는
+SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
+
+**전제 조건(위 5단계).** unseal share·offsite key·CA key가 서로 분리된 off-host 보관에
+있다는 owner 확인이 값 없이 기록되어야 한다. 확인이 없으면 window를 열지 않는다.
+
+| 순서 | 단계 | 목표 시간 | 승인 |
+| --- | --- | --- | --- |
+| W0 | 사전 점검 | window 전 | SEC01 담당자, owner |
+| W1 | root ceremony | 10분 | owner(share 보유자 2명) |
+| W2 | snapshot token 발급과 확인 | 5분 | owner(credential 발급) |
+| W3 | 새 업그레이드 전 snapshot | 5분 | owner(backup 실행) |
+| W4 | server 업그레이드와 수동 unseal | 10분 | owner(runtime 변경) |
+| W5 | Agent 업그레이드와 재발급 | 5분 | owner(runtime 변경) |
+| W6 | audit·logrotate | 10분 | owner(sudo host 변경) |
+| W7 | 사후 점검과 root 폐기 | 10분 | owner |
+| W8 | cold boot | 별도 window | owner(별도 승인) |
+
+W1부터 W5까지가 운영자가 고른 30분 cutover 목표이고, W7까지 60분 window 안에 끝나야
+한다. 두 값은 계획 추정치다. 30분을 넘거나 어떤 중단 조건이 생기면 아래 rollback으로
+돌아가고 남은 단계는 다음 window로 넘긴다.
+
+**W0 사전 점검.**
+
+```bash
+HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
+docker compose exec -T openbao bao status
+docker compose --profile security config --images | grep '^openbao/openbao' | sort -u |
+  xargs docker image inspect --format '{{.Id}}'   # 없으면 오류로 끝난다
+df -h /home
+systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
+```
+
+기대: compose 검증 통과, `Sealed false`, compose가 고정한 candidate image가 local에
+있음, 남은 용량 확인, 마지막 backup 결과 확인. SEC01이 candidate image의 서명·SBOM·
+CVE 결과를 수용했고(위 1단계) 위 TLS preflight가 PASS여야 한다. 하나라도 아니면 중단한다.
+image가 없으면 별도 승인으로 같은 digest만 pull한다.
+
+**W1 root ceremony.** 위 [Human Login and Normal Root Recovery](#human-login-and-normal-root-recovery)를
+따른다. OIDC로 로그인한 operator token을 container 안 단독 shell의 `BAO_TOKEN`으로 둔다.
+
+```bash
+docker compose exec openbao sh
+# 이하 container 안. 출력은 보호된 custody로만 옮긴다.
+bao operator generate-root -generate-otp        # OTP는 바로 보호된 custody로
+bao operator generate-root -init -otp="$otp"    # nonce를 기록
+bao operator generate-root -nonce="$nonce" -    # share 보유자 1이 숨겨진 prompt로 입력
+bao operator generate-root -nonce="$nonce" -    # share 보유자 2가 입력, encoded token 반환
+bao operator generate-root -decode=- -otp="$otp" # encoded token을 stdin으로
+```
+
+`-otp`는 인자로 전달되므로 다른 process가 없는 container 안 shell에서만, 바로 실행한다.
+encoded token은 decode 전에 보존한다. 기대: 새 root token 하나. 중단: share 불일치,
+`-status`의 진행이 멈춤, decode 실패. 중단하면 `bao operator generate-root -cancel`로
+attempt를 버린다. 기존 상태는 바뀌지 않으므로 rollback이 따로 없다.
+
+**W2 snapshot token.** [RUN-0021](../10-platform-and-backup/0021-backup-and-restore.md)의
+OpenBao token 블록을 별도 터미널에서 실행하고, `OpenBao admin token:` prompt에 임시
+root를 입력한다. 기대: `snapshot token ready`. 그 token으로 일반 secret 경로 읽기가
+거부되고 `bao token renew`가 성공하는지 값 없이 확인한다. 중단: 403, 빈 파일, 확인 실패.
+실패하면 `$out.new`를 지우고 token을 폐기한다.
+
+**W3 새 업그레이드 전 snapshot.** OpenBao에는 쓰기 정지 기능이 없으므로 쓰기 주체를
+멈춘다. Agent를 먼저 멈추고(`docker compose stop openbao-agent`), 승인된 관리 작업이
+없음을 확인한 뒤 새 token으로 snapshot을 받는다.
+
+```bash
+docker compose exec openbao bao operator raft snapshot save /tmp/pre-upgrade.snap
+```
+
+container 안 임시 파일은 RUN-0021 경로로 옮기고 sha256과 크기를 기록한 뒤 container에서
+지운다. 기대: 0이 아닌 크기와 checksum. 중단: 빈 파일, sealed, timeout. 이 snapshot이
+생기면 보존해 둔 이전 업그레이드 전 snapshot은 다음 정리 결정의 대상이 된다.
+
+**W4 server 업그레이드와 수동 unseal.**
+
+```bash
+docker compose --profile security up -d --no-deps --no-build --pull never openbao
+docker compose exec openbao bao operator unseal   # 숨겨진 prompt, 지정 운영자가 share 입력
+docker compose exec openbao bao operator unseal   # 두 번째 share
+docker compose exec -T openbao bao status
+```
+
+기대: 새 image로 재생성, Raft mount identity 불변, threshold 뒤 `Sealed false`.
+중단: mount identity 변경, unseal 실패, cluster ID 변경, audit backend 실패.
+rollback: 새 버전 데이터에 이전 image를 붙이지 않는다(in-place Raft downgrade 금지).
+업그레이드가 실패하면 W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 검토된 절차로
+간다(위 Rollback or Recovery). 이 경우 HOME은 보류하고 @buenhyden에게 반환한다.
+
+**W5 Agent 업그레이드와 재발급.** server가 unsealed이고 health가 통과한 뒤에만
+`docker compose --profile security up -d --no-deps --no-build --pull never openbao-agent`를
+실행하고, 위 [Renderer SecretID Delivery](#renderer-secretid-delivery)로 wrapped
+SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 version 일치. 중단:
+재인증 실패, health 실패. Agent는 server보다 앞서 rollback하지 않는다.
+
+**W6 audit와 logrotate.** 새 server에 `openbao-audit` mount와 `audit.json`(0600, UID
+100)이 생겼는지 확인하고, 용량과 증가율을 잰 뒤 위 Native TLS, Audit and Recovery Gate의
+규칙대로 host logrotate(rename/create 0600, UID 100/GID 1000, `SIGHUP` reopen)를
+sudo로 등록한다. `copytruncate`는 쓰지 않는다. 기대: rotation 시험 뒤 audit 쓰기 지속.
+중단: audit 쓰기 실패. 이때 audit device를 끄지 않고 공간과 권한을 복구한다.
+
+**W7 사후 점검과 root 폐기.** renderer 재인증, consumer 읽기(Keycloak·Grafana 렌더 결과
+일치), `OpenBaoSealed` 등 기존 경보가 조용한지, `up{job="openbao"}`, 다음 backup 단위의
+OpenBao snapshot 성공을 확인한다. 임시 root는 W2·W4에서만 필요하다. W7 끝에서
+`bao token revoke -self`로 폐기하고 같은 token의 lookup이 거부되는지, OIDC 로그인이
+여전히 되는지 확인한다. 더 이른 단계가 실패해 window를 접을 때도 root를 먼저 폐기한다.
+
+**W8 cold boot.** 별도 승인과 별도 window에서 host를 재시작하고, 수동 unseal, Agent
+재인증, 위 W7 점검을 반복한다. cold start 시뮬레이션은 실제 재부팅 증거가 아니다.
+
+**window 뒤에 남는 것.**
+
+- 새 attempt로 빈 대상에 의미 있는 restore와 canary 읽기(위 6단계). `.agent-work/`가
+  삭제되므로 추적되거나 새로 검토한 도구가 필요하다.
+- consumer와 ACL 선택(위 10단계, P06).
+- Agent telemetry·scrape·alert를 추가하는 별도 Spec.
 
 ## Verification
 
