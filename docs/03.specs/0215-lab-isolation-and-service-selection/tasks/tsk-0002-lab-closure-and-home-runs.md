@@ -1,10 +1,10 @@
 ---
 title: "LAB Closure and HOME LAB Run Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-13"
 layer: "specs"
 artifact_id: "SPEC-0215-TSK-0002"
 parent_ids:
@@ -158,6 +158,35 @@ the retirement had lowered, and showed that `LAB_READY_TIMEOUT_SECONDS` was
 not declared. After commits `d341b75c8` and `137650df8` the gate exited 0
 (161 tests). `pre-commit run --from-ref origin/main --to-ref HEAD` exited 0.
 
+### W6 Follow-up: Single Collection and Exact Path List
+
+The request on 2026-10-13 (prompt v9, findings F31 to F33) asked to compare
+this test module with the current guides and its callers. The baseline is
+`main` `5bf0e9479`.
+
+- F31 is already resolved on `main`: `LAB_GUIDE_PATHS` reads the moved
+  Supabase guide, and the operations catalog reader checks its
+  `implementation_services` against the LAB source. The other eight guides
+  have no frontmatter binding, so the Project and Services assertion stays as
+  their only render check.
+- F32: `LabBoundaryTests` and `LabInventoryAndSelectionTests` inherited
+  `RootClosureTests`, so its three tests ran three times and every class
+  rendered the root and all nine LABs again. A test-free `RenderedModels`
+  fixture now gives each class the models from one `functools.cache` render
+  per process. The cache does not keep a failed render, so a render failure
+  still fails every class that needs it.
+- F33: the tracked-file scan split `git ls-files` output on whitespace, which
+  broke paths that hold a space. It now reads `-z` output split on NUL. A
+  scratch repository with `a b.md` and `한글 문서.md` showed the old split
+  breaking both names and the new one keeping them.
+
+Measured with a counting `docker` wrapper on `PATH`: 12 tests in 50 s and 20
+`docker` calls, against 18 collected tests in 105 s on `main`. The main run's
+call count was not measured; the code implies 58 (three class setups of ten
+renders, three times nine target probes, one HOME render).
+
+PR #439 head `58ae9cf6d`: `candidate-quality` passed in run `38344705466` (4m16s).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -169,10 +198,12 @@ not declared. After commits `d341b75c8` and `137650df8` the gate exited 0
 | Local gate | 6 | W6 | Changed-profile gate in a clean worktree; pre-commit over the range | `137650df8` | PASS | Validation | accepted |
 | Real LAB runs | 7 | W8 | `lab.py up`, probe, `down`, leftover count for six LABs | Synthetic roots; `231e070ac` | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
 | OpenSearch LAB run | 7 | W8 | `lab.py up`, cluster health, `down`, leftover count | Synthetic roots; host disk 66%; `e0e19cdcf` | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
+| Single collection and exact path list | 6 | W6 | Module run with a counting `docker` wrapper; scratch space-path check | `test_lab_isolation.py` on `5bf0e9479`, rebased on `4af41f1a8` | PASS | W6 Follow-up: Single Collection and Exact Path List | pending |
+| W6 follow-up remote candidate | 6 | W6 | `candidate-quality` on PR #439 | `58ae9cf6d` | PASS | W6 Follow-up: Single Collection and Exact Path List | pending |
 
 ## Review and Completion
 
-Every evidence row is accepted. The volume cleanup below stays with the owner.
+Every evidence row except the W6 follow-up is accepted; that row awaits owner acceptance. The volume cleanup below stays with the owner.
 
 Owner actions, which this session may not take:
 

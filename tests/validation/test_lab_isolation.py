@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import json
 import os
 import subprocess
@@ -45,23 +46,34 @@ def render(*args: str, extra_env: dict[str, str] | None = None) -> dict:
     return json.loads(result.stdout)
 
 
-class RootClosureTests(unittest.TestCase):
+@functools.cache
+def rendered_models() -> tuple[dict, dict[str, dict]]:
+    """Render the root and every LAB once per test process; tests only read."""
+    root = render("--env-file", ".env.example", "--profile", "*")
+    labs = {
+        path.name: render(
+            "--env-file",
+            "labs/.env.example",
+            "-f",
+            str(path.relative_to(ROOT)),
+            "--profile",
+            "*",
+            extra_env=LAB_INPUTS,
+        )
+        for path in LABS
+    }
+    return root, labs
+
+
+class RenderedModels(unittest.TestCase):
+    """Fixture only. It holds no test, so subclasses inherit none."""
+
     @classmethod
     def setUpClass(cls) -> None:
-        cls.root = render("--env-file", ".env.example", "--profile", "*")
-        cls.labs = {
-            path.name: render(
-                "--env-file",
-                "labs/.env.example",
-                "-f",
-                str(path.relative_to(ROOT)),
-                "--profile",
-                "*",
-                extra_env=LAB_INPUTS,
-            )
-            for path in LABS
-        }
+        cls.root, cls.labs = rendered_models()
 
+
+class RootClosureTests(RenderedModels):
     def test_wildcard_root_render_selects_no_lab_service(self) -> None:
         self.assertEqual(9, len(self.labs))
         root_services = set(self.root["services"])
@@ -93,7 +105,7 @@ class RootClosureTests(unittest.TestCase):
                 self.assertIn("no such service", result.stderr.lower())
 
 
-class LabBoundaryTests(RootClosureTests):
+class LabBoundaryTests(RenderedModels):
     def test_every_lab_volume_binds_under_a_required_lab_input(self) -> None:
         roots = tuple(value + "/" for value in LAB_INPUTS.values())
         for name, lab in self.labs.items():
@@ -145,7 +157,7 @@ class LabBoundaryTests(RootClosureTests):
                     seen[port] = name
 
 
-class LabInventoryAndSelectionTests(RootClosureTests):
+class LabInventoryAndSelectionTests(RenderedModels):
     def test_each_lab_guide_names_exactly_its_project_and_services(self) -> None:
         import re
 
@@ -213,9 +225,9 @@ class LabInventoryAndSelectionTests(RootClosureTests):
             r"""|COMPOSE_PROFILES=['"]?\*"""
         )
         tracked = subprocess.run(
-            ["git", "ls-files", "--", "*.md", "*.sh", "*.py", "*.service", "Makefile"],
+            ["git", "ls-files", "-z", "--", "*.md", "*.sh", "*.py", "*.service", "Makefile"],
             cwd=ROOT, capture_output=True, text=True, check=True,
-        ).stdout.split()  # fmt: skip
+        ).stdout.split("\0")[:-1]  # fmt: skip
         offenders = [
             path
             for path in tracked
