@@ -1,6 +1,6 @@
 ---
 title: "LAB Closure and HOME LAB Run Task"
-version: "0.1.3"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -187,17 +187,71 @@ renders, three times nine target probes, one HOME render).
 
 PR #439 head `58ae9cf6d`: `candidate-quality` passed in run `38344705466` (4m16s).
 
+### W6 RED Proof for Contracts 11 and 12 — 2026-10-13
+
+The owner asked on 2026-10-13 to check criterion 6 and proceed ("SPEC-0215 C6
+점검후 진행"). The Evidence row "Inventory and selection tests" said "New tests
+RED then GREEN", but the W6 table records that the contract 11 test and both
+contract 12 tests passed on first run; only the contract 9 and 10 tests had a
+witnessed RED. That row's wording overstated it and now names the split.
+
+**Against the 0.1.0 source.** The three current tests, with
+`tests/validation/test_lab_isolation.py` copied from `ec0877f10`, were run in
+detached scratch worktrees of two earlier commits:
+
+- `ba9bdd3f3` (2026-10-08, the commit that added the SPEC-0215 Spec): 3 tests,
+  OK.
+- `f88eb6601` (TSK-0002's baseline): `test_home_prometheus_scrapes_no_lab_container`
+  and `test_no_document_or_script_starts_the_root_with_every_profile` OK.
+  `test_home_selection_starts_no_lab_or_alternate_gateway` first errored only
+  because POL-0078 lived at `docs/05.operations/policies/0078-compose-profile-vocabulary.md`
+  before the 2026-10-12 renumbering; with that path it passed.
+
+So the 0.1.0 source already met contracts 11 and 12. These three tests are
+characterization tests; no RED against 0.1.0 exists, and criterion 6's clause
+"fail against the 0.1.0 source or documents" cannot hold for them. That
+clause needs an owner decision.
+
+**Guard sensitivity.** In this worktree on `ec0877f10`, three temporary edits,
+never committed:
+
+- appended `# - targets: ['cassandra-node1:9100']` to
+  `infra/06-observability/prometheus/config/prometheus.dev.yml`;
+- appended `docker compose --profile '*' up -d` to `README.md`;
+- put `` `nginx` `` first in POL-0078's `| HOME |` row.
+
+```bash
+T=tests.validation.test_lab_isolation.LabInventoryAndSelectionTests
+python3 -m unittest $T.test_home_prometheus_scrapes_no_lab_container \
+  $T.test_no_document_or_script_starts_the_root_with_every_profile \
+  $T.test_home_selection_starts_no_lab_or_alternate_gateway
+```
+
+With the edits: 3 tests, `FAILED (failures=3)`, one failure per test. After
+`git checkout --` of the three files: 3 tests, OK. Each guard fails when its
+contract is broken.
+
+### Owner Decisions
+
+On 2026-10-13 the owner chose "Count mutation RED and accept" through
+AskUserQuestion. SPEC-0215 criterion 6 (Spec 0.3.0) now counts a targeted
+mutation that fails a guard as its RED when the 0.1.0 source already met the
+contract. The "Contract 11 and 12 mutation" PASS row therefore resolves the
+"Contract 11 and 12 at 0.1.0" FAIL, and the owner accepted criterion 6.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Exporter retirement | 6 | W5 | Image tag check; renders; catalog and tech-stack sync | `3bc108834` | PASS | W5 MongoDB Exporter Retirement | - |
-| Inventory and selection tests | 6 | W6 | New tests RED then GREEN; changed-profile gate | `5a16f1844` | PASS | W6 Inventory, Cluster ID, Observability and Selection Tests | - |
+| Inventory and selection tests | 6 | W6 | Contract 9 and 10 tests RED then GREEN; contract 11 and 12 tests passed on first run; changed-profile gate | `5a16f1844` | PASS | W6 Inventory, Cluster ID, Observability and Selection Tests | - |
 | Disposition columns | 4 | W7 | Policy text; HOME selection test; link and metadata checks | `add4cc598` | PASS | W7 Disposition Columns | - |
 | HOME residue audit | 5 | W8 | Read-only `docker ps`, restart policies, systemd units, crontab | HOME host 2026-10-08 | PASS | W8 HOME Residue Audit and Real LAB Runs | - |
 | Local gate | 6 | W6 | Changed-profile gate in a clean worktree; pre-commit over the range | `137650df8` | PASS | Validation | - |
 | Real LAB runs | 7 | W8 | `lab.py up`, probe, `down`, leftover count for six LABs | Synthetic roots; `231e070ac` | PASS | W8 HOME Residue Audit and Real LAB Runs | - |
 | OpenSearch LAB run | 7 | W8 | `lab.py up`, cluster health, `down`, leftover count | Synthetic roots; host disk 66%; `e0e19cdcf` | PASS | W8 HOME Residue Audit and Real LAB Runs | - |
+| Contract 11 and 12 at 0.1.0 | 6 | W6 | Current contract 11 and 12 tests run against `ba9bdd3f3` and `f88eb6601`; all pass, so no RED against 0.1.0 | `ba9bdd3f3`, `f88eb6601` | FAIL | W6 RED Proof for Contracts 11 and 12 — 2026-10-13 | - |
+| Contract 11 and 12 mutation | 6 | W6 | One uncommitted mutation per contract: 3 failures; restored: OK | `ec0877f10` | PASS | W6 RED Proof for Contracts 11 and 12 — 2026-10-13 | Contract 11 and 12 at 0.1.0 |
 | Single collection and exact path list | 6 | W6 | Module run with a counting `docker` wrapper; scratch space-path check | `test_lab_isolation.py` on `5bf0e9479`, rebased on `4af41f1a8` | PASS | W6 Follow-up: Single Collection and Exact Path List | - |
 | W6 follow-up remote candidate | 6 | W6 | `candidate-quality` on PR #439 | `58ae9cf6d` | PASS | W6 Follow-up: Single Collection and Exact Path List | - |
 
@@ -205,12 +259,12 @@ PR #439 head `58ae9cf6d`: `candidate-quality` passed in run `38344705466` (4m16s
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 6 | pending | - | - |
+| 6 | accepted | Exporter retirement, Inventory and selection tests, Local gate, Contract 11 and 12 mutation, Single collection and exact path list, W6 follow-up remote candidate | Owner accepted 2026-10-13 |
 | 7 | accepted | Real LAB runs, OpenSearch LAB run | Generation 5 row acceptance |
 
 ## Review and Completion
 
-Criterion 7 is accepted; criterion 6, the W6 follow-up, awaits owner acceptance. The volume cleanup below stays with the owner.
+Criteria 6 and 7 are accepted. Criterion 6 was accepted by the owner on 2026-10-13 after the contract 11 and 12 mutation RED proof (Owner Decisions). The volume cleanup below stays with the owner.
 
 Owner actions, which this session may not take:
 

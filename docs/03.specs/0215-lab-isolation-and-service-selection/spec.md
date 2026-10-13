@@ -1,6 +1,6 @@
 ---
 title: "LAB Isolation and Service Selection"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -97,7 +97,9 @@ or HOME data, and observing which services run on the HOME host.
 5. HOME runs, real LAB starts on the HOME host and data moves stay `NOT_RUN`
    unless observed.
 6. Tests for contracts 9 to 12 fail against the 0.1.0 source or documents
-   and pass now.
+   and pass now. A test that cannot fail against the 0.1.0 source, because
+   that source already met its contract, counts as failing when a targeted
+   mutation of the behaviour it guards makes it fail.
 7. Each LAB starts on the HOME host through `lab.py` with synthetic inputs,
    reaches its own readiness signal or records why not, and stops without
    leaving containers or networks and without changing the HOME project.
