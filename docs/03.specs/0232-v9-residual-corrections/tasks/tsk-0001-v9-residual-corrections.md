@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -176,11 +176,113 @@ ref (`--all`), and the unmerged local branches for SPEC-0233 and SPEC-0234
 already issue Spec numbers 233 and 234. That cause is likely but not yet
 verified; the test is rerun once both branches merge.
 
+### W8 Pre-commit Wrapper (F22)
+
+`run-ci-precommit.sh` dropped `end-of-file-fixer` and `trailing-whitespace`
+from the read-only copy of `.pre-commit-config.yaml`, so neither the local
+staged check nor the PR merge check saw trailing whitespace or a missing final
+newline in a file no other hook covers, such as TOML, a Dockerfile or `.env`.
+No test compared the copy's hooks with the source's; the fake `pre-commit` in
+`test_run_ci_precommit.sh` asserted the two hooks were absent.
+
+The wrapper now keeps every hook. A fixer without a check mode changes only the
+isolated checkout, and `pre-commit` fails a hook that changes a file. Both
+modes now take the before/after snapshot that only `local-staged` took: a hook
+that changes the candidate and fails returns its own exit with a note to fix
+the files explicitly, and one that changes it and passes still fails with exit
+2. `quality-standards.md` (1.6.1) states this.
+
+- **RED:** the updated test, whose fake `pre-commit` requires the copy to
+  list exactly the source's hook IDs and adds the failing-mutator cases for
+  both modes, failed against the `main` wrapper at its first `pr-merge` call.
+- **GREEN:** `bash tests/validation/test_run_ci_precommit.sh` printed `PASS:
+  CI pre-commit wrapper contract`; shellcheck reported nothing.
+- **Real hooks:** in a scratch repository with this repository's
+  `.pre-commit-config.yaml`, a staged `x.toml` holding `a = 1` plus three
+  trailing spaces made the new wrapper exit 1 in `local-staged` and the `main`
+  wrapper exit 0. The staged bytes were unchanged afterwards.
+
+### W9 LAB Isolation Test (F31)
+
+`test_each_lab_guide_names_exactly_its_project_and_services` read Project and
+Services rows from `0029-supabase.md` through `LAB_GUIDE_PATHS`. That guide
+binds `labs/supabase.yml` through `implementation_services`, which the
+operations catalog already checks in both directions:
+`operations_catalog.py` `_inventory_bindings` reports a bound name the Compose
+file lacks (`service-operations-removed`) and a declared LAB service no guide
+binds (`service-operations-missing`). The test now skips any LAB a Stage 05
+guide binds and keeps the README rows of the other eight LABs, which are
+current. The guide's rows stay as reader documentation.
+
+- **RED:** with the guide's Project and Services rows deleted, the old test
+  failed (`guide lacks a Project row`, lab `supabase.yml`).
+- **GREEN:** with the same deletion it passes; the rows were restored.
+- **Catalog:** `test_bound_lab_source_requires_every_declared_service_owner`
+  already shows an unbound service in a bound LAB failing with
+  `service-operations-missing`, so no new catalog test was added; it is a
+  characterization of existing behaviour, not a RED.
+- `test_lab_isolation` and `test_operations_catalog` ran 140 tests, OK. PR
+  #428's local aggregate FAIL listed two LAB document and README failures that
+  reproduced on `main`; this duplicate dependency was one source of that
+  class.
+
+### W10 Finding Records
+
+The prompt's D-P0 to D-P5 order applies only to this repository. Per finding:
+
+- **F01.** Asked that the source hash and the 333 non-blank lines bind to the
+  four targets, and that work continue from current state without resetting
+  to an old SHA. The v9 prompt file given to this session has SHA-256
+  `79dd3930a64dd65cf81755685ca3e46db6d8f603592d401910e7ddbb28143b09`, 911
+  lines and 666 non-blank lines. The 333-line count belongs to the v8
+  attachment, which is not in this repository, so that binding is NOT_RUN.
+  Every change here started from the then-current `main` and nothing was
+  reset.
+- **F19.** Asked to keep candidate quality, main security and the release
+  workflow separate and not to count `--requirements` as a second QA run.
+  Satisfied: `ci-quality.yml:18-19` runs `candidate-quality` on pull requests
+  only, `:44` runs `--requirements` to select prerequisites and `:54` runs
+  the gate; `main-security` is separate at `:56-57`; and
+  `generate-changelog.yml:1,39` publishes the release.
+- **F28.** Asked that one sufficient run may serve several criteria, with
+  claim, input, method, result, failure and follow-up linked, and that static
+  checks never stand in for live ones. Satisfied: the Task template's
+  Evidence row has a plural Criteria cell and `Resolves`
+  (`task.template.md:19,39`), SPEC-0231 split Evidence from Criterion
+  Acceptance, and `quality-standards.md:244` calls source-only evidence
+  insufficient for runtime settings.
+- **F29.** Asked not to force the four Registries' `schema_version` values to
+  match. Satisfied here: `docs/99.templates/registry.json:2` holds `1` and no
+  test compares it with another repository. The cross-repository comparison
+  is outside this repository.
+- **F38.** Asked to record merge, candidate, local aggregate and service
+  acceptance separately. PR #428 merged as `62556dc63b66c828c27e9c33017d26cdf70b8542`
+  at 2026-10-12T16:14:06Z. Run 38275029067 (`CI Quality Gates`,
+  `pull_request`, head `c402f165140fa9c63dc3710ffc2c20eb7f312ce6`) concluded
+  success with `candidate-quality` success and `main-security` skipped, read
+  with `gh` on 2026-10-13. The PR body records the local-only aggregate as
+  FAIL (exit 1), and SEC01 security and HOME acceptance as not accepted;
+  those results stay separate and none of them is replaced by the hosted
+  success.
+- **F41.** Asked that the Task stay the single progress record, that only
+  affected checks run at the end, and that other writers' worktrees and
+  memory are never deleted automatically. Satisfied: `agentic.md:113-114`
+  forbids inferring a review from a label, `:125-127` keeps execution and
+  acceptance in the Task, and `approval-boundaries.md:88-93` limits deletion
+  to scratch with proven ownership. This session removed only its own merged,
+  clean worktrees and left the other writers' `codex/*` worktrees.
+
 ### Owner Decisions
 
 On 2026-10-13 the owner answered the review question by accepting the
 criteria rated ready and approving this Spec and Plan; Review and Completion
 lists the criteria and why the rest stay `pending`.
+
+Later on 2026-10-13 the owner wrote "Prompt findings not done or only partly
+done 검토후 진행" and "Not all work is done 검토후 진행". Because the prompt
+says to reuse existing Specs, that instruction extends this approved Spec and
+Plan (1.1.0) with W8 to W10 and criteria 8 to 10; the new criteria start
+`pending`.
 
 ### Lifecycle Events
 
@@ -205,6 +307,9 @@ lists the criteria and why the rest stay `pending`.
 | Live Claude | 7 | W7 | Live PostToolUse delivery, Claude Code 2.1.296 | `958349408` | PASS | W7 PostToolUse Failure as Context | - |
 | Live Codex | 7 | W7 | Live PostToolUse delivery, codex-cli 0.162.1, sandbox off | `958349408` | PASS | W7 PostToolUse Failure as Context | - |
 | Governance suite | 5 | W5 | Full document governance suite, 893 of 894 passed | `b1a6976f4` | FAIL | Governance Suite | - |
+| Wrapper | 8 | W8 | Wrapper test RED on `main` then GREEN; shellcheck; real `pre-commit` TOML whitespace case (new exit 1, `main` exit 0) | Branch on `ec0877f10` | PASS | W8 Pre-commit Wrapper (F22) | - |
+| LAB guide | 9 | W9 | Old test RED with the guide rows deleted, GREEN after; `test_lab_isolation` and `test_operations_catalog` (140) | Branch on `ec0877f10` | PASS | W9 LAB Isolation Test (F31) | - |
+| Finding records | 10 | W10 | Per-finding records with file:line evidence; PR #428 and run 38275029067 read with `gh` | Branch on `ec0877f10` | PASS | W10 Finding Records | - |
 
 ## Criterion Acceptance
 
@@ -217,6 +322,9 @@ lists the criteria and why the rest stay `pending`.
 | 5 | pending | - | - |
 | 6 | accepted | Tombstone | Owner accepted 2026-10-13 |
 | 7 | accepted | Context, Context candidate, Live Claude, Live Codex | Owner accepted 2026-10-13 |
+| 8 | pending | - | - |
+| 9 | pending | - | - |
+| 10 | pending | - | - |
 
 ## Review and Completion
 

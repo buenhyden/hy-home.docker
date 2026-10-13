@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -46,7 +46,10 @@ later Spec.
 In scope: the PostToolUse dispatcher call, the check mode of
 `post-tool-validate.sh`, the policy and README text describing them; the n8n
 candidate rehearsal; one Registry assertion in the frozen payload test; root
-`AGENTS.md`; how the dispatcher returns a PostToolUse failure; the role-layout pattern in `tombstone_identity`. Out of scope: the Stop hook, shared memory, historical SEC01
+`AGENTS.md`; how the dispatcher returns a PostToolUse failure; the role-layout pattern in `tombstone_identity`; and, added on 2026-10-13, the
+read-only pre-commit wrapper (F22), the LAB isolation test's duplicate guide
+dependency (F31), and the per-finding record of F01, F19, F28, F29, F38 and
+F41. Out of scope: the Stop hook, shared memory, historical SEC01
 receipts and README records, the Airflow candidate rehearsal.
 
 ## Contracts
@@ -67,6 +70,15 @@ receipts and README records, the Airflow candidate rehearsal.
 6. A retired Stage 05 guide, policy or runbook inherits the artifact number
    in its filename whether it sat directly in its family directory or in a
    numbered classification directory under it.
+7. `run-ci-precommit.sh` keeps every hook from the source configuration in
+   its read-only copy, and in both modes a hook that changes the isolated
+   candidate fails the run: as its own failure when it fails, as a hidden
+   mutator when it passes.
+8. The LAB isolation test reads Project and Services rows only for LABs that
+   no Stage 05 guide binds through `implementation_services`; the operations
+   catalog owns the bound ones.
+9. The Task records, per finding, what F01, F19, F28, F29, F38 and F41 asked,
+   the current evidence and the outcome.
 
 ## Acceptance Criteria
 
@@ -81,6 +93,13 @@ receipts and README records, the Airflow candidate rehearsal.
    violation.
 7. A test shows a whitespace defect producing exit 0 and the context JSON,
    and a clean file producing no output.
+8. The wrapper test fails on `main` and passes after the change, and a real
+   `pre-commit` run fails a staged TOML file with trailing whitespace that
+   `main` passes.
+9. The LAB isolation test passes with the Supabase guide's Project and
+   Services rows removed, and the catalog test for an unbound LAB service
+   passes.
+10. Each of the six findings has a record with evidence and an outcome.
 
 ## Related Documents
 
