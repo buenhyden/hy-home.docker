@@ -4569,10 +4569,25 @@ def _validate_current_reconciliation(
     if len(carriers) != 1 or carriers[0].path == task.path:
         raise SpecPackageError("lifecycle reconciliation canonical carrier is invalid")
     target, carrier = targets[0], carriers[0]
+    registered = (
+        _registered_normalizations(registry)
+        if registry.common.get("lifecycle_generation") == 6
+        else frozenset()
+    )
+    normalized_away = {(profile, source) for profile, source, _ in registered}
+    # A receipt recorded under generation 5 keeps its edge; the normalized
+    # status of its target stands in for the status it recorded.
+    legacy_edge = {
+        (target.profile_id, receipt.source),
+        (target.profile_id, receipt.target),
+    } <= normalized_away
     if (
         target.status != receipt.target
-        or receipt.target
+        and (target.profile_id, receipt.target, target.status) not in registered
+    ) or (
+        receipt.target
         not in registry.transitions.get(target.profile_id, {}).get(receipt.source, ())
+        and not legacy_edge
     ):
         raise SpecPackageError("lifecycle reconciliation transition is invalid")
     host_matches = [
