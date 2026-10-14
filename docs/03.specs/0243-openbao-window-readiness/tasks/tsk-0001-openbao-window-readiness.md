@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -200,8 +200,11 @@ network against a local repository (a mounted wrapper sets
 `RESTIC_REPOSITORY`, which the script otherwise points at R2) and synthetic
 secrets: a 300 kB random snapshot and its receipt were stored and proved, and
 a symlinked receipt stopped with exit 64 before any snapshot. The existing
-Compose baseline gates still pass. The read-only R2 rehearsal in criterion 5
-needs the owner's approval because it reaches HOME's R2 bucket.
+Compose baseline gates still pass. On 2026-10-14 the owner approved (AskUserQuestion) the read-only R2
+rehearsal in criterion 5. It ran `snapshots --no-lock`, which writes not
+even a lock file: the repository was reachable and decrypted with 45
+snapshots and none under the W3 tag. RUN-0085's reachability check now uses
+the same lock-free form.
 
 ### W6 CA Mounts, Logrotate and W4 Rollback
 
@@ -261,7 +264,7 @@ runs the W5 and W6 tests in CI.
 | Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 | Role apply re-review | 7 | W3 | Independent `iac-reviewer` re-review of the fixes: PASS with notes, notes applied; 17 tests OK with both native runs; CI gate tests OK | `3e080d999` | PASS | W3 Renderer Role Apply | - |
 | R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
-| R2 read-only rehearsal | 5 | W5 | `snapshots` against HOME's R2 repository | Owner approval needed | NOT_RUN | W5 R2 Artifact Transfer | - |
+| R2 read-only rehearsal | 5 | W5 | `restic-offsite cmd snapshots --no-lock --json` against HOME's R2 repository, owner-approved: reachable and decrypted, 45 snapshots, latest 2026-10-13T18:42:46, none tagged `hy-home-openbao-w3`; no write, no lock | HOME R2 on 2026-10-14 | PASS | W5 R2 Artifact Transfer | - |
 | Window overrides | 6 | W6 | Compose config with and without the override differs only in the Traefik and Prometheus image; CA mounts kept; contract test OK; timer drop-in passes `systemd-analyze verify` on a copy of the host units | `ccfa88e05`; running images observed 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 | W4 rollback decision | 6 | W6 | Owner chose fix-forward (AskUserQuestion) | Owner answer 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 | W6 review | 7 | W6 | Independent `iac-reviewer` review: PASS with notes, notes applied; contract tests and CI gate tests OK | `ccfa88e05` | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |

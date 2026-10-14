@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.9"
+version: "0.12.10"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -1064,10 +1064,10 @@ standalone helper와 RUN-0021의 별도 full backup은 이 W3 경로를 자동�
 [offsite entrypoint](../../../../infra/09-platform-ops/restic/offsite.sh)의 `artifact`는 두
 파일만 tag `hy-home-openbao-w3`, host `hy-home-openbao-window`로 R2에 저장하고, 곧바로 R2에서
 두 파일을 다시 읽어 SHA-256을 로컬과 비교한다. 지우거나 다시 시도하지 않는다. 먼저 읽기
-전용 `snapshots`로 저장소에 닿는지 확인한다.
+전용 `snapshots --no-lock`(lock 파일도 쓰지 않음)으로 저장소에 닿는지 확인한다.
 
 ```bash
-docker compose --profile backup run --rm --no-deps restic-offsite snapshots >/dev/null || exit 1
+docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock >/dev/null || exit 1
 docker compose --profile backup run --rm --no-deps \
   -v "${P01_SNAPSHOT_DIRECTORY:?}:/artifact:ro" restic-offsite artifact
 ```
