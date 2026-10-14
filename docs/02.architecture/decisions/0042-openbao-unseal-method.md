@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Unseal Method"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-14"
 layer: "architecture"
 artifact_id: "ADR-0042"
 parent_ids:
@@ -24,7 +24,12 @@ RUN-0085, there are 3 shares with a threshold of 2. By owner decision
 `secrets/security/openbao/openbao_unseal_keys.txt` (SEC-003, `0600`, excluded from
 Git, not mounted into the container). Anyone who can read this file can
 unseal OpenBao. This file is also encrypted with BKP-002 inside the host
-Restic repository.
+Restic repository, which `restic-offsite` copies to R2 encrypted with BKP-003,
+so BKP-003 with R2 read access, or BKP-002 with the local repository, also
+meets the threshold. On 2026-10-14 the owner chose to exclude the file from
+the host backup (SPEC-0240) and to rekey in the maintenance window (RUN-0085
+W1b). Snapshots already written keep the old shares until they are deleted,
+and a rekey does not change the keys a pre-rekey Raft snapshot opens with.
 
 Auto-unseal was only deferred as a non-goal in ADR-0018 from the Vault era
 ("actual KMS/HSM auto-unseal implementation at this stage"); it was never
@@ -232,6 +237,7 @@ Candidate triggers:
 - Spec: [SPEC-0182](../../03.specs/0182-home-residual-backlog/spec.md) criterion 10 and 11,
   Plan W10/W11,
   [Task 0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)
+- Exposure correction: [SPEC-0240](../../03.specs/0240-unseal-backup-exclusion/spec.md)
 - Runbook: [RUN-0085](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
 - Runtime sources: [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
   [Agent configuration](../../../infra/03-security/openbao/config/agent.hcl)

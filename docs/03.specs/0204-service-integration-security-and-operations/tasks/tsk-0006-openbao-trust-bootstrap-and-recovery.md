@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.14"
+version: "0.2.15"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -2262,6 +2262,22 @@ records a step 5 result only as `owner-attested` when every answer is yes
 says copy rather than move. Excluding the unseal file from the host backup
 needs a separately approved IaC change; that coupling stays open.
 
+### Unseal File Exposure Decisions — 2026-10-14
+
+After PR #461 merged, a re-review of the procedure found the Cloudflare
+account (which can reissue the R2 credentials) missing from the confirmation
+table and a place left undefined. On 2026-10-14 the owner asked to review and
+proceed with the exposure finding and chose (AskUserQuestion) to exclude the
+unseal file from the host backup and to rekey, and to correct POL-0085's
+"only copy" statement. SPEC-0240 carries the exclusion, the POL-0085 and
+ADR-0042 corrections and RUN-0085 0.9.0: the Cloudflare account row, the
+place definition, the merge gate (merge only after step 5 is
+`owner-attested`) and W1b unseal rekey right after W1 and before any new
+snapshot, BLOCKED until a reviewed protected output path exists. A rekey does
+not change the keys a pre-rekey Raft snapshot opens with, so the exposure ends
+only when pre-exclusion host snapshots are deleted. Nothing ran on HOME; step 5 and
+criterion 11 stay as before.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -2282,7 +2298,7 @@ needs a separately approved IaC change; that coupling stays open.
 | Actual selected empty restore 04 | 11 | W23 | Selected empty-target FILE_USABILITY; independent IaC actual review | isolated HOME target; value-free receipt | PASS | W23 Actual Selected Empty Restore 04 | Actual pre-restore 01/02, Actual pre-restore 03 |
 | Isolated native rerun | 11 | W23 | Registered CandidateNative (1) and rehearsal (3) opt-in tests, no skips | `958349408` | PASS | Isolated Native Rerun — 2026-10-13 | - |
 | HOME snapshot credential | 11 | W23 | Restricted snapshot-only identity and token; ordinary-secret denial; renewal. Operator-token attempt refused with HTTP 403; deferred to the upgrade window's root ceremony by owner decision | Owner checklist steps 3–4 | NOT_RUN | Owner Decisions — 2026-10-13 | - |
-| HOME custody attestation | 11 | W23 | Off-host custody of unseal shares, offsite key and CA key, value-free; owner states it is not separated yet | Owner checklist step 5 | NOT_RUN | Owner Decisions — 2026-10-13 | - |
+| HOME custody attestation | 11 | W23 | Off-host custody of unseal shares, offsite key, R2 credentials, Cloudflare account access and CA key, value-free; owner states it is not separated yet | Owner checklist step 5 | NOT_RUN | Owner Decisions — 2026-10-13 | - |
 | HOME semantic restore | 11 | W23 | Empty-target restore with canary read and renderer reauthentication | Owner checklist step 6 | NOT_RUN | Source Corrections — 2026-10-13 | - |
 | HOME audit capacity | 11 | W23 | Audit filesystem capacity and logrotate registration | Owner checklist step 7 | NOT_RUN | Source Corrections — 2026-10-13 | - |
 | HOME upgrade and cold boot | 11 | W23 | Server and Agent 2.7.1 upgrade, manual unseal, wrapped reissue, cold boot | Owner checklist steps 8–9 | NOT_RUN | Source Corrections — 2026-10-13 | - |

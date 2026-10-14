@@ -73,6 +73,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0236 | [공유 에이전트 기억](./0236-shared-agent-memory/) | Claude·Codex native 기억 비활성화, 등록된 단일 공유 기억 저장소와 CLI, 용량·백업 계약 초안 |
 | SPEC-0237 | [에이전트 memory Restic 포함](./0237-agent-memory-restic-coverage/) | 일일 `hyhome-backup.sh`가 공유 memory 저장소를 staging에 online backup해 Restic snapshot에 포함 |
 | SPEC-0239 | [OpenBao Agent telemetry와 alert](./0239-openbao-agent-alert/) | Agent `metrics_only` listener, Prometheus `openbao-agent` job, scrape 실패·인증 실패 alert |
+| SPEC-0240 | [unseal share 파일 백업 제외](./0240-unseal-backup-exclusion/) | OpenBao unseal share 파일을 host Restic 백업과 R2 사본에서 빼고, 정책 사실 정정과 custody·rekey 계획 보강 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
