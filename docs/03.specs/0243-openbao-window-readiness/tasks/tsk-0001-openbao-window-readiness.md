@@ -549,6 +549,20 @@ Other changes:
 - The stranded-root sweep is an exact block after W1 and before W3. It was rehearsed on a throwaway dev server, where it revoked the old root and kept the new one.
 - The unencrypted host swap and the full UID 100 asset list are recorded as residuals.
 
+**Rounds 3 to 5.** Each round fixed what the last one found, and each fix was rehearsed. Round 5 closed it:
+
+- **IaC review:** READY with Low notes only, at `0d59ce192`.
+- **Security review:** APPROVE with notes.
+
+After round 5 the Low notes were applied:
+
+- a kept root also keeps the path-variable file, needs `unset` before the cleanup is re-run, and needs Linger or a session;
+- the sweep reads policies from stdout only, treats either message for a vanished token as gone, prints unexpected errors, and the counts of a re-run are added;
+- the restore contract variables are saved;
+- the attempt nonce is recorded only as present.
+
+A dev-server rehearsal of the sweep used five parent root tokens with child roots and a stderr warning containing "root" on every call. It gave `revoked=11 remaining=0`, and kept the non-root token and the new root.
+
 **Spec scope.** Contract 6 in the Spec still says the overlays keep the running images. #497 changed that by SEC01 acceptance, and this Task records it without editing the approved Spec.
 
 ## Evidence
@@ -594,6 +608,9 @@ Other changes:
 | Final IaC re-review 3 | 7 | W1 | Independent `iac-reviewer` re-review of `a78f5073c`: NOT READY (an unsealed OIDC failure still shredded the only root, with no keep switch); round-3 findings closed | `98303ca92` | FAIL | Final Readiness Review | - |
 | Final security re-review 3 | 7 | W1 | Independent `security-auditor` re-review of `a78f5073c`: APPROVE with notes; N1 to N7 closed; Low: sweep aborts on a vanished accessor, no W1 pointer, empty `self`, no root keep switch | `98303ca92` | PASS | Final Readiness Review | - |
 | Final re-review 3 text fixes | 1 | W1 | `P01_KEEP_ROOT` keeps W1 custody and operator token files on an unsealed OIDC failure; sealed-only root strand; `P01_KEEP_W2` persists; receipts copied; sweep treats `invalid accessor` and `No token found` as gone, requires a non-empty `self`, may re-run once; W1 points to the sweep; dev-server rehearsal with a cascaded child root: `revoked=3 remaining=0`, re-run `revoked=0`; keep switch rehearsed on fake directories | Branch `claude/window-final-review` | PASS | Final Readiness Review | - |
+| Final IaC re-review 4 | 7 | W1 | Independent `iac-reviewer` re-review of `0d59ce192`: READY with Low notes only; every earlier finding closed | `c61f3ca95` | PASS | Final Readiness Review | Readiness review, Second readiness review, Window security review, Window IaC review, Final IaC readiness review, Final IaC re-review, Final IaC re-review 2, Final IaC re-review 3 |
+| Final security re-review 4 | 7 | W1 | Independent `security-auditor` re-review of `0d59ce192`: APPROVE with notes (Low: stderr mixed into the root test, gone messages split by branch, keep path removed the vars file) | `c61f3ca95` | PASS | Final Readiness Review | - |
+| Final re-review 4 text fixes | 1 | W1 | Low notes applied; sweep rehearsed on a dev server with five parent and child root pairs and an injected stderr `root` warning: `revoked=11 remaining=0`, non-root token and new root kept | Branch `claude/window-final-review` | PASS | Final Readiness Review | - |
 | Agent input fix | 2 | W2 | Native chown with the restore's flags: exit 1 without `DAC_READ_SEARCH`, 0 with it; new assertions RED on the earlier code, GREEN after; 47 OK and native preflight 17 OK in a umask 022 clone | `2e3683771` (#492) | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Full restore rehearsal | 2 | W2 | Native `orchestrate()` and `perform()` on synthetic resources, old `11fd73a2` restore and owned `46bf9b5c` candidate and Agent: ledger `accepted`, no attempt containers left; four defects fixed with RED then GREEN unit assertions; restore-input suite 18 OK with `HYHOME_OPENBAO_REHEARSAL=1` in a umask 022 clone | `564f4049c` | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Restore fix IaC re-review | 7 | W2 | Independent `iac-reviewer` re-review of #492 and #495: FAIL (umask 077 leaves `tls/` unreadable to the server; cleanup misses the pre-token gap and depends on the shared runner) | `bc552bf9b` | FAIL | Restore Agent Fix and Full Rehearsal | - |
