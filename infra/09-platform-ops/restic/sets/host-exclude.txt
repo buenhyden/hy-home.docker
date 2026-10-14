@@ -1,1 +1,4 @@
-# Secrets and .env are small and wholly retained; nothing is excluded.
+# The host set keeps secrets/ and .env whole except the OpenBao unseal share
+# file: its shares belong in separated off-host custody (RUN-0085), and a copy
+# here, mirrored to R2, would let the offsite key alone yield every share.
+/src/host/secrets/security/openbao/openbao_unseal_keys.txt

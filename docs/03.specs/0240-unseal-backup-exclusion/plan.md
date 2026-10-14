@@ -1,0 +1,51 @@
+---
+title: "Unseal Share File Out of Host Backups Plan"
+version: "0.1.0"
+type: "sdlc/plan"
+status: "draft"
+owner: "@buenhyden"
+updated: "2026-10-14"
+layer: "specs"
+artifact_id: "SPEC-0240-PLAN-0001"
+parent_ids:
+- "SPEC-0240"
+created: "2026-10-14"
+---
+
+# Unseal Share File Out of Host Backups Plan
+
+## Overview
+
+Pin the exclusion with a test and a synthetic dry run, correct the policy and
+decision text, extend the runbook, review, then merge only after the owner
+attests off-host custody and observe one daily run.
+
+## Work Breakdown
+
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| W1 | 1 | Host exclusion, its test and a synthetic dry run | None | TSK-0001 | Task evidence |
+| W2 | 2 | POL-0085, ADR-0042 and RUN-0085 text | W1 | TSK-0001 | Task evidence |
+| W3 | 3 | Independent IaC, security and rules reviews | W1, W2 | TSK-0001 | Task evidence |
+| W4 | 4 | Merge after step 5 is attested; observe the next host snapshot | W3 | TSK-0001 | Task evidence |
+
+## Verification Plan
+
+Run the compose baseline tests with the new test, a `--dry-run` of the
+pinned `restic/restic` image with the tracked exclude file against a
+synthetic tree, markdownlint, changed metadata, corpus lifecycle and links.
+W4 lists the next host snapshot for the file name only.
+
+## Risks and Rollback
+
+- **Early merge.** Merged before step 5, the next backup no longer copies the
+  file, and a host loss would lose every share. Contract 2 forbids it.
+- **Old snapshots.** Existing host and R2 snapshots keep the old shares until
+  they expire; only the W9 rekey ends that exposure.
+- **Rollback.** Revert the exclusion line; the next backup copies the file
+  again.
+
+## Related Documents
+
+- [Spec](spec.md)
+- [Task](tasks/tsk-0001-unseal-backup-exclusion.md)

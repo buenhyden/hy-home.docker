@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.8.0"
+version: "0.9.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -510,18 +510,23 @@ SPEC-0204 TSK-0006에 기록한다. 값은 화면 공유·채팅·명령 인자�
 (`infra/09-platform-ops/restic/backup.sh`, 제외 목록 없음), `restic-offsite`가 그 저장소를
 R2로 복사한다. 그래서 모든 share를 담은 단일 unseal 파일이 R2 사본 안에 있고, BKP-003과
 R2 읽기 권한만 있으면 share 3개를 모두 얻는다. snapshot token 발급(W2) 뒤에는 Raft
-snapshot도 함께 들어간다. 이 결합을 끊으려면 단일 파일을 host 백업에서 빼는 별도 승인된
-IaC 변경이 필요하며, 이 절차는 그 위험을 보관 분리로만 줄인다.
+snapshot도 함께 들어간다. 2026-10-14 owner 결정으로 단일 파일을 host 백업에서 빼고
+(SPEC-0240, `sets/host-exclude.txt`), 별도 window에서 rekey한다(아래 W9). 제외는 운영
+checkout에 merge되는 즉시 다음 일일 백업부터 적용되므로, 5단계가 `owner-attested`가 된
+뒤에만 merge한다. 그 전에 적용되면 host 손실 때 share를 되찾을 사본이 없다. 제외 뒤에도
+이미 만들어진 host·R2 snapshot은 보존 기간(R2 최대 12개월, bucket lock) 동안 옛 share를
+담으므로, rekey 전까지 이 결합은 남는다.
 
 **분리 규칙.** off-host 보관 장소에 적용한다.
 
 - 한 장소에 share가 2개 이상 있으면 안 된다.
-- offsite key는 share가 없는 장소에 두고, R2 자격 증명·Cloudflare 계정 접근과도 다른 장소에
-  둔다.
+- offsite key는 share가 없는 장소에 두고, R2 자격 증명과도, Cloudflare 계정 접근(로그인·2FA·
+  복구 이메일)과도 다른 장소에 둔다. 그 계정으로 R2 자격 증명을 다시 발급할 수 있기 때문이다.
 - 각 항목은 이 host 밖에 최소 한 곳 있어야 한다. host 디스크·host 백업·R2 사본은 off-host
   보관이 아니다.
-- 장소는 종류만 기록한다. 예: 비밀번호 관리자 vault A, 다른 계정이나 장치의 vault B,
-  금고의 종이 사본, 암호화된 오프라인 매체, 신뢰하는 제2자.
+- 장소는 별도 자격 증명이나 물리 보관으로 접근이 갈리는 단위다. 같은 비밀번호 관리자 계정
+  안의 vault나 폴더 둘은 한 장소다. 기록에는 종류만 적는다. 예: 비밀번호 관리자 계정 A,
+  다른 계정 B, 금고의 종이 사본, 암호화된 오프라인 매체, 신뢰하는 제2자.
 - host에 남는 단일 파일은 그대로 한 명이 threshold를 넘는 위험이다. 이 절차를 통과해도
   [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)의
   예외는 닫히거나 바뀌지 않는다. 단일 파일과 그 백업 사본을 지울지는 별도 owner 결정이며,
@@ -531,7 +536,7 @@ IaC 변경이 필요하며, 이 절차는 그 위험을 보관 분리로만 줄�
 
 1. 위 규칙에 맞게 장소를 정한다.
 2. 각 값을 해당 장소로 **복사**한다. 원본은 지우지 않는다. 단일 파일을 통째로 한 장소에
-   첨부하면 분리가 깨지므로 share를 하나씩 옮긴다. 종이 사본처럼 값을 봐야 하는 경우에는
+   첨부하면 분리가 깨지므로 share를 하나씩 복사한다. 종이 사본처럼 값을 봐야 하는 경우에는
    화면 공유·녹화·clipboard 기록이 없는 상태에서 한다.
 3. 장소마다 혼자서 그 사본을 꺼낼 수 있는지 확인한다(예: 다른 장치에서 vault 열기). 값이
    맞는지는 유지보수 창의 W1 root ceremony(share 2개)와 의미 있는 restore(6단계)에서
@@ -545,6 +550,7 @@ IaC 변경이 필요하며, 이 절차는 그 위험을 보관 분리로만 줄�
 | share 3 | | | | | |
 | offsite key | | | share가 없는 장소인가 | 해당 없음 | |
 | R2 자격 증명 | | | 해당 없음 | | |
+| Cloudflare 계정 접근 | | 해당 없음 | 해당 없음 | | |
 | CA key | | | 해당 없음 | 해당 없음 | |
 
 **판정.** 모든 칸이 채워지고 모든 질문의 답이 "예"일 때만 agent가 5단계를
@@ -573,6 +579,7 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 | W6 | audit·logrotate | 10분 | owner(sudo host 변경) |
 | W7 | 사후 점검과 root 폐기 | 10분 | owner |
 | W8 | cold boot | 별도 window | owner(별도 승인) |
+| W9 | unseal rekey | 별도 window | owner(share 보유자 2명, credential 변경) |
 
 W1부터 W5까지가 운영자가 고른 30분 cutover 목표이고, W7까지 60분 window 안에 끝나야
 한다. 두 값은 계획 추정치다. 30분을 넘거나 어떤 중단 조건이 생기면 아래 rollback으로
@@ -667,6 +674,18 @@ OpenBao snapshot 성공을 확인한다. 임시 root는 W2·W4에서만 필요�
 
 **W8 cold boot.** 별도 승인과 별도 window에서 host를 재시작하고, 수동 unseal, Agent
 재인증, 위 W7 점검을 반복한다. cold start 시뮬레이션은 실제 재부팅 증거가 아니다.
+
+**W9 unseal rekey.** 2026-10-14 owner 결정. W1–W7이 끝나 서버가 compose pin으로 돈 뒤
+별도 window에서 새 share 3개(threshold 2)를 만든다. 새 share가 생기면 host 단일 파일과
+host·R2 백업의 옛 share는 쓸모가 없어진다. 조건은 다음과 같다.
+
+- 옛 share 2개는 숨겨진 prompt로만 넣는다. 명령 인자·환경 변수·파일로 넘기지 않는다.
+- 새 share는 확인 단계(새 share threshold를 다시 넣어야 적용)를 거쳐야 적용되게 한다. 확인
+  전에 실패하면 옛 share가 그대로 유효하다.
+- 새 share 출력은 host의 `secrets/`나 어떤 파일에도 쓰지 않고, 분리 규칙에 맞는 세 장소로
+  바로 옮긴다. W1과 같이 검토된 보호 출력 경로가 정해지기 전까지 W9는 BLOCKED다.
+- 끝나면 새 share로 5단계 확인 기록을 다시 채운다. host 단일 파일을 지울지는 별도 owner
+  결정이다.
 
 **window 뒤에 남는 것.**
 
