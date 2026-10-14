@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.7"
+version: "0.12.8"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -789,7 +789,7 @@ fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-securi
 3b46e54964060c3c2088220735a565341cdc135d7d01555ea785a1047b15a418 infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
-7f2f09ee734215e3be0379d79c8917200996aaea06496f6ad008c270d4a49b7e infra/03-security/openbao/scripts/protected-renderer-roles.py
+56552244eb748cbe569ad0e63a9d47e70dcd5e3f10a28b730382de3993498d5c infra/03-security/openbao/scripts/protected-renderer-roles.py
 6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1 infra/03-security/openbao/config/policies/renderer.hcl
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl
@@ -832,8 +832,9 @@ token role이 있다고 가정한다. `operator.hcl`에는 `sys/policies/acl` �
 [renderer role helper](../../../../infra/03-security/openbao/scripts/protected-renderer-roles.py)는
 위 manifest로 받은 고정 파일만 쓴다. 대상은 정책 `renderer`·`renderer-issuer`·
 `renderer-cleanup`·`hy-home-operator`, token role `renderer-issuer`·`renderer-cleanup`,
-AppRole `hy-home-renderer`이며 이 순서로 한 번씩 쓴다. 검토 파일이 빠뜨린 role 필드
-(period, CIDR, 사용 횟수 등)도 기본값으로 함께 써서 남은 설정이 살아남지 않게 한다.
+AppRole `hy-home-renderer`이며 이 순서로 한 번씩 쓴다. role 읽기가 돌려주는 나머지
+필드도 모두 기본값으로 함께 써서 남은 설정이 살아남지 않게 한다. 예외는 role 생성 때
+정해지는 AppRole `local_secret_ids`뿐이다.
 쓰기 전에 모든 대상의 현재 값을 읽어 custody의 `prior-state.json`에 남기고, 각 쓰기 직후
 읽어 같은지 비교한다. 배포된 Agent가 RoleID를 쥐고 있으므로 AppRole이 없으면 쓰기 전에
 멈춘다. credential을 만들거나 출력하지 않는다.
@@ -858,19 +859,39 @@ exec 3<&-
 test "$P01_ROLES_EXIT" = 0 || exit "$P01_ROLES_EXIT"
 ```
 
-차이를 받아들였다면 같은 인자로 `plan` 대신 `apply`를 새 디렉터리
-`P01_ROLES_CUSTODY_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-roles.XXXXXX")"`에 대해
-실행하고, 똑같이 종료 코드를 잡아 0이 아니면 멈춘다.
+차이를 받아들였다면 `apply`한다.
+
+```bash
+P01_ROLES_CUSTODY_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-roles.XXXXXX")" || exit 1
+exec 3<"$P01_CUSTODY_DIR/root.token" || exit 1
+/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-renderer-roles.py" apply \
+  --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
+  --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
+  --connect-ip 192.168.0.13 \
+  --expected-cluster-id 51fbfa38-a715-7dca-629f-3f07233749f4 \
+  --custody-directory "$P01_ROLES_CUSTODY_DIR" \
+  --w1-custody-directory "$P01_CUSTODY_DIR" --root-fd 3
+P01_ROLES_EXIT=$?
+exec 3<&-
+test "$P01_ROLES_EXIT" = 0 || exit "$P01_ROLES_EXIT"
+```
+
+`apply`는 `plan`과 따로 이전 값을 읽으므로, 끝난 뒤 두 `state.json`의 `prior_sha256`이
+같은지 비교한다. 다르면 plan과 apply 사이에 누군가 값을 바꾼 것이므로 owner가 그 차이를
+다시 판단한다.
 
 기대: `plan`은 exit0/`RENDERER_ROLES_PLANNED`, `apply`는 exit0/`RENDERER_ROLES_APPLIED`.
 custody의 `state.json`은 값 없는 receipt이며 대상마다 경로, 이전·적용 값의 SHA-256, 변경
 여부만 담는다. `prior-state.json`은 credential이 없지만 HOME의 정책 원문이므로, window를
 닫기 전에 owner 전용 영구 저장소(tmpfs 밖, 문서 밖)에 복사한다. `renderer`나 AppRole이
 바뀌었다면 바로 `docker inspect -f '{{.State.Health.Status}}' openbao-agent`가 `healthy`이고
-렌더 결과가 그대로인지 확인한다. W1c 뒤 window를 멈추면 W5 재발급까지 Agent가 낡은 결과를
+렌더 결과가 그대로인지 확인한다. 아니면 W2로 가지 않고 window를 멈추며,
+`prior-state.json`으로 되돌릴지는 아래 rollback 판단으로 넘긴다. W1c 뒤 window를 멈추면 W5 재발급까지 Agent가 낡은 결과를
 유지하고 `OpenBaoAgentAuthFailure`가 날 수 있음을 받아들인다.
 
-중단: exit1/`BLOCKED`는 쓰기 전이다. exit2/`INDETERMINATE`는 일부 대상만 바뀌었을 수 있다.
+중단: exit1/`BLOCKED`는 쓰기 전이다. `plan`의 exit2는 읽기 실패이며 아무것도 쓰지
+않았으므로 새 디렉터리로 다시 실행할 수 있다. `apply`의 exit2/`INDETERMINATE`는 일부
+대상만 바뀌었을 수 있다.
 custody를 보존하고 같은 명령을 다시 실행하지 않는다. `state.json`이
 `RENDERER_ROLES_APPLIED`가 아니면 W2·W3를 시작하지 않는다. 되돌릴지 그대로 둘지는 root를
 폐기하기 전에 정한다. 정책 복원과 새 token role 삭제에는 root가 필요하며, 검토된 rollback
@@ -1109,6 +1130,7 @@ rotation을 성공으로 처리하지 않습니다.
 OpenBao snapshot 성공을 확인합니다. 임시 root는 W1c·W2·W7의 보호된 관리 입력으로만
 사용합니다. W4 수동 unseal에는 지정된 두 share가 필요합니다.
 
+W1c rollback 판단이 열려 있으면 root를 폐기하지 않습니다(W1c 참조).
 W7의 `revoke-root`는 root FD와 별도의 현재 OIDC operator FD를 요구합니다. 운영자는
 승인된 로그인 절차로 새 OIDC credential을 0600·single-link 보호 파일에 준비하고 그 경로를
 `P01_OPERATOR_FD_FILE`에 지정합니다. 이전 W1의 성공 기록을 현재 관리자 접근 확인으로

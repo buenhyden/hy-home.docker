@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -171,6 +171,16 @@ four Low; `iac-reviewer` three Medium, two Low). Applied:
   probe showed the operator policy's `policies = ["renderer-issuer"]` limit
   admits the string form and refuses a JSON list, which matches W5's text.
 
+The `iac-reviewer` re-review of `3e080d999` passed with notes (three Low, two
+Nits). Applied: a native probe on both images showed `allowed_entity_aliases`
+and `token_no_default_policy` read back as written, so every field a role
+read returns is now written at its default except the AppRole's
+`local_secret_ids`, fixed at creation; the runbook has a literal `apply`
+block with its exit check, says a `plan` exit 2 wrote nothing, compares the
+plan and apply `prior_sha256` values, stops at W1c if the Agent is unhealthy,
+and W7 keeps root while a W1c rollback decision is open. The test is now in
+`.github/workflow-contract.yml`, so CI runs it.
+
 ### W5 R2 Artifact Transfer
 
 `offsite.sh` gains an `artifact` action for the existing `restic-offsite`
@@ -234,6 +244,7 @@ override commands.
 | Role apply native | 3 | W3 | Real tool on an owned synthetic server, both images: targets replaced and read back, RoleID kept, role tokens exact, wrapped SecretID only, second run unchanged | `455dffd70` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 | Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
 | Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
+| Role apply re-review | 7 | W3 | Independent `iac-reviewer` re-review of the fixes: PASS with notes, notes applied; 17 tests OK with both native runs; CI gate tests OK | `3e080d999` | PASS | W3 Renderer Role Apply | - |
 | R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | Branch `claude/window-w6-ca-logrotate` | PASS | W5 R2 Artifact Transfer | - |
 | R2 read-only rehearsal | 5 | W5 | `snapshots` against HOME's R2 repository | Owner approval needed | NOT_RUN | W5 R2 Artifact Transfer | - |
 | Window overrides | 6 | W6 | Compose config with and without the override differs only in the Traefik and Prometheus image; CA mounts kept; contract test OK; timer drop-in passes `systemd-analyze verify` on a copy of the host units | Running images observed 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
