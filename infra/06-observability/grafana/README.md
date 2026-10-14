@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.9"
+version: "1.1.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-13"
 created: "2026-01-12"
 ---
 
@@ -113,7 +113,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 02-auth | `oauth2-proxy-valkey` | `oauth2-proxy-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 02-auth | `oauth2-proxy-valkey-exporter` | `oauth2-proxy-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 03-security | `openbao` | `openbao` | `Security/openbao`, `Infrastructure/containers` |  |
-| 03-security | `openbao-agent` | `openbao-agent` | `Infrastructure/containers` | auth counters and scrape health; alerts only, no dashboard |
+| 03-security | `openbao-agent` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `flink-jobmanager` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `flink-taskmanager` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `great-expectations` | none | `Infrastructure/containers` | container metrics and logs only |
