@@ -258,6 +258,22 @@ quoted `-C` path is followed; `--attr-source` takes a value; a remote push
 mapping with a wildcard or `:` counts as `main`. The hookify text rule still
 denies quoted text that contains a main push (round 1 residual).
 
+### Review Round 5
+
+On 2026-10-14 the re-review of `1a58a6be3` found three pushes to `main`
+still allowed and one false-positive class. Fixed: a `git checkout` or
+`git switch` earlier in the command now sets the branch a later push is
+judged by (`checkout` only when the name is a local branch; `-` or a
+`symbolic-ref` or `branch -m` makes an implicit or `HEAD` push fail closed);
+comments are dropped by the scanner itself, so a comment no longer swallows
+the next line; a shell runner's `-c` string is judged as its own command
+with its own `cd`; and command substitutions are taken from the raw text
+with single-quoted and escaped spans masked, so a backtick in single quotes
+or an escaped backtick is data. Also: heredoc delimiters may contain `-`,
+and the `git ... push` pattern no longer backtracks on repeated options.
+Residual, as before: a shell fed a script on stdin or from a file, and
+redirection targets such as process substitution.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -277,7 +293,9 @@ denies quoted text that contains a main push (round 1 residual).
 | Re-review 2 fixes | 5 | W5 | Round 3 fixes; 13 more denied and 4 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32), governance contract, renderer check (drift 0) | Branch | PASS | Review Round 3 | Re-review 2 |
 | Re-review 3 | 5 | W5 | Independent `security-auditor` re-review of `455cfe459`: no realistic push to `main` allowed; data text that mentions `git push` denied | Branch | FAIL | Review Round 4 | - |
 | Re-review 3 fixes | 5 | W5 | Round 4 fixes; 5 more denied and 7 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32), governance contract | Branch | PASS | Review Round 4 | Re-review 3 |
-| Re-review 4 | 5 | W5 | Independent review of the round 4 fixes | - | NOT_RUN | Review Round 4 | - |
+| Re-review 4 | 5 | W5 | Independent `security-auditor` re-review of `1a58a6be3`: three pushes to `main` allowed, one false-positive class | Branch | FAIL | Review Round 5 | - |
+| Re-review 4 fixes | 5 | W5 | Round 5 fixes; 5 more denied and 5 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32) | Branch | PASS | Review Round 5 | Re-review 4 |
+| Re-review 5 | 5 | W5 | Independent review of the round 5 fixes | - | NOT_RUN | Review Round 5 | - |
 | Candidate | 6 | W5 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

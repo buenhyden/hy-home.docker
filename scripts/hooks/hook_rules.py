@@ -248,12 +248,25 @@ _PUNCTUATION = ";&|()<>\n"
 # A heredoc body is data unless its delimiter is unquoted; either way it is
 # not judged (residual: an unquoted body's `$(...)` would run).
 _HEREDOC = re.compile(
-    r"<<-?[ \t]*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1([^\n]*)\n(?:.*?\n)??[ \t]*\2[ \t]*(?=\n|$)",
+    r"<<-?[ \t]*(['\"]?)([A-Za-z_][A-Za-z0-9_-]*)\1([^\n]*)\n(?:.*?\n)??[ \t]*\2[ \t]*(?=\n|$)",
     re.S,
 )
 _SUBSTITUTION = re.compile(r"\$\(((?:[^()]|\([^()]*\))*)\)|`([^`]*)`")
 # Commands that run a string argument as a shell command.
 _RUNNERS = frozenset({"bash", "sh", "zsh", "dash", "eval", "su", "watch", "script"})
+# Global git options that take a separate value.
+_GIT_VALUE_OPTIONS = frozenset(
+    {
+        "-C",
+        "-c",
+        "--git-dir",
+        "--work-tree",
+        "--namespace",
+        "--super-prefix",
+        "--attr-source",
+        "--config-env",
+    }
+)
 _VALUE_OPTIONS = frozenset(
     {"-o", "--push-option", "--repo", "--receive-pack", "--exec"}
 )
@@ -268,7 +281,7 @@ _LOCATION_OPTIONS = ("--git-dir", "--work-tree")
 _PUSH_CONFIG = re.compile(r"^(push\.|remote\..*\.(push|mirror)|alias\.)", re.I)
 # `git`, its global options, then the `push` subcommand, anywhere in a segment.
 _GIT_PUSH = re.compile(
-    r"\bgit(?:\s+(?:-[Cc]|--git-dir|--work-tree|--namespace|--config-env)\s+\S+"
+    r"\bgit(?:\s+(?:-[Cc]|--git-dir|--work-tree|--namespace|--config-env)\s+[^-\s]\S*"
     r"|\s+-\S+)*\s+push\b"
 )
 
@@ -301,16 +314,23 @@ def _segments(command: str) -> list[object]:
     lexer = shlex.shlex(command, posix=True, punctuation_chars=_PUNCTUATION)
     lexer.whitespace = " \t\r"
     lexer.whitespace_split = True
+    lexer.commenters = ""
     items: list[object] = []
     words: list[str] = []
     target = False
+    comment = False
     for token in lexer:
+        if comment and token != "\n" and not token.endswith("\n"):
+            continue
         if not (token and set(token) <= set(_PUNCTUATION)):
             if target:
                 target = False
+            elif token.startswith("#"):
+                comment = True
             else:
                 words.append(token)
             continue
+        comment = False
         if set(token) & set("<>"):
             if words and words[-1].isdigit():
                 words.pop()
@@ -358,7 +378,13 @@ def _scan(command: str, cwd: pathlib.Path | None) -> bool:
         if _GIT_PUSH.search(command):
             raise _Unknown from None
         return False
+    # Command substitutions run wherever bash expands them, which excludes
+    # single quotes and escaped characters.
+    for inner in _live_substitutions(command):
+        if _scan(inner, cwd):
+            return True
     directory = cwd
+    head_branch: str | None = None
     subshells: list[pathlib.Path | None] = []
     pushed: list[pathlib.Path | None] = []
     for item in items:
@@ -367,20 +393,17 @@ def _scan(command: str, cwd: pathlib.Path | None) -> bool:
             continue
         if item == ")":
             directory = subshells.pop() if subshells else directory
+            head_branch = None
             continue
         words = list(item)  # type: ignore[call-overload]
-        # Command substitutions run wherever they appear, even inside quotes.
-        for word in words:
-            for match in _SUBSTITUTION.finditer(word):
-                inner = match.group(1) if match.group(1) is not None else match.group(2)
-                if _scan(inner, directory):
-                    return True
         location: list[str] = []
         while words and (words[0] in _KEYWORDS or _ASSIGNMENT.fullmatch(words[0])):
             _locate(words.pop(0), location)
         if not words:
             continue
         head = pathlib.PurePath(words[0]).name
+        if head in {"cd", "pushd", "popd"}:
+            head_branch = None
         if head in {"cd", "pushd"} and len(words) > 1:
             if head == "pushd":
                 pushed.append(directory)
@@ -395,8 +418,8 @@ def _scan(command: str, cwd: pathlib.Path | None) -> bool:
             directory = pushed.pop() if pushed else directory
             continue
         if head in _RUNNERS:
-            # The runner joins its arguments into one command string.
-            if _scan(" ".join(words[1:]), directory):
+            script = _runner_script(head, words[1:])
+            if script is not None and _scan(script, directory):
                 return True
             continue
         for index, word in enumerate(words):
@@ -405,9 +428,103 @@ def _scan(command: str, cwd: pathlib.Path | None) -> bool:
             here = list(location)
             for prefix in words[:index]:
                 _locate(prefix, here)
-            if _git_push_targets_main(words[index:], directory, here):
+            moved = _head_change(words[index:], directory, here)
+            if moved is not None:
+                head_branch = moved
+                continue
+            if _git_push_targets_main(words[index:], directory, here, head_branch):
                 return True
     return False
+
+
+def _live_substitutions(command: str) -> list[str]:
+    """Return the bodies of `$(...)` and backticks that bash would run."""
+
+    masked = list(command)
+    quote = ""
+    index = 0
+    while index < len(command):
+        character = command[index]
+        if quote == "'":
+            if character == "'":
+                quote = ""
+            masked[index] = " "
+        elif character == "\\" and index + 1 < len(command):
+            masked[index] = masked[index + 1] = " "
+            index += 1
+        elif character == "'" and not quote:
+            quote = "'"
+        elif character == '"':
+            quote = "" if quote == '"' else '"'
+        index += 1
+    return [
+        command[match.start(1) : match.end(1)]
+        if match.group(1) is not None
+        else command[match.start(2) : match.end(2)]
+        for match in _SUBSTITUTION.finditer("".join(masked))
+    ]
+
+
+def _runner_script(head: str, arguments: list[str]) -> str | None:
+    """Return the command string a runner executes, or None for a script file."""
+
+    if head == "eval":
+        return " ".join(arguments)
+    if head == "watch":
+        rest = list(arguments)
+        while rest and rest[0].startswith("-"):
+            option = rest.pop(0)
+            if option in {"-n", "--interval", "-d", "--differences"} and rest:
+                if option in {"-n", "--interval"}:
+                    rest.pop(0)
+        return " ".join(rest)
+    for index, word in enumerate(arguments):
+        if word.startswith("-") and not word.startswith("--") and "c" in word[1:]:
+            return arguments[index + 1] if index + 1 < len(arguments) else ""
+    return None
+
+
+def _subcommand_index(tokens: list[str]) -> int:
+    index = 1
+    while index < len(tokens) and tokens[index].startswith("-"):
+        index += 2 if tokens[index] in _GIT_VALUE_OPTIONS else 1
+    return index
+
+
+def _head_change(
+    tokens: list[str], directory: pathlib.Path | None, location: list[str]
+) -> str | None:
+    """Return the branch a checkout or switch leaves HEAD on.
+
+    `?` means HEAD moved somewhere this check cannot name; None means this git
+    command does not move HEAD.
+    """
+
+    index = _subcommand_index(tokens)
+    subcommand = tokens[index] if index < len(tokens) else ""
+    arguments = tokens[index + 1 :]
+    if subcommand == "symbolic-ref" or (
+        subcommand == "branch" and {"-m", "-M", "--move"} & set(arguments)
+    ):
+        return "?"
+    if subcommand not in {"checkout", "switch"}:
+        return None
+    for position, word in enumerate(arguments):
+        if word in {"-b", "-B", "-c", "-C", "--orphan"}:
+            return arguments[position + 1] if position + 1 < len(arguments) else "?"
+    if "-" in arguments:
+        return "?"
+    before = arguments[: arguments.index("--")] if "--" in arguments else arguments
+    names = [word for word in before if not word.startswith("-")]
+    if not names:
+        return None
+    if subcommand == "switch":
+        return names[0]
+    here = (directory or pathlib.Path("/")) / "."
+    known = _git(
+        here, location, "rev-parse", "--verify", "--quiet", f"refs/heads/{names[0]}"
+    )
+    return names[0] if known is not None else None
 
 
 def _locate(word: str, location: list[str]) -> None:
@@ -422,7 +539,10 @@ def _locate(word: str, location: list[str]) -> None:
 
 
 def _git_push_targets_main(
-    tokens: list[str], directory: pathlib.Path | None, location: list[str]
+    tokens: list[str],
+    directory: pathlib.Path | None,
+    location: list[str],
+    head_branch: str | None = None,
 ) -> bool:
     here = directory or pathlib.Path("/")
     index = 1
@@ -477,7 +597,12 @@ def _git_push_targets_main(
     remote, refspecs = (positional[0] if positional else ""), positional[1:]
     if not refspecs and "--tags" in tokens:
         return False
-    branch = _git(here, location, "rev-parse", "--abbrev-ref", "HEAD")
+    if head_branch == "?" and (
+        not refspecs
+        or any(spec.lstrip("+").partition(":")[0] in {"HEAD", "@"} for spec in refspecs)
+    ):
+        raise _Unknown
+    branch = head_branch or _git(here, location, "rev-parse", "--abbrev-ref", "HEAD")
     if branch is None:
         return True
     # Without a named remote any configured remote may be used.

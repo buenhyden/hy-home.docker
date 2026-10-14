@@ -2506,6 +2506,7 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "git push \\\n  -u origin HEAD",
                 "(cd feature && true); git push",
                 "pushd feature && popd && git push",
+                "cd . # stay here\ngit push -u origin HEAD",
                 # Shell keywords, groups and wrappers with values.
                 "for i in 1 2; do git push -u origin HEAD && break; done",
                 "until git push; do sleep 5; done",
@@ -2528,9 +2529,27 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "pushd other && git push",
                 "GIT_DIR=other/.git git push",
                 "env GIT_DIR=other/.git git push",
+                # A branch switch earlier in the command decides the push.
+                "git checkout main && git push",
+                "git switch main; git push origin HEAD",
+                "git checkout - && git push",
             ):
                 with self.subTest(command=command):
                     self.assertTrue(self._denied(command, repo))
+            self.assertFalse(
+                self._denied("git checkout -b fresh && git push -u origin HEAD", repo)
+            )
+            # A runner's -c string is judged where it runs.
+            self.assertTrue(self._denied("bash -c 'cd .. && git push'", feature))
+            # Substitutions bash would not run are data.
+            for command in (
+                "git commit -m 'Deny `git push origin main` forms'",
+                'git commit -m "Deny \\`git push origin main\\`"',
+                "gh pr create --body 'Run `git push --all` or `git push origin $B`'",
+                "git commit -F - <<'END-MSG'\nIt didn't `git push`\nEND-MSG",
+            ):
+                with self.subTest(command=command):
+                    self.assertFalse(self._denied(command, repo))
 
     def test_pre_push_guard_refuses_main(self) -> None:
         guard = ROOT / "scripts/hooks/pre-push-guard.sh"
