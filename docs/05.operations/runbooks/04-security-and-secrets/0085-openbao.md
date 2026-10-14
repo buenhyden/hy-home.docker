@@ -558,7 +558,10 @@ commit을 담는 순간 다음 일일 백업부터 적용되므로, 5단계가 `
 merge하고 운영 checkout에 반영한다. host 파일과 이미 만든 snapshot은 남으므로 그 순간
 복구 자료를 잃지는 않지만, 그 뒤의 새 recovery point는 off-host 보관에만 기댄다. 5단계는
 사본을 꺼낼 수 있는지만 확인하므로, W1이나 6단계 restore가 off-host share의 값을 증명하기
-전까지 host 파일을 지우지 않고 제외 이전 host snapshot도 prune하지 않는다.
+전까지 host 파일을 지우지 않고 제외 이전 host snapshot도 prune하지 않는다. W1 root ceremony는
+share 2개만 쓰므로 그 둘만 증명한다. 무엇이든 지우기 전에 세 번째 share의 off-host 사본도
+이미 증명된 share 하나와 짝지은 두 번째 ceremony 등으로 증명한다. rekey 뒤 새 share의
+`-verify`도 2개만 확인하므로 같은 규칙을 따른다.
 
 rekey는 실행 중인 cluster의 unseal key만 바꾼다. rekey 전에 만든 Raft snapshot은 restore하면
 옛 share로 열린다. 그래서 rekey는 옛 share로 지금의 서버를 여는 길을 막을 뿐이고, 제외 이전
