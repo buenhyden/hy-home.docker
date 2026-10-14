@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.22"
+version: "0.12.23"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -486,8 +486,8 @@ file backend에는 자체 rotation이 없다. 운영자는 실제 audit filesyst
 증가율을 측정해 보존 기간·rotation size·schedule을 정하고 기존 host logrotate에
 rename/create(0600, UID 100/GID 1000)와 대상 OpenBao `SIGHUP` reopen을 등록한다.
 `copytruncate`로 손실을 감추거나 audit device를 제거하지 않는다. `/` 용량 알림은 실제
-mountpoint가 `/`라는 관찰이 있어야 audit 용량 증거로 인정한다. 아직 해당 HOME 관찰과
-rotation 등록은 미실행이다. 임시 용량 장애 시험은 실제 host 용량 최적값이 아니다.
+mountpoint가 `/`라는 관찰이 있어야 audit 용량 증거로 인정한다. 2026-10-15 owner가 rotation
+규칙과 시간 단위 drop-in을 설치했다(SPEC-0243). 실제 회전과 HOME 용량 관찰은 아직 없다. 임시 용량 장애 시험은 실제 host 용량 최적값이 아니다.
 
 현재 한 backend의 쓰기가 실패하면 audited 요청은 실패하고 blocking writer라면
 응답이 지연될 수 있다. `/sys/health` 같은 비감사 경로가 200이어도 정상 업무를 뜻하지
@@ -536,12 +536,12 @@ P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 g
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
 5. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근의 off-host 보관과 share·CA key의 host 보조 사본을 값 없이 확인한다(owner 확인). 확인 전까지 미실행이며, P01은 계속 차단된다. 배치와 확인은 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다.
 6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않았다. 지금은 추적되는 `protected-semantic-restore.py`가 있고, SPEC-0243이 합성 자원에서 전체 `perform()`을 native로 리허설했다. HOME의 실제 restore와 canary는 아직 실행되지 않았다.
-7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 현재 HOME server에는 audit mount가 없으므로 8단계 업그레이드 window로 미룬다.
+7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 규칙과 drop-in은 2026-10-15에 설치됐다. 현재 HOME server에는 audit mount가 없으므로 용량 측정은 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
 9. HOME cold boot를 한다(별도 승인).
 10. 현재 버전 인증과 consumer 읽기를 위한 consumer와 ACL을 고른다(P06 담당자 선택).
 
-변조된 HMAC의 audit 검증은 미실행이다. Agent 인증 실패 alert는 SPEC-0239(PR #463, #466)로 source에 들어왔다. `agent.hcl`이 `metrics_only` listener(8100)로 `/agent/v1/metrics`를 열고, Prometheus job `openbao-agent`가 scrape하며, `OpenBaoAgentMetricsScrapeFailing`과 `OpenBaoAgentAuthFailure`가 알린다. 아직 배포되지 않았다. 실행 중인 server와 Agent는 Compose가 고정한 image보다 이전 버전이므로, Agent만 다시 만들면 server보다 먼저 업그레이드된다. 그래서 2026-10-14 owner 결정으로 유지보수 창의 W5(Agent 업그레이드와 wrapped 재발급)에서 함께 배포하고 이어서 Prometheus를 restart한다. 인증은 되는데 렌더만 낡는 경우는 metric이 없어서 배포 뒤에도 Docker healthcheck(token lookup·KV 읽기·렌더 bytes 일치)의 `unhealthy`로만 드러나고 알림은 없다.
+변조된 HMAC의 audit 검증은 미실행이다. Agent 인증 실패 alert는 SPEC-0239(PR #463, #466)로 source에 들어왔다. `agent.hcl`이 `metrics_only` listener(8100)로 `/agent/v1/metrics`를 열고, Prometheus job `openbao-agent`가 scrape하며, `OpenBaoAgentMetricsScrapeFailing`과 `OpenBaoAgentAuthFailure`가 알린다. 아직 배포되지 않았다. 실행 중인 server와 Agent는 Compose가 고정한 image보다 이전 버전이므로, Agent만 다시 만들면 server보다 먼저 업그레이드된다. 그래서 2026-10-14 owner 결정으로 유지보수 창의 W5(Agent 업그레이드와 wrapped 재발급)에서 함께 배포하고 이어서 Prometheus를 다시 만든다. 인증은 되는데 렌더만 낡는 경우는 metric이 없어서 배포 뒤에도 Docker healthcheck(token lookup·KV 읽기·렌더 bytes 일치)의 `unhealthy`로만 드러나고 알림은 없다.
 
 #### 1인 관리자 custody 절차
 
@@ -648,11 +648,18 @@ W3b가 시작되지 않으면 W3b 이후를 다음 window로 넘긴다. T+55까�
 W3a를 시작하지 않는다(단발 attempt를 쓰지 않는다). T+80까지 W4가 시작되지 않으면 HOME
 server를 바꾸지 않고 멈춘다.
 
-어느 지점에서 멈추든 같은 정리를 한다: H3으로 멈춘 `hyhome-backup.timer`를 다시 켠다.
-silence는 window 동안 발생한 경보를 기록한 뒤 지운다. W3에서 멈춘 Agent는 W4 전이면 같은
-image로 다시 시작한다. 임시 root는 아래 W7 절차로 폐기하거나, 폐기할 수 없으면 아래
-root 보관 규칙을 따른다. W5·W7 operator credential 파일은 폐기하고 지운다. 멈춘 시각과
-남은 단계를 값 없이 Task에 기록한다. W3a는 attempt와 대상이 고정된
+어느 지점에서 멈추든 같은 정리를 한다: W0에서 멈춘 `hyhome-backup.timer`를 다시 켠다.
+silence는 window 동안 발생한 경보를 기록한 뒤 지운다. W3에서 멈춘 hy-home.k8s 로그인 주체를
+다시 켠다. W3에서 멈춘 Agent는 다시 켜지 않는다. 일회용 SecretID를 이미 소비해 인증하지
+못하므로, consumer는 렌더된 파일로 계속 동작하고 Agent는 다음 window의 W5에서 새 SecretID로
+올린다(2026-10-15 owner 결정). 그동안 나는 Agent 경보는 알려진 상태로 기록한다. W2가 끝난
+뒤 멈췄으면 설치된 snapshot token은 일일 backup이 쓰므로 그대로 두고, 다음 window는 그 token이
+갱신되는지 확인한 뒤 W2를 건너뛴다. 임시 root는 아래 W7 절차로 폐기하거나, 폐기할 수 없으면 아래
+root 보관 규칙을 따른다. 이 window에서 쓴 모든 OIDC operator token(W1·W3a·W5·W7)을
+`revoke-self`로 폐기하고, token helper 파일이 생겼으면 지운다. `$P01_CUSTODY_DIR`,
+`$P01_TOKEN_CUSTODY_DIR`, `$P01_RUNTIME_DIR/p01-w3a.*`의 모든 파일을 `shred -u`하고 디렉터리를
+지운다(root는 `root.token`만이 아니라 `initialization.json`의 OTP와 `update-2.json`의 encoded
+token으로도 다시 만들 수 있다). 멈춘 시각과 남은 단계를 값 없이 Task에 기록한다. W3a는 attempt와 대상이 고정된
 단발 실행이라, 다음 window에서 다시 하려면 새 attempt를 정하는 별도 변경이 먼저
 필요하다. W6의 실제 회전·`SIGHUP` 재개방과 W7의 다음 backup 성공은 window 안에서 볼 수
 없으므로 window 뒤 관찰로 기록한다. W1b rekey는 이 window에 없습니다(SPEC-0242). W1 직후
@@ -683,9 +690,14 @@ docker info -f '{{.Debug}}'   # false여야 한다. true면 exec 환경의 token
 loginctl show-user "$USER" -p Linger   # yes가 아니면 window 동안 다른 로그인 세션을 유지한다
 ```
 
-window의 모든 bash 블록은 `bash --noprofile --norc`로 연 새 셸에서 `unset HISTFILE` 뒤에
-실행한다. 기본 셸 zsh의 `read -p`는 coprocess 읽기라 숨김 입력이 되지 않는다. 블록의
-`|| exit 1`은 그 셸만 닫는다. 마지막 로그인 세션이 끝나면 logind가 W1 custody가 있는
+window 전체를 `bash --noprofile --norc`로 연 셸 하나에서 `unset HISTFILE`과
+`cd /home/hyunyoun/data/hy-home.docker` 뒤에 실행한다(상대 경로와 `.env`가 main checkout을
+가리킨다). 기본 셸 zsh의 `read -p`는 coprocess 읽기라 숨김 입력이 되지 않는다. 블록의
+`|| exit 1`은 그 셸을 닫으므로, 값이 아닌 경로 변수(`P01_RUNTIME_DIR`·`P01_SCRIPT_DIR`·
+`P01_CUSTODY_DIR`·`P01_TOKEN_CUSTODY_DIR`·`P01_INPUTS`·`P01_SNAPSHOT_DIRECTORY` 등)는 만들 때마다
+`declare -p <이름> >>"$XDG_RUNTIME_DIR/p01-window.vars"`로 남기고, 셸이 닫히면 같은 규칙의 새
+셸에서 `. "$XDG_RUNTIME_DIR/p01-window.vars"`로 되살린 뒤 정리나 재시도를 한다. 값·token은 이
+파일에 넣지 않는다. 마지막 로그인 세션이 끝나면 logind가 W1 custody가 있는
 `$XDG_RUNTIME_DIR`를 지우므로 Linger나 별도 세션으로 막는다.
 
 기대: compose 검증 통과, `Sealed false`, compose가 고정한 candidate image가 local에
@@ -696,15 +708,17 @@ image가 없으면 registry에서 받을 수 없으므로, 별도 승인으로 �
 W0에서는 audit 디렉터리와 rotation 계약도 server 재생성 전에 준비합니다. 실제 audit
 경로 `/home/hyunyoun/storage/volumes/security/openbao/audit`는 2026-10-14에 독립 IaC
 검토 후 생성됐습니다: device2064/inode115609395, UID100/GID1000, mode0700,
-해당 filesystem 가용 공간 약2.5TiB. 아직 audit volume·file·전용 rotation 규칙 등록이나 server
-mount는 없습니다. W6는 사후 쓰기·reopen 검증 단계이며 audit 디렉터리의 최초 준비를
+해당 filesystem 가용 공간 약2.5TiB. 전용 rotation 규칙은 2026-10-15에 등록됐고, audit
+volume·file과 server mount는 아직 없습니다. W6는 사후 쓰기·reopen 검증 단계이며 audit 디렉터리의 최초 준비를
 그때까지 미루지 않습니다. 매 실행 전 같은 path/device/inode·권한과 실제 mount 용량을
 다시 확인하고, 원본 데이터 volume `hy-home-infra_openbao-data`의 bind device
 `/home/hyunyoun/storage/volumes/security/openbao/data`와 device2064/inode115612005를
 보존합니다. audit를 준비하려고 데이터 권한을 재귀 변경하지 않습니다.
 
 [전용 rotation 규칙](../../../../infra/03-security/openbao/config/logrotate/openbao)은
-이 HOME의 UID100=`dhcpcd`, GID1000=`hyunyoun` 매핑을 사용합니다. 최초 숫자 group
+이 HOME의 UID100=`dhcpcd`, GID1000=`hyunyoun` 매핑을 사용합니다. host의 `dhcpcd` 계정은
+OpenBao와 같은 UID라 `audit.json`과 TLS server key를 읽을 수 있습니다. dhcpcd의 권한 분리
+process는 chroot되어 위험이 작으며 알려진 잔여 위험으로 둡니다. 최초 숫자 group
 표기는 실제 격리 parser에서 거부돼 이름으로 수정했습니다. rename/create0600,
 `nocopytruncate`, `compress`/`delaycompress`와 고정 container ID의 상태·Compose 라벨
 검증 뒤 같은 ID에만 `SIGHUP`을 보내는 계약입니다. 성장률 미측정으로 `maxsize256M`,
@@ -758,6 +772,13 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   Delivery](#renderer-secretid-delivery) 2단계로 `$operator_tools/$P01_COMMIT`에 설치하고,
   `P01_APPROVED_COMMIT`·`operator_tools`·`issuer_commit`(=`P01_COMMIT`)·`agent_volume`·
   `issuance_journal`·`P01_SNAPSHOT_DIRECTORY`를 값 없이 Task에 기록한다.
+- **operator credential.** window의 OIDC 로그인은 token helper 파일(홈 디렉터리, 영구 disk)에
+  저장하지 않는다. `umask 077`에서
+  `bao login -no-store -token-only -method=oidc -path=oidc role=home-admin >"$P01_RUNTIME_DIR/<이름>.token"`으로
+  tmpfs 0600 파일에 받고 FD나 `"$(cat …)"`로만 넘긴다. W5의 숨김 prompt 대신
+  `BAO_TOKEN="$(cat "$P01_RUNTIME_DIR/<이름>.token")"`를 써도 된다. share는 화면에 띄우지 않고
+  clipboard 기록·동기화를 끈 상태에서 숨김 prompt에 붙여 넣는다. 이렇게 만든 token은 window 끝이나
+  중단 때 위 정리대로 폐기하고 지운다.
 - **기준선.** 실행 중 `openbao` image ID가 restore의 이전 image(`11fd73a2…`)와 같고,
   `openbao-agent`가 `healthy`이며(W1c health 정지의 기준), `/dev/shm`이 `noexec` 없는
   tmpfs이고, restore 대상 `p01-restore-20261014-05`가 없고 부모 identity가 그대로인지 본다.
@@ -782,8 +803,9 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   첫 조회가 403이면 token은 이미 만료됐으므로 폐기 없이 `shred -u "$t"`로 지우고 그렇게 기록한다.
 
 - **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
-  쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 지금 없으므로 W4 뒤 gateway를 거치는
-  OIDC 로그인과 W7 `revoke-root`가 끊긴다. Compose는 mount를 이미 선언한다. 2026-10-15 SEC01이
+  쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 없으면 W4 뒤 gateway를 거치는
+  OIDC 로그인과 W7 `revoke-root`가 끊긴다. 2026-10-15 owner가 아래 명령으로 다시 만들었고,
+  실행 image `575fa15b`와 그 파일이 확인됐다(SPEC-0243). W0에서는 같은 두 가지만 다시 본다. Compose는 mount를 이미 선언한다. 2026-10-15 SEC01이
   Compose 고정 Traefik을 만료일과 함께 수용했으므로(SPEC-0204 TSK-0009), window 전 별도 owner
   승인으로 아래 차이 비교를 마친 뒤
   `docker compose --profile core up -d --no-deps --no-build --pull never --force-recreate traefik`으로
@@ -799,8 +821,9 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   명령은 worktree가 아니라 `.env`가 있는 main checkout에서 실행한다. 서비스마다
   `docker inspect`의 `.Mounts`(source·destination·RW), `.NetworkSettings.Networks` 이름,
   `.HostConfig`의 memory·CPU·pids와
-  `docker compose -f docker-compose.yml -f infra/01-gateway/traefik/compose.window-ca.override.yml -f infra/06-observability/compose.window-ca.override.yml config --format json <service>`의
-  volumes·networks·자원을 나란히 비교한다. 실행 중 `Config.Image`는 tag만 담으므로 image는
+  `docker compose config --format json <service>`의 volumes·networks·자원을 나란히 비교한다.
+  image는 Compose 고정과 비교한다. Traefik은 이미 그 image로 실행 중이고, Prometheus는 W5에서
+  그 image로 올라간다. 실행 중 `Config.Image`는 tag만 담으므로 image는
   ID로 비교하고 config hash는 쓰지 않는다. 단일 파일 bind는 재생성 때 지금 파일 내용이
   들어가므로 그 파일의 최근 변경도 함께 본다. override가 고정한 참조가 로컬에서 풀리는지
   `docker image inspect --format '{{.Id}}' <override의 image>`로 두 서비스 모두 확인한다.
@@ -1038,7 +1061,8 @@ test "$P01_TOKEN_EXIT" = 0 || exit "$P01_TOKEN_EXIT"
 Agent·관리 writer의 정지 범위, 정확한 container ID와 정지 전 상태를 먼저 기록합니다.
 writer는 `openbao-agent`(`docker stop openbao-agent`), OIDC 운영자 로그인, hy-home.k8s의
 OpenBao 로그인(External Secrets 등 Kubernetes auth)이다. 운영자는 W3 시작부터 W3a가 끝날
-때까지 새로 로그인하지 않는다. W5·W7의 새 OIDC credential은 그 뒤에 만든다. hy-home.k8s
+때까지 새로 로그인하지 않는다. W3a의 HOME 읽기 token은 W3 전에 받아 두고(restore는 시작할
+때만 읽으므로 그때 유효하면 된다), W5·W7의 새 OIDC credential은 W3a 뒤에 만든다. hy-home.k8s
 쪽 로그인 주체를 멈춘 방법과 확인을 값 없이 Task에 기록하며, 멈출 방법이 없으면 W3를 열지
 않는다.
 Agent와 해당 writer가 정지했음을 확인한 뒤 아래
@@ -1128,8 +1152,7 @@ image entrypoint와 `/openbao/config`·`/tmp` tmpfs, `write sys/unseal key=-`, `
 sealed로 남고 둘째 share가 `invalid key`로 실패해야 통과한다. 두 image 모두 합성 대상에서 init·unseal·
 login·snapshot restore가 통과했다. SPEC-0243 W4가 네 입력의 producer를 더했다(아래).
 W4 rehearsal은 preflight가 multi-arch 이전 image의 platform manifest ID를 비교해 W3a를 항상
-멈추는 결함도 찾았고, 이제 local image ID와 `linux/amd64`를 비교한다. 위 BLOCKED가 풀린
-뒤에도 W3a는 W3 산출물·lease와 owner 승인이 있어야 연다.
+멈추는 결함도 찾았고, 이제 local image ID와 `linux/amd64`를 비교한다. W3a는 W3 산출물·lease와 owner 승인이 있어야 연다.
 
 입력 준비. renderer helper는 위 [Renderer SecretID Delivery](#renderer-secretid-delivery) 2단계의
 installer로 `$operator_tools/$issuer_commit`에 먼저 설치한다. bundle·보안 receipt·candidate는
@@ -1299,13 +1322,11 @@ SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 versio
 이 재생성으로 SPEC-0239 Agent telemetry도 배포된다(2026-10-14 owner 결정). Compose와
 `agent.hcl`이 이미 `metrics_only` listener(8100)와 `obs_net`을 담고 있으므로 따로 바꿀 것은
 없다. Agent가 `healthy`가 된 뒤 Prometheus를 다시 만든다. `restart`는 Compose 변경을
-적용하지 않아 HTTPS `openbao` job에 필요한 CA mount가 계속 빠지므로 쓰지 않는다. W0에서
-실행 중 image가 Compose 고정과 같고 다른 설정 차이가 없음을 확인한 뒤에만
-`docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
-실행한다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다.
+적용하지 않아 HTTPS `openbao` job에 필요한 CA mount가 계속 빠지므로 쓰지 않는다.
 2026-10-15 SEC01이 Compose 고정 Prometheus를 만료일과 함께 수용했으므로(SPEC-0204
-TSK-0009), 실행 중 image가 그보다 이전이어도 다른 설정 차이가 없으면 같은 명령으로 Compose
-고정 image로 올린다. image는 W0에서 local에 있는지 확인한다. 새 image가 뜨지 않거나 rule
+TSK-0009), W0에서 image 외의 설정 차이가 없음을 확인한 뒤
+`docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`로
+Compose 고정 image로 다시 만든다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다. image는 W0에서 local에 있는지 확인한다. 새 image가 뜨지 않거나 rule
 평가가 실패하면 이전 image를 유지하는
 [Prometheus window overlay](../../../../infra/06-observability/compose.window-ca.override.yml)로
 `docker compose -f docker-compose.yml -f infra/06-observability/compose.window-ca.override.yml --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
@@ -1333,18 +1354,22 @@ rotation을 성공으로 처리하지 않습니다.
 
 **W7 사후 점검과 root 폐기.** renderer 재인증, consumer 읽기(Keycloak·Grafana 렌더 결과
 일치), `OpenBaoSealed` 등 기존 경보가 조용한지, `up{job="openbao"}`를 확인합니다. 다음
-backup 단위의 OpenBao snapshot 성공은 window 뒤 관찰입니다. W7 뒤 backup timer를 다시 켜고
-경보 silence를 지웁니다.
+backup 단위의 OpenBao snapshot 성공은 window 뒤 관찰입니다. W7 뒤 backup timer와
+hy-home.k8s 로그인 주체를 다시 켜고, 경보를 기록한 뒤 silence를 지웁니다.
 
-window가 root를 폐기하지 못하고 끝나면(W1c rollback 판단, W4 sealed 등) W1 custody의
-`root.token`은 `$XDG_RUNTIME_DIR` tmpfs에 있어 마지막 로그아웃이나 재부팅에 사라지고, 만료
-없는 root가 남는다. 값은 영구 저장소로 옮기지 않는다(backup 대상인 `secrets/` 포함). root의
-accessor와 custody 수령 기록만 값 없이 Task에 남기고 `root.token`은 `shred -u`로 지운다. 다음
-window는 W1 절차로 새 root를 만들어 `bao token revoke -accessor <accessor>`로 이전 root를
-폐기하고, 그 결과를 W0 점검으로 확인한다. server가 sealed면 이전 root는 unseal 전까지 쓸 수 없다. 임시 root는 W1c·W2·W7의 보호된 관리 입력으로만
+window가 root를 폐기하지 못하고 끝나면(W1c rollback 판단이 열려 있음, W4 sealed 등) 만료
+없는 root가 OpenBao에 남는다. W1 custody는 `$XDG_RUNTIME_DIR` tmpfs에 있고 Linger가 켜져 있어
+재부팅 전까지 남으며, 저장소 UID로 도는 모든 process가 읽을 수 있다. 값은 영구 저장소로
+옮기지 않는다(backup 대상인 `secrets/` 포함). 위 정리대로 두 custody 디렉터리의 모든 파일을
+`shred -u`해 값을 아무도 갖지 않게 하고, 폐기하지 못한 사실만 값 없이 Task에 남긴다. accessor도
+기록하지 않는다. 다음 window는 W1 절차로 새 root를 만든 뒤 `bao list auth/token/accessors`의
+각 accessor를 `bao token lookup -accessor`로 보고, policy가 `root`이면서 새 root가 아닌 것을
+`bao token revoke -accessor`로 폐기하며, 출력은 화면에만 두고 기록하지 않는다. server가 sealed면
+이전 root는 unseal 전까지 쓸 수 없다. W1c rollback 판단이 열린 채 window가 끝나면 root는 이렇게
+버리고, rollback이 필요하면 다음 window의 새 root로 한다. 임시 root는 W1c·W2·W7의 보호된 관리 입력으로만
 사용합니다. W4 수동 unseal에는 지정된 두 share가 필요합니다.
 
-W1c rollback 판단이 열려 있으면 root를 폐기하지 않습니다(W1c 참조).
+window 안에서 W1c rollback 판단이 열려 있는 동안은 root를 폐기하지 않습니다(W1c 참조).
 W7의 `revoke-root`는 root FD와 별도의 현재 OIDC operator FD를 요구합니다. 운영자는
 승인된 로그인 절차로 새 OIDC credential을 0600·single-link 보호 파일에 준비하고 그 경로를
 `P01_OPERATOR_FD_FILE`에 지정합니다. 이 파일은 `$P01_RUNTIME_DIR` tmpfs 안에 두고, W7이 끝나거나

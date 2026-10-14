@@ -1,9 +1,9 @@
-# SPEC-0243 W5/W6: recreate Prometheus with the OpenBao CA mount its Compose
-# file already declares, while keeping the image it ran on 2026-10-14 (Compose
-# pins a newer one that is not deployed). Only `image` changes. Use it solely as
-# a second `-f` with `up -d --no-deps --no-build --pull never --force-recreate
-# prometheus`, and only when W0 shows the running image ID equals this digest.
-# Retire it once SEC01 moves the running image to the Compose pin.
+# SPEC-0243 rollback overlay: recreate Prometheus on the image it ran on 2026-10-14,
+# with the OpenBao CA mount its Compose file declares. Only `image` changes.
+# SEC01 accepted the Compose pin on 2026-10-15 (SPEC-0204 TSK-0009), so the
+# pin is the normal path; use this solely as a second `-f` with `up -d
+# --no-deps --no-build --pull never --force-recreate prometheus` to roll back.
+# Remove it once Prometheus is stable on the pin.
 x-hyhome-overlay:
   version: 1
   base: infra/06-observability/docker-compose.yml
