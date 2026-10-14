@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.11.0"
+version: "0.12.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -522,7 +522,7 @@ P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 g
 3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급하며, 그 전까지 일일 backup의 OpenBao snapshot은 recovery gap으로 계속 실패한다.
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
 5. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근의 off-host 보관과 share·CA key의 host 보조 사본을 값 없이 확인한다(owner 확인). 확인 전까지 미실행이며, P01은 계속 차단된다. 배치와 확인은 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다.
-6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않으므로 이 단계에는 추적되거나 새로 검토한 도구가 필요하다.
+6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않았다. 지금은 추적되는 `protected-semantic-restore.py`가 있지만 native로 실행된 적이 없고, 고정 image에서 `/bin/bao` 경로와 `-config` 없는 기동이 실패할 가능성이 있어(SPEC-0243) 먼저 합성 snapshot으로 native 시험한다.
 7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 현재 HOME server에는 audit mount가 없으므로 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
 9. HOME cold boot를 한다(별도 승인).
@@ -614,6 +614,7 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 | --- | --- | --- | --- |
 | W0 | 사전 점검 | window 전 | SEC01 담당자, owner |
 | W1 | root ceremony | 10분 | buenhyden(서로 다른 share 2개 수동 입력) |
+| W1c | renderer 정책·token role 적용 | 측정 전 | owner(root 사용, credential 정책 변경) |
 | W2 | snapshot token 발급과 확인 | 5분 | owner(credential 발급) |
 | W3 | 새 업그레이드 전 snapshot | 5분 목표 | owner(backup 실행) |
 | W3a | 격리 semantic restore와 candidate 시험 | 측정 전, cutover 전 필수 | 정확한 새 artifact·빈 대상의 독립 검토와 owner |
@@ -625,14 +626,14 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 
 W3a는 HOME server 변경 전에 통과해야 하는 준비 단계이며, 실제 복구 실행 시간은
 측정되지 않았고 native restore는 NOT_RUN입니다. 기존 30분 cutover·60분 window는 계획 추정치입니다.
-W1b rekey는 이 window에 없습니다(SPEC-0242). W1 직후 W2·W3를 엽니다.
+W1b rekey는 이 window에 없습니다(SPEC-0242). W1 직후 W1c, 그다음 W2·W3를 엽니다.
 새 snapshot의 semantic restore를 끝낸 다음 W4 cutover를 열며, 준비 시간이 목표를
 넘거나 중단 조건이 생기면 HOME 변경을 시작하지 않고 남은 단계는 다음 window로 넘깁니다.
 
-2026-10-14의 선택 artifact 검사에서 공식 candidate의 Go HTTP/2 경로에
-`GO-2026-6612` 적용이 확인돼 SEC01 배포 수용은 **BLOCKED**입니다. scanner 실행 성공은
-보안 통과가 아닙니다. 패치된 dependency로 검증한 새로운 artifact가 수용되기 전에는
-현재 source pin으로 W4/W5를 실행하지 않습니다. 실제 scan·플랫폼 적용 판단은
+Compose는 두 OpenBao service 모두 자체 빌드 image(manifest `46bf9b5c`)를 고정한다. 독립
+보안 검토는 이 image를 다음 제한된 native 검증에만 받아들였고, scan은 Critical·High 0이지만
+Medium·Unknown 항목 검토와 SEC01 HOME 배포 수용(기준 15)은 아직이다. 그래서 SEC01 수용
+전에는 W4/W5를 실행하지 않는다. 실제 scan·플랫폼 적용 판단은
 [SEC01 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0009-sec01-stable-security-integration.md)가
 소유합니다. 아래 명령의 준비 여부와 실제 실행은 별도이며, 지정 운영자의 서로 다른 share 2개·5단계 custody 기록(SPEC-0242)과
 W3a 복구 gate도 계속 필요합니다.
@@ -690,6 +691,22 @@ W4 전에 root-owned0644 `/etc/logrotate.d/openbao`의 정확한 source hash, �
 재생성합니다. Traefik은 backend CA/transport를 먼저 준비하고 public gateway를 확인합니다.
 Prometheus/Gatus의 HTTPS-only OpenBao target 전환은 server의 내부 TLS가 실제 동작한
 뒤 수행합니다. 준비되지 않은 monitoring을 먼저 바꾸거나 전체 스택을 재시작하지 않습니다.
+
+W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 않는다.
+
+- **백업 timer.** `hyhome-backup.timer`(매일 03:30 KST)가 W3 정지 범위와 W4 sealed 구간에
+  돌지 않게 window 동안 멈추거나 window를 03:30부터 무작위 지연 최대 30분과 실행
+  시간을 더한 구간과 떨어뜨린다. timer는 system unit이라
+  멈추고 다시 켜는 것은 owner의 sudo 작업이다.
+- **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
+  쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 지금 없으므로 W4 뒤 gateway를 거치는
+  OIDC 로그인과 W7 `revoke-root`가 끊긴다. 실행 중인 Traefik image를 유지하는 검토된 scoped
+  override로 그 mount를 먼저 배포하고 gateway를 확인하기 전에는 W4를 열지 않는다. Traefik은
+  `core` profile이다.
+- **실행 중 설정과 디스크의 차이.** Prometheus·Gatus·Traefik의 실행 중 image·mount·설정을
+  Compose 선언과 비교한다. 차이가 있으면 재생성이 다른 변경까지 배포하므로 먼저 검토한다.
+- **경보.** W4부터 Gatus와 Prometheus를 다시 만들 때까지 OpenBao down 경보가 난다. silence를
+  둘지, 그 경보를 받아들일지 정한다.
 
 **W1 root ceremony.** 위 [Human Login and Normal Root Recovery](#human-login-and-normal-root-recovery)의
 보호된 인증 API 절차를 사용한다. Share·OTP·token은 검토된 클라이언트의 숨겨진
@@ -789,6 +806,15 @@ encoded 응답과 root는 custody에 먼저 fsync되고 일반 출력에는 상�
 실행하지 않아야 합니다. 메모리 소거, prompt 대기나 fsync 시간 상한은 보장하지 않습니다.
 root를 읽어 채팅에 보내지 말고 W2·W7의 보호된 관리 입력으로만 전달합니다.
 
+**W1c renderer 정책과 token role.** W1 root로 W3 전에 수행해 W3 snapshot이 이 설정을 담게
+한다. W3a 격리 restore와 W5 helper는 HOME에 `renderer-issuer`·`renderer-cleanup` 정책과
+token role이 있다고 가정하지만 지금 window에는 그 단계가 없다. 대상은
+`config/policies/renderer-issuer.hcl`, `renderer-cleanup.hcl`, 현재 `operator.hcl`,
+`config/renderer-issuer-token-role.json`, `renderer-cleanup-token-role.json`,
+`renderer-role.json`이다. `operator.hcl`에는 `sys/policies/acl` 쓰기가 없어 root가 필요하고,
+W7이 root를 폐기하기 전에 끝나야 한다. 검토된 적용 명령과 값 없는 receipt가 준비되기
+전에는 **BLOCKED**다.
+
 **W1b unseal rekey는 하지 않는다.** 2026-10-14 owner 결정(SPEC-0242)으로 share를 host
 백업에 포함하므로, rekey해도 새 share가 다시 백업에 들어가 노출이 줄지 않는다. 그래서 이
 window에서 rekey와 그 PGP 준비를 하지 않는다. share 유출이 의심되면 별도 Spec과 별도
@@ -883,6 +909,12 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 코드·보안·인프라 검토는 통과했으며 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
+W3a는 **BLOCKED**다(SPEC-0243). 이 client는 server를 `--entrypoint /bin/bao ... server`로
+`-config` 없이 시작하는데, 고정한 자체 빌드 image는 `/usr/bin/bao`에 설치되고 설정은 보통
+entrypoint script가 적용하므로 실패할 가능성이 크다(D3). 한 번 실패하면 target-05를 다 쓴다.
+SPEC-0243 W2의 합성 snapshot native rehearsal과 W4의 contract·quiescence lease·renderer
+bundle·보안 receipt producer가 준비되기 전에는 실행하지 않는다.
+
 2026-10-14 운영자는 새 경로
 `/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261014-05`를 선택했습니다.
 사전 조사에서 경로는 없었고 부모는 device2064/inode115612004, UID/GID1000이었습니다.
@@ -935,8 +967,11 @@ W4는 W3a semantic restore와 이 W3b receipt가 모두 수용된 뒤에만 실�
 
 **W4 server 업그레이드와 수동 unseal.**
 
-중단 gate: 이번 W3 snapshot/receipt identity에 결속된 독립 off-host 보관 receipt 또는
-W3a semantic restore가 없으면 아래 server 재생성 명령을 실행하지 않습니다.
+중단 gate: 이번 W3 snapshot/receipt identity에 결속된 독립 off-host 보관 receipt와 W3a
+semantic restore 중 하나라도 없으면 아래 server 재생성 명령을 실행하지 않습니다. 재생성
+전후에 `docker inspect openbao`의 `/openbao/data` mount 이름·source와 그 source의
+`stat -c '%d/%i'`(기록값 device2064/inode115612005)로 실제 Raft mount identity를 기록하고, Compose가 volume 설정이 달라 다시 만들지 묻는 prompt에는 절대 동의하지
+않고 중단합니다.
 
 ```bash
 docker compose --profile security up -d --no-deps --no-build --pull never openbao
@@ -949,21 +984,36 @@ docker compose exec -T openbao bao status
 중단: mount identity 변경, unseal 실패, cluster ID 변경, audit backend 실패.
 rollback: 새 버전 데이터에 이전 image를 붙이지 않는다(in-place Raft downgrade 금지).
 업그레이드가 실패하면 W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 검토된 절차로
-간다(위 Rollback or Recovery). 이 경우 HOME은 보류하고 @buenhyden에게 반환한다.
+간다(아래 Rollback or Recovery). 이 경우 HOME은 보류하고 @buenhyden에게 반환한다. 다만 지금의
+restore 도구는 격리 target-05에 고정돼 있고 HOME을 복원된 volume으로 바꾸는 검토된 절차가
+없다. 그 cut-over 절차나 fix-forward를 택한다는 owner 결정이 기록되기 전에는 W4를 열지
+않는다(SPEC-0243).
 
 **W5 Agent 업그레이드와 재발급.** server가 unsealed이고 health가 통과한 뒤에만
-`docker compose --profile security up -d --no-deps --no-build --pull never openbao-agent`를
-실행하고, 위 [Renderer SecretID Delivery](#renderer-secretid-delivery)로 wrapped
+`docker compose --profile security up --no-start --no-deps --no-build --pull never openbao-agent`로
+컨테이너만 만든다(journal이 없을 때 helper는 Agent가 멈춰 있기를 요구한다). 그다음 위 [Renderer SecretID Delivery](#renderer-secretid-delivery)로 wrapped
 SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 version 일치. 중단:
 재인증 실패, health 실패. Agent는 server보다 앞서 rollback하지 않는다.
 
 이 재생성으로 SPEC-0239 Agent telemetry도 배포된다(2026-10-14 owner 결정). Compose와
 `agent.hcl`이 이미 `metrics_only` listener(8100)와 `obs_net`을 담고 있으므로 따로 바꿀 것은
-없다. Agent가 `healthy`가 된 뒤 `docker compose --profile obs restart prometheus`로
-Prometheus를 restart한다. `prometheus.yml`은 단일 파일 bind mount라 reload로는 새 job이
-반영되지 않는다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
+없다. Agent가 `healthy`가 된 뒤 Prometheus를 다시 만든다. `restart`는 Compose 변경을
+적용하지 않아 HTTPS `openbao` job에 필요한 CA mount가 계속 빠지므로 쓰지 않는다. W0에서
+실행 중 image가 Compose 고정과 같고 다른 설정 차이가 없음을 확인한 뒤에만
+`docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
+실행한다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다.
+다르면 실행 image를 유지하는 검토된 scoped override를 쓰고, 둘 다 없으면 이 부분은
+**BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
 `OpenBaoAgentAuthFailure`가 조용하다. 중단: scrape 실패가 이어지면 Agent listener와 `obs_net`
 연결을 먼저 확인한다. Prometheus만 이전 설정으로 되돌리는 것은 Agent 재인증과 무관하다.
+
+Gatus도 W4 뒤 OpenBao를 HTTPS로 보고 내부 CA를 요구하므로 CA mount가 없으면 W4 이후에도
+계속 경보를 낸다. Compose는 이미 Gatus의 CA mount를 선언한다. Gatus image는 digest 고정이 아닌
+local build tag `hy/gatus:local`이므로, 실행 중 컨테이너의 image ID가 지금의 `hy/gatus:local`
+ID와 같고 다른 설정 차이가 없을 때만
+`docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate gatus`로
+다시 만든다. 다르면 실행 image를 유지하는 검토된 scoped override(SPEC-0243 W6)를 쓰고, 둘 다
+없으면 이 부분은 **BLOCKED**이며 그때까지의 Gatus 경보는 W0에서 정한 대로 처리한다.
 
 **W6 audit와 logrotate 검증.** W0에서 등록·parser 검증을 끝낸 규칙을 사용합니다.
 새 server의 `openbao-audit` mount와 `audit.json`(0600, UID100/GID1000), 정확한
@@ -1014,7 +1064,6 @@ mutation을 재시도하지 않습니다. 더 이른 단계에서 window를 접�
 - W3a는 window 뒤 잔여가 아니라 W4 전 필수 gate입니다. 새 attempt의 실제 도구·빈 대상
   입력이 없으면 HOME upgrade는 계속 미실행입니다.
 - consumer와 ACL 선택(위 10단계, P06).
-- SPEC-0239 Agent alert 배포: 위 W5에서 Agent 재생성(새 wrapped SecretID) 뒤 Prometheus restart.
 
 ### P06 Consumer Migration Boundary
 
