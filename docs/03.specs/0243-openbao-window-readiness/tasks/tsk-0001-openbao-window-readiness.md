@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.16"
+version: "0.1.17"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -589,6 +589,55 @@ Changes:
 - **The guide** states that the host has no CLI and that window logins avoid the token helper, and adds a short window overview.
 - **RUN-0085** points its residual notes to the policy.
 
+An independent `rules-engineer` review returned FAIL on text only. Its findings:
+
+- the token channel rule left out the single-command environment variable that RUN-0085 uses;
+- the operator-token and kept-root rules lacked their exceptions and time limit;
+- the Traefik and Prometheus acceptance sat outside POL-0085's scope, and was weaker than the owner's record (early revocation, the unauthenticated in-network Prometheus path, the image identities, signatures shown as accepted rather than open);
+- several Low wording gaps.
+
+The owner asked for the move into the service policies. Applied:
+
+- POL-0085 states the full token channel, both token exceptions and the kept-root limit, extends the root-use rule to the window root, keeps only the OpenBao acceptance, closes the kept-W2 row on a reviewed recovery only, and gives the stalled-rotation alert gap an owner and closure condition.
+- POL-0013 and POL-0045 now each hold their own image acceptance.
+- The guide and RUN-0085 use the same channel wording and link to the policy.
+
+The parallel `security-auditor` review was stopped unfinished when the owner asked to wrap up. It must run on the PR before merge.
+
+### Current Status and Handoff
+
+Status on 2026-10-15:
+
+| Area | State |
+| --- | --- |
+| Criteria 1 to 7 | Accepted |
+| Source, tools and window text | Merged up to #501 |
+| Traefik | Runs its SEC01-accepted pin |
+| Prometheus | Moves to its pin at W5 |
+| Host preparation (logrotate rule and drop-in, Linger, Docker debug off, old operator token) | Done |
+| Window | Scheduled for 2026-10-22, 14:00 to 16:00 KST |
+| Policy and guide alignment | In its own PR, pending a `security-auditor` review |
+
+Remaining, in order:
+
+1. Merge the policy and guide PR after its security review.
+2. On 2026-10-21, run a fresh SEC01 stable lookup, then the owner runs `git pull --ff-only` in the main checkout. `P01_APPROVED_COMMIT` is that commit once its CI passes.
+3. On 2026-10-22 from 13:30, W0. At 14:00 the owner approves the window separately, then W1 to W7 per RUN-0085.
+4. After the window:
+   - observe the first audit rotation and the next backup snapshot;
+   - cover the Prometheus and Gatus CA mounts (W5);
+   - decide on 2026-11-15 on the image acceptances and window residuals.
+5. Later, each with separate approval: W8 cold boot, P06 consumer migration, SEC01 criterion 15, and closing the Spec, Plan and Task, which stay `draft` until the window evidence exists.
+
+Known gaps:
+
+- the HOME TLS preflight output was not observed here;
+- `5b7b8b32f` was rehearsed but not reviewed;
+- the sweep's per-accessor time is unmeasured;
+- there is no stalled audit rotation alert.
+
+All session worktrees and merged or superseded `claude/*` branches were removed. Only this PR's branch remains. The owner removes the session scratch under `/tmp/claude-1000/` with sudo (some files are UID 100) and the leftover `/dev/shm/p01-rehearsal-*` directories.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -636,6 +685,8 @@ Changes:
 | Final security re-review 4 | 7 | W1 | Independent `security-auditor` re-review of `0d59ce192`: APPROVE with notes (Low: stderr mixed into the root test, gone messages split by branch, keep path removed the vars file) | `c61f3ca95` | PASS | Final Readiness Review | - |
 | Final re-review 4 text fixes | 1 | W1 | Low notes applied; sweep rehearsed on a dev server with five parent and child root pairs and an injected stderr `root` warning: `revoked=11 remaining=0`, non-root token and new root kept | Branch `claude/window-final-review` | PASS | Final Readiness Review | - |
 | Policy and guide alignment | 1 | W1 | Owner decisions recorded; POL-0085 window rules, SEC01 acceptances and residual exceptions with expiry 2026-11-15; guide login and window overview; markdownlint 0, links PASS | Branch `claude/openbao-policy-guide` | PASS | Policy and Guide Alignment | - |
+| Policy rules review | 1 | W1 | Independent `rules-engineer` review: FAIL (token channel and exceptions, kept-root limit, Traefik and Prometheus acceptance out of scope and weaker than the owner record, Low wording) | `bbc15d1d1` | FAIL | Policy and Guide Alignment | - |
+| Policy rules fixes | 1 | W1 | All findings applied; image acceptances moved to POL-0013 and POL-0045 as the owner asked; markdownlint 0, links PASS; security review still required | Branch `claude/openbao-policy-guide` | PASS | Policy and Guide Alignment | Policy rules review |
 | Agent input fix | 2 | W2 | Native chown with the restore's flags: exit 1 without `DAC_READ_SEARCH`, 0 with it; new assertions RED on the earlier code, GREEN after; 47 OK and native preflight 17 OK in a umask 022 clone | `2e3683771` (#492) | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Full restore rehearsal | 2 | W2 | Native `orchestrate()` and `perform()` on synthetic resources, old `11fd73a2` restore and owned `46bf9b5c` candidate and Agent: ledger `accepted`, no attempt containers left; four defects fixed with RED then GREEN unit assertions; restore-input suite 18 OK with `HYHOME_OPENBAO_REHEARSAL=1` in a umask 022 clone | `564f4049c` | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Restore fix IaC re-review | 7 | W2 | Independent `iac-reviewer` re-review of #492 and #495: FAIL (umask 077 leaves `tls/` unreadable to the server; cleanup misses the pre-token gap and depends on the shared runner) | `bc552bf9b` | FAIL | Restore Agent Fix and Full Rehearsal | - |
