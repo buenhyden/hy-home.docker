@@ -1,6 +1,6 @@
 ---
 title: "Local Gate Governance Timeout Plan"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -16,7 +16,7 @@ created: "2026-10-13"
 
 ## Overview
 
-Measure the node's batch, change one value, let the reachability test accept
+Measure each node's batch, change its timeout, let the reachability test accept
 a class selection, then prove the local gate passes the node.
 
 ## Work Breakdown
@@ -26,7 +26,8 @@ a class selection, then prove the local gate passes the node.
 | W1 | 2 | Measure the node's module batch on this host | None | TSK-0001 | Task evidence |
 | W2 | 1 | Set the node timeout to 45 minutes; contract tests; ci-cd review | W1 | TSK-0001 | Task evidence |
 | W3 | 4 | Reachability test admits class selections; ci-cd review | W2 | TSK-0001 | Task evidence |
-| W4 | 3 | Full local changed gate and hosted candidate | W2, W3 | TSK-0001 | Task evidence |
+| W4 | 5 | Measure the metadata node's batch; set its timeout to 30 minutes; contract tests; ci-cd review | W2 | TSK-0001 | Task evidence |
+| W5 | 3 | Full local changed gate and hosted candidate | W2, W3, W4 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 
@@ -39,12 +40,12 @@ run `tests.lib.test_surface_ownership` on `main` (RED) and with the change
 ## Risks and Rollback
 
 - **A hung test waits longer.** A real hang now takes 45 minutes to surface
-  locally instead of 15. Hosted CI is unaffected because the node is local
+  locally instead of 15, or 30 instead of 10 in the metadata node. Hosted CI is unaffected because the node is local
   only.
 - **A class selection hides the rest of its module.** The reachability test
   now accepts a module reached through one class, so the module's other
   classes may never run in the full profile; that is P04's deliberate choice.
-- **Rollback.** Revert the one-line change and the test change.
+- **Rollback.** Revert the two one-line changes and the test change.
 
 ## Related Documents
 
