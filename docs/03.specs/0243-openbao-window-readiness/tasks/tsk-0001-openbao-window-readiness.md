@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -99,6 +99,23 @@ container was left. RUN-0085's W1 manifest now pins the new module SHA256
 `44f3d475bef1b8fdf8ca679cb7a5fe97eab4aeace5d279d8f0a59b4fcdaf4984`. An actual
 restore and canary read still need the W4 inputs.
 
+An independent `security-auditor` review of that fix passed with notes and
+warned that later steps in the same flow were unproven. A native synthetic
+probe then ran init, unseal, login, snapshot save and restore with the tool's
+server arguments and found four more defects: `bao operator unseal` and
+`bao login` without an argument refuse non-terminal stdin (`docker exec -i`
+has no TTY), so the post-restore foreign-share denial check passed for the
+wrong reason; neither image has `/usr/bin/stat`; and root with every
+capability dropped cannot read the 0400 snapshot owned by the host user, nor
+the token, while the CLI also needs a writable `/tmp`. The fix uses
+`write sys/unseal key=-` and `login -no-print -`, busybox `/bin/stat`,
+restores as the server user with a 0440 snapshot (group 1000) and adds a
+16 MiB `/tmp` tmpfs. New assertions failed on the earlier code (3 failures)
+and pass now; both suites ran OK under umask 022. Natively, on both images,
+restore as the server user with the 0440 snapshot returned 0, and the old
+forms failed with permission denied. RUN-0085 pins the new SHA256 of both
+modules.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -109,6 +126,9 @@ restore and canary read still need the W4 inputs.
 | Text re-review | 7 | W1 | Independent `iac-reviewer` re-review: PASS with notes, notes applied | `0a3930f8a` | PASS | W1 Window Text | Text review |
 | Server start unit | 2 | W2 | Server-argument assertion RED on the old code, GREEN after; suite 26 OK under umask 022 | Branch on `claude/window-readiness` | PASS | W2 Restore Server Start | - |
 | Server start native | 2 | W2 | Tool's create arguments on a synthetic empty target, both images: uninitialized, sealed, Raft; pre-fix arguments fail to start | Owned `46bf9b5c`, old `11fd73a2` | PASS | W2 Restore Server Start | - |
+| Server start review | 7 | W2 | Independent `security-auditor` review of the server start fix: PASS with notes | `e439fc1a6` | PASS | W2 Restore Server Start | - |
+| Restore flow unit | 2 | W2 | Unseal, login, stat, restore user and snapshot mode assertions RED on the earlier code (3 failures), GREEN after; both suites OK under umask 022 | Branch | PASS | W2 Restore Server Start | - |
+| Restore flow native | 2 | W2 | Synthetic init, unseal, login, snapshot save and restore on both images: restore as server user with 0440 snapshot returns 0; old forms fail | Owned `46bf9b5c`, old `11fd73a2` | PASS | W2 Restore Server Start | - |
 
 ## Criterion Acceptance
 

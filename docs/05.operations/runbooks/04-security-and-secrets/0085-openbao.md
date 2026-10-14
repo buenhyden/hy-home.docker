@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.2"
+version: "0.12.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -778,8 +778,8 @@ eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-securi
 2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-44f3d475bef1b8fdf8ca679cb7a5fe97eab4aeace5d279d8f0a59b4fcdaf4984 infra/03-security/openbao/scripts/protected-semantic-restore.py
-3ed79ab6b43663bc8788c583578a469c3d8c81ee8d71c0310bdd605ec5474bca infra/03-security/openbao/scripts/protected-semantic-execution.py
+3b46e54964060c3c2088220735a565341cdc135d7d01555ea785a1047b15a418 infra/03-security/openbao/scripts/protected-semantic-restore.py
+137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 P01_SOURCE_MANIFEST
 P01_CUSTODY_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-custody.XXXXXX")" || exit 1
@@ -912,10 +912,13 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 코드·보안·인프라 검토는 통과했으며 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
-W3a는 **BLOCKED**다(SPEC-0243). client가 server를 `/bin/bao`로 `-config` 없이 시작하던
-결함(D3)은 SPEC-0243 W2에서 image 자체 entrypoint와 `/openbao/config` tmpfs로 고쳤고, 두
-image 모두 합성 대상에서 server가 뜨는 것을 확인했다. 아직 W4의 contract·quiescence lease·
-renderer bundle·보안 receipt producer가 없으므로 실행하지 않는다.
+W3a는 **BLOCKED**다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
+`/bin/bao`로 `-config` 없이 시작하던 것(D3), TTY 없이 거부되는 `operator unseal`과 인자 없는
+`login`, 없는 `/usr/bin/stat`, capability 없는 root로 읽을 수 없던 0400 snapshot이다. 이제
+image entrypoint와 `/openbao/config`·`/tmp` tmpfs, `write sys/unseal key=-`, `login -`,
+`/bin/stat`, server 사용자와 0440 snapshot을 쓴다. 두 image 모두 합성 대상에서 init·unseal·
+login·snapshot restore가 통과했다. 아직 W4의 contract·quiescence lease·renderer bundle·보안
+receipt producer가 없으므로 실행하지 않는다.
 
 2026-10-14 운영자는 새 경로
 `/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261014-05`를 선택했습니다.
