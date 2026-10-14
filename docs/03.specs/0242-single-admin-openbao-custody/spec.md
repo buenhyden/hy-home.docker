@@ -1,6 +1,6 @@
 ---
 title: "Single-Administrator OpenBao Custody"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -24,7 +24,8 @@ off-host custody step, the owner chose (AskUserQuestion) to keep the OpenBao
 unseal shares and the CA key on the host, in `secrets/` and an owner-made
 root-only second copy at `/home/hyunyoun/data/hy-home.secrets`, and in the
 host Restic backup, and to keep only BKP-003, the R2 credentials, BKP-002 and
-Cloudflare account access off the host, in one password manager account. The
+Cloudflare account access off the host, in a place the owner controls (a
+password manager account or a separate desktop). The
 owner also chose to drop the W1b unseal rekey. This withdraws SPEC-0240's
 backup exclusion, rekey and place separation.
 
@@ -45,10 +46,11 @@ window's readiness, and SPEC-0240's lifecycle disposition.
    and R2. The host second copy is on the same system disk and is not
    off-host storage.
 2. BKP-003, the R2 credentials, BKP-002, Cloudflare account access and the
-   non-secret R2 account ID and bucket name are kept off the host in one
-   password manager account, whose recovery means and second factor are kept
+   non-secret R2 account ID and bucket name are kept off the host in places
+   the owner controls (a password manager account or a separate desktop),
+   whose recovery means and second factor are kept
    offline, neither in that account nor on the host.
-3. The accepted exposure is stated: that one account opens the R2 copy with
+3. The accepted exposure is stated: that the place holding BKP-003 and the R2 credentials opens the R2 copy with
    every secret and share and can destroy that copy through Cloudflare access
    and writable R2 tokens, and one reader of the host meets the threshold.
    Recovery from R2 is stated as intended until it is run. The POL-0085

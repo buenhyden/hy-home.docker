@@ -1,6 +1,6 @@
 ---
 title: "Single-Administrator OpenBao Custody Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -83,6 +83,15 @@ applied: contracts 2 to 4 now own what step 5 contains (the R2 identifiers,
 the listing with the account's values, the destructive exposure, recovery as
 intended), and POL-0085 names the non-secret R2 identifiers.
 
+### W4 Step 5 Record
+
+On 2026-10-14 the owner returned the step 5 table and clarified that the
+backup and R2 values are on a separate desktop rather than in the password
+manager account, which holds Cloudflare access. Contract 2, RUN-0085 (0.12.2)
+and POL-0085 (0.7.1) now name the off-host place as a password manager
+account or the owner's separate desktop. Every answer was yes, so SPEC-0204
+TSK-0006 records step 5 as `PASS`, owner-attested.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -93,7 +102,7 @@ intended), and POL-0085 names the non-secret R2 identifiers.
 | Rules review | 3 | W3 | Independent `rules-engineer`: undefined "independent custody" gates | `3eb6d360f` | FAIL | W3 Review Round 1 | - |
 | Rules re-review | 3 | W3 | Independent `rules-engineer` re-review: PASS with notes, notes applied | `31c218d71` | PASS | W3 Review Round 2 | Rules review |
 | Round 2 checks | 1 | W1 | Changed metadata (11 documents) 0 violations; links `--mode all` PASS; markdownlint 0 | Branch after `31c218d71` | PASS | W3 Review Round 2 | - |
-| Step 5 record | 4 | W4 | Owner step 5 statement in TSK-0006 | - | NOT_RUN | Work Log | - |
+| Step 5 record | 4 | W4 | owner-attested step 5 table recorded in TSK-0006: every answer yes, R2 listing with the off-host values passed | Owner statement 2026-10-14 | PASS | W4 Step 5 Record | - |
 
 ## Criterion Acceptance
 
