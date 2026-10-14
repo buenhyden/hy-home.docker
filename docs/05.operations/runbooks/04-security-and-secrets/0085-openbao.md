@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.10.3"
+version: "0.10.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -528,7 +528,7 @@ P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지
 9. HOME cold boot를 한다(별도 승인).
 10. 현재 버전 인증과 consumer 읽기를 위한 consumer와 ACL을 고른다(P06 담당자 선택).
 
-변조된 HMAC의 audit 검증은 미실행이다. Agent 인증 실패 alert는 SPEC-0239(PR #463, #466)로 source에 들어왔다. `agent.hcl`이 `metrics_only` listener(8100)로 `/agent/v1/metrics`를 열고, Prometheus job `openbao-agent`가 scrape하며, `OpenBaoAgentMetricsScrapeFailing`과 `OpenBaoAgentAuthFailure`가 알린다. 아직 배포되지 않았다. 배포하려면 Agent를 다시 만들어야 하는데, 그러면 token sink가 지워지므로 새 wrapped SecretID가 필요한 credential 작업이다. `prometheus.yml`은 단일 파일 bind mount라 reload로는 반영되지 않으므로, Agent를 먼저 다시 만든 뒤 Prometheus를 restart한다(별도 승인). 인증은 되는데 렌더만 낡는 경우는 metric이 없어서 배포 뒤에도 Docker healthcheck(token lookup·KV 읽기·렌더 bytes 일치)의 `unhealthy`로만 드러나고 알림은 없다.
+변조된 HMAC의 audit 검증은 미실행이다. Agent 인증 실패 alert는 SPEC-0239(PR #463, #466)로 source에 들어왔다. `agent.hcl`이 `metrics_only` listener(8100)로 `/agent/v1/metrics`를 열고, Prometheus job `openbao-agent`가 scrape하며, `OpenBaoAgentMetricsScrapeFailing`과 `OpenBaoAgentAuthFailure`가 알린다. 아직 배포되지 않았다. 실행 중인 server와 Agent는 Compose가 고정한 image보다 이전 버전이므로, Agent만 다시 만들면 server보다 먼저 업그레이드된다. 그래서 2026-10-14 owner 결정으로 유지보수 창의 W5(Agent 업그레이드와 wrapped 재발급)에서 함께 배포하고 이어서 Prometheus를 restart한다. 인증은 되는데 렌더만 낡는 경우는 metric이 없어서 배포 뒤에도 Docker healthcheck(token lookup·KV 읽기·렌더 bytes 일치)의 `unhealthy`로만 드러나고 알림은 없다.
 
 #### off-host custody 분리 절차
 
@@ -558,7 +558,10 @@ commit을 담는 순간 다음 일일 백업부터 적용되므로, 5단계가 `
 merge하고 운영 checkout에 반영한다. host 파일과 이미 만든 snapshot은 남으므로 그 순간
 복구 자료를 잃지는 않지만, 그 뒤의 새 recovery point는 off-host 보관에만 기댄다. 5단계는
 사본을 꺼낼 수 있는지만 확인하므로, W1이나 6단계 restore가 off-host share의 값을 증명하기
-전까지 host 파일을 지우지 않고 제외 이전 host snapshot도 prune하지 않는다.
+전까지 host 파일을 지우지 않고 제외 이전 host snapshot도 prune하지 않는다. W1 root ceremony는
+share 2개만 쓰므로 그 둘만 증명한다. 무엇이든 지우기 전에 세 번째 share의 off-host 사본도
+이미 증명된 share 하나와 짝지은 두 번째 ceremony 등으로 증명한다. rekey 뒤 새 share의
+`-verify`도 2개만 확인하므로 같은 규칙을 따른다.
 
 rekey는 실행 중인 cluster의 unseal key만 바꾼다. rekey 전에 만든 Raft snapshot은 restore하면
 옛 share로 열린다. 그래서 rekey는 옛 share로 지금의 서버를 여는 길을 막을 뿐이고, 제외 이전
@@ -1145,6 +1148,14 @@ rollback: 새 버전 데이터에 이전 image를 붙이지 않는다(in-place R
 SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 version 일치. 중단:
 재인증 실패, health 실패. Agent는 server보다 앞서 rollback하지 않는다.
 
+이 재생성으로 SPEC-0239 Agent telemetry도 배포된다(2026-10-14 owner 결정). Compose와
+`agent.hcl`이 이미 `metrics_only` listener(8100)와 `obs_net`을 담고 있으므로 따로 바꿀 것은
+없다. Agent가 `healthy`가 된 뒤 `docker compose --profile obs restart prometheus`로
+Prometheus를 restart한다. `prometheus.yml`은 단일 파일 bind mount라 reload로는 새 job이
+반영되지 않는다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
+`OpenBaoAgentAuthFailure`가 조용하다. 중단: scrape 실패가 이어지면 Agent listener와 `obs_net`
+연결을 먼저 확인한다. Prometheus만 이전 설정으로 되돌리는 것은 Agent 재인증과 무관하다.
+
 **W6 audit와 logrotate 검증.** W0에서 등록·parser 검증을 끝낸 규칙을 사용합니다.
 새 server의 `openbao-audit` mount와 `audit.json`(0600, UID100/GID1000), 정확한
 device·inode·용량을 확인합니다. 실제 audit 요청 전후 크기와 bounded rotation 뒤 새 inode의
@@ -1194,7 +1205,7 @@ mutation을 재시도하지 않습니다. 더 이른 단계에서 window를 접�
 - W3a는 window 뒤 잔여가 아니라 W4 전 필수 gate입니다. 새 attempt의 실제 도구·빈 대상
   입력이 없으면 HOME upgrade는 계속 미실행입니다.
 - consumer와 ACL 선택(위 10단계, P06).
-- SPEC-0239 Agent alert 배포: Agent 재생성(새 wrapped SecretID) 뒤 Prometheus restart(별도 승인).
+- SPEC-0239 Agent alert 배포: 위 W5에서 Agent 재생성(새 wrapped SecretID) 뒤 Prometheus restart.
 
 ### P06 Consumer Migration Boundary
 
