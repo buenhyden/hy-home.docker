@@ -66,9 +66,11 @@ APPROLE = (
     "96f74c4b1908dd2edb3f7bbbf794bdd226b0a66f3133c103f64e1b7790218d79",
 )
 UNITS = {"s": 1, "m": 60, "h": 3600}
-# A role update keeps any field it omits, so the fields the reviewed files leave
-# out are written at their defaults too; a stale period or CIDR cannot survive.
+# A role update keeps any field it omits, so every other field a role read
+# returns (2.6.2 and 2.7.1) is written at its default, except the AppRole's
+# `local_secret_ids`, which is fixed when the role is created.
 TOKEN_ROLE_DEFAULTS = {
+    "allowed_entity_aliases": [],
     "allowed_policies_glob": [],
     "disallowed_policies": [],
     "disallowed_policies_glob": [],
@@ -84,7 +86,9 @@ APPROLE_DEFAULTS = {
     "secret_id_bound_cidrs": [],
     "token_bound_cidrs": [],
     "token_explicit_max_ttl": 0,
+    "token_no_default_policy": False,
     "token_period": 0,
+    "token_strictly_bind_ip": False,
     "token_type": "default",
 }
 

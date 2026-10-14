@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -171,6 +171,16 @@ four Low; `iac-reviewer` three Medium, two Low). Applied:
   probe showed the operator policy's `policies = ["renderer-issuer"]` limit
   admits the string form and refuses a JSON list, which matches W5's text.
 
+The `iac-reviewer` re-review of `3e080d999` passed with notes (three Low, two
+Nits). Applied: a native probe on both images showed `allowed_entity_aliases`
+and `token_no_default_policy` read back as written, so every field a role
+read returns is now written at its default except the AppRole's
+`local_secret_ids`, fixed at creation; the runbook has a literal `apply`
+block with its exit check, says a `plan` exit 2 wrote nothing, compares the
+plan and apply `prior_sha256` values, stops at W1c if the Agent is unhealthy,
+and W7 keeps root while a W1c rollback decision is open. The test is now in
+`.github/workflow-contract.yml`, so CI runs it.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -188,6 +198,7 @@ four Low; `iac-reviewer` three Medium, two Low). Applied:
 | Role apply native | 3 | W3 | Real tool on an owned synthetic server, both images: targets replaced and read back, RoleID kept, role tokens exact, wrapped SecretID only, second run unchanged | `455dffd70` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 | Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
 | Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
+| Role apply re-review | 7 | W3 | Independent `iac-reviewer` re-review of the fixes: PASS with notes, notes applied; 17 tests OK with both native runs; CI gate tests OK | `3e080d999` | PASS | W3 Renderer Role Apply | - |
 
 ## Criterion Acceptance
 
