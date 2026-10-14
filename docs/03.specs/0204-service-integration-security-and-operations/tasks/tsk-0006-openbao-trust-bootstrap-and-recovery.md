@@ -2272,8 +2272,10 @@ unseal file from the host backup and to rekey, and to correct POL-0085's
 "only copy" statement. SPEC-0240 carries the exclusion, the POL-0085 and
 ADR-0042 corrections and RUN-0085 0.9.0: the Cloudflare account row, the
 place definition, the merge gate (merge only after step 5 is
-`owner-attested`) and W9 unseal rekey in a separate window, BLOCKED until a
-reviewed protected output path exists. Nothing ran on HOME; step 5 and
+`owner-attested`) and W1b unseal rekey right after W1 and before any new
+snapshot, BLOCKED until a reviewed protected output path exists. A rekey does
+not change the keys a pre-rekey Raft snapshot opens with, so the exposure ends
+only when pre-exclusion host snapshots are deleted. Nothing ran on HOME; step 5 and
 criterion 11 stay as before.
 
 ## Evidence

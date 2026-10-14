@@ -122,12 +122,14 @@ owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건�
 기존 owner 결정(2026-09-22)은 share3개를 `secrets/security/openbao/openbao_unseal_keys.txt`
 한 파일에 함께 보관한다. 파일은0600, Git-ignored, 컨테이너에 mount하지 않으며
 private registry는 SEC-003 placeholder만 보관한다. 이 파일은 유일한 사본이 아니다.
-host Restic 저장소(BKP-002로 암호화)가 `secrets/` 전체를 담고, `restic-offsite`가 그
-저장소를 bucket lock이 걸린 R2(BKP-003으로 암호화, 보존 최대 12개월)로 복사한다.
-이는 분리 custody의 기존 명시적 예외다. 파일을 읽는 한 주체, 그리고 BKP-003과 R2 읽기
-권한을 함께 가진 한 주체가 unseal threshold를 충족할 수 있고, 파일 손실이 복구 자료
-가용성을 잃게 할 수 있다. 2026-10-14 owner 결정으로 파일을 host 백업에서 빼고(SPEC-0240)
-별도 window에서 rekey한다(RUN-0085 W9). 둘 다 이 예외를 닫지 않는다. 이 문서는 기존
+SPEC-0240 전까지 host Restic 저장소(BKP-002로 암호화)는 `secrets/` 전체를 담고,
+`restic-offsite`가 그 저장소를 R2(BKP-003으로 암호화)로 복사한다. 그 사본은 owner가
+`forget-prune`이나 별도 승인된 삭제로 지울 때까지 남는다(R2 bucket lock 30일).
+이는 분리 custody의 기존 명시적 예외다. 파일을 읽는 한 주체, BKP-003과 R2 읽기 권한을
+함께 가진 한 주체, BKP-002와 local host 저장소를 가진 한 주체가 unseal threshold를 충족할
+수 있고, 파일 손실이 복구 자료 가용성을 잃게 할 수 있다. 2026-10-14 owner 결정으로 파일을
+host 백업에서 빼고(SPEC-0240) 유지보수 창에서 rekey한다(RUN-0085 W1b). rekey는 그 전에
+만든 Raft snapshot을 옛 share로 여는 길을 막지 못한다. 둘 다 이 예외를 닫지 않는다. 이 문서는 기존
 결정을 이동해 보존할 뿐 새 credential 처리나 예외 확대를 승인하지 않는다.
 기존 기록에는 **만료와 종료 조건이 없다**. 위 Exceptions의 필수 항목을 충족했다고
 표시하지 않으며 @buenhyden의 후속 결정이 필요하다. 파일을 읽거나 이동하거나

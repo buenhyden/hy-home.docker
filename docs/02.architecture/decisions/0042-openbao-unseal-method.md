@@ -25,10 +25,11 @@ RUN-0085, there are 3 shares with a threshold of 2. By owner decision
 Git, not mounted into the container). Anyone who can read this file can
 unseal OpenBao. This file is also encrypted with BKP-002 inside the host
 Restic repository, which `restic-offsite` copies to R2 encrypted with BKP-003,
-so BKP-003 with R2 read access also unseals it. On 2026-10-14 the owner chose
-to exclude the file from the host backup (SPEC-0240) and to rekey in a
-separate window (RUN-0085 W9); snapshots already written keep the old shares
-until they expire.
+so BKP-003 with R2 read access, or BKP-002 with the local repository, also
+meets the threshold. On 2026-10-14 the owner chose to exclude the file from
+the host backup (SPEC-0240) and to rekey in the maintenance window (RUN-0085
+W1b). Snapshots already written keep the old shares until they are deleted,
+and a rekey does not change the keys a pre-rekey Raft snapshot opens with.
 
 Auto-unseal was only deferred as a non-goal in ADR-0018 from the Vault era
 ("actual KMS/HSM auto-unseal implementation at this stage"); it was never

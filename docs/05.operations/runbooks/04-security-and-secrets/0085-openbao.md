@@ -482,7 +482,7 @@ P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지
 2. 보존된 attempt 대상과 container의 처리를 정한다(삭제는 명시 승인). attempt 03·04·chown container와 `-03` 대상은 2026-10-13에 owner가 삭제했다. 같은 날 owner 결정으로 빈 기본 restore 대상과 `-04` 대상도 삭제했고, 기존 업그레이드 전 snapshot 파일은 새 snapshot이 생길 때까지 rollback 지점으로 보존한다.
 3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급하며, 그 전까지 일일 backup의 OpenBao snapshot은 recovery gap으로 계속 실패한다.
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
-5. unseal share·offsite key·R2 자격 증명·CA key의 off-host 독립 보관을 값 없이 확인한다(owner 확인). 2026-10-13 owner 확인 결과 아직 분리 보관이 없으므로 미실행이며, P01은 계속 차단된다. 분리와 확인은 아래 [off-host custody 분리 절차](#off-host-custody-분리-절차)를 따른다.
+5. unseal share·offsite key·R2 자격 증명·Cloudflare 계정 접근·CA key의 off-host 독립 보관을 값 없이 확인한다(owner 확인). 2026-10-13 owner 확인 결과 아직 분리 보관이 없으므로 미실행이며, P01은 계속 차단된다. 분리와 확인은 아래 [off-host custody 분리 절차](#off-host-custody-분리-절차)를 따른다.
 6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않으므로 이 단계에는 추적되거나 새로 검토한 도구가 필요하다.
 7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 현재 HOME server에는 audit mount가 없으므로 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
@@ -506,16 +506,27 @@ SPEC-0204 TSK-0006에 기록한다. 값은 화면 공유·채팅·명령 인자�
 | R2 자격 증명 | BKP-004·005 R2 API token(객체 읽기·쓰기) | offsite key와 합쳐지면 R2 사본을 읽을 수 있음 |
 | CA key | OpenBao TLS를 발급한 CA의 개인키 | 같은 trust로 인증서를 발급할 수 있음 |
 
-**offsite key는 share 전체와 같다.** Restic host 백업은 `secrets/` 전체를 담고
-(`infra/09-platform-ops/restic/backup.sh`, 제외 목록 없음), `restic-offsite`가 그 저장소를
-R2로 복사한다. 그래서 모든 share를 담은 단일 unseal 파일이 R2 사본 안에 있고, BKP-003과
-R2 읽기 권한만 있으면 share 3개를 모두 얻는다. snapshot token 발급(W2) 뒤에는 Raft
-snapshot도 함께 들어간다. 2026-10-14 owner 결정으로 단일 파일을 host 백업에서 빼고
-(SPEC-0240, `sets/host-exclude.txt`), 별도 window에서 rekey한다(아래 W9). 제외는 운영
-checkout에 merge되는 즉시 다음 일일 백업부터 적용되므로, 5단계가 `owner-attested`가 된
-뒤에만 merge한다. 그 전에 적용되면 host 손실 때 share를 되찾을 사본이 없다. 제외 뒤에도
-이미 만들어진 host·R2 snapshot은 보존 기간(R2 최대 12개월, bucket lock) 동안 옛 share를
-담으므로, rekey 전까지 이 결합은 남는다.
+**offsite key는 share 전체와 같다.** SPEC-0240이 운영 checkout에 들어가기 전까지 Restic
+host 백업은 `secrets/` 전체를 담고, `restic-offsite`가 그 저장소를 R2로 복사한다. 그래서
+모든 share를 담은 단일 unseal 파일과, 같은 `secrets/` 안의 보호된 Raft snapshot
+(`backup/openbao/pre-change.snap`)이 R2 사본 안에 함께 있다. BKP-003과 R2 읽기 권한만
+있으면 share 3개와 그 snapshot의 데이터를 얻는다. local host 저장소도 BKP-002로 같은 결합을
+담는다. snapshot token 발급(W2) 뒤에는 state 백업에도 Raft snapshot이 들어간다.
+
+2026-10-14 owner 결정으로 단일 파일을 host 백업에서 빼고(SPEC-0240,
+`sets/host-exclude.txt`) 유지보수 창에서 rekey한다(아래 W1b). 제외는 운영 checkout이 그
+commit을 담는 순간 다음 일일 백업부터 적용되므로, 5단계가 `owner-attested`가 된 뒤에만
+merge하고 운영 checkout에 반영한다. host 파일과 이미 만든 snapshot은 남으므로 그 순간
+복구 자료를 잃지는 않지만, 그 뒤의 새 recovery point는 off-host 보관에만 기댄다. 5단계는
+사본을 꺼낼 수 있는지만 확인하므로, W1이나 6단계 restore가 off-host share의 값을 증명하기
+전까지 host 파일을 지우지 않고 제외 이전 host snapshot도 prune하지 않는다.
+
+rekey는 실행 중인 cluster의 unseal key만 바꾼다. rekey 전에 만든 Raft snapshot은 restore하면
+옛 share로 열린다. 그래서 rekey는 옛 share로 지금의 서버를 여는 길을 막을 뿐이고, 제외 이전
+host snapshot(옛 share)과 rekey 이전 Raft snapshot이 함께 남아 있는 동안 노출은 계속된다.
+R2 bucket lock은 30일이고, 12개월은 owner가 확인을 넣어 실행하는 `forget-prune`의 보존
+정책일 뿐 자동 만료가 아니다. 노출은 제외 이전 host snapshot을 local과 R2에서 지울 때
+끝나며, 그 삭제는 lock 기간 뒤 별도 승인된 작업이다.
 
 **분리 규칙.** off-host 보관 장소에 적용한다.
 
@@ -565,13 +576,14 @@ checkout에 merge되는 즉시 다음 일일 백업부터 적용되므로, 5단�
 stdin으로만 다루고, 명령 인자·터미널 기록·채팅에 남기지 않는다. 각 단계의 결과는
 SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 
-**전제 조건(위 5단계).** unseal share·offsite key·R2 자격 증명·CA key가 분리 규칙에 맞는 off-host 보관에
+**전제 조건(위 5단계).** unseal share·offsite key·R2 자격 증명·Cloudflare 계정 접근·CA key가 분리 규칙에 맞는 off-host 보관에
 있다는 owner 확인이 값 없이 기록되어야 한다. 확인이 없으면 window를 열지 않는다.
 
 | 순서 | 단계 | 목표 시간 | 승인 |
 | --- | --- | --- | --- |
 | W0 | 사전 점검 | window 전 | SEC01 담당자, owner |
 | W1 | root ceremony | 10분 | owner(share 보유자 2명) |
+| W1b | unseal rekey | 10분 | owner(share 보유자 2명, credential 변경) |
 | W2 | snapshot token 발급과 확인 | 5분 | owner(credential 발급) |
 | W3 | 새 업그레이드 전 snapshot | 5분 | owner(backup 실행) |
 | W4 | server 업그레이드와 수동 unseal | 10분 | owner(runtime 변경) |
@@ -579,10 +591,10 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 | W6 | audit·logrotate | 10분 | owner(sudo host 변경) |
 | W7 | 사후 점검과 root 폐기 | 10분 | owner |
 | W8 | cold boot | 별도 window | owner(별도 승인) |
-| W9 | unseal rekey | 별도 window | owner(share 보유자 2명, credential 변경) |
 
 W1부터 W5까지가 운영자가 고른 30분 cutover 목표이고, W7까지 60분 window 안에 끝나야
-한다. 두 값은 계획 추정치다. 30분을 넘거나 어떤 중단 조건이 생기면 아래 rollback으로
+한다. W1b가 10분을 더하므로 60분이 위태로우면 W1b 뒤에서 멈추고 W2부터 다음 window로
+넘긴다. 이 값들은 계획 추정치다. 30분을 넘거나 어떤 중단 조건이 생기면 아래 rollback으로
 돌아가고 남은 단계는 다음 window로 넘긴다.
 
 **W0 사전 점검.**
@@ -675,17 +687,24 @@ OpenBao snapshot 성공을 확인한다. 임시 root는 W2·W4에서만 필요�
 **W8 cold boot.** 별도 승인과 별도 window에서 host를 재시작하고, 수동 unseal, Agent
 재인증, 위 W7 점검을 반복한다. cold start 시뮬레이션은 실제 재부팅 증거가 아니다.
 
-**W9 unseal rekey.** 2026-10-14 owner 결정. W1–W7이 끝나 서버가 compose pin으로 돈 뒤
-별도 window에서 새 share 3개(threshold 2)를 만든다. 새 share가 생기면 host 단일 파일과
-host·R2 백업의 옛 share는 쓸모가 없어진다. 조건은 다음과 같다.
+**W1b unseal rekey.** 2026-10-14 owner 결정. W1 직후, W2 snapshot token과 W3 snapshot보다
+먼저 새 share 3개(threshold 2)를 만든다. 그래야 이 window와 그 뒤의 Raft snapshot은 새
+share와만 짝을 이루고, 새 share는 host에 없다. rekey에는 root token이 필요 없다. 조건은
+다음과 같다.
 
-- 옛 share 2개는 숨겨진 prompt로만 넣는다. 명령 인자·환경 변수·파일로 넘기지 않는다.
-- 새 share는 확인 단계(새 share threshold를 다시 넣어야 적용)를 거쳐야 적용되게 한다. 확인
-  전에 실패하면 옛 share가 그대로 유효하다.
-- 새 share 출력은 host의 `secrets/`나 어떤 파일에도 쓰지 않고, 분리 규칙에 맞는 세 장소로
-  바로 옮긴다. W1과 같이 검토된 보호 출력 경로가 정해지기 전까지 W9는 BLOCKED다.
-- 끝나면 새 share로 5단계 확인 기록을 다시 채운다. host 단일 파일을 지울지는 별도 owner
-  결정이다.
+- 옛 share 2개는 `bao operator rekey`의 숨겨진 prompt로만 넣는다. 명령 인자·환경 변수·
+  파일로 넘기지 않는다.
+- `-verify`로 시작해 새 share threshold를 다시 넣어야 적용되게 한다. 확인 전에 실패하거나
+  멈추면 `bao operator rekey -cancel`(확인 단계는 `-verify -cancel`)로 취소하고, 옛 share가
+  그대로 유효함을 확인한다.
+- `-backup`은 쓰지 않는다(core에 암호화된 key 사본을 남긴다). 새 share 출력은 host의
+  `secrets/`나 어떤 파일에도 쓰지 않고, 분리 규칙에 맞는 세 장소로 바로 옮긴다. 보유자별
+  공개 키로 암호화하는 `-pgp-keys`가 native 보호 출력 수단이다. W1과 같이 검토된 보호 출력
+  경로가 정해지기 전까지 W1b는 BLOCKED이며, 그 경우 W2부터의 단계도 같은 window에서
+  진행하지 않는다.
+- 끝나면 새 share로 5단계 확인 기록을 다시 채운다. 옛 share는 rekey 이전 snapshot을
+  restore하는 데만 쓰이므로, 그 snapshot을 지울 때까지 같은 분리 보관을 유지한다. host
+  단일 파일을 지울지는 별도 owner 결정이다.
 
 **window 뒤에 남는 것.**
 

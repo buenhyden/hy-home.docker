@@ -40,17 +40,17 @@ change to the state set.
 ## Contracts
 
 1. The host set excludes exactly the unseal share file and nothing else.
-2. The exclusion is merged only after RUN-0085 step 5 is `owner-attested`,
-   because the operating checkout applies it to the next daily backup and the
-   file must not lose its only recoverable copies before off-host custody
-   exists.
+2. The exclusion is merged, and present in the operating checkout, only after
+   RUN-0085 step 5 is `owner-attested`, because that checkout applies it to the
+   next daily backup and new recovery points then rely on off-host custody.
 3. POL-0085 and ADR-0042 state where copies of the file exist and that BKP-003
    with R2 read access meets the threshold; neither closes the POL-0085
    exception.
 4. RUN-0085 keeps BKP-003 apart from every share, from the R2 credentials and
    from Cloudflare account access, defines a place as a separately
-   credentialed or physically held unit, and plans the rekey as W9 with new
-   shares never written to the host.
+   credentialed or physically held unit, plans the rekey as W1b before any new
+   Raft snapshot with new shares never written to the host, and states that
+   the exposure ends only when pre-exclusion host snapshots are deleted.
 
 ## Acceptance Criteria
 

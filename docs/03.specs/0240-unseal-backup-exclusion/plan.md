@@ -38,10 +38,13 @@ W4 lists the next host snapshot for the file name only.
 
 ## Risks and Rollback
 
-- **Early merge.** Merged before step 5, the next backup no longer copies the
-  file, and a host loss would lose every share. Contract 2 forbids it.
+- **Early merge.** Merged before step 5, new recovery points would hold no
+  share while no off-host copy exists. Contract 2 forbids it.
 - **Old snapshots.** Existing host and R2 snapshots keep the old shares until
-  they expire; only the W9 rekey ends that exposure.
+  the owner deletes them; R2's bucket lock is 30 days and 12 months is only
+  the `forget-prune` keep policy. A rekey does not change the keys a
+  pre-rekey Raft snapshot opens with, so the exposure ends only when the
+  pre-exclusion host snapshots are deleted, a separately approved operation.
 - **Rollback.** Revert the exclusion line; the next backup copies the file
   again.
 

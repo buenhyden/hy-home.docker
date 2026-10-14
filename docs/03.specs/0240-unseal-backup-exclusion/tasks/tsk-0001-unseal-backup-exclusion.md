@@ -48,19 +48,35 @@ nothing; it is not counted.
 ### W2 Policy, Decision and Runbook Text
 
 - POL-0085 (0.5.6): the exception no longer calls the file the only copy. It
-  names the host Restic copy (BKP-002) and the R2 copy (BKP-003, bucket lock,
-  up to 12 months), says BKP-003 with R2 read access meets the threshold, and
-  records the 2026-10-14 decisions without closing the exception.
+  names the host Restic copy (BKP-002) and the R2 copy (BKP-003), says each
+  key with its repository meets the threshold, that copies last until the
+  owner deletes them, and records the 2026-10-14 decisions without closing
+  the exception.
 - ADR-0042 (0.2.3): the context adds the R2 copy, the same exposure and the
   decisions; the decision itself is unchanged.
 - RUN-0085 (0.9.0): the custody procedure keeps BKP-003 apart from Cloudflare
   account access as well (review N1), defines a place as a separately
   credentialed or physically held unit (N2), says copy throughout (L1), adds
   a Cloudflare account row to the confirmation table, states the merge gate
-  for the exclusion, and plans W9 unseal rekey in a separate window with
-  hidden-prompt input, verification before the new shares apply, and new
-  shares never written to the host; W9 is BLOCKED until a reviewed protected
-  output path exists.
+  for the exclusion, and plans W1b unseal rekey right after W1 with
+  hidden-prompt input, `-verify`, a cancel path, no `-backup`, and new shares
+  never written to the host; W1b is BLOCKED until a reviewed protected output
+  path exists.
+
+### Review Round 1
+
+On 2026-10-14 the independent `iac-reviewer` passed the exclusion and the
+`security-auditor` returned FAIL; both found that a rekey does not stop a
+pre-rekey Raft snapshot from opening with the old shares, and that the
+protected Raft snapshot `secrets/backup/openbao/pre-change.snap` sits beside
+the share file in the same host set. The text now moves the rekey to W1b,
+before W2 and W3 take new snapshots, states that the exposure ends only when
+pre-exclusion host snapshots are deleted from the local and R2 repositories,
+corrects the retention wording (30-day bucket lock; 12 months is the
+owner-run `forget-prune` policy), keeps the host file and those snapshots
+until W1 or a restore proves the off-host shares, names the local repository
+with BKP-002, adds Cloudflare account access to step 5, and points RUN-0021's
+host restore to off-host custody for the share file.
 
 ## Evidence
 
@@ -68,6 +84,8 @@ nothing; it is not counted.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Exclusion test | 1 | W1 | Compose baseline tests with the new test (112, 30 skipped) | Branch on `c96d46112` | PASS | W1 Host Exclusion | - |
 | Dry run | 1 | W1 | Pinned Restic image `--dry-run` on a synthetic tree, with and without the exclude file | Branch on `c96d46112` | PASS | W1 Host Exclusion | - |
+| IaC review | 3 | W3 | Independent `iac-reviewer` review of `27d84d9ab`: exclusion PASS, document notes | `27d84d9ab` | PASS | Review Round 1 | - |
+| Security review | 3 | W3 | Independent `security-auditor` review of `27d84d9ab`: rekey semantics and retention wording wrong | `27d84d9ab` | FAIL | Review Round 1 | - |
 | Merge gate | 4 | W4 | RUN-0085 step 5 `owner-attested` before merge | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
