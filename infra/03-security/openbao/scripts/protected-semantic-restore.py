@@ -481,7 +481,7 @@ class RecoveryEffects:
 
     def _server(self, name, image, directory, network):
         config = {"ui": False, "disable_mlock": True, "storage": {"raft": {"path": "/openbao/data", "node_id": "p01-restore"}}, "listener": [{"tcp": {"address": "0.0.0.0:8200", "cluster_address": "0.0.0.0:8201", "tls_disable": False, "tls_min_version": "tls12", "tls_cert_file": "/openbao/tls/server.pem", "tls_key_file": "/openbao/tls/server-key.pem"}}], "api_addr": "https://openbao:8200", "cluster_addr": "https://openbao:8201", "audit": [{"type": "file", "path": "p01-file", "options": {"file_path": "/openbao/audit/audit.json", "mode": "0600", "log_raw": "false", "hmac_accessor": "true"}}]}
-        args = ["create", "--name", name, "--label", "hy-home.attempt=" + ATTEMPT, "--network", network, *container_security(SERVER_LIMITS), "--user", "100:1000", "--env", "BAO_ADDR=https://127.0.0.1:8200", "--env", "BAO_CACERT=/openbao/tls/ca.pem", "--env", "BAO_TLS_SERVER_NAME=openbao", "--env", "BAO_TOKEN_PATH=/openbao/private/token", "--env", "BAO_LOCAL_CONFIG=" + json.dumps(config, separators=(",", ":")), "--mount", f"type=bind,src={TARGET},dst=/openbao/data", "--mount", f"type=bind,src={directory / 'tls'},dst=/openbao/tls,readonly", "--mount", f"type=bind,src={directory / 'raft.snap'},dst=/restore/raft.snap,readonly", "--tmpfs", "/openbao/private:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000", "--tmpfs", "/openbao/audit:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=100,gid=1000", "--tmpfs", "/openbao/config:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000", "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=100,gid=1000", image, "server"]
+        args = ["create", "--name", name, "--label", "hy-home.attempt=" + ATTEMPT, "--network", network, *container_security(SERVER_LIMITS), "--user", "100:1000", "--env", "BAO_ADDR=https://127.0.0.1:8200", "--env", "BAO_CACERT=/openbao/tls/ca.pem", "--env", "BAO_TLS_SERVER_NAME=openbao", "--env", "BAO_TOKEN_PATH=/openbao/private/token", "--env", "BAO_LOCAL_CONFIG=" + json.dumps(config, separators=(",", ":")), "--mount", f"type=bind,src={TARGET},dst=/openbao/data", "--mount", f"type=bind,src={directory / 'tls'},dst=/openbao/tls,readonly", "--mount", f"type=bind,src={directory / 'raft.snap'},dst=/restore/raft.snap,readonly", "--tmpfs", "/openbao/private:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000", "--tmpfs", "/openbao/audit:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=100,gid=1000", "--tmpfs", "/openbao/config:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000", "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=40m,mode=0700,uid=100,gid=1000", image, "server"]
         if network != "none":
             args[args.index("--network") + 2 : args.index("--network") + 2] = ["--network-alias", "openbao"]
         identity = self.runtime.remember("container", self.runtime.docker(*args))
@@ -529,8 +529,14 @@ class RecoveryEffects:
         self.runtime.login(old, root)
         self.runtime.restore(old)
         self._wait_status(old, True, True)
-        denied = self.runtime.exec(old, "bao", "write", "-format=json", "sys/unseal", "key=-", input=shares[0].encode(), allow_failure=True)
-        if denied.returncode == 0:
+        # Shamir cannot reject a share below the threshold, so the restored keyring is
+        # proven foreign only when a threshold of throwaway shares fails to combine.
+        _result, first = self._json_exec(old, "write", "-format=json", "sys/unseal", "key=-", input=shares[0].encode())
+        first = first.get("data", first) if isinstance(first, dict) else {}
+        if first.get("sealed") is not True or first.get("progress") != 1:
+            raise Indeterminate()
+        denied = self.runtime.exec(old, "bao", "write", "-format=json", "sys/unseal", "key=-", input=shares[1].encode(), allow_failure=True)
+        if denied.returncode == 0 or b"invalid key" not in denied.stderr:
             raise Indeterminate()
         self.runtime.exec(old, "bao", "operator", "unseal", "-reset")
         for share in self.shares:

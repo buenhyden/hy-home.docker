@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.10"
+version: "0.1.11"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -115,6 +115,26 @@ and pass now; both suites ran OK under umask 022. Natively, on both images,
 restore as the server user with the 0440 snapshot returned 0, and the old
 forms failed with permission denied. RUN-0085 pins the new SHA256 of both
 modules.
+
+The `security-auditor` re-review of that fix failed one item: the
+foreign-share denial check sent a single throwaway share, but Shamir unseal
+cannot reject a share below the threshold, so with the working stdin form it
+would return 0 and stop every restore as indeterminate. A native run on both
+images confirmed it: after restoring a 2-of-3 snapshot, the first foreign
+share returned 0 with the server sealed and progress 1, the second returned
+"invalid key", and after `-reset` two original shares unsealed it. The check
+now requires the first share to leave the server sealed at progress 1 and the
+second to fail. New assertions failed on the earlier code (1 failure, 1
+error) and pass now. `/tmp` grew to 40 MiB to cover the 32 MiB snapshot
+admission limit. Module SHA256s now pinned in RUN-0085:
+`protected-semantic-restore.py`
+`67f47ef51dea688de6a0f7d8300311ba53dda0fa11070055bd9ec2cb3b14181c`,
+`protected-semantic-execution.py`
+`137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b`.
+
+The third re-review passed with notes: the second share must now fail with
+"invalid key" specifically, so an unrelated failure cannot pass the check, and
+the wording notes are applied.
 
 ### W3 Renderer Role Apply
 
@@ -267,6 +287,9 @@ runs the W5 and W6 tests in CI.
 | Server start review | 7 | W2 | Independent `security-auditor` review of the server start fix: PASS with notes | `e439fc1a6` | PASS | W2 Restore Server Start | - |
 | Restore flow unit | 2 | W2 | Unseal, login, stat, restore user and snapshot mode assertions RED on the earlier code (3 failures), GREEN after; both suites OK under umask 022 | Branch | PASS | W2 Restore Server Start | - |
 | Restore flow native | 2 | W2 | Synthetic init, unseal, login, snapshot save and restore on both images: restore as server user with 0440 snapshot returns 0; old forms fail | Owned `46bf9b5c`, old `11fd73a2` | PASS | W2 Restore Server Start | - |
+| Restore flow review | 7 | W2 | Independent `security-auditor` re-review: foreign-share denial check stops every restore | Branch `205fb7593` | FAIL | W2 Restore Server Start | - |
+| Denial check fix | 2, 7 | W2 | Two-share denial assertions RED on the earlier code, GREEN after; native on both images: first foreign share sealed at progress 1, second invalid key, originals unseal | Branch | PASS | W2 Restore Server Start | Restore flow review |
+| Restore flow re-review | 7 | W2 | Independent `security-auditor` third review: PASS with notes, notes applied | `01b4150b4` | PASS | W2 Restore Server Start | Restore flow review |
 | Role apply unit | 3 | W3 | 11 unit tests OK under umask 022; removing the AppRole check and readback comparison fails 2 | `455dffd70` | PASS | W3 Renderer Role Apply | - |
 | Role apply native | 3 | W3 | Real tool on an owned synthetic server, both images: targets replaced and read back, RoleID kept, role tokens exact, wrapped SecretID only, second run unchanged | `455dffd70` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 | Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
