@@ -9,7 +9,7 @@ run when the approval line they need is absent.
 
 ## Current State
 
-**No approval is on file.** Both scripts fail closed.
+The Grype DB seed approval is on file (owner, 2026-10-15). The Scorecard approval is not, so that script still fails closed.
 
 ## Scope
 
@@ -30,6 +30,8 @@ commit message. To withdraw one, delete the line.
 ## Approvals
 
 <!-- Add approval lines here, one per line, exactly as written in the table. -->
+
+Grype DB network approval: confirmed
 
 ## Why This File Exists
 
