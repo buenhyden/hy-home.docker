@@ -778,7 +778,7 @@ eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-securi
 2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-3b46e54964060c3c2088220735a565341cdc135d7d01555ea785a1047b15a418 infra/03-security/openbao/scripts/protected-semantic-restore.py
+e556f56ab02f536aab6dffe33f0772a75c1821499b418d73d8c5f326efcac626 infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 P01_SOURCE_MANIFEST
@@ -908,8 +908,8 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 실제 artifact identity와 새 attempt·빈 대상 device/inode·소유권·용량·network·담당자·
 시간/공간 한도·보존/정리 경계를 정한 stateful recovery contract가 필요합니다.
 이전 attempt04의 FILE_USABILITY는 이 검사를 통과한 것이 아닙니다. 운영 도구·exact target이
-준비되지 않았던 상태는 보존합니다. 현재 보호 복구 도구의 소스·38개 단위시험과 독립
-코드·보안·인프라 검토는 통과했으며 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
+준비되지 않았던 상태는 보존합니다. 이 문단의 단위시험·독립 검토 통과는 이전 hash의 기록이며, 현재 hash의 근거는
+SPEC-0243 W2에 있습니다. 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
 W3a는 **BLOCKED**다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를

@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -116,6 +116,22 @@ restore as the server user with the 0440 snapshot returned 0, and the old
 forms failed with permission denied. RUN-0085 pins the new SHA256 of both
 modules.
 
+The `security-auditor` re-review of that fix failed one item: the
+foreign-share denial check sent a single throwaway share, but Shamir unseal
+cannot reject a share below the threshold, so with the working stdin form it
+would return 0 and stop every restore as indeterminate. A native run on both
+images confirmed it: after restoring a 3-of-2 snapshot, the first foreign
+share returned 0 with the server sealed and progress 1, the second returned
+"invalid key", and after `-reset` two original shares unsealed it. The check
+now requires the first share to leave the server sealed at progress 1 and the
+second to fail. New assertions failed on the earlier code (1 failure, 1
+error) and pass now. `/tmp` grew to 40 MiB to cover the 32 MiB snapshot
+admission limit. Module SHA256s now pinned in RUN-0085:
+`protected-semantic-restore.py`
+`e556f56ab02f536aab6dffe33f0772a75c1821499b418d73d8c5f326efcac626`,
+`protected-semantic-execution.py`
+`137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -129,6 +145,8 @@ modules.
 | Server start review | 7 | W2 | Independent `security-auditor` review of the server start fix: PASS with notes | `e439fc1a6` | PASS | W2 Restore Server Start | - |
 | Restore flow unit | 2 | W2 | Unseal, login, stat, restore user and snapshot mode assertions RED on the earlier code (3 failures), GREEN after; both suites OK under umask 022 | Branch | PASS | W2 Restore Server Start | - |
 | Restore flow native | 2 | W2 | Synthetic init, unseal, login, snapshot save and restore on both images: restore as server user with 0440 snapshot returns 0; old forms fail | Owned `46bf9b5c`, old `11fd73a2` | PASS | W2 Restore Server Start | - |
+| Restore flow review | 7 | W2 | Independent `security-auditor` re-review: foreign-share denial check stops every restore | Branch `205fb7593` | FAIL | W2 Restore Server Start | - |
+| Denial check fix | 2 | W2 | Two-share denial assertions RED on the earlier code, GREEN after; native on both images: first foreign share sealed at progress 1, second invalid key, originals unseal | Branch | PASS | W2 Restore Server Start | Restore flow review |
 
 ## Criterion Acceptance
 

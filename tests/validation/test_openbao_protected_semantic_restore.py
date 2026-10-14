@@ -475,18 +475,31 @@ class RuntimeUnitTests(unittest.TestCase):
         effect.runtime = mock.Mock()
         effect.runtime.exec.return_value = self.result(returncode=2)
         effect._wait_status = mock.Mock()
-        effect._json_exec = mock.Mock(
-            return_value=(
-                self.result(),
-                {"root_token": "synthetic-root", "unseal_keys_b64": ["x", "y", "z"]},
-            )
-        )
+        init = {"root_token": "synthetic-root", "unseal_keys_b64": ["x", "y", "z"]}
+        below = {"sealed": True, "progress": 1}
+        effect._json_exec = mock.Mock(side_effect=[(self.result(), init), (self.result(), below)])
         effect._unseal = mock.Mock()
         effect._status = mock.Mock()
         effect._init_restore("old", Path("/tmp"))
         effect.runtime.login.assert_any_call("old", "synthetic-root")
         effect.runtime.restore.assert_called_once_with("old")
         self.assertEqual([c.args[1] for c in effect._unseal.call_args_list], list(effect.shares))
+        # One foreign share is accepted below the threshold; the second must fail to combine.
+        self.assertEqual(effect._json_exec.call_args_list[1].kwargs["input"], b"x")
+        self.assertEqual(effect.runtime.exec.call_args_list[0].kwargs["input"], b"y")
+
+    def test_init_restore_stops_when_foreign_shares_unseal_or_skip_progress(self):
+        init = {"root_token": "synthetic-root", "unseal_keys_b64": ["x", "y", "z"]}
+        for first, second_rc in (({"sealed": True, "progress": 1}, 0), ({"sealed": False, "progress": 0}, 2)):
+            effect = self.effect()
+            effect.runtime = mock.Mock()
+            effect.runtime.exec.return_value = self.result(returncode=second_rc)
+            effect._wait_status = mock.Mock()
+            effect._json_exec = mock.Mock(side_effect=[(self.result(), init), (self.result(), first)])
+            effect._unseal = mock.Mock()
+            with self.assertRaises(self.subject.Indeterminate):
+                effect._init_restore("old", Path("/tmp"))
+            effect._unseal.assert_not_called()
 
     def test_token_creation_and_agent_output_comparison(self):
         effect = self.effect()
