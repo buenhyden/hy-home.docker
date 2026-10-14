@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.3"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -136,6 +136,71 @@ The third re-review passed with notes: the second share must now fail with
 "invalid key" specifically, so an unrelated failure cannot pass the check, and
 the wording notes are applied.
 
+### W3 Renderer Role Apply
+
+Nothing applied the renderer policies, token roles or AppRole that W3a and
+W5 assume, and `operator.hcl` cannot write `sys/policies/acl`, so W1c needs
+root. The new `protected-renderer-roles.py` loads the token helper by its
+pinned hash and reuses its root input, custody, pinned TLS and response
+checks. It writes four policies (`renderer`, `renderer-issuer`,
+`renderer-cleanup`, `hy-home-operator`), two token roles and the
+`hy-home-renderer` AppRole from hash-pinned tracked files, in that order and
+once each. Before any write it reads every target and stores the result in
+custody `prior-state.json` for rollback; after each write it reads the target
+back and stops as INDETERMINATE on any difference. A missing AppRole blocks
+before any write, because the deployed Agent holds its RoleID. The receipt
+`state.json` holds only paths, SHA-256 of prior and applied values, and a
+changed flag. It creates no credential.
+
+Eleven unit tests cover the target set and hashes, duration readback, source
+tampering, the binding pin, root and cluster checks, the missing AppRole,
+readback difference, write failure and the request allowlist. Removing the
+AppRole check and the readback comparison makes two of them fail; restored,
+all pass under umask 022. Two opt-in native tests ran the real tool against
+an owned synthetic server on both the owned image and the running HOME image:
+a stale `renderer` policy and a differently configured AppRole were replaced,
+the RoleID stayed the same, a root-issued request through each token role
+returned the reviewed five-minute non-renewable identity, the issuer token
+could create a wrapped SecretID but not an unwrapped one, and a second run
+reported no change. The rehearsal's server, CA, address, cluster and AppRole
+mount are synthetic, the tool sees the fixture's host name and port in place
+of HOME's, and the 2.6.2 run bypasses the fixture's helper-tag probe. RUN-0085 pins the new helper and the seven config files in
+the W1 manifest and replaces the BLOCKED W1c text with the command.
+
+Independent reviews of `5c2dd4601` both passed with notes (`security-auditor`
+four Low; `iac-reviewer` three Medium, two Low). Applied:
+
+- A read-only `plan` operation records the same receipt without writing; the
+  runbook runs it first and applies only after the owner accepts any change to
+  `hy-home-operator`, `renderer` or the AppRole, then checks Agent health.
+- Role fields the reviewed files omit (period, CIDRs, use count, globs, token
+  type) are written at their defaults. Token role reads omit
+  `token_bound_cidrs` and `token_num_uses` when empty on both images, so the
+  readback expects them absent.
+- `BindingBlocked` from a changed config prints BLOCKED instead of a
+  traceback; the token module is loaded with no-follow, regular, single-link
+  and size checks; POST sends the held reviewed body.
+- The runbook captures each exit status, keeps W2 and W3 closed unless the
+  receipt says `RENDERER_ROLES_APPLIED`, decides rollback before root is
+  revoked (rollback BLOCKED without a reviewed command), copies
+  `prior-state.json` to durable owner storage, and names W1c wherever root
+  use is listed.
+- The native test now runs `plan` first and confirms nothing changed, then
+  has an operator-policy token, not root, create both role tokens with
+  `policies` as a string, as W5 sends it, and be refused a one-hour TTL. A
+  probe showed the operator policy's `policies = ["renderer-issuer"]` limit
+  admits the string form and refuses a JSON list, which matches W5's text.
+
+The `iac-reviewer` re-review of `3e080d999` passed with notes (three Low, two
+Nits). Applied: a native probe on both images showed `allowed_entity_aliases`
+and `token_no_default_policy` read back as written, so every field a role
+read returns is now written at its default except the AppRole's
+`local_secret_ids`, fixed at creation; the runbook has a literal `apply`
+block with its exit check, says a `plan` exit 2 wrote nothing, compares the
+plan and apply `prior_sha256` values, stops at W1c if the Agent is unhealthy,
+and W7 keeps root while a W1c rollback decision is open. The test is now in
+`.github/workflow-contract.yml`, so CI runs it.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -152,6 +217,11 @@ the wording notes are applied.
 | Restore flow review | 7 | W2 | Independent `security-auditor` re-review: foreign-share denial check stops every restore | Branch `205fb7593` | FAIL | W2 Restore Server Start | - |
 | Denial check fix | 2, 7 | W2 | Two-share denial assertions RED on the earlier code, GREEN after; native on both images: first foreign share sealed at progress 1, second invalid key, originals unseal | Branch | PASS | W2 Restore Server Start | Restore flow review |
 | Restore flow re-review | 7 | W2 | Independent `security-auditor` third review: PASS with notes, notes applied | `01b4150b4` | PASS | W2 Restore Server Start | Restore flow review |
+| Role apply unit | 3 | W3 | 11 unit tests OK under umask 022; removing the AppRole check and readback comparison fails 2 | `455dffd70` | PASS | W3 Renderer Role Apply | - |
+| Role apply native | 3 | W3 | Real tool on an owned synthetic server, both images: targets replaced and read back, RoleID kept, role tokens exact, wrapped SecretID only, second run unchanged | `455dffd70` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
+| Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
+| Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
+| Role apply re-review | 7 | W3 | Independent `iac-reviewer` re-review of the fixes: PASS with notes, notes applied; 17 tests OK with both native runs; CI gate tests OK | `3e080d999` | PASS | W3 Renderer Role Apply | - |
 
 ## Criterion Acceptance
 
