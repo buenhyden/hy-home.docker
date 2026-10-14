@@ -716,7 +716,7 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
 - **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
   쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 지금 없으므로 W4 뒤 gateway를 거치는
   OIDC 로그인과 W7 `revoke-root`가 끊긴다. Compose는 mount를 이미 선언하지만 2026-10-14 실행
-  image(v3.7.13)는 Compose 고정(v3.7.14)과 다르다. 실행 중 image ID가
+  image는 Compose 고정보다 이전 버전이다. 실행 중 image ID가
   [window override](../../../../infra/03-security/openbao/window/compose.window-ca.override.yml)의
   digest와 같고 다른 설정 차이가 없을 때만
   `docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml --profile core up -d --no-deps --no-build --pull never --force-recreate traefik`으로
@@ -859,7 +859,7 @@ AppRole `hy-home-renderer`이며 이 순서로 한 번씩 쓴다. role 읽기가
 먼저 `plan`으로 같은 읽기만 하고 아무것도 쓰지 않는다. 그 `state.json`이 대상별 변경 여부를
 보여 준다. `hy-home-operator`·`renderer`·AppRole이 바뀌면 `prior-state.json`의 현재 값과
 고정 파일을 비교해 그 차이를 owner가 받아들인다고 Task에 기록한 뒤에만 `apply`한다.
-이 정책들은 실행 중인 OIDC 세션과 2.6.2 Agent token에 즉시 적용된다.
+이 정책들은 실행 중인 OIDC 세션과 현재 Agent token에 즉시 적용된다.
 
 ```bash
 P01_ROLES_PLAN_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-roles-plan.XXXXXX")" || exit 1
@@ -1100,10 +1100,10 @@ docker compose exec -T openbao bao status
 기대: 새 image로 재생성, Raft mount identity 불변, threshold 뒤 `Sealed false`.
 중단: mount identity 변경, unseal 실패, cluster ID 변경, audit backend 실패.
 rollback 규칙은 fix-forward다(2026-10-14 owner 결정, SPEC-0243 W6). 새 버전 데이터에 이전
-image를 붙이지 않는다(in-place Raft downgrade 금지). W4가 실패하면 2.7.1에서 원인을 고친다.
+image를 붙이지 않는다(in-place Raft downgrade 금지). W4가 실패하면 새 owned image에서 원인을 고친다.
 window 안에 끝나지 않으면 server를 sealed 또는 정지 상태로 두고, consumer는 이미 렌더된
 파일로 계속 동작하며, 남은 단계는 다음 window로 넘긴다. 유일한 예외는 Raft 데이터 손상처럼
-2.7.1에서 고칠 수 없는 경우다. 그때만 HOME을 보류하고 @buenhyden에게 반환하며, 별도 승인으로
+새 owned image에서 고칠 수 없는 경우다. 그때만 HOME을 보류하고 @buenhyden에게 반환하며, 별도 승인으로
 W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 경로를 연다(아래 Rollback or Recovery).
 지금의 restore 도구는 격리 target-05에 고정돼 있으므로, HOME을 복원된 volume으로 바꾸는
 절차는 그때 따로 검토한다.
@@ -1121,8 +1121,8 @@ SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 versio
 실행 중 image가 Compose 고정과 같고 다른 설정 차이가 없음을 확인한 뒤에만
 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
 실행한다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다.
-다르면 실행 image를 유지하는 검토된 scoped override를 쓴다. 2026-10-14 실행 image(v3.14.0)는
-Compose 고정(v3.15.0)과 달랐으므로, 실행 중 image ID가 window override의 digest와 같을 때
+다르면 실행 image를 유지하는 검토된 scoped override를 쓴다. 2026-10-14 실행 image는
+Compose 고정과 달랐으므로, 실행 중 image ID가 window override의 digest와 같을 때
 `docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
 쓴다. 둘 다 아니면 이 부분은 **BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
 `OpenBaoAgentAuthFailure`가 조용하다. 중단: scrape 실패가 이어지면 Agent listener와 `obs_net`
@@ -1273,7 +1273,7 @@ path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 있어야 한다. 현�
 ### Rollback or Recovery
 
 maintenance window의 W4 실패는 fix-forward가 규칙이다([W4](#maintenance-window-plan)의 rollback
-규칙). 아래 snapshot 복원은 2.7.1에서 고칠 수 없는 손상에 대한 별도 승인 경로다.
+규칙). 아래 snapshot 복원은 새 owned image에서 고칠 수 없는 손상에 대한 별도 승인 경로다.
 
 non-root operator 신원으로 보호된 Raft 스냅샷을 캡처하고, checksum, cluster ID, 이미지
 선언, seal 구성, custody 영수증을 기록한 뒤, network egress와 consumer가 비활성화된 새
