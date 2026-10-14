@@ -1,8 +1,8 @@
 ---
 title: "Unseal Share File Out of Host Backups Plan"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/plan"
-status: "draft"
+status: "superseded"
 owner: "@buenhyden"
 updated: "2026-10-14"
 layer: "specs"

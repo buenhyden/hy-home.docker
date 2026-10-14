@@ -1,8 +1,8 @@
 ---
 title: "Unseal Share File Out of Host Backups Task"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/task"
-status: "draft"
+status: "superseded"
 owner: "@buenhyden"
 updated: "2026-10-14"
 layer: "specs"
@@ -169,6 +169,14 @@ therefore withdrawn and will not merge; the W5 place rule is replaced. The
 same day the owner chose `superseded` by SPEC-0242 for this package, to take
 effect once SPEC-0242 is merged and approved, when the package leaves Stage
 03; the exclusion branches are deleted.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0240 | draft | superseded | #owner-withdrawal--2026-10-14 |
+| SPEC-0240-PLAN-0001 | draft | superseded | #owner-withdrawal--2026-10-14 |
+| SPEC-0240-TSK-0001 | draft | superseded | #owner-withdrawal--2026-10-14 |
 
 ## Evidence
 
