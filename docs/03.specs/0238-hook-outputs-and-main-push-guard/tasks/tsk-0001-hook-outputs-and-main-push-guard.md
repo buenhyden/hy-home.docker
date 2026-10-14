@@ -290,6 +290,16 @@ in another repository (`-C`, `--git-dir`, `GIT_DIR`) makes the branch
 unknown, and a redirection glued to `)` keeps the separator. Residual: a
 checkout that fails on a `;` chain is judged as if it succeeded.
 
+### Review Round 7
+
+On 2026-10-14 the re-review of `eb679ab16` verified every round 6 fix and
+found one regression from the pathspec rule: `git checkout -b <name>
+<start-point>` and `-B` have two names and were read as a pathspec checkout,
+so `git checkout -B main origin/main && git push` from a feature branch was
+allowed and `git checkout -b feat origin/main && git push -u origin HEAD` on
+`main` was denied. A branch-creating flag is now handled first and names the
+new branch; only without one do two names or `--` mean a pathspec.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -313,7 +323,9 @@ checkout that fails on a `;` chain is judged as if it succeeded.
 | Re-review 4 fixes | 5 | W5 | Round 5 fixes; 5 more denied and 5 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32) | Branch | PASS | Review Round 5 | Re-review 4 |
 | Re-review 5 | 5 | W5 | Independent `security-auditor` re-review of `f3146b362`: three implicit pushes to `main` allowed | Branch | FAIL | Review Round 6 | - |
 | Re-review 5 fixes | 5 | W5 | Round 6 fixes; 10 more denied and 1 more allowed forms; routing suite (70), hook tests (32) | Branch | PASS | Review Round 6 | Re-review 5 |
-| Re-review 6 | 5 | W5 | Independent review of the round 6 fixes | - | NOT_RUN | Review Round 6 | - |
+| Re-review 6 | 5 | W5 | Independent `security-auditor` re-review of `eb679ab16`: round 6 fixes verified; `checkout -b|-B <name> <start>` read as a pathspec | Branch | FAIL | Review Round 7 | - |
+| Re-review 6 fixes | 5 | W5 | Branch-creating flags handled before the pathspec test; 1 more denied and 1 more allowed form; routing suite (70), hook tests (32) | Branch | PASS | Review Round 7 | Re-review 6 |
+| Re-review 7 | 5 | W5 | Independent review of the round 7 fix | - | NOT_RUN | Review Round 7 | - |
 | Candidate | 6 | W5 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

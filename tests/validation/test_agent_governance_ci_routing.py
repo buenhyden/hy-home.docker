@@ -2530,6 +2530,12 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 with self.subTest(command=command):
                     self.assertTrue(self._denied(command, repo))
             self.assertFalse(self._denied("git push --tags origin", repo))
+            # A new branch from a start point is a switch, not a pathspec.
+            self.assertFalse(
+                self._denied(
+                    "git checkout -b fresh origin/main && git push -u origin HEAD", repo
+                )
+            )
             # Another repository on `main`, reached by directory or GIT_DIR.
             subprocess.run(["git", "checkout", "-q", "feat"], cwd=repo, check=True)
             other = repo / "other"
@@ -2546,6 +2552,7 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "git checkout main && cd . && git push origin HEAD",
                 "(git checkout main) && git push origin HEAD",
                 "git checkout main && bash -c 'git push origin HEAD'",
+                "git checkout -B main origin/main && git push",
             ):
                 with self.subTest(command=command):
                     self.assertTrue(self._denied(command, repo))

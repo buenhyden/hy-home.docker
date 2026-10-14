@@ -548,6 +548,13 @@ def _head_change(
         return "?"
     if subcommand not in {"checkout", "switch"}:
         return None
+    for position, word in enumerate(arguments):
+        if word in {"-b", "-B", "-c", "-C", "--orphan"}:
+            # A branch-creating flag names the new branch; any later word is
+            # its start point, not a pathspec.
+            if elsewhere:
+                return "?"
+            return arguments[position + 1] if position + 1 < len(arguments) else "?"
     if subcommand == "checkout" and (
         ("--" in arguments and arguments.index("--") + 1 < len(arguments))
         or len([word for word in arguments if not word.startswith("-")]) > 1
@@ -555,9 +562,6 @@ def _head_change(
         return None  # a pathspec checkout leaves HEAD where it is
     if elsewhere:
         return "?"
-    for position, word in enumerate(arguments):
-        if word in {"-b", "-B", "-c", "-C", "--orphan"}:
-            return arguments[position + 1] if position + 1 < len(arguments) else "?"
     if "-" in arguments:
         return "?"
     before = arguments[: arguments.index("--")] if "--" in arguments else arguments
