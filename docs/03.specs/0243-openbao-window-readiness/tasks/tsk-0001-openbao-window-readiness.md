@@ -659,6 +659,21 @@ criterion does not approve the window itself: the window still needs owner
 approval, `P01_APPROVED_COMMIT`, a SEC01 stable lookup within 7 days of the
 window start, and the W0 runtime checks.
 
+The owner scheduled the window (AskUserQuestion, 2026-10-15) for Thursday
+2026-10-22, 14:00 to 16:00 KST. This avoids the 03:30 backup, so H3 is not
+needed.
+
+What the schedule implies:
+
+- The 2026-10-14 SEC01 lookup does not cover a start on 2026-10-22, so a fresh
+  lookup must run on or after 2026-10-15 14:00 KST. The plan is 2026-10-21.
+- The Traefik and Prometheus acceptance expires on 2026-11-15, so it covers
+  the window.
+- `P01_APPROVED_COMMIT` is the default-branch commit at W0, after its CI passes
+  and with no source change since `bf87a9b6a`. This record's own merge commit
+  qualifies.
+- Scheduling is not approval: the owner approves the window separately at W0.
+
 ## Related Documents
 
 - [Spec](../spec.md)
