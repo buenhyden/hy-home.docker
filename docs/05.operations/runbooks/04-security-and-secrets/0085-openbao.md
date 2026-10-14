@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.11"
+version: "0.12.12"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -717,16 +717,16 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 지금 없으므로 W4 뒤 gateway를 거치는
   OIDC 로그인과 W7 `revoke-root`가 끊긴다. Compose는 mount를 이미 선언하지만 2026-10-14 실행
   image는 Compose 고정보다 이전 버전이다. 실행 중 image ID가
-  [window override](../../../../infra/03-security/openbao/window/compose.window-ca.override.yml)의
+  [Traefik window overlay](../../../../infra/01-gateway/traefik/compose.window-ca.override.yml)의
   digest와 같고 다른 설정 차이가 없을 때만
-  `docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml --profile core up -d --no-deps --no-build --pull never --force-recreate traefik`으로
+  `docker compose -f docker-compose.yml -f infra/01-gateway/traefik/compose.window-ca.override.yml --profile core up -d --no-deps --no-build --pull never --force-recreate traefik`으로
   다시 만들고 gateway를 확인한다. 그 전에는 W4를 열지 않는다.
 - **실행 중 설정과 디스크의 차이.** Prometheus·Gatus·Traefik의 실행 중 image·mount·설정을
   Compose 선언과 비교한다. 차이가 있으면 재생성이 다른 변경까지 배포하므로 먼저 검토한다.
   명령은 worktree가 아니라 `.env`가 있는 main checkout에서 실행한다. 서비스마다
   `docker inspect`의 `.Mounts`(source·destination·RW), `.NetworkSettings.Networks` 이름,
   `.HostConfig`의 memory·CPU·pids와
-  `docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml config --format json <service>`의
+  `docker compose -f docker-compose.yml -f infra/01-gateway/traefik/compose.window-ca.override.yml -f infra/06-observability/compose.window-ca.override.yml config --format json <service>`의
   volumes·networks·자원을 나란히 비교한다. 실행 중 `Config.Image`는 tag만 담으므로 image는
   ID로 비교하고 config hash는 쓰지 않는다. 단일 파일 bind는 재생성 때 지금 파일 내용이
   들어가므로 그 파일의 최근 변경도 함께 본다. override가 고정한 참조가 로컬에서 풀리는지
@@ -1122,8 +1122,8 @@ SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 versio
 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
 실행한다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다.
 다르면 실행 image를 유지하는 검토된 scoped override를 쓴다. 2026-10-14 실행 image는
-Compose 고정과 달랐으므로, 실행 중 image ID가 window override의 digest와 같을 때
-`docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
+Compose 고정과 달랐으므로, 실행 중 image ID가 [Prometheus window overlay](../../../../infra/06-observability/compose.window-ca.override.yml)의 digest와 같을 때
+`docker compose -f docker-compose.yml -f infra/06-observability/compose.window-ca.override.yml --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
 쓴다. 둘 다 아니면 이 부분은 **BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
 `OpenBaoAgentAuthFailure`가 조용하다. 중단: scrape 실패가 이어지면 Agent listener와 `obs_net`
 연결을 먼저 확인한다. Prometheus만 이전 설정으로 되돌리는 것은 Agent 재인증과 무관하다.

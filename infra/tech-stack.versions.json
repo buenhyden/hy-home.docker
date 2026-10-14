@@ -19,12 +19,20 @@
         "traefik": "external"
       },
       "images": [
+        "traefik:v3.7.13@sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259",
         "traefik:v3.7.14@sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c"
       ],
       "compose_files": [
+        "infra/01-gateway/traefik/compose.window-ca.override.yml",
         "infra/01-gateway/traefik/docker-compose.yml"
       ],
       "sources": [
+        {
+          "compose_file": "infra/01-gateway/traefik/compose.window-ca.override.yml",
+          "images": [
+            "traefik:v3.7.13@sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259"
+          ]
+        },
         {
           "compose_file": "infra/01-gateway/traefik/docker-compose.yml",
           "images": [
@@ -259,12 +267,20 @@
         "prom/prometheus": "external"
       },
       "images": [
+        "prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0",
         "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
       ],
       "compose_files": [
+        "infra/06-observability/compose.window-ca.override.yml",
         "infra/06-observability/docker-compose.yml"
       ],
       "sources": [
+        {
+          "compose_file": "infra/06-observability/compose.window-ca.override.yml",
+          "images": [
+            "prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0"
+          ]
+        },
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [

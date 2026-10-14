@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.11"
+version: "0.1.12"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -242,10 +242,16 @@ OpenBao CA mount for Traefik, Prometheus and Gatus, but none of the running
 containers has it. Gatus runs the current `hy/gatus:local` image ID, so the
 plain recreate in RUN-0085 applies. Traefik runs v3.7.13 and Prometheus
 v3.14.0, while Compose pins v3.7.14 and v3.15.0, so a plain recreate would
-also upgrade them. The new `compose.window-ca.override.yml` pins each to the
+also upgrade them. Two `x-hyhome-overlay` files, `compose.window-ca.override.yml`
+beside each service's Compose file, pin each to the
 running image by digest and changes nothing else: `docker compose config`
 with and without it differs only in those two `image` values, and the merged
 model keeps the CA mount targets. A contract test pins that shape.
+
+PR #486's operations-catalog gate rejected a single override with `services`
+under `infra/` as an unincluded Compose file, so it became two
+`x-hyhome-overlay` files, each based on its service's Compose file; the gate
+then passes.
 
 The hourly logrotate call is a drop-in for the host's existing
 `logrotate.timer` that resets `OnCalendar` to hourly and sets
