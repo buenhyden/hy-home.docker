@@ -434,7 +434,7 @@ the restore remains open.
 
 On 2026-10-14 the owner (AskUserQuestion) accepted criteria 1 to 3, whose
 evidence is on main, and chose to accept criteria 4 to 7 once #486 and #487
-merge. #486 and #487 merged on 2026-10-14, so criteria 4 to 6 are accepted as
+merge. #486 and #487 merged on 2026-10-15 KST, so criteria 4 to 6 are accepted as
 the owner chose. Criterion 7 stays pending: the second readiness review
 returned NOT READY, and per-unit reviews it found missing (security for W1
 and W6, IaC for W2 and W5) are still to run. The window stays NOT READY.
