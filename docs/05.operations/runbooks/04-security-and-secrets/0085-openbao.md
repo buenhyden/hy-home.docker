@@ -834,7 +834,7 @@ AppRole `hy-home-renderer`이며 이 순서로 한 번씩 쓴다. role 읽기가
 먼저 `plan`으로 같은 읽기만 하고 아무것도 쓰지 않는다. 그 `state.json`이 대상별 변경 여부를
 보여 준다. `hy-home-operator`·`renderer`·AppRole이 바뀌면 `prior-state.json`의 현재 값과
 고정 파일을 비교해 그 차이를 owner가 받아들인다고 Task에 기록한 뒤에만 `apply`한다.
-이 정책들은 실행 중인 OIDC 세션과 2.6.2 Agent token에 즉시 적용된다.
+이 정책들은 실행 중인 OIDC 세션과 현재 Agent token에 즉시 적용된다.
 
 ```bash
 P01_ROLES_PLAN_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-roles-plan.XXXXXX")" || exit 1
