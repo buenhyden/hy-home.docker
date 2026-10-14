@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.15"
+version: "0.1.16"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -358,6 +358,32 @@ never read as a logrotate rule; the override says when to retire it; the
 OpenBao README lists the new files; and `.github/workflow-contract.yml` now
 runs the W5 and W6 tests in CI.
 
+### Second Readiness Review and Window Text
+
+An independent `iac-reviewer` readiness review of the whole window on the
+W4 branch, with every unit in place, returned NOT READY on 2026-10-14: D1-D4
+are fixed in source, but the text still stopped W4/W5 on SEC01 criterion 15,
+the targets could not fit 60 minutes, W6 rotation could not be seen in the
+window, W3a's status contradicted itself, an un-revoked root could be lost
+on tmpfs, and the W5 token step put credentials through the terminal.
+
+The owner decided (AskUserQuestion, 2026-10-14): a 120-minute window with
+W6 rotation and W7's next backup moved to post-window observation; the
+W4/W5 SEC01 gate is the window-only image acceptance plus a stable lookup
+within 7 days, not criterion 15; an Alertmanager silence over the window;
+and the old `p01-operator.token` is revoked and deleted.
+
+RUN-0085 now has a timing table with W1c, W3a and W3b rows, a 105-minute
+target in a 120-minute window and clock stop points (T+15, T+60, T+85); the
+SEC01 gate as decided; W0 checks for a running backup, `Persistent=true`,
+the clean approved checkout, the operator inputs, the image, Agent, `/dev/shm`
+and target baselines, and the old token; the silence from W3 to W7; the W3
+writer list; a consistent W3a status; W6 and W7 checks split into window and
+post-window parts; a custody path for a root left un-revoked; and a W5 step
+in which only the operator credential is typed and the two short tokens go
+from the server's CLI into variables. A full native `perform()` rehearsal of
+the restore remains open.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -383,6 +409,8 @@ runs the W5 and W6 tests in CI.
 | Restore input reviews | 4, 7 | W4 | `security-auditor` APPROVE with notes; `iac-reviewer` REJECT: no native rehearsal, candidate not bound to the commit | `0294deaf8` | FAIL | W4 W3a Input Producers | - |
 | Restore input native | 4 | W4 | Real 2.6.2 synthetic snapshot through every producer CLI and the restore's `_contract`, `QuiescenceLease`, `Admission.pre_read` and `preflight`; preflight platform-ID defect fixed (RED then GREEN); 15 tests OK in a umask 022 clone | `863eafa40` on old `11fd73a2` | PASS | W4 W3a Input Producers | Restore input reviews |
 | Restore input re-review | 7 | W4 | Independent `iac-reviewer` re-review: PASS with notes, notes applied; 66 tests OK with all native rehearsals in a umask 022 clone; manifest pin test OK | `a4dbc0f9e` | PASS | W4 W3a Input Producers | - |
+| Second readiness review | 7 | W1 | Independent `iac-reviewer` readiness review of the whole window: NOT READY (SEC01 gate text, timing, W6 timing, W3a status, root custody, W5 token step) | `a4dbc0f9e` branch | FAIL | Second Readiness Review and Window Text | - |
+| Window text round 2 | 1 | W1 | Owner decisions recorded; RUN-0085 text fixed; metadata check-changed 0, links PASS, markdownlint 0, related suites 70 OK | Branch `claude/window-text-r2` | PASS | Second Readiness Review and Window Text | - |
 | R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
 | R2 read-only rehearsal | 5 | W5 | `restic-offsite cmd snapshots --no-lock --json` against HOME's R2 repository, owner-approved: reachable and decrypted, 45 snapshots, latest 2026-10-13T18:42:46, none tagged `hy-home-openbao-w3`; no write, no lock | HOME R2 on 2026-10-14 | PASS | W5 R2 Artifact Transfer | - |
 | R2 artifact review | 7 | W5 | Independent `security-auditor` review: PASS with notes, notes applied; 5 tests OK including the native rehearsal | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
