@@ -2139,7 +2139,13 @@ class BackupContractTests(unittest.TestCase):
             ROOT / "infra/03-security/openbao/config/policies/backup-snapshot.hcl"
         ).read_text(encoding="utf-8")
         self.assertEqual(
-            ['"sys/storage/raft/snapshot"'], re.findall(r"path (\S+)", policy)
+            [
+                '"sys/storage/raft/snapshot"',
+                '"auth/token/lookup-self"',
+                '"auth/token/renew-self"',
+                '"auth/token/revoke-self"',
+            ],
+            re.findall(r"path (\S+)", policy),
         )
         self.assertIn('capabilities = ["read"]', policy)
         service = (ROOT / RESTIC_DIR / "systemd/hyhome-backup.service").read_text(
