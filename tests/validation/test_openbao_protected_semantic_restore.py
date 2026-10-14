@@ -464,7 +464,11 @@ class RuntimeUnitTests(unittest.TestCase):
         self.assertEqual(effect._canaries("server"), (("one", 1), ("two", 2)))
         effect._unseal("server", "share-secret")
         self.assertNotIn("share-secret", repr(effect._json_exec.call_args.args))
-        self.assertEqual(effect._json_exec.call_args.kwargs["input"], b"share-secret\n")
+        self.assertEqual(effect._json_exec.call_args.kwargs["input"], b"share-secret")
+        # operator unseal refuses non-terminal stdin; the API path reads key=- from stdin.
+        self.assertEqual(
+            effect._json_exec.call_args.args[1:], ("write", "-format=json", "sys/unseal", "key=-")
+        )
 
     def test_init_restore_rejects_foreign_then_uses_original_shares(self):
         effect = self.effect()
@@ -732,7 +736,8 @@ class IntegrationBoundaryTests(unittest.TestCase):
         effect._copy_snapshot(destination)
         copied = destination / "raft.snap"
         self.assertEqual(copied.read_bytes(), raw)
-        self.assertEqual(copied.stat().st_mode & 0o777, 0o400)
+        # Group 1000 can read it inside the server container; nothing can write it.
+        self.assertEqual(copied.stat().st_mode & 0o777, 0o440)
 
     def test_main_reports_accepted_blocked_and_indeterminate(self):
         args = []

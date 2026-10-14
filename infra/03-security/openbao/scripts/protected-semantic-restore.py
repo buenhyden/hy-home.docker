@@ -43,7 +43,7 @@ PARENT_SHA256 = "2c6101572dca382752cc5cef25f9d5d1ed18804e40c43984f41ea6e5d80734a
 ARCHIVE_NAME = "protected-snapshot-archive.py"
 ARCHIVE_SHA256 = "48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868"
 EXECUTION_NAME = "protected-semantic-execution.py"
-EXECUTION_SHA256 = "3ed79ab6b43663bc8788c583578a469c3d8c81ee8d71c0310bdd605ec5474bca"
+EXECUTION_SHA256 = "137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b"
 CANARY_FIELD_NAME = "admin_password"
 CANARIES = (("secret/data/hy-home/02-auth/keycloak", CANARY_FIELD_NAME), ("secret/data/hy-home/06-observability/grafana", CANARY_FIELD_NAME))
 SERVER_LIMITS = ("--memory", "512m", "--memory-swap", "512m", "--cpus", "1", "--pids-limit", "512")
@@ -437,7 +437,7 @@ class RecoveryEffects:
 
     def _copy_snapshot(self, directory):
         target = directory / "raft.snap"
-        fd = os.open(target, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o400)
+        fd = os.open(target, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o440)
         try:
             offset = 0
             while offset < self.admission.snapshot_info.st_size:
@@ -446,7 +446,7 @@ class RecoveryEffects:
                     raise Indeterminate()
                 _write_all(fd, raw)
                 offset += len(raw)
-            os.fchmod(fd, 0o400)
+            os.fchmod(fd, 0o440)
             os.fsync(fd)
             if _signature(os.fstat(self.admission.snapshot_fd)) != _signature(self.admission.snapshot_info):
                 raise Indeterminate()
@@ -481,7 +481,7 @@ class RecoveryEffects:
 
     def _server(self, name, image, directory, network):
         config = {"ui": False, "disable_mlock": True, "storage": {"raft": {"path": "/openbao/data", "node_id": "p01-restore"}}, "listener": [{"tcp": {"address": "0.0.0.0:8200", "cluster_address": "0.0.0.0:8201", "tls_disable": False, "tls_min_version": "tls12", "tls_cert_file": "/openbao/tls/server.pem", "tls_key_file": "/openbao/tls/server-key.pem"}}], "api_addr": "https://openbao:8200", "cluster_addr": "https://openbao:8201", "audit": [{"type": "file", "path": "p01-file", "options": {"file_path": "/openbao/audit/audit.json", "mode": "0600", "log_raw": "false", "hmac_accessor": "true"}}]}
-        args = ["create", "--name", name, "--label", "hy-home.attempt=" + ATTEMPT, "--network", network, *container_security(SERVER_LIMITS), "--user", "100:1000", "--env", "BAO_ADDR=https://127.0.0.1:8200", "--env", "BAO_CACERT=/openbao/tls/ca.pem", "--env", "BAO_TLS_SERVER_NAME=openbao", "--env", "BAO_TOKEN_PATH=/openbao/private/token", "--env", "BAO_LOCAL_CONFIG=" + json.dumps(config, separators=(",", ":")), "--mount", f"type=bind,src={TARGET},dst=/openbao/data", "--mount", f"type=bind,src={directory / 'tls'},dst=/openbao/tls,readonly", "--mount", f"type=bind,src={directory / 'raft.snap'},dst=/restore/raft.snap,readonly", "--tmpfs", "/openbao/private:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000", "--tmpfs", "/openbao/audit:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=100,gid=1000", "--tmpfs", "/openbao/config:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000", image, "server"]
+        args = ["create", "--name", name, "--label", "hy-home.attempt=" + ATTEMPT, "--network", network, *container_security(SERVER_LIMITS), "--user", "100:1000", "--env", "BAO_ADDR=https://127.0.0.1:8200", "--env", "BAO_CACERT=/openbao/tls/ca.pem", "--env", "BAO_TLS_SERVER_NAME=openbao", "--env", "BAO_TOKEN_PATH=/openbao/private/token", "--env", "BAO_LOCAL_CONFIG=" + json.dumps(config, separators=(",", ":")), "--mount", f"type=bind,src={TARGET},dst=/openbao/data", "--mount", f"type=bind,src={directory / 'tls'},dst=/openbao/tls,readonly", "--mount", f"type=bind,src={directory / 'raft.snap'},dst=/restore/raft.snap,readonly", "--tmpfs", "/openbao/private:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000", "--tmpfs", "/openbao/audit:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=100,gid=1000", "--tmpfs", "/openbao/config:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000", "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=100,gid=1000", image, "server"]
         if network != "none":
             args[args.index("--network") + 2 : args.index("--network") + 2] = ["--network-alias", "openbao"]
         identity = self.runtime.remember("container", self.runtime.docker(*args))
@@ -505,7 +505,7 @@ class RecoveryEffects:
         raise Indeterminate()
 
     def _unseal(self, server, share):
-        self._json_exec(server, "operator", "unseal", "-format=json", input=(share + "\n").encode())
+        self._json_exec(server, "write", "-format=json", "sys/unseal", "key=-", input=share.encode())
 
     def _status(self, server, version):
         _result, value = self._json_exec(server, "status", "-format=json")
@@ -529,7 +529,7 @@ class RecoveryEffects:
         self.runtime.login(old, root)
         self.runtime.restore(old)
         self._wait_status(old, True, True)
-        denied = self.runtime.exec(old, "bao", "operator", "unseal", "-format=json", input=(shares[0] + "\n").encode(), allow_failure=True)
+        denied = self.runtime.exec(old, "bao", "write", "-format=json", "sys/unseal", "key=-", input=shares[0].encode(), allow_failure=True)
         if denied.returncode == 0:
             raise Indeterminate()
         self.runtime.exec(old, "bao", "operator", "unseal", "-reset")
