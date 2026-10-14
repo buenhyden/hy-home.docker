@@ -589,7 +589,7 @@ A dev-server rehearsal of the sweep used five parent root tokens with child root
 | Restore input producers | 4 | W4 | 10 unit tests through the restore client's own lease and contract validators, OK in a umask 022 clone with the restore suite (36); start-before-save mutation fails a test | `33763dd1d` | PASS | W4 W3a Input Producers | - |
 | Restore input reviews | 4, 7 | W4 | `security-auditor` APPROVE with notes; `iac-reviewer` REJECT: no native rehearsal, candidate not bound to the commit | `0294deaf8` | FAIL | W4 W3a Input Producers | - |
 | Restore input native | 4 | W4 | Real 2.6.2 synthetic snapshot through every producer CLI and the restore's `_contract`, `QuiescenceLease`, `Admission.pre_read` and `preflight`; preflight platform-ID defect fixed (RED then GREEN); 15 tests OK in a umask 022 clone | `863eafa40` on old `11fd73a2` | PASS | W4 W3a Input Producers | Restore input reviews |
-| Restore input re-review | 7 | W4 | Independent `iac-reviewer` re-review: PASS with notes, notes applied; 66 tests OK with all native rehearsals in a umask 022 clone; manifest pin test OK | `a4dbc0f9e` | PASS | W4 W3a Input Producers | - |
+| Restore input re-review | 7 | W4 | Independent `iac-reviewer` re-review: PASS with notes, notes applied; 66 tests OK with all native rehearsals in a umask 022 clone; manifest pin test OK | `a4dbc0f9e` | PASS | W4 W3a Input Producers | Restore input reviews |
 | Second readiness review | 7 | W1 | Independent `iac-reviewer` readiness review of the whole window: NOT READY (SEC01 gate text, timing, W6 timing, W3a status, root custody, W5 token step) | `a4dbc0f9e` branch | FAIL | Second Readiness Review and Window Text | - |
 | Window security review | 7 | W1 | Independent `security-auditor` review of W1, W6 and the window text: REJECT (un-revoked root on disk, old token in argv, zsh prompt) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
 | Window IaC review | 7 | W2 | Independent `iac-reviewer` review of W2, W5 and the window text: NOT READY (Agent input chown fails natively, timing, stop path, W3a secret input) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
@@ -638,7 +638,7 @@ A dev-server rehearsal of the sweep used five parent root tokens with child root
 | 4 | accepted | Restore input native | Owner accepted 2026-10-15 after #486 and #487 merged |
 | 5 | accepted | R2 artifact action, R2 read-only rehearsal | Owner accepted 2026-10-15 after #486 and #487 merged |
 | 6 | accepted | Window overrides, W4 rollback decision | Owner accepted 2026-10-15 after #486 and #487 merged |
-| 7 | pending | - | - |
+| 7 | accepted | Final IaC re-review 4, Final security re-review 4 | Owner accepted 2026-10-15 after #499 merged |
 
 ## Review and Completion
 
@@ -649,6 +649,15 @@ the owner chose. Criterion 7 stays pending: the second readiness review
 returned NOT READY at the time. The per-unit reviews it found missing ran later
 (see the Evidence table), and the final readiness review below governs
 criterion 7.
+
+On 2026-10-15 the owner was asked through AskUserQuestion and chose to accept
+criterion 7 once #499 merged. #499 merged the same day, so criterion 7 is
+accepted. The evidence is the fifth IaC re-review (READY) and the security
+re-review (APPROVE with notes). The Low notes applied after them in
+`5b7b8b32f` were rehearsed but not independently reviewed. Accepting the
+criterion does not approve the window itself: the window still needs owner
+approval, `P01_APPROVED_COMMIT`, a SEC01 stable lookup within 7 days of the
+window start, and the W0 runtime checks.
 
 ## Related Documents
 
