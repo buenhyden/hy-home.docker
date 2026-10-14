@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.5.1"
+version: "1.6.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -140,6 +140,15 @@ alert-rule surface에 적용된다.
   예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
 - 긴급 reload나 target suppression은 rollback evidence와 함께 Prometheus
   runbook을 통해 기록해야 한다.
+
+### SEC01 image acceptance — 2026-10-15
+
+owner는 SEC01(SPEC-0204 TSK-0009 "Traefik and Prometheus upstream candidates")에서 Compose가 고정한
+Prometheus image(index `efd719c9`)의 잔여 위험을 받아들였다. 적용 가능한 것은 서비스 거부뿐이다.
+GO-2026-6608과 GO-2026-6609는 Traefik 인증 뒤에, 그리고 Docker network 안에서는 인증 없이 닿는다.
+만료는 이 결함들을 고친 Go와 x/net으로 빌드된 upstream 릴리스가 나온 뒤 7일, 또는 2026-11-15 중 이른
+날이다. WAN 노출이나 공개 exploit이 생기면 수용을 앞당겨 철회한다. publisher 서명 확인은 아직
+하지 않았으며 수용 범위가 아니라 열린 증거다. 다른 image로 고정을 바꾸면 이 수용은 이어지지 않는다.
 
 ### Verification
 

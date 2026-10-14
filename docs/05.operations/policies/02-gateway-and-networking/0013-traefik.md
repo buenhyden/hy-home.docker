@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Operations Policy"
-version: "1.1.1"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0013"
 parent_ids:
@@ -72,6 +72,16 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 ## Exceptions
 
 - 비상 복구 시 임시 체인 우회 가능. 단, 사후에 원복 커밋과 변경 기록을 남겨야 한다.
+
+### SEC01 image acceptance — 2026-10-15
+
+owner는 SEC01(SPEC-0204 TSK-0009 "Traefik and Prometheus upstream candidates")에서 Compose가 고정한 Traefik image
+(index `575fa15b`)의 잔여 위험을 받아들였다. 적용 가능한 것은 서비스 거부뿐이다. Go HTTP/2 서버
+결함 GO-2026-6612·6603·6611·6617은 LAN에서 인증 전에 닿고, GO-2026-6609는 인증 뒤에 닿는다.
+GO-2026-6605·6610·6613은 UNPROVEN이다. 만료는 이 결함들을 고친 Go와 x/net으로 빌드된 upstream
+릴리스가 나온 뒤 7일, 또는 2026-11-15 중 이른 날이며, 그날 자체 빌드 여부를 다시 결정한다. WAN
+노출이나 공개 exploit이 생기면 수용을 앞당겨 철회한다. publisher 서명 확인은 아직 하지 않았으며
+수용 범위가 아니라 열린 증거다. 다른 image로 고정을 바꾸면 이 수용은 이어지지 않는다.
 
 ### Verification
 
