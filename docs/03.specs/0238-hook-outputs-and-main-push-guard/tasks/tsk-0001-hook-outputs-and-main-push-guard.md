@@ -221,6 +221,26 @@ unobserved items; the sandbox wording points to approval-boundaries' trusted
 channel. Residual: a persisted git alias that expands to `push`, and quoted
 text that contains a main push (denied, friction only).
 
+### Review Round 3
+
+On 2026-10-14 the re-review of `0b1697ac6` returned FAIL on one blocking
+finding: the check judged a segment by its first word, so a push after a shell
+keyword, a group or an unknown wrapper was never examined, for example the
+retry loop `for i in 1 2; do git push -u origin HEAD && break; done` on
+`main`. The check now finds `git ... push` anywhere in a segment, strips shell
+keywords and groups, and judges from the first `git` word, so any wrapper in
+front of it is covered; a segment holding `git ... push` that it cannot
+resolve still fails closed. Also fixed: a `cd` whose target it cannot read
+(`cd "$(...)"`, `$`, backtick, brace) makes a later push fail closed; brace
+expansion and abbreviated `--all`, `--branches` and `--mirror` count as
+pushes to `main`; a configured push mapping or mirror on any remote counts
+when no remote is named; `push.default` `upstream` or `tracking` reads
+`branch.<name>.merge` directly; `on_failure: block` is pinned for Claude
+PreToolUse. Friction removed: a commit message naming a push and a script
+path containing `push` are no longer denied, because only `git` followed by
+its `push` subcommand counts. Residual: `#` inside a word, `xargs` arguments,
+and a `git` lookup that times out, which counts as not `main`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -236,7 +256,9 @@ text that contains a main push (denied, friction only).
 | Review fixes | 5 | W5 | Round 1 fixes in `d18fe1986`: push forms, stage pins, Registry `on_failure` parity | Branch | PASS | Review Round 1 | Review |
 | Re-review | 5 | W5 | Independent `security-auditor` re-review of `d18fe1986` | Branch | FAIL | Review Round 2 | - |
 | Re-review fixes | 5 | W5 | Round 2 fixes; routing suite (70), workflow contract tests (39), hook tests (32), governance contract, script manifest, renderer check (drift 0) | Branch | PASS | Review Round 2 | Re-review |
-| Re-review 2 | 5 | W5 | Independent review of the round 2 fixes | - | NOT_RUN | Review Round 2 | - |
+| Re-review 2 | 5 | W5 | Independent `security-auditor` re-review of `0b1697ac6` | Branch | FAIL | Review Round 3 | - |
+| Re-review 2 fixes | 5 | W5 | Round 3 fixes; 13 more denied and 4 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32), governance contract, renderer check (drift 0) | Branch | PASS | Review Round 3 | Re-review 2 |
+| Re-review 3 | 5 | W5 | Independent review of the round 3 fixes | - | NOT_RUN | Review Round 3 | - |
 | Candidate | 6 | W5 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

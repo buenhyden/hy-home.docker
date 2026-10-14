@@ -2421,6 +2421,9 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "GIT_CONFIG_COUNT=1 git push origin feat",
                 "timeout 60 git push origin main",
                 "env -i git push origin main",
+                "git push --al origin",
+                "git push origin {feat,main}",
+                'cd "$(echo elsewhere)" && git push',
             )
             for command in explicit:
                 with self.subTest(command=command):
@@ -2432,6 +2435,10 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "git push",
                 "git push origin HEAD:refs/heads/claude/x 2>&1",
                 "git commit -m 'a > b; push it'",
+                'git commit -m "Add pre-push guard; pin stages"',
+                'git commit -m "Make the main push check fail closed (round 2)"',
+                "bash scripts/hooks/pre-push-guard.sh",
+                "git commit -F - <<'EOF'\nPushes to `main` are refused; $VAR stays\nEOF",
             ):
                 with self.subTest(command=command):
                     self.assertFalse(self._denied(command, repo))
@@ -2489,6 +2496,16 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "git push \\\n  -u origin HEAD",
                 "(cd feature && true); git push",
                 "pushd feature && popd && git push",
+                # Shell keywords, groups and wrappers with values.
+                "for i in 1 2; do git push -u origin HEAD && break; done",
+                "until git push; do sleep 5; done",
+                "if ! git push -u origin HEAD; then echo failed; fi",
+                "if true; then git push; fi",
+                "{ git push -u origin HEAD; } 2>&1 | tail -3",
+                "nice -n 10 git push",
+                "sudo -u me git push",
+                "timeout -s KILL 60 git push",
+                "stdbuf -oL git push",
             ):
                 with self.subTest(command=command):
                     self.assertTrue(self._denied(command, repo))
@@ -2561,6 +2578,7 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                     self.assertEqual(binding["timeout"], hook["timeout"])
                     self.assertEqual(binding["matcher"], entry.get("matcher"))
                     self.assertEqual(binding.get("on_failure"), hook.get("onFailure"))
+        self.assertEqual("block", registry["claude"]["PreToolUse"]["on_failure"])
 
     def test_codex_project_config_keeps_native_memory_off(self) -> None:
         import tomllib

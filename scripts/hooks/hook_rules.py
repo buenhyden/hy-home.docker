@@ -250,16 +250,18 @@ _VALUE_OPTIONS = frozenset(
 )
 _ALL_BRANCHES = frozenset({"--all", "--branches", "--mirror"})
 _MAIN = frozenset({"main", "heads/main", "refs/heads/main"})
-_PREFIXES = frozenset({"env", "command", "exec", "nohup", "time", "sudo", "nice"})
+# Shell keywords and grouping words that may precede a command in a segment.
+_KEYWORDS = frozenset(
+    {"if", "then", "elif", "else", "do", "while", "until", "!", "{", "}", "time"}
+)
 _ASSIGNMENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*=.*")
 _LOCATION_OPTIONS = ("--git-dir", "--work-tree")
 _PUSH_CONFIG = re.compile(r"^(push\.|remote\..*\.(push|mirror)|alias\.)", re.I)
-_SHELLS = frozenset({"bash", "sh", "zsh", "dash"})
-# A segment that starts like a command which may run `git push`.
-_PUSH_COMMAND = re.compile(
-    r"^\s*(?:[A-Za-z_][A-Za-z0-9_]*=\S*\s+)*(?:\S*/)?"
-    r"(?:git|env|command|exec|nohup|time|sudo|nice|timeout|xargs|"
-    r"bash|sh|zsh|dash|eval)\b.*\bpush\b"
+_SHELLS = frozenset({"bash", "sh", "zsh", "dash", "eval"})
+# `git`, its global options, then the `push` subcommand, anywhere in a segment.
+_GIT_PUSH = re.compile(
+    r"\bgit(?:\s+(?:-[Cc]|--git-dir|--work-tree|--namespace|--config-env)\s+\S+"
+    r"|\s+-\S+)*\s+push\b"
 )
 
 
@@ -318,12 +320,12 @@ def implicit_main_push(command: str, cwd: pathlib.Path) -> bool:
 
 
 def _scan(command: str, cwd: pathlib.Path) -> bool:
-    # ponytail: a lexical approximation of the shell, not a parser. Anything it
-    # cannot resolve on a segment that mentions `push` raises _Unknown (deny).
+    # ponytail: a lexical approximation of the shell, not a parser. A segment
+    # that holds `git ... push` and cannot be resolved raises _Unknown (deny).
     command = command.replace("\\\n", " ")
-    directory = cwd
-    subshells: list[pathlib.Path] = []
-    pushed: list[pathlib.Path] = []
+    directory: pathlib.Path | None = cwd
+    subshells: list[pathlib.Path | None] = []
+    pushed: list[pathlib.Path | None] = []
     for segment in _SEPARATORS.split(command):
         if segment == "(":
             subshells.append(directory)
@@ -333,57 +335,74 @@ def _scan(command: str, cwd: pathlib.Path) -> bool:
             continue
         if segment in {"&&", "||", ";", "&", "|", "\n"}:
             continue
-        mentions_push = bool(_PUSH_COMMAND.match(segment))
+        pushes = bool(_GIT_PUSH.search(segment))
         try:
             tokens = _words(segment)
         except ValueError:
-            if mentions_push:
+            if pushes:
                 raise _Unknown from None
+            if re.match(r"\s*(?:\S+\s+)*?(?:cd|pushd)\b", segment):
+                directory = None
             continue
         location: list[str] = []
-        while tokens:
-            head = pathlib.PurePath(tokens[0]).name
-            if _ASSIGNMENT.fullmatch(tokens[0]):
-                name, _, value = tokens.pop(0).partition("=")
-                if name in {"GIT_DIR", "GIT_WORK_TREE"} and value:
-                    option = "--git-dir" if name == "GIT_DIR" else "--work-tree"
-                    location.append(f"{option}={value}")
-                elif name.startswith("GIT_CONFIG"):
-                    location.append("--unknown-config")
-            elif head in _PREFIXES or head in {"timeout", "xargs"}:
-                tokens.pop(0)
-                while tokens and (
-                    tokens[0].startswith("-")
-                    or (head == "timeout" and tokens[0][:1].isdigit())
-                ):
-                    tokens.pop(0)
-            else:
-                break
+        while tokens and (tokens[0] in _KEYWORDS or _ASSIGNMENT.fullmatch(tokens[0])):
+            name, _, value = tokens.pop(0).partition("=")
+            if name in {"GIT_DIR", "GIT_WORK_TREE"} and value:
+                option = "--git-dir" if name == "GIT_DIR" else "--work-tree"
+                location.append(f"{option}={value}")
+            elif name.startswith("GIT_CONFIG"):
+                location.append("--unknown-config")
         if not tokens:
             continue
         head = pathlib.PurePath(tokens[0]).name
-        if head in _SHELLS or head == "eval":
-            if mentions_push:
-                raise _Unknown
-            continue
         if head in {"cd", "pushd"} and len(tokens) > 1:
             if head == "pushd":
                 pushed.append(directory)
-            directory = directory / pathlib.Path(tokens[1]).expanduser()
+            target = tokens[1]
+            directory = (
+                None
+                if directory is None or any(c in target for c in "$`{")
+                else directory / pathlib.Path(target).expanduser()
+            )
             continue
         if head == "popd":
             directory = pushed.pop() if pushed else directory
             continue
-        if head != "git":
+        if not pushes:
             continue
-        if _git_push_targets_main(tokens, directory, location):
+        if head in _SHELLS:
+            raise _Unknown
+        # Any wrapper (`nice -n 10`, `sudo -u x`, `stdbuf -oL`, ...) may precede
+        # git; judge from the first `git` word.
+        index = next(
+            (
+                i
+                for i, word in enumerate(tokens)
+                if pathlib.PurePath(word).name == "git"
+            ),
+            None,
+        )
+        if index is None:
+            raise _Unknown
+        for word in tokens[:index]:
+            name, equals, value = word.partition("=")
+            if not equals or not _ASSIGNMENT.fullmatch(word):
+                continue
+            if name in {"GIT_DIR", "GIT_WORK_TREE"} and value:
+                option = "--git-dir" if name == "GIT_DIR" else "--work-tree"
+                location.append(f"{option}={value}")
+            elif name.startswith("GIT_CONFIG"):
+                location.append("--unknown-config")
+        if _git_push_targets_main(tokens[index:], directory, location):
             return True
     return False
 
 
 def _git_push_targets_main(
-    tokens: list[str], directory: pathlib.Path, location: list[str]
+    tokens: list[str], directory: pathlib.Path | None, location: list[str]
 ) -> bool:
+    if directory is None:
+        raise _Unknown
     here = directory
     index = 1
     while index < len(tokens) and tokens[index].startswith("-"):
@@ -411,7 +430,7 @@ def _git_push_targets_main(
     if index >= len(tokens) or tokens[index] != "push":
         return False
     if "--unknown-config" in location or any(
-        "$" in token or "`" in token for token in tokens
+        c in token for token in tokens for c in "$`{"
     ):
         raise _Unknown
     positional = []
@@ -419,7 +438,9 @@ def _git_push_targets_main(
     for token in tokens[index + 1 :]:
         if skip:
             skip = False
-        elif token in _ALL_BRANCHES:
+        elif token in _ALL_BRANCHES or (
+            len(token) > 3 and any(option.startswith(token) for option in _ALL_BRANCHES)
+        ):
             return True
         elif token in _VALUE_OPTIONS:
             skip = True
@@ -431,10 +452,14 @@ def _git_push_targets_main(
     branch = _git(here, location, "rev-parse", "--abbrev-ref", "HEAD")
     if branch is None:
         return True
-    if remote:
-        mapping = _git(here, location, "config", "--get-all", f"remote.{remote}.push")
-        mirror = _git(here, location, "config", "--bool", f"remote.{remote}.mirror")
-        if (mapping and "main" in mapping) or mirror == "true":
+    # Without a named remote any configured remote may be used.
+    pattern = rf"^remote\.{re.escape(remote) if remote else '.*'}\.(push|mirror)$"
+    settings = _git(here, location, "config", "--get-regexp", pattern) or ""
+    for line in settings.splitlines():
+        key, _, value = line.partition(" ")
+        if (key.endswith(".mirror") and value == "true") or (
+            key.endswith(".push") and _MAIN & set(re.split(r"[:+]", value))
+        ):
             return True
     for refspec in refspecs:
         source, colon, destination = refspec.lstrip("+").partition(":")
@@ -448,7 +473,13 @@ def _git_push_targets_main(
         return False
     if branch == "main":
         return True
-    if _git(here, location, "config", "push.default") == "matching":
+    default = _git(here, location, "config", "push.default")
+    if default == "matching":
+        return True
+    if (
+        default in {"upstream", "tracking"}
+        and _git(here, location, "config", f"branch.{branch}.merge") in _MAIN
+    ):
         return True
     target = _git(
         here,
