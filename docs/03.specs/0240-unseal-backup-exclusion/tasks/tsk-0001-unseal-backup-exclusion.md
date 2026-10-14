@@ -102,13 +102,36 @@ administrator. The owner chose three places with a condition. RUN-0085
 (0.10.0) now says that the unit is a place, not a person, so three places,
 one share each, are the minimum; BKP-003 stays apart from the R2 credentials
 and Cloudflare account access and normally from every share, and may join one
-share only after W4 confirms the exclusion in a new host snapshot and no
-pre-exclusion host snapshot remains in the R2 repository. Until then the
-first storage still needs a fourth, share-free place. A place's opening means
+share only after a new host snapshot confirms the exclusion (criterion 4) and
+listings of both repositories show no pre-exclusion host snapshot. Until
+then the first storage still needs a fourth, share-free place. A place's opening means
 (master password, media passphrase, key location) may not be stored in
 another place. The step 5 table and verdict accept the conditional placement
 only with those two records. POL-0085 (0.6.0) records the decision and keeps
 the exception open.
+
+### W5 Review Round 1
+
+Independent reviews of `f9b04c1ac` on 2026-10-14 both returned FAIL.
+
+- `rules-engineer`: the share rows of the step 5 table could not answer
+  "offsite key와 장소가 다른가" for the share beside BKP-003, so the verdict
+  failed the layout it was meant to allow; the W1 and W1b approvers still read
+  "share 보유자 2명"; criterion 5 asked POL-0085 to state the rule it only
+  records; the Plan still said two pull requests; this Evidence lacked a
+  commit and review rows. All fixed; a moved BKP-003 now requires step 5
+  again.
+- `security-auditor`: the daily `restic copy` re-uploads any pre-exclusion
+  snapshot still in the local host repository, so an R2-only deletion is
+  undone the next day; a deletion record proves an action, not the state;
+  `prune` keeps some unused space by default; no tracked tool deletes
+  selected snapshots. Condition (2) now requires that neither repository
+  holds a pre-exclusion host snapshot, proved by value-free listings taken
+  after a later daily copy, with `prune --max-unused 0`, and says that this
+  needs new reviewed tooling or the retention period. Notes applied: the
+  table asks whether a place's opening means is stored elsewhere, a
+  reappearing file sends BKP-003 back to a share-free place, "with R2 read
+  access" is stated, and "SPEC-0240 기준 4" replaces the ambiguous "W4".
 
 ## Evidence
 
@@ -119,7 +142,9 @@ the exception open.
 | IaC review | 3 | W3 | Independent `iac-reviewer` review of `27d84d9ab`: exclusion PASS, document notes | `27d84d9ab` | PASS | Review Round 1 | - |
 | Security review | 3 | W3 | Independent `security-auditor` review of `27d84d9ab`: rekey semantics and retention wording wrong | `27d84d9ab` | FAIL | Review Round 1 | - |
 | Rules review | 3 | W3 | Independent `rules-engineer` review of `27d84d9ab`: stale runbook sentence; merge gate holds the procedure back | `27d84d9ab` | FAIL | Review Round 1 | - |
-| Place rule text | 5 | W5 | Changed metadata, markdownlint and links for RUN-0085, POL-0085 and this package | Branch on `origin/main` | PASS | W5 Single-Administrator Places | - |
+| Place rule text | 5 | W5 | Changed metadata, markdownlint and links for RUN-0085, POL-0085 and this package | `f9b04c1ac` | PASS | W5 Single-Administrator Places | - |
+| Rules review W5 | 5 | W5 | Independent `rules-engineer` review: table rejects the allowed layout; stale approver wording; criterion wording | `f9b04c1ac` | FAIL | W5 Review Round 1 | - |
+| Security review W5 | 5 | W5 | Independent `security-auditor` review: daily copy re-uploads deleted R2 snapshots; deletion record is not state proof | `f9b04c1ac` | FAIL | W5 Review Round 1 | - |
 | Merge gate | 4 | W4 | RUN-0085 step 5 `owner-attested` before merge | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

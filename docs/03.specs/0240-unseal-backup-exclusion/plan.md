@@ -16,11 +16,11 @@ created: "2026-10-14"
 
 ## Overview
 
-Deliver in two pull requests. The first carries the policy, decision and
+Deliver in three pull requests. The first carries the policy, decision and
 runbook text and this package, so the owner attests step 5 against the
 revised procedure on `main`. The second carries the exclusion, its test and
 the restore wording, and merges only after that attestation; then one daily
-run is observed.
+run is observed. A third carries the W5 single-administrator place rule.
 
 ## Work Breakdown
 
@@ -50,8 +50,10 @@ W4 lists the next host snapshot for the file name only.
   pre-exclusion host snapshots are deleted, a separately approved operation.
 - **Three places too early.** If BKP-003 joins a share before both W5
   conditions hold, one place plus R2 read access yields every share through
-  the old R2 snapshots. The verdict accepts that placement only with the W4
-  record and a recorded R2 deletion.
+  the old R2 snapshots. The daily copy re-uploads any pre-exclusion snapshot
+  still in the local repository, so the verdict accepts that placement only
+  with the criterion 4 record and listings of both repositories taken after a
+  later copy. No tracked tool deletes selected snapshots yet.
 - **Rollback.** Revert the exclusion line; the next backup copies the file
   again. The W5 rule reverts as text.
 

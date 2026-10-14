@@ -55,10 +55,12 @@ change to the state set.
    the exposure ends only when pre-exclusion host snapshots are deleted.
 5. For a single administrator, RUN-0085 and POL-0085 allow three places, one
    share each. BKP-003 may share a place with one share only after the
-   exclusion is confirmed in a new host snapshot (W4) and no pre-exclusion
-   host snapshot remains in the R2 repository; until then it needs a place
+   exclusion is confirmed in a new host snapshot (criterion 4) and listings of
+   both the local host and R2 repositories, taken after a later daily copy,
+   show no pre-exclusion host snapshot; until then it needs a place
    with no share. A place's opening means may not be stored in another place.
-   The POL-0085 exception stays open.
+   If the file reappears in a later host snapshot, BKP-003 returns to a
+   share-free place. The POL-0085 exception stays open.
 
 ## Acceptance Criteria
 
@@ -70,7 +72,7 @@ change to the state set.
 3. Independent IaC, security and rules reviews find nothing blocking.
 4. After the owner attests step 5 and the change merges, the next daily host
    snapshot does not contain the file.
-5. RUN-0085 and POL-0085 state contract 5, the step 5 table and verdict
+5. RUN-0085 states contract 5 and POL-0085 records the decision, the step 5 table and verdict
    accept it, and independent security and rules reviews find nothing
    blocking.
 

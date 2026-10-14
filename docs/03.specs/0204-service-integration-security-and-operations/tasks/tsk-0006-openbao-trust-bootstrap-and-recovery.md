@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.16"
+version: "0.2.17"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -2277,6 +2277,16 @@ snapshot, BLOCKED until a reviewed protected output path exists. A rekey does
 not change the keys a pre-rekey Raft snapshot opens with, so the exposure ends
 only when pre-exclusion host snapshots are deleted. Nothing ran on HOME; step 5 and
 criterion 11 stay as before.
+
+### Single-Administrator Custody Places — 2026-10-14
+
+The owner stated that one administrator holds every place and chose three
+places with a condition (AskUserQuestion). RUN-0085 0.10.0 now counts places,
+not people: three places, one share each; BKP-003 apart from the R2
+credentials and Cloudflare account access, and from every share until the
+exclusion is confirmed (SPEC-0240 criterion 4) and listings of the local host
+and R2 repositories show no pre-exclusion host snapshot. The first storage still needs a fourth, share-free
+place. Step 5 is attested against that table; SPEC-0240 W5 holds the record.
 
 ### Agent Alert Source — 2026-10-14
 

@@ -536,10 +536,17 @@ R2 bucket lock은 30일이고, 12개월은 owner가 확인을 넣어 실행하�
   장소에 둔다. 그 계정으로 R2 자격 증명을 다시 발급할 수 있기 때문이다.
 - offsite key는 share가 없는 장소에 둔다. 다만 다음 두 조건이 모두 충족되면 share 하나와 같은
   장소에 둘 수 있다(2026-10-14 owner 결정, 1인 관리자). (1) SPEC-0240 제외가 운영 checkout에
-  들어간 뒤 만든 host snapshot에 unseal 파일이 없음이 확인됐다(SPEC-0240 W4). (2) 제외 이전
-  host snapshot이 R2 저장소에 하나도 남아 있지 않다(lock 기간 뒤 별도 승인된 삭제). 두 조건
-  전에는 offsite key 하나로 R2 사본의 share 전체에 닿으므로, 처음 보관할 때는 share가 없는
-  네 번째 장소가 필요하다.
+  들어간 뒤 만든 host snapshot에 unseal 파일이 없음이 확인됐다(SPEC-0240 기준 4). (2) 제외 이전
+  host snapshot이 local host 저장소와 R2 저장소 어디에도 없다. 일일 `restic copy`는 R2에 없는
+  local snapshot을 다시 올리므로 R2만 지우면 다음 날 되살아난다. 두 저장소 모두에서 `forget`한
+  뒤 `prune --max-unused 0`으로 데이터를 지우고, 그 뒤 일일 copy가 한 번 이상 돈 다음 찍은 두
+  저장소의 snapshot 목록(ID·시각만)이 첫 제외 이후 snapshot보다 오래된 host snapshot이 없음을
+  보여야 한다. 지금 추적되는 도구는 특정 snapshot을 지우지 못한다(`offsite.sh`는 `forget`·
+  `prune`을 거부하고, `forget-prune`은 월별 snapshot을 12개월 둔다). 그래서 이 조건은 검토된 새
+  도구나 보존 기간 경과가 필요하다. 두 조건 전에는 offsite key와 R2 읽기 권한으로 R2 사본의
+  share 전체에 닿으므로, 처음 보관할 때는 share가 없는 네 번째 장소가 필요하다. 두 조건을 갖춘
+  뒤 offsite key를 옮기면, 옮긴 날 아래 5단계 기록을 다시 채운다. 제외 뒤의 host snapshot에
+  파일이 다시 들어가면 offsite key를 즉시 share가 없는 장소로 되돌리고 5단계를 다시 채운다.
 - 한 장소를 여는 수단(마스터 비밀번호, 매체 암호, 금고 열쇠 위치)을 다른 장소에 저장하지
   않는다. 저장하면 두 장소는 한 장소다.
 - 각 항목은 이 host 밖에 최소 한 곳 있어야 한다. host 디스크·host 백업·R2 사본은 off-host
@@ -563,20 +570,21 @@ R2 bucket lock은 30일이고, 12개월은 owner가 확인을 넣어 실행하�
    드러난다.
 4. 아래 기록을 값 없이 채워 agent에 전달한다.
 
-| 항목 | 보관 장소 종류 | host 밖인가 | 다른 share와 장소가 다른가 | offsite key와 장소가 다른가 | 꺼낼 수 있음을 확인한 날 |
-| --- | --- | --- | --- | --- | --- |
-| share 1 | | | | | |
-| share 2 | | | | | |
-| share 3 | | | | | |
-| offsite key | | | share가 없는 장소인가, 아니면 두 조건 충족 뒤 share 하나와 같은 장소인가 | 해당 없음 | |
-| R2 자격 증명 | | | 해당 없음 | | |
-| Cloudflare 계정 접근 | | 해당 없음 | 해당 없음 | | |
-| CA key | | | 해당 없음 | 해당 없음 | |
+| 항목 | 보관 장소 종류 | host 밖인가 | 다른 share와 장소가 다른가 | offsite key와 장소가 다른가(두 조건 충족 뒤 같은 장소인 share 하나는 "조건부 예") | 이 장소를 여는 수단이 다른 장소에 없는가 | 꺼낼 수 있음을 확인한 날 |
+| --- | --- | --- | --- | --- | --- | --- |
+| share 1 | | | | | | |
+| share 2 | | | | | | |
+| share 3 | | | | | | |
+| offsite key | | | share가 없는 장소인가(두 조건 충족 뒤 share 하나와 같은 장소면 "조건부 예") | 해당 없음 | | |
+| R2 자격 증명 | | | 해당 없음 | | | |
+| Cloudflare 계정 접근 | | 해당 없음 | 해당 없음 | | | |
+| CA key | | | 해당 없음 | 해당 없음 | | |
 
 **판정.** 모든 칸이 채워지고 모든 질문의 답이 "예"일 때만 agent가 5단계를
-`owner-attested`로 기록한다. offsite key 행의 "두 조건 충족 뒤 같은 장소"는 SPEC-0240 W4
-기록과 제외 이전 R2 snapshot 삭제 기록이 저장소에 있을 때만 "예"로 본다. 칸이 비면 5단계는 미실행으로 남고, "아니오"가 하나라도 있으면
-`FAIL`이다. 둘 다 유지보수 창을 열지 않는다. `owner-attested`는 owner의 진술이며 저장소는
+`owner-attested`로 기록한다. "조건부 예"는 offsite key 행과 그와 같은 장소인 share 행
+하나에만 쓸 수 있고, SPEC-0240 기준 4 기록과 위 (2)의 두 저장소 snapshot 목록이 저장소에
+있을 때만 "예"로 본다. 그 기록이 없으면 "아니오"다. 칸이 비면 5단계는 미실행으로
+남고, "아니오"가 하나라도 있으면 `FAIL`이다. 둘 다 유지보수 창을 열지 않는다. `owner-attested`는 owner의 진술이며 저장소는
 보관 사실을 인증하지 못한다. 실제 복구 가능성은 W1과 6단계에서 다시 확인된다.
 
 ### HOME 유지보수 창 계획
@@ -592,8 +600,8 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 | 순서 | 단계 | 목표 시간 | 승인 |
 | --- | --- | --- | --- |
 | W0 | 사전 점검 | window 전 | SEC01 담당자, owner |
-| W1 | root ceremony | 10분 | owner(share 보유자 2명) |
-| W1b | unseal rekey | 10분 | owner(share 보유자 2명, credential 변경) |
+| W1 | root ceremony | 10분 | owner(share 2개) |
+| W1b | unseal rekey | 10분 | owner(share 2개, credential 변경) |
 | W2 | snapshot token 발급과 확인 | 5분 | owner(credential 발급) |
 | W3 | 새 업그레이드 전 snapshot | 5분 | owner(backup 실행) |
 | W4 | server 업그레이드와 수동 unseal | 10분 | owner(runtime 변경) |
