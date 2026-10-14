@@ -83,6 +83,7 @@ reads this table.
 | `superseded/03.specs/0202-development-data-and-lab-isolation/` | superseded | SPEC-0204 | `79b42b604b99bcc6712887d29e36f8244ec0f9eb:docs/03.specs/0202-development-data-and-lab-isolation` |
 | `superseded/03.specs/0203-quality-results-and-isolated-load-testing/` | superseded | SPEC-0204 | `79b42b604b99bcc6712887d29e36f8244ec0f9eb:docs/03.specs/0203-quality-results-and-isolated-load-testing` |
 | `superseded/03.specs/0205-storybook-dependency-refresh/` | superseded | SPEC-0204 | `79b42b604b99bcc6712887d29e36f8244ec0f9eb:docs/03.specs/0205-storybook-dependency-refresh` |
+| `superseded/03.specs/0240-unseal-backup-exclusion/` | superseded | SPEC-0242 | `fa69f055c18339a9617f75ead5ea232b63c3874f:docs/03.specs/0240-unseal-backup-exclusion` |
 | `completed/03.specs/0193-observability-dashboards-signals-and-alerting/` | completed | GDE-0041 / GDE-0044 / RUN-0050 / observability source | `275d708ab797e0c86a30508351666482ebc04907:docs/03.specs/0193-observability-dashboards-signals-and-alerting` |
 | `completed/03.specs/0206-shared-storybook-and-docs-mcp/` | completed | GDE-0101 / POL-0101 / RUN-0101 / shared Storybook source | `275d708ab797e0c86a30508351666482ebc04907:docs/03.specs/0206-shared-storybook-and-docs-mcp` |
 

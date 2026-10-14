@@ -1,6 +1,6 @@
 ---
 title: "Single-Administrator OpenBao Custody Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -92,6 +92,13 @@ and POL-0085 (0.7.1) now name the off-host place as a password manager
 account or the owner's separate desktop. Every answer was yes, so SPEC-0204
 TSK-0006 records step 5 as `PASS`, owner-attested.
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0242 | draft | approved | #review-and-completion |
+| SPEC-0242-PLAN-0001 | draft | approved | #review-and-completion |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -108,14 +115,16 @@ TSK-0006 records step 5 as `PASS`, owner-attested.
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
+| 1 | accepted | Runbook checks, Round 2 checks | Owner accepted 2026-10-14 |
+| 2 | accepted | Record checks | Owner accepted 2026-10-14 |
+| 3 | accepted | Security review, Rules re-review | Owner accepted 2026-10-14 |
+| 4 | accepted | Step 5 record | Owner accepted 2026-10-14 |
 
 ## Review and Completion
 
-No criterion is accepted until the owner accepts it.
+On 2026-10-14 the owner, answering the review question (AskUserQuestion),
+accepted criteria 1 to 4 and approved this Spec and Plan. SPEC-0240, which
+this Spec supersedes, moves to the archive in the same change.
 
 ## Related Documents
 
