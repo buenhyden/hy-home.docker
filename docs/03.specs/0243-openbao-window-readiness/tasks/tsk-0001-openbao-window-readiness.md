@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -116,6 +116,36 @@ restore as the server user with the 0440 snapshot returned 0, and the old
 forms failed with permission denied. RUN-0085 pins the new SHA256 of both
 modules.
 
+### W3 Renderer Role Apply
+
+Nothing applied the renderer policies, token roles or AppRole that W3a and
+W5 assume, and `operator.hcl` cannot write `sys/policies/acl`, so W1c needs
+root. The new `protected-renderer-roles.py` loads the token helper by its
+pinned hash and reuses its root input, custody, pinned TLS and response
+checks. It writes four policies (`renderer`, `renderer-issuer`,
+`renderer-cleanup`, `hy-home-operator`), two token roles and the
+`hy-home-renderer` AppRole from hash-pinned tracked files, in that order and
+once each. Before any write it reads every target and stores the result in
+custody `prior-state.json` for rollback; after each write it reads the target
+back and stops as INDETERMINATE on any difference. A missing AppRole blocks
+before any write, because the deployed Agent holds its RoleID. The receipt
+`state.json` holds only paths, SHA-256 of prior and applied values, and a
+changed flag. It creates no credential.
+
+Eleven unit tests cover the target set and hashes, duration readback, source
+tampering, the binding pin, root and cluster checks, the missing AppRole,
+readback difference, write failure and the request allowlist. Removing the
+AppRole check and the readback comparison makes two of them fail; restored,
+all pass under umask 022. Two opt-in native tests ran the real tool against
+an owned synthetic server on both the owned image and the running HOME image:
+a stale `renderer` policy and a differently configured AppRole were replaced,
+the RoleID stayed the same, the operator's exact request through each token
+role returned the reviewed five-minute non-renewable identity, the issuer
+token could create a wrapped SecretID but not an unwrapped one, and a second
+run reported no change. The rehearsal replaces only HOME's host name and port
+with the fixture's. RUN-0085 pins the new helper and the seven config files in
+the W1 manifest and replaces the BLOCKED W1c text with the command.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -129,6 +159,8 @@ modules.
 | Server start review | 7 | W2 | Independent `security-auditor` review of the server start fix: PASS with notes | `e439fc1a6` | PASS | W2 Restore Server Start | - |
 | Restore flow unit | 2 | W2 | Unseal, login, stat, restore user and snapshot mode assertions RED on the earlier code (3 failures), GREEN after; both suites OK under umask 022 | Branch | PASS | W2 Restore Server Start | - |
 | Restore flow native | 2 | W2 | Synthetic init, unseal, login, snapshot save and restore on both images: restore as server user with 0440 snapshot returns 0; old forms fail | Owned `46bf9b5c`, old `11fd73a2` | PASS | W2 Restore Server Start | - |
+| Role apply unit | 3 | W3 | 11 unit tests OK under umask 022; removing the AppRole check and readback comparison fails 2 | Branch `claude/renderer-roles-apply` | PASS | W3 Renderer Role Apply | - |
+| Role apply native | 3 | W3 | Real tool on an owned synthetic server, both images: targets replaced and read back, RoleID kept, role tokens exact, wrapped SecretID only, second run unchanged | Owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 
 ## Criterion Acceptance
 
