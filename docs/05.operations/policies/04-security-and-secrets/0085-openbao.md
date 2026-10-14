@@ -131,10 +131,10 @@ host Restic 저장소(BKP-002로 암호화)는 `secrets/` 전체를 담고, `res
 나누기로 했다가(SPEC-0240), 같은 날 관리자가 1명인 운영에 맞춰 이를 거두고 host 중심
 배치를 정했다(SPEC-0242). share와 CA key는 host `secrets/`와 owner의 host 보조 사본에 두고
 host 백업에 포함한다. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근만 비밀번호 관리자
-계정 하나에 둔다. 그래서 host를 잃어도 R2에서 모두 복구할 수 있지만, 그 계정 하나가 뚫리면
-모든 secret과 share가 노출되고 host를 읽는 한 주체가 threshold를 넘는다. owner는 이 노출을
+계정 하나에 둔다. host를 잃어도 R2에서 모두 복구하려는 배치이지만(R2 원격 복구는 아직 미실행), 그 계정
+하나가 뚫리면 모든 secret과 share가 노출되고 off-host 사본을 지울 수도 있으며, host를 읽는 한 주체가 threshold를 넘는다. owner는 이 노출을
 받아들였고 rekey는 하지 않는다(RUN-0085). 이 결정은 이 예외를 닫지 않는다. 이 문서는
-결정을 기록할 뿐 그 실행이나 새 credential 처리, 예외 확대를 승인하지 않는다.
+결정을 기록할 뿐 그 실행이나 새 credential 처리, 이 결정을 넘는 예외 확대를 승인하지 않는다.
 기존 기록에는 **만료와 종료 조건이 없다**. 위 Exceptions의 필수 항목을 충족했다고
 표시하지 않으며 @buenhyden의 후속 결정이 필요하다. 파일을 읽거나 이동하거나
 share를 재발급해 이 문서 불일치를 자동 해결하지 않는다.
@@ -156,7 +156,7 @@ config-owned HMAC file audit를 유지하며 모든 필수 backend 실패 시 �
 않는다. 실제 filesystem 용량, rotation owner/schedule/보존, 실패 알림을 HOME에서
 검증해야 한다. 기존 single-file custody 예외는 미해결 상태로 보존한다. P01 격리 시험은
 그 예외를 종료하거나 HOME 복구 자료를 만들어내지 않는다. P06 확대는 실제 cold boot·
-독립 unseal/offsite custody·선정 snapshot 복구 수용 이후만 허용한다.
+RUN-0085 5단계 custody 기록(SPEC-0242)·선정 snapshot 복구 수용 이후만 허용한다.
 
 ### Versioned issuance identity control
 

@@ -27,7 +27,7 @@ backup and R2 keys off the host, as SPEC-0242 states.
   "W1b 빼기", and for the password manager account BKP-003, the R2
   credentials, BKP-002 and Cloudflare account access, adding that a backup
   copy goes to `/home/hyunyoun/data/hy-home.secrets`.
-- **Baseline:** `main` `f0984f3c0`, with PR #476 underneath.
+- **Baseline:** `main` `4421d30f1` (the PR #476 merge).
 - **Not done:** no HOME change, no secret or second-copy read. Only the
   directory's metadata was read: root-owned, mode 0700, on the same system
   disk as the repository.
@@ -54,12 +54,35 @@ exception open. ADR-0042 (0.2.4) updates its context and links this Spec.
 SPEC-0240's Task records the withdrawal; its disposition is left to the
 owner.
 
+### W3 Review Round 1
+
+Independent reviews of `3eb6d360f` on 2026-10-14:
+
+- `security-auditor` PASS with notes. Applied: the R2 account ID and bucket
+  name join account A, since `.env` is inside the R2 copy; step 3 checks the
+  account A values with a read-only R2 snapshot listing from hidden input,
+  because step 6 uses the host's copies; the exposure adds what the account's
+  Cloudflare access and writable R2 tokens can destroy; "recover everything
+  from R2" is stated as intended, not proven; the account's recovery means and
+  second factor stay offline and off the host; RUN-0021 no longer asks for
+  BKP-001 in offline custody; ADR-0042 names Cloudflare access and the open
+  exception.
+- `rules-engineer` FAIL on R1: RUN-0085's window and P06 lines, POL-0085's P06
+  gate and RUN-0098 still required "independent custody", which the new
+  section no longer defines. They now point to the step 5 record. Notes
+  applied: SPEC-0240's Task no longer reads as live merge instructions, its
+  README row says it was withdrawn, TSK-0006 keeps its old custody row as
+  history, this Task names its baseline and commits, and the Spec scope lists
+  these consumers.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Runbook checks | 1 | W1 | Changed metadata (9 documents) 0 violations; links `--mode all` PASS; markdownlint 0; operations catalog tests OK | Branch | PASS | W1 Runbook | - |
-| Record checks | 2 | W2 | Same checks over POL-0085, ADR-0042 and the SPEC-0240 and TSK-0006 records | Branch | PASS | W2 Policy and Decision Record | - |
+| Runbook checks | 1 | W1 | Changed metadata (9 documents) 0 violations; links `--mode all` PASS; markdownlint 0; operations catalog tests OK | `3eb6d360f` | PASS | W1 Runbook | - |
+| Record checks | 2 | W2 | Same checks over POL-0085, ADR-0042 and the SPEC-0240 and TSK-0006 records | `3eb6d360f` | PASS | W2 Policy and Decision Record | - |
+| Security review | 3 | W3 | Independent `security-auditor`: PASS with notes, notes applied | `3eb6d360f` | PASS | W3 Review Round 1 | - |
+| Rules review | 3 | W3 | Independent `rules-engineer`: undefined "independent custody" gates | `3eb6d360f` | FAIL | W3 Review Round 1 | - |
 | Step 5 record | 4 | W4 | Owner step 5 statement in TSK-0006 | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

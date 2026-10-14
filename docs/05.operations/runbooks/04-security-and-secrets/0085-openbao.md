@@ -92,7 +92,7 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 스냅샷이 모두 성공한 뒤에만 폐기해야 한다. setup이 실패하면 운영자 복구를 위해 보호된
 복구 자료를 유지한다.
 
-기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
+이 HOME은 1인 관리자 결정(SPEC-0242)으로 share를 host에 두며 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다. 기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
 [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)가
 소유한다. 이 예외는 share 분리 검증을 뜻하지 않는다. 승인된 운영자는 대화형
 `docker compose exec openbao bao operator unseal`의 숨겨진 prompt로 share를 하나씩
@@ -501,7 +501,7 @@ file audit를 보존한다. 2.7의 제거된 file **storage** backend와 file **
 격리 합성 시험에서 expired-unused SecretID 거부·잘못된 CA 거부·제한 token role·
 snapshot 빈 환경 복원·audit 용량 실패 차단을 확인했다. 이는 실제 HOME custody·cold boot·
 이관·복구나 모든 malformed 입력 안전성의 증거가 아니다. 실제 host 적용 전에는 최신
-공급자 channel·같은 플랫폼 SBOM/scan·서명·pre-upgrade snapshot·독립 custody·빈 이전
+공급자 channel·같은 플랫폼 SBOM/scan·서명·pre-upgrade snapshot·5단계 custody 기록(SPEC-0242)·빈 이전
 버전 환경 복원과 이후 candidate upgrade를 검증한다. 2.7 데이터에 이전 image를 붙이는
 것은 rollback이 아니다. 운영자가 고른 30분 cutover 목표와 60분 maintenance window
 안에 restore/unseal/검증까지 가능한지 측정한다. 두 값은 계획 추정치이며 관측한
@@ -511,7 +511,7 @@ RTO가 아니다. 목표를 넘거나 복구 자료가 없으면 HOME만 보류�
 HOME 적용 전 source-only rollback은 검토된 revert다. 적용 후에는 TLS·audit 선언과 로그 custody를 유지하는
 검토된 override 또는 fix-forward만 사용한다. client도 검증된 endpoint로만 전환하며 HTTP나 audit 제거로 되돌리지 않는다.
 
-P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지 보류한다.
+P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 gate가 통과할 때까지 보류한다.
 
 #### HOME 적용 입력과 승인 순서
 
@@ -539,7 +539,9 @@ SPEC-0204 TSK-0006에 기록한다. 값은 화면 공유·채팅·명령 인자�
 
 2026-10-14 owner 결정(SPEC-0242)으로 관리자가 1명인 이 HOME은 share를 host에 두고 host
 백업에 포함한다. off-host로는 백업과 원격 저장소를 여는 key만 둔다. 이 배치는 장소 분리로
-threshold를 지키지 않는다. 그 대신 host를 잃어도 R2 사본에서 모두 복구할 수 있게 한다.
+threshold를 지키지 않는다. 그 대신 host를 잃어도 R2 사본에서 모두 복구할 수 있게 하려는
+것이다. 아직 R2 원격 복구를 실행하지 않았고 OpenBao 일일 snapshot도 실패 중이므로(위
+복구 gap) 현재 보장된 상태는 아니다.
 
 **배치.**
 
@@ -551,24 +553,34 @@ threshold를 지키지 않는다. 그 대신 host를 잃어도 R2 사본에서 �
 | BKP-003 offsite key | R2 원격 Restic 저장소 암호 | 비밀번호 관리자 계정 A | R2 읽기 권한과 합쳐지면 R2 사본의 모든 secret과 share |
 | R2 자격 증명 | BKP-004·005 R2 API token(객체 읽기·쓰기) | 비밀번호 관리자 계정 A | BKP-003과 합쳐지면 R2 사본을 읽음 |
 | BKP-002 local key | local host Restic 저장소 암호 | 비밀번호 관리자 계정 A | local 저장소에 접근하면 그 안의 모든 secret과 share |
-| Cloudflare 계정 접근 | 로그인·2FA 복구 코드 | 비밀번호 관리자 계정 A | R2 자격 증명을 다시 발급할 수 있음 |
+| Cloudflare 계정 접근 | 로그인·2FA 복구 코드 | 비밀번호 관리자 계정 A | R2 자격 증명을 다시 발급하고 bucket과 lock 규칙을 바꾸거나 지울 수 있음 |
+| R2 account ID·bucket 이름 | `.env`의 `BACKUP_OFFSITE_R2_ACCOUNT_ID`·`BACKUP_OFFSITE_R2_BUCKET`(secret 아님) | 비밀번호 관리자 계정 A | 단독으로는 접근을 주지 않음. host를 잃으면 `.env`가 R2 사본 안에 있으므로 따로 필요함 |
 
 BKP-001(pgBackRest)은 host `secrets/`에 있어 host 백업으로 함께 복구된다. host 보조 사본은
 host 백업 범위 밖이며 off-host 보관이 아니다.
 
 **받아들인 노출.** 계정 A 하나가 뚫리면 BKP-003과 R2 자격 증명으로 R2 사본을 열어 모든
-secret과 share를 얻는다. host를 읽는 한 주체는 share 3개를 모두 가진다. 둘 다
+secret과 share를 얻는다. 같은 계정의 Cloudflare 접근과 쓰기 가능한 R2 token으로 bucket lock
+규칙이나 bucket을 지우고 lock이 없는 `locks/`·`index/`를 바꿔 유일한 off-host 사본을 망가뜨릴
+수도 있다. host를 읽는 한 주체는 share 3개를 모두 가진다. 둘 다
 [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)의
 예외로 남고, 이 절차로 닫히지 않는다. 계정 A는 강한 마스터 비밀번호와 2FA로 보호하고,
-그 복구 수단(emergency kit·복구 코드)을 같은 계정이나 host에 두지 않는다.
+그 복구 수단(emergency kit·복구 코드)과 2FA 요소(TOTP seed 등)를 같은 계정이나 host에 두지
+않는다. 복구 수단은 host와 계정 A 없이 닿는 오프라인 장소에 두고, 계정 A의 2FA가 그 안에
+저장된 Cloudflare 로그인에 기대지 않게 한다. Claude Code `!` 명령이나 agent 세션처럼 저장소
+UID로 도는 process도 host를 읽는 주체에 들어간다.
 
 **절차.**
 
-1. BKP-003, R2 자격 증명, BKP-002, Cloudflare 계정 접근을 계정 A로 **복사**한다. 원본은
+1. BKP-003, R2 자격 증명, BKP-002, Cloudflare 계정 접근, R2 account ID와 bucket 이름을 계정
+   A로 **복사**한다. 원본은
    지우지 않는다. clipboard 기록·동기화가 꺼진 상태에서 한 번에 하나씩 옮긴다.
-2. host 보조 사본을 갱신한다. share와 CA key가 바뀔 때마다 다시 맞춘다.
-3. host가 아닌 장치에서 계정 A를 열어 네 항목을 꺼낼 수 있는지 확인한다. 값이 맞는지는
-   6단계 restore와 R2 원격 복구 시험에서 드러난다.
+2. host 보조 사본을 갱신한다. share와 CA key가 바뀔 때마다 다시 맞춘다. sudo로 맞출 때도 값을
+   명령 인자·기록에 남기지 않는다.
+3. host가 아닌 장치에서 계정 A를 열어 항목을 꺼낼 수 있는지 확인한다. 값이 맞는지는 계정 A에서
+   꺼낸 BKP-003·R2 자격 증명·account ID·bucket을 숨김 입력으로 넣어 읽기 전용 R2 snapshot
+   목록을 받아 확인한다. 값은 출력하지 않는다. 6단계 restore는 host의 사본을 쓰므로 계정 A의
+   값을 증명하지 못한다.
 4. 아래 기록을 값 없이 채워 agent에 전달한다.
 
 | 항목 | 둔 곳 | host 밖인가 | 꺼낼 수 있음을 확인한 날 |
@@ -577,10 +589,13 @@ secret과 share를 얻는다. host를 읽는 한 주체는 share 3개를 모두 
 | R2 자격 증명 | | | |
 | BKP-002 local key | | | |
 | Cloudflare 계정 접근 | | | |
+| R2 account ID·bucket 이름 | | | |
+| 계정 A의 값으로 받은 R2 snapshot 목록 | | 해당 없음 | |
 | unseal share 파일과 CA key의 host 보조 사본 | | 해당 없음 | |
 | 계정 A의 복구 수단이 계정 A와 host 밖에 있는가 | | | |
 
-**판정.** 모든 칸이 채워지고 네 key 행이 "host 밖 = 예"이며 마지막 행이 "예"일 때만
+**판정.** 모든 칸이 채워지고 계정 A의 다섯 행이 "host 밖 = 예"이며 R2 목록을 받은 날이 있고
+마지막 행이 "예"일 때만
 agent가 5단계를 기록한다. Evidence 결과는 `PASS`이고 Check는 "owner-attested"로 시작한다.
 칸이 비면 `NOT_RUN`, "아니오"가 하나라도 있으면 `FAIL`이다. 둘 다 유지보수 창을 열지
 않는다. owner 진술일 뿐이며 저장소는 보관 사실을 인증하지 못한다.
@@ -619,7 +634,7 @@ W1b rekey는 이 window에 없습니다(SPEC-0242). W1 직후 W2·W3를 엽니�
 보안 통과가 아닙니다. 패치된 dependency로 검증한 새로운 artifact가 수용되기 전에는
 현재 source pin으로 W4/W5를 실행하지 않습니다. 실제 scan·플랫폼 적용 판단은
 [SEC01 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0009-sec01-stable-security-integration.md)가
-소유합니다. 아래 명령의 준비 여부와 실제 실행은 별도이며, 지정 운영자의 서로 다른 share 2개·독립 custody와
+소유합니다. 아래 명령의 준비 여부와 실제 실행은 별도이며, 지정 운영자의 서로 다른 share 2개·5단계 custody 기록(SPEC-0242)과
 W3a 복구 gate도 계속 필요합니다.
 
 **W0 사전 점검.**
@@ -694,7 +709,7 @@ root credential로 `lookup-self`를 수행해 root-only·orphan·비만료 ident
 `DELIVERED`가 됩니다. 이 client는 snapshot token 발급·root 폐기·upgrade를 실행하지 않습니다.
 
 독립 code/security 검토와 합성 TLS·중단 회귀시험은 통과했습니다. 지정 운영자 `buenhyden`은
-2026-10-14 최신 답변에서 unseal share와 off-host 보관 준비를 확인했습니다. 이는 운영자 확인이며
+2026-10-14 최신 답변에서 unseal share와 보관 준비를 확인했습니다. 이는 5단계 기록이 아닌 운영자 확인이며
 실제 인증·발급·복구가 실행됐다는 증거는 아닙니다. 실제 W1의 현재 OIDC 인증과 서로 다른
 share 2개는 보호 client로 입력합니다. 보관 위치 참조와 복구 계약도 값 없이 기록합니다.
 아직 ceremony는 **NOT_RUN**이며 실제 값은 채팅으로 보내지 않습니다.

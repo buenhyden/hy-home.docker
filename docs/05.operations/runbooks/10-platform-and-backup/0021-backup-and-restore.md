@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.21"
+version: "1.4.22"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -179,7 +179,7 @@ snapshot을 제거하므로 오래된 파일을 이번 성공으로 사용할 �
 복구 지점으로 수용하지 않는다. run이 30일 넘게 멈추면 token이 만료되므로 다시 만든다.
 
 snapshot은 barrier 암호화된 상태라 원래 unseal key 없이는 열 수 없다. 따라서
-unseal key는 snapshot과 다른 곳에 따로 보관한다. 복구는 새로 초기화한 OpenBao에서
+unseal key가 필요하다. 1인 관리자 결정(SPEC-0242)으로 share는 host와 host 백업에 함께 있다. 복구는 새로 초기화한 OpenBao에서
 `bao operator raft snapshot restore -force`로 하고, 복구 직후 sealed가 되면 원래
 unseal key로 연다. 2026-10-08 격리 시험에서 이 순서로 합성 secret과 원래 root
 token이 돌아왔다. HOME 복구는 별도 승인이다.
@@ -281,7 +281,8 @@ IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/restic/r2_secret_access_k
 
 `.env`에 `BACKUP_OFFSITE_R2_ACCOUNT_ID`(16진수 32자)와
 `BACKUP_OFFSITE_R2_BUCKET`을 넣는다. BKP-003, BKP-004, BKP-005, account ID,
-bucket 이름을 BKP-001/BKP-002 옆의 offline custody에 복사한다. host를 잃은
+bucket 이름을 BKP-002와 함께 [RUN-0085](../04-security-and-secrets/0085-openbao.md) 1인 관리자 custody의 계정 A에
+복사한다. BKP-001은 host `secrets/`에 있어 host 백업으로 함께 복구된다. host를 잃은
 뒤의 복구가 OpenBao에 기대면 안 되므로 OpenBao에는 절대 두지 않는다. 그다음
 state repository의 chunker 설정으로 원격을 초기화하고 첫 copy를 한다:
 
@@ -311,7 +312,7 @@ step 4의 성공 timestamp를 쓴다.
 
 #### 8.3 R2에서 복원
 
-host를 잃은 뒤에는 Docker·보존 source revision과 image identity, BKP-001~005 offline custody, account/bucket 외에 root Compose 렌더링에 필요한 non-secret inputs 및 명시적 directory/mount 준비가 필요하다. `.env` 두 키만으로 root Compose bootstrap이 된다고 가정하지 않는다. 복원한 private 설정은 출력하지 않는다.
+host를 잃은 뒤에는 Docker·보존 source revision과 image identity, 계정 A의 BKP-002~005와 account/bucket(BKP-001은 host 백업에서 복구) 외에 root Compose 렌더링에 필요한 non-secret inputs 및 명시적 directory/mount 준비가 필요하다. `.env` 두 키만으로 root Compose bootstrap이 된다고 가정하지 않는다. 복원한 private 설정은 출력하지 않는다.
 
 승인된 새 data-disk scratch에 먼저 원격 snapshot 목록의 metadata만 조사한다. 원격 snapshot ID는 local과 다르므로 host/tag/time과 전체 성공 실행 기록으로 host/state pair를 고정한다. 원격 접근에 필요한 전용 network와 R2 credential을 최소 범위로 제공하고, 기본 bridge·전체 secret 디렉터리 공유를 암묵적으로 사용하지 않는다.
 

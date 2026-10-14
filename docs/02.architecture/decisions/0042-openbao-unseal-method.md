@@ -29,8 +29,9 @@ so BKP-003 with R2 read access, or BKP-002 with the local repository, also
 meets the threshold. On 2026-10-14 the owner first chose to exclude the
 file from the host backup and rekey (SPEC-0240), then, as the only
 administrator, withdrew that the same day: the shares stay on the host and in
-the host backup, and only the backup and R2 keys are kept off the host in one
-password manager account (SPEC-0242). No rekey is planned.
+the host backup, and only the backup and R2 keys and Cloudflare account access
+are kept off the host in one password manager account (SPEC-0242). No rekey is
+planned, and the POL-0085 exception stays open.
 
 Auto-unseal was only deferred as a non-goal in ADR-0018 from the Vault era
 ("actual KMS/HSM auto-unseal implementation at this stage"); it was never

@@ -3068,7 +3068,8 @@ chose host custody (SPEC-0242): shares and the CA key on the host and in the
 host backup, and only BKP-003, the R2 credentials, BKP-002 and Cloudflare
 account access in one password manager account; no W1b rekey. RUN-0085 0.11.0
 holds the procedure and the step 5 table. The "HOME custody attestation" row
-stays NOT_RUN until the owner returns that table.
+keeps its earlier off-host check and stays NOT_RUN as history; the owner's
+step 5 table for the host layout will be recorded as a new row.
 
 ## Evidence
 

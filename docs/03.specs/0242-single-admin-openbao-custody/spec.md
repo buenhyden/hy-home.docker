@@ -32,7 +32,10 @@ backup exclusion, rekey and place separation.
 
 In scope: RUN-0085's custody section, its step 5 record and verdict, the
 maintenance window's W1b and the W0 and W3b lines that depend on custody or
-the image pin, POL-0085's exception text and ADR-0042's context. Out of scope:
+the image pin, POL-0085's exception text and ADR-0042's context, the consumers that
+named independent custody as a gate (RUN-0021, RUN-0098, POL-0085's P06 line),
+and the withdrawal and pointer records in SPEC-0240's Task and SPEC-0204
+TSK-0006. Out of scope:
 any HOME change, credential handling, reading the second copy, the rest of the
 window's readiness, and SPEC-0240's lifecycle disposition.
 

@@ -73,7 +73,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0236 | [공유 에이전트 기억](./0236-shared-agent-memory/) | Claude·Codex native 기억 비활성화, 등록된 단일 공유 기억 저장소와 CLI, 용량·백업 계약 초안 |
 | SPEC-0237 | [에이전트 memory Restic 포함](./0237-agent-memory-restic-coverage/) | 일일 `hyhome-backup.sh`가 공유 memory 저장소를 staging에 online backup해 Restic snapshot에 포함 |
 | SPEC-0239 | [OpenBao Agent telemetry와 alert](./0239-openbao-agent-alert/) | Agent `metrics_only` listener, Prometheus `openbao-agent` job, scrape 실패·인증 실패 alert |
-| SPEC-0240 | [unseal share 파일 백업 제외](./0240-unseal-backup-exclusion/) | OpenBao unseal share 파일을 host Restic 백업과 R2 사본에서 빼고, 정책 사실 정정과 custody·rekey 계획 보강 |
+| SPEC-0240 | [unseal share 파일 백업 제외](./0240-unseal-backup-exclusion/) | OpenBao unseal share 파일을 host Restic 백업과 R2 사본에서 빼고, 정책 사실 정정과 custody·rekey 계획 보강 (owner 철회, SPEC-0242) |
 | SPEC-0241 | [hook 출력과 main push 차단](./0241-hook-outputs-and-main-push-guard/) | PreCompact·SessionStart·PreToolUse 출력 교정, Codex hook 정렬, main 직접 push 차단과 pre-push guard, secret 읽기 거부 |
 | SPEC-0242 | [1인 관리자 OpenBao custody](./0242-single-admin-openbao-custody/) | share·CA key는 host와 host 백업에, BKP-003·R2 자격 증명·BKP-002·Cloudflare 접근만 비밀번호 관리자 계정에 두고 W1b rekey를 뺀다 |
 

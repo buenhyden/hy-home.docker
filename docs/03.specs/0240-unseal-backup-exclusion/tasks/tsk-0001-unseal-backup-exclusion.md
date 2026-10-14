@@ -201,9 +201,9 @@ package's disposition (cancelled or superseded, which moves it out of Stage
 
 ## Review and Completion
 
-Do not merge before RUN-0085 step 5 is `owner-attested`. On 2026-10-14 the owner, answering the review question (AskUserQuestion), accepted criteria 1 and 5. After the Round 2
-re-reviews the owner accepted criteria 2 and 3 the same day. Criterion 4 waits
-for the merge and the next host snapshot.
+Withdrawn 2026-10-14, see Owner Withdrawal: the exclusion will not merge. Before that, on 2026-10-14 the owner, answering the review question (AskUserQuestion), accepted criteria 1 and 5. After the Round 2
+re-reviews the owner accepted criteria 2 and 3 the same day. Criterion 4 can no
+longer be met; its disposition goes with the package's.
 
 ## Related Documents
 
