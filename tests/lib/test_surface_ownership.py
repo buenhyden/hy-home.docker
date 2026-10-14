@@ -72,6 +72,13 @@ def _full_profile_unittest_modules() -> list[str]:
     ]
 
 
+def _module_of(entry: str, modules: set[str]) -> str:
+    prefix = entry
+    while prefix not in modules and "." in prefix:
+        prefix = prefix.rpartition(".")[0]
+    return prefix if prefix in modules else entry
+
+
 _WORKSPACE_CONTRACT_DOCUMENTS = (
     "_workspace/README.md",
     "_workspace/repo-support/README.md",
@@ -152,7 +159,10 @@ class SurfaceOwnershipTests(unittest.TestCase):
             str(path.relative_to(ROOT).with_suffix("")).replace("/", ".")
             for path in (ROOT / "tests").rglob("test_*.py")
         }
-        planned = _full_profile_unittest_modules()
+        # A class or method selection reaches its module.
+        planned = [
+            _module_of(entry, on_disk) for entry in _full_profile_unittest_modules()
+        ]
         self.assertEqual(on_disk, set(planned))
         # Exactly once. The adapter grammar admits any well-shaped module, so
         # this is the only thing stopping the full profile from running one
@@ -161,6 +171,17 @@ class SurfaceOwnershipTests(unittest.TestCase):
             module for module in set(planned) if planned.count(module) > 1
         )
         self.assertEqual([], duplicates)
+
+    def test_a_class_selection_reaches_its_module(self) -> None:
+        modules = {"tests.validation.test_x"}
+        self.assertEqual(
+            "tests.validation.test_x",
+            _module_of("tests.validation.test_x.BoundaryTests", modules),
+        )
+        self.assertEqual(
+            "tests.validation.test_gone",
+            _module_of("tests.validation.test_gone", modules),
+        )
 
     def test_adapter_admission_alone_is_not_test_registration(self) -> None:
         module = "tests.lib.unreachable.test_admission_only"

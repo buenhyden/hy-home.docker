@@ -1,10 +1,10 @@
 ---
 title: "Local Gate Governance Timeout"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0235"
 parent_ids:
@@ -43,6 +43,9 @@ to 45 minutes rather than accept hosted results only or split the node.
    no other node or workflow changes.
 2. The value is justified by a measured run of the node's own module list on
    this host, recorded in the Task.
+3. The full-profile reachability test counts a class or method selection as
+   reaching its module, so a node that deliberately runs one class of a module
+   does not stop every local gate; no node or workflow changes.
 
 ## Acceptance Criteria
 
@@ -51,6 +54,8 @@ to 45 minutes rather than accept hosted results only or split the node.
    timeout with margin, and the measured time is recorded.
 3. A full local `run-ci-gate.py --profile changed` run reaches and passes the
    node, and hosted `candidate-quality` passes.
+4. The reachability test fails on `main` and passes with the change, and a
+   test covers a class selection and a module that is not on disk.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Local Gate Governance Timeout Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0235-PLAN-0001"
 parent_ids:
@@ -25,7 +25,8 @@ the node.
 | --- | --- | --- | --- | --- | --- |
 | W1 | 2 | Measure the node's module batch on this host | None | TSK-0001 | Task evidence |
 | W2 | 1 | Set the node timeout to 45 minutes; contract tests; ci-cd review | W1 | TSK-0001 | Task evidence |
-| W3 | 3 | Full local changed gate and hosted candidate | W2 | TSK-0001 | Task evidence |
+| W3 | 4 | Reachability test admits class selections; ci-cd review | W2 | TSK-0001 | Task evidence |
+| W4 | 3 | Full local changed gate and hosted candidate | W2, W3 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 

@@ -1,10 +1,10 @@
 ---
 title: "Local Gate Governance Timeout Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0235-TSK-0001"
 parent_ids:
@@ -60,6 +60,20 @@ it. The CI gate contract tests (28), the workflow contract and adapter tests
 (85) and `check-github-workflow-contract.py` (5 workflows, 7 jobs, 8 actions)
 pass.
 
+### W3 Reachability of Class Selections
+
+On 2026-10-14 every local `run-ci-gate.py --profile changed` stopped before
+the governance node: `tests.lib.test_surface_ownership` failed
+`test_every_test_module_is_reachable_from_the_full_profile`, because commit
+`c80915370` (P04, 2026-10-13) registers
+`tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests`,
+a class, in the workflow contract, and the test compared module names only.
+The gate stops at its first failing node, so W3 could not reach the
+governance node on any branch, and the local gate moved to W4. The owner chose on 2026-10-14
+(AskUserQuestion) to make the test count a class or method selection as
+reaching its module, keeping P04's single-class selection. Only
+`tests/lib/test_surface_ownership.py` changes; the duplicate check is kept.
+
 ### Direct Push to Main
 
 At 2026-10-13T11:16:06Z, `refs/heads/main` on GitHub moved from `338c607d8`
@@ -82,7 +96,8 @@ is not the authenticated pull request merge); #448 was rebased onto
 | Contract | 1 | W2 | CI gate contract tests (28); workflow contract and adapter tests (85); workflow contract check | Branch on `338c607d8` | PASS | W2 Timeout Change | - |
 | Runtime | 2 | W1 | Node module batch on this host: 763 tests, 1336 s | `338c607d8` | PASS | W1 Measured Runtime | - |
 | CI review | 1 | W2 | Independent `ci-cd-engineer` review: approve with notes, notes applied | `682840106` | PASS | Inputs and Authorization | - |
-| Local gate | 3 | W3 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
+| Local gate | 3 | W4 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
+| Reachability | 4 | W3 | `tests.lib.test_surface_ownership` RED on `1e7e2ba84` (1 failure), GREEN with the change (8 tests) | Branch on `1e7e2ba84` | PASS | W3 Reachability of Class Selections | - |
 
 ## Criterion Acceptance
 
@@ -91,6 +106,7 @@ is not the authenticated pull request merge); #448 was rebased onto
 | 1 | pending | - | - |
 | 2 | pending | - | - |
 | 3 | pending | - | - |
+| 4 | pending | - | - |
 
 ## Review and Completion
 
