@@ -40,8 +40,8 @@ run `tests.lib.test_surface_ownership` on `main` (RED) and with the change
 ## Risks and Rollback
 
 - **A hung test waits longer.** A real hang now takes 45 minutes to surface
-  locally instead of 15, or 30 instead of 10 in the metadata node. Hosted CI is unaffected because the node is local
-  only.
+  locally instead of 15, or 30 instead of 10 in the metadata node. Hosted CI
+  is unaffected because both nodes are local only.
 - **A class selection hides the rest of its module.** The reachability test
   now accepts a module reached through one class, so the module's other
   classes may never run in the full profile; that is P04's deliberate choice.

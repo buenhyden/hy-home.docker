@@ -95,6 +95,13 @@ it to 30 minutes, about 2.5 times the measured time. The node is in
 `public_gate.local_only_gate_ids`, so hosted `candidate-quality` never runs
 it, and no test pins the old value.
 
+An independent `ci-cd-engineer` review of `6ce05b26a` passed with notes: the
+contract changes in one line, the contract accepts 1 to 60 minutes, the
+runner uses `timeout_minutes * 60` per node, and the package pairs are
+consistent. Its wrapping and evidence notes are applied. The changed gate on
+this branch exited 0 in 557 s, but its path selection reached neither
+timeout node, so it does not bear on criterion 3.
+
 ### Direct Push to Main
 
 At 2026-10-13T11:16:06Z, `refs/heads/main` on GitHub moved from `338c607d8`
@@ -120,6 +127,8 @@ is not the authenticated pull request merge); #448 was rebased onto
 | Reachability | 4 | W3 | `tests.lib.test_surface_ownership` RED on `1e7e2ba84` (1 failure), GREEN with the change (8 tests) | `a35f1e0af` on `1e7e2ba84` | PASS | W3 Reachability of Class Selections | - |
 | CI review W3 | 4 | W3 | Independent `ci-cd-engineer` review: code sound, document notes applied | `a35f1e0af` | PASS | W3 Reachability of Class Selections | - |
 | Metadata runtime | 5 | W4 | Metadata node module batch on this host: 148 tests, 719 s | `f1af4b59e` | PASS | W4 Metadata Node Timeout | - |
+| Contract W4 | 5 | W4 | CI gate contract and reachability tests (36); workflow contract check (5 workflows); changed metadata 0 violations | `6ce05b26a` | PASS | W4 Metadata Node Timeout | - |
+| CI review W4 | 5 | W4 | Independent `ci-cd-engineer` review: pass with notes, notes applied | `6ce05b26a` | PASS | W4 Metadata Node Timeout | - |
 | Local gate | 3 | W5 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
