@@ -6,9 +6,9 @@ status: "draft"
 owner: "@buenhyden"
 updated: "2026-10-14"
 layer: "specs"
-artifact_id: "SPEC-0238-TSK-0001"
+artifact_id: "SPEC-0241-TSK-0001"
 parent_ids:
-- "SPEC-0238-PLAN-0001"
+- "SPEC-0241-PLAN-0001"
 created: "2026-10-13"
 ---
 
@@ -17,7 +17,7 @@ created: "2026-10-13"
 ## Objective
 
 Deliver valid hook outputs to the model, align the Codex hook bindings, and
-close the routes to a direct push to `main`, as SPEC-0238 states.
+close the routes to a direct push to `main`, as SPEC-0241 states.
 
 ## Inputs and Authorization
 
@@ -300,6 +300,13 @@ allowed and `git checkout -b feat origin/main && git push -u origin HEAD` on
 `main` was denied. A branch-creating flag is now handled first and names the
 new branch; only without one do two names or `--` mean a pathspec.
 
+### Renumbering
+
+On 2026-10-14 `main` reached Registry high water 239 (SPEC-0239) while this
+package was unmerged, and the changed-metadata check refused issuing 0238
+below it (`identity-reuse-forbidden`). The package was renumbered to
+SPEC-0241; SPEC-0240 is held by PR #464.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -323,7 +330,7 @@ new branch; only without one do two names or `--` mean a pathspec.
 | Re-review 4 fixes | 5 | W5 | Round 5 fixes; 5 more denied and 5 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32) | Branch | PASS | Review Round 5 | Re-review 4 |
 | Re-review 5 | 5 | W5 | Independent `security-auditor` re-review of `f3146b362`: three implicit pushes to `main` allowed | Branch | FAIL | Review Round 6 | - |
 | Re-review 5 fixes | 5 | W5 | Round 6 fixes; 10 more denied and 1 more allowed forms; routing suite (70), hook tests (32) | Branch | PASS | Review Round 6 | Re-review 5 |
-| Re-review 6 | 5 | W5 | Independent `security-auditor` re-review of `eb679ab16`: round 6 fixes verified; `checkout -b|-B <name> <start>` read as a pathspec | Branch | FAIL | Review Round 7 | - |
+| Re-review 6 | 5 | W5 | Independent `security-auditor` re-review of `eb679ab16`: round 6 fixes verified; `checkout -b` or `-B` with a start point read as a pathspec | Branch | FAIL | Review Round 7 | - |
 | Re-review 6 fixes | 5 | W5 | Branch-creating flags handled before the pathspec test; 1 more denied and 1 more allowed form; routing suite (70), hook tests (32) | Branch | PASS | Review Round 7 | Re-review 6 |
 | Re-review 7 | 5 | W5 | Independent review of the round 7 fix | - | NOT_RUN | Review Round 7 | - |
 | Candidate | 6 | W5 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |

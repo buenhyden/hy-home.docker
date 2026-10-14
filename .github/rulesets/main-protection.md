@@ -66,7 +66,7 @@ settings by itself.
   admin enforcement or a ruleset with no bypass actor. The repository now adds
   a tracked `pre-push` guard (`scripts/hooks/pre-push-guard.sh`), active only
   after `pre-commit install --hook-type pre-push`, and agent-side denials
-  (SPEC-0238); neither changes the remote settings.
+  (SPEC-0241); neither changes the remote settings.
 
 ## Target Ruleset
 

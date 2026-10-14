@@ -6,9 +6,9 @@ status: "draft"
 owner: "@buenhyden"
 updated: "2026-10-14"
 layer: "specs"
-artifact_id: "SPEC-0238-PLAN-0001"
+artifact_id: "SPEC-0241-PLAN-0001"
 parent_ids:
-- "SPEC-0238"
+- "SPEC-0241"
 created: "2026-10-13"
 ---
 
