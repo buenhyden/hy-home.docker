@@ -314,37 +314,57 @@ def _segments(command: str) -> list[object]:
     lexer = shlex.shlex(command, posix=True, punctuation_chars=_PUNCTUATION)
     lexer.whitespace = " \t\r"
     lexer.whitespace_split = True
-    lexer.commenters = ""
+    lexer.commenters = ""  # comments are removed from the raw text first
     items: list[object] = []
     words: list[str] = []
     target = False
-    comment = False
     for token in lexer:
-        if comment and token != "\n" and not token.endswith("\n"):
-            continue
         if not (token and set(token) <= set(_PUNCTUATION)):
             if target:
                 target = False
-            elif token.startswith("#"):
-                comment = True
             else:
                 words.append(token)
             continue
-        comment = False
-        if set(token) & set("<>"):
-            if words and words[-1].isdigit():
-                words.pop()
-            target = True
-            continue
-        for character in token:
+        redirect = min((token.index(c) for c in "<>" if c in token), default=None)
+        for character in token if redirect is None else token[:redirect]:
             if words:
                 items.append(words)
                 words = []
             if character in "()":
                 items.append(character)
+        if redirect is not None:
+            if words and words[-1].isdigit():
+                words.pop()
+            target = True
     if words:
         items.append(words)
     return items
+
+
+def _strip_comments(command: str) -> str:
+    """Blank every shell comment: a `#` that starts a word outside quotes."""
+
+    out = list(command)
+    quote = ""
+    index = 0
+    while index < len(command):
+        character = command[index]
+        if quote == "'":
+            quote = "" if character == "'" else quote
+        elif character == "\\":
+            index += 1
+        elif quote == '"':
+            quote = "" if character == '"' else quote
+        elif character in "'\"":
+            quote = character
+        elif character == "#" and (index == 0 or command[index - 1] in " \t\n;&|()<>"):
+            end = command.find("\n", index)
+            end = len(command) if end < 0 else end
+            out[index:end] = " " * (end - index)
+            index = end
+            continue
+        index += 1
+    return "".join(out)
 
 
 def implicit_main_push(command: str, cwd: pathlib.Path) -> bool:
@@ -364,14 +384,15 @@ def implicit_main_push(command: str, cwd: pathlib.Path) -> bool:
         return True
 
 
-def _scan(command: str, cwd: pathlib.Path | None) -> bool:
+def _scan(
+    command: str, cwd: pathlib.Path | None, head_branch: str | None = None
+) -> bool:
     # ponytail: a lexical approximation of the shell, not a parser. A push it
     # cannot resolve raises _Unknown (deny); text that only mentions a push in
     # an argument is data and is not judged.
-    command = _HEREDOC.sub(
-        lambda match: f"<<{match.group(2)}{match.group(3)}",
-        command.replace("\\\n", " "),
-    )
+    command = _strip_comments(
+        _HEREDOC.sub(lambda match: f"<<{match.group(2)}{match.group(3)}", command)
+    ).replace("\\\n", " ")
     try:
         items = _segments(command)
     except ValueError:
@@ -381,10 +402,9 @@ def _scan(command: str, cwd: pathlib.Path | None) -> bool:
     # Command substitutions run wherever bash expands them, which excludes
     # single quotes and escaped characters.
     for inner in _live_substitutions(command):
-        if _scan(inner, cwd):
+        if _scan(inner, cwd, head_branch):
             return True
     directory = cwd
-    head_branch: str | None = None
     subshells: list[pathlib.Path | None] = []
     pushed: list[pathlib.Path | None] = []
     for item in items:
@@ -393,7 +413,9 @@ def _scan(command: str, cwd: pathlib.Path | None) -> bool:
             continue
         if item == ")":
             directory = subshells.pop() if subshells else directory
-            head_branch = None
+            # A checkout is on-disk state; after a directory change it can no
+            # longer be tied to the repository a later push runs in.
+            head_branch = head_branch and "?"
             continue
         words = list(item)  # type: ignore[call-overload]
         location: list[str] = []
@@ -403,7 +425,7 @@ def _scan(command: str, cwd: pathlib.Path | None) -> bool:
             continue
         head = pathlib.PurePath(words[0]).name
         if head in {"cd", "pushd", "popd"}:
-            head_branch = None
+            head_branch = head_branch and "?"
         if head in {"cd", "pushd"} and len(words) > 1:
             if head == "pushd":
                 pushed.append(directory)
@@ -417,9 +439,21 @@ def _scan(command: str, cwd: pathlib.Path | None) -> bool:
         if head == "popd":
             directory = pushed.pop() if pushed else directory
             continue
-        if head in _RUNNERS:
-            script = _runner_script(head, words[1:])
-            if script is not None and _scan(script, directory):
+        runner = next(
+            (
+                i
+                for i, word in enumerate(words)
+                if pathlib.PurePath(word).name in _RUNNERS
+            ),
+            None,
+        )
+        if runner is not None and not any(
+            pathlib.PurePath(word).name == "git" for word in words[:runner]
+        ):
+            script = _runner_script(
+                pathlib.PurePath(words[runner]).name, words[runner + 1 :]
+            )
+            if script is not None and _scan(script, directory, head_branch):
                 return True
             continue
         for index, word in enumerate(words):
@@ -503,12 +537,24 @@ def _head_change(
     index = _subcommand_index(tokens)
     subcommand = tokens[index] if index < len(tokens) else ""
     arguments = tokens[index + 1 :]
+    elsewhere = bool(location) or any(
+        word in _GIT_VALUE_OPTIONS - {"-c", "--namespace", "--attr-source"}
+        or word.startswith(("--git-dir=", "--work-tree="))
+        for word in tokens[1:index]
+    )
     if subcommand == "symbolic-ref" or (
         subcommand == "branch" and {"-m", "-M", "--move"} & set(arguments)
     ):
         return "?"
     if subcommand not in {"checkout", "switch"}:
         return None
+    if subcommand == "checkout" and (
+        ("--" in arguments and arguments.index("--") + 1 < len(arguments))
+        or len([word for word in arguments if not word.startswith("-")]) > 1
+    ):
+        return None  # a pathspec checkout leaves HEAD where it is
+    if elsewhere:
+        return "?"
     for position, word in enumerate(arguments):
         if word in {"-b", "-B", "-c", "-C", "--orphan"}:
             return arguments[position + 1] if position + 1 < len(arguments) else "?"
@@ -518,8 +564,8 @@ def _head_change(
     names = [word for word in before if not word.startswith("-")]
     if not names:
         return None
-    if subcommand == "switch":
-        return names[0]
+    if subcommand == "switch" or names[0] in _MAIN:
+        return "main" if names[0] in _MAIN else names[0]
     here = (directory or pathlib.Path("/")) / "."
     known = _git(
         here, location, "rev-parse", "--verify", "--quiet", f"refs/heads/{names[0]}"

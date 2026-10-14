@@ -274,6 +274,22 @@ and the `git ... push` pattern no longer backtracks on repeated options.
 Residual, as before: a shell fed a script on stdin or from a file, and
 redirection targets such as process substitution.
 
+### Review Round 6
+
+On 2026-10-14 the re-review of `f3146b362` found three implicit pushes to
+`main` still allowed: a quoted argument starting with `#` was taken for a
+comment and hid the rest of the line; a comment followed by a line starting
+with `(` swallowed that line; and a branch switch was forgotten after a `cd`,
+`pushd`, `popd` or subshell end. Comments are now blanked on the raw text,
+quote-aware, before tokenizing; a switch followed by a directory change makes
+a later implicit or `HEAD` push fail closed, and nested runner and
+substitution scans inherit it. Also fixed: a pathspec checkout no longer
+counts as a switch, a runner behind a wrapper (`timeout 300 bash -c`) is
+judged, `git checkout main` counts even without a local `main`, a checkout
+in another repository (`-C`, `--git-dir`, `GIT_DIR`) makes the branch
+unknown, and a redirection glued to `)` keeps the separator. Residual: a
+checkout that fails on a `;` chain is judged as if it succeeded.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -295,7 +311,9 @@ redirection targets such as process substitution.
 | Re-review 3 fixes | 5 | W5 | Round 4 fixes; 5 more denied and 7 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32), governance contract | Branch | PASS | Review Round 4 | Re-review 3 |
 | Re-review 4 | 5 | W5 | Independent `security-auditor` re-review of `1a58a6be3`: three pushes to `main` allowed, one false-positive class | Branch | FAIL | Review Round 5 | - |
 | Re-review 4 fixes | 5 | W5 | Round 5 fixes; 5 more denied and 5 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32) | Branch | PASS | Review Round 5 | Re-review 4 |
-| Re-review 5 | 5 | W5 | Independent review of the round 5 fixes | - | NOT_RUN | Review Round 5 | - |
+| Re-review 5 | 5 | W5 | Independent `security-auditor` re-review of `f3146b362`: three implicit pushes to `main` allowed | Branch | FAIL | Review Round 6 | - |
+| Re-review 5 fixes | 5 | W5 | Round 6 fixes; 10 more denied and 1 more allowed forms; routing suite (70), hook tests (32) | Branch | PASS | Review Round 6 | Re-review 5 |
+| Re-review 6 | 5 | W5 | Independent review of the round 6 fixes | - | NOT_RUN | Review Round 6 | - |
 | Candidate | 6 | W5 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

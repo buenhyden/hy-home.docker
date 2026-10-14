@@ -2507,6 +2507,15 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "(cd feature && true); git push",
                 "pushd feature && popd && git push",
                 "cd . # stay here\ngit push -u origin HEAD",
+                # Quoted `#` is data; a comment never hides the next line.
+                'echo "# Notes" > /dev/null && git push -u origin HEAD',
+                'git commit -m "#462 follow-up" && git push -u origin HEAD',
+                "# push from here\n(cd . && git push -u origin HEAD)",
+                # A pathspec checkout leaves HEAD on main.
+                "git checkout feat -- README && git push -u origin HEAD",
+                # A runner behind a wrapper, and a checkout in another repository.
+                "timeout 300 bash -c 'git push -u origin HEAD'",
+                "git -C feature checkout -b x && git push -u origin HEAD",
                 # Shell keywords, groups and wrappers with values.
                 "for i in 1 2; do git push -u origin HEAD && break; done",
                 "until git push; do sleep 5; done",
@@ -2533,12 +2542,19 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "git checkout main && git push",
                 "git switch main; git push origin HEAD",
                 "git checkout - && git push",
+                # A switch survives a later cd or subshell.
+                "git checkout main && cd . && git push origin HEAD",
+                "(git checkout main) && git push origin HEAD",
+                "git checkout main && bash -c 'git push origin HEAD'",
             ):
                 with self.subTest(command=command):
                     self.assertTrue(self._denied(command, repo))
-            self.assertFalse(
-                self._denied("git checkout -b fresh && git push -u origin HEAD", repo)
-            )
+            for command in (
+                "git checkout -b fresh && git push -u origin HEAD",
+                "git checkout main -- README && git push -u origin HEAD",
+            ):
+                with self.subTest(command=command):
+                    self.assertFalse(self._denied(command, repo))
             # A runner's -c string is judged where it runs.
             self.assertTrue(self._denied("bash -c 'cd .. && git push'", feature))
             # Substitutions bash would not run are data.
