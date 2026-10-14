@@ -391,7 +391,9 @@ class RecoveryEffects:
         for name in (ATTEMPT + "-old", ATTEMPT + "-candidate", ATTEMPT + "-agent", ATTEMPT + "-watcher"):
             if self.runtime.docker("inspect", "--type=container", name, allow_failure=True).returncode == 0:
                 raise Blocked()
-        if self.runner.run(["findmnt", "-n", "-o", "FSTYPE", "--target", "/dev/shm"]).stdout.strip() != b"tmpfs":
+        # The helper is materialized under /dev/shm and executed from there.
+        mount = self.runner.run(["findmnt", "-n", "-o", "FSTYPE,OPTIONS", "--target", "/dev/shm"]).stdout.split()
+        if len(mount) != 2 or mount[0] != b"tmpfs" or b"noexec" in mount[1].split(b","):
             raise Blocked()
         renderer = self.contract["renderer"]
         helper = Path(renderer["helper"])
@@ -587,8 +589,9 @@ class RecoveryEffects:
             os.fsync(role_fd)
         finally:
             os.close(role_fd)
+        # chown -R must read and search the operator-owned 0770/0700 inputs.
         prep = ATTEMPT + "-agent-chown"
-        result = self.runtime.docker("create", "--name", prep, "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "0:0", "--cap-add", "CHOWN", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/chown", OLD_IMAGE, "-R", "100:1000", "/agent", "/out", "/bundle")
+        result = self.runtime.docker("create", "--name", prep, "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "0:0", "--cap-add", "CHOWN", "--cap-add", "DAC_READ_SEARCH", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/chown", OLD_IMAGE, "-R", "100:1000", "/agent", "/out", "/bundle")
         prep_id = self.runtime.remember("container", result)
         self.runtime.docker("start", "--attach", prep_id)
         if self.runtime.docker("inspect", "--format", "{{.State.ExitCode}} {{.State.OOMKilled}}", prep_id).stdout.strip() != b"0 false":

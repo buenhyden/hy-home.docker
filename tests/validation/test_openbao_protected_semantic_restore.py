@@ -1,5 +1,6 @@
 # fmt: off
 import importlib.util
+import itertools
 import json
 import os
 import tempfile
@@ -533,6 +534,8 @@ class RuntimeUnitTests(unittest.TestCase):
             effect.materialized_helper = root / "helper"
             effect._agent("server", root, (("alpha", 1), ("beta", 2)))
         self.assertEqual(effect._json_exec.call_count, 3)
+        prep = effect.runtime.docker.call_args_list[0].args
+        self.assertIn(("--cap-add", "DAC_READ_SEARCH"), list(itertools.pairwise(prep)))
         self.assertEqual((effect.runner.run.call_args.args[0][0], "issuer" in repr(effect.runner.run.call_args.args[0]), "/bundle" in repr(effect.runtime.docker.call_args_list[0])), (str(effect.materialized_helper), False, True))
 
     def test_partial_token_issue_revokes_every_issued_token(self):
@@ -720,7 +723,12 @@ class IntegrationBoundaryTests(unittest.TestCase):
 
         effect.runtime.docker.side_effect = docker
         effect.runner = mock.Mock()
-        effect.runner.run.return_value = SimpleNamespace(stdout=b"tmpfs\n", returncode=0)
+        for mounted in (b"tmpfs rw,nosuid,noexec\n", b"ext4 rw\n", b"tmpfs\n"):
+            effect.runner.run.return_value = SimpleNamespace(stdout=mounted, returncode=0)
+            with self.subTest(mounted=mounted), self.assertRaises(self.subject.Blocked):
+                effect.preflight()
+        effect.runtime.docker.reset_mock()
+        effect.runner.run.return_value = SimpleNamespace(stdout=b"tmpfs rw,nosuid,nodev,inode64\n", returncode=0)
         effect.preflight()
         self.assertEqual(effect.runtime.docker.call_count, 6)
         for wrong in (" linux/arm64", " linux/amd64 extra"):
