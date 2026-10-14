@@ -535,7 +535,7 @@ P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 g
 3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급하며, 그 전까지 일일 backup의 OpenBao snapshot은 recovery gap으로 계속 실패한다.
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
 5. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근의 off-host 보관과 share·CA key의 host 보조 사본을 값 없이 확인한다(owner 확인). 확인 전까지 미실행이며, P01은 계속 차단된다. 배치와 확인은 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다.
-6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않았다. 지금은 추적되는 `protected-semantic-restore.py`가 있지만 native로 실행된 적이 없고, server 기동 결함은 SPEC-0243 W2에서 고쳤다. 실제 restore와 canary는 아직 native로 실행되지 않았다.
+6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않았다. 지금은 추적되는 `protected-semantic-restore.py`가 있고, SPEC-0243이 합성 자원에서 전체 `perform()`을 native로 리허설했다. HOME의 실제 restore와 canary는 아직 실행되지 않았다.
 7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 현재 HOME server에는 audit mount가 없으므로 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
 9. HOME cold boot를 한다(별도 승인).
@@ -761,6 +761,10 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
 - **기준선.** 실행 중 `openbao` image ID가 restore의 이전 image(`11fd73a2…`)와 같고,
   `openbao-agent`가 `healthy`이며(W1c health 정지의 기준), `/dev/shm`이 `noexec` 없는
   tmpfs이고, restore 대상 `p01-restore-20261014-05`가 없고 부모 identity가 그대로인지 본다.
+- **HOME audit·mount 목록.** 격리 restore server는 tmpfs의 `p01-file` audit만 만들 수 있다.
+  HOME의 `bao audit list -format=json`과 `bao secrets list -format=json`·`bao auth list
+  -format=json`의 path·type만 값 없이 Task에 기록한다. restore가 열 수 없는 audit device나
+  plugin mount가 있으면 W3a를 열지 않고 검토로 돌린다.
 - **이전 operator token.** host에 남은 `p01-operator.token`은 W7 입력으로 쓰지 않는다.
   2026-10-14 owner 결정대로 owner가 그 token으로 `revoke-self`한 뒤 파일을 지운다. 값은
   변수로만 넘겨 argv에 이름만 남게 하고, 정책이 `hy-home-operator`인지 먼저 보고, 폐기가
@@ -875,7 +879,7 @@ eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-securi
 2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-0e114c3fcb521f16f94dee2d22710f5c7018e0df588fceb4610506bff7603b85 infra/03-security/openbao/scripts/protected-semantic-restore.py
+83e587c8f221ede08073bf0636c207fda74f0a0530e874e62458bc635db02b4a infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 56552244eb748cbe569ad0e63a9d47e70dcd5e3f10a28b730382de3993498d5c infra/03-security/openbao/scripts/protected-renderer-roles.py
@@ -1111,7 +1115,9 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 W3a는 BLOCKED다. 2026-10-15 독립 검토가 Agent 단계의 입력 chown 결함을 찾았고 native로
 재현됐다. 그 수정 뒤 전체 `perform()` native 리허설이 결함 넷(sealed 상태의 login, 빈 token
 생성 요청, 본문 없는 revoke 응답, Agent 파일 회수)을 더 찾았고, 고친 뒤 두 image에서
-`accepted`로 끝났다. 이 수정의 독립 IaC·보안 재검토가 통과할 때까지 W3a를 열지 않는다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
+`accepted`로 끝났다. 그 수정의 재검토가 umask 077에서 읽을 수 없는 `tls/`와 실패 경로의
+Agent 파일 잔여를 찾아 다시 고쳤고, 리허설은 restore를 umask 077에서 실행한다. 이 수정의
+독립 IaC·보안 재검토가 통과할 때까지 W3a를 열지 않는다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
 `/bin/bao`로 `-config` 없이 시작하던 것(D3), TTY 없이 거부되는 `operator unseal`과 인자 없는
 `login`, 없는 `/usr/bin/stat`, capability 없는 root로 읽을 수 없던 0400 snapshot이다. 이제
 image entrypoint와 `/openbao/config`·`/tmp` tmpfs, `write sys/unseal key=-`, `login -`,
@@ -1119,8 +1125,8 @@ image entrypoint와 `/openbao/config`·`/tmp` tmpfs, `write sys/unseal key=-`, `
 sealed로 남고 둘째 share가 `invalid key`로 실패해야 통과한다. 두 image 모두 합성 대상에서 init·unseal·
 login·snapshot restore가 통과했다. SPEC-0243 W4가 네 입력의 producer를 더했다(아래).
 W4 rehearsal은 preflight가 multi-arch 이전 image의 platform manifest ID를 비교해 W3a를 항상
-멈추는 결함도 찾았고, 이제 local image ID와 `linux/amd64`를 비교한다. W3a는 이제 W3
-산출물·lease와 owner 승인을 기다린다.
+멈추는 결함도 찾았고, 이제 local image ID와 `linux/amd64`를 비교한다. 위 BLOCKED가 풀린
+뒤에도 W3a는 W3 산출물·lease와 owner 승인이 있어야 연다.
 
 입력 준비. renderer helper는 위 [Renderer SecretID Delivery](#renderer-secretid-delivery) 2단계의
 installer로 `$operator_tools/$issuer_commit`에 먼저 설치한다. bundle·보안 receipt·candidate는
@@ -1212,7 +1218,10 @@ filesystem quota가 아닙니다. cleanup은 별도 60초 안에서 성공적으
 ID만 정리합니다. 이름·label은 ID를 확보하지 못한 create의 운영자 대조 자료이며 자동
 cleanup 선택자가 아닙니다.
 `RESTORE_ACCEPTED`/exit0만 성공이며 `INDETERMINATE`/exit2에서는 대상·ledger를 보존하고
-다시 실행하지 않습니다. 이전 버전 복원 후 candidate와 Agent를 같은 격리 data에 연결하며
+다시 실행하지 않습니다. stderr에 `RESIDUE: /dev/shm attempt directory retained`가 나오면
+`/dev/shm/<ATTEMPT>-*`에 복원 key·snapshot 사본이나 렌더 값이 남았을 수 있습니다. 지우지
+말고 그대로 두며, owner가 `sudo ls -laR`로 이름·소유자·크기만(내용은 보지 않음) 값 없이
+Task에 기록한 뒤 `sudo rm -r`로 지웁니다. 재부팅해도 `/dev/shm`은 비워집니다. 이전 버전 복원 후 candidate와 Agent를 같은 격리 data에 연결하며
 HOME root 폐기나 HOME server 교체는 이 client가 수행하지 않습니다.
 
 **W3b 정확한 artifact의 독립 보관.** W3 snapshot과 그 receipt를 선택한 독립 off-host

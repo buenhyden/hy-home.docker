@@ -366,6 +366,7 @@ class RecoveryEffects:
         self.runtime = execution.ContainerRuntime(self.runner, ATTEMPT, Indeterminate)
         self.ledger = None
         self.held_artifacts = []
+        self.reclaim_paths = self.agent_id = None
 
     def _hold(self, path, digest, *, private=False):
         try:
@@ -388,9 +389,11 @@ class RecoveryEffects:
             result = self.runtime.docker("image", "inspect", "--format", "{{.Id}} {{.Os}}/{{.Architecture}}", image)
             if result.stdout.strip().decode() != expected + " linux/amd64":
                 raise Blocked()
-        for name in (ATTEMPT + "-old", ATTEMPT + "-candidate", ATTEMPT + "-agent", ATTEMPT + "-watcher"):
-            if self.runtime.docker("inspect", "--type=container", name, allow_failure=True).returncode == 0:
+        for suffix in ("-old", "-candidate", "-agent", "-watcher", "-chown", "-agent-chown", "-agent-reclaim"):
+            if self.runtime.docker("inspect", "--type=container", ATTEMPT + suffix, allow_failure=True).returncode == 0:
                 raise Blocked()
+        if self.runtime.docker("network", "inspect", ATTEMPT + "-net", allow_failure=True).returncode == 0:
+            raise Blocked()
         # The helper is materialized under /dev/shm and executed from there.
         mount = self.runner.run(["findmnt", "-n", "-o", "FSTYPE,OPTIONS", "--target", "/dev/shm"]).stdout.split()
         if len(mount) != 2 or mount[0] != b"tmpfs" or b"noexec" in mount[1].split(b","):
@@ -501,7 +504,8 @@ class RecoveryEffects:
             result = self.runtime.exec(server, "bao", "status", "-format=json", allow_failure=True)
             try:
                 value = _json(result.stdout)
-                if value.get("initialized") is initialized and value.get("sealed") is sealed:
+                # Login and reads need the active node, not only an unsealed one.
+                if value.get("initialized") is initialized and value.get("sealed") is sealed and (sealed or value.get("is_self") is True):
                     return value
             except Blocked:
                 pass
@@ -549,6 +553,7 @@ class RecoveryEffects:
         self.runtime.exec(old, "bao", "operator", "unseal", "-reset")
         for share in self.shares:
             self._unseal(old, share)
+        self._wait_status(old, True, False)
         self.runtime.login(old, self.root_token)
         self._status(old, OLD_VERSION)
 
@@ -573,7 +578,7 @@ class RecoveryEffects:
         for token in tokens:
             try:
                 # A revoke answers 204 with no body; the exit status is the result.
-                self.runtime.exec(server, "bao", "write", "auth/token/revoke", "-", input=json.dumps({"token": token}, separators=(",", ":")).encode())
+                self._fresh("exec", "-i", server, "bao", "write", "auth/token/revoke", "-", input=json.dumps({"token": token}, separators=(",", ":")).encode())
             except BaseException:
                 failed = True
         if failed:
@@ -583,7 +588,7 @@ class RecoveryEffects:
         bundle = self.materialized_bundle
         auth, out, journal = (directory / name for name in ("agent", "out", "journal"))
         for path in (auth, out):
-            path.mkdir(mode=0o770)
+            path.mkdir()
         journal.mkdir(mode=0o700)
         _result, role = self._json_exec(server, "read", "-format=json", "auth/approle/role/hy-home-renderer/role-id")
         role_id = role.get("data", {}).get("role_id")
@@ -596,10 +601,25 @@ class RecoveryEffects:
             os.fsync(role_fd)
         finally:
             os.close(role_fd)
-        # chown -R must read and search the operator-owned 0770/0700 inputs.
+        # Root with only CHOWN reads and searches the inputs as "other", so every
+        # directory is opened explicitly, whatever the umask; the 0700 attempt
+        # directory still confines them.
+        for path in (auth, out, bundle, *(item for item in bundle.rglob("*") if item.is_dir() and not item.is_symlink())):
+            path.chmod(0o755)
         prep = ATTEMPT + "-agent-chown"
-        result = self.runtime.docker("create", "--name", prep, "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "0:0", "--cap-add", "CHOWN", "--cap-add", "DAC_READ_SEARCH", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/chown", OLD_IMAGE, "-R", "100:1000", "/agent", "/out", "/bundle")
+        result = self.runtime.docker("create", "--name", prep, "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "0:0", "--cap-add", "CHOWN", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/chown", OLD_IMAGE, "-R", "100:1000", "/agent", "/out", "/bundle")
         prep_id = self.runtime.remember("container", result)
+        self.reclaim_paths = (auth, out, bundle)
+        tokens = []
+        try:
+            self._agent_run(server, directory, reference, prep_id, auth, out, bundle, journal, tokens)
+        finally:
+            try:
+                self._revoke_tokens(server, tokens)
+            finally:
+                self._reclaim()
+
+    def _agent_run(self, server, directory, reference, prep_id, auth, out, bundle, journal, tokens):
         self.runtime.docker("start", "--attach", prep_id)
         if self.runtime.docker("inspect", "--format", "{{.State.ExitCode}} {{.State.OOMKilled}}", prep_id).stdout.strip() != b"0 false":
             raise Indeterminate()
@@ -608,41 +628,47 @@ class RecoveryEffects:
         agent = ATTEMPT + "-agent"
         image = self.contract["candidate"]["reference"]
         result = self.runtime.docker("create", "--name", agent, "--label", "hy-home.attempt=" + ATTEMPT, "--network", self.runtime.networks[-1], *container_security(SERVER_LIMITS), "--user", "100:1000", "--env", "BAO_ADDR=https://openbao:8200", "--env", "VAULT_ADDR=https://openbao:8200", "--env", "BAO_CACERT=/openbao/tls/ca.pem", "--env", "VAULT_CACERT=/openbao/tls/ca.pem", "--mount", f"type=bind,src={bundle / 'scripts'},dst=/openbao/scripts,readonly", "--mount", f"type=bind,src={bundle / 'config'},dst=/openbao/config,readonly", "--mount", f"type=bind,src={directory / 'tls' / 'ca.pem'},dst=/openbao/tls/ca.pem,readonly", "--mount", f"type=volume,src={volume_id},dst=/openbao/agent", "--mount", f"type=bind,src={out},dst=/openbao/out", "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=16m,mode=1777", "--entrypoint", "/bin/sh", image, "/openbao/scripts/start-agent.sh")
-        agent_id = self.runtime.remember("container", result)
-        issuer, cleanup = self._create_tokens(server)
-        helper = self.materialized_helper
-        try:
-            result = self.runner.run([str(helper), server, volume_id, image, agent_id, str(journal), self.contract["renderer"]["revision"]], input=(issuer + "\n" + cleanup + "\n").encode())
-            if result.returncode:
-                raise Indeterminate()
-            rendered = []
-            for value_path, version_path in (("/openbao/out/auth/keycloak_admin_password.txt", "/openbao/out/auth/keycloak_admin_password.version"), ("/openbao/out/observability/grafana_admin_password.txt", "/openbao/out/observability/grafana_admin_password.version")):
-                value = self.runtime.exec(agent_id, "/bin/cat", value_path).stdout.decode().rstrip("\n")
-                raw_version = self.runtime.exec(agent_id, "/bin/cat", version_path).stdout.decode().strip()
-                if not raw_version.isdecimal() or not value:
-                    raise Indeterminate()
-                rendered.append((value, int(raw_version)))
-            if tuple(rendered) != reference:
-                raise Indeterminate()
-        finally:
-            try:
-                self._revoke_tokens(server, (issuer, cleanup))
-            finally:
-                self._reclaim(agent_id, auth, out, bundle)
-
-    def _reclaim(self, agent_id, auth, out, bundle):
-        # The stopped Agent's UID 100 files, rendered values included, go back to the
-        # operator so the attempt directory can be removed.
-        self.runtime.docker("stop", "--time", "10", agent_id)
-        result = self.runtime.docker("create", "--name", ATTEMPT + "-agent-reclaim", "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "0:0", "--cap-add", "CHOWN", "--cap-add", "DAC_READ_SEARCH", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/chown", OLD_IMAGE, "-R", f"{os.getuid()}:{os.getgid()}", "/agent", "/out", "/bundle")
-        identity = self.runtime.remember("container", result)
-        self.runtime.docker("start", "--attach", identity)
-        if self.runtime.docker("inspect", "--format", "{{.State.ExitCode}} {{.State.OOMKilled}}", identity).stdout.strip() != b"0 false":
+        self.agent_id = self.runtime.remember("container", result)
+        tokens.extend(self._create_tokens(server))
+        issuer, cleanup = tokens
+        result = self.runner.run([str(self.materialized_helper), server, volume_id, image, self.agent_id, str(journal), self.contract["renderer"]["revision"]], input=(issuer + "\n" + cleanup + "\n").encode())
+        if result.returncode:
             raise Indeterminate()
+        rendered = []
+        for value_path, version_path in (("/openbao/out/auth/keycloak_admin_password.txt", "/openbao/out/auth/keycloak_admin_password.version"), ("/openbao/out/observability/grafana_admin_password.txt", "/openbao/out/observability/grafana_admin_password.version")):
+            value = self.runtime.exec(self.agent_id, "/bin/cat", value_path).stdout.decode().rstrip("\n")
+            raw_version = self.runtime.exec(self.agent_id, "/bin/cat", version_path).stdout.decode().strip()
+            if not raw_version.isdecimal() or not value:
+                raise Indeterminate()
+            rendered.append((value, int(raw_version)))
+        if tuple(rendered) != reference:
+            raise Indeterminate()
+
+    def _fresh(self, *args, input=None, allow_failure=False):
+        # Cleanup runs on its own clock with no watcher probe: a spent deadline or a
+        # dead watcher, the likely failures, would fail every shared-runner command.
+        try:
+            return self.execution.BoundedRunner(time.monotonic() + 60, output_limit=8192).run(["docker", *args], input=input, allow_failure=allow_failure)
+        except self.execution.ProcessError:
+            raise Indeterminate() from None
+
+    def _reclaim(self):
+        # UID 100 destroys the Agent's files, rendered values included, where they
+        # were written, with no capability; the emptied mount points open to the
+        # operator's removal inside the 0700 attempt directory.
+        if self.reclaim_paths is None:
+            return
+        auth, out, bundle = self.reclaim_paths
+        if self.agent_id is not None:
+            self._fresh("stop", "--time", "10", self.agent_id, allow_failure=True)
+        self._fresh("run", "--rm", "--name", ATTEMPT + "-agent-reclaim", "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "100:1000", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/sh", OLD_IMAGE, "-ec", "find /agent /out /bundle -mindepth 1 -delete; chmod 0777 /agent /out /bundle")
+        self.reclaim_paths = None
 
     def _tls(self, directory):
         tls, issuer = directory / "tls", directory / "issuer"
-        tls.mkdir(mode=0o750)
+        tls.mkdir()
+        # RUN-0085 runs under umask 077; the UID 100 server reads tls/ by group.
+        tls.chmod(0o750)
         issuer.mkdir(mode=0o700)
         ca_key, ca, key, csr, cert = (issuer / "ca-key.pem", tls / "ca.pem", tls / "server-key.pem", issuer / "server.csr", tls / "server.pem")
         self.runner.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout", str(ca_key), "-out", str(ca), "-days", "1", "-subj", "/CN=P01 Restore CA"])
@@ -681,6 +707,7 @@ class RecoveryEffects:
             self._wait_status(candidate, True, True)
             for share in self.shares:
                 self._unseal(candidate, share)
+            self._wait_status(candidate, True, False)
             self.runtime.login(candidate, self.root_token)
             self._status(candidate, OWNED_VERSION)
             if self._canaries(candidate) != reference:
@@ -711,11 +738,15 @@ class RecoveryEffects:
                 if not cleaned:
                     self.runtime.cleanup()
             finally:
+                try:
+                    self._reclaim()
+                except Exception:
+                    pass  # the removal below reports what is left
                 if directory is not None:
                     try:
                         shutil.rmtree(directory)
                     except OSError:
-                        pass
+                        print("RESIDUE: /dev/shm attempt directory retained", file=sys.stderr)
                 if self.ledger is not None:
                     self.ledger.close()
                 for held in self.held_artifacts:

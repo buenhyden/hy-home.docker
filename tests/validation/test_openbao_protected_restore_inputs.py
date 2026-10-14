@@ -567,7 +567,13 @@ class NativeRehearsalTests(unittest.TestCase):
                 client.target,
             )
             self.assertEqual(reader.read_all(), reference)
-            receipt = restore.orchestrate(admission, reader, effects)
+            # RUN-0085 runs W3a under umask 077; every container must still read
+            # the directories the client creates.
+            previous = os.umask(0o077)
+            try:
+                receipt = restore.orchestrate(admission, reader, effects)
+            finally:
+                os.umask(previous)
         self.assertEqual(
             receipt,
             {
@@ -580,12 +586,15 @@ class NativeRehearsalTests(unittest.TestCase):
         )
         ledger = json.loads((parent / ("." + attempt + ".attempt.json")).read_text())
         self.assertEqual(ledger["state"], "accepted")
-        leftovers = subprocess.run(
-            ["docker", "ps", "-aq", "--filter", "label=hy-home.attempt=" + attempt],
-            capture_output=True,
-            check=True,
-        ).stdout
-        self.assertEqual(leftovers, b"")
+        for kind in (["ps", "-aq"], ["volume", "ls", "-q"], ["network", "ls", "-q"]):
+            leftovers = subprocess.run(
+                ["docker", *kind, "--filter", "label=hy-home.attempt=" + attempt],
+                capture_output=True,
+                check=True,
+            ).stdout
+            self.assertEqual(leftovers, b"", kind[0])
+        # The rendered values, the Agent token and the keys lived only here.
+        self.assertEqual(list(Path("/dev/shm").glob(attempt + "-*")), [])
 
     def seed(self, native, fixture, client, cluster):
         """HOME's canaries and renderer roles, applied by the reviewed W1c tool."""
