@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -139,12 +139,37 @@ AppRole check and the readback comparison makes two of them fail; restored,
 all pass under umask 022. Two opt-in native tests ran the real tool against
 an owned synthetic server on both the owned image and the running HOME image:
 a stale `renderer` policy and a differently configured AppRole were replaced,
-the RoleID stayed the same, the operator's exact request through each token
-role returned the reviewed five-minute non-renewable identity, the issuer
-token could create a wrapped SecretID but not an unwrapped one, and a second
-run reported no change. The rehearsal replaces only HOME's host name and port
-with the fixture's. RUN-0085 pins the new helper and the seven config files in
+the RoleID stayed the same, a root-issued request through each token role
+returned the reviewed five-minute non-renewable identity, the issuer token
+could create a wrapped SecretID but not an unwrapped one, and a second run
+reported no change. The rehearsal's server, CA, address, cluster and AppRole
+mount are synthetic, the tool sees the fixture's host name and port in place
+of HOME's, and the 2.6.2 run bypasses the fixture's helper-tag probe. RUN-0085 pins the new helper and the seven config files in
 the W1 manifest and replaces the BLOCKED W1c text with the command.
+
+Independent reviews of `5c2dd4601` both passed with notes (`security-auditor`
+four Low; `iac-reviewer` three Medium, two Low). Applied:
+
+- A read-only `plan` operation records the same receipt without writing; the
+  runbook runs it first and applies only after the owner accepts any change to
+  `hy-home-operator`, `renderer` or the AppRole, then checks Agent health.
+- Role fields the reviewed files omit (period, CIDRs, use count, globs, token
+  type) are written at their defaults. Token role reads omit
+  `token_bound_cidrs` and `token_num_uses` when empty on both images, so the
+  readback expects them absent.
+- `BindingBlocked` from a changed config prints BLOCKED instead of a
+  traceback; the token module is loaded with no-follow, regular, single-link
+  and size checks; POST sends the held reviewed body.
+- The runbook captures each exit status, keeps W2 and W3 closed unless the
+  receipt says `RENDERER_ROLES_APPLIED`, decides rollback before root is
+  revoked (rollback BLOCKED without a reviewed command), copies
+  `prior-state.json` to durable owner storage, and names W1c wherever root
+  use is listed.
+- The native test now runs `plan` first and confirms nothing changed, then
+  has an operator-policy token, not root, create both role tokens with
+  `policies` as a string, as W5 sends it, and be refused a one-hour TTL. A
+  probe showed the operator policy's `policies = ["renderer-issuer"]` limit
+  admits the string form and refuses a JSON list, which matches W5's text.
 
 ## Evidence
 
@@ -159,8 +184,10 @@ the W1 manifest and replaces the BLOCKED W1c text with the command.
 | Server start review | 7 | W2 | Independent `security-auditor` review of the server start fix: PASS with notes | `e439fc1a6` | PASS | W2 Restore Server Start | - |
 | Restore flow unit | 2 | W2 | Unseal, login, stat, restore user and snapshot mode assertions RED on the earlier code (3 failures), GREEN after; both suites OK under umask 022 | Branch | PASS | W2 Restore Server Start | - |
 | Restore flow native | 2 | W2 | Synthetic init, unseal, login, snapshot save and restore on both images: restore as server user with 0440 snapshot returns 0; old forms fail | Owned `46bf9b5c`, old `11fd73a2` | PASS | W2 Restore Server Start | - |
-| Role apply unit | 3 | W3 | 11 unit tests OK under umask 022; removing the AppRole check and readback comparison fails 2 | Branch `claude/renderer-roles-apply` | PASS | W3 Renderer Role Apply | - |
-| Role apply native | 3 | W3 | Real tool on an owned synthetic server, both images: targets replaced and read back, RoleID kept, role tokens exact, wrapped SecretID only, second run unchanged | Owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
+| Role apply unit | 3 | W3 | 11 unit tests OK under umask 022; removing the AppRole check and readback comparison fails 2 | `455dffd70` | PASS | W3 Renderer Role Apply | - |
+| Role apply native | 3 | W3 | Real tool on an owned synthetic server, both images: targets replaced and read back, RoleID kept, role tokens exact, wrapped SecretID only, second run unchanged | `455dffd70` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
+| Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
+| Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 
 ## Criterion Acceptance
 
