@@ -1,6 +1,6 @@
 ---
 title: "Unseal Share File Out of Host Backups Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -24,6 +24,8 @@ and correct the text that called it the only copy, as SPEC-0240 states.
 - **Request:** on 2026-10-14 the owner asked to review and proceed with the
   security finding (H1) from the PR #461 review, then chose in
   AskUserQuestion "백업 제외 + rekey" and, for POL-0085, "사실대로 정정".
+  Later that day the owner stated that one administrator holds every place,
+  asked to change POL-0085 and RUN-0085 to fit, and chose "3곳, 조건부".
 - **Baseline:** `main` `c96d46112`.
 - **Not done:** no rekey, no deletion of the host file or of any snapshot, no
   HOME backup run, no secret read. The synthetic dry run used invented files.
@@ -92,6 +94,22 @@ applied: ADR-0042 traceability links SPEC-0240, and the restore and set
 descriptions that change with the exclusion travel in the second pull
 request.
 
+### W5 Single-Administrator Places
+
+The four-place layout (three shares and a share-free place for BKP-003) was
+written for separation between places, not people, and the owner is the only
+administrator. The owner chose three places with a condition. RUN-0085
+(0.10.0) now says that the unit is a place, not a person, so three places,
+one share each, are the minimum; BKP-003 stays apart from the R2 credentials
+and Cloudflare account access and normally from every share, and may join one
+share only after W4 confirms the exclusion in a new host snapshot and no
+pre-exclusion host snapshot remains in the R2 repository. Until then the
+first storage still needs a fourth, share-free place. A place's opening means
+(master password, media passphrase, key location) may not be stored in
+another place. The step 5 table and verdict accept the conditional placement
+only with those two records. POL-0085 (0.6.0) records the decision and keeps
+the exception open.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -101,6 +119,7 @@ request.
 | IaC review | 3 | W3 | Independent `iac-reviewer` review of `27d84d9ab`: exclusion PASS, document notes | `27d84d9ab` | PASS | Review Round 1 | - |
 | Security review | 3 | W3 | Independent `security-auditor` review of `27d84d9ab`: rekey semantics and retention wording wrong | `27d84d9ab` | FAIL | Review Round 1 | - |
 | Rules review | 3 | W3 | Independent `rules-engineer` review of `27d84d9ab`: stale runbook sentence; merge gate holds the procedure back | `27d84d9ab` | FAIL | Review Round 1 | - |
+| Place rule text | 5 | W5 | Changed metadata, markdownlint and links for RUN-0085, POL-0085 and this package | Branch on `origin/main` | PASS | W5 Single-Administrator Places | - |
 | Merge gate | 4 | W4 | RUN-0085 step 5 `owner-attested` before merge | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
@@ -111,6 +130,7 @@ request.
 | 2 | pending | - | - |
 | 3 | pending | - | - |
 | 4 | pending | - | - |
+| 5 | pending | - | - |
 
 ## Review and Completion
 

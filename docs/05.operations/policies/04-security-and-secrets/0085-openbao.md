@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.5.6"
+version: "0.6.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -129,7 +129,10 @@ SPEC-0240 전까지 host Restic 저장소(BKP-002로 암호화)는 `secrets/` �
 함께 가진 한 주체, BKP-002와 local host 저장소를 가진 한 주체가 unseal threshold를 충족할
 수 있고, 파일 손실이 복구 자료 가용성을 잃게 할 수 있다. 2026-10-14 owner 결정으로 파일을
 host 백업에서 빼고(SPEC-0240) 유지보수 창에서 rekey한다(RUN-0085 W1b). rekey는 그 전에
-만든 Raft snapshot을 옛 share로 여는 길을 막지 못한다. 둘 다 이 예외를 닫지 않는다. 이 문서는 결정을
+만든 Raft snapshot을 옛 share로 여는 길을 막지 못한다. 같은 날 owner는 관리자가 1명인
+운영에 맞춰 off-host 보관을 share마다 한 곳씩 최소 3곳으로 정했다. BKP-003은 R2 자격
+증명·Cloudflare 계정 접근과 늘 다른 장소에 두고, 제외가 확인되고 제외 이전 snapshot이 R2에서
+지워진 뒤에만 share 하나와 같은 장소에 둘 수 있다(RUN-0085). 셋 다 이 예외를 닫지 않는다. 이 문서는 결정을
 기록할 뿐 그 실행이나 새 credential 처리, 예외 확대를 승인하지 않는다.
 기존 기록에는 **만료와 종료 조건이 없다**. 위 Exceptions의 필수 항목을 충족했다고
 표시하지 않으며 @buenhyden의 후속 결정이 필요하다. 파일을 읽거나 이동하거나
