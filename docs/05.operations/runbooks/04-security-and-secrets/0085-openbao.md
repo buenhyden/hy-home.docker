@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.0"
+version: "0.12.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -538,7 +538,9 @@ SPEC-0204 TSK-0006에 기록한다. 값은 화면 공유·채팅·명령 인자�
 명령은 기록되지 않는 별도 터미널에서만 실행한다.
 
 2026-10-14 owner 결정(SPEC-0242)으로 관리자가 1명인 이 HOME은 share를 host에 두고 host
-백업에 포함한다. off-host로는 백업과 원격 저장소를 여는 key만 둔다. 이 배치는 장소 분리로
+백업에 포함한다. off-host로는 백업과 원격 저장소를 여는 key만 둔다. 장소 A는 owner가 관리하는 host 밖 장소로,
+비밀번호 관리자 계정이나 owner의 별도 데스크탑이다. 2026-10-14 기준 백업·R2 값은 별도
+데스크탑에, Cloudflare 계정 접근은 비밀번호 관리자 계정에 있다. 이 배치는 장소 분리로
 threshold를 지키지 않는다. 그 대신 host를 잃어도 R2 사본에서 모두 복구할 수 있게 하려는
 것이다. 아직 R2 원격 복구를 실행하지 않았고 OpenBao 일일 snapshot도 실패 중이므로(위
 복구 gap) 현재 보장된 상태는 아니다.
@@ -550,23 +552,24 @@ threshold를 지키지 않는다. 그 대신 host를 잃어도 R2 사본에서 �
 | unseal share 파일 | OpenBao Shamir share 3개(threshold 2), `secrets/security/openbao/openbao_unseal_keys.txt` | host `secrets/`, host Restic 백업(local·R2) | 한 주체가 unseal과 root ceremony를 할 수 있음 |
 | CA key | 내부 TLS 공용 root CA 개인키(`secrets/certs/`), OpenBao 전용이 아님 | host `secrets/`, host Restic 백업 | 그 CA를 믿는 모든 내부 TLS endpoint를 사칭할 수 있음 |
 | host 보조 사본 | 위 두 항목을 포함한 owner의 사본, `/home/hyunyoun/data/hy-home.secrets`(root 0700) | 같은 system disk | 실수로 지운 경우만 막음. host·disk를 잃으면 함께 잃음 |
-| BKP-003 offsite key | R2 원격 Restic 저장소 암호 | 비밀번호 관리자 계정 A | R2 읽기 권한과 합쳐지면 R2 사본의 모든 secret과 share |
-| R2 자격 증명 | BKP-004·005 R2 API token(객체 읽기·쓰기) | 비밀번호 관리자 계정 A | BKP-003과 합쳐지면 R2 사본을 읽음 |
-| BKP-002 local key | local host Restic 저장소 암호 | 비밀번호 관리자 계정 A | local 저장소에 접근하면 그 안의 모든 secret과 share |
-| Cloudflare 계정 접근 | 로그인·2FA 복구 코드 | 비밀번호 관리자 계정 A | R2 자격 증명을 다시 발급하고 bucket과 lock 규칙을 바꾸거나 지울 수 있음 |
-| R2 account ID·bucket 이름 | `.env`의 `BACKUP_OFFSITE_R2_ACCOUNT_ID`·`BACKUP_OFFSITE_R2_BUCKET`(secret 아님) | 비밀번호 관리자 계정 A | 단독으로는 접근을 주지 않음. host를 잃으면 `.env`가 R2 사본 안에 있으므로 따로 필요함 |
+| BKP-003 offsite key | R2 원격 Restic 저장소 암호 | host 밖 장소 A | R2 읽기 권한과 합쳐지면 R2 사본의 모든 secret과 share |
+| R2 자격 증명 | BKP-004·005 R2 API token(객체 읽기·쓰기) | host 밖 장소 A | BKP-003과 합쳐지면 R2 사본을 읽음 |
+| BKP-002 local key | local host Restic 저장소 암호 | host 밖 장소 A | local 저장소에 접근하면 그 안의 모든 secret과 share |
+| Cloudflare 계정 접근 | 로그인·2FA 복구 코드 | host 밖 장소 A | R2 자격 증명을 다시 발급하고 bucket과 lock 규칙을 바꾸거나 지울 수 있음 |
+| R2 account ID·bucket 이름 | `.env`의 `BACKUP_OFFSITE_R2_ACCOUNT_ID`·`BACKUP_OFFSITE_R2_BUCKET`(secret 아님) | host 밖 장소 A | 단독으로는 접근을 주지 않음. host를 잃으면 `.env`가 R2 사본 안에 있으므로 따로 필요함 |
 
 BKP-001(pgBackRest)은 host `secrets/`에 있어 host 백업으로 함께 복구된다. host 보조 사본은
 host 백업 범위 밖이며 off-host 보관이 아니다.
 
-**받아들인 노출.** 계정 A 하나가 뚫리면 BKP-003과 R2 자격 증명으로 R2 사본을 열어 모든
+**받아들인 노출.** 장소 A 하나가 뚫리면 BKP-003과 R2 자격 증명으로 R2 사본을 열어 모든
 secret과 share를 얻는다. 같은 계정의 Cloudflare 접근과 쓰기 가능한 R2 token으로 bucket lock
 규칙이나 bucket을 지우고 lock이 없는 `locks/`·`index/`를 바꿔 유일한 off-host 사본을 망가뜨릴
 수도 있다. host를 읽는 한 주체는 share 3개를 모두 가진다. 둘 다
 [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)의
-예외로 남고, 이 절차로 닫히지 않는다. 계정 A는 강한 마스터 비밀번호와 2FA로 보호하고,
+예외로 남고, 이 절차로 닫히지 않는다. 장소 A는 비밀번호 관리자 계정이면 강한 마스터 비밀번호와 2FA로, 별도 데스크탑이면 로그인과
+디스크 암호화로 보호하고,
 그 복구 수단(emergency kit·복구 코드)과 2FA 요소(TOTP seed 등)를 같은 계정이나 host에 두지
-않는다. 복구 수단은 host와 계정 A 없이 닿는 오프라인 장소에 두고, 계정 A의 2FA가 그 안에
+않는다. 복구 수단은 host와 장소 A 없이 닿는 오프라인 장소에 두고, 장소 A의 2FA가 그 안에
 저장된 Cloudflare 로그인에 기대지 않게 한다. Claude Code `!` 명령이나 agent 세션처럼 저장소
 UID로 도는 process도 host를 읽는 주체에 들어간다.
 
@@ -577,9 +580,9 @@ UID로 도는 process도 host를 읽는 주체에 들어간다.
    지우지 않는다. clipboard 기록·동기화가 꺼진 상태에서 한 번에 하나씩 옮긴다.
 2. host 보조 사본을 갱신한다. share와 CA key가 바뀔 때마다 다시 맞춘다. sudo로 맞출 때도 값을
    명령 인자·기록에 남기지 않는다.
-3. host가 아닌 장치에서 계정 A를 열어 항목을 꺼낼 수 있는지 확인한다. 값이 맞는지는 계정 A에서
+3. host가 아닌 장치에서 장소 A를 열어 항목을 꺼낼 수 있는지 확인한다. 값이 맞는지는 장소 A에서
    꺼낸 BKP-003·R2 자격 증명·account ID·bucket을 숨김 입력으로 넣어 읽기 전용 R2 snapshot
-   목록을 받아 확인한다. 값은 출력하지 않는다. 6단계 restore는 host의 사본을 쓰므로 계정 A의
+   목록을 받아 확인한다. 값은 출력하지 않는다. 6단계 restore는 host의 사본을 쓰므로 장소 A의
    값을 증명하지 못한다.
 4. 아래 기록을 값 없이 채워 agent에 전달한다.
 
@@ -590,11 +593,11 @@ UID로 도는 process도 host를 읽는 주체에 들어간다.
 | BKP-002 local key | | | |
 | Cloudflare 계정 접근 | | | |
 | R2 account ID·bucket 이름 | | | |
-| 계정 A의 값으로 받은 R2 snapshot 목록 | | 해당 없음 | |
+| 장소 A의 값으로 받은 R2 snapshot 목록 | | 해당 없음 | |
 | unseal share 파일과 CA key의 host 보조 사본 | | 해당 없음 | |
-| 계정 A의 복구 수단이 계정 A와 host 밖에 있는가 | | | |
+| 장소 A의 복구 수단이 장소 A와 host 밖에 있는가 | | | |
 
-**판정.** 모든 칸이 채워지고 계정 A의 다섯 행이 "host 밖 = 예"이며 R2 목록을 받은 날이 있고
+**판정.** 모든 칸이 채워지고 장소 A의 다섯 행이 "host 밖 = 예"이며 R2 목록을 받은 날이 있고
 마지막 행이 "예"일 때만
 agent가 5단계를 기록한다. Evidence 결과는 `PASS`이고 Check는 "owner-attested"로 시작한다.
 칸이 비면 `NOT_RUN`, "아니오"가 하나라도 있으면 `FAIL`이다. 둘 다 유지보수 창을 열지
@@ -955,7 +958,7 @@ HOME root 폐기나 HOME server 교체는 이 client가 수행하지 않습니�
 
 **W3b 정확한 artifact의 독립 보관.** W3 snapshot과 그 receipt를 선택한 독립 off-host
 대상으로 전달하고, 양쪽에서 두 파일의 정확한 bytes·hash·파일 identity와 보관 위치 참조를
-값 없는 receipt로 결속합니다. share와 CA key는 host와 host 백업에, BKP-003은 계정 A에
+값 없는 receipt로 결속합니다. share와 CA key는 host와 host 백업에, BKP-003은 장소 A에
 있다는 1인 관리자 custody 기록(5단계)도 확인합니다. 준비됐다는 운영자 확인만으로 이 전달을 완료 처리하지 않습니다.
 standalone helper와 RUN-0021의 별도 full backup은 이 W3 경로를 자동으로 복사하지 않습니다.
 정확한 보관 대상·전송 절차와 결과 receipt가 준비되기 전에는 W3b는 **BLOCKED / NOT_RUN**입니다.

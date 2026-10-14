@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.23"
+version: "0.2.24"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3071,6 +3071,22 @@ holds the procedure and the step 5 table. The "HOME custody attestation" row
 keeps its earlier off-host check and stays NOT_RUN as history; the owner's
 step 5 table for the host layout will be recorded as a new row.
 
+### Step 5 Owner Record — 2026-10-14
+
+The owner returned the RUN-0085 step 5 table, value-free, on 2026-10-14, and
+clarified it the same day: the R2 account ID and bucket name, the R2
+credentials, BKP-003 and BKP-002 are kept only on the owner's separate
+desktop, off the host; Cloudflare account access is in password manager
+account hyunyoun; a read-only R2 snapshot listing with values taken from
+those places succeeded; the host second copy is at
+`/home/hyunyoun/data/hy-home.secrets`; and the recovery means for those
+places (desktop login and disk-encryption recovery, account recovery) are
+kept outside them and the host, for example on paper. Each was checked that
+day. RUN-0085 0.12.2 names the off-host place "place A", a password manager
+account or the owner's separate desktop. Every answer is yes, so step 5 is
+`PASS`, owner-attested. This is the owner's statement; the agent read no
+value, and the repository cannot certify where values are kept.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -3092,6 +3108,7 @@ step 5 table for the host layout will be recorded as a new row.
 | Isolated native rerun | 11 | W23 | Registered CandidateNative (1) and rehearsal (3) opt-in tests, no skips | `958349408` | PASS | Isolated Native Rerun — 2026-10-13 | - |
 | HOME snapshot credential | 11 | W23 | Restricted snapshot-only identity and token; ordinary-secret denial; renewal. Operator-token attempt refused with HTTP 403; deferred to the upgrade window's root ceremony by owner decision | Owner checklist steps 3–4 | NOT_RUN | Owner Decisions — 2026-10-13 | - |
 | HOME custody attestation | 11 | W23 | Off-host custody of unseal shares, offsite key, R2 credentials, Cloudflare account access and CA key, value-free; owner states it is not separated yet | Owner checklist step 5 | NOT_RUN | Owner Decisions — 2026-10-13 | - |
+| Host custody step 5 | 11 | W23 | owner-attested RUN-0085 step 5 table (SPEC-0242), value-free: BKP-002, BKP-003, R2 credentials and R2 account ID and bucket on the owner's separate desktop, Cloudflare access in password manager account hyunyoun, all off the host; R2 listing with those values; host second copy; recovery means outside those places and the host; each checked 2026-10-14 | Owner statement 2026-10-14; RUN-0085 0.12.2 | PASS | Step 5 Owner Record — 2026-10-14 | - |
 | HOME semantic restore | 11 | W23 | Empty-target restore with canary read and renderer reauthentication | Owner checklist step 6 | NOT_RUN | Source Corrections — 2026-10-13 | - |
 | HOME audit capacity | 11 | W23 | Audit filesystem capacity and logrotate registration | Owner checklist step 7 | NOT_RUN | Source Corrections — 2026-10-13 | - |
 | HOME upgrade and cold boot | 11 | W23 | Server and Agent 2.7.1 upgrade, manual unseal, wrapped reissue, cold boot | Owner checklist steps 8–9 | NOT_RUN | Source Corrections — 2026-10-13 | - |

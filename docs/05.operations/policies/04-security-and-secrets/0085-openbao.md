@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.7.0"
+version: "0.7.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -131,8 +131,8 @@ host Restic 저장소(BKP-002로 암호화)는 `secrets/` 전체를 담고, `res
 나누기로 했다가(SPEC-0240), 같은 날 관리자가 1명인 운영에 맞춰 이를 거두고 host 중심
 배치를 정했다(SPEC-0242). share와 CA key는 host `secrets/`와 owner의 host 보조 사본에 두고
 host 백업에 포함한다. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근과 secret이 아닌 R2
-식별자만 비밀번호 관리자 계정 하나에 둔다. host를 잃어도 R2에서 모두 복구하려는 배치이지만(R2 원격 복구는 아직 미실행), 그 계정
-하나가 뚫리면 모든 secret과 share가 노출되고 off-host 사본을 지울 수도 있으며, host를 읽는 한 주체가 threshold를 넘는다. owner는 이 노출을
+식별자만 owner가 관리하는 host 밖 장소(비밀번호 관리자 계정이나 별도 데스크탑)에 둔다. host를
+잃어도 R2에서 모두 복구하려는 배치이지만(R2 원격 복구는 아직 미실행), 그 장소가 뚫리면 모든 secret과 share가 노출되고 off-host 사본을 지울 수도 있으며, host를 읽는 한 주체가 threshold를 넘는다. owner는 이 노출을
 받아들였고 rekey는 하지 않는다(RUN-0085). 이 결정은 이 예외를 닫지 않는다. 이 문서는
 결정을 기록할 뿐 그 실행이나 새 credential 처리, 이 결정을 넘는 예외 확대를 승인하지 않는다.
 기존 기록에는 **만료와 종료 조건이 없다**. 위 Exceptions의 필수 항목을 충족했다고
