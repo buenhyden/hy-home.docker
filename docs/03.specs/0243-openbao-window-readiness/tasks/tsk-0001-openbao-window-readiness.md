@@ -525,6 +525,30 @@ Smaller fixes:
 - the W3a HOME read token is taken before W3, and a stop after W2 keeps the installed snapshot token;
 - the shared UID 100 is recorded as a residual, and both overlay headers now say rollback only.
 
+**Re-review of these fixes.** The security re-review returned APPROVE with notes. The IaC re-review returned NOT READY on four text gaps:
+
+- the stop cleanup against the INDETERMINATE preserve rules;
+- the W0 Agent baseline after an early stop;
+- operator tokens that had to be shown to reach W1 and W3a;
+- revoking all access without first proving a fresh OIDC login.
+
+It passed the last restore deltas with notes.
+
+RUN-0085 now:
+
+- resolves INDETERMINATE before cleanup;
+- keeps an unresolved W2 custody with `P01_KEEP_W2=1`;
+- proves a fresh OIDC login before dropping root and the last token;
+- copies the credential-free evidence first;
+- shreds with fixed globs, rehearsed on fake directories, including dotfiles.
+
+Other changes:
+
+- W1 and W3a take the operator token by FD from a tmpfs file filled at a hidden prompt, because the host has no `bao` CLI.
+- The W0 Agent baseline accepts a recorded stop.
+- The stranded-root sweep is an exact block after W1 and before W3. It was rehearsed on a throwaway dev server, where it revoked the old root and kept the new one.
+- The unencrypted host swap and the full UID 100 asset list are recorded as residuals.
+
 **Spec scope.** Contract 6 in the Spec still says the overlays keep the running images. #497 changed that by SEC01 acceptance, and this Task records it without editing the approved Spec.
 
 ## Evidence
@@ -561,6 +585,9 @@ Smaller fixes:
 | Final IaC readiness review | 7 | W1 | Independent `iac-reviewer` review of the whole window: NOT READY (root rebuildable from W1 custody; acceptance period; Agent after an early stop; k8s writers; shell state; stale text) | `12ab97dab` | FAIL | Final Readiness Review | - |
 | Final security readiness review | 7 | W1 | Independent `security-auditor` review of the whole window: APPROVE with notes (root rebuildable from W1 custody; no accessor capture; operator tokens left live) | `12ab97dab` | PASS | Final Readiness Review | - |
 | Final review text fixes | 1 | W1 | Owner decisions recorded; RUN-0085 text fixed; overlay headers rollback-only; markdownlint 0, links PASS, overlay tests OK | Branch `claude/window-final-review` | PASS | Final Readiness Review | - |
+| Final IaC re-review | 7 | W1 | Independent `iac-reviewer` re-review of #499: NOT READY (cleanup against INDETERMINATE rules, W0 Agent baseline after a stop, tokens shown to reach W1 and W3a, no fresh-login proof before revoking); restore deltas `c9aa69b89` and `3cbde6376` PASS with notes | `adacb8a6c` | FAIL | Final Readiness Review | - |
+| Final security re-review | 7 | W1 | Independent `security-auditor` re-review of #499: APPROVE with notes (stranded-root sweep had no exact command; exit2 precedence; W1 and W3a prompts; cleanup guards; swap and UID 100 residuals) | `adacb8a6c` | PASS | Final Readiness Review | - |
+| Final re-review text fixes | 1 | W1 | RUN-0085 cleanup order, W2 keep, fresh-login proof, evidence copy, FD token inputs, Agent baseline, exact sweep; cleanup block rehearsed on fake directories; sweep rehearsed on a throwaway dev server | Branch `claude/window-final-review` | PASS | Final Readiness Review | - |
 | Agent input fix | 2 | W2 | Native chown with the restore's flags: exit 1 without `DAC_READ_SEARCH`, 0 with it; new assertions RED on the earlier code, GREEN after; 47 OK and native preflight 17 OK in a umask 022 clone | `2e3683771` (#492) | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Full restore rehearsal | 2 | W2 | Native `orchestrate()` and `perform()` on synthetic resources, old `11fd73a2` restore and owned `46bf9b5c` candidate and Agent: ledger `accepted`, no attempt containers left; four defects fixed with RED then GREEN unit assertions; restore-input suite 18 OK with `HYHOME_OPENBAO_REHEARSAL=1` in a umask 022 clone | `564f4049c` | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Restore fix IaC re-review | 7 | W2 | Independent `iac-reviewer` re-review of #492 and #495: FAIL (umask 077 leaves `tls/` unreadable to the server; cleanup misses the pre-token gap and depends on the shared runner) | `bc552bf9b` | FAIL | Restore Agent Fix and Full Rehearsal | - |
@@ -596,8 +623,9 @@ On 2026-10-14 the owner (AskUserQuestion) accepted criteria 1 to 3, whose
 evidence is on main, and chose to accept criteria 4 to 7 once #486 and #487
 merge. #486 and #487 merged on 2026-10-15 KST, so criteria 4 to 6 are accepted as
 the owner chose. Criterion 7 stays pending: the second readiness review
-returned NOT READY, and per-unit reviews it found missing (security for W1
-and W6, IaC for W2 and W5) are still to run. The window stays NOT READY.
+returned NOT READY at the time. The per-unit reviews it found missing ran later
+(see the Evidence table), and the final readiness review below governs
+criterion 7.
 
 ## Related Documents
 
