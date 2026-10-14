@@ -1873,6 +1873,17 @@ binary scan, which are recorded above. The rows are marked as awaiting
 owner acceptance. The latest and security gates exit 2 before and after
 the change. No owner acceptance, HOME change or criterion decision is implied.
 
+### Owned OpenBao SEC01 image acceptance — 2026-10-14
+
+After the review above, the owner was asked, through the interactive
+question in this session, whether to accept three residuals of owned
+manifest `46bf9b5c`: no image signature, CVE-2025-60876 (BusyBox wget,
+unreachable, no fixed version) and the GO-2026-5932 not-affected
+disposition. The owner answered "3건 모두 수락" (accept all three). This
+accepts the image's residuals for the window only. Criterion 15 stays
+pending on the other open gates, the fresh stable lookup before
+2026-10-17 is still required, and no HOME change follows from this record.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
@@ -1898,6 +1909,7 @@ and its later observations are recorded above.
 | Owned OpenBao import and version validator assumptions | 15 | W31 | Initial absent-tag assumption; wrong /bin/bao path; built vs actual committed output expectation; original failures retained | acceptedmanifest46bf, public exact receipts | FAIL | Owned OpenBao reproducibility and local import — 2026-10-14 | - |
 | Owned OpenBao local identity and recorded version | 15 | W31 | One import, absent owned tag attached, tag@digest resolves; separate pure validation of existing exact owned version/client0, exact probe cleanup | archivee8b428/manifest46bf/config7ee | PASS | Owned OpenBao reproducibility and local import — 2026-10-14 | Owned OpenBao import and version validator assumptions |
 | Owned OpenBao applicability dispositions | 15 | W31 | Read-only module and symbol listing and govulncheck binary scan of f0b103b8; independent security review APPROVE with notes; primary advisories GO-2026-5932 and CVE-2025-60876; ledger rows updated; gate exits unchanged | Owned manifest 46bf9b5c | PASS | Owned OpenBao applicability dispositions — 2026-10-14 | - |
+| Owned OpenBao SEC01 image acceptance | 15 | W31 | Owner decision on the three residuals of manifest 46bf9b5c | Reviewed dispositions above | PASS | Owned OpenBao SEC01 image acceptance — 2026-10-14 | - |
 
 ## Criterion Acceptance
 
