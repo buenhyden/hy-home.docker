@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.21"
+version: "0.12.22"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -881,7 +881,7 @@ eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-securi
 2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-acdc1f42915933fef897ca35ff96b855df2875dd3592950164f01dee73f282a4 infra/03-security/openbao/scripts/protected-semantic-restore.py
+5f1ced86319e877611436c3f871874fc1865f36c7305b8b8b1776f6d767a9d7c infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 56552244eb748cbe569ad0e63a9d47e70dcd5e3f10a28b730382de3993498d5c infra/03-security/openbao/scripts/protected-renderer-roles.py
@@ -1114,12 +1114,13 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 준비되지 않았던 상태는 보존합니다. 현재 hash의 단위시험·native 시험·독립 검토는 SPEC-0243 W2에 있습니다. 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
-W3a는 BLOCKED다. 2026-10-15 독립 검토가 Agent 단계의 입력 chown 결함을 찾았고 native로
+2026-10-15 독립 검토가 Agent 단계의 입력 chown 결함을 찾았고 native로
 재현됐다. 그 수정 뒤 전체 `perform()` native 리허설이 결함 넷(sealed 상태의 login, 빈 token
 생성 요청, 본문 없는 revoke 응답, Agent 파일 회수)을 더 찾았고, 고친 뒤 두 image에서
 `accepted`로 끝났다. 그 수정의 재검토가 umask 077에서 읽을 수 없는 `tls/`와 실패 경로의
-Agent 파일 잔여를 찾아 다시 고쳤고, 리허설은 restore를 umask 077에서 실행한다. 이 수정의
-독립 IaC·보안 재검토가 통과할 때까지 W3a를 열지 않는다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
+Agent 파일 잔여를 찾아 다시 고쳤고, 리허설은 restore를 umask 077에서 실행한다. 이 수정과 그 뒤
+보완의 독립 IaC·보안 재검토가 통과했다(SPEC-0243). 이제 W3a 도구는 준비됐고, 실행은 W3
+산출물·lease·W0의 HOME audit·mount 기록과 owner 승인을 기다린다. SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
 `/bin/bao`로 `-config` 없이 시작하던 것(D3), TTY 없이 거부되는 `operator unseal`과 인자 없는
 `login`, 없는 `/usr/bin/stat`, capability 없는 root로 읽을 수 없던 0400 snapshot이다. 이제
 image entrypoint와 `/openbao/config`·`/tmp` tmpfs, `write sys/unseal key=-`, `login -`,
@@ -1165,7 +1166,7 @@ P01_SECURITY_RECEIPT="$P01_INPUTS/security-receipt.json"
 `$P01_INPUTS/quiescence-lease.json`은 그대로 둔다. lease가 만료됐거나 lease가 더는 이 snapshot을 덮지 못하면 새 W3 attempt(새 snapshot
 디렉터리·새 W3b)로 간다. restore는 lease 만료보다 최소 17분 전에 시작한다(900초 실행과
 60초 정리, 입력 시간). 그보다 늦으면 시작하지 않는다. 실패한 restore는 token 폐기·Agent
-정지·정리·재회수가 단계마다 별도 60초 시계로 돌아 최대 약 7분이 더 걸린다. lease는 시작 뒤
+정지·확인·정리·재회수가 단계마다 별도 60초 시계로 돌아 최대 약 9분이 더 걸린다. lease는 시작 뒤
 다시 보지 않고, 실패하면 W4를 열지 않으므로 시간표에는 영향이 없다. `$P01_INPUTS`의 contract·lease·
 `lease.pending.json`·두 receipt는 credential이 없지만 W4 gate와 INDETERMINATE 분석의 증거이므로,
 window를 닫기 전에 owner 전용 영구 저장소(tmpfs 밖, 문서 밖)에 복사한다.
@@ -1223,8 +1224,10 @@ ID만 정리합니다. 이름·label은 ID를 확보하지 못한 create의 운�
 cleanup 선택자가 아닙니다.
 `RESTORE_ACCEPTED`/exit0만 성공이며 `INDETERMINATE`/exit2에서는 대상·ledger를 보존하고
 다시 실행하지 않습니다. exit가 0이 아니거나 실행이 끊기면(kill, 터미널 닫힘, 전원) `RESIDUE` 줄이
-없어도 ledger 상태, `/dev/shm/p01-restore-20261014-05-*`, container
-`p01-restore-20261014-05-agent-reclaim`이 남았는지 값 없이 확인합니다. stderr에 `RESIDUE: /dev/shm attempt directory retained`가 나오면
+없어도 ledger 상태와 `/dev/shm/p01-restore-20261014-05-*`를 보고,
+`docker ps -a`·`docker volume ls`·`docker network ls`를 `--filter label=hy-home.attempt=p01-restore-20261014-05`로
+조회해 남은 container·volume·network를 값 없이 기록합니다. 끊긴 실행은 unseal된
+`-candidate`와 계속 렌더하는 `-agent`를 남길 수 있으므로 기록 뒤 `docker rm -f`로 먼저 지웁니다. stderr에 `RESIDUE: /dev/shm attempt directory retained`가 나오면
 `/dev/shm/<ATTEMPT>-*`에 복원 key·snapshot 사본이나 렌더 값이 남았을 수 있습니다. 지우지
 말고 그대로 두며, owner가 `sudo ls -laR`로 이름·소유자·크기만(내용은 보지 않음) 값 없이
 Task에 기록한 뒤 `sudo rm -r`로 지웁니다. 재부팅해도 `/dev/shm`은 비워집니다. 이전 버전 복원 후 candidate와 Agent를 같은 격리 data에 연결하며

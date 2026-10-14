@@ -395,7 +395,7 @@ class RecoveryEffects:
         if self.runtime.docker("network", "inspect", ATTEMPT + "-net", allow_failure=True).returncode == 0:
             raise Blocked()
         # The UID 100 servers read tls/ through the operator's group, GID 1000.
-        if os.getgid() != 1000:
+        if os.getegid() != 1000:
             raise Blocked()
         # The helper is materialized under /dev/shm and executed from there.
         mount = self.runner.run(["findmnt", "-n", "-o", "FSTYPE,OPTIONS", "--target", "/dev/shm"]).stdout.split()
@@ -666,7 +666,8 @@ class RecoveryEffects:
             # A running Agent would re-render after the delete; a removed one cannot.
             self._fresh("stop", "--time", "10", self.agent_id, allow_failure=True)
             state = self._fresh("inspect", "--type=container", "--format", "{{.State.Running}}", self.agent_id, allow_failure=True)
-            if state.returncode == 0 and state.stdout.strip() != b"false":
+            gone = state.returncode != 0 and b"No such container" in state.stderr
+            if not gone and (state.returncode != 0 or state.stdout.strip() != b"false"):
                 raise Indeterminate()
         self._fresh("run", "--rm", "--name", ATTEMPT + "-agent-reclaim", "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "100:1000", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/sh", OLD_IMAGE, "-ec", "find /agent /out /bundle -mindepth 1 -delete; chmod 0755 /agent /out /bundle")
         self.reclaim_paths = None

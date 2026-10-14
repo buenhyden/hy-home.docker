@@ -642,6 +642,19 @@ class RuntimeUnitTests(unittest.TestCase):
         self.run_agent(effect)
         self.assertIsNotNone(effect.reclaim_paths)
 
+    def test_removed_agent_still_reclaims_and_daemon_error_does_not(self):
+        effect = self.agent_effect()
+        effect.agent_id, effect.reclaim_paths = "q" * 64, (Path("/a"), Path("/o"), Path("/b"))
+        effect._fresh.side_effect = lambda *a, **k: self.result(returncode=1, stderr=b"Error: No such container: x") if a[0] in ("stop", "inspect") else self.result()
+        effect._reclaim()
+        self.assertEqual(effect._fresh.call_args.args[:2], ("run", "--rm"))
+        self.assertIsNone(effect.reclaim_paths)
+        effect.reclaim_paths = (Path("/a"), Path("/o"), Path("/b"))
+        effect._fresh.side_effect = lambda *a, **k: self.result(returncode=1, stderr=b"Cannot connect to the Docker daemon") if a[0] == "inspect" else self.result()
+        with self.assertRaises(self.subject.Indeterminate):
+            effect._reclaim()
+        self.assertIsNotNone(effect.reclaim_paths)
+
     def test_fresh_runner_ignores_the_spent_shared_deadline(self):
         effect = self.effect()
         effect.runner = effect.execution.CommandRunner(time.monotonic() - 1, self.subject.Indeterminate)
@@ -907,7 +920,7 @@ class IntegrationBoundaryTests(unittest.TestCase):
         effect.runner.run.return_value = SimpleNamespace(stdout=b"tmpfs rw,nosuid,nodev,inode64\n", returncode=0)
         effect.preflight()
         self.assertEqual(effect.runtime.docker.call_count, 10)
-        with mock.patch.object(self.subject.os, "getgid", return_value=1001), self.assertRaises(self.subject.Blocked):
+        with mock.patch.object(self.subject.os, "getegid", return_value=1001), self.assertRaises(self.subject.Blocked):
             effect.preflight()
         inspected = {c.args[-1] for c in effect.runtime.docker.call_args_list if "inspect" in c.args}
         for suffix in ("-chown", "-agent-chown", "-agent-reclaim", "-net"):
