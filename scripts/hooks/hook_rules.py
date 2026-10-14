@@ -244,7 +244,16 @@ IMPLICIT_MAIN_PUSH = Rule(
         "HEAD:refs/heads/<branch>`) and open a pull request."
     ),
 )
-_SEPARATORS = re.compile(r"(&&|\|\||[;&|\n()])")
+_PUNCTUATION = ";&|()<>\n"
+# A heredoc body is data unless its delimiter is unquoted; either way it is
+# not judged (residual: an unquoted body's `$(...)` would run).
+_HEREDOC = re.compile(
+    r"<<-?[ \t]*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1([^\n]*)\n(?:.*?\n)??[ \t]*\2[ \t]*(?=\n|$)",
+    re.S,
+)
+_SUBSTITUTION = re.compile(r"\$\(((?:[^()]|\([^()]*\))*)\)|`([^`]*)`")
+# Commands that run a string argument as a shell command.
+_RUNNERS = frozenset({"bash", "sh", "zsh", "dash", "eval", "su", "watch", "script"})
 _VALUE_OPTIONS = frozenset(
     {"-o", "--push-option", "--repo", "--receive-pack", "--exec"}
 )
@@ -257,7 +266,6 @@ _KEYWORDS = frozenset(
 _ASSIGNMENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*=.*")
 _LOCATION_OPTIONS = ("--git-dir", "--work-tree")
 _PUSH_CONFIG = re.compile(r"^(push\.|remote\..*\.(push|mirror)|alias\.)", re.I)
-_SHELLS = frozenset({"bash", "sh", "zsh", "dash", "eval"})
 # `git`, its global options, then the `push` subcommand, anywhere in a segment.
 _GIT_PUSH = re.compile(
     r"\bgit(?:\s+(?:-[Cc]|--git-dir|--work-tree|--namespace|--config-env)\s+\S+"
@@ -283,23 +291,40 @@ def _git(directory: pathlib.Path, location: list[str], *arguments: str) -> str |
     return result.stdout.strip() if result.returncode == 0 else None
 
 
-def _words(segment: str) -> list[str]:
-    """Split one shell segment into words, dropping comments and redirections."""
+def _segments(command: str) -> list[object]:
+    """Split a command into word lists, `(` and `)`, honouring quotes.
 
-    lexer = shlex.shlex(segment, posix=True, punctuation_chars="<>&")
+    Redirections and their targets are dropped. Unbalanced quotes raise
+    ValueError.
+    """
+
+    lexer = shlex.shlex(command, posix=True, punctuation_chars=_PUNCTUATION)
+    lexer.whitespace = " \t\r"
     lexer.whitespace_split = True
+    items: list[object] = []
     words: list[str] = []
     target = False
     for token in lexer:
-        if target:
-            target = False
-        elif token and set(token) <= set("<>&"):
+        if not (token and set(token) <= set(_PUNCTUATION)):
+            if target:
+                target = False
+            else:
+                words.append(token)
+            continue
+        if set(token) & set("<>"):
             if words and words[-1].isdigit():
                 words.pop()
             target = True
-        else:
-            words.append(token)
-    return words
+            continue
+        for character in token:
+            if words:
+                items.append(words)
+                words = []
+            if character in "()":
+                items.append(character)
+    if words:
+        items.append(words)
+    return items
 
 
 def implicit_main_push(command: str, cwd: pathlib.Path) -> bool:
@@ -319,46 +344,47 @@ def implicit_main_push(command: str, cwd: pathlib.Path) -> bool:
         return True
 
 
-def _scan(command: str, cwd: pathlib.Path) -> bool:
-    # ponytail: a lexical approximation of the shell, not a parser. A segment
-    # that holds `git ... push` and cannot be resolved raises _Unknown (deny).
-    command = command.replace("\\\n", " ")
-    directory: pathlib.Path | None = cwd
+def _scan(command: str, cwd: pathlib.Path | None) -> bool:
+    # ponytail: a lexical approximation of the shell, not a parser. A push it
+    # cannot resolve raises _Unknown (deny); text that only mentions a push in
+    # an argument is data and is not judged.
+    command = _HEREDOC.sub(
+        lambda match: f"<<{match.group(2)}{match.group(3)}",
+        command.replace("\\\n", " "),
+    )
+    try:
+        items = _segments(command)
+    except ValueError:
+        if _GIT_PUSH.search(command):
+            raise _Unknown from None
+        return False
+    directory = cwd
     subshells: list[pathlib.Path | None] = []
     pushed: list[pathlib.Path | None] = []
-    for segment in _SEPARATORS.split(command):
-        if segment == "(":
+    for item in items:
+        if item == "(":
             subshells.append(directory)
             continue
-        if segment == ")":
+        if item == ")":
             directory = subshells.pop() if subshells else directory
             continue
-        if segment in {"&&", "||", ";", "&", "|", "\n"}:
-            continue
-        pushes = bool(_GIT_PUSH.search(segment))
-        try:
-            tokens = _words(segment)
-        except ValueError:
-            if pushes:
-                raise _Unknown from None
-            if re.match(r"\s*(?:\S+\s+)*?(?:cd|pushd)\b", segment):
-                directory = None
-            continue
+        words = list(item)  # type: ignore[call-overload]
+        # Command substitutions run wherever they appear, even inside quotes.
+        for word in words:
+            for match in _SUBSTITUTION.finditer(word):
+                inner = match.group(1) if match.group(1) is not None else match.group(2)
+                if _scan(inner, directory):
+                    return True
         location: list[str] = []
-        while tokens and (tokens[0] in _KEYWORDS or _ASSIGNMENT.fullmatch(tokens[0])):
-            name, _, value = tokens.pop(0).partition("=")
-            if name in {"GIT_DIR", "GIT_WORK_TREE"} and value:
-                option = "--git-dir" if name == "GIT_DIR" else "--work-tree"
-                location.append(f"{option}={value}")
-            elif name.startswith("GIT_CONFIG"):
-                location.append("--unknown-config")
-        if not tokens:
+        while words and (words[0] in _KEYWORDS or _ASSIGNMENT.fullmatch(words[0])):
+            _locate(words.pop(0), location)
+        if not words:
             continue
-        head = pathlib.PurePath(tokens[0]).name
-        if head in {"cd", "pushd"} and len(tokens) > 1:
+        head = pathlib.PurePath(words[0]).name
+        if head in {"cd", "pushd"} and len(words) > 1:
             if head == "pushd":
                 pushed.append(directory)
-            target = tokens[1]
+            target = words[1]
             directory = (
                 None
                 if directory is None or any(c in target for c in "$`{")
@@ -368,42 +394,37 @@ def _scan(command: str, cwd: pathlib.Path) -> bool:
         if head == "popd":
             directory = pushed.pop() if pushed else directory
             continue
-        if not pushes:
+        if head in _RUNNERS:
+            # The runner joins its arguments into one command string.
+            if _scan(" ".join(words[1:]), directory):
+                return True
             continue
-        if head in _SHELLS:
-            raise _Unknown
-        # Any wrapper (`nice -n 10`, `sudo -u x`, `stdbuf -oL`, ...) may precede
-        # git; judge from the first `git` word.
-        index = next(
-            (
-                i
-                for i, word in enumerate(tokens)
-                if pathlib.PurePath(word).name == "git"
-            ),
-            None,
-        )
-        if index is None:
-            raise _Unknown
-        for word in tokens[:index]:
-            name, equals, value = word.partition("=")
-            if not equals or not _ASSIGNMENT.fullmatch(word):
+        for index, word in enumerate(words):
+            if pathlib.PurePath(word).name != "git":
                 continue
-            if name in {"GIT_DIR", "GIT_WORK_TREE"} and value:
-                option = "--git-dir" if name == "GIT_DIR" else "--work-tree"
-                location.append(f"{option}={value}")
-            elif name.startswith("GIT_CONFIG"):
-                location.append("--unknown-config")
-        if _git_push_targets_main(tokens[index:], directory, location):
-            return True
+            here = list(location)
+            for prefix in words[:index]:
+                _locate(prefix, here)
+            if _git_push_targets_main(words[index:], directory, here):
+                return True
     return False
+
+
+def _locate(word: str, location: list[str]) -> None:
+    name, equals, value = word.partition("=")
+    if not equals or not _ASSIGNMENT.fullmatch(word):
+        return
+    if name in {"GIT_DIR", "GIT_WORK_TREE"} and value:
+        option = "--git-dir" if name == "GIT_DIR" else "--work-tree"
+        location.append(f"{option}={value}")
+    elif name.startswith("GIT_CONFIG"):
+        location.append("--unknown-config")
 
 
 def _git_push_targets_main(
     tokens: list[str], directory: pathlib.Path | None, location: list[str]
 ) -> bool:
-    if directory is None:
-        raise _Unknown
-    here = directory
+    here = directory or pathlib.Path("/")
     index = 1
     while index < len(tokens) and tokens[index].startswith("-"):
         option = tokens[index]
@@ -423,14 +444,21 @@ def _git_push_targets_main(
         elif option.startswith(tuple(f"{name}=" for name in _LOCATION_OPTIONS)):
             location.append(option)
             index += 1
-        elif option in {"--namespace", "--super-prefix"}:
+        elif option in {"--namespace", "--super-prefix", "--attr-source"}:
             index += 2
         else:
             index += 1
-    if index >= len(tokens) or tokens[index] != "push":
+    subcommand = tokens[index] if index < len(tokens) else ""
+    if subcommand in {"rebase", "submodule"} and any(
+        _GIT_PUSH.search(token) or token == "push" for token in tokens[index + 1 :]
+    ):
+        raise _Unknown
+    if subcommand != "push":
         return False
-    if "--unknown-config" in location or any(
-        c in token for token in tokens for c in "$`{"
+    if (
+        directory is None
+        or "--unknown-config" in location
+        or any(c in token for token in tokens for c in "$`{")
     ):
         raise _Unknown
     positional = []
@@ -439,7 +467,7 @@ def _git_push_targets_main(
         if skip:
             skip = False
         elif token in _ALL_BRANCHES or (
-            len(token) > 3 and any(option.startswith(token) for option in _ALL_BRANCHES)
+            len(token) > 2 and any(option.startswith(token) for option in _ALL_BRANCHES)
         ):
             return True
         elif token in _VALUE_OPTIONS:
@@ -458,7 +486,12 @@ def _git_push_targets_main(
     for line in settings.splitlines():
         key, _, value = line.partition(" ")
         if (key.endswith(".mirror") and value == "true") or (
-            key.endswith(".push") and _MAIN & set(re.split(r"[:+]", value))
+            key.endswith(".push")
+            and (
+                _MAIN & set(re.split(r"[:+]", value))
+                or "*" in value
+                or value.lstrip("+") == ":"
+            )
         ):
             return True
     for refspec in refspecs:

@@ -241,6 +241,23 @@ path containing `push` are no longer denied, because only `git` followed by
 its `push` subcommand counts. Residual: `#` inside a word, `xargs` arguments,
 and a `git` lookup that times out, which counts as not `main`.
 
+### Review Round 4
+
+On 2026-10-14 the re-review of `455cfe459` found no realistic push to `main`
+that was allowed, and one blocking false-positive class: the check split the
+raw text on separators before tokenizing, so a commit message, pull request
+body or `grep` argument that contained `git push` was denied. The command is
+now tokenized once, quote-aware, before it is split; heredoc bodies are
+removed; a push is recognised only from a `git` word followed by its `push`
+subcommand, checking every `git` word in a segment; command substitutions
+are judged where they run; and command-string runners (`bash -c`, `eval`,
+`su`, `watch`, `script`) have their argument judged, so `bash -c 'git push
+origin feat'` is allowed and the same with `main` is denied. Also fixed:
+`git rebase -x` and `git submodule foreach` naming a push fail closed; a
+quoted `-C` path is followed; `--attr-source` takes a value; a remote push
+mapping with a wildcard or `:` counts as `main`. The hookify text rule still
+denies quoted text that contains a main push (round 1 residual).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -258,7 +275,9 @@ and a `git` lookup that times out, which counts as not `main`.
 | Re-review fixes | 5 | W5 | Round 2 fixes; routing suite (70), workflow contract tests (39), hook tests (32), governance contract, script manifest, renderer check (drift 0) | Branch | PASS | Review Round 2 | Re-review |
 | Re-review 2 | 5 | W5 | Independent `security-auditor` re-review of `0b1697ac6` | Branch | FAIL | Review Round 3 | - |
 | Re-review 2 fixes | 5 | W5 | Round 3 fixes; 13 more denied and 4 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32), governance contract, renderer check (drift 0) | Branch | PASS | Review Round 3 | Re-review 2 |
-| Re-review 3 | 5 | W5 | Independent review of the round 3 fixes | - | NOT_RUN | Review Round 3 | - |
+| Re-review 3 | 5 | W5 | Independent `security-auditor` re-review of `455cfe459`: no realistic push to `main` allowed; data text that mentions `git push` denied | Branch | FAIL | Review Round 4 | - |
+| Re-review 3 fixes | 5 | W5 | Round 4 fixes; 5 more denied and 7 more allowed forms; routing suite (70), workflow contract tests (39), hook tests (32), governance contract | Branch | PASS | Review Round 4 | Re-review 3 |
+| Re-review 4 | 5 | W5 | Independent review of the round 4 fixes | - | NOT_RUN | Review Round 4 | - |
 | Candidate | 6 | W5 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
