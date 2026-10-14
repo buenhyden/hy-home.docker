@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.13"
+version: "0.2.14"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -2237,6 +2237,19 @@ passed 14/0; operations catalog and navigation checks passed, exit 0. These
 checks precede this result-only receipt, whose final document validation and
 staged hooks remain required. Source correction acceptance does not admit W1
 or supersede any HOME, maintenance or recovery finding.
+
+### Off-host Custody Procedure — 2026-10-14
+
+On 2026-10-14 the owner asked to review and proceed with off-host custody
+separation, and chose (AskUserQuestion) to prepare the procedure first.
+RUN-0085 0.8.0 adds "off-host custody 분리 절차": the items (unseal shares 1
+to 3, offsite key BKP-003, R2 credentials BKP-004 and BKP-005, the CA private
+key), the rule that no place holds two or more shares, that host disk, host
+backups and the R2 copy do not count as off-host, and a value-free
+confirmation table the owner fills. The agent read no value and moved nothing.
+Checklist step 5 stays NOT_RUN until the owner returns the filled table; the
+single-file exception and any deletion of that file remain a separate owner
+decision. Criterion 11 and this Task stay pending and blocked.
 
 ## Evidence
 
