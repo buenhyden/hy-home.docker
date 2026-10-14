@@ -5143,8 +5143,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 237,
-      "next_number": 238,
+      "high_water": 239,
+      "next_number": 240,
       "child_spaces": {}
     },
     "operations-subject": {
