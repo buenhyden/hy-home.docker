@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.17"
+version: "0.4.18"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -1905,6 +1905,60 @@ Both OpenBao ledger rows now carry this `checked_at`. The latest and
 security gates still exit 2 for the other open evidence; no HOME change
 follows from this record.
 
+### Traefik and Prometheus upstream candidates — 2026-10-15
+
+The owner chose to move the running Traefik v3.7.13 and Prometheus v3.14.0
+to their Compose pins through SEC01 instead of accepting the older images
+for the OpenBao window (SPEC-0243). GitHub releases list Traefik v3.7.14
+(2026-10-06) and Prometheus v3.15.0 (2026-09-25) as the latest stable, so
+the pins need no bump. Traefik v3.7.14 fixes eight Traefik advisories; no
+Prometheus advisory has been published since 2026-04.
+
+The owner approved, through the interactive question in this session, the
+network steps: pulling `traefik:v3.7.14@575fa15b`, the registered
+`anchore/syft@3eb5379b` and `anchore/grype@e4a44ef4`, and one Grype DB update
+through `seed-grype-db-cache.sh`. The approval line is in
+`infra/supply-chain.network-approvals.md`. One `docker buildx imagetools
+inspect` registry read of the Traefik index also ran; the archive's own
+manifests bind the same identity. The seed published DB schema v6.1.10
+built 2026-10-14T06:30:34Z. Every scan step ran on `--network none`.
+
+| Image | Index / manifest / config | Packages | Matches | Archive / SBOM / Grype SHA-256 |
+| --- | --- | --- | --- | --- |
+| Traefik v3.7.14 | `575fa15b` / `5902d68e` / `5a93040e` | 1189 | 49: 3 Critical, 20 High, 13 Medium, 8 Low, 5 Unknown, 0 ignored | `120b8325` / `8c35013b` / `72885264` |
+| Prometheus v3.15.0 | `efd719c9` / `86b17a25` / `66416213` | 444 | 41: 6 Critical, 25 High, 10 Unknown, 0 ignored | `5b982bdd` / `17d1cc5b` / `09ceaa53` |
+
+Most matches are Go 1.26.8 or 1.27.1 and `golang.org/x/net` 0.59.0 or
+0.58.0, fixed in Go 1.26.9 or 1.27.2 and x/net 0.60.0, which no upstream
+build ships yet. The same scan of the running images found no ID that the
+candidates add, while the candidates remove 2 Critical and 9 High from
+Traefik and 5 High from Prometheus.
+
+An independent `security-auditor` primary-source applicability review found
+only denial of service applicable. For Traefik: the Go HTTP/2 server IDs
+GO-2026-6612, 6603, 6611 and 6617, reachable before authentication from the
+LAN, and GO-2026-6609 after authentication. For Prometheus: GO-2026-6608 and
+6609, after Traefik authentication or without it inside the Docker
+networks. GO-2026-6605, 6610 and 6613 are UNPROVEN, GO-2026-6604 is
+Windows-only, and the OpenSSL, zlib and BusyBox matches are not on any
+request path. HTTP/3, FastProxy and Kubernetes providers are off.
+
+Compatibility ran on synthetic inputs only. The repository's Traefik static
+and dynamic config boots on `--network none` with the same errors on
+v3.7.13 and v3.7.14 (no Docker socket, no certificate mount), and the
+v3.7.13 and v3.7.14 migration changes cover providers and metrics not used
+here. `promtool check config --syntax-only` passes both Prometheus config
+files and `check rules` passes all 13 rule files on both versions.
+
+The owner accepted the residuals with an expiry ("만료일 붙여 수용") and
+declined the interim HTTP/2 configuration change. The acceptance expires at
+the earlier of: the first upstream release built with Go 1.26.9 or 1.27.2
+and x/net 0.60.0, to be adopted within 7 days, or 2026-11-15, when an owned
+Traefik build is re-decided. It is revoked early on WAN exposure or a public
+exploit. Publisher signatures were not checked and stay NOT_RUN. Both
+ledger rows record these results; the HOME recreate, rollback and
+postchecks are NOT_RUN and need separate approval.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
@@ -1932,6 +1986,9 @@ and its later observations are recorded above.
 | Owned OpenBao applicability dispositions | 15 | W31 | Read-only module and symbol listing and govulncheck binary scan of f0b103b8; independent security review APPROVE with notes; primary advisories GO-2026-5932 and CVE-2025-60876; ledger rows updated; gate exits unchanged | Owned manifest 46bf9b5c | PASS | Owned OpenBao applicability dispositions — 2026-10-14 | - |
 | Owned OpenBao SEC01 image acceptance | 15 | W31 | Owner decision on the three residuals of manifest 46bf9b5c | Reviewed dispositions above | PASS | Owned OpenBao SEC01 image acceptance — 2026-10-14 | - |
 | Fresh OpenBao stable lookup | 15 | W31 | GitHub releases, go.dev, Go module proxy, Go vulnerability index and govulncheck binary scan: v2.7.1 and go1.27.2 current; newer x/net and x/crypto carry no fix the image lacks; ledger `checked_at` refreshed | Lookup 2026-10-14T14:22Z | PASS | Fresh OpenBao stable lookup — 2026-10-14 | - |
+| Traefik and Prometheus offline scan | 15 | W31 | Owner-approved pulls and one Grype DB update; Syft and Grype on `--network none`; running images scanned for comparison: candidates add no ID | Traefik `575fa15b`, Prometheus `efd719c9`; DB built 2026-10-14 | PASS | Traefik and Prometheus upstream candidates — 2026-10-15 | - |
+| Traefik and Prometheus applicability and compatibility | 15 | W31 | Independent `security-auditor` review: denial of service only, ACCEPT with residual; Traefik config boot and promtool checks on both versions | Scan receipts above | PASS | Traefik and Prometheus upstream candidates — 2026-10-15 | - |
+| Traefik and Prometheus SEC01 acceptance | 15 | W31 | Owner accepted the residuals with an expiry; interim HTTP/2 change declined; signature NOT_RUN | Reviewed applicability above | PASS | Traefik and Prometheus upstream candidates — 2026-10-15 | - |
 
 ## Criterion Acceptance
 
