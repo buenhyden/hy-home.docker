@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.27"
+version: "0.12.28"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -656,29 +656,36 @@ silence는 window 동안 발생한 경보를 기록한 뒤 지운다. W3에서 �
 뒤 멈췄으면 설치된 snapshot token은 일일 backup이 쓰므로 그대로 두고, 다음 window는 그 token이
 갱신되는지 확인한 뒤 W2를 건너뛴다. 임시 root는 server가 unsealed이고 operator token이
 있으면 아래 W7의 `revoke-root`로 폐기한다. W1c rollback 판단이 열려 있어도 버리며, rollback이
-필요하면 다음 window의 새 root로 한다. 폐기할 수 없을 때(server sealed 등)만 아래 root 보관
-규칙을 따른다. W0·W1·W3a·W5·W7의 operator token은 각자 `revoke-self`로 폐기한다. server가
+필요하면 다음 window의 새 root로 한다. 폐기할 수 없을 때(server sealed 등)는 아래 이전 root
+정리 규칙을 따른다. W0·W1·W3a·W5·W7의 operator token은 각자 `revoke-self`로 폐기한다. server가
 sealed라 폐기할 수 없는 token은 OIDC 최대 TTL(4시간) 안에 만료되며, 그 사실을 값 없이 기록한다.
 server가 unsealed이면 root와 마지막 operator token을 버리기 전에 UI에서 새 OIDC 로그인을 해
 W0 방식으로 `$XDG_RUNTIME_DIR/p01-op-proof.token`에 받고
 `BAO_TOKEN="$(cat "$XDG_RUNTIME_DIR/p01-op-proof.token")" docker compose exec -T -e BAO_TOKEN openbao bao read -field=policies auth/token/lookup-self`가
 `[hy-home-operator]`를 돌려주는지 본 뒤, 같은 형식의 `bao token revoke -self`로 그 token도 폐기한다.
 안 되면(gateway나 OIDC 장애) root와 custody를 지우지 않고 OIDC 접근부터 복구한다. 복구 수단 없이
-관리 접근을 모두 버리지 않는다. server가 sealed면 이 확인은 할 수 없고 root도 unseal 전까지 쓸 수
+관리 접근을 모두 버리지 않는다. 이때 아래 정리 명령은 `P01_KEEP_ROOT=1`로 실행해 W1 custody와
+`p01-op-*.token`을 남기고, root로 OIDC를 고친 뒤 이 정리를 처음부터 다시 한다. 보존은 owner가 맡으며
+재부팅 전까지, 최대 다음 window까지이고 그 사실을 값 없이 Task에 기록한다. server가 sealed면 이 확인은 할 수 없고 root도 unseal 전까지 쓸 수
 없으므로, custody는 그대로 지우고 다음 window W1 뒤의 이전 root 정리에 맡긴다.
 
 exit2(INDETERMINATE)가 남았으면 그 단계의 복구가 정리보다 먼저다. W1 exit2는 OTP가 함께 있는
 custody 파일을 열지 않고, window 안이든 다음 window의 W1 전이든 operator token으로
+같은 형식의 `bao read sys/generate-root-token/attempt`로 started·progress·nonce를 값 없이 기록한 뒤
 `BAO_TOKEN="$(cat "$XDG_RUNTIME_DIR/p01-op-w1.token")" docker compose exec -T -e BAO_TOKEN openbao bao delete sys/generate-root-token/attempt`를
 실행해 남은 attempt를 취소하고(operator 정책이 허용한다) W1 custody를 지운다. 이 경우 생겼을 수
 있는 root는 다음 window W1 뒤의 이전 root 정리가 찾는다. W2 exit2가 window 안에서 해결되지
 않았으면 W2 custody(`p01-token.*`)와 대상의 `.snapshot_token.txt.issuance-lock`은 남기고 아래
 명령 전에 `P01_KEEP_W2=1`을 둔다. 그 안의 token은 snapshot 전용 권한에 최대 720시간이며 tmpfs라
 재부팅 때 사라진다. W2 helper는 lock이 있으면 멈추므로 다음 window의 W2와 W3는 검토된 W2 복구
-절차가 생길 때까지 **BLOCKED**다.
+절차가 생길 때까지 **BLOCKED**다. kept W2 custody가 있는 동안은 이후 모든 정리에서도
+`P01_KEEP_W2=1`을 둔다. sealed server에서 root custody를 지우면 OIDC 확인 없이 관리 접근을 모두
+버리는 것이며, 이는 POL-0085의 예외 옆에 알려진 잔여 위험으로 둔다(복구는 share 2개로 unseal한 뒤
+OIDC operator와 W1 절차).
 
 지우기 전에 credential이 없는 증거, 곧 W1c의 `prior-state.json`·`state.json`(`p01-roles.*`,
-`p01-roles-plan.*`), W1·W7의 `state.json`과 `$P01_INPUTS`의 contract·lease·receipt를 owner 전용 영구 저장소(tmpfs·문서 밖)에 복사한다. 그다음 secret 파일을
+`p01-roles-plan.*`), W1·W2·W7의 `state.json`, W1c·W2·W7의 `operation-intent.json`과 `$P01_INPUTS`의
+contract·lease·receipt를 owner 전용 영구 저장소(tmpfs·문서 밖)에 복사한다. 그다음 secret 파일을
 모두 지운다. root는 `root.token`만이
 아니라 `initialization.json`의 OTP와 `update-2.json`의 encoded token으로도 다시 만들 수 있으므로
 custody 디렉터리 전체를 지운다:
@@ -689,9 +696,11 @@ for d in "$XDG_RUNTIME_DIR"/p01-custody.* "$XDG_RUNTIME_DIR"/p01-token.* \
   "$XDG_RUNTIME_DIR"/p01-w1.* "$XDG_RUNTIME_DIR"/p01-w3a.*; do
   [ -d "$d" ] || continue
   case "$d" in */p01-token.*) [ "${P01_KEEP_W2:-0}" = 1 ] && continue ;; esac
+  case "$d" in */p01-custody.*) [ "${P01_KEEP_ROOT:-0}" = 1 ] && continue ;; esac
   find "$d" -type f -exec shred -u {} + && find "$d" -depth -type d -empty -delete
 done
-for f in "$XDG_RUNTIME_DIR"/p01-op-*.token; do [ -f "$f" ] && shred -u "$f"; done
+[ "${P01_KEEP_ROOT:-0}" = 1 ] ||
+  for f in "$XDG_RUNTIME_DIR"/p01-op-*.token; do [ -f "$f" ] && shred -u "$f"; done
 rm -f "$XDG_RUNTIME_DIR/p01-window.vars"
 ```
 
@@ -726,6 +735,7 @@ systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
 docker info -f '{{.Debug}}'   # false여야 한다. true면 exec 환경의 token이 dockerd 로그에 남는다
 command -v jq                  # 이전 root 정리에 필요하다
 loginctl show-user "$USER" -p Linger   # yes가 아니면 window 동안 다른 로그인 세션을 유지한다
+: >"$XDG_RUNTIME_DIR/p01-window.vars"   # 이 window의 경로 변수 기록을 비운다
 ```
 
 window 전체를 `bash --noprofile --norc`로 연 셸 하나에서 `unset HISTFILE`과
@@ -821,7 +831,8 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   token을 복사한다. token helper 파일(홈 디렉터리, 영구 disk)에는 저장하지 않는다. 쓰는 단계마다
   새로 로그인해 `umask 077`에서
   `IFS= read -rsp 'operator token> ' v </dev/tty; printf '\n'; printf '%s' "$v" >"$XDG_RUNTIME_DIR/p01-op-<단계>.token"; unset v`로
-  tmpfs 0600 파일에 받는다(`<단계>`는 `w0`·`w1`·`w3a`·`w5`·`w7`). 이후에는 FD나
+  tmpfs 0600 파일에 받는다(W1 블록의 `set -C` 뒤라 다시 받을 때는 먼저 `shred -u`로 지운다.
+`<단계>`는 `w0`·`w1`·`w3a`·`w5`·`w7`). 이후에는 FD나
   `"$(cat …)"`로만 넘긴다. W5의 숨김 prompt 대신 `BAO_TOKEN="$(cat "$XDG_RUNTIME_DIR/p01-op-w5.token")"`를
   써도 된다. token과 share는 화면에 띄우지 않고 clipboard 기록·동기화를 끈 상태에서 붙여 넣으며,
   붙여 넣은 뒤 clipboard를 비운다. 이 token은 window 끝이나 중단 때 위 정리대로 폐기하고 지운다.
@@ -990,6 +1001,8 @@ shred -u "$P01_W1_SECRETS"/share-1 "$P01_W1_SECRETS"/share-2 && rmdir "$P01_W1_S
 test "$P01_W1_EXIT" = 0 || exit "$P01_W1_EXIT"
 ```
 
+W1이 끝나면 W1c 전에 아래 W7 절의 이전 root 정리 블록을 실행한다(매 window).
+
 각 setup 명령이 exit0인지 확인한 뒤 다음 명령으로 진행합니다. source hash 실패, CA 변경,
 cluster 변경 또는 기존 attempt가 있으면 중단합니다. gateway 공개 CA hash와 IP는 이 HOME
 대상의 2026-10-14 검증 입력이며, 내부 backend CA와 혼동하지 않습니다. 다른 host·CA에는
@@ -1156,6 +1169,7 @@ declare -p P01_INPUTS >>"$XDG_RUNTIME_DIR/p01-window.vars"
 ```
 
 ```bash
+declare -p P01_SNAPSHOT_DIRECTORY >>"$XDG_RUNTIME_DIR/p01-window.vars"
 (umask 077; /usr/bin/mkdir -- "${P01_SNAPSHOT_DIRECTORY:?}") || exit 1
 exec 3</home/hyunyoun/data/hy-home.docker/secrets/backup/openbao/snapshot_token.txt || exit 1
 /usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-raft-snapshot.py" \
@@ -1426,16 +1440,17 @@ rotation을 성공으로 처리하지 않습니다.
 backup 단위의 OpenBao snapshot 성공은 window 뒤 관찰입니다. W7 뒤 backup timer와
 hy-home.k8s 로그인 주체를 다시 켜고, 경보를 기록한 뒤 silence를 지웁니다.
 
-window가 root를 폐기하지 못하고 끝나면(W4 sealed나 operator token이 없을 때) 만료
-없는 root가 OpenBao에 남는다. W1 custody는 `$XDG_RUNTIME_DIR` tmpfs에 있고 Linger가 켜져 있어
-재부팅 전까지 남으며, 저장소 UID로 도는 모든 process가 읽을 수 있다. 값은 영구 저장소로
+server가 sealed라 window가 root를 폐기하지 못하고 끝나면 만료 없는 root가 OpenBao에 남는다
+(unsealed인데 OIDC가 안 되면 위 `P01_KEEP_ROOT` 규칙을 따른다). W1 custody는 `$XDG_RUNTIME_DIR`
+tmpfs에 있고 Linger나 남은 로그인 세션 때문에 재부팅 전까지 남으며, 저장소 UID로 도는 모든 process가 읽을 수 있다. 값은 영구 저장소로
 옮기지 않는다(backup 대상인 `secrets/` 포함). 위 정리 명령으로 모든 custody·secret 파일을
 `shred -u`해 값을 아무도 갖지 않게 하고, 폐기하지 못한 사실만 값 없이 Task에 남긴다. accessor도
 기록하지 않는다. 모든 window는 W1 직후, W1c·W3 전에 아래로 이전 root를 찾아 폐기한다(W1 exit2로
 누구도 갖지 않은 root가 생겼을 수도 있으므로 기록과 상관없이 매번 한다. W1의 10분 안에 들어가며,
 W3 뒤에는 쓰기라 하지 않는다). accessor 하나마다 `docker compose exec`가 한 번 돌아 시간은
 accessor 수에 비례하며 아직 측정하지 않았으므로, T+15 멈춤 기준은 그대로 적용한다. W0에서
-`command -v jq`를 확인한다. 폐기한 개수와 다시 센 나머지
+`command -v jq`를 확인한다. 실패하면 T+15 전까지 한 번 다시 실행해도 된다(이미 폐기한 accessor는
+없는 것으로 넘어간다). 폐기한 개수와 다시 센 나머지
 root 수(0이어야 한다)를 값 없이 Task에 기록한다. 새 root를 helper가 아닌
 CLI에 넘기는 유일한 예외이며, 값은 변수로만 넘겨 argv에는 이름만 남고 출력은 화면에만 둔다:
 
@@ -1448,14 +1463,21 @@ bao_root() { BAO_TOKEN="$(cat "$P01_CUSTODY_DIR/root.token")" /usr/bin/docker co
     list="$(bao_root list -format=json auth/token/accessors | jq -er '.[]')" || return 1
     for a in $list; do
       [ "$a" = "$self" ] && continue
-      p="$(bao_root write -field=policies auth/token/lookup-accessor accessor="$a")" || return 1
-      [ "$p" = "[root]" ] && printf '%s\n' "$a"
+      # A token that expired or was revoked with its parent since the list is gone, not a failure.
+      if p="$(bao_root write -field=policies auth/token/lookup-accessor accessor="$a" 2>&1)"; then
+        case " $(printf '%s' "$p" | tr -d '[]') " in *" root "*) printf '%s\n' "$a" ;; esac
+      else
+        case "$p" in *"invalid accessor"*) ;; *) return 1 ;; esac
+      fi
     done
     return 0
   }
-  self="$(bao_root read -field=accessor auth/token/lookup-self)" || exit 1
+  self="$(bao_root read -field=accessor auth/token/lookup-self)" && [ -n "$self" ] || exit 1
   stale="$(root_accessors)" || exit 1
-  for a in $stale; do bao_root write auth/token/revoke-accessor accessor="$a" >/dev/null || exit 1; done
+  for a in $stale; do
+    out="$(bao_root write auth/token/revoke-accessor accessor="$a" 2>&1)" ||
+      case "$out" in *"No token found with this accessor"*) ;; *) exit 1 ;; esac
+  done
   printf 'revoked=%s\n' "$(printf '%s' "$stale" | grep -c .)"
   left="$(root_accessors)" || exit 1
   printf 'remaining=%s\n' "$(printf '%s' "$left" | grep -c .)"   # 0이어야 한다
