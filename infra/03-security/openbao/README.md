@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.9"
+version: "0.1.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -49,7 +49,7 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 | Service | Profiles | Networks | `edge_net`, `obs_net`, `secrets_net` | Secret references |
 | --- | --- | --- | --- | --- |
 | `openbao` | `security, secrets, core, local, dev` | `secrets_net, edge_net, obs_net` | 호스트 게시 없음 | Compose Secret 부여 없음; 구성된 bootstrap 파일 메타데이터를 확인하십시오 |
-| `openbao-agent` | `security, secrets, core, local, dev` | `secrets_net` | 호스트 게시 없음 | Compose Secret 부여 없음; 구성된 bootstrap 파일 메타데이터를 확인하십시오 |
+| `openbao-agent` | `security, secrets, core, local, dev` | `secrets_net, obs_net` | 호스트 게시 없음 | Compose Secret 부여 없음; 구성된 bootstrap 파일 메타데이터를 확인하십시오 |
 
 Persistence:
 

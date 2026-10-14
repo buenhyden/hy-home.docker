@@ -1,0 +1,73 @@
+---
+title: "OpenBao Maintenance Window Readiness"
+version: "0.1.0"
+type: "sdlc/spec"
+status: "draft"
+owner: "@buenhyden"
+updated: "2026-10-14"
+layer: "specs"
+artifact_id: "SPEC-0243"
+parent_ids:
+- "REQ-0003"
+- "AD-0004"
+- "ADR-0042"
+created: "2026-10-14"
+---
+
+# OpenBao Maintenance Window Readiness
+
+## Overview
+
+An independent `iac-reviewer` readiness review of RUN-0085's maintenance
+window on 2026-10-14 returned NOT READY. W0 and W3 to W7 depend on tools,
+mounts and decisions that do not exist, and four defects would stop the
+window part-way: the gateway path to OpenBao breaks after W4 (D1), nothing
+creates the renderer token roles W3a and W5 need (D2), the restore tool likely
+fails on the pinned image (D3), and W5's Prometheus `restart` cannot apply the
+CA mount (D4). W4 also has no reviewed way back. The owner asked to review
+and proceed and chose (AskUserQuestion) a readiness Spec that fixes the text
+first and leaves tool work to later work units.
+
+## Scope
+
+In scope: RUN-0085's window text; the restore tool's server start; a reviewed
+apply step for the renderer policies and token roles; the W3a inputs; a W3b
+transfer and receipt; the Traefik, Prometheus and Gatus CA mounts; an hourly
+logrotate unit; and a W4 cut-over procedure or an owner decision to fix
+forward. Out of scope: running any window step, SEC01's image acceptance,
+and P06.
+
+## Contracts
+
+1. RUN-0085 states every window prerequisite and stop that the review found
+   missing, and marks each unbuilt step BLOCKED.
+2. The restore tool starts the pinned image's server with its configuration,
+   proved by a native rehearsal on a synthetic snapshot with both images.
+3. W1c applies the renderer policies and token roles with root before W3,
+   through a reviewed command that leaves a value-free receipt.
+4. W3a's contract, quiescence lease, renderer bundle and security receipt
+   each have a reviewed producer.
+5. W3b sends the W3 snapshot and receipt to R2 and records a value-free
+   receipt through a reviewed tool.
+6. Traefik, Prometheus and Gatus get the OpenBao CA mount through scoped
+   overrides that keep their running images; an hourly logrotate call shares
+   the daily state; W4 has a reviewed cut-over procedure or a recorded owner
+   decision to fix forward.
+
+## Acceptance Criteria
+
+1. RUN-0085 states contract 1 and the document checks pass.
+2. The restore tool's native rehearsal passes on both images.
+3. The W1c command and receipt pass review and a synthetic rehearsal.
+4. Each W3a input producer passes review and a synthetic rehearsal.
+5. The W3b tool passes review and a read-only R2 rehearsal.
+6. The mount overrides, logrotate unit and W4 rollback decision pass review.
+7. Independent IaC and security reviews of each unit find nothing blocking.
+
+## Related Documents
+
+- [REQ-0003](../../01.requirements/0003-security.md)
+- [AD-0004](../../02.architecture/descriptions/0004-data-architecture.md)
+- [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-method.md)
+- [SPEC-0242](../0242-single-admin-openbao-custody/spec.md)
+- [Plan](plan.md)
