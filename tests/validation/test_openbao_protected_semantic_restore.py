@@ -427,6 +427,14 @@ class RuntimeUnitTests(unittest.TestCase):
         self.assertIn("--memory-swap", server)
         self.assertIn("--network=none", create_calls[1].args)
         self.assertNotIn("--network-alias", server)
+        # The image's own entrypoint writes BAO_LOCAL_CONFIG and adds -config;
+        # neither image has /bin/bao, and the read-only root needs a config tmpfs.
+        self.assertNotIn("--entrypoint", server)
+        self.assertEqual(server[-2:], ("image", "server"))
+        self.assertIn(
+            "/openbao/config:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000",
+            server,
+        )
 
     def test_wait_status_unseal_status_and_canaries(self):
         effect = self.effect()
@@ -456,7 +464,11 @@ class RuntimeUnitTests(unittest.TestCase):
         self.assertEqual(effect._canaries("server"), (("one", 1), ("two", 2)))
         effect._unseal("server", "share-secret")
         self.assertNotIn("share-secret", repr(effect._json_exec.call_args.args))
-        self.assertEqual(effect._json_exec.call_args.kwargs["input"], b"share-secret\n")
+        self.assertEqual(effect._json_exec.call_args.kwargs["input"], b"share-secret")
+        # operator unseal refuses non-terminal stdin; the API path reads key=- from stdin.
+        self.assertEqual(
+            effect._json_exec.call_args.args[1:], ("write", "-format=json", "sys/unseal", "key=-")
+        )
 
     def test_init_restore_rejects_foreign_then_uses_original_shares(self):
         effect = self.effect()
@@ -724,7 +736,8 @@ class IntegrationBoundaryTests(unittest.TestCase):
         effect._copy_snapshot(destination)
         copied = destination / "raft.snap"
         self.assertEqual(copied.read_bytes(), raw)
-        self.assertEqual(copied.stat().st_mode & 0o777, 0o400)
+        # Group 1000 can read it inside the server container; nothing can write it.
+        self.assertEqual(copied.stat().st_mode & 0o777, 0o440)
 
     def test_main_reports_accepted_blocked_and_indeterminate(self):
         args = []

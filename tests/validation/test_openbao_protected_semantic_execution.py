@@ -170,6 +170,11 @@ class CleanupTests(unittest.TestCase):
         self.assertNotIn("root-sentinel", repr(login.args[0]))
         self.assertEqual(login.kwargs["input"], b"root-sentinel\n")
         self.assertEqual(restore.args[0][-2:], ["-force", "/restore/raft.snap"])
+        # Without a TTY, login reads "-" from stdin; the image ships busybox stat in /bin;
+        # restore runs as the server user, since root without capabilities cannot read.
+        self.assertEqual(login.args[0][-3:], ["login", "-no-print", "-"])
+        self.assertIn("/bin/stat", runner.run.call_args_list[1].args[0])
+        self.assertNotIn("--user", restore.args[0])
         self.assertEqual(runtime.containers, [identity])
 
     def test_runtime_rejects_unknown_ids_bad_token_file_and_dead_watcher(self):

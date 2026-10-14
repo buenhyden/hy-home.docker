@@ -342,9 +342,11 @@ class ContainerRuntime:
         )
 
     def login(self, identity, token):
-        self.exec(identity, "bao", "login", "-no-print", input=(token + "\n").encode())
+        self.exec(
+            identity, "bao", "login", "-no-print", "-", input=(token + "\n").encode()
+        )
         check = self.exec(
-            identity, "/usr/bin/stat", "-c", "%u %g %a %h %F", "/openbao/private/token"
+            identity, "/bin/stat", "-c", "%u %g %a %h %F", "/openbao/private/token"
         )
         if check.stdout.strip() != b"100 1000 600 1 regular file":
             raise self.failure()
@@ -359,7 +361,6 @@ class ContainerRuntime:
             "restore",
             "-force",
             "/restore/raft.snap",
-            user="0:0",
         )
 
     def watcher_probe(self):
