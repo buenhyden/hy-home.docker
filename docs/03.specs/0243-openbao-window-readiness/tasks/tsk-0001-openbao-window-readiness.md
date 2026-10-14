@@ -57,8 +57,8 @@ From the `iac-reviewer` review, RUN-0085 (0.12.0) now states:
   recreate prompt, and do not open W4 until a cut-over procedure or a
   fix-forward decision is recorded.
 - W5: create the Agent with `up --no-start` so the helper finds it stopped,
-  and recreate Prometheus with `up -d` only when its running image matches
-  the pin, instead of `restart`, which cannot apply the CA mount (D4).
+  and recreate Prometheus with `up -d --force-recreate` only when its running
+  image matches the pin, instead of `restart`, which cannot apply the CA mount (D4).
 - Step 6 names the tracked restore tool and its likely image failure (D3).
 
 The OpenBao README now lists `obs_net` for the Agent.
@@ -72,6 +72,10 @@ applied: the Raft identity comes from `docker inspect` of the mount rather
 than the host path; Prometheus and Gatus use `--force-recreate`; the timer
 window includes its random delay; the rollback pointer points down.
 
+The re-review of `0a3930f8a` passed with notes. Applied: Gatus is checked by
+its local image ID rather than a digest pin, and, since Compose already
+declares its CA mount, it follows the same condition as Prometheus.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -79,6 +83,7 @@ window includes its random delay; the rollback pointer points down.
 | Readiness review | 7 | W1 | Independent `iac-reviewer` readiness review of RUN-0085 0.10.4: NOT READY | `f0984f3c0` | FAIL | Inputs and Authorization | - |
 | Text review | 7 | W1 | Independent `iac-reviewer` re-review of the W1 text: W3a not BLOCKED; Gatus never recreated | `8e28414f5` | FAIL | W1 Window Text | - |
 | Text checks | 1 | W1 | Changed metadata 0 violations; links `--mode all` PASS; markdownlint 0; operations catalog and OpenBao consumer contract tests OK | Branch after `8e28414f5` | PASS | W1 Window Text | - |
+| Text re-review | 7 | W1 | Independent `iac-reviewer` re-review: PASS with notes, notes applied | `0a3930f8a` | PASS | W1 Window Text | Text review |
 
 ## Criterion Acceptance
 

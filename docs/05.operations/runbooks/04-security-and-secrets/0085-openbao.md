@@ -1008,10 +1008,12 @@ SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 versio
 연결을 먼저 확인한다. Prometheus만 이전 설정으로 되돌리는 것은 Agent 재인증과 무관하다.
 
 Gatus도 W4 뒤 OpenBao를 HTTPS로 보고 내부 CA를 요구하므로 CA mount가 없으면 W4 이후에도
-계속 경보를 낸다. Prometheus와 같은 조건(실행 image가 Compose 고정과 같고 설정 차이가
-없음)에서 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate gatus`로
-다시 만든다. CA mount를 주는 SPEC-0243 W6 override가 없으면 이 부분은 **BLOCKED**이고, 그때까지의
-Gatus 경보는 W0에서 정한 대로 처리한다.
+계속 경보를 낸다. Compose는 이미 Gatus의 CA mount를 선언한다. Gatus image는 digest 고정이 아닌
+local build tag `hy/gatus:local`이므로, 실행 중 컨테이너의 image ID가 지금의 `hy/gatus:local`
+ID와 같고 다른 설정 차이가 없을 때만
+`docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate gatus`로
+다시 만든다. 다르면 실행 image를 유지하는 검토된 scoped override(SPEC-0243 W6)를 쓰고, 둘 다
+없으면 이 부분은 **BLOCKED**이며 그때까지의 Gatus 경보는 W0에서 정한 대로 처리한다.
 
 **W6 audit와 logrotate 검증.** W0에서 등록·parser 검증을 끝낸 규칙을 사용합니다.
 새 server의 `openbao-audit` mount와 `audit.json`(0600, UID100/GID1000), 정확한
