@@ -11,7 +11,7 @@
     create 0600 dhcpcd hyunyoun
     nocopytruncate
     postrotate
-        openbao_id=$(/usr/bin/docker inspect --format '{{.Id}}' openbao) || exit 1
+        openbao_id=$(/usr/bin/docker inspect --type container --format '{{.Id}}' openbao) || exit 1
         [ "${#openbao_id}" -eq 64 ] || exit 1
         case "$openbao_id" in *[!0-9a-f]*) exit 1 ;; esac
         [ "$(/usr/bin/docker inspect --format '{{.State.Running}} {{index .Config.Labels "com.docker.compose.project"}} {{index .Config.Labels "com.docker.compose.service"}}' "$openbao_id")" = "true hy-home-infra openbao" ] || exit 1
