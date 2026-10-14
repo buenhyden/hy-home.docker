@@ -1,10 +1,10 @@
 ---
 title: "Generation 6 Reader Corrections Task"
-version: "0.4.0"
+version: "0.4.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0233-TSK-0001"
 parent_ids:
@@ -135,6 +135,17 @@ suites. Under the owner's standing authorization to merge after required
 checks pass, #447 merged as `338c607d8` once its required hosted checks
 passed; this local result stays a FAIL.
 
+On 2026-10-14, after SPEC-0235 raised both local-only node timeouts and fixed
+the reachability test, the change was replayed through the local changed
+gate in a scratch clone: the base was the PR parent `958349408` with only
+those SPEC-0235 changes applied, the head was that base plus the #447 merge
+diff (`338c607d8`), and every other ref was removed so the identity history
+test saw only this replay. The gate exited 0 after 2455 s; the metadata node
+ran 148 tests in 749 s and the governance node 763 tests in 1103 s, all OK.
+An earlier replay that kept the clone's later refs failed only that identity
+history test, because those refs carry Spec numbers above the replayed
+Registry; it is not counted.
+
 ### W7 Stage Alignment
 
 A read-only audit of Stages 01 to 03 against the corrected rules, on
@@ -197,6 +208,7 @@ lists the criteria and why the rest stay `pending`.
 | Decision record checks | 5 | W7 | After the owner decision records: changed metadata (19 documents) and corpus lifecycle, 0 violations; links `--mode all` PASS; markdownlint 0 errors | `a6b541026` plus review notes | PASS | W7 Stage Alignment | - |
 | Candidate | 6 | W6 | Hosted `candidate-quality`, run 38380353911 | `5b95ed942` | PASS | W6 Gate | - |
 | Local gate | 6 | W6 | `run-ci-gate.py --profile changed`; exit 124 at the governance unittest node's 15-minute timeout | `5b95ed942` | FAIL | W6 Gate | - |
+| Local gate replay | 6 | W6 | Local changed gate replay of the #447 diff on its parent with the SPEC-0235 fixes: exit 0, 2455 s | `958349408` to `338c607d8` | PASS | W6 Gate | Local gate |
 
 ## Criterion Acceptance
 
@@ -207,7 +219,7 @@ lists the criteria and why the rest stay `pending`.
 | 3 | accepted | Departure, Departure status | Owner accepted 2026-10-13 |
 | 4 | accepted | Fixtures | Owner accepted 2026-10-13 |
 | 5 | accepted | Text, Rules re-review, Alignment checks, Alignment re-review | Owner accepted 2026-10-13 |
-| 6 | pending | - | - |
+| 6 | accepted | Candidate, Local gate replay | Owner rule 2026-10-14: replay counts, accept on pass |
 
 ## Review and Completion
 
@@ -218,6 +230,11 @@ FAIL at the governance unittest node's timeout. The owner also
 accepted ADR-0048 on the same date; ADR-0048 is now `accepted` (1.0.0),
 ADR-0037 notes the clauses it replaces, and the decisions README lists
 ADR-0048 as accepted.
+
+On 2026-10-14 the owner answered (AskUserQuestion) that a replay of the change
+through the local changed gate counts as evidence and that the criterion is
+accepted if it passes. The replay recorded in W6 passed, so criterion 6 is
+accepted under that rule.
 
 ## Related Documents
 

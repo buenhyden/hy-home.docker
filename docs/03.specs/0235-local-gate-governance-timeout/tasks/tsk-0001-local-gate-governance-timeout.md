@@ -1,6 +1,6 @@
 ---
 title: "Local Gate Governance Timeout Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -102,6 +102,18 @@ consistent. Its wrapping and evidence notes are applied. The changed gate on
 this branch exited 0 in 557 s, but its path selection reached neither
 timeout node, so it does not bear on criterion 3.
 
+### W5 Local Gate and Candidate
+
+Hosted `candidate-quality` passed on PR #469 head `5ad493be1` (run
+`38510455397`), and #469 merged as `7f4c364f8`. On 2026-10-14 the SPEC-0233
+change was replayed through the local changed gate in a scratch clone whose
+base was its PR parent `958349408` with the three SPEC-0235 changes (both
+timeouts and the reachability test) and nothing else, whose head added the
+merge diff of PR #447, and from which every other ref was removed. The gate
+reached both nodes and exited 0 after 2455 s: the metadata node ran 148
+tests in 749 s, past the old 10-minute limit, and the governance node 763
+tests in 1103 s, all OK. SPEC-0233 W6 records the same run.
+
 ### Direct Push to Main
 
 At 2026-10-13T11:16:06Z, `refs/heads/main` on GitHub moved from `338c607d8`
@@ -130,6 +142,8 @@ is not the authenticated pull request merge); #448 was rebased onto
 | Contract W4 | 5 | W4 | CI gate contract and reachability tests (36); workflow contract check (5 workflows); changed metadata 0 violations | `6ce05b26a` | PASS | W4 Metadata Node Timeout | - |
 | CI review W4 | 5 | W4 | Independent `ci-cd-engineer` review: pass with notes, notes applied | `6ce05b26a` | PASS | W4 Metadata Node Timeout | - |
 | Local gate | 3 | W5 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
+| Local gate replay | 3 | W5 | Local changed gate replay of the SPEC-0233 diff with the SPEC-0235 changes: both nodes reached, exit 0, 2455 s | `958349408` to `338c607d8` | PASS | W5 Local Gate and Candidate | - |
+| Candidate | 3 | W5 | Hosted `candidate-quality` on PR #469, run `38510455397` | `5ad493be1` | PASS | W5 Local Gate and Candidate | - |
 
 ## Criterion Acceptance
 
@@ -137,13 +151,16 @@ is not the authenticated pull request merge); #448 was rebased onto
 | --- | --- | --- | --- |
 | 1 | pending | - | - |
 | 2 | pending | - | - |
-| 3 | pending | - | - |
+| 3 | accepted | Local gate replay, Candidate | Owner rule 2026-10-14: replay counts, accept on pass |
 | 4 | pending | - | - |
 | 5 | pending | - | - |
 
 ## Review and Completion
 
-No criterion is accepted until the owner accepts it.
+On 2026-10-14 the owner answered (AskUserQuestion) that a replay through the
+local changed gate counts as evidence and that a gate criterion is accepted if
+it passes. The W5 replay passed, so criterion 3 is accepted under that rule.
+The other criteria wait for the owner.
 
 ## Related Documents
 
