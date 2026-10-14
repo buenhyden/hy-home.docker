@@ -482,7 +482,7 @@ P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지
 2. 보존된 attempt 대상과 container의 처리를 정한다(삭제는 명시 승인). attempt 03·04·chown container와 `-03` 대상은 2026-10-13에 owner가 삭제했다. 같은 날 owner 결정으로 빈 기본 restore 대상과 `-04` 대상도 삭제했고, 기존 업그레이드 전 snapshot 파일은 새 snapshot이 생길 때까지 rollback 지점으로 보존한다.
 3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급하며, 그 전까지 일일 backup의 OpenBao snapshot은 recovery gap으로 계속 실패한다.
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
-5. unseal share·offsite key·CA key의 off-host 독립 보관을 값 없이 확인한다(owner 확인). 2026-10-13 owner 확인 결과 아직 분리 보관이 없으므로 미실행이며, P01은 계속 차단된다. 분리와 확인은 아래 [off-host custody 분리 절차](#off-host-custody-분리-절차)를 따른다.
+5. unseal share·offsite key·R2 자격 증명·CA key의 off-host 독립 보관을 값 없이 확인한다(owner 확인). 2026-10-13 owner 확인 결과 아직 분리 보관이 없으므로 미실행이며, P01은 계속 차단된다. 분리와 확인은 아래 [off-host custody 분리 절차](#off-host-custody-분리-절차)를 따른다.
 6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않으므로 이 단계에는 추적되거나 새로 검토한 도구가 필요하다.
 7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 현재 HOME server에는 audit mount가 없으므로 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
@@ -493,51 +493,64 @@ Agent staleness와 인증 실패를 알리는 Prometheus 규칙이 아직 없고
 
 #### off-host custody 분리 절차
 
-이 절차는 owner가 직접 수행한다. agent는 값을 읽거나 옮기지 않고, 값이 없는 확인 결과만
-SPEC-0204 TSK-0006에 기록한다. 값은 화면·채팅·명령 인자·터미널 기록·이 저장소 어디에도
-남기지 않는다.
+이 절차는 owner가 직접 수행한다. agent는 값을 읽거나 옮기지 않고, 값이 없는 owner 진술만
+SPEC-0204 TSK-0006에 기록한다. 값은 화면 공유·채팅·명령 인자·터미널 기록·이 저장소
+어디에도 남기지 않는다.
 
 **대상.**
 
-| 항목 | 내용 | host 손실 시 영향 |
+| 항목 | 내용 | 노출되면 |
 | --- | --- | --- |
-| share 1·2·3 | OpenBao Shamir unseal share(threshold 2) | 2개 이상 없으면 unseal·root ceremony 불가 |
-| offsite key | BKP-003 R2 원격 Restic 저장소 암호 | 없으면 R2 사본을 복호화할 수 없음 |
-| R2 자격 증명 | BKP-004·005 R2 API token | Cloudflare 계정에서 재발급 가능, 함께 보관 권장 |
-| CA key | OpenBao TLS를 발급한 CA의 개인키 | 없으면 server 인증서를 같은 trust로 재발급할 수 없음 |
+| share 1·2·3 | OpenBao Shamir unseal share(threshold 2) | 2개가 모이면 unseal과 root ceremony가 가능 |
+| offsite key | BKP-003 R2 원격 Restic 저장소 암호 | R2 사본에서 share 전체를 복원할 수 있음(아래) |
+| R2 자격 증명 | BKP-004·005 R2 API token(객체 읽기·쓰기) | offsite key와 합쳐지면 R2 사본을 읽을 수 있음 |
+| CA key | OpenBao TLS를 발급한 CA의 개인키 | 같은 trust로 인증서를 발급할 수 있음 |
 
-**분리 규칙.**
+**offsite key는 share 전체와 같다.** Restic host 백업은 `secrets/` 전체를 담고
+(`infra/09-platform-ops/restic/backup.sh`, 제외 목록 없음), `restic-offsite`가 그 저장소를
+R2로 복사한다. 그래서 모든 share를 담은 단일 unseal 파일이 R2 사본 안에 있고, BKP-003과
+R2 읽기 권한만 있으면 share 3개를 모두 얻는다. snapshot token 발급(W2) 뒤에는 Raft
+snapshot도 함께 들어간다. 이 결합을 끊으려면 단일 파일을 host 백업에서 빼는 별도 승인된
+IaC 변경이 필요하며, 이 절차는 그 위험을 보관 분리로만 줄인다.
 
-- 한 보관 장소에 share가 2개 이상 있으면 안 된다. threshold가 2이므로 한 장소의 유출이
-  곧 unseal 권한이 된다.
-- 각 항목은 이 host 밖에 최소 한 곳 있어야 하고, host 디스크·host 백업·R2 사본은 off-host
-  보관으로 세지 않는다. R2 사본은 offsite key로 잠겨 있으므로 offsite key를 R2에 두지 않는다.
+**분리 규칙.** off-host 보관 장소에 적용한다.
+
+- 한 장소에 share가 2개 이상 있으면 안 된다.
+- offsite key는 share가 없는 장소에 두고, R2 자격 증명·Cloudflare 계정 접근과도 다른 장소에
+  둔다.
+- 각 항목은 이 host 밖에 최소 한 곳 있어야 한다. host 디스크·host 백업·R2 사본은 off-host
+  보관이 아니다.
 - 장소는 종류만 기록한다. 예: 비밀번호 관리자 vault A, 다른 계정이나 장치의 vault B,
   금고의 종이 사본, 암호화된 오프라인 매체, 신뢰하는 제2자.
-- 모든 share를 담은 기존 단일 파일은 분리 보관이 아니다([POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)).
-  분리 확인 뒤에도 host의 단일 파일을 지울지는 별도 owner 결정이며 이 절차는 삭제하지 않는다.
+- host에 남는 단일 파일은 그대로 한 명이 threshold를 넘는 위험이다. 이 절차를 통과해도
+  [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)의
+  예외는 닫히거나 바뀌지 않는다. 단일 파일과 그 백업 사본을 지울지는 별도 owner 결정이며,
+  이 절차는 아무것도 삭제하지 않는다.
 
 **절차.**
 
-1. 보관 장소를 정한다. share 3개는 서로 다른 세 장소에, offsite key와 CA key는 각각
-   share와 같은 장소여도 되지만 host 밖에 둔다.
-2. 각 값을 원본에서 해당 장소로 옮긴다. 화면 출력·clipboard 기록·명령 인자를 피하고,
-   옮긴 사본이 원본과 같은지는 그 장소 안에서만 확인한다.
-3. 장소마다 혼자서 그 사본을 꺼낼 수 있는지 확인한다(예: 다른 장치에서 vault 열기).
-4. 아래 확인 기록을 값 없이 채워 agent에 전달한다. agent는 TSK-0006 Evidence에 옮기고 5단계를
-   `PASS`로 바꾼다. 한 항목이라도 비면 5단계는 미실행으로 남고 유지보수 창은 열지 않는다.
+1. 위 규칙에 맞게 장소를 정한다.
+2. 각 값을 해당 장소로 **복사**한다. 원본은 지우지 않는다. 단일 파일을 통째로 한 장소에
+   첨부하면 분리가 깨지므로 share를 하나씩 옮긴다. 종이 사본처럼 값을 봐야 하는 경우에는
+   화면 공유·녹화·clipboard 기록이 없는 상태에서 한다.
+3. 장소마다 혼자서 그 사본을 꺼낼 수 있는지 확인한다(예: 다른 장치에서 vault 열기). 값이
+   맞는지는 유지보수 창의 W1 root ceremony(share 2개)와 의미 있는 restore(6단계)에서
+   드러난다.
+4. 아래 기록을 값 없이 채워 agent에 전달한다.
 
-| 항목 | 보관 장소 종류 | 다른 share와 장소가 다른가 | host 밖인가 | 꺼낼 수 있음을 확인한 날 |
-| --- | --- | --- | --- | --- |
-| share 1 | | | | |
-| share 2 | | | | |
-| share 3 | | | | |
-| offsite key | | 해당 없음 | | |
-| R2 자격 증명 | | 해당 없음 | | |
-| CA key | | 해당 없음 | | |
+| 항목 | 보관 장소 종류 | host 밖인가 | 다른 share와 장소가 다른가 | offsite key와 장소가 다른가 | 꺼낼 수 있음을 확인한 날 |
+| --- | --- | --- | --- | --- | --- |
+| share 1 | | | | | |
+| share 2 | | | | | |
+| share 3 | | | | | |
+| offsite key | | | share가 없는 장소인가 | 해당 없음 | |
+| R2 자격 증명 | | | 해당 없음 | | |
+| CA key | | | 해당 없음 | 해당 없음 | |
 
-이 기록은 owner의 진술이다. 저장소는 보관 사실을 인증하지 못하므로, 실제 복구 가능성은
-유지보수 창의 W1 root ceremony(share 2개)와 의미 있는 restore(6단계)에서 다시 드러난다.
+**판정.** 모든 칸이 채워지고 모든 질문의 답이 "예"일 때만 agent가 5단계를
+`owner-attested`로 기록한다. 칸이 비면 5단계는 미실행으로 남고, "아니오"가 하나라도 있으면
+`FAIL`이다. 둘 다 유지보수 창을 열지 않는다. `owner-attested`는 owner의 진술이며 저장소는
+보관 사실을 인증하지 못한다. 실제 복구 가능성은 W1과 6단계에서 다시 확인된다.
 
 ### HOME 유지보수 창 계획
 
@@ -546,7 +559,7 @@ SPEC-0204 TSK-0006에 기록한다. 값은 화면·채팅·명령 인자·터미
 stdin으로만 다루고, 명령 인자·터미널 기록·채팅에 남기지 않는다. 각 단계의 결과는
 SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 
-**전제 조건(위 5단계).** unseal share·offsite key·CA key가 서로 분리된 off-host 보관에
+**전제 조건(위 5단계).** unseal share·offsite key·R2 자격 증명·CA key가 분리 규칙에 맞는 off-host 보관에
 있다는 owner 확인이 값 없이 기록되어야 한다. 확인이 없으면 window를 열지 않는다.
 
 | 순서 | 단계 | 목표 시간 | 승인 |

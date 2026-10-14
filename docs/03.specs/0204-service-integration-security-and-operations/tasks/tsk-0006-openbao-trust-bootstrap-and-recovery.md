@@ -2251,6 +2251,17 @@ Checklist step 5 stays NOT_RUN until the owner returns the filled table; the
 single-file exception and any deletion of that file remain a separate owner
 decision. Criterion 11 and this Task stay pending and blocked.
 
+An independent security review of the first draft (PR #461) returned FAIL:
+the Restic host backup holds all of `secrets/`, including the single unseal
+file, and `restic-offsite` copies it to R2, so the offsite key BKP-003 with
+R2 read access yields all three shares; the draft let the offsite key share a
+place with a share. The procedure now treats BKP-003 as equal to the full
+share set, keeps it apart from every share and from the R2 credentials,
+records a step 5 result only as `owner-attested` when every answer is yes
+(`FAIL` on any no), says a pass does not close the POL-0085 exception, and
+says copy rather than move. Excluding the unseal file from the host backup
+needs a separately approved IaC change; that coupling stays open.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
