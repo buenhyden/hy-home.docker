@@ -1,6 +1,6 @@
 ---
 title: "Local Gate Governance Timeout Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -16,8 +16,8 @@ created: "2026-10-13"
 
 ## Objective
 
-Let the local changed gate finish on the owner's host by raising one local
-only node timeout and letting the reachability test accept a class
+Let the local changed gate finish on the owner's host by raising two local
+only node timeouts and letting the reachability test accept a class
 selection, as SPEC-0235 states.
 
 ## Inputs and Authorization
@@ -70,7 +70,8 @@ the governance node: `tests.lib.test_surface_ownership` failed
 `tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests`,
 a class, in the workflow contract, and the test compared module names only.
 The gate stops at its first failing node, so the local gate could not reach
-the governance node on any branch; that local gate, formerly W3, is now W4. The owner chose on 2026-10-14
+the governance node on any branch; that local gate, formerly W3, became W4,
+and W5 once the metadata node's timeout was added as W4. The owner chose on 2026-10-14
 (AskUserQuestion) to make the test count a class or method selection as
 reaching its module, keeping P04's single-class selection. Only
 `tests/lib/test_surface_ownership.py` changes; the duplicate check is kept.
@@ -80,6 +81,26 @@ misspelt class name is caught only when unittest runs it.
 An independent `ci-cd-engineer` review on 2026-10-14 found the code sound
 (dropped, duplicated and misspelt modules still fail; 8 tests OK) and asked
 for these document corrections, which are applied.
+
+### W4 Metadata Node Timeout
+
+With W3 in place, replays of the SPEC-0232 and SPEC-0233 merges through the
+local changed gate on 2026-10-14 passed every earlier node, then exited 124
+after about 1200 s inside `leaf.local-document-metadata-tests`, whose
+timeout was 10 minutes. The node's six argv modules, run alone with
+`python -m unittest` on `main` `f1af4b59e`, took 148 tests in 719 s (OK) with
+a host load average of about 9 on 12 cores. So 10 minutes cannot hold the
+batch on this host. The owner chose on 2026-10-14 (AskUserQuestion) to set
+it to 30 minutes, about 2.5 times the measured time. The node is in
+`public_gate.local_only_gate_ids`, so hosted `candidate-quality` never runs
+it, and no test pins the old value.
+
+An independent `ci-cd-engineer` review of `6ce05b26a` passed with notes: the
+contract changes in one line, the contract accepts 1 to 60 minutes, the
+runner uses `timeout_minutes * 60` per node, and the package pairs are
+consistent. Its wrapping and evidence notes are applied. The changed gate on
+this branch exited 0 in 557 s, but its path selection reached neither
+timeout node, so it does not bear on criterion 3.
 
 ### Direct Push to Main
 
@@ -105,7 +126,10 @@ is not the authenticated pull request merge); #448 was rebased onto
 | CI review | 1 | W2 | Independent `ci-cd-engineer` review: approve with notes, notes applied | `682840106` | PASS | Inputs and Authorization | - |
 | Reachability | 4 | W3 | `tests.lib.test_surface_ownership` RED on `1e7e2ba84` (1 failure), GREEN with the change (8 tests) | `a35f1e0af` on `1e7e2ba84` | PASS | W3 Reachability of Class Selections | - |
 | CI review W3 | 4 | W3 | Independent `ci-cd-engineer` review: code sound, document notes applied | `a35f1e0af` | PASS | W3 Reachability of Class Selections | - |
-| Local gate | 3 | W4 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
+| Metadata runtime | 5 | W4 | Metadata node module batch on this host: 148 tests, 719 s | `f1af4b59e` | PASS | W4 Metadata Node Timeout | - |
+| Contract W4 | 5 | W4 | CI gate contract and reachability tests (36); workflow contract check (5 workflows); changed metadata 0 violations | `6ce05b26a` | PASS | W4 Metadata Node Timeout | - |
+| CI review W4 | 5 | W4 | Independent `ci-cd-engineer` review: pass with notes, notes applied | `6ce05b26a` | PASS | W4 Metadata Node Timeout | - |
+| Local gate | 3 | W5 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
 
@@ -115,6 +139,7 @@ is not the authenticated pull request merge); #448 was rebased onto
 | 2 | pending | - | - |
 | 3 | pending | - | - |
 | 4 | pending | - | - |
+| 5 | pending | - | - |
 
 ## Review and Completion
 

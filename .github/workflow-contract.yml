@@ -574,7 +574,7 @@
       ],
       "cwd": ".",
       "allowed_env_keys": [],
-      "timeout_minutes": 10,
+      "timeout_minutes": 30,
       "opaque": true,
       "suite_key": "local-document-metadata-tests"
     },
