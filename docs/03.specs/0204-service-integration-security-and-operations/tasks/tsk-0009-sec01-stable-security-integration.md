@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.15"
+version: "0.4.16"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1827,6 +1827,40 @@ reachable through the selected exporter health/source path. A Go1.27.2 owned
 rebuild is the recommended remediation and remains pending. No exporter image
 was deployed and no exporter post-deployment metric acceptance ran.
 
+### Owned OpenBao applicability dispositions — 2026-10-14
+
+This follows up the "pending" applicability review recorded under attempt3.
+On the owned binary `f0b103b853891539cfe4c01421074077de8b3665b189ecbe3159f7966d876a51`,
+extracted read-only from manifest `46bf9b5c`, `go version -m` lists
+`golang.org/x/crypto` v0.57.0, `github.com/ProtonMail/go-crypto` v1.4.1 and
+`github.com/cloudflare/circl` v1.6.3. `go tool nm` finds 0 symbols under
+`golang.org/x/crypto/openpgp` and 568 under
+`github.com/ProtonMail/go-crypto/openpgp`; x/crypto contributes 22 other
+packages (acme, argon2, bcrypt, blake2b, blowfish, cast5, chacha20,
+chacha20poly1305, cryptobyte, curve25519, hkdf, poly1305, ocsp, pbkdf2,
+pkcs12, scrypt, sha3, ssh and others).
+
+- **GO-2026-5932** (<https://pkg.go.dev/vuln/GO-2026-5932>, published
+  2026-07-07): every symbol of the seven `golang.org/x/crypto/openpgp`
+  packages, all versions, no fix; it recommends the ProtonMail fork. The
+  advisory deprecates the package itself rather than describing a parsing
+  defect the fork would share. Disposition: not affected, because the
+  packages are absent from the binary.
+- **CVE-2025-60876** (<https://security.alpinelinux.org/vuln/CVE-2025-60876>):
+  BusyBox wget through 1.37.0; the Alpine tracker lists `busybox`
+  1.37.0-r31, the image's version, as possibly vulnerable in every branch
+  including edge, with no fixed version. The three matches (`busybox`,
+  `busybox-binsh`, `ssl_client`) are the same package and its wget HTTPS
+  helper, and the "dormant wget residual" is this same item. No OpenBao
+  entrypoint, start, health or backup script runs `wget` or `ssl_client`,
+  and the image entrypoint script contains no `wget`. Disposition: affected
+  but unreachable; no rebuild can fix it; it waits for owner acceptance.
+
+Both OpenBao ledger rows now carry these URLs and dispositions in
+`advisory_urls` and `applicability`, marked as pending independent
+verification. The latest and security gates exit 2 before and after the
+change. No owner acceptance, HOME change or criterion decision is implied.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
@@ -1851,6 +1885,7 @@ and its later observations are recorded above.
 | Owned OpenBao packaging reproducibility | 15 | W31 | Two independently verified R4 compiles and two new R5 runtime assemblies; exact fullOCI equality, apk.log absent, independent post-run IaC acceptance | R5packetc318; actionfreeze3d966dae; manifest46bf | PASS | Owned OpenBao reproducibility and local import — 2026-10-14 | - |
 | Owned OpenBao import and version validator assumptions | 15 | W31 | Initial absent-tag assumption; wrong /bin/bao path; built vs actual committed output expectation; original failures retained | acceptedmanifest46bf, public exact receipts | FAIL | Owned OpenBao reproducibility and local import — 2026-10-14 | - |
 | Owned OpenBao local identity and recorded version | 15 | W31 | One import, absent owned tag attached, tag@digest resolves; separate pure validation of existing exact owned version/client0, exact probe cleanup | archivee8b428/manifest46bf/config7ee | PASS | Owned OpenBao reproducibility and local import — 2026-10-14 | Owned OpenBao import and version validator assumptions |
+| Owned OpenBao applicability dispositions | 15 | W31 | Read-only module and symbol listing of binary f0b103b8; primary advisories GO-2026-5932 and CVE-2025-60876; ledger rows updated; gate exits unchanged | Owned manifest 46bf9b5c | PASS | Owned OpenBao applicability dispositions — 2026-10-14 | - |
 
 ## Criterion Acceptance
 

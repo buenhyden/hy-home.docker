@@ -5476,8 +5476,12 @@
       "target_config_digest": "sha256:7ee363935e49f667e408afda590dbc60182cea82587fea3a94a1d8a74586e1d1",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-01T14:03:19Z",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
+      "advisory_urls": [
+        "https://pkg.go.dev/vuln/GO-2026-5932",
+        "https://security.alpinelinux.org/vuln/CVE-2025-60876",
+        "https://nvd.nist.gov/vuln/detail/CVE-2025-60876"
+      ],
+      "applicability": "REVIEWED_PENDING_INDEPENDENT_VERIFICATION: GO-2026-5932 NOT_AFFECTED - advisory covers only golang.org/x/crypto/openpgp packages (all symbols, no fix); go tool nm on owned binary f0b103b853891539cfe4c01421074077de8b3665b189ecbe3159f7966d876a51 finds 0 golang.org/x/crypto/openpgp symbols, x/crypto v0.57.0 contributes 22 other packages, OpenPGP comes from github.com/ProtonMail/go-crypto v1.4.1 (568 symbols), the replacement the advisory recommends. CVE-2025-60876 AFFECTED_UNREACHABLE - BusyBox wget (busybox, busybox-binsh, ssl_client 1.37.0-r31); Alpine tracker lists no fixed version in any branch including edge r31; no OpenBao entrypoint, start, health or backup script runs wget or ssl_client; residual awaits owner acceptance. Observed 2026-10-14.",
       "support_end": "UNKNOWN",
       "compatibility": "PASS_SYNTHETIC_ONLY: exact owned candidate, 4 native cases; HOME compatibility/adoption NOT_RUN",
       "backup": "NOT_RUN",
@@ -5754,8 +5758,12 @@
       "target_config_digest": "sha256:7ee363935e49f667e408afda590dbc60182cea82587fea3a94a1d8a74586e1d1",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-01T14:03:19Z",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
+      "advisory_urls": [
+        "https://pkg.go.dev/vuln/GO-2026-5932",
+        "https://security.alpinelinux.org/vuln/CVE-2025-60876",
+        "https://nvd.nist.gov/vuln/detail/CVE-2025-60876"
+      ],
+      "applicability": "REVIEWED_PENDING_INDEPENDENT_VERIFICATION: GO-2026-5932 NOT_AFFECTED - advisory covers only golang.org/x/crypto/openpgp packages (all symbols, no fix); go tool nm on owned binary f0b103b853891539cfe4c01421074077de8b3665b189ecbe3159f7966d876a51 finds 0 golang.org/x/crypto/openpgp symbols, x/crypto v0.57.0 contributes 22 other packages, OpenPGP comes from github.com/ProtonMail/go-crypto v1.4.1 (568 symbols), the replacement the advisory recommends. CVE-2025-60876 AFFECTED_UNREACHABLE - BusyBox wget (busybox, busybox-binsh, ssl_client 1.37.0-r31); Alpine tracker lists no fixed version in any branch including edge r31; no OpenBao entrypoint, start, health or backup script runs wget or ssl_client; residual awaits owner acceptance. Observed 2026-10-14.",
       "support_end": "UNKNOWN",
       "compatibility": "PASS_SYNTHETIC_ONLY: exact owned candidate, 4 native cases; HOME compatibility/adoption NOT_RUN",
       "backup": "NOT_RUN",
