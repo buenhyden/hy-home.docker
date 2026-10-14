@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.10"
+version: "0.12.11"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -1077,7 +1077,9 @@ docker compose --profile backup run --rm --no-deps \
 중단: exit64는 입력 누락이나 symlink, exit65는 R2 저장소 문제·snapshot ID 없음·바이트
 불일치다. 어느 경우에도 W4를 열지 않는다. 불일치 뒤 다시 실행하면 새 snapshot이 하나 더
 생길 뿐 이전 것은 지워지지 않는다. 전체 repository copy를 이번 두 산출물의 전달 성공으로
-대체하지 않는다.
+대체하지 않는다. `artifact`는 snapshot의 SHA-256이 W3 receipt에 적힌 값과 다르거나 입력이
+비어 있으면 exit64로 멈춘다. 이 snapshot은 자기 host·tag 묶음에 혼자 있어 월간
+`forget-prune`이 지우지 않으므로, W4 수용 뒤 R2에서 언제 지울지는 owner가 따로 정한다.
 W4는 W3a semantic restore와 이 W3b receipt가 모두 수용된 뒤에만 실행합니다.
 
 **W4 server 업그레이드와 수동 unseal.**

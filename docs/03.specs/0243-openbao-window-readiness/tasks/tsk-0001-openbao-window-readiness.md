@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -206,6 +206,15 @@ even a lock file: the repository was reachable and decrypted with 45
 snapshots and none under the W3 tag. RUN-0085's reachability check now uses
 the same lock-free form.
 
+An independent `security-auditor` review of `bab3124fc` passed with notes
+(two Low). Applied: the branch sets `pipefail`, so a failed restic is not
+hidden behind `sed` or `sha256sum`, and a failed read-back says so; empty
+inputs are refused; and the snapshot's SHA-256 must appear in its W3 receipt
+before anything is sent. The runbook notes that a lone W3 snapshot survives
+the monthly prune, so its removal is a separate owner decision. The native
+rehearsal now also stops a snapshot its receipt does not name and an empty
+receipt with exit 64, before any backup (5 tests OK).
+
 ### W6 CA Mounts, Logrotate and W4 Rollback
 
 A read-only comparison on 2026-10-14 found that Compose already declares the
@@ -265,6 +274,7 @@ runs the W5 and W6 tests in CI.
 | Role apply re-review | 7 | W3 | Independent `iac-reviewer` re-review of the fixes: PASS with notes, notes applied; 17 tests OK with both native runs; CI gate tests OK | `3e080d999` | PASS | W3 Renderer Role Apply | - |
 | R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
 | R2 read-only rehearsal | 5 | W5 | `restic-offsite cmd snapshots --no-lock --json` against HOME's R2 repository, owner-approved: reachable and decrypted, 45 snapshots, latest 2026-10-13T18:42:46, none tagged `hy-home-openbao-w3`; no write, no lock | HOME R2 on 2026-10-14 | PASS | W5 R2 Artifact Transfer | - |
+| R2 artifact review | 7 | W5 | Independent `security-auditor` review: PASS with notes, notes applied; 5 tests OK including the native rehearsal | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
 | Window overrides | 6 | W6 | Compose config with and without the override differs only in the Traefik and Prometheus image; CA mounts kept; contract test OK; timer drop-in passes `systemd-analyze verify` on a copy of the host units | `ccfa88e05`; running images observed 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 | W4 rollback decision | 6 | W6 | Owner chose fix-forward (AskUserQuestion) | Owner answer 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 | W6 review | 7 | W6 | Independent `iac-reviewer` review: PASS with notes, notes applied; contract tests and CI gate tests OK | `ccfa88e05` | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |

@@ -5,6 +5,7 @@ repository: a wrapper sets RESTIC_REPOSITORY, which the script otherwise points
 at R2. Synthetic secrets only; nothing reaches R2.
 """
 
+import hashlib
 import json
 import os
 import re
@@ -31,6 +32,8 @@ class ArtifactContractTests(unittest.TestCase):
         self.assertIn("require_initialized", body)
         self.assertIn("restic backup --json", body)
         self.assertIn('restic dump "$id"', body)
+        self.assertIn("set -o pipefail", body)
+        self.assertIn('[ ! -s "/artifact/$name" ]', body)
         for word in ("forget", "prune", "unlock", "rm ", "--force"):
             self.assertNotIn(word, body)
         for name in FILES:
@@ -56,7 +59,16 @@ class ArtifactRehearsalTests(unittest.TestCase):
         wrapper.chmod(0o755)
         self.snapshot = os.urandom(300000)
         (self.work / "artifact" / FILES[0]).write_bytes(self.snapshot)
-        (self.work / "artifact" / FILES[1]).write_text('{"synthetic": true}\n')
+        digest = hashlib.sha256(self.snapshot).hexdigest()
+        (self.work / "artifact" / FILES[1]).write_text(
+            # Same serialization as protected-snapshot-custody.publish_receipt.
+            json.dumps(
+                {"sha256": digest, "synthetic": True},
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            + "\n"
+        )
         self.assertEqual(self.docker("init").returncode, 0, "synthetic init failed")
 
     def cleanup(self):
@@ -116,6 +128,15 @@ class ArtifactRehearsalTests(unittest.TestCase):
         self.assertEqual([item["name"] for item in receipt["files"]], list(FILES))
         self.assertEqual(receipt["files"][0]["bytes"], len(self.snapshot))
         self.assertNotIn("synthetic-restic", result.stdout + result.stderr)
+
+    def test_snapshot_not_named_by_its_receipt_stops_before_any_backup(self):
+        (self.work / "artifact" / FILES[0]).write_bytes(b"other bytes")
+        self.assertEqual(self.docker("artifact").returncode, 64)
+        self.assertNotIn("hy-home-openbao-window", self.docker("snapshots").stdout)
+
+    def test_empty_input_stops_before_any_backup(self):
+        (self.work / "artifact" / FILES[1]).write_bytes(b"")
+        self.assertEqual(self.docker("artifact").returncode, 64)
 
     def test_missing_or_linked_input_stops_before_any_backup(self):
         receipt = self.work / "artifact" / FILES[1]

@@ -90,14 +90,24 @@ case "$action" in
         # RUN-0085 W3b: store the W3 OpenBao snapshot and its receipt, mounted
         # read-only at /artifact, then read both back from R2 and compare.
         # Prints only names, sizes, SHA-256 and the snapshot ID; no retry.
+        # A failed restic must fail the pipe, not hide behind sed or sha256sum.
+        # shellcheck disable=SC3040 # busybox ash in the restic image supports it.
+        set -o pipefail
         require_initialized
         files="raft-pre-upgrade.snap raft-pre-upgrade.snap.receipt.json"
         for name in $files; do
-            if [ ! -f "/artifact/$name" ] || [ -L "/artifact/$name" ]; then
-                echo "missing or non-regular /artifact/$name" >&2
+            if [ ! -f "/artifact/$name" ] || [ -L "/artifact/$name" ] ||
+                [ ! -s "/artifact/$name" ]; then
+                echo "missing, empty or non-regular /artifact/$name" >&2
                 exit 64
             fi
         done
+        # The snapshot must be the one the W3 receipt names.
+        snap_sum="$(sha256sum <"/artifact/raft-pre-upgrade.snap" | cut -d' ' -f1)"
+        if ! grep -q "\"sha256\": *\"$snap_sum\"" /artifact/raft-pre-upgrade.snap.receipt.json; then
+            echo "snapshot SHA-256 differs from its W3 receipt" >&2
+            exit 64
+        fi
         set --
         for name in $files; do set -- "$@" "/artifact/$name"; done
         id="$(restic backup --json --host hy-home-openbao-window \
@@ -107,7 +117,10 @@ case "$action" in
         entries=""
         for name in $files; do
             local_sum="$(sha256sum <"/artifact/$name" | cut -d' ' -f1)"
-            remote_sum="$(restic dump "$id" "/artifact/$name" | sha256sum | cut -d' ' -f1)"
+            remote_sum="$(restic dump "$id" "/artifact/$name" | sha256sum | cut -d' ' -f1)" || {
+                echo "R2 read-back failed for $name in snapshot $id" >&2
+                exit 65
+            }
             size="$(wc -c <"/artifact/$name" | tr -d ' ')"
             if [ "$local_sum" != "$remote_sum" ]; then
                 echo "R2 bytes differ for $name in snapshot $id" >&2
