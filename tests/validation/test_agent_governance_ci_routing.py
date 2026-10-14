@@ -2402,6 +2402,13 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "git -C . push origin main",
                 "git push origin main; echo done",
                 "git push --all origin",
+                "git push --branches origin",
+                "git push origin HEAD:heads/main",
+                "git push origin 'refs/heads/*:refs/heads/*'",
+                "git -c remote.origin.push=feat:refs/heads/main push origin",
+                "git --git-dir .git push origin main",
+                "(cd . && git push origin main)",
+                "cd /nonexistent-hy-home && git push",
             )
             for command in explicit:
                 with self.subTest(command=command):
@@ -2409,6 +2416,7 @@ class HookOutputAndMainPushTests(unittest.TestCase):
             for command in (
                 "git push origin HEAD:refs/heads/claude/x",
                 "git push origin main-fix",
+                "git push origin HEAD",
                 "git push",
             ):
                 with self.subTest(command=command):
@@ -2435,6 +2443,22 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 ["git", "checkout", "-q", "-b", "main"], cwd=repo, check=True
             )
             self.assertTrue(self._denied("git push origin", repo))
+            # On `main`, HEAD and @ name main; tags alone do not.
+            for command in ("git push -u origin HEAD", "git push origin @"):
+                with self.subTest(command=command):
+                    self.assertTrue(self._denied(command, repo))
+            self.assertFalse(self._denied("git push --tags origin", repo))
+            # Another repository on `main`, reached by directory or GIT_DIR.
+            subprocess.run(["git", "checkout", "-q", "feat"], cwd=repo, check=True)
+            other = repo / "other"
+            subprocess.run(["git", "init", "-q", "-b", "main", str(other)], check=True)
+            for command in (
+                "pushd other && git push",
+                "GIT_DIR=other/.git git push",
+                "env GIT_DIR=other/.git git push",
+            ):
+                with self.subTest(command=command):
+                    self.assertTrue(self._denied(command, repo))
 
     def test_pre_push_guard_refuses_main(self) -> None:
         guard = ROOT / "scripts/hooks/pre-push-guard.sh"
@@ -2457,6 +2481,19 @@ class HookOutputAndMainPushTests(unittest.TestCase):
         config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
         self.assertIn("pre-push", config["default_install_hook_types"])
         self.assertNotIn("pre-push", config["default_stages"])
+        # Upstream manifests declare pre-push for some hooks; pin them back.
+        for hook_id in (
+            "check-added-large-files",
+            "end-of-file-fixer",
+            "trailing-whitespace",
+        ):
+            hook = next(
+                hook
+                for repo in config["repos"]
+                for hook in repo["hooks"]
+                if hook["id"] == hook_id
+            )
+            self.assertEqual(["pre-commit", "manual"], hook["stages"], hook_id)
         hooks = [hook for repo in config["repos"] for hook in repo["hooks"]]
         guard_hook = next(hook for hook in hooks if hook["id"] == "block-main-push")
         self.assertEqual(["pre-push"], guard_hook["stages"])
@@ -2478,6 +2515,7 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                     self.assertEqual(binding["command"], hook["command"])
                     self.assertEqual(binding["timeout"], hook["timeout"])
                     self.assertEqual(binding["matcher"], entry.get("matcher"))
+                    self.assertEqual(binding.get("on_failure"), hook.get("onFailure"))
 
     def test_codex_project_config_keeps_native_memory_off(self) -> None:
         import tomllib
@@ -2500,6 +2538,7 @@ class HookOutputAndMainPushTests(unittest.TestCase):
             "Read(~/.ssh/**)",
             "Edit(./secrets/**)",
             "Edit(./.env)",
+            "Edit(./**/.env)",
             "Bash(git push * main)",
             "Bash(git push *:refs/heads/main)",
         ):

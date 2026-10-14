@@ -41,9 +41,10 @@ and the hosted candidate.
 ## Risks and Rollback
 
 - **Fail-closed PreToolUse.** With `onFailure: block`, a hook slower than 30 s
-  denies the tool. The timeout was raised from 10 s to 30 s for that reason.
+  denies the tool, per the documentation; this is not observed. The timeout was raised from 10 s to 30 s for that reason.
 - **Stricter reads.** Denying `.env` stops agents reading it through file
-  tools and the Bash file commands Claude Code recognizes; a key-only
+  tools and, per the documentation, the Bash file commands Claude Code
+  recognizes; a key-only
   comparison then needs the owner's approval for that read.
 - **Push-time guard.** It runs only after the owner installs it with
   `pre-commit install --hook-type pre-push`.

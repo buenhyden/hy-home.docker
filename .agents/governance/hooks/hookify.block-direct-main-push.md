@@ -12,17 +12,6 @@ name: "block-direct-main-push"
 pattern: "\\bgit(\\s+-C\\s+\\S+)*\\s+push\\b[^;&|\\n]*?(\\s|:|\\+)(refs/heads/)?main(\\s|$|[;&|])"
 ---
 
-**Direct push to `main` blocked (project rule)**
-
-`.agents/governance/github-governance.md` — Repository Protection Contract:
-
-> "Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks."
-
-> "No exceptions is mandatory agent behavior even when GitHub admin enforcement does not fully enforce the same boundary."
-
-**Correct workflow:**
-
-```bash
 # BLOCKED: direct push to main
 
 ## Overview
@@ -31,23 +20,36 @@ Apply the declared `block` action for block-direct-main-push.
 
 ## Scope
 
-The declared `bash` event and `pattern` match an explicit `main` destination in
-any form (`main`, `HEAD:main`, `HEAD:refs/heads/main`, `+main`, `-u`, `--force`,
-`git -C <dir>`, compound commands). A push whose refspec is implicit
-(`git push`, `git push origin`, `--all`, `--mirror`) is judged by the dispatcher
-against the branch and push target of the directory it runs in. The tracked
-`pre-push` hook in `.pre-commit-config.yaml` applies the same boundary to every
-push from the checkout, including editor sync, once installed. Native event
-delivery remains a separate observation.
+`.agents/governance/github-governance.md` — Repository Protection Contract:
+
+> "Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks."
+
+> "\"No exceptions\" is mandatory agent behavior even when GitHub admin enforcement or repository rulesets do not fully enforce the same boundary."
+
+The declared `bash` event and `pattern` match an explicit `main` destination
+(`main`, `HEAD:main`, `HEAD:refs/heads/main`, `+main`, `-u`, `--force`,
+`git -C <dir>`, compound commands). The dispatcher judges what the text cannot
+show: `HEAD` and `@`, implicit refspecs, `heads/main`, wildcard refspecs,
+`--all`, `--branches`, `--mirror`, `-c` push settings, and the repository a
+push runs in (`cd`, `pushd`, `git -C`, `--git-dir`, `GIT_DIR`). A push from a
+repository it cannot read is denied.
+
+The tracked `pre-push` guard in `.pre-commit-config.yaml` covers pushes no
+agent hook sees, once installed, with known limits: under pre-commit it sees
+only the first pushed ref with new commits, pre-commit skips deletions and
+pushes it judges empty, and `--no-verify` skips it. Native event delivery and
+editor sync remain separate observations. Only a remote ruleset without bypass
+enforces the boundary.
 
 ## Rules
 
+```bash
+# BLOCKED: direct push to main
 git push origin main
 git push origin HEAD:main
 
 # ALLOWED: push a feature branch and open a PR
-git push origin feat/42-my-feature
-git push origin fix/17-bug-fix
+git push origin HEAD:refs/heads/feat/42-my-feature
 # Create a GitHub PR, then review and merge through the governed flow.
 ```
 

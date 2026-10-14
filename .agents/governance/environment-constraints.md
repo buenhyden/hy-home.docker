@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.3.1"
+version: "1.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -46,9 +46,10 @@ Local repository work, infrastructure execution, secrets handling, verification 
   secret values or shell history as comparison input.
 - On this host Codex's `bubblewrap` sandbox cannot start (`bwrap: loopback:
   Failed RTM_NEWADDR: Operation not permitted`), so a Codex session or role in
-  `workspace-write` cannot write files. A live Codex run that must write uses
-  `danger-full-access` in a disposable worktree with a prompt limited to the
-  intended edit, and records that choice in its Task.
+  `workspace-write` cannot write files. This records the limit only. A
+  `danger-full-access` run relaxes the native sandbox and is a protected
+  operation under [approval boundaries](approval-boundaries.md): it needs the
+  owner's authorization for that run, with its exact target recorded in the Task.
 
 ### 2. Infrastructure Constraints
 

@@ -29,7 +29,8 @@
       "Read(./**/.env)",
       "Read(~/.ssh/**)",
       "Edit(./secrets/**)",
-      "Edit(./.env)"
+      "Edit(./.env)",
+      "Edit(./**/.env)"
     ]
   },
   "hooks": {

@@ -244,36 +244,40 @@ IMPLICIT_MAIN_PUSH = Rule(
         "HEAD:refs/heads/<branch>`) and open a pull request."
     ),
 )
-_SEPARATORS = re.compile(r"&&|\|\||[;&|\n]")
+_SEPARATORS = re.compile(r"&&|\|\||[;&|\n()]")
 _VALUE_OPTIONS = frozenset(
     {"-o", "--push-option", "--repo", "--receive-pack", "--exec"}
 )
+_ALL_BRANCHES = frozenset({"--all", "--branches", "--mirror"})
+_MAIN = frozenset({"main", "heads/main", "refs/heads/main"})
+_PREFIXES = frozenset({"env", "command", "exec", "nohup", "time", "sudo"})
+_ASSIGNMENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*=.*")
+_LOCATION_OPTIONS = ("--git-dir", "--work-tree")
 
 
-def _git(directory: pathlib.Path, *arguments: str) -> str:
+def _git(directory: pathlib.Path, location: list[str], *arguments: str) -> str | None:
     try:
         result = subprocess.run(
-            ["git", "-C", str(directory), *arguments],
+            ["git", "-C", str(directory), *location, *arguments],
             capture_output=True,
             text=True,
             timeout=3,
             check=False,
         )
     except (OSError, subprocess.SubprocessError):
-        return ""
-    return result.stdout.strip() if result.returncode == 0 else ""
-
-
-def _targets_main(refspec: str) -> bool:
-    destination = refspec.lstrip("+").rpartition(":")[2] or refspec.lstrip("+")
-    return destination in {"main", "refs/heads/main"}
+        return None
+    return result.stdout.strip() if result.returncode == 0 else None
 
 
 def implicit_main_push(command: str, cwd: pathlib.Path) -> bool:
-    """Return whether any `git push` in `command` would update `main`.
+    """Return whether any `git push` in `command` could update `main`.
 
-    Explicit refspecs are judged by text; an implicit one by the branch and
-    push target of the directory the push runs in (`cd` and `git -C` honoured).
+    Explicit refspecs are judged by text, `HEAD` and `@` by the current branch,
+    and an implicit refspec by the branch and push target of the repository
+    the push runs in (`cd`, `pushd`, `git -C`, `--git-dir`, `--work-tree`,
+    `GIT_DIR` and `GIT_WORK_TREE` honoured). A wildcard refspec, a push of
+    every branch, a `-c` push setting naming `main`, and a repository that
+    cannot be read all count as pushes to `main`.
     """
 
     # ponytail: splits on shell separators without quote awareness; a separator
@@ -284,45 +288,79 @@ def implicit_main_push(command: str, cwd: pathlib.Path) -> bool:
             tokens = shlex.split(segment)
         except ValueError:
             continue
+        location: list[str] = []
+        while tokens and (tokens[0] in _PREFIXES or _ASSIGNMENT.fullmatch(tokens[0])):
+            name, _, value = tokens.pop(0).partition("=")
+            if name in {"GIT_DIR", "GIT_WORK_TREE"} and value:
+                option = "--git-dir" if name == "GIT_DIR" else "--work-tree"
+                location.append(f"{option}={value}")
         if not tokens:
             continue
-        if tokens[0] == "cd" and len(tokens) > 1:
+        if tokens[0] in {"cd", "pushd"} and len(tokens) > 1:
             directory = directory / pathlib.Path(tokens[1]).expanduser()
             continue
-        if tokens[0] != "git":
+        if pathlib.PurePath(tokens[0]).name != "git":
             continue
         here = directory
         index = 1
         while index < len(tokens) and tokens[index].startswith("-"):
-            if tokens[index] == "-C" and index + 1 < len(tokens):
-                here = here / tokens[index + 1]
+            option = tokens[index]
+            value = tokens[index + 1] if index + 1 < len(tokens) else ""
+            if option == "-C":
+                here = here / value
                 index += 2
-            elif tokens[index] == "-c":
+            elif option == "-c":
+                if "push" in value.lower() and "main" in value:
+                    return True
+                index += 2
+            elif option in _LOCATION_OPTIONS:
+                location.append(f"{option}={value}")
+                index += 2
+            elif option.startswith(tuple(f"{name}=" for name in _LOCATION_OPTIONS)):
+                location.append(option)
+                index += 1
+            elif option in {"--namespace", "--config-env", "--super-prefix"}:
                 index += 2
             else:
                 index += 1
         if index >= len(tokens) or tokens[index] != "push":
             continue
         positional = []
-        rest = tokens[index + 1 :]
         skip = False
-        for token in rest:
+        for token in tokens[index + 1 :]:
             if skip:
                 skip = False
-            elif token in {"--all", "--mirror"}:
+            elif token in _ALL_BRANCHES:
                 return True
             elif token in _VALUE_OPTIONS:
                 skip = True
             elif not token.startswith("-"):
                 positional.append(token)
-        if any(_targets_main(refspec) for refspec in positional[1:]):
+        refspecs = positional[1:]
+        if not refspecs and "--tags" in tokens:
+            continue
+        branch = _git(here, location, "rev-parse", "--abbrev-ref", "HEAD")
+        if branch is None:
             return True
-        if len(positional) <= 1:
-            if _git(here, "rev-parse", "--abbrev-ref", "HEAD") == "main":
+        for refspec in refspecs:
+            source, colon, destination = refspec.lstrip("+").partition(":")
+            if not colon:
+                destination = source
+            if destination in {"HEAD", "@"}:
+                destination = branch
+            if "*" in refspec or destination in _MAIN:
+                return True
+        if not refspecs:
+            if branch == "main":
                 return True
             target = _git(
-                here, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{push}"
+                here,
+                location,
+                "rev-parse",
+                "--abbrev-ref",
+                "--symbolic-full-name",
+                "@{push}",
             )
-            if target.endswith("/main"):
+            if target is not None and target.endswith("/main"):
                 return True
     return False

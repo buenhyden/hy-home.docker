@@ -63,9 +63,10 @@ approval visible; this adapter cannot present any of them as completion.
 Static source structure and renderer parity do not prove live picker discovery,
 skill invocation, trusted hook delivery, entitlement, or runtime acceptance.
 Hook delivery also depends on user-global Codex state this adapter does not
-own: project trust and hook enablement. Observed so far: `apply_patch` triggers
-PostToolUse and its `additionalContext` reaches the model; a PreToolUse denial
-of `apply_patch` has not been observed. Codex's sandbox cannot start on this
+own: project trust and hook enablement. Observed on 2026-10-13 with codex-cli
+0.162.1, a dated observation the Stage 03 record holds:
+`apply_patch` triggers PostToolUse and its `additionalContext` reaches the
+model. A PreToolUse denial of `apply_patch` has not been observed. Codex's sandbox cannot start on this
 host, as the [environment constraints](../.agents/governance/environment-constraints.md#1-hard-constraints)
 record.
 Record those as unverified until directly observed within separate authorization.

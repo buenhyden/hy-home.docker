@@ -616,11 +616,13 @@ def _validate_registry(
             )
             _exact_keys(
                 contract,
-                {"command", "timeout", "matcher", "executable"},
+                {"command", "timeout", "matcher", "executable"}
+                | ({"on_failure"} if "on_failure" in contract else set()),
                 field=f"hook_contracts.{provider_id}.{event}",
             )
             if (
-                not isinstance(contract.get("command"), str)
+                contract.get("on_failure", "block") != "block"
+                or not isinstance(contract.get("command"), str)
                 or not contract.get("command")
                 or not isinstance(contract.get("timeout"), int)
                 or isinstance(contract.get("timeout"), bool)

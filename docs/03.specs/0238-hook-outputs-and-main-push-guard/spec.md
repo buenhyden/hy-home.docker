@@ -68,12 +68,15 @@ reads of secrets (AskUserQuestion).
    name the tools Codex emits. The native hook files equal the Registry
    contract.
 4. A PreToolUse `git push` that would update `main` is denied in every
-   explicit form and, for an implicit refspec, by the branch and push target
-   of the directory it runs in. A tracked `pre-push` guard refuses any push
-   to `refs/heads/main` once installed.
-5. Claude settings deny reading or editing `secrets/**`, `.env` and `~/.ssh`,
-   deny explicit pushes to `main`, drop the grep/rg allows, and fail closed
-   when the PreToolUse hook times out.
+   explicit form, for `HEAD`, `@` and an implicit refspec by the branch and
+   push target of the repository it runs in, and when that repository cannot
+   be read. A tracked `pre-push` guard refuses a push to `refs/heads/main`
+   once installed, within the limits the pre-commit shim imposes; only a
+   remote ruleset without bypass enforces the boundary.
+5. Claude settings deny the Read and Edit tools on `secrets/**`, `.env` and
+   `~/.ssh` under the session directory, deny explicit pushes to `main`, drop
+   the grep/rg allows, and set the Registry-owned `on_failure: block` on
+   PreToolUse so a timed-out hook is documented to deny the tool.
 6. Policy and adapters state the Codex sandbox limit and the unobserved Codex
    claims.
 
@@ -87,7 +90,8 @@ reads of secrets (AskUserQuestion).
 3. Tests show every listed main-push form denied, feature-branch pushes
    allowed, and the pre-push guard refusing main; the main-push tests fail
    against `main`.
-4. A test shows the settings deny rules and the removed allows.
+4. Tests show the settings deny rules, the removed allows, and the
+   PreToolUse `onFailure` value equal to the Registry binding.
 5. The governance contract, renderer check, script manifest, workflow
    contract, changed metadata, corpus lifecycle and links pass, and an
    independent review finds nothing blocking.
