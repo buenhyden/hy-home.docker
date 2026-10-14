@@ -133,6 +133,15 @@ Independent reviews of `f9b04c1ac` on 2026-10-14 both returned FAIL.
   reappearing file sends BKP-003 back to a share-free place, "with R2 read
   access" is stated, and "SPEC-0240 기준 4" replaces the ambiguous "W4".
 
+### W5 Review Round 2
+
+Re-reviews of `fc2a62155` on 2026-10-14: `security-auditor` PASS with notes
+and `rules-engineer` PASS with notes; every Round 1 finding was confirmed
+fixed. Notes applied: RUN-0085 no longer says the old snapshots can be deleted
+right after the lock period, it points to condition (2); the TSK-0006 entry
+moved into date order. Left as a recommendation: a reviewed deletion tool
+could also confirm with `restic check` that no pre-exclusion data remains.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -145,6 +154,9 @@ Independent reviews of `f9b04c1ac` on 2026-10-14 both returned FAIL.
 | Place rule text | 5 | W5 | Changed metadata, markdownlint and links for RUN-0085, POL-0085 and this package | `f9b04c1ac` | PASS | W5 Single-Administrator Places | - |
 | Rules review W5 | 5 | W5 | Independent `rules-engineer` review: table rejects the allowed layout; stale approver wording; criterion wording | `f9b04c1ac` | FAIL | W5 Review Round 1 | - |
 | Security review W5 | 5 | W5 | Independent `security-auditor` review: daily copy re-uploads deleted R2 snapshots; deletion record is not state proof | `f9b04c1ac` | FAIL | W5 Review Round 1 | - |
+| Security re-review W5 | 5 | W5 | Independent `security-auditor` re-review: PASS with notes, notes applied | `fc2a62155` | PASS | W5 Review Round 2 | Security review W5 |
+| Rules re-review W5 | 5 | W5 | Independent `rules-engineer` re-review: PASS with notes, notes applied | `fc2a62155` | PASS | W5 Review Round 2 | Rules review W5 |
+| Place rule checks | 5 | W5 | Changed metadata, markdownlint and links on the final text | Branch after `fc2a62155` | PASS | W5 Review Round 2 | - |
 | Merge gate | 4 | W4 | RUN-0085 step 5 `owner-attested` before merge | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

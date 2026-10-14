@@ -526,7 +526,8 @@ rekey는 실행 중인 cluster의 unseal key만 바꾼다. rekey 전에 만든 R
 host snapshot(옛 share)과 rekey 이전 Raft snapshot이 함께 남아 있는 동안 노출은 계속된다.
 R2 bucket lock은 30일이고, 12개월은 owner가 확인을 넣어 실행하는 `forget-prune`의 보존
 정책일 뿐 자동 만료가 아니다. 노출은 제외 이전 host snapshot을 local과 R2에서 지울 때
-끝나며, 그 삭제는 lock 기간 뒤 별도 승인된 작업이다.
+끝나며, 그 삭제는 별도 승인된 작업이다. 지금 추적되는 도구로는 특정 snapshot을 지울 수 없어서
+검토된 새 도구나 보존 기간 경과가 필요하다(아래 분리 규칙의 조건 (2)).
 
 **분리 규칙.** off-host 보관 장소에 적용한다.
 

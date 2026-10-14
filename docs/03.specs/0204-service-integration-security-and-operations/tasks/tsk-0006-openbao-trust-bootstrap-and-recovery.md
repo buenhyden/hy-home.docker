@@ -2278,16 +2278,6 @@ not change the keys a pre-rekey Raft snapshot opens with, so the exposure ends
 only when pre-exclusion host snapshots are deleted. Nothing ran on HOME; step 5 and
 criterion 11 stay as before.
 
-### Single-Administrator Custody Places — 2026-10-14
-
-The owner stated that one administrator holds every place and chose three
-places with a condition (AskUserQuestion). RUN-0085 0.10.0 now counts places,
-not people: three places, one share each; BKP-003 apart from the R2
-credentials and Cloudflare account access, and from every share until the
-exclusion is confirmed (SPEC-0240 criterion 4) and listings of the local host
-and R2 repositories show no pre-exclusion host snapshot. The first storage still needs a fourth, share-free
-place. Step 5 is attested against that table; SPEC-0240 W5 holds the record.
-
 ### Agent Alert Source — 2026-10-14
 
 SPEC-0239 added the Agent telemetry, scrape and alerts the 2026-10-13 gap
@@ -2298,6 +2288,16 @@ It is not deployed: the Agent recreate needs a fresh wrapped SecretID, then a
 Prometheus restart, both separately approved. A render that goes stale while
 authentication works still shows only as Docker `unhealthy`. RUN-0085 0.9.1
 states this; the gap row stays NOT_RUN until deployment.
+
+### Single-Administrator Custody Places — 2026-10-14
+
+The owner stated that one administrator holds every place and chose three
+places with a condition (AskUserQuestion). RUN-0085 0.10.0 now counts places,
+not people: three places, one share each; BKP-003 apart from the R2
+credentials and Cloudflare account access, and from every share until the
+exclusion is confirmed (SPEC-0240 criterion 4) and listings of the local host
+and R2 repositories show no pre-exclusion host snapshot. The first storage still needs a fourth, share-free
+place. Step 5 is attested against that table; SPEC-0240 W5 holds the record.
 
 ## Evidence
 
