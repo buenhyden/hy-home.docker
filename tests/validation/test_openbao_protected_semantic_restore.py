@@ -711,7 +711,11 @@ class IntegrationBoundaryTests(unittest.TestCase):
         def docker(*args, **_kwargs):
             if args[:2] == ("image", "inspect"):
                 identity = self.subject.OLD_IMAGE if args[-1] == self.subject.OLD_IMAGE else candidate_id
-                return SimpleNamespace(stdout=(identity + "\n").encode(), returncode=0)
+                # With the containerd store, --platform names the platform manifest
+                # of a multi-arch upstream tag, not the local image ID.
+                if any(arg.startswith("--platform") for arg in args):
+                    return SimpleNamespace(stdout=("sha256:" + "9" * 64 + "\n").encode(), returncode=0)
+                return SimpleNamespace(stdout=(identity + " linux/amd64\n").encode(), returncode=0)
             return SimpleNamespace(stdout=b"", returncode=1)
 
         effect.runtime.docker.side_effect = docker
@@ -719,6 +723,15 @@ class IntegrationBoundaryTests(unittest.TestCase):
         effect.runner.run.return_value = SimpleNamespace(stdout=b"tmpfs\n", returncode=0)
         effect.preflight()
         self.assertEqual(effect.runtime.docker.call_count, 6)
+        for wrong in (" linux/arm64", " linux/amd64 extra"):
+            def other(*args, wrong=wrong, **_kwargs):
+                if args[:2] == ("image", "inspect"):
+                    return SimpleNamespace(stdout=(self.subject.OLD_IMAGE + wrong + "\n").encode(), returncode=0)
+                return docker(*args)
+            effect.runtime.docker.side_effect = other
+            with self.subTest(wrong=wrong), self.assertRaises(self.subject.Blocked):
+                effect.preflight()
+        effect.runtime.docker.side_effect = docker
         stage = self.root / "stage"
         stage.mkdir()
         effect._materialize_artifacts(stage)

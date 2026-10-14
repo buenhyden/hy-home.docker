@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.11"
+version: "0.1.12"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -201,6 +201,67 @@ plan and apply `prior_sha256` values, stops at W1c if the Agent is unhealthy,
 and W7 keeps root while a W1c rollback decision is open. The test is now in
 `.github/workflow-contract.yml`, so CI runs it.
 
+### W4 W3a Input Producers
+
+`protected-restore-inputs.py` produces the four inputs the restore client
+consumes, each as a new owner-private file that is never overwritten:
+
+- `lease-start` records the writer-stop time before W3; `lease-bind` then
+  writes the quiescence lease bound to the W3 receipt's SHA-256 and refuses a
+  snapshot saved before writers stopped or a lease longer than 90 minutes.
+- `bundle` extracts the seven Agent files from one reviewed commit through
+  `git show` with a clean environment, mode 0400, plus the
+  `{source_revision, sha256}` receipt the restore client checks. The renderer
+  helper keeps its existing installer.
+- `security-receipt` freezes the two OpenBao ledger rows with the ledger's
+  SHA-256.
+- `contract` validates the snapshot archive, matches it to the W3 receipt
+  and the lease, resolves the candidate image ID, and writes the contract only
+  through the restore client's own `_contract` schema check.
+
+Ten unit tests feed each output to the restore client's validators: the
+bound lease passes `QuiescenceLease.recheck` and fails after expiry, the
+bundle matches its revision, and the contract passes `_contract` while a
+mismatched snapshot or a wrong candidate writes nothing. With the loader's
+mode checks they ran in a umask 022 clone (36 OK with the restore suite).
+Removing the lease's start-before-save check fails one test; removing the
+contract's snapshot hash check is still caught by the lease hash check.
+RUN-0085 adds `lease-start` before the W3 save, `lease-bind` after it, the
+input commands before W3a, and pins the producer in the W1 manifest.
+
+Independent reviews of `0294deaf8`: `security-auditor` APPROVE with notes
+(one Medium); `iac-reviewer` REJECT, because criterion 4 had no native
+rehearsal and the candidate was not bound to the approved commit. Applied:
+
+- The producer reads Git through held descriptors, verifies `^{commit}` and
+  rechecks the checkout identity, as `install-renderer-issuer.sh` does; the
+  candidate is the one owned image the Compose file pins at that commit.
+- `contract` checks that both receipts name the revision, deletes a contract
+  that fails the restore's schema check, and the lease refuses a save more
+  than 30 minutes after writers stopped. Every failure prints BLOCKED.
+- RUN-0085: one commit for helper, bundle, receipt and candidate; a shell
+  function instead of a word-split string; exit checks; the contract digest
+  captured into the variables the restore reads; FD 4 opened and closed
+  around the restore; a BLOCKED rerun keeps the lease; the restore starts at
+  least 17 minutes before expiry; the inputs are copied to durable owner
+  storage; the lease records the operator's claim rather than proving it.
+- A native rehearsal now runs the whole chain on a real 2.6.2 synthetic
+  server: a real Raft snapshot, `lease-start`/`lease-bind`, the real helper
+  installer, `bundle`, `security-receipt` and `contract` through the CLI,
+  then the restore client's own `_contract`, `QuiescenceLease`, `Admission`
+  with `pre_read`, and `preflight`, stopping before any effect.
+
+The rehearsal found two defects. The restore preflight compared
+`docker image inspect --platform=linux/amd64` against the old image ID, but
+under the containerd store that returns the multi-arch tag's platform
+manifest (`e29524…`), so W3a would always stop on HOME; it now compares the
+local image ID with `linux/amd64` (unit test RED on the old code, GREEN
+after). And `lease-bind` truncated its clock to seconds, so a bind in the
+same second as the save was refused; it no longer truncates. 15 producer
+tests (including the native one) and the restore suite pass in a umask 022
+clone. RUN-0085 repins `protected-semantic-restore.py` (`0cb31922…`) and the
+producer (`0bfc1bac…`).
+
 ### W5 R2 Artifact Transfer
 
 `offsite.sh` gains an `artifact` action for the existing `restic-offsite`
@@ -295,6 +356,9 @@ runs the W5 and W6 tests in CI.
 | Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
 | Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 | Role apply re-review | 7 | W3 | Independent `iac-reviewer` re-review of the fixes: PASS with notes, notes applied; 17 tests OK with both native runs; CI gate tests OK | `3e080d999` | PASS | W3 Renderer Role Apply | - |
+| Restore input producers | 4 | W4 | 10 unit tests through the restore client's own lease and contract validators, OK in a umask 022 clone with the restore suite (36); start-before-save mutation fails a test | `33763dd1d` | PASS | W4 W3a Input Producers | - |
+| Restore input reviews | 4, 7 | W4 | `security-auditor` APPROVE with notes; `iac-reviewer` REJECT: no native rehearsal, candidate not bound to the commit | `0294deaf8` | FAIL | W4 W3a Input Producers | - |
+| Restore input native | 4 | W4 | Real 2.6.2 synthetic snapshot through every producer CLI and the restore's `_contract`, `QuiescenceLease`, `Admission.pre_read` and `preflight`; preflight platform-ID defect fixed (RED then GREEN); 15 tests OK in a umask 022 clone | `863eafa40` on old `11fd73a2` | PASS | W4 W3a Input Producers | Restore input reviews |
 | R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
 | R2 read-only rehearsal | 5 | W5 | `restic-offsite cmd snapshots --no-lock --json` against HOME's R2 repository, owner-approved: reachable and decrypted, 45 snapshots, latest 2026-10-13T18:42:46, none tagged `hy-home-openbao-w3`; no write, no lock | HOME R2 on 2026-10-14 | PASS | W5 R2 Artifact Transfer | - |
 | R2 artifact review | 7 | W5 | Independent `security-auditor` review: PASS with notes, notes applied; 5 tests OK including the native rehearsal | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |

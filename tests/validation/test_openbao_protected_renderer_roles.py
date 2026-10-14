@@ -383,19 +383,6 @@ class NativeRehearsalTests(unittest.TestCase):
         fixture = self.native.OwnedFixture(
             image=OLD_IMAGE, version="2.6.2", image_reference="openbao/openbao:2.6.2"
         )
-        # prepare() also checks the issuer helper's platform tag, which for this
-        # upstream multi-arch tag names the platform manifest, not the image ID.
-        # No helper runs here; the image ID itself is still checked first.
-        original = fixture.docker
-
-        def docker(*args, **kwargs):
-            if args[:3] == ("image", "inspect", "--platform=linux/amd64"):
-                return self.native.captured(
-                    ["docker", "image", "inspect", "--format", "{{.Id}}", args[3]]
-                )
-            return original(*args, **kwargs)
-
-        fixture.docker = docker
         self.rehearse(fixture)
 
     def rehearse(self, fixture):

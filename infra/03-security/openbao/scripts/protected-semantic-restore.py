@@ -383,8 +383,10 @@ class RecoveryEffects:
 
     def preflight(self):
         for image, expected in ((OLD_IMAGE, OLD_IMAGE), (self.contract["candidate"]["reference"], self.contract["candidate"]["image_id"])):
-            result = self.runtime.docker("image", "inspect", "--platform=linux/amd64", "--format", "{{.Id}}", image)
-            if result.stdout.strip().decode() != expected:
+            # --platform would name a multi-arch tag's platform manifest under the
+            # containerd store; compare the local image ID and its platform instead.
+            result = self.runtime.docker("image", "inspect", "--format", "{{.Id}} {{.Os}}/{{.Architecture}}", image)
+            if result.stdout.strip().decode() != expected + " linux/amd64":
                 raise Blocked()
         for name in (ATTEMPT + "-old", ATTEMPT + "-candidate", ATTEMPT + "-agent", ATTEMPT + "-watcher"):
             if self.runtime.docker("inspect", "--type=container", name, allow_failure=True).returncode == 0:

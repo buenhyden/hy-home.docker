@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.11"
+version: "0.12.14"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -803,7 +803,7 @@ eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-securi
 2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-67f47ef51dea688de6a0f7d8300311ba53dda0fa11070055bd9ec2cb3b14181c infra/03-security/openbao/scripts/protected-semantic-restore.py
+0cb31922a93080ea80094faa001afd2744acf6da1972a2d0a9ed47c4b3b8fecc infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 56552244eb748cbe569ad0e63a9d47e70dcd5e3f10a28b730382de3993498d5c infra/03-security/openbao/scripts/protected-renderer-roles.py
@@ -811,6 +811,7 @@ fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-securi
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl
 e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093 infra/03-security/openbao/config/policies/operator.hcl
+0bfc1bacf28c02386a74594954b39749c03c9a7afc6bf99626e42e54a129f0b1 infra/03-security/openbao/scripts/protected-restore-inputs.py
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
 96f74c4b1908dd2edb3f7bbbf794bdd226b0a66f3133c103f64e1b7790218d79 infra/03-security/openbao/config/renderer-role.json
@@ -967,6 +968,17 @@ Agent와 해당 writer가 정지했음을 확인한 뒤 아래
 실패해야 하며 helper가 canonical 경로·UID·0700·alias와 모든 산출물 이름을 다시 검사합니다.
 아래 expected-version은 W0에 기록한 업그레이드 전 HOME 검사값이며 새 image pin이 아닙니다.
 
+writer가 멈춘 것을 확인한 즉시, snapshot 전에
+[restore input producer](../../../../infra/03-security/openbao/scripts/protected-restore-inputs.py)로
+quiescence lease의 시작 시각을 남긴다. lease 디렉터리는 새 0700 경로이며 W3a가 끝날
+때까지 보존한다.
+
+```bash
+P01_INPUTS="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-inputs.XXXXXX")" || exit 1
+/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-restore-inputs.py" \
+  lease-start --directory "$P01_INPUTS" || exit 1
+```
+
 ```bash
 (umask 077; /usr/bin/mkdir -- "${P01_SNAPSHOT_DIRECTORY:?}") || exit 1
 exec 3</home/hyunyoun/data/hy-home.docker/secrets/backup/openbao/snapshot_token.txt || exit 1
@@ -998,6 +1010,17 @@ window 증거로 붙입니다. 이 helper는 Restic 또는 offsite 전송을 실
 따릅니다. `latest`나 과거 snapshot을 새 성공으로 대체하지 않으며, 2026-10-13 snapshot은
 새 artifact와 semantic restore 수용 전까지 보존합니다.
 
+`SAVED` 뒤 같은 producer로 lease를 snapshot에 결속한다. lease는 운영자가 writer를 멈췄다고
+확인한 시각을 기록할 뿐 정지를 스스로 증명하지 않는다. 시작이 receipt의 `saved_at_utc`보다
+늦거나 30분 넘게 이르면 거부한다. 만료는 bind부터 세며 90분을 넘지 않는다. 출력의 lease
+ID와 SHA-256은 contract가 쓴다.
+
+```bash
+/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-restore-inputs.py" \
+  lease-bind --directory "$P01_INPUTS" \
+  --snapshot-receipt "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap.receipt.json" --minutes 60 || exit 1
+```
+
 **W3a 격리 semantic restore.** W4 전에 새 W3 artifact를 실제 빈 대상에서 복원하고
 원본 cluster·canary 읽기·제한 권한 거부·renderer 재인증을 확인합니다. 먼저 이전 버전
 image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수동 unseal과 같은 검사를
@@ -1014,8 +1037,48 @@ W3a는 **BLOCKED**다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가
 image entrypoint와 `/openbao/config`·`/tmp` tmpfs, `write sys/unseal key=-`, `login -`,
 `/bin/stat`, server 사용자와 0440 snapshot을 쓰며, 외래 share 확인은 threshold 미만 첫 share가
 sealed로 남고 둘째 share가 `invalid key`로 실패해야 통과한다. 두 image 모두 합성 대상에서 init·unseal·
-login·snapshot restore가 통과했다. 아직 W4의 contract·quiescence lease·renderer bundle·보안
-receipt producer가 없으므로 실행하지 않는다.
+login·snapshot restore가 통과했다. SPEC-0243 W4가 네 입력의 producer를 더했다(아래).
+W4 rehearsal은 preflight가 multi-arch 이전 image의 platform manifest ID를 비교해 W3a를 항상
+멈추는 결함도 찾았고, 이제 local image ID와 `linux/amd64`를 비교한다. W3a는 이제 W3
+산출물·lease와 owner 승인을 기다린다.
+
+입력 준비. renderer helper는 위 [Renderer SecretID Delivery](#renderer-secretid-delivery) 2단계의
+installer로 `$operator_tools/$issuer_commit`에 먼저 설치한다. bundle·보안 receipt·candidate는
+같은 승인 commit에서 만들므로 `$issuer_commit`과 `$P01_COMMIT`은 같아야 한다. producer는 Git을
+보유 descriptor로 읽고 `^{commit}`을 확인하며, candidate는 그 commit의 Compose가 고정한 owned
+image 하나다. `contract`는 snapshot archive를 검증하고 W3 receipt·lease·두 receipt의 revision과
+대조한 뒤 restore client의 schema 검사를 통과해야만 파일을 남긴다.
+
+```bash
+test "$issuer_commit" = "$P01_COMMIT" || exit 1
+p01_produce() {
+  /usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-restore-inputs.py" "$@"
+}
+p01_produce bundle --repository /home/hyunyoun/data/hy-home.docker \
+  --revision "$P01_COMMIT" --target "$P01_INPUTS/bundle" || exit 1
+p01_produce security-receipt --repository /home/hyunyoun/data/hy-home.docker \
+  --revision "$P01_COMMIT" --output "$P01_INPUTS/security-receipt.json" || exit 1
+P01_CONTRACT_LINE="$(p01_produce contract --output "$P01_INPUTS/restore-contract.json" \
+  --snapshot "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap" \
+  --snapshot-receipt "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap.receipt.json" \
+  --lease "$P01_INPUTS/quiescence-lease.json" \
+  --helper-directory "$operator_tools/$issuer_commit" --bundle "$P01_INPUTS/bundle" \
+  --revision "$P01_COMMIT" --security-receipt "$P01_INPUTS/security-receipt.json" \
+  --repository /home/hyunyoun/data/hy-home.docker)" || exit 1
+P01_RESTORE_CONTRACT="$P01_INPUTS/restore-contract.json"
+P01_RESTORE_CONTRACT_SHA256="${P01_CONTRACT_LINE#CONTRACT_WRITTEN }"
+P01_SECURITY_RECEIPT="$P01_INPUTS/security-receipt.json"
+```
+
+기대: `BUNDLE_WRITTEN`·`SECURITY_RECEIPT`·`CONTRACT_WRITTEN <sha256>`. exit1/`BLOCKED`는 기존
+파일을 덮지 않는다. 거부된 contract는 producer가 지우므로 같은 경로로 다시 만든다. bundle이나
+보안 receipt가 중간에 실패했으면 그 단계만 새 경로로 다시 만들고, `contract`의 `--bundle` 또는
+`--security-receipt`와 `P01_SECURITY_RECEIPT`를 그 새 경로로 바꾼다.
+`$P01_INPUTS/quiescence-lease.json`은 그대로 둔다. lease가 만료됐거나 lease가 더는 이 snapshot을 덮지 못하면 새 W3 attempt(새 snapshot
+디렉터리·새 W3b)로 간다. restore는 lease 만료보다 최소 17분 전에 시작한다(900초 실행과
+60초 정리, 입력 시간). 그보다 늦으면 시작하지 않는다. `$P01_INPUTS`의 contract·lease·
+`lease.pending.json`·두 receipt는 credential이 없지만 W4 gate와 INDETERMINATE 분석의 증거이므로,
+window를 닫기 전에 owner 전용 영구 저장소(tmpfs 밖, 문서 밖)에 복사한다.
 
 2026-10-14 운영자는 새 경로
 `/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261014-05`를 선택했습니다.
@@ -1031,6 +1094,8 @@ receipt producer가 없으므로 실행하지 않는다.
 writer 정지 확인은 W3 저장 전부터 W3a 종료까지 별도로 유지해야 합니다.
 
 ```bash
+exec 4<"$P01_INPUTS/quiescence-lease.json" || exit 1
+P01_QUIESCENCE_FD=4
 /usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-semantic-restore.py" \
   --contract "${P01_RESTORE_CONTRACT:?}" --contract-sha256 "${P01_RESTORE_CONTRACT_SHA256:?}" \
   --snapshot "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap" \
@@ -1039,6 +1104,9 @@ writer 정지 확인은 W3 저장 전부터 W3a 종료까지 별도로 유지해
   --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
   --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
   --connect-ip 192.168.0.13
+P01_RESTORE_EXIT=$?
+exec 4<&-
+test "$P01_RESTORE_EXIT" = 0 || exit "$P01_RESTORE_EXIT"
 ```
 
 HOME 읽기용 현재 관리자 token·임시 root·서로 다른 원본 share 둘은 기본 숨김 prompt로

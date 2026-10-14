@@ -37,6 +37,7 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 - [hourly logrotate](config/systemd/logrotate-hourly.conf): host `logrotate.timer` drop-in입니다. 일정만 시간 단위로 바꾸며 owner가 sudo로 설치합니다(RUN-0085 W0).
 - [window override](window/compose.window-ca.override.yml): maintenance window에서 Traefik·Prometheus를 실행 중 image 그대로 다시 만들어 OpenBao CA mount를 배포하는 두 번째 `-f`입니다.
 - [renderer role helper](./scripts/protected-renderer-roles.py): W1c에서 root로 renderer 정책·token role·AppRole을 `plan` 후 `apply`합니다.
+- [restore input producer](./scripts/protected-restore-inputs.py): W3a용 quiescence lease·Agent bundle·보안 receipt·restore contract를 새 0600/0400 파일로 만듭니다.
 - [owned build](build/README.md): 인증된 공개 입력과 패치된 Go·x/net로 두 번 빌드해 전체 OCI identity를 비교합니다. 실제 산출물 수용은 별도입니다.
 - [renderer request](./scripts/renderer-request.sh): 검증된 메모리 바이트로 실행하며 token은 컨테이너 tmpfs의 보호 파일과 stdin으로 전달합니다.
 - [docker-compose.yml](docker-compose.yml)
