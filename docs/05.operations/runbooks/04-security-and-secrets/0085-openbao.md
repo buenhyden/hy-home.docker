@@ -769,9 +769,9 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   ```bash
   t=<path>/p01-operator.token
   BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao \
-    bao token lookup -self -field=policies   # [hy-home-operator]만
+    bao token lookup -field=policies   # [hy-home-operator]만
   BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao bao token revoke -self &&
-    ! BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao bao token lookup -self >/dev/null 2>&1 &&
+    ! BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao bao token lookup >/dev/null 2>&1 &&
     shred -u "$t"
   ```
 
