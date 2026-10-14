@@ -4,6 +4,7 @@ Root comes only from the W1 custody descriptor. Every target is read before any
 write, written once with the reviewed file bytes, then read back and compared.
 The custody directory keeps the prior values for rollback and a value-free
 receipt. No credential is created, printed or stored, and no write is retried.
+`plan` does every read and records the same receipt shape with nothing written.
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ import http.client
 import ipaddress
 import json
 import os
+import stat
 import sys
 import threading
 import time
@@ -64,12 +66,44 @@ APPROLE = (
     "96f74c4b1908dd2edb3f7bbbf794bdd226b0a66f3133c103f64e1b7790218d79",
 )
 UNITS = {"s": 1, "m": 60, "h": 3600}
+# A role update keeps any field it omits, so the fields the reviewed files leave
+# out are written at their defaults too; a stale period or CIDR cannot survive.
+TOKEN_ROLE_DEFAULTS = {
+    "allowed_policies_glob": [],
+    "disallowed_policies": [],
+    "disallowed_policies_glob": [],
+    "path_suffix": "",
+    "token_bound_cidrs": [],
+    "token_num_uses": 0,
+    "token_period": 0,
+}
+# Token role reads omit these two when empty (observed on 2.6.2 and 2.7.1), so an
+# absent key is the cleared state and any leftover value still mismatches.
+OMITTED_WHEN_EMPTY = {"token_bound_cidrs": [], "token_num_uses": 0}
+APPROLE_DEFAULTS = {
+    "secret_id_bound_cidrs": [],
+    "token_bound_cidrs": [],
+    "token_explicit_max_ttl": 0,
+    "token_period": 0,
+    "token_type": "default",
+}
 
 
 def load_token_operations():
     """Compile only bytes matching the pinned hash; that module pins its own base."""
     path = Path(__file__).absolute().with_name("protected-token-operations.py")
-    raw = path.read_bytes()
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    try:
+        info = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_nlink != 1
+            or not 1 <= info.st_size <= 1048576
+        ):
+            raise ValueError()
+        raw = os.read(descriptor, 1048577)
+    finally:
+        os.close(descriptor)
     if hashlib.sha256(raw).hexdigest() != TOKEN_OPERATIONS_SHA256:
         raise ValueError()
     module = types.ModuleType("approved_protected_token_operations")
@@ -96,8 +130,12 @@ def seconds(value):
     return value
 
 
-def expected_readback(payload):
-    return {key: seconds(value) for key, value in payload.items()}
+def expected_readback(payload, omitted=None):
+    omitted = omitted or {}
+    return {
+        key: None if omitted.get(key, object()) == value else seconds(value)
+        for key, value in payload.items()
+    }
 
 
 def targets(repository):
@@ -108,10 +146,22 @@ def targets(repository):
         policy = OPS.read_public(config / source, digest).decode("ascii")
         result.append(("sys/policies/acl/" + name, {"policy": policy}, None))
     for name, source, digest in TOKEN_ROLES:
-        payload = json.loads(OPS.read_public(config / source, digest))
-        result.append(("auth/token/roles/" + name, payload, expected_readback(payload)))
+        payload = {
+            **TOKEN_ROLE_DEFAULTS,
+            **json.loads(OPS.read_public(config / source, digest)),
+        }
+        result.append(
+            (
+                "auth/token/roles/" + name,
+                payload,
+                expected_readback(payload, OMITTED_WHEN_EMPTY),
+            )
+        )
     name, source, digest = APPROLE
-    payload = json.loads(OPS.read_public(config / source, digest))
+    payload = {
+        **APPROLE_DEFAULTS,
+        **json.loads(OPS.read_public(config / source, digest)),
+    }
     result.append(("auth/approle/role/" + name, payload, expected_readback(payload)))
     return tuple(result)
 
@@ -143,11 +193,12 @@ class RoleCustody(BASE.Custody if BASE else object):
 class RoleAPI:
     """Root identity; only the fixed target paths and their reviewed bodies."""
 
-    def __init__(self, token, context, connect_ip, documents):
+    def __init__(self, token, context, connect_ip, documents, *, write=True):
         self.token = BASE.validate_secret(token)
         self.context = context
         self.connect_ip = str(ipaddress.ip_address(connect_ip))
         self.documents = dict(documents)
+        self.write = write
 
     def _check(self, method, path, document):
         if method == "GET" and (
@@ -158,6 +209,7 @@ class RoleAPI:
             return
         if (
             method == "POST"
+            and self.write
             and path in self.documents
             and document == self.documents[path]
         ):
@@ -181,7 +233,8 @@ class RoleAPI:
             connection.request(
                 method,
                 "/v1/" + path,
-                body=json.dumps(document) if document is not None else None,
+                # Send the held reviewed body, not the caller's equal-comparing one.
+                body=json.dumps(self.documents[path]) if method == "POST" else None,
                 headers={
                     "X-Vault-Token": self.token,
                     "Content-Type": "application/json",
@@ -230,7 +283,7 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
-def apply_roles(api, custody, cluster, plan):
+def apply_roles(api, custody, cluster, plan, *, write=True):
     BASE.check_root(OPS.document(api.request("GET", BASE.LOOKUP)))
     BASE.check_seal(OPS.document(api.request("GET", BASE.SEAL)), cluster)
     prior = {path: current(api, path, readback) for path, _document, readback in plan}
@@ -238,6 +291,21 @@ def apply_roles(api, custody, cluster, plan):
     # orphan it, so the role must already exist.
     if prior["auth/approle/role/" + APPROLE[0]] is None:
         raise Blocked()
+    if not write:
+        saved = custody.reserve("prior-state.json")
+        custody.write(saved, prior)
+        preview = [
+            {
+                "path": path,
+                "prior_sha256": digest(prior[path]),
+                "applied_sha256": digest(wanted(document, readback)),
+                "changed": prior[path] != wanted(document, readback),
+            }
+            for path, document, readback in plan
+        ]
+        state = custody.reserve("state.json")
+        custody.write(state, {"state": "RENDERER_ROLES_PLANNED", "targets": preview})
+        return "RENDERER_ROLES_PLANNED"
     intent = custody.reserve("operation-intent.json")
     custody.write(
         intent,
@@ -277,7 +345,7 @@ def main(arguments=None):
         print("BLOCKED: approved token operations binding unavailable", file=sys.stderr)
         return 1
     parser = BASE.PrivateArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("apply",))
+    parser.add_argument("operation", choices=("plan", "apply"))
     for name in (
         "ca",
         "ca-sha256",
@@ -305,8 +373,15 @@ def main(arguments=None):
                 context,
                 options.connect_ip,
                 ((path, document) for path, document, _readback in plan),
+                write=options.operation == "apply",
             )
-            result = apply_roles(api, custody, options.expected_cluster_id, plan)
+            result = apply_roles(
+                api,
+                custody,
+                options.expected_cluster_id,
+                plan,
+                write=options.operation == "apply",
+            )
         try:
             print(result, flush=True)
         except OSError:
@@ -318,7 +393,14 @@ def main(arguments=None):
             file=sys.stderr,
         )
         return 2
-    except (Blocked, OSError, ValueError, EOFError, KeyboardInterrupt):
+    except (
+        Blocked,
+        OPS.BindingBlocked,
+        OSError,
+        ValueError,
+        EOFError,
+        KeyboardInterrupt,
+    ):
         print(
             "BLOCKED: no completion claimed; preserve protected custody",
             file=sys.stderr,

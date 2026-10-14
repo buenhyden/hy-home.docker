@@ -108,6 +108,16 @@ class SourceTests(unittest.TestCase):
             with self.assertRaises(M.OPS.BindingBlocked):
                 M.targets(directory)
 
+    def test_unreviewed_role_fields_are_written_at_their_defaults(self):
+        targets = {path: document for path, document, _readback in plan()}
+        issuer = targets["auth/token/roles/renderer-issuer"]
+        self.assertEqual(issuer["token_period"], 0)
+        self.assertEqual(issuer["token_bound_cidrs"], [])
+        self.assertEqual(issuer["disallowed_policies"], [])
+        self.assertEqual(targets[APPROLE]["token_period"], 0)
+        self.assertEqual(targets[APPROLE]["secret_id_bound_cidrs"], [])
+        self.assertEqual(targets[APPROLE]["token_policies"], ["renderer"])
+
     def test_token_operations_binding_is_hash_pinned(self):
         with mock.patch.object(M, "TOKEN_OPERATIONS_SHA256", "0" * 64):
             with self.assertRaises(ValueError):
@@ -182,6 +192,18 @@ class ApplyTests(unittest.TestCase):
         self.assertIn("prior-state.json", self.files())
         self.assertNotIn("state.json", self.files())
 
+    def test_plan_reads_every_target_and_writes_nothing(self):
+        api = FakeAPI(prior={"sys/policies/acl/renderer": {"data": {"policy": "old"}}})
+        with M.RoleCustody(self.directory) as custody:
+            result = M.apply_roles(api, custody, CLUSTER, api.plan, write=False)
+        self.assertEqual(result, "RENDERER_ROLES_PLANNED")
+        self.assertFalse(any(call[0] == "POST" for call in api.calls))
+        self.assertEqual(len(api.calls), 2 + len(api.plan))
+        state = json.loads((self.directory / "state.json").read_text())
+        changed = {item["path"]: item["changed"] for item in state["targets"]}
+        self.assertTrue(changed["sys/policies/acl/renderer"])
+        self.assertEqual(self.files(), [".lock", "prior-state.json", "state.json"])
+
     def test_write_failure_is_indeterminate_and_never_retried(self):
         api = FakeAPI()
         api.responses[2 + len(api.plan)] = M.Indeterminate()
@@ -212,6 +234,45 @@ class RequestTests(unittest.TestCase):
                     with self.assertRaises(M.Blocked):
                         api.request(method, path, document)
             connection.assert_not_called()
+
+    def test_plan_identity_refuses_every_write(self):
+        documents = [(path, document) for path, document, _readback in plan()]
+        api = M.RoleAPI(
+            fixtures.ROOT_TOKEN,
+            mock.sentinel.context,
+            "127.0.0.1",
+            documents,
+            write=False,
+        )
+        with mock.patch.object(M.BASE, "PinnedConnection") as connection:
+            with self.assertRaises(M.Blocked):
+                api.request("POST", documents[0][0], documents[0][1])
+            connection.assert_not_called()
+
+    def test_changed_config_reports_blocked_not_a_traceback(self):
+        arguments = [
+            "apply",
+            "--ca",
+            "x",
+            "--ca-sha256",
+            "0" * 64,
+            "--connect-ip",
+            "127.0.0.1",
+            "--expected-cluster-id",
+            CLUSTER,
+            "--custody-directory",
+            "a",
+            "--w1-custody-directory",
+            "b",
+            "--root-fd",
+            "5",
+        ]
+        with (
+            mock.patch.object(M.BASE, "ca_context"),
+            mock.patch.object(M, "targets", side_effect=M.OPS.BindingBlocked()),
+            mock.patch("sys.stderr"),
+        ):
+            self.assertEqual(M.main(arguments), 1)
 
     def test_main_blocks_bad_inputs_without_network(self):
         common = ["--ca", "x", "--ca-sha256", "0", "--connect-ip", "127.0.0.1"]
@@ -272,7 +333,7 @@ class NativeRehearsalTests(unittest.TestCase):
         operation.chmod(0o700)
         return w1, operation
 
-    def run_tool(self, client, cluster):
+    def run_tool(self, client, cluster, operation_name="apply"):
         w1, operation = self.custody(client)
         ca = self.fixture.tls / "ca.pem"
         root_fd = os.open(w1 / "root.token", os.O_RDONLY)
@@ -291,7 +352,7 @@ class NativeRehearsalTests(unittest.TestCase):
         ):
             code = M.main(
                 [
-                    "apply",
+                    operation_name,
                     "--ca",
                     str(ca),
                     "--ca-sha256",
@@ -308,7 +369,10 @@ class NativeRehearsalTests(unittest.TestCase):
                     str(root_fd),
                 ]
             )
-        self.assertEqual((code, output.getvalue()), (0, "RENDERER_ROLES_APPLIED\n"))
+        result = "RENDERER_ROLES_" + (
+            "APPLIED" if operation_name == "apply" else "PLANNED"
+        )
+        self.assertEqual((code, output.getvalue()), (0, result + "\n"))
         return operation
 
     def test_native_apply_on_the_owned_candidate_image(self):
@@ -351,6 +415,16 @@ class NativeRehearsalTests(unittest.TestCase):
         )
         role_id = self.ok(client, "GET", APPROLE + "/role-id")["data"]["role_id"]
 
+        planned = self.run_tool(client, cluster, "plan")
+        state = json.loads((planned / "state.json").read_text())
+        self.assertTrue(all(item["changed"] for item in state["targets"]))
+        self.assertEqual(
+            self.ok(client, "GET", "sys/policies/acl/renderer")["data"]["policy"],
+            "# stale\n",
+        )
+        status, _body = client.api("GET", "auth/token/roles/renderer-issuer")
+        self.assertEqual(status, 404)
+
         first = self.run_tool(client, cluster)
         state = json.loads((first / "state.json").read_text())
         changed = {item["path"]: item["changed"] for item in state["targets"]}
@@ -363,14 +437,21 @@ class NativeRehearsalTests(unittest.TestCase):
             self.ok(client, "GET", APPROLE + "/role-id")["data"]["role_id"], role_id
         )
 
-        # The operator's exact request through each role yields the reviewed identity.
+        # An operator-policy token, not root, makes the W5 request through each role.
+        operator = self.ok(
+            client,
+            "POST",
+            "auth/token/create",
+            {"policies": ["hy-home-operator"], "ttl": "10m"},
+        )["auth"]["client_token"]
         for role in ("renderer-issuer", "renderer-cleanup"):
             issued = self.ok(
                 client,
                 "POST",
                 "auth/token/create/" + role,
-                {
-                    "policies": [role],
+                token=operator,
+                payload={
+                    "policies": role,  # RUN-0085 W5 sends the exact string.
                     "renewable": False,
                     "no_default_policy": True,
                     "ttl": "5m",
@@ -387,6 +468,20 @@ class NativeRehearsalTests(unittest.TestCase):
             self.assertEqual(data["explicit_max_ttl"], 300)
             if role == "renderer-issuer":
                 issuer = issued["client_token"]
+        # The operator policy refuses any other parameters through the role.
+        status, _body = client.api(
+            "POST",
+            "auth/token/create/renderer-issuer",
+            {
+                "policies": "renderer-issuer",
+                "renewable": False,
+                "no_default_policy": True,
+                "ttl": "1h",
+                "explicit_max_ttl": "1h",
+            },
+            token=operator,
+        )
+        self.assertNotIn(status, (200, 204))
         wrapped = self.ok(
             client,
             "POST",
