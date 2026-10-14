@@ -1,10 +1,10 @@
 ---
 title: "Prompt v9 Quality Corrections Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0230-TSK-0001"
 parent_ids:
@@ -137,7 +137,7 @@ lists the criteria and why the rest stay `pending`.
 | --- | --- | --- | --- |
 | 1 | accepted | Mark-only inputs | Owner accepted 2026-10-13 |
 | 2 | accepted | Check repairs | Owner accepted 2026-10-13 |
-| 3 | pending | - | - |
+| 3 | accepted | Remote candidate, Changed gate | Owner accepted 2026-10-14 |
 | 4 | accepted | Normalizer agreement | Owner accepted 2026-10-13 |
 
 ## Review and Completion
@@ -151,6 +151,10 @@ rated ready (criteria 1, 2, 4) and approved this Spec and Plan. Criterion 3,
 the gate, stays `pending`: the Changed gate row records a gate that exited 1
 before only two permission modules were rerun, on a base before W4, so no
 local changed gate covers the normalizer change.
+
+On 2026-10-14 the owner, answering a second review question, accepted
+criterion 3 on the remote candidate and the partial local gate as recorded,
+knowing that no local changed gate covers the normalizer change.
 
 ## Related Documents
 

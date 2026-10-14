@@ -1,10 +1,10 @@
 ---
 title: "Prompt v9 Residual Corrections Task"
-version: "0.7.0"
+version: "0.7.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0232-TSK-0001"
 parent_ids:
@@ -350,14 +350,16 @@ create every later branch with `--no-track` and push with an explicit refspec.
 | 5 | pending | - | - |
 | 6 | accepted | Tombstone | Owner accepted 2026-10-13 |
 | 7 | accepted | Context, Context candidate, Live Claude, Live Codex | Owner accepted 2026-10-13 |
-| 8 | pending | - | - |
-| 9 | pending | - | - |
-| 10 | pending | - | - |
+| 8 | accepted | Wrapper, Wrapper review, Policy review | Owner accepted 2026-10-14 |
+| 9 | accepted | LAB guide | Owner accepted 2026-10-14 |
+| 10 | accepted | Finding records | Owner accepted 2026-10-14 |
 
 ## Review and Completion
 
 On 2026-10-13 the owner, answering the review question, accepted the criteria
 rated ready (criteria 1, 2, 3, 4, 6, 7) and approved this Spec and Plan.
+Criteria 8, 9 and 10 were not asked then; on 2026-10-14 the owner accepted
+all three.
 Criterion 5, the gate, stays `pending`: its local changed gate has no PASS,
 and the governance suite FAIL is unresolved where recorded.
 
