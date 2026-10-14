@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Unseal Method"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -26,10 +26,11 @@ Git, not mounted into the container). Anyone who can read this file can
 unseal OpenBao. This file is also encrypted with BKP-002 inside the host
 Restic repository, which `restic-offsite` copies to R2 encrypted with BKP-003,
 so BKP-003 with R2 read access, or BKP-002 with the local repository, also
-meets the threshold. On 2026-10-14 the owner chose to exclude the file from
-the host backup (SPEC-0240) and to rekey in the maintenance window (RUN-0085
-W1b). Snapshots already written keep the old shares until they are deleted,
-and a rekey does not change the keys a pre-rekey Raft snapshot opens with.
+meets the threshold. On 2026-10-14 the owner first chose to exclude the
+file from the host backup and rekey (SPEC-0240), then, as the only
+administrator, withdrew that the same day: the shares stay on the host and in
+the host backup, and only the backup and R2 keys are kept off the host in one
+password manager account (SPEC-0242). No rekey is planned.
 
 Auto-unseal was only deferred as a non-goal in ADR-0018 from the Vault era
 ("actual KMS/HSM auto-unseal implementation at this stage"); it was never
@@ -237,7 +238,7 @@ Candidate triggers:
 - Spec: [SPEC-0182](../../03.specs/0182-home-residual-backlog/spec.md) criterion 10 and 11,
   Plan W10/W11,
   [Task 0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)
-- Exposure correction: [SPEC-0240](../../03.specs/0240-unseal-backup-exclusion/spec.md)
+- Exposure correction: [SPEC-0240](../../03.specs/0240-unseal-backup-exclusion/spec.md), [SPEC-0242](../../03.specs/0242-single-admin-openbao-custody/spec.md)
 - Runbook: [RUN-0085](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
 - Runtime sources: [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
   [Agent configuration](../../../infra/03-security/openbao/config/agent.hcl)

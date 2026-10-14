@@ -636,7 +636,7 @@ systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
 기대: compose 검증 통과, `Sealed false`, compose가 고정한 candidate image가 local에
 있음, 남은 용량 확인, 마지막 backup 결과 확인. SEC01이 candidate image의 서명·SBOM·
 CVE 결과를 수용했고(위 1단계) 위 TLS preflight가 PASS여야 한다. 하나라도 아니면 중단한다.
-image가 없으면 별도 승인으로 같은 digest만 pull한다.
+image가 없으면 registry에서 받을 수 없으므로, 별도 승인으로 검토된 OCI archive를 다시 import해 같은 digest인지 확인한다(SPEC-0204 TSK-0009).
 
 W0에서는 audit 디렉터리와 rotation 계약도 server 재생성 전에 준비합니다. 실제 audit
 경로 `/home/hyunyoun/storage/volumes/security/openbao/audit`는 2026-10-14에 독립 IaC

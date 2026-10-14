@@ -1,6 +1,6 @@
 ---
 title: "Unseal Share File Out of Host Backups Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -156,6 +156,18 @@ deletion, since W1 and `-verify` each use two shares (both in their branches).
 The criterion 2 document checks ran on `main` `fae77e14d`: changed metadata
 for POL-0085, ADR-0042 and RUN-0085 with 0 violations, links `--mode all`
 PASS and markdownlint 0.
+
+### Owner Withdrawal — 2026-10-14
+
+After reviewing the step 5 custody table, the owner, the only administrator,
+chose (AskUserQuestion) to keep the shares and the CA key on the host and in
+the host backup, to keep only BKP-003, the R2 credentials, BKP-002 and
+Cloudflare account access off the host, and to drop the W1b rekey. SPEC-0242
+carries that. This package's exclusion (W1, branch
+`claude/unseal-exclusion-apply-v2`), its merge gate and criterion 4 are
+therefore withdrawn and will not merge; the W5 place rule is replaced. The
+package's disposition (cancelled or superseded, which moves it out of Stage
+03) is left to the owner.
 
 ## Evidence
 
