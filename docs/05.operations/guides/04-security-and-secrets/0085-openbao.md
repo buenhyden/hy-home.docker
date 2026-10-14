@@ -114,7 +114,7 @@ bao login -no-print -method=oidc -path=oidc role=home-admin
 
 그 CLI는 token helper로 OpenBao token을 local 파일에 저장하므로 그 파일을 보호한다. 유지보수
 window에서는 token helper를 쓰지 않는다. UI에서 받은 token을 숨김 입력으로 tmpfs의 0600 파일에
-넣고 보호된 FD로만 넘긴다([POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-credential-handling),
+넣고 보호된 FD나 명령 하나에만 붙는 환경 변수로만 넘긴다([POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-credential-handling),
 RUN-0085). gateway browser SSO는 public route에서 non-browser API access를
 막을 수 있다. gateway 인증이나 TLS 검증을 우회하지 말고 승인된 API transport를
 사용한다. 구성된 callback은 정확한 UI path인
@@ -167,7 +167,7 @@ restore와 share의 오프라인 전달은 별도의 운영자 책임으로 남�
 
 server와 Agent 업그레이드는 120분 유지보수 window 하나에서 순서대로 진행한다(SPEC-0243).
 W0 사전 점검 뒤 W1 임시 root, W1c renderer 정책, W2 snapshot token, W3 새 snapshot, W3b R2 보관,
-W3a 격리 복원 시험(한 번만), W4 server 업그레이드와 수동 unseal(이때 OpenBao가 약 10분 멈춘다),
+W3a 격리 복원 시험(한 번만), W4 server 업그레이드와 수동 unseal(목표상 OpenBao가 약 10분 멈추며, window를 넘기면 다음 window까지 sealed로 남을 수 있다),
 W5 Agent 업그레이드와 재발급, W6 audit 확인, W7 root 폐기 순서다. 정해진 시각까지 단계가 시작되지
 않으면 멈추고, 어디서 멈추든 같은 정리를 한다. Keycloak과 Grafana는 이미 렌더된 값으로 계속
 동작한다. 명령과 멈춤 기준은 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이,
