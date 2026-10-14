@@ -73,8 +73,8 @@ reads of secrets (AskUserQuestion).
    be read. A tracked `pre-push` guard refuses a push to `refs/heads/main`
    once installed, within the limits the pre-commit shim imposes; only a
    remote ruleset without bypass enforces the boundary.
-5. Claude settings deny the Read and Edit tools on `secrets/**`, `.env` and
-   `~/.ssh` under the session directory, deny explicit pushes to `main`, drop
+5. Claude settings deny the Read and Edit tools on `secrets/**` and `.env`
+   under the session directory and at any absolute path, and on `~/.ssh`, deny explicit pushes to `main`, drop
    the grep/rg allows, and set the Registry-owned `on_failure: block` on
    PreToolUse so a timed-out hook is documented to deny the tool.
 6. Policy and adapters state the Codex sandbox limit and the unobserved Codex

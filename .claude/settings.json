@@ -30,7 +30,11 @@
       "Read(~/.ssh/**)",
       "Edit(./secrets/**)",
       "Edit(./.env)",
-      "Edit(./**/.env)"
+      "Edit(./**/.env)",
+      "Read(//**/secrets/**)",
+      "Read(//**/.env)",
+      "Edit(//**/secrets/**)",
+      "Edit(//**/.env)"
     ]
   },
   "hooks": {

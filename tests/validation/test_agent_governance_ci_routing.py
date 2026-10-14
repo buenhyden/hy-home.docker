@@ -2584,6 +2584,10 @@ class HookOutputAndMainPushTests(unittest.TestCase):
             "Edit(./secrets/**)",
             "Edit(./.env)",
             "Edit(./**/.env)",
+            "Read(//**/secrets/**)",
+            "Read(//**/.env)",
+            "Edit(//**/secrets/**)",
+            "Edit(//**/.env)",
             "Bash(git push * main)",
             "Bash(git push *:refs/heads/main)",
         ):

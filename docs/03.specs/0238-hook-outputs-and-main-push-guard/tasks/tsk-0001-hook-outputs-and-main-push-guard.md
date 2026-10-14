@@ -175,9 +175,13 @@ Findings and their disposition:
   `--work-tree`; treats `heads/main`, wildcard refspecs, `--branches` and a
   `-c` push setting naming `main` as pushes to `main`; and denies when the
   repository cannot be read. `git push --tags` alone is allowed.
-- **Security M3 (residual):** `Edit(./**/.env)` was added. The `./` rules do
-  not reach the main checkout's ignored `secrets/` and `.env` by absolute path
-  from a linked worktree; the owner decides whether to add path-specific rules.
+- **Security M3:** `Edit(./**/.env)` was added. The `./` rules did not reach
+  the main checkout's ignored `secrets/` and `.env` by absolute path from a
+  linked worktree. On 2026-10-14 the owner chose (AskUserQuestion) rules for
+  any path: `Read(//**/secrets/**)`, `Read(//**/.env)`,
+  `Edit(//**/secrets/**)` and `Edit(//**/.env)`. They also deny the tracked
+  `secrets/README.md` and other projects' `secrets/` directories, which the
+  owner accepted; their effect is documented, not yet observed.
 - **Security L1 and CI 1 (residual):** under the pre-commit shim the guard sees
   only the first pushed ref with new commits, so a multi-ref push that lists
   another branch first bypasses it; pre-commit also skips deletions and
@@ -187,9 +191,13 @@ Findings and their disposition:
 - **CI 2:** `check-added-large-files`, `end-of-file-fixer` and
   `trailing-whitespace` declare pre-push upstream; they are pinned to
   `[pre-commit, manual]` and a test checks it.
-- **CI 3 (owner, host):** global `core.hooksPath` (`~/.codex/git-hooks`) makes
-  `pre-commit install` fail on this host, so the guard is not installable here
-  until the owner changes that user-global setting.
+- **CI 3 (owner, host):** global `core.hooksPath` (`~/.codex/git-hooks`, an
+  ECC plugin's generic hooks) made `pre-commit install` fail on this host. On
+  2026-10-14 the owner chose (AskUserQuestion) to remove the global setting,
+  and the agent ran `git config --global --unset core.hooksPath` at the
+  owner's direct request; restoring it is
+  `git config --global core.hooksPath ~/.codex/git-hooks`. The repository's
+  `.git/hooks` then held no installed hook; installation follows this merge.
 - **Not changed:** quoted text that contains a main push is denied (friction
   only); `--force-with-lease` on a feature branch stays denied, as the owner
   chose.
