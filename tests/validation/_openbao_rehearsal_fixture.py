@@ -104,15 +104,16 @@ class OwnedFixture:
         )
         self.network_created = True
         self.auth_volume = self.volume("agent-auth", bind_path=self.auth)
+        # Not --platform: for a multi-arch upstream tag the containerd store
+        # answers with the platform manifest, not the local image ID.
         tagged = self.docker(
             "image",
             "inspect",
-            "--platform=linux/amd64",
             self.image_reference,
             "--format",
-            "{{.Id}}",
+            "{{.Id}} {{.Os}}/{{.Architecture}}",
         )
-        if tagged.stdout.strip().decode() != self.image:
+        if tagged.stdout.strip().decode() != self.image + " linux/amd64":
             raise RehearsalFailure(
                 "issuer helper cached tag differs from reviewed image"
             )

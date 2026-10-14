@@ -1,5 +1,6 @@
 """SPEC-0243 W6 scoped override and hourly logrotate drop-in contracts."""
 
+import hashlib
 import re
 import unittest
 from pathlib import Path
@@ -58,6 +59,21 @@ class WindowOverrideTests(unittest.TestCase):
         self.assertEqual(
             lines, ["[Timer]", "OnCalendar=", "OnCalendar=hourly", "AccuracySec=5m"]
         )
+
+    def test_runbook_source_manifest_pins_match_the_files(self):
+        # A stale pin would stop the window at W1's sha256sum check.
+        runbook = (
+            ROOT / "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md"
+        ).read_text()
+        body = runbook.split("<<'P01_SOURCE_MANIFEST'\n", 1)[1].split(
+            "\nP01_SOURCE_MANIFEST\n", 1
+        )[0]
+        pins = [line.split(" ", 1) for line in body.splitlines()]
+        self.assertGreaterEqual(len(pins), 10)
+        for digest, path in pins:
+            with self.subTest(path=path):
+                raw = (ROOT / path).read_bytes()
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), digest)
 
 
 if __name__ == "__main__":
