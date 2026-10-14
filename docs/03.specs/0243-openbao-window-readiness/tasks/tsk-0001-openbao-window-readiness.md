@@ -63,11 +63,22 @@ From the `iac-reviewer` review, RUN-0085 (0.12.0) now states:
 
 The OpenBao README now lists `obs_net` for the Agent.
 
+An independent `iac-reviewer` re-review of `8e28414f5` returned FAIL on two
+gaps: W3a was not marked BLOCKED despite D3, and no step recreated Gatus,
+which keeps alerting after W4 without the CA mount. W3a now says BLOCKED with
+D3 and the missing W4 producers, and W5 recreates Gatus under the same
+conditions as Prometheus, BLOCKED until the W6 override exists. Notes
+applied: the Raft identity comes from `docker inspect` of the mount rather
+than the host path; Prometheus and Gatus use `--force-recreate`; the timer
+window includes its random delay; the rollback pointer points down.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Readiness review | 7 | W1 | Independent `iac-reviewer` readiness review of RUN-0085 0.10.4: NOT READY | `f0984f3c0` | FAIL | Inputs and Authorization | - |
+| Text review | 7 | W1 | Independent `iac-reviewer` re-review of the W1 text: W3a not BLOCKED; Gatus never recreated | `8e28414f5` | FAIL | W1 Window Text | - |
+| Text checks | 1 | W1 | Changed metadata 0 violations; links `--mode all` PASS; markdownlint 0; operations catalog and OpenBao consumer contract tests OK | Branch after `8e28414f5` | PASS | W1 Window Text | - |
 
 ## Criterion Acceptance
 

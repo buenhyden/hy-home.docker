@@ -695,7 +695,8 @@ Prometheus/Gatus의 HTTPS-only OpenBao target 전환은 server의 내부 TLS가 
 W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 않는다.
 
 - **백업 timer.** `hyhome-backup.timer`(매일 03:30 KST)가 W3 정지 범위와 W4 sealed 구간에
-  돌지 않게 window 동안 멈추거나 window를 그 시각과 떨어뜨린다. timer는 system unit이라
+  돌지 않게 window 동안 멈추거나 window를 03:30부터 무작위 지연 최대 30분과 실행
+  시간을 더한 구간과 떨어뜨린다. timer는 system unit이라
   멈추고 다시 켜는 것은 owner의 sudo 작업이다.
 - **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
   쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 지금 없으므로 W4 뒤 gateway를 거치는
@@ -704,7 +705,7 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   `core` profile이다.
 - **실행 중 설정과 디스크의 차이.** Prometheus·Gatus·Traefik의 실행 중 image·mount·설정을
   Compose 선언과 비교한다. 차이가 있으면 재생성이 다른 변경까지 배포하므로 먼저 검토한다.
-- **경보.** W4 동안 Gatus와 이전 설정의 Prometheus가 OpenBao down 경보를 낸다. silence를
+- **경보.** W4부터 Gatus와 Prometheus를 다시 만들 때까지 OpenBao down 경보가 난다. silence를
   둘지, 그 경보를 받아들일지 정한다.
 
 **W1 root ceremony.** 위 [Human Login and Normal Root Recovery](#human-login-and-normal-root-recovery)의
@@ -908,6 +909,12 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 코드·보안·인프라 검토는 통과했으며 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
+W3a는 **BLOCKED**다(SPEC-0243). 이 client는 server를 `--entrypoint /bin/bao ... server`로
+`-config` 없이 시작하는데, 고정한 자체 빌드 image는 `/usr/bin/bao`에 설치되고 설정은 보통
+entrypoint script가 적용하므로 실패할 가능성이 크다(D3). 한 번 실패하면 target-05를 다 쓴다.
+SPEC-0243 W2의 합성 snapshot native rehearsal과 W4의 contract·quiescence lease·renderer
+bundle·보안 receipt producer가 준비되기 전에는 실행하지 않는다.
+
 2026-10-14 운영자는 새 경로
 `/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261014-05`를 선택했습니다.
 사전 조사에서 경로는 없었고 부모는 device2064/inode115612004, UID/GID1000이었습니다.
@@ -962,8 +969,8 @@ W4는 W3a semantic restore와 이 W3b receipt가 모두 수용된 뒤에만 실�
 
 중단 gate: 이번 W3 snapshot/receipt identity에 결속된 독립 off-host 보관 receipt와 W3a
 semantic restore 중 하나라도 없으면 아래 server 재생성 명령을 실행하지 않습니다. 재생성
-전후에 `stat -c '%d/%i' /home/hyunyoun/storage/volumes/security/openbao/data`로 Raft mount
-identity를 기록하고, Compose가 volume 설정이 달라 다시 만들지 묻는 prompt에는 절대 동의하지
+전후에 `docker inspect openbao`의 `/openbao/data` mount 이름·source와 그 source의
+`stat -c '%d/%i'`(기록값 device2064/inode115612005)로 실제 Raft mount identity를 기록하고, Compose가 volume 설정이 달라 다시 만들지 묻는 prompt에는 절대 동의하지
 않고 중단합니다.
 
 ```bash
@@ -977,7 +984,7 @@ docker compose exec -T openbao bao status
 중단: mount identity 변경, unseal 실패, cluster ID 변경, audit backend 실패.
 rollback: 새 버전 데이터에 이전 image를 붙이지 않는다(in-place Raft downgrade 금지).
 업그레이드가 실패하면 W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 검토된 절차로
-간다(위 Rollback or Recovery). 이 경우 HOME은 보류하고 @buenhyden에게 반환한다. 다만 지금의
+간다(아래 Rollback or Recovery). 이 경우 HOME은 보류하고 @buenhyden에게 반환한다. 다만 지금의
 restore 도구는 격리 target-05에 고정돼 있고 HOME을 복원된 volume으로 바꾸는 검토된 절차가
 없다. 그 cut-over 절차나 fix-forward를 택한다는 owner 결정이 기록되기 전에는 W4를 열지
 않는다(SPEC-0243).
@@ -993,11 +1000,18 @@ SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 versio
 없다. Agent가 `healthy`가 된 뒤 Prometheus를 다시 만든다. `restart`는 Compose 변경을
 적용하지 않아 HTTPS `openbao` job에 필요한 CA mount가 계속 빠지므로 쓰지 않는다. W0에서
 실행 중 image가 Compose 고정과 같고 다른 설정 차이가 없음을 확인한 뒤에만
-`docker compose --profile obs up -d --no-deps --no-build --pull never prometheus`를 실행한다.
+`docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
+실행한다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다.
 다르면 실행 image를 유지하는 검토된 scoped override를 쓰고, 둘 다 없으면 이 부분은
 **BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
 `OpenBaoAgentAuthFailure`가 조용하다. 중단: scrape 실패가 이어지면 Agent listener와 `obs_net`
 연결을 먼저 확인한다. Prometheus만 이전 설정으로 되돌리는 것은 Agent 재인증과 무관하다.
+
+Gatus도 W4 뒤 OpenBao를 HTTPS로 보고 내부 CA를 요구하므로 CA mount가 없으면 W4 이후에도
+계속 경보를 낸다. Prometheus와 같은 조건(실행 image가 Compose 고정과 같고 설정 차이가
+없음)에서 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate gatus`로
+다시 만든다. CA mount를 주는 SPEC-0243 W6 override가 없으면 이 부분은 **BLOCKED**이고, 그때까지의
+Gatus 경보는 W0에서 정한 대로 처리한다.
 
 **W6 audit와 logrotate 검증.** W0에서 등록·parser 검증을 끝낸 규칙을 사용합니다.
 새 server의 `openbao-audit` mount와 `audit.json`(0600, UID100/GID1000), 정확한
