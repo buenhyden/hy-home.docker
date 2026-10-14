@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -388,9 +388,9 @@ runs the W5 and W6 tests in CI.
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
+| 1 | accepted | Text checks, Text re-review | Owner accepted 2026-10-14 |
+| 2 | accepted | Server start native, Restore flow native, Denial check fix | Owner accepted 2026-10-14 |
+| 3 | accepted | Role apply native, Role apply fixes, Role apply re-review | Owner accepted 2026-10-14 |
 | 4 | pending | - | - |
 | 5 | pending | - | - |
 | 6 | pending | - | - |
@@ -398,8 +398,11 @@ runs the W5 and W6 tests in CI.
 
 ## Review and Completion
 
-No criterion is accepted until the owner accepts it. The window stays
-NOT READY.
+On 2026-10-14 the owner (AskUserQuestion) accepted criteria 1 to 3, whose
+evidence is on main, and chose to accept criteria 4 to 7 once #486 and #487
+merge. A second readiness review on the same day returned NOT READY; its
+prerequisites are listed in the readiness section. The window stays NOT
+READY.
 
 ## Related Documents
 
