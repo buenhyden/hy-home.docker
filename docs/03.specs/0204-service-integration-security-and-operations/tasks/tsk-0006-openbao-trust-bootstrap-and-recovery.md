@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.15"
+version: "0.2.16"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -2278,6 +2278,17 @@ not change the keys a pre-rekey Raft snapshot opens with, so the exposure ends
 only when pre-exclusion host snapshots are deleted. Nothing ran on HOME; step 5 and
 criterion 11 stay as before.
 
+### Agent Alert Source — 2026-10-14
+
+SPEC-0239 added the Agent telemetry, scrape and alerts the 2026-10-13 gap
+record deferred: a `metrics_only` listener, Prometheus job `openbao-agent`,
+`OpenBaoAgentMetricsScrapeFailing` and `OpenBaoAgentAuthFailure`. It merged
+in PR #463 and its review fixes in PR #466, whose `candidate-quality` passed.
+It is not deployed: the Agent recreate needs a fresh wrapped SecretID, then a
+Prometheus restart, both separately approved. A render that goes stale while
+authentication works still shows only as Docker `unhealthy`. RUN-0085 0.9.1
+states this; the gap row stays NOT_RUN until deployment.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -2307,6 +2318,7 @@ criterion 11 stay as before.
 | Audit logrotate registration | 11 | W23 | Deferred: the running server has no audit mount, so registration waits for the upgrade window | HOME check 2026-10-13 | NOT_RUN | Preserved Attempt Cleanup — 2026-10-13 | - |
 | Leftover target cleanup | 11 | W23 | Empty base target removed with `rmdir`; `-04` target deleted by the owner; no `p01-*` directory left, live server and Agent healthy; pre-2.7.1 snapshot kept | HOME, value-free metadata | PASS | Owner Decisions — 2026-10-13 | - |
 | Agent alert gap | 11 | W23 | No Agent metrics or alert; gap recorded, telemetry and alert deferred to a separate Spec | `agent.hcl`, Prometheus config | NOT_RUN | Owner Decisions — 2026-10-13 | - |
+| Agent alert source | 11 | W23 | SPEC-0239 telemetry, scrape and alerts merged (PR #463, #466; candidate passed); deployment NOT_RUN | `main` `b4291bb43` | PASS | Agent Alert Source — 2026-10-14 | - |
 | Maintenance window plan | 11 | W23 | RUN-0085 window plan with commands, signals, stops, rollback and approvers; HOME execution NOT_RUN | Branch on `origin/main` | PASS | Maintenance Window Plan — 2026-10-13 | - |
 | Maintenance OTP argument defect | 11 | W22 | Independent source inspection: stdin-only claim conflicted with executable OTP arguments and unsupported process-isolation assumption | RUN-0085 SHA256 0db6f3d23ec0e93a00a1276c29d57603937294c543b4546c623f5c7baa9a9785 | FAIL | Maintenance-window input correction | - |
 | Maintenance protected-input correction | 11 | W22 | Remove unsafe OTP CLI block; retain protected authenticated API/custody boundary and explicit BLOCKED/NOT_RUN | RUN-0085 SHA256 81ce399fead9074dd92f06b37094e9cc30a987709fa5cbe24e6e209e4d03521b | PASS | Maintenance-window input correction | Maintenance OTP argument defect |
