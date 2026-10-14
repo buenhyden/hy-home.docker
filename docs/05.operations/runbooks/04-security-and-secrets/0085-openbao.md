@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.29"
+version: "0.12.30"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -682,7 +682,7 @@ custody 파일을 열지 않고, window 안이든 다음 window의 W1 전이든 
 재부팅 때 사라진다. W2 helper는 lock이 있으면 멈추므로 다음 window의 W2와 W3는 검토된 W2 복구
 절차가 생길 때까지 **BLOCKED**다. kept W2 custody가 있는 동안은 이후 모든 정리에서도
 `P01_KEEP_W2=1`을 둔다. sealed server에서 root custody를 지우면 OIDC 확인 없이 관리 접근을 모두
-버리는 것이며, 이는 이 runbook이 기록하는 알려진 잔여 위험이다(POL-0085에는 아직 없다)(복구는 share 2개로 unseal한 뒤
+버리는 것이며, 이는 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 2026-11-15까지 받아들인 잔여 위험이다(복구는 share 2개로 unseal한 뒤
 OIDC operator와 W1 절차).
 
 지우기 전에 credential이 없는 증거, 곧 W1c의 `prior-state.json`·`state.json`(`p01-roles.*`,
@@ -772,9 +772,9 @@ OpenBao와 같은 UID라 `audit.json`, TLS server key, Raft data, Agent token si
 렌더된 Keycloak·Grafana admin password, SecretID 파일, 그리고 `docker compose exec` 동안 container
 안 `bao` process의 환경에 있는 root·operator token을 읽을 수 있습니다(`${DEFAULT_SECURITY_DIR}/openbao` 아래 UID 100
 소유 경로). dhcpcd의 권한 분리
-process는 chroot되어 위험이 작으며 알려진 잔여 위험으로 둡니다. host swap(`/swap.img`)은 암호화되지
+process는 chroot되어 위험이 작으며 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 2026-11-15까지 받아들인 잔여 위험입니다. host swap(`/swap.img`)은 암호화되지
 않아 tmpfs의 custody·token 파일 page가 disk로 나갈 수 있고, `shred`는 그 사본을 지우지 못합니다.
-이것도 알려진 잔여 위험입니다. 최초 숫자 group
+이것도 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 받아들인 잔여 위험입니다. 최초 숫자 group
 표기는 실제 격리 parser에서 거부돼 이름으로 수정했습니다. rename/create0600,
 `nocopytruncate`, `compress`/`delaycompress`와 고정 container ID의 상태·Compose 라벨
 검증 뒤 같은 ID에만 `SIGHUP`을 보내는 계약입니다. 성장률 미측정으로 `maxsize256M`,

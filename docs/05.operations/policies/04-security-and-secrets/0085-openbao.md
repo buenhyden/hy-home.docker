@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.7.1"
+version: "0.8.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -106,6 +106,19 @@ Raft upgrade 전 backup과 독립 stateful recovery 계약 검토가 필요하�
 unseal/custody 자료를 검증 전에 폐기하지 않는다. 서비스·Agent 제거는 소비자 이관,
 credential 폐기와 보호 자료 보존을 각각 승인받아 수행하며 `down -v`로 대체하지 않는다.
 
+### Maintenance window credential handling
+
+HOME 유지보수 window(SPEC-0243, 절차는 RUN-0085)는 아래 규칙을 따른다.
+
+- share·root·operator token은 숨김 입력, 보호된 FD, tmpfs의 0600 파일로만 다룬다. 명령 인자,
+  셸 기록, 화면 출력, OpenBao CLI token helper(영구 disk)에 두지 않는다.
+- window에서 만든 임시 root는 window 끝이나 중단 때 폐기한다. server가 sealed라 폐기할 수 없으면
+  그 root를 다시 만들 수 있는 custody 파일을 모두 지우고, 다음 window가 W1 직후 이전 root를 찾아
+  폐기한다. 이 정리는 기록과 상관없이 매 window 실행한다.
+- server가 unsealed인데 새 OIDC 로그인이 되지 않으면 root와 custody를 지우지 않고 OIDC 접근부터
+  복구한다. 마지막 관리 접근을 복구 수단 없이 버리지 않는다.
+- window에서 쓴 operator token은 모두 폐기하고, 값이나 accessor는 기록하지 않는다.
+
 ## Exceptions
 
 owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건을 기록해야 한다. 정적
@@ -139,6 +152,27 @@ host 백업에 포함한다. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계�
 표시하지 않으며 @buenhyden의 후속 결정이 필요하다. 파일을 읽거나 이동하거나
 share를 재발급해 이 문서 불일치를 자동 해결하지 않는다.
 
+### SEC01 image acceptances
+
+owner는 SEC01(SPEC-0204 TSK-0009)에서 아래 image의 잔여 위험을 받아들였다. 각 수용은 기록된
+범위 안에서만 유효하다.
+
+| Image | 범위와 위험 | 만료 | 종료 조건 |
+| --- | --- | --- | --- |
+| 자체 빌드 OpenBao (manifest `46bf9b5c`) | 서명 없음, CVE-2025-60876, GO-2026-5932 처분 | SEC01 기준 15 수용이나 image 교체까지. window 시작 7일 안의 stable 조회에서 영향을 주는 보안 수정이 나오면 W4·W5 gate 실패 | 기준 15 수용 또는 새 image |
+| Traefik·Prometheus Compose 고정 | Go HTTP/2 서버 DoS 계열(인증 전, LAN), Prometheus는 인증 뒤 DoS. 서명 미확인 | 패치된 Go·x/net upstream 릴리스 뒤 7일, 또는 2026-11-15 중 이른 날 | 패치 릴리스 채택, 또는 2026-11-15 재결정. WAN 노출이나 공개 exploit이 생기면 즉시 재검토 |
+
+### Maintenance window residuals
+
+2026-10-15 owner는 아래 잔여 위험을 **2026-11-15까지** 받아들였다. 그날 다시 결정한다.
+
+| 잔여 위험 | 범위와 위험 | 종료 조건 |
+| --- | --- | --- |
+| UID 100 공유 | host `dhcpcd` 계정이 OpenBao와 같은 UID라 audit log, TLS server key, Raft data, Agent token·SecretID·`role_id`, 렌더 값, exec 중 container 안 `bao` 환경의 token을 읽을 수 있다. dhcpcd 권한 분리 process는 chroot된다 | OpenBao를 host에 없는 UID로 옮기거나 경로 권한으로 막음 |
+| 암호화 안 된 swap | host `/swap.img`가 암호화되지 않아 tmpfs의 custody·token page가 disk로 나갈 수 있고 `shred`가 그 사본을 지우지 못한다 | swap 암호화, 또는 window 동안 swap 끄기 |
+| sealed 정리의 관리 접근 상실 | server가 sealed인 채 window가 멈추면 OIDC 확인 없이 root custody를 지운다. 복구는 share 2개로 unseal한 뒤 OIDC operator와 W1 절차 | 정리 전에 unseal할 수 있는 검토된 절차 |
+| 남겨 둔 W2 custody | W2가 INDETERMINATE로 끝나면 snapshot 전용 token(최대 720시간)이 tmpfs에 남고, 다음 window의 W2·W3는 BLOCKED다 | 검토된 W2 복구 절차, 또는 token 만료 |
+
 ### Verification
 
 Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 별도의 정적/런타임 증거를
@@ -154,7 +188,9 @@ Docker socket을 주거나 무제한 restart로 인증 실패를 숨기지 않�
 config-owned HMAC file audit를 유지하며 모든 필수 backend 실패 시 업무 요청의
 실패/지연을 수용한다. health 응답은 audit 증거가 아니며 audit 비활성화로 성공시키지
 않는다. 실제 filesystem 용량, rotation owner/schedule/보존, 실패 알림을 HOME에서
-검증해야 한다. 기존 single-file custody 예외는 미해결 상태로 보존한다. P01 격리 시험은
+검증해야 한다. rotation은 host logrotate 규칙(`/etc/logrotate.d/openbao`)과 기존
+`logrotate.timer`의 시간 단위 drop-in이 맡으며 owner가 2026-10-15에 설치했다. 회전이 멈춰
+`audit.json.1`이 계속 커지는 경우를 알리는 경보는 아직 없다. 기존 single-file custody 예외는 미해결 상태로 보존한다. P01 격리 시험은
 그 예외를 종료하거나 HOME 복구 자료를 만들어내지 않는다. P06 확대는 실제 cold boot·
 RUN-0085 5단계 custody 기록(SPEC-0242)·선정 snapshot 복구 수용 이후만 허용한다.
 

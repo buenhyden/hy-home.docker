@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.6.0"
+version: "0.7.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -104,15 +104,18 @@ account가 아니라 Keycloak에 속한다. 이 guide에는 password나 token을
 metadata는 해당 session에 `default`와 `hy-home-operator` policy만 있음을
 확인했다.
 
-HOME domain을 resolve하고 그 CA를 신뢰하는 host에서 CLI access를 하려면:
+HOME host에는 `bao` CLI가 없다. 평소에는 OpenBao UI에서 OIDC로 로그인한다. HOME domain을
+resolve하고 그 CA를 신뢰하는 다른 host에 CLI가 있으면 다음처럼 로그인할 수 있다:
 
 ```bash
 export BAO_ADDR=https://openbao.hy.home.arpa
 bao login -no-print -method=oidc -path=oidc role=home-admin
 ```
 
-CLI는 token helper로 OpenBao token을 저장한다. 그 local 파일을
-보호한다. gateway browser SSO는 public route에서 non-browser API access를
+그 CLI는 token helper로 OpenBao token을 local 파일에 저장하므로 그 파일을 보호한다. 유지보수
+window에서는 token helper를 쓰지 않는다. UI에서 받은 token을 숨김 입력으로 tmpfs의 0600 파일에
+넣고 보호된 FD로만 넘긴다([POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-credential-handling),
+RUN-0085). gateway browser SSO는 public route에서 non-browser API access를
 막을 수 있다. gateway 인증이나 TLS 검증을 우회하지 말고 승인된 API transport를
 사용한다. 구성된 callback은 정확한 UI path인
 `https://openbao.hy.home.arpa/ui/vault/auth/oidc/oidc/callback`와 CLI
@@ -159,6 +162,17 @@ server의 기존 bootstrap 기록은 threshold2, Shamir share3개다. 현재 cus
 [보존된 follow-up Task](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md)에
 기록되어 있다. snapshot 생성과 server 재시작/unseal은 검증되었으며, 격리된
 restore와 share의 오프라인 전달은 별도의 운영자 책임으로 남아 있다.
+
+### Maintenance window
+
+server와 Agent 업그레이드는 120분 유지보수 window 하나에서 순서대로 진행한다(SPEC-0243).
+W0 사전 점검 뒤 W1 임시 root, W1c renderer 정책, W2 snapshot token, W3 새 snapshot, W3b R2 보관,
+W3a 격리 복원 시험(한 번만), W4 server 업그레이드와 수동 unseal(이때 OpenBao가 약 10분 멈춘다),
+W5 Agent 업그레이드와 재발급, W6 audit 확인, W7 root 폐기 순서다. 정해진 시각까지 단계가 시작되지
+않으면 멈추고, 어디서 멈추든 같은 정리를 한다. Keycloak과 Grafana는 이미 렌더된 값으로 계속
+동작한다. 명령과 멈춤 기준은 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이,
+credential 규칙과 받아들인 잔여 위험은 [policy](../../policies/04-security-and-secrets/0085-openbao.md)가
+소유한다.
 
 ### Common Checks
 
