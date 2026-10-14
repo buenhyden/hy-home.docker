@@ -425,18 +425,19 @@ the restore remains open.
 | 1 | accepted | Text checks, Text re-review | Owner accepted 2026-10-14 |
 | 2 | accepted | Server start native, Restore flow native, Denial check fix | Owner accepted 2026-10-14 |
 | 3 | accepted | Role apply native, Role apply fixes, Role apply re-review | Owner accepted 2026-10-14 |
-| 4 | pending | - | - |
-| 5 | pending | - | - |
-| 6 | pending | - | - |
+| 4 | accepted | Restore input native | Owner accepted 2026-10-15 after #486 and #487 merged |
+| 5 | accepted | R2 artifact action, R2 read-only rehearsal | Owner accepted 2026-10-15 after #486 and #487 merged |
+| 6 | accepted | Window overrides, W4 rollback decision | Owner accepted 2026-10-15 after #486 and #487 merged |
 | 7 | pending | - | - |
 
 ## Review and Completion
 
 On 2026-10-14 the owner (AskUserQuestion) accepted criteria 1 to 3, whose
 evidence is on main, and chose to accept criteria 4 to 7 once #486 and #487
-merge. A second readiness review on the same day returned NOT READY; its
-prerequisites are listed in the readiness section. The window stays NOT
-READY.
+merge. #486 and #487 merged on 2026-10-14, so criteria 4 to 6 are accepted as
+the owner chose. Criterion 7 stays pending: the second readiness review
+returned NOT READY, and per-unit reviews it found missing (security for W1
+and W6, IaC for W2 and W5) are still to run. The window stays NOT READY.
 
 ## Related Documents
 
