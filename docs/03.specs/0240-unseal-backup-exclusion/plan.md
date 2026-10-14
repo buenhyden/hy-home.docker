@@ -1,6 +1,6 @@
 ---
 title: "Unseal Share File Out of Host Backups Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -16,11 +16,11 @@ created: "2026-10-14"
 
 ## Overview
 
-Deliver in two pull requests. The first carries the policy, decision and
+Deliver in three pull requests. The first carries the policy, decision and
 runbook text and this package, so the owner attests step 5 against the
 revised procedure on `main`. The second carries the exclusion, its test and
 the restore wording, and merges only after that attestation; then one daily
-run is observed.
+run is observed. A third carries the W5 single-administrator place rule.
 
 ## Work Breakdown
 
@@ -30,6 +30,7 @@ run is observed.
 | W2 | 2 | POL-0085, ADR-0042 and RUN-0085 text | W1 | TSK-0001 | Task evidence |
 | W3 | 3 | Independent IaC, security and rules reviews | W1, W2 | TSK-0001 | Task evidence |
 | W4 | 4 | Merge after step 5 is attested; observe the next host snapshot | W3 | TSK-0001 | Task evidence |
+| W5 | 5 | Single-administrator place rule in RUN-0085 and POL-0085; security and rules reviews | W2 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 
@@ -47,8 +48,14 @@ W4 lists the next host snapshot for the file name only.
   the `forget-prune` keep policy. A rekey does not change the keys a
   pre-rekey Raft snapshot opens with, so the exposure ends only when the
   pre-exclusion host snapshots are deleted, a separately approved operation.
+- **Three places too early.** If BKP-003 joins a share before both W5
+  conditions hold, one place plus R2 read access yields every share through
+  the old R2 snapshots. The daily copy re-uploads any pre-exclusion snapshot
+  still in the local repository, so the verdict accepts that placement only
+  with the criterion 4 record and listings of both repositories taken after a
+  later copy. No tracked tool deletes selected snapshots yet.
 - **Rollback.** Revert the exclusion line; the next backup copies the file
-  again.
+  again. The W5 rule reverts as text.
 
 ## Related Documents
 
