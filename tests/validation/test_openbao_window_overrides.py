@@ -8,15 +8,17 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-OVERRIDE = ROOT / "infra/03-security/openbao/window/compose.window-ca.override.yml"
 DROP_IN = ROOT / "infra/03-security/openbao/config/systemd/logrotate-hourly.conf"
+# service: (overlay, base Compose file, CA mount target)
 BASE = {
     "traefik": (
-        ROOT / "infra/01-gateway/traefik/docker-compose.yml",
+        "infra/01-gateway/traefik/compose.window-ca.override.yml",
+        "infra/01-gateway/traefik/docker-compose.yml",
         "/openbao-ca/ca.pem",
     ),
     "prometheus": (
-        ROOT / "infra/06-observability/docker-compose.yml",
+        "infra/06-observability/compose.window-ca.override.yml",
+        "infra/06-observability/docker-compose.yml",
         "/etc/prometheus/openbao-ca.pem",
     ),
 }
@@ -24,16 +26,19 @@ PINNED = re.compile(r"[a-z0-9./-]+:v[0-9.]+@sha256:[a-f0-9]{64}")
 
 
 class WindowOverrideTests(unittest.TestCase):
-    def test_override_changes_only_the_image_of_two_services(self):
-        services = yaml.safe_load(OVERRIDE.read_text())
-        self.assertEqual(set(services), {"services"})
-        self.assertEqual(set(services["services"]), set(BASE))
-        for name, (compose, target) in BASE.items():
+    def test_each_overlay_changes_only_its_service_image(self):
+        for name, (overlay, compose, target) in BASE.items():
             with self.subTest(service=name):
-                override = services["services"][name]
+                model = yaml.safe_load((ROOT / overlay).read_text())
+                self.assertEqual(set(model), {"x-hyhome-overlay", "services"})
+                self.assertEqual(
+                    model["x-hyhome-overlay"], {"version": 1, "base": compose}
+                )
+                self.assertEqual(set(model["services"]), {name})
+                override = model["services"][name]
                 self.assertEqual(set(override), {"image"})
                 self.assertRegex(override["image"], PINNED)
-                base = yaml.safe_load(compose.read_text())["services"][name]
+                base = yaml.safe_load((ROOT / compose).read_text())["services"][name]
                 # The pin keeps the running image, which differs from Compose's.
                 self.assertNotEqual(override["image"], base["image"])
                 self.assertEqual(

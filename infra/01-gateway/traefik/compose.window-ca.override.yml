@@ -1,0 +1,14 @@
+# SPEC-0243 W6: recreate Traefik with the OpenBao CA mount its Compose file
+# already declares, while keeping the image it ran on 2026-10-14 (Compose pins
+# a newer one that is not deployed). Only `image` changes. Use it solely as a
+# second `-f` with `up -d --no-deps --no-build --pull never --force-recreate
+# traefik`, and only when W0 shows the running image ID equals this digest.
+# Retire it once SEC01 moves the running image to the Compose pin; the W0 image
+# ID comparison already stops a stale use.
+x-hyhome-overlay:
+  version: 1
+  base: infra/01-gateway/traefik/docker-compose.yml
+
+services:
+  traefik:
+    image: traefik:v3.7.13@sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259
