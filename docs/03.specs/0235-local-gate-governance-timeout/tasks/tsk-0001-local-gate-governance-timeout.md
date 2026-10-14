@@ -1,6 +1,6 @@
 ---
 title: "Local Gate Governance Timeout Task"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -149,18 +149,19 @@ is not the authenticated pull request merge); #448 was rebased onto
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
+| 1 | accepted | Contract, CI review | Owner accepted 2026-10-14 |
+| 2 | accepted | Runtime | Owner accepted 2026-10-14 |
 | 3 | accepted | Local gate replay, Candidate | Owner rule 2026-10-14: replay counts, accept on pass |
-| 4 | pending | - | - |
-| 5 | pending | - | - |
+| 4 | accepted | Reachability, CI review W3 | Owner accepted 2026-10-14 |
+| 5 | accepted | Metadata runtime, Contract W4, CI review W4 | Owner accepted 2026-10-14 |
 
 ## Review and Completion
 
 On 2026-10-14 the owner answered (AskUserQuestion) that a replay through the
 local changed gate counts as evidence and that a gate criterion is accepted if
 it passes. The W5 replay passed, so criterion 3 is accepted under that rule.
-The other criteria wait for the owner.
+The same day the owner, answering the review question (AskUserQuestion),
+accepted criteria 1, 2, 4 and 5.
 
 ## Related Documents
 

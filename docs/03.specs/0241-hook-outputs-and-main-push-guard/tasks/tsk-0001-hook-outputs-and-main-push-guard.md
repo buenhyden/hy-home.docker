@@ -1,6 +1,6 @@
 ---
 title: "Hook Outputs and Main Push Guard Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -340,24 +340,28 @@ SPEC-0241; SPEC-0240 is held by PR #464.
 | Re-review 7 | 5 | W5 | Independent `security-auditor` re-review of the round 7 fix: no blocking finding | Branch | PASS | Review Round 7 | - |
 | Attached flags | 5 | W5 | `-bmain` and `--create=main` forms named; routing suite (70) | Branch | PASS | Review Round 7 | - |
 | Candidate | 6 | W5 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
+| Candidate merged | 6 | W5 | Hosted `candidate-quality` on PR #467 head: SUCCESS, run `38508413442`; merged as `9205f8221` | `1af602bfa` | PASS | Review and Completion | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
-| 5 | pending | - | - |
-| 6 | pending | - | - |
+| 1 | accepted | Output tests | Owner accepted 2026-10-14 |
+| 2 | accepted | Binding parity | Owner accepted 2026-10-14 |
+| 3 | accepted | Main push tests, Main push tests 2, Pre-push stage | Owner accepted 2026-10-14 |
+| 4 | accepted | Settings test | Owner accepted 2026-10-14 |
+| 5 | accepted | Checks, Re-review 7, Attached flags | Owner accepted 2026-10-14 |
+| 6 | accepted | Candidate merged | Owner accepted 2026-10-14 |
 
 ## Review and Completion
 
-Owner actions: install the push-time guard with
-`pre-commit install --hook-type pre-push`; consider enabling admin enforcement
-or a ruleset without bypass actors on `main`. No criterion is accepted until
-the owner accepts it.
+On 2026-10-14 the owner, answering the review question (AskUserQuestion), accepted criteria 1 to 6.
+At the owner's request the same day, the hooks were installed in the main
+checkout with `pre-commit install --hook-type pre-commit --hook-type
+commit-msg --hook-type pre-push` (pre-commit 4.6.2), and `enforce_admins` was
+enabled on `main` with read-back at 2026-10-14T08:46:11Z, every other
+protection field unchanged. A push blocked by the installed hook has not been
+observed.
 
 ## Related Documents
 
