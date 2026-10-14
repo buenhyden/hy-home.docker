@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.10.2"
+version: "0.10.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -787,7 +787,7 @@ eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-securi
 2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-18352557360b0dc730269714be45377a084e88b6cf5810a23805eb4e09a7798e infra/03-security/openbao/scripts/protected-semantic-restore.py
+1a259ef01a762656a9eeef18917b511b301c7db10f888527cd3cffb0fe67fde7 infra/03-security/openbao/scripts/protected-semantic-restore.py
 3ed79ab6b43663bc8788c583578a469c3d8c81ee8d71c0310bdd605ec5474bca infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 P01_SOURCE_MANIFEST

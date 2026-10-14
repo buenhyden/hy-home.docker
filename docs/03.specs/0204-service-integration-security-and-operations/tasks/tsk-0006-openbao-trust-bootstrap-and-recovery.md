@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.20"
+version: "0.2.21"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -2979,6 +2979,38 @@ Fresh token-free state projection found no remaining p01 fixture container;
 HOME server and Agent still run healthy on the original11fd image. The source
 candidate is ready for its owning-Spec draft PR; no HOME gate is promoted.
 
+### Source PR delivery and hosted field-metadata finding — 2026-10-14
+
+The reviewed source candidate was committed as932508be4 and delivered in
+[draft PR472](https://github.com/buenhyden/hy-home.docker/pull/472) from
+codex/openbao-maintenance-integration-latest against main4c33.
+The initial hosted
+[candidate-quality run](https://github.com/buenhyden/hy-home.docker/actions/runs/38522461732/job/115715081494)
+passed. The same head's GitGuardian check failed with one Generic Password
+finding in protected-semantic-restore.py; no annotation or value was copied
+into this Task. Independent security inspection confirmed the two public
+KV-route/field-selector pairs contain no source credential or expected value.
+The semantic client reads actual values only through protected runtime inputs.
+
+The source-only clarity correction names the common public field explicitly
+with CANARY_FIELD_NAME and references it from the same two pairs. Routes,
+field bytes, tuple values, consumers and protected handling remain unchanged.
+New exact module SHA256:
+1a259ef01a762656a9eeef18917b511b301c7db10f888527cd3cffb0fe67fde7.
+RUN-0085 0.10.3 updates its one live W1 source binding; the prior18352557
+review packet above remains historical. No detector/path suppression,
+dashboard mutation or credential rotation was performed or is indicated.
+
+The first semantic regression invocation ran38 with37 PASS/1 ERROR because
+its unchanged approved public dependencies were0664 and the loader refused
+group-write. Only four owned public source modes were restored to0644;
+content hashes and loader policy stayed unchanged. The exact rerun passed38/38,
+0 skips,1.892s; Ruff and independent code/security/IaC delta reviews passed.
+The earlier native34-file digest was recomputed unchanged at2fa9f8b2;
+this module is outside that fixture, so no native rerun or new HOME semantic
+restore is claimed. Hosted checks on the clarified follow-up remain pending
+at publication; the source PR stays draft and no merge/deployment is claimed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -3067,7 +3099,8 @@ candidate is ready for its owning-Spec draft PR; no HOME gate is promoted.
 
 Prior source delivery merged in PR421 and PR431 (merge `7620f2d22`). The
 current protected-client/common integration passed its registered source gates
-and independent reviews and is prepared for its owning-Spec draft PR.
+and independent reviews and was delivered in draft PR472. Its follow-up
+field-metadata clarity correction retains the hosted-check boundary above.
 The current Task remains blocked on the named W23 target/custody and runtime residuals. Source
 and isolated proof do not complete HOME custody/boot/recovery acceptance or
 authorize P06. No secret migration or consumer switch is claimed.
