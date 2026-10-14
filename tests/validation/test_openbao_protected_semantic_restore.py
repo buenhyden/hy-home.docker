@@ -1,8 +1,10 @@
 # fmt: off
 import importlib.util
+import io
 import itertools
 import json
 import os
+import stat
 import tempfile
 import time
 import unittest
@@ -408,6 +410,7 @@ class RuntimeUnitTests(unittest.TestCase):
         effect.shares = ("share-one", "share-two")
         effect.contract_digest = "f" * 64
         effect.ledger = None
+        effect.reclaim_paths = effect.agent_id = None
         return effect
 
     def test_server_watcher_and_status_commands_are_bounded(self):
@@ -445,6 +448,14 @@ class RuntimeUnitTests(unittest.TestCase):
             self.result(returncode=2, stdout=b'{"initialized":true,"sealed":true}'),
         ]
         self.assertTrue(effect._wait_status("server", True, True)["sealed"])
+        # An unsealed node answers login and reads only once it is the active node.
+        effect.runtime.exec.side_effect = [
+            self.result(stdout=b'{"initialized":true,"sealed":false,"is_self":false}'),
+            self.result(stdout=b'{"initialized":true,"sealed":false,"is_self":true}'),
+        ]
+        effect.runtime.exec.reset_mock()
+        self.assertTrue(effect._wait_status("server", True, False)["is_self"])
+        self.assertEqual(effect.runtime.exec.call_count, 2)
         effect._json_exec = mock.Mock(
             side_effect=[
                 (
@@ -485,14 +496,16 @@ class RuntimeUnitTests(unittest.TestCase):
         order.attach_mock(effect._unseal, "unseal")
         order.attach_mock(effect.runtime.login, "login")
         order.attach_mock(effect.runtime.restore, "restore")
+        order.attach_mock(effect._wait_status, "wait")
         effect._init_restore("old", Path("/tmp"))
         # A new server is sealed: its own shares open it before the throwaway login
-        # and the restore, then the original shares open the restored keyring.
+        # and the restore, then the original shares open the restored keyring. Each
+        # login waits for an unsealed active node.
         self.assertEqual(
             [(c[0], *c.args) for c in order.mock_calls],
-            [("unseal", "old", "x"), ("unseal", "old", "y"), ("login", "old", "synthetic-root"), ("restore", "old")]
+            [("wait", "old", False, True), ("unseal", "old", "x"), ("unseal", "old", "y"), ("wait", "old", True, False), ("login", "old", "synthetic-root"), ("restore", "old"), ("wait", "old", True, True)]
             + [("unseal", "old", share) for share in effect.shares]
-            + [("login", "old", effect.root_token)],
+            + [("wait", "old", True, False), ("login", "old", effect.root_token)],
         )
         # One foreign share is accepted below the threshold; the second must fail to combine.
         self.assertEqual(effect._json_exec.call_args_list[1].kwargs["input"], b"x")
@@ -536,35 +549,134 @@ class RuntimeUnitTests(unittest.TestCase):
             ]
         )
         effect._create_tokens = mock.Mock(return_value=("issuer", "cleanup"))
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            bundle = root / "bundle"
-            bundle.mkdir()
-            effect.materialized_bundle = bundle
-            effect.materialized_helper = root / "helper"
-            effect._agent("server", root, (("alpha", 1), ("beta", 2)))
+        effect._fresh = mock.Mock(side_effect=self.fresh_stopped)
+        old_umask = os.umask(0o077)
+        try:
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                bundle = root / "bundle"
+                (bundle / "config").mkdir(parents=True, mode=0o700)
+                effect.materialized_bundle = bundle
+                effect.materialized_helper = root / "helper"
+                effect._agent("server", root, (("alpha", 1), ("beta", 2)))
+                # RUN-0085 runs the restore under umask 077; root with only CHOWN
+                # must still traverse every input directory as "other".
+                modes = {name: stat.S_IMODE((root / name).stat().st_mode) for name in ("agent", "out", "bundle", "bundle/config")}
+        finally:
+            os.umask(old_umask)
+        self.assertEqual(set(modes.values()), {0o755})
         self.assertEqual(effect._json_exec.call_count, 1)
         prep = effect.runtime.docker.call_args_list[0].args
-        # The Agent's UID 100 files go back to the operator after it stops, or the
-        # attempt directory with rendered values could not be removed.
-        calls = [c.args for c in effect.runtime.docker.call_args_list]
-        stop = calls.index(("stop", "--time", "10", "q" * 64))
-        reclaim = calls[stop + 1]
-        self.assertEqual(reclaim[:3], ("create", "--name", self.subject.ATTEMPT + "-agent-reclaim"))
-        self.assertIn(("--cap-add", "DAC_READ_SEARCH"), list(itertools.pairwise(reclaim)))
-        self.assertEqual(reclaim[-5:], ("-R", f"{os.getuid()}:{os.getgid()}", "/agent", "/out", "/bundle"))
-        self.assertEqual(calls[stop + 2], ("start", "--attach", "r" * 64))
-        self.assertIn(("--cap-add", "DAC_READ_SEARCH"), list(itertools.pairwise(prep)))
+        self.assertNotIn("DAC_READ_SEARCH", prep)
+        # The stopped Agent's UID 100 files, rendered values included, are destroyed
+        # where they were written, by UID 100 with no capability, on a fresh runner.
+        fresh = [c.args for c in effect._fresh.call_args_list]
+        revokes = [c for c in fresh if "auth/token/revoke" in c]
+        self.assertEqual(len(revokes), 2)
+        stop = fresh.index(("stop", "--time", "10", "q" * 64))
+        self.assertEqual(fresh[stop + 1][:2], ("inspect", "--type=container"))
+        reclaim = fresh[stop + 2]
+        self.assertEqual(reclaim[:4], ("run", "--rm", "--name", self.subject.ATTEMPT + "-agent-reclaim"))
+        self.assertIn(("--user", "100:1000"), list(itertools.pairwise(reclaim)))
+        self.assertNotIn("--cap-add", reclaim)
+        self.assertEqual("find /agent /out /bundle -mindepth 1 -delete; chmod 0755 /agent /out /bundle", reclaim[-1])
+        self.assertLess(fresh.index(revokes[-1]), stop)
         self.assertEqual((effect.runner.run.call_args.args[0][0], "issuer" in repr(effect.runner.run.call_args.args[0]), "/bundle" in repr(effect.runtime.docker.call_args_list[0])), (str(effect.materialized_helper), False, True))
+
+    def agent_effect(self):
+        effect = self.effect()
+        effect.runtime = mock.Mock()
+        effect.runtime.networks = ["n" * 64]
+        effect.runtime.docker.return_value = self.result(stdout=b"0 false")
+        effect.runtime.remember.side_effect = ["p" * 64, "agent-volume", "q" * 64]
+        effect.runner = mock.Mock()
+        effect._json_exec = mock.Mock(return_value=(self.result(), {"data": {"role_id": "role"}}))
+        effect._create_tokens = mock.Mock(return_value=("issuer", "cleanup"))
+        effect._fresh = mock.Mock(side_effect=self.fresh_stopped)
+        return effect
+
+    def fresh_stopped(self, *args, **_kwargs):
+        return self.result(stdout=b"false\n" if args[0] == "inspect" else b"")
+
+    def run_agent(self, effect):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "bundle").mkdir()
+            effect.materialized_bundle = root / "bundle"
+            effect.materialized_helper = root / "helper"
+            with self.assertRaises(self.subject.Indeterminate):
+                effect._agent("server", root, (("alpha", 1), ("beta", 2)))
+        return [c.args for c in effect._fresh.call_args_list]
+
+    def test_helper_failure_or_deadline_still_revokes_and_reclaims(self):
+        # A spent deadline or a dead watcher fails every shared-runner command, so
+        # revoke and reclaim run on their own runner.
+        for failure in (self.result(returncode=1), self.subject.Indeterminate()):
+            effect = self.agent_effect()
+            effect.runner.run.side_effect = [failure]
+            fresh = self.run_agent(effect)
+            with self.subTest(failure=failure):
+                self.assertEqual(sum("auth/token/revoke" in c for c in fresh), 2)
+                self.assertEqual(fresh[-1][:4], ("run", "--rm", "--name", self.subject.ATTEMPT + "-agent-reclaim"))
+
+    def test_failure_before_tokens_reclaims_without_revoking(self):
+        effect = self.agent_effect()
+        effect.runtime.remember.side_effect = ["p" * 64, self.subject.Indeterminate()]
+        fresh = self.run_agent(effect)
+        self.assertFalse(any("auth/token/revoke" in c for c in fresh))
+        self.assertFalse(any(c[0] == "stop" for c in fresh))
+        self.assertEqual(fresh[-1][:2], ("run", "--rm"))
+        effect._create_tokens.assert_not_called()
+
+    def test_running_agent_or_failed_reclaim_is_indeterminate_and_kept(self):
+        # A stop that leaves the Agent running would let it re-render after the delete.
+        effect = self.agent_effect()
+        effect.runner.run.side_effect = [self.result(returncode=1)]
+        effect._fresh.side_effect = lambda *a, **k: self.result(stdout=b"true\n" if a[0] == "inspect" else b"")
+        fresh = self.run_agent(effect)
+        self.assertFalse(any(c[:2] == ("run", "--rm") for c in fresh))
+        self.assertIsNotNone(effect.reclaim_paths)
+        effect = self.agent_effect()
+        effect.runner.run.side_effect = [self.result(returncode=1)]
+        effect._fresh.side_effect = lambda *a, **k: (_ for _ in ()).throw(self.subject.Indeterminate()) if a[0] == "run" else self.fresh_stopped(*a)
+        self.run_agent(effect)
+        self.assertIsNotNone(effect.reclaim_paths)
+
+    def test_removed_agent_still_reclaims_and_daemon_error_does_not(self):
+        effect = self.agent_effect()
+        effect.agent_id, effect.reclaim_paths = "q" * 64, (Path("/a"), Path("/o"), Path("/b"))
+        effect._fresh.side_effect = lambda *a, **k: self.result(returncode=1, stderr=b"Error: No such container: x") if a[0] in ("stop", "inspect") else self.result()
+        effect._reclaim()
+        self.assertEqual(effect._fresh.call_args.args[:2], ("run", "--rm"))
+        self.assertIsNone(effect.reclaim_paths)
+        effect.reclaim_paths = (Path("/a"), Path("/o"), Path("/b"))
+        effect._fresh.side_effect = lambda *a, **k: self.result(returncode=1, stderr=b"Cannot connect to the Docker daemon") if a[0] == "inspect" else self.result()
+        with self.assertRaises(self.subject.Indeterminate):
+            effect._reclaim()
+        self.assertIsNotNone(effect.reclaim_paths)
+
+    def test_fresh_runner_ignores_the_spent_shared_deadline(self):
+        effect = self.effect()
+        effect.runner = effect.execution.CommandRunner(time.monotonic() - 1, self.subject.Indeterminate)
+        runner = mock.Mock()
+        runner.run.return_value = self.result()
+        with mock.patch.object(effect.execution, "BoundedRunner", return_value=runner) as made:
+            effect._fresh("version")
+        self.assertGreater(made.call_args.args[0], time.monotonic())
+        self.assertIsNone(made.call_args.kwargs.get("probe"))
+        self.assertEqual(runner.run.call_args.args[0], ["docker", "version"])
+        runner.run.side_effect = effect.execution.ProcessError()
+        with mock.patch.object(effect.execution, "BoundedRunner", return_value=runner), self.assertRaises(self.subject.Indeterminate):
+            effect._fresh("version")
 
     def test_partial_token_issue_revokes_every_issued_token(self):
         effect = self.effect()
         effect.runtime = mock.Mock()
-        effect.runtime.exec.return_value = self.result(stdout=b"")
+        effect._fresh = mock.Mock(return_value=self.result(stdout=b""))
         effect._json_exec = mock.Mock(side_effect=[(self.result(), {"auth": {"client_token": "issued"}}), self.subject.Indeterminate()])
         with self.assertRaises(self.subject.Indeterminate):
             effect._create_tokens("server")
-        revoke = effect.runtime.exec.call_args
+        revoke = effect._fresh.call_args
         self.assertIn("auth/token/revoke", revoke.args)
         self.assertIn(b'"issued"', revoke.kwargs["input"])
         # The issuer helper requires explicit_max_ttl 300, which an empty body
@@ -579,22 +691,26 @@ class RuntimeUnitTests(unittest.TestCase):
     def test_revoke_success_has_no_body_and_failure_is_indeterminate(self):
         # auth/token/revoke answers 204 with no body, so success is the exit status.
         effect = self.effect()
-        effect.runtime = mock.Mock()
-        effect.runtime.exec.return_value = self.result(stdout=b"")
+        effect._fresh = mock.Mock(return_value=self.result(stdout=b""))
         effect._revoke_tokens("server", ("one", "two"))
-        self.assertEqual(effect.runtime.exec.call_count, 2)
-        self.assertNotIn("one", repr(effect.runtime.exec.call_args_list[0].args))
-        self.assertIn(b'"one"', effect.runtime.exec.call_args_list[0].kwargs["input"])
-        effect.runtime.exec.side_effect = [self.result(stdout=b""), self.subject.Indeterminate()]
+        self.assertEqual(effect._fresh.call_count, 2)
+        self.assertEqual(effect._fresh.call_args_list[0].args, ("exec", "-i", "server", "bao", "write", "auth/token/revoke", "-"))
+        self.assertNotIn("one", repr(effect._fresh.call_args_list[0].args))
+        self.assertIn(b'"one"', effect._fresh.call_args_list[0].kwargs["input"])
+        effect._fresh.side_effect = [self.result(stdout=b""), self.subject.Indeterminate()]
         with self.assertRaises(self.subject.Indeterminate):
             effect._revoke_tokens("server", ("one", "two"))
 
     def test_tls_material_keeps_ca_key_outside_mounted_directory(self):
         effect = self.effect()
         effect.runner = effect.execution.CommandRunner(time.monotonic() + 30, self.subject.Indeterminate)
+        old_umask = os.umask(0o077)
+        self.addCleanup(os.umask, old_umask)
         with tempfile.TemporaryDirectory(dir="/tmp") as directory:
             root = Path(directory)
             effect._tls(root)
+            # RUN-0085 sets umask 077; the UID 100 server reads tls/ through its group.
+            self.assertEqual(stat.S_IMODE((root / "tls").stat().st_mode), 0o750)
             self.assertTrue((root / "tls/ca.pem").is_file())
             self.assertTrue((root / "issuer/ca-key.pem").is_file())
             self.assertFalse((root / "tls/ca-key.pem").exists())
@@ -632,10 +748,41 @@ class RuntimeUnitTests(unittest.TestCase):
         ):
             receipt = effect.perform(reference)
         self.assertTrue(receipt["canaries_equal"])
+        self.assertEqual(effect._wait_status.call_args_list[-1].args, ("b" * 64, True, False))
+        execs = [c.args[1:] for c in effect.runtime.exec.call_args_list]
+        self.assertLess(execs.index(("bao", "lease", "revoke", "-prefix", "auth/approle/login")), execs.index(("bao", "token", "revoke", "-self")))
         calls = effect.runtime.docker.call_args_list
         self.assertEqual(calls[0].args[:3], ("stop", "--time", "10"))
         effect.runtime.cleanup.assert_called_once()
         self.assertEqual(ledger.write.call_args_list[-1].args[0], "accepted")
+
+    def test_failure_reclaims_after_cleanup_and_reports_residue(self):
+        effect, ledger = self.effect(), mock.Mock()
+        effect.runtime = mock.Mock()
+        effect._tmp = mock.Mock(return_value=Path("/tmp/owned-runtime"))
+        effect._materialize_artifacts = effect._copy_snapshot = effect._tls = mock.Mock()
+        order = mock.Mock()
+
+        def agent_started():
+            effect.reclaim_paths = (Path("/a"), Path("/o"), Path("/b"))
+            raise RuntimeError()
+
+        effect._prepare_target = mock.Mock(side_effect=agent_started)
+        effect._fresh = mock.Mock(return_value=self.result())
+        order.attach_mock(effect.runtime.cleanup, "cleanup")
+        order.attach_mock(effect._fresh, "fresh")
+        stderr = io.StringIO()
+        with (
+            mock.patch.object(self.subject, "AttemptLedger", return_value=ledger),
+            mock.patch.object(self.subject.shutil, "rmtree", side_effect=OSError()),
+            mock.patch("sys.stderr", stderr),
+            self.assertRaises(self.subject.Indeterminate),
+        ):
+            effect.perform((("a", 1), ("b", 2)))
+        names = [c[0] for c in order.mock_calls]
+        self.assertEqual(names[0], "cleanup")
+        self.assertEqual(order.mock_calls[1].args[:2], ("run", "--rm"))
+        self.assertIn("RESIDUE: /dev/shm attempt directory retained", stderr.getvalue())
 
     def test_every_post_ledger_exception_is_indeterminate_and_retained(self):
         for failure in (RuntimeError(), KeyboardInterrupt()):
@@ -772,7 +919,20 @@ class IntegrationBoundaryTests(unittest.TestCase):
         effect.runtime.docker.reset_mock()
         effect.runner.run.return_value = SimpleNamespace(stdout=b"tmpfs rw,nosuid,nodev,inode64\n", returncode=0)
         effect.preflight()
-        self.assertEqual(effect.runtime.docker.call_count, 6)
+        self.assertEqual(effect.runtime.docker.call_count, 10)
+        with mock.patch.object(self.subject.os, "getegid", return_value=1001), self.assertRaises(self.subject.Blocked):
+            effect.preflight()
+        inspected = {c.args[-1] for c in effect.runtime.docker.call_args_list if "inspect" in c.args}
+        for suffix in ("-chown", "-agent-chown", "-agent-reclaim", "-net"):
+            self.assertIn(self.subject.ATTEMPT + suffix, inspected)
+        def taken(*args, **_kwargs):
+            if args[:2] == ("network", "inspect"):
+                return SimpleNamespace(stdout=b"[]", returncode=0)
+            return docker(*args)
+        effect.runtime.docker.side_effect = taken
+        with self.assertRaises(self.subject.Blocked):
+            effect.preflight()
+        effect.runtime.docker.side_effect = docker
         for wrong in (" linux/arm64", " linux/amd64 extra"):
             def other(*args, wrong=wrong, **_kwargs):
                 if args[:2] == ("image", "inspect"):
