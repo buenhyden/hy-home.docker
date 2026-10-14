@@ -61,7 +61,9 @@ groups:
 
       # Agent counters (SPEC-0239). The Agent names them `bao_agent_*`, unlike
       # the server's `vault_*`. Its template engine emits no metric, so a stale
-      # render with working auth shows only as Docker `unhealthy`.
+      # render with working auth shows only as Docker `unhealthy`. The 15-minute
+      # window outlasts the Agent's 5-minute maximum auth retry backoff, so a
+      # long outage keeps the alert firing instead of flapping.
       - alert: OpenBaoAgentMetricsScrapeFailing
         expr: up{job="openbao-agent"} == 0
         for: 10m
@@ -74,12 +76,12 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'
 
       - alert: OpenBaoAgentAuthFailure
-        expr: increase(bao_agent_auth_failure{job="openbao-agent"}[5m]) > 0
+        expr: increase(bao_agent_auth_failure{job="openbao-agent"}[15m]) > 0
         for: 5m
         labels:
           severity: warning
           domain: security
         annotations:
           summary: 'OpenBao Agent 인증 실패'
-          description: 'openbao-agent의 AppRole 인증이 5분 넘게 실패하고 있습니다. 렌더된 credential이 갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.'
+          description: 'openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이 갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'

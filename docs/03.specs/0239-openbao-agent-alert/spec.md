@@ -48,7 +48,8 @@ which its owner updates after merge.
    labels, identically in `prometheus.yml` and `prometheus.dev.yml`.
 4. `OpenBaoAgentMetricsScrapeFailing` fires when `up` is 0 for 10 minutes, and
    `OpenBaoAgentAuthFailure` when `bao_agent_auth_failure` increased within
-   5 minutes for 5 minutes. The Agent's metric prefix is `bao`, not the
+   15 minutes for 5 minutes, a window longer than the Agent's 5-minute maximum
+   auth retry backoff. The Agent's metric prefix is `bao`, not the
    documented `vault`.
 5. A render that goes stale while authentication works has no metric and
    stays a Docker health signal; this limit is stated where the gap was.
