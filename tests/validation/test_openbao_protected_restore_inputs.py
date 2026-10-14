@@ -9,8 +9,10 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import types
 import unittest
+import uuid
 from pathlib import Path
 from unittest import mock
 
@@ -20,6 +22,19 @@ SPEC = importlib.util.spec_from_file_location("protected_restore_inputs", SOURCE
 M = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = M
 SPEC.loader.exec_module(M)
+
+
+def load_roles():
+    path = ROOT / "infra/03-security/openbao/scripts/protected-renderer-roles.py"
+    spec = importlib.util.spec_from_file_location("_rehearsal_renderer_roles", path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+# Restored Raft data is written as UID 100 and stays for the owner to remove.
+REHEARSAL_PARENT = os.environ.get("HYHOME_OPENBAO_REHEARSAL_PARENT") or None
 
 UTC = datetime.UTC
 SNAPSHOT = b"synthetic snapshot bytes"
@@ -305,10 +320,11 @@ class ContractTests(unittest.TestCase):
     "opt-in native rehearsal: real snapshot, producers and restore validators",
 )
 class NativeRehearsalTests(unittest.TestCase):
-    """Producer CLI end to end, then the restore client's read-only checks.
+    """Producer CLI end to end, then the restore client on owned synthetic state.
 
-    Stops before RecoveryEffects.perform: nothing is restored and no HOME path
-    is written; Admission only stats the fixed target's parent.
+    The read-only test stops before RecoveryEffects.perform and only stats the
+    fixed target's parent. The perform test replaces HOME's attempt, target,
+    parent and cluster constants in this process only.
     """
 
     OLD_IMAGE = (
@@ -327,7 +343,7 @@ class NativeRehearsalTests(unittest.TestCase):
         path.mkdir(mode=0o700)
         return path
 
-    def test_inputs_pass_every_read_only_restore_check(self):
+    def home(self):
         from tests.validation import _openbao_rehearsal_fixture as native
 
         fixture = native.OwnedFixture(
@@ -339,14 +355,16 @@ class NativeRehearsalTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.work = Path(tmp.name)
+        fixture.prepare()
+        _name, client = fixture.server("w4")
+        shares = client.initialize()
+        return native, fixture, client, shares
+
+    def inputs(self, client, cluster, restore):
+        """W3 snapshot and every W3a input up to, not including, the contract."""
         inputs, snapshots, tools = (
             self.private(name) for name in ("inputs", "snapshots", "tools")
         )
-        restore = M.load_restore()
-        fixture.prepare()
-        _name, client = fixture.server("w4")
-        client.initialize()
-
         self.produce("lease-start", "--directory", str(inputs))
         status, raw = client.api("GET", "sys/storage/raft/snapshot", binary=True)
         self.assertEqual(status, 200)
@@ -362,7 +380,7 @@ class NativeRehearsalTests(unittest.TestCase):
                     "size": len(raw),
                     "dev": info.st_dev,
                     "ino": info.st_ino,
-                    "cluster_id": restore.CLUSTER,
+                    "cluster_id": cluster,
                     "version": restore.OLD_VERSION,
                     "http_status": 200,
                     "saved_at_utc": datetime.datetime.now(UTC).isoformat(),
@@ -378,7 +396,6 @@ class NativeRehearsalTests(unittest.TestCase):
             "--minutes",
             "30",
         )
-
         repository = (
             Path(BundleAndReceiptTests.git("rev-parse", "--git-common-dir"))
             .resolve()
@@ -413,62 +430,239 @@ class NativeRehearsalTests(unittest.TestCase):
             "--output",
             str(security),
         )
-        contract_path = inputs / "restore-contract.json"
-        _written, digest = self.produce(
-            "contract",
-            "--output",
-            str(contract_path),
-            "--snapshot",
-            str(snapshot),
-            "--snapshot-receipt",
-            str(receipt),
-            "--lease",
-            str(inputs / M.LEASE),
-            "--helper-directory",
-            str(helper),
-            "--bundle",
-            str(inputs / "bundle"),
-            "--revision",
-            revision,
-            "--security-receipt",
-            str(security),
-            "--repository",
-            str(repository),
+        return types.SimpleNamespace(
+            output=str(inputs / "restore-contract.json"),
+            snapshot=str(snapshot),
+            snapshot_receipt=str(receipt),
+            lease=str(inputs / M.LEASE),
+            helper_directory=str(helper),
+            bundle=str(inputs / "bundle"),
+            revision=revision,
+            security_receipt=str(security),
+            repository=str(repository),
+            lease_id=lease_id,
+            lease_sha256=lease_sha,
         )
 
-        # The restore client's own read-only admission and preflight.
+    def admit(self, restore, options, digest):
+        """The restore client's own admission, exactly as main() builds it."""
         _parent, archive, execution = restore.load_dependencies()
-        contract, contract_held = restore._contract(contract_path, digest, execution)
+        contract, contract_held = restore._contract(options.output, digest, execution)
         self.addCleanup(contract_held.close)
-        self.assertEqual(contract["quiescence"]["lease_sha256"], lease_sha)
+        self.assertEqual(contract["quiescence"]["lease_sha256"], options.lease_sha256)
         snapshot_fd, snapshot_info = restore._open_held(
-            snapshot, contract["snapshot"]["sha256"], maximum=32 << 20, private=True
+            options.snapshot,
+            contract["snapshot"]["sha256"],
+            maximum=32 << 20,
+            private=True,
         )
         self.addCleanup(os.close, snapshot_fd)
         receipt_held = execution.HeldBytes.open(
-            receipt, contract["snapshot"]["receipt_sha256"], private=True
+            options.snapshot_receipt,
+            contract["snapshot"]["receipt_sha256"],
+            private=True,
         )
         self.addCleanup(receipt_held.close)
-        lease_fd = os.open(inputs / M.LEASE, os.O_RDONLY)
+        lease_fd = os.open(options.lease, os.O_RDONLY)
         self.addCleanup(os.close, lease_fd)
         lease = restore.QuiescenceLease(
-            lease_fd, lease_id, contract["snapshot"]["sha256"], lease_sha
+            lease_fd,
+            options.lease_id,
+            contract["snapshot"]["sha256"],
+            options.lease_sha256,
         )
-        admission = restore.Admission(
+        return (
+            execution,
             contract,
-            contract_held,
-            snapshot_fd,
-            snapshot_info,
-            receipt_held,
-            archive,
-            lease,
+            restore.Admission(
+                contract,
+                contract_held,
+                snapshot_fd,
+                snapshot_info,
+                receipt_held,
+                archive,
+                lease,
+            ),
         )
+
+    def test_inputs_pass_every_read_only_restore_check(self):
+        _native, _fixture, client, _shares = self.home()
+        restore = M.load_restore()
+        options = self.inputs(client, restore.CLUSTER, restore)
+        arguments = ["contract"]
+        for name in (
+            "output",
+            "snapshot",
+            "snapshot-receipt",
+            "lease",
+            "helper-directory",
+            "bundle",
+            "revision",
+            "security-receipt",
+            "repository",
+        ):
+            arguments += ["--" + name, getattr(options, name.replace("-", "_"))]
+        _written, digest = self.produce(*arguments)
+        execution, contract, admission = self.admit(restore, options, digest)
         admission.pre_read()
         effects = restore.RecoveryEffects(
             None, contract, admission, ("a", "b", ("c", "d")), digest, execution
         )
         self.addCleanup(lambda: [held.close() for held in effects.held_artifacts])
         effects.preflight()
+
+    def test_full_perform_restores_upgrades_and_renders(self):
+        """Old-image restore, candidate upgrade, Agent render, accepted ledger."""
+        native, fixture, client, shares = self.home()
+        cluster = client.api("GET", "sys/seal-status")[1]["cluster_id"]
+        reference = self.seed(native, fixture, client, cluster)
+        restore = M.load_restore()
+        attempt = "p01-rehearsal-" + uuid.uuid4().hex[:12]
+        # Docker writes the restored Raft data as UID 100; the owner removes it.
+        parent = Path(tempfile.mkdtemp(prefix=attempt + "-", dir=REHEARSAL_PARENT))
+        parent.chmod(0o700)
+        for name, value in (
+            ("ATTEMPT", attempt),
+            ("LEDGER", "." + attempt + ".attempt.json"),
+            ("TARGET", parent / attempt),
+            ("CLUSTER", cluster),
+        ):
+            patcher = mock.patch.object(restore, name, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        options = self.inputs(client, cluster, restore)
+        digest = M.contract(options, restore=restore)
+        # _contract pins HOME's parent literally; the target's real parent
+        # replaces it only after the contract is admitted.
+        info = parent.stat()
+        with mock.patch.object(
+            restore,
+            "PARENT_IDENTITY",
+            (info.st_dev, info.st_ino, info.st_uid, info.st_gid),
+        ):
+            execution, contract, admission = self.admit(restore, options, digest)
+            home_token = client.api("POST", "auth/token/create", {"ttl": "30m"})[1][
+                "auth"
+            ]["client_token"]
+            effects = restore.RecoveryEffects(
+                None,
+                contract,
+                admission,
+                (home_token, client.token, tuple(shares[:2])),
+                digest,
+                execution,
+            )
+            self.addCleanup(lambda: [held.close() for held in effects.held_artifacts])
+            base = restore.load_dependencies()[0]
+            # HOME's gateway name and port are the only replaced transport facts.
+            gateway = types.SimpleNamespace(**vars(base))
+            gateway.PinnedConnection = lambda _host, _port, **kwargs: (
+                base.PinnedConnection("openbao", native.PORT, **kwargs)
+            )
+            ca = fixture.tls / "ca.pem"
+            reader = restore.LiveCanaries(
+                gateway,
+                home_token,
+                base.ca_context(str(ca), hashlib.sha256(ca.read_bytes()).hexdigest()),
+                client.target,
+            )
+            self.assertEqual(reader.read_all(), reference)
+            receipt = restore.orchestrate(admission, reader, effects)
+        self.assertEqual(
+            receipt,
+            {
+                "canaries_equal": True,
+                "lease_id": options.lease_id,
+                "snapshot_sha256": contract["snapshot"]["sha256"],
+                "raft_index": contract["snapshot"]["raft_index"],
+                "raft_term": contract["snapshot"]["raft_term"],
+            },
+        )
+        ledger = json.loads((parent / ("." + attempt + ".attempt.json")).read_text())
+        self.assertEqual(ledger["state"], "accepted")
+        leftovers = subprocess.run(
+            ["docker", "ps", "-aq", "--filter", "label=hy-home.attempt=" + attempt],
+            capture_output=True,
+            check=True,
+        ).stdout
+        self.assertEqual(leftovers, b"")
+
+    def seed(self, native, fixture, client, cluster):
+        """HOME's canaries and renderer roles, applied by the reviewed W1c tool."""
+
+        def ok(method, path, payload=None):
+            status, body = client.api(method, path, payload)
+            self.assertIn(status, (200, 204), "synthetic setup request failed")
+            return body
+
+        ok("POST", "sys/mounts/secret", {"type": "kv", "options": {"version": "2"}})
+        # A new KV v2 mount answers 400 until its metadata upgrade finishes.
+        for _ in range(40):
+            if client.api("GET", "secret/config")[0] == 200:
+                break
+            time.sleep(0.25)
+        values = {}
+        for route, writes in (("02-auth/keycloak", 2), ("06-observability/grafana", 1)):
+            for _ in range(writes):
+                value = uuid.uuid4().hex
+                version = ok(
+                    "POST",
+                    "secret/data/hy-home/" + route,
+                    {"data": {"admin_password": value}},
+                )["data"]["version"]
+            values[route] = (value, version)
+        ok("POST", "sys/auth/approle", {"type": "approle"})
+        ok(
+            "POST",
+            "auth/approle/role/hy-home-renderer",
+            {"token_policies": ["renderer"]},
+        )
+        roles = load_roles()
+        w1 = self.private("w1")
+        for name, value in (
+            ("root.token", client.token),
+            (
+                "state.json",
+                json.dumps({"state": "DELIVERED", "operator_healthy": True}),
+            ),
+        ):
+            M.write_new(w1 / name, value.encode())
+        operation = self.private("roles")
+        ca = fixture.tls / "ca.pem"
+        root_fd = os.open(w1 / "root.token", os.O_RDONLY)
+        self.addCleanup(os.close, root_fd)
+        original = roles.BASE.PinnedConnection
+        output = io.StringIO()
+        with (
+            mock.patch.object(roles.BASE, "HOST", "openbao"),
+            mock.patch.object(
+                roles.BASE,
+                "PinnedConnection",
+                lambda host, _port, **kwargs: original(host, native.PORT, **kwargs),
+            ),
+            mock.patch("sys.stdout", output),
+        ):
+            code = roles.main(
+                [
+                    "apply",
+                    "--ca",
+                    str(ca),
+                    "--ca-sha256",
+                    hashlib.sha256(ca.read_bytes()).hexdigest(),
+                    "--connect-ip",
+                    client.target,
+                    "--expected-cluster-id",
+                    cluster,
+                    "--custody-directory",
+                    str(operation),
+                    "--w1-custody-directory",
+                    str(w1),
+                    "--root-fd",
+                    str(root_fd),
+                ]
+            )
+        self.assertEqual((code, output.getvalue()), (0, "RENDERER_ROLES_APPLIED\n"))
+        return (values["02-auth/keycloak"], values["06-observability/grafana"])
 
 
 if __name__ == "__main__":
