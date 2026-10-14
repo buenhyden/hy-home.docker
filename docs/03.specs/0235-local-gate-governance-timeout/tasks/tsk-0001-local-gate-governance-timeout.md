@@ -17,7 +17,8 @@ created: "2026-10-13"
 ## Objective
 
 Let the local changed gate finish on the owner's host by raising one local
-only node timeout, as SPEC-0235 states.
+only node timeout and letting the reachability test accept a class
+selection, as SPEC-0235 states.
 
 ## Inputs and Authorization
 
@@ -68,11 +69,17 @@ the governance node: `tests.lib.test_surface_ownership` failed
 `c80915370` (P04, 2026-10-13) registers
 `tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests`,
 a class, in the workflow contract, and the test compared module names only.
-The gate stops at its first failing node, so W3 could not reach the
-governance node on any branch, and the local gate moved to W4. The owner chose on 2026-10-14
+The gate stops at its first failing node, so the local gate could not reach
+the governance node on any branch; that local gate, formerly W3, is now W4. The owner chose on 2026-10-14
 (AskUserQuestion) to make the test count a class or method selection as
 reaching its module, keeping P04's single-class selection. Only
 `tests/lib/test_surface_ownership.py` changes; the duplicate check is kept.
+Limits: two class entries from one module count as a duplicate, and a
+misspelt class name is caught only when unittest runs it.
+
+An independent `ci-cd-engineer` review on 2026-10-14 found the code sound
+(dropped, duplicated and misspelt modules still fail; 8 tests OK) and asked
+for these document corrections, which are applied.
 
 ### Direct Push to Main
 
@@ -96,8 +103,9 @@ is not the authenticated pull request merge); #448 was rebased onto
 | Contract | 1 | W2 | CI gate contract tests (28); workflow contract and adapter tests (85); workflow contract check | Branch on `338c607d8` | PASS | W2 Timeout Change | - |
 | Runtime | 2 | W1 | Node module batch on this host: 763 tests, 1336 s | `338c607d8` | PASS | W1 Measured Runtime | - |
 | CI review | 1 | W2 | Independent `ci-cd-engineer` review: approve with notes, notes applied | `682840106` | PASS | Inputs and Authorization | - |
+| Reachability | 4 | W3 | `tests.lib.test_surface_ownership` RED on `1e7e2ba84` (1 failure), GREEN with the change (8 tests) | `a35f1e0af` on `1e7e2ba84` | PASS | W3 Reachability of Class Selections | - |
+| CI review W3 | 4 | W3 | Independent `ci-cd-engineer` review: code sound, document notes applied | `a35f1e0af` | PASS | W3 Reachability of Class Selections | - |
 | Local gate | 3 | W4 | `run-ci-gate.py --profile changed` | Branch | NOT_RUN | Work Log | - |
-| Reachability | 4 | W3 | `tests.lib.test_surface_ownership` RED on `1e7e2ba84` (1 failure), GREEN with the change (8 tests) | Branch on `1e7e2ba84` | PASS | W3 Reachability of Class Selections | - |
 
 ## Criterion Acceptance
 

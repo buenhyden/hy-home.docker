@@ -26,12 +26,15 @@ PR #448). The earlier SPEC-0231 W6 and SPEC-0232 W5 runs stopped at outer
 3000 s and 3600 s limits around the gate, so they do not show the node's own
 limit, although both stopped inside the same suite. The node is listed in
 `public_gate.local_only_gate_ids`, so hosted `candidate-quality` never runs it
-and is not affected.
+and is not affected. On 2026-10-14 a second stop appeared: commit
+`c80915370` registers one test class instead of its module, which fails the
+full-profile reachability test, so the gate stopped before this node.
 
 ## Scope
 
-In scope: that node's `timeout_minutes` and the evidence that the new value
-fits the measured runtime. Out of scope: splitting the node, speeding up the
+In scope: that node's `timeout_minutes`, the evidence that the new value
+fits the measured runtime, and the reachability test's handling of a class
+selection. Out of scope: splitting the node, speeding up the
 suite, and every hosted job or workflow timeout.
 
 The owner chose on 2026-10-13, through AskUserQuestion, to raise the timeout
