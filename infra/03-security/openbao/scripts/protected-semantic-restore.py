@@ -394,6 +394,9 @@ class RecoveryEffects:
                 raise Blocked()
         if self.runtime.docker("network", "inspect", ATTEMPT + "-net", allow_failure=True).returncode == 0:
             raise Blocked()
+        # The UID 100 servers read tls/ through the operator's group, GID 1000.
+        if os.getgid() != 1000:
+            raise Blocked()
         # The helper is materialized under /dev/shm and executed from there.
         mount = self.runner.run(["findmnt", "-n", "-o", "FSTYPE,OPTIONS", "--target", "/dev/shm"]).stdout.split()
         if len(mount) != 2 or mount[0] != b"tmpfs" or b"noexec" in mount[1].split(b","):
@@ -660,8 +663,12 @@ class RecoveryEffects:
             return
         auth, out, bundle = self.reclaim_paths
         if self.agent_id is not None:
+            # A running Agent would re-render after the delete; a removed one cannot.
             self._fresh("stop", "--time", "10", self.agent_id, allow_failure=True)
-        self._fresh("run", "--rm", "--name", ATTEMPT + "-agent-reclaim", "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "100:1000", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/sh", OLD_IMAGE, "-ec", "find /agent /out /bundle -mindepth 1 -delete; chmod 0777 /agent /out /bundle")
+            state = self._fresh("inspect", "--type=container", "--format", "{{.State.Running}}", self.agent_id, allow_failure=True)
+            if state.returncode == 0 and state.stdout.strip() != b"false":
+                raise Indeterminate()
+        self._fresh("run", "--rm", "--name", ATTEMPT + "-agent-reclaim", "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "100:1000", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/sh", OLD_IMAGE, "-ec", "find /agent /out /bundle -mindepth 1 -delete; chmod 0755 /agent /out /bundle")
         self.reclaim_paths = None
 
     def _tls(self, directory):
@@ -713,6 +720,8 @@ class RecoveryEffects:
             if self._canaries(candidate) != reference:
                 raise Indeterminate()
             self._agent(candidate, directory, reference)
+            # The Agent's AppRole login token lives on in the restored copy otherwise.
+            self.runtime.exec(candidate, "bao", "lease", "revoke", "-prefix", "auth/approle/login")
             self.runtime.exec(candidate, "bao", "token", "revoke", "-self")
             denied = self.runtime.exec(candidate, "bao", "read", "-format=json", "auth/token/lookup-self", allow_failure=True)
             if denied.returncode == 0 or b"403" not in denied.stderr:

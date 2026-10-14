@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.20"
+version: "0.12.21"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -634,7 +634,7 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 | W2 | snapshot token 발급과 확인 | 5분 | owner(credential 발급) |
 | W3 | writer 정지, lease, 새 업그레이드 전 snapshot | 10분 | owner(backup 실행) |
 | W3b | R2 artifact 보관(W3 직후, W3a 전) | 10분 | owner(off-host 전송) |
-| W3a | 입력 준비와 격리 semantic restore | 25분(restore 자체는 최대 17분) | 정확한 새 artifact·빈 대상의 독립 검토와 owner |
+| W3a | 입력 준비와 격리 semantic restore | 25분(성공한 restore는 최대 약 16분) | 정확한 새 artifact·빈 대상의 독립 검토와 owner |
 | W4 | server 업그레이드와 수동 unseal | 10분 | owner(runtime 변경) |
 | W5 | Agent 업그레이드, 재발급, Prometheus·Gatus 재생성 | 15분 | owner(runtime 변경) |
 | W6 | audit 쓰기·mode·성장 확인(회전은 사후) | 5분 | owner |
@@ -879,7 +879,7 @@ eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-securi
 2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-83e587c8f221ede08073bf0636c207fda74f0a0530e874e62458bc635db02b4a infra/03-security/openbao/scripts/protected-semantic-restore.py
+acdc1f42915933fef897ca35ff96b855df2875dd3592950164f01dee73f282a4 infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 56552244eb748cbe569ad0e63a9d47e70dcd5e3f10a28b730382de3993498d5c infra/03-security/openbao/scripts/protected-renderer-roles.py
@@ -1162,7 +1162,9 @@ P01_SECURITY_RECEIPT="$P01_INPUTS/security-receipt.json"
 `--security-receipt`와 `P01_SECURITY_RECEIPT`를 그 새 경로로 바꾼다.
 `$P01_INPUTS/quiescence-lease.json`은 그대로 둔다. lease가 만료됐거나 lease가 더는 이 snapshot을 덮지 못하면 새 W3 attempt(새 snapshot
 디렉터리·새 W3b)로 간다. restore는 lease 만료보다 최소 17분 전에 시작한다(900초 실행과
-60초 정리, 입력 시간). 그보다 늦으면 시작하지 않는다. `$P01_INPUTS`의 contract·lease·
+60초 정리, 입력 시간). 그보다 늦으면 시작하지 않는다. 실패한 restore는 token 폐기·Agent
+정지·정리·재회수가 단계마다 별도 60초 시계로 돌아 최대 약 7분이 더 걸린다. lease는 시작 뒤
+다시 보지 않고, 실패하면 W4를 열지 않으므로 시간표에는 영향이 없다. `$P01_INPUTS`의 contract·lease·
 `lease.pending.json`·두 receipt는 credential이 없지만 W4 gate와 INDETERMINATE 분석의 증거이므로,
 window를 닫기 전에 owner 전용 영구 저장소(tmpfs 밖, 문서 밖)에 복사한다.
 
@@ -1214,11 +1216,13 @@ effects 생성부터 공통 절대 900초 deadline을 세고 subprocess runner�
 입력 prompt와 이전 관리자 lookup은 시계 시작 전입니다. 이후 로컬 syscall·canary GET은
 runner가 중단시키지 않지만 경과 시간은 같은 예산을 소비하며 GET에는 별도 20초 abort가
 있습니다. cleanup은 별도 시계를 사용합니다. 약 1초 간격 watcher가 64개 entry/1GiB를 감시하며
-filesystem quota가 아닙니다. cleanup은 별도 60초 안에서 성공적으로 확보한 정확한 생성
+filesystem quota가 아닙니다. cleanup·token 폐기·Agent 파일 회수는 단계마다 별도 60초 안에서 돌며, cleanup은 성공적으로 확보한 정확한 생성
 ID만 정리합니다. 이름·label은 ID를 확보하지 못한 create의 운영자 대조 자료이며 자동
 cleanup 선택자가 아닙니다.
 `RESTORE_ACCEPTED`/exit0만 성공이며 `INDETERMINATE`/exit2에서는 대상·ledger를 보존하고
-다시 실행하지 않습니다. stderr에 `RESIDUE: /dev/shm attempt directory retained`가 나오면
+다시 실행하지 않습니다. exit가 0이 아니거나 실행이 끊기면(kill, 터미널 닫힘, 전원) `RESIDUE` 줄이
+없어도 ledger 상태, `/dev/shm/p01-restore-20261014-05-*`, container
+`p01-restore-20261014-05-agent-reclaim`이 남았는지 값 없이 확인합니다. stderr에 `RESIDUE: /dev/shm attempt directory retained`가 나오면
 `/dev/shm/<ATTEMPT>-*`에 복원 key·snapshot 사본이나 렌더 값이 남았을 수 있습니다. 지우지
 말고 그대로 두며, owner가 `sudo ls -laR`로 이름·소유자·크기만(내용은 보지 않음) 값 없이
 Task에 기록한 뒤 `sudo rm -r`로 지웁니다. 재부팅해도 `/dev/shm`은 비워집니다. 이전 버전 복원 후 candidate와 Agent를 같은 격리 data에 연결하며

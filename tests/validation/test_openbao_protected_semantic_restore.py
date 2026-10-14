@@ -549,7 +549,7 @@ class RuntimeUnitTests(unittest.TestCase):
             ]
         )
         effect._create_tokens = mock.Mock(return_value=("issuer", "cleanup"))
-        effect._fresh = mock.Mock(return_value=self.result())
+        effect._fresh = mock.Mock(side_effect=self.fresh_stopped)
         old_umask = os.umask(0o077)
         try:
             with tempfile.TemporaryDirectory() as directory:
@@ -574,11 +574,12 @@ class RuntimeUnitTests(unittest.TestCase):
         revokes = [c for c in fresh if "auth/token/revoke" in c]
         self.assertEqual(len(revokes), 2)
         stop = fresh.index(("stop", "--time", "10", "q" * 64))
-        reclaim = fresh[stop + 1]
+        self.assertEqual(fresh[stop + 1][:2], ("inspect", "--type=container"))
+        reclaim = fresh[stop + 2]
         self.assertEqual(reclaim[:4], ("run", "--rm", "--name", self.subject.ATTEMPT + "-agent-reclaim"))
         self.assertIn(("--user", "100:1000"), list(itertools.pairwise(reclaim)))
         self.assertNotIn("--cap-add", reclaim)
-        self.assertIn("find /agent /out /bundle -mindepth 1 -delete", reclaim[-1])
+        self.assertEqual("find /agent /out /bundle -mindepth 1 -delete; chmod 0755 /agent /out /bundle", reclaim[-1])
         self.assertLess(fresh.index(revokes[-1]), stop)
         self.assertEqual((effect.runner.run.call_args.args[0][0], "issuer" in repr(effect.runner.run.call_args.args[0]), "/bundle" in repr(effect.runtime.docker.call_args_list[0])), (str(effect.materialized_helper), False, True))
 
@@ -591,8 +592,11 @@ class RuntimeUnitTests(unittest.TestCase):
         effect.runner = mock.Mock()
         effect._json_exec = mock.Mock(return_value=(self.result(), {"data": {"role_id": "role"}}))
         effect._create_tokens = mock.Mock(return_value=("issuer", "cleanup"))
-        effect._fresh = mock.Mock(return_value=self.result())
+        effect._fresh = mock.Mock(side_effect=self.fresh_stopped)
         return effect
+
+    def fresh_stopped(self, *args, **_kwargs):
+        return self.result(stdout=b"false\n" if args[0] == "inspect" else b"")
 
     def run_agent(self, effect):
         with tempfile.TemporaryDirectory() as directory:
@@ -623,6 +627,20 @@ class RuntimeUnitTests(unittest.TestCase):
         self.assertFalse(any(c[0] == "stop" for c in fresh))
         self.assertEqual(fresh[-1][:2], ("run", "--rm"))
         effect._create_tokens.assert_not_called()
+
+    def test_running_agent_or_failed_reclaim_is_indeterminate_and_kept(self):
+        # A stop that leaves the Agent running would let it re-render after the delete.
+        effect = self.agent_effect()
+        effect.runner.run.side_effect = [self.result(returncode=1)]
+        effect._fresh.side_effect = lambda *a, **k: self.result(stdout=b"true\n" if a[0] == "inspect" else b"")
+        fresh = self.run_agent(effect)
+        self.assertFalse(any(c[:2] == ("run", "--rm") for c in fresh))
+        self.assertIsNotNone(effect.reclaim_paths)
+        effect = self.agent_effect()
+        effect.runner.run.side_effect = [self.result(returncode=1)]
+        effect._fresh.side_effect = lambda *a, **k: (_ for _ in ()).throw(self.subject.Indeterminate()) if a[0] == "run" else self.fresh_stopped(*a)
+        self.run_agent(effect)
+        self.assertIsNotNone(effect.reclaim_paths)
 
     def test_fresh_runner_ignores_the_spent_shared_deadline(self):
         effect = self.effect()
@@ -717,6 +735,9 @@ class RuntimeUnitTests(unittest.TestCase):
         ):
             receipt = effect.perform(reference)
         self.assertTrue(receipt["canaries_equal"])
+        self.assertEqual(effect._wait_status.call_args_list[-1].args, ("b" * 64, True, False))
+        execs = [c.args[1:] for c in effect.runtime.exec.call_args_list]
+        self.assertLess(execs.index(("bao", "lease", "revoke", "-prefix", "auth/approle/login")), execs.index(("bao", "token", "revoke", "-self")))
         calls = effect.runtime.docker.call_args_list
         self.assertEqual(calls[0].args[:3], ("stop", "--time", "10"))
         effect.runtime.cleanup.assert_called_once()
@@ -886,6 +907,8 @@ class IntegrationBoundaryTests(unittest.TestCase):
         effect.runner.run.return_value = SimpleNamespace(stdout=b"tmpfs rw,nosuid,nodev,inode64\n", returncode=0)
         effect.preflight()
         self.assertEqual(effect.runtime.docker.call_count, 10)
+        with mock.patch.object(self.subject.os, "getgid", return_value=1001), self.assertRaises(self.subject.Blocked):
+            effect.preflight()
         inspected = {c.args[-1] for c in effect.runtime.docker.call_args_list if "inspect" in c.args}
         for suffix in ("-chown", "-agent-chown", "-agent-reclaim", "-net"):
             self.assertIn(self.subject.ATTEMPT + suffix, inspected)
