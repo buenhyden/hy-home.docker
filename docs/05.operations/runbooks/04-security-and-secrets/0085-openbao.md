@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.5"
+version: "0.12.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -683,7 +683,12 @@ host 등록·권한 있는 parser·실제 rotation 성공을 뜻하지 않습니
 
 W4 전에 root-owned0644 `/etc/logrotate.d/openbao`의 정확한 source hash, 실제 NSS
 매핑과 host parser를 검증하고, 같은 공용 config·state·lock을 쓰는 시간 단위 호출을
-준비해야 합니다. 기존 일 단위 timer에서는 `maxsize`도 하루 한 번만 검사합니다.
+준비해야 합니다. 시간 단위 호출은 기존 `logrotate.timer`의 일정만 바꾸는
+[drop-in](../../../../infra/03-security/openbao/config/logrotate/logrotate-hourly.conf)입니다.
+owner가 `sudo install -D -o root -g root -m 0644` 로
+`/etc/systemd/system/logrotate.timer.d/hourly.conf`에 설치하고 `sudo systemctl daemon-reload`
+뒤 `systemctl list-timers logrotate.timer`의 다음 실행이 한 시간 안인지 확인합니다.
+`daily` 규칙은 계속 하루 한 번만 회전합니다. 기존 일 단위 timer에서는 `maxsize`도 하루 한 번만 검사합니다.
 별도 state를 사용하는 중복 scheduler를 만들지 않습니다. source만 복사한 상태나
 신호 전달만으로 등록·재개방을 완료했다고 보지 않으며, host 권한·등록·schedule 입력이
 준비되지 않으면 W0에서 중단합니다. W6는 실제 inode 변경과 후속 audit 성장·실패 알림을
@@ -703,9 +708,12 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   멈추고 다시 켜는 것은 owner의 sudo 작업이다.
 - **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
   쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 지금 없으므로 W4 뒤 gateway를 거치는
-  OIDC 로그인과 W7 `revoke-root`가 끊긴다. 실행 중인 Traefik image를 유지하는 검토된 scoped
-  override로 그 mount를 먼저 배포하고 gateway를 확인하기 전에는 W4를 열지 않는다. Traefik은
-  `core` profile이다.
+  OIDC 로그인과 W7 `revoke-root`가 끊긴다. Compose는 mount를 이미 선언하지만 2026-10-14 실행
+  image(v3.7.13)는 Compose 고정(v3.7.14)과 다르다. 실행 중 image ID가
+  [window override](../../../../infra/03-security/openbao/window/compose.window-ca.override.yml)의
+  digest와 같고 다른 설정 차이가 없을 때만
+  `docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml --profile core up -d --no-deps --no-build --pull never --force-recreate traefik`으로
+  다시 만들고 gateway를 확인한다. 그 전에는 W4를 열지 않는다.
 - **실행 중 설정과 디스크의 차이.** Prometheus·Gatus·Traefik의 실행 중 image·mount·설정을
   Compose 선언과 비교한다. 차이가 있으면 재생성이 다른 변경까지 배포하므로 먼저 검토한다.
 - **경보.** W4부터 Gatus와 Prometheus를 다시 만들 때까지 OpenBao down 경보가 난다. silence를
@@ -1042,8 +1050,10 @@ rollback: 새 버전 데이터에 이전 image를 붙이지 않는다(in-place R
 업그레이드가 실패하면 W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 검토된 절차로
 간다(아래 Rollback or Recovery). 이 경우 HOME은 보류하고 @buenhyden에게 반환한다. 다만 지금의
 restore 도구는 격리 target-05에 고정돼 있고 HOME을 복원된 volume으로 바꾸는 검토된 절차가
-없다. 그 cut-over 절차나 fix-forward를 택한다는 owner 결정이 기록되기 전에는 W4를 열지
-않는다(SPEC-0243).
+없다. 2026-10-14 owner는 fix-forward를 택했다(SPEC-0243 W6). W4가 실패하면 이전 image로
+되돌리지 않고 2.7.1에서 원인을 고친다. Raft 데이터 손상처럼 고칠 수 없을 때만 HOME을
+보류하고, 별도 승인으로 W3 snapshot 복원 경로를 연다. 그 경로의 HOME 전환 절차는 그때 따로
+검토한다.
 
 **W5 Agent 업그레이드와 재발급.** server가 unsealed이고 health가 통과한 뒤에만
 `docker compose --profile security up --no-start --no-deps --no-build --pull never openbao-agent`로
@@ -1058,15 +1068,17 @@ SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 versio
 실행 중 image가 Compose 고정과 같고 다른 설정 차이가 없음을 확인한 뒤에만
 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
 실행한다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다.
-다르면 실행 image를 유지하는 검토된 scoped override를 쓰고, 둘 다 없으면 이 부분은
-**BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
+다르면 실행 image를 유지하는 검토된 scoped override를 쓴다. 2026-10-14 실행 image(v3.14.0)는
+Compose 고정(v3.15.0)과 달랐으므로, 실행 중 image ID가 window override의 digest와 같을 때
+`docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
+쓴다. 둘 다 아니면 이 부분은 **BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
 `OpenBaoAgentAuthFailure`가 조용하다. 중단: scrape 실패가 이어지면 Agent listener와 `obs_net`
 연결을 먼저 확인한다. Prometheus만 이전 설정으로 되돌리는 것은 Agent 재인증과 무관하다.
 
 Gatus도 W4 뒤 OpenBao를 HTTPS로 보고 내부 CA를 요구하므로 CA mount가 없으면 W4 이후에도
 계속 경보를 낸다. Compose는 이미 Gatus의 CA mount를 선언한다. Gatus image는 digest 고정이 아닌
 local build tag `hy/gatus:local`이므로, 실행 중 컨테이너의 image ID가 지금의 `hy/gatus:local`
-ID와 같고 다른 설정 차이가 없을 때만
+ID와 같고(2026-10-14 관측에서 같았다) 다른 설정 차이가 없을 때만
 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate gatus`로
 다시 만든다. 다르면 실행 image를 유지하는 검토된 scoped override(SPEC-0243 W6)를 쓰고, 둘 다
 없으면 이 부분은 **BLOCKED**이며 그때까지의 Gatus 경보는 W0에서 정한 대로 처리한다.

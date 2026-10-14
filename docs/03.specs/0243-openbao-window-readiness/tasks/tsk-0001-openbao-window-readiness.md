@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -171,6 +171,30 @@ four Low; `iac-reviewer` three Medium, two Low). Applied:
   probe showed the operator policy's `policies = ["renderer-issuer"]` limit
   admits the string form and refuses a JSON list, which matches W5's text.
 
+### W6 CA Mounts, Logrotate and W4 Rollback
+
+A read-only comparison on 2026-10-14 found that Compose already declares the
+OpenBao CA mount for Traefik, Prometheus and Gatus, but none of the running
+containers has it. Gatus runs the current `hy/gatus:local` image ID, so the
+plain recreate in RUN-0085 applies. Traefik runs v3.7.13 and Prometheus
+v3.14.0, while Compose pins v3.7.14 and v3.15.0, so a plain recreate would
+also upgrade them. The new `compose.window-ca.override.yml` pins each to the
+running image by digest and changes nothing else: `docker compose config`
+with and without it differs only in those two `image` values, and the merged
+model keeps the CA mount targets. A contract test pins that shape.
+
+The hourly logrotate call is a drop-in for the host's existing
+`logrotate.timer` that only resets `OnCalendar` to hourly, so the one
+`logrotate.service` keeps the shared config, state and lock. A copy of the
+host's timer and service with the drop-in passed `systemd-analyze verify`.
+Installing it is the owner's sudo step.
+
+For W4's way back, the owner chose fix-forward on 2026-10-14
+(AskUserQuestion, "Fix-forward (Recommended)"): no rollback to the old
+image; only unfixable Raft damage holds HOME and opens the W3 snapshot
+restore under separate approval. RUN-0085 records the decision and the two
+override commands.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -188,6 +212,8 @@ four Low; `iac-reviewer` three Medium, two Low). Applied:
 | Role apply native | 3 | W3 | Real tool on an owned synthetic server, both images: targets replaced and read back, RoleID kept, role tokens exact, wrapped SecretID only, second run unchanged | `455dffd70` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 | Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
 | Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
+| Window overrides | 6 | W6 | Compose config with and without the override differs only in the Traefik and Prometheus image; CA mounts kept; contract test OK; timer drop-in passes `systemd-analyze verify` on a copy of the host units | Running images observed 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
+| W4 rollback decision | 6 | W6 | Owner chose fix-forward (AskUserQuestion) | Owner answer 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 
 ## Criterion Acceptance
 
