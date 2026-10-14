@@ -67,6 +67,17 @@ settings by itself.
   a tracked `pre-push` guard (`scripts/hooks/pre-push-guard.sh`), active only
   after `pre-commit install --hook-type pre-push`, and agent-side denials
   (SPEC-0241); neither changes the remote settings.
+- On 2026-10-14, at the owner's direction (AskUserQuestion), `enforce_admins`
+  was enabled with `gh api -X POST
+  repos/buenhyden/hy-home.docker/branches/main/protection/enforce_admins`.
+  Authenticated read-back before and after, at 2026-10-14T08:46:11Z, showed
+  `enforce_admins` false then true, and every other field identical:
+  `strict=true`, `contexts=[]`, zero required approvals, conversation
+  resolution on, force pushes, deletions and linear history off, branch not
+  locked. Admin credentials now need a pull request to change `main`. The
+  same day the main checkout installed the `pre-commit`, `commit-msg` and
+  `pre-push` hooks. Rollback is `gh api -X DELETE` on the same endpoint, by
+  separate approval.
 
 ## Target Ruleset
 
