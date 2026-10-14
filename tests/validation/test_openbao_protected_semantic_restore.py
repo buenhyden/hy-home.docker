@@ -427,6 +427,14 @@ class RuntimeUnitTests(unittest.TestCase):
         self.assertIn("--memory-swap", server)
         self.assertIn("--network=none", create_calls[1].args)
         self.assertNotIn("--network-alias", server)
+        # The image's own entrypoint writes BAO_LOCAL_CONFIG and adds -config;
+        # neither image has /bin/bao, and the read-only root needs a config tmpfs.
+        self.assertNotIn("--entrypoint", server)
+        self.assertEqual(server[-2:], ("image", "server"))
+        self.assertIn(
+            "/openbao/config:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=100,gid=1000",
+            server,
+        )
 
     def test_wait_status_unseal_status_and_canaries(self):
         effect = self.effect()
