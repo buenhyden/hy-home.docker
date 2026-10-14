@@ -565,6 +565,30 @@ A dev-server rehearsal of the sweep used five parent root tokens with child root
 
 **Spec scope.** Contract 6 in the Spec still says the overlays keep the running images. #497 changed that by SEC01 acceptance, and this Task records it without editing the approved Spec.
 
+### Policy and Guide Alignment
+
+On 2026-10-15 the owner asked whether the runbook, policy and guide covered the window. Only RUN-0085 did:
+
+- POL-0085 had none of the window rules or the new exceptions;
+- the guide still described a host `bao login` that stores the token through the token helper, but the host has no `bao` CLI.
+
+The owner chose (AskUserQuestion) to update both, and to accept the four window residuals until 2026-11-15:
+
+- the shared UID 100;
+- the unencrypted swap;
+- the loss of admin access after a sealed-server cleanup;
+- a kept W2 custody.
+
+Changes:
+
+- **POL-0085** now has:
+  - a "Maintenance window credential handling" rule set;
+  - an "SEC01 image acceptances" table that records the owner's existing OpenBao, Traefik and Prometheus decisions with their expiry and closure;
+  - a "Maintenance window residuals" table, each row with scope, risk and closure condition;
+  - the audit rotation owner, with the missing stalled-rotation alert.
+- **The guide** states that the host has no CLI and that window logins avoid the token helper, and adds a short window overview.
+- **RUN-0085** points its residual notes to the policy.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -611,6 +635,7 @@ A dev-server rehearsal of the sweep used five parent root tokens with child root
 | Final IaC re-review 4 | 7 | W1 | Independent `iac-reviewer` re-review of `0d59ce192`: READY with Low notes only; every earlier finding closed | `c61f3ca95` | PASS | Final Readiness Review | Readiness review, Second readiness review, Window security review, Window IaC review, Final IaC readiness review, Final IaC re-review, Final IaC re-review 2, Final IaC re-review 3 |
 | Final security re-review 4 | 7 | W1 | Independent `security-auditor` re-review of `0d59ce192`: APPROVE with notes (Low: stderr mixed into the root test, gone messages split by branch, keep path removed the vars file) | `c61f3ca95` | PASS | Final Readiness Review | - |
 | Final re-review 4 text fixes | 1 | W1 | Low notes applied; sweep rehearsed on a dev server with five parent and child root pairs and an injected stderr `root` warning: `revoked=11 remaining=0`, non-root token and new root kept | Branch `claude/window-final-review` | PASS | Final Readiness Review | - |
+| Policy and guide alignment | 1 | W1 | Owner decisions recorded; POL-0085 window rules, SEC01 acceptances and residual exceptions with expiry 2026-11-15; guide login and window overview; markdownlint 0, links PASS | Branch `claude/openbao-policy-guide` | PASS | Policy and Guide Alignment | - |
 | Agent input fix | 2 | W2 | Native chown with the restore's flags: exit 1 without `DAC_READ_SEARCH`, 0 with it; new assertions RED on the earlier code, GREEN after; 47 OK and native preflight 17 OK in a umask 022 clone | `2e3683771` (#492) | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Full restore rehearsal | 2 | W2 | Native `orchestrate()` and `perform()` on synthetic resources, old `11fd73a2` restore and owned `46bf9b5c` candidate and Agent: ledger `accepted`, no attempt containers left; four defects fixed with RED then GREEN unit assertions; restore-input suite 18 OK with `HYHOME_OPENBAO_REHEARSAL=1` in a umask 022 clone | `564f4049c` | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Restore fix IaC re-review | 7 | W2 | Independent `iac-reviewer` re-review of #492 and #495: FAIL (umask 077 leaves `tls/` unreadable to the server; cleanup misses the pre-token gap and depends on the shared runner) | `bc552bf9b` | FAIL | Restore Agent Fix and Full Rehearsal | - |
