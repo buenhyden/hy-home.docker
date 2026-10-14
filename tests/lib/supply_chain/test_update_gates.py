@@ -364,6 +364,14 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     row["sbom_scan"],
                 )
                 self.assertEqual("NOT_UPSTREAM_SIGNED", row["signature"])
+            elif row["service"] in {"traefik", "prometheus"}:
+                # SEC01 2026-10-15: offline scan of the upstream Compose pin.
+                self.assertTrue(
+                    row["sbom_scan"].startswith(
+                        "PASS: offline Syft v1.54.1/Grype v0.120.1"
+                    )
+                )
+                self.assertTrue(row["signature"].startswith("NOT_RUN"))
             else:
                 self.assertEqual("NOT_RUN", row["sbom_scan"])
             self.assertEqual("SEC01", row["blocker"]["owner"])
