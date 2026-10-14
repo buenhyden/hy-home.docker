@@ -476,6 +476,57 @@ The owner reported that the old `p01-operator.token` lookup was denied, so the
 token had already expired, and the file was deleted with `shred -u`. The HOME
 TLS preflight was run by the owner; this session did not observe its output.
 
+The owner then recreated Traefik on its SEC01-accepted Compose pin before the
+window. A read-only check on 2026-10-15 showed:
+
+- the container runs image `575fa15b`, is healthy and has 0 restarts;
+- `/openbao-ca/ca.pem` is present in the container;
+- its log has no error since the recreate.
+
+### Final Readiness Review
+
+Independent `iac-reviewer` and `security-auditor` reviews of the whole window
+at main `12ab97dab` ran on 2026-10-15.
+
+**Security review: APPROVE with notes.**
+
+- **Closed:** F2, F3 and F5 to F10.
+- **Partly closed:** F1 and F4.
+- **New findings:** two Medium, about a root left un-revoked:
+  - the root can be rebuilt from the OTP and the encoded token that remain in the W1 custody;
+  - no tool records the root accessor.
+
+**IaC review: NOT READY.** Its earlier timing, W6, W3a, W5-mint and secret-input findings are closed. New findings:
+
+- **High (the same root problem):** a root left un-revoked can still be rebuilt from the W1 custody.
+- **Medium, owner decisions:** the OpenBao acceptance period, and the Agent after an early stop.
+- **Medium, text:** hy-home.k8s writers never resumed, shell variables lost on `exit`, stale Traefik text.
+- **Low:** several stale or contradictory lines.
+
+The owner decided through the interactive question that:
+
+- the owned OpenBao acceptance lasts until SEC01 criterion 15 or a new image;
+- after an early stop the Agent stays stopped until the next window's W5, since its one-time SecretID is spent and consumers keep using the rendered files.
+
+**RUN-0085 changes.** At any stop:
+
+- every file in both custody directories and the W3a secret directory is shredded;
+- every OpenBao operator token used in the window is revoked;
+- the hy-home.k8s writers are resumed;
+- the Agent stays stopped.
+
+A root left un-revoked is found in the next window by listing accessors with a new root, without recording any accessor.
+
+Window logins write to a 0600 tmpfs file instead of the token helper. The window runs in one bash shell in the main checkout, whose non-secret path variables are saved for a reopened shell.
+
+Smaller fixes:
+
+- the stale Traefik, logrotate, W3a and Prometheus text is corrected, and the drift comparison checks Compose pins;
+- the W3a HOME read token is taken before W3, and a stop after W2 keeps the installed snapshot token;
+- the shared UID 100 is recorded as a residual, and both overlay headers now say rollback only.
+
+**Spec scope.** Contract 6 in the Spec still says the overlays keep the running images. #497 changed that by SEC01 acceptance, and this Task records it without editing the approved Spec.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -506,6 +557,10 @@ TLS preflight was run by the owner; this session did not observe its output.
 | Window IaC review | 7 | W2 | Independent `iac-reviewer` review of W2, W5 and the window text: NOT READY (Agent input chown fails natively, timing, stop path, W3a secret input) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
 | Host logrotate install | 6 | W6 | Read-only: timer drop-in loaded with the next run within an hour; `/etc/logrotate.d/openbao` root 0644, SHA-256 equal to the tracked rule | Host 2026-10-15 | PASS | Owner Host Preparation | - |
 | Window host prerequisites | 1 | W1 | Read-only: Linger yes, Docker debug false; owner-reported: old operator token expired (lookup denied) and shredded; TLS preflight run by the owner, output not observed here | Host 2026-10-15 | PASS | Owner Host Preparation | - |
+| Traefik pin recreate | 6 | W6 | Read-only after the owner's recreate: image `575fa15b`, healthy, 0 restarts, `/openbao-ca/ca.pem` present, no log error | Host 2026-10-15 | PASS | Owner Host Preparation | - |
+| Final IaC readiness review | 7 | W1 | Independent `iac-reviewer` review of the whole window: NOT READY (root rebuildable from W1 custody; acceptance period; Agent after an early stop; k8s writers; shell state; stale text) | `12ab97dab` | FAIL | Final Readiness Review | - |
+| Final security readiness review | 7 | W1 | Independent `security-auditor` review of the whole window: APPROVE with notes (root rebuildable from W1 custody; no accessor capture; operator tokens left live) | `12ab97dab` | PASS | Final Readiness Review | - |
+| Final review text fixes | 1 | W1 | Owner decisions recorded; RUN-0085 text fixed; overlay headers rollback-only; markdownlint 0, links PASS, overlay tests OK | Branch `claude/window-final-review` | PASS | Final Readiness Review | - |
 | Agent input fix | 2 | W2 | Native chown with the restore's flags: exit 1 without `DAC_READ_SEARCH`, 0 with it; new assertions RED on the earlier code, GREEN after; 47 OK and native preflight 17 OK in a umask 022 clone | `2e3683771` (#492) | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Full restore rehearsal | 2 | W2 | Native `orchestrate()` and `perform()` on synthetic resources, old `11fd73a2` restore and owned `46bf9b5c` candidate and Agent: ledger `accepted`, no attempt containers left; four defects fixed with RED then GREEN unit assertions; restore-input suite 18 OK with `HYHOME_OPENBAO_REHEARSAL=1` in a umask 022 clone | `564f4049c` | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Restore fix IaC re-review | 7 | W2 | Independent `iac-reviewer` re-review of #492 and #495: FAIL (umask 077 leaves `tls/` unreadable to the server; cleanup misses the pre-token gap and depends on the shared runner) | `bc552bf9b` | FAIL | Restore Agent Fix and Full Rehearsal | - |
