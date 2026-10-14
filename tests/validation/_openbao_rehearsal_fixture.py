@@ -25,7 +25,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "infra/03-security/openbao"
-IMAGE = "sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005"
+IMAGE = "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
+VERSION = "2.7.1+hyhome.go1.27.2.net0.60.0.r1"
+IMAGE_REFERENCE = "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
 PORT = 8240
 CLUSTER_PORT = 8241
 
@@ -60,8 +62,8 @@ class OwnedFixture:
         self,
         *,
         image=IMAGE,
-        version="2.7.1",
-        image_reference="openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+        version=VERSION,
+        image_reference=IMAGE_REFERENCE,
     ):
         self.image = image
         self.version = version
@@ -349,6 +351,8 @@ class OwnedFixture:
             f"BAO_ADDR=https://127.0.0.1:{PORT}",
             "--env",
             "BAO_CACERT=/openbao/tls/ca.pem",
+            "--env",
+            "BAO_TLS_SERVER_NAME=openbao",
         ]
         if active:
             args += ["--network-alias", "openbao"]

@@ -11,8 +11,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "infra/03-security/openbao/scripts"
-IMAGE = "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
-MANIFEST = "sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005"
+IMAGE = "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
+MANIFEST = "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
 
 
 class AgentContractTests(unittest.TestCase):
@@ -80,10 +80,16 @@ mode = os.environ.get("STUB_FAILURE", "")
 if args[0] == "agent":
     sys.stderr.write("agent: authentication pending\\n")
     sys.exit(0 if not (root / "openbao/agent/token").exists() else 1)
-if os.environ.get("BAO_TOKEN") not in (os.environ["STUB_TOKEN"], os.environ["STUB_CLEANUP_TOKEN"]):
+token = os.environ.get("BAO_TOKEN")
+if os.environ.get("BAO_TOKEN_PATH"):
+    source = pathlib.Path(os.environ["BAO_TOKEN_PATH"])
+    if source.stat().st_mode & 0o777 != 0o600 or source.stat().st_nlink != 1:
+        sys.exit(1)
+    token = source.read_text().removesuffix("\\n")
+if token not in (os.environ["STUB_TOKEN"], os.environ["STUB_CLEANUP_TOKEN"]):
     sys.exit(1)
 if args[:2] == ["read", "-format=json"]:
-    role = "renderer-issuer" if os.environ["BAO_TOKEN"] == os.environ["STUB_TOKEN"] else "renderer-cleanup"
+    role = "renderer-issuer" if token == os.environ["STUB_TOKEN"] else "renderer-cleanup"
     print(json.dumps({"data":{"policies":[role],"renewable":False,"ttl":299,
                              "explicit_max_ttl":300,"type":"service",
                              "path":"auth/token/create/"+role}}))
@@ -185,8 +191,23 @@ if args[0] == "exec":
     if args[-1].endswith("health-agent.sh"):
         result = subprocess.run(["sh", args[-1]], check=False)
         sys.exit(result.returncode)
-    if payload.split("\\n",1)[0] not in (os.environ["STUB_TOKEN"],os.environ["STUB_CLEANUP_TOKEN"]):
+    token, body = payload.split("\\n", 1)
+    if token not in (os.environ["STUB_TOKEN"],os.environ["STUB_CLEANUP_TOKEN"]):
         sys.exit(1)
+    script_index = args.index("-c") + 1
+    if args[script_index + 1] != "renderer-request" or not 0 < int(args[script_index + 2]) < 20:
+        sys.exit(1)
+    # shortcut: emulate the container token file; native peer custody has its own suite.
+    import tempfile
+    with tempfile.TemporaryDirectory(dir=root) as temporary:
+        token_file = pathlib.Path(temporary) / "token"
+        token_file.touch(mode=0o600)
+        token_file.write_text(token)
+        environment = {**os.environ, "BAO_TOKEN_PATH": str(token_file)}
+        environment.pop("BAO_TOKEN", None)
+        result = subprocess.run(["bao", *args[script_index + 3:]], input=body,
+                                text=True, env=environment, check=False)
+        sys.exit(result.returncode)
 elif args[0] == "run":
     if mode == "deliver":
         sys.stderr.write(payload)
@@ -214,6 +235,9 @@ sys.exit(result.returncode)
                 .replace("/openbao/", str(self.root / "openbao") + "/")
             )
             helper.chmod(0o600)
+            request = self.root / "renderer-request.sh"
+            request.write_bytes((SCRIPTS / "renderer-request.sh").read_bytes())
+            request.chmod(0o600)
             health = self.root / "openbao/scripts/health-agent.sh"
             health.parent.mkdir(exist_ok=True)
             health.write_text(
@@ -241,7 +265,11 @@ sys.exit(result.returncode)
                         "source_revision": "a" * 40,
                         "sha256": {
                             p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                            for p in (fixture, self.root / "renderer-issuance.py")
+                            for p in (
+                                fixture,
+                                self.root / "renderer-issuance.py",
+                                self.root / "renderer-request.sh",
+                            )
                         },
                     }
                 )
@@ -439,18 +467,26 @@ sys.exit(result.returncode)
             json.loads((self.journal / "issuance.anchor").read_text())["state"],
         )
 
-    def test_issue_and_delivery_failures_are_redacted(self):
-        for failure in ("issue", "deliver", "volume"):
-            self.env["STUB_FAILURE"] = failure
-            result = self.run_script(
-                "issue-renderer-secret-id.sh",
-                "openbao",
-                "p01-agent",
-                IMAGE,
-                "openbao-agent",
-                stdin=self.token + "\n",
-            )
-            self.assertNotEqual(result.returncode, 0)
+    def test_issue_failure_is_redacted(self):
+        self.check_issuance_failure("issue")
+
+    def test_delivery_failure_is_redacted(self):
+        self.check_issuance_failure("deliver")
+
+    def test_volume_failure_is_redacted(self):
+        self.check_issuance_failure("volume")
+
+    def check_issuance_failure(self, failure):
+        self.env["STUB_FAILURE"] = failure
+        result = self.run_script(
+            "issue-renderer-secret-id.sh",
+            "openbao",
+            "p01-agent",
+            IMAGE,
+            "openbao-agent",
+            stdin=self.token + "\n",
+        )
+        self.assertNotEqual(result.returncode, 0)
 
     def test_wrong_server_image_is_rejected_before_credential_delivery(self):
         self.check_rejected_image("server-image")

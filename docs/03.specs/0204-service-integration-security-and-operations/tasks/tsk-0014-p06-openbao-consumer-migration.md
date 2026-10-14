@@ -1,10 +1,10 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0014"
 parent_ids:
@@ -736,6 +736,84 @@ lanes remain pending/NOT_RUN. SMTP retains COMM-003's sole retirement executor.
 The final repository leaf passed494 tests/127.874s, exit0; neither it nor local
 source integration authenticates production selection or supplies a real copy.
 
+### W48 Runtime Primitive Preparation — 2026-10-14
+
+The direct user request now authorizes concrete deployment, issuance,
+migration, retirement, recovery and related development cleanup; the latest
+steering prioritizes P01. Exact operational targets and physical inputs still
+must exist. The user reports independent custody or holders need preparation
+and asks for investigated target choices. No provisional catalog path is
+promoted to an approved destination, no real pilot is selected or copied.
+
+Base main/origin were `1e7e2ba841c4e428a06762a61a570011711bc1ef`.
+The six-file frozen source packet is manifest
+`5539f188775cc9d9f9d262564fc4fe4b33b940c53d0a82c7467a6d7caac9f24e`:
+lexically sorted repository-relative `path SHA256` rows with final LF. It
+contains migration API, two private I/O/transport modules, unit/runtime tests
+and the direct consumer-migration README. The coordinator integrates manifest
+runtime classifications, both existing CI selection maps and existing family
+README navigation; validation CLI behavior remains unchanged.
+
+The primitive consumes separately bound source, copy-token, metadata-token
+and CA files. It rejects lexical role aliases before private reads and held
+inode aliases before HTTP, requires distinct token bytes, immutable verified
+CA, strict DNS origin plus separate numeric connection IP, no proxy/redirect
+or ambient auth, bounded HTTP/JSON and total request budget. Copy preserves
+UTF8 bytes including whitespace; non-UTF8 inputs fail closed. Genuine absent
+KV-v2 data and metadata are checked before CAS0; equal existing is NOOP,
+conflict/history is blocked. Each POST is single-attempt; bounded readback
+separates `write_attempted`, acknowledged `accepted_version` and observed
+`kv_version`. Post-write uncertainty remains PARTIAL, including cleanup errors;
+pre-write cleanup failure remains BLOCKED with observed NOOP evidence retained.
+
+Initial missing-executor RED failed. The original 54-test packet passed93%
+coverage but independent review failed role alias, write-provenance and DNS
+origin validation. Narrow correction RED recorded five cases/14 assertion
+failures, plus one unexpected POST exception failure. A full corrected60-test
+run initially had one old version assertion failure; the corrected freeze
+passed60, but review found a separate ExitStack-close defect that discarded
+completed write evidence. Its focused RED had2 failures; final fixed source
+passed62. These failures remain historical, with final exact-input review
+resolving the identified source findings only.
+
+Independent QA command:
+
+```sh
+rtk /tmp/hyhome-p04-qa-tools/bin/python -m unittest tests.lib.ops.test_openbao_copy_runtime tests.lib.ops.test_openbao_consumer_migration tests.validation.test_openbao_consumer_migration_contract -v
+```
+
+Exit0,62/62 PASS,skip0,38.680s. Worker final branch coverage93% (I/O90%,
+transport95%,migration94%); scoped five-Python Ruff/format and diff passed.
+Direct README metadata selected1/violations0. Independent code/security
+review approved the final six-file input, including close-failure provenance
+and fixed diagnostics. System Python attempts missing `referencing` remain
+recorded environment failures, not source PASS; the configured QA environment
+supplies the actual full receipt.
+
+The first coordinator runtime-registration proposal failed independent review:
+retained runtime rows pointed to a README instead of the required Operations
+Runbook authority, and one consumer list was unsorted. The narrowed correction
+uses RUN-0085 for runtime rows and lexically sorts the internal I/O consumers.
+Final manifest and combined gates/review remain required; this source-only
+registration defect changes no runtime or credential.
+
+The r2 combined QA then found that RUN-0085 was still draft and did not
+directly name the two runtime modules. P01/TSK-0006 owns the minimal authorized
+Runbook activation after independent rules review: a current reusable
+procedure is not evidence that deployment occurred. RUN-0085 now directly
+governs the runtime API and private HTTPS transport, while preserving the
+validate-only public CLI and missing production adapter/controller factory.
+The exact activation/link delta and affected registered gates remain under
+review. This is an authority binding only; every private/native copy,
+renderer, pilot, authority transition, recovery, removal and rotation remains
+NOT_RUN. It does not complete criterion20 or admit direct library invocation.
+
+This is partial W48 source/API implementation: public CLI stays validate-only,
+production P02 selection/adapter and P01 limited token/ACL/TTL/custody binding,
+controller authorization, renderer delivery, native pilot, authority change,
+rotation and recovery remain NOT_RUN. Callback input is not a JSON approval.
+Criterion20 remains pending; code or unit approval is not HOME acceptance.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -749,7 +827,7 @@ source integration authenticates production selection or supplies a real copy.
 | Independent source review | 20 | W47 | Code and security review | Frozen seven source hashes only | PASS | No source findings; common proposal reviewed separately; operational scope unassessed | - |
 | P02 API compatibility | 20 | W47 | Actual public API load and synthetic binding refusals | P02 source962e11be integrated in08b009a9; candidate42a82e19 | PASS | 23 tests; production selection/approval interface pending | - |
 | Synthetic KV decisions | 20 | W48 | Pure hypothetical state/phase/version guards | combined4c83f14b plus owned unit delta | PASS | 32 unit/CLI tests;98% coverage; no copier, approval or operational receipt | - |
-| Copy executor | 20 | W48 | Synthetic CAS/TLS/response/file/privacy failures | Native authorization/catalog prerequisites pending | NOT_RUN | No real copy or client implementation yet | - |
+| Production copy binding | 20 | W48 | Operational P02 selection, P01 credential/custody and controller authorization | Native authorization/catalog prerequisites pending | NOT_RUN | Reviewed bounded primitive exists; production adapter and actual copy remain absent | - |
 | Renderer delivery | 20 | W49 | Version/inode/identity/reload/LKG failure proof | P01/P03 facts pending | NOT_RUN | Reuse their sole-owned contracts | - |
 | Real pilot | 20 | W50 | Actual DEV ingest/S3 canary | P01/SEC/P02/P03/P04 gates pending | NOT_RUN | No resource, token or value action | - |
 | Authority and recovery | 20 | W51 | Rollback/snapshot/empty restore/reauth | No reviewed exact target | NOT_RUN | No authority transition | - |
@@ -758,6 +836,12 @@ source integration authenticates production selection or supplies a real copy.
 | Rotation | 20 | W54 | Actual server/native-copy change and denial | No selected exact server | NOT_RUN | Same-value copy is not rotation | - |
 | Delivery | 8, 20 | W55 | Registered QA/review/latest-head PR/merge | No P06 PR | NOT_RUN | Dedicated source checkpoint; combined registration/CI pending | - |
 | Segmented source checks | 8 | W55 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | - |
+| Initial runtime primitive review | 20 | W48 | Independent role-alias, write-provenance and DNS findings despite54 unit PASS | manifestd9174e21 | FAIL | W48 Runtime Primitive Preparation — 2026-10-14 | - |
+| Intermediate runtime close review | 20 | W48 | FD cleanup discarded completed write facts despite60 unit PASS | manifest412e62c9 | FAIL | W48 Runtime Primitive Preparation — 2026-10-14 | - |
+| Corrected runtime primitive review and QA | 20 | W48 | Independent code/security approval;62 unique tests/0skip;93% branch coverage;Ruff/format/diff/README metadata | manifest5539f188 | PASS | W48 Runtime Primitive Preparation — 2026-10-14 | Initial runtime primitive review, Intermediate runtime close review |
+| Runtime registration review | 20 | W48 | Independent runtime-authority-invalid and unsorted consumer list findings | manifestb44de862 proposal | FAIL | W48 Runtime Primitive Preparation — 2026-10-14 | - |
+| Runtime authority activation binding | 20 | W48 | P01-owned RUN-0085 activation and direct runtime links; rules lifecycle/authorization assessment only, final delta/gates pending | Current direct user authorization; common r2 findings | NOT_RUN | W48 Runtime Primitive Preparation — 2026-10-14 | - |
+| Actual runtime copy admission | 20 | W50 | No approved operational P02 destination/P01 token/custody/native canary | User requests investigated choices; P01 physical inputs pending | NOT_RUN | W48 Runtime Primitive Preparation — 2026-10-14 | - |
 
 Actual reference command on clean inputf754, exit0:
 

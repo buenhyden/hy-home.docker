@@ -353,7 +353,19 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             self.assertEqual("root", row["scope"])
             self.assertTrue(row["compose_file"].startswith("infra/"))
             self.assertEqual("NOT_RUN", row["deployment"])
-            self.assertEqual("NOT_RUN", row["sbom_scan"])
+            if row["service"] in {"openbao", "openbao-agent"}:
+                self.assertEqual(
+                    "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+                    row["target_declared_digest"],
+                )
+                self.assertEqual(
+                    "PASS: selected owned artifact scan receipt SHA256 "
+                    "8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9",
+                    row["sbom_scan"],
+                )
+                self.assertEqual("NOT_UPSTREAM_SIGNED", row["signature"])
+            else:
+                self.assertEqual("NOT_RUN", row["sbom_scan"])
             self.assertEqual("SEC01", row["blocker"]["owner"])
             discovered = datetime.fromisoformat(row["blocker"]["discovered_at"])
             due = datetime.fromisoformat(row["blocker"]["next_validation_due"])

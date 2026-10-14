@@ -1,8 +1,8 @@
 ---
 title: "OpenBao Runbook"
-version: "0.10.0"
+version: "0.10.2"
 type: "operation/runbook"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-14"
 layer: "operations"
@@ -129,20 +129,59 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    journal과 completion anchor를 따로 삭제·초기화하지 않는다. 값·token·accessor는 기록하지 않는다.
 2. 검토한 전체 commit SHA로 host helper를 operator-private 디렉터리에 설치한다.
    source checkout의 group-writable 경로는 token을 받는 실행 경로로 신뢰하지 않는다.
-   installer는 정확한 Git blob 두 개만 읽고 mode 0500/0400과 공개 hash receipt를 남긴다.
+   installer는 wrapper·Python helper·request shell의 Git blob 세 개만 읽고 mode 0500/0400과 공개 hash receipt를 남긴다.
    기존 목적지와 symlink를 덮어쓰지 않는다. 부모 디렉터리는 운영자가 소유한 0700이어야 한다.
 
    ```bash
    # 아래 경로와 commit은 owning Task에서 확정한 운영자 입력이다.
+   unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH
    test -n "$issuer_repository" && test -n "$issuer_commit" && test -n "$operator_tools" || exit 1
-   set -o pipefail
-   /usr/bin/git -C "$issuer_repository" show \
-     "$issuer_commit:infra/03-security/openbao/scripts/install-renderer-issuer.sh" | \
-     /bin/sh -s -- "$issuer_repository" "$issuer_commit" "$operator_tools/$issuer_commit" || exit 1
+   /usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S - \
+     "$issuer_repository" "$issuer_commit" "$operator_tools/$issuer_commit" <<'P01_ISSUER_BOOTSTRAP'
+   import hashlib, os, re, stat, subprocess, sys
+   from pathlib import Path
+
+   def bootstrap():
+       repository, revision, target = sys.argv[1:]
+       repo = Path(repository)
+       git = repo / ".git"
+       def binding():
+           if str(repo) != "/home/hyunyoun/data/hy-home.docker" or repo.resolve() != repo or git.is_symlink():
+               raise ValueError()
+           root_info, git_info = repo.stat(), git.stat()
+           if ((root_info.st_dev, root_info.st_ino, root_info.st_uid) != (64512, 4338469, 1000)
+                   or (git_info.st_dev, git_info.st_ino, git_info.st_uid) != (64512, 4338470, 1000)
+                   or not stat.S_ISDIR(root_info.st_mode) or not stat.S_ISDIR(git_info.st_mode)):
+               raise ValueError()
+       binding()
+       if re.fullmatch(r"[a-f0-9]{40}", revision) is None:
+           raise ValueError()
+       environment = {"PATH": "/usr/bin:/bin", "GIT_CONFIG_NOSYSTEM": "1",
+                      "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_NO_REPLACE_OBJECTS": "1"}
+       def read(*arguments):
+           result = subprocess.run(["/usr/bin/git", "--no-pager", "--git-dir=" + str(git), *arguments],
+                                   env=environment, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                   stderr=subprocess.DEVNULL, check=True, timeout=10)
+           return result.stdout
+       if read("rev-parse", "--verify", revision + "^{commit}").strip().decode("ascii") != revision:
+           raise ValueError()
+       source = read("show", "--no-textconv", revision + ":infra/03-security/openbao/scripts/install-renderer-issuer.sh")
+       binding()
+       if len(source) > 100000 or hashlib.sha256(source).hexdigest() != "27a097f133ced7bc1d3657c401a16fa923d464878a10b38d69d5e0e7033343c9":
+           raise ValueError()
+       subprocess.run(["/bin/sh", "-s", "--", repository, revision, target], input=source,
+                      env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                      check=True, timeout=60)
+   try:
+       bootstrap()
+   except Exception:
+       raise SystemExit(1)
+   P01_ISSUER_BOOTSTRAP
+   test "$?" = 0 || exit 1
    ```
 
    승인 SHA는 checkout의 현재 HEAD와 별개로 owning Task에서 검토한 full commit이다.
-   installer도 해당 commit blob에서만 읽는다. 쓰기 가능한 checkout의 installer를 직접 실행하지 않는다.
+   installer 자체도 환경·replacement를 차단한 full commit에서 읽고 고정 공개 hash와 대조한 메모리 bytes로 실행한다. installer가 검증한 request shell도 token 입력 전에 같은 bytes로 고정한다. 쓰기 가능한 checkout 경로를 다시 열어 실행하지 않는다.
 
 3. 새 발급 전에 Agent를 중지한다. 현재 operator 인증을 통해
    `auth/token/create/renderer-issuer`와 `auth/token/create/renderer-cleanup`에서
@@ -159,7 +198,7 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    printf '%s\n%s\n' "$SEC01_ISSUER_TOKEN" "$SEC01_CLEANUP_TOKEN" | \
      sh "$operator_tools/$issuer_commit/issue-renderer-secret-id.sh" \
        openbao "$agent_volume" \
-       openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf openbao-agent "$issuance_journal" "$issuer_commit" # <!-- runtime-version-exception: compatibility — helper requires the exact image; docker-compose.yml owns the pin -->
+       hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e openbao-agent "$issuance_journal" "$issuer_commit" # <!-- runtime-version-exception: compatibility — helper requires the exact owned image; docker-compose.yml owns the pin -->
    sec01_issue_result=$?
    unset SEC01_ISSUER_TOKEN SEC01_CLEANUP_TOKEN
    test "$sec01_issue_result" -eq 0 || exit 1
@@ -414,7 +453,7 @@ OpenBao 외부 custody에서 `${DEFAULT_SECURITY_DIR}/openbao/tls/{ca.pem,server
 적용한다. 시작 전 아래 read-only preflight를 실행한다. stdout은 check label과 PASS/FAIL만 출력한다.
 
 ```bash
-sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DIR/openbao/tls" openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf # <!-- runtime-version-exception: compatibility — preflight requires the exact image; docker-compose.yml owns the pin -->
+sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DIR/openbao/tls" hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e # <!-- runtime-version-exception: compatibility — preflight requires the exact owned image; docker-compose.yml owns the pin -->
 ```
 
 명령은 만료·CA chain·정확한 SAN·cert/key 일치와 UID100:GID1000의 읽기를 검증한다.
@@ -588,7 +627,7 @@ R2 bucket lock은 30일이고, 12개월은 owner가 확인을 넣어 실행하�
 남고, "아니오"가 하나라도 있으면 `FAIL`이다. 둘 다 유지보수 창을 열지 않는다. `owner-attested`는 owner의 진술이며 저장소는
 보관 사실을 인증하지 못한다. 실제 복구 가능성은 W1과 6단계에서 다시 확인된다.
 
-### HOME 유지보수 창 계획
+### Maintenance Window Plan
 
 2026-10-13 owner 결정으로 남은 HOME 단계를 한 번의 maintenance window로 묶는다. 이
 계획은 문서일 뿐 실행 증거가 아니다. 모든 값(share·OTP·token·key)은 숨겨진 prompt나
@@ -601,20 +640,31 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 | 순서 | 단계 | 목표 시간 | 승인 |
 | --- | --- | --- | --- |
 | W0 | 사전 점검 | window 전 | SEC01 담당자, owner |
-| W1 | root ceremony | 10분 | owner(share 2개) |
-| W1b | unseal rekey | 10분 | owner(share 2개, credential 변경) |
+| W1 | root ceremony | 10분 | buenhyden(서로 다른 share 2개 수동 입력) |
+| W1b | unseal rekey | 10분 목표 | buenhyden(옛 share 2개 수동 입력·새 share 3개 분리 출력) |
 | W2 | snapshot token 발급과 확인 | 5분 | owner(credential 발급) |
-| W3 | 새 업그레이드 전 snapshot | 5분 | owner(backup 실행) |
+| W3 | 새 업그레이드 전 snapshot | 5분 목표 | owner(backup 실행) |
+| W3a | 격리 semantic restore와 candidate 시험 | 측정 전, cutover 전 필수 | 정확한 새 artifact·빈 대상의 독립 검토와 owner |
 | W4 | server 업그레이드와 수동 unseal | 10분 | owner(runtime 변경) |
 | W5 | Agent 업그레이드와 재발급 | 5분 | owner(runtime 변경) |
-| W6 | audit·logrotate | 10분 | owner(sudo host 변경) |
+| W6 | audit·rotation 검증 | 10분 목표 | owner(실제 쓰기·재개방 검증) |
 | W7 | 사후 점검과 root 폐기 | 10분 | owner |
 | W8 | cold boot | 별도 window | owner(별도 승인) |
 
-W1부터 W5까지가 운영자가 고른 30분 cutover 목표이고, W7까지 60분 window 안에 끝나야
-한다. W1b가 10분을 더하므로 60분이 위태로우면 W1b 뒤에서 멈추고 W2부터 다음 window로
-넘긴다. 이 값들은 계획 추정치다. 30분을 넘거나 어떤 중단 조건이 생기면 아래 rollback으로
-돌아가고 남은 단계는 다음 window로 넘긴다.
+W3a는 HOME server 변경 전에 통과해야 하는 준비 단계이며, 실제 복구 실행 시간은
+측정되지 않았고 native restore는 NOT_RUN입니다. 기존 30분 cutover·60분 window는 계획 추정치입니다.
+W1 직후 W1b rekey를 끝내고 새 share의 독립 보관을 확인한 뒤에만 W2·W3를 엽니다.
+W1b의 10분도 계획 추정치이며 실제 복구·rekey 시간은 아직 측정하지 않았습니다.
+새 snapshot의 semantic restore를 끝낸 다음 W4 cutover를 열며, 준비 시간이 목표를
+넘거나 중단 조건이 생기면 HOME 변경을 시작하지 않고 남은 단계는 다음 window로 넘깁니다.
+
+2026-10-14의 선택 artifact 검사에서 공식 candidate의 Go HTTP/2 경로에
+`GO-2026-6612` 적용이 확인돼 SEC01 배포 수용은 **BLOCKED**입니다. scanner 실행 성공은
+보안 통과가 아닙니다. 패치된 dependency로 검증한 새로운 artifact가 수용되기 전에는
+현재 source pin으로 W4/W5를 실행하지 않습니다. 실제 scan·플랫폼 적용 판단은
+[SEC01 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0009-sec01-stable-security-integration.md)가
+소유합니다. 아래 명령의 준비 여부와 실제 실행은 별도이며, 지정 운영자의 서로 다른 share 2개·독립 custody와
+W3a 복구 gate도 계속 필요합니다.
 
 **W0 사전 점검.**
 
@@ -632,6 +682,44 @@ systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
 CVE 결과를 수용했고(위 1단계) 위 TLS preflight가 PASS여야 한다. 하나라도 아니면 중단한다.
 image가 없으면 별도 승인으로 같은 digest만 pull한다.
 
+W0에서는 audit 디렉터리와 rotation 계약도 server 재생성 전에 준비합니다. 실제 audit
+경로 `/home/hyunyoun/storage/volumes/security/openbao/audit`는 2026-10-14에 독립 IaC
+검토 후 생성됐습니다: device2064/inode115609395, UID100/GID1000, mode0700,
+해당 filesystem 가용 공간 약2.5TiB. 아직 audit volume·file·전용 rotation 규칙 등록이나 server
+mount는 없습니다. W6는 사후 쓰기·reopen 검증 단계이며 audit 디렉터리의 최초 준비를
+그때까지 미루지 않습니다. 매 실행 전 같은 path/device/inode·권한과 실제 mount 용량을
+다시 확인하고, 원본 데이터 volume `hy-home-infra_openbao-data`의 bind device
+`/home/hyunyoun/storage/volumes/security/openbao/data`와 device2064/inode115612005를
+보존합니다. audit를 준비하려고 데이터 권한을 재귀 변경하지 않습니다.
+
+[전용 rotation 규칙](../../../../infra/03-security/openbao/config/logrotate/openbao)은
+이 HOME의 UID100=`dhcpcd`, GID1000=`hyunyoun` 매핑을 사용합니다. 최초 숫자 group
+표기는 실제 격리 parser에서 거부돼 이름으로 수정했습니다. rename/create0600,
+`nocopytruncate`, `compress`/`delaycompress`와 고정 container ID의 상태·Compose 라벨
+검증 뒤 같은 ID에만 `SIGHUP`을 보내는 계약입니다. 성장률 미측정으로 `maxsize256M`,
+`rotate14`는 초기값이며 14개 파일을 뜻합니다. 14일 보존이나 최대 파일 크기의 엄격한
+상한을 보장하지 않습니다.
+
+2026-10-14 재확인에서 host logrotate3.21.0, 공용 config와 활성 일 단위 timer가
+관측됐습니다. 이전 부재 점검 뒤 파일 ctime09:40:51 KST에 상태가 바뀌었으며 설치 주체는
+확인되지 않았습니다. 격리된 서명 검증 APK의 logrotate3.22.0 debug parser는 규칙을
+수용했지만 실제 host debug는 권한 전환 EPERM으로 종료됐고 비대화형 sudo도 실패했습니다.
+host 등록·권한 있는 parser·실제 rotation 성공을 뜻하지 않습니다.
+
+W4 전에 root-owned0644 `/etc/logrotate.d/openbao`의 정확한 source hash, 실제 NSS
+매핑과 host parser를 검증하고, 같은 공용 config·state·lock을 쓰는 시간 단위 호출을
+준비해야 합니다. 기존 일 단위 timer에서는 `maxsize`도 하루 한 번만 검사합니다.
+별도 state를 사용하는 중복 scheduler를 만들지 않습니다. source만 복사한 상태나
+신호 전달만으로 등록·재개방을 완료했다고 보지 않으며, host 권한·등록·schedule 입력이
+준비되지 않으면 W0에서 중단합니다. W6는 실제 inode 변경과 후속 audit 성장·실패 알림을
+검증하고, 그 결과로 보존 개수·간격·용량 reserve를 조정합니다.
+
+현재 Traefik·Prometheus·Gatus의 내부 OpenBao CA mount도 미배포입니다. 검토된 동일
+서비스 image를 유지하는 scoped override 또는 해당 image의 SEC01 수용이 있어야
+재생성합니다. Traefik은 backend CA/transport를 먼저 준비하고 public gateway를 확인합니다.
+Prometheus/Gatus의 HTTPS-only OpenBao target 전환은 server의 내부 TLS가 실제 동작한
+뒤 수행합니다. 준비되지 않은 monitoring을 먼저 바꾸거나 전체 스택을 재시작하지 않습니다.
+
 **W1 root ceremony.** 위 [Human Login and Normal Root Recovery](#human-login-and-normal-root-recovery)의
 보호된 인증 API 절차를 사용한다. Share·OTP·token은 검토된 클라이언트의 숨겨진
 입력 또는 보호된 stdin/custody로만 다루고 argv·터미널·일반 로그로 전달하지 않는다.
@@ -641,36 +729,402 @@ option은 문자열 인자이며 encoded token의 stdin 입력과 별개다. Con
 실행 중인 server나 다른 process·runtime metadata에서 인자를 숨긴다고 가정하지 않는다.
 이전 window의 OTP 인자 명령은 실행 절차에서 제거했다.
 
-W1은 보호된 [인증 API](https://openbao.org/docs/api/system/generate-root-token/)를
-사용하는 클라이언트의 입력·출력·디코딩·중단 처리가 검토되고, 정확한 대상·권한·
-복구와 독립 custody가 확인되기 전까지 **BLOCKED / NOT_RUN**이다. 이 문서 수정은
-클라이언트 구현, root 발급이나 승인 증거가 아니다. API 응답의 OTP/nonce와 encoded
-응답은 보호된 custody에 먼저 보존하고, 디코딩한 root를 승인된 다음 단계로만 전달한다.
+[보호 client](../../../../infra/03-security/openbao/scripts/protected-maintenance.py)는
+고정 gateway와 numeric IP, 사전 검토된 공개 CA hash를 사용합니다. CA bytes를 검증한 뒤에만
+OIDC operator token과 두 share를 `/dev/tty` 숨겨진 prompt에서 받습니다. 입력값은 서로
+달라야 하며, 현재 cluster·Shamir 2-of-3·operator 권한을 확인합니다. API는 root ceremony와
+lookup만 허용하고 proxy·redirect·환경 token을 사용하지 않습니다. root를 디코딩한 뒤 새
+root credential로 `lookup-self`를 수행해 root-only·orphan·비만료 identity를 확인해야
+`DELIVERED`가 됩니다. 이 client는 snapshot token 발급·root 폐기·upgrade를 실행하지 않습니다.
 
-기대: 검토된 절차로 새 root token 하나가 생성되고 정상 관리 인증을 보존한다.
-중단: share 불일치, 진행 정체, 입력·출력 보호 실패, 디코딩 실패. 미완료 attempt는
-같은 보호된 클라이언트의 승인된 취소 경로로 정리하고 실제 잔여 상태를 확인한다.
-값은 기록하지 않으며, 취소가 수행되지 않았다면 성공으로 보고하지 않는다.
+독립 code/security 검토와 합성 TLS·중단 회귀시험은 통과했습니다. 지정 운영자 `buenhyden`은
+2026-10-14 최신 답변에서 unseal share와 off-host 보관 준비를 확인했습니다. 이는 운영자 확인이며
+실제 인증·발급·복구가 실행됐다는 증거는 아닙니다. 실제 W1의 현재 OIDC 인증과 서로 다른
+share 2개는 보호 client로 입력합니다. 보관 위치 참조와 복구 계약도 값 없이 기록합니다.
+아직 ceremony는 **NOT_RUN**이며 실제 값은 채팅으로 보내지 않습니다.
 
-**W2 snapshot token.** [RUN-0021](../10-platform-and-backup/0021-backup-and-restore.md)의
-OpenBao token 블록을 별도 터미널에서 실행하고, `OpenBao admin token:` prompt에 임시
-root를 입력한다. 기대: `snapshot token ready`. 그 token으로 일반 secret 경로 읽기가
-거부되고 `bao token renew`가 성공하는지 값 없이 확인한다. 중단: 403, 빈 파일, 확인 실패.
-실패하면 `$out.new`를 지우고 token을 폐기한다.
-
-**W3 새 업그레이드 전 snapshot.** OpenBao에는 쓰기 정지 기능이 없으므로 쓰기 주체를
-멈춘다. Agent를 먼저 멈추고(`docker compose stop openbao-agent`), 승인된 관리 작업이
-없음을 확인한 뒤 새 token으로 snapshot을 받는다.
+운영자는 CI와 독립 검토를 통과한 정확한 commit을 `P01_APPROVED_COMMIT`에 지정합니다.
+아래 명령은 고정 HOME 저장소 identity와 전체 commit OID를 확인한 뒤 해당 blob을 운영자
+전용 runtime 디렉터리에 복사하고 source hash를 검사합니다. Git 환경과 replacement object를
+차단하고 stdlib-only helper는 시스템 Python의 isolated/no-site 모드로 실행합니다.
+mutable checkout의 helper를 그대로 실행하지 않습니다. `XDG_RUNTIME_DIR`은
+현재 운영자의 0700 runtime 디렉터리여야 하며, 해당 mount가 tmpfs인지 먼저 확인합니다.
+매번 새 custody를 만들고 이전 attempt를 덮어쓰거나 재사용하지 않습니다.
 
 ```bash
-docker compose exec openbao bao operator raft snapshot save /tmp/pre-upgrade.snap
+unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH
+readonly P01_HOME_ROOT=/home/hyunyoun/data/hy-home.docker
+test "$P01_HOME_ROOT" = "$(/usr/bin/realpath -e -- "$P01_HOME_ROOT")" || exit 1
+test "$(/usr/bin/stat -c '%d:%i:%u' -- "$P01_HOME_ROOT")" = 64512:4338469:1000 || exit 1
+test ! -L "$P01_HOME_ROOT/.git" || exit 1
+test "$(/usr/bin/stat -c '%d:%i:%u' -- "$P01_HOME_ROOT/.git")" = 64512:4338470:1000 || exit 1
+case "${P01_APPROVED_COMMIT:?}" in *[!0-9a-f]*) exit 1 ;; esac
+test "${#P01_APPROVED_COMMIT}" = 40 || exit 1
+P01_COMMIT="$(/usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 \
+  GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 /usr/bin/git \
+  --git-dir="$P01_HOME_ROOT/.git" rev-parse --verify "$P01_APPROVED_COMMIT^{commit}")" || exit 1
+test "$P01_COMMIT" = "$P01_APPROVED_COMMIT" || exit 1
+readonly P01_COMMIT
+readonly P01_RUNTIME_DIR="${XDG_RUNTIME_DIR:?}"
+test -d "$P01_RUNTIME_DIR" || exit 1
+test ! -L "$P01_RUNTIME_DIR" || exit 1
+test "$P01_RUNTIME_DIR" = "$(/usr/bin/realpath -e -- "$P01_RUNTIME_DIR")" || exit 1
+test "$(/usr/bin/stat -c '%u:%a' -- "$P01_RUNTIME_DIR")" = "$(/usr/bin/id -u):700" || exit 1
+test "$(/usr/bin/findmnt -n -T "$P01_RUNTIME_DIR" -o FSTYPE)" = tmpfs || exit 1
+P01_CLIENT_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-client.XXXXXX")" || exit 1
+P01_SCRIPT_DIR="$P01_CLIENT_DIR/infra/03-security/openbao/scripts"
+/usr/bin/install -d -m 0700 "$P01_SCRIPT_DIR" "$P01_CLIENT_DIR/infra/03-security/openbao/config/policies" || exit 1
+set -C  # 기존 source 파일을 덮어쓰지 않습니다.
+while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
+  /usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null \
+    GIT_NO_REPLACE_OBJECTS=1 /usr/bin/git --git-dir="$P01_HOME_ROOT/.git" \
+    show --no-textconv "$P01_COMMIT:$P01_SOURCE_PATH" > "$P01_CLIENT_DIR/$P01_SOURCE_PATH" || exit 1
+  printf '%s  %s\n' "$P01_SOURCE_HASH" "$P01_CLIENT_DIR/$P01_SOURCE_PATH" | /usr/bin/sha256sum -c - || exit 1
+  /usr/bin/chmod 0400 "$P01_CLIENT_DIR/$P01_SOURCE_PATH" || exit 1
+done <<'P01_SOURCE_MANIFEST'
+2c6101572dca382752cc5cef25f9d5d1ed18804e40c43984f41ea6e5d80734a2 infra/03-security/openbao/scripts/protected-maintenance.py
+eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-security/openbao/scripts/protected-token-operations.py
+2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
+48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
+fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
+18352557360b0dc730269714be45377a084e88b6cf5810a23805eb4e09a7798e infra/03-security/openbao/scripts/protected-semantic-restore.py
+3ed79ab6b43663bc8788c583578a469c3d8c81ee8d71c0310bdd605ec5474bca infra/03-security/openbao/scripts/protected-semantic-execution.py
+1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
+P01_SOURCE_MANIFEST
+P01_CUSTODY_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-custody.XXXXXX")" || exit 1
+/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-maintenance.py" \
+  --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
+  --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
+  --connect-ip 192.168.0.13 \
+  --expected-cluster-id 51fbfa38-a715-7dca-629f-3f07233749f4 \
+  --custody-directory "$P01_CUSTODY_DIR"
 ```
 
-container 안 임시 파일은 RUN-0021 경로로 옮기고 sha256과 크기를 기록한 뒤 container에서
-지운다. 기대: 0이 아닌 크기와 checksum. 중단: 빈 파일, sealed, timeout. 이 snapshot이
-생기면 보존해 둔 이전 업그레이드 전 snapshot은 다음 정리 결정의 대상이 된다.
+각 setup 명령이 exit0인지 확인한 뒤 다음 명령으로 진행합니다. source hash 실패, CA 변경,
+cluster 변경 또는 기존 attempt가 있으면 중단합니다. gateway 공개 CA hash와 IP는 이 HOME
+대상의 2026-10-14 검증 입력이며, 내부 backend CA와 혼동하지 않습니다. 다른 host·CA에는
+그 대상의 검토된 공개 입력을 다시 고정합니다. hash는 공개 인증서와 source만 대상으로 하고
+secret hash는 기록하지 않습니다.
+
+기대: exit0/`DELIVERED`, custody의 `root.token`은 0600이며 새 root로 인증됨. OTP/nonce,
+encoded 응답과 root는 custody에 먼저 fsync되고 일반 출력에는 상태만 나옵니다.
+세 개의 보호된 0600 regular file FD를 지정하는 대체 입력도 있지만 실제 운영은 지정 운영자의
+숨겨진 prompt를 기본으로 사용합니다. secret-bearing 파일·FD·custody를 출력하지 않습니다.
+
+중단: exit1/`BLOCKED`는 완료를 주장하지 않습니다. exit2/`INDETERMINATE`는 생성·완료 여부가
+불확실하므로 custody를 그대로 보존하고 동일 attempt 상태부터 확인합니다. 새 ceremony나
+재시작으로 덮지 않습니다. 미완료 attempt는 client가 보존한 자신의 nonce와 일치할 때만
+취소하며, 완료·취소 불확실 응답은 운영자 복구로 넘깁니다. 다른 운영자가 동시에 ceremony를
+실행하지 않아야 합니다. 메모리 소거, prompt 대기나 fsync 시간 상한은 보장하지 않습니다.
+root를 읽어 채팅에 보내지 말고 W2·W7의 보호된 관리 입력으로만 전달합니다.
+
+**W1b unseal rekey — PGP 준비부터 완료까지.** W1 직후, W2·W3 전에 수행합니다.
+2026-10-14 운영자 `buenhyden`은 PGP 준비가 필요하다고 답했습니다. 아래 준비가 끝나기
+전에는 W1b와 그 뒤의 HOME 교체를 실행하지 않습니다. 공개키 준비와 이미지 검증은
+독립적으로 진행할 수 있습니다. 기존 2-of-3 share 준비 확인은 그대로 유지합니다.
+
+1. **서버 밖 보관 장소 세 곳을 정합니다.** 예: 암호화된 별도 장치 A, 다른 장소의
+   암호화 장치 B, 별도 계정·접근 수단의 보관소 C. 같은 계정의 폴더 세 개나 같은 장치의
+   파티션 세 개는 독립된 장소가 아닙니다. 한 사람이 세 장소를 관리할 수 있으며 두 명의
+   운영자를 새로 요구하지 않습니다. 개인키·해제 암호·폐기 인증서와 대응 share를 각
+   장소 안에서 보관하고, 하나의 서버·계정 손실로 두 share가 함께 노출되지 않게 합니다.
+   share 보관을 복원하려면 먼저 같은 OpenBao를 열어야 하는 순환 의존도 없어야 합니다.
+   **파일 보관이 가능합니다.** 각 장소에 해당 share의 PGP 암호문 파일과 암호로 보호한
+   개인키를 보존합니다. 평문 share 파일은 만들지 않습니다. 파일 세 개를 같은 서버나
+   같은 계정의 폴더 세 개에 두는 방식은 독립 보관이 아닙니다.
+   Cloudflare 계정 접근 수단, R2 credential, Restic offsite key와 CA key의 분리 기록은
+   위 5단계 custody 표에서 별도로 채웁니다. 현재는 SPEC-0240 기준 4와 과거 host snapshot이
+   두 저장소 모두에 없다는 후속 copy 이후 목록이 없으므로, offsite key에는 share가 없는
+   **네 번째 장소**를 먼저 준비합니다. 두 조건이 입증된 뒤에만 share 하나의 장소로 옮길 수
+   있으며 5단계를 다시 기록합니다. 장소를 여는 암호·매체 암호·열쇠 위치는 다른 장소에
+   저장하지 않습니다. 같은 장치·계정의 폴더 구분이나 PGP 암호화만으로 이 조건을 충족하지
+   않습니다.
+2. **각 장소에서 별도 PGP 키를 만듭니다.** 서버와 Codex 터미널에서는 개인키를 만들거나
+   가져오지 않습니다. 각 장소의 신뢰할 수 있는 로컬 터미널에 GnuPG가 설치돼 있는지
+   `gpg --version`으로 확인합니다. 아래 `P01_OFFHOST_UNIT`은 그 장소의 실제 암호화된
+   저장 경로로 직접 지정합니다. 세 장소에서 각각 한 번, 새 경로로 실행합니다.
+
+   ```bash
+   umask 077
+   P01_OFFHOST_UNIT=/실제/독립보관장소/openbao-share-1
+   mkdir -m 0700 -- "$P01_OFFHOST_UNIT" || exit 1
+   mkdir -m 0700 -- "$P01_OFFHOST_UNIT/gnupg" || exit 1
+   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" --full-generate-key
+   ```
+
+   대화형 메뉴에서 서명과 **암호화가 가능한 RSA/RSA 3072-bit** 키를 선택하고,
+   보관 장소마다 다른 강한 암호를 pinentry에 입력합니다. 암호를 명령 인자에 넣지
+   않습니다. 수명은 실제 보관·갱신 계획에 맞춰 정하고 만료 전에 갱신합니다.
+   2·3번 장소는 경로 끝을 `openbao-share-2`, `openbao-share-3`으로 바꿉니다.
+   키 목록에서 primary 전체 fingerprint와 `[E]` encryption subkey를 확인합니다.
+
+   ```bash
+   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" --list-keys --with-subkey-fingerprint
+   P01_PGP_FPR=출력에서_확인한_해당_키의_전체_fingerprint
+   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" --fingerprint "$P01_PGP_FPR"
+   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" \
+     --output "$P01_OFFHOST_UNIT/recipient.pgp" --export "$P01_PGP_FPR"
+   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" \
+     --show-keys --with-fingerprint "$P01_OFFHOST_UNIT/recipient.pgp"
+   ```
+
+   `recipient.pgp`는 **binary 공개키**입니다. `--armor`와 `--export-secret-keys`를
+   쓰지 않습니다. 전체 fingerprint가 세 키마다 다르고 암호화 키가 유효하며 만료·폐기되지
+   않았는지 확인합니다. GnuPG home과 그 안의 revocation certificate는 해당 장소에
+   보존합니다. 서버에는 별도 전달 수단으로 **공개키 파일만** 전달하고 개인키 장치를
+   서버에 연결하지 않습니다. 서버 쪽 공개키를 `recipient-1.pgp`부터 `recipient-3.pgp`로
+   구분하고, 전달 전후 전체 fingerprint를 대조합니다. 짧은 key ID만 비교하지 않습니다.
+3. **값 없는 준비 기록을 전달합니다.** 아래 세 행을 채우면 운영 준비를 검토할 수 있습니다.
+   공개키의 서버 절대 경로와 전체 fingerprint, 보관 장소의 별칭만 전달합니다.
+   개인키·share·암호·token·복호화 화면은 채팅에 보내지 않습니다.
+
+   | 순서 | 공개키 서버 절대 경로 | 전체 fingerprint | 담당자 | 독립 보관 장소 참조 |
+   | --- | --- | --- | --- | --- |
+   | 1 | 준비 필요 | 준비 필요 | buenhyden | 준비 필요 |
+   | 2 | 준비 필요 | 준비 필요 | buenhyden | 준비 필요 |
+   | 3 | 준비 필요 | 준비 필요 | buenhyden | 준비 필요 |
+
+4. **운영 창에서 인증과 대상을 확인합니다.** 이후 share 입력·암호문 출력·복호화는
+   녹화·전사·xtrace·터미널 공유가 없는 운영자 전용 TTY에서만 합니다. Codex 도구에서
+   실행하지 않습니다. share를 positional argument, `-`, 환경 변수 또는 파일로 전달하지
+   않습니다. 명령 이력에도 값이 들어가지 않습니다. 암호문 세 개는 native CLI 화면에
+   나타나므로 host 파일·`tee`·스크린샷·clipboard history로 저장하지 않습니다.
+
+   선택된 Compose 소스는 legacy unauthenticated rekey endpoint를 끕니다. 따라서
+   인증되는 **`operator rotate-keys`**를 사용하며, W1이 보호 전달한 임시 root가
+   필요합니다. 현재 HOME 설정에 그 옵션이 적용됐다는 뜻은 아닙니다. 검토한 native CLI의
+   절대 경로와 SHA256·버전, 대상 CA·cluster를 먼저 고정합니다. 아래 `P01_BAO`는 그
+   승인된 실행 파일로 지정하며, candidate 보안 검증이 끝나지 않은 파일을 임의로 사용하지
+   않습니다. W1의 private tmpfs custody에 있는 root 값은 읽어 출력하지 않습니다.
+   다음 함수는 매번 깨끗한 환경에서 native CLI를 실행하고 **token 파일 경로만** 전달합니다.
+
+   ```bash
+   P01_BAO=/검증된/절대경로/bao
+   p01_bao() {
+     /usr/bin/env -i PATH=/usr/bin:/bin \
+       BAO_ADDR=https://openbao.hy.home.arpa:443 \
+       BAO_CACERT=/home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
+       BAO_TOKEN_PATH="${P01_CUSTODY_DIR:?}/root.token" \
+       "${P01_BAO:?}" "$@"
+   }
+   p01_bao status
+   p01_bao operator rotate-keys -status
+   p01_bao operator rotate-keys -verify -status
+   ```
+
+   CA 검증을 끄지 않습니다. DNS/TLS 접속과 cluster ID가 W0의 고정 대상과 같고,
+   initialized·unsealed 상태이며 두 status에 기존 attempt가 없어야 합니다.
+   W1 `DELIVERED`, root 파일 0600/private directory 0700, 옛 share 두 개, 공개키
+   세 개의 fingerprint·순서·보관 장소가 확인돼야 다음 단계로 갑니다. 실패하거나 다른
+   attempt가 있으면 원인을 확인하며 기존 attempt를 임의 취소하지 않습니다.
+5. **검증을 필수로 하는 새 2-of-3 분할을 시작합니다.** 실제 분할은 **3개 중 2개 필요**입니다.
+   공개키 절대 경로 세 개를 준비 기록과 같은 순서로 지정합니다. `-backup`은 쓰지 않습니다.
+
+   ```bash
+   p01_bao operator rotate-keys -init -key-shares=3 -key-threshold=2 -verify \
+     -pgp-keys=/공개키경로/recipient-1.pgp,/공개키경로/recipient-2.pgp,/공개키경로/recipient-3.pgp
+   p01_bao operator rotate-keys
+   p01_bao operator rotate-keys
+   ```
+
+   첫 제출 prompt에는 옛 share 1개, 두 번째에는 **다른 옛 share**를 직접 입력합니다.
+   **rotation/operation nonce**가 초기 attempt와 같은지 두 옛 share 제출마다 확인합니다.
+   **verification nonce는 별도로 발급되는 값**이며 operation nonce와 같다고 가정하지
+   않습니다. quorum 후
+   base64 PGP 암호문 세 개와 verification 상태가 나옵니다. 암호문 N은 공개키 N의
+   보관 장소로만 전달합니다. 새 plaintext share는 host에 저장하지 않습니다.
+6. **세 장소에서 각각 복호화·보관한 뒤 두 새 share로 확인합니다.** 각 장소에서
+   대응 암호문만 `encrypted-share.b64`로 보관하고 다음 명령으로 화면에 복호화합니다.
+   사용할 실제 전달 채널은 보관 환경 선택 후 각 수신자별로 고정합니다. 서버 파일이나
+   녹화 로그를 경유하지 않고, 암호문만 해당 off-host 장치의 입력 화면으로 옮기는
+   방식입니다. 동기화 clipboard·터미널 기록을 끄고 plaintext share는 전달하지 않습니다.
+   전달 채널이 정해지지 않았으면 init 전에 멈춥니다.
+
+   ```bash
+   base64 --decode < "$P01_OFFHOST_UNIT/encrypted-share.b64" | \
+     gpg --homedir "$P01_OFFHOST_UNIT/gnupg" --decrypt
+   ```
+
+   암호는 pinentry에 입력합니다. plaintext share를 출력 파일·채팅·clipboard에 복사하지
+   않습니다. 세 암호문이 모두 각 개인키로 복호화되고 보관됐음을 확인합니다. 운영자 전용
+   TTY에서 다음 두 명령의 숨김 prompt에 서로 다른 **새 share** 두 개를 직접 입력합니다.
+   새 share 제출 두 번에는 별도로 발급된 **verification nonce**가 그대로 유지되는지
+   확인합니다. operation nonce와 혼동하지 않습니다.
+
+   ```bash
+   p01_bao operator rotate-keys -verify
+   p01_bao operator rotate-keys -verify
+   p01_bao operator rotate-keys -status
+   p01_bao operator rotate-keys -verify -status
+   p01_bao status
+   ```
+
+   검증 완료 응답과 exit0, 남은 attempt 없음, 같은 cluster/unsealed를 확인해야 새 share가
+   활성화된 것으로 기록합니다. 이 확인을 위해 운영 서버를 seal하지 않습니다. 새 W3 snapshot과
+   W3a 격리 복원, 이후 별도 cold boot로 실제 복구를 검증합니다. public receipt에는
+   버전·cluster·상태·N=3/T=2·verification required·rotation_nonce·verification_nonce·
+   세 fingerprint·보관 장소 참조와
+   완료 여부만 기록합니다. share·암호문·token·그 값의 hash는 넣지 않습니다.
+7. **실패·취소·옛 백업 보존을 처리합니다.** verification 완료 전 전체 attempt를 취소하려면
+   같은 인증 경로에서 `p01_bao operator rotate-keys -cancel`을 사용하고 두 status를
+   다시 확인합니다. **`-verify -cancel`은 verification 진행·nonce만 초기화하며 전체 rekey를
+   취소하지 않습니다.** Ctrl-C도 로컬 prompt만 중단하므로 서버 attempt는 따로 확인합니다.
+   응답 유실·timeout은 두 status와 보존 nonce로 먼저 대조하고, 맹목적으로 init·재시도하지
+   않습니다. 암호문 유실·키 불일치·복호화 실패는 verification을 완료하지 말고 pending
+   attempt의 전체 취소로 처리합니다. 완료 이후에는 cancel로 옛 share로 되돌릴 수 없습니다.
+   W1b 전 snapshot에는 옛 share가 필요하므로 승인된 백업 폐기까지 분리 보관합니다.
+   rekey는 과거 host·R2 백업에 들어간 옛 share를 지우지 않습니다. host 파일과 옛 백업의
+   실제 폐기는 별도 exact-resource 결정에 따릅니다. 정상 완료 또는 전체 취소 확인 뒤
+   `unset -f p01_bao`로 함수만 해제합니다. W1 임시 root의 폐기는 W8에서 수행합니다.
+
+이 절차의 native 옵션과 동작은 [2.6 rotate-keys](https://openbao.org/docs/2.6.x/commands/operator/rotate-keys/),
+[동일 태그 CLI 소스](https://github.com/openbao/openbao/blob/v2.6.2/command/operator_rotate_keys.go), <!-- runtime-version-exception: migration — fixed observed pre-upgrade HOME CLI source -->
+[verification 취소 API](https://openbao.org/docs/2.6.x/api/system/rotate/verify/),
+[PGP 형식](https://openbao.org/docs/2.6.x/concepts/pgp-gpg-keybase/),
+[GnuPG 매뉴얼](https://gnupg.org/documentation/manuals/gnupg26/gpg.1.html)을 기준으로 합니다.
+
+**W2 snapshot token.** 위에서 검증한
+[token helper](../../../../infra/03-security/openbao/scripts/protected-token-operations.py)를
+사용합니다. 실제 root는 W1 custody의 보호된 FD로만 전달하며 argv에 넣지 않습니다.
+고정 대상 `secrets/backup/openbao`는 2026-10-14 metadata 점검에서 UID/GID1000,
+mode0700, device64512/inode5260267이었고 token과 issuance lock은 모두 없었습니다.
+HOME root의 사전 기록은 device64512/inode4338469입니다. 실행 직전에 같은 대상을 다시
+확인하며, 기대 identity를 임의의 다른 경로에서 계산해 이 인자에 넣지 않습니다.
+
+```bash
+P01_TOKEN_CUSTODY_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-token.XXXXXX")" || exit 1
+exec 3<"$P01_CUSTODY_DIR/root.token" || exit 1
+/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-token-operations.py" issue-snapshot-token \
+  --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
+  --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
+  --connect-ip 192.168.0.13 \
+  --expected-cluster-id 51fbfa38-a715-7dca-629f-3f07233749f4 \
+  --custody-directory "$P01_TOKEN_CUSTODY_DIR" \
+  --w1-custody-directory "$P01_CUSTODY_DIR" --root-fd 3 \
+  --home-root /home/hyunyoun/data/hy-home.docker \
+  --expected-home-device 64512 --expected-home-inode 4338469 \
+  --policy-sha256 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622
+P01_TOKEN_EXIT=$?
+exec 3<&-
+test "$P01_TOKEN_EXIT" = 0 || exit "$P01_TOKEN_EXIT"
+```
+
+기대: exit0/`SNAPSHOT_TOKEN_DELIVERED`, 기존 파일을 덮지 않고 0600 single-link token이
+고정 대상에 생성됩니다. helper가 root identity, 정확한 정책·capability, no-default-policy
+720-hour orphan service token, 일반 secret403과 갱신·후속 lookup을 확인합니다.
+정책이 없거나 알려진 이전 정책 또는 정확한 새 정책일 때만 진행합니다. 다른 정책,
+기존 token/lock, 경로·권한·cluster 불일치에서는 중단합니다. exit2/`INDETERMINATE`는
+응답·custody·lock을 보존하며 재발급하거나 파일을 지우지 않습니다. 단순 로컬 파일 삭제는
+발급된 credential의 폐기가 아니므로 별도 실제 identity 확인 없이 보상 폐기를 하지 않습니다.
+
+**W3 새 업그레이드 전 snapshot.** OpenBao에는 쓰기 정지 기능이 없으므로 승인된
+Agent·관리 writer의 정지 범위, 정확한 container ID와 정지 전 상태를 먼저 기록합니다.
+Agent와 해당 writer가 정지했음을 확인한 뒤 아래
+[보호 snapshot helper](../../../../infra/03-security/openbao/scripts/protected-raft-snapshot.py)를
+사용합니다. helper 자체는 writer를 정지하지 않습니다. 중단 시 writer 재개 여부는
+기록된 window 상태와 복구 판단에 따르며 자동 재시도하지 않습니다.
+
+`P01_SNAPSHOT_DIRECTORY`는 사전 선택한 새 절대 경로입니다. 기존 attempt, token 보관
+디렉터리, HOME data 또는 source 디렉터리를 재사용하지 않습니다. 생성 명령은 기존 경로에서
+실패해야 하며 helper가 canonical 경로·UID·0700·alias와 모든 산출물 이름을 다시 검사합니다.
+아래 expected-version은 W0에 기록한 업그레이드 전 HOME 검사값이며 새 image pin이 아닙니다.
+
+```bash
+(umask 077; /usr/bin/mkdir -- "${P01_SNAPSHOT_DIRECTORY:?}") || exit 1
+exec 3</home/hyunyoun/data/hy-home.docker/secrets/backup/openbao/snapshot_token.txt || exit 1
+/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-raft-snapshot.py" \
+  --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
+  --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
+  --connect-ip 192.168.0.13 \
+  --expected-cluster-id 51fbfa38-a715-7dca-629f-3f07233749f4 \
+  --output-directory "$P01_SNAPSHOT_DIRECTORY" \
+  --artifact-name raft-pre-upgrade.snap --token-fd 3 \
+  --expected-version 2.6.2 # <!-- runtime-version-exception: migration — fixed observed pre-upgrade HOME version check -->
+P01_SNAPSHOT_EXIT=$?
+exec 3<&-
+test "$P01_SNAPSHOT_EXIT" = 0 || exit "$P01_SNAPSHOT_EXIT"
+```
+
+기대: exit0/`SAVED`, barrier-encrypted `raft-pre-upgrade.snap`과 값 없는
+`raft-pre-upgrade.snap.receipt.json`, 모두 0600 single-link. helper는 보유 FD의 token을
+검증·갱신하고 현재 cluster/version·TTL, bounded archive 구조·checksum·최종 inode를
+확인합니다. snapshot과 receipt는 Linux `renameat2(RENAME_NOREPLACE)`로 게시하며
+기존 파일을 덮지 않습니다. 해당 syscall이 없거나 저장 후 상태가 불확실하면 exit2/
+`INDETERMINATE`로 남기고 lock·partial·final을 그대로 보존합니다. exit1/`BLOCKED`도
+완료를 주장하지 않습니다. snapshot token·archive 내용·secret hash는 출력하지 않습니다.
+
+helper receipt는 UTC·cluster/version·암호화 artifact SHA256·크기·파일 identity를 증명합니다.
+원본 image와 data volume identity, writer 정지 구간, 독립 offsite 전달 결과는 별도 실제
+window 증거로 붙입니다. 이 helper는 Restic 또는 offsite 전송을 실행하지 않습니다.
+전체 backup은 [RUN-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 기존 flow를
+따릅니다. `latest`나 과거 snapshot을 새 성공으로 대체하지 않으며, 2026-10-13 snapshot은
+새 artifact와 semantic restore 수용 전까지 보존합니다.
+
+**W3a 격리 semantic restore.** W4 전에 새 W3 artifact를 실제 빈 대상에서 복원하고
+원본 cluster·canary 읽기·제한 권한 거부·renderer 재인증을 확인합니다. 먼저 이전 버전
+image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수동 unseal과 같은 검사를
+반복합니다. 대상은 HOME data mount와 분리하고 edge/obs/egress를 연결하지 않습니다.
+실제 artifact identity와 새 attempt·빈 대상 device/inode·소유권·용량·network·담당자·
+시간/공간 한도·보존/정리 경계를 정한 stateful recovery contract가 필요합니다.
+이전 attempt04의 FILE_USABILITY는 이 검사를 통과한 것이 아닙니다. 운영 도구·exact target이
+준비되지 않았던 상태는 보존합니다. 현재 보호 복구 도구의 소스·38개 단위시험과 독립
+코드·보안·인프라 검토는 통과했으며 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
+또는 Git revert는 이 단계의 대체 증거가 아닙니다.
+
+2026-10-14 운영자는 새 경로
+`/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261014-05`를 선택했습니다.
+사전 조사에서 경로는 없었고 부모는 device2064/inode115612004, UID/GID1000이었습니다.
+이번 새 W3 snapshot의 1회 격리 복원 용도이며 실제 생성·복원은 아직 하지 않았습니다.
+
+검토된 [보호 복구 client](../../../../infra/03-security/openbao/scripts/protected-semantic-restore.py)는
+위 W1 manifest의 두 복구 모듈을 같은 private 경로에 설치해 사용합니다. 공개 contract는
+이 attempt·부모 identity·새 W3 snapshot/receipt의 정확한 SHA256과 파일 identity,
+유효한 quiescence lease의 ID/바이트 SHA256, 승인된 candidate reference와 실제 Docker ID,
+승인 commit에서 설치한 renderer 3파일·인접 receipt·bundle의 경로/해시와 보안 receipt의
+해시를 결속합니다. contract와 실제 snapshot이 없으면 아래 호출을 실행하지 않습니다.
+writer 정지 확인은 W3 저장 전부터 W3a 종료까지 별도로 유지해야 합니다.
+
+```bash
+/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-semantic-restore.py" \
+  --contract "${P01_RESTORE_CONTRACT:?}" --contract-sha256 "${P01_RESTORE_CONTRACT_SHA256:?}" \
+  --snapshot "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap" \
+  --snapshot-receipt "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap.receipt.json" \
+  --security-receipt "${P01_SECURITY_RECEIPT:?}" --quiescence-fd "${P01_QUIESCENCE_FD:?}" \
+  --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
+  --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
+  --connect-ip 192.168.0.13
+```
+
+HOME 읽기용 현재 관리자 token·임시 root·서로 다른 원본 share 둘은 기본 숨김 prompt로
+입력하거나 `--home-read-fd`, `--root-fd`, `--share-1-fd`, `--share-2-fd`의 서로 다른
+보호 FD로 한 방식만 사용합니다. 값·capability·복구된 canary는 일반 로그에 남기지 않습니다.
+effects 생성부터 공통 절대 900초 deadline을 세고 subprocess runner가 이를 강제합니다.
+입력 prompt와 이전 관리자 lookup은 시계 시작 전입니다. 이후 로컬 syscall·canary GET은
+runner가 중단시키지 않지만 경과 시간은 같은 예산을 소비하며 GET에는 별도 20초 abort가
+있습니다. cleanup은 별도 시계를 사용합니다. 약 1초 간격 watcher가 64개 entry/1GiB를 감시하며
+filesystem quota가 아닙니다. cleanup은 별도 60초 안에서 성공적으로 확보한 정확한 생성
+ID만 정리합니다. 이름·label은 ID를 확보하지 못한 create의 운영자 대조 자료이며 자동
+cleanup 선택자가 아닙니다.
+`RESTORE_ACCEPTED`/exit0만 성공이며 `INDETERMINATE`/exit2에서는 대상·ledger를 보존하고
+다시 실행하지 않습니다. 이전 버전 복원 후 candidate와 Agent를 같은 격리 data에 연결하며
+HOME root 폐기나 HOME server 교체는 이 client가 수행하지 않습니다.
+
+**W3b 정확한 artifact의 독립 보관.** W3 snapshot과 그 receipt를 선택한 독립 off-host
+대상으로 전달하고, 양쪽에서 두 파일의 정확한 bytes·hash·파일 identity와 보관 위치 참조를
+값 없는 receipt로 결속합니다. 원본 unseal shares와 offsite key/CA key의 독립 보관 참조도
+확인합니다. 준비됐다는 운영자 확인만으로 이 전달을 완료 처리하지 않습니다.
+standalone helper와 RUN-0021의 별도 full backup은 이 W3 경로를 자동으로 복사하지 않습니다.
+정확한 보관 대상·전송 절차와 결과 receipt가 준비되기 전에는 W3b는 **BLOCKED / NOT_RUN**입니다.
+운영자는 기존 Cloudflare R2 Restic 저장소를 이번 snapshot·receipt 보관 대상으로 선택했고,
+먼저 읽기 전용 원격 검증을 진행하도록 승인했습니다. 로컬 입력 검사는 통과했으나 원격
+접속·저장소 검증·두 산출물 전달 receipt는 아직 없습니다. 전체 repository copy를 이번
+두 산출물의 전달 성공으로 대체하지 않습니다.
+W4는 W3a semantic restore와 이 W3b receipt가 모두 수용된 뒤에만 실행합니다.
 
 **W4 server 업그레이드와 수동 unseal.**
+
+중단 gate: 이번 W3 snapshot/receipt identity에 결속된 독립 off-host 보관 receipt 또는
+W3a semantic restore가 없으면 아래 server 재생성 명령을 실행하지 않습니다.
 
 ```bash
 docker compose --profile security up -d --no-deps --no-build --pull never openbao
@@ -691,46 +1145,69 @@ rollback: 새 버전 데이터에 이전 image를 붙이지 않는다(in-place R
 SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 version 일치. 중단:
 재인증 실패, health 실패. Agent는 server보다 앞서 rollback하지 않는다.
 
-**W6 audit와 logrotate.** 새 server에 `openbao-audit` mount와 `audit.json`(0600, UID
-100)이 생겼는지 확인하고, 용량과 증가율을 잰 뒤 위 Native TLS, Audit and Recovery Gate의
-규칙대로 host logrotate(rename/create 0600, UID 100/GID 1000, `SIGHUP` reopen)를
-sudo로 등록한다. `copytruncate`는 쓰지 않는다. 기대: rotation 시험 뒤 audit 쓰기 지속.
-중단: audit 쓰기 실패. 이때 audit device를 끄지 않고 공간과 권한을 복구한다.
+**W6 audit와 logrotate 검증.** W0에서 등록·parser 검증을 끝낸 규칙을 사용합니다.
+새 server의 `openbao-audit` mount와 `audit.json`(0600, UID100/GID1000), 정확한
+device·inode·용량을 확인합니다. 실제 audit 요청 전후 크기와 bounded rotation 뒤 새 inode의
+성장을 확인하고, 회전된 inode가 더 커지지 않는지 확인합니다. `SIGHUP` 전달 성공만으로
+재개방을 완료했다고 보지 않습니다. 실패하면 audit device를 끄거나 `copytruncate`로
+바꾸지 않고 공간·권한과 재개방을 복구합니다. 이전 파일을 계속 쓰는 상태에서는 다음
+rotation을 성공으로 처리하지 않습니다.
 
 **W7 사후 점검과 root 폐기.** renderer 재인증, consumer 읽기(Keycloak·Grafana 렌더 결과
 일치), `OpenBaoSealed` 등 기존 경보가 조용한지, `up{job="openbao"}`, 다음 backup 단위의
-OpenBao snapshot 성공을 확인한다. 임시 root는 W2·W4에서만 필요하다. W7 끝에서
-`bao token revoke -self`로 폐기하고 같은 token의 lookup이 거부되는지, OIDC 로그인이
-여전히 되는지 확인한다. 더 이른 단계가 실패해 window를 접을 때도 root를 먼저 폐기한다.
+OpenBao snapshot 성공을 확인합니다. 임시 root는 W2와 W7의 보호된 관리 입력으로만
+사용합니다. W4 수동 unseal에는 지정된 두 share가 필요합니다.
+
+W7의 `revoke-root`는 root FD와 별도의 현재 OIDC operator FD를 요구합니다. 운영자는
+승인된 로그인 절차로 새 OIDC credential을 0600·single-link 보호 파일에 준비하고 그 경로를
+`P01_OPERATOR_FD_FILE`에 지정합니다. 이전 W1의 성공 기록을 현재 관리자 접근 확인으로
+대체하지 않으며, auth 파일을 자동 검색하거나 값을 출력하지 않습니다.
+
+```bash
+P01_REVOKE_CUSTODY_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-revoke.XXXXXX")" || exit 1
+exec 3<"$P01_CUSTODY_DIR/root.token" || exit 1
+exec 4<"${P01_OPERATOR_FD_FILE:?}" || exit 1
+/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-token-operations.py" revoke-root \
+  --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
+  --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
+  --connect-ip 192.168.0.13 \
+  --expected-cluster-id 51fbfa38-a715-7dca-629f-3f07233749f4 \
+  --custody-directory "$P01_REVOKE_CUSTODY_DIR" \
+  --w1-custody-directory "$P01_CUSTODY_DIR" --root-fd 3 --operator-fd 4
+P01_REVOKE_EXIT=$?
+exec 3<&- 4<&-
+test "$P01_REVOKE_EXIT" = 0 || exit "$P01_REVOKE_EXIT"
+```
+
+기대: exit0/`ROOT_REVOKED_OPERATOR_HEALTHY`만 완료입니다. helper가 서로 다른 실제
+FD inode와 token bytes, 정확한 renewable service OIDC 정책과 600초 이상 TTL을 폐기
+직전과 직후에 확인하고 root lookup403을 확인합니다. 관리자 접근이 준비되지 않으면
+POST 전에 중단합니다. 폐기 후 확인이 불확실하면 exit2이며 custody를 보존하고 같은
+mutation을 재시도하지 않습니다. 더 이른 단계에서 window를 접을 때도 먼저 현재 복구
+접근을 확인한 뒤 이 절차로 폐기합니다.
 
 **W8 cold boot.** 별도 승인과 별도 window에서 host를 재시작하고, 수동 unseal, Agent
 재인증, 위 W7 점검을 반복한다. cold start 시뮬레이션은 실제 재부팅 증거가 아니다.
 
-**W1b unseal rekey.** 2026-10-14 owner 결정. W1 직후, W2 snapshot token과 W3 snapshot보다
-먼저 새 share 3개(threshold 2)를 만든다. 그래야 이 window와 그 뒤의 Raft snapshot은 새
-share와만 짝을 이루고, 새 share는 host에 없다. rekey에는 root token이 필요 없다. 조건은
-다음과 같다.
-
-- 옛 share 2개는 `bao operator rekey`의 숨겨진 prompt로만 넣는다. 명령 인자·환경 변수·
-  파일로 넘기지 않는다.
-- `-verify`로 시작해 새 share threshold를 다시 넣어야 적용되게 한다. 확인 전에 실패하거나
-  멈추면 `bao operator rekey -cancel`(확인 단계는 `-verify -cancel`)로 취소하고, 옛 share가
-  그대로 유효함을 확인한다.
-- `-backup`은 쓰지 않는다(core에 암호화된 key 사본을 남긴다). 새 share 출력은 host의
-  `secrets/`나 어떤 파일에도 쓰지 않고, 분리 규칙에 맞는 세 장소로 바로 옮긴다. 보유자별
-  공개 키로 암호화하는 `-pgp-keys`가 native 보호 출력 수단이다. W1과 같이 검토된 보호 출력
-  경로가 정해지기 전까지 W1b는 BLOCKED이며, 그 경우 W2부터의 단계도 같은 window에서
-  진행하지 않는다.
-- 끝나면 새 share로 5단계 확인 기록을 다시 채운다. 옛 share는 rekey 이전 snapshot을
-  restore하는 데만 쓰이므로, 그 snapshot을 지울 때까지 같은 분리 보관을 유지한다. host
-  단일 파일을 지울지는 별도 owner 결정이다.
-
 **window 뒤에 남는 것.**
 
-- 새 attempt로 빈 대상에 의미 있는 restore와 canary 읽기(위 6단계). `.agent-work/`가
-  삭제되므로 추적되거나 새로 검토한 도구가 필요하다.
+- W3a는 window 뒤 잔여가 아니라 W4 전 필수 gate입니다. 새 attempt의 실제 도구·빈 대상
+  입력이 없으면 HOME upgrade는 계속 미실행입니다.
 - consumer와 ACL 선택(위 10단계, P06).
 - SPEC-0239 Agent alert 배포: Agent 재생성(새 wrapped SecretID) 뒤 Prometheus restart(별도 승인).
+
+### P06 Consumer Migration Boundary
+
+이 Runbook은 [copy runtime](../../../../scripts/lib/ops/openbao_consumer_migration.py)과
+[HTTPS transport](../../../../scripts/lib/ops/_openbao_copy_transport.py)의 운영 실행 경계를 소유합니다.
+두 모듈은 controller가 현재 trusted user 또는 native authorization origin을 확인하고
+고정 P02·P01·P03·P04 입력에 결속한 뒤에만 실행하는 runtime primitive입니다.
+직접 library를 호출했다는 사실은 실행 승인이 아닙니다. 공개
+`scripts/operations/openbao-consumer-migration.py` CLI는 validate-only이며 production catalog
+adapter·controller factory·runtime copy CLI는 아직 제공하지 않습니다. 실제 private/native copy,
+consumer 렌더·pilot·authority 전환·복구·삭제·회전은
+[P06 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md)의
+별도 입력·검토·수용 전까지 **NOT_RUN**입니다. source/unit 통과로 이 경계를 완료 처리하지 않습니다.
 
 ## Verification
 

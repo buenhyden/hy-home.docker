@@ -39,7 +39,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf
+    image: hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e
     container_name: openbao
     hostname: openbao
     # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
@@ -113,7 +113,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf
+    image: hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e
     container_name: openbao-agent
     hostname: openbao-agent
     # Writes a data directory owned by the host group (common-optimizations.exceptions.json).

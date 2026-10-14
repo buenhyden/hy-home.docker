@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.8"
+version: "0.1.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-14"
 ---
 
 # OpenBao
@@ -32,6 +32,10 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
   - [prometheus](config/policies/prometheus.hcl): SEC-002 scrape token이며 `sys/metrics`만 읽습니다.
   - [eso-read-platform](config/policies/eso-read-platform.hcl): hy-home.k8s External Secrets용이며 `secret/platform/{argocd,postgres-app,notifications,prometheus-api,grafana-api}`를 읽습니다.
   - [k8s-bootstrap](config/policies/k8s-bootstrap.hcl): 수명이 짧은 클러스터 bootstrap token입니다.
+  - [backup-snapshot](config/policies/backup-snapshot.hcl): snapshot read와 자기 lookup·renew·revoke만 허용합니다.
+- [audit rotation](config/logrotate/openbao): 이 HOME의 UID/GID 매핑과 고정 container ID를 검증하는 host 규칙입니다. 실제 등록·schedule·재개방 결과는 Runbook에서 확인합니다.
+- [owned build](build/README.md): 인증된 공개 입력과 패치된 Go·x/net로 두 번 빌드해 전체 OCI identity를 비교합니다. 실제 산출물 수용은 별도입니다.
+- [renderer request](./scripts/renderer-request.sh): 검증된 메모리 바이트로 실행하며 token은 컨테이너 tmpfs의 보호 파일과 stdin으로 전달합니다.
 - [docker-compose.yml](docker-compose.yml)
 - [소비자 이관 계약](consumer-migration/README.md): 값 없는 wave·receipt schema와
   합성 검증 경로입니다. 실제 pilot·복구·삭제·회전은 별도 수용 증거가 필요합니다.
@@ -77,6 +81,28 @@ config-owned HMAC audit는 `openbao-audit`에 기록합니다. 한 backend가 �
 요청이 차단될 수 있어 외부 rotation/용량/알림이 필요합니다. HOME custody·cold boot·
 실제 복구는 운영 Runbook `RUN-0085`([운영 문서 인덱스](../../../docs/05.operations/README.md))을 따르며
 P06 확대 전제입니다. 임시 고정 버전 시험은 HOME 완료 증거가 아닙니다.
+
+### P01 protected maintenance clients
+
+[protected-maintenance.py](./scripts/protected-maintenance.py)는 인증된 root ceremony의
+보호 입력·custody·중단 경계를 구현합니다. 고정 HTTPS gateway, 숫자 connect IP와 검토된
+공개 CA SHA256을 먼저 확인하고 OIDC token과 두 share를 숨겨진 prompt 또는 서로 다른
+보호 FD로 받습니다. 디코딩한 root의 별도 self-lookup이 root-only identity를 확인해야
+완료를 보고합니다. mutation 이후 cleanup·출력 실패는 `INDETERMINATE`로 보존합니다.
+별도 [token helper](./scripts/protected-token-operations.py)는 제한 snapshot token을 발급하고
+고정 HOME 대상에 한 번만 전달합니다. root 폐기는 별도의 현재 OIDC 관리자 입력과
+600초 이상 TTL을 폐기 직전·직후에 확인해야 완료합니다. 운영 명령은 `RUN-0085`가
+소유합니다. [snapshot helper](./scripts/protected-raft-snapshot.py)는 보호 FD token으로
+검증·갱신·bounded save를 수행하고 snapshot과 receipt를 덮어쓰기 없이 게시합니다.
+저장 후 불확실성에서는 산출물과 lock을 보존하며 writer 정지·offsite·복구는 실행하지 않습니다.
+[semantic restore helper](./scripts/protected-semantic-restore.py)는 검토된 snapshot·receipt와
+유효한 writer 정지 lease를 고정하고, 선택한 빈 격리 대상에서 복구·canary·Agent 재인증을
+검증합니다. 실행 peer와 renderer 3파일·인접 receipt를 검증한 동일 바이트로 구성하며,
+한 번의 시도 이후 불확실성에서는 대상과 ledger를 보존합니다. 실제 실행 절차는 `RUN-0085`가
+소유합니다. 단위시험 통과는 HOME 복구 성공을 뜻하지 않습니다.
+운영자 `buenhyden`은 서로 다른 share와 off-host 보관 준비를 확인했습니다. 실제 현재 인증과
+share 입력은 보호 client에서만 처리하며, 준비 확인을 발급·upgrade·semantic restore 성공으로
+취급하지 않습니다.
 
 ### P01 versioned issuance journal compatibility
 

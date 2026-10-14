@@ -1,10 +1,10 @@
 ---
 title: "Operations Library"
-version: "0.1.4"
+version: "0.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-14"
 created: "2026-10-10"
 ---
 
@@ -21,9 +21,14 @@ created: "2026-10-10"
 - `root_resource_assessment.py`: 공개 JSON의 측정 선언·unknown·기존 공통 통제를
   범위 제한 평가합니다. 출력의 runtime 수용·변경 승인 플래그는 항상 false이며,
   정본 예외 등록과 실제 서비스의 결합은 후속 검증 대상입니다.
-- `openbao_consumer_migration.py`: P06 공개 wave·receipt 형태와 P02 공개 API의
-  이관 선택 거부를 합성 입력으로 검증합니다. 실제 비밀 파일·OpenBao API에는
-  접근하지 않으며, 합성 receipt의 PASS는 운영 승인이나 pilot 수용이 아닙니다.
+- `openbao_consumer_migration.py`: P06 공개 wave·receipt와 P02 API 선택 거부를
+  검증하고, 별도 controller가 권한과 입력을 제공한 경우 같은 bytes의 KV-v2 copy
+  primitive를 호출합니다. CAS=0·기존 값 확인·불확실 readback을 구분하고 POST 뒤
+  실패 또는 FD 정리 실패가 쓰기 사실을 지우지 않도록 보존합니다. 공개 CLI는
+  validation 전용이며 운영 P02 adapter·P01 token/ACL/custody는 별도입니다.
+- `_openbao_copy_io.py`, `_openbao_copy_transport.py`: 위 primitive 전용 내부
+  보호 입력·고정 HTTPS 전송 경계입니다. origin·numeric connect IP·held CA를
+  분리하고 역할의 경로/inode 충돌과 proxy·redirect·ambient 인증을 거부합니다.
 - `smtp_contract.py`: SMTP Compose 모델 검사와 정확한 중복 파일 퇴역 처리.
   모델·비밀값은 출력하지 않고 canonical 파일은 변경하지 않습니다.
 - `smtp_public_source.py`: ROOT·LAB의 추적된 공개 Compose와 선택된 상속

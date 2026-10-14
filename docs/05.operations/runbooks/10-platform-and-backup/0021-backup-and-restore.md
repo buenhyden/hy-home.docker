@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.20"
+version: "1.4.21"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -157,29 +157,18 @@ layer에 생성돼 재생성마다 바뀌었다. 이제 `WEBUI_SECRET_KEY_FILE`�
 가리킨다. SPEC-0226 적용 때 실행 중이던 key를 먼저 volume에 복사했으므로 key는
 바뀌지 않았고 재로그인도 필요 없었다. 그 뒤로도 재생성 때 유지된다.
 
-OpenBao는 Raft snapshot으로 백업한다. 최초 1회 운영자가 unseal된 OpenBao에서
-`infra/03-security/openbao/config/policies/backup-snapshot.hcl`을 `backup-snapshot`
-정책으로 등록하고, 이 정책만 가진 periodic token을 만들어
-`secrets/backup/openbao/snapshot_token.txt`(mode 600)에 둔다. 이 token은 snapshot
-읽기만 할 수 있고 secret은 읽지 못한다. 저장소 root의 터미널에서 실행한다. 관리자
-token은 화면에 나오지 않고 stdin으로만 전달되며 어디에도 저장되지 않는다.
+OpenBao는 Raft snapshot으로 백업합니다. 최초 snapshot-only periodic token 발급은
+[RUN-0085 Maintenance Window Plan의 W1·W2](../04-security-and-secrets/0085-openbao.md#maintenance-window-plan)가
+소유합니다. 독립 검토된 helper가 실제 root identity, 고정 gateway CA·cluster,
+정확한 정책과 ordinary-secret denial·renewal을 확인하며, 기존 token을 덮지 않고
+`secrets/backup/openbao/snapshot_token.txt`에 0600 single-link로 전달합니다.
+정책은 snapshot read와 자기 lookup·renew·revoke만 허용하고 default policy를 붙이지
+않습니다. root와 발급 응답은 보호된 custody 밖으로 출력하지 않습니다.
 
-```bash
-umask 077
-read -rsp 'OpenBao admin token: ' admin; echo
-out=secrets/backup/openbao/snapshot_token.txt
-{ printf '%s\n' "$admin"; cat infra/03-security/openbao/config/policies/backup-snapshot.hcl; } |
-  docker exec -i openbao sh -ec 'read -r BAO_TOKEN; export BAO_TOKEN
-    bao policy write backup-snapshot - >/dev/null
-    bao token create -orphan -period=720h -policy=backup-snapshot -field=token' >"$out.new"
-unset admin
-docker exec -i openbao sh -ec 'BAO_TOKEN="$(tr -d "\r\n")"; export BAO_TOKEN
-  trap "rm -f /tmp/check.snap" EXIT; bao operator raft snapshot save /tmp/check.snap' <"$out.new" &&
-  mv -f "$out.new" "$out" && echo "snapshot token ready"
-```
-
-마지막 명령은 새 token으로 snapshot 하나를 만들어 버리는 방식으로 권한을 확인한다.
-실패하면 `$out.new`를 지우고 sealed 상태와 관리자 token 권한을 확인한다.
+이전 inline 발급 블록은 정책을 무조건 덮고 실패 뒤 발급 identity를 남기며 대상 파일을
+강제로 교체할 수 있어 제거했습니다. 파일 삭제는 서버 credential 폐기가 아닙니다.
+현재 token·issuance lock이 있거나 결과가 불확실하면 보존하고 실제 identity부터
+확인합니다. 재발급과 원래 token 폐기는 같은 작업으로 취급하지 않습니다.
 
 매 run은 token을 stdin으로 넘겨 갱신한 뒤 snapshot을 staging에 받는다. token
 파일이 없으면 "OpenBao snapshot token absent: snapshot failed (recovery gap)"을

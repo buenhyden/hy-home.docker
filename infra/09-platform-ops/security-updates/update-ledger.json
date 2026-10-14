@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "source_revision": "328871a94b42c13f676e61b40f026c906ebbc13d",
+  "source_revision": "4c33d6cecc3087b1c5b0d8ef79b7d25e7e52e0a6",
   "collected_at": "2026-10-10T10:23:40.053333+00:00",
   "selection_profiles": "UNKNOWN: source defaults and observed runtime only; operator-selected profiles not inferred.",
   "expected_services": [
@@ -139,7 +139,7 @@
     },
     {
       "path": "infra/03-security/openbao/docker-compose.yml",
-      "sha256": "4115f5b7e78ed2f125a22f0b9464b5383e72fc8bbbb8c7fbe9b0c86843de9b0c"
+      "sha256": "3e90f94355834b10a5d5234432b7bd4975e9a340a0ccfaa3077af1e0e86622de"
     },
     {
       "path": "infra/04-data/dev-db/docker-compose.yml",
@@ -5441,7 +5441,7 @@
       "service": "openbao",
       "scope": "root",
       "compose_file": "infra/03-security/openbao/docker-compose.yml",
-      "current_declared": "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+      "current_declared": "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
       "profiles_declared": [
         "security",
         "secrets",
@@ -5471,27 +5471,27 @@
       "channel": "stable",
       "checked_at": "2026-10-10T10:24:14.947234+00:00",
       "release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
-      "target_index_digest": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-      "target_manifest_digest": "sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005",
-      "target_config_digest": "UNKNOWN",
+      "target_index_digest": "NOT_APPLICABLE: selected owned artifact is a single linux/amd64 manifest",
+      "target_manifest_digest": "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+      "target_config_digest": "sha256:7ee363935e49f667e408afda590dbc60182cea82587fea3a94a1d8a74586e1d1",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-01T14:03:19Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
+      "compatibility": "PASS_SYNTHETIC_ONLY: exact owned candidate, 4 native cases; HOME compatibility/adoption NOT_RUN",
       "backup": "NOT_RUN",
       "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
+      "native_test": "PASS_SYNTHETIC_ONLY: attempt2 13/13 PASS, 4 native cases, 0 skipped; root observation SHA256 2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8",
       "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
+      "signature": "NOT_UPSTREAM_SIGNED",
+      "sbom_scan": "PASS: selected owned artifact scan receipt SHA256 8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9",
       "disposition": "IMPLEMENT",
       "blocker": {
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Final bounded isolated native fixture passed and source hashes independently match. Real HOME/independent real unseal-offsite custody, production consumer migration-rotation/recovery and signature-SBOM-scan remain NOT_RUN; coordinator Task/integration/delivery pending."
+        "reason": "Owned source candidate, bound SBOM/CVE scan and exact synthetic native attempt2 accepted within their recorded scope; first native attempt FAIL is preserved. Actual production backup/rollback, HOME upgrade/cold boot and consumer uptake are NOT_RUN; artifact is NOT_UPSTREAM_SIGNED."
       },
       "source_owner_repository": "openbao/openbao",
       "current_repo_digests": [
@@ -5503,75 +5503,51 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v2.7.1",
       "next_fact_command": "gh release view --repo openbao/openbao --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "4115f5b7e78ed2f125a22f0b9464b5383e72fc8bbbb8c7fbe9b0c86843de9b0c",
+      "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00",
+      "source_input_sha256": "3e90f94355834b10a5d5234432b7bd4975e9a340a0ccfaa3077af1e0e86622de",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-      "candidate_evidence_scope": "Final bounded synthetic OpenBao native trust/auth/audit/restore PASS independently bound to exact public source and source-only test split. Real HOME/custody/consumer uptake and full operations acceptance NOT_RUN.",
-      "target_declared_digest": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-      "target_digest_evidence": "SEC01 parent verified index and linux/amd64 descriptor; config digest not provided.",
+      "target_source_image": "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+      "candidate_evidence_scope": "HYHOME owned binary 2.7.1+hyhome.go1.27.2.net0.60.0.r1, rebuilt from upstream v2.7.1 commit a5db72cef75c24b920ade02065b18dd8eb666bac using authenticated signed inputs; two distinct verified R4 compiles and two R5 runtime assemblies have equal full OCI identity (runtime lineage receipt SHA256 7001b288816e3474dd28a38b3c642f735474cc8fd0a2aefb6faa992599ced074). Owned artifact is not upstream signed. Accepted subject-bound Syft/Grype scan has 320 packages, 0 Critical/High, 3 Medium CVE-2025-60876 matches (unused BusyBox wget path) and 1 Unknown GO-2026-5932 match (module false positive: compiled ProtonMail replacement), 0 ignored; SEC01 source-candidate approval reported by ROOT. Owned-candidate synthetic compatibility/native attempt2 PASS_SYNTHETIC_ONLY: 13/13 tests, 4 native cases, fixture input 2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73 and root receipt SHA256 2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8. Attempt1 aggregate FAIL remains historical. Production backup/rollback, HOME deployment and consumer adoption remain NOT_RUN; the broader 111-service/44-input source closure is not claimed native-covered.",
+      "target_declared_digest": "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+      "target_digest_evidence": "Owned R5 runtime lineage receipt SHA256 7001b288816e3474dd28a38b3c642f735474cc8fd0a2aefb6faa992599ced074 binds manifest46bf/config7ee/layerc5d8; accepted scan receipt SHA256 8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9 binds the same artifact. Single-platform manifest, not an upstream multi-platform index. Local import receipt SHA256 0b6801f2e46a3d0ddb3b1fe65e1f587bcf294905ad51b0eb3fae02a10ca31f7d reports Docker local ID sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e separately from OCI config sha256:7ee363935e49f667e408afda590dbc60182cea82587fea3a94a1d8a74586e1d1.",
       "candidate_openbao_receipt": {
-        "reported_by": "SEC01 native worker via root",
-        "recorded_at": "2026-10-10T11:40:42.564403+00:00",
-        "command": "HYHOME_OPENBAO_REHEARSAL=1 rtk proxy python3 -m unittest tests.validation.test_openbao_rehearsal -v",
-        "input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
-        "source_binding": "MATCH independently recomputed for final native bytes; offline split does not change native inputs",
+        "reported_by": "ROOT actual native attempt2 observation; fixture input independently recomputed by evidence worker",
+        "recorded_at": "2026-10-14T06:16:08.390654+00:00",
+        "command": [
+          "env",
+          "HYHOME_OPENBAO_CANDIDATE=1",
+          "HYHOME_OPENBAO_REHEARSAL=1",
+          "/tmp/hyhome-p04-qa-tools/bin/python",
+          "-m",
+          "unittest",
+          "tests.validation.test_openbao_candidate",
+          "tests.validation.test_openbao_rehearsal",
+          "-v"
+        ],
+        "input_sha256": "2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73",
+        "source_binding": "MATCH independently recomputed existing 34-file rehearsal input_digest; this is not the broader 44-file ROOT Compose closure and does not claim all 44 inputs are native-covered.",
         "exit_code": 0,
-        "passed_tests": 2,
-        "duration_seconds": 177.078,
-        "environment": "Isolated invocation-owned synthetic OpenBao 2.7.1 fixture; no HOME keys/data/services",
+        "passed_tests": 13,
+        "duration_seconds": 454.043,
+        "environment": "Invocation-owned synthetic HYHOME OpenBao 2.7.1+hyhome.go1.27.2.net0.60.0.r1 selected manifest sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e; HOME runtime unchanged",
         "verified_scope": [
-          "operator direct SecretID issuance HTTP403",
-          "issuer constrained minting HTTP403 and cleanup role other AppRole/KV HTTP403",
-          "native abandoned journal exact-accessor cleanup and process restart",
-          "installed helper receipt",
-          "fresh Agent cold boot/authentication and functional readiness",
-          "expired unused SecretID rejection",
-          "malformed JSON response and audit input nonexposure",
-          "snapshot empty-environment restoration preserving fixture KV and original synthetic unseal shares",
-          "all audit devices failed: audited request HTTP500 while health HTTP200"
+          "13 tests PASS, 0 ERROR, 0 skipped; 4 native cases and 9 supporting tests.",
+          "Candidate TLS/expiry/audit/snapshot native case.",
+          "Native server startup diagnostic.",
+          "Native trust/auth/audit/synthetic recovery rehearsal.",
+          "Native versioned issuance reconciliation."
         ],
         "not_verified": [
-          "HOME deployment/cold boot",
-          "independently stored real unseal/offsite keys or custody",
-          "real secret migration/rotation/consumption",
-          "native full-service backup/recovery",
-          "candidate signature/SBOM/scan"
+          "HOME deployment and cold boot",
+          "production backup/rollback/recovery",
+          "production consumer credential migration and adoption",
+          "native coverage of the entire 111-service ROOT source closure"
         ],
-        "offline_results_reported": {
-          "command": "rtk proxy python3 -m unittest tests.lib.ops.test_openbao_issuance tests.lib.ops.test_openbao_issuance_trust",
-          "input_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
-          "tests": 36,
-          "result": "PASS",
-          "exit_code": 0,
-          "duration_seconds": 2.482,
-          "reported_by": "OpenBao worker; evidence worker independently verifies source binding",
-          "coverage": {
-            "reported_by": "root actual current split controller run",
-            "tests_pass": 36,
-            "exit_code": 0,
-            "coverage_percent": 92,
-            "statements": 410,
-            "missed": 33,
-            "meaning": "Root standard controller coverage after source-only split; not evidence worker execution or native/full-service coverage."
-          }
-        },
-        "receipt_status": "PASS: bounded final isolated native fixture and cleanup unit; not full HOME acceptance",
+        "receipt_status": "PASS_SYNTHETIC_ONLY",
         "valid_for_current_final_candidate": true,
         "invalidation_reason": null,
-        "meaning": "Two tests include cleanup unit and expanded native case; do not classify both tests as HOME or full service verification.",
-        "source_only_followup": {
-          "reported_by": "root",
-          "total_tests": 39,
-          "passed": 37,
-          "native_skipped": 2,
-          "exit_code": 0,
-          "scope": "Corrected candidate module plus both controller offline unit modules; skipped native tests not counted PASS",
-          "input_scope_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
-          "candidate_file_sha256": "29e80acaecb76069295dcc6518c2e8ba75a185e7c998e338a3775c39191f65c0",
-          "command": "Root reported corrected candidate + both offline modules; exact shell prefix/coverage invocation not supplied"
-        }
+        "meaning": "Actual ROOT observation /tmp/hyhome-p01-owned-native-attempt2-20261014.json SHA256 2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8; public log /tmp/hyhome-p01-owned-native-attempt2-20261014.log SHA256 2466d19f23c35067841b89bf1081e15497f453320d5ced4074d4cdad6675db39. Exact argv ran 13 tests including 4 native cases in 454.043 seconds. Metadata recorded_at is capture time. Synthetic native success is separate from deployed HOME acceptance."
       },
       "historical_candidate_openbao_receipts": [
         {
@@ -5613,20 +5589,137 @@
           "receipt_status": "HISTORICAL: final source correction pending fresh native receipt",
           "valid_for_current_final_candidate": false,
           "invalidation_reason": "Root actual staged Ruff failed: 32 issues and seven Python formats. OpenBao formatting/imports/explicit subprocess checks require new native run on exact final bytes; old e1044 receipt is historical only."
+        },
+        {
+          "reported_by": "SEC01 native worker via root",
+          "recorded_at": "2026-10-10T11:40:42.564403+00:00",
+          "command": "HYHOME_OPENBAO_REHEARSAL=1 rtk proxy python3 -m unittest tests.validation.test_openbao_rehearsal -v",
+          "input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+          "source_binding": "MATCH independently recomputed for final native bytes; offline split does not change native inputs",
+          "exit_code": 0,
+          "passed_tests": 2,
+          "duration_seconds": 177.078,
+          "environment": "Isolated invocation-owned synthetic OpenBao 2.7.1 fixture; no HOME keys/data/services",
+          "verified_scope": [
+            "operator direct SecretID issuance HTTP403",
+            "issuer constrained minting HTTP403 and cleanup role other AppRole/KV HTTP403",
+            "native abandoned journal exact-accessor cleanup and process restart",
+            "installed helper receipt",
+            "fresh Agent cold boot/authentication and functional readiness",
+            "expired unused SecretID rejection",
+            "malformed JSON response and audit input nonexposure",
+            "snapshot empty-environment restoration preserving fixture KV and original synthetic unseal shares",
+            "all audit devices failed: audited request HTTP500 while health HTTP200"
+          ],
+          "not_verified": [
+            "HOME deployment/cold boot",
+            "independently stored real unseal/offsite keys or custody",
+            "real secret migration/rotation/consumption",
+            "native full-service backup/recovery",
+            "candidate signature/SBOM/scan"
+          ],
+          "offline_results_reported": {
+            "command": "rtk proxy python3 -m unittest tests.lib.ops.test_openbao_issuance tests.lib.ops.test_openbao_issuance_trust",
+            "input_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
+            "tests": 36,
+            "result": "PASS",
+            "exit_code": 0,
+            "duration_seconds": 2.482,
+            "reported_by": "OpenBao worker; evidence worker independently verifies source binding",
+            "coverage": {
+              "reported_by": "root actual current split controller run",
+              "tests_pass": 36,
+              "exit_code": 0,
+              "coverage_percent": 92,
+              "statements": 410,
+              "missed": 33,
+              "meaning": "Root standard controller coverage after source-only split; not evidence worker execution or native/full-service coverage."
+            }
+          },
+          "receipt_status": "PASS: bounded final isolated native fixture and cleanup unit; not full HOME acceptance",
+          "valid_for_current_final_candidate": false,
+          "invalidation_reason": "Superseded by the HYHOME owned 2.7.1+hyhome.go1.27.2.net0.60.0.r1 artifact and changed public fixture/source. Historical official-image synthetic PASS is retained, but is not a current owned-candidate native receipt.",
+          "meaning": "Two tests include cleanup unit and expanded native case; do not classify both tests as HOME or full service verification.",
+          "source_only_followup": {
+            "reported_by": "root",
+            "total_tests": 39,
+            "passed": 37,
+            "native_skipped": 2,
+            "exit_code": 0,
+            "scope": "Corrected candidate module plus both controller offline unit modules; skipped native tests not counted PASS",
+            "input_scope_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
+            "candidate_file_sha256": "29e80acaecb76069295dcc6518c2e8ba75a185e7c998e338a3775c39191f65c0",
+            "command": "Root reported corrected candidate + both offline modules; exact shell prefix/coverage invocation not supplied"
+          }
+        },
+        {
+          "command": "docker image inspect --format {{.Id}} openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+          "exit_code": 0,
+          "image_id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+          "meaning": "Containerd image store reports same ID as OCI index; this is not the platform config digest. Config remains UNKNOWN.",
+          "receipt_status": "HISTORICAL: official image local identity observation",
+          "valid_for_current_final_candidate": false,
+          "invalidation_reason": "Superseded by the HYHOME owned 2.7.1+hyhome.go1.27.2.net0.60.0.r1 artifact and changed public fixture/source. Historical official-image synthetic PASS is retained, but is not a current owned-candidate native receipt."
+        },
+        {
+          "reported_by": "SEC01 public pinned Syft/Grype receipts; existing official subject",
+          "recorded_at": "2026-10-13T23:34:24.957650+00:00",
+          "input_sha256": "48105d750eb7da5017b5731f7372db4b8d336e3a7aa5ec4fc7179061d5ac6930",
+          "exit_code": 0,
+          "environment": "Official OpenBao 2.7.1 index sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf; linux/amd64 manifest sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005",
+          "verified_scope": [
+            "Historical official artifact scan: 49 matches, 3 Critical, 20 High, 13 Medium, 8 Low, 5 Unknown; 0 ignored.",
+            "Public grype-receipt.json SHA256 e37e66b1b6c2ac3255d6c920ec758812d0addf508764250c21e10e9efbd211b6; successful scanner exit does not mean security acceptance."
+          ],
+          "receipt_status": "CVE_REJECTED: official artifact is not the selected owned candidate",
+          "valid_for_current_final_candidate": false,
+          "invalidation_reason": "Official artifact rejected for Critical/High findings; retained as history after selecting the separately rebuilt owned artifact.",
+          "meaning": "Historical upstream signature evidence applies only to the official image. The owned candidate is not signed by upstream OpenBao."
+        },
+        {
+          "reported_by": "ROOT actual native attempt1 observation",
+          "recorded_at": "2026-10-14T06:16:08.390654+00:00",
+          "command": [
+            "env",
+            "HYHOME_OPENBAO_CANDIDATE=1",
+            "HYHOME_OPENBAO_REHEARSAL=1",
+            "/tmp/hyhome-p04-qa-tools/bin/python",
+            "-m",
+            "unittest",
+            "tests.validation.test_openbao_candidate",
+            "tests.validation.test_openbao_rehearsal",
+            "-v"
+          ],
+          "input_sha256": "d1c59476085763d99798413c402e4fe4d8341ab8fe45fc76b84eee6281db65af",
+          "source_binding": "Historical failed attempt on old fixture input; receipt /tmp/hyhome-p01-owned-native-attempt1-20261014.json SHA256 555afd88b549ff79502a4074eeac10e236b6aa802c4e38d1e5eb0b27aa5754a5",
+          "exit_code": 1,
+          "passed_tests": 11,
+          "duration_seconds": 276.386,
+          "environment": "Invocation-owned synthetic HYHOME OpenBao 2.7.1+hyhome.go1.27.2.net0.60.0.r1; HOME runtime unchanged",
+          "verified_scope": [
+            "13 tests run: 11 PASS, 2 ERROR, 0 skipped; aggregate FAIL.",
+            "Candidate native TLS/expiry/audit/snapshot and startup diagnostic passed within the failed aggregate."
+          ],
+          "not_verified": [
+            "Trust/auth/recovery and versioned issuance failed at test_openbao_rehearsal.py:540: native interrupted issue exact cleanup failed.",
+            "HOME runtime/deployment/rollback/adoption"
+          ],
+          "receipt_status": "FAIL",
+          "valid_for_current_final_candidate": false,
+          "invalidation_reason": "First attempt failed and its d1c594 fixture source was superseded before the separately recorded successful second attempt. Partial passes are not aggregate acceptance.",
+          "meaning": "Actual attempt1 result retained unchanged in root observation receipt; recorded_at here is metadata capture time, not an invented native execution timestamp."
         }
       ],
       "target_local_image_observation": {
-        "command": "docker image inspect --format {{.Id}} openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-        "exit_code": 0,
-        "image_id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-        "meaning": "Containerd image store reports same ID as OCI index; this is not the platform config digest. Config remains UNKNOWN."
+        "image_id": "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+        "meaning": "Existing ROOT public LOCAL_IMPORT_AND_TAG_BINDING receipt /tmp/hyhome-p01-selected-image-security-20261014/owned-r5-pinned-import-receipt.json SHA256 0b6801f2e46a3d0ddb3b1fe65e1f587bcf294905ad51b0eb3fae02a10ca31f7d records reference hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e and local ID convergence. OCI config is sha256:7ee363935e49f667e408afda590dbc60182cea82587fea3a94a1d8a74586e1d1. No new Docker inspection was executed by this metadata refresh; no native compatibility/deployment claim."
       }
     },
     {
       "service": "openbao-agent",
       "scope": "root",
       "compose_file": "infra/03-security/openbao/docker-compose.yml",
-      "current_declared": "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+      "current_declared": "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
       "profiles_declared": [
         "security",
         "secrets",
@@ -5656,27 +5749,27 @@
       "channel": "stable",
       "checked_at": "2026-10-10T10:24:14.947234+00:00",
       "release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
-      "target_index_digest": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-      "target_manifest_digest": "sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005",
-      "target_config_digest": "UNKNOWN",
+      "target_index_digest": "NOT_APPLICABLE: selected owned artifact is a single linux/amd64 manifest",
+      "target_manifest_digest": "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+      "target_config_digest": "sha256:7ee363935e49f667e408afda590dbc60182cea82587fea3a94a1d8a74586e1d1",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-01T14:03:19Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
+      "compatibility": "PASS_SYNTHETIC_ONLY: exact owned candidate, 4 native cases; HOME compatibility/adoption NOT_RUN",
       "backup": "NOT_RUN",
       "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
+      "native_test": "PASS_SYNTHETIC_ONLY: attempt2 13/13 PASS, 4 native cases, 0 skipped; root observation SHA256 2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8",
       "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
+      "signature": "NOT_UPSTREAM_SIGNED",
+      "sbom_scan": "PASS: selected owned artifact scan receipt SHA256 8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9",
       "disposition": "IMPLEMENT",
       "blocker": {
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Final bounded isolated native fixture passed and source hashes independently match. Real HOME/independent real unseal-offsite custody, production consumer migration-rotation/recovery and signature-SBOM-scan remain NOT_RUN; coordinator Task/integration/delivery pending."
+        "reason": "Owned source candidate, bound SBOM/CVE scan and exact synthetic native attempt2 accepted within their recorded scope; first native attempt FAIL is preserved. Actual production backup/rollback, HOME upgrade/cold boot and consumer uptake are NOT_RUN; artifact is NOT_UPSTREAM_SIGNED."
       },
       "source_owner_repository": "openbao/openbao",
       "current_repo_digests": [
@@ -5688,75 +5781,51 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v2.7.1",
       "next_fact_command": "gh release view --repo openbao/openbao --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "4115f5b7e78ed2f125a22f0b9464b5383e72fc8bbbb8c7fbe9b0c86843de9b0c",
+      "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00",
+      "source_input_sha256": "3e90f94355834b10a5d5234432b7bd4975e9a340a0ccfaa3077af1e0e86622de",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-      "candidate_evidence_scope": "Final bounded synthetic OpenBao native trust/auth/audit/restore PASS independently bound to exact public source and source-only test split. Real HOME/custody/consumer uptake and full operations acceptance NOT_RUN.",
-      "target_declared_digest": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-      "target_digest_evidence": "SEC01 parent verified index and linux/amd64 descriptor; config digest not provided.",
+      "target_source_image": "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+      "candidate_evidence_scope": "HYHOME owned binary 2.7.1+hyhome.go1.27.2.net0.60.0.r1, rebuilt from upstream v2.7.1 commit a5db72cef75c24b920ade02065b18dd8eb666bac using authenticated signed inputs; two distinct verified R4 compiles and two R5 runtime assemblies have equal full OCI identity (runtime lineage receipt SHA256 7001b288816e3474dd28a38b3c642f735474cc8fd0a2aefb6faa992599ced074). Owned artifact is not upstream signed. Accepted subject-bound Syft/Grype scan has 320 packages, 0 Critical/High, 3 Medium CVE-2025-60876 matches (unused BusyBox wget path) and 1 Unknown GO-2026-5932 match (module false positive: compiled ProtonMail replacement), 0 ignored; SEC01 source-candidate approval reported by ROOT. Owned-candidate synthetic compatibility/native attempt2 PASS_SYNTHETIC_ONLY: 13/13 tests, 4 native cases, fixture input 2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73 and root receipt SHA256 2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8. Attempt1 aggregate FAIL remains historical. Production backup/rollback, HOME deployment and consumer adoption remain NOT_RUN; the broader 111-service/44-input source closure is not claimed native-covered.",
+      "target_declared_digest": "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+      "target_digest_evidence": "Owned R5 runtime lineage receipt SHA256 7001b288816e3474dd28a38b3c642f735474cc8fd0a2aefb6faa992599ced074 binds manifest46bf/config7ee/layerc5d8; accepted scan receipt SHA256 8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9 binds the same artifact. Single-platform manifest, not an upstream multi-platform index. Local import receipt SHA256 0b6801f2e46a3d0ddb3b1fe65e1f587bcf294905ad51b0eb3fae02a10ca31f7d reports Docker local ID sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e separately from OCI config sha256:7ee363935e49f667e408afda590dbc60182cea82587fea3a94a1d8a74586e1d1.",
       "candidate_openbao_receipt": {
-        "reported_by": "SEC01 native worker via root",
-        "recorded_at": "2026-10-10T11:40:42.564403+00:00",
-        "command": "HYHOME_OPENBAO_REHEARSAL=1 rtk proxy python3 -m unittest tests.validation.test_openbao_rehearsal -v",
-        "input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
-        "source_binding": "MATCH independently recomputed for final native bytes; offline split does not change native inputs",
+        "reported_by": "ROOT actual native attempt2 observation; fixture input independently recomputed by evidence worker",
+        "recorded_at": "2026-10-14T06:16:08.390654+00:00",
+        "command": [
+          "env",
+          "HYHOME_OPENBAO_CANDIDATE=1",
+          "HYHOME_OPENBAO_REHEARSAL=1",
+          "/tmp/hyhome-p04-qa-tools/bin/python",
+          "-m",
+          "unittest",
+          "tests.validation.test_openbao_candidate",
+          "tests.validation.test_openbao_rehearsal",
+          "-v"
+        ],
+        "input_sha256": "2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73",
+        "source_binding": "MATCH independently recomputed existing 34-file rehearsal input_digest; this is not the broader 44-file ROOT Compose closure and does not claim all 44 inputs are native-covered.",
         "exit_code": 0,
-        "passed_tests": 2,
-        "duration_seconds": 177.078,
-        "environment": "Isolated invocation-owned synthetic OpenBao 2.7.1 fixture; no HOME keys/data/services",
+        "passed_tests": 13,
+        "duration_seconds": 454.043,
+        "environment": "Invocation-owned synthetic HYHOME OpenBao 2.7.1+hyhome.go1.27.2.net0.60.0.r1 selected manifest sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e; HOME runtime unchanged",
         "verified_scope": [
-          "operator direct SecretID issuance HTTP403",
-          "issuer constrained minting HTTP403 and cleanup role other AppRole/KV HTTP403",
-          "native abandoned journal exact-accessor cleanup and process restart",
-          "installed helper receipt",
-          "fresh Agent cold boot/authentication and functional readiness",
-          "expired unused SecretID rejection",
-          "malformed JSON response and audit input nonexposure",
-          "snapshot empty-environment restoration preserving fixture KV and original synthetic unseal shares",
-          "all audit devices failed: audited request HTTP500 while health HTTP200"
+          "13 tests PASS, 0 ERROR, 0 skipped; 4 native cases and 9 supporting tests.",
+          "Candidate TLS/expiry/audit/snapshot native case.",
+          "Native server startup diagnostic.",
+          "Native trust/auth/audit/synthetic recovery rehearsal.",
+          "Native versioned issuance reconciliation."
         ],
         "not_verified": [
-          "HOME deployment/cold boot",
-          "independently stored real unseal/offsite keys or custody",
-          "real secret migration/rotation/consumption",
-          "native full-service backup/recovery",
-          "candidate signature/SBOM/scan"
+          "HOME deployment and cold boot",
+          "production backup/rollback/recovery",
+          "production consumer credential migration and adoption",
+          "native coverage of the entire 111-service ROOT source closure"
         ],
-        "offline_results_reported": {
-          "command": "rtk proxy python3 -m unittest tests.lib.ops.test_openbao_issuance tests.lib.ops.test_openbao_issuance_trust",
-          "input_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
-          "tests": 36,
-          "result": "PASS",
-          "exit_code": 0,
-          "duration_seconds": 2.482,
-          "reported_by": "OpenBao worker; evidence worker independently verifies source binding",
-          "coverage": {
-            "reported_by": "root actual current split controller run",
-            "tests_pass": 36,
-            "exit_code": 0,
-            "coverage_percent": 92,
-            "statements": 410,
-            "missed": 33,
-            "meaning": "Root standard controller coverage after source-only split; not evidence worker execution or native/full-service coverage."
-          }
-        },
-        "receipt_status": "PASS: bounded final isolated native fixture and cleanup unit; not full HOME acceptance",
+        "receipt_status": "PASS_SYNTHETIC_ONLY",
         "valid_for_current_final_candidate": true,
         "invalidation_reason": null,
-        "meaning": "Two tests include cleanup unit and expanded native case; do not classify both tests as HOME or full service verification.",
-        "source_only_followup": {
-          "reported_by": "root",
-          "total_tests": 39,
-          "passed": 37,
-          "native_skipped": 2,
-          "exit_code": 0,
-          "scope": "Corrected candidate module plus both controller offline unit modules; skipped native tests not counted PASS",
-          "input_scope_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
-          "candidate_file_sha256": "29e80acaecb76069295dcc6518c2e8ba75a185e7c998e338a3775c39191f65c0",
-          "command": "Root reported corrected candidate + both offline modules; exact shell prefix/coverage invocation not supplied"
-        }
+        "meaning": "Actual ROOT observation /tmp/hyhome-p01-owned-native-attempt2-20261014.json SHA256 2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8; public log /tmp/hyhome-p01-owned-native-attempt2-20261014.log SHA256 2466d19f23c35067841b89bf1081e15497f453320d5ced4074d4cdad6675db39. Exact argv ran 13 tests including 4 native cases in 454.043 seconds. Metadata recorded_at is capture time. Synthetic native success is separate from deployed HOME acceptance."
       },
       "historical_candidate_openbao_receipts": [
         {
@@ -5798,13 +5867,130 @@
           "receipt_status": "HISTORICAL: final source correction pending fresh native receipt",
           "valid_for_current_final_candidate": false,
           "invalidation_reason": "Root actual staged Ruff failed: 32 issues and seven Python formats. OpenBao formatting/imports/explicit subprocess checks require new native run on exact final bytes; old e1044 receipt is historical only."
+        },
+        {
+          "reported_by": "SEC01 native worker via root",
+          "recorded_at": "2026-10-10T11:40:42.564403+00:00",
+          "command": "HYHOME_OPENBAO_REHEARSAL=1 rtk proxy python3 -m unittest tests.validation.test_openbao_rehearsal -v",
+          "input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+          "source_binding": "MATCH independently recomputed for final native bytes; offline split does not change native inputs",
+          "exit_code": 0,
+          "passed_tests": 2,
+          "duration_seconds": 177.078,
+          "environment": "Isolated invocation-owned synthetic OpenBao 2.7.1 fixture; no HOME keys/data/services",
+          "verified_scope": [
+            "operator direct SecretID issuance HTTP403",
+            "issuer constrained minting HTTP403 and cleanup role other AppRole/KV HTTP403",
+            "native abandoned journal exact-accessor cleanup and process restart",
+            "installed helper receipt",
+            "fresh Agent cold boot/authentication and functional readiness",
+            "expired unused SecretID rejection",
+            "malformed JSON response and audit input nonexposure",
+            "snapshot empty-environment restoration preserving fixture KV and original synthetic unseal shares",
+            "all audit devices failed: audited request HTTP500 while health HTTP200"
+          ],
+          "not_verified": [
+            "HOME deployment/cold boot",
+            "independently stored real unseal/offsite keys or custody",
+            "real secret migration/rotation/consumption",
+            "native full-service backup/recovery",
+            "candidate signature/SBOM/scan"
+          ],
+          "offline_results_reported": {
+            "command": "rtk proxy python3 -m unittest tests.lib.ops.test_openbao_issuance tests.lib.ops.test_openbao_issuance_trust",
+            "input_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
+            "tests": 36,
+            "result": "PASS",
+            "exit_code": 0,
+            "duration_seconds": 2.482,
+            "reported_by": "OpenBao worker; evidence worker independently verifies source binding",
+            "coverage": {
+              "reported_by": "root actual current split controller run",
+              "tests_pass": 36,
+              "exit_code": 0,
+              "coverage_percent": 92,
+              "statements": 410,
+              "missed": 33,
+              "meaning": "Root standard controller coverage after source-only split; not evidence worker execution or native/full-service coverage."
+            }
+          },
+          "receipt_status": "PASS: bounded final isolated native fixture and cleanup unit; not full HOME acceptance",
+          "valid_for_current_final_candidate": false,
+          "invalidation_reason": "Superseded by the HYHOME owned 2.7.1+hyhome.go1.27.2.net0.60.0.r1 artifact and changed public fixture/source. Historical official-image synthetic PASS is retained, but is not a current owned-candidate native receipt.",
+          "meaning": "Two tests include cleanup unit and expanded native case; do not classify both tests as HOME or full service verification.",
+          "source_only_followup": {
+            "reported_by": "root",
+            "total_tests": 39,
+            "passed": 37,
+            "native_skipped": 2,
+            "exit_code": 0,
+            "scope": "Corrected candidate module plus both controller offline unit modules; skipped native tests not counted PASS",
+            "input_scope_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
+            "candidate_file_sha256": "29e80acaecb76069295dcc6518c2e8ba75a185e7c998e338a3775c39191f65c0",
+            "command": "Root reported corrected candidate + both offline modules; exact shell prefix/coverage invocation not supplied"
+          }
+        },
+        {
+          "command": "docker image inspect --format {{.Id}} openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+          "exit_code": 0,
+          "image_id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+          "meaning": "Containerd image store reports same ID as OCI index; this is not the platform config digest. Config remains UNKNOWN.",
+          "receipt_status": "HISTORICAL: official image local identity observation",
+          "valid_for_current_final_candidate": false,
+          "invalidation_reason": "Superseded by the HYHOME owned 2.7.1+hyhome.go1.27.2.net0.60.0.r1 artifact and changed public fixture/source. Historical official-image synthetic PASS is retained, but is not a current owned-candidate native receipt."
+        },
+        {
+          "reported_by": "SEC01 public pinned Syft/Grype receipts; existing official subject",
+          "recorded_at": "2026-10-13T23:34:24.957650+00:00",
+          "input_sha256": "48105d750eb7da5017b5731f7372db4b8d336e3a7aa5ec4fc7179061d5ac6930",
+          "exit_code": 0,
+          "environment": "Official OpenBao 2.7.1 index sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf; linux/amd64 manifest sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005",
+          "verified_scope": [
+            "Historical official artifact scan: 49 matches, 3 Critical, 20 High, 13 Medium, 8 Low, 5 Unknown; 0 ignored.",
+            "Public grype-receipt.json SHA256 e37e66b1b6c2ac3255d6c920ec758812d0addf508764250c21e10e9efbd211b6; successful scanner exit does not mean security acceptance."
+          ],
+          "receipt_status": "CVE_REJECTED: official artifact is not the selected owned candidate",
+          "valid_for_current_final_candidate": false,
+          "invalidation_reason": "Official artifact rejected for Critical/High findings; retained as history after selecting the separately rebuilt owned artifact.",
+          "meaning": "Historical upstream signature evidence applies only to the official image. The owned candidate is not signed by upstream OpenBao."
+        },
+        {
+          "reported_by": "ROOT actual native attempt1 observation",
+          "recorded_at": "2026-10-14T06:16:08.390654+00:00",
+          "command": [
+            "env",
+            "HYHOME_OPENBAO_CANDIDATE=1",
+            "HYHOME_OPENBAO_REHEARSAL=1",
+            "/tmp/hyhome-p04-qa-tools/bin/python",
+            "-m",
+            "unittest",
+            "tests.validation.test_openbao_candidate",
+            "tests.validation.test_openbao_rehearsal",
+            "-v"
+          ],
+          "input_sha256": "d1c59476085763d99798413c402e4fe4d8341ab8fe45fc76b84eee6281db65af",
+          "source_binding": "Historical failed attempt on old fixture input; receipt /tmp/hyhome-p01-owned-native-attempt1-20261014.json SHA256 555afd88b549ff79502a4074eeac10e236b6aa802c4e38d1e5eb0b27aa5754a5",
+          "exit_code": 1,
+          "passed_tests": 11,
+          "duration_seconds": 276.386,
+          "environment": "Invocation-owned synthetic HYHOME OpenBao 2.7.1+hyhome.go1.27.2.net0.60.0.r1; HOME runtime unchanged",
+          "verified_scope": [
+            "13 tests run: 11 PASS, 2 ERROR, 0 skipped; aggregate FAIL.",
+            "Candidate native TLS/expiry/audit/snapshot and startup diagnostic passed within the failed aggregate."
+          ],
+          "not_verified": [
+            "Trust/auth/recovery and versioned issuance failed at test_openbao_rehearsal.py:540: native interrupted issue exact cleanup failed.",
+            "HOME runtime/deployment/rollback/adoption"
+          ],
+          "receipt_status": "FAIL",
+          "valid_for_current_final_candidate": false,
+          "invalidation_reason": "First attempt failed and its d1c594 fixture source was superseded before the separately recorded successful second attempt. Partial passes are not aggregate acceptance.",
+          "meaning": "Actual attempt1 result retained unchanged in root observation receipt; recorded_at here is metadata capture time, not an invented native execution timestamp."
         }
       ],
       "target_local_image_observation": {
-        "command": "docker image inspect --format {{.Id}} openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-        "exit_code": 0,
-        "image_id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
-        "meaning": "Containerd image store reports same ID as OCI index; this is not the platform config digest. Config remains UNKNOWN."
+        "image_id": "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+        "meaning": "Existing ROOT public LOCAL_IMPORT_AND_TAG_BINDING receipt /tmp/hyhome-p01-selected-image-security-20261014/owned-r5-pinned-import-receipt.json SHA256 0b6801f2e46a3d0ddb3b1fe65e1f587bcf294905ad51b0eb3fae02a10ca31f7d records reference hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e and local ID convergence. OCI config is sha256:7ee363935e49f667e408afda590dbc60182cea82587fea3a94a1d8a74586e1d1. No new Docker inspection was executed by this metadata refresh; no native compatibility/deployment claim."
       }
     },
     {
@@ -11471,6 +11657,36 @@
       "native_scans_rerun": false,
       "deployment_rerun": false,
       "meaning": "Current ROOT Compose source binding only. Dated supplier, candidate digest, runtime, native, scan and recovery evidence remains historical where it does not match this source and is not promoted to current acceptance."
+    },
+    {
+      "source_revision": "4c33d6cecc3087b1c5b0d8ef79b7d25e7e52e0a6",
+      "refreshed_at": "2026-10-14T05:56:02.419926+00:00",
+      "input_manifest_sha256": "f1f1a4a973e3924ffe76200a7b3c9dcc1f5935244bd323f40bdca47a45a33a61",
+      "root_service_count": 111,
+      "root_input_count": 44,
+      "source_rebound_services": [
+        "openbao",
+        "openbao-agent"
+      ],
+      "vendor_lookups_rerun": false,
+      "native_scans_rerun": false,
+      "deployment_rerun": false,
+      "meaning": "Current public ROOT source closure after refreshed main and PINS_FINAL. Only OpenBao and Agent select the accepted HYHOME owned artifact; prior running 2.6.2 facts and upstream 2.7.1 release observations retain their original dates. Existing owned scan/runtime receipts are rebound by exact artifact identity; no new scan, native rehearsal or deployment executed."
+    },
+    {
+      "source_revision": "4c33d6cecc3087b1c5b0d8ef79b7d25e7e52e0a6",
+      "refreshed_at": "2026-10-14T06:16:08.390654+00:00",
+      "input_manifest_sha256": "f1f1a4a973e3924ffe76200a7b3c9dcc1f5935244bd323f40bdca47a45a33a61",
+      "root_service_count": 111,
+      "root_input_count": 44,
+      "source_rebound_services": [
+        "openbao",
+        "openbao-agent"
+      ],
+      "vendor_lookups_rerun": false,
+      "native_scans_rerun": false,
+      "deployment_rerun": false,
+      "meaning": "PINS_FINAL2 public ROOT source closure only. Separately preserved actual native attempt1 FAIL and attempt2 PASS_SYNTHETIC_ONLY; attempt2 receipt 2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8 matches the registered 34-file fixture digest 2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73. The 111-service/44-file source inventory is broader and is not asserted fully native-tested. SBOM/CVE scan was not rerun; previous exact artifact scan remains bound. HOME deployment/backup/rollback/adoption NOT_RUN."
     }
   ],
   "delivery_preconditions": {
@@ -11555,9 +11771,9 @@
     "scan_signature_sbom": "NOT_RUN"
   },
   "openbao_source_binding": {
-    "checked_at": "2026-10-10T11:40:42.564403+00:00",
-    "source_revision": "9cf2f5909f1be443cde16898e06fd7e1e8653b62",
-    "input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+    "checked_at": "2026-10-14T06:16:08.390654+00:00",
+    "source_revision": "4c33d6cecc3087b1c5b0d8ef79b7d25e7e52e0a6",
+    "input_sha256": "2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73",
     "algorithm": "SHA256 sorted public relative path + space + file SHA256 + newline",
     "input_files": [
       {
@@ -11566,11 +11782,11 @@
       },
       {
         "path": "infra/03-security/openbao/config/agent.hcl",
-        "sha256": "a558f76145b2f75402965834f8b8051b5cd8ed7443c6756794ed556d7e07b212"
+        "sha256": "d5638223f40bce5776b5802ed8d28f21ddd034ac878ac37af113a8a8b8e7be43"
       },
       {
         "path": "infra/03-security/openbao/config/policies/backup-snapshot.hcl",
-        "sha256": "84af105c666312712a0d6809e0a4c037ed66e7157027e94ac1d79c132131a608"
+        "sha256": "1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622"
       },
       {
         "path": "infra/03-security/openbao/config/policies/operator.hcl",
@@ -11622,11 +11838,11 @@
       },
       {
         "path": "infra/03-security/openbao/docker-compose.yml",
-        "sha256": "4115f5b7e78ed2f125a22f0b9464b5383e72fc8bbbb8c7fbe9b0c86843de9b0c"
+        "sha256": "3e90f94355834b10a5d5234432b7bd4975e9a340a0ccfaa3077af1e0e86622de"
       },
       {
         "path": "infra/03-security/openbao/scripts/check-tls-material.sh",
-        "sha256": "9c4a99cdd57ec55e41679b854e2e0cfcc6434d16a47728a42f949c84a8364711"
+        "sha256": "a728a2f3f40de514726eea6f1029461582c3dc543978b538e8d58cc856f9b9e9"
       },
       {
         "path": "infra/03-security/openbao/scripts/health-agent.sh",
@@ -11634,7 +11850,7 @@
       },
       {
         "path": "infra/03-security/openbao/scripts/install-renderer-issuer.sh",
-        "sha256": "1cf3df2a9e8404d757661e311dd284d8a97de27f2b04b46e871763ce6192abf2"
+        "sha256": "27a097f133ced7bc1d3657c401a16fa923d464878a10b38d69d5e0e7033343c9"
       },
       {
         "path": "infra/03-security/openbao/scripts/issue-renderer-secret-id.sh",
@@ -11642,7 +11858,11 @@
       },
       {
         "path": "infra/03-security/openbao/scripts/renderer-issuance.py",
-        "sha256": "6d99b3b3fa721412008f2b7203b91296e727738840f8b6e8e9fdfcef9059dd59"
+        "sha256": "5c809c1e2578c5fc58e736934faa67703e629382210edb99e810d8710b58a925"
+      },
+      {
+        "path": "infra/03-security/openbao/scripts/renderer-request.sh",
+        "sha256": "be1865325138679ab8cac82e0203cdbe308c2f66651b920c0f2c4cb9ae103014"
       },
       {
         "path": "infra/03-security/openbao/scripts/start-agent.sh",
@@ -11662,11 +11882,11 @@
       },
       {
         "path": "infra/06-observability/prometheus/config/alert_rules/alert_rules.openbao.yml",
-        "sha256": "75ac751872010dc3e1209e8433c48dbf7f2a04ce28bb2b96166a98637e63f6e0"
+        "sha256": "571805b5952583dd256c62881ecc1711469110a4bd44fb888e872089dd417d4e"
       },
       {
         "path": "infra/06-observability/prometheus/config/prometheus.yml",
-        "sha256": "6b805256f719633e556e99458049e1c7df8c4c9f21661144f2368bc8ad4b0a04"
+        "sha256": "75380a3321a30b404e8d0ad49ee9e05cfd3eaa5cc91399555278964b7cc12e96"
       },
       {
         "path": "infra/06-observability/prometheus/scripts/start.sh",
@@ -11674,102 +11894,28 @@
       },
       {
         "path": "infra/09-platform-ops/restic/bin/hyhome-backup.sh",
-        "sha256": "d212aa05a8373fd5acb0a81b42f86b7d86b6b12d93adeb3911902038dd279dcf"
+        "sha256": "afddbebbc329b21980b45a415a4053a15a449b0cafced56e38117e676a181d00"
       },
       {
         "path": "tests/validation/_openbao_rehearsal_clients.py",
-        "sha256": "698442d8cd982fc30023c8ce3c66755a5a2cadf9275060230d1469d66cf94cc6"
+        "sha256": "2117a32a1dd105058f3e4d46f337234556da6e753a90352f54b24f7de7c61471"
       },
       {
         "path": "tests/validation/_openbao_rehearsal_fixture.py",
-        "sha256": "00a09527dc9f969b037a0ec2da67eab058c2aeab47bdf3d011a6b5b7c7683500"
+        "sha256": "44f83b5874788936141f661d47c1a41dc02d2e62b9cb0133bb3ff7fd80d4a263"
       },
       {
         "path": "tests/validation/fixtures/openbao-audit-alerts.test.yml",
-        "sha256": "f8a0ece5276bba2887f344da229af8055687eaa45da4ac2386a5c397a7e9ae99"
+        "sha256": "4b555281d2d5b58fe1a14f3f69dce17d4b64397e68522910153e420850cdb7e9"
       },
       {
         "path": "tests/validation/test_openbao_rehearsal.py",
-        "sha256": "0790448f3c86ea09b4fcbd972acef5ab0fabeb2ab92e5215adf26069ba43d900"
+        "sha256": "30315785c66b8f95a0bdcd2ab559278a1d62d4a5f4fd037a5d618ccab00bad85"
       }
     ],
-    "result": "MATCH independently recomputed by evidence worker without importing/running native fixtures",
+    "result": "MATCH: existing 34-file rehearsal fixture digest independently recomputed against successful actual attempt2 ROOT receipt 2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8. This is not native coverage of all 44 ROOT Compose inputs.",
     "valid_for_current_final_candidate": true,
-    "owned_source_unit_fingerprint": "62d281cefb0cc0efeb98a009068b49b3649f258bcb9308f492e7236da7e2e4d1",
-    "owned_source_unit_algorithm": "Ordered path UTF8 + NUL + file bytes + NUL, sequence retained below",
-    "owned_source_unit_paths_in_order": [
-      "infra/03-security/openbao/config/policies/operator.hcl",
-      "infra/03-security/openbao/config/policies/renderer-issuer.hcl",
-      "infra/03-security/openbao/config/policies/renderer-cleanup.hcl",
-      "infra/03-security/openbao/config/renderer-issuer-token-role.json",
-      "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
-      "infra/03-security/openbao/scripts/issue-renderer-secret-id.sh",
-      "infra/03-security/openbao/scripts/renderer-issuance.py",
-      "infra/03-security/openbao/scripts/install-renderer-issuer.sh",
-      "tests/lib/ops/test_openbao_issuance.py",
-      "tests/lib/ops/test_openbao_issuance_trust.py",
-      "tests/validation/test_openbao_agent_contract.py",
-      "tests/validation/test_openbao_rehearsal.py"
-    ],
-    "owned_source_unit_input_files": [
-      {
-        "path": "infra/03-security/openbao/config/policies/operator.hcl",
-        "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
-      },
-      {
-        "path": "infra/03-security/openbao/config/policies/renderer-issuer.hcl",
-        "sha256": "0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5"
-      },
-      {
-        "path": "infra/03-security/openbao/config/policies/renderer-cleanup.hcl",
-        "sha256": "a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5"
-      },
-      {
-        "path": "infra/03-security/openbao/config/renderer-issuer-token-role.json",
-        "sha256": "4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f"
-      },
-      {
-        "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
-        "sha256": "bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e"
-      },
-      {
-        "path": "infra/03-security/openbao/scripts/issue-renderer-secret-id.sh",
-        "sha256": "d92ed0353fc6885ec803a223cb1eeb845d78b3f86cde4e2ed700c9a276df1878"
-      },
-      {
-        "path": "infra/03-security/openbao/scripts/renderer-issuance.py",
-        "sha256": "6d99b3b3fa721412008f2b7203b91296e727738840f8b6e8e9fdfcef9059dd59"
-      },
-      {
-        "path": "infra/03-security/openbao/scripts/install-renderer-issuer.sh",
-        "sha256": "1cf3df2a9e8404d757661e311dd284d8a97de27f2b04b46e871763ce6192abf2"
-      },
-      {
-        "path": "tests/lib/ops/test_openbao_issuance.py",
-        "sha256": "c5c8e4aaa061ff1703d2ab450c92fb819e76959634985a52c6ff4374dd7ffe8d"
-      },
-      {
-        "path": "tests/lib/ops/test_openbao_issuance_trust.py",
-        "sha256": "41a7544557533ea895c29e36dc451a7b6623e9344c15d6adc34d4dbf11a322e8"
-      },
-      {
-        "path": "tests/validation/test_openbao_agent_contract.py",
-        "sha256": "bcf80937a1abc230f880959c538ae43cad38423ba0ab391b5b56d706dc5e5b8d"
-      },
-      {
-        "path": "tests/validation/test_openbao_rehearsal.py",
-        "sha256": "0790448f3c86ea09b4fcbd972acef5ab0fabeb2ab92e5215adf26069ba43d900"
-      }
-    ],
-    "owned_source_unit_fingerprint_result": "MATCH independently recomputed for twelve files after source-only unit test split",
-    "unit_split": {
-      "paths": [
-        "tests/lib/ops/test_openbao_issuance.py",
-        "tests/lib/ops/test_openbao_issuance_trust.py"
-      ],
-      "input_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
-      "meaning": "Offline-only split of three existing trust classes; production/native fixture bytes unchanged. Prior eleven-file aggregate historical; final native f2f2 independently remains unchanged."
-    }
+    "invalidation_reason": null
   },
   "current_head_observations": [
     {
@@ -11932,6 +12078,224 @@
       "owned_source_unit_fingerprint_origin": "Root-reported eleven-file fingerprint, separate from independently recomputed native input manifest",
       "valid_for_current_final_candidate": false,
       "meaning": "Independently matched before final staged Ruff failure; retained as historical input, final source/native binding pending new worker receipt."
+    },
+    {
+      "checked_at": "2026-10-10T11:40:42.564403+00:00",
+      "source_revision": "9cf2f5909f1be443cde16898e06fd7e1e8653b62",
+      "input_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
+      "algorithm": "SHA256 sorted public relative path + space + file SHA256 + newline",
+      "input_files": [
+        {
+          "path": "infra/01-gateway/traefik/dynamic/tls.yaml",
+          "sha256": "79c50d69fb674a8d8afdfee953b099f0bc4ab7f22cf516ff05e1362467f531db"
+        },
+        {
+          "path": "infra/03-security/openbao/config/agent.hcl",
+          "sha256": "a558f76145b2f75402965834f8b8051b5cd8ed7443c6756794ed556d7e07b212"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/backup-snapshot.hcl",
+          "sha256": "84af105c666312712a0d6809e0a4c037ed66e7157027e94ac1d79c132131a608"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/operator.hcl",
+          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
+          "sha256": "68c20addfcfab05118c75ff5f0b25330743c82f7f7f1305f26b3f0fe65652d50"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/renderer-cleanup.hcl",
+          "sha256": "a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/renderer-issuer.hcl",
+          "sha256": "0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/renderer.hcl",
+          "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+        },
+        {
+          "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
+          "sha256": "bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e"
+        },
+        {
+          "path": "infra/03-security/openbao/config/renderer-issuer-token-role.json",
+          "sha256": "4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f"
+        },
+        {
+          "path": "infra/03-security/openbao/config/renderer-role.json",
+          "sha256": "96f74c4b1908dd2edb3f7bbbf794bdd226b0a66f3133c103f64e1b7790218d79"
+        },
+        {
+          "path": "infra/03-security/openbao/config/templates/grafana_admin_password.ctmpl",
+          "sha256": "7beb12fafc5c28405fd1fbd3ea1765e346af38554405f64c45ebf1f29d5c9245"
+        },
+        {
+          "path": "infra/03-security/openbao/config/templates/grafana_admin_password_version.ctmpl",
+          "sha256": "2c64e07e5fe4d3fdd1cd8d2d2c75cb48fc38309eda7892474831badb3a697f49"
+        },
+        {
+          "path": "infra/03-security/openbao/config/templates/keycloak_admin_password.ctmpl",
+          "sha256": "578eeae3ebda8fce208c9c2f0d71d06d63255c872c77ca22b27b54315e944ece"
+        },
+        {
+          "path": "infra/03-security/openbao/config/templates/keycloak_admin_password_version.ctmpl",
+          "sha256": "f430b7ab1cd394d9e767ebde92c465850e8ba9e49b6f0861247cb98d0993903f"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "4115f5b7e78ed2f125a22f0b9464b5383e72fc8bbbb8c7fbe9b0c86843de9b0c"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/check-tls-material.sh",
+          "sha256": "9c4a99cdd57ec55e41679b854e2e0cfcc6434d16a47728a42f949c84a8364711"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/health-agent.sh",
+          "sha256": "61a6f57fcc968384c464bc3218a14530d4686152f837b06dca23dee5f82223a8"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/install-renderer-issuer.sh",
+          "sha256": "1cf3df2a9e8404d757661e311dd284d8a97de27f2b04b46e871763ce6192abf2"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/issue-renderer-secret-id.sh",
+          "sha256": "d92ed0353fc6885ec803a223cb1eeb845d78b3f86cde4e2ed700c9a276df1878"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/renderer-issuance.py",
+          "sha256": "6d99b3b3fa721412008f2b7203b91296e727738840f8b6e8e9fdfcef9059dd59"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/start-agent.sh",
+          "sha256": "2ba722a35ea190c14912b9da7ce923f0b286d47f4650cf091775d5f0cebe151f"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/start-server.sh",
+          "sha256": "fa6465e70fe6c736710d42cee0525314a80837fbbf5e591c6535ffb4980d4fb3"
+        },
+        {
+          "path": "infra/06-observability/gatus/config/config.yaml",
+          "sha256": "e9779a0a8020ed5438984656e1fc08d4e62ab9801fca353db4f47ca5ecaa839d"
+        },
+        {
+          "path": "infra/06-observability/gatus/docker-entrypoint.sh",
+          "sha256": "4d4264b50f8fd4998bded541461fba7db51a86b34c07a7418ed88c0eff6b6f2f"
+        },
+        {
+          "path": "infra/06-observability/prometheus/config/alert_rules/alert_rules.openbao.yml",
+          "sha256": "75ac751872010dc3e1209e8433c48dbf7f2a04ce28bb2b96166a98637e63f6e0"
+        },
+        {
+          "path": "infra/06-observability/prometheus/config/prometheus.yml",
+          "sha256": "6b805256f719633e556e99458049e1c7df8c4c9f21661144f2368bc8ad4b0a04"
+        },
+        {
+          "path": "infra/06-observability/prometheus/scripts/start.sh",
+          "sha256": "cf7e5a219c9742f18ede78d07efdb3d48fb9bef6ffa3b832d11b62aec5184151"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/bin/hyhome-backup.sh",
+          "sha256": "d212aa05a8373fd5acb0a81b42f86b7d86b6b12d93adeb3911902038dd279dcf"
+        },
+        {
+          "path": "tests/validation/_openbao_rehearsal_clients.py",
+          "sha256": "698442d8cd982fc30023c8ce3c66755a5a2cadf9275060230d1469d66cf94cc6"
+        },
+        {
+          "path": "tests/validation/_openbao_rehearsal_fixture.py",
+          "sha256": "00a09527dc9f969b037a0ec2da67eab058c2aeab47bdf3d011a6b5b7c7683500"
+        },
+        {
+          "path": "tests/validation/fixtures/openbao-audit-alerts.test.yml",
+          "sha256": "f8a0ece5276bba2887f344da229af8055687eaa45da4ac2386a5c397a7e9ae99"
+        },
+        {
+          "path": "tests/validation/test_openbao_rehearsal.py",
+          "sha256": "0790448f3c86ea09b4fcbd972acef5ab0fabeb2ab92e5215adf26069ba43d900"
+        }
+      ],
+      "result": "MATCH independently recomputed by evidence worker without importing/running native fixtures",
+      "valid_for_current_final_candidate": false,
+      "owned_source_unit_fingerprint": "62d281cefb0cc0efeb98a009068b49b3649f258bcb9308f492e7236da7e2e4d1",
+      "owned_source_unit_algorithm": "Ordered path UTF8 + NUL + file bytes + NUL, sequence retained below",
+      "owned_source_unit_paths_in_order": [
+        "infra/03-security/openbao/config/policies/operator.hcl",
+        "infra/03-security/openbao/config/policies/renderer-issuer.hcl",
+        "infra/03-security/openbao/config/policies/renderer-cleanup.hcl",
+        "infra/03-security/openbao/config/renderer-issuer-token-role.json",
+        "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
+        "infra/03-security/openbao/scripts/issue-renderer-secret-id.sh",
+        "infra/03-security/openbao/scripts/renderer-issuance.py",
+        "infra/03-security/openbao/scripts/install-renderer-issuer.sh",
+        "tests/lib/ops/test_openbao_issuance.py",
+        "tests/lib/ops/test_openbao_issuance_trust.py",
+        "tests/validation/test_openbao_agent_contract.py",
+        "tests/validation/test_openbao_rehearsal.py"
+      ],
+      "owned_source_unit_input_files": [
+        {
+          "path": "infra/03-security/openbao/config/policies/operator.hcl",
+          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/renderer-issuer.hcl",
+          "sha256": "0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/renderer-cleanup.hcl",
+          "sha256": "a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5"
+        },
+        {
+          "path": "infra/03-security/openbao/config/renderer-issuer-token-role.json",
+          "sha256": "4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f"
+        },
+        {
+          "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
+          "sha256": "bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/issue-renderer-secret-id.sh",
+          "sha256": "d92ed0353fc6885ec803a223cb1eeb845d78b3f86cde4e2ed700c9a276df1878"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/renderer-issuance.py",
+          "sha256": "6d99b3b3fa721412008f2b7203b91296e727738840f8b6e8e9fdfcef9059dd59"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/install-renderer-issuer.sh",
+          "sha256": "1cf3df2a9e8404d757661e311dd284d8a97de27f2b04b46e871763ce6192abf2"
+        },
+        {
+          "path": "tests/lib/ops/test_openbao_issuance.py",
+          "sha256": "c5c8e4aaa061ff1703d2ab450c92fb819e76959634985a52c6ff4374dd7ffe8d"
+        },
+        {
+          "path": "tests/lib/ops/test_openbao_issuance_trust.py",
+          "sha256": "41a7544557533ea895c29e36dc451a7b6623e9344c15d6adc34d4dbf11a322e8"
+        },
+        {
+          "path": "tests/validation/test_openbao_agent_contract.py",
+          "sha256": "bcf80937a1abc230f880959c538ae43cad38423ba0ab391b5b56d706dc5e5b8d"
+        },
+        {
+          "path": "tests/validation/test_openbao_rehearsal.py",
+          "sha256": "0790448f3c86ea09b4fcbd972acef5ab0fabeb2ab92e5215adf26069ba43d900"
+        }
+      ],
+      "owned_source_unit_fingerprint_result": "MATCH independently recomputed for twelve files after source-only unit test split",
+      "unit_split": {
+        "paths": [
+          "tests/lib/ops/test_openbao_issuance.py",
+          "tests/lib/ops/test_openbao_issuance_trust.py"
+        ],
+        "input_sha256": "987e8997a5f51f002faa7b06a88b5945dbd1772ceb3504e600c4beb25cdc82bc",
+        "meaning": "Offline-only split of three existing trust classes; production/native fixture bytes unchanged. Prior eleven-file aggregate historical; final native f2f2 independently remains unchanged."
+      },
+      "invalidation_reason": "Superseded by the HYHOME owned 2.7.1+hyhome.go1.27.2.net0.60.0.r1 artifact and changed public fixture/source. Historical official-image synthetic PASS is retained, but is not a current owned-candidate native receipt."
     }
   ],
   "source_only_post_native_changes": {

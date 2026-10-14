@@ -526,12 +526,12 @@
     {
       "component": "OpenBao",
       "tier": "03-security",
-      "classification": "external",
+      "classification": "local-custom",
       "repository_classifications": {
-        "openbao/openbao": "external"
+        "hy-home/openbao": "local-custom"
       },
       "images": [
-        "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
+        "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
       ],
       "compose_files": [
         "infra/03-security/openbao/docker-compose.yml"
@@ -540,7 +540,7 @@
         {
           "compose_file": "infra/03-security/openbao/docker-compose.yml",
           "images": [
-            "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
+            "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
           ]
         }
       ]

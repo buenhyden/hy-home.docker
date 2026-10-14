@@ -9,9 +9,7 @@ from unittest.mock import patch
 from . import test_openbao_rehearsal as openbao_rehearsal
 from ._openbao_rehearsal_fixture import SOURCE, Client, OwnedFixture, RehearsalFailure
 
-MANIFEST = "sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005"
 INVALID_CREDENTIAL = "invalid-synthetic-token"
-REFERENCE = "openbao/openbao:2.7.1@" + MANIFEST
 
 
 class ExpiryRegression(unittest.TestCase):
@@ -41,9 +39,7 @@ class ExpiryRegression(unittest.TestCase):
 )
 class CandidateNative(unittest.TestCase):
     def test_tls_expiry_audit_and_snapshot(self):
-        fixture = OwnedFixture(
-            image=MANIFEST, version="2.7.1", image_reference=REFERENCE
-        )
+        fixture = OwnedFixture()
         try:
             fixture.prepare()
             server, client = fixture.server("candidate", active=True)
