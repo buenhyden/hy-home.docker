@@ -4,7 +4,7 @@ version: "0.1.16"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0243-TSK-0001"
 parent_ids:
@@ -373,7 +373,7 @@ W4/W5 SEC01 gate is the window-only image acceptance plus a stable lookup
 within 7 days, not criterion 15; an Alertmanager silence over the window;
 and the old `p01-operator.token` is revoked and deleted.
 
-RUN-0085 now has a timing table with W1c, W3a and W3b rows, a 105-minute
+RUN-0085 now has a timing table with W1c, W3a and W3b rows, a 110-minute
 target in a 120-minute window and clock stop points (T+15, T+60, T+85); the
 SEC01 gate as decided; W0 checks for a running backup, `Persistent=true`,
 the clean approved checkout, the operator inputs, the image, Agent, `/dev/shm`
@@ -383,6 +383,39 @@ post-window parts; a custody path for a root left un-revoked; and a W5 step
 in which only the operator credential is typed and the two short tokens go
 from the server's CLI into variables. A full native `perform()` rehearsal of
 the restore remains open.
+
+An independent `security-auditor` review of the W1 text, the W6 overlays and
+logrotate files, and this text returned REJECT on 2026-10-15 with no
+Critical finding and three blocking ones: the un-revoked root path kept a
+non-expiring root on persistent disk, the old-token step put the value in
+argv and deleted the file whether or not the revoke worked, and the hidden
+prompt only works in bash while the operator's shell is zsh. RUN-0085 now
+keeps only the root accessor and shreds the value, revokes by accessor in
+the next window, passes the old token by variable with a policy check and
+deletes it only after a confirmed revoke, and runs every block in
+`bash --noprofile --norc` without history. It also applies the notes: the
+W7 operator file lives on tmpfs and is revoked and removed; the silence
+starts at W3, covers only the expected alerts, ends at T+120 and records
+what fired; the SEC01 acceptance lasts until criterion 15 or a new image
+and a security fix in a newer stable fails the gate; step 3 uses absolute
+paths; W0 checks that Docker debug logging is off; and W0 reviews the
+release notes the overlays skip. The logrotate `--type container` and
+stale-audit alert notes stay open as follow-ups.
+
+An independent `iac-reviewer` review of W2, W5 and this text returned NOT
+READY on 2026-10-15. W5 passed with notes. W2 failed: the restore's Agent
+step runs `chown -R` as root with only `CHOWN`, and root cannot read the
+operator's 0770 and 0700 input directories. A native run with the same
+flags on the old image reproduced it (exit 1, "Permission denied"); adding
+`DAC_READ_SEARCH` gave exit 0. The fix, its test and a full native
+`perform()` rehearsal belong to a separate change, and W3a is BLOCKED until
+they pass. The text findings are applied here: the targets add up to 110
+minutes, so W3b now runs before W3a and the stops are T+15, T+45 (W3b),
+T+55 (W3a) and T+80 (W4); one cleanup applies at any stop; stale signature
+and 60-minute text is gone; the no-login rule covers W3 to the end of W3a;
+W0 requires bash and Linger or a second session; W3a passes all four
+secrets by FD, because the root exists only in custody; and W3b treats any
+non-zero exit and a stale R2 lock as stops.
 
 ## Evidence
 
@@ -410,6 +443,8 @@ the restore remains open.
 | Restore input native | 4 | W4 | Real 2.6.2 synthetic snapshot through every producer CLI and the restore's `_contract`, `QuiescenceLease`, `Admission.pre_read` and `preflight`; preflight platform-ID defect fixed (RED then GREEN); 15 tests OK in a umask 022 clone | `863eafa40` on old `11fd73a2` | PASS | W4 W3a Input Producers | Restore input reviews |
 | Restore input re-review | 7 | W4 | Independent `iac-reviewer` re-review: PASS with notes, notes applied; 66 tests OK with all native rehearsals in a umask 022 clone; manifest pin test OK | `a4dbc0f9e` | PASS | W4 W3a Input Producers | - |
 | Second readiness review | 7 | W1 | Independent `iac-reviewer` readiness review of the whole window: NOT READY (SEC01 gate text, timing, W6 timing, W3a status, root custody, W5 token step) | `a4dbc0f9e` branch | FAIL | Second Readiness Review and Window Text | - |
+| Window security review | 7 | W1 | Independent `security-auditor` review of W1, W6 and the window text: REJECT (un-revoked root on disk, old token in argv, zsh prompt) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
+| Window IaC review | 7 | W2 | Independent `iac-reviewer` review of W2, W5 and the window text: NOT READY (Agent input chown fails natively, timing, stop path, W3a secret input) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
 | Window text round 2 | 1 | W1 | Owner decisions recorded; RUN-0085 text fixed; metadata check-changed 0, links PASS, markdownlint 0, related suites 70 OK | Branch `claude/window-text-r2` | PASS | Second Readiness Review and Window Text | - |
 | R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
 | R2 read-only rehearsal | 5 | W5 | `restic-offsite cmd snapshots --no-lock --json` against HOME's R2 repository, owner-approved: reachable and decrypted, 45 snapshots, latest 2026-10-13T18:42:46, none tagged `hy-home-openbao-w3`; no write, no lock | HOME R2 on 2026-10-14 | PASS | W5 R2 Artifact Transfer | - |

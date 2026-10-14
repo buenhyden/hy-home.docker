@@ -4,7 +4,7 @@ version: "0.12.16"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -192,13 +192,16 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    입력으로 받고, 두 짧은 token은 server 안의 CLI가 만들어 변수로 바로 받으므로 화면에
    나오지 않는다. CLI의 `policies=…`는 문자열로 보내져 operator 정책의 허용 형식과 맞는다.
 
+   W0의 셸 규칙대로 `bash --noprofile --norc` 셸에서 실행한다.
+
    ```bash
    set +x
-   docker stop openbao-agent || exit 1
-   read -rsp 'Enter current OIDC operator credential> ' BAO_TOKEN; printf '\n'
+   unset DOCKER_HOST DOCKER_CONTEXT DOCKER_CONFIG
+   /usr/bin/docker stop openbao-agent || exit 1
+   read -rsp 'Enter current OIDC operator credential> ' BAO_TOKEN </dev/tty; printf '\n'
    export BAO_TOKEN
    sec01_mint() {
-     docker compose exec -T -e BAO_TOKEN openbao bao write -field=token \
+     /usr/bin/docker compose exec -T -e BAO_TOKEN openbao bao write -field=token \
        "auth/token/create/$1" policies="$1" ttl=5m explicit_max_ttl=5m \
        renewable=false no_default_policy=true
    }
@@ -206,7 +209,7 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    SEC01_CLEANUP_TOKEN="$(sec01_mint renderer-cleanup)" || exit 1
    unset BAO_TOKEN
    printf '%s\n%s\n' "$SEC01_ISSUER_TOKEN" "$SEC01_CLEANUP_TOKEN" | \
-     sh "$operator_tools/$issuer_commit/issue-renderer-secret-id.sh" \
+     /bin/sh "$operator_tools/$issuer_commit/issue-renderer-secret-id.sh" \
        openbao "$agent_volume" \
        hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e openbao-agent "$issuance_journal" "$issuer_commit" # <!-- runtime-version-exception: compatibility — helper requires the exact owned image; docker-compose.yml owns the pin -->
    sec01_issue_result=$?
@@ -511,9 +514,9 @@ file audit를 보존한다. 2.7의 제거된 file **storage** backend와 file **
 격리 합성 시험에서 expired-unused SecretID 거부·잘못된 CA 거부·제한 token role·
 snapshot 빈 환경 복원·audit 용량 실패 차단을 확인했다. 이는 실제 HOME custody·cold boot·
 이관·복구나 모든 malformed 입력 안전성의 증거가 아니다. 실제 host 적용 전에는 최신
-공급자 channel·같은 플랫폼 SBOM/scan·서명·pre-upgrade snapshot·5단계 custody 기록(SPEC-0242)·빈 이전
+공급자 channel·아래 W4/W5 SEC01 gate·pre-upgrade snapshot·5단계 custody 기록(SPEC-0242)·빈 이전
 버전 환경 복원과 이후 candidate upgrade를 검증한다. 2.7 데이터에 이전 image를 붙이는
-것은 rollback이 아니다. 운영자가 고른 30분 cutover 목표와 60분 maintenance window
+것은 rollback이 아니다. 아래 120분 maintenance window 시간표
 안에 restore/unseal/검증까지 가능한지 측정한다. 두 값은 계획 추정치이며 관측한
 RTO가 아니다. 목표를 넘거나 복구 자료가 없으면 HOME만 보류한다. P06 확대도 HOME gate 전에는
 진행하지 않는다.
@@ -527,7 +530,7 @@ P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 g
 
 값은 기록하지 않는다. 각 단계는 앞 단계가 끝난 뒤에만 진행하며, 괄호 안 승인이 따로 필요하다.
 
-1. SEC01이 현재 candidate image의 서명·SBOM·CVE 결과를 수용한다(SEC01 담당자).
+1. 아래 W4/W5의 SEC01 gate(image 잔여 위험 수용과 7일 안의 stable 조회)가 기록돼 있다(owner).
 2. 보존된 attempt 대상과 container의 처리를 정한다(삭제는 명시 승인). attempt 03·04·chown container와 `-03` 대상은 2026-10-13에 owner가 삭제했다. 같은 날 owner 결정으로 빈 기본 restore 대상과 `-04` 대상도 삭제했고, 기존 업그레이드 전 snapshot 파일은 새 snapshot이 생길 때까지 rollback 지점으로 보존한다.
 3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급하며, 그 전까지 일일 backup의 OpenBao snapshot은 recovery gap으로 계속 실패한다.
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
@@ -630,18 +633,26 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 | W1c | renderer 정책·token role 적용(plan·apply) | 10분 | owner(root 사용, credential 정책 변경) |
 | W2 | snapshot token 발급과 확인 | 5분 | owner(credential 발급) |
 | W3 | writer 정지, lease, 새 업그레이드 전 snapshot | 10분 | owner(backup 실행) |
+| W3b | R2 artifact 보관(W3 직후, W3a 전) | 10분 | owner(off-host 전송) |
 | W3a | 입력 준비와 격리 semantic restore | 25분(restore 자체는 최대 17분) | 정확한 새 artifact·빈 대상의 독립 검토와 owner |
-| W3b | R2 artifact 보관 | 10분 | owner(off-host 전송) |
 | W4 | server 업그레이드와 수동 unseal | 10분 | owner(runtime 변경) |
 | W5 | Agent 업그레이드, 재발급, Prometheus·Gatus 재생성 | 15분 | owner(runtime 변경) |
 | W6 | audit 쓰기·mode·성장 확인(회전은 사후) | 5분 | owner |
 | W7 | 사후 점검과 root 폐기(다음 backup은 사후) | 10분 | owner |
 | W8 | cold boot | 별도 window | owner(별도 승인) |
 
-window는 120분이다(2026-10-14 owner 결정, SPEC-0243). 위 목표의 합은 105분이며 나머지는
-여유다. 시작 시각을 T로 두고 시각으로 멈춘다: T+15까지 W1이 끝나지 않으면 window를
-닫는다. T+60까지 W3a가 시작되지 않으면 W3a 이후를 다음 window로 넘긴다. T+85까지
-W4가 시작되지 않으면 HOME server를 바꾸지 않고 멈춘다. W3a는 attempt와 대상이 고정된
+window는 120분이다(2026-10-14 owner 결정, SPEC-0243). 위 목표의 합은 110분이며 나머지 10분은
+여유다. W3b는 W3 산출물만 쓰므로 W3a보다 먼저 한다. W4부터 W7까지 40분이 걸리므로 시작
+시각을 T로 두고 시각으로 멈춘다: T+15까지 W1이 끝나지 않으면 window를 닫는다. T+45까지
+W3b가 시작되지 않으면 W3b 이후를 다음 window로 넘긴다. T+55까지 W3a가 시작되지 않으면
+W3a를 시작하지 않는다(단발 attempt를 쓰지 않는다). T+80까지 W4가 시작되지 않으면 HOME
+server를 바꾸지 않고 멈춘다.
+
+어느 지점에서 멈추든 같은 정리를 한다: H3으로 멈춘 `hyhome-backup.timer`를 다시 켠다.
+silence는 window 동안 발생한 경보를 기록한 뒤 지운다. W3에서 멈춘 Agent는 W4 전이면 같은
+image로 다시 시작한다. 임시 root는 아래 W7 절차로 폐기하거나, 폐기할 수 없으면 아래
+root 보관 규칙을 따른다. W5·W7 operator credential 파일은 폐기하고 지운다. 멈춘 시각과
+남은 단계를 값 없이 Task에 기록한다. W3a는 attempt와 대상이 고정된
 단발 실행이라, 다음 window에서 다시 하려면 새 attempt를 정하는 별도 변경이 먼저
 필요하다. W6의 실제 회전·`SIGHUP` 재개방과 W7의 다음 backup 성공은 window 안에서 볼 수
 없으므로 window 뒤 관찰로 기록한다. W1b rekey는 이 window에 없습니다(SPEC-0242). W1 직후
@@ -650,9 +661,11 @@ W1c, 그다음 W2·W3를 엽니다. 새 snapshot의 semantic restore를 끝낸 �
 
 Compose는 두 OpenBao service 모두 자체 빌드 image(manifest `46bf9b5c`)를 고정한다.
 W4/W5의 SEC01 gate는 두 가지다(2026-10-14 owner 결정): owner가 이 image의 잔여 위험(서명 없음,
-CVE-2025-60876, GO-2026-5932 처분)을 이 window에 한해 수용한 기록과, window 시작 7일 안의
-최신 stable 조회다. SEC01 기준 15 전체는 다른 gate까지 포함하므로 W4 조건이 아니다. 둘 중
-하나라도 없으면 W4/W5를 실행하지 않는다. 실제 scan·플랫폼 적용 판단은
+CVE-2025-60876, GO-2026-5932 처분)을 수용한 기록과, window 시작 7일 안의 최신 stable
+조회다. fix-forward라 image는 window 뒤에도 실행되므로 이 수용은 window가 아니라 SEC01 기준
+15가 수용되거나 image가 교체될 때까지 유효하다. 조회에서 현재 image의 OpenBao에 영향을 주는 보안 수정이 든
+새 stable·Go·x/net·x/crypto가 나왔으면 gate는 실패다. SEC01 기준 15 전체는 다른 gate까지
+포함하므로 W4 조건이 아니다. 둘 중 하나라도 없거나 실패면 W4/W5를 실행하지 않는다. 실제 scan·플랫폼 적용 판단은
 [SEC01 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0009-sec01-stable-security-integration.md)가
 소유합니다. 아래 명령의 준비 여부와 실제 실행은 별도이며, 지정 운영자의 서로 다른 share 2개·5단계 custody 기록(SPEC-0242)과
 W3a 복구 gate도 계속 필요합니다.
@@ -666,7 +679,14 @@ docker compose --profile security config --images | grep '^hy-home/openbao' | so
   xargs docker image inspect --format '{{.Id}}'   # 없으면 오류로 끝난다
 df -h /home
 systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
+docker info -f '{{.Debug}}'   # false여야 한다. true면 exec 환경의 token이 dockerd 로그에 남는다
+loginctl show-user "$USER" -p Linger   # yes가 아니면 window 동안 다른 로그인 세션을 유지한다
 ```
+
+window의 모든 bash 블록은 `bash --noprofile --norc`로 연 새 셸에서 `unset HISTFILE` 뒤에
+실행한다. 기본 셸 zsh의 `read -p`는 coprocess 읽기라 숨김 입력이 되지 않는다. 블록의
+`|| exit 1`은 그 셸만 닫는다. 마지막 로그인 세션이 끝나면 logind가 W1 custody가 있는
+`$XDG_RUNTIME_DIR`를 지우므로 Linger나 별도 세션으로 막는다.
 
 기대: compose 검증 통과, `Sealed false`, compose가 고정한 candidate image가 local에
 있음, 남은 용량 확인, 마지막 backup 결과 확인. 위 SEC01 gate(image 잔여 위험 수용과 7일 안의
@@ -742,9 +762,21 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   `openbao-agent`가 `healthy`이며(W1c health 정지의 기준), `/dev/shm`이 `noexec` 없는
   tmpfs이고, restore 대상 `p01-restore-20261014-05`가 없고 부모 identity가 그대로인지 본다.
 - **이전 operator token.** host에 남은 `p01-operator.token`은 W7 입력으로 쓰지 않는다.
-  2026-10-14 owner 결정대로 owner가 그 token으로 `revoke-self`한 뒤 파일을 지운다:
-  `docker compose exec -T -e BAO_TOKEN="$(cat <path>/p01-operator.token)" openbao bao token revoke -self`
-  다음 `shred -u <path>/p01-operator.token`. 값은 출력하지 않는다.
+  2026-10-14 owner 결정대로 owner가 그 token으로 `revoke-self`한 뒤 파일을 지운다. 값은
+  변수로만 넘겨 argv에 이름만 남게 하고, 정책이 `hy-home-operator`인지 먼저 보고, 폐기가
+  성공하고 그 token의 조회가 거부될 때만 파일을 지운다. 결과는 값 없이 Task에 기록한다:
+
+  ```bash
+  t=<path>/p01-operator.token
+  BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao \
+    bao token lookup -self -field=policies   # [hy-home-operator]만
+  BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao bao token revoke -self &&
+    ! BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao bao token lookup -self >/dev/null 2>&1 &&
+    shred -u "$t"
+  ```
+
+  첫 조회가 403이면 token은 이미 만료됐으므로 폐기 없이 `shred -u "$t"`로 지우고 그렇게 기록한다.
+
 - **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
   쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 지금 없으므로 W4 뒤 gateway를 거치는
   OIDC 로그인과 W7 `revoke-root`가 끊긴다. Compose는 mount를 이미 선언하지만 2026-10-14 실행
@@ -765,9 +797,16 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   `docker image inspect --format '{{.Id}}' <override의 image>`로 두 서비스 모두 확인한다.
   SEC01이 실행 image를 Compose 고정으로 올리면 이 override는 쓰지 않는다(image ID 비교가
   자동으로 막는다).
+  override는 Compose 고정보다 이전 Traefik·Prometheus를 유지하므로, W0 전에 Compose 고정
+  버전까지의 release note와 advisory를 보고 보안 수정이 있으면 owner가 만료일과 함께 수용하거나
+  SEC01로 올린다.
 - **경보.** W3에서 Agent를 멈추는 순간부터 Prometheus·Gatus를 다시 만들 때까지 OpenBao·Agent
-  경보가 난다. 2026-10-14 owner 결정대로 Alertmanager에 window 시작부터 종료까지 `alertname=~"OpenBao.*"`
-  silence를 하나 만들고 ID를 Task에 기록하며, W7이 끝나면 그 silence를 지운다.
+  경보가 난다. 2026-10-14 owner 결정대로 W3 시작에 Alertmanager silence를 하나 만든다. 범위는
+  예상되는 경보 `alertname=~"OpenBao(Sealed|MetricsScrapeFailing|AgentMetricsScrapeFailing|AgentAuthFailure)"`로
+  한정해 `OpenBaoAuditFailure`·`OpenBaoTooManyInfinityTokens`·`OpenBaoTooManyPendingTokens`는
+  계속 알리고, 종료 시각은 window 끝(T+120)으로 둔다. ID를 Task에 기록하고, W7 끝이나 어떤
+  중단 경로에서든 지우기 전에 Prometheus에서 window 동안의 `ALERTS{alertname=~"OpenBao.*"}`를
+  조회해 발생한 경보를 값 없이 기록한다.
 
 **W1 root ceremony.** 위 [Human Login and Normal Root Recovery](#human-login-and-normal-root-recovery)의
 보호된 인증 API 절차를 사용한다. Share·OTP·token은 검토된 클라이언트의 숨겨진
@@ -992,8 +1031,10 @@ test "$P01_TOKEN_EXIT" = 0 || exit "$P01_TOKEN_EXIT"
 **W3 새 업그레이드 전 snapshot.** OpenBao에는 쓰기 정지 기능이 없으므로 승인된
 Agent·관리 writer의 정지 범위, 정확한 container ID와 정지 전 상태를 먼저 기록합니다.
 writer는 `openbao-agent`(`docker stop openbao-agent`), OIDC 운영자 로그인, hy-home.k8s의
-OpenBao 로그인(External Secrets 등 Kubernetes auth)이다. 운영자는 window 동안 새로 로그인하지
-않고, hy-home.k8s 쪽 로그인 주체를 멈출 수 없으면 W3를 열지 않는다.
+OpenBao 로그인(External Secrets 등 Kubernetes auth)이다. 운영자는 W3 시작부터 W3a가 끝날
+때까지 새로 로그인하지 않는다. W5·W7의 새 OIDC credential은 그 뒤에 만든다. hy-home.k8s
+쪽 로그인 주체를 멈춘 방법과 확인을 값 없이 Task에 기록하며, 멈출 방법이 없으면 W3를 열지
+않는다.
 Agent와 해당 writer가 정지했음을 확인한 뒤 아래
 [보호 snapshot helper](../../../../infra/03-security/openbao/scripts/protected-raft-snapshot.py)를
 사용합니다. helper 자체는 writer를 정지하지 않습니다. 중단 시 writer 재개 여부는
@@ -1067,7 +1108,8 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 준비되지 않았던 상태는 보존합니다. 현재 hash의 단위시험·native 시험·독립 검토는 SPEC-0243 W2에 있습니다. 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
-W3a 도구는 준비됐고 W3 산출물·lease와 owner 승인을 기다린다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
+W3a는 BLOCKED다. 2026-10-15 독립 검토가 Agent 단계의 입력 chown 결함을 찾았고 native로
+재현됐다. 수정과 전체 `perform()` native 리허설이 통과할 때까지 W3a를 열지 않는다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
 `/bin/bao`로 `-config` 없이 시작하던 것(D3), TTY 없이 거부되는 `operator unseal`과 인자 없는
 `login`, 없는 `/usr/bin/stat`, capability 없는 root로 읽을 수 없던 0400 snapshot이다. 이제
 image entrypoint와 `/openbao/config`·`/tmp` tmpfs, `write sys/unseal key=-`, `login -`,
@@ -1132,6 +1174,16 @@ writer 정지 확인은 W3 저장 전부터 W3a 종료까지 별도로 유지해
 ```bash
 exec 4<"$P01_INPUTS/quiescence-lease.json" || exit 1
 P01_QUIESCENCE_FD=4
+umask 077
+P01_W3A_SECRETS="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-w3a.XXXXXX")" || exit 1
+trap 'shred -u "$P01_W3A_SECRETS"/* 2>/dev/null; rmdir "$P01_W3A_SECRETS" 2>/dev/null' EXIT
+for n in home share-1 share-2; do
+  IFS= read -rsp "W3a $n> " v </dev/tty; printf '\n'
+  printf '%s' "$v" >"$P01_W3A_SECRETS/$n" || exit 1
+done
+unset v
+exec 5<"$P01_W3A_SECRETS/home" 6<"$P01_CUSTODY_DIR/root.token" \
+  7<"$P01_W3A_SECRETS/share-1" 8<"$P01_W3A_SECRETS/share-2" || exit 1
 /usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-semantic-restore.py" \
   --contract "${P01_RESTORE_CONTRACT:?}" --contract-sha256 "${P01_RESTORE_CONTRACT_SHA256:?}" \
   --snapshot "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap" \
@@ -1139,15 +1191,17 @@ P01_QUIESCENCE_FD=4
   --security-receipt "${P01_SECURITY_RECEIPT:?}" --quiescence-fd "${P01_QUIESCENCE_FD:?}" \
   --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
   --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
-  --connect-ip 192.168.0.13
+  --connect-ip 192.168.0.13 --home-read-fd 5 --root-fd 6 --share-1-fd 7 --share-2-fd 8
 P01_RESTORE_EXIT=$?
-exec 4<&-
+exec 4<&- 5<&- 6<&- 7<&- 8<&-
+shred -u "$P01_W3A_SECRETS"/home "$P01_W3A_SECRETS"/share-1 "$P01_W3A_SECRETS"/share-2 && rmdir "$P01_W3A_SECRETS"
 test "$P01_RESTORE_EXIT" = 0 || exit "$P01_RESTORE_EXIT"
 ```
 
-HOME 읽기용 현재 관리자 token·임시 root·서로 다른 원본 share 둘은 기본 숨김 prompt로
-입력하거나 `--home-read-fd`, `--root-fd`, `--share-1-fd`, `--share-2-fd`의 서로 다른
-보호 FD로 한 방식만 사용합니다. 값·capability·복구된 canary는 일반 로그에 남기지 않습니다.
+HOME 읽기용 현재 관리자 token·임시 root·서로 다른 원본 share 둘은 네 개의 서로 다른
+보호 FD로 넘긴다. 임시 root는 W1 custody 파일에만 있어 숨김 prompt로 입력하려면 먼저 화면에
+보여야 하므로 prompt 방식은 쓰지 않는다. 나머지 셋은 숨김으로 읽어 tmpfs의 0600 파일로 열고
+실행 뒤 지운다. 값·capability·복구된 canary는 일반 로그에 남기지 않습니다.
 effects 생성부터 공통 절대 900초 deadline을 세고 subprocess runner가 이를 강제합니다.
 입력 prompt와 이전 관리자 lookup은 시계 시작 전입니다. 이후 로컬 syscall·canary GET은
 runner가 중단시키지 않지만 경과 시간은 같은 예산을 소비하며 GET에는 별도 20초 abort가
@@ -1160,7 +1214,7 @@ cleanup 선택자가 아닙니다.
 HOME root 폐기나 HOME server 교체는 이 client가 수행하지 않습니다.
 
 **W3b 정확한 artifact의 독립 보관.** W3 snapshot과 그 receipt를 선택한 독립 off-host
-대상으로 전달하고, 양쪽에서 두 파일의 정확한 bytes·hash·파일 identity와 보관 위치 참조를
+대상으로 전달하고, 양쪽에서 두 파일의 정확한 bytes·hash와 보관 위치 참조를
 값 없는 receipt로 결속합니다. share와 CA key는 host와 host 백업에, BKP-003은 장소 A에
 있다는 1인 관리자 custody 기록(5단계)도 확인합니다. 준비됐다는 운영자 확인만으로 이 전달을 완료 처리하지 않습니다.
 standalone helper와 RUN-0021의 별도 full backup은 이 W3 경로를 자동으로 복사하지 않습니다.
@@ -1174,12 +1228,16 @@ standalone helper와 RUN-0021의 별도 full backup은 이 W3 경로를 자동�
 docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock >/dev/null || exit 1
 docker compose --profile backup run --rm --no-deps \
   -v "${P01_SNAPSHOT_DIRECTORY:?}:/artifact:ro" restic-offsite artifact
+P01_W3B_EXIT=$?
+test "$P01_W3B_EXIT" = 0 || exit "$P01_W3B_EXIT"
 ```
 
 기대: 마지막 줄이 `{"state":"W3B_STORED","snapshot_id":...,"files":[...]}`이고 두 파일의
 `sha256`이 W3 receipt와 같다. 이 줄이 값 없는 W3b receipt이며 Task에 그대로 남긴다.
 중단: exit64는 입력 누락이나 symlink, exit65는 R2 저장소 문제·snapshot ID 없음·바이트
-불일치다. 어느 경우에도 W4를 열지 않는다. 불일치 뒤 다시 실행하면 새 snapshot이 하나 더
+불일치다. `restic backup` 자체가 실패하면 restic의 종료 코드(1·3·10-12 등)로 끝난다. 0이
+아닌 종료는 모두 W4를 막는다. R2에 남은 배타 lock이 있으면 `cmd unlock`은 거부되므로 W3b를
+멈추고 다음 window로 넘긴다. 불일치 뒤 다시 실행하면 새 snapshot이 하나 더
 생길 뿐 이전 것은 지워지지 않는다. 전체 repository copy를 이번 두 산출물의 전달 성공으로
 대체하지 않는다. `artifact`는 snapshot의 SHA-256이 W3 receipt에 적힌 값과 다르거나 입력이
 비어 있으면 exit64로 멈춘다. 이 snapshot은 자기 host·tag 묶음에 혼자 있어 월간
@@ -1257,15 +1315,18 @@ backup 단위의 OpenBao snapshot 성공은 window 뒤 관찰입니다. W7 뒤 b
 
 window가 root를 폐기하지 못하고 끝나면(W1c rollback 판단, W4 sealed 등) W1 custody의
 `root.token`은 `$XDG_RUNTIME_DIR` tmpfs에 있어 마지막 로그아웃이나 재부팅에 사라지고, 만료
-없는 root가 폐기 수단 없이 남는다. 그 경우 세션을 유지한 채 다음 window를 잡거나, owner가 W1
-custody 디렉터리 전체를 owner 전용 영구 저장소(0700, tmpfs·문서 밖)로 옮겨 다음 window의
-`revoke-root` 입력으로 쓰고 그 위치를 값 없이 Task에 기록한다. 임시 root는 W1c·W2·W7의 보호된 관리 입력으로만
+없는 root가 남는다. 값은 영구 저장소로 옮기지 않는다(backup 대상인 `secrets/` 포함). root의
+accessor와 custody 수령 기록만 값 없이 Task에 남기고 `root.token`은 `shred -u`로 지운다. 다음
+window는 W1 절차로 새 root를 만들어 `bao token revoke -accessor <accessor>`로 이전 root를
+폐기하고, 그 결과를 W0 점검으로 확인한다. server가 sealed면 이전 root는 unseal 전까지 쓸 수 없다. 임시 root는 W1c·W2·W7의 보호된 관리 입력으로만
 사용합니다. W4 수동 unseal에는 지정된 두 share가 필요합니다.
 
 W1c rollback 판단이 열려 있으면 root를 폐기하지 않습니다(W1c 참조).
 W7의 `revoke-root`는 root FD와 별도의 현재 OIDC operator FD를 요구합니다. 운영자는
 승인된 로그인 절차로 새 OIDC credential을 0600·single-link 보호 파일에 준비하고 그 경로를
-`P01_OPERATOR_FD_FILE`에 지정합니다. 이전 W1의 성공 기록을 현재 관리자 접근 확인으로
+`P01_OPERATOR_FD_FILE`에 지정합니다. 이 파일은 `$P01_RUNTIME_DIR` tmpfs 안에 두고, W7이 끝나거나
+중단되면 그 token을 `revoke-self`로 폐기한 뒤 `shred -u`로 지우고 값 없이 Task에 기록합니다.
+이전 W1의 성공 기록을 현재 관리자 접근 확인으로
 대체하지 않으며, auth 파일을 자동 검색하거나 값을 출력하지 않습니다.
 
 ```bash
