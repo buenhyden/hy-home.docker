@@ -1,6 +1,7 @@
 """Offline trusted installer, receipt and interrupted-write regressions."""
 
 import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -23,6 +24,7 @@ class TrustedInstallTests(unittest.TestCase):
             for name in (
                 "issue-renderer-secret-id.sh",
                 "renderer-issuance.py",
+                "renderer-request.sh",
                 "install-renderer-issuer.sh",
             ):
                 (source / name).write_bytes((BASE / "scripts" / name).read_bytes())
@@ -32,6 +34,12 @@ class TrustedInstallTests(unittest.TestCase):
                     ["/usr/bin/git", "-C", str(repo), *args],
                     check=True,
                     capture_output=True,
+                    env={
+                        "PATH": "/usr/bin:/bin",
+                        "GIT_CONFIG_NOSYSTEM": "1",
+                        "GIT_CONFIG_GLOBAL": "/dev/null",
+                        "GIT_NO_REPLACE_OBJECTS": "1",
+                    },
                 ).stdout
 
             git("init", "--quiet")
@@ -47,6 +55,20 @@ class TrustedInstallTests(unittest.TestCase):
                 "test: committed public helper fixture",
             )
             revision = git("rev-parse", "HEAD").decode().strip()
+            (source / "renderer-request.sh").write_text("exit 99")
+            git("add", ".")
+            git(
+                "-c",
+                "user.name=fixture",
+                "-c",
+                "user.email=fixture@example.invalid",
+                "commit",
+                "--quiet",
+                "-m",
+                "test: replacement object",
+            )
+            replacement = git("rev-parse", "HEAD").decode().strip()
+            git("replace", revision, replacement)
             target = parent / "reviewed-install"
             installer = parent / "approved-installer.sh"
             installer.write_bytes(
@@ -72,7 +94,16 @@ class TrustedInstallTests(unittest.TestCase):
 
             # Dirty source changes are deliberately excluded from the installed artifact.
             (source / "renderer-issuance.py").write_text("unreviewed working tree code")
-            done = run(target)
+            with patch.dict(
+                os.environ,
+                {
+                    "GIT_DIR": str(parent / "poisoned-git"),
+                    "GIT_CONFIG_COUNT": "1",
+                    "GIT_CONFIG_KEY_0": "core.bare",
+                    "GIT_CONFIG_VALUE_0": "true",
+                },
+            ):
+                done = run(target)
             self.assertEqual(0, done.returncode)
             self.assertFalse(marker.exists())
             self.assertEqual(b"", done.stdout)
@@ -82,6 +113,7 @@ class TrustedInstallTests(unittest.TestCase):
             for name, mode in (
                 ("issue-renderer-secret-id.sh", 0o500),
                 ("renderer-issuance.py", 0o400),
+                ("renderer-request.sh", 0o400),
             ):
                 blob = git(
                     "show", revision + ":infra/03-security/openbao/scripts/" + name
@@ -459,6 +491,9 @@ class RuntimeReceiptTests(unittest.TestCase):
             root = Path(directory)
             helper = root / "renderer-issuance.py"
             wrapper = root / "issue-renderer-secret-id.sh"
+            request = root / "renderer-request.sh"
+            request.write_text('printf "{}"')
+            request.chmod(0o400)
             helper.write_text("approved helper")
             wrapper.write_text("approved wrapper")
             helper.chmod(0o400)
@@ -473,7 +508,7 @@ class RuntimeReceiptTests(unittest.TestCase):
                             "source_revision": REV,
                             "sha256": {
                                 p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                                for p in (helper, wrapper)
+                                for p in (helper, wrapper, request)
                             },
                         }
                     )
@@ -482,7 +517,35 @@ class RuntimeReceiptTests(unittest.TestCase):
 
             write_receipt()
             with patch.object(M, "__file__", str(helper)):
-                M.validate_receipt(REV)
+                held = M.validate_receipt(REV)
+                for replace_peer in (False, True):
+                    request.chmod(0o600)
+                    if replace_peer:
+                        request.unlink()
+                    request.write_text("exit 99")
+                    api = M.DockerAPI(
+                        "server",
+                        "volume",
+                        "agent",
+                        "issuer",
+                        "cleanup",
+                        request_script=held,
+                    )
+
+                    def execute(argv, **kwargs):
+                        return subprocess.run(
+                            argv[4:],
+                            input=kwargs["payload"],
+                            capture_output=True,
+                            check=True,
+                        ).stdout
+
+                    with patch.object(api, "command", side_effect=execute):
+                        self.assertEqual(
+                            {}, api.request("read", "auth/token/lookup-self")
+                        )
+                request.write_text('printf "{}"')
+                request.chmod(0o400)
                 stdin = io.StringIO("synthetic-issuer\nsynthetic-cleanup\n")
                 args = ["server", "volume", M.IMAGE, "agent", directory, "b" * 40]
                 with patch.object(M.sys, "stdin", stdin), self.assertRaises(M.Blocked):
@@ -501,6 +564,124 @@ class RuntimeReceiptTests(unittest.TestCase):
                 receipt.symlink_to(wrapper)
                 with self.assertRaises(M.Blocked):
                     M.validate_receipt(REV)
+
+
+class TransportTests(unittest.TestCase):
+    def test_tokens_metadata_and_accessors_never_appear_in_argv(self):
+        api = M.DockerAPI(
+            "server",
+            "volume",
+            "agent",
+            "synthetic-issuer",
+            "synthetic-cleanup",
+            request_script=":",
+        )
+        responses = [
+            json.dumps({"wrap_info": {"token": "synthetic-wrap"}}).encode(),
+            b"",
+            b"{}",
+        ]
+        observed = []
+
+        def command(argv, **kwargs):
+            observed.append((argv, kwargs.get("payload")))
+            return responses.pop(0)
+
+        with patch.object(api, "command", side_effect=command):
+            api.issue({"nonce": "synthetic-nonce"})
+            api.destroy("synthetic-accessor")
+            api.lookup("synthetic-accessor")
+        for argv, body in observed:
+            for sensitive in (
+                "synthetic-issuer",
+                "synthetic-cleanup",
+                "synthetic-accessor",
+                "synthetic-nonce",
+            ):
+                self.assertNotIn(sensitive, " ".join(argv))
+            self.assertIsInstance(body, bytes)
+
+    def test_transport_failure_never_includes_original_stderr(self):
+        response = subprocess.CompletedProcess(
+            [], 2, b"", b"synthetic-sensitive-server-error"
+        )
+        with patch.object(M.subprocess, "run", return_value=response):
+            with self.assertRaises(M.Blocked) as caught:
+                M.DockerAPI.command(["docker"])
+            self.assertEqual("", str(caught.exception))
+
+    def test_empty_list_not_confused_with_permission_failure(self):
+        responses = [
+            subprocess.CompletedProcess(
+                [], 2, b"", ("No value found at " + M.PREFIX + "/secret-id\n").encode()
+            ),
+            subprocess.CompletedProcess(
+                [], 2, b"", b"Error making API request: permission denied"
+            ),
+        ]
+        with patch.object(M.subprocess, "run", side_effect=responses):
+            value = M.DockerAPI.command(
+                ["docker"], empty_list_path=M.PREFIX + "/secret-id"
+            )
+            self.assertEqual([], json.loads(value)["data"]["keys"])
+            with self.assertRaises(M.Blocked):
+                M.DockerAPI.command(["docker"], empty_list_path=M.PREFIX + "/secret-id")
+
+    def test_native_json_empty_list_sentinel_is_not_permission_success(self):
+        for stderr in (b"", b"permission denied"):
+            response = subprocess.CompletedProcess([], 2, b"{}\n", stderr)
+            with patch.object(M.subprocess, "run", return_value=response):
+                if stderr:
+                    with self.assertRaises(M.Blocked):
+                        M.DockerAPI.command(
+                            ["docker"], empty_list_path=M.PREFIX + "/secret-id"
+                        )
+                else:
+                    value = M.DockerAPI.command(
+                        ["docker"], empty_list_path=M.PREFIX + "/secret-id"
+                    )
+                    self.assertEqual([], json.loads(value)["data"]["keys"])
+        for raw in (b"null", b"[]", b'{"errors":[]}', b'{"unexpected":true}'):
+            response = subprocess.CompletedProcess([], 2, raw, b"")
+            with patch.object(M.subprocess, "run", return_value=response):
+                with self.assertRaises(M.Blocked):
+                    M.DockerAPI.command(
+                        ["docker"], empty_list_path=M.PREFIX + "/secret-id"
+                    )
+
+    def test_native_cli_accessor_array_validated_without_api_envelope(self):
+        api = M.DockerAPI(
+            "server", "volume", "agent", "issuer", "cleanup", request_script=":"
+        )
+        with patch.object(api, "request", return_value=["synthetic-accessor"]):
+            self.assertEqual(["synthetic-accessor"], api.accessors())
+        for response in (
+            ["same", "same"],
+            ["../escape"],
+            [3],
+            {"unexpected": []},
+            None,
+        ):
+            with patch.object(api, "request", return_value=response):
+                with self.assertRaises(M.Blocked):
+                    api.accessors()
+
+    def test_exact_cleanup_policy_and_short_roles(self):
+        policy = (BASE / "config/policies/renderer-cleanup.hcl").read_text()
+        self.assertNotIn("*", policy)
+        resource = policy.split("# Self-identity")[0]
+        self.assertNotIn('"read"', resource)
+        self.assertNotIn('"create"', policy)
+        self.assertNotIn("secret/data", policy)
+        self.assertEqual(3, policy.count('path "' + M.PREFIX))
+        for name in ("renderer-issuer", "renderer-cleanup"):
+            role = json.loads(
+                (BASE / "config" / (name + "-token-role.json")).read_text()
+            )
+            self.assertEqual([name], role["allowed_policies"])
+            self.assertFalse(role["renewable"])
+            self.assertTrue(role["token_no_default_policy"])
+            self.assertEqual("5m", role["token_explicit_max_ttl"])
 
 
 if __name__ == "__main__":

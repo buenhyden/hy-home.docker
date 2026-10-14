@@ -1,4 +1,4 @@
-"""Public selection, P02 binding and synthetic KV decisions; no private I/O."""
+"""Public binding, synthetic decisions and generated loopback review regressions."""
 
 import contextlib
 import copy
@@ -558,3 +558,212 @@ class SyntheticKvDecisionTests(unittest.TestCase):
             candidate["items"][0]["state"] = status
             with self.assertRaises(MigrationError):
                 validate_public("receipt", candidate)
+
+
+class RuntimeReviewRegressionTests(unittest.TestCase):
+    """Review-found safety failures exercised through synthetic loopback resources."""
+
+    def setUp(self):
+        from tests.lib.ops.test_openbao_copy_runtime import RuntimeCopyTests
+
+        self.runtime = RuntimeCopyTests()
+        self.runtime.setUp()
+        self.addCleanup(self.runtime.doCleanups)
+
+    def test_input_roles_and_alternate_root_path_cannot_alias_source(self):
+        import os
+
+        candidate = self.runtime.plan()
+        source = candidate.sources[0]
+        nested = self.runtime.folder / "secrets"
+        info = nested.stat()
+        alternate = replace(
+            source,
+            root=str(nested),
+            root_dev=info.st_dev,
+            root_ino=info.st_ino,
+            relative="db/dev-pg/synthetic.txt",
+        )
+        for field, reference in (
+            ("copy_token", source),
+            ("metadata_token", source),
+            ("ca", source),
+            ("copy_token", alternate),
+            ("metadata_token", candidate.copy_token),
+            ("ca", candidate.copy_token),
+        ):
+            with self.subTest(field=field, root=reference.root):
+                self.runtime.server.version = 0
+                self.runtime.server.calls.clear()
+                with patch("os.open", wraps=os.open) as opened:
+                    result = self.runtime.execute(
+                        replace(candidate, **{field: reference})
+                    )
+                self.assertEqual("BLOCKED", result.status)
+                self.assertEqual([], self.runtime.server.calls)
+                self.assertFalse(opened.called)
+
+    def test_actual_held_inode_role_alias_is_refused_before_http(self):
+        from scripts.lib.ops._openbao_copy_io import hold_input
+
+        candidate = self.runtime.plan()
+        for field in ("copy_token", "metadata_token", "ca"):
+            with self.subTest(field=field):
+                reference = getattr(candidate, field)
+
+                def mounted_alias(selected, stack, *, ca=False, reference=reference):
+                    # An injected bind-mount seam returns a real held source FD.
+                    chosen = candidate.sources[0] if selected == reference else selected
+                    return hold_input(chosen, stack, ca=ca)
+
+                with patch.object(migration, "hold_input", side_effect=mounted_alias):
+                    result = self.runtime.execute(candidate)
+                self.assertEqual("BLOCKED", result.status)
+                self.assertEqual("copy_input_role_alias", result.diagnostic)
+                self.assertEqual([], self.runtime.server.calls)
+
+    def test_lost_post_and_unverifiable_readback_preserve_possible_write(self):
+        from scripts.lib.ops._openbao_copy_transport import CopyTransport
+
+        self.runtime.server.mode = "lost_write"
+        request = CopyTransport.request
+        metadata = "/v1/secret/metadata/" + row().kv_path
+
+        def lost_readback(client, method, path, token, payload=None):
+            try:
+                return request(client, method, path, token, payload)
+            finally:
+                if method == "POST":
+                    self.runtime.server.responses = {
+                        ("GET", metadata): (403, {"errors": []})
+                    }
+
+        with patch.object(CopyTransport, "request", new=lost_readback):
+            result = self.runtime.execute()
+        self.assertEqual("PARTIAL", result.status)
+        self.assertEqual("UNRESOLVED", result.items[0].status)
+        self.assertTrue(result.items[0].write_attempted)
+        self.assertIsNone(result.items[0].accepted_version)
+        self.assertIsNone(result.items[0].kv_version)
+        self.assertEqual(
+            1, sum(method == "POST" for method, *_ in self.runtime.server.calls)
+        )
+
+    def test_acknowledged_version_one_and_conflicting_version_two_both_survive(self):
+        from scripts.lib.ops._openbao_copy_transport import CopyTransport
+
+        request = CopyTransport.request
+
+        def concurrent_change(client, method, path, token, payload=None):
+            response = request(client, method, path, token, payload)
+            if method == "POST":
+                self.runtime.server.version, self.runtime.server.value = 2, "different"
+            return response
+
+        with patch.object(CopyTransport, "request", new=concurrent_change):
+            result = self.runtime.execute()
+        self.assertEqual("PARTIAL", result.status)
+        self.assertEqual("CONFLICT", result.items[0].status)
+        self.assertTrue(result.items[0].write_attempted)
+        self.assertEqual(1, result.items[0].accepted_version)
+        self.assertEqual(2, result.items[0].kv_version)
+        self.assertEqual(
+            1, sum(method == "POST" for method, *_ in self.runtime.server.calls)
+        )
+        self.assertEqual(
+            b"synthetic-private-marker\n", self.runtime.source.read_bytes()
+        )
+
+    def test_origin_requires_dns_labels_and_separate_numeric_connect_address(self):
+        candidate = self.runtime.plan()
+        for hostname in (
+            "127.0.0.1",
+            "[::1]",
+            "x-",
+            "a..b",
+            "-bad.example",
+            "a" * 64 + ".example",
+            ".example",
+            "a." * 126 + "ab",
+        ):
+            with self.subTest(hostname=hostname), patch("os.open") as opened:
+                result = self.runtime.execute(
+                    replace(candidate, origin="https://" + hostname)
+                )
+                self.assertEqual("BLOCKED", result.status)
+                self.assertEqual("copy_endpoint_invalid", result.diagnostic)
+                self.assertEqual([], self.runtime.server.calls)
+                self.assertFalse(opened.called)
+
+    def test_unexpected_post_transport_failure_is_partial_and_redacted(self):
+        from scripts.lib.ops._openbao_copy_transport import CopyTransport
+
+        request = CopyTransport.request
+
+        def unexpected(client, method, path, token, payload=None):
+            if method == "POST":
+                request(client, method, path, token, payload)
+                raise RuntimeError("synthetic-private-marker")
+            if self.runtime.server.version:
+                raise RuntimeError("synthetic-private-marker")
+            return request(client, method, path, token, payload)
+
+        with patch.object(CopyTransport, "request", new=unexpected):
+            result = self.runtime.execute()
+        self.assertEqual("PARTIAL", result.status)
+        self.assertTrue(result.items[0].write_attempted)
+        self.assertIsNone(result.items[0].accepted_version)
+        self.assertIsNone(result.items[0].kv_version)
+        self.assertNotIn("synthetic-private-marker", repr(result))
+        self.assertEqual(
+            1, sum(method == "POST" for method, *_ in self.runtime.server.calls)
+        )
+
+    def test_post_cleanup_failure_preserves_ack_observation_and_attempt(self):
+        import os
+
+        close = os.close
+        closed = []
+
+        def failing_close(descriptor):
+            close(descriptor)
+            closed.append(descriptor)
+            if self.runtime.server.version:
+                raise OSError("synthetic-private-marker")
+
+        with patch("os.close", new=failing_close):
+            result = self.runtime.execute()
+        self.assertEqual("PARTIAL", result.status)
+        self.assertEqual("copy_cleanup_failed", result.diagnostic)
+        self.assertEqual(1, len(result.items))
+        item = result.items[0]
+        self.assertEqual("CREATED", item.status)
+        self.assertTrue(item.write_attempted)
+        self.assertEqual((1, 1), (item.accepted_version, item.kv_version))
+        self.assertNotIn("synthetic-private-marker", repr(result))
+        self.assertTrue(closed)
+        for descriptor in closed:
+            with self.assertRaises(OSError):
+                os.fstat(descriptor)
+
+    def test_noop_cleanup_failure_retains_observation_without_write_claim(self):
+        import os
+
+        self.runtime.server.version = 3
+        self.runtime.server.value = "synthetic-private-marker\n"
+        close = os.close
+
+        def failing_close(descriptor):
+            close(descriptor)
+            raise OSError("synthetic-private-marker")
+
+        with patch("os.close", new=failing_close):
+            result = self.runtime.execute()
+        self.assertEqual("BLOCKED", result.status)
+        self.assertEqual("copy_cleanup_failed", result.diagnostic)
+        self.assertEqual(1, len(result.items))
+        item = result.items[0]
+        self.assertEqual(("NOOP", 3), (item.status, item.kv_version))
+        self.assertFalse(item.write_attempted)
+        self.assertIsNone(item.accepted_version)
+        self.assertNotIn("synthetic-private-marker", repr(result))

@@ -1,5 +1,5 @@
 {
-  "source_revision": "abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9",
+  "source_revision": "4c33d6cecc3087b1c5b0d8ef79b7d25e7e52e0a6",
   "collected_at": "2026-10-10T10:27:43.184845+00:00",
   "inputs": [
     {
@@ -1318,9 +1318,177 @@
       "installed_sbom": "NOT_RUN",
       "source_binding": "infra/13-experience/storybook/README.md links this Dockerfile; mcp image has separately unresolved build source.",
       "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+    },
+    {
+      "service": "openbao",
+      "build_input": "infra/03-security/openbao/build/Dockerfile",
+      "input_sha256": "419dc5d8aba3c099187cab6f72027ca37b951ed4c85d90552cf80090030e6804",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 2,
+          "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+        },
+        {
+          "line": 3,
+          "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+        },
+        {
+          "line": 4,
+          "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+        },
+        {
+          "line": 5,
+          "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+        },
+        {
+          "line": 6,
+          "declaration": "RUN --mount=type=bind,source=apks,target=/public/apks,readonly apk --no-logfile --keys-dir /public/keys verify /public/apks/*.apk && apk --no-logfile --keys-dir /public/keys add --no-cache --no-network /public/apks/*.apk && addgroup -g 1000 openbao && adduser -S -u 100 -G openbao openbao && awk -F: -v OFS=: -v epoch=\"$SOURCE_DATE_EPOCH\" 'BEGIN {if(epoch !~ /^[0-9]+$/) exit 1; day=int(epoch/86400)} $1==\"openbao\" {if(NF!=9 || $2 !~ /^[!*]/) exit 1; $3=day; count++} {print} END {if(count!=1) exit 1}' /etc/shadow > /etc/shadow.hyhome && cat /etc/shadow.hyhome > /etc/shadow && rm /etc/shadow.hyhome && ln -s /usr/bin/bao /usr/bin/vault && mkdir -p /openbao/logs /openbao/file /openbao/config && chown -R 100:1000 /openbao"
+        },
+        {
+          "line": 7,
+          "declaration": "ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        },
+        {
+          "line": 8,
+          "declaration": "EXPOSE 8200"
+        },
+        {
+          "line": 9,
+          "declaration": "USER openbao"
+        },
+        {
+          "line": 10,
+          "declaration": "ENTRYPOINT [\"docker-entrypoint.sh\"]"
+        },
+        {
+          "line": 11,
+          "declaration": "CMD [\"server\", \"-dev\", \"-dev-no-store-token\"]"
+        },
+        {
+          "line": 12,
+          "declaration": "LABEL org.opencontainers.image.source=\"https://github.com/openbao/openbao\""
+        },
+        {
+          "line": 13,
+          "declaration": "LABEL org.opencontainers.image.revision=\"a5db72cef75c24b920ade02065b18dd8eb666bac\""
+        },
+        {
+          "line": 14,
+          "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.2.net0.60.0.r1\""
+        },
+        {
+          "line": 15,
+          "declaration": "LABEL com.hyhome.openbao.upstream_signed=\"false\""
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/03-security/openbao/build/build-inputs.json",
+          "sha256": "1e8b356a53df47b36d011bc60f8b8cbf22e28de1664117973155cd3718eb6556"
+        },
+        {
+          "path": "infra/03-security/openbao/build/go-modules.patch",
+          "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+        },
+        {
+          "path": "infra/03-security/openbao/build/owned_image_oci.py",
+          "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+          "sha256": "c4438ce0c18016477262204712c90f8f38b0dd00d0b7d6a51cd940079611cc31"
+        }
+      ],
+      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e; scan receipt SHA256 8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9; 320 packages, 0 Critical/High, 4 unsuppressed matches; synthetic native attempt2 PASS_SYNTHETIC_ONLY (13/13, 4 native cases); HOME compatibility/deployment NOT_RUN",
+      "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00"
+    },
+    {
+      "service": "openbao-agent",
+      "build_input": "infra/03-security/openbao/build/Dockerfile",
+      "input_sha256": "419dc5d8aba3c099187cab6f72027ca37b951ed4c85d90552cf80090030e6804",
+      "compose_build_args": {},
+      "declarations": [
+        {
+          "line": 2,
+          "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+        },
+        {
+          "line": 3,
+          "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+        },
+        {
+          "line": 4,
+          "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+        },
+        {
+          "line": 5,
+          "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+        },
+        {
+          "line": 6,
+          "declaration": "RUN --mount=type=bind,source=apks,target=/public/apks,readonly apk --no-logfile --keys-dir /public/keys verify /public/apks/*.apk && apk --no-logfile --keys-dir /public/keys add --no-cache --no-network /public/apks/*.apk && addgroup -g 1000 openbao && adduser -S -u 100 -G openbao openbao && awk -F: -v OFS=: -v epoch=\"$SOURCE_DATE_EPOCH\" 'BEGIN {if(epoch !~ /^[0-9]+$/) exit 1; day=int(epoch/86400)} $1==\"openbao\" {if(NF!=9 || $2 !~ /^[!*]/) exit 1; $3=day; count++} {print} END {if(count!=1) exit 1}' /etc/shadow > /etc/shadow.hyhome && cat /etc/shadow.hyhome > /etc/shadow && rm /etc/shadow.hyhome && ln -s /usr/bin/bao /usr/bin/vault && mkdir -p /openbao/logs /openbao/file /openbao/config && chown -R 100:1000 /openbao"
+        },
+        {
+          "line": 7,
+          "declaration": "ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        },
+        {
+          "line": 8,
+          "declaration": "EXPOSE 8200"
+        },
+        {
+          "line": 9,
+          "declaration": "USER openbao"
+        },
+        {
+          "line": 10,
+          "declaration": "ENTRYPOINT [\"docker-entrypoint.sh\"]"
+        },
+        {
+          "line": 11,
+          "declaration": "CMD [\"server\", \"-dev\", \"-dev-no-store-token\"]"
+        },
+        {
+          "line": 12,
+          "declaration": "LABEL org.opencontainers.image.source=\"https://github.com/openbao/openbao\""
+        },
+        {
+          "line": 13,
+          "declaration": "LABEL org.opencontainers.image.revision=\"a5db72cef75c24b920ade02065b18dd8eb666bac\""
+        },
+        {
+          "line": 14,
+          "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.2.net0.60.0.r1\""
+        },
+        {
+          "line": 15,
+          "declaration": "LABEL com.hyhome.openbao.upstream_signed=\"false\""
+        }
+      ],
+      "package_inputs": [
+        {
+          "path": "infra/03-security/openbao/build/build-inputs.json",
+          "sha256": "1e8b356a53df47b36d011bc60f8b8cbf22e28de1664117973155cd3718eb6556"
+        },
+        {
+          "path": "infra/03-security/openbao/build/go-modules.patch",
+          "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+        },
+        {
+          "path": "infra/03-security/openbao/build/owned_image_oci.py",
+          "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+          "sha256": "c4438ce0c18016477262204712c90f8f38b0dd00d0b7d6a51cd940079611cc31"
+        }
+      ],
+      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e; scan receipt SHA256 8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9; 320 packages, 0 Critical/High, 4 unsuppressed matches; synthetic native attempt2 PASS_SYNTHETIC_ONLY (13/13, 4 native cases); HOME compatibility/deployment NOT_RUN",
+      "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00"
     }
   ],
-  "meaning": "Current selected public build declarations and per-input hashes on the stated base revision; initial snapshot preserved. No registered generator or reproducible aggregate-hash algorithm exists, so input_manifest_sha256 remains UNKNOWN rather than reusing a stale or invented digest. Installed SBOM, native build/runtime, full service acceptance and HOME remain NOT_RUN.",
+  "meaning": "Current public build declarations and per-input hashes; initial snapshot retained. OpenBao/Agent use an already-built HYHOME owned image; their Dockerfile is the fixed recipe consumed by the bounded build wrapper, not a Compose build declaration. Authenticated material inputs, reproducible OCI runtime lineage and selected-artifact SBOM/CVE receipt are recorded separately from production compatibility/deployment. Exact synthetic native attempt2 passed 13/13 tests (4 native cases) with fixture digest 2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73; this does not cover the whole ROOT source inventory or production backup/rollback/adoption. No registered aggregate generator exists: input_manifest_sha256 remains UNKNOWN; no whole-package final freeze is asserted.",
   "unresolved_local_image_sources": [
     {
       "service": "storybook-mcp",
@@ -2261,7 +2429,7 @@
       }
     ]
   },
-  "source_refreshed_at": "2026-10-10T16:12:44Z",
+  "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00",
   "input_manifest_sha256": "UNKNOWN",
   "final_candidate_source_freeze": {
     "valid": false,
@@ -2271,6 +2439,6 @@
     "workflow_source_binding_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
     "openbao_source_binding_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
     "owned_openbao_source_fingerprint": "62d281cefb0cc0efeb98a009068b49b3649f258bcb9308f492e7236da7e2e4d1",
-    "meaning": "Prior public candidate freeze retained as history and invalidated by the current Stalwart build-input refresh. A canonical aggregate manifest has not been regenerated; installed SBOM, native build/runtime, full service and HOME acceptance remain NOT_RUN."
+    "meaning": "Historical freeze and old hashes remain invalid for current sources after owned-candidate and latest-main reconciliation. No canonical aggregate build manifest has been regenerated. Exact synthetic native attempt2 passed within its registered 34-file fixture scope; this is separate from a whole-package freeze, production recovery, HOME deployment and consumer adoption, which are NOT_RUN."
   }
 }

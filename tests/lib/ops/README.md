@@ -1,10 +1,10 @@
 ---
 title: "Operations Library Tests"
-version: "0.1.4"
+version: "0.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-14"
 created: "2026-10-10"
 ---
 
@@ -34,8 +34,15 @@ created: "2026-10-10"
   `test_opsflow_provision_contract.py`: P04 합성 매니페스트·보호된 접속 설정·SQL 권한
   소스 계약을 검증합니다. 실제 Airflow·DEV 게시나 빈 복원 수용은 별도입니다.
 
+- `test_openbao_issuance.py`, `test_openbao_issuance_trust.py`,
+  `test_openbao_issuance_custody.py`: 발급 journal, 제한 신원과 tmpfs token 파일,
+  검증한 request bytes·Git blob 설치의 결속을 합성 시험합니다.
 - `test_openbao_consumer_migration.py`: P06 공개 계약·P02 API binding과 승인되지
   않은 이관 선택의 거부를 검증합니다. 실제 KV·pilot·복구 시험은 별도입니다.
+- `test_openbao_copy_runtime.py`: 보호된 합성 파일과 loopback TLS fixture로
+  CAS0·metadata 확인·equal/conflict·POST 불확실성과 version 보존, CA/SAN/만료·
+  경로/inode 역할 충돌·전송 시간 상한·값 없는 진단을 검증합니다. 실제 HOME
+  인증·소비·이관 수용은 증명하지 않습니다.
 
 ## Related Documents
 

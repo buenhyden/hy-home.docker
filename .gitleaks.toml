@@ -32,3 +32,21 @@ targetRules = ['''generic-api-key''']
 regexTarget = "secret"
 paths = ['''^infra/09-platform-ops/project-registration/wiki-preparation/fixtures/blog-data-handoff\.(valid|invalid)\.json$''']
 regexes = ['''^2d4983e79a482c981c0eb3713898a06b14124f96a51d014c7bddb7fdd0531b31$''']
+
+# Authenticated owned-build public integrity material; preserve frozen inputs.
+
+[[allowlists]]
+description = "Owned OpenBao public Go module checksum"
+condition = "AND"
+targetRules = ['''generic-api-key''']
+regexTarget = "secret"
+paths = ['''^infra/03\-security/openbao/build/go\-modules\.patch$''']
+regexes = ['''^peZ/1z27fi9hUOFCAZaHyrpWG5lwe0RJEEEeH0ThlIs=$''']
+
+[[allowlists]]
+description = "Owned OpenBao published Alpine RSA public-key digest"
+condition = "AND"
+targetRules = ['''generic-api-key''']
+regexTarget = "secret"
+paths = ['''^infra/03\-security/openbao/build/build\-inputs\.json$''']
+regexes = ['''^207e4696d3c05f7cb05966aee557307151f1f00217af4143c1bcaf33b8df733f$''']

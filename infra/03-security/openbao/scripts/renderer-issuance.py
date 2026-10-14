@@ -1,8 +1,4 @@
-"""Explicit operator issuance with durable, secret-free reconciliation state.
-
-Only the CLI adapter performs I/O. API responses and credentials remain in memory.
-A journal is evidence of uncertainty, never proof that authentication succeeded.
-"""
+"""Durable, secret-free renderer issuance; a journal records uncertainty, not success."""
 
 from __future__ import annotations
 
@@ -23,14 +19,18 @@ from pathlib import Path
 
 ROLE = "hy-home-renderer"
 PREFIX = "auth/approle/role/" + ROLE
-IMAGE = "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
-MANIFEST = "sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005"
+IMAGE = "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
+MANIFEST = "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
 SAFE = re.compile(r"[a-zA-Z0-9._-]+")
 REVISION = re.compile(r"[a-f0-9]{40}")
 
 
 class Blocked(Exception):
     """Deliberately carries no server response, credential, or subprocess output."""
+
+
+class Uncertain(Blocked):
+    """A request may have succeeded; retain its journal for explicit reconciliation."""
 
 
 def unique_fields(pairs):
@@ -339,6 +339,8 @@ def run_issuance(api, journal, *, revision, clock=time.time, nonce=secrets.token
             raise Blocked()
         reconcile(api, journal, delivered, ready=True)
         return "authenticated"
+    except Uncertain:
+        raise
     except Exception:
         # A failed delivery may have issued an ID. Revoke only an exact single match.
         # Delivered IDs await current-process authentication proof on the next run.
@@ -351,9 +353,10 @@ def run_issuance(api, journal, *, revision, clock=time.time, nonce=secrets.token
 class DockerAPI:
     """No host env/credentials in argv; credentials go through receiving stdin."""
 
-    def __init__(self, server, volume, agent, issuer, cleanup):
+    def __init__(self, server, volume, agent, issuer, cleanup, *, request_script):
         self.server, self.volume, self.agent = server, volume, agent
         self.issuer, self.cleanup = issuer, cleanup
+        self.request_script = request_script
         self.started_at = None
         self.deadline = time.monotonic() + 240
 
@@ -383,37 +386,40 @@ class DockerAPI:
 
     def request(self, operation, path, payload=None, *, issuer=False):
         # Leave renewal-free token lifetime margin; never turn a large LIST into an unbounded run.
-        remaining = self.deadline - time.monotonic()
-        if remaining <= 0:
+        seconds = min(20, self.deadline - time.monotonic())
+        if seconds < 4:
             raise Blocked()
-        # The public operation and exact public role path are constant at callers.
         token = self.issuer if issuer else self.cleanup
-        script = (
-            "set +x; set -eu; IFS= read -r BAO_TOKEN; export BAO_TOKEN; "
-            'unset VAULT_TOKEN; case "${BAO_ADDR:-}" in https://?*) ;; *) exit 1;; esac; '
-            '[ -n "${BAO_CACERT:-}" ] && [ -r "$BAO_CACERT" ]; '
-            '[ -z "${BAO_SKIP_VERIFY:-}${VAULT_SKIP_VERIFY:-}" ]; '
-            "exec bao " + operation + " -format=json " + path
-        )
         body = (token + "\n").encode()
+        arguments = [*operation.split(), "-format=json", path]
         if payload is not None:
             body += json.dumps(payload).encode()
-            script += " -"
+            arguments.append("-")
         destroying = path == PREFIX + "/secret-id-accessor/destroy"
-        if destroying:
-            script += " >/dev/null"
-        raw = self.command(
-            ["docker", "exec", "-i", self.server, "sh", "-c", script],
-            payload=body,
-            seconds=min(20, remaining),
-            empty_list_path=path if operation == "list" else None,
-        )
+        argv = [
+            "docker",
+            "exec",
+            "-i",
+            self.server,
+            "/bin/sh",
+            "-c",
+            self.request_script,
+        ]
+        try:
+            raw = self.command(
+                [*argv, "renderer-request", str(int(seconds) - 3), *arguments],
+                payload=body,
+                seconds=seconds,
+                empty_list_path=path if operation == "list" else None,
+            )
+        except (Blocked, InterruptedError):
+            raise Uncertain() from None
         if destroying:
             return {}
         try:
             return json.loads(raw, object_pairs_hook=unique_fields)
         except (ValueError, TypeError):
-            raise Blocked() from None
+            raise Uncertain() from None
 
     def validate_tokens(self):
         for issuer, policy in ((True, "renderer-issuer"), (False, "renderer-cleanup")):
@@ -690,7 +696,14 @@ def validate_binding(server, volume, agent, journal_path):
 
 def validate_receipt(revision):
     directory = Path(__file__).parent
-    files = {"issue-renderer-secret-id.sh", "renderer-issuance.py"}
+    files = {
+        "issue-renderer-secret-id.sh",
+        "renderer-issuance.py",
+        "renderer-request.sh",
+    }
+
+    def signature(info):
+        return info.st_dev, info.st_ino, info.st_mtime_ns, info.st_ctime_ns
 
     def read_private(name, *, receipt=False):
         fd = os.open(directory / name, os.O_RDONLY | os.O_NOFOLLOW)
@@ -706,6 +719,10 @@ def validate_receipt(revision):
             raise Blocked()
         with os.fdopen(fd, "rb") as stream:
             raw = stream.read(100001)
+            if signature(info) != signature(os.fstat(stream.fileno())) or signature(
+                info
+            ) != signature((directory / name).lstat()):
+                raise Blocked()
         if len(raw) > 100000:
             raise Blocked()
         return raw
@@ -722,13 +739,15 @@ def validate_receipt(revision):
             or set(hashes) != files
         ):
             raise Blocked()
+        blobs = {name: read_private(name) for name in files}
         for name in files:
             if (
                 not isinstance(hashes[name], str)
                 or not re.fullmatch(r"[a-f0-9]{64}", hashes[name])
-                or hashlib.sha256(read_private(name)).hexdigest() != hashes[name]
+                or hashlib.sha256(blobs[name]).hexdigest() != hashes[name]
             ):
                 raise Blocked()
+        return blobs["renderer-request.sh"].decode()
     except (OSError, KeyError, ValueError, TypeError):
         raise Blocked() from None
 
@@ -745,40 +764,18 @@ def main(argv):
         raise Blocked()
     if not Path(directory).is_absolute() or Path(directory).is_symlink():
         raise Blocked()
-    validate_receipt(revision)
+    request_script = validate_receipt(revision)
     tokens = [sys.stdin.readline(1025).strip() for _ in range(2)]
     if any(not SAFE.fullmatch(t) or len(t) > 1024 for t in tokens):
         raise Blocked()
     validate_binding(server, volume, agent, directory)
-    api = DockerAPI(server, volume, agent, *tokens)
-    if not (Path(directory) / "issuance.json").exists():
-        running = api.command(
-            [
-                "docker",
-                "inspect",
-                "--type=container",
-                "--format",
-                "{{.State.Running}}",
-                agent,
-            ]
-        ).strip()
-        if running != b"false":
-            raise Blocked()
+    api = DockerAPI(server, volume, agent, *tokens, request_script=request_script)
+    if not (Path(directory) / "issuance.json").exists() and not api.stopped():
+        raise Blocked()
     api.validate_tokens()
     with Journal(directory) as journal:
-        if journal.load() is None:
-            running = api.command(
-                [
-                    "docker",
-                    "inspect",
-                    "--type=container",
-                    "--format",
-                    "{{.State.Running}}",
-                    agent,
-                ]
-            ).strip()
-            if running != b"false":
-                raise Blocked()
+        if journal.load() is None and not api.stopped():
+            raise Blocked()
         run_issuance(api, journal, revision=revision)
     return 0
 

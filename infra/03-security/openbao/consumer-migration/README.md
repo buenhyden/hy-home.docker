@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.2"
+version: "0.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-14"
 created: "2026-10-11"
 ---
 
@@ -12,9 +12,10 @@ created: "2026-10-11"
 
 ## Overview
 
-소비자별 이관을 준비하는 값 없는 공개 계약과 합성 검사 경로입니다. 현재 구현은
-공개 형식과 선택 거부 조건을 검증하며, 실제 이관·소비·복구·삭제·회전 영수증은
-발급하지 않습니다. 실행 증거와 선행 조건은 [문서 인덱스](../../../../docs/README.md)를
+소비자별 이관을 준비하는 값 없는 공개 계약과 합성 검사 경로입니다. 공개 CLI는
+형식과 선택 거부 조건만 검증합니다. 별도 Python API에는 보호 파일과 실제 HTTPS를
+사용하는 제한된 KV-v2 복사 실행기가 있습니다. 현재 실제 catalog 승인 연결과
+운영 실행 입력은 공급되지 않았으며, 실제 이관·소비·복구·삭제·회전 영수증은 없습니다. 실행 증거와 선행 조건은 [문서 인덱스](../../../../docs/README.md)를
 통해 현재 작업에서 확인합니다.
 
 ## Audience
@@ -23,8 +24,10 @@ created: "2026-10-11"
 
 ## Scope
 
-현재 계약은 합성 준비 단계에 한정됩니다. 기존 catalog 소유자가 발급한 실제
-항목과 승인된 목적지, 인증·전달·소비·복구 계약의 통합이 후속 실행의 입력입니다.
+공개 wave/receipt 계약은 합성 준비 단계에 한정됩니다. 복사 실행 API는 이 문서를
+읽거나 형식 검사를 통과했다고 활성화되지 않습니다. 기존 catalog 소유자가 발급한
+실제 항목과 승인된 목적지, 인증·전달·소비·복구 계약 및 현재 신뢰된 운영자 입력의
+연결이 실제 실행의 선행 조건입니다.
 형식 검사 통과와 입력의 hash 일치는 운영 승인이나 실제 수용 증거가 아닙니다.
 
 ## Structure
@@ -78,8 +81,73 @@ KV 부재를 확인하지 않습니다. 파일·token·HTTP·catalog 선택에 �
 응답 유실과 CAS race 뒤에는 부재 선언만으로 생성·재시도 후보를 만들지 않습니다.
 404에 대응하는 `not_found`만으로도 신규 생성 후보를 만들 수 없습니다.
 위 판단은 운영 승인·명령·이관 영수증이 아니며 기존 receipt schema는 이 상태들을
-계속 거부합니다. 실제 copier·production approval interface, 안전한 파일/CA/token
-입력, native TLS/KV 응답 분류와 전체 실행 시간·재시도 제한은 아직 구현되지 않았습니다.
+계속 거부합니다. 실제 transport 복사 primitive의 동작은 아래 Python API에 따릅니다.
+P02 catalog의 실제 승인 연결, P01의 실제 token·권한·mount·신뢰·복구 인계와 운영자
+실행 adapter는 여전히 필요합니다. 소스 시험 성공은 이 선행 조건의 승인이나
+실제 HOME 실행 수용을 대신하지 않습니다.
+
+### Controller-bound copy API
+
+[openbao_consumer_migration.py](../../../../scripts/lib/ops/openbao_consumer_migration.py)의
+`execute_copy(CopyPlan, authorize=...)`는 공개 CLI와 분리된 실제 파일/HTTPS 실행 API입니다.
+호출하는 controller가 현재 신뢰된 사용자 또는 native 허가 채널을 해석하고 정확한
+catalog 전체 입력·revision, 소비자, source/token/CA 파일 경로와 stat metadata,
+KV-v2 mount/data 경로, token identity·짧은 비갱신 TTL·최소 권한, 복구 경계 및
+P01의 공개 CA hash를 대조해야 합니다. 승인 callback이 literal `True`를 반환해야
+private I/O가 시작됩니다. Task, JSON, `FrozenAuthority` 또는 입력의 승인 필드는
+인증 수단이 아니며 실제 catalog 항목을 승인 상태로 바꾸는 adapter도 없습니다.
+
+`CopyPlan`은 정확한 HTTPS DNS origin, 별도로 승인된 숫자 IPv4/IPv6 연결 주소,
+보호 입력 경로와 UID/GID/mode/size 및 root dev/ino, 연결·읽기·전체 wave 예산을
+묶습니다. origin은 길이 1–63의 alnum 양끝·hyphen 내부 DNS label과 전체 hostname
+253자 이하를 요구하며 빈 label과 IPv4/IPv6 literal을 거부합니다. 단일 DNS label은
+허용합니다. 숫자 연결 주소를 사용하므로 ambient DNS/proxy를 사용하지 않으며, TLS는
+origin의 hostname/SAN을 유지하고 보호 CA bytes를 SSLContext에 직접 적재합니다.
+모든 경로 요소를 no-follow descriptor로 열고 root/parent/leaf 재결합과 mutation을
+검사합니다. source·copy token·metadata token·CA 및 서로 다른 source의 절대 경로
+binding이 겹치면 파일을 열기 전에 거부합니다. 실제 held descriptor의 dev/ino도
+전부 달라야 하므로 다른 경로나 mount로 동일 inode를 가리켜 역할 경계를 넘는
+입력은 HTTP 전에 거부합니다. source/token은 0600/0640, 공개 CA는 승인된 0600/0640/0644만 허용하며
+정규 single-link leaf와 exact metadata·bounded snapshot을 요구합니다. source의
+UTF-8 roundtrip이 불가능하면 변환 없이 거부하여 최초 복사 bytes를 보존합니다.
+
+복사 token은 선택한 data GET/POST에만 쓰입니다. 별도의 P01 승인 reconciliation
+입력 token만 선택한 mount config와 metadata GET에 사용합니다. 두 token이 같으면
+거부합니다. token 값은 argv나 반환 결과에 없으며 이 API는 발급·갱신·회전하지
+않습니다. 실제 token 권한·TTL·정책 검증은 controller/P01의 선행 인계입니다.
+
+TLS HTTP 응답은 헤더 32 KiB, body 128 KiB, JSON 깊이 12/node 4096으로 제한하며
+중복 키·nonfinite 값·버전 불명·redirect를 거부합니다. 연결/읽기 timeout과 전체
+wave monotonic 예산 및 socket watchdog이 TLS/header/body 대기를 제한합니다.
+전체 예산은 private 입력 준비부터 계산하고 HTTP 전에 검사합니다. kernel 파일 I/O의
+고장 격리나 운영자 인증 단계의 시간 제한을 제공한다는 주장은 하지 않습니다.
+
+생성은 data와 metadata가 모두 빈 오류 목록으로 404이고 같은 mount의 KV-v2 config가
+정상 검증된 경우에만 CAS=0으로 한 번 요청합니다. 404 하나로 생성하지 않으며
+삭제·파기·권한 거부·mount 부재는 unresolved입니다. 기존 bytes와 version이
+일치하면 no-op, 다르면 conflict입니다. 응답 유실/CAS race에서는 제한된
+metadata/data/metadata readback으로 동일 bytes와 안정된 version을 대조합니다.
+POST는 재시도하지 않으며 확인되지 않은 상태는 unresolved로 남깁니다. 결과의
+`write_attempted`는 POST 호출을 시도했음을 보수적으로 나타내며 실제 서버 변경의
+확인 표시가 아닙니다. `accepted_version`은 검증된 POST 응답의 version이며
+`kv_version`은 안정된 readback으로 관찰한 version입니다. 확인되지 않은 version은
+각각 `null`로 유지하고 서로 대체하지 않습니다. POST 뒤의 실패·conflict는 실제
+변경 여부나 version을 몰라도 PARTIAL입니다. 예를 들어 생성 응답 version1 뒤에
+conflict version2를 관찰하면 accepted1과 observed2를 모두 유지합니다. POST 전에
+막히고 이전 쓰기도 없으면 BLOCKED입니다. 이후 항목이 실패해도 앞선 항목의
+write/version 정보를 보존하고 기존 source 파일을 삭제·덮어쓰지 않습니다. 결과는
+public ID·고정 상태·쓰기 시도 표시·두 version뿐이며 비밀값 또는 비밀값에서 계산한
+hash가 없습니다. held descriptor를 닫는 정리 단계가 실패해도 이미 완성한 항목의
+상태·쓰기 시도·acknowledged/observed version을 유지합니다. 기존 PARTIAL 또는
+POST 시도가 있으면 전체 PARTIAL이며, 쓰기 시도 없이 정리만 실패하면 기존 관찰
+항목을 남긴 BLOCKED입니다. 진단은 예외 payload 없이 `copy_cleanup_failed`입니다.
+실제 운영 영수증 schema 연결은
+후속 owner 작업이고 기존 synthetic receipt schema는 계속 runtime 상태를 거부합니다.
+
+내부 구현은 [_openbao_copy_io.py](../../../../scripts/lib/ops/_openbao_copy_io.py)와
+[_openbao_copy_transport.py](../../../../scripts/lib/ops/_openbao_copy_transport.py)입니다.
+실행용 CLI와 P02 승인 연결이 없으므로 현재 W48은 source primitive까지의 부분 구현이며,
+실제 W50 pilot·전달·소비·복구·authority·폐기·회전은 미실행입니다.
 
 ## Validation
 
@@ -91,15 +159,19 @@ KV 부재를 확인하지 않습니다. 파일·token·HTTP·catalog 선택에 �
 python3 scripts/operations/openbao-consumer-migration.py --help
 ```
 
-전용 시험은 `tests/lib/ops/test_openbao_consumer_migration.py`와
-`tests/validation/test_openbao_consumer_migration_contract.py`입니다. 공통 Script
+전용 시험은 `tests/lib/ops/test_openbao_consumer_migration.py`,
+`tests/validation/test_openbao_consumer_migration_contract.py`와
+`tests/lib/ops/test_openbao_copy_runtime.py`입니다. 마지막 시험은 OpenSSL로 생성한
+임시 합성 인증서와 loopback HTTPS 서버로 실제 transport·CAS·file/privacy 실패를
+검증합니다. 실제 credential·HOME API나 외부 runtime에는 접속하지 않습니다. 공통 Script
 Manifest·QA 등록은 현재 통합 소스를 재사용합니다. 공통 등록과 상위 README의 후속
 변경은 단일 통합 작성자가 소유합니다.
 
 ## Usage
 
 `validate-wave`와 `validate-receipt`는 공개 형식만 검사합니다. 파일 읽기·KV 복사·삭제·
-비밀번호 변경 실행 옵션은 없습니다. 실제 단계의 계약과 영수증이 없으면 대기하며,
+비밀번호 변경 실행 옵션은 없습니다. 별도 Python API의 실제 사용은 controller의
+현재 승인과 정확한 선행 입력을 필요로 합니다. 실제 단계의 계약과 영수증이 없으면 대기하며,
 이 합성 결과를 HOME·이관·복구·배포 성공으로 사용하지 않습니다.
 
 ## Related Documents

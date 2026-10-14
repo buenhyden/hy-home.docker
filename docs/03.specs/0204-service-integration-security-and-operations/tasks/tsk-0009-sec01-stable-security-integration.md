@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.13"
+version: "0.4.15"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -1521,6 +1521,312 @@ candidate results, independent evidence-delta review and current-main read-back
 before source merge. All blocked local/security and NOT_RUN operational states
 above remain unchanged.
 
+### Selected OpenBao Artifact Inspection — 2026-10-14
+
+The user explicitly prioritizes actual OpenBao issuance/upgrade within the
+latest authorized operations request. This bounded inspection covers only
+source candidate2.7.1 linux/amd64, not all111 ROOT services or the current
+2.6.2 runtime. Source main was `1e7e2ba841c4e428a06762a61a570011711bc1ef`.
+P01 records the exact publisher-signature verification: index
+`sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf`
+passed the official `release-images.yml@refs/tags/v2.7.1` identity and GitHub
+Actions issuer checks. That signed index's unique amd64 child is
+`sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005`,
+config `sha256:8b664b4dd46db74a327e373f7b9581e39a1447b7d788b9b69f664896683c14d5`.
+
+Authenticated Syft1.54.1 and Grype0.120.1 archive/binary hashes were verified
+against the existing public tool-readiness receipts before execution. Direct
+isolated CLI phases used readonly rootfs, no Docker socket/auth/config or
+private data mount, all capabilities dropped/no-new-privileges, PID64/CPU1/
+memory2GiB/swap2GiB and300-second bounds. SBOM registry extraction exited0
+in28.355s:320 packages,985,738 bytes. Exact index/embedded manifest/config/
+platform/eight diffIDs and Grype artifact IDs matched. SBOM SHA256:
+`48105d750eb7da5017b5731f7372db4b8d336e3a7aa5ec4fc7179061d5ac6930`.
+
+The first public vulnerability DB download failed because its64MiB temporary
+filesystem filled. That FAIL is preserved. The narrow retry used temporary
+space inside the already-owned public DB cache, with the same resource bounds,
+and exited0 in175.605s. Offline DB status was valid, schema v6.1.10, built
+2026-10-13T06:35:20Z (about17hours old). Offline SBOM scan exited0 in12.315s,
+no OOM:49 matches/29 unique IDs, Critical3/High20/Medium13/Low8/Unknown5.
+Grype output SHA256:
+`0372f266feaa849b8ed9cbf6256ed024570c916cb02557407b10623ce4b29196`.
+All seven invocation-owned containers were removed. Exact argv/client and
+container exits, bounds, cleanup and binding receipts remain in the exclusive
+public scratch directory `/tmp/hyhome-p01-selected-image-security-20261014`.
+Its sanitized immutable `selected-artifact-summary.json` SHA256 is
+`846f2ff0efcc4652eff850034e8f195c5574b5e84d245f756e2210338214760e`.
+
+Independent security review verified those three hashes and scoped the two
+unique Critical IDs behind the three matches. Official
+[GO-2026-6612](https://pkg.go.dev/vuln/GO-2026-6612) applies to this Linux
+server: tagged listener advertises h2 and TLS server calls `http.Server.Serve`,
+so the vulnerable flow-control/refund path is reachable. Evidence supports
+buffer-budget bypass/resource exhaustion, not RCE or disclosure. Its x/net
+match is duplicate package evidence; it is not a second unique Critical.
+[GO-2026-6604](https://pkg.go.dev/vuln/GO-2026-6604) concerns Windows junction
+handling and is not applicable to linux/amd64. The selected binary uses
+Go1.27.1 and x/net0.58.0; reported fixed versions include Go1.27.2 and
+x/net0.60.0. Other matches are not silently dismissed or fully triaged here.
+
+Security acceptance of this exact official2.7.1 artifact is BLOCKED. It must
+not be deployed. Remediation is a vendor artifact with fixed dependencies or
+a separately reviewed reproducible owned rebuild with exact source/toolchain
+provenance, SBOM/scan and native/recovery evidence. The latest official release
+still resolved to2.7.1 at this observation; no accepted replacement was found.
+A broad upgrade request is not residual-risk acceptance. The existing ledger
+is not rewritten as globally complete, and criterion15 stays pending.
+
+#### Owned OpenBao reproducibility and local import — 2026-10-14
+
+The owner-selected patched build uses signed/authenticated source/toolchain/base
+and offline package materials c60926e2. The failed r3/r4 attempts remain in
+TSK-0006. Two clean independent r4-attempt2 Go compilations produced identical
+binary f0b103b853891539cfe4c01421074077de8b3665b189ecbe3159f7966d876a51
+and build-info77b26c30d4d08d41ffb13dad917d73ed98482c898166d9c6100cf7403c12990f;
+their whole images failed solely on APK installation wallclock log contents.
+R5 source packetc3183267 adds global --no-logfile to the offline recipe.
+Independent code/security/IaC approved its seven source hashes and the fixed
+one-time action v2 freeze3d966dae, runner78dcadfe and literal launcher31a2dc01.
+The actual argv used env-i absolute isolated/no-site Python with the reviewed
+runner embedded in memory, never executing a mutable scratch pathname.
+
+The admitted action ran once, exit0. It reused the two independently held and
+verified r4 compiler outputs, copied them into separate exclusive files, and
+performed two fresh r5 runtime assemblies. Both phase receipts passed with no
+OOM and exact-created-ID removal. This is explicitly compile
+REUSED_VERIFIED_R4_NOT_RUN, not a new r5 Go compilation or resumed r4 success.
+Both normalized layers, config, manifest and full OCI archive bytes match;
+apk.log is absent. The final public output uses1,898,971,809 bytes, under4GiB,
+with the16GiB filesystem reserve preserved. Independent post-run IaC accepted
+the artifact for scan and pinned import only.
+
+| Artifact namespace | Exact SHA-256 |
+| --- | --- |
+| OCI archive, both191989760-byte independent files | e8b42840819cfbbcb81c3753ad9a0ae4ec7191b35e2ddc9f9eab205fb6646bbc |
+| OCI manifest | 46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e |
+| OCI config | 7ee363935e49f667e408afda590dbc60182cea82587fea3a94a1d8a74586e1d1 |
+| Uncompressed OCI layer/diff-id | c5d8fbcc0e7a364df2f93193b6524cba8ee10b0dab76213060972abbf656be74 |
+| Runtime-only lineage receipt | 7001b288816e3474dd28a38b3c642f735474cc8fd0a2aefb6faa992599ced074 |
+
+Root independently checked held archive FD/path signatures, raw descriptor and
+layer hashes, linux/amd64 identity and exact R4-binary/R5-runtime/material labels.
+Proof files remain in `/tmp/hyhome-p01-selected-image-security-20261014`.
+A single Docker import succeeded under its digest reference, but the first
+import validator failed because it assumed the version tag was imported too.
+The expected absent owned local tag was then explicitly attached to the same
+already imported manifest, without a second load. Actual Docker29 local ID is
+the manifest46bf, distinct from OCI config7ee; both the tag and tag@manifest
+resolve to46bf. No remote image push or HOME service change occurred.
+
+The first isolated version probe used the wrong /bin/bao path and failed; the
+reviewed owned recipe installs /usr/bin/bao. The corrected probe's CLI exited0,
+without stderr, and returned the exact owned version, upstream revisiona5db72c
+and committed2026-10-01T13:32:54Z. Its validator still failed because it expected
+the word built rather than the observed committed. Both original FAIL receipts
+remain. A separate pure validator accepted the already recorded exact version
+and client exit without another container execution; it does not invent
+unobserved Docker state fields. Both exact probe IDs were removed.
+
+Fresh owned SBOM/CVE scans and independent applicability acceptance are still
+NOT_RUN at this receipt. The reviewed R5 scan plan is public/offline only and
+binds the accepted archive/OCI namespaces. An accepted reproducible build,
+import or version string alone does not clear official-image GO-2026-6612 or
+admit HOME deployment. candidate_signed_by_upstream_openbao remains false;
+upstream signed inputs and owned provenance are separate evidence.
+
+### Declared-versus-running service versions — 2026-10-14
+
+At main7f4c364f, public Docker metadata identified63 project containers:
+59 running and4 exited jobs. Thirty match the exact declared local image ID
+(including the four exited jobs),32 running healthy targets differ, and one
+build-only oauth2-proxy identity is unresolved. Five unlabelled k3d containers
+and48 declared-but-unobserved services are excluded from deployment. All107
+explicit source image references already match the current version projection
+and ledger declarations; this work concerns runtime drift and does not invent
+new source version bumps. Public inventory SHA256
+5a7a8563f667e6109d5f8a01232deff7cfbca41936cfc37b1bd923e579267749;
+its exact32-target analysis SHA256
+a990bb49a15e17e1f90c6459508d5ea672a845cd5a3e1f40dd8f53aae59e1597.
+
+The first scoped candidate is MNG valkey-exporter: running redis_exporter
+v1.91.1-alpine to declared v1.93.0-alpine index93831cd4, amd64 child5eac4c83.
+DEV is a separate later canary. The reviewed direction reuses authenticated
+Syft/Grype and existing artifact identity checks, then proves config parity,
+native compatibility, exact rollback identity and both Prometheus
+up{job="mng-valkey-exporter"}=1 and redis_up{db_scope="mng"}=1.
+The public exporter admission plan SHA256 is
+fec62095dcd46389b54e0ea8b17eb31e48eab547bdc367641dc83d1c081613b6.
+No exporter deployment or fresh candidate SBOM/CVE/native test has run yet.
+
+Read-only publisher research found unsigned BuildKit provenance bound to the
+selected child, but no publisher signature/DSSE/SBOM or GitHub subject
+attestation at the investigated index/child routes. A verified Git commit and
+release archive checksums do not authenticate the different OCI build.
+Existing sample-only exceptions are not a production waiver. Concrete fresh
+scan/compatibility evidence and independent security disposition must precede
+any owner decision on the remaining publisher-authentication residual.
+
+### Actual owned scanner preparation attempt1 — 2026-10-14
+
+After final code/security/IaC approval of action59287064 and33 synthetic tests,
+ROOT executed exactly one new-output public/offline attempt. The action exited3
+CREATE_RECOVERY_UNPROVEN during db_status create validation, operation
+ e65c3188e57f59cf05271b31144b7046:db_status. Exact temporary ID
+1e8fe413f849ebd7d437b8f8d2e242f3f7c0e5c87d563c06189d010982c49844
+remained created and never started. The validator incorrectly compared Docker's
+Env list to only the explicit variables, omitting the signed runner's three
+public inherited values and assuming list order. No DB/Syft/Grype process ran.
+
+ROOT obtained independent scoped cleanup review, re-proved exact ID/name/nonce/
+image, never-started state and resource/mount/command contract, compared the
+full duplicate-free environment map to the exact public runner base plus five
+explicit variables, then removed only the full ID without force. Name and
+ID filtered lists both returned exit0+empty. The existing attempt output with
+two public config files and original failed source remains preserved.
+Reconciliation receipt SHA256:
+06b1bc8d934df8fdc500e6e7dede11eb57cd64da35fe7014f90f1d6385f2173f.
+The already-authenticated exact runner image's public base Env observation is
+bound by receipt4311db3c4b3add74e3262be9a914180c4a2b59e571e125eab881797453655305;
+it is a ROOT byte observation, not a newly generated publisher signature.
+
+A corrected fresh-output source packet is being prepared and must receive its
+own exact review. Actual SBOM/CVE acceptance and HOME deployment remain
+NOT_RUN. ROOT also found a related subset-only Env check in the as-yet-unrun
+MNG exporter operator; independent security review classified it an action
+blocker. Its correction requires full exact Env-map equality and negative
+regressions before any exporter execution. The MNG scan/deploy remains NOT_RUN.
+
+### Actual exporter observation and clean-main metadata comparison — 2026-10-14
+
+MNG selected exporter r4 source received exact code/security/IaC action review.
+ROOT independently replayed27 synthetic tests, then executed the frozen
+launcher9620b06a once. The actual invocation exited0 PASS_OBSERVATION_ONLY.
+The64MiB-bounded cached export produced8340992-byte archive SHA256
+8349ba2914df08d19664e6c01ca67ac0915d45041eacacc96e0ce57093064035.
+Exact index93831cd4, selected child5eac4c83/config8d339939, all three compressed
+layers and uncompressed diff IDs were bound. Actual Syft, DB status and Grype
+ran offline in the resource-limited pinned runner with exact-owned cleanup.
+
+Public receipt SHA256:
+1cca5d86a0cf95fd7bb9183218aff182406e431c874de9fe013b3e9fa1de4511.
+SBOM SHA256:
+143c83f7c4399f300e266878ccdd842837e337c679ccde96aa0f2c513cfa38fd.
+Raw Grype reports44 findings (2 Critical/17 High/13 Medium/8 Low/4 Unknown),
+including stdlib Go1.27.1 GO-2026-6612 and GO-2026-6604. Raw package matches
+are not proof of applicability to the actual Linux service. Independent
+primary-source applicability review is pending. Publisher authentication is
+still UNSIGNED_PARTIAL_NOT_ACCEPTED. Native compatibility, configuration
+parity, residual acceptance, exporter deployment and metric postchecks remain
+NOT_RUN. No Valkey data/credential/init/ACL was read or changed.
+
+Owned OpenBao scan attempt2 passed DB status and Syft, publishing raw SBOM
+7f4d8865684adaca230f6509fae436c18e7eebd9695ebab13749ebf8df27d98d.
+Grype creation then exited with the action's CREATE_RECOVERY_UNPROVEN because
+the namespace transform left the Grype SBOM bind at the absent original output
+path. The exact operation label and exact derived container-name filtered lists
+both returned exit0+empty. Grype never started by reviewed source sequencing;
+its original Docker create exit was not captured and is not invented.
+Reconciliation SHA256:
+1556ee78c6ebc476bf8dbaa9e68acd28138bd3f62a6760eb3ee2d065813c2aba.
+The failed attempt and its successfully published raw DB/Syft outputs remain
+preserved. Correcting all derived output paths requires a new source freeze,
+review and fresh output; actual owned CVE acceptance is still NOT_RUN.
+
+The build README documentation-only correction passed focused registry body/
+frontmatter validation, links, markdownlint and independent review. Its new
+SHA256 is7f2870a1b42988afea695d2e6dc400e973b6122d3c400b8beb264b9ba39e5b98;
+original c318 README is retained at
+/tmp/hyhome-openbao-build-readme-c318-before-doc-only-20261014.md,
+SHA256 f953dd2726c8926671c1d54fb185c3b76a2bbeb80c887a35f09f7781fc19ae16.
+This does not claim a rebuilt artifact or change historical recipe evidence.
+A read-only metadata comparison on clean main7f4c, selecting unchanged
+archive migration0001, also exited1/type-mismatch (selected1/violations1).
+At least that archive finding predates this work; remaining corpus findings
+are not waived. Final registered quality gates remain pending.
+
+### Actual owned OpenBao full scanner attempt3 — 2026-10-14
+
+The corrected all-caller output namespace received exact independent code,
+security and IaC approval. ROOT independently ran34 tests, then executed
+frozen actionbcb9db285c4cc2ddef3dacf52833aeb2736e45335d2ef2618ada498f11f2a53e
+once in the new owned-oci-scan-r5-attempt-3 directory. Actual action exited0
+OWNED_OCI_SCAN_R5:PASS. DB status, Syft and Grype each recorded client0,
+container0, noOOM, exact-owned cleanup0 and post-removal full-ID absence.
+No HOME service, private credential or deployment was involved.
+
+Public scan receipt SHA256:
+8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9.
+Raw SBOM SHA256:
+7f4d8865684adaca230f6509fae436c18e7eebd9695ebab13749ebf8df27d98d.
+Raw Grype SHA256:
+d729f6a20d1d231ca83de3c8f879901825a944199e13ece62cd828382b90c59f.
+The archivee8b42840/manifest46bf9b5c/config7ee36393/layerc5d8fbcc binding,
+320 Syft packages, all six required runtime Go module versions and all28
+actual APK versions passed. Effective scanner visibility retained matches and
+ignoredMatches with no user excludes, VEX or hidden matcher suppressions.
+The public output before receipt was996170 bytes under96MiB.
+
+Result:0 Critical,0 High,3 Medium package matches of CVE-2025-60876
+(busybox/busybox-binsh/ssl_client1.37.0-r31) and1 Unknown module match
+GO-2026-5932 (x/crypto0.57.0),0 ignored. GO-2026-6612 is absent on the
+patched Go1.27.2/x-net0.60 runtime. Independent primary-source applicability
+review of the two remaining unique IDs is pending. This is successful native
+scan transport and coverage, not yet candidate security acceptance or HOME
+upgrade. The original failed attempts remain retained without promotion.
+
+### Owned candidate admission and current native status — 2026-10-14
+
+Independent security review admitted the owned OpenBao source candidate for
+the next bounded native validation. The full scan receipt remains
+8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9:
+0 Critical,0 High, three Medium BusyBox-family matches for CVE-2025-60876 and
+one Unknown `golang.org/x/crypto` match for GO-2026-5932. Review confirmed that
+the legacy `x/crypto/openpgp` path is absent and the source uses ProtonMail's
+implementation. The dormant `wget` Medium residual remains. This admission
+binds authenticated build inputs and reproducible owned provenance; it is not
+an upstream OpenBao signature or a HOME deployment acceptance.
+
+Current source pins both OpenBao service image references to the owned
+manifest46bf9b5c, includes renderer issuance helper5c809c1e and the corrected
+TLS-material check, aligns the affected fixtures, and projects the owned pin in
+the shared tech-stack data. The focused RED run produced one failure and three
+errors. After the source correction,39 tests ran:35 PASS and four explicit
+native-opt-in SKIPPED. A fresh native validation then started and observed the
+expected full-audit denial with HTTP500 before completion. Its input SHA256 was
+d1c59476085763d99798413c402e4fe4d8341ab8fe45fc76b84eee6281db65af.
+The final invocation ran13 tests in276.386 seconds:11 PASS, two ERROR and no
+skips. Candidate native TLS expiry, audit and snapshot checks and the diagnostic
+path passed. Both the native full rehearsal and versioned issuance stopped at
+wrapping line540 with `RehearsalFailure: native interrupted issue exact cleanup
+failed`. The result is FAIL and unresolved while ROOT diagnoses the synthetic
+helper boundary. There is no aggregate native PASS, deployment, issuance or
+HOME change to record.
+
+The first actual failure receipt SHA256 is
+555afd88b549ff79502a4074eeac10e236b6aa802c4e38d1e5eb0b27aa5754a5.
+Diagnosis found `BAO_TLS_SERVER_NAME=openbao` missing only from the synthetic
+fixture. The focused RED regression failed once before the correction. After
+the minimal fix, Ruff passed and the combined suite ran74 tests in24.939
+seconds:70 PASS and four native-opt-in SKIPPED. Independent IaC and security
+review approved the exact Runbook version0.10.2 and fixture. The single reviewed
+native rerun used fixture input SHA256
+2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73 and
+exited0 after454.043 seconds:13/13 PASS, no skips, including all four native
+tests. Public log SHA256 is
+2466d19f23c35067841b89bf1081e15497f453320d5ced4074d4cdad6675db39;
+ROOT observation receipt SHA256 is
+2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8.
+The first FAIL remains historical evidence rather than being promoted. The
+second PASS resolves the synthetic fixture failure only and does not establish
+HOME custody or deployment.
+
+The MNG exporter observation's44 findings now have a security disposition that
+blocks official deployment. GO-2026-6613 is High and its HTTP/1 CONNECT path is
+reachable through the selected exporter health/source path. A Go1.27.2 owned
+rebuild is the recommended remediation and remains pending. No exporter image
+was deployed and no exporter post-deployment metric acceptance ran.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
@@ -1538,6 +1844,13 @@ and its later observations are recorded above.
 | Public tool publisher checks | 15 | W31 | Two exact OCI subjects and Syft/Grype release checksum authentication | Five actual exits 0; reviewed operator and immutable receipt recorded above | PASS | Public Tool Publisher Authentication Receipt | - |
 | Authenticated scanner versions | 15 | W31 | Exact authenticated archive extraction and isolated version-only execution | Syft/Grype exact version/source/platform, client and container exits 0; 11.827 seconds | PASS | Authenticated Scanner Extraction and Native Version Receipt | - |
 | HOME, migration, rotation and recovery | 15 | W31 | Initial source-only slice had no operational authorization; later direct authorization covers bounded continuation | Exact per-target execution and acceptance remain pending; read-only observations are recorded above | NOT_RUN | Current TSK-0009 and per-operation contracts | - |
+| Selected OpenBao subject and SBOM | 15 | W31 | Authenticated Syft; exact signed-index child/config/platform/diffIDs binding;320packages/exit0 | childa36ea8; SBOM48105d75 | PASS | Selected OpenBao Artifact Inspection — 2026-10-14 | - |
+| Selected scanner DB preparation failure | 15 | W31 | First owned64MiB tmpfs download filled and exited1 | Grype0.120.1 exact authenticated binary | FAIL | Selected OpenBao Artifact Inspection — 2026-10-14 | - |
+| Selected scanner DB and execution | 15 | W31 | Owned-cache retry/valid fresh DB/offline scan;exit0/noOOM/49matches | summary846f2ff0; Grype0372f266 | PASS | Selected OpenBao Artifact Inspection — 2026-10-14 | Selected scanner DB preparation failure |
+| Selected OpenBao security applicability | 15 | W31 | Independent official advisory/tagged server-path review: applicable GO-2026-6612; Windows-only GO-2026-6604 excluded | exact childa36ea8 Go1.27.1/x-net0.58.0 | FAIL | Selected OpenBao Artifact Inspection — 2026-10-14 | - |
+| Owned OpenBao packaging reproducibility | 15 | W31 | Two independently verified R4 compiles and two new R5 runtime assemblies; exact fullOCI equality, apk.log absent, independent post-run IaC acceptance | R5packetc318; actionfreeze3d966dae; manifest46bf | PASS | Owned OpenBao reproducibility and local import — 2026-10-14 | - |
+| Owned OpenBao import and version validator assumptions | 15 | W31 | Initial absent-tag assumption; wrong /bin/bao path; built vs actual committed output expectation; original failures retained | acceptedmanifest46bf, public exact receipts | FAIL | Owned OpenBao reproducibility and local import — 2026-10-14 | - |
+| Owned OpenBao local identity and recorded version | 15 | W31 | One import, absent owned tag attached, tag@digest resolves; separate pure validation of existing exact owned version/client0, exact probe cleanup | archivee8b428/manifest46bf/config7ee | PASS | Owned OpenBao reproducibility and local import — 2026-10-14 | Owned OpenBao import and version validator assumptions |
 
 ## Criterion Acceptance
 

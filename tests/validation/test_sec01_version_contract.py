@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-OPENBAO = "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
+OPENBAO = "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
 
 PATCH_STABLE_IMAGES = {
     (
@@ -339,6 +339,14 @@ class CandidateContract(unittest.TestCase):
         ).read_text()
         self.assertIn("docker exec -i openbao sh -ec", backup)
         self.assertIn("bao operator raft snapshot save", backup)
+        runbook = (
+            ROOT / "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md"
+        ).read_text()
+        image_arguments = re.findall(
+            r"(?:openbao/openbao|hy-home/openbao):[^\s]+@sha256:[0-9a-f]{64}",
+            runbook,
+        )
+        self.assertEqual([OPENBAO, OPENBAO], image_arguments)
         config = json.loads(
             compose["services"]["openbao"]["environment"]["BAO_LOCAL_CONFIG"]
         )

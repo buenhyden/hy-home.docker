@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.17"
+version: "0.2.21"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -33,6 +33,23 @@ Real HOME credential reads/issuance, restarts, cold boot and restore await the
 concrete host, impact and recovery facts. Existing bootstrap and snapshot
 source is reused; old source-only/prompt/draft labels do not stop independent
 work. LAB and all learning-app planning/implementation are excluded.
+
+The 2026-10-14 direct user request supersedes the earlier source-only operation
+limit: execute deployment, issuance, migration, retirement and recovery, then
+clean related development branches/worktrees. The latest steering prioritizes
+OpenBao issuance and upgrade. This authorizes concrete preparation and the
+named maintenance operations; it supplies no missing cryptographic quorum,
+independent custody or authenticated input. The user's current answer is
+"independent custody or holders need preparation" and asks for investigated
+resource choices before migration/retirement/restore selection. Secrets remain
+outside chat, Git, argv and ordinary logs.
+
+The latest trusted reply assigns the operator to `buenhyden` and confirms that
+unseal shares and off-host custody are prepared. This supersedes the earlier
+preparation-needed answer. It is an owner readiness attestation, not observed
+secret input, a named custody-location receipt or completed recovery evidence.
+Two distinct shares and current OIDC authentication still enter only through
+the reviewed protected client.
 
 ## Work Log
 
@@ -2299,6 +2316,701 @@ exclusion is confirmed (SPEC-0240 criterion 4) and listings of the local host
 and R2 repositories show no pre-exclusion host snapshot. The first storage still needs a fourth, share-free
 place. Step 5 is attested against that table; SPEC-0240 W5 holds the record.
 
+### Current Operation Preparation — 2026-10-14
+
+Local main and fetched origin/main were clean at
+`1e7e2ba841c4e428a06762a61a570011711bc1ef`. PR459 and PR460 had already
+merged externally; their merge receipts are not an agent-run deployment.
+The integration writer uses `codex/openbao-maintenance-integration`; P01 owns
+only the protected client/tests, P06 its bounded copy primitive/tests, and
+this writer owns shared CI, manifest, Plan, Task and Runbook updates.
+
+Read-only HOME preflight observed server `d2943ebb0619` and Agent
+`0f0a8494f289`, both healthy on the historical 2.6.2 image. Auth-free status
+reported initialized/unsealed, Raft, Shamir threshold2/shares3 and cluster
+`51fbfa38-a715-7dca-629f-3f07233749f4`. The selected server mount was
+`hy-home-infra_openbao-data`; the current server has no selected TLS/audit
+mount. The current backup unit reported `Result=exit-code`, `ExecMainStatus=1`
+and failed state at 2026-10-14 03:43:29 KST. Raw logs and credentials were not
+read. The preserved 2026-10-13 snapshot remains a 58,396-byte regular 0600
+file; metadata inspection is not a fresh snapshot or successful recovery.
+
+Actual candidate preparation pulled the approved linux/amd64 child
+`sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005`
+of source index
+`sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf`.
+The isolated `bao version` probe had no mounts/network, readonly filesystem,
+all capabilities dropped, no-new-privileges, PID32/memory128MiB/CPU1 bounds;
+exit0 reported 2.7.1 revision `a5db72cef75c24b920ade02065b18dd8eb666bac`.
+The invocation-owned transient container was removed. No server was started.
+
+Publisher verification used authenticated pinned Cosign OCI
+`sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8`.
+The first attempt failed because the tool's `.sigstore` cache was readonly.
+An ephemeral cache fixed that environmental failure; the next attempt still
+failed because the binary-checksum `release.yml` identity did not match OCI
+images. Official tagged `release-images.yml` confirmed the distinct image
+workflow. The final exact image identity
+`https://github.com/openbao/openbao/.github/workflows/release-images.yml@refs/tags/v2.7.1`
+and issuer `https://token.actions.githubusercontent.com` verified the exact
+index: exit0, four signature rows, certificate trust and transparency claims
+verified. Identity checks were retained; neither failure is a vulnerability
+scan result. Selected SBOM/CVE acceptance remains separate.
+
+The exact external gateway is `https://openbao.hy.home.arpa:443`, numeric
+connect IP `192.168.0.13`. Its public CA is
+`/home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem`, SHA256
+`6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87`,
+UID1000/GID1001, mode0644, one link, 1,700 bytes. A token-free TLS probe
+verified CA/SAN with TLSv1.3; certificate expiry was 2028-12-17. This public
+hash pins gateway trust and does not hash a key or unseal share. Internal
+OpenBao backend trust and its planned audit deployment remain distinct.
+
+The initial protected client passed 34 synthetic tests/94% coverage but
+independent reviews rejected it: decoded root was not authenticated; CA
+provenance was unpinned; secret roles could contain equal bytes; deep JSON
+could escape sanitized errors; cleanup/output could downgrade post-mutation
+uncertainty to BLOCKED. These source findings are preserved pending the
+corrected exact-input review. No actual ceremony occurred.
+
+The corrected frozen client is SHA256
+`640a3bd7cc913028d0e9c67ab31bed385341339386b4c4e572c0b14544a17506`;
+base tests are `c8cba04c8246835646523c239a48677ea40fbe9e4762f4df06a211bfd65c5f5c`
+and review tests `6b68869c1e13745a41bde58c4c07b5640032a4a2da11056759c237e3367d9964`.
+Correction RED recorded six failures/three errors before fixes; a companion
+fixture/import error was corrected before the final unique test collection.
+Independent QA command:
+
+```sh
+rtk /tmp/hyhome-p04-qa-tools/bin/python -m unittest tests.validation.test_openbao_protected_maintenance tests.validation.test_openbao_protected_maintenance_review -v
+```
+
+Exit0: 46/46 PASS, skip0, 4.015s. Independent branch coverage was93%
+(408 statements,22 misses,146 branches,13 partial); scoped Ruff/format/diff
+passed. Code and security reviewers independently approved the exact three
+hashes after verifying separate decoded-root lookup, public CA provenance
+before secret input, distinct role bytes, bounded JSON and post-mutation
+cleanup/output uncertainty. This resolves the initial source review defects,
+not any HOME prerequisite or historical backup/restore failure. The Runbook
+uses only public flags, approved-blob private copy and hidden input.
+
+The next separately reviewed compatibility delta admits only the exact owned
+version `2.7.1+hyhome.go1.27.2.net0.60.0.r1`. Current parent source is
+`2c6101572dca382752cc5cef25f9d5d1ed18804e40c43984f41ea6e5d80734a2`;
+base tests remain `c8cba04c8246835646523c239a48677ea40fbe9e4762f4df06a211bfd65c5f5c`
+and review tests are
+`13feeb75590ded2cba39c0f44189c6bac81ed9b6d29a81b9f497ab5e0caf3b8a`.
+Focused RED rejected the owned version before the change; the combined suite
+then passed47. Independent security replay passed47/3.137s; code review
+approved the exact delta, while its sandbox replay failed before collection
+and supplies no test PASS. Arbitrary owned suffixes and r2 remain rejected.
+This allowlist does not authenticate an image: native version, provenance and
+selected security acceptance remain required before operational use.
+
+The new separate TokenOps unit implements only restricted snapshot-token
+issuance and temporary-root revocation. Initial source `3b3f0f8c` passed85
+synthetic tests but independent review rejected optional recovery-operator
+authentication, arbitrary HOME/custody aliases, method-insensitive status
+admission, malformed response schemas and an inadequate operator lifetime.
+That test PASS is not review acceptance. One combined correction recorded
+RED4 failures/2 errors and froze helper
+`eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688`,
+base tests `38f109095f582fd7b3f35837f9e3666053efe4d04159e4a49c1f2e92a57563ca`,
+review tests `41ff32b01c79ec13aac2934a40cd839f3002bcb4acde21afded1eaf575efa79c`
+and policy `1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622`.
+Independent QA passed99 unique tests/skip0/6.545s, branch coverage87%, scoped
+Ruff/format/diff and unchanged hashes. Independent code and security reviews
+approved that correction. The exact fixed destination is absent token and
+absent issuance lock under `secrets/backup/openbao`; metadata-only preflight
+observed this directory device64512/inode5260267, UID/GID1000, mode0700.
+Canonical HOME was device64512/inode4338469. Expected identity inputs come
+from this pre-recorded public receipt, not the caller's self-authorization.
+
+Issuance authenticates actual root, permits only the absent/known prior/exact
+policy, creates one no-default-policy 720-hour orphan service token, proves
+exact capabilities, ordinary-secret denial and renewal, and delivers once
+without overwrite. Revocation requires separate protected root/OIDC inputs,
+an exact renewable service operator with at least600 seconds TTL immediately
+before POST and afterward, and root403 afterward. The current root remains
+in protected custody on ambiguity; no credential has actually been issued,
+read, renewed or revoked by this source preparation.
+
+Initial protected snapshot source `062e929b` passed76 synthetic tests and83%
+branch coverage, but independent code/security review rejected fabricated
+renewal fields, incomplete native metadata validation, output-path rebinding,
+receipt namespace and final digest binding, source/output aliases and
+post-effect cleanup/uncertainty handling. Its correction remains pending;
+these tests do not admit W3 or provide a fresh backup.
+
+Seven clean merged related worktrees/local branches and five remaining remote
+branches were removed with normal non-force operations after exact SHA,
+ancestry and ownership checks. COORD's ignored handoff directory was moved
+without reading its contents to
+`.agent-work/retained-development-handoffs/20261014/coord-current-handoff-repair`;
+filesystem identity was preserved. Dirty foreign worktrees, unmerged drafts
+and operational receipts remain held. No volume, private source credential or
+snapshot was deleted by this development cleanup.
+
+Independent current IaC review found three executable-plan gaps: semantic
+restore had been deferred after the window despite being a pre-upgrade gate;
+W3's bare snapshot command supplied no restricted token or atomic host artifact;
+audit setup was deferred until after server creation. RUN-0085 now requires
+W3a before W4, delegates W3 to the tracked protected backup flow and requires
+audit/rotation preparation plus ordered gateway/monitoring trust rollout.
+No new restore CLI is invented. Current exact artifact/empty-target/restore
+executor admission remains missing, and the protected client does not implement
+snapshot-token issuance or restore.
+
+Actual bounded audit-directory preparation followed independent IaC READY.
+The first exact noninteractive sudo command failed exit1 without creating the
+directory; a fixed-image direct-mkdir alternative was independently reviewed.
+Its first Docker argument attempt failed exit125 and left the path absent.
+After correcting the mount syntax, the same current2.6.2 image, UID100:GID1000,
+network-none/readonly rootfs/all-caps-dropped/no-new-privileges/PID16/memory32MiB/
+CPU0.25 invocation created only the absent audit directory, exit0. Exact target
+`/home/hyunyoun/storage/volumes/security/openbao/audit` now has device2064,
+inode115609395, UID100/GID1000, mode0700 and 2,742,595,534,848 available bytes.
+Parent identity stayed unchanged; the transient was removed. Audit file,
+named volume, logrotate and server mounts were not created or modified.
+Rollback is only rmdir of that same empty unmounted inode; private sibling
+contents were not read and no recursive ownership change occurred.
+
+The dedicated host audit-rotation rule is source-approved at SHA256
+`2ad4473a4f7f3fcaae37a9ad430b32a8ebf9398853ea8b0090233c74b2eaf765`;
+focused tests are `e0c36c1ffb2e3ec27fca6513629e9b573711eaad40da3006c22db2a74ffee212`.
+The first name-based inspect/kill race was reproduced with2 RED failures;
+the correction captures a full immutable container ID, verifies running and
+exact Compose labels on that ID, then signals that same ID. Seven meaningful
+shell/static tests passed; the coordinator's pre-NSS replay passed7/0.032s.
+The subsequent native parser rejected both numeric group forms. The final
+rule uses the actual public host mapping `dhcpcd`→UID100 and `hyunyoun`→GID1000,
+retaining mode0600, rename/create, no copytruncate and delayed compression.
+Independent IaC re-review approved the final exact two-file source delta.
+
+An initial host probe observed no logrotate package/config/units. A later
+independent probe and controller metadata recheck observed executable/config
+and an enabled active daily timer, with file ctime2026-10-14 09:40:51 KST.
+Actor/cause is unknown; no agent installation is claimed. Current package is
+3.21.0-2build1. Host debug parsed the rule but failed its unprivileged UID
+transition with EPERM; noninteractive sudo failed. Public-only Alpine package
+preparation retained its initial bind-permission failures before successful
+signature-enforced offline installation. An independently matching official
+key hash207e4696 authenticated the selected key; no allow-untrusted was used.
+Final isolated logrotate3.22.0 debug used network-none, readonly root/package/
+rule/public NSS inputs, UID100:GID1000 and no capabilities: exit0, one rule,
+daily/maxsize268435456/rotate14, absent audit file skipped. Postrotate, actual
+host state-file access and rotation were never executed. The different tool
+version and host privilege failure remain visible.
+
+The rule's256MiB/14-file sizing is provisional, not measured retention or a
+hard file-size bound. W0 still requires atomic root-owned registration,
+privileged host parser and hourly scheduling using the same global state and
+lock; W6 requires actual inode/reopen/growth/failure-alert evidence. None is
+supplied by isolated debug or Docker HUP delivery. Public preparation receipts
+remain under `/tmp/hyhome-p01-logrotate-parser-20261014`; no private audit
+contents were read and no host rule, timer or audit file was installed.
+
+The snapshot b390 intermediate passed88 synthetic tests but review found
+overwrite/publication, post-save uncertainty and source-directory binding
+defects. The fbaf intermediate passed95 tests but its link-then-unlink
+publication could lose the sole verified copy after a concurrent final-name
+replacement. These remain failed reviewed inputs despite their test counts.
+The final main2779382f/archive48ff7d0e/custodyfd266cdd packet replaces that
+publication with typed dirfd-bound Linux renameat2(RENAME_NOREPLACE), without
+fallback. Both snapshot and receipt retain partials on EEXIST/ENOSYS, bind the
+held FD to the final inode and revalidate/fsync. No code separately unlinks
+the last verified partial after binding. Save/final-check/close/success-output
+interruptions conservatively report INDETERMINATE. Independent code/security
+approval and QA100unique/0skip passed; branch coverage85%/83%/89% for the
+three sources. RUN-0085 installs these exact approved blobs and uses the
+authenticated standalone save, while preserving separate writer-quiescence,
+offsite and semantic-restore evidence requirements. No HOME snapshot ran.
+
+Selected SEC01 inspection completed successfully as tool execution and
+artifact binding, but independent review confirmed the candidate's Linux
+HTTP/2 GO-2026-6612 applicability. TSK-0009 owns exact scanner hashes and
+security disposition; this official2.7.1 artifact is BLOCKED for deployment.
+A patched accepted artifact is needed in addition to physical custody and
+recovery inputs. The current2.6.2 runtime was not scanned by that result.
+
+The user explicitly chose an owned rebuild using patched Go and x/net, twice
+through the current trusted question-reply channel. This authorizes the
+selected public source/build preparation, not acceptance of the vulnerable
+official image or completion of physical custody. SEC01 owns the authenticated
+source, minimal module closure, bounded offline build and fresh artifact scan.
+Neither an uncompiled recipe nor a synthetic source test admits W4/W5.
+
+The frozen owned-build r3 source packet
+`e2487b5b6822162eaf8aad603630167f7f80c3672f8f6e618ee98f07c8f38b53`
+passed independent code/security/IaC review and 41 unique unit tests, with
+independent branch coverage88%/85% for the builder/OCI helper. All seven
+native-input files were intentionally staged. The existing Git attributes
+pattern for unified-diff context markers was reused for the module patch;
+cached diff checking then passed without changing native inputs. A fresh
+read-only plan and immediate resource/output-absence preflight passed.
+
+Actual compile pass1 failed after53.649s with exit1: Go used the bounded128MiB
+`/tmp` tmpfs for its work directory and reported ENOSPC. The container was not
+OOM-killed and its exact created ID was removed. The failed output, public
+compiler diagnostics and receipt remain under
+`/tmp/hyhome-p01-selected-image-security-20261014/owned-build-frozen-r3`.
+This is an execution failure, not an accepted artifact. The affected fix uses
+the existing fresh disk-backed cache mount for Go temporary work; no HOME
+mount, network access or increased container limit is authorized by this result.
+
+R4 packet2370a5d3 adds only a fresh0700 cache/tmp and GOTMPDIR on the existing
+writable cache mount. Independent affected code/security/IaC reviews and42
+unit tests passed. Actual compile1 passed in446.855s and runtime1 in14.873s,
+both without OOM and with exact-created-ID cleanup. The wrapper then failed
+before pass2. A complete first-pass OCI exists, but reproducibility is NOT_RUN;
+the remaining post-runtime resource/material/source guards are under diagnosis.
+The wrapper's generic Blocked output does not prove a specific historical
+resource measurement, so no inferred cause is accepted as an observed result.
+
+Common-integration r1 failed independent review: ambient Git/Python execution
+did not bind the actual credential-bearing process; exact W3 off-host artifact
+custody was not a mandatory W4 stop; and RUN-0021 used a nonexistent anchor.
+Light QA separately found a runtime-literal deficit, unsorted manifest rows
+and untracked source references. The r2 edits began after code/security review
+but before QA's final hash comparison, so its input mismatch is also preserved
+as a failed input rather than frozen acceptance. The correction uses explicit
+system tools, cleared Git/Python environment, canonical HOME/Git identities, a resolved full commit and isolated/no-site Python; W3b now gates W4 on the
+exact snapshot and receipt's independent copy. Source paths are intentionally
+staged, manifest rows sorted and the pre-upgrade observation explicitly
+distinguished from a deployment pin. Fresh final checks remain required.
+
+Common r2 code/security re-review accepted its process and custody corrections,
+but independent QA still rejected the P06 authority: RUN-0085 was draft and did
+not directly govern the two runtime modules. Three README links also resolved
+against repository-root scripts instead of the OpenBao directory. The links
+now use explicit relative paths. Independent rules review confirmed the
+Registry's operational-policy draft-to-active edge and existing direct-owner
+authorization for source and actual operations. The owner is @buenhyden, who
+accepted the manual operator role and selected the isolated recovery target;
+the trusted user messages remain the authorization record, not this Task's
+assertion alone. This unit activates RUN-0085 as the reviewed current reusable
+procedure and directly binds the P06 runtime modules. It does not activate a
+production copy CLI or claim any actual maintenance/recovery acceptance.
+The RUN-0085 source activation is recorded in this Work Log, not in the
+Spec Package lifecycle-event table: RUN-0085 is an operations artifact outside
+this package. The table retains only the package member's Task transitions.
+Exact common r2 review input was b617d339749106f7dadd8de9305aa9d43500bac15384d63906edb7128e40b561;
+the activation/link delta requires its own fresh freeze, independent review
+and registered gates before delivery. Every W3a/W3b/P06 runtime stop remains.
+
+Common r3 security review accepted the unchanged command/custody boundary,
+but rules review rejected wording that implied the controller grants approval.
+The r4 correction says the controller verifies and binds the actual trusted
+user/native authorization. Independent exact-hash rules review passed r4
+manifest10eb5361 (RUN-0085 f3b44449); its other eleven rows equal r3. This
+resolves that wording finding only. Registered aggregate gates and delivery
+remain pending, and the earlier r1/r2 failures remain preserved.
+
+The separately admitted r4 native attempt2 completed both independent clean
+Go compilations and both runtime assemblies without OOM. The two binary
+SHA-256 values equal f0b103b853891539cfe4c01421074077de8b3665b189ecbe3159f7966d876a51;
+both build-info digests equal77b26c30d4d08d41ffb13dad917d73ed98482c898166d9c6100cf7403c12990f.
+Whole-image reproducibility nevertheless FAILED: the sole normalized-layer
+member difference is var/log/apk.log content containing installation wallclock
+stamps. Exact differences are retained in the public selected-image inspection
+directory's owned-build-r4-attempt-2-repro-differences.json. No accepted owned
+artifact, image load, scan or HOME change follows from those compiler passes.
+R5 is a separately reviewed packaging correction; no failed attempt is resumed
+or relabeled as a whole-build PASS.
+
+The renderer token-file source slice initially passed55 synthetic tests but
+independent security review found a mutable request-shell reopen after receipt
+validation. The corrected source must execute the same held verified peer bytes
+before any credential input; the old packet2f671fe3 remains REVIEW_FAIL.
+
+The user's off-host reply is investigation then review, not a selected transfer
+destination. Public backup sources identify existing restic-offsite/Cloudflare
+R2 as a candidate. Local metadata observations do not prove account, endpoint,
+connectivity or independent custody. The first ephemeral readiness inspector
+failed review on semantic dotenv duplicates, unchecked argv, mixed-file binding
+and pathname execution. Its R2 source91a177f6 and tests e41a7033 passed13
+synthetic tests; execution awaits exact-source and byte-snapshot-launcher review.
+No actual configuration/credential contents or remote repository were opened.
+
+A fresh remote read found main had advanced to
+`f1af4b59e9a746d4d25ec5e5e2ff6cf9a8ec1416`. The previous39-path public
+integration diff was preserved as `/tmp/hyhome-openbao-integration-before-upstream-20261014.patch`
+(SHA-2563658925b6b3182715cfeb795179fb4ab2c6ab31450566fdc35f60a77876664de).
+A new owned integration worktree/branch starts from that main. Three-way
+application preserved the other writer's custody procedure, Agent alert source,
+Registry and SPEC-0235 updates; the two document conflicts retained both Work
+Log sections and the established Maintenance Window Plan anchor. This is a
+source reconciliation, not runtime acceptance of those upstream changes.
+The original dirty integration worktree remains preserved until delivery.
+
+The approved offsite R2 inspector and exact embedded verified launcher ran once
+against the five named local inputs: exit2, LOCAL_INPUTS_BLOCKED:ENV_BINDING.
+Only that fixed code was emitted. No private value, length or digest was
+recorded and no network or transfer ran. R2 connectivity and independent custody
+remain unproved. A narrower parser-reason diagnostic requires its own reviewed
+source; no parser weakening or automatic configuration change is authorized.
+
+Renderer R2's necessary test scope also includes
+`tests/lib/ops/test_openbao_issuance_custody.py`; focused custody tests move there
+without dropping assertions. The existing registered issuer suite must select
+that module. Installer and request-peer fixes remain source review inputs.
+
+Renderer R2 packet794fb462 passed exact independent code/security review:
+helper4fc09f12, peerbe186532, installer27a097f1 and three focused test modules
+all match their frozen manifest. The existing55 tests passed with90% branch
+coverage. The Runbook bootstrap now verifies the exact installer bytes in
+memory with isolated clean-environment system tools, fixed HOME/Git identity,
+no replacements and exact full OID; independent code/security approved the
+frozen Runbook c2c94d0f and bootstrap be3e5004. Neither result issues credentials.
+
+Root integration's first90-test invocation failed one Agent fixture: its old
+Docker stub did not implement the new explicit request argv/token-file framing.
+After that correction, a24-test invocation exposed cross-case journal reuse in
+the failure-injection loop: a later case reconciled the preceding uncertain
+attempt instead of testing a new issuance. Splitting those three scenarios into
+independent fixtures preserved the durable-journal behavior. The focused26
+Agent tests then passed. The combined current renderer/Agent/rehearsal/owned
+source suite ran134 tests:131 PASS, three explicit native-opt-in SKIPPED,
+exit0. This is not native or HOME acceptance. An initial Ruff module invocation
+failed because that interpreter has no ruff module; the existing standalone
+Ruff lint/format checks on both changed fixtures passed unchanged thereafter.
+
+R3 local offsite diagnosis used exact approved embedded launcher6874b957 and
+inspector ddc03549: exit2, LOCAL_INPUTS_BLOCKED:ENV_ACCOUNT_SYNTAX. The accepted
+literal grammar was not weakened. This result says only that local syntax was
+not accepted; it does not prove the actual Cloudflare account is invalid.
+Remote access, transfer and custody remain NOT_RUN/NOT_PROVEN. The user was
+presented the existing R2 candidate for local setting review or another named
+off-host target; no selection is inferred while awaiting a reply.
+
+The W23 semantic recovery source lease is one minimal coordinator at
+`infra/03-security/openbao/scripts/protected-semantic-restore.py` and one focused
+unit module at `tests/validation/test_openbao_protected_semantic_restore.py`.
+Independent review requires the focused execution/custody peer
+`infra/03-security/openbao/scripts/protected-semantic-execution.py` and its
+`tests/validation/test_openbao_protected_semantic_execution.py`; the source
+lease includes these exact four paths and no generic target or HTTP framework.
+The assigned infrastructure implementer owns those four paths only; the root
+integration writer owns any Plan/Task/manifest/runbook/fixture updates. Reuse
+reviewed protected maintenance/archive helpers rather than import test code or
+add generic HTTP/target frameworks. Independently reviewed source and an exact
+runtime recovery contract must precede the one selected attempt. Required
+checks cover held-FD snapshot validation and private tmpfs filename delivery,
+exclusive durable no-retry ledger before target creation, exact identities and
+resource bounds, protected distinct credentials, metadata-only storage watcher,
+old-image shutdown before same-target candidate startup, original-share unseal,
+canary comparison, isolated renderer/Agent acceptance, isolated root revocation
+and exact-owned cleanup. Retain the selected target and ledger on every outcome.
+This source lease creates no directory, authorizes no extra recovery attempt,
+and supplies no actual W3 snapshot or secret input.
+
+W1 credential issuance, W2 snapshot-only token, W3 fresh snapshot, W4/W5
+server/Agent upgrade, W6 audit/logrotate and semantic restore remain NOT_RUN.
+The latest trusted reply assigns manual execution to `buenhyden`. This names
+the operator; the subsequent reply confirms unseal-share and off-host readiness.
+Custody location references and protected current OIDC/two-share input have
+not been observed. The next ceremony uses those protected inputs; the owner
+attestation does not by itself perform issuance or semantic restore. A prepared
+client, healthy unsealed current server and downloaded candidate do not
+supply those inputs. Criterion11 remains pending and this Task blocked.
+
+The operator selected the currently absent
+`/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261014-05`
+for one isolated recovery of this new W3 snapshot. The read-only parent
+observation was device2064/inode115612004, UID/GID1000, about2.5TiB free.
+This supplies the target choice, not an actual target inode or completed
+recovery contract; no directory or restore was created by that investigation.
+
+The first semantic-restore freeze327ab851/e597962e changed after review handoff
+and is a failed review input, never frozen acceptance. The explicit next freeze
+4ffd0ec3/8ba3a111 passed28 synthetic tests at80% branch coverage but failed all
+three independent reviews: mutable helper/bundle/contract bytes after hash,
+unused lease digest and future/start-after-W3 admission, unbounded subprocess
+capture, ineffective storage watcher/main-deadline cleanup, and post-effect
+exceptions escaping INDETERMINATE. The correction extends only the exact four
+source/test paths above, uses captured verified bytes, fixed bounded process
+supervision, exact created object IDs and independent cleanup deadline. Target05,
+ledger retention and one actual attempt remain unchanged and NOT_RUN.
+
+The owner's subsequent answer selected existing R2 local review. Final diagnosis
+identified a valid quoted account literal; earlier syntax refusals were a parser
+compatibility limit, not proof of invalid Cloudflare configuration. Docker's
+Compose environment documentation admits these matching quoted literals. The
+minimal normalizer strips one matching ASCII quote pair before the same strict
+account/bucket fullmatch; escapes, interpolation, duplicates and other forms
+remain blocked. Independent code/security approved final inspectorff6bae4f and
+launcher5f75e150 after14+10 synthetic PASS. Exact embedded execution completed
+exit0 at2026-10-14T03:19:47.833Z: LOCAL_INPUTS_READY, account/bucket syntax,
+credential presence and filesystem binding true. Values were not emitted or
+changed. Public receipt is in the existing /tmp readiness directory. Remote
+reachability is NOT_CHECKED and off-host custody NOT_PROVEN; no R2 transfer
+selection or execution is inferred from this local result.
+
+The semantic packet18f10be9/3ed79ab6/3289564c/1cc2842b passed the prior
+correctness fixes but failed security/IaC review because the captured helper
+receipt was not materialized beside the three renderer payloads. The final
+four-file packet is restore18352557360b0dc730269714be45377a084e88b6cf5810a23805eb4e09a7798e,
+execution3ed79ab6b43663bc8788c583578a469c3d8c81ee8d71c0310bdd605ec5474bca,
+restore-test4eb946693b5546ebcdf3ff4c3a8a25cb27b4a1ec1db2c5e44ff6f2ef695f775b
+and execution-test1cc2842b4851127eeba4d248dbce0a183081050732650bc8265fd47157aab7aa.
+It installs the same held helper receipt mode0400 and tests actual materialized
+R2 three-file validate_receipt. All three independent reviews approved source;
+38 tests passed independently, branch coverage82%. ROOT integration first
+failed test discovery with Python-I, then failed one of38 tests because its
+two dependency source files were mode0664 from patch application. Removing
+group-write on those two owned worktree files restores the loader's existing
+0644 contract; no source or HOME permissions were widened.
+ROOT then reran the same38 tests against the integrated current renderer and
+dependencies: PASS38/38 in1.683s, no skips. Ruff passed all four semantic paths.
+The combined protected maintenance/token/snapshot/semantic/P06/audit invocation
+first failed when another imported custody peer retained patch-created0664
+permissions; its test interrupt was not an actual runtime interruption. After
+removing group-write from the five remaining owned public modules, the exact
+11-module rerun passed253 tests in43.375s, no skips. These are synthetic/unit
+results and do not establish HOME issuance, snapshot or recovery.
+The existing script-manifest suite ran51 tests and failed two assertions because
+its explicit mutation expectation table omitted P06's actual runtime transport
+and migration coordinator. Adding those two runtime entries makes the exact
+failing mutation test PASS; this corrects the test inventory rather than
+weakening the manifest's runtime classification. Full suite rerun is pending.
+
+The owned scan operator3e72bbb6 passed18 synthetic tests but failed all three
+reviews for mutable tools/DB, ambiguous create cleanup, runner identity,
+deadline/output bounds and package coverage; Ruff also failed. A corrected
+frozen packet is required before any scan. ROOT independently captured the
+existing hydrated DB's exact three public files and acquisition receipt in
+owned-r5-db-custody-manifest.json, SHA3261664a685eb495cc749dc4ba82937df83b8087d768ffb60f128ad849bd3f00.
+The first manifest attempt failed on sibling-sensitive shared-directory
+timestamps and wrote no manifest. The corrected manifest checks stable held
+directory identities and full file signatures/content, limits the read-only
+mount to db-cache/6 and excludes the unused empty tmp sibling. Security approved
+this post-hydration byte custody; it does not claim a publisher-signed SQLite
+database. The fresh owned-image CVE scan remains NOT_RUN.
+
+After LOCAL_INPUTS_READY, the operator explicitly selected the existing R2
+Restic repository for this new snapshot and receipt, beginning with read-only
+remote verification. A separate bounded public operator is being prepared;
+no remote connection, repository lock, upload or verification has run yet.
+
+### Latest main reconciliation and PGP preparation — 2026-10-14
+
+ROOT refreshed clean main and origin/main to
+`7f4c364f8681ea0db091f05ab6077c594661dfff`, then reapplied the task-owned staged
+packet into `codex/openbao-maintenance-integration-latest`. The earlier dirty
+integration worktree remains preserved. The full pre-refresh public patch is
+`/tmp/hyhome-openbao-integration-before-main-7f4c-20261014.patch`,
+SHA256 a39d88a76e90d871cf56a6903cca60cff56ac808655281cf549ec79dfa56fc4f.
+The two document conflicts retain both main's exposure/custody and Agent-alert
+records and this operation's actual evidence. Main's W1b now precedes W2/W3;
+SPEC-0239 source delivery remains distinct from actual Agent deployment.
+
+The operator answered that PGP setup is needed and requested beginning-to-end
+instructions. RUN-0085 W1b now explains three independent off-host recipient
+units, binary public exports and full fingerprints, native authenticated
+rotate-keys with W1 protected token-file input, hidden-TTY old/new shares,
+recipient-ordered encrypted output, verification, cancellation and old-snapshot
+custody. This supersedes the inherited no-root/legacy-rekey and
+verify-cancel-as-full-cancel text. Three recipient public-key paths/fingerprints
+and custody references are still missing. W1b, W2/W3, HOME upgrade and recovery
+are NOT_RUN; unrelated source/security work continues.
+
+R2 read-only attempt1 failed IMAGE_CONTRACT before create; private inputs were
+read and private copies cleaned. Attempt2 used frozen operator fbac6359 and
+receipt5ee7, then returned exit3 CONTAINER_UNVERIFIED with operation nonce
+3088df92292f15bf7857a8d48caca748. Docker created exact ID
+b4498a5067f65b55de0081d28644c3dfc5bad2667faaf9ab064470528ed4f8f7
+but never started it. The full-mount dictionary omitted native Mode empty;
+the created network map also has an empty NetworkID before start, while
+HostConfig.NetworkMode already equals the exact approved network ID.
+
+Independent code/security review approved a narrowly bounded reconciliation.
+The first cleanup preflight stopped on an assertion before mutation because
+the worker's corrected pathname had changed; the retained frozen source was
+then used. ROOT freshly proved exact ID/name/nonce/image, created-never-started
+state, resources/mounts and existing network identity, removed only that full ID
+without force, and observed exit0+empty lists by both ID and anchored name.
+The private tmpfs root was absent. Public reconciliation receipt SHA256 is
+c8a686601fa8e7ed6c5de4e94fae121d3ff235020833ac0d607b27120b70e7bf.
+No Restic process or remote query ran; cleanup does not convert either failure
+to remote acceptance. The next corrected-source action needs its own frozen
+review and fresh bounded attempt; historical receipts remain preserved.
+
+### Actual R2 read-only result and incorporated-worktree cleanup — 2026-10-14
+
+R2 attempt3 used frozen operator40ba8184, launcher ebdaeb8b and source receipt
+d2930cfa after independent code/security/IaC approval and ROOT's35-test replay.
+The actual bounded invocation exited0 with R2_READ_ONLY_READY: JSON valid,
+repository reachable,45 snapshots, latest_present=true. Its reviewed exit0
+control flow includes exact-owned-container removal and private-copy cleanup.
+Public observation receipt SHA256:
+20bbd98bfb8b941f033a57e90d644687b81c1a1bccbe908aa5fb152e45e22e2c.
+The existing bridge provides broad egress, not an R2-only firewall. This action
+ran only snapshots --json --no-lock; it proves neither repository write nor
+upload of a new OpenBao snapshot, restore, or independent custody completion.
+
+The user then explicitly requested removal of codex branches/worktrees already
+incorporated into codex/openbao-maintenance-integration-latest. ROOT compared
+effective changed files, staged/unstaged patches and ancestry. Three P01 trees
+(owned-rebuild, protected-semantic-restore, protected-snapshot) disappeared
+through an external concurrent actor during preparation; ROOT did not remove
+them. Their source had matched latest at the preceding inventory.
+
+For the still-present original and -current integration trees, ROOT preserved
+all effective public changed files plus HEAD/staged/unstaged patches under
+.agent-work/retained-development-handoffs/20261014/incorporated-worktree-cleanup-20261014
+(private0700 directory). Independent code review confirmed incorporation and
+exact patch-manifest matches. ROOT rechecked unchanged status/content/ancestry
+and only generated ignored caches, removed those two exact worktrees, then
+used git branch -d for their two ancestor branches. Result receipt SHA256:
+da25c11d3404c9e4c915ad87a87b50cc042b93c056c582647a3b40c082db1f17.
+
+Fresh worktree listing contains only main, active -latest integration and
+p01-renderer-token-custody. The renderer branch retains the unique accepted
+but not-yet-applied5c809c1e image-pin delta; its preservation is intentional.
+Remote origin codex/* heads query succeeded with no refs. Root main remains
+clean7f4c364f. The public scanner's build-input path was separately updated to
+-latest with unchanged input bytes SHA1e8b356a before removing -current;
+its own new exact-hash review remains separate from this cleanup evidence.
+
+### Current documentation verification — 2026-10-14
+
+RUN-0085 W1b full guide passed exact source/security/IaC review at06c64ba0.
+The later7c8b35a8 change adds only the required fixed-pre-upgrade CLI citation
+annotation; it does not change commands. Six W1b bash fences passed bash -n
+without executing a command. Operations catalog passed. Full document-link
+check passed1306 documents/11606 links, with the existing2870 uncaptured legacy
+archive-link warning retained as historical-resolution unverified.
+
+The first changed metadata check exited1: selected9,154 violations. It reported
+the evidence-table blank separator, one fixed-version citation annotation,
+new build README structure/version-authority gaps, and archive migration/
+tombstone type mismatches outside this task's changed files. ROOT corrected
+the table separator/citation; the build README has a bounded documentation-only
+owner. Archive findings are not yet classified against a fresh clean-main
+comparison and are not silently waived or edited. Final registered gates and
+source delivery remain pending; this is not an all-checks PASS claim.
+
+### Main 4c33 reconciliation, custody state, and renderer cleanup — 2026-10-14
+
+ROOT reconciled the canonical integration worktree from clean main7f4c364f to
+clean main4c33d6ce. Main's six documentation changes were retained. Before
+application, ROOT preserved59 changed paths in manifest
+1e8dd9643a1490e8c76512f51a32bfac15991ba4f77a9c7f7631499d021fcb16 and full
+patch40bfefb2f68f88f18f77d1bc118adee849b20601fe117dc2b5efdee1016ceafa.
+Post-apply preservation records57 non-conflict paths byte-exact, no unmerged
+entry and SPEC-0240 retained. This supersedes neither the older reconciliation
+receipts nor their failed and pending runtime results.
+
+The current custody design conditionally uses three separate places for the
+three share holders and an initially separate fourth off-host place for the
+key material. The protected PGP procedure remains pending the three actual
+public-key paths, full fingerprints and custody-location references. No public
+key was selected, no share or key was processed, and no HOME operation changed.
+
+The renderer cleanup archive manifest
+874ba02f9ca21c313f199a29dc7dba31a98ee7344ab65a6706f677efd8b38cc5
+contains all six effective source/test files, including the two files that had
+been untracked in the renderer worktree; every file is byte-equal to canonical
+latest. After independent code review and fresh status/hash checks, ROOT removed
+only the temporary before-main4c33 worktree/local branch and the incorporated
+renderer worktree/local branch. Cleanup receipt SHA256 is
+db8b4598d65f53085362c561454416b6787e1bca5820e5deeb8eabcd37f0c6d0.
+Root main is clean at4c33d6ce, and only main plus the canonical latest worktree
+remain. Archives are retained; no HOME or runtime effect followed from cleanup.
+
+The fresh native candidate/rehearsal invocation used input SHA256
+d1c59476085763d99798413c402e4fe4d8341ab8fe45fc76b84eee6281db65af
+and finished after276.386 seconds with13 tests:11 PASS, two ERROR and no skips.
+Candidate native TLS expiry, audit and snapshot checks passed, as did the
+diagnostic path. Both the native full rehearsal and versioned issuance stopped
+at wrapping line540 with `RehearsalFailure: native interrupted issue exact
+cleanup failed`. This actual result is FAIL and unresolved; it supplies no
+aggregate native or HOME acceptance. Its public failure receipt SHA256 is
+555afd88b549ff79502a4074eeac10e236b6aa802c4e38d1e5eb0b27aa5754a5.
+
+Diagnosis found the synthetic fixture omitted
+`BAO_TLS_SERVER_NAME=openbao`. The focused RED regression failed once, then
+passed after the minimal fixture correction; Ruff passed. The combined source
+suite ran74 tests in24.939 seconds:70 PASS and four native-opt-in SKIPPED. IaC
+and security read-only review approved the exact Runbook version0.10.2 and
+fixture: the two active image arguments now use owned manifest46bf and the TLS
+server-name input matches the Compose/request-helper contract. The reviewed
+second native attempt used fixture input SHA256
+2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73 and
+exited0 after454.043 seconds:13/13 PASS, no skips, including all four native
+tests. Public log SHA256 is
+2466d19f23c35067841b89bf1081e15497f453320d5ced4074d4cdad6675db39;
+ROOT observation receipt SHA256 is
+2995a9891c7d8bc12550d2b140b8d8ba068f4759e380688cae29466387bdb1a8.
+This resolves the diagnosed synthetic fixture failure only. It does not prove
+HOME custody or deployment, and no HOME state changed.
+
+### Registered source-delivery checks — 2026-10-14
+
+The canonical changed metadata gate against main4c33 first failed on the
+appended RUN-0085 lifecycle row's malformed anchor, then on its out-of-package
+Artifact. Neither was a baseline exception. The invalid row was removed;
+the three original Task events remain unchanged and the Runbook source
+activation/review/authorization stays in Current Operation Preparation.
+Independent rules review approved that placement. The final registered
+`check-document-metadata.py --mode check-changed --base-ref main` exited0:
+selected9, violations0, legacy_exceptions0, transition_overrides0.
+
+The final exact staged `run-ci-precommit.sh --mode local-staged` exited0;
+Markdown, shell, Python, Dockerfile and secret-scan checks passed. Earlier
+Markdown list/heredoc indentation and a P06 blank separator were fixed.
+Two generic-api-key hits were independently verified public Go/Alpine
+integrity checksums. Exact path-and-value AND allowlists passed the redacted
+staged scan; a changed neighboring value remained detected. The first
+isolated directory-mode self-check failed on absolute-path projection;
+the corrected native Git-staged self-check passed, without printing values.
+
+The full document-link check exited0:1306 documents,11620 links, failures0;
+the existing2870 uncaptured legacy links remain historical-resolution
+unverified. The script-manifest module passed51 cases. A combined invocation
+also misnamed the catalog module and recorded one import error; the corrected
+catalog invocation passed128 cases in308.694s. The focused source/Agent/gate
+suite passed70 of74, with four opt-in native skips; the separate actual
+13-case native rerun supplies the current native proof, not those skips.
+
+Source and retained verification receipts remain available under
+.agent-work/retained-development-handoffs/20261014/main-4c33-reconciliation.
+Fresh token-free state projection found no remaining p01 fixture container;
+HOME server and Agent still run healthy on the original11fd image. The source
+candidate is ready for its owning-Spec draft PR; no HOME gate is promoted.
+
+### Source PR delivery and hosted field-metadata finding — 2026-10-14
+
+The reviewed source candidate was committed as932508be4 and delivered in
+[draft PR472](https://github.com/buenhyden/hy-home.docker/pull/472) from
+codex/openbao-maintenance-integration-latest against main4c33.
+The initial hosted
+[candidate-quality run](https://github.com/buenhyden/hy-home.docker/actions/runs/38522461732/job/115715081494)
+passed. The same head's GitGuardian check failed with one Generic Password
+finding in protected-semantic-restore.py; no annotation or value was copied
+into this Task. Independent security inspection confirmed the two public
+KV-route/field-selector pairs contain no source credential or expected value.
+The semantic client reads actual values only through protected runtime inputs.
+
+The source-only clarity correction names the common public field explicitly
+with CANARY_FIELD_NAME and references it from the same two pairs. Routes,
+field bytes, tuple values, consumers and protected handling remain unchanged.
+New exact module SHA256:
+1a259ef01a762656a9eeef18917b511b301c7db10f888527cd3cffb0fe67fde7.
+RUN-0085 0.10.3 updates its one live W1 source binding; the prior18352557
+review packet above remains historical. No detector/path suppression,
+dashboard mutation or credential rotation was performed or is indicated.
+
+The first semantic regression invocation ran38 with37 PASS/1 ERROR because
+its unchanged approved public dependencies were0664 and the loader refused
+group-write. Only four owned public source modes were restored to0644;
+content hashes and loader policy stayed unchanged. The exact rerun passed38/38,
+0 skips,1.892s; Ruff and independent code/security/IaC delta reviews passed.
+The earlier native34-file digest was recomputed unchanged at2fa9f8b2;
+this module is outside that fixture, so no native rerun or new HOME semantic
+restore is claimed. Hosted checks on the clarified follow-up remain pending
+at publication; the source PR stays draft and no merge/deployment is claimed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -2333,6 +3045,49 @@ place. Step 5 is attested against that table; SPEC-0240 W5 holds the record.
 | Maintenance OTP argument defect | 11 | W22 | Independent source inspection: stdin-only claim conflicted with executable OTP arguments and unsupported process-isolation assumption | RUN-0085 SHA256 0db6f3d23ec0e93a00a1276c29d57603937294c543b4546c623f5c7baa9a9785 | FAIL | Maintenance-window input correction | - |
 | Maintenance protected-input correction | 11 | W22 | Remove unsafe OTP CLI block; retain protected authenticated API/custody boundary and explicit BLOCKED/NOT_RUN | RUN-0085 SHA256 81ce399fead9074dd92f06b37094e9cc30a987709fa5cbe24e6e209e4d03521b | PASS | Maintenance-window input correction | Maintenance OTP argument defect |
 | Maintenance correction review and frozen QA | 11 | W22 | Independent exact-hash security approval and metadata selection 14/0; catalog/navigation exit 0; no credential/native action | RUN-0085 81ce399fead9074dd92f06b37094e9cc30a987709fa5cbe24e6e209e4d03521b; Task pre-receipt 526a6916eb5847cd6b2a0b7a597156e6209683fd801ad8572a297d47f8ca0cdc | PASS | Maintenance-window input correction | - |
+| Current HOME preflight | 11 | W23 | Auth-free status, selected mount and backup unit metadata | main1e7e2ba; cluster51fbfa38-a715-7dca-629f-3f07233749f4 | PASS | Current Operation Preparation — 2026-10-14 | - |
+| Current backup unit failure | 11 | W23 | Result exit-code, status1; fresh pre-upgrade snapshot absent | hyhome-backup.service 2026-10-14 03:43:29 KST | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Candidate pull and CLI probe | 11 | W23 | Exact amd64 child pull; bounded network-none version probe; transient removed | index6d2b938; childa36ea8; revisiona5db72c | PASS | Current Operation Preparation — 2026-10-14 | - |
+| Image signature cache failure | 11 | W23 | Public pinned Cosign verify failed on readonly tool cache | CosignOCI9e5c2f; OpenBaoindex6d2b938 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Image signature identity mismatch | 11 | W23 | Binary checksum workflow identity refused OCI image workflow | OpenBaoindex6d2b938 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Exact image publisher signature | 11 | W23 | Correct official image identity; issuer/certificate/transparency and exact digest; exit0/four rows | OpenBaoindex6d2b938; release-images.yml tagv2.7.1 | PASS | Current Operation Preparation — 2026-10-14 | Image signature cache failure, Image signature identity mismatch |
+| Current gateway trust | 11 | W20 | Protected public CA hash plus token-free TLS CA/SAN verification | publicCA6b7c5c75; 192.168.0.13:443 | PASS | Current Operation Preparation — 2026-10-14 | - |
+| Initial protected client review | 11 | W20 | Independent code/security found five input/identity/uncertainty defects despite34 unit PASS | client2013e441; test23703ee0 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Corrected protected client review and QA | 11 | W20 | Exact-hash independent code/security approvals;46 unique tests PASS/0skip;93% branch coverage;Ruff/format/diff | client640a3bd7; testsc8cba04c/6b68869c | PASS | Current Operation Preparation — 2026-10-14 | Initial protected client review |
+| Exact owned-version client compatibility | 11 | W20 | Focused RED then47 PASS; exact-delta code approval and independent security replay; no native image claim | client2c610157; testsc8cba04c/13feeb75 | PASS | Current Operation Preparation — 2026-10-14 | - |
+| Initial protected token operations review | 11 | W20 | Recovery access, HOME/custody identity, HTTP/schema and TTL findings despite85 unit PASS | client3b3f0f8c | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Corrected protected token operations review and QA | 11 | W20 | Independent code/security approvals;99 unique PASS/0skip;87% branch coverage; source hashes stable; no actual credential action | clienteecf50f6; tests38f10909/41ff32b0; policy1aa658e0 | PASS | Current Operation Preparation — 2026-10-14 | Initial protected token operations review |
+| Snapshot token destination metadata | 11 | W23 | Exact owned0700 directory, token and issuance lock absent; no private contents read | HOMEdev64512/inode4338469; destinationinode5260267 | PASS | Current Operation Preparation — 2026-10-14 | - |
+| Initial protected snapshot review | 11 | W21 | Independent native-schema, path/namespace/digest/alias and uncertainty findings despite76 unit PASS | client062e929b; test7aaadcad | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Intermediate snapshot publication review | 11 | W21 | Overwrite, post-save uncertainty and source binding defects despite88 unit PASS | clientb390; archive48ff7d0e | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Snapshot link publication review | 11 | W21 | Concurrent final-name replacement can lose sole verified copy despite95 unit PASS | clientfbaf9d74; custody29ef5cf3 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Final protected snapshot review and QA | 11 | W21 | Independent code/security approvals;100 unique PASS/0skip;85/83/89% branch; no native/HOME action | client2779382f; archive48ff7d0e; custodyfd266cdd; testsc2acc33f/314ea3b8 | PASS | Current Operation Preparation — 2026-10-14 | Initial protected snapshot review, Intermediate snapshot publication review, Snapshot link publication review |
+| Maintenance execution-order review | 11 | W23 | Semantic restore order, missing snapshot authentication/artifact and precreate audit findings | base1e7e2ba Run0085 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Audit directory preparation failed attempts | 11 | W23 | Noninteractive sudo exit1; Docker argument exit125; final path remained absent | exact audit path; current2.6.2 image | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Audit directory prepared | 11 | W23 | Independently READY direct-mkdir; exit0, exact dev/inode/100:1000/0700/capacity; transient removed | device2064 inode115609395 | PASS | Current Operation Preparation — 2026-10-14 | Audit directory preparation failed attempts |
+| Audit rotation target race | 11 | W21 | Name-based inspect/kill can target a replacement; meaningful RED2fail | rule67a306be; testbf0348d7 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Audit rotation parser group failure | 11 | W21 | Actual isolated parser rejected numeric group forms | rule57ee84e7 and intermediate group correction | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Audit rotation source and isolated parser | 11 | W21 | Immutable ID/label guard, native NSS correction, seven tests and exact-hash IaC approval; isolated3.22 debug one-rule exit0; no host mutation | rule2ad4473a; teste0c36c1f | PASS | Current Operation Preparation — 2026-10-14 | Audit rotation target race, Audit rotation parser group failure |
+| Audit rotation host privilege | 11 | W23 | Host3.21 debug EPERM and noninteractive sudo failure; registration and actual rotation not performed | current host package/NSS, exact rule | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Current operation physical inputs | 11 | W23 | User reports custody or actual holders still need preparation | Direct 2026-10-14 user answer | NOT_RUN | Current Operation Preparation — 2026-10-14 | - |
+| Current operator readiness attestation | 11 | W23 | buenhyden confirms shares and off-host preparation; no values or actual ceremony processed | Latest direct 2026-10-14 user answer | PASS | Current Operation Preparation — 2026-10-14 | - |
+| Owned-build r3 source admission | 11 | W23 | Independent code/security/IaC, 41 unique unit tests, frozen seven inputs, fresh plan/preflight | packet e2487b5b; materials c60926e2 | PASS | Current Operation Preparation — 2026-10-14 | - |
+| Owned-build r3 native compile | 11 | W23 | Pass1 exit1 after53.649s, bounded tmpfs ENOSPC, no OOM, exact-ID cleanup | packet e2487b5b; preserved owned-build-frozen-r3 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Owned-build r4 native attempt | 11 | W23 | Compile1/runtime1 PASS, wrapper failure before pass2; first OCI retained, cause diagnosis pending | packet2370a5d3; preserved owned-build-frozen-r4 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Common integration r1 review and QA | 11 | W23 | Process trust, exact off-host gate, anchor, literal, manifest order/tracking and concurrent-input mismatch | common manifest13685533 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Common integration r2 authority and links | 11 | W23 | Draft/non-governing runtime authority and three root-prefixed README targets; r2 hashes stable | common manifestb617d339 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Common integration r3 authorization wording | 11 | W23 | Rules rejected wording implying controller-granted approval | common manifest7d2eff2e | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Common integration r4 rules correction | 11 | W23 | Independent exact-hash rules PASS; controller verifies trusted origin, eleven unchanged rows; aggregate pending | common manifest10eb5361; Runf3b44449 | PASS | Current Operation Preparation — 2026-10-14 | Common integration r3 authorization wording |
+| Owned-build r4 attempt2 reproducibility | 11 | W23 | Two clean compiler and runtime passes; identical binaries/build-info, whole OCI differs only apk.log wallclock bytes | packet2370a5d3; retained owned-build-frozen-r4-attempt-2 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Renderer request peer source integrity | 11 | W20 | Independent security found mutable pathname reopen after verified receipt despite55 unit PASS | packet2f671fe3 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Offsite readiness inspector r1 review | 11 | W23 | Semantic duplicate, argv, mixed-file and executable-source binding defects; actual private reads zero | inspector3f972975; nine synthetic PASS | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Renderer protected peer and installer r2 | 11 | W20 | Independent exact6-file code/security approvals;55 PASS90%branch; Runbook held-byte bootstrap separately approved | packet794fb462; Runc2c94d0f | PASS | Current Operation Preparation — 2026-10-14 | Renderer request peer source integrity |
+| Integrated Agent fixture compatibility | 11 | W22 | Two actual failed test inputs, then corrected request framing and independent journals;26 PASS | current integration onf1af4b59 | PASS | Current Operation Preparation — 2026-10-14 | - |
+| Current combined synthetic source regression | 11 | W22 |134 run:131 PASS/3 native-opt-in SKIPPED; exit0, no native/runtime claim | R5productc318; rendererR2; root fixtures | PASS | Current Operation Preparation — 2026-10-14 | - |
+| Actual offsite local readiness r2/r3 | 11 | W23 | Fixed-code local input refusals ENV_BINDING then ENV_ACCOUNT_SYNTAX; no network/transfer/private output | inspectorddc03549; launcher6874b957 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Semantic restore moving initial review input | 11 | W23 | Author changed frozen source/test before independent review; old hashes not accepted | source327ab851/e597962e | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Semantic restore source independent review | 11 | W23 | Code/security/IaC blockers despite28 synthetic PASS80%branch; actual recovery NOT_READY | source4ffd0ec3/tests8ba3a111 | FAIL | Current Operation Preparation — 2026-10-14 | - |
+| Actual quoted R2 local readiness correction | 11 | W23 | Minimal Compose literal normalization, independent exact review,14+10 synthetic PASS; actual exit0 LOCAL_INPUTS_READY; no remote/custody proof | inspectorff6bae4f/launcher5f75e150 | PASS | Current Operation Preparation — 2026-10-14 | Actual offsite local readiness r2/r3 |
 
 ## Criterion Acceptance
 
@@ -2342,8 +3097,11 @@ place. Step 5 is attested against that table; SPEC-0240 W5 holds the record.
 
 ## Review and Completion
 
-Source delivery is merged in PR 421 and in PR #431 (merge `7620f2d22`); the current Task
-remains blocked on the named W23 target/custody and runtime residuals. Source
+Prior source delivery merged in PR421 and PR431 (merge `7620f2d22`). The
+current protected-client/common integration passed its registered source gates
+and independent reviews and was delivered in draft PR472. Its follow-up
+field-metadata clarity correction retains the hosted-check boundary above.
+The current Task remains blocked on the named W23 target/custody and runtime residuals. Source
 and isolated proof do not complete HOME custody/boot/recovery acceptance or
 authorize P06. No secret migration or consumer switch is claimed.
 

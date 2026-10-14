@@ -715,7 +715,18 @@
         "tests.validation.test_datastore_rehearsal_boundary",
         "tests.lib.ops.test_openbao_issuance",
         "tests.lib.ops.test_openbao_issuance_trust",
+        "tests.lib.ops.test_openbao_issuance_custody",
         "tests.validation.test_openbao_candidate",
+        "tests.validation.test_openbao_protected_maintenance",
+        "tests.validation.test_openbao_protected_maintenance_review",
+        "tests.validation.test_openbao_protected_token_operations",
+        "tests.validation.test_openbao_protected_token_operations_review",
+        "tests.validation.test_openbao_protected_raft_snapshot",
+        "tests.validation.test_openbao_protected_raft_snapshot_review",
+        "tests.validation.test_openbao_protected_semantic_restore",
+        "tests.validation.test_openbao_protected_semantic_execution",
+        "tests.validation.test_openbao_audit_rotation",
+        "tests.validation.test_openbao_owned_image_contract",
         "tests.validation.test_sec01_version_contract",
         "tests.validation.test_sec01_next_stable_candidates",
         "tests.validation.test_sec01_next_tool_candidates",
@@ -794,6 +805,7 @@
         "tests.lib.ops.test_port_inventory",
         "tests.validation.test_port_contract",
         "tests.lib.ops.test_openbao_consumer_migration",
+        "tests.lib.ops.test_openbao_copy_runtime",
         "tests.validation.test_openbao_consumer_migration_contract",
         "tests.lib.ops.test_n8n_outbox_workflow",
         "tests.validation.test_n8n_outbox_contract",
@@ -1620,7 +1632,18 @@
         "prefixes": [
           "tests/lib/ops/test_openbao_issuance.py",
           "tests/lib/ops/test_openbao_issuance_trust.py",
+          "tests/lib/ops/test_openbao_issuance_custody.py",
           "tests/validation/test_openbao_candidate.py",
+          "tests/validation/test_openbao_protected_maintenance.py",
+          "tests/validation/test_openbao_protected_maintenance_review.py",
+          "tests/validation/test_openbao_protected_token_operations.py",
+          "tests/validation/test_openbao_protected_token_operations_review.py",
+          "tests/validation/test_openbao_protected_raft_snapshot.py",
+          "tests/validation/test_openbao_protected_raft_snapshot_review.py",
+          "tests/validation/test_openbao_protected_semantic_restore.py",
+          "tests/validation/test_openbao_protected_semantic_execution.py",
+          "tests/validation/test_openbao_audit_rotation.py",
+          "tests/validation/test_openbao_owned_image_contract.py",
           "tests/validation/test_sec01_version_contract.py",
           "tests/validation/test_sec01_next_stable_candidates.py",
           "tests/validation/test_sec01_next_tool_candidates.py",
@@ -1693,9 +1716,12 @@
       {
         "prefixes": [
           "scripts/lib/ops/openbao_consumer_migration.py",
+          "scripts/lib/ops/_openbao_copy_io.py",
+          "scripts/lib/ops/_openbao_copy_transport.py",
           "scripts/operations/openbao-consumer-migration.py",
           "infra/03-security/openbao/consumer-migration/",
           "tests/lib/ops/test_openbao_consumer_migration.py",
+          "tests/lib/ops/test_openbao_copy_runtime.py",
           "tests/validation/test_openbao_consumer_migration_contract.py"
         ],
         "suites": [
@@ -2019,9 +2045,12 @@
       {
         "prefixes": [
           "scripts/lib/ops/openbao_consumer_migration.py",
+          "scripts/lib/ops/_openbao_copy_io.py",
+          "scripts/lib/ops/_openbao_copy_transport.py",
           "scripts/operations/openbao-consumer-migration.py",
           "infra/03-security/openbao/consumer-migration/",
           "tests/lib/ops/test_openbao_consumer_migration.py",
+          "tests/lib/ops/test_openbao_copy_runtime.py",
           "tests/validation/test_openbao_consumer_migration_contract.py"
         ],
         "root_gate_ids": [

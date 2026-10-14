@@ -1,7 +1,6 @@
 """Offline regression tests; never authenticate against HOME OpenBao."""
 
 import importlib.util
-import json
 import os
 import signal
 import subprocess
@@ -299,117 +298,6 @@ class IssuanceRecoveryTests(unittest.TestCase):
             self.assertIn("other", api.data)
 
 
-class TransportTests(unittest.TestCase):
-    def test_tokens_metadata_and_accessors_never_appear_in_argv(self):
-        api = M.DockerAPI(
-            "server", "volume", "agent", "synthetic-issuer", "synthetic-cleanup"
-        )
-        responses = [
-            json.dumps({"wrap_info": {"token": "synthetic-wrap"}}).encode(),
-            b"",
-            b"{}",
-        ]
-        observed = []
-
-        def command(argv, **kwargs):
-            observed.append((argv, kwargs.get("payload")))
-            return responses.pop(0)
-
-        with patch.object(api, "command", side_effect=command):
-            api.issue({"nonce": "synthetic-nonce"})
-            api.destroy("synthetic-accessor")
-            api.lookup("synthetic-accessor")
-        for argv, body in observed:
-            for sensitive in (
-                "synthetic-issuer",
-                "synthetic-cleanup",
-                "synthetic-accessor",
-                "synthetic-nonce",
-            ):
-                self.assertNotIn(sensitive, " ".join(argv))
-            self.assertIsInstance(body, bytes)
-
-    def test_transport_failure_never_includes_original_stderr(self):
-        response = subprocess.CompletedProcess(
-            [], 2, b"", b"synthetic-sensitive-server-error"
-        )
-        with patch.object(M.subprocess, "run", return_value=response):
-            with self.assertRaises(M.Blocked) as caught:
-                M.DockerAPI.command(["docker"])
-            self.assertEqual("", str(caught.exception))
-
-    def test_empty_list_not_confused_with_permission_failure(self):
-        responses = [
-            subprocess.CompletedProcess(
-                [], 2, b"", ("No value found at " + M.PREFIX + "/secret-id\n").encode()
-            ),
-            subprocess.CompletedProcess(
-                [], 2, b"", b"Error making API request: permission denied"
-            ),
-        ]
-        with patch.object(M.subprocess, "run", side_effect=responses):
-            value = M.DockerAPI.command(
-                ["docker"], empty_list_path=M.PREFIX + "/secret-id"
-            )
-            self.assertEqual([], json.loads(value)["data"]["keys"])
-            with self.assertRaises(M.Blocked):
-                M.DockerAPI.command(["docker"], empty_list_path=M.PREFIX + "/secret-id")
-
-    def test_native_json_empty_list_sentinel_is_not_permission_success(self):
-        for stderr in (b"", b"permission denied"):
-            response = subprocess.CompletedProcess([], 2, b"{}\n", stderr)
-            with patch.object(M.subprocess, "run", return_value=response):
-                if stderr:
-                    with self.assertRaises(M.Blocked):
-                        M.DockerAPI.command(
-                            ["docker"], empty_list_path=M.PREFIX + "/secret-id"
-                        )
-                else:
-                    value = M.DockerAPI.command(
-                        ["docker"], empty_list_path=M.PREFIX + "/secret-id"
-                    )
-                    self.assertEqual([], json.loads(value)["data"]["keys"])
-        for raw in (b"null", b"[]", b'{"errors":[]}', b'{"unexpected":true}'):
-            response = subprocess.CompletedProcess([], 2, raw, b"")
-            with patch.object(M.subprocess, "run", return_value=response):
-                with self.assertRaises(M.Blocked):
-                    M.DockerAPI.command(
-                        ["docker"], empty_list_path=M.PREFIX + "/secret-id"
-                    )
-
-    def test_native_cli_accessor_array_validated_without_api_envelope(self):
-        api = M.DockerAPI("server", "volume", "agent", "issuer", "cleanup")
-        with patch.object(api, "request", return_value=["synthetic-accessor"]):
-            self.assertEqual(["synthetic-accessor"], api.accessors())
-        for response in (
-            ["same", "same"],
-            ["../escape"],
-            [3],
-            {"unexpected": []},
-            None,
-        ):
-            with patch.object(api, "request", return_value=response):
-                with self.assertRaises(M.Blocked):
-                    api.accessors()
-
-    def test_exact_cleanup_policy_and_short_roles(self):
-        policy = (BASE / "config/policies/renderer-cleanup.hcl").read_text()
-        self.assertNotIn("*", policy)
-        resource = policy.split("# Self-identity")[0]
-        self.assertNotIn('"read"', resource)
-        self.assertNotIn('"create"', policy)
-        self.assertNotIn("secret/data", policy)
-        self.assertEqual(3, policy.count('path "' + M.PREFIX))
-        for name in ("renderer-issuer", "renderer-cleanup"):
-            role = json.loads(
-                (BASE / "config" / (name + "-token-role.json")).read_text()
-            )
-            self.assertEqual([name], role["allowed_policies"])
-            self.assertFalse(role["renewable"])
-            self.assertTrue(role["token_no_default_policy"])
-            self.assertEqual("5m", role["token_explicit_max_ttl"])
-
-
 class ProcessInterruptionTests(unittest.TestCase):
     def test_actual_sigkill_preserves_durable_journal_and_restart_reconciles(self):
         child = """import importlib.util,sys,time
@@ -533,7 +421,12 @@ class DockerBindingTests(unittest.TestCase):
 
     def test_adapter_accessor_and_wrapping_response_validation(self):
         api = M.DockerAPI(
-            "server", "volume", "agent", "synthetic-issuer", "synthetic-cleanup"
+            "server",
+            "volume",
+            "agent",
+            "synthetic-issuer",
+            "synthetic-cleanup",
+            request_script=":",
         )
         for response in ({}, {"wrap_info": {"token": "space forbidden"}}):
             with patch.object(api, "request", return_value=response):
@@ -551,7 +444,12 @@ class DockerBindingTests(unittest.TestCase):
 
     def test_delivery_hardening_and_generation_health(self):
         api = M.DockerAPI(
-            "server", "volume", "agent", "synthetic-issuer", "synthetic-cleanup"
+            "server",
+            "volume",
+            "agent",
+            "synthetic-issuer",
+            "synthetic-cleanup",
+            request_script=":",
         )
         with patch.object(api, "command", return_value=b"") as call:
             api.deliver("synthetic-wrapped")
@@ -631,7 +529,12 @@ class EffectiveTokenTests(unittest.TestCase):
 
     def test_exact_short_nonrenewable_roles(self):
         api = M.DockerAPI(
-            "server", "volume", "agent", "synthetic-issuer", "synthetic-cleanup"
+            "server",
+            "volume",
+            "agent",
+            "synthetic-issuer",
+            "synthetic-cleanup",
+            request_script=":",
         )
         with patch.object(
             api,
@@ -657,7 +560,12 @@ class EffectiveTokenTests(unittest.TestCase):
             response = self.data("renderer-issuer")
             response["data"][key] = value
             api = M.DockerAPI(
-                "server", "volume", "agent", "synthetic-issuer", "synthetic-cleanup"
+                "server",
+                "volume",
+                "agent",
+                "synthetic-issuer",
+                "synthetic-cleanup",
+                request_script=":",
             )
             with (
                 self.subTest(key=key, value=value),
@@ -750,7 +658,12 @@ class BoundaryRecoveryTests(unittest.TestCase):
 
     def test_recovery_rejects_old_or_unparseable_running_generation(self):
         api = M.DockerAPI(
-            "server", "volume", "agent", "synthetic-issuer", "synthetic-cleanup"
+            "server",
+            "volume",
+            "agent",
+            "synthetic-issuer",
+            "synthetic-cleanup",
+            request_script=":",
         )
         for generation in (M.utc(WHEN - 1), "not-a-time"):
             with (

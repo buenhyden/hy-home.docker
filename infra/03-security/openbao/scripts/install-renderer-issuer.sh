@@ -6,7 +6,8 @@ set +x
 set -eu
 exec >/dev/null 2>&1
 [ "$#" -eq 3 ] || exit 1
-exec /usr/bin/python3 -I - "$@" <<'PY'
+unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH
+exec /usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S - "$@" <<'PY'
 import ctypes
 import hashlib
 import json
@@ -20,10 +21,15 @@ import sys
 import tempfile
 
 BASE = 'infra/03-security/openbao/scripts/'
-FILES = {'issue-renderer-secret-id.sh': 0o500, 'renderer-issuance.py': 0o400}
+FILES = {'issue-renderer-secret-id.sh': 0o500, 'renderer-issuance.py': 0o400,
+         'renderer-request.sh': 0o400}
 
-def run(argv):
-    done = subprocess.run(['/usr/bin/git', '--no-pager', *argv], stdin=subprocess.DEVNULL,
+def run(argv, git_fd):
+    environment = {'PATH': '/usr/bin:/bin', 'GIT_CONFIG_NOSYSTEM': '1',
+                   'GIT_CONFIG_GLOBAL': '/dev/null', 'GIT_NO_REPLACE_OBJECTS': '1'}
+    done = subprocess.run(['/usr/bin/git', '--no-pager',
+                           '--git-dir=/proc/self/fd/' + str(git_fd), *argv],
+                          env=environment, pass_fds=(git_fd,), stdin=subprocess.DEVNULL,
                           stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=10)
     if done.returncode:
         raise ValueError()
@@ -42,10 +48,27 @@ def install(repository, revision, target):
     if (not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid()
             or stat.S_IMODE(info.st_mode) != 0o700 or os.path.lexists(destination)):
         raise ValueError()
-    if run(['-C', str(repo), 'cat-file', '-t', revision]).strip() != b'commit':
-        raise ValueError()
-    blobs = {name: run(['-C', str(repo), 'show', revision + ':' + BASE + name])
-             for name in FILES}
+    repository_fd = os.open(repo, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        git_fd = os.open('.git', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                         dir_fd=repository_fd)
+        try:
+            identities = [(path, os.fstat(fd)) for path, fd in
+                          ((repo, repository_fd), (repo / '.git', git_fd))]
+            if run(['rev-parse', '--verify', revision + '^{commit}'], git_fd).strip() != revision.encode():
+                raise ValueError()
+            blobs = {name: run(['show', '--no-textconv', revision + ':' + BASE + name], git_fd)
+                     for name in FILES}
+            for path, held in identities:
+                current = path.lstat()
+                if (not stat.S_ISDIR(current.st_mode) or
+                        (held.st_dev, held.st_ino, held.st_uid) !=
+                        (current.st_dev, current.st_ino, current.st_uid)):
+                    raise ValueError()
+        finally:
+            os.close(git_fd)
+    finally:
+        os.close(repository_fd)
     if any(not blob or len(blob) > 100000 for blob in blobs.values()):
         raise ValueError()
     receipt = {'source_revision': revision,

@@ -315,7 +315,7 @@ class OpenBaoClientCases:
                 [
                     *preflight,
                     str(fixture.tls),
-                    "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+                    fixture.image_reference,
                 ],
                 allow_failure=True,
             ).returncode
@@ -368,7 +368,7 @@ class OpenBaoClientCases:
                     [
                         *preflight,
                         str(invalid),
-                        "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+                        fixture.image_reference,
                     ],
                     allow_failure=True,
                 ).returncode

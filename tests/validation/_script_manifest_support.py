@@ -44,6 +44,8 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
     "docs/04.execution/",
 )
 MUTATION_OVERRIDES = {
+    "scripts/lib/ops/_openbao_copy_transport.py": "runtime",
+    "scripts/lib/ops/openbao_consumer_migration.py": "runtime",
     "scripts/lib/ops/_secret_catalog_io.py": "check-write",
     "scripts/lib/ops/secret_catalog.py": "check-write",
     "scripts/lib/ops/smtp_contract.py": "runtime",

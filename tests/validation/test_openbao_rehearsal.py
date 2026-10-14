@@ -92,6 +92,14 @@ class OpenBaoCleanupTests(unittest.TestCase):
                 ):
                     fixture.server("config-mode")
                 container.assert_called_once()
+                args = container.call_args.args[1]
+                tls_names = [
+                    args[index + 1]
+                    for index, argument in enumerate(args[:-1])
+                    if argument == "--env"
+                    and args[index + 1].startswith("BAO_TLS_SERVER_NAME=")
+                ]
+                self.assertEqual(["BAO_TLS_SERVER_NAME=openbao"], tls_names)
             mode = (fixture.directory / "config-mode-config").stat().st_mode & 0o777
             self.assertEqual(0o770, mode)
         finally:
@@ -407,6 +415,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             for name in (
                 "issue-renderer-secret-id.sh",
                 "renderer-issuance.py",
+                "renderer-request.sh",
                 "install-renderer-issuer.sh",
             ):
                 (target / name).write_bytes((SOURCE / "scripts" / name).read_bytes())
@@ -431,6 +440,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             for name in (
                 "issue-renderer-secret-id.sh",
                 "renderer-issuance.py",
+                "renderer-request.sh",
                 "install-renderer-issuer.sh",
             ):
                 self.must(
@@ -484,7 +494,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             str(installed / "issue-renderer-secret-id.sh"),
             server,
             fixture.auth_volume,
-            "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+            fixture.image_reference,
             agent,
             str(journal),
             revision,
@@ -642,6 +652,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 "health-agent.sh",
                 "issue-renderer-secret-id.sh",
                 "renderer-issuance.py",
+                "renderer-request.sh",
                 "install-renderer-issuer.sh",
                 "check-tls-material.sh",
             )
