@@ -536,7 +536,7 @@ class RecoveryEffects:
         if first.get("sealed") is not True or first.get("progress") != 1:
             raise Indeterminate()
         denied = self.runtime.exec(old, "bao", "write", "-format=json", "sys/unseal", "key=-", input=shares[1].encode(), allow_failure=True)
-        if denied.returncode == 0:
+        if denied.returncode == 0 or b"invalid key" not in denied.stderr:
             raise Indeterminate()
         self.runtime.exec(old, "bao", "operator", "unseal", "-reset")
         for share in self.shares:

@@ -473,7 +473,7 @@ class RuntimeUnitTests(unittest.TestCase):
     def test_init_restore_rejects_foreign_then_uses_original_shares(self):
         effect = self.effect()
         effect.runtime = mock.Mock()
-        effect.runtime.exec.return_value = self.result(returncode=2)
+        effect.runtime.exec.return_value = self.result(returncode=2, stderr=b"* invalid key: failed to decrypt keys from storage")
         effect._wait_status = mock.Mock()
         init = {"root_token": "synthetic-root", "unseal_keys_b64": ["x", "y", "z"]}
         below = {"sealed": True, "progress": 1}
@@ -490,7 +490,7 @@ class RuntimeUnitTests(unittest.TestCase):
 
     def test_init_restore_stops_when_foreign_shares_unseal_or_skip_progress(self):
         init = {"root_token": "synthetic-root", "unseal_keys_b64": ["x", "y", "z"]}
-        for first, second_rc in (({"sealed": True, "progress": 1}, 0), ({"sealed": False, "progress": 0}, 2)):
+        for first, second_rc in (({"sealed": True, "progress": 1}, 0), ({"sealed": False, "progress": 0}, 2), ({"sealed": True, "progress": 1}, 1)):
             effect = self.effect()
             effect.runtime = mock.Mock()
             effect.runtime.exec.return_value = self.result(returncode=second_rc)
