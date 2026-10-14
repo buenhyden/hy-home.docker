@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -216,7 +216,8 @@ with and without it differs only in those two `image` values, and the merged
 model keeps the CA mount targets. A contract test pins that shape.
 
 The hourly logrotate call is a drop-in for the host's existing
-`logrotate.timer` that only resets `OnCalendar` to hourly, so the one
+`logrotate.timer` that resets `OnCalendar` to hourly and sets
+`AccuracySec=5m`, so the one
 `logrotate.service` keeps the shared config, state and lock. A copy of the
 host's timer and service with the drop-in passed `systemd-analyze verify`.
 Installing it is the owner's sudo step.
@@ -226,6 +227,20 @@ For W4's way back, the owner chose fix-forward on 2026-10-14
 image; only unfixable Raft damage holds HOME and opens the W3 snapshot
 restore under separate approval. RUN-0085 records the decision and the two
 override commands.
+
+An independent `iac-reviewer` review of `ccfa88e05` passed with notes (four
+Medium, five Low). Applied: the W4 paragraph now states fix-forward as the
+one rule, what HOME looks like if it does not finish in the window, and the
+Raft-damage exception, and Rollback or Recovery points to it; the logrotate
+text lists the size, hourly and `dateext` effects, an inventory command, the
+undo and a unit-level check; W0 names the drift-check method (main checkout,
+`docker inspect` mounts, networks and resources against `compose config`,
+image by ID) and a check that each pinned override reference resolves; a
+different Gatus image is BLOCKED because W6 has no Gatus override; W0's
+approval is the owner's; the drop-in moved to `config/systemd/` so it is
+never read as a logrotate rule; the override says when to retire it; the
+OpenBao README lists the new files; and `.github/workflow-contract.yml` now
+runs the W5 and W6 tests in CI.
 
 ## Evidence
 
@@ -245,10 +260,11 @@ override commands.
 | Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
 | Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 | Role apply re-review | 7 | W3 | Independent `iac-reviewer` re-review of the fixes: PASS with notes, notes applied; 17 tests OK with both native runs; CI gate tests OK | `3e080d999` | PASS | W3 Renderer Role Apply | - |
-| R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | Branch `claude/window-w6-ca-logrotate` | PASS | W5 R2 Artifact Transfer | - |
+| R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
 | R2 read-only rehearsal | 5 | W5 | `snapshots` against HOME's R2 repository | Owner approval needed | NOT_RUN | W5 R2 Artifact Transfer | - |
-| Window overrides | 6 | W6 | Compose config with and without the override differs only in the Traefik and Prometheus image; CA mounts kept; contract test OK; timer drop-in passes `systemd-analyze verify` on a copy of the host units | Running images observed 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
+| Window overrides | 6 | W6 | Compose config with and without the override differs only in the Traefik and Prometheus image; CA mounts kept; contract test OK; timer drop-in passes `systemd-analyze verify` on a copy of the host units | `ccfa88e05`; running images observed 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 | W4 rollback decision | 6 | W6 | Owner chose fix-forward (AskUserQuestion) | Owner answer 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
+| W6 review | 7 | W6 | Independent `iac-reviewer` review: PASS with notes, notes applied; contract tests and CI gate tests OK | `ccfa88e05` | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 
 ## Criterion Acceptance
 

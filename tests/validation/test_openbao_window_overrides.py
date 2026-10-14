@@ -8,7 +8,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 OVERRIDE = ROOT / "infra/03-security/openbao/window/compose.window-ca.override.yml"
-DROP_IN = ROOT / "infra/03-security/openbao/config/logrotate/logrotate-hourly.conf"
+DROP_IN = ROOT / "infra/03-security/openbao/config/systemd/logrotate-hourly.conf"
 BASE = {
     "traefik": (
         ROOT / "infra/01-gateway/traefik/docker-compose.yml",
