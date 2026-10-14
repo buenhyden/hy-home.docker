@@ -522,7 +522,7 @@ P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 g
 3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급하며, 그 전까지 일일 backup의 OpenBao snapshot은 recovery gap으로 계속 실패한다.
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
 5. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근의 off-host 보관과 share·CA key의 host 보조 사본을 값 없이 확인한다(owner 확인). 확인 전까지 미실행이며, P01은 계속 차단된다. 배치와 확인은 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다.
-6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않았다. 지금은 추적되는 `protected-semantic-restore.py`가 있지만 native로 실행된 적이 없고, 고정 image에서 `/bin/bao` 경로와 `-config` 없는 기동이 실패할 가능성이 있어(SPEC-0243) 먼저 합성 snapshot으로 native 시험한다.
+6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않았다. 지금은 추적되는 `protected-semantic-restore.py`가 있지만 native로 실행된 적이 없고, server 기동 결함은 SPEC-0243 W2에서 고쳤다. 실제 restore와 canary는 아직 native로 실행되지 않았다.
 7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 현재 HOME server에는 audit mount가 없으므로 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
 9. HOME cold boot를 한다(별도 승인).
@@ -778,7 +778,7 @@ eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-securi
 2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-1a259ef01a762656a9eeef18917b511b301c7db10f888527cd3cffb0fe67fde7 infra/03-security/openbao/scripts/protected-semantic-restore.py
+44f3d475bef1b8fdf8ca679cb7a5fe97eab4aeace5d279d8f0a59b4fcdaf4984 infra/03-security/openbao/scripts/protected-semantic-restore.py
 3ed79ab6b43663bc8788c583578a469c3d8c81ee8d71c0310bdd605ec5474bca infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 P01_SOURCE_MANIFEST
@@ -912,11 +912,10 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 코드·보안·인프라 검토는 통과했으며 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
-W3a는 **BLOCKED**다(SPEC-0243). 이 client는 server를 `--entrypoint /bin/bao ... server`로
-`-config` 없이 시작하는데, 고정한 자체 빌드 image는 `/usr/bin/bao`에 설치되고 설정은 보통
-entrypoint script가 적용하므로 실패할 가능성이 크다(D3). 한 번 실패하면 target-05를 다 쓴다.
-SPEC-0243 W2의 합성 snapshot native rehearsal과 W4의 contract·quiescence lease·renderer
-bundle·보안 receipt producer가 준비되기 전에는 실행하지 않는다.
+W3a는 **BLOCKED**다(SPEC-0243). client가 server를 `/bin/bao`로 `-config` 없이 시작하던
+결함(D3)은 SPEC-0243 W2에서 image 자체 entrypoint와 `/openbao/config` tmpfs로 고쳤고, 두
+image 모두 합성 대상에서 server가 뜨는 것을 확인했다. 아직 W4의 contract·quiescence lease·
+renderer bundle·보안 receipt producer가 없으므로 실행하지 않는다.
 
 2026-10-14 운영자는 새 경로
 `/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261014-05`를 선택했습니다.
