@@ -2,7 +2,7 @@
 # Restic entrypoint for the two repositories.
 #   state: allowlisted data-disk trees, consistent exports and the pgBackRest
 #          repository                                        -> BACKUP_STATE_REPO_DIR
-#   host:  secrets/ and .env, minus sets/host-exclude.txt    -> BACKUP_HOST_REPO_DIR
+#   host:  secrets/ and .env on the system disk              -> BACKUP_HOST_REPO_DIR
 # Usage: backup.sh {snapshots|init|backup|check|forget-prune|cmd <state|host> <restic args...>}
 set -eu
 
@@ -55,7 +55,7 @@ case "$action" in
             require_initialized "$set"
         done
         # state: only allowlisted file-safe trees plus the export staging;
-        # host: the secrets/ and .env mount, minus sets/host-exclude.txt.
+        # host: the whole secrets/ and .env mount.
         list=/tmp/state-paths
         : >"$list"
         grep -v -e '^#' -e '^$' "$SETS_DIR/state-include.txt" | while read -r rel; do

@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.21"
+version: "1.4.20"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-13"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -326,7 +326,7 @@ host를 잃은 뒤에는 Docker·보존 source revision과 image identity, BKP-0
 
 승인된 새 data-disk scratch에 먼저 원격 snapshot 목록의 metadata만 조사한다. 원격 snapshot ID는 local과 다르므로 host/tag/time과 전체 성공 실행 기록으로 host/state pair를 고정한다. 원격 접근에 필요한 전용 network와 R2 credential을 최소 범위로 제공하고, 기본 bridge·전체 secret 디렉터리 공유를 암묵적으로 사용하지 않는다.
 
-`restic restore <host-id> --tag hyhome-host --target <owned-host-scratch>`와 `restic restore <state-id> --tag hyhome-state --target <owned-state-scratch>`의 정확한 ID를 검토한 후 실행한다. `latest`와 기본 `/tmp`는 사용하지 않는다. host의 `/src/host`에서 설정/custody를 복원하고(SPEC-0240 이후의 host snapshot에는 OpenBao unseal share 파일이 없으므로 share는 [RUN-0085](../04-security-and-secrets/0085-openbao.md)의 off-host 보관에서 가져온다) state의 `/src/state/pgbackrest`는 별도 승인된 repository 경로에 owner70:70/mode0750로 준비한다. 실제 database 복원은 step5의 backup label/WAL target 계약을 따른다. 원격 copy가 담은 마지막 WAL 이후의 복구는 보장되지 않는다.
+`restic restore <host-id> --tag hyhome-host --target <owned-host-scratch>`와 `restic restore <state-id> --tag hyhome-state --target <owned-state-scratch>`의 정확한 ID를 검토한 후 실행한다. `latest`와 기본 `/tmp`는 사용하지 않는다. host의 `/src/host`에서 설정/custody를 복원하고 state의 `/src/state/pgbackrest`는 별도 승인된 repository 경로에 owner70:70/mode0750로 준비한다. 실제 database 복원은 step5의 backup label/WAL target 계약을 따른다. 원격 copy가 담은 마지막 WAL 이후의 복구는 보장되지 않는다.
 
 로컬 repository를 다시 만드는 경우에도 빈 target과 원격 snapshot scope를 검토한다. `restic init --copy-chunker-params --from-repo` 후 승인된 ID를 `copy`하며, 기존 repository를 덮어쓰거나 전체 tag를 무조건 복사하지 않는다. encrypted snapshot 존재만으로 key custody와 application restore가 검증되지는 않는다. 실패 artifact는 보존하고 cleanup/cutover는 별도 승인한다.
 

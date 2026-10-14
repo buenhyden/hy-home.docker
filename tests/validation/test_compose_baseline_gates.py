@@ -2014,17 +2014,6 @@ class BackupContractTests(unittest.TestCase):
             else:
                 self.assertIs(True, volume.get("read_only"), volume["target"])
 
-    def test_restic_host_set_excludes_only_the_unseal_share_file(self) -> None:
-        lines = (ROOT / RESTIC_DIR / "sets/host-exclude.txt").read_text(
-            encoding="utf-8"
-        )
-        excluded = [
-            line for line in lines.splitlines() if line and not line.startswith("#")
-        ]
-        self.assertEqual(
-            ["/src/host/secrets/security/openbao/openbao_unseal_keys.txt"], excluded
-        )
-
     def test_restic_state_set_is_an_allowlist_without_live_engines(self) -> None:
         lines = (ROOT / RESTIC_DIR / "sets/state-include.txt").read_text(
             encoding="utf-8"

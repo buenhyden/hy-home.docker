@@ -237,6 +237,7 @@ Candidate triggers:
 - Spec: [SPEC-0182](../../03.specs/0182-home-residual-backlog/spec.md) criterion 10 and 11,
   Plan W10/W11,
   [Task 0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)
+- Exposure correction: [SPEC-0240](../../03.specs/0240-unseal-backup-exclusion/spec.md)
 - Runbook: [RUN-0085](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
 - Runtime sources: [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
   [Agent configuration](../../../infra/03-security/openbao/config/agent.hcl)

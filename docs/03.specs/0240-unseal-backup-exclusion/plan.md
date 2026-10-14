@@ -16,15 +16,17 @@ created: "2026-10-14"
 
 ## Overview
 
-Pin the exclusion with a test and a synthetic dry run, correct the policy and
-decision text, extend the runbook, review, then merge only after the owner
-attests off-host custody and observe one daily run.
+Deliver in two pull requests. The first carries the policy, decision and
+runbook text and this package, so the owner attests step 5 against the
+revised procedure on `main`. The second carries the exclusion, its test and
+the restore wording, and merges only after that attestation; then one daily
+run is observed.
 
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
-| W1 | 1 | Host exclusion, its test and a synthetic dry run | None | TSK-0001 | Task evidence |
+| W1 | 1 | Host exclusion, its test and a synthetic dry run (separate PR) | None | TSK-0001 | Task evidence |
 | W2 | 2 | POL-0085, ADR-0042 and RUN-0085 text | W1 | TSK-0001 | Task evidence |
 | W3 | 3 | Independent IaC, security and rules reviews | W1, W2 | TSK-0001 | Task evidence |
 | W4 | 4 | Merge after step 5 is attested; observe the next host snapshot | W3 | TSK-0001 | Task evidence |

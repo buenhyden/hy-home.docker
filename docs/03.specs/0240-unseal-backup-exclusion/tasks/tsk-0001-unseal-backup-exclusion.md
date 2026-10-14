@@ -32,6 +32,12 @@ and correct the text that called it the only copy, as SPEC-0240 states.
 
 ### W1 Host Exclusion
 
+The exclusion is delivered by a second pull request from branch
+`claude/unseal-exclusion-apply` (rules review R2): the first pull request
+carries the text, so step 5 is attested against the revised procedure on
+`main`, and the exclusion merges only after that. The evidence below was
+taken at commit `27d84d9ab`, which held both.
+
 `infra/09-platform-ops/restic/sets/host-exclude.txt` now excludes
 `/src/host/secrets/security/openbao/openbao_unseal_keys.txt`, the path the
 Restic job mounts `secrets/` under, and keeps its comment explaining why. A
@@ -78,6 +84,14 @@ until W1 or a restore proves the off-host shares, names the local repository
 with BKP-002, adds Cloudflare account access to step 5, and points RUN-0021's
 host restore to off-host custody for the share file.
 
+The `rules-engineer` review of `27d84d9ab` returned FAIL on two items: the
+runbook still said the host set had no exclusion (R1, fixed above), and the
+merge gate held the revised procedure back until after the attestation that
+depends on it (R2). The delivery is split as W1 records. Its advisories are
+applied: ADR-0042 traceability links SPEC-0240, and the restore and set
+descriptions that change with the exclusion travel in the second pull
+request.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -86,6 +100,7 @@ host restore to off-host custody for the share file.
 | Dry run | 1 | W1 | Pinned Restic image `--dry-run` on a synthetic tree, with and without the exclude file | Branch on `c96d46112` | PASS | W1 Host Exclusion | - |
 | IaC review | 3 | W3 | Independent `iac-reviewer` review of `27d84d9ab`: exclusion PASS, document notes | `27d84d9ab` | PASS | Review Round 1 | - |
 | Security review | 3 | W3 | Independent `security-auditor` review of `27d84d9ab`: rekey semantics and retention wording wrong | `27d84d9ab` | FAIL | Review Round 1 | - |
+| Rules review | 3 | W3 | Independent `rules-engineer` review of `27d84d9ab`: stale runbook sentence; merge gate holds the procedure back | `27d84d9ab` | FAIL | Review Round 1 | - |
 | Merge gate | 4 | W4 | RUN-0085 step 5 `owner-attested` before merge | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
