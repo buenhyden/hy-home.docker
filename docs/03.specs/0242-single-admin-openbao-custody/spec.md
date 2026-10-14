@@ -1,8 +1,8 @@
 ---
 title: "Single-Administrator OpenBao Custody"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-14"
 layer: "specs"
@@ -77,5 +77,5 @@ window's readiness, and SPEC-0240's lifecycle disposition.
 - [AD-0004](../../02.architecture/descriptions/0004-data-architecture.md)
 - [ADR-0041](../../02.architecture/decisions/0041-offsite-backup-target.md)
 - [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-method.md)
-- [SPEC-0240](../0240-unseal-backup-exclusion/spec.md)
+- [SPEC-0240](../0240-unseal-backup-exclusion/spec.md), superseded by this Spec
 - [Plan](plan.md)
