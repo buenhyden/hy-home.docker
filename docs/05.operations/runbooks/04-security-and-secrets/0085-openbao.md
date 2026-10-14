@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.16"
+version: "0.12.18"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -1109,7 +1109,9 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
 W3a는 BLOCKED다. 2026-10-15 독립 검토가 Agent 단계의 입력 chown 결함을 찾았고 native로
-재현됐다. 수정과 전체 `perform()` native 리허설이 통과할 때까지 W3a를 열지 않는다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
+재현됐다. 그 수정 뒤 전체 `perform()` native 리허설이 결함 넷(sealed 상태의 login, 빈 token
+생성 요청, 본문 없는 revoke 응답, Agent 파일 회수)을 더 찾았고, 고친 뒤 두 image에서
+`accepted`로 끝났다. 이 수정의 독립 IaC·보안 재검토가 통과할 때까지 W3a를 열지 않는다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
 `/bin/bao`로 `-config` 없이 시작하던 것(D3), TTY 없이 거부되는 `operator unseal`과 인자 없는
 `login`, 없는 `/usr/bin/stat`, capability 없는 root로 읽을 수 없던 0400 snapshot이다. 이제
 image entrypoint와 `/openbao/config`·`/tmp` tmpfs, `write sys/unseal key=-`, `login -`,
