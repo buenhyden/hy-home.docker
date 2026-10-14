@@ -24,7 +24,7 @@ class AuditRotationContract(unittest.TestCase):
 printf '%s\n' "$*" >> "$FAKE_DOCKER_CALLS"
 if [ "$1" = inspect ]; then
     [ "$FAKE_DOCKER_MODE" != inspect-failure ] || exit 42
-    case "$3" in
+    case "$*" in
         *'{{.Id}}'*) printf '%s\n' "$FAKE_DOCKER_ID" ;;
         *)
             if [ "$FAKE_DOCKER_MODE" = bad-labels ]; then
@@ -70,6 +70,11 @@ fi
         result, calls = self.run_postrotate()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(calls[-1], f"kill --signal=HUP {CONTAINER_ID}")
+
+    def test_name_lookup_only_matches_containers(self):
+        # A network or volume named openbao also has a 64-hex ID.
+        _result, calls = self.run_postrotate()
+        self.assertTrue(calls[0].startswith("inspect --type container "), calls[0])
 
     def test_bad_labels_do_not_signal(self):
         result, calls = self.run_postrotate("bad-labels")
