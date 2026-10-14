@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.6.0"
+version: "0.7.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -122,18 +122,19 @@ owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건�
 기존 owner 결정(2026-09-22)은 share3개를 `secrets/security/openbao/openbao_unseal_keys.txt`
 한 파일에 함께 보관한다. 파일은0600, Git-ignored, 컨테이너에 mount하지 않으며
 private registry는 SEC-003 placeholder만 보관한다. 이 파일은 유일한 사본이 아니다.
-SPEC-0240 전까지 host Restic 저장소(BKP-002로 암호화)는 `secrets/` 전체를 담고,
-`restic-offsite`가 그 저장소를 R2(BKP-003으로 암호화)로 복사한다. 그 사본은 owner가
-`forget-prune`이나 별도 승인된 삭제로 지울 때까지 남는다(R2 bucket lock 30일).
+host Restic 저장소(BKP-002로 암호화)는 `secrets/` 전체를 담고, `restic-offsite`가 그
+저장소를 R2(BKP-003으로 암호화)로 복사한다. 그 사본은 owner가 `forget-prune`이나 별도
+승인된 삭제로 지울 때까지 남는다(R2 bucket lock 30일).
 이는 분리 custody의 기존 명시적 예외다. 파일을 읽는 한 주체, BKP-003과 R2 읽기 권한을
 함께 가진 한 주체, BKP-002와 local host 저장소를 가진 한 주체가 unseal threshold를 충족할
-수 있고, 파일 손실이 복구 자료 가용성을 잃게 할 수 있다. 2026-10-14 owner 결정으로 파일을
-host 백업에서 빼고(SPEC-0240) 유지보수 창에서 rekey한다(RUN-0085 W1b). rekey는 그 전에
-만든 Raft snapshot을 옛 share로 여는 길을 막지 못한다. 같은 날 owner는 관리자가 1명인
-운영에 맞춰 off-host 보관을 share마다 한 곳씩 최소 3곳으로 정했다. BKP-003은 R2 자격
-증명·Cloudflare 계정 접근과 늘 다른 장소에 두고, 제외가 확인되고 제외 이전 snapshot이 local
-host 저장소와 R2 어디에도 없음이 목록으로 확인된 뒤에만 share 하나와 같은 장소에 둘 수 있다(RUN-0085). 백업 제외, rekey, 3곳 결정 모두 이 예외를 닫지 않는다. 이 문서는 결정을
-기록할 뿐 그 실행이나 새 credential 처리, 예외 확대를 승인하지 않는다.
+수 있다. 2026-10-14 owner는 처음에 파일을 host 백업에서 빼고 rekey하며 share를 장소별로
+나누기로 했다가(SPEC-0240), 같은 날 관리자가 1명인 운영에 맞춰 이를 거두고 host 중심
+배치를 정했다(SPEC-0242). share와 CA key는 host `secrets/`와 owner의 host 보조 사본에 두고
+host 백업에 포함한다. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근과 secret이 아닌 R2
+식별자만 비밀번호 관리자 계정 하나에 둔다. host를 잃어도 R2에서 모두 복구하려는 배치이지만(R2 원격 복구는 아직 미실행), 그 계정
+하나가 뚫리면 모든 secret과 share가 노출되고 off-host 사본을 지울 수도 있으며, host를 읽는 한 주체가 threshold를 넘는다. owner는 이 노출을
+받아들였고 rekey는 하지 않는다(RUN-0085). 이 결정은 이 예외를 닫지 않는다. 이 문서는
+결정을 기록할 뿐 그 실행이나 새 credential 처리, 이 결정을 넘는 예외 확대를 승인하지 않는다.
 기존 기록에는 **만료와 종료 조건이 없다**. 위 Exceptions의 필수 항목을 충족했다고
 표시하지 않으며 @buenhyden의 후속 결정이 필요하다. 파일을 읽거나 이동하거나
 share를 재발급해 이 문서 불일치를 자동 해결하지 않는다.
@@ -155,7 +156,7 @@ config-owned HMAC file audit를 유지하며 모든 필수 backend 실패 시 �
 않는다. 실제 filesystem 용량, rotation owner/schedule/보존, 실패 알림을 HOME에서
 검증해야 한다. 기존 single-file custody 예외는 미해결 상태로 보존한다. P01 격리 시험은
 그 예외를 종료하거나 HOME 복구 자료를 만들어내지 않는다. P06 확대는 실제 cold boot·
-독립 unseal/offsite custody·선정 snapshot 복구 수용 이후만 허용한다.
+RUN-0085 5단계 custody 기록(SPEC-0242)·선정 snapshot 복구 수용 이후만 허용한다.
 
 ### Versioned issuance identity control
 

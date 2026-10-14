@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.3.3"
+version: "0.3.4"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-14"
 layer: "operations"
 artifact_id: "RUN-0098"
 parent_ids:
@@ -208,7 +208,7 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 
 ### P01 external trust and bootstrap prerequisite
 
-재부팅 전에 OpenBao 외부 CA/server key 자료, 독립 unseal/offsite custody와 제한
+재부팅 전에 OpenBao 외부 CA/server key 자료, RUN-0085 5단계 custody 기록(SPEC-0242)과 제한
 재발급 신원을 확인한다. Agent process cache는 새 process/host boot를 넘지 않는다.
 [RUN-0085](../04-security-and-secrets/0085-openbao.md#renderer-secretid-delivery)의 60초 wrapping 전달 helper를
 사용하고, source health·KV version·render·실제 consumer 적용을 구분한다. Keycloak/DB는

@@ -1,6 +1,6 @@
 ---
 title: "Unseal Share File Out of Host Backups Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -157,6 +157,19 @@ The criterion 2 document checks ran on `main` `fae77e14d`: changed metadata
 for POL-0085, ADR-0042 and RUN-0085 with 0 violations, links `--mode all`
 PASS and markdownlint 0.
 
+### Owner Withdrawal — 2026-10-14
+
+After reviewing the step 5 custody table, the owner, the only administrator,
+chose (AskUserQuestion) to keep the shares and the CA key on the host and in
+the host backup, to keep only BKP-003, the R2 credentials, BKP-002 and
+Cloudflare account access off the host, and to drop the W1b rekey. SPEC-0242
+carries that. This package's exclusion (W1, branch
+`claude/unseal-exclusion-apply-v2`), its merge gate and criterion 4 are
+therefore withdrawn and will not merge; the W5 place rule is replaced. The
+same day the owner chose `superseded` by SPEC-0242 for this package, to take
+effect once SPEC-0242 is merged and approved, when the package leaves Stage
+03; the exclusion branches are deleted.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -189,9 +202,9 @@ PASS and markdownlint 0.
 
 ## Review and Completion
 
-Do not merge before RUN-0085 step 5 is `owner-attested`. On 2026-10-14 the owner, answering the review question (AskUserQuestion), accepted criteria 1 and 5. After the Round 2
-re-reviews the owner accepted criteria 2 and 3 the same day. Criterion 4 waits
-for the merge and the next host snapshot.
+Withdrawn 2026-10-14, see Owner Withdrawal: the exclusion will not merge. Before that, on 2026-10-14 the owner, answering the review question (AskUserQuestion), accepted criteria 1 and 5. After the Round 2
+re-reviews the owner accepted criteria 2 and 3 the same day. Criterion 4 can no
+longer be met; its disposition goes with the package's.
 
 ## Related Documents
 

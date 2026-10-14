@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.10.4"
+version: "0.11.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -92,7 +92,7 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 스냅샷이 모두 성공한 뒤에만 폐기해야 한다. setup이 실패하면 운영자 복구를 위해 보호된
 복구 자료를 유지한다.
 
-기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
+이 HOME은 1인 관리자 결정(SPEC-0242)으로 share를 host에 두며 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다. 기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
 [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)가
 소유한다. 이 예외는 share 분리 검증을 뜻하지 않는다. 승인된 운영자는 대화형
 `docker compose exec openbao bao operator unseal`의 숨겨진 prompt로 share를 하나씩
@@ -501,7 +501,7 @@ file audit를 보존한다. 2.7의 제거된 file **storage** backend와 file **
 격리 합성 시험에서 expired-unused SecretID 거부·잘못된 CA 거부·제한 token role·
 snapshot 빈 환경 복원·audit 용량 실패 차단을 확인했다. 이는 실제 HOME custody·cold boot·
 이관·복구나 모든 malformed 입력 안전성의 증거가 아니다. 실제 host 적용 전에는 최신
-공급자 channel·같은 플랫폼 SBOM/scan·서명·pre-upgrade snapshot·독립 custody·빈 이전
+공급자 channel·같은 플랫폼 SBOM/scan·서명·pre-upgrade snapshot·5단계 custody 기록(SPEC-0242)·빈 이전
 버전 환경 복원과 이후 candidate upgrade를 검증한다. 2.7 데이터에 이전 image를 붙이는
 것은 rollback이 아니다. 운영자가 고른 30분 cutover 목표와 60분 maintenance window
 안에 restore/unseal/검증까지 가능한지 측정한다. 두 값은 계획 추정치이며 관측한
@@ -511,7 +511,7 @@ RTO가 아니다. 목표를 넘거나 복구 자료가 없으면 HOME만 보류�
 HOME 적용 전 source-only rollback은 검토된 revert다. 적용 후에는 TLS·audit 선언과 로그 custody를 유지하는
 검토된 override 또는 fix-forward만 사용한다. client도 검증된 endpoint로만 전환하며 HTTP나 audit 제거로 되돌리지 않는다.
 
-P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지 보류한다.
+P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 gate가 통과할 때까지 보류한다.
 
 #### HOME 적용 입력과 승인 순서
 
@@ -521,7 +521,7 @@ P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지
 2. 보존된 attempt 대상과 container의 처리를 정한다(삭제는 명시 승인). attempt 03·04·chown container와 `-03` 대상은 2026-10-13에 owner가 삭제했다. 같은 날 owner 결정으로 빈 기본 restore 대상과 `-04` 대상도 삭제했고, 기존 업그레이드 전 snapshot 파일은 새 snapshot이 생길 때까지 rollback 지점으로 보존한다.
 3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급하며, 그 전까지 일일 backup의 OpenBao snapshot은 recovery gap으로 계속 실패한다.
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
-5. unseal share·offsite key·R2 자격 증명·Cloudflare 계정 접근·CA key의 off-host 독립 보관을 값 없이 확인한다(owner 확인). 2026-10-13 owner 확인 결과 아직 분리 보관이 없으므로 미실행이며, P01은 계속 차단된다. 분리와 확인은 아래 [off-host custody 분리 절차](#off-host-custody-분리-절차)를 따른다.
+5. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근의 off-host 보관과 share·CA key의 host 보조 사본을 값 없이 확인한다(owner 확인). 확인 전까지 미실행이며, P01은 계속 차단된다. 배치와 확인은 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다.
 6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않으므로 이 단계에는 추적되거나 새로 검토한 도구가 필요하다.
 7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 현재 HOME server에는 audit mount가 없으므로 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
@@ -530,105 +530,75 @@ P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지
 
 변조된 HMAC의 audit 검증은 미실행이다. Agent 인증 실패 alert는 SPEC-0239(PR #463, #466)로 source에 들어왔다. `agent.hcl`이 `metrics_only` listener(8100)로 `/agent/v1/metrics`를 열고, Prometheus job `openbao-agent`가 scrape하며, `OpenBaoAgentMetricsScrapeFailing`과 `OpenBaoAgentAuthFailure`가 알린다. 아직 배포되지 않았다. 실행 중인 server와 Agent는 Compose가 고정한 image보다 이전 버전이므로, Agent만 다시 만들면 server보다 먼저 업그레이드된다. 그래서 2026-10-14 owner 결정으로 유지보수 창의 W5(Agent 업그레이드와 wrapped 재발급)에서 함께 배포하고 이어서 Prometheus를 restart한다. 인증은 되는데 렌더만 낡는 경우는 metric이 없어서 배포 뒤에도 Docker healthcheck(token lookup·KV 읽기·렌더 bytes 일치)의 `unhealthy`로만 드러나고 알림은 없다.
 
-#### off-host custody 분리 절차
+#### 1인 관리자 custody 절차
 
 이 절차는 owner가 직접 수행한다. agent는 값을 읽거나 옮기지 않고, 값이 없는 owner 진술만
 SPEC-0204 TSK-0006에 기록한다. 값은 화면 공유·채팅·명령 인자·터미널 기록·이 저장소
-어디에도 남기지 않는다.
+어디에도 남기지 않는다. Claude Code의 `!` 명령 출력은 대화 기록에 남으므로 값을 다루는
+명령은 기록되지 않는 별도 터미널에서만 실행한다.
 
-**대상.**
+2026-10-14 owner 결정(SPEC-0242)으로 관리자가 1명인 이 HOME은 share를 host에 두고 host
+백업에 포함한다. off-host로는 백업과 원격 저장소를 여는 key만 둔다. 이 배치는 장소 분리로
+threshold를 지키지 않는다. 그 대신 host를 잃어도 R2 사본에서 모두 복구할 수 있게 하려는
+것이다. 아직 R2 원격 복구를 실행하지 않았고 OpenBao 일일 snapshot도 실패 중이므로(위
+복구 gap) 현재 보장된 상태는 아니다.
 
-| 항목 | 내용 | 노출되면 |
-| --- | --- | --- |
-| share 1·2·3 | OpenBao Shamir unseal share(threshold 2) | 2개가 모이면 unseal과 root ceremony가 가능 |
-| offsite key | BKP-003 R2 원격 Restic 저장소 암호 | R2 사본에서 share 전체를 복원할 수 있음(아래) |
-| R2 자격 증명 | BKP-004·005 R2 API token(객체 읽기·쓰기) | offsite key와 합쳐지면 R2 사본을 읽을 수 있음 |
-| CA key | OpenBao TLS를 발급한 CA의 개인키 | 같은 trust로 인증서를 발급할 수 있음 |
+**배치.**
 
-**offsite key는 share 전체와 같다.** SPEC-0240이 운영 checkout에 들어가기 전까지 Restic
-host 백업은 `secrets/` 전체를 담고, `restic-offsite`가 그 저장소를 R2로 복사한다. 그래서
-모든 share를 담은 단일 unseal 파일과, 같은 `secrets/` 안의 보호된 Raft snapshot
-(`backup/openbao/pre-change.snap`)이 R2 사본 안에 함께 있다. BKP-003과 R2 읽기 권한만
-있으면 share 3개와 그 snapshot의 데이터를 얻는다. local host 저장소도 BKP-002로 같은 결합을
-담는다. snapshot token 발급(W2) 뒤에는 state 백업에도 Raft snapshot이 들어간다.
+| 항목 | 내용 | 둘 곳 | 노출되면 |
+| --- | --- | --- | --- |
+| unseal share 파일 | OpenBao Shamir share 3개(threshold 2), `secrets/security/openbao/openbao_unseal_keys.txt` | host `secrets/`, host Restic 백업(local·R2) | 한 주체가 unseal과 root ceremony를 할 수 있음 |
+| CA key | 내부 TLS 공용 root CA 개인키(`secrets/certs/`), OpenBao 전용이 아님 | host `secrets/`, host Restic 백업 | 그 CA를 믿는 모든 내부 TLS endpoint를 사칭할 수 있음 |
+| host 보조 사본 | 위 두 항목을 포함한 owner의 사본, `/home/hyunyoun/data/hy-home.secrets`(root 0700) | 같은 system disk | 실수로 지운 경우만 막음. host·disk를 잃으면 함께 잃음 |
+| BKP-003 offsite key | R2 원격 Restic 저장소 암호 | 비밀번호 관리자 계정 A | R2 읽기 권한과 합쳐지면 R2 사본의 모든 secret과 share |
+| R2 자격 증명 | BKP-004·005 R2 API token(객체 읽기·쓰기) | 비밀번호 관리자 계정 A | BKP-003과 합쳐지면 R2 사본을 읽음 |
+| BKP-002 local key | local host Restic 저장소 암호 | 비밀번호 관리자 계정 A | local 저장소에 접근하면 그 안의 모든 secret과 share |
+| Cloudflare 계정 접근 | 로그인·2FA 복구 코드 | 비밀번호 관리자 계정 A | R2 자격 증명을 다시 발급하고 bucket과 lock 규칙을 바꾸거나 지울 수 있음 |
+| R2 account ID·bucket 이름 | `.env`의 `BACKUP_OFFSITE_R2_ACCOUNT_ID`·`BACKUP_OFFSITE_R2_BUCKET`(secret 아님) | 비밀번호 관리자 계정 A | 단독으로는 접근을 주지 않음. host를 잃으면 `.env`가 R2 사본 안에 있으므로 따로 필요함 |
 
-2026-10-14 owner 결정으로 단일 파일을 host 백업에서 빼고(SPEC-0240,
-`sets/host-exclude.txt`) 유지보수 창에서 rekey한다(아래 W1b). 제외는 운영 checkout이 그
-commit을 담는 순간 다음 일일 백업부터 적용되므로, 5단계가 `owner-attested`가 된 뒤에만
-merge하고 운영 checkout에 반영한다. host 파일과 이미 만든 snapshot은 남으므로 그 순간
-복구 자료를 잃지는 않지만, 그 뒤의 새 recovery point는 off-host 보관에만 기댄다. 5단계는
-사본을 꺼낼 수 있는지만 확인하므로, W1이나 6단계 restore가 off-host share의 값을 증명하기
-전까지 host 파일을 지우지 않고 제외 이전 host snapshot도 prune하지 않는다. W1 root ceremony는
-share 2개만 쓰므로 그 둘만 증명한다. 무엇이든 지우기 전에 세 번째 share의 off-host 사본도
-이미 증명된 share 하나와 짝지은 두 번째 ceremony 등으로 증명한다. rekey 뒤 새 share의
-`-verify`도 2개만 확인하므로 같은 규칙을 따른다.
+BKP-001(pgBackRest)은 host `secrets/`에 있어 host 백업으로 함께 복구된다. host 보조 사본은
+host 백업 범위 밖이며 off-host 보관이 아니다.
 
-rekey는 실행 중인 cluster의 unseal key만 바꾼다. rekey 전에 만든 Raft snapshot은 restore하면
-옛 share로 열린다. 그래서 rekey는 옛 share로 지금의 서버를 여는 길을 막을 뿐이고, 제외 이전
-host snapshot(옛 share)과 rekey 이전 Raft snapshot이 함께 남아 있는 동안 노출은 계속된다.
-R2 bucket lock은 30일이고, 12개월은 owner가 확인을 넣어 실행하는 `forget-prune`의 보존
-정책일 뿐 자동 만료가 아니다. 노출은 제외 이전 host snapshot을 local과 R2에서 지울 때
-끝나며, 그 삭제는 별도 승인된 작업이다. 지금 추적되는 도구로는 특정 snapshot을 지울 수 없어서
-검토된 새 도구나 보존 기간 경과가 필요하다(아래 분리 규칙의 조건 (2)).
-
-**분리 규칙.** off-host 보관 장소에 적용한다.
-
-- 한 장소에 share가 2개 이상 있으면 안 된다. 그래서 장소는 share마다 하나씩 최소 3곳이다.
-  관리자가 1명이어도 된다. 규칙의 단위는 사람이 아니라 장소다.
-- offsite key는 R2 자격 증명과도, Cloudflare 계정 접근(로그인·2FA·복구 이메일)과도 다른
-  장소에 둔다. 그 계정으로 R2 자격 증명을 다시 발급할 수 있기 때문이다.
-- offsite key는 share가 없는 장소에 둔다. 다만 다음 두 조건이 모두 충족되면 share 하나와 같은
-  장소에 둘 수 있다(2026-10-14 owner 결정, 1인 관리자). (1) SPEC-0240 제외가 운영 checkout에
-  들어간 뒤 만든 host snapshot에 unseal 파일이 없음이 확인됐다(SPEC-0240 기준 4). (2) 제외 이전
-  host snapshot이 local host 저장소와 R2 저장소 어디에도 없다. 일일 `restic copy`는 R2에 없는
-  local snapshot을 다시 올리므로 R2만 지우면 다음 날 되살아난다. 두 저장소 모두에서 `forget`한
-  뒤 `prune --max-unused 0`으로 데이터를 지우고, 그 뒤 일일 copy가 한 번 이상 돈 다음 찍은 두
-  저장소의 snapshot 목록(ID·시각만)이 첫 제외 이후 snapshot보다 오래된 host snapshot이 없음을
-  보여야 한다. 지금 추적되는 도구는 특정 snapshot을 지우지 못한다(`offsite.sh`는 `forget`·
-  `prune`을 거부하고, `forget-prune`은 월별 snapshot을 12개월 둔다). 그래서 이 조건은 검토된 새
-  도구나 보존 기간 경과가 필요하다. 두 조건 전에는 offsite key와 R2 읽기 권한으로 R2 사본의
-  share 전체에 닿으므로, 처음 보관할 때는 share가 없는 네 번째 장소가 필요하다. 두 조건을 갖춘
-  뒤 offsite key를 옮기면, 옮긴 날 아래 5단계 기록을 다시 채운다. 제외 뒤의 host snapshot에
-  파일이 다시 들어가면 offsite key를 즉시 share가 없는 장소로 되돌리고 5단계를 다시 채운다.
-- 한 장소를 여는 수단(마스터 비밀번호, 매체 암호, 금고 열쇠 위치)을 다른 장소에 저장하지
-  않는다. 저장하면 두 장소는 한 장소다.
-- 각 항목은 이 host 밖에 최소 한 곳 있어야 한다. host 디스크·host 백업·R2 사본은 off-host
-  보관이 아니다.
-- 장소는 별도 자격 증명이나 물리 보관으로 접근이 갈리는 단위다. 같은 비밀번호 관리자 계정
-  안의 vault나 폴더 둘은 한 장소다. 기록에는 종류만 적는다. 예: 비밀번호 관리자 계정 A,
-  다른 계정 B, 금고의 종이 사본, 암호화된 오프라인 매체, 신뢰하는 제2자.
-- host에 남는 단일 파일은 그대로 한 명이 threshold를 넘는 위험이다. 이 절차를 통과해도
-  [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)의
-  예외는 닫히거나 바뀌지 않는다. 단일 파일과 그 백업 사본을 지울지는 별도 owner 결정이며,
-  이 절차는 아무것도 삭제하지 않는다.
+**받아들인 노출.** 계정 A 하나가 뚫리면 BKP-003과 R2 자격 증명으로 R2 사본을 열어 모든
+secret과 share를 얻는다. 같은 계정의 Cloudflare 접근과 쓰기 가능한 R2 token으로 bucket lock
+규칙이나 bucket을 지우고 lock이 없는 `locks/`·`index/`를 바꿔 유일한 off-host 사본을 망가뜨릴
+수도 있다. host를 읽는 한 주체는 share 3개를 모두 가진다. 둘 다
+[POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)의
+예외로 남고, 이 절차로 닫히지 않는다. 계정 A는 강한 마스터 비밀번호와 2FA로 보호하고,
+그 복구 수단(emergency kit·복구 코드)과 2FA 요소(TOTP seed 등)를 같은 계정이나 host에 두지
+않는다. 복구 수단은 host와 계정 A 없이 닿는 오프라인 장소에 두고, 계정 A의 2FA가 그 안에
+저장된 Cloudflare 로그인에 기대지 않게 한다. Claude Code `!` 명령이나 agent 세션처럼 저장소
+UID로 도는 process도 host를 읽는 주체에 들어간다.
 
 **절차.**
 
-1. 위 규칙에 맞게 장소를 정한다.
-2. 각 값을 해당 장소로 **복사**한다. 원본은 지우지 않는다. 단일 파일을 통째로 한 장소에
-   첨부하면 분리가 깨지므로 share를 하나씩 복사한다. 종이 사본처럼 값을 봐야 하는 경우에는
-   화면 공유·녹화·clipboard 기록이 없는 상태에서 한다.
-3. 장소마다 혼자서 그 사본을 꺼낼 수 있는지 확인한다(예: 다른 장치에서 vault 열기). 값이
-   맞는지는 유지보수 창의 W1 root ceremony(share 2개)와 의미 있는 restore(6단계)에서
-   드러난다.
+1. BKP-003, R2 자격 증명, BKP-002, Cloudflare 계정 접근, R2 account ID와 bucket 이름을 계정
+   A로 **복사**한다. 원본은
+   지우지 않는다. clipboard 기록·동기화가 꺼진 상태에서 한 번에 하나씩 옮긴다.
+2. host 보조 사본을 갱신한다. share와 CA key가 바뀔 때마다 다시 맞춘다. sudo로 맞출 때도 값을
+   명령 인자·기록에 남기지 않는다.
+3. host가 아닌 장치에서 계정 A를 열어 항목을 꺼낼 수 있는지 확인한다. 값이 맞는지는 계정 A에서
+   꺼낸 BKP-003·R2 자격 증명·account ID·bucket을 숨김 입력으로 넣어 읽기 전용 R2 snapshot
+   목록을 받아 확인한다. 값은 출력하지 않는다. 6단계 restore는 host의 사본을 쓰므로 계정 A의
+   값을 증명하지 못한다.
 4. 아래 기록을 값 없이 채워 agent에 전달한다.
 
-| 항목 | 보관 장소 종류 | host 밖인가 | 다른 share와 장소가 다른가 | offsite key와 장소가 다른가(두 조건 충족 뒤 같은 장소인 share 하나는 "조건부 예") | 이 장소를 여는 수단이 다른 장소에 없는가 | 꺼낼 수 있음을 확인한 날 |
-| --- | --- | --- | --- | --- | --- | --- |
-| share 1 | | | | | | |
-| share 2 | | | | | | |
-| share 3 | | | | | | |
-| offsite key | | | share가 없는 장소인가(두 조건 충족 뒤 share 하나와 같은 장소면 "조건부 예") | 해당 없음 | | |
-| R2 자격 증명 | | | 해당 없음 | | | |
-| Cloudflare 계정 접근 | | 해당 없음 | 해당 없음 | | | |
-| CA key | | | 해당 없음 | 해당 없음 | | |
+| 항목 | 둔 곳 | host 밖인가 | 꺼낼 수 있음을 확인한 날 |
+| --- | --- | --- | --- |
+| BKP-003 offsite key | | | |
+| R2 자격 증명 | | | |
+| BKP-002 local key | | | |
+| Cloudflare 계정 접근 | | | |
+| R2 account ID·bucket 이름 | | | |
+| 계정 A의 값으로 받은 R2 snapshot 목록 | | 해당 없음 | |
+| unseal share 파일과 CA key의 host 보조 사본 | | 해당 없음 | |
+| 계정 A의 복구 수단이 계정 A와 host 밖에 있는가 | | | |
 
-**판정.** 모든 칸이 채워지고 모든 질문의 답이 "예"일 때만 agent가 5단계를
-`owner-attested`로 기록한다. "조건부 예"는 offsite key 행과 그와 같은 장소인 share 행
-하나에만 쓸 수 있고, SPEC-0240 기준 4 기록과 위 (2)의 두 저장소 snapshot 목록이 저장소에
-있을 때만 "예"로 본다. 그 기록이 없으면 "아니오"다. 칸이 비면 5단계는 미실행으로
-남고, "아니오"가 하나라도 있으면 `FAIL`이다. 둘 다 유지보수 창을 열지 않는다. `owner-attested`는 owner의 진술이며 저장소는
-보관 사실을 인증하지 못한다. 실제 복구 가능성은 W1과 6단계에서 다시 확인된다.
+**판정.** 모든 칸이 채워지고 계정 A의 다섯 행이 "host 밖 = 예"이며 R2 목록을 받은 날이 있고
+마지막 행이 "예"일 때만
+agent가 5단계를 기록한다. Evidence 결과는 `PASS`이고 Check는 "owner-attested"로 시작한다.
+칸이 비면 `NOT_RUN`, "아니오"가 하나라도 있으면 `FAIL`이다. 둘 다 유지보수 창을 열지
+않는다. owner 진술일 뿐이며 저장소는 보관 사실을 인증하지 못한다.
 
 ### Maintenance Window Plan
 
@@ -637,14 +607,13 @@ R2 bucket lock은 30일이고, 12개월은 owner가 확인을 넣어 실행하�
 stdin으로만 다루고, 명령 인자·터미널 기록·채팅에 남기지 않는다. 각 단계의 결과는
 SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 
-**전제 조건(위 5단계).** unseal share·offsite key·R2 자격 증명·Cloudflare 계정 접근·CA key가 분리 규칙에 맞는 off-host 보관에
+**전제 조건(위 5단계).** BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근이 1인 관리자 custody 절차에 맞는 off-host 보관에
 있다는 owner 확인이 값 없이 기록되어야 한다. 확인이 없으면 window를 열지 않는다.
 
 | 순서 | 단계 | 목표 시간 | 승인 |
 | --- | --- | --- | --- |
 | W0 | 사전 점검 | window 전 | SEC01 담당자, owner |
 | W1 | root ceremony | 10분 | buenhyden(서로 다른 share 2개 수동 입력) |
-| W1b | unseal rekey | 10분 목표 | buenhyden(옛 share 2개 수동 입력·새 share 3개 분리 출력) |
 | W2 | snapshot token 발급과 확인 | 5분 | owner(credential 발급) |
 | W3 | 새 업그레이드 전 snapshot | 5분 목표 | owner(backup 실행) |
 | W3a | 격리 semantic restore와 candidate 시험 | 측정 전, cutover 전 필수 | 정확한 새 artifact·빈 대상의 독립 검토와 owner |
@@ -656,8 +625,7 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 
 W3a는 HOME server 변경 전에 통과해야 하는 준비 단계이며, 실제 복구 실행 시간은
 측정되지 않았고 native restore는 NOT_RUN입니다. 기존 30분 cutover·60분 window는 계획 추정치입니다.
-W1 직후 W1b rekey를 끝내고 새 share의 독립 보관을 확인한 뒤에만 W2·W3를 엽니다.
-W1b의 10분도 계획 추정치이며 실제 복구·rekey 시간은 아직 측정하지 않았습니다.
+W1b rekey는 이 window에 없습니다(SPEC-0242). W1 직후 W2·W3를 엽니다.
 새 snapshot의 semantic restore를 끝낸 다음 W4 cutover를 열며, 준비 시간이 목표를
 넘거나 중단 조건이 생기면 HOME 변경을 시작하지 않고 남은 단계는 다음 window로 넘깁니다.
 
@@ -666,7 +634,7 @@ W1b의 10분도 계획 추정치이며 실제 복구·rekey 시간은 아직 측
 보안 통과가 아닙니다. 패치된 dependency로 검증한 새로운 artifact가 수용되기 전에는
 현재 source pin으로 W4/W5를 실행하지 않습니다. 실제 scan·플랫폼 적용 판단은
 [SEC01 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0009-sec01-stable-security-integration.md)가
-소유합니다. 아래 명령의 준비 여부와 실제 실행은 별도이며, 지정 운영자의 서로 다른 share 2개·독립 custody와
+소유합니다. 아래 명령의 준비 여부와 실제 실행은 별도이며, 지정 운영자의 서로 다른 share 2개·5단계 custody 기록(SPEC-0242)과
 W3a 복구 gate도 계속 필요합니다.
 
 **W0 사전 점검.**
@@ -674,7 +642,7 @@ W3a 복구 gate도 계속 필요합니다.
 ```bash
 HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
 docker compose exec -T openbao bao status
-docker compose --profile security config --images | grep '^openbao/openbao' | sort -u |
+docker compose --profile security config --images | grep '^hy-home/openbao' | sort -u |
   xargs docker image inspect --format '{{.Id}}'   # 없으면 오류로 끝난다
 df -h /home
 systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
@@ -683,7 +651,7 @@ systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
 기대: compose 검증 통과, `Sealed false`, compose가 고정한 candidate image가 local에
 있음, 남은 용량 확인, 마지막 backup 결과 확인. SEC01이 candidate image의 서명·SBOM·
 CVE 결과를 수용했고(위 1단계) 위 TLS preflight가 PASS여야 한다. 하나라도 아니면 중단한다.
-image가 없으면 별도 승인으로 같은 digest만 pull한다.
+image가 없으면 registry에서 받을 수 없으므로, 별도 승인으로 검토된 OCI archive를 다시 import해 같은 digest인지 확인한다(SPEC-0204 TSK-0009).
 
 W0에서는 audit 디렉터리와 rotation 계약도 server 재생성 전에 준비합니다. 실제 audit
 경로 `/home/hyunyoun/storage/volumes/security/openbao/audit`는 2026-10-14에 독립 IaC
@@ -741,7 +709,7 @@ root credential로 `lookup-self`를 수행해 root-only·orphan·비만료 ident
 `DELIVERED`가 됩니다. 이 client는 snapshot token 발급·root 폐기·upgrade를 실행하지 않습니다.
 
 독립 code/security 검토와 합성 TLS·중단 회귀시험은 통과했습니다. 지정 운영자 `buenhyden`은
-2026-10-14 최신 답변에서 unseal share와 off-host 보관 준비를 확인했습니다. 이는 운영자 확인이며
+2026-10-14 최신 답변에서 unseal share와 보관 준비를 확인했습니다. 이는 5단계 기록이 아닌 운영자 확인이며
 실제 인증·발급·복구가 실행됐다는 증거는 아닙니다. 실제 W1의 현재 OIDC 인증과 서로 다른
 share 2개는 보호 client로 입력합니다. 보관 위치 참조와 복구 계약도 값 없이 기록합니다.
 아직 ceremony는 **NOT_RUN**이며 실제 값은 채팅으로 보내지 않습니다.
@@ -821,170 +789,11 @@ encoded 응답과 root는 custody에 먼저 fsync되고 일반 출력에는 상�
 실행하지 않아야 합니다. 메모리 소거, prompt 대기나 fsync 시간 상한은 보장하지 않습니다.
 root를 읽어 채팅에 보내지 말고 W2·W7의 보호된 관리 입력으로만 전달합니다.
 
-**W1b unseal rekey — PGP 준비부터 완료까지.** W1 직후, W2·W3 전에 수행합니다.
-2026-10-14 운영자 `buenhyden`은 PGP 준비가 필요하다고 답했습니다. 아래 준비가 끝나기
-전에는 W1b와 그 뒤의 HOME 교체를 실행하지 않습니다. 공개키 준비와 이미지 검증은
-독립적으로 진행할 수 있습니다. 기존 2-of-3 share 준비 확인은 그대로 유지합니다.
-
-1. **서버 밖 보관 장소 세 곳을 정합니다.** 예: 암호화된 별도 장치 A, 다른 장소의
-   암호화 장치 B, 별도 계정·접근 수단의 보관소 C. 같은 계정의 폴더 세 개나 같은 장치의
-   파티션 세 개는 독립된 장소가 아닙니다. 한 사람이 세 장소를 관리할 수 있으며 두 명의
-   운영자를 새로 요구하지 않습니다. 개인키·해제 암호·폐기 인증서와 대응 share를 각
-   장소 안에서 보관하고, 하나의 서버·계정 손실로 두 share가 함께 노출되지 않게 합니다.
-   share 보관을 복원하려면 먼저 같은 OpenBao를 열어야 하는 순환 의존도 없어야 합니다.
-   **파일 보관이 가능합니다.** 각 장소에 해당 share의 PGP 암호문 파일과 암호로 보호한
-   개인키를 보존합니다. 평문 share 파일은 만들지 않습니다. 파일 세 개를 같은 서버나
-   같은 계정의 폴더 세 개에 두는 방식은 독립 보관이 아닙니다.
-   Cloudflare 계정 접근 수단, R2 credential, Restic offsite key와 CA key의 분리 기록은
-   위 5단계 custody 표에서 별도로 채웁니다. 현재는 SPEC-0240 기준 4와 과거 host snapshot이
-   두 저장소 모두에 없다는 후속 copy 이후 목록이 없으므로, offsite key에는 share가 없는
-   **네 번째 장소**를 먼저 준비합니다. 두 조건이 입증된 뒤에만 share 하나의 장소로 옮길 수
-   있으며 5단계를 다시 기록합니다. 장소를 여는 암호·매체 암호·열쇠 위치는 다른 장소에
-   저장하지 않습니다. 같은 장치·계정의 폴더 구분이나 PGP 암호화만으로 이 조건을 충족하지
-   않습니다.
-2. **각 장소에서 별도 PGP 키를 만듭니다.** 서버와 Codex 터미널에서는 개인키를 만들거나
-   가져오지 않습니다. 각 장소의 신뢰할 수 있는 로컬 터미널에 GnuPG가 설치돼 있는지
-   `gpg --version`으로 확인합니다. 아래 `P01_OFFHOST_UNIT`은 그 장소의 실제 암호화된
-   저장 경로로 직접 지정합니다. 세 장소에서 각각 한 번, 새 경로로 실행합니다.
-
-   ```bash
-   umask 077
-   P01_OFFHOST_UNIT=/실제/독립보관장소/openbao-share-1
-   mkdir -m 0700 -- "$P01_OFFHOST_UNIT" || exit 1
-   mkdir -m 0700 -- "$P01_OFFHOST_UNIT/gnupg" || exit 1
-   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" --full-generate-key
-   ```
-
-   대화형 메뉴에서 서명과 **암호화가 가능한 RSA/RSA 3072-bit** 키를 선택하고,
-   보관 장소마다 다른 강한 암호를 pinentry에 입력합니다. 암호를 명령 인자에 넣지
-   않습니다. 수명은 실제 보관·갱신 계획에 맞춰 정하고 만료 전에 갱신합니다.
-   2·3번 장소는 경로 끝을 `openbao-share-2`, `openbao-share-3`으로 바꿉니다.
-   키 목록에서 primary 전체 fingerprint와 `[E]` encryption subkey를 확인합니다.
-
-   ```bash
-   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" --list-keys --with-subkey-fingerprint
-   P01_PGP_FPR=출력에서_확인한_해당_키의_전체_fingerprint
-   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" --fingerprint "$P01_PGP_FPR"
-   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" \
-     --output "$P01_OFFHOST_UNIT/recipient.pgp" --export "$P01_PGP_FPR"
-   gpg --homedir "$P01_OFFHOST_UNIT/gnupg" \
-     --show-keys --with-fingerprint "$P01_OFFHOST_UNIT/recipient.pgp"
-   ```
-
-   `recipient.pgp`는 **binary 공개키**입니다. `--armor`와 `--export-secret-keys`를
-   쓰지 않습니다. 전체 fingerprint가 세 키마다 다르고 암호화 키가 유효하며 만료·폐기되지
-   않았는지 확인합니다. GnuPG home과 그 안의 revocation certificate는 해당 장소에
-   보존합니다. 서버에는 별도 전달 수단으로 **공개키 파일만** 전달하고 개인키 장치를
-   서버에 연결하지 않습니다. 서버 쪽 공개키를 `recipient-1.pgp`부터 `recipient-3.pgp`로
-   구분하고, 전달 전후 전체 fingerprint를 대조합니다. 짧은 key ID만 비교하지 않습니다.
-3. **값 없는 준비 기록을 전달합니다.** 아래 세 행을 채우면 운영 준비를 검토할 수 있습니다.
-   공개키의 서버 절대 경로와 전체 fingerprint, 보관 장소의 별칭만 전달합니다.
-   개인키·share·암호·token·복호화 화면은 채팅에 보내지 않습니다.
-
-   | 순서 | 공개키 서버 절대 경로 | 전체 fingerprint | 담당자 | 독립 보관 장소 참조 |
-   | --- | --- | --- | --- | --- |
-   | 1 | 준비 필요 | 준비 필요 | buenhyden | 준비 필요 |
-   | 2 | 준비 필요 | 준비 필요 | buenhyden | 준비 필요 |
-   | 3 | 준비 필요 | 준비 필요 | buenhyden | 준비 필요 |
-
-4. **운영 창에서 인증과 대상을 확인합니다.** 이후 share 입력·암호문 출력·복호화는
-   녹화·전사·xtrace·터미널 공유가 없는 운영자 전용 TTY에서만 합니다. Codex 도구에서
-   실행하지 않습니다. share를 positional argument, `-`, 환경 변수 또는 파일로 전달하지
-   않습니다. 명령 이력에도 값이 들어가지 않습니다. 암호문 세 개는 native CLI 화면에
-   나타나므로 host 파일·`tee`·스크린샷·clipboard history로 저장하지 않습니다.
-
-   선택된 Compose 소스는 legacy unauthenticated rekey endpoint를 끕니다. 따라서
-   인증되는 **`operator rotate-keys`**를 사용하며, W1이 보호 전달한 임시 root가
-   필요합니다. 현재 HOME 설정에 그 옵션이 적용됐다는 뜻은 아닙니다. 검토한 native CLI의
-   절대 경로와 SHA256·버전, 대상 CA·cluster를 먼저 고정합니다. 아래 `P01_BAO`는 그
-   승인된 실행 파일로 지정하며, candidate 보안 검증이 끝나지 않은 파일을 임의로 사용하지
-   않습니다. W1의 private tmpfs custody에 있는 root 값은 읽어 출력하지 않습니다.
-   다음 함수는 매번 깨끗한 환경에서 native CLI를 실행하고 **token 파일 경로만** 전달합니다.
-
-   ```bash
-   P01_BAO=/검증된/절대경로/bao
-   p01_bao() {
-     /usr/bin/env -i PATH=/usr/bin:/bin \
-       BAO_ADDR=https://openbao.hy.home.arpa:443 \
-       BAO_CACERT=/home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
-       BAO_TOKEN_PATH="${P01_CUSTODY_DIR:?}/root.token" \
-       "${P01_BAO:?}" "$@"
-   }
-   p01_bao status
-   p01_bao operator rotate-keys -status
-   p01_bao operator rotate-keys -verify -status
-   ```
-
-   CA 검증을 끄지 않습니다. DNS/TLS 접속과 cluster ID가 W0의 고정 대상과 같고,
-   initialized·unsealed 상태이며 두 status에 기존 attempt가 없어야 합니다.
-   W1 `DELIVERED`, root 파일 0600/private directory 0700, 옛 share 두 개, 공개키
-   세 개의 fingerprint·순서·보관 장소가 확인돼야 다음 단계로 갑니다. 실패하거나 다른
-   attempt가 있으면 원인을 확인하며 기존 attempt를 임의 취소하지 않습니다.
-5. **검증을 필수로 하는 새 2-of-3 분할을 시작합니다.** 실제 분할은 **3개 중 2개 필요**입니다.
-   공개키 절대 경로 세 개를 준비 기록과 같은 순서로 지정합니다. `-backup`은 쓰지 않습니다.
-
-   ```bash
-   p01_bao operator rotate-keys -init -key-shares=3 -key-threshold=2 -verify \
-     -pgp-keys=/공개키경로/recipient-1.pgp,/공개키경로/recipient-2.pgp,/공개키경로/recipient-3.pgp
-   p01_bao operator rotate-keys
-   p01_bao operator rotate-keys
-   ```
-
-   첫 제출 prompt에는 옛 share 1개, 두 번째에는 **다른 옛 share**를 직접 입력합니다.
-   **rotation/operation nonce**가 초기 attempt와 같은지 두 옛 share 제출마다 확인합니다.
-   **verification nonce는 별도로 발급되는 값**이며 operation nonce와 같다고 가정하지
-   않습니다. quorum 후
-   base64 PGP 암호문 세 개와 verification 상태가 나옵니다. 암호문 N은 공개키 N의
-   보관 장소로만 전달합니다. 새 plaintext share는 host에 저장하지 않습니다.
-6. **세 장소에서 각각 복호화·보관한 뒤 두 새 share로 확인합니다.** 각 장소에서
-   대응 암호문만 `encrypted-share.b64`로 보관하고 다음 명령으로 화면에 복호화합니다.
-   사용할 실제 전달 채널은 보관 환경 선택 후 각 수신자별로 고정합니다. 서버 파일이나
-   녹화 로그를 경유하지 않고, 암호문만 해당 off-host 장치의 입력 화면으로 옮기는
-   방식입니다. 동기화 clipboard·터미널 기록을 끄고 plaintext share는 전달하지 않습니다.
-   전달 채널이 정해지지 않았으면 init 전에 멈춥니다.
-
-   ```bash
-   base64 --decode < "$P01_OFFHOST_UNIT/encrypted-share.b64" | \
-     gpg --homedir "$P01_OFFHOST_UNIT/gnupg" --decrypt
-   ```
-
-   암호는 pinentry에 입력합니다. plaintext share를 출력 파일·채팅·clipboard에 복사하지
-   않습니다. 세 암호문이 모두 각 개인키로 복호화되고 보관됐음을 확인합니다. 운영자 전용
-   TTY에서 다음 두 명령의 숨김 prompt에 서로 다른 **새 share** 두 개를 직접 입력합니다.
-   새 share 제출 두 번에는 별도로 발급된 **verification nonce**가 그대로 유지되는지
-   확인합니다. operation nonce와 혼동하지 않습니다.
-
-   ```bash
-   p01_bao operator rotate-keys -verify
-   p01_bao operator rotate-keys -verify
-   p01_bao operator rotate-keys -status
-   p01_bao operator rotate-keys -verify -status
-   p01_bao status
-   ```
-
-   검증 완료 응답과 exit0, 남은 attempt 없음, 같은 cluster/unsealed를 확인해야 새 share가
-   활성화된 것으로 기록합니다. 이 확인을 위해 운영 서버를 seal하지 않습니다. 새 W3 snapshot과
-   W3a 격리 복원, 이후 별도 cold boot로 실제 복구를 검증합니다. public receipt에는
-   버전·cluster·상태·N=3/T=2·verification required·rotation_nonce·verification_nonce·
-   세 fingerprint·보관 장소 참조와
-   완료 여부만 기록합니다. share·암호문·token·그 값의 hash는 넣지 않습니다.
-7. **실패·취소·옛 백업 보존을 처리합니다.** verification 완료 전 전체 attempt를 취소하려면
-   같은 인증 경로에서 `p01_bao operator rotate-keys -cancel`을 사용하고 두 status를
-   다시 확인합니다. **`-verify -cancel`은 verification 진행·nonce만 초기화하며 전체 rekey를
-   취소하지 않습니다.** Ctrl-C도 로컬 prompt만 중단하므로 서버 attempt는 따로 확인합니다.
-   응답 유실·timeout은 두 status와 보존 nonce로 먼저 대조하고, 맹목적으로 init·재시도하지
-   않습니다. 암호문 유실·키 불일치·복호화 실패는 verification을 완료하지 말고 pending
-   attempt의 전체 취소로 처리합니다. 완료 이후에는 cancel로 옛 share로 되돌릴 수 없습니다.
-   W1b 전 snapshot에는 옛 share가 필요하므로 승인된 백업 폐기까지 분리 보관합니다.
-   rekey는 과거 host·R2 백업에 들어간 옛 share를 지우지 않습니다. host 파일과 옛 백업의
-   실제 폐기는 별도 exact-resource 결정에 따릅니다. 정상 완료 또는 전체 취소 확인 뒤
-   `unset -f p01_bao`로 함수만 해제합니다. W1 임시 root의 폐기는 W8에서 수행합니다.
-
-이 절차의 native 옵션과 동작은 [2.6 rotate-keys](https://openbao.org/docs/2.6.x/commands/operator/rotate-keys/),
-[동일 태그 CLI 소스](https://github.com/openbao/openbao/blob/v2.6.2/command/operator_rotate_keys.go), <!-- runtime-version-exception: migration — fixed observed pre-upgrade HOME CLI source -->
-[verification 취소 API](https://openbao.org/docs/2.6.x/api/system/rotate/verify/),
-[PGP 형식](https://openbao.org/docs/2.6.x/concepts/pgp-gpg-keybase/),
-[GnuPG 매뉴얼](https://gnupg.org/documentation/manuals/gnupg26/gpg.1.html)을 기준으로 합니다.
+**W1b unseal rekey는 하지 않는다.** 2026-10-14 owner 결정(SPEC-0242)으로 share를 host
+백업에 포함하므로, rekey해도 새 share가 다시 백업에 들어가 노출이 줄지 않는다. 그래서 이
+window에서 rekey와 그 PGP 준비를 하지 않는다. share 유출이 의심되면 별도 Spec과 별도
+승인으로 rekey한다. 그때는 rekey가 이전 Raft snapshot을 여는 옛 share를 바꾸지 못한다는
+점과 새 share를 host 파일과 보조 사본에 함께 반영하는 순서를 정한다.
 
 **W2 snapshot token.** 위에서 검증한
 [token helper](../../../../infra/03-security/openbao/scripts/protected-token-operations.py)를
@@ -1114,8 +923,8 @@ HOME root 폐기나 HOME server 교체는 이 client가 수행하지 않습니�
 
 **W3b 정확한 artifact의 독립 보관.** W3 snapshot과 그 receipt를 선택한 독립 off-host
 대상으로 전달하고, 양쪽에서 두 파일의 정확한 bytes·hash·파일 identity와 보관 위치 참조를
-값 없는 receipt로 결속합니다. 원본 unseal shares와 offsite key/CA key의 독립 보관 참조도
-확인합니다. 준비됐다는 운영자 확인만으로 이 전달을 완료 처리하지 않습니다.
+값 없는 receipt로 결속합니다. share와 CA key는 host와 host 백업에, BKP-003은 계정 A에
+있다는 1인 관리자 custody 기록(5단계)도 확인합니다. 준비됐다는 운영자 확인만으로 이 전달을 완료 처리하지 않습니다.
 standalone helper와 RUN-0021의 별도 full backup은 이 W3 경로를 자동으로 복사하지 않습니다.
 정확한 보관 대상·전송 절차와 결과 receipt가 준비되기 전에는 W3b는 **BLOCKED / NOT_RUN**입니다.
 운영자는 기존 Cloudflare R2 Restic 저장소를 이번 snapshot·receipt 보관 대상으로 선택했고,

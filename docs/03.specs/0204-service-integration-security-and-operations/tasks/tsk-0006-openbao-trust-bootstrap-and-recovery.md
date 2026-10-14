@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.22"
+version: "0.2.23"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3060,6 +3060,16 @@ They were applied byte-identically to codex/openbao-pr-review-tls-minimum,
 a fresh worktree based at5cdf, for a small follow-up PR. No history rewrite,
 production code change or runtime mutation is required. The user's intended
 GitGuardian dashboard action remains separate from observed check clearance.
+
+### Host Custody for One Administrator — 2026-10-14
+
+The owner withdrew the separated-place layout and the SPEC-0240 exclusion and
+chose host custody (SPEC-0242): shares and the CA key on the host and in the
+host backup, and only BKP-003, the R2 credentials, BKP-002 and Cloudflare
+account access in one password manager account; no W1b rekey. RUN-0085 0.11.0
+holds the procedure and the step 5 table. The "HOME custody attestation" row
+keeps its earlier off-host check and stays NOT_RUN as history; the owner's
+step 5 table for the host layout will be recorded as a new row.
 
 ## Evidence
 
