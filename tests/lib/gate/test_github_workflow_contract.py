@@ -441,13 +441,17 @@ class GithubWorkflowContractTests(unittest.TestCase):
         pre_commit = self.module._read_bounded_yaml(
             ROOT, pathlib.PurePosixPath(".pre-commit-config.yaml")
         )[1]
+        # A local hook may only be the push-time main-branch guard; any other
+        # local entry would copy a gate command into pre-commit.
         local_entries = tuple(
-            hook["entry"]
+            (hook["entry"], tuple(hook.get("stages", ())))
             for repository in pre_commit["repos"]
             if repository["repo"] == "local"
             for hook in repository["hooks"]
         )
-        self.assertEqual(set(), set(local_entries))
+        self.assertEqual(
+            {("scripts/hooks/pre-push-guard.sh", ("pre-push",))}, set(local_entries)
+        )
 
         active_surfaces = "\n".join(
             (ROOT / path).read_text(encoding="utf-8")

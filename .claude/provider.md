@@ -1,10 +1,10 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.1.2"
+version: "1.2.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-14"
 runtime: "claude"
 ---
 
@@ -32,7 +32,14 @@ projection of either, and their absence under `.claude/` is not a defect.
 - Generated Claude skill adapters set `disable-model-invocation: true` and are
   explicitly invoked. A discovered skill grants no additional tools or approval.
 - `.claude/settings.json`, `.claude/hooks/`, and `.claude/output-styles/` are
-  native mechanics that route to shared policies and scripts.
+  native mechanics that route to shared policies and scripts. The `.claude/hooks/`
+  wrappers are authored, not rendered. The Registry PreToolUse binding's
+  `on_failure: block` is written `"onFailure": "block"` here; per the Claude
+  Code documentation (2.1.295 or later) a hook that then times out denies the
+  tool, which has not been observed. The `permissions.deny` rules are native
+  extra protection, not Registry translations: they back the
+  [secret boundary](../.agents/governance/approval-boundaries.md#authorization-source-and-records)
+  and the [no-direct-push rule](../.agents/governance/github-governance.md#1-repository-protection-contract).
 - This `provider.md` is an authored input. `.claude/README.md` and
   `.claude/CLAUDE.md` are generated pointers and never renderer inputs.
 - Provider/model selections and permission translations come only from the

@@ -76,6 +76,17 @@ files:
   tests:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/hooks/pre-push-guard.sh
+  kind: hook
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .pre-commit-config.yaml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agent_governance_ci_routing.py
 - path: scripts/knowledge/report-graphify-health.sh
   kind: generator
   authority: docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md

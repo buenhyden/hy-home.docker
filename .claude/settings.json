@@ -4,8 +4,6 @@
   "permissions": {
     "allow": [
       "$defaults",
-      "Bash(grep:*)",
-      "Bash(rg:*)",
       "Bash(docker ps:*)",
       "Bash(docker compose ps:*)",
       "Bash(docker image ls:*)",
@@ -17,7 +15,26 @@
       "Bash(docker system prune:*)",
       "Bash(rm -rf:*)",
       "Bash(docker compose down:*)",
-      "Bash(docker volume rm:*)"
+      "Bash(docker volume rm:*)",
+      "Bash(git push * main)",
+      "Bash(git push *:main)",
+      "Bash(git push *:refs/heads/main)",
+      "Bash(git push * +main)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push * --force*)",
+      "Bash(git push * -f *)",
+      "Read(./secrets/**)",
+      "Read(./.env)",
+      "Read(./**/.env)",
+      "Read(~/.ssh/**)",
+      "Edit(./secrets/**)",
+      "Edit(./.env)",
+      "Edit(./**/.env)",
+      "Read(//**/secrets/**)",
+      "Read(//**/.env)",
+      "Edit(//**/secrets/**)",
+      "Edit(//**/.env)"
     ]
   },
   "hooks": {
@@ -39,7 +56,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh\"",
-            "timeout": 10
+            "timeout": 30,
+            "onFailure": "block"
           }
         ],
         "matcher": "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch"

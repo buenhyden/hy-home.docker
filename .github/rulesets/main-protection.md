@@ -56,6 +56,17 @@ settings by itself.
   unchanged; rulesets and effective rules were empty. Receipt and rollback
   payloads were retained outside tracked source. This is a dated observation,
   not evidence that a later candidate context is already required.
+- On 2026-10-13, `main` was pushed directly twice, at 11:16:06Z
+  (`338c607d8` to `4072f8af8`) and 12:10:11Z (`40f194e99` to `5a93ea054`),
+  without a pull request. The pushes came from local worktree branches that
+  tracked `origin/main`, most likely through an editor's sync; the pusher was
+  not identified. The last protection read-back (2026-09-08) reported
+  `enforce_admins=false`, under which an admin credential can push to `main`
+  directly; it was not read again on 2026-10-13. The owner can close that by enabling
+  admin enforcement or a ruleset with no bypass actor. The repository now adds
+  a tracked `pre-push` guard (`scripts/hooks/pre-push-guard.sh`), active only
+  after `pre-commit install --hook-type pre-push`, and agent-side denials
+  (SPEC-0241); neither changes the remote settings.
 
 ## Target Ruleset
 

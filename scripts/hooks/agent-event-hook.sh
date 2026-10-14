@@ -26,13 +26,19 @@ PY
 fi
 
 session_start() {
-  python3 - "$PROJECT_DIR" <<'PY'
+  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" <<'PY'
 import json
+import os
 import pathlib
 import subprocess
 import sys
 
 project = pathlib.Path(sys.argv[1])
+try:
+    payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
+except Exception:
+    payload = {}
+source = payload.get("source", "") if isinstance(payload, dict) else ""
 
 def run(command, fallback="unknown", timeout=3):
     try:
@@ -67,12 +73,24 @@ Infra layer:
 {infra_entries}
 
 Key rules:
-- Use `AGENTS.md` and `.agents/` as governance entry points.
+- Enter through root `AGENTS.md` or `CLAUDE.md` and the bootstrap policy in `.agents/governance/bootstrap.md`.
 - Treat Graphify as advisory when `scripts/knowledge/report-graphify-health.sh` reports contamination.
 - Run the relevant focused checks at the planned delivery boundary.
 """
 
-print(json.dumps({"systemMessage": message.strip()}))
+if source == "compact":
+    message += """
+Context was just compacted:
+- Re-read the active Stage 03 Task before continuing; it, not memory, holds progress.
+- Preserve tracked, staged, and untracked state; do not hide unrelated work.
+"""
+
+# Both providers add `additionalContext` to the model's context; `systemMessage`
+# is only shown to the user.
+print(json.dumps({"hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": message.strip(),
+}}))
 PY
 }
 
@@ -234,6 +252,10 @@ try:
     )
     system_messages.extend(rule.message for rule in warnings)
     denials.extend(blocks)
+    if tool_name in {"", "Bash"} and hook_rules.implicit_main_push(
+        command, pathlib.Path(str(data.get("cwd") or project))
+    ):
+        denials.append(hook_rules.IMPLICIT_MAIN_PUSH)
 except Exception:
     deny_policy_failure(
         "Repository hook policy could not be loaded or evaluated; resolve the "
@@ -251,16 +273,11 @@ if denials:
 if not system_messages and not additional_context:
     sys.exit(0)
 
-output = {}
-if system_messages:
-    output["systemMessage"] = "\n\n".join(system_messages)
-if additional_context:
-    output["hookSpecificOutput"] = {
-        "hookEventName": "PreToolUse",
-        "additionalContext": "\n\n".join(additional_context),
-    }
-
-print(json.dumps(output))
+# Guidance is for the model: `systemMessage` would reach only the user.
+print(json.dumps({"hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "additionalContext": "\n\n".join(system_messages + additional_context),
+}}))
 PY
   then
     return 0
@@ -648,12 +665,10 @@ Before compaction, ensure:
 - The active co-located Stage 03 Task named by the current bootstrap/spec context reflects current progress.
 - Any in-flight plan or decision is recorded in that Task or its governing Spec/Plan."""
 
-print(json.dumps({
-    "hookSpecificOutput": {
-        "hookEventName": "PreCompact",
-        "additionalContext": msg.strip(),
-    }
-}))
+# PreCompact accepts no hookSpecificOutput in either provider, and neither adds
+# its output to the model's context. Show the snapshot to the user; SessionStart
+# with source `compact` gives the model its reminder after compaction.
+print(json.dumps({"systemMessage": msg.strip()}))
 PY
 }
 
