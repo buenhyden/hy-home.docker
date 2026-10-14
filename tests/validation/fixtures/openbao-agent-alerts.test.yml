@@ -5,7 +5,7 @@ tests:
 - interval: 1m
   input_series:
   - series: bao_agent_auth_failure{job="openbao-agent",instance="fixture"}
-    values: 0 0 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 15 15 15 15 15 15 15 15
+    values: 0 0 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15
   - series: up{job="openbao-agent",instance="fixture"}
     values: 1 1 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1
   alert_rule_test:
@@ -22,10 +22,23 @@ tests:
         domain: security
       exp_annotations:
         summary: OpenBao Agent 인증 실패
-        description: openbao-agent의 AppRole 인증이 5분 넘게 실패하고 있습니다. 렌더된 credential이 갱신되지
-          않습니다. SecretID 재발급 절차를 확인하세요.
+        description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
+          갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
         runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
   - eval_time: 25m
+    alertname: OpenBaoAgentAuthFailure
+    exp_alerts:
+    - exp_labels:
+        job: openbao-agent
+        instance: fixture
+        severity: warning
+        domain: security
+      exp_annotations:
+        summary: OpenBao Agent 인증 실패
+        description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
+          갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+  - eval_time: 35m
     alertname: OpenBaoAgentAuthFailure
     exp_alerts: []
   - eval_time: 8m
@@ -47,3 +60,62 @@ tests:
   - eval_time: 15m
     alertname: OpenBaoAgentMetricsScrapeFailing
     exp_alerts: []
+# A long outage retries auth only every five minutes (the Agent's maximum
+# backoff); the alert must stay firing between those failures.
+- interval: 1m
+  input_series:
+  - series: bao_agent_auth_failure{job="openbao-agent",instance="slow"}
+    values: 0+0x4 1+0x4 2+0x4 3+0x4 4+0x4 5+0x4 6+0x4
+  alert_rule_test:
+  - eval_time: 12m
+    alertname: OpenBaoAgentAuthFailure
+    exp_alerts:
+    - exp_labels:
+        job: openbao-agent
+        instance: slow
+        severity: warning
+        domain: security
+      exp_annotations:
+        summary: OpenBao Agent 인증 실패
+        description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
+          갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+  - eval_time: 14m
+    alertname: OpenBaoAgentAuthFailure
+    exp_alerts:
+    - exp_labels:
+        job: openbao-agent
+        instance: slow
+        severity: warning
+        domain: security
+      exp_annotations:
+        summary: OpenBao Agent 인증 실패
+        description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
+          갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+  - eval_time: 22m
+    alertname: OpenBaoAgentAuthFailure
+    exp_alerts:
+    - exp_labels:
+        job: openbao-agent
+        instance: slow
+        severity: warning
+        domain: security
+      exp_annotations:
+        summary: OpenBao Agent 인증 실패
+        description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
+          갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+  - eval_time: 24m
+    alertname: OpenBaoAgentAuthFailure
+    exp_alerts:
+    - exp_labels:
+        job: openbao-agent
+        instance: slow
+        severity: warning
+        domain: security
+      exp_annotations:
+        summary: OpenBao Agent 인증 실패
+        description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
+          갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md

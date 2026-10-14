@@ -62,8 +62,8 @@ and `/` returned 404.
 
 `alert_rules.openbao.yml` gains `OpenBaoAgentMetricsScrapeFailing`
 (`up{job="openbao-agent"} == 0` for 10 minutes, warning) and
-`OpenBaoAgentAuthFailure` (`increase(bao_agent_auth_failure[5m]) > 0` for
-5 minutes, warning). `tests/validation/fixtures/openbao-agent-alerts.test.yml`
+`OpenBaoAgentAuthFailure` (`increase(bao_agent_auth_failure[15m]) > 0` for
+5 minutes, warning; widened from `[5m]` after the IaC review). `tests/validation/fixtures/openbao-agent-alerts.test.yml`
 checks each alert absent, firing and cleared; `AgentMetricsTests` runs it with
 the cached promtool image and skips when that image is absent. A stale render
 with working auth still has no metric; Docker health remains its only signal.
@@ -73,6 +73,22 @@ with working auth still has no metric; Docker health remains its only signal.
 The OpenBao guide (0.6.0) states the listener, network and limit; the Grafana
 README coverage row names the new job, which its coverage test requires.
 
+### Review Round 1
+
+On 2026-10-14 the controller ran the independent reviews this fork could not
+start. `security-auditor` returned PASS with one wording finding: Agent-to-
+server traffic may cross either shared network, still TLS-verified; the Plan
+says so now. `iac-reviewer` returned FAIL on one item: with the Agent's
+5-minute maximum auth retry backoff, a `[5m]` window could read zero between
+retries, so a long outage would flap or never fire. The window is now
+`[15m]`, and a second promtool case increments only every five minutes and
+stays firing at 12, 14, 22 and 24 minutes; the first case now clears at 35
+minutes. The `agent.hcl` comment now says the host can reach the port too.
+Deployment notes from the IaC review: recreating the Agent deletes its token
+sink and needs a fresh wrapped SecretID, so it is a credential operation;
+`prometheus.yml` is a single-file bind mount, so Prometheus needs a restart,
+not a reload; recreate the Agent before restarting Prometheus.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -81,8 +97,9 @@ README coverage row names the new job, which its coverage test requires.
 | Image probe | 3 | W1 | Pinned image, `--network none`, no credentials: config accepted, metrics path only, `bao_agent_auth_failure` counter | Branch | PASS | W1 Listener, Network and Scrape Job | - |
 | Alert cases | 2 | W2 | Agent promtool cases SUCCESS; audit cases SUCCESS; `promtool check rules` 7 rules | Branch | PASS | W2 Alerts | - |
 | Checks | 4 | W3 | OpenBao agent contract (24), compose baseline, runtime compatibility, SEC01 version and surface ownership suites (154, 30 skipped); Registry tests (126); changed metadata (6 documents) 0 violations; links `--mode all` 0 failures; markdownlint 0 | Branch | PASS | W3 Documents and Checks | - |
-| IaC review | 4 | W3 | Independent `iac-reviewer` | - | NOT_RUN | W3 Documents and Checks | - |
-| Security review | 4 | W3 | Independent `security-auditor` | - | NOT_RUN | W3 Documents and Checks | - |
+| IaC review | 4 | W3 | Independent `iac-reviewer` of `f0f6b1b2b`: auth alert window too short | `f0f6b1b2b` | FAIL | Review Round 1 | - |
+| IaC fix | 4 | W3 | `[15m]` window; slow-retry promtool case; agent contract suite (24, promtool cases run) | Branch | PASS | Review Round 1 | IaC review |
+| Security review | 4 | W3 | Independent `security-auditor` of `f0f6b1b2b`: PASS, wording note applied | `f0f6b1b2b` | PASS | Review Round 1 | - |
 | Candidate | 5 | W4 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

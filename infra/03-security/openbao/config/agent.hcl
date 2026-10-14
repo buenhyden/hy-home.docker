@@ -58,8 +58,8 @@ template_config {
 # Metrics for the Prometheus `openbao-agent` job (SPEC-0239). A metrics_only
 # listener serves /agent/v1/metrics and nothing else: no API proxy, cache or
 # quit route, no token, no secret. Plain HTTP because the Agent holds no server
-# certificate; the port is never published and only obs_net and secrets_net
-# peers can reach it.
+# certificate; the port is never published, so peers on obs_net and secrets_net
+# and the host itself can reach it.
 listener "tcp" {
   address     = "0.0.0.0:8100"
   role        = "metrics_only"

@@ -42,7 +42,8 @@ other paths.
 - **Unauthenticated endpoint.** Any `obs_net` or `secrets_net` peer can read
   the Agent's counters; they carry no secret or token.
 - **Wider network membership.** Joining `obs_net` lets the Agent reach other
-  `obs_net` services; it initiates no connection there.
+  `obs_net` services, and Agent-to-server traffic may use either shared
+  network; it stays TLS-verified against the pinned CA.
 - **Not deployed.** The change applies on the next Agent recreate, which is a
   separately approved runtime step.
 - **Rollback.** Revert the commits; the Agent returns to no listener.
