@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.6"
+version: "0.12.11"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -615,7 +615,7 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 
 | 순서 | 단계 | 목표 시간 | 승인 |
 | --- | --- | --- | --- |
-| W0 | 사전 점검 | window 전 | SEC01 담당자, owner |
+| W0 | 사전 점검 | window 전 | owner(runtime 재생성, host sudo) |
 | W1 | root ceremony | 10분 | buenhyden(서로 다른 share 2개 수동 입력) |
 | W1c | renderer 정책·token role 적용 | 측정 전 | owner(root 사용, credential 정책 변경) |
 | W2 | snapshot token 발급과 확인 | 5분 | owner(credential 발급) |
@@ -683,7 +683,19 @@ host 등록·권한 있는 parser·실제 rotation 성공을 뜻하지 않습니
 
 W4 전에 root-owned0644 `/etc/logrotate.d/openbao`의 정확한 source hash, 실제 NSS
 매핑과 host parser를 검증하고, 같은 공용 config·state·lock을 쓰는 시간 단위 호출을
-준비해야 합니다. 기존 일 단위 timer에서는 `maxsize`도 하루 한 번만 검사합니다.
+준비해야 합니다. 시간 단위 호출은 기존 `logrotate.timer`의 일정만 바꾸는
+[drop-in](../../../../infra/03-security/openbao/config/systemd/logrotate-hourly.conf)입니다.
+owner가 `sudo install -D -o root -g root -m 0644` 로
+`/etc/systemd/system/logrotate.timer.d/hourly.conf`에 설치하고 `sudo systemctl daemon-reload`
+뒤 `systemctl list-timers logrotate.timer`의 다음 실행이 한 시간 안인지 확인합니다.
+`daily`·`weekly` 규칙은 날짜 기준이라 계속 한 번만 회전합니다. 다만 `size`·`minsize`나
+`hourly` 규칙은 최대 24배 자주 회전해 같은 `rotate N`으로 보존 기간이 줄고, 전역 `dateext`가
+켜져 있으면 같은 날 두 번째 회전은 이미 있는 파일명 때문에 건너뛴다. 설치 전에
+`grep -rnE '^\s*(hourly|size|minsize|maxsize|dateext)' /etc/logrotate.conf /etc/logrotate.d`로
+해당 규칙을 확인하고 영향을 받아들일지 owner가 정한다. 되돌리기는 drop-in을 지우고
+`sudo systemctl daemon-reload`이다. 실제 동작은 회전할 것이 있을 때
+`sudo systemctl start logrotate.service`와 `journalctl -u logrotate`로 확인한다. 직접
+`logrotate -f`는 unit hardening과 전역 config를 거치지 않으므로 증거로 쓰지 않는다. 기존 일 단위 timer에서는 `maxsize`도 하루 한 번만 검사합니다.
 별도 state를 사용하는 중복 scheduler를 만들지 않습니다. source만 복사한 상태나
 신호 전달만으로 등록·재개방을 완료했다고 보지 않으며, host 권한·등록·schedule 입력이
 준비되지 않으면 W0에서 중단합니다. W6는 실제 inode 변경과 후속 audit 성장·실패 알림을
@@ -703,11 +715,24 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   멈추고 다시 켜는 것은 owner의 sudo 작업이다.
 - **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
   쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 지금 없으므로 W4 뒤 gateway를 거치는
-  OIDC 로그인과 W7 `revoke-root`가 끊긴다. 실행 중인 Traefik image를 유지하는 검토된 scoped
-  override로 그 mount를 먼저 배포하고 gateway를 확인하기 전에는 W4를 열지 않는다. Traefik은
-  `core` profile이다.
+  OIDC 로그인과 W7 `revoke-root`가 끊긴다. Compose는 mount를 이미 선언하지만 2026-10-14 실행
+  image는 Compose 고정보다 이전 버전이다. 실행 중 image ID가
+  [window override](../../../../infra/03-security/openbao/window/compose.window-ca.override.yml)의
+  digest와 같고 다른 설정 차이가 없을 때만
+  `docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml --profile core up -d --no-deps --no-build --pull never --force-recreate traefik`으로
+  다시 만들고 gateway를 확인한다. 그 전에는 W4를 열지 않는다.
 - **실행 중 설정과 디스크의 차이.** Prometheus·Gatus·Traefik의 실행 중 image·mount·설정을
   Compose 선언과 비교한다. 차이가 있으면 재생성이 다른 변경까지 배포하므로 먼저 검토한다.
+  명령은 worktree가 아니라 `.env`가 있는 main checkout에서 실행한다. 서비스마다
+  `docker inspect`의 `.Mounts`(source·destination·RW), `.NetworkSettings.Networks` 이름,
+  `.HostConfig`의 memory·CPU·pids와
+  `docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml config --format json <service>`의
+  volumes·networks·자원을 나란히 비교한다. 실행 중 `Config.Image`는 tag만 담으므로 image는
+  ID로 비교하고 config hash는 쓰지 않는다. 단일 파일 bind는 재생성 때 지금 파일 내용이
+  들어가므로 그 파일의 최근 변경도 함께 본다. override가 고정한 참조가 로컬에서 풀리는지
+  `docker image inspect --format '{{.Id}}' <override의 image>`로 두 서비스 모두 확인한다.
+  SEC01이 실행 image를 Compose 고정으로 올리면 이 override는 쓰지 않는다(image ID 비교가
+  자동으로 막는다).
 - **경보.** W4부터 Gatus와 Prometheus를 다시 만들 때까지 OpenBao down 경보가 난다. silence를
   둘지, 그 경보를 받아들일지 정한다.
 
@@ -1035,11 +1060,26 @@ HOME root 폐기나 HOME server 교체는 이 client가 수행하지 않습니�
 값 없는 receipt로 결속합니다. share와 CA key는 host와 host 백업에, BKP-003은 장소 A에
 있다는 1인 관리자 custody 기록(5단계)도 확인합니다. 준비됐다는 운영자 확인만으로 이 전달을 완료 처리하지 않습니다.
 standalone helper와 RUN-0021의 별도 full backup은 이 W3 경로를 자동으로 복사하지 않습니다.
-정확한 보관 대상·전송 절차와 결과 receipt가 준비되기 전에는 W3b는 **BLOCKED / NOT_RUN**입니다.
-운영자는 기존 Cloudflare R2 Restic 저장소를 이번 snapshot·receipt 보관 대상으로 선택했고,
-먼저 읽기 전용 원격 검증을 진행하도록 승인했습니다. 로컬 입력 검사는 통과했으나 원격
-접속·저장소 검증·두 산출물 전달 receipt는 아직 없습니다. 전체 repository copy를 이번
-두 산출물의 전달 성공으로 대체하지 않습니다.
+운영자는 기존 Cloudflare R2 Restic 저장소를 이번 snapshot·receipt 보관 대상으로 선택했다.
+[offsite entrypoint](../../../../infra/09-platform-ops/restic/offsite.sh)의 `artifact`는 두
+파일만 tag `hy-home-openbao-w3`, host `hy-home-openbao-window`로 R2에 저장하고, 곧바로 R2에서
+두 파일을 다시 읽어 SHA-256을 로컬과 비교한다. 지우거나 다시 시도하지 않는다. 먼저 읽기
+전용 `snapshots --no-lock`(lock 파일도 쓰지 않음)으로 저장소에 닿는지 확인한다.
+
+```bash
+docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock >/dev/null || exit 1
+docker compose --profile backup run --rm --no-deps \
+  -v "${P01_SNAPSHOT_DIRECTORY:?}:/artifact:ro" restic-offsite artifact
+```
+
+기대: 마지막 줄이 `{"state":"W3B_STORED","snapshot_id":...,"files":[...]}`이고 두 파일의
+`sha256`이 W3 receipt와 같다. 이 줄이 값 없는 W3b receipt이며 Task에 그대로 남긴다.
+중단: exit64는 입력 누락이나 symlink, exit65는 R2 저장소 문제·snapshot ID 없음·바이트
+불일치다. 어느 경우에도 W4를 열지 않는다. 불일치 뒤 다시 실행하면 새 snapshot이 하나 더
+생길 뿐 이전 것은 지워지지 않는다. 전체 repository copy를 이번 두 산출물의 전달 성공으로
+대체하지 않는다. `artifact`는 snapshot의 SHA-256이 W3 receipt에 적힌 값과 다르거나 입력이
+비어 있으면 exit64로 멈춘다. 이 snapshot은 자기 host·tag 묶음에 혼자 있어 월간
+`forget-prune`이 지우지 않으므로, W4 수용 뒤 R2에서 언제 지울지는 owner가 따로 정한다.
 W4는 W3a semantic restore와 이 W3b receipt가 모두 수용된 뒤에만 실행합니다.
 
 **W4 server 업그레이드와 수동 unseal.**
@@ -1059,12 +1099,14 @@ docker compose exec -T openbao bao status
 
 기대: 새 image로 재생성, Raft mount identity 불변, threshold 뒤 `Sealed false`.
 중단: mount identity 변경, unseal 실패, cluster ID 변경, audit backend 실패.
-rollback: 새 버전 데이터에 이전 image를 붙이지 않는다(in-place Raft downgrade 금지).
-업그레이드가 실패하면 W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 검토된 절차로
-간다(아래 Rollback or Recovery). 이 경우 HOME은 보류하고 @buenhyden에게 반환한다. 다만 지금의
-restore 도구는 격리 target-05에 고정돼 있고 HOME을 복원된 volume으로 바꾸는 검토된 절차가
-없다. 그 cut-over 절차나 fix-forward를 택한다는 owner 결정이 기록되기 전에는 W4를 열지
-않는다(SPEC-0243).
+rollback 규칙은 fix-forward다(2026-10-14 owner 결정, SPEC-0243 W6). 새 버전 데이터에 이전
+image를 붙이지 않는다(in-place Raft downgrade 금지). W4가 실패하면 새 owned image에서 원인을 고친다.
+window 안에 끝나지 않으면 server를 sealed 또는 정지 상태로 두고, consumer는 이미 렌더된
+파일로 계속 동작하며, 남은 단계는 다음 window로 넘긴다. 유일한 예외는 Raft 데이터 손상처럼
+새 owned image에서 고칠 수 없는 경우다. 그때만 HOME을 보류하고 @buenhyden에게 반환하며, 별도 승인으로
+W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 경로를 연다(아래 Rollback or Recovery).
+지금의 restore 도구는 격리 target-05에 고정돼 있으므로, HOME을 복원된 volume으로 바꾸는
+절차는 그때 따로 검토한다.
 
 **W5 Agent 업그레이드와 재발급.** server가 unsealed이고 health가 통과한 뒤에만
 `docker compose --profile security up --no-start --no-deps --no-build --pull never openbao-agent`로
@@ -1079,18 +1121,20 @@ SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 versio
 실행 중 image가 Compose 고정과 같고 다른 설정 차이가 없음을 확인한 뒤에만
 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
 실행한다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다.
-다르면 실행 image를 유지하는 검토된 scoped override를 쓰고, 둘 다 없으면 이 부분은
-**BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
+다르면 실행 image를 유지하는 검토된 scoped override를 쓴다. 2026-10-14 실행 image는
+Compose 고정과 달랐으므로, 실행 중 image ID가 window override의 digest와 같을 때
+`docker compose -f docker-compose.yml -f infra/03-security/openbao/window/compose.window-ca.override.yml --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
+쓴다. 둘 다 아니면 이 부분은 **BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
 `OpenBaoAgentAuthFailure`가 조용하다. 중단: scrape 실패가 이어지면 Agent listener와 `obs_net`
 연결을 먼저 확인한다. Prometheus만 이전 설정으로 되돌리는 것은 Agent 재인증과 무관하다.
 
 Gatus도 W4 뒤 OpenBao를 HTTPS로 보고 내부 CA를 요구하므로 CA mount가 없으면 W4 이후에도
 계속 경보를 낸다. Compose는 이미 Gatus의 CA mount를 선언한다. Gatus image는 digest 고정이 아닌
 local build tag `hy/gatus:local`이므로, 실행 중 컨테이너의 image ID가 지금의 `hy/gatus:local`
-ID와 같고 다른 설정 차이가 없을 때만
+ID와 같고(2026-10-14 관측에서 같았다) 다른 설정 차이가 없을 때만
 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate gatus`로
-다시 만든다. 다르면 실행 image를 유지하는 검토된 scoped override(SPEC-0243 W6)를 쓰고, 둘 다
-없으면 이 부분은 **BLOCKED**이며 그때까지의 Gatus 경보는 W0에서 정한 대로 처리한다.
+다시 만든다. 다르면 Gatus override는 없으므로 이 부분은 **BLOCKED**이며 그때까지의 Gatus
+경보는 W0에서 정한 대로 처리한다.
 
 **W6 audit와 logrotate 검증.** W0에서 등록·parser 검증을 끝낸 규칙을 사용합니다.
 새 server의 `openbao-audit` mount와 `audit.json`(0600, UID100/GID1000), 정확한
@@ -1227,6 +1271,9 @@ path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 있어야 한다. 현�
 ## Rollback and Escalation
 
 ### Rollback or Recovery
+
+maintenance window의 W4 실패는 fix-forward가 규칙이다([W4](#maintenance-window-plan)의 rollback
+규칙). 아래 snapshot 복원은 새 owned image에서 고칠 수 없는 손상에 대한 별도 승인 경로다.
 
 non-root operator 신원으로 보호된 Raft 스냅샷을 캡처하고, checksum, cluster ID, 이미지
 선언, seal 구성, custody 영수증을 기록한 뒤, network egress와 consumer가 비활성화된 새

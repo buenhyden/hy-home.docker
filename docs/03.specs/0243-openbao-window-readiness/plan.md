@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -28,7 +28,7 @@ and review each missing tool or mount in its own pull request.
 | W3 | 3, 7 | W1c apply command and receipt | W1 | TSK-0001 | Task evidence |
 | W4 | 4, 7 | W3a input producers | W2, W3 | TSK-0001 | Task evidence |
 | W5 | 5, 7 | W3b R2 transfer tool and receipt | W1 | TSK-0001 | Task evidence |
-| W6 | 6, 7 | CA mount overrides, hourly logrotate unit, W4 rollback decision | W1 | TSK-0001 | Task evidence |
+| W6 | 6, 7 | CA mount overrides, hourly logrotate timer drop-in, W4 rollback decision | W1 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 
