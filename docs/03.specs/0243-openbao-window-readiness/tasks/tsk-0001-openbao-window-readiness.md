@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.6"
+version: "0.1.12"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -201,6 +201,85 @@ plan and apply `prior_sha256` values, stops at W1c if the Agent is unhealthy,
 and W7 keeps root while a W1c rollback decision is open. The test is now in
 `.github/workflow-contract.yml`, so CI runs it.
 
+### W5 R2 Artifact Transfer
+
+`offsite.sh` gains an `artifact` action for the existing `restic-offsite`
+job, with the same image, secrets and egress-only network. It refuses a
+missing or symlinked input. It backs up only `raft-pre-upgrade.snap` and its
+receipt from a read-only `/artifact` mount under a fixed tag and host, takes
+the snapshot ID from restic's JSON summary, then reads each file back with
+`restic dump` and compares SHA-256 with the local bytes. It prints one
+value-free JSON receipt (names, sizes, SHA-256, snapshot ID). It never
+deletes or retries. RUN-0085 replaces the BLOCKED W3b text with a read-only
+`snapshots` reachability check followed by the action.
+
+A contract test pins that the branch adds and reads back but never forgets,
+prunes, unlocks or removes; dropping the read-back makes it fail. An opt-in
+native rehearsal ran the real script in `restic/restic:0.19.1` with no
+network against a local repository (a mounted wrapper sets
+`RESTIC_REPOSITORY`, which the script otherwise points at R2) and synthetic
+secrets: a 300 kB random snapshot and its receipt were stored and proved, and
+a symlinked receipt stopped with exit 64 before any snapshot. The existing
+Compose baseline gates still pass. On 2026-10-14 the owner approved (AskUserQuestion) the read-only R2
+rehearsal in criterion 5. It ran `snapshots --no-lock`, which writes not
+even a lock file: the repository was reachable and decrypted with 45
+snapshots and none under the W3 tag. RUN-0085's reachability check now uses
+the same lock-free form.
+
+An independent `security-auditor` review of `bab3124fc` passed with notes
+(two Low). Applied: the branch sets `pipefail`, so a failed restic is not
+hidden behind `sed` or `sha256sum`, and a failed read-back says so; empty
+inputs are refused; and the snapshot's SHA-256 must appear in its W3 receipt
+before anything is sent. The runbook notes that a lone W3 snapshot survives
+the monthly prune, so its removal is a separate owner decision. The native
+rehearsal now also stops a snapshot its receipt does not name and an empty
+receipt with exit 64, before any backup (5 tests OK).
+
+### W6 CA Mounts, Logrotate and W4 Rollback
+
+A read-only comparison on 2026-10-14 found that Compose already declares the
+OpenBao CA mount for Traefik, Prometheus and Gatus, but none of the running
+containers has it. Gatus runs the current `hy/gatus:local` image ID, so the
+plain recreate in RUN-0085 applies. Traefik runs v3.7.13 and Prometheus
+v3.14.0, while Compose pins v3.7.14 and v3.15.0, so a plain recreate would
+also upgrade them. Two `x-hyhome-overlay` files, `compose.window-ca.override.yml`
+beside each service's Compose file, pin each to the
+running image by digest and changes nothing else: `docker compose config`
+with and without it differs only in those two `image` values, and the merged
+model keeps the CA mount targets. A contract test pins that shape.
+
+PR #486's operations-catalog gate rejected a single override with `services`
+under `infra/` as an unincluded Compose file, so it became two
+`x-hyhome-overlay` files, each based on its service's Compose file; the gate
+then passes.
+
+The hourly logrotate call is a drop-in for the host's existing
+`logrotate.timer` that resets `OnCalendar` to hourly and sets
+`AccuracySec=5m`, so the one
+`logrotate.service` keeps the shared config, state and lock. A copy of the
+host's timer and service with the drop-in passed `systemd-analyze verify`.
+Installing it is the owner's sudo step.
+
+For W4's way back, the owner chose fix-forward on 2026-10-14
+(AskUserQuestion, "Fix-forward (Recommended)"): no rollback to the old
+image; only unfixable Raft damage holds HOME and opens the W3 snapshot
+restore under separate approval. RUN-0085 records the decision and the two
+override commands.
+
+An independent `iac-reviewer` review of `ccfa88e05` passed with notes (four
+Medium, five Low). Applied: the W4 paragraph now states fix-forward as the
+one rule, what HOME looks like if it does not finish in the window, and the
+Raft-damage exception, and Rollback or Recovery points to it; the logrotate
+text lists the size, hourly and `dateext` effects, an inventory command, the
+undo and a unit-level check; W0 names the drift-check method (main checkout,
+`docker inspect` mounts, networks and resources against `compose config`,
+image by ID) and a check that each pinned override reference resolves; a
+different Gatus image is BLOCKED because W6 has no Gatus override; W0's
+approval is the owner's; the drop-in moved to `config/systemd/` so it is
+never read as a logrotate rule; the override says when to retire it; the
+OpenBao README lists the new files; and `.github/workflow-contract.yml` now
+runs the W5 and W6 tests in CI.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -222,6 +301,12 @@ and W7 keeps root while a W1c rollback decision is open. The test is now in
 | Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
 | Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 | Role apply re-review | 7 | W3 | Independent `iac-reviewer` re-review of the fixes: PASS with notes, notes applied; 17 tests OK with both native runs; CI gate tests OK | `3e080d999` | PASS | W3 Renderer Role Apply | - |
+| R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
+| R2 read-only rehearsal | 5 | W5 | `restic-offsite cmd snapshots --no-lock --json` against HOME's R2 repository, owner-approved: reachable and decrypted, 45 snapshots, latest 2026-10-13T18:42:46, none tagged `hy-home-openbao-w3`; no write, no lock | HOME R2 on 2026-10-14 | PASS | W5 R2 Artifact Transfer | - |
+| R2 artifact review | 7 | W5 | Independent `security-auditor` review: PASS with notes, notes applied; 5 tests OK including the native rehearsal | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
+| Window overrides | 6 | W6 | Compose config with and without the override differs only in the Traefik and Prometheus image; CA mounts kept; contract test OK; timer drop-in passes `systemd-analyze verify` on a copy of the host units | `ccfa88e05`; running images observed 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
+| W4 rollback decision | 6 | W6 | Owner chose fix-forward (AskUserQuestion) | Owner answer 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
+| W6 review | 7 | W6 | Independent `iac-reviewer` review: PASS with notes, notes applied; contract tests and CI gate tests OK | `ccfa88e05` | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 
 ## Criterion Acceptance
 
