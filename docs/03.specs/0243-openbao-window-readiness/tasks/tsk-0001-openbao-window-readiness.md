@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.12"
+version: "0.1.13"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -262,6 +262,23 @@ tests (including the native one) and the restore suite pass in a umask 022
 clone. RUN-0085 repins `protected-semantic-restore.py` (`0cb31922…`) and the
 producer (`0bfc1bac…`).
 
+The `iac-reviewer` re-review of `f00837af5` passed with notes (all Low).
+Applied: the native class sits above the `__main__` guard; any self-check
+failure deletes the contract; each receipt is checked and hashed from one
+read; `security-receipt` reads the ledger at the approved revision through
+the held repository and records that revision; `image_id` runs Docker with
+the restore's fixed `PATH`; the fixture's tag probe uses the local image ID,
+so both native tests drop their copied workaround; new tests cover a wrong
+platform and a failed `docker` in the producer and the restore preflight;
+the runbook's rerun text names which paths change; and a new test checks
+every W1 manifest pin against its file. A GitGuardian finding on PR #485 was
+a synthetic secret-file path in a test, not a secret, but the scan covers
+history and the branch cannot be rewritten, so W5/W6 moved to
+`claude/window-w5-w6` (#486) as one commit and W4 was rebuilt on it. In a
+umask 022 clone, 66 tests passed with every native rehearsal (W3 on both
+images, W4 end to end, W5 restic). RUN-0085 repins the producer
+(`f0807d5e…`).
+
 ### W5 R2 Artifact Transfer
 
 `offsite.sh` gains an `artifact` action for the existing `restic-offsite`
@@ -359,6 +376,7 @@ runs the W5 and W6 tests in CI.
 | Restore input producers | 4 | W4 | 10 unit tests through the restore client's own lease and contract validators, OK in a umask 022 clone with the restore suite (36); start-before-save mutation fails a test | `33763dd1d` | PASS | W4 W3a Input Producers | - |
 | Restore input reviews | 4, 7 | W4 | `security-auditor` APPROVE with notes; `iac-reviewer` REJECT: no native rehearsal, candidate not bound to the commit | `0294deaf8` | FAIL | W4 W3a Input Producers | - |
 | Restore input native | 4 | W4 | Real 2.6.2 synthetic snapshot through every producer CLI and the restore's `_contract`, `QuiescenceLease`, `Admission.pre_read` and `preflight`; preflight platform-ID defect fixed (RED then GREEN); 15 tests OK in a umask 022 clone | `863eafa40` on old `11fd73a2` | PASS | W4 W3a Input Producers | Restore input reviews |
+| Restore input re-review | 7 | W4 | Independent `iac-reviewer` re-review: PASS with notes, notes applied; 66 tests OK with all native rehearsals in a umask 022 clone; manifest pin test OK | `a4dbc0f9e` | PASS | W4 W3a Input Producers | - |
 | R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
 | R2 read-only rehearsal | 5 | W5 | `restic-offsite cmd snapshots --no-lock --json` against HOME's R2 repository, owner-approved: reachable and decrypted, 45 snapshots, latest 2026-10-13T18:42:46, none tagged `hy-home-openbao-w3`; no write, no lock | HOME R2 on 2026-10-14 | PASS | W5 R2 Artifact Transfer | - |
 | R2 artifact review | 7 | W5 | Independent `security-auditor` review: PASS with notes, notes applied; 5 tests OK including the native rehearsal | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
