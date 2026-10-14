@@ -1,6 +1,6 @@
 ---
 title: "Unseal Share File Out of Host Backups Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -40,7 +40,7 @@ carries the text, so step 5 is attested against the revised procedure on
 `main`, and the exclusion merges only after that. The evidence below was
 taken at commit `27d84d9ab`, which held both.
 
-`infra/09-platform-ops/restic/sets/host-exclude.txt` now excludes
+On that branch, `infra/09-platform-ops/restic/sets/host-exclude.txt` excludes
 `/src/host/secrets/security/openbao/openbao_unseal_keys.txt`, the path the
 Restic job mounts `secrets/` under, and keeps its comment explaining why. A
 new test in `tests/validation/test_compose_baseline_gates.py` pins the
@@ -68,8 +68,9 @@ nothing; it is not counted.
   a Cloudflare account row to the confirmation table, states the merge gate
   for the exclusion, and plans W1b unseal rekey right after W1 with
   hidden-prompt input, `-verify`, a cancel path, no `-backup`, and new shares
-  never written to the host; W1b is BLOCKED until a reviewed protected output
-  path exists.
+  never written to the host; W1b was BLOCKED until a reviewed protected output
+  path existed. RUN-0085 0.10.3 (PR #472) now gates W1b on PGP preparation
+  instead; contract 4 still holds.
 
 ### Review Round 1
 
@@ -83,8 +84,8 @@ pre-exclusion host snapshots are deleted from the local and R2 repositories,
 corrects the retention wording (30-day bucket lock; 12 months is the
 owner-run `forget-prune` policy), keeps the host file and those snapshots
 until W1 or a restore proves the off-host shares, names the local repository
-with BKP-002, adds Cloudflare account access to step 5, and points RUN-0021's
-host restore to off-host custody for the share file.
+with BKP-002, adds Cloudflare account access to step 5, and, on the exclusion
+branch, points RUN-0021's host restore to off-host custody for the share file.
 
 The `rules-engineer` review of `27d84d9ab` returned FAIL on two items: the
 runbook still said the host set had no exclusion (R1, fixed above), and the
@@ -142,6 +143,20 @@ right after the lock period, it points to condition (2); the TSK-0006 entry
 moved into date order. Left as a recommendation: a reviewed deletion tool
 could also confirm with `restic check` that no pre-exclusion data remains.
 
+### Review Round 2
+
+Re-reviews on 2026-10-14 of the current `main` text and branch
+`claude/unseal-exclusion-apply-v2` (`8a693bf4d`): `security-auditor` PASS with
+notes and `rules-engineer` PASS with notes; every Round 1 finding is fixed.
+Notes applied: the main Task no longer states branch content as current;
+this summary of W1b follows RUN-0085 0.10.3; RUN-0021 and
+`hyhome-backup.sh` name the shares an older Raft snapshot opens with, and
+RUN-0085 requires the third share's off-host copy to be proven before any
+deletion, since W1 and `-verify` each use two shares (both in their branches).
+The criterion 2 document checks ran on `main` `fae77e14d`: changed metadata
+for POL-0085, ADR-0042 and RUN-0085 with 0 violations, links `--mode all`
+PASS and markdownlint 0.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -157,6 +172,9 @@ could also confirm with `restic check` that no pre-exclusion data remains.
 | Security re-review W5 | 5 | W5 | Independent `security-auditor` re-review: PASS with notes, notes applied | `fc2a62155` | PASS | W5 Review Round 2 | Security review W5 |
 | Rules re-review W5 | 5 | W5 | Independent `rules-engineer` re-review: PASS with notes, notes applied | `fc2a62155` | PASS | W5 Review Round 2 | Rules review W5 |
 | Place rule checks | 5 | W5 | Changed metadata, markdownlint and links on the final text | Branch after `fc2a62155` | PASS | W5 Review Round 2 | - |
+| Text checks | 2 | W2 | Changed metadata for POL-0085, ADR-0042 and RUN-0085 (0 violations); links `--mode all` PASS; markdownlint 0 | `fae77e14d` | PASS | Review Round 2 | - |
+| Security re-review | 3 | W3 | Independent `security-auditor` re-review of the Round 1 fixes: PASS with notes, notes applied | `main` and `8a693bf4d` | PASS | Review Round 2 | Security review |
+| Rules re-review | 3 | W3 | Independent `rules-engineer` re-review of the Round 1 fixes: PASS with notes, notes applied | `main` and `8a693bf4d` | PASS | Review Round 2 | Rules review |
 | Merge gate | 4 | W4 | RUN-0085 step 5 `owner-attested` before merge | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance
@@ -164,16 +182,16 @@ could also confirm with `restic check` that no pre-exclusion data remains.
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
 | 1 | accepted | Exclusion test, Dry run | Owner accepted 2026-10-14 |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
+| 2 | accepted | Text checks | Owner accepted 2026-10-14 |
+| 3 | accepted | IaC review, Security re-review, Rules re-review | Owner accepted 2026-10-14 |
 | 4 | pending | - | - |
 | 5 | accepted | Place rule text, Security re-review W5, Rules re-review W5, Place rule checks | Owner accepted 2026-10-14 |
 
 ## Review and Completion
 
-Do not merge before RUN-0085 step 5 is `owner-attested`. On 2026-10-14 the owner, answering the review question (AskUserQuestion), accepted criteria 1 and 5. Criteria 2
-and 3 wait for re-reviews of the Round 1 fixes, and criterion 4 for the merge
-and the next host snapshot.
+Do not merge before RUN-0085 step 5 is `owner-attested`. On 2026-10-14 the owner, answering the review question (AskUserQuestion), accepted criteria 1 and 5. After the Round 2
+re-reviews the owner accepted criteria 2 and 3 the same day. Criterion 4 waits
+for the merge and the next host snapshot.
 
 ## Related Documents
 
