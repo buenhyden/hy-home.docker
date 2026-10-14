@@ -1,6 +1,6 @@
 ---
 title: "Unseal Share File Out of Host Backups Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -163,16 +163,17 @@ could also confirm with `restic check` that no pre-exclusion data remains.
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
+| 1 | accepted | Exclusion test, Dry run | Owner accepted 2026-10-14 |
 | 2 | pending | - | - |
 | 3 | pending | - | - |
 | 4 | pending | - | - |
-| 5 | pending | - | - |
+| 5 | accepted | Place rule text, Security re-review W5, Rules re-review W5, Place rule checks | Owner accepted 2026-10-14 |
 
 ## Review and Completion
 
-Do not merge before RUN-0085 step 5 is `owner-attested`. No criterion is
-accepted until the owner accepts it.
+Do not merge before RUN-0085 step 5 is `owner-attested`. On 2026-10-14 the owner, answering the review question (AskUserQuestion), accepted criteria 1 and 5. Criteria 2
+and 3 wait for re-reviews of the Round 1 fixes, and criterion 4 for the merge
+and the next host snapshot.
 
 ## Related Documents
 

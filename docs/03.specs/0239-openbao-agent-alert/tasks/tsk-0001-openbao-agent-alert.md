@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Agent Telemetry and Alert Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -115,16 +115,20 @@ the merge.
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
-| 5 | pending | - | - |
+| 1 | accepted | Config tests | Owner accepted 2026-10-14 |
+| 2 | accepted | Alert cases | Owner accepted 2026-10-14 |
+| 3 | accepted | Image probe | Owner accepted 2026-10-14 |
+| 4 | accepted | Checks, IaC fix, Security review | Owner accepted 2026-10-14 |
+| 5 | accepted | Candidate | Owner accepted 2026-10-14 |
 
 ## Review and Completion
 
-No criterion is accepted until the owner accepts it. Deployment needs a
-separately approved Agent recreate.
+On 2026-10-14 the owner, answering the review question (AskUserQuestion), accepted criteria 1 to 5.
+The same day the owner chose to deploy in the maintenance window's Agent
+upgrade step (RUN-0085 W5), with the wrapped reissue, followed by a
+Prometheus restart: the running server and Agent are 2.6.2 while Compose pins
+the 2.7.1 image, so recreating the Agent alone would upgrade it before the
+server. Deployment is not done.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Task Lifecycle Generation 6 Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0231-TSK-0001"
 parent_ids:
@@ -178,6 +178,19 @@ The owner merged pull request #441 with a merge commit, `ffd201182` (parents
 `e931417be` and `f38fd2ea5`), the one first-parent integration the generation
 6 proof requires.
 
+On 2026-10-14 the change was replayed through the local changed gate in a
+scratch clone. The base was the PR parent `e931417be` with the three SPEC-0235
+changes (both local timeouts and the reachability test) and the one-line
+tombstone identity fix `61f3b99ef` (SPEC-0232 W6, PR #445); the head was a
+real two-parent merge of the PR head `f38fd2ea5` into that base, as the
+generation 6 proof requires; every other ref was removed, and the checkout
+used umask 022. The gate exited 0 after 2443 s: the metadata node ran 148
+tests in 708 s and the governance node 753 tests in 1053 s, all OK. Earlier
+replays are not counted: one built the head as a single-parent commit, which
+the proof's one-main-integration check rejects, and the others carried the
+replay causes SPEC-0232 W5 records (later refs, the tombstone test failing on
+`main` since `6056788a5`, umask 002).
+
 ### Contract Migration
 
 | Date | Source revision | Evidence |
@@ -220,6 +233,7 @@ lists the criteria and why the rest stay `pending`.
 | Gate | 6 | W6 | Changed gate on synthetic merge; stopped at local 3000 s limit in the governance suite | `d28b15c1c` | NOT_RUN | W6 Gate | - |
 | Candidate | 6 | W6 | Hosted `candidate-quality`, changed profile | PR #441 at `f38fd2ea5` | PASS | W6 Gate | - |
 | Governance suite | 6 | W6 | Full document governance suite, 893 of 894 passed | `b1a6976f4` | FAIL | Governance Suite | - |
+| Gate replay | 6 | W6 | Local changed gate replay of the #441 merge on its parent with the SPEC-0235 changes and `61f3b99ef`: exit 0, 2443 s | `e931417be` to `ffd201182` | PASS | W6 Gate | Governance suite |
 
 ## Criterion Acceptance
 
@@ -230,14 +244,18 @@ lists the criteria and why the rest stay `pending`.
 | 3 | accepted | Readiness | Owner accepted 2026-10-13 |
 | 4 | accepted | Migration | Owner accepted 2026-10-13 |
 | 5 | accepted | Text | Owner accepted 2026-10-13 |
-| 6 | pending | - | - |
+| 6 | accepted | Candidate, Gate replay | Owner rule 2026-10-14: replay counts, accept on pass |
 
 ## Review and Completion
 
 On 2026-10-13 the owner, answering the review question, accepted the criteria
 rated ready (criteria 1, 2, 3, 4, 5) and approved this Spec and Plan.
-Criterion 6, the gate, stays `pending`: its local changed gate has no PASS,
-and the governance suite FAIL is unresolved where recorded.
+Criterion 6, the gate, was `pending`: its local changed gate had no PASS,
+and the governance suite FAIL was unresolved. On 2026-10-14 the owner
+answered (AskUserQuestion) that a replay through the local changed gate
+counts and that the criterion is accepted if it passes, and confirmed that
+rule again after the base gained `61f3b99ef`. The W6 replay passed, so
+criterion 6 is accepted.
 
 ## Related Documents
 
