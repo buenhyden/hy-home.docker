@@ -436,6 +436,20 @@ server's own shares before login, sends the W5 token body, takes the revoke
 exit status as the result, and reclaims the stopped Agent's files. W3a stays
 BLOCKED until independent re-reviews pass.
 
+### Owner Host Preparation
+
+On 2026-10-15 the owner reported running the pre-window host steps. A
+read-only check from this session confirmed four of them:
+
+- the hourly `logrotate.timer` drop-in is loaded, with its next run within the hour;
+- `/etc/logrotate.d/openbao` is root-owned 0644 and byte-identical to the tracked rule;
+- Linger is on;
+- Docker debug logging is off.
+
+The owner reported that the old `p01-operator.token` lookup was denied, so the
+token had already expired, and the file was deleted with `shred -u`. The HOME
+TLS preflight was run by the owner; this session did not observe its output.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -464,6 +478,8 @@ BLOCKED until independent re-reviews pass.
 | Second readiness review | 7 | W1 | Independent `iac-reviewer` readiness review of the whole window: NOT READY (SEC01 gate text, timing, W6 timing, W3a status, root custody, W5 token step) | `a4dbc0f9e` branch | FAIL | Second Readiness Review and Window Text | - |
 | Window security review | 7 | W1 | Independent `security-auditor` review of W1, W6 and the window text: REJECT (un-revoked root on disk, old token in argv, zsh prompt) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
 | Window IaC review | 7 | W2 | Independent `iac-reviewer` review of W2, W5 and the window text: NOT READY (Agent input chown fails natively, timing, stop path, W3a secret input) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
+| Host logrotate install | 6 | W6 | Read-only: timer drop-in loaded with the next run within an hour; `/etc/logrotate.d/openbao` root 0644, SHA-256 equal to the tracked rule | Host 2026-10-15 | PASS | Owner Host Preparation | - |
+| Window host prerequisites | 1 | W1 | Read-only: Linger yes, Docker debug false; owner-reported: old operator token expired (lookup denied) and shredded; TLS preflight run by the owner, output not observed here | Host 2026-10-15 | PASS | Owner Host Preparation | - |
 | Agent input fix | 2 | W2 | Native chown with the restore's flags: exit 1 without `DAC_READ_SEARCH`, 0 with it; new assertions RED on the earlier code, GREEN after; 47 OK and native preflight 17 OK in a umask 022 clone | `2e3683771` (#492) | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Full restore rehearsal | 2 | W2 | Native `orchestrate()` and `perform()` on synthetic resources, old `11fd73a2` restore and owned `46bf9b5c` candidate and Agent: ledger `accepted`, no attempt containers left; four defects fixed with RED then GREEN unit assertions; restore-input suite 18 OK with `HYHOME_OPENBAO_REHEARSAL=1` in a umask 022 clone | `564f4049c` | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Window text round 2 | 1 | W1 | Owner decisions recorded; RUN-0085 text fixed; metadata check-changed 0, links PASS, markdownlint 0, related suites 70 OK | Branch `claude/window-text-r2` | PASS | Second Readiness Review and Window Text | - |
