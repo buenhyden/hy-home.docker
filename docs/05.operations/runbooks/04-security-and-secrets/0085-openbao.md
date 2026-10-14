@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.18"
+version: "0.12.20"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -779,12 +779,17 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
 
 - **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
   쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 지금 없으므로 W4 뒤 gateway를 거치는
-  OIDC 로그인과 W7 `revoke-root`가 끊긴다. Compose는 mount를 이미 선언하지만 2026-10-14 실행
-  image는 Compose 고정보다 이전 버전이다. 실행 중 image ID가
-  [Traefik window overlay](../../../../infra/01-gateway/traefik/compose.window-ca.override.yml)의
-  digest와 같고 다른 설정 차이가 없을 때만
-  `docker compose -f docker-compose.yml -f infra/01-gateway/traefik/compose.window-ca.override.yml --profile core up -d --no-deps --no-build --pull never --force-recreate traefik`으로
-  다시 만들고 gateway를 확인한다. 그 전에는 W4를 열지 않는다.
+  OIDC 로그인과 W7 `revoke-root`가 끊긴다. Compose는 mount를 이미 선언한다. 2026-10-15 SEC01이
+  Compose 고정 Traefik을 만료일과 함께 수용했으므로(SPEC-0204 TSK-0009), window 전 별도 owner
+  승인으로 아래 차이 비교를 마친 뒤
+  `docker compose --profile core up -d --no-deps --no-build --pull never --force-recreate traefik`으로
+  Compose 고정 image로 다시 만든다. 기대: 실행 중 image ID가 Compose 고정 digest와 같고,
+  container 안에 `/openbao-ca/ca.pem`이 있으며, gateway 경유 로그인과 대시보드 인증이 된다.
+  되돌리기는 이전 image를 유지하는
+  [Traefik window overlay](../../../../infra/01-gateway/traefik/compose.window-ca.override.yml)로
+  `docker compose -f docker-compose.yml -f infra/01-gateway/traefik/compose.window-ca.override.yml --profile core up -d --no-deps --no-build --pull never --force-recreate traefik`이다.
+  실행 중 Traefik이 Compose 고정이 아니면 W4를 열지 않는다. Prometheus는 window 전에 다시 만들지
+  않는다. 지금 설정은 OpenBao scrape를 HTTPS로 바꾸므로 W4 전에는 scrape 경보만 낸다.
 - **실행 중 설정과 디스크의 차이.** Prometheus·Gatus·Traefik의 실행 중 image·mount·설정을
   Compose 선언과 비교한다. 차이가 있으면 재생성이 다른 변경까지 배포하므로 먼저 검토한다.
   명령은 worktree가 아니라 `.env`가 있는 main checkout에서 실행한다. 서비스마다
@@ -795,11 +800,8 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   ID로 비교하고 config hash는 쓰지 않는다. 단일 파일 bind는 재생성 때 지금 파일 내용이
   들어가므로 그 파일의 최근 변경도 함께 본다. override가 고정한 참조가 로컬에서 풀리는지
   `docker image inspect --format '{{.Id}}' <override의 image>`로 두 서비스 모두 확인한다.
-  SEC01이 실행 image를 Compose 고정으로 올리면 이 override는 쓰지 않는다(image ID 비교가
-  자동으로 막는다).
-  override는 Compose 고정보다 이전 Traefik·Prometheus를 유지하므로, W0 전에 Compose 고정
-  버전까지의 release note와 advisory를 보고 보안 수정이 있으면 owner가 만료일과 함께 수용하거나
-  SEC01로 올린다.
+  2026-10-15 SEC01 수용으로 Traefik·Prometheus는 Compose 고정으로 올리며, 두 override는 이전
+  image로 되돌릴 때만 쓴다. 두 서비스가 Compose 고정으로 안정되면 override를 지운다.
 - **경보.** W3에서 Agent를 멈추는 순간부터 Prometheus·Gatus를 다시 만들 때까지 OpenBao·Agent
   경보가 난다. 2026-10-14 owner 결정대로 W3 시작에 Alertmanager silence를 하나 만든다. 범위는
   예상되는 경보 `alertname=~"OpenBao(Sealed|MetricsScrapeFailing|AgentMetricsScrapeFailing|AgentAuthFailure)"`로
@@ -1285,10 +1287,13 @@ SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 versio
 실행 중 image가 Compose 고정과 같고 다른 설정 차이가 없음을 확인한 뒤에만
 `docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
 실행한다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다.
-다르면 실행 image를 유지하는 검토된 scoped override를 쓴다. 2026-10-14 실행 image는
-Compose 고정과 달랐으므로, 실행 중 image ID가 [Prometheus window overlay](../../../../infra/06-observability/compose.window-ca.override.yml)의 digest와 같을 때
+2026-10-15 SEC01이 Compose 고정 Prometheus를 만료일과 함께 수용했으므로(SPEC-0204
+TSK-0009), 실행 중 image가 그보다 이전이어도 다른 설정 차이가 없으면 같은 명령으로 Compose
+고정 image로 올린다. image는 W0에서 local에 있는지 확인한다. 새 image가 뜨지 않거나 rule
+평가가 실패하면 이전 image를 유지하는
+[Prometheus window overlay](../../../../infra/06-observability/compose.window-ca.override.yml)로
 `docker compose -f docker-compose.yml -f infra/06-observability/compose.window-ca.override.yml --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
-쓴다. 둘 다 아니면 이 부분은 **BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
+실행해 되돌린다. 다른 설정 차이가 있으면 이 부분은 **BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
 `OpenBaoAgentAuthFailure`가 조용하다. 중단: scrape 실패가 이어지면 Agent listener와 `obs_net`
 연결을 먼저 확인한다. Prometheus만 이전 설정으로 되돌리는 것은 Agent 재인증과 무관하다.
 
