@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.16"
+version: "0.4.17"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1884,6 +1884,27 @@ accepts the image's residuals for the window only. Criterion 15 stays
 pending on the other open gates, the fresh stable lookup before
 2026-10-17 is still required, and no HOME change follows from this record.
 
+### Fresh OpenBao stable lookup — 2026-10-14
+
+The fresh lookup due before 2026-10-17 ran on 2026-10-14 at 14:22 UTC:
+
+- GitHub releases list OpenBao v2.7.1 (2026-10-01) as the latest stable,
+  the release the owned image `46bf9b5c` rebuilds; v2.6.4 is the newest 2.6
+  patch.
+- go.dev lists go1.27.2 as the latest Go, the toolchain the image uses.
+- The Go module proxy lists `golang.org/x/net` v0.61.0 and
+  `golang.org/x/crypto` v0.58.0 (both 2026-10-09), newer than the image's
+  v0.60.0 and v0.57.0. In the Go vulnerability database index the newest
+  x/net entries are fixed in v0.60.0 and the newest x/crypto entries in
+  v0.56.0, so neither newer release carries a fix this image lacks.
+- `govulncheck` v1.1.4 `-mode=binary` on the owned binary again reports no
+  symbol or package vulnerability and only the module-level GO-2026-5932
+  match already dispositioned above.
+
+Both OpenBao ledger rows now carry this `checked_at`. The latest and
+security gates still exit 2 for the other open evidence; no HOME change
+follows from this record.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
@@ -1910,6 +1931,7 @@ and its later observations are recorded above.
 | Owned OpenBao local identity and recorded version | 15 | W31 | One import, absent owned tag attached, tag@digest resolves; separate pure validation of existing exact owned version/client0, exact probe cleanup | archivee8b428/manifest46bf/config7ee | PASS | Owned OpenBao reproducibility and local import — 2026-10-14 | Owned OpenBao import and version validator assumptions |
 | Owned OpenBao applicability dispositions | 15 | W31 | Read-only module and symbol listing and govulncheck binary scan of f0b103b8; independent security review APPROVE with notes; primary advisories GO-2026-5932 and CVE-2025-60876; ledger rows updated; gate exits unchanged | Owned manifest 46bf9b5c | PASS | Owned OpenBao applicability dispositions — 2026-10-14 | - |
 | Owned OpenBao SEC01 image acceptance | 15 | W31 | Owner decision on the three residuals of manifest 46bf9b5c | Reviewed dispositions above | PASS | Owned OpenBao SEC01 image acceptance — 2026-10-14 | - |
+| Fresh OpenBao stable lookup | 15 | W31 | GitHub releases, go.dev, Go module proxy, Go vulnerability index and govulncheck binary scan: v2.7.1 and go1.27.2 current; newer x/net and x/crypto carry no fix the image lacks; ledger `checked_at` refreshed | Lookup 2026-10-14T14:22Z | PASS | Fresh OpenBao stable lookup — 2026-10-14 | - |
 
 ## Criterion Acceptance
 
