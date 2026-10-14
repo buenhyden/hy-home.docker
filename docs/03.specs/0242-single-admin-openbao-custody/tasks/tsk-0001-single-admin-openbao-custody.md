@@ -75,6 +75,14 @@ Independent reviews of `3eb6d360f` on 2026-10-14:
   history, this Task names its baseline and commits, and the Spec scope lists
   these consumers.
 
+### W3 Review Round 2
+
+The `rules-engineer` re-review of `31c218d71` passed with notes: every gate
+that named independent custody now points to the step 5 record. Notes
+applied: contracts 2 to 4 now own what step 5 contains (the R2 identifiers,
+the listing with the account's values, the destructive exposure, recovery as
+intended), and POL-0085 names the non-secret R2 identifiers.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -83,6 +91,8 @@ Independent reviews of `3eb6d360f` on 2026-10-14:
 | Record checks | 2 | W2 | Same checks over POL-0085, ADR-0042 and the SPEC-0240 and TSK-0006 records | `3eb6d360f` | PASS | W2 Policy and Decision Record | - |
 | Security review | 3 | W3 | Independent `security-auditor`: PASS with notes, notes applied | `3eb6d360f` | PASS | W3 Review Round 1 | - |
 | Rules review | 3 | W3 | Independent `rules-engineer`: undefined "independent custody" gates | `3eb6d360f` | FAIL | W3 Review Round 1 | - |
+| Rules re-review | 3 | W3 | Independent `rules-engineer` re-review: PASS with notes, notes applied | `31c218d71` | PASS | W3 Review Round 2 | Rules review |
+| Round 2 checks | 1 | W1 | Changed metadata (11 documents) 0 violations; links `--mode all` PASS; markdownlint 0 | Branch after `31c218d71` | PASS | W3 Review Round 2 | - |
 | Step 5 record | 4 | W4 | Owner step 5 statement in TSK-0006 | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

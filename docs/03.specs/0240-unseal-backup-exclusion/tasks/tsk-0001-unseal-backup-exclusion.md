@@ -166,8 +166,9 @@ Cloudflare account access off the host, and to drop the W1b rekey. SPEC-0242
 carries that. This package's exclusion (W1, branch
 `claude/unseal-exclusion-apply-v2`), its merge gate and criterion 4 are
 therefore withdrawn and will not merge; the W5 place rule is replaced. The
-package's disposition (cancelled or superseded, which moves it out of Stage
-03) is left to the owner.
+same day the owner chose `superseded` by SPEC-0242 for this package, to take
+effect once SPEC-0242 is merged and approved, when the package leaves Stage
+03; the exclusion branches are deleted.
 
 ## Evidence
 

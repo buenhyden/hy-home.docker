@@ -44,13 +44,17 @@ window's readiness, and SPEC-0240's lifecycle disposition.
 1. The shares and the CA key stay on the host and in the host backup, local
    and R2. The host second copy is on the same system disk and is not
    off-host storage.
-2. BKP-003, the R2 credentials, BKP-002 and Cloudflare account access are kept
-   off the host in one password manager account, whose recovery means are
-   kept neither in that account nor on the host.
+2. BKP-003, the R2 credentials, BKP-002, Cloudflare account access and the
+   non-secret R2 account ID and bucket name are kept off the host in one
+   password manager account, whose recovery means and second factor are kept
+   offline, neither in that account nor on the host.
 3. The accepted exposure is stated: that one account opens the R2 copy with
-   every secret and share, and one reader of the host meets the threshold.
-   The POL-0085 exception stays open.
-4. Step 5 is a value-free owner record of those four keys, the second copy and
+   every secret and share and can destroy that copy through Cloudflare access
+   and writable R2 tokens, and one reader of the host meets the threshold.
+   Recovery from R2 is stated as intended until it is run. The POL-0085
+   exception stays open.
+4. Step 5 is a value-free owner record of those account items, a read-only R2
+   snapshot listing taken with the values from the account, the second copy and
    the account's recovery means, recorded as `PASS` with a Check that starts
    "owner-attested"; an empty cell is `NOT_RUN` and any "아니오" is `FAIL`.
 5. The window has no W1b rekey; W3b refers to the step 5 record; the W0 image
