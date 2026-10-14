@@ -530,6 +530,10 @@ class RecoveryEffects:
         shares = initialized.get("unseal_keys_b64")
         if not isinstance(root, str) or not isinstance(shares, list) or len(shares) != 3 or len(set(shares)) != 3:
             raise Indeterminate()
+        # A new server starts sealed; a snapshot restore needs it open and logged in.
+        for share in shares[:2]:
+            self._unseal(old, share)
+        self._wait_status(old, True, False)
         self.runtime.login(old, root)
         self.runtime.restore(old)
         self._wait_status(old, True, True)
@@ -552,7 +556,9 @@ class RecoveryEffects:
         tokens = []
         try:
             for role in ("renderer-issuer", "renderer-cleanup"):
-                _result, value = self._json_exec(server, "write", "-format=json", "auth/token/create/" + role, "-", input=b"{}")
+                # An empty body leaves explicit_max_ttl at 0, which the issuer helper refuses.
+                body = {"policies": role, "ttl": "5m", "explicit_max_ttl": "5m", "renewable": False, "no_default_policy": True}
+                _result, value = self._json_exec(server, "write", "-format=json", "auth/token/create/" + role, "-", input=json.dumps(body, separators=(",", ":")).encode())
                 token = value.get("auth", {}).get("client_token")
                 if not isinstance(token, str) or not 1 <= len(token) <= 1024:
                     raise Indeterminate()
@@ -566,7 +572,8 @@ class RecoveryEffects:
         failed = False
         for token in tokens:
             try:
-                self._json_exec(server, "write", "-format=json", "auth/token/revoke", "-", input=json.dumps({"token": token}, separators=(",", ":")).encode())
+                # A revoke answers 204 with no body; the exit status is the result.
+                self.runtime.exec(server, "bao", "write", "auth/token/revoke", "-", input=json.dumps({"token": token}, separators=(",", ":")).encode())
             except BaseException:
                 failed = True
         if failed:
@@ -618,7 +625,20 @@ class RecoveryEffects:
             if tuple(rendered) != reference:
                 raise Indeterminate()
         finally:
-            self._revoke_tokens(server, (issuer, cleanup))
+            try:
+                self._revoke_tokens(server, (issuer, cleanup))
+            finally:
+                self._reclaim(agent_id, auth, out, bundle)
+
+    def _reclaim(self, agent_id, auth, out, bundle):
+        # The stopped Agent's UID 100 files, rendered values included, go back to the
+        # operator so the attempt directory can be removed.
+        self.runtime.docker("stop", "--time", "10", agent_id)
+        result = self.runtime.docker("create", "--name", ATTEMPT + "-agent-reclaim", "--label", "hy-home.attempt=" + ATTEMPT, "--network=none", *container_security(SMALL_LIMITS), "--user", "0:0", "--cap-add", "CHOWN", "--cap-add", "DAC_READ_SEARCH", "--mount", f"type=bind,src={auth},dst=/agent", "--mount", f"type=bind,src={out},dst=/out", "--mount", f"type=bind,src={bundle},dst=/bundle", "--entrypoint", "/bin/chown", OLD_IMAGE, "-R", f"{os.getuid()}:{os.getgid()}", "/agent", "/out", "/bundle")
+        identity = self.runtime.remember("container", result)
+        self.runtime.docker("start", "--attach", identity)
+        if self.runtime.docker("inspect", "--format", "{{.State.ExitCode}} {{.State.OOMKilled}}", identity).stdout.strip() != b"0 false":
+            raise Indeterminate()
 
     def _tls(self, directory):
         tls, issuer = directory / "tls", directory / "issuer"

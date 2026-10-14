@@ -481,10 +481,19 @@ class RuntimeUnitTests(unittest.TestCase):
         effect._json_exec = mock.Mock(side_effect=[(self.result(), init), (self.result(), below)])
         effect._unseal = mock.Mock()
         effect._status = mock.Mock()
+        order = mock.Mock()
+        order.attach_mock(effect._unseal, "unseal")
+        order.attach_mock(effect.runtime.login, "login")
+        order.attach_mock(effect.runtime.restore, "restore")
         effect._init_restore("old", Path("/tmp"))
-        effect.runtime.login.assert_any_call("old", "synthetic-root")
-        effect.runtime.restore.assert_called_once_with("old")
-        self.assertEqual([c.args[1] for c in effect._unseal.call_args_list], list(effect.shares))
+        # A new server is sealed: its own shares open it before the throwaway login
+        # and the restore, then the original shares open the restored keyring.
+        self.assertEqual(
+            [(c[0], *c.args) for c in order.mock_calls],
+            [("unseal", "old", "x"), ("unseal", "old", "y"), ("login", "old", "synthetic-root"), ("restore", "old")]
+            + [("unseal", "old", share) for share in effect.shares]
+            + [("login", "old", effect.root_token)],
+        )
         # One foreign share is accepted below the threshold; the second must fail to combine.
         self.assertEqual(effect._json_exec.call_args_list[1].kwargs["input"], b"x")
         self.assertEqual(effect.runtime.exec.call_args_list[0].kwargs["input"], b"y")
@@ -500,7 +509,8 @@ class RuntimeUnitTests(unittest.TestCase):
             effect._unseal = mock.Mock()
             with self.assertRaises(self.subject.Indeterminate):
                 effect._init_restore("old", Path("/tmp"))
-            effect._unseal.assert_not_called()
+            used = {c.args[1] for c in effect._unseal.call_args_list}
+            self.assertFalse(used & set(effect.shares))
 
     def test_token_creation_and_agent_output_comparison(self):
         effect = self.effect()
@@ -509,20 +519,20 @@ class RuntimeUnitTests(unittest.TestCase):
         effect.runtime.volumes = []
         effect.runtime.networks = ["n" * 64]
         effect.runtime.docker.return_value = self.result(stdout=b"0 false")
-        effect.runtime.remember.side_effect = ["p" * 64, "agent-volume", "q" * 64]
+        effect.runtime.remember.side_effect = ["p" * 64, "agent-volume", "q" * 64, "r" * 64]
         effect.runtime.exec.side_effect = [
             self.result(stdout=b"alpha\n"),
             self.result(stdout=b"1\n"),
             self.result(stdout=b"beta\n"),
             self.result(stdout=b"2\n"),
+            self.result(stdout=b""),
+            self.result(stdout=b""),
         ]
         effect.runner = mock.Mock()
         effect.runner.run.return_value = self.result()
         effect._json_exec = mock.Mock(
             side_effect=[
                 (self.result(), {"data": {"role_id": "role"}}),
-                (self.result(), {}),
-                (self.result(), {}),
             ]
         )
         effect._create_tokens = mock.Mock(return_value=("issuer", "cleanup"))
@@ -533,19 +543,51 @@ class RuntimeUnitTests(unittest.TestCase):
             effect.materialized_bundle = bundle
             effect.materialized_helper = root / "helper"
             effect._agent("server", root, (("alpha", 1), ("beta", 2)))
-        self.assertEqual(effect._json_exec.call_count, 3)
+        self.assertEqual(effect._json_exec.call_count, 1)
         prep = effect.runtime.docker.call_args_list[0].args
+        # The Agent's UID 100 files go back to the operator after it stops, or the
+        # attempt directory with rendered values could not be removed.
+        calls = [c.args for c in effect.runtime.docker.call_args_list]
+        stop = calls.index(("stop", "--time", "10", "q" * 64))
+        reclaim = calls[stop + 1]
+        self.assertEqual(reclaim[:3], ("create", "--name", self.subject.ATTEMPT + "-agent-reclaim"))
+        self.assertIn(("--cap-add", "DAC_READ_SEARCH"), list(itertools.pairwise(reclaim)))
+        self.assertEqual(reclaim[-5:], ("-R", f"{os.getuid()}:{os.getgid()}", "/agent", "/out", "/bundle"))
+        self.assertEqual(calls[stop + 2], ("start", "--attach", "r" * 64))
         self.assertIn(("--cap-add", "DAC_READ_SEARCH"), list(itertools.pairwise(prep)))
         self.assertEqual((effect.runner.run.call_args.args[0][0], "issuer" in repr(effect.runner.run.call_args.args[0]), "/bundle" in repr(effect.runtime.docker.call_args_list[0])), (str(effect.materialized_helper), False, True))
 
     def test_partial_token_issue_revokes_every_issued_token(self):
         effect = self.effect()
-        effect._json_exec = mock.Mock(side_effect=[(self.result(), {"auth": {"client_token": "issued"}}), self.subject.Indeterminate(), (self.result(), {})])
+        effect.runtime = mock.Mock()
+        effect.runtime.exec.return_value = self.result(stdout=b"")
+        effect._json_exec = mock.Mock(side_effect=[(self.result(), {"auth": {"client_token": "issued"}}), self.subject.Indeterminate()])
         with self.assertRaises(self.subject.Indeterminate):
             effect._create_tokens("server")
-        revoke = effect._json_exec.call_args_list[-1]
+        revoke = effect.runtime.exec.call_args
         self.assertIn("auth/token/revoke", revoke.args)
         self.assertIn(b'"issued"', revoke.kwargs["input"])
+        # The issuer helper requires explicit_max_ttl 300, which an empty body
+        # through the role leaves at 0; send the RUN-0085 W5 request exactly.
+        created = effect._json_exec.call_args_list[0]
+        self.assertEqual(created.args[1:], ("write", "-format=json", "auth/token/create/renderer-issuer", "-"))
+        self.assertEqual(
+            json.loads(created.kwargs["input"]),
+            {"policies": "renderer-issuer", "ttl": "5m", "explicit_max_ttl": "5m", "renewable": False, "no_default_policy": True},
+        )
+
+    def test_revoke_success_has_no_body_and_failure_is_indeterminate(self):
+        # auth/token/revoke answers 204 with no body, so success is the exit status.
+        effect = self.effect()
+        effect.runtime = mock.Mock()
+        effect.runtime.exec.return_value = self.result(stdout=b"")
+        effect._revoke_tokens("server", ("one", "two"))
+        self.assertEqual(effect.runtime.exec.call_count, 2)
+        self.assertNotIn("one", repr(effect.runtime.exec.call_args_list[0].args))
+        self.assertIn(b'"one"', effect.runtime.exec.call_args_list[0].kwargs["input"])
+        effect.runtime.exec.side_effect = [self.result(stdout=b""), self.subject.Indeterminate()]
+        with self.assertRaises(self.subject.Indeterminate):
+            effect._revoke_tokens("server", ("one", "two"))
 
     def test_tls_material_keeps_ca_key_outside_mounted_directory(self):
         effect = self.effect()

@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.17"
+version: "0.12.18"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -875,7 +875,7 @@ eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-securi
 2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-362d759942b7278c40675318cefd3a6ea5480690e84fa723aa7b727f6046c248 infra/03-security/openbao/scripts/protected-semantic-restore.py
+0e114c3fcb521f16f94dee2d22710f5c7018e0df588fceb4610506bff7603b85 infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 56552244eb748cbe569ad0e63a9d47e70dcd5e3f10a28b730382de3993498d5c infra/03-security/openbao/scripts/protected-renderer-roles.py
@@ -1109,7 +1109,9 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
 W3a는 BLOCKED다. 2026-10-15 독립 검토가 Agent 단계의 입력 chown 결함을 찾았고 native로
-재현됐다. 수정과 전체 `perform()` native 리허설이 통과할 때까지 W3a를 열지 않는다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
+재현됐다. 그 수정 뒤 전체 `perform()` native 리허설이 결함 넷(sealed 상태의 login, 빈 token
+생성 요청, 본문 없는 revoke 응답, Agent 파일 회수)을 더 찾았고, 고친 뒤 두 image에서
+`accepted`로 끝났다. 이 수정의 독립 IaC·보안 재검토가 통과할 때까지 W3a를 열지 않는다(SPEC-0243). SPEC-0243 W2에서 client의 결함 다섯 가지를 고쳤다. server를
 `/bin/bao`로 `-config` 없이 시작하던 것(D3), TTY 없이 거부되는 `operator unseal`과 인자 없는
 `login`, 없는 `/usr/bin/stat`, capability 없는 root로 읽을 수 없던 0400 snapshot이다. 이제
 image entrypoint와 `/openbao/config`·`/tmp` tmpfs, `write sys/unseal key=-`, `login -`,

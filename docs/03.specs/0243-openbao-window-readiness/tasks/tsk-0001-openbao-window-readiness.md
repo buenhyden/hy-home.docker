@@ -417,6 +417,25 @@ W0 requires bash and Linger or a second session; W3a passes all four
 secrets by FD, because the root exists only in custody; and W3b treats any
 non-zero exit and a stale R2 lock as stops.
 
+### Restore Agent Fix and Full Rehearsal
+
+The Agent prep now adds `DAC_READ_SEARCH` and the preflight refuses a
+`noexec` `/dev/shm` (#492). A full native rehearsal then drove
+`orchestrate()` and `perform()` on synthetic resources: a fake HOME on the
+old image with KV canaries and renderer roles applied by
+`protected-renderer-roles.py apply`, every input from the producers, the old
+image restore into a throwaway target, the candidate upgrade on the owned
+image, helper issuance, Agent render and comparison, and token revoke. Only
+ATTEMPT, LEDGER, TARGET, CLUSTER and PARENT_IDENTITY are patched, in the test
+process. It found four more defects, each of which would have ended W3a
+INDETERMINATE: login to the still-sealed new server, token creation with an
+empty body (explicit max TTL 0, which the helper refuses), a 204 revoke
+parsed as JSON, and UID 100 Agent files the operator could not remove, which
+also left rendered values in `/dev/shm`. The restore now unseals with the new
+server's own shares before login, sends the W5 token body, takes the revoke
+exit status as the result, and reclaims the stopped Agent's files. W3a stays
+BLOCKED until independent re-reviews pass.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -445,6 +464,8 @@ non-zero exit and a stale R2 lock as stops.
 | Second readiness review | 7 | W1 | Independent `iac-reviewer` readiness review of the whole window: NOT READY (SEC01 gate text, timing, W6 timing, W3a status, root custody, W5 token step) | `a4dbc0f9e` branch | FAIL | Second Readiness Review and Window Text | - |
 | Window security review | 7 | W1 | Independent `security-auditor` review of W1, W6 and the window text: REJECT (un-revoked root on disk, old token in argv, zsh prompt) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
 | Window IaC review | 7 | W2 | Independent `iac-reviewer` review of W2, W5 and the window text: NOT READY (Agent input chown fails natively, timing, stop path, W3a secret input) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
+| Agent input fix | 2 | W2 | Native chown with the restore's flags: exit 1 without `DAC_READ_SEARCH`, 0 with it; new assertions RED on the earlier code, GREEN after; 47 OK and native preflight 17 OK in a umask 022 clone | `2e3683771` (#492) | PASS | Restore Agent Fix and Full Rehearsal | - |
+| Full restore rehearsal | 2 | W2 | Native `orchestrate()` and `perform()` on synthetic resources, old `11fd73a2` restore and owned `46bf9b5c` candidate and Agent: ledger `accepted`, no attempt containers left; four defects fixed with RED then GREEN unit assertions; restore-input suite 18 OK with `HYHOME_OPENBAO_REHEARSAL=1` in a umask 022 clone | `564f4049c` | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Window text round 2 | 1 | W1 | Owner decisions recorded; RUN-0085 text fixed; metadata check-changed 0, links PASS, markdownlint 0, related suites 70 OK | Branch `claude/window-text-r2` | PASS | Second Readiness Review and Window Text | - |
 | R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
 | R2 read-only rehearsal | 5 | W5 | `restic-offsite cmd snapshots --no-lock --json` against HOME's R2 repository, owner-approved: reachable and decrypted, 45 snapshots, latest 2026-10-13T18:42:46, none tagged `hy-home-openbao-w3`; no write, no lock | HOME R2 on 2026-10-14 | PASS | W5 R2 Artifact Transfer | - |
