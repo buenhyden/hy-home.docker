@@ -436,6 +436,32 @@ server's own shares before login, sends the W5 token body, takes the revoke
 exit status as the result, and reclaims the stopped Agent's files. W3a stays
 BLOCKED until independent re-reviews pass.
 
+The re-reviews of those fixes split. The `iac-reviewer` returned FAIL on one
+blocking finding: RUN-0085 sets `umask 077` before the restore, so `tls/`
+came out 0700 and the UID 100 server could not read its certificate, which
+the umask 022 rehearsal could not show. It also found that cleanup missed the
+gap between the prep chown and token creation, and that revoke and reclaim ran
+on the shared runner, so a spent deadline or a dead watcher, the likely
+failures, would skip them. The `security-auditor` returned APPROVE with notes,
+with one Medium finding on the same cleanup paths: rendered values could stay
+in `/dev/shm` with no report.
+
+The client now sets `tls/` to 0750 and the Agent input directories to 0755
+explicitly, so the prep chown runs as root with `CHOWN` alone, without
+`DAC_READ_SEARCH`. Everything after the prep container sits inside a revoke
+and reclaim block, which revokes only issued tokens. Revoke and reclaim run on
+a fresh runner with no watcher probe. A UID 100 container with no capability
+deletes the Agent files where they were written, and `perform` reclaims again
+after cleanup. A retained attempt directory prints
+`RESIDUE: /dev/shm attempt directory retained`. Each login waits for the
+active node (`is_self`). Preflight checks every container and network name
+the run creates. The native test runs `orchestrate()` under umask 077 and
+asserts that no attempt container, volume, network or `/dev/shm` directory
+remains. RUN-0085 pins the module as
+`83e587c8f221ede08073bf0636c207fda74f0a0530e874e62458bc635db02b4a`, records
+HOME's audit and mount lists in W0, and says how to handle a residue. W3a
+stays BLOCKED until independent re-reviews of these fixes pass.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -466,6 +492,9 @@ BLOCKED until independent re-reviews pass.
 | Window IaC review | 7 | W2 | Independent `iac-reviewer` review of W2, W5 and the window text: NOT READY (Agent input chown fails natively, timing, stop path, W3a secret input) | Branch `claude/window-text-r2` | FAIL | Second Readiness Review and Window Text | - |
 | Agent input fix | 2 | W2 | Native chown with the restore's flags: exit 1 without `DAC_READ_SEARCH`, 0 with it; new assertions RED on the earlier code, GREEN after; 47 OK and native preflight 17 OK in a umask 022 clone | `2e3683771` (#492) | PASS | Restore Agent Fix and Full Rehearsal | - |
 | Full restore rehearsal | 2 | W2 | Native `orchestrate()` and `perform()` on synthetic resources, old `11fd73a2` restore and owned `46bf9b5c` candidate and Agent: ledger `accepted`, no attempt containers left; four defects fixed with RED then GREEN unit assertions; restore-input suite 18 OK with `HYHOME_OPENBAO_REHEARSAL=1` in a umask 022 clone | `564f4049c` | PASS | Restore Agent Fix and Full Rehearsal | - |
+| Restore fix IaC re-review | 7 | W2 | Independent `iac-reviewer` re-review of #492 and #495: FAIL (umask 077 leaves `tls/` unreadable to the server; cleanup misses the pre-token gap and depends on the shared runner) | `bc552bf9b` | FAIL | Restore Agent Fix and Full Rehearsal | - |
+| Restore fix security re-review | 7 | W2 | Independent `security-auditor` re-review of #492 and #495: APPROVE with notes (Medium: rendered values can stay in `/dev/shm` on failure paths) | `bc552bf9b` | PASS | Restore Agent Fix and Full Rehearsal | - |
+| Restore review fixes | 2, 7 | W2 | 11 new or changed unit assertions RED on the earlier module (`tls/` 0700 under umask 077), restore suite 32 OK after in a umask 022 clone; native `perform()` with `orchestrate()` under umask 077: the earlier module ends INDETERMINATE, the fixed module ends `accepted` with no attempt container, volume, network or `/dev/shm` directory left; native suite 2 OK | `6fd36be4a` | PASS | Restore Agent Fix and Full Rehearsal | Restore fix IaC re-review |
 | Window text round 2 | 1 | W1 | Owner decisions recorded; RUN-0085 text fixed; metadata check-changed 0, links PASS, markdownlint 0, related suites 70 OK | Branch `claude/window-text-r2` | PASS | Second Readiness Review and Window Text | - |
 | R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | `bab3124fc` | PASS | W5 R2 Artifact Transfer | - |
 | R2 read-only rehearsal | 5 | W5 | `restic-offsite cmd snapshots --no-lock --json` against HOME's R2 repository, owner-approved: reachable and decrypted, 45 snapshots, latest 2026-10-13T18:42:46, none tagged `hy-home-openbao-w3`; no write, no lock | HOME R2 on 2026-10-14 | PASS | W5 R2 Artifact Transfer | - |

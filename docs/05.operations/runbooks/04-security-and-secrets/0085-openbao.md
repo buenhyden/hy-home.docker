@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.18"
+version: "0.12.20"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
