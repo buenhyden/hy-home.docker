@@ -1,6 +1,6 @@
 ---
 title: "Prompt v9 Residual Corrections Task"
-version: "0.7.1"
+version: "0.7.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -111,6 +111,20 @@ suite and was stopped (exit 124). That suite's local result is `NOT_RUN`.
 
 The owner merged pull request #443 as merge commit `8a3155daa` (parents
 `baffae4c7` and `cc8a880dc`).
+
+On 2026-10-14 the change was replayed through the local changed gate in a
+scratch clone. The base was the PR parent `baffae4c7` with the three SPEC-0235
+changes (both local timeouts and the reachability test) and the one-line
+tombstone identity fix `61f3b99ef` from this package's W6 (PR #445); the head
+was that base plus the #443 merge diff; every other ref was removed, and the
+checkout used umask 022. The gate exited 0 after 2998 s: the metadata node
+ran 148 tests in 733 s and the governance node 753 tests in 1072 s, all OK.
+Three earlier replays are not counted, each for a cause in the replay rather
+than the change: later refs in the clone failed the identity history test,
+which also confirms the cause the Governance Suite record below suspected;
+without `61f3b99ef` the tombstone test failed as it had on `main` since
+`6056788a5` (2026-10-12); and under umask 002 two entrypoint permission tests
+saw group-writable files.
 
 ### W6 Tombstone Identity
 
@@ -333,6 +347,7 @@ create every later branch with `--no-track` and push with an explicit refspec.
 | Live Claude | 7 | W7 | Live PostToolUse delivery, Claude Code 2.1.296 | `958349408` | PASS | W7 PostToolUse Failure as Context | - |
 | Live Codex | 7 | W7 | Live PostToolUse delivery, codex-cli 0.162.1, sandbox off | `958349408` | PASS | W7 PostToolUse Failure as Context | - |
 | Governance suite | 5 | W5 | Full document governance suite, 893 of 894 passed | `b1a6976f4` | FAIL | Governance Suite | - |
+| Gate replay | 5 | W5 | Local changed gate replay of the #443 diff on its parent with the SPEC-0235 changes and `61f3b99ef`: exit 0, 2998 s | `baffae4c7` to `8a3155daa` | PASS | W5 Gate | Governance suite |
 | Wrapper | 8 | W8 | Wrapper test RED on `main` then GREEN; shellcheck; real `pre-commit` TOML whitespace case (new exit 1, `main` exit 0) | Branch on `ec0877f10` | PASS | W8 Pre-commit Wrapper (F22) | - |
 | LAB guide | 9 | W9 | Old test RED with the guide rows deleted, GREEN after; `test_lab_isolation` and `test_operations_catalog` (140) | Branch on `ec0877f10` | PASS | W9 LAB Isolation Test (F31) | - |
 | Finding records | 10 | W10 | Per-finding records with file:line evidence; PR #428 and run 38275029067 read with `gh` | Branch on `ec0877f10` | PASS | W10 Finding Records | - |
@@ -347,7 +362,7 @@ create every later branch with `--no-track` and push with an explicit refspec.
 | 2 | accepted | Rehearsal | Owner accepted 2026-10-13 |
 | 3 | accepted | Frozen | Owner accepted 2026-10-13 |
 | 4 | accepted | Shim | Owner accepted 2026-10-13 |
-| 5 | pending | - | - |
+| 5 | accepted | Candidate, Gate replay | Owner rule 2026-10-14: replay counts, accept on pass |
 | 6 | accepted | Tombstone | Owner accepted 2026-10-13 |
 | 7 | accepted | Context, Context candidate, Live Claude, Live Codex | Owner accepted 2026-10-13 |
 | 8 | accepted | Wrapper, Wrapper review, Policy review | Owner accepted 2026-10-14 |
@@ -360,8 +375,12 @@ On 2026-10-13 the owner, answering the review question, accepted the criteria
 rated ready (criteria 1, 2, 3, 4, 6, 7) and approved this Spec and Plan.
 Criteria 8, 9 and 10 were not asked then; on 2026-10-14 the owner accepted
 all three.
-Criterion 5, the gate, stays `pending`: its local changed gate has no PASS,
-and the governance suite FAIL is unresolved where recorded.
+Criterion 5, the gate, was `pending`: its local changed gate had no PASS,
+and the governance suite FAIL was unresolved. On 2026-10-14 the owner
+answered (AskUserQuestion) that a replay through the local changed gate
+counts and that the criterion is accepted if it passes, and confirmed that
+rule again after the base gained `61f3b99ef`. The W5 replay passed, so
+criterion 5 is accepted.
 
 ## Related Documents
 
