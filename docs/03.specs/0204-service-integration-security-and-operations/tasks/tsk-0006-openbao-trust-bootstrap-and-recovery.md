@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.21"
+version: "0.2.22"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3011,6 +3011,56 @@ this module is outside that fixture, so no native rerun or new HOME semantic
 restore is claimed. Hosted checks on the clarified follow-up remain pending
 at publication; the source PR stays draft and no merge/deployment is claimed.
 
+### PR review and synthetic TLS server minimum — 2026-10-14
+
+The owner's subsequent PR-review request examined latestcbe95c588 against
+main4c33. Hosted CodeQL analysis jobs succeeded, but its aggregate failed
+with two new High py/insecure-protocol alerts:
+[test copy runtime](https://github.com/buenhyden/hy-home.docker/security/code-scanning/33)
+and [test snapshot](https://github.com/buenhyden/hy-home.docker/security/code-scanning/34).
+The two loopback synthetic HTTPS fixture servers constructed
+SSLContext(PROTOCOL_TLS_SERVER) without an explicit minimum. The production
+copy/maintenance clients already enforce TLS1.2; no HOME credential exposure
+was found. The exact two-line correction sets minimum_version=TLSv1_2 on
+each server context before certificate loading and socket wrapping.
+
+The first full two-module regression ran51 in20.516s and failed with1 failure
+and12 errors because the approved custody dependency was0664 and its loader
+refused group-write. That log is retained at
+/tmp/hyhome-pr472-codeql-tls-regression-20261014.log. Exact content hashes
+were confirmed and only the three remaining owned public-module group-write
+bits were removed; seven protected modules are now0644, with no content or
+loader-policy change. The identical rerun passed51/51,0 skip,21.603s;
+/tmp/hyhome-pr472-codeql-tls-regression-attempt2-20261014.log. Ruff and
+independent exact-delta code/security reviews passed. The native34 inputs,
+owned image, Compose, W4 and HOME state are unchanged.
+
+The same review confirmed GitGuardian's latest check still names historical
+commit932508be4, not currentcbe95. Its Generic Password report concerns only
+public field-selector metadata, and checks inspect every PR commit. The owner
+selected direct dashboard false-positive handling. This is an operator intent,
+not completed external-state proof: no dashboard change, ignore rule,
+credential rotation or history rewrite was performed by the agent. A fresh
+hosted check must confirm clearance after that action. The TLS follow-up is
+prepared for the existing draft PR; no merge or runtime acceptance is claimed.
+
+### Source merge and remaining review fix — 2026-10-14
+
+The owner reported merge completion. GitHub confirms PR472 merged at
+2026-10-14T06:48:39Z as5cdf684902b88bb68f048e99ed88e5525d4755c0,
+with headcbe95c588. Local main, origin/main and fetched main match5cdf;
+its tree exactly equalscbe95, and the root checkout is clean. The two TLS
+fixture minimum-version edits and their Task receipt were still staged
+locally when the owner merged and therefore are absent from that merge.
+
+Those three public files and full/index/worktree patches were preserved in
+.agent-work/retained-development-handoffs/20261014/pr472-post-merge-tls-followup,
+manifest SHA25673d0337962b3c5055e5f2ccc360741cde64fbacc6f00725f00719f7a85b099a9.
+They were applied byte-identically to codex/openbao-pr-review-tls-minimum,
+a fresh worktree based at5cdf, for a small follow-up PR. No history rewrite,
+production code change or runtime mutation is required. The user's intended
+GitGuardian dashboard action remains separate from observed check clearance.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -3098,9 +3148,10 @@ at publication; the source PR stays draft and no merge/deployment is claimed.
 ## Review and Completion
 
 Prior source delivery merged in PR421 and PR431 (merge `7620f2d22`). The
-current protected-client/common integration passed its registered source gates
-and independent reviews and was delivered in draft PR472. Its follow-up
-field-metadata clarity correction retains the hosted-check boundary above.
+current protected-client/common integration and field-metadata clarification
+were merged in PR472 as5cdf684902. The two reviewed test-fixture TLS minimum
+fixes were not part of that merge and are carried in the follow-up source
+branch recorded above. Hosted clearance is assessed per exact head.
 The current Task remains blocked on the named W23 target/custody and runtime residuals. Source
 and isolated proof do not complete HOME custody/boot/recovery acceptance or
 authorize P06. No secret migration or consumer switch is claimed.
