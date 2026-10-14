@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.5.4"
+version: "0.6.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-14"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -49,8 +49,11 @@ server command는 `server`, Agent는 `agent -config=/openbao/config/agent.hcl`�
 server의 `BAO_LOCAL_CONFIG`가 단일 노드 Raft와 내부 native TLS listener를 정의한다.
 `OPENBAO_PORT`/`OPENBAO_CLUSTER_PORT`, `DEFAULT_SECURITY_DIR`, public route의
 `DEFAULT_URL`이 입력이다. host port는 없으며 외부 TLS와 검증된 내부 TLS를 모두 사용한다.
-서버는 `edge_net`/`secrets_net`/`obs_net`, Agent는 `secrets_net`만 사용한다.
-Agent에는 HTTP listener나 자체 metrics endpoint가 선언되어 있지 않다.
+서버는 `edge_net`/`secrets_net`/`obs_net`, Agent는 `secrets_net`과 `obs_net`을 사용한다.
+Agent의 유일한 listener는 `metrics_only` 역할의 8100 HTTP이며(SPEC-0239)
+`/agent/v1/metrics`만 응답하고 API proxy·cache·quit 경로는 없다. 인증이 없으므로
+host port는 열지 않는다. Prometheus `openbao-agent` job이 `bao_agent_auth_failure`를
+수집한다. template 렌더링은 metric이 없어 staleness는 Docker healthcheck로만 드러난다.
 
 | 서비스 | mount·인증·정상 신호와 한계 |
 | --- | --- |

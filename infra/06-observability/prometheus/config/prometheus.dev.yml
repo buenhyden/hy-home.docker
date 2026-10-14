@@ -173,6 +173,20 @@ scrape_configs:
     file_sd_configs:
       - files: ["/etc/prometheus/targets/openbao.yml"]
 
+  # The Agent's metrics_only listener: unauthenticated counters, no secret
+  # (SPEC-0239). Its names use the `bao_agent_` prefix.
+  - job_name: "openbao-agent"
+    metrics_path: /agent/v1/metrics
+    params:
+      format: ["prometheus"]
+    static_configs:
+      - targets: ["openbao-agent:8100"]
+        labels:
+          cluster: "hy-home"
+          namespace: "hy-home"
+          domain: "security"
+          container: "openbao-agent"
+
   # ============================================================================
   # DATASTORES
   # ============================================================================
