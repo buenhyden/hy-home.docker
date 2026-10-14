@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Agent Telemetry and Alert Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -89,6 +89,15 @@ sink and needs a fresh wrapped SecretID, so it is a credential operation;
 `prometheus.yml` is a single-file bind mount, so Prometheus needs a restart,
 not a reload; recreate the Agent before restarting Prometheus.
 
+### Hosted Candidate
+
+PR #463 merged `f0f6b1b2b` alone, and its candidate failed: the
+`openbao-agent` row in the local service consolidation inventory lacked
+`obs_net`. PR #466 carried the review fixes and that inventory row; its
+`candidate-quality` passed on head `fd3fc3d3c` (run `38503721974`), and it
+merged as `b4291bb43`. RUN-0085 and SPEC-0204 TSK-0006 were updated after
+the merge.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -100,7 +109,7 @@ not a reload; recreate the Agent before restarting Prometheus.
 | IaC review | 4 | W3 | Independent `iac-reviewer` of `f0f6b1b2b`: auth alert window too short | `f0f6b1b2b` | FAIL | Review Round 1 | - |
 | IaC fix | 4 | W3 | `[15m]` window; slow-retry promtool case; agent contract suite (24, promtool cases run) | Branch | PASS | Review Round 1 | IaC review |
 | Security review | 4 | W3 | Independent `security-auditor` of `f0f6b1b2b`: PASS, wording note applied | `f0f6b1b2b` | PASS | Review Round 1 | - |
-| Candidate | 5 | W4 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
+| Candidate | 5 | W4 | Hosted `candidate-quality` on PR #466 head: SUCCESS, run `38503721974` | `fd3fc3d3c` | PASS | Hosted Candidate | - |
 
 ## Criterion Acceptance
 

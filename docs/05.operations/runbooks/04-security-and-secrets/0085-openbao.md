@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.9.0"
+version: "0.9.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -489,7 +489,7 @@ P06 확대는 실제 HOME cold boot·custody·복구 gate가 통과할 때까지
 9. HOME cold boot를 한다(별도 승인).
 10. 현재 버전 인증과 consumer 읽기를 위한 consumer와 ACL을 고른다(P06 담당자 선택).
 
-Agent staleness와 인증 실패를 알리는 Prometheus 규칙이 아직 없고, 변조된 HMAC의 audit 검증도 미실행이다. `openbao-agent`는 metric을 노출하지 않는다(`agent.hcl`에 telemetry·listener가 없고 Prometheus도 scrape하지 않는다). Docker healthcheck가 token lookup·KV 읽기·렌더 bytes 일치를 확인하므로 staleness·인증 실패는 Docker `unhealthy`로만 드러나고 알림은 없다. 2026-10-13 owner 결정으로 이 gap을 기록해 두고, Agent telemetry·scrape·alert는 IaC 검토를 거치는 별도 Spec에서 추가한다.
+변조된 HMAC의 audit 검증은 미실행이다. Agent 인증 실패 alert는 SPEC-0239(PR #463, #466)로 source에 들어왔다. `agent.hcl`이 `metrics_only` listener(8100)로 `/agent/v1/metrics`를 열고, Prometheus job `openbao-agent`가 scrape하며, `OpenBaoAgentMetricsScrapeFailing`과 `OpenBaoAgentAuthFailure`가 알린다. 아직 배포되지 않았다. 배포하려면 Agent를 다시 만들어야 하는데, 그러면 token sink가 지워지므로 새 wrapped SecretID가 필요한 credential 작업이다. `prometheus.yml`은 단일 파일 bind mount라 reload로는 반영되지 않으므로, Agent를 먼저 다시 만든 뒤 Prometheus를 restart한다(별도 승인). 인증은 되는데 렌더만 낡는 경우는 metric이 없어서 배포 뒤에도 Docker healthcheck(token lookup·KV 읽기·렌더 bytes 일치)의 `unhealthy`로만 드러나고 알림은 없다.
 
 #### off-host custody 분리 절차
 
@@ -711,7 +711,7 @@ share와만 짝을 이루고, 새 share는 host에 없다. rekey에는 root toke
 - 새 attempt로 빈 대상에 의미 있는 restore와 canary 읽기(위 6단계). `.agent-work/`가
   삭제되므로 추적되거나 새로 검토한 도구가 필요하다.
 - consumer와 ACL 선택(위 10단계, P06).
-- Agent telemetry·scrape·alert를 추가하는 별도 Spec.
+- SPEC-0239 Agent alert 배포: Agent 재생성(새 wrapped SecretID) 뒤 Prometheus restart(별도 승인).
 
 ## Verification
 
