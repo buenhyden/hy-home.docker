@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 layer: "specs"
 artifact_id: "SPEC-0238-TSK-0001"
 parent_ids:
@@ -94,10 +94,16 @@ serves both providers.
 - The `block-direct-main-push` rule (1.1.0) matches an explicit `main`
   destination in every form: `main`, `HEAD:main`, `HEAD:refs/heads/main`,
   `+main`, `x:main`, `-u`, `--force`, `git -C <dir>`, and compound commands.
-- `hook_rules.implicit_main_push` judges a push whose refspec is implicit
-  (`git push`, `git push origin`) by the branch and `@{push}` target of the
-  directory it runs in, following `cd` and `git -C`, and treats `--all` and
-  `--mirror` as pushes to `main`. The dispatcher denies those too.
+- `hook_rules.implicit_main_push` resolves what the text cannot show: `HEAD`
+  and `@` by the current branch, an implicit refspec by the branch, `@{push}`
+  target, `push.default` and `remote.<name>.push`/`.mirror` of the repository
+  the push runs in (`cd`, `pushd`/`popd`, subshells, `git -C`, `--git-dir`,
+  `--work-tree`, `GIT_DIR`, `GIT_WORK_TREE`, command prefixes such as `env`
+  and `timeout`). Redirections and comments are dropped before judging. It
+  fails closed: `heads/main`, wildcard refspecs, `--all`, `--branches`,
+  `--mirror`, shell expansion, an unparseable segment, `bash -c`/`eval`, push
+  or alias `-c` settings, `--config-env`, `GIT_CONFIG*` and an unreadable
+  repository all count as pushes to `main`. The dispatcher denies them.
 - `scripts/hooks/pre-push-guard.sh` refuses any push whose remote ref is
   `refs/heads/main`, reading both the pre-commit environment and raw pre-push
   stdin. `.pre-commit-config.yaml` installs `pre-push` by default and runs only
@@ -152,8 +158,8 @@ Findings and their disposition:
 
 - **Rules B1:** environment-constraints §1 prescribed `danger-full-access` for
   live Codex writes, which approval-boundaries forbids a policy to grant. It
-  now records the limit only and names such a run a protected operation that
-  needs per-run owner authorization (1.4.0).
+  now records the limit only (1.4.0); round 2 points to approval-boundaries'
+  trusted-channel wording instead of naming a new protected operation.
 - **Rules B2:** the unauthorized direct `pre-commit run`, recorded in W3; its
   evidence row is replaced.
 - **Rules B3:** `onFailure` lived outside the Registry; moved there as above.
@@ -188,6 +194,25 @@ Findings and their disposition:
   only); `--force-with-lease` on a feature branch stays denied, as the owner
   chose.
 
+### Review Round 2
+
+On 2026-10-14 the independent re-review of `d18fe1986` returned FAIL on one
+blocking finding: the push check still allowed a push to `main` hidden by a
+redirection (`git push origin 2>&1`), shell expansion, or a segment `shlex`
+could not parse. Patching forms one by one would not converge, so the check
+now fails closed as W3 describes, and tokenizes with redirection and comment
+handling that keeps quoted text intact. Commit messages that mention a push
+are not affected: only a segment that starts like a command able to run
+`git push` is judged.
+
+Non-blocking items: a `cd` inside a subshell and `pushd`/`popd` no longer leak
+into later segments; `env -i`, `sudo -E`, `timeout` and basename prefixes are
+followed; the contract loader accepts `on_failure` only for `claude`; the
+round-1 files carry `updated: "2026-10-14"`; the Codex adapter names the
+unobserved items; the sandbox wording points to approval-boundaries' trusted
+channel. Residual: a persisted git alias that expands to `push`, and quoted
+text that contains a main push (denied, friction only).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -195,12 +220,15 @@ Findings and their disposition:
 | Output tests | 1 | W1 | PreCompact, SessionStart and PreToolUse tests RED on `main` then GREEN | Branch on `f1214c839` | PASS | W1 Hook Outputs | - |
 | Binding parity | 2 | W2 | Native hook files equal Registry contract; Codex `[memories]` pinned (both pass on `main` too) | Branch | PASS | W2 Codex Hooks | - |
 | Main push tests | 3 | W3 | Ten push forms denied, three allowed, implicit target denied; pre-push guard; RED on `main` then GREEN | Branch on `f1214c839` | PASS | W3 Direct Push to Main | - |
+| Main push tests 2 | 3 | W3 | Rounds 1 and 2: 28 explicit or undeterminable forms denied, 6 allowed, implicit, `HEAD`/`@`, redirection, comment, continuation, subshell, `popd` and other-repository cases denied | Branch on `1e7e2ba84` | PASS | Review Round 2 | - |
 | Pre-push stage | 3 | W3 | Direct-script guard test and effective-stage configuration test; installed-stage run left to the owner | Branch | PASS | W3 Direct Push to Main | - |
 | Settings test | 4 | W4 | Deny rules present, grep/rg allows absent, `.env.example` not denied; RED on `main` then GREEN | Branch | PASS | W4 Claude Permissions | - |
 | Checks | 5 | W5 | Routing suite (70); hook tests (32); renderer check (drift 0); governance contract; script manifest; workflow contract and tests (90); shellcheck; pre-commit wrapper test | Branch | PASS | Work Log | - |
 | Review | 5 | W5 | Independent rules, security and CI review of `a16ca2451..f8af6b3ab` | Branch | FAIL | Review Round 1 | - |
-| Review fixes | 3, 4, 5 | W5 | Round 1 fixes: push forms (HEAD, @, heads/main, wildcard, --branches, -c, pushd, GIT_DIR, unreadable repo), stage pins, Registry `on_failure` parity | Branch | PASS | Review Round 1 | Review |
-| Re-review | 5 | W5 | Independent re-review of the fix range | - | NOT_RUN | Review Round 1 | - |
+| Review fixes | 5 | W5 | Round 1 fixes in `d18fe1986`: push forms, stage pins, Registry `on_failure` parity | Branch | PASS | Review Round 1 | Review |
+| Re-review | 5 | W5 | Independent `security-auditor` re-review of `d18fe1986` | Branch | FAIL | Review Round 2 | - |
+| Re-review fixes | 5 | W5 | Round 2 fixes; routing suite (70), workflow contract tests (39), hook tests (32), governance contract, script manifest, renderer check (drift 0) | Branch | PASS | Review Round 2 | Re-review |
+| Re-review 2 | 5 | W5 | Independent review of the round 2 fixes | - | NOT_RUN | Review Round 2 | - |
 | Candidate | 6 | W5 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

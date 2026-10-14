@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 action: "block"
 enabled: true
 event: "bash"

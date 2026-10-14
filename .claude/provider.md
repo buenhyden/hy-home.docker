@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 runtime: "claude"
 ---
 

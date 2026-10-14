@@ -4,7 +4,7 @@ version: "1.1.3"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-14"
 runtime: "codex"
 ---
 
@@ -66,10 +66,11 @@ Hook delivery also depends on user-global Codex state this adapter does not
 own: project trust and hook enablement. Observed on 2026-10-13 with codex-cli
 0.162.1, a dated observation the Stage 03 record holds:
 `apply_patch` triggers PostToolUse and its `additionalContext` reaches the
-model. A PreToolUse denial of `apply_patch` has not been observed. Codex's sandbox cannot start on this
+model. Not observed: a PreToolUse denial of `apply_patch`, and delivery under
+another trust or enablement state; record those as unverified until directly
+observed within separate authorization. Codex's sandbox cannot start on this
 host, as the [environment constraints](../.agents/governance/environment-constraints.md#1-hard-constraints)
 record.
-Record those as unverified until directly observed within separate authorization.
 Respect the active sandbox and approval boundary; do not mutate user-global or
 ignored local configuration or install global skill copies.
 

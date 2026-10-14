@@ -2409,6 +2409,18 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "git --git-dir .git push origin main",
                 "(cd . && git push origin main)",
                 "cd /nonexistent-hy-home && git push",
+                # Undeterminable destinations fail closed.
+                "git push origin $BRANCH",
+                'git push origin "$(git branch --show-current)"',
+                "git push origin `git branch --show-current`",
+                "git push origin feat 'unbalanced",
+                "bash -c 'git push origin feat'",
+                "eval git push origin feat",
+                "git -c push.default=matching push origin",
+                "git --config-env=remote.origin.push=V push origin feat",
+                "GIT_CONFIG_COUNT=1 git push origin feat",
+                "timeout 60 git push origin main",
+                "env -i git push origin main",
             )
             for command in explicit:
                 with self.subTest(command=command):
@@ -2418,6 +2430,8 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "git push origin main-fix",
                 "git push origin HEAD",
                 "git push",
+                "git push origin HEAD:refs/heads/claude/x 2>&1",
+                "git commit -m 'a > b; push it'",
             ):
                 with self.subTest(command=command):
                     self.assertFalse(self._denied(command, repo))
@@ -2444,7 +2458,38 @@ class HookOutputAndMainPushTests(unittest.TestCase):
             )
             self.assertTrue(self._denied("git push origin", repo))
             # On `main`, HEAD and @ name main; tags alone do not.
-            for command in ("git push -u origin HEAD", "git push origin @"):
+            # Redirections, comments and continuations do not hide the target,
+            # and a subshell or popd restores the directory.
+            feature = repo / "feature"
+            subprocess.run(
+                ["git", "init", "-q", "-b", "feat", str(feature)], check=True
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=t",
+                    "-c",
+                    "user.email=t@example.com",
+                    "commit",
+                    "-q",
+                    "--allow-empty",
+                    "-m",
+                    "seed",
+                ],
+                cwd=feature,
+                check=True,
+            )
+            for command in (
+                "git push -u origin HEAD",
+                "git push origin @",
+                "git push origin 2>&1",
+                "git push -u origin > push.log",
+                "git push -u origin HEAD # note",
+                "git push \\\n  -u origin HEAD",
+                "(cd feature && true); git push",
+                "pushd feature && popd && git push",
+            ):
                 with self.subTest(command=command):
                     self.assertTrue(self._denied(command, repo))
             self.assertFalse(self._denied("git push --tags origin", repo))
