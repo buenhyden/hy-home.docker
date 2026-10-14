@@ -86,6 +86,37 @@ case "$action" in
         size="$(restic stats --mode raw-data --json | sed -n 's/.*"total_size":\([0-9]*\).*/\1/p')"
         echo "R2 repository size: ${size:-unknown} bytes"
         ;;
+    artifact)
+        # RUN-0085 W3b: store the W3 OpenBao snapshot and its receipt, mounted
+        # read-only at /artifact, then read both back from R2 and compare.
+        # Prints only names, sizes, SHA-256 and the snapshot ID; no retry.
+        require_initialized
+        files="raft-pre-upgrade.snap raft-pre-upgrade.snap.receipt.json"
+        for name in $files; do
+            if [ ! -f "/artifact/$name" ] || [ -L "/artifact/$name" ]; then
+                echo "missing or non-regular /artifact/$name" >&2
+                exit 64
+            fi
+        done
+        set --
+        for name in $files; do set -- "$@" "/artifact/$name"; done
+        id="$(restic backup --json --host hy-home-openbao-window \
+            --tag hy-home-openbao-w3 "$@" |
+            sed -n 's/.*"message_type":"summary".*"snapshot_id":"\([0-9a-f]\{64\}\)".*/\1/p')"
+        [ -n "$id" ] || { echo "R2 backup returned no snapshot ID" >&2; exit 65; }
+        entries=""
+        for name in $files; do
+            local_sum="$(sha256sum <"/artifact/$name" | cut -d' ' -f1)"
+            remote_sum="$(restic dump "$id" "/artifact/$name" | sha256sum | cut -d' ' -f1)"
+            size="$(wc -c <"/artifact/$name" | tr -d ' ')"
+            if [ "$local_sum" != "$remote_sum" ]; then
+                echo "R2 bytes differ for $name in snapshot $id" >&2
+                exit 65
+            fi
+            entries="$entries${entries:+,}{\"name\":\"$name\",\"bytes\":$size,\"sha256\":\"$local_sum\"}"
+        done
+        echo "{\"state\":\"W3B_STORED\",\"snapshot_id\":\"$id\",\"tag\":\"hy-home-openbao-w3\",\"files\":[$entries]}"
+        ;;
     cmd)
         case "${1:-}" in
             forget | prune | unlock)

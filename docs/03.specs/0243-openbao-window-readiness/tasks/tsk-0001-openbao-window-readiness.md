@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -171,6 +171,28 @@ four Low; `iac-reviewer` three Medium, two Low). Applied:
   probe showed the operator policy's `policies = ["renderer-issuer"]` limit
   admits the string form and refuses a JSON list, which matches W5's text.
 
+### W5 R2 Artifact Transfer
+
+`offsite.sh` gains an `artifact` action for the existing `restic-offsite`
+job, with the same image, secrets and egress-only network. It refuses a
+missing or symlinked input. It backs up only `raft-pre-upgrade.snap` and its
+receipt from a read-only `/artifact` mount under a fixed tag and host, takes
+the snapshot ID from restic's JSON summary, then reads each file back with
+`restic dump` and compares SHA-256 with the local bytes. It prints one
+value-free JSON receipt (names, sizes, SHA-256, snapshot ID). It never
+deletes or retries. RUN-0085 replaces the BLOCKED W3b text with a read-only
+`snapshots` reachability check followed by the action.
+
+A contract test pins that the branch adds and reads back but never forgets,
+prunes, unlocks or removes; dropping the read-back makes it fail. An opt-in
+native rehearsal ran the real script in `restic/restic:0.19.1` with no
+network against a local repository (a mounted wrapper sets
+`RESTIC_REPOSITORY`, which the script otherwise points at R2) and synthetic
+secrets: a 300 kB random snapshot and its receipt were stored and proved, and
+a symlinked receipt stopped with exit 64 before any snapshot. The existing
+Compose baseline gates still pass. The read-only R2 rehearsal in criterion 5
+needs the owner's approval because it reaches HOME's R2 bucket.
+
 ### W6 CA Mounts, Logrotate and W4 Rollback
 
 A read-only comparison on 2026-10-14 found that Compose already declares the
@@ -212,6 +234,8 @@ override commands.
 | Role apply native | 3 | W3 | Real tool on an owned synthetic server, both images: targets replaced and read back, RoleID kept, role tokens exact, wrapped SecretID only, second run unchanged | `455dffd70` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
 | Role apply reviews | 7 | W3 | Independent `security-auditor` and `iac-reviewer` reviews: both PASS with notes, notes applied | `5c2dd4601` | PASS | W3 Renderer Role Apply | - |
 | Role apply fixes | 3 | W3 | 17 tests OK under umask 022 with both native runs: plan writes nothing, operator token makes the W5 request, defaults read back; removing the BindingBlocked catch or the plan write guard fails 2 | `d4a4455c4` on owned `46bf9b5c`, old `11fd73a2` | PASS | W3 Renderer Role Apply | - |
+| R2 artifact action | 5 | W5 | Contract test OK, read-back removal fails it; native rehearsal in `restic/restic:0.19.1`, no network, local repository: both files stored and proved, symlinked input exits 64 before backup; Compose baseline gates OK | Branch `claude/window-w6-ca-logrotate` | PASS | W5 R2 Artifact Transfer | - |
+| R2 read-only rehearsal | 5 | W5 | `snapshots` against HOME's R2 repository | Owner approval needed | NOT_RUN | W5 R2 Artifact Transfer | - |
 | Window overrides | 6 | W6 | Compose config with and without the override differs only in the Traefik and Prometheus image; CA mounts kept; contract test OK; timer drop-in passes `systemd-analyze verify` on a copy of the host units | Running images observed 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 | W4 rollback decision | 6 | W6 | Owner chose fix-forward (AskUserQuestion) | Owner answer 2026-10-14 | PASS | W6 CA Mounts, Logrotate and W4 Rollback | - |
 

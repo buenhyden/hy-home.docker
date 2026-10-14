@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.6"
+version: "0.12.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -1022,11 +1022,24 @@ HOME root 폐기나 HOME server 교체는 이 client가 수행하지 않습니�
 값 없는 receipt로 결속합니다. share와 CA key는 host와 host 백업에, BKP-003은 장소 A에
 있다는 1인 관리자 custody 기록(5단계)도 확인합니다. 준비됐다는 운영자 확인만으로 이 전달을 완료 처리하지 않습니다.
 standalone helper와 RUN-0021의 별도 full backup은 이 W3 경로를 자동으로 복사하지 않습니다.
-정확한 보관 대상·전송 절차와 결과 receipt가 준비되기 전에는 W3b는 **BLOCKED / NOT_RUN**입니다.
-운영자는 기존 Cloudflare R2 Restic 저장소를 이번 snapshot·receipt 보관 대상으로 선택했고,
-먼저 읽기 전용 원격 검증을 진행하도록 승인했습니다. 로컬 입력 검사는 통과했으나 원격
-접속·저장소 검증·두 산출물 전달 receipt는 아직 없습니다. 전체 repository copy를 이번
-두 산출물의 전달 성공으로 대체하지 않습니다.
+운영자는 기존 Cloudflare R2 Restic 저장소를 이번 snapshot·receipt 보관 대상으로 선택했다.
+[offsite entrypoint](../../../../infra/09-platform-ops/restic/offsite.sh)의 `artifact`는 두
+파일만 tag `hy-home-openbao-w3`, host `hy-home-openbao-window`로 R2에 저장하고, 곧바로 R2에서
+두 파일을 다시 읽어 SHA-256을 로컬과 비교한다. 지우거나 다시 시도하지 않는다. 먼저 읽기
+전용 `snapshots`로 저장소에 닿는지 확인한다.
+
+```bash
+docker compose --profile backup run --rm --no-deps restic-offsite snapshots >/dev/null || exit 1
+docker compose --profile backup run --rm --no-deps \
+  -v "${P01_SNAPSHOT_DIRECTORY:?}:/artifact:ro" restic-offsite artifact
+```
+
+기대: 마지막 줄이 `{"state":"W3B_STORED","snapshot_id":...,"files":[...]}`이고 두 파일의
+`sha256`이 W3 receipt와 같다. 이 줄이 값 없는 W3b receipt이며 Task에 그대로 남긴다.
+중단: exit64는 입력 누락이나 symlink, exit65는 R2 저장소 문제·snapshot ID 없음·바이트
+불일치다. 어느 경우에도 W4를 열지 않는다. 불일치 뒤 다시 실행하면 새 snapshot이 하나 더
+생길 뿐 이전 것은 지워지지 않는다. 전체 repository copy를 이번 두 산출물의 전달 성공으로
+대체하지 않는다.
 W4는 W3a semantic restore와 이 W3b receipt가 모두 수용된 뒤에만 실행합니다.
 
 **W4 server 업그레이드와 수동 unseal.**

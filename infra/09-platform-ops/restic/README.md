@@ -35,7 +35,7 @@ Valkey RDB, SQLite 데이터베이스 세 개), `secrets/`와 `.env`.
 restic/
 ├── docker-compose.yml     # restic, restic-offsite, backup-sqlite-export (profile backup)
 ├── backup.sh              # snapshots | init | backup | check | forget-prune | cmd
-├── offsite.sh             # R2: snapshots | init | copy | check | forget-prune (confirmed) | cmd
+├── offsite.sh             # R2: snapshots | init | copy | check | forget-prune (confirmed) | artifact (RUN-0085 W3b) | cmd
 ├── export_sqlite.py       # Online Backup API copies with integrity check
 ├── sets/                  # state-include, state-exclude, host-exclude
 ├── bin/hyhome-backup.sh   # host orchestrator (lock, disk preflight, order)
