@@ -1864,6 +1864,7 @@
           "scripts/operations/gen-secrets.sh",
           "scripts/hooks/post-tool-validate.sh",
           "scripts/hooks/agent-event-hook.sh",
+          "scripts/hooks/pre-push-guard.sh",
           "scripts/validation/check-template-security-baseline.sh",
           "scripts/validation/run-agent-precommit-all-files.sh",
           "scripts/validation/validate-docker-compose.sh",

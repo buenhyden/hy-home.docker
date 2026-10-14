@@ -1,15 +1,15 @@
 ---
 title: "BLOCKED: direct push to main"
-version: "1.0.1"
+version: "1.1.0"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-13"
 action: "block"
 enabled: true
 event: "bash"
 name: "block-direct-main-push"
-pattern: "git\\s+push\\s+\\w[\\w.-]*\\s+(HEAD:)?main\\s*$"
+pattern: "\\bgit(\\s+-C\\s+\\S+)*\\s+push\\b[^;&|\\n]*?(\\s|:|\\+)(refs/heads/)?main(\\s|$|[;&|])"
 ---
 
 **Direct push to `main` blocked (project rule)**
@@ -31,7 +31,14 @@ Apply the declared `block` action for block-direct-main-push.
 
 ## Scope
 
-The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+The declared `bash` event and `pattern` match an explicit `main` destination in
+any form (`main`, `HEAD:main`, `HEAD:refs/heads/main`, `+main`, `-u`, `--force`,
+`git -C <dir>`, compound commands). A push whose refspec is implicit
+(`git push`, `git push origin`, `--all`, `--mirror`) is judged by the dispatcher
+against the branch and push target of the directory it runs in. The tracked
+`pre-push` hook in `.pre-commit-config.yaml` applies the same boundary to every
+push from the checkout, including editor sync, once installed. Native event
+delivery remains a separate observation.
 
 ## Rules
 

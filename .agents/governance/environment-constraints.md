@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.3.0"
+version: "1.3.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -44,6 +44,11 @@ Local repository work, infrastructure execution, secrets handling, verification 
   provider/model comparison uses dated official provider sources or native-schema facts;
   never load diagnostics dumps, local logs, auth files, credentials, tokens,
   secret values or shell history as comparison input.
+- On this host Codex's `bubblewrap` sandbox cannot start (`bwrap: loopback:
+  Failed RTM_NEWADDR: Operation not permitted`), so a Codex session or role in
+  `workspace-write` cannot write files. A live Codex run that must write uses
+  `danger-full-access` in a disposable worktree with a prompt limited to the
+  intended edit, and records that choice in its Task.
 
 ### 2. Infrastructure Constraints
 
@@ -157,8 +162,10 @@ This project has a graphify knowledge graph at `graphify-out/`.
   WAL-reset fix or distribution backport.
 - Native provider memory is off: `.claude/settings.json` sets
   `autoMemoryEnabled` to `false` and `.codex/config.toml` sets
-  `memories.generate_memories` and `memories.use_memories` to `false`. Native
-  memory files stay in place and are not loaded. Only an owner-approved,
+  `memories.generate_memories` and `memories.use_memories` to `false`. Codex
+  reads that file only in a trusted project, and whether it honours
+  `[memories]` there has not been observed. Native memory files stay in place
+  and are not loaded. Only an owner-approved,
   one-time migration may read them, to seed the store through the CLI.
 - A memory record is context only. It is never Task status, execution
   progress, handoff state, QA result, approval or acceptance evidence, and

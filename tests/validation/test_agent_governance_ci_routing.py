@@ -2288,5 +2288,227 @@ class RequestPrecedenceContractTests(unittest.TestCase):
         )
 
 
+class HookOutputAndMainPushTests(unittest.TestCase):
+    """Hook outputs the providers accept, and every route to a direct main push."""
+
+    @staticmethod
+    def _event(
+        event: str,
+        payload: dict[str, object],
+        *,
+        cwd: pathlib.Path = ROOT,
+        provider: str = "claude",
+    ) -> subprocess.CompletedProcess[str]:
+        environment = dict(os.environ)
+        for key in ("CODEX_PROJECT_DIR", "CLAUDE_PROJECT_DIR", "HY_HOME_HOOK_PROVIDER"):
+            environment.pop(key, None)
+        if provider == "codex":
+            environment["CODEX_PROJECT_DIR"] = str(ROOT)
+            environment["HY_HOME_HOOK_PROVIDER"] = "codex"
+        else:
+            environment["CLAUDE_PROJECT_DIR"] = str(ROOT)
+        return subprocess.run(
+            ["bash", str(EVENT_HOOK), event],
+            cwd=cwd,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            env=environment,
+            check=False,
+        )
+
+    def test_pre_compact_emits_only_fields_both_providers_accept(self) -> None:
+        for provider in ("claude", "codex"):
+            with self.subTest(provider=provider):
+                result = self._event("PreCompact", {}, provider=provider)
+                self.assertEqual(0, result.returncode, result.stderr)
+                output = json.loads(result.stdout)
+                self.assertNotIn("hookSpecificOutput", output)
+                self.assertIn("state snapshot", output["systemMessage"])
+
+    def test_session_start_context_reaches_the_model(self) -> None:
+        for source in ("startup", "compact"):
+            with self.subTest(source=source):
+                result = self._event("SessionStart", {"source": source})
+                self.assertEqual(0, result.returncode, result.stderr)
+                output = json.loads(result.stdout)
+                self.assertNotIn("systemMessage", output)
+                specific = output["hookSpecificOutput"]
+                self.assertEqual("SessionStart", specific["hookEventName"])
+                self.assertIn("`CLAUDE.md`", specific["additionalContext"])
+                self.assertEqual(
+                    source == "compact",
+                    "Context was just compacted" in specific["additionalContext"],
+                )
+
+    def test_pre_tool_guidance_reaches_the_model(self) -> None:
+        payload = {
+            "tool_name": "Write",
+            "tool_input": {
+                "file_path": str(ROOT / "docs/03.specs/zz-probe.md"),
+                "content": "x\n",
+            },
+        }
+        result = self._event("PreToolUse", payload)
+        self.assertEqual(0, result.returncode, result.stderr)
+        output = json.loads(result.stdout)
+        self.assertNotIn("systemMessage", output)
+        self.assertIn(
+            "Target-stage documentation edit detected",
+            output["hookSpecificOutput"]["additionalContext"],
+        )
+
+    def _denied(self, command: str, cwd: pathlib.Path) -> bool:
+        payload = {
+            "tool_name": "Bash",
+            "tool_input": {"command": command},
+            "cwd": str(cwd),
+        }
+        result = self._event("PreToolUse", payload, cwd=cwd)
+        self.assertEqual(0, result.returncode, result.stderr)
+        if not result.stdout.strip():
+            return False
+        decision = json.loads(result.stdout).get("hookSpecificOutput", {})
+        return decision.get("permissionDecision") == "deny"
+
+    def test_every_form_of_a_main_push_is_denied(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = pathlib.Path(directory)
+            for argv in (
+                ["git", "init", "-q", "-b", "feat"],
+                [
+                    "git",
+                    "-c",
+                    "user.name=t",
+                    "-c",
+                    "user.email=t@example.com",
+                    "commit",
+                    "-q",
+                    "--allow-empty",
+                    "-m",
+                    "seed",
+                ],
+                ["git", "remote", "add", "origin", "https://example.invalid/r.git"],
+            ):
+                subprocess.run(argv, cwd=repo, check=True)
+            explicit = (
+                "git push origin main",
+                "git push -u origin main",
+                "git push origin HEAD:main",
+                "git push origin HEAD:refs/heads/main",
+                "git push origin +main",
+                "git push origin feat:main",
+                "git push --force origin main",
+                "git -C . push origin main",
+                "git push origin main; echo done",
+                "git push --all origin",
+            )
+            for command in explicit:
+                with self.subTest(command=command):
+                    self.assertTrue(self._denied(command, repo))
+            for command in (
+                "git push origin HEAD:refs/heads/claude/x",
+                "git push origin main-fix",
+                "git push",
+            ):
+                with self.subTest(command=command):
+                    self.assertFalse(self._denied(command, repo))
+            # The push target, not the text, decides an implicit refspec.
+            subprocess.run(
+                ["git", "config", "branch.feat.remote", "origin"], cwd=repo, check=True
+            )
+            subprocess.run(
+                ["git", "config", "branch.feat.merge", "refs/heads/main"],
+                cwd=repo,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "update-ref", "refs/remotes/origin/main", "HEAD"],
+                cwd=repo,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "config", "push.default", "upstream"], cwd=repo, check=True
+            )
+            self.assertTrue(self._denied("git push", repo))
+            subprocess.run(
+                ["git", "checkout", "-q", "-b", "main"], cwd=repo, check=True
+            )
+            self.assertTrue(self._denied("git push origin", repo))
+
+    def test_pre_push_guard_refuses_main(self) -> None:
+        guard = ROOT / "scripts/hooks/pre-push-guard.sh"
+        cases = (
+            ({}, "refs/heads/x a refs/heads/main b\n", 1),
+            ({}, "refs/heads/x a refs/heads/claude/x b\n", 0),
+            ({"PRE_COMMIT_REMOTE_BRANCH": "refs/heads/main"}, "", 1),
+        )
+        for extra, stdin, expected in cases:
+            with self.subTest(extra=extra, stdin=stdin):
+                result = subprocess.run(
+                    ["bash", str(guard)],
+                    input=stdin,
+                    capture_output=True,
+                    text=True,
+                    env={**os.environ, **extra},
+                    check=False,
+                )
+                self.assertEqual(expected, result.returncode, result.stderr)
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        self.assertIn("pre-push", config["default_install_hook_types"])
+        self.assertNotIn("pre-push", config["default_stages"])
+        hooks = [hook for repo in config["repos"] for hook in repo["hooks"]]
+        guard_hook = next(hook for hook in hooks if hook["id"] == "block-main-push")
+        self.assertEqual(["pre-push"], guard_hook["stages"])
+
+    def test_native_hook_files_match_the_registry(self) -> None:
+        registry = yaml.safe_load(
+            (ROOT / ".agents/governance/providers/registry.yaml").read_text()
+        )["hook_contracts"]
+        natives = {
+            "claude": json.loads((ROOT / ".claude/settings.json").read_text())["hooks"],
+            "codex": json.loads((ROOT / ".codex/hooks.json").read_text())["hooks"],
+        }
+        for provider, contracts in registry.items():
+            self.assertEqual(set(contracts), set(natives[provider]), provider)
+            for event, binding in contracts.items():
+                with self.subTest(provider=provider, event=event):
+                    (entry,) = natives[provider][event]
+                    (hook,) = entry["hooks"]
+                    self.assertEqual(binding["command"], hook["command"])
+                    self.assertEqual(binding["timeout"], hook["timeout"])
+                    self.assertEqual(binding["matcher"], entry.get("matcher"))
+
+    def test_codex_project_config_keeps_native_memory_off(self) -> None:
+        import tomllib
+
+        config = tomllib.loads((ROOT / ".codex/config.toml").read_text())
+        self.assertEqual(
+            {"generate_memories": False, "use_memories": False}, config["memories"]
+        )
+
+    def test_claude_settings_deny_secret_reads_and_main_pushes(self) -> None:
+        permissions = json.loads((ROOT / ".claude/settings.json").read_text())[
+            "permissions"
+        ]
+        self.assertNotIn("Bash(grep:*)", permissions["allow"])
+        self.assertNotIn("Bash(rg:*)", permissions["allow"])
+        for rule in (
+            "Read(./secrets/**)",
+            "Read(./.env)",
+            "Read(./**/.env)",
+            "Read(~/.ssh/**)",
+            "Edit(./secrets/**)",
+            "Edit(./.env)",
+            "Bash(git push * main)",
+            "Bash(git push *:refs/heads/main)",
+        ):
+            self.assertIn(rule, permissions["deny"])
+        self.assertFalse(
+            any(".env.example" in rule for rule in permissions["deny"]),
+            "the tracked .env.example stays readable",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

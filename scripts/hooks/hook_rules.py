@@ -18,7 +18,11 @@ the tool call instead of silently dropping policy.
 which is a placeholder rather than a condition — evaluating
 `require-logical-commits-before-stop` generically would block every stop. Their
 real conditions are contextual and already live in the dispatcher's
-`changed_profile_stop_gate` and `logical_commit_stop_gate`.
+`logical_commit_stop_gate`.
+
+A push whose refspec is implicit (`git push`, `git push origin`) cannot be
+judged from the command text: `implicit_main_push` resolves it against the
+repository the command runs in.
 """
 
 from __future__ import annotations
@@ -26,6 +30,8 @@ from __future__ import annotations
 import json
 import pathlib
 import re
+import shlex
+import subprocess
 from dataclasses import dataclass
 
 RULES_DIRECTORY = ".agents/governance/hooks"
@@ -224,3 +230,99 @@ def evaluate(
     warnings = tuple(rule for rule in fired.values() if rule.action == "warn")
     blocks = tuple(rule for rule in fired.values() if rule.action == "block")
     return warnings, blocks
+
+
+IMPLICIT_MAIN_PUSH = Rule(
+    name="block-direct-main-push",
+    event="bash",
+    action="block",
+    conditions=(),
+    message=(
+        "Direct push to `main` blocked (project rule): this `git push` targets "
+        "`main` through the current branch or its push target. Push a feature "
+        "branch with an explicit refspec (`git push origin "
+        "HEAD:refs/heads/<branch>`) and open a pull request."
+    ),
+)
+_SEPARATORS = re.compile(r"&&|\|\||[;&|\n]")
+_VALUE_OPTIONS = frozenset(
+    {"-o", "--push-option", "--repo", "--receive-pack", "--exec"}
+)
+
+
+def _git(directory: pathlib.Path, *arguments: str) -> str:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(directory), *arguments],
+            capture_output=True,
+            text=True,
+            timeout=3,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return result.stdout.strip() if result.returncode == 0 else ""
+
+
+def _targets_main(refspec: str) -> bool:
+    destination = refspec.lstrip("+").rpartition(":")[2] or refspec.lstrip("+")
+    return destination in {"main", "refs/heads/main"}
+
+
+def implicit_main_push(command: str, cwd: pathlib.Path) -> bool:
+    """Return whether any `git push` in `command` would update `main`.
+
+    Explicit refspecs are judged by text; an implicit one by the branch and
+    push target of the directory the push runs in (`cd` and `git -C` honoured).
+    """
+
+    # ponytail: splits on shell separators without quote awareness; a separator
+    # inside a quoted argument only makes the check stricter.
+    directory = cwd
+    for segment in _SEPARATORS.split(command):
+        try:
+            tokens = shlex.split(segment)
+        except ValueError:
+            continue
+        if not tokens:
+            continue
+        if tokens[0] == "cd" and len(tokens) > 1:
+            directory = directory / pathlib.Path(tokens[1]).expanduser()
+            continue
+        if tokens[0] != "git":
+            continue
+        here = directory
+        index = 1
+        while index < len(tokens) and tokens[index].startswith("-"):
+            if tokens[index] == "-C" and index + 1 < len(tokens):
+                here = here / tokens[index + 1]
+                index += 2
+            elif tokens[index] == "-c":
+                index += 2
+            else:
+                index += 1
+        if index >= len(tokens) or tokens[index] != "push":
+            continue
+        positional = []
+        rest = tokens[index + 1 :]
+        skip = False
+        for token in rest:
+            if skip:
+                skip = False
+            elif token in {"--all", "--mirror"}:
+                return True
+            elif token in _VALUE_OPTIONS:
+                skip = True
+            elif not token.startswith("-"):
+                positional.append(token)
+        if any(_targets_main(refspec) for refspec in positional[1:]):
+            return True
+        if len(positional) <= 1:
+            if _git(here, "rev-parse", "--abbrev-ref", "HEAD") == "main":
+                return True
+            target = _git(
+                here, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{push}"
+            )
+            if target.endswith("/main"):
+                return True
+    return False

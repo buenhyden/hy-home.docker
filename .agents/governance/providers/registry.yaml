@@ -222,17 +222,17 @@ semantic_events:
 hook_contracts:
   claude:
     SessionStart: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"', timeout: 15, matcher: '*', executable: .claude/hooks/session-start.sh}
-    PreToolUse: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh"', timeout: 10, matcher: 'Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: .claude/hooks/docker-compose-pre.sh}
+    PreToolUse: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh"', timeout: 30, matcher: 'Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: .claude/hooks/docker-compose-pre.sh}
     PostToolUse: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh"', timeout: 30, matcher: 'Write|Edit|MultiEdit|apply_patch|ApplyPatch', executable: .claude/hooks/post-tool-validate.sh}
     Stop: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"', timeout: 600, matcher: '*', executable: .claude/hooks/stop.sh}
     SessionEnd: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/session-end.sh}
     PreCompact: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/pre-compact.sh}
     UserPromptSubmit: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/user-prompt-submit.sh}
   codex:
-    SessionStart: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" SessionStart', timeout: 600, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
-    PreToolUse: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreToolUse', timeout: 600, matcher: 'Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: scripts/hooks/agent-event-hook.sh}
-    PostToolUse: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PostToolUse', timeout: 600, matcher: 'Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: scripts/hooks/agent-event-hook.sh}
+    SessionStart: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" SessionStart', timeout: 15, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
+    PreToolUse: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreToolUse', timeout: 30, matcher: 'Bash|apply_patch', executable: scripts/hooks/agent-event-hook.sh}
+    PostToolUse: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PostToolUse', timeout: 30, matcher: 'apply_patch', executable: scripts/hooks/agent-event-hook.sh}
     Stop: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" Stop', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
-    PreCompact: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreCompact', timeout: 600, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
-    UserPromptSubmit: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" UserPromptSubmit', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
+    PreCompact: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreCompact', timeout: 10, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
+    UserPromptSubmit: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" UserPromptSubmit', timeout: 10, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
 generated_roots: [.claude/agents, .claude/skills, .codex/agents]

@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Usage Guide"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-13"
 layer: "operations"
 artifact_id: "GDE-0101"
 parent_ids:
@@ -141,7 +141,9 @@ Keycloak 26은 RFC 8707 `resource` 매개변수를 실험 기능으로만 지원
 ```
 
 Claude Code는 처음 사용할 때 project 서버 승인을 묻고 `/mcp`에서 브라우저 로그인을
-시작한다. Codex `.codex/config.toml`(신뢰된 project에서만 읽음):
+시작한다. Codex는 사용자 전역 `~/.codex/config.toml`에 둔다. project의
+`.codex/config.toml`은 native memory를 끄는 용도로만 쓰고 MCP 서버를 두지 않는다
+([ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md)):
 
 ```toml
 [mcp_servers.hyhome_storybook]

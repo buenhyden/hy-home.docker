@@ -6,7 +6,7 @@
           {
             "type": "command",
             "command": "HY_HOME_HOOK_PROVIDER=codex bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" SessionStart",
-            "timeout": 600
+            "timeout": 15
           }
         ],
         "matcher": "*"
@@ -18,10 +18,10 @@
           {
             "type": "command",
             "command": "HY_HOME_HOOK_PROVIDER=codex bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" PreToolUse",
-            "timeout": 600
+            "timeout": 30
           }
         ],
-        "matcher": "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch"
+        "matcher": "Bash|apply_patch"
       }
     ],
     "PostToolUse": [
@@ -30,10 +30,10 @@
           {
             "type": "command",
             "command": "HY_HOME_HOOK_PROVIDER=codex bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" PostToolUse",
-            "timeout": 600
+            "timeout": 30
           }
         ],
-        "matcher": "Edit|Write|MultiEdit|apply_patch|ApplyPatch"
+        "matcher": "apply_patch"
       }
     ],
     "Stop": [
@@ -53,7 +53,7 @@
           {
             "type": "command",
             "command": "HY_HOME_HOOK_PROVIDER=codex bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" PreCompact",
-            "timeout": 600
+            "timeout": 10
           }
         ],
         "matcher": "*"
@@ -65,7 +65,7 @@
           {
             "type": "command",
             "command": "HY_HOME_HOOK_PROVIDER=codex bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" UserPromptSubmit",
-            "timeout": 600
+            "timeout": 10
           }
         ]
       }
