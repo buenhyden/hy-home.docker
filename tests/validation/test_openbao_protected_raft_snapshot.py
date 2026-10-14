@@ -656,6 +656,7 @@ class TLSFixtureTests(unittest.TestCase):
         server.daemon_threads = True
         server.handle_error = lambda *_: None
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
         context.load_cert_chain(
             self.root / f"{certificate}.pem", self.root / f"{certificate}.key"
         )
