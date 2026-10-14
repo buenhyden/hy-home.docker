@@ -300,6 +300,11 @@ allowed and `git checkout -b feat origin/main && git push -u origin HEAD` on
 `main` was denied. A branch-creating flag is now handled first and names the
 new branch; only without one do two names or `--` mean a pathspec.
 
+The focused re-review of that fix returned PASS with no blocking finding. Its
+non-blocking note, attached flag values (`-bmain`, `--create=main`,
+`--orphan=main`), is applied; a checkout of a remote-only branch name still
+leaves the branch unknown to the check, which only causes a false denial.
+
 ### Renumbering
 
 On 2026-10-14 `main` reached Registry high water 239 (SPEC-0239) while this
@@ -332,7 +337,8 @@ SPEC-0241; SPEC-0240 is held by PR #464.
 | Re-review 5 fixes | 5 | W5 | Round 6 fixes; 10 more denied and 1 more allowed forms; routing suite (70), hook tests (32) | Branch | PASS | Review Round 6 | Re-review 5 |
 | Re-review 6 | 5 | W5 | Independent `security-auditor` re-review of `eb679ab16`: round 6 fixes verified; `checkout -b` or `-B` with a start point read as a pathspec | Branch | FAIL | Review Round 7 | - |
 | Re-review 6 fixes | 5 | W5 | Branch-creating flags handled before the pathspec test; 1 more denied and 1 more allowed form; routing suite (70), hook tests (32) | Branch | PASS | Review Round 7 | Re-review 6 |
-| Re-review 7 | 5 | W5 | Independent review of the round 7 fix | - | NOT_RUN | Review Round 7 | - |
+| Re-review 7 | 5 | W5 | Independent `security-auditor` re-review of the round 7 fix: no blocking finding | Branch | PASS | Review Round 7 | - |
+| Attached flags | 5 | W5 | `-bmain` and `--create=main` forms named; routing suite (70) | Branch | PASS | Review Round 7 | - |
 | Candidate | 6 | W5 | Hosted `candidate-quality` | - | NOT_RUN | Work Log | - |
 
 ## Criterion Acceptance

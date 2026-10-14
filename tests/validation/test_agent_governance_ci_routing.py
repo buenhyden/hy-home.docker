@@ -2553,6 +2553,8 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 "(git checkout main) && git push origin HEAD",
                 "git checkout main && bash -c 'git push origin HEAD'",
                 "git checkout -B main origin/main && git push",
+                "git checkout -bmain origin/main && git push origin HEAD",
+                "git switch --create=main origin/main && git push origin HEAD",
             ):
                 with self.subTest(command=command):
                     self.assertTrue(self._denied(command, repo))
