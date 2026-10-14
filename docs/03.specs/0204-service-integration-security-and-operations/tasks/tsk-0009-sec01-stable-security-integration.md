@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.18"
+version: "0.4.19"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1959,6 +1959,28 @@ exploit. Publisher signatures were not checked and stay NOT_RUN. Both
 ledger rows record these results; the HOME recreate, rollback and
 postchecks are NOT_RUN and need separate approval.
 
+### OpenBao acceptance period and Traefik recreate — 2026-10-15
+
+The final SPEC-0243 readiness review noted that the owned OpenBao acceptance
+above covers the window only, while under fix-forward the image keeps running
+after it. The owner was asked through the interactive question in this
+session and chose "기준 15 또는 새 image까지": the acceptance of the three
+residuals of manifest `46bf9b5c` now lasts until criterion 15 is accepted or
+the image is replaced. A fresh stable lookup within 7 days of the window
+start still gates W4 and W5, and a newer stable with a security fix that
+affects the image fails that gate.
+
+The owner recreated Traefik on its accepted Compose pin before the window. A
+read-only check from this session showed:
+
+- image `575fa15b`, healthy, with 0 restarts;
+- `/openbao-ca/ca.pem` present in the container;
+- no log error since the recreate.
+
+The drift comparison before the recreate was not observed here. Prometheus
+moves to its pin at W5. The ledger `deployment` fields stay NOT_RUN until a
+runtime collection refreshes them.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
@@ -1989,6 +2011,8 @@ and its later observations are recorded above.
 | Traefik and Prometheus offline scan | 15 | W31 | Owner-approved pulls and one Grype DB update; Syft and Grype on `--network none`; running images scanned for comparison: candidates add no ID | Traefik `575fa15b`, Prometheus `efd719c9`; DB built 2026-10-14 | PASS | Traefik and Prometheus upstream candidates — 2026-10-15 | - |
 | Traefik and Prometheus applicability and compatibility | 15 | W31 | Independent `security-auditor` review: denial of service only, ACCEPT with residual; Traefik config boot and promtool checks on both versions | Scan receipts above | PASS | Traefik and Prometheus upstream candidates — 2026-10-15 | - |
 | Traefik and Prometheus SEC01 acceptance | 15 | W31 | Owner accepted the residuals with an expiry; interim HTTP/2 change declined; signature NOT_RUN | Reviewed applicability above | PASS | Traefik and Prometheus upstream candidates — 2026-10-15 | - |
+| OpenBao acceptance period | 15 | W31 | Owner extended the owned image acceptance from the window to criterion 15 or image replacement; 7-day stable lookup gate unchanged | Owner answer 2026-10-15 | PASS | OpenBao acceptance period and Traefik recreate — 2026-10-15 | - |
+| Traefik HOME recreate | 15 | W31 | Owner recreate on the Compose pin; read-only postcheck: image `575fa15b`, healthy, 0 restarts, CA file present, no log error; drift comparison not observed | Host 2026-10-15 | PASS | OpenBao acceptance period and Traefik recreate — 2026-10-15 | - |
 
 ## Criterion Acceptance
 
