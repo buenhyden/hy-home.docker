@@ -231,6 +231,60 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             self.assertEqual(1, result)
             self.assertIn("index-member-unlisted", output.getvalue())
 
+    def test_changed_mode_propagates_source_bound_legacy_types(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root, registry = self.fixture(directory)
+            source_bound_path = (
+                "docs/99.templates/templates/archive/migration.template.md"
+            )
+            generation_bindings = reference_module._GenerationBindings(
+                source_bound_legacy_types=frozenset({source_bound_path})
+            )
+            with (
+                mock.patch.object(
+                    reference_module,
+                    "_validate_repository_contracts",
+                    return_value=(
+                        [],
+                        frozenset(),
+                        frozenset(),
+                        generation_bindings,
+                    ),
+                ),
+                mock.patch.object(
+                    reference_module, "collect_records_at_ref", return_value=[]
+                ),
+                mock.patch.object(
+                    reference_module,
+                    "validate_record",
+                    return_value=[],
+                ) as validate_record,
+            ):
+                result = reference_module.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--registry",
+                        str(registry),
+                        "--mode",
+                        "check-changed",
+                        "--base-ref",
+                        "HEAD",
+                    ]
+                )
+
+            source_bound_calls = [
+                call
+                for call in validate_record.call_args_list
+                if call.args[0].path.as_posix() == source_bound_path
+            ]
+            self.assertEqual(0, result)
+            self.assertEqual(1, len(source_bound_calls))
+            self.assertIs(
+                True,
+                source_bound_calls[0].kwargs.get("source_bound_legacy_type"),
+            )
+
     def test_contracts_share_exact_baseline_and_historical_input_context(self) -> None:
         profiles = current_profiles()
         previous = {
