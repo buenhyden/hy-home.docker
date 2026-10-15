@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -23,9 +23,9 @@ reviewed, exact command selection in the Task before running it.
 
 ## Scope
 
-W1 establishes a value-free preflight contract. W2 and W4 complete the
+W1 establishes a value-free preflight contract. W2 and W3 complete the
 Prometheus and Gatus backup/isolated-restore gates before any CA recreation.
-W3 then recreates Prometheus and W5 recreates Gatus. W6 records stop or
+W4 then recreates Prometheus and W5 recreates Gatus. W6 records stop or
 rollback outcomes. W7 obtains independent review and selected checks. The Plan
 does not execute the OpenBao window, use OpenBao secrets, change a certificate,
 or select services beyond the two named targets.
@@ -36,9 +36,9 @@ or select services beyond the two named targets.
 | --- | --- | --- | --- | --- | --- |
 | W1 | 1, 7 | Record current-host and two-service value-free preflight identities, isolation design, and stop gates | None | TSK-0001 | Operations implementer record; independent review |
 | W2 | 2, 7 | Create and prove a reviewed Prometheus consistent backup through isolated restore; retain 3.14 identity | W1 | TSK-0001 | Operations implementer evidence; QA verification |
-| W3 | 5, 6, 7 | Apply the reviewed Prometheus CA selection and recreate only Prometheus after both W2 and W4 PASS | W2, W4 | TSK-0001 | Operations implementer evidence; QA verification |
-| W4 | 3, 4, 7 | Create and prove a reviewed Gatus SQLite backup; create the no-network/no-pull minimal delta image with `FROM` the exact current running immutable base and `COPY` only the tracked CA-aware entrypoint, leaving the binary unchanged | W1 | TSK-0001 | Operations implementer evidence; IaC, security, and QA review |
-| W5 | 5, 6, 7 | Apply the reviewed Gatus CA selection and recreate only Gatus after W3 PASS | W3, W4 | TSK-0001 | Operations implementer evidence; QA verification |
+| W3 | 3, 4, 7 | Create and prove a reviewed Gatus SQLite backup; create the no-network/no-pull minimal delta image with `FROM` the exact current running immutable base and `COPY` only the tracked CA-aware entrypoint, leaving the binary unchanged | W1 | TSK-0001 | Operations implementer evidence; IaC, security, and QA review |
+| W4 | 5, 6, 7 | Apply the reviewed Prometheus CA selection and recreate only Prometheus after both W2 and W3 PASS | W2, W3 | TSK-0001 | Operations implementer evidence; QA verification |
+| W5 | 5, 6, 7 | Apply the reviewed Gatus CA selection and recreate only Gatus after W4 PASS | W3, W4 | TSK-0001 | Operations implementer evidence; QA verification |
 | W6 | 6 | Record a stopped service path or reviewed rollback when a gate fails | W1, W2, W3, W4, W5 | TSK-0001 | Sanitized Task evidence |
 | W7 | 7 | Independent operational, security, and recovery reviews; selected source and document checks | W1, W2, W3, W4, W5, W6 | TSK-0001 | QA, IaC, and security evidence |
 

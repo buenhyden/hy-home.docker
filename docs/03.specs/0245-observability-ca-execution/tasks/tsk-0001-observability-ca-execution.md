@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -60,10 +60,10 @@ two guard helpers to the selected host-local protected artifact path. The
 contract specifies the two recovery gates before either CA recreation, the
 Prometheus-then-Gatus recreation order, same-device non-DR limitation, and
 the mode-0700 workspace/mode-0400 tar-sibling controls. This makes the Task
-`ready` to begin a reviewed W2 or W4 gate; it is not a backup, restore, image
+`ready` to begin a reviewed W2 or W3 gate; it is not a backup, restore, image
 build, service recreation, or operational-review result.
 
-The Task transitions to `in-progress` only when an approved W2 or W4 recovery
+The Task transitions to `in-progress` only when an approved W2 or W3 recovery
 gate actually starts. The reviewed recovery packet must still pass its
 independent IaC/security review before the relevant operation proceeds.
 
@@ -71,7 +71,7 @@ independent IaC/security review before the relevant operation proceeds.
 
 On 2026-10-16, independent IaC and security reviews returned READY for the
 backup phase only, bound to the final W1 packet. The operator was released to
-hash-recheck that packet and start the approved W2/W4 recovery gate. This
+hash-recheck that packet and start the approved W2/W3 recovery gate. This
 transition records the release and start boundary only; it does not claim any
 backup, restore, image build, CA application, recreation, or health outcome.
 
@@ -98,9 +98,9 @@ backup, restore, image build, CA application, recreation, or health outcome.
 | --- | --- | --- | --- | --- |
 | 1 | pending | - | Await W1 preflight | @buenhyden |
 | 2 | pending | - | Await W2 backup and isolated restore | @buenhyden |
-| 3 | pending | - | Await W4 backup and isolated restore | @buenhyden |
-| 4 | pending | - | Await W4 build identity | @buenhyden |
-| 5 | pending | - | Await W3 and W5 service results | @buenhyden |
+| 3 | pending | - | Await W3 backup and isolated restore | @buenhyden |
+| 4 | pending | - | Await W3 build identity | @buenhyden |
+| 5 | pending | - | Await W4 and W5 service results | @buenhyden |
 | 6 | pending | - | Await W6 outcome if a gate fails | @buenhyden |
 | 7 | pending | - | Await W7 reviews and checks | @buenhyden |
 
