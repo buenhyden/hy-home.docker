@@ -1,8 +1,8 @@
 ---
 title: "R13 Reconciliation Follow-up Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -35,8 +35,18 @@ imported or accepted here. Published main later incorporated those three
 documents at `5a88c7937bf427021f2fd0441e04b1011ecd28a9`; this local merge
 preserves W24/TSK-0008 alongside W25/TSK-0009 without changing either Task's
 acceptance decision.
-This Task authorizes no remote write, deployment, credential operation, live
-service action, or deletion. Those boundaries remain with the named owner.
+At the initial snapshot, this Task authorized no remote write, deployment,
+credential operation, live service action, or deletion. Those boundaries
+remained with the named owner.
+
+The user subsequently authorized the next bounded delivery phase: push the
+current branch, open a draft pull request, and observe hosted checks. Before
+any main-protection rule change, the delivery owner must observe the actual
+required-check identity and review that scoped change. No data, secret,
+restart, deployment, or restore target is named by this authorization. The
+current host's Docker services are authorized read-only verification targets,
+and a non-secret diagnostic may observe native-off effects; those observations
+remain with their leaf owners and cannot be inferred from a hosted result.
 
 ## Work Log
 
@@ -59,6 +69,25 @@ The doc-writer exception owns only `.agents/governance/environment-constraints.m
 and `docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`;
 it clarifies the full-commit/current-byte source pin without changing a policy
 schema, runtime procedure, or historical record.
+
+### Hosted validation authorization and plan
+
+The approved Spec and Plan, completed local source receipts, and the observed
+user authorization make this single Task ready for its delivery phase. The
+delivery owner will push the current branch, create a draft pull request, and
+record the hosted check results against its exact head. It will separately read
+the real required-check identity before proposing any main-protection setting.
+Hosted checks do not accept criterion 20, select a native-memory target, or
+prove a live service, recovery, data, secret, restart, deployment, or restore
+operation. The current host's Docker services may be read-only verified, and
+native-off effects may be non-secret diagnostically observed; neither result
+changes a leaf-owner acceptance decision.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0009 | draft | ready | #hosted-validation-authorization-and-plan |
 
 ### Local delivery ledger
 
@@ -193,11 +222,11 @@ not execute a PR leaf.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 20 | pending | Scoped-metadata-GREEN, Memory helper regression final, Link full regression, W25 source security review GREEN, Metadata full regression | Source checks are recorded; the Task remains draft pending its actual lifecycle decision, remote selected-check execution, and criterion acceptance. | SPEC-0212 TSK-0009 |
+| 20 | pending | Scoped-metadata-GREEN, Memory helper regression final, Link full regression, W25 source security review GREEN, Metadata full regression | Source checks are recorded; this ready Task awaits remote selected-check execution and criterion acceptance. | SPEC-0212 TSK-0009 |
 
 ## Review and Completion
 
-This draft Task does not convert static inspection, stored Task evidence,
+This ready Task does not convert static inspection, stored Task evidence,
 a merged change, or an unavailable runtime target into acceptance. It completes
 only after the required W25 checks pass with the final source input; runtime,
 remote, and leaf-owner acceptance stay separate.
@@ -214,9 +243,10 @@ limits remain source contracts described by the
 [PRAGMA reference](https://www.sqlite.org/pragma.html), not proof that a
 provider-native memory setting or a live restore has been observed.
 
-The direct user authorization covers local source and documentation correction
-and logical commits. Remote publication remains outside this Task until a
-separate current authorization is supplied. No new skill is required:
+The direct user authorization covers local source and documentation correction,
+logical commits, branch push, draft pull request, and hosted checks. A protected
+main merge remains outside this Task until its required checks and review are
+observed. No new skill is required:
 available procedure reads were `superpowers` 6.4.2 and `ponytail` 5.2.0;
 skill-stocktake, skill-improver, Harness:Evolve, and Harness:Harness were not
 available and are not claimed.
