@@ -28,10 +28,13 @@ The direct r13 request is the attached text with SHA-256
 `3a3205dd8787e2a65f1f9eb735be46f2530581af2b8333a79925f800f3775745`.
 The source baseline is `e6807a7d16d8b9e180ff58456ab64e4ee721ca69`.
 
-The user directed this work to proceed separately and preserve the existing
-infrastructure worktree and staged SPEC-0212 Spec, Plan, and TSK-0008 changes.
-Criterion 19 and W24 therefore remain on that independent branch and are not
-imported or accepted here.
+The user initially directed this work to proceed separately and preserve the
+existing infrastructure worktree and staged SPEC-0212 Spec, Plan, and TSK-0008
+changes. At the `e6807a7` baseline, criterion 19/W24 therefore were not
+imported or accepted here. Published main later incorporated those three
+documents at `5a88c7937bf427021f2fd0441e04b1011ecd28a9`; this local merge
+preserves W24/TSK-0008 alongside W25/TSK-0009 without changing either Task's
+acceptance decision.
 This Task authorizes no remote write, deployment, credential operation, live
 service action, or deletion. Those boundaries remain with the named owner.
 
@@ -78,6 +81,13 @@ The completed P04 consumer trace identifies SPEC-0240 as an archived,
 superseded record with current provenance consumers and retained OpenBao
 assurance checks. No one-shot asset is a deletion candidate based only on age,
 name, or completed history.
+
+The recorded current inventory contains 2,280 tracked paths, including 1,371
+Markdown paths and 386 script/code candidates. This is a classified inventory,
+not a semantic audit of every body; the r13 attachment's 573 figure is not
+treated as a current exhaustive-audit result. Script-manifest and operations
+catalog checks retain all 106 manifest entries and the catalog respectively,
+supporting P04 retention without a deletion claim.
 
 Static inspection of `scripts/lib/ops/memory_sources.py` shows that a
 repository-file reference's `revision` must be nonempty but is not bound to a
@@ -136,6 +146,13 @@ changed-document metadata result.
 | Clean changed-gate observation | 20 | W25 | `run-ci-gate changed local --explain` | Clean isolated worktree | NOT_APPLICABLE | No changed-path selection; routing observation only | optional | - |
 | Protection and hook observation | 20 | W25 | Read-only remote and Git configuration inspection | `origin/main` `e6807a7`; strict protection with no contexts; hooksPath and init.templateDir unset | PASS | r13 isolated worktree | optional | - |
 | Advisory graph availability | 20 | W25 | Graphify CLI and report discovery | Current source environment | NOT_APPLICABLE | No tracked report or CLI found | optional | - |
+| Script-manifest observation | 20 | W25 | Script-manifest validation | 106 manifest paths active or retained | PASS | r13 isolated worktree | optional | - |
+| Operations-catalog observation | 20 | W25 | Operations catalog validation | Current catalog | PASS | r13 isolated worktree | optional | - |
+| Inventory-scope observation | 20 | W25 | Tracked-path inventory | 2,280 tracked paths; 1,371 Markdown; 386 script/code candidates; classification only, not whole-body semantic audit | PASS | r13 isolated worktree | optional | - |
+| Pre-merge scoped metadata GREEN | 20 | W25 | `check-document-metadata.py --mode check-changed` | Merge base `e6807a7d16d8b9e180ff58456ab64e4ee721ca69`; selected 5, violations 0, legacy exceptions 0, transition overrides 0 | PASS | r13 isolated worktree | required | - |
+| Pre-merge document link alignment | 20 | W25 | Three-document link alignment | SPEC-0212 Spec, Plan, and TSK-0009: 0 findings | PASS | r13 isolated worktree | required | - |
+| Pre-merge PR selector explanation | 20 | W25 | Three-leaf PR selector `--explain` | PASS explanation only; no PR leaf executed | PASS | r13 isolated worktree | optional | - |
+| Final document integration review | 20 | W25 | Independent document integration review | APPROVED; 0 findings | PASS | r13 isolated worktree | required | - |
 | Memory revision RED | 20 | W25 | Focused bogus-revision source-pin regression | Earlier helper accepts an invalid revision | FAIL | W25 memory slice | required | - |
 | Memory revision GREEN | 20 | W25 | Focused bogus-revision source-pin regression | Current W25 memory slice | PASS | W25 memory slice | required | Memory revision RED |
 | Memory helper regression | 20 | W25 | Focused agent-memory tests | 24 tests; 5.273 s | PASS | W25 memory slice | required | - |
@@ -152,6 +169,8 @@ changed-document metadata result.
 | New Task link alignment | 20 | W25 | `build_document_graph(Taskonly) + check_alignment` | TSK-0009: 6 links, 0 findings | PASS | TSK-0009 | required | - |
 | W25-style-RED | 20 | W25 | Focused Ruff check | FAIL: unused import/I001 in the link CLI and one link-test formatting finding | FAIL | W25 link slice | required | - |
 | W25-style-GREEN | 20 | W25 | Focused Ruff check | Link CLI and link tests pass after formatting correction | PASS | W25 link slice | required | W25-style-RED |
+| Documentation commit hooks RED | 20 | W25 | Normal git commit hooks | Initial documentation commit attempt: markdownlint MD029 expected criterion 19, found independently numbered criterion 20 | FAIL | W25 documentation slice | required | - |
+| Documentation commit hooks GREEN | 20 | W25 | Normal git commit hooks | Narrow MD029 exception preserved the initial independent allocation; normal hooks passed for `bc6d4990e88bcdbd38789aa840bbc1dcc0134bc0` | PASS | W25 documentation slice | required | Documentation commit hooks RED |
 | W25 source security review | 20 | W25 | Independent security review | FAIL: ambient Git, replace-ref, lazy-fetch, and bounded-subprocess helper findings; one narrow memory retry also needs remediation | FAIL | W25 source slices | required | - |
 | W25 source security review GREEN | 20 | W25 | Independent security review | Final re-review PASS after shared sanitized Git runner correction | PASS | W25 source slices | required | W25 source security review |
 | Memory helper regression final | 20 | W25 | Focused agent-memory tests | 28 tests; 2.938 s; source SHA-256: `memory_sources.py` `86179a3d6690a82d50d2c63dbad1f6250f1c50521dd06704370af78af9a95f5f`, `agent_memory.py` `843a6f414b3682de17d46a42ed1f7f264c8525449bb2712f43032ecc30dfa3f8`, tests `91a38b2565afb8d1931f49a5ddfaf413983e41b7fe34883166d54570fe388b50` | PASS | W25 memory slice | required | - |

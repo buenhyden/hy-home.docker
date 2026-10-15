@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.3.2"
+version: "1.4.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -31,9 +31,13 @@ and SEC01 → SMTP01 → CLN01 handoffs; W1–W8 retain their historical receipt
 R10 W16–W23 add the current authority, document, lifecycle, retention,
 hook/release, memory and OpenBao source corrections in TSK-0007 without
 reopening completed Tasks or assigning new downstream acceptance owners.
-R13 adds W25 in TSK-0009 for one current-source follow-up. Criterion 19 and
-W24 belong to independent infrastructure work and are deliberately not merged
-into this worktree.
+R13 adds W25 in TSK-0009 for one current-source follow-up. It began separately
+from W24's independent infrastructure work and now preserves the published
+W24/criterion 19 allocation alongside W25/criterion 20.
+
+W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–31.
+It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
+variable implementation; it does not reopen r10 criteria 11–18.
 
 ## Work Breakdown
 
@@ -62,6 +66,7 @@ into this worktree.
 | W21 | 16 | P06 branch/release/CHANGELOG/rollback producer audit and concrete source corrections | W16 | TSK-0007 | Current producer/config trace and scoped contracts |
 | W22 | 17 | P07 shared-memory/native-off/Restic reuse and justified missing assurance design or implementation | W16 | TSK-0007 | Existing receipts plus synthetic memory/backup regressions |
 | W23 | 18 | P08 OpenBao optional-skip and CA-overlay discrepancies, operations promotion and quality limits | W16 | TSK-0007 | Focused OpenBao synthetic tests and changed document checks |
+| W24 | 19 | INFRA-P0 inventory scope, owner routes, QA/CI mapping, writer leases, evidence ladder, and P1–P9 handoffs for requirements 11–31 | None | TSK-0008 | Value-free source/static evidence; no native/HOME/recovery claim |
 | W25 | 20 | Classify r13 P01-P08 follow-up findings; remove one reproduced link-graph duplicate, bind repository-file provenance to its declared revision, and retain one shared memory store through sanitized CLI common-directory identity | W16 | TSK-0009 | Focused link and memory regressions, changed-path CI selection, and changed document checks |
 
 ### W25 file map and checks
@@ -126,6 +131,18 @@ and both `infra/common-optimizations.yml` and
 `infra/common-optimizations.exceptions.json`. P00 owns none of their implementation.
 P07 reuses SPEC-0218 v2; no full common-file rewrite follows from this Plan.
 
+For W24, the coordinator exclusively writes this Spec, this Plan, and
+TSK-0008. The bounded matrix at `m0021-local-docker-service-consolidation.md`
+is an input projection, not a second inventory authority. Later writers are:
+P01/P06/P07 for data, secret, backup and root-control work; SEC01 plus each
+affected leaf owner for images, Dockerfiles, OCI evidence and update records;
+P03 for connection and port contracts; P04/P05/P10 for the vertical flow;
+the QA/CI owner for workflow contracts, gate scripts and tests; and P08/
+SPEC-0227 plus the image owner for Stage 05 and requirement-31 documents.
+Root Compose, `.env.example`, catalogs/exceptions, Stage 99 Registry, Stage 05
+indexes, shared scripts, and CI contracts require a named single-writer lease.
+Unknown task-level token, time, and rate limits do not release that lease.
+
 For W14–W15, the coordinator writes only this package's Spec, Plan and
 TSK-0006. Existing worktrees are evidence of possible concurrent ownership, not
 permission to edit their paths. The lock map is: SEC01 image/digest/build;
@@ -157,6 +174,14 @@ preceding source identity and review are fixed.
    config, secrets and runtime are not moved.
 5. Each feature owner completes its Task, independent review and per-Spec PR.
    P00's inventory or merge receipt cannot complete a downstream native run.
+6. W24 records its reviewed P0 route before P1 or any variable source change;
+   criterion acceptance remains pending while its evidence rows stay open. P1 establishes
+   non-destructive restore prerequisites before live or irreversible image,
+   connection, leaf, workflow, or retirement work; it does not block unrelated
+   reversible source, test, CI, or P9 documentation work. Every logical change
+   maps changed files to a regression, selector/gate, rollback, and operating
+   documentation owner; requirement 31 is completed in the same unit as its
+   actual ROOT-image change.
 
 ### R10 ownership and integration
 
@@ -197,6 +222,12 @@ document move waits for the feature-owner path freeze and a single move writer;
 the confirmed duplicate README headings and stale domain wording are source
 findings, not permission to move LAB runtime assets.
 
+W24 records only tracked, value-free source and authenticated public Git
+observations. `SOURCE_APPLIED`, `STATIC_PASS`, `ISOLATED_PASS`, `NATIVE_PASS`,
+`HOME_PASS`, and `RECOVERY_PASS` are ordered domains; no lower domain implies a
+higher one. A local changed no-op or `full --explain` selection is not hosted
+required-check coverage. Missing live targets remain `BLOCKED` or `NOT_RUN`.
+
 After independent review, validate the Conventional Commit message and run
 `scripts/validation/run-ci-precommit.sh --mode local-staged` on the exact
 staged set. Read actual branch protection and PR checks. Push this request's
@@ -223,10 +254,18 @@ rollback is claimed. Equal baseline, merged draft and historical runtime PASS
 must not be promoted to fresh validation. A concurrent shared-writer/path
 change invalidates affected inputs and requires a fresh scoped check.
 
+Revert W24 as its isolated documentation unit through the protected PR path;
+do not revert an independent owner’s implementation with it. Before a secret
+rotation, data migration, retirement, or live upgrade, the owner records the
+concrete target, backup identity, restore boundary, compatibility result,
+operator/window, stop condition, and rollback. Missing prerequisites block
+only that dependent operation.
+
 ## Related Documents
 
 - [Spec](spec.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)
+- [Infrastructure audit execution Task](tasks/tsk-0008-infra-audit-execution.md)
 - [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
 - [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
