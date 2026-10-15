@@ -1,10 +1,10 @@
 ---
 title: "명세 패키지"
-version: "1.3.1"
+version: "1.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-16"
 layer: "specs"
 ---
 
@@ -76,6 +76,8 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0241 | [hook 출력과 main push 차단](./0241-hook-outputs-and-main-push-guard/) | PreCompact·SessionStart·PreToolUse 출력 교정, Codex hook 정렬, main 직접 push 차단과 pre-push guard, secret 읽기 거부 |
 | SPEC-0242 | [1인 관리자 OpenBao custody](./0242-single-admin-openbao-custody/) | share·CA key는 host와 host 백업에, BKP-003·R2 자격 증명·BKP-002·Cloudflare 접근만 비밀번호 관리자 계정에 두고 W1b rekey를 뺀다 |
 | SPEC-0243 | [OpenBao 유지보수 창 준비](./0243-openbao-window-readiness/) | 창 NOT READY 판정의 선행 조건·결함(D1~D4)·W4 rollback을 문서로 막고 restore·W1c·W3a·W3b 도구와 CA mount를 단위별로 준비 |
+| SPEC-0244 | [Native memory 통제 검증](./0244-native-memory-controlled-verification/) | Claude native memory effective-state와 hook delivery를 설정·메뉴·영수증별로 분리해 통제 검증 |
+| SPEC-0245 | [Observability CA 실행](./0245-observability-ca-execution/) | Prometheus·Gatus의 백업·격리 복원 검증 후 순차 CA 재생성과 rollback 경계 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)

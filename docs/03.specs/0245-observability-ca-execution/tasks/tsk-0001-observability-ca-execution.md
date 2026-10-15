@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -79,6 +79,8 @@ backup, restore, image build, CA application, recreation, or health outcome.
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
+| SPEC-0245 | draft | approved | Direct user authorization recorded in Inputs and Authorization |
+| SPEC-0245-PLAN-0001 | draft | approved | Direct user authorization recorded in Inputs and Authorization |
 | SPEC-0245-TSK-0001 | draft | ready | Ready backup packet binding |
 | SPEC-0245-TSK-0001 | ready | in-progress | Backup phase release |
 
@@ -86,7 +88,7 @@ backup, restore, image build, CA application, recreation, or health outcome.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Initial operational execution state | 1, 2, 3, 4, 5, 6, 7 | W1, W2, W3, W4, W5, W6, W7 | No preflight, backup, isolated restore, image build, recreation, review, or selected gate had run when this Task was created | Initial record on `89eb43f683a11587cf4f125be534ae720c20a55c` | NOT_RUN | Initial State | optional | - |
+| Initial operational execution state | 1 | W1 | No preflight, backup, isolated restore, image build, recreation, review, or selected gate had run when this Task was created | Initial record on `89eb43f683a11587cf4f125be534ae720c20a55c` | NOT_RUN | Initial State | optional | - |
 | Ready backup packet binding | 1 | W1 | SHA-256 binding of the final frozen backup phase contract and guard helpers | Contract `d70944844623e5733a7e6dff4a5e999bf29078a5f5c0bd91fd11e48950db0d88`; phase script `1ce35b3a0e4759f4b37b8c6d0f86d48d41c8452dc92d0f32179835561cf7475a`; archive guard `a85ab831c3369f1d04b5dc6abd14fa83ae5bb4ced495f594d85955474c42b385` | PASS | Ready Transition | required | - |
 | Backup phase independent reviews | 7 | W7 | Independent IaC and security reviews of the final backup phase packet | READY limited to backup phase; no execution outcome | PASS | In-progress Transition | required | - |
 
