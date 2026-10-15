@@ -205,9 +205,12 @@ else:
             docker.write_text(
                 f"""#!/usr/bin/env python3
 import json
+import os
 import sys
 
 args = sys.argv[1:]
+with open(os.environ["FAKE_COMPOSE_CALLS"], "a", encoding="utf-8") as stream:
+    stream.write(json.dumps(args) + "\\n")
 if args[:1] == ["network"]:
     raise SystemExit(1)
 if "--environment" in args:
@@ -221,11 +224,15 @@ if "--environment" in args:
         print(key + "={data}/" + name)
     print("COMFYUI_ARGS=--listen 0.0.0.0")
 elif "--format" in args:
+    if os.environ.get("FAKE_PREFLIGHT_RENDER_FAILURE"):
+        print('{{"private-render-value": true}}')
+        raise SystemExit(7)
     print(json.dumps({{"services": {{"a": {{}}}}, "volumes": {{}}}}))
 """,
                 encoding="utf-8",
             )
             docker.chmod(0o755)
+            calls = root / "compose-calls.jsonl"
             result = subprocess.run(
                 ["bash", os.fspath(VALIDATE_COMPOSE), "--preflight"],
                 cwd=root,
@@ -234,9 +241,43 @@ elif "--format" in args:
                 env={
                     **os.environ,
                     "PATH": os.fspath(fakebin) + os.pathsep + os.environ["PATH"],
+                    "FAKE_COMPOSE_CALLS": os.fspath(calls),
                 },
                 check=False,
             )
+            config_calls = [
+                call
+                for line in calls.read_text().splitlines()
+                if (call := json.loads(line))[:1] == ["compose"]
+            ]
+            self.assertEqual(
+                [
+                    ["compose", "config", "--environment"],
+                    ["compose", "--profile", "core", "config"],
+                    ["compose", "--profile", "core", "config", "--format", "json"],
+                ],
+                config_calls,
+            )
+            self.assertEqual(
+                "COMFYUI_ARGS=--listen 0.0.0.0\n", (root / ".env").read_text()
+            )
+            failed = subprocess.run(
+                ["bash", os.fspath(VALIDATE_COMPOSE), "--preflight"],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                env={
+                    **os.environ,
+                    "PATH": os.fspath(fakebin) + os.pathsep + os.environ["PATH"],
+                    "FAKE_COMPOSE_CALLS": os.fspath(calls),
+                    "FAKE_PREFLIGHT_RENDER_FAILURE": "1",
+                },
+                check=False,
+            )
+            self.assertEqual(1, failed.returncode, failed.stdout + failed.stderr)
+            self.assertIn("Compose configuration did not render", failed.stdout)
+            self.assertNotIn("private-render-value", failed.stdout + failed.stderr)
+            self.assertNotIn("Preflight checks passed", failed.stdout)
         output = result.stdout + result.stderr
         self.assertEqual(0, result.returncode, output)
         self.assertNotIn("command not found", output)
