@@ -262,8 +262,13 @@ Frozen implementation SHA-256 values before document-only result updates are:
 | Checkout mode baseline RED | 2, 3 | W70 | Checkout mode alignment for promoted compose baseline | Staged tree `5d45abff5d78a55230172ac24f79ddd7259f56ff`; group-writable OpenBao public sources | FAIL | Actual changed-profile exited 254 after metadata 151, document governance 772, supply chain 265, Compose 66 selections/316 services and Conftest 364/69/18 passed | required | - |
 | Checkout mode baseline GREEN | 2, 3 | W70 | Checkout mode alignment for promoted compose baseline | Same Git blobs and SHA-256 content; only 0664 to 0644 and 0775 to 0755 checkout mode corrections | PASS | Exact OpenBao modules 53 tests; authenticated registered compose-baseline leaf 955 tests in 113.207 seconds with 78 declared skips | required | Checkout mode baseline RED |
 | Final local changed profile | 2, 3, 5 | W70 | Actual default changed-profile execution | Staged tree `5d45abff5d78a55230172ac24f79ddd7259f56ff` before checkout mode correction | FAIL | Exit 254 in promoted compose-baseline leaf after all earlier selected leaves above passed; recovered by the narrower exact-leaf proof | required | - |
+| Final local changed profile recovery | 2, 3, 5 | W70 | Actual default changed-profile execution | Frozen staged tree `9db843aa3de4322fb8c8b73112a47ce95eedf78b` with checkout modes aligned to tracked metadata | PASS | `run-ci-gate.py --profile changed` exited 0; repository-integrity 591 tests passed in 210.731 seconds after Compose 66 selections/316 services and the selected contract batches passed | required | Final local changed profile |
+| Node prerequisite routing RED | 2, 3 | W70 | Selected Node prerequisites for promoted regression leaves | Registered `leaf.compose-baseline-regressions` and `leaf.repository-integrity-regressions`; infra-only Compose selector | FAIL | Two focused methods produced three exact false-negative assertions; independent model receipt `30474f6616fd6f9513321e3a5a0969e17811017b28d593bd311863e703434af6` | required | - |
+| Node prerequisite routing GREEN | 2, 3 | W70 | Selected Node prerequisites for promoted regression leaves | Runner `bb2a2720cdb94918bef5c080e5659a11cef35c610b3168e7f492830800d3c267`; plan test `ec642a47f1a1e6342f91f30e9ac1458859b40138d750507e2085c748dc3d2d2a` | PASS | Focused two-method batch and complete runner/execution-context batch passed; independent security review approved the exact two-ID change | required | Node prerequisite routing RED |
 | Final hosted candidate | 2, 3 | W70 | Actual PR candidate | Final receipt commit not yet created | NOT_RUN | A new exact-head hosted run is required | required | - |
 | Remote protection observation | 3 | W70 | Read-only main protection, effective rules and latest successful candidate App identity | Current remote main; run 38695709347 | FAIL | Required contexts/checks empty; App 15368 observed; no mutation | optional | - |
+| Remote protection recovery observation | 3 | W70 | Read-only main protection, effective rules and latest successful candidate App identity | Separately approved main setting change recorded on current `origin/main`; independent API read-back | PASS | Strict required `candidate-quality` is bound to App 15368; PR 505 head `e459c4ec1aaf652ad26d17e67daaf7ff5bb23aac` remained `BLOCKED` on its failed current-head check; no mutation by this Task | optional | Remote protection observation |
+| Remote protection matching-success observation | 3 | W70 | Read-only main protection, effective rules and latest successful candidate App identity | PR 506 head `2fbcf8982945d6e8d3666e6940e3accde728c768`; main `89eb43f683a11587cf4f125be534ae720c20a55c` | PASS | App 15368 `candidate-quality` succeeded on the exact head and the protected PR merged; receipt SHA-256 `09a65fe2baf67725c2b4d781ed69007ef9b3a40d6c907224af809c3309ab51e6` | optional | - |
 
 ## Criterion Acceptance
 
@@ -274,9 +279,10 @@ current owner of criteria 2, 3 and 5.
 
 The source correction and independent review are complete, but the support
 unit remains incomplete until the exact-head hosted retry finishes. The
-original Task retains every SPEC-0211 criterion decision. Do not claim branch
-enforcement while required contexts remain empty, and do not change remote
-protection under this Task's authorization.
+original Task retains every SPEC-0211 criterion decision. The current required
+check was applied under a separate approved setting change recorded on main;
+this Task performed no remote protection mutation. Its matching-success case
+remains unproved until the new exact PR head completes successfully.
 
 ## Related Documents
 

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -42,6 +42,11 @@ The direct infrastructure-audit request dated 2026-10-16 adds an independent
 coordination lane. Its requirement numbers 11–18 are not r10 criteria 11–18.
 This package records cross-owner routing and P0 source evidence only; named
 owners retain implementation and acceptance for their own leaf contracts.
+
+The r13 request dated 2026-10-16 adds a follow-up current-source revalidation
+criterion and Task. It began in a separate worktree while criterion 19/W24 was
+issued; published main now preserves that allocation together with criterion
+20/W25, without altering either Task's acceptance owner.
 
 ## Scope
 
@@ -287,6 +292,13 @@ hold, authorization and recovery requirements have been established.
     to test/gate/rollback mapping, shared-writer leases, evidence ladder, and
     explicit pending native, HOME, recovery, and delivery boundaries. It does
     not alter historical r10 criteria 11–18 or claim downstream execution.
+20. TSK-0009 classifies current P01-P08 follow-up findings, removes a
+    demonstrated same-input link-graph duplicate, and corrects memory-source
+    revision trust and CLI shared-store identity only with scoped regression and
+    CI-consumer checks. It keeps
+    historical criteria 11-18 unchanged, records unavailable checks as
+    NOT_RUN, and leaves runtime, remote, and named leaf-owner acceptance
+    outside this criterion.
 
 ## Failure Conditions
 

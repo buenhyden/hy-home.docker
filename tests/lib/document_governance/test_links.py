@@ -2625,6 +2625,64 @@ class LinkSelectionScopeTests(unittest.TestCase):
             self.assertNotIn("docs/90.references/audits/0001-b/README.md", selected)
             self.assertIn("docs/90.references/audits/0001-c/README.md", selected)
 
+    def test_all_mode_parses_disjoint_current_and_historical_inputs(self) -> None:
+        from scripts.lib.document_governance.links import (
+            DocumentGraph,
+            LinkFinding,
+        )
+
+        module = load_links_cli()
+        root = ROOT.resolve()
+        current = root / "docs/current.md"
+        historical = root / "docs/98.archive/retired/historical.md"
+        current_finding = LinkFinding("docs/current.md", "current-input", "current")
+        historical_finding = LinkFinding(
+            "docs/98.archive/retired/historical.md",
+            "historical-input",
+            "historical",
+        )
+        graphs = iter(
+            (
+                DocumentGraph(root, (), (), (current_finding,)),
+                DocumentGraph(root, (), (), (historical_finding,)),
+            )
+        )
+        observed: dict[str, tuple[str, ...]] = {}
+
+        def run_mode(mode: str, graph: DocumentGraph) -> list[object]:
+            observed[mode] = tuple(item.code for item in graph.input_findings)
+            return []
+
+        with (
+            mock.patch.object(
+                module,
+                "_path_sets",
+                create=True,
+                return_value=((current,), (current, historical)),
+            ),
+            mock.patch.object(
+                module,
+                "_paths",
+                side_effect=AssertionError("all mode must select paths once"),
+            ),
+            mock.patch.object(
+                module,
+                "build_document_graph",
+                side_effect=lambda paths, repo_root: next(graphs),
+            ) as build,
+            mock.patch.object(module, "run_mode", side_effect=run_mode),
+            mock.patch("sys.stdout", io.StringIO()),
+            mock.patch("sys.stderr", io.StringIO()),
+        ):
+            self.assertEqual(0, module.main(["--root", str(root), "--mode", "all"]))
+
+        self.assertEqual(
+            [((current,),), ((historical,),)],
+            [call.args for call in build.call_args_list],
+        )
+        self.assertEqual(("current-input",), observed["traceability"])
+        self.assertEqual(("historical-input", "current-input"), observed["alignment"])
+
     def test_selection_has_no_path_exemption(self) -> None:
         """Nothing is skipped for where it lives, only for what it claims.
 
