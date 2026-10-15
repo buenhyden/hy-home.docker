@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -130,6 +130,17 @@ no Read, Bash, or MCP tool; it has at most two turns, USD 1, and 180 seconds.
 It is one new retry only. Guard tests passed before release. Normal merged
 auto-memory remains unknown, and this plan does not change its criterion.
 
+### Forced-off Hook Retry 02 Result
+
+The retry's local route, shim, atomic, and guard preflight checks passed, but
+the provider attempt again failed closed before hook initialization: exit 1,
+stderr-only output discarded, and zero events, tools, or model output. Exact
+cleanup and Git-status restoration passed. A separate no-session static
+validation found that an empty `--mcp-config '{}'` argument is rejected as
+`Invalid MCP` before lifecycle initialization; an empty wrapped `mcpServers`
+form is rejected too. This static diagnosis is not a retained provider stderr
+receipt. No third attempt ran under the cap.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -156,6 +167,8 @@ auto-memory remains unknown, and this plan does not change its criterion.
 | Forced-off hook plan review | 4 | W4 | Security review of one session-only forced-off hook-delivery attempt without privacy-environment scrub | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`; sole PASS label `HOOK_DELIVERY_VERIFIED_WITH_SESSION_FORCED_MEMORY_OFF`; normal merged effective-off remains unknown | PASS | Forced-off Hook Delivery Plan | required | - |
 | Forced-off hook attempt | 4 | W4 | One approved session-only forced-off hook-delivery attempt | Startup exit 1; stdout absent; stderr discarded; zero hooks, tools, and model output; no timeout | FAIL | Forced-off Hook Attempt | required | - |
 | Forced-off hook retry 02 plan review | 4 | W4 | Security review of one fresh session-only forced-off retry with guarded Write-only witness | Plan `4f59ea1279ac9233b50cc33262a3ca50a3015920a6b1f1ce37280e389d92e414`; sandbox false with no OS-confinement claim; no Read/Bash/MCP; max two turns/USD 1/180 seconds; guard tests PASS | PASS | Forced-off Hook Retry 02 Plan | required | - |
+| Forced-off hook retry 02 attempt | 4 | W4 | One approved fresh session-only forced-off hook-delivery retry | Local route/shim/atomic/guard preflight PASS; provider exit 1 before hook initialization; stderr-only discarded; zero events, tools, and model output; cleanup/status PASS | FAIL | Forced-off Hook Retry 02 Result | required | - |
+| Forced-off MCP static diagnosis | 4 | W4 | No-session validation of the retry MCP argument forms | Empty `--mcp-config '{}'` and empty wrapped `mcpServers` each reject as `Invalid MCP` before lifecycle initialization; no third attempt | PASS | Forced-off Hook Retry 02 Result | optional | - |
 
 ## Criterion Acceptance
 
