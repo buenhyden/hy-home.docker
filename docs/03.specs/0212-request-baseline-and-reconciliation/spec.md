@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.3.1"
+version: "1.4.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-16"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -37,6 +37,12 @@ implementation; it does not establish WGOV-CORE/3.0.0 adoption or remote
 authority. Independent implementation review and criterion acceptance remain
 separate.
 
+The direct infrastructure-audit request dated 2026-10-16 adds an independent
+11–31 requirement namespace and the ordered `INFRA-P0` through `INFRA-P9`
+coordination lane. Its requirement numbers 11–18 are not r10 criteria 11–18.
+This package records cross-owner routing and P0 source evidence only; named
+owners retain implementation and acceptance for their own leaf contracts.
+
 ## Scope
 
 LLM Wiki work is preparation only: documentation, schema, connection contract,
@@ -51,7 +57,7 @@ excluded, including planning.
 
 ## Contracts
 
-### Current request scope (items 11–30)
+### Current request scope (historical items 11–30)
 
 Each row has one primary execution owner and one disposition. Supporting
 stages do not own the same acceptance criterion. The Task records evidence,
@@ -84,14 +90,49 @@ with recovery planning; delete legacy material only after source, runtime, jobs,
 backup/restore and external consumers are confirmed absent. Disabled profiles
 or absent traffic are not proof of no consumer.
 
-That historical formulation predates the current audit. Criterion 9 records
-the current numbered routes without changing the accepted meaning of criteria
-1–8: requirement 27 audits all ROOT images, while an actual update is limited
-to a confirmed security warning, support end or required compatibility issue;
-requirement 28 is completed offline Wiki preparation only; requirement 29 is
-the canonical SMTP source; and requirement 30 remains consumer-confirmed
-retirement. A latest stable lookup alone neither requires a broad upgrade nor
-proves deployed security acceptance.
+That historical formulation predates the current infrastructure-audit route.
+Criterion 9 records the historical numbered routes without changing the
+accepted meaning of criteria 1–8. The direct current request supersedes its
+restriction that an actual ROOT-image update needs a CVE, support end, or
+required compatibility issue: every ROOT image is evaluated against its
+official latest stable release. A compatibility, migration, consumer, or
+recovery barrier may defer the update only when the owner records the exact
+barrier, mitigation, review date, exit condition, and rollback boundary.
+Latest-stable lookup does not itself prove a deployed, native, HOME, or
+recovery result.
+
+### Current infrastructure-audit routing (requirements 11–31)
+
+`INFRA-P0` fixes common source boundaries before any variable source change;
+`INFRA-P1` then protects data, secrets, backups, and recovery prerequisites.
+The remaining phases are sequenced by the Plan. The source-evidence ladder is
+`SOURCE_APPLIED`, `STATIC_PASS`, `ISOLATED_PASS`, `NATIVE_PASS`, `HOME_PASS`,
+`RECOVERY_PASS`, `BLOCKED`, `OUT_OF_SCOPE`, `SUPERSEDED`, and `NOT_RUN`.
+Lower-stage PASS never satisfies a higher-stage result.
+
+| Requirement | Current primary owner | Current route and boundary |
+| --- | --- | --- |
+| 11 | SPEC-0218 / P07 | Consumer-backed root-leaf acceptance; SPEC-0212/P0 supplies the bounded inventory and route. |
+| 12 | SPEC-0204 / P03 | Existing integration route; P0 maps the caller, contract, and verification leaf. |
+| 13 | SPEC-0204 / P02 | Compose, secret, config, and consumer ownership reconciliation. |
+| 14 | SPEC-0204 / P03 | Endpoint, ACL, S3, OIDC, resource, health, and upgrade prerequisites. |
+| 15 | SPEC-0204 / P10 | Named input-to-recovery vertical acceptance; no P0 runtime claim. |
+| 16 | SPEC-0204 / P04 | Existing Airflow DEV database/S3/DAG owner. |
+| 17 | SPEC-0204 / P05 | Existing n8n outbox/SMTP owner. |
+| 18 | SPEC-0218 / P07 | Measurement-backed resources, permissions, common controls, and exceptions. |
+| 19 | SPEC-0218 / P07 | Existing v2 common-control owner; P0 only maps consumers and validation. |
+| 20 | SPEC-0227 | Stage 05 template authority; SPEC-0204/P08 supports allowed document moves and LAB runtime remains excluded. |
+| 21 | SPEC-0212 / P0 | Current lifecycle and acceptance inventory; each package retains residual closure. |
+| 22 | SPEC-0204 / P01 | OpenBao classification; P02/P06 support mapping and consumer migration with rotation/recovery prerequisites. |
+| 23 | SPEC-0204 / P03 | Listener, DNS, host, backend, and route-port contract owner. |
+| 24 | SPEC-0212 / P0 | One-owner active-contract, consumer, and validation-route reconciliation. |
+| 25 | SPEC-0204 / P08 | Operations-document layout and links; SPEC-0227 remains the template authority. |
+| 26 | SPEC-0212 / P0 | Learning applications remain excluded from plans, code, data, and resources. |
+| 27 | SEC01 | Official latest-stable, OCI identity, security, compatibility, migration, rollback, and evidence route; image owners implement approved changes. |
+| 28 | SPEC-0204 / P09 criterion 13 / TSK-0008 | Offline Wiki preparation only; no Wiki service, database, API, UI, client, collector, or external workspace. |
+| 29 | SMTP01 | Canonical SMTP source and real-consumer verification; retirement remains separate. |
+| 30 | CLN01 | Retirement only after consumer, backup, external dependency, authorization, and recovery evidence. |
+| 31 | SPEC-0204 / P09 | Every actual ROOT-image change carries matching configuration, tests, templates, Guide, Policy, Runbook, and README updates in its logical unit; P08 supports layout work. |
 
 ### Current coordination audit
 
@@ -241,6 +282,11 @@ hold, authorization and recovery requirements have been established.
 18. P08 corrects demonstrated OpenBao/operations source discrepancies while
     retaining service-specific security and recovery checks; purpose quality
     measures and durable owner promotion trace actual evidence and limits.
+19. TSK-0008 records an `INFRA-P0` source snapshot for requirements 11–31:
+    root/inventory scope, one current owner route per requirement, changed-file
+    to test/gate/rollback mapping, shared-writer leases, evidence ladder, and
+    explicit pending native, HOME, recovery, and delivery boundaries. It does
+    not alter historical r10 criteria 11–18 or claim downstream execution.
 
 ## Failure Conditions
 
@@ -250,10 +296,17 @@ shared paths change without the assigned writer. Learning-app work, actual
 Wiki implementation, unproven consumer retirement and unnamed operational
 targets remain outside the routed execution boundaries.
 
+The infrastructure-audit coordination also fails if a ROOT-image result is
+called current without an official release/source date and compatibility
+assessment, a lower evidence stage is promoted, a shared path changes without
+its lease, or a destructive/secret/live action proceeds without its named
+target, backup, recovery boundary, and action-specific authorization.
+
 ## Related Documents
 
 - [Plan](plan.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)
+- [Infrastructure audit execution Task](tasks/tsk-0008-infra-audit-execution.md)
 - [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
 - [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
