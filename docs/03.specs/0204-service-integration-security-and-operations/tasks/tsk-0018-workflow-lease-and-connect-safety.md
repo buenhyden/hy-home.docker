@@ -164,6 +164,39 @@ The preserved SQL001/002/003 hashes remain respectively
 7ed4bfd5f160e93ad810e8d32ce2221a02f1629946e5e4297817385acbbb13ed and
 830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72.
 
+### Coupled source commit and current base — 2026-10-16
+
+The coordinator approved one coupled source delivery for W71 (stable n8n
+artifact), W72 (DEV CONNECT admission) and W73 (notification safety), together
+with their exact tests, binding metadata, Plan and both new Tasks. The stable
+custom artifact includes the corrected six-field lease consumer, while its
+SQL migration, notifier graph and interface tests must agree. Committing only
+partial shared Plan/Task references or stale image-input bindings would create
+an invalid intermediate candidate. This source unit does not combine or infer
+the separate native n8n/HOME/complete-recovery acceptances.
+
+The explicit approved staging manifest contained exactly 46 paths: 42 tracked
+modifications and four new files. It excluded LAB runtime, private inputs,
+node_modules and temporary fixtures. The first normal commit attempt exited 1
+on four Markdown MD012 double-blank-line findings in Plan/GDE/POL/RUN0053;
+JSON/YAML, Ruff, Dockerfile and secret hooks passed. Only those four blank lines
+were corrected, explicitly re-staged, and the same normal commit succeeded,
+exit 0, with no hook bypass: `34c0319c3e3c512e1d0de2a5a8113648c635ca5d`.
+
+The checkout was clean. Fresh `rtk git fetch origin main` returned
+`5a88c7937bf427021f2fd0441e04b1011ecd28a9`; the clean owned branch rebased
+without conflict, exit 0. Its actual coupled source commit is now
+`8306839bb377228f76881cadaeb1ebe0f14656b5`. W71, W72 and W73 all reference this
+same actual source commit; no other worktree was reset, stashed or cleaned.
+The post-rebase checkout was clean and no push, PR or merge occurred.
+
+`shutil.which('graphify')` returned no executable, so graph refresh is SKIPPED;
+no installation, forced generation or stale graph authority claim is made.
+Affected final gates will run once against the final source after the separate
+CI policy integration; pre-rebase tests are not relabeled as final-head or
+hosted CI evidence. The separate blocked image-native/HOME/recovery lanes
+remain visible.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
