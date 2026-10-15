@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.10"
+version: "0.1.11"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -141,6 +141,35 @@ validation found that an empty `--mcp-config '{}'` argument is rejected as
 form is rejected too. This static diagnosis is not a retained provider stderr
 receipt. No third attempt ran under the cap.
 
+### Forced-off Hook Retry 03 Plan
+
+Security independently approved one fresh, frozen retry only after the pinned
+Claude Code 2.1.301 headless path and its asserted binary identity showed that
+literal `--strict-mcp-config`, with no `--mcp-config` argument, selects empty
+MCP servers. The approved harness digest is
+`98af87fab954dc515d54f43153bab36966f328a2137ed64868eda97c9b2ebc02`.
+
+The prior no-further-attempt cap is amended only for this distinct 03 retry:
+both earlier attempts reached no provider lifecycle, hook, tool, or model
+output, and the static diagnosis identified the invalid empty MCP argument
+that this plan removes. This is not general retry authority or a claim that a
+usage limit was reached. The owner has continued to authorize the requested
+verification, subject to this review and a Task release.
+
+Retry 03 keeps every Retry 02 guard: a session-only forced-memory-off setting,
+`sandbox=false` with no outer OS-confinement claim, a named tracked witness,
+only the exact guarded fixture `Write`, no Read, Bash, or MCP tool, and at
+most two turns, USD 1, and 180 seconds. Normal settings, hooks, inherited
+authentication, and environment remain active. A public `mcp list` attempt
+timed out while health-checking normally approved servers, because that
+subcommand does not use the headless strict resolver; it supplies no dynamic
+proof. No child process remains and no further list attempt is planned.
+
+Retry 03 has not started. It can start once the root releases this exact
+reviewed plan. It cannot prove normal merged auto-memory is off; that state
+remains unknown. Its only successful hook-delivery label remains
+`HOOK_DELIVERY_VERIFIED_WITH_SESSION_FORCED_MEMORY_OFF`.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -169,6 +198,8 @@ receipt. No third attempt ran under the cap.
 | Forced-off hook retry 02 plan review | 4 | W4 | Security review of one fresh session-only forced-off retry with guarded Write-only witness | Plan `4f59ea1279ac9233b50cc33262a3ca50a3015920a6b1f1ce37280e389d92e414`; sandbox false with no OS-confinement claim; no Read/Bash/MCP; max two turns/USD 1/180 seconds; guard tests PASS | PASS | Forced-off Hook Retry 02 Plan | required | - |
 | Forced-off hook retry 02 attempt | 4 | W4 | One approved fresh session-only forced-off hook-delivery retry | Local route/shim/atomic/guard preflight PASS; provider exit 1 before hook initialization; stderr-only discarded; zero events, tools, and model output; cleanup/status PASS | FAIL | Forced-off Hook Retry 02 Result | required | - |
 | Forced-off MCP static diagnosis | 4 | W4 | No-session validation of the retry MCP argument forms | Empty `--mcp-config '{}'` and empty wrapped `mcpServers` each reject as `Invalid MCP` before lifecycle initialization; no third attempt | PASS | Forced-off Hook Retry 02 Result | optional | - |
+| Forced-off hook retry 03 plan review | 4 | W4 | Independent security review of one frozen strict-MCP, no-config retry with the Retry 02 guards retained | Harness `98af87fab954dc515d54f43153bab36966f328a2137ed64868eda97c9b2ebc02`; pinned 2.1.301 headless strict path selects empty servers; no `--mcp-config`; Write-only, max two turns/USD 1/180 seconds, sandbox false without OS-confinement claim | PASS | Forced-off Hook Retry 03 Plan | required | - |
+| Forced-off MCP dynamic-proof boundary | 4 | W4 | Public `mcp list` observation under the reviewed investigation | Timed out health-checking normally approved servers; subcommand bypasses the headless strict resolver; no child remains | NOT_RUN | Forced-off Hook Retry 03 Plan | optional | - |
 
 ## Criterion Acceptance
 
