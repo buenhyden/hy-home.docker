@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.5.1"
+version: "1.5.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-16"
 ---
 
 # Environment Constraints
@@ -171,6 +171,10 @@ This project has a graphify knowledge graph at `graphify-out/`.
   아닌 caller worktree의 tracked 정상 파일을 제한하여 읽고, 경로 이탈·symlink·
   비밀/인증/native memory 경로를 거절한다. 과거 native 이관과 외부 출처 문자열은
   provenance로 남지만 다시 읽거나 자동 current로 승격하지 않는다.
+- `revision`은 완전한 Git commit object ID여야 한다. 해당 commit의 같은 상대
+  `path`는 일반 blob이고 그 bytes가 caller worktree의 bytes와 같아야 하며,
+  선언한 `sha256` 또는 `git-blob` digest도 그 bytes와 일치해야 한다. commit,
+  path, blob, worktree bytes 또는 digest가 없거나 다르면 current가 될 수 없다.
 - `--request-key` 재시도는 대상·workspace·기대 revision·본문·출처·owner·계층·
   영역·민감도·재사용 상태가 모두 같을 때만 과거 성공 revision을 반환한다.
   다른 입력은 conflict다. revision, provenance, 요청 identity와 용량 검사는

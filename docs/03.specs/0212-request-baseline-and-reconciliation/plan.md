@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -31,6 +31,9 @@ and SEC01 → SMTP01 → CLN01 handoffs; W1–W8 retain their historical receipt
 R10 W16–W23 add the current authority, document, lifecycle, retention,
 hook/release, memory and OpenBao source corrections in TSK-0007 without
 reopening completed Tasks or assigning new downstream acceptance owners.
+R13 adds W25 in TSK-0009 for one current-source follow-up. It began separately
+from W24's independent infrastructure work and now preserves the published
+W24/criterion 19 allocation alongside W25/criterion 20.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–31.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -64,6 +67,40 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W22 | 17 | P07 shared-memory/native-off/Restic reuse and justified missing assurance design or implementation | W16 | TSK-0007 | Existing receipts plus synthetic memory/backup regressions |
 | W23 | 18 | P08 OpenBao optional-skip and CA-overlay discrepancies, operations promotion and quality limits | W16 | TSK-0007 | Focused OpenBao synthetic tests and changed document checks |
 | W24 | 19 | INFRA-P0 inventory scope, owner routes, QA/CI mapping, writer leases, evidence ladder, and P1–P9 handoffs for requirements 11–31 | None | TSK-0008 | Value-free source/static evidence; no native/HOME/recovery claim |
+| W25 | 20 | Classify r13 P01-P08 follow-up findings; remove one reproduced link-graph duplicate, bind repository-file provenance to its declared revision, and retain one shared memory store through sanitized CLI common-directory identity | W16 | TSK-0009 | Focused link and memory regressions, changed-path CI selection, and changed document checks |
+
+### W25 file map and checks
+
+The link slice owns `scripts/lib/document_governance/links.py`,
+`scripts/validation/check-document-links.py`, and
+`tests/lib/document_governance/test_links.py`. Its regression proves one
+same-input parse reaches the graph once and retains the CLI's existing modes.
+The memory slice owns `scripts/lib/ops/memory_sources.py`,
+`scripts/operations/agent_memory.py`, and `tests/lib/hooks/test_agent_memory.py`;
+it adds a bogus-revision rejection and makes the CLI's own/caller
+common-directory identity use the sanitized Git runner, without weakening the
+digest, tracked-file, or no-symlink checks. This source-only regression does not
+read a memory store.
+`tests/validation/test_agent_governance_ci_routing.py` verifies that a memory
+helper change selects the focused agent-governance route. The W25 memory writer
+also owns the one-line `.github/workflow-contract.yml` changed-path map and its
+direct gate-contract tests; it maps the helper and its regressions to the
+focused route without changing unrelated workflow selection.
+The metadata QA slice owns
+`scripts/lib/document_governance/metadata/reference.py` and
+`tests/lib/document_governance/metadata/test_reference.py`. It transports the
+already-computed immutable legacy-archive binding into changed-record validation;
+it does not alter an archive, add a predicate or constant, or redefine the
+immutable-binding rule.
+
+W25's doc-writer exception owns only
+`.agents/governance/environment-constraints.md` and
+`docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`.
+After an actual required-check readback and scoped review, it also owns only
+`.github/rulesets/main-protection.md` for that canonical observation. These
+exceptions clarify the full-commit/current-byte source-pin contract and the
+observed protection state; they do not change a policy schema, runtime
+procedure, or historical record.
 
 ### Exact writer map
 

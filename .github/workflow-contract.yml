@@ -1546,6 +1546,7 @@
           ".agents/governance/hooks/",
           "scripts/hooks/",
           "scripts/lib/hooks/",
+          "scripts/lib/ops/memory_sources.py",
           "scripts/operations/agent_memory.py",
           "scripts/operations/provider_surface_renderer.py",
           "tests/lib/hooks/",

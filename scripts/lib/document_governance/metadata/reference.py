@@ -136,6 +136,7 @@ class _GenerationBindings:
         default_factory=lambda: MappingProxyType({})
     )
     frozen_terminal_tasks: frozenset[str] = frozenset()
+    source_bound_legacy_types: frozenset[str] = frozenset()
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -145,6 +146,11 @@ class _GenerationBindings:
         )
         object.__setattr__(
             self, "frozen_terminal_tasks", frozenset(self.frozen_terminal_tasks)
+        )
+        object.__setattr__(
+            self,
+            "source_bound_legacy_types",
+            frozenset(self.source_bound_legacy_types),
         )
 
 
@@ -915,6 +921,7 @@ def _validate_repository_contracts(
             generation_revision,
             MappingProxyType(dict(unchanged_generation_statuses)),
             frozenset(frozen_terminal_tasks),
+            frozenset(source_bound_legacy_types),
         ),
     )
 
@@ -1912,6 +1919,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 actual_lifecycle_normalization_sources
             ),
             unchanged_generation_statuses=generation_bindings.unchanged_statuses,
+            source_bound_legacy_type=(
+                record.path.as_posix() in generation_bindings.source_bound_legacy_types
+            ),
         )
         for record in records
     }

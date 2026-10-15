@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 import pathlib
 import sys
@@ -81,9 +82,11 @@ def _routing_status(
     return not isinstance(status, str) or status not in NON_ROUTING_STATUSES
 
 
-def _paths(
-    root: pathlib.Path, *, include_historical: bool = False
-) -> list[pathlib.Path]:
+def _path_sets(
+    root: pathlib.Path,
+) -> tuple[tuple[pathlib.Path, ...], tuple[pathlib.Path, ...]]:
+    """Select current paths and their historical superset in one pass."""
+
     registry_path = root / "docs/99.templates/registry.json"
     registry = load_registry(registry_path) if registry_path.exists() else None
     candidates = {
@@ -92,18 +95,24 @@ def _paths(
         if relative.suffix == ".md"
     }
     candidates.update(root / relative for relative in SUPPORT_DOCS)
-    return sorted(
-        path
-        for path in candidates
-        if (path.is_file() or path.is_symlink())
-        and (
-            _routing_status(root, path, registry)
-            or (
-                include_historical
-                and preserved_origin_path(path.relative_to(root).as_posix()) is not None
-            )
-        )
-    )
+    current: list[pathlib.Path] = []
+    historical: list[pathlib.Path] = []
+    for path in sorted(candidates):
+        if not (path.is_file() or path.is_symlink()):
+            continue
+        if _routing_status(root, path, registry):
+            current.append(path)
+            historical.append(path)
+        elif preserved_origin_path(path.relative_to(root).as_posix()) is not None:
+            historical.append(path)
+    return tuple(current), tuple(historical)
+
+
+def _paths(
+    root: pathlib.Path, *, include_historical: bool = False
+) -> list[pathlib.Path]:
+    current, historical = _path_sets(root)
+    return list(historical if include_historical else current)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -117,13 +126,40 @@ def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     root = args.root.resolve()
     try:
-        graph = build_document_graph(_paths(root), repo_root=root)
         modes = tuple(MODE_HANDLERS) if args.mode == "all" else (args.mode,)
-        alignment_graph = (
-            build_document_graph(_paths(root, include_historical=True), repo_root=root)
-            if "alignment" in modes
-            else graph
-        )
+        current_paths, alignment_paths = _path_sets(root)
+        graph = build_document_graph(current_paths, repo_root=root)
+        if "alignment" in modes:
+            current_path_set = set(current_paths)
+            historical_graph = build_document_graph(
+                tuple(path for path in alignment_paths if path not in current_path_set),
+                repo_root=root,
+            )
+            alignment_graph = dataclasses.replace(
+                graph,
+                nodes=tuple(
+                    sorted(
+                        graph.nodes + historical_graph.nodes,
+                        key=lambda item: item.path.as_posix(),
+                    )
+                ),
+                links=tuple(
+                    sorted(
+                        graph.links + historical_graph.links,
+                        key=lambda item: (
+                            item.source.as_posix(),
+                            item.line,
+                            item.target.as_posix(),
+                            item.raw_target,
+                        ),
+                    )
+                ),
+                input_findings=tuple(
+                    sorted(set(graph.input_findings + historical_graph.input_findings))
+                ),
+            )
+        else:
+            alignment_graph = graph
         findings = tuple(
             finding
             for mode in modes
