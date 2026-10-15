@@ -178,6 +178,9 @@ provisioning, LAB runtime or learning-application work.
 | W68 | 8, 21 | Consume final P08 paths and revalidate manual working directories and README coverage | W62 | TSK-0016 | Final path/hash handoff and actual dry-run receipts; no concurrent moves |
 | W69 | 8, 21 | Final requirement 11–30 report, required checks/review and owning-Spec delivery | W66, W67, W68 | TSK-0016 | Actual evidence from all relevant owners; no duplicated test counts or inferred runtime PASS |
 | W70 | 8 | Keep existing merged LAB service/source relocation out of this request; limit P08 to typed Stage05 LAB-document moves, README and path contracts | W56 | TSK-0015 | Exact writer path/hash handoff, profile/link/navigation checks; no LAB runtime, service-source, image, secret or data change |
+| W71 | 2 | Prepare one compatible n8n stable source bundle | None | TSK-0017 | Exact pins, locked package, compile/tests; native separately |
+| W72 | 18 | Reject cross-database CONNECT before workload login | None | TSK-0018 | Shared provision guard, operator bootstrap, isolated native denials/restore |
+| W73 | 19 | Quarantine ambiguous sends and reject expired SMTP leases | W72 | TSK-0018 | Versioned SQL004, closed consumer contract, deadline and native quarantine tests |
 
 ### P10 staged admission and acceptance ownership
 
@@ -729,6 +732,16 @@ assessment/hold. Integration must confirm that executor, resolve the currently f
 enforce receipt freshness before any private apply. The present user-integration
 hold remains until the supervisor selects one route; no private execution is
 authorized by either tool's source checks.
+
+### Current safety and stable-source corrections — 2026-10-16
+
+W71 belongs to Task0017 for n8n stable source preparation. W72 and W73 belong
+to Task0018 for the reproduced DEV CONNECT and SMTP lease/quarantine defects.
+These corrective units support existing criteria 2, 18 and 19 without changing
+the durable acceptance owners or rewriting historical evidence. Each requires
+its own logical commit, focused RED/GREEN, native evidence where executable,
+changed/full gate routing, and independent review. HOME, live cluster ACLs,
+real workflow activation and complete recovery remain separate blocked lanes.
 
 ## Verification Plan
 

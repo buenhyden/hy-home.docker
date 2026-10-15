@@ -105,6 +105,16 @@ builder가 비활성 workflow에서 이 node type을 참조합니다. 위 build�
 생성할 뿐 실행 서비스에 설치하거나 mail을 보내지 않습니다. shared Dockerfile·mount·
 Compose 변경은 총괄에 제안하고 최종 endpoint·SQL hash·이미지 인계 이후 통합합니다.
 
+### 서버 lease deadline
+
+닫힌 claim은 기존 다섯 필드와 필수 `lease_until`을 갖습니다. 서버가 UTC
+`YYYY-MM-DDTHH:mm:ss.SSSZ`로 투영하며 impossible date와 다른 timezone 형식도 거부합니다.
+Transport 생성 전과 send 직전에 SMTP 15초+ack 5초+clock skew 5초보다 남은 시간이
+커야 합니다. 시작 전 취소는 cancelled, 시작 후 취소·timeout·수락 응답 유실은 uncertain입니다.
+Workflow는 uncertain·ack 유실을 SQL004 unknown으로 격리하며 자동 재전송하지 않습니다.
+실제 clock skew/DB timeout과 중단 후 재개는 별도 native acceptance이며 시간 확인만으로
+분산 fencing 또는 exactly-once를 보장하지 않습니다.
+
 ## Related Documents
 
 - [노드 탐색](../README.md)

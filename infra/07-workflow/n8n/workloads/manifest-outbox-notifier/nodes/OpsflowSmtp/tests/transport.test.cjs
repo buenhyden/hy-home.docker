@@ -8,7 +8,7 @@ const claim = Object.freeze({
   id: '9223372036854775807',
   run_id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
   source: 'hy-home.docker', row_count: 7,
-  lease_token: '22222222-2222-4222-8222-222222222222',
+  lease_token: '22222222-2222-4222-8222-222222222222', lease_until: '2099-01-01T00:00:00.000Z',
 });
 const credential = Object.freeze({ host: 'mailpit', port: 1025, secure: false, disableStartTls: true, user: '', password: '', hostName: '' });
 
@@ -119,4 +119,39 @@ test('deadline closes a hung transport and reports uncertainty', async (t) => {
   t.mock.timers.tick(POLICY.totalTimeoutMs);
   assert.deepEqual(await pending, { run_id: claim.run_id, state: 'uncertain' });
   assert.equal(closed, 1);
+});
+
+
+test('server lease expiry or insufficient SMTP/ack reserve never opens transport', async () => {
+  for (const offset of [-1, 0, 19000]) {
+    let opened = 0;
+    const stale = { ...claim, lease_until: new Date(Date.now() + offset).toISOString() };
+    const result = await sendClaim(stale, credential, undefined, () => { opened++; throw new Error('must not open'); });
+    assert.equal(opened, 0);
+    assert.equal(result.state, 'cancelled');
+  }
+});
+
+
+test('lease deadline rejects missing malformed noncanonical and impossible timestamps', () => {
+  for (const lease_until of [undefined, null, '', '2099-01-01', '2099-01-01T00:00:00Z', '2099-02-30T00:00:00.000Z', '2099-01-01T00:00:00.000Z\n', '2099-01-01T00:00:00.000+00:00']) {
+    assert.throws(() => validateClaim({ ...claim, lease_until }), /^Error: OPSFLOW_INVALID_CLAIM$/);
+  }
+});
+
+test('lease expiring during transport creation never dispatches SMTP', async () => {
+  const originalNow = Date.now;
+  const now = originalNow();
+  let sends = 0;
+  let closed = 0;
+  try {
+    const row = { ...claim, lease_until: new Date(now + 60000).toISOString() };
+    const result = await sendClaim(row, credential, undefined, () => {
+      Date.now = () => now + 40000;
+      return { sendMail: async () => { sends++; }, close: () => { closed++; } };
+    });
+    assert.equal(result.state, 'cancelled');
+    assert.equal(sends, 0);
+    assert.equal(closed, 1);
+  } finally { Date.now = originalNow; }
 });

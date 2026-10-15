@@ -26,6 +26,7 @@ def claim():
         "source": "hy-home.docker",
         "row_count": 2,
         "lease_token": "00000000-0000-4000-8000-000000000002",
+        "lease_until": "2099-01-01T00:00:00.000Z",
     }
 
 
@@ -58,6 +59,9 @@ class OutboxWorkflowTests(unittest.TestCase):
             ("lease_token", "PRIVATE-marker"),
             ("lease_token", claim()["lease_token"] + "\n"),
             ("id", "1\n"),
+            ("lease_until", "2099-02-30T00:00:00.000Z"),
+            ("lease_until", "2099-01-01T00:00:00Z"),
+            ("lease_until", None),
         ):
             with (
                 self.subTest(key=key),
@@ -118,7 +122,11 @@ class OutboxWorkflowTests(unittest.TestCase):
             self.assertEqual(
                 case["expected"],
                 builder.evaluate_outcome(
-                    [fixture["claim"]], receipt, case["ack"], case["retry"]
+                    [fixture["claim"]],
+                    receipt,
+                    case["ack"],
+                    case["retry"],
+                    case["quarantine"],
                 ),
             )
         self.assertEqual(
@@ -136,7 +144,8 @@ class OutboxWorkflowTests(unittest.TestCase):
         )
         for ack in (False, None, "true", 1):
             self.assertEqual(
-                "ack_uncertain", builder.evaluate_outcome([claim()], receipt, ack, None)
+                "quarantine_uncertain",
+                builder.evaluate_outcome([claim()], receipt, ack, None),
             )
         for bad in (
             None,
@@ -149,19 +158,27 @@ class OutboxWorkflowTests(unittest.TestCase):
                 builder.evaluate_outcome([claim()], bad, True, True),
             )
 
-    def test_retry_requires_strict_true_and_never_claims_delivery(self):
+    def test_retry_requires_proven_no_send_and_unknown_requires_quarantine(self):
         builder = load_builder()
-        for state in ("uncertain", "cancelled"):
-            receipt = {"run_id": claim()["run_id"], "state": state}
+        uncertain = {"run_id": claim()["run_id"], "state": "uncertain"}
+        self.assertEqual(
+            "quarantine_uncertain",
+            builder.evaluate_outcome([claim()], uncertain, None, True),
+        )
+        self.assertEqual(
+            "quarantined",
+            builder.evaluate_outcome([claim()], uncertain, None, True, True),
+        )
+        cancelled = {"run_id": claim()["run_id"], "state": "cancelled"}
+        self.assertEqual(
+            "retry_recorded_not_sent",
+            builder.evaluate_outcome([claim()], cancelled, None, True),
+        )
+        for retry in (False, None, 1, "true"):
             self.assertEqual(
-                "retry_recorded_uncertain",
-                builder.evaluate_outcome([claim()], receipt, None, True),
+                "quarantine_uncertain",
+                builder.evaluate_outcome([claim()], cancelled, None, retry),
             )
-            for retry in (False, None, 1, "true"):
-                self.assertEqual(
-                    "retry_lost_lease",
-                    builder.evaluate_outcome([claim()], receipt, None, retry),
-                )
         self.assertEqual("empty", builder.evaluate_outcome([], None, None, None))
         self.assertEqual(
             "invalid_claim",

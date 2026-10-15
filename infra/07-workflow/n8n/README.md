@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.9"
+version: "1.2.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-16"
 created: "2025-11-12"
 ---
 
@@ -106,7 +106,7 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 - **PRD**: 07-workflow PRD (`docs/01.requirements/0008-workflow.md`)
 - **ARD**: 07-workflow Architecture Description (`docs/02.architecture/descriptions/0007-workflow-architecture.md`)
 - **ADR**: N8N Integration ADR (`docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md`)
-- **Plan**: 활성 Spec 패키지 없음. 이전 SPEC-0008은 폐기되었습니다 (`docs/98.archive/tombstones/03.specs/0008-workflow.md`).
+- **Plan**: [SPEC-0204](../../../docs/03.specs/0204-service-integration-security-and-operations/plan.md)의 [Task0017](../../../docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0017-n8n-stable-source-preparation.md)이 이번 버전 소스 준비를 담당합니다.
 
 ## Validation
 
@@ -115,10 +115,10 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 
 ### SEC01 안정판 묶음
 
-2026-10-12 [공식 릴리스](https://github.com/n8n-io/n8n/releases/tag/n8n%402.42.7), <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
-[npm stable 배포](https://registry.npmjs.org/n8n/latest)와 Docker stable channel의 OCI index를 대조했습니다.
-공식 Docker 설치 문서의 이전 stable 표기는 아직 갱신되지 않아 배포 채널의 동일 digest를 확인했습니다.
-이번 패치는 credential 시험의 공유 node registry와 deferred tool 호출 재개를 수정합니다.
+2026-10-16 KST [공식 릴리스](https://github.com/n8n-io/n8n/releases/tag/n8n%402.43.6), <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+[npm stable 배포](https://registry.npmjs.org/n8n/latest)와 Docker stable/latest channel의 OCI index를 대조했습니다.
+요청에 인용된 이전 안정판 다음으로 발표된 패치는 webhook 요청마다 XML parser를 생성하도록 수정합니다.
+공식 index·amd64 manifest·config descriptor의 digest를 각각 구분해 장부에 기록했습니다.
 main·worker와 두 task runner를 같은 vendor stable로 맞추고 두 custom Dockerfile의 base·font builder
 OCI index digest를 고정합니다. platform manifest·custom build image ID·실제 running digest는 별도 증거입니다.
 fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정 채널의 명시 버전으로 설치합니다.
@@ -127,7 +127,9 @@ fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정
 
 UNIT의 네 role 정합 검사는 native workflow import·실행이나 HOME 배포를 입증하지 않습니다.
 deprecated node import 거부·JSON typeVersion·webhook·Code runner·queue·PostgreSQL·SMTP·실패 경로는 NOT_RUN입니다.
-SEC01 담당자는 2026-10-17까지 독립 매니페스트 배치로 다음 검증을 수행해야 합니다.
+Opsflow custom node의 peer/dev API와 lock도 upstream 본체가 사용하는 버전에 정렬했습니다.
+이 변경의 새 custom build·signature·SBOM·native 기능 영수증은 없으며 이전 버전 영수증은 역사로 보존합니다.
+SEC01 담당자는 별도 이미지와 합성 입력의 경계를 확정한 뒤 다음 검증을 수행해야 합니다.
 Wiki 예약이나 실제 Wiki 소비자는 이 업데이트에 추가하지 않습니다.
 
 HOME 전환 전 MNG DB와 n8n data, 동일 encryption key의 독립 보관, queue/진행 중 실행의

@@ -317,6 +317,16 @@ def _sql_function_only(project):
             "  END IF;",
             "END $check$;",
         ]
+    lines += [
+        "DO $check$ BEGIN",
+        "  IF EXISTS (SELECT 1 FROM pg_database d CROSS JOIN pg_roles r",
+        f"      WHERE d.datallowconn AND d.datname<>'{db}'",
+        f"        AND r.rolname IN ({','.join(repr(roles[k]) for k in FUNCTION_LOGIN_KINDS)})",
+        "        AND has_database_privilege(r.oid,d.oid,'CONNECT')) THEN",
+        "    RAISE EXCEPTION 'cross_database_connect_requires_cluster_review';",
+        "  END IF;",
+        "END $check$;",
+    ]
     owner, migrator = roles["owner"], roles["migrator"]
     lines += [
         "DO $check$ BEGIN",

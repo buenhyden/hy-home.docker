@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.12"
+version: "1.7.13"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-16"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -35,6 +35,15 @@ P03 routes endpoint/port integration, P04 Airflow, P05 n8n, P01/P02/P06
 secret classification/mapping/consumption, P09 offline Wiki preparation and P10 the
 named user vertical slice. Each residual stays with one existing acceptance
 owner; the new stage labels do not reserve Spec IDs.
+
+The direct 2026-10-16 request reopens ROOT latest-stable and security assessment
+under the existing SEC01 authority. Task0017 prepares the newly confirmed n8n
+source bundle; Task0018 corrects reproduced database CONNECT and ambiguous-send
+lease/quarantine defects. These continuations supersede earlier blanket version
+NO_CHANGE and security-warning-only restrictions for their current scope, while
+preserving prior source, acceptance decisions and historical Task receipts.
+They do not authorize HOME deployment, live ACL/data migration, secret use or
+production recovery without the separate concrete target and recovery boundary.
 
 ### Technical Approach
 
@@ -317,7 +326,9 @@ inferred from document relocation.
     selected Airflow DEV/S3/DAG and n8n JSON/import/execution flow from input
     through its recovery fixture. Source creation, reference wiring, secret
     consumption and native results have separate evidence; missing exact
-    consumer/target defers only that lane. Existing version work is NO_CHANGE.
+    consumer/target defers only that lane. Earlier version-work NO_CHANGE remains
+    historical; Task0017 supports criterion 2 with the current stable source
+    preparation, without accepting this criterion's native integration lane.
 
 11. P01 completes one coherent native TLS endpoint/CA contract for OpenBao,
     Agent, metrics, operational clients and Traefik backend; bootstrap trust
@@ -404,8 +415,12 @@ inferred from document relocation.
     and trust facts; it is not inferred from a missing HOME target. TSK-0009
     owns this increment; LAB runtime and
     learning applications remain out of scope.
-    Root-image version changes and scanner source corrections require an actual
-    confirmed current-image security warning. Reuse the existing reviewed
+    The earlier warning-only version restriction is historical. The direct
+    2026-10-16 request authorizes full ROOT stable/security investigation and
+    compatible source updates; major/schema changes still require independent
+    migration, native and recovery evidence. Task0017 owns the bounded current
+    n8n preparation, while Task0009 retains this criterion's overall acceptance.
+    Reuse the existing reviewed
     security-disposition gates; missing or stale evidence remains UNKNOWN,
     never a clean verdict. Do not invent a replacement scanner or optional gate.
     Bind current ROOT inputs independently and exclude relocated LAB
@@ -452,7 +467,7 @@ inferred from document relocation.
     contract. Restricted file delivery may support pre-migration DEV proof;
     P01/P06 completion is not a global prerequisite to that bounded lane.
 19. P05 implements one independent DEV-only n8n notifier consuming P04's
-    frozen `ops_flow` claim/ack/retry interface. A value-free workflow imports
+    versioned `ops_flow` claim/ack/retry interface. A value-free workflow imports
     inactive, uses operator-resolved native credential references and proves
     manual then one-minute scheduled execution on the actual queue worker.
     The notifier has function-only database access and a restricted Mailpit
@@ -466,6 +481,11 @@ inferred from document relocation.
     No Wiki schedule, Airflow mail duplicate, external SMTP or extra engine is
     created. Only the relevant image/resource/credential/recovery contracts gate
     its native lane; full SEC01/P01/P06 completion is not a global start gate.
+    Task0018 supports the current safety correction: a server-issued deadline
+    bounds SMTP work, and existing retry, expired sending or ambiguous SMTP/ack
+    outcomes are quarantined pending evidence-backed reconciliation. Automatic
+    retry requires proof that no send occurred; source tests and isolated SQL
+    proof do not accept the actual n8n queue or HOME lane.
 20. P06 migrates only catalog-approved existing static values in sequential
     consumer waves, preserving the exact bytes during the first copy. It
     consumes P01's accepted authentication, renderer and recovery contract,

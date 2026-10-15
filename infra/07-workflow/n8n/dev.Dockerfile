@@ -1,4 +1,4 @@
-ARG N8N_VERSION=2.42.7
+ARG N8N_VERSION=2.43.6
 
 FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder
 RUN apk add --no-cache \
@@ -28,8 +28,8 @@ WORKDIR /artifact/opsflow
 RUN find package.json dist node_modules -type f -exec sha256sum '{}' ';' > /tmp/opsflow-hashes && \
   sort -k2 /tmp/opsflow-hashes > SHA256SUMS
 
-FROM n8nio/n8n:${N8N_VERSION}@sha256:906dd7fb0a2f23869001d1767168359489c518ff34d4f67427abf2dc59e868fe
-ARG N8N_VERSION=2.42.7
+FROM n8nio/n8n:${N8N_VERSION}@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833
+ARG N8N_VERSION=2.43.6
 
 USER root
 

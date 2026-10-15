@@ -4659,5 +4659,165 @@
     "result": "PASS: bounded public release binary authentication only",
     "not_proven": "OCI image trust, SBOM, Grype, advisory remediation, deployment, HOME and recovery remain NOT_RUN",
     "next_execution_boundary": "NOT_RUN: current root metadata and exact asset metadata/source URLs must be refreshed or revalidated before public publisher/registry/TLS-only verification"
+  },
+  "historical_n8n_workflow_bindings": [
+    {
+      "archived_at": "2026-10-15T15:49:33.606582+00:00",
+      "workflow_source_binding": {
+        "checked_at": "2026-10-10T11:22:24.683398+00:00",
+        "source_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+        "input_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes for each of seven paths; no added separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/airflow/Dockerfile",
+            "sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1"
+          },
+          {
+            "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+            "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+          },
+          {
+            "path": "infra/07-workflow/airflow/docker-compose.yml",
+            "sha256": "d593c5df25235db81192f6f8abf4ab86a7cf8da7fe90afe29e3340bf72aba8ae"
+          },
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "f31a101f416b0183e298e5848403ca99bbf5388ce456641dc0967ba17c5bd3c0"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "45391a624f9c0fd495804d2de80e47a5a4f0001c837504fd62d75378e2ab7263"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "9709ad7f17d10912c0d10fa8ffd2da63b2c536d6b2f20ac99a3c6fac1e62f023"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "f4c9a77583993ac4f76e88dfaff6ec2f42d9ebc987e48c092dd32176a7e14a81"
+          }
+        ],
+        "result": "MATCH: independently recomputed by SEC01 evidence worker",
+        "candidate_native_result": "Parent reported separate fresh worker 8 PASS (40.474s) and independent reviewer 8 PASS (33.917s), each UNIT5/ISOLATED3; these are not this worker native runs.",
+        "native_command": "HYHOME_WORKFLOW_REHEARSAL=1 python3 -m unittest tests.validation.test_workflow_version_bundle",
+        "native_exit_code": 0,
+        "full_feature_acceptance": "NOT_RUN",
+        "home": "NOT_RUN",
+        "scan_signature_sbom": "NOT_RUN"
+      },
+      "meaning": "Old version binding and native reports are historical only."
+    }
+  ],
+  "n8n_source_preparation": {
+    "task": "SPEC-0204-TSK-0017",
+    "source_revision": "e6807a7d16d8b9e180ff58456ab64e4ee721ca69",
+    "checked_at": "2026-10-15T15:53:41.352480+00:00",
+    "source_binding_reference": "update-ledger.json#/n8n_source_preparation/source_binding",
+    "results": [
+      {
+        "command": "python3 -m unittest tests.lib.supply_chain.test_update_gates tests.validation.test_workflow_version_bundle -q",
+        "exit_code": 0,
+        "tests_run": 36,
+        "skipped": 2,
+        "duration_seconds": 9.674,
+        "scope": "UNIT/STATIC source/metadata; skipped tests are native Airflow candidate class, not n8n native proof"
+      },
+      {
+        "command": "npm ci --ignore-scripts --no-audit --no-fund --bin-links=false --registry=https://registry.npmjs.org/",
+        "exit_code": 0,
+        "installed_packages": 136,
+        "scope": "local lock install; no lifecycle scripts or global install"
+      },
+      {
+        "command": "npm run test:coverage",
+        "exit_code": 0,
+        "tests_run": 27,
+        "line_percent": 97.38,
+        "branch_percent": 95.12,
+        "function_percent": 88.24,
+        "scope": "local Node26.10.0 TypeScript compile and unit/in-memory SMTP tests; not actual n8n image/runner/API/queue or Mailpit runtime"
+      },
+      {
+        "command": "docker compose --env-file .env.example --profile workflow-n8n config --quiet",
+        "exit_code": 0,
+        "scope": "public static render only; no file creation, secrets or runtime"
+      },
+      {
+        "command": "docker compose --env-file .env.example --profile workflow-n8n config --services",
+        "exit_code": 0,
+        "services": [
+          "n8n",
+          "n8n-worker",
+          "n8n-task-runner",
+          "n8n-task-runner-worker"
+        ],
+        "scope": "static source selection only"
+      },
+      {
+        "command": "bash scripts/operations/sync-tech-stack-versions.sh --check",
+        "exit_code": 0,
+        "repositories": 91,
+        "external": 71,
+        "local_custom": 20,
+        "scope": "derived source projection; no LAB files changed"
+      },
+      {
+        "command": "bash .agents/skills/infra-validate/scripts/static-checks.sh",
+        "exit_code": 2,
+        "pass": 11,
+        "fail": 0,
+        "blocked": 4,
+        "not_run": 2,
+        "reason": "input-graph external-absolute-path; Compose-dependent helper checks blocked; YAML/shell lint and owned fixture cleanup passed",
+        "scope": "required helper incomplete; scoped public Compose render separately passed"
+      },
+      {
+        "command": "check-document-metadata.py --mode check-changed --base-ref HEAD (six explicit changed paths)",
+        "exit_code": 1,
+        "selected": 6,
+        "violations": 148,
+        "scope": "initial Task status/duplicate Plan table defects plus archive fallback cascades; corrected candidate awaits fresh complete validation"
+      },
+      {
+        "command": "load_spec_packages(Path('docs/03.specs'))",
+        "exit_code": 0,
+        "packages": 36,
+        "scope": "authoritative current package parser after initial Task/Plan corrections; full scoped metadata rerun separate"
+      },
+      {
+        "command": "check-document-metadata.py --mode check-changed --base-ref HEAD (seven explicit changed paths including the original six)",
+        "exit_code": 0,
+        "selected": 7,
+        "violations": 0,
+        "legacy_exceptions": 0,
+        "transition_overrides": 0,
+        "observed_at": "2026-10-15T16:04:37.865532+00:00",
+        "scope": "corrected current Task/Plan and Spec/n8n documents; resolves prior scoped metadata failure, not the separate incomplete canonical static helper"
+      }
+    ],
+    "states": {
+      "source": "SOURCE_APPLIED",
+      "unit": "PASS: scoped current source and local custom-node tests only",
+      "static": "PARTIAL: scoped document metadata, public Compose, projection, Ruff and diff checks passed; canonical helper remains blocked on external-absolute-path",
+      "isolated_native": "NOT_RUN",
+      "build": "NOT_RUN",
+      "signature": "NOT_RUN",
+      "full_image_sbom_scan": "NOT_RUN",
+      "home": "NOT_RUN",
+      "migration": "NOT_RUN",
+      "backup": "NOT_RUN",
+      "recovery": "NOT_RUN",
+      "delivery": "NOT_RUN"
+    },
+    "meaning": "Current n8n-specific source preparation. Historical global/runtime fields retain their original scope; no current native acceptance is inferred."
+  },
+  "root_official_refresh": {
+    "lookup_reference": "release-lookups.json#/root_official_refresh",
+    "observations": 92,
+    "mapped_services": 111,
+    "vendor_channel_interpretations": 13,
+    "security_acceptance": "NOT_RUN",
+    "meaning": "Metadata-only supplier candidate coverage, not whole ROOT stable/image/security/native completion"
   }
 }

@@ -10,34 +10,68 @@
   "owner": "P04",
   "canonical_sql_path": "infra/07-workflow/airflow/workloads/manifest-pipeline/sql",
   "source_reference": {
-    "schema_version": 2,
+    "schema_version": 3,
     "scope": "SOURCE_REVIEW_ONLY",
     "observed_main": "5bf0e94795de2020a990756a65b4116a336613fa",
     "native_acceptance": "NOT_RUN",
     "sql_sha256": {
       "001_opsflow.sql": "82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f",
       "002_checks.sql": "7ed4bfd5f160e93ad810e8d32ce2221a02f1629946e5e4297817385acbbb13ed",
-      "003_business_date.sql": "830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72"
+      "003_business_date.sql": "830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72",
+      "004_notification_quarantine.sql": "ad8176d875b75c15d0e7bfc21c1cb67cd5b31240a4901bccec5b8bb0d931bde9"
     },
-    "claim_output_fields": ["id", "run_id", "source", "row_count", "lease_token", "lease_until"]
+    "claim_output_fields": [
+      "id",
+      "run_id",
+      "source",
+      "row_count",
+      "lease_token",
+      "lease_until"
+    ],
+    "safety_review_receipt": "docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0018-workflow-lease-and-connect-safety.md"
   },
   "draft": {
     "provenance": "P04 independently reviewed SQL v1 source at observed main; explicit five-field consumer projection. Native migration/role acceptance and transport targets remain unbound.",
-    "claim_fields": ["id", "run_id", "source", "row_count", "lease_token"],
+    "claim_fields": [
+      "id",
+      "run_id",
+      "source",
+      "row_count",
+      "lease_token",
+      "lease_until"
+    ],
     "run_id": "64 lowercase hexadecimal characters",
-    "sources": ["hy-home.docker", "hy-home.k8s", "Project-Template", "blog-data"],
-    "row_count": {"minimum": 1, "maximum": 5000},
+    "sources": [
+      "hy-home.docker",
+      "hy-home.k8s",
+      "Project-Template",
+      "blog-data"
+    ],
+    "row_count": {
+      "minimum": 1,
+      "maximum": 5000
+    },
     "id": "positive bigint as safe integer or canonical decimal string",
     "lease_token": "lowercase UUID; private capability at runtime",
-    "functions": ["claim_notification", "ack_notification", "retry_notification"],
+    "functions": [
+      "claim_notification",
+      "ack_notification",
+      "retry_not_sent_notification",
+      "unknown_notification"
+    ],
     "ack_retry_result": "strict boolean true for the same current id/token",
-    "role": "DB CONNECT and ops_flow USAGE plus claim/ack/retry EXECUTE; no owner/superuser/direct table/column/sequence access",
+    "role": "DB CONNECT and ops_flow USAGE plus claim/ack/retry/unknown EXECUTE; no owner/superuser/direct table/column/sequence access",
     "lease_seconds": 600,
     "max_attempts": 5,
     "workflow_timeout_seconds": 120,
     "smtp_timeout_seconds": 15,
-    "db_transport_timeout": "UNBOUND: P04/P03 must freeze server statement/socket cancellation below lease; no unsupported node JSON options",
-    "delivery": "at-least-once; SMTP acceptance and DB ack are non-atomic"
+    "db_transport_timeout": "UNBOUND: native DB timeout and cancellation must fit explicit 5-second ack reserve before activation",
+    "delivery": "SMTP acceptance and DB ack are non-atomic; ambiguous outcomes and expired sends are quarantined, never automatically resent",
+    "lease_timestamp": "SQL-rendered UTC YYYY-MM-DDTHH:mm:ss.SSSZ; required closed consumer field",
+    "ack_reserve_seconds": 5,
+    "maximum_clock_skew_seconds": 5,
+    "reconciliation": "migrator session SET ROLE opsflow_owner; quiesce every old execution/worker/SMTP attempt; exact unknown row + accepted_by_smtp/not_sent + evidence SHA256 retained per attempt; no-send remains bounded by five attempts",
+    "legacy_retry": "retry_notification retains its signature but quarantines ambiguous legacy calls"
   },
   "pending": [
     "P04 W38 genuine publication/outbox handoff",

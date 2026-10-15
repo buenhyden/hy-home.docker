@@ -10,6 +10,7 @@ import os
 import re
 import secrets
 import subprocess
+import sys
 import tempfile
 import time
 import unittest
@@ -21,6 +22,7 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 WORKLOAD = ROOT / "infra/07-workflow/airflow/workloads/manifest-pipeline"
 PROVISIONER = ROOT / "infra/04-data/dev-db/pg/provision/project.py"
+CLUSTER_CONNECT = PROVISIONER.parent / "cluster-connect.sql"
 MANIFEST = ROOT / "infra/04-data/dev-db/pg/provision/opsflow.json"
 MIGRATION_1 = WORKLOAD / "sql/001_opsflow.sql"
 MIGRATION_2 = WORKLOAD / "sql/003_business_date.sql"
@@ -209,6 +211,16 @@ def provision_sql() -> str:
             raise RehearsalFailure("provision credential input contract changed")
         sql = sql.replace(source, target)
     return sql
+def monitor_sql() -> str:
+    sys.path.insert(0, str(PROVISIONER.parent))
+    try:
+        spec = importlib.util.spec_from_file_location("p04_monitor", PROVISIONER.parent / "monitor.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.sql().replace("\\getenv monitor_secret DEV_MONITOR_PASSWORD", "\\set monitor_secret 'AAAAAAAAAAAAAAAAAAAAAAAA'")
+    finally:
+        sys.path.remove(str(PROVISIONER.parent))
+
 def migration_sql(path: Path) -> str:
     content = path.read_text(encoding="utf-8")
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
@@ -396,7 +408,7 @@ class OpsflowDatabaseNativeRehearsal(unittest.TestCase):
         image, context = native_selection()
         self.receipt = {"case": self._testMethodName, "image_id": image, "context": context, "containers": []}
 
-    def fixture(self, bootstrap):
+    def fixture(self, bootstrap, *, reviewed_cluster=True):
         image, context = native_selection()
         fixture = PgFixture(image, context, bootstrap)
         self.fixtures.append(fixture)
@@ -405,6 +417,8 @@ class OpsflowDatabaseNativeRehearsal(unittest.TestCase):
         self.receipt["containers"].append(record)
         fixture.create()
         record["id"] = fixture.container_id
+        if reviewed_cluster:
+            self.cluster_connect(fixture)
         return fixture
 
     def tearDown(self):
@@ -418,6 +432,10 @@ class OpsflowDatabaseNativeRehearsal(unittest.TestCase):
         print("OPSFLOW_PG_REHEARSAL_RECEIPT " + json.dumps(self.receipt, sort_keys=True))
         if failures:
             raise RehearsalFailure("owned container cleanup failed (details withheld)")
+
+    @staticmethod
+    def cluster_connect(fixture):
+        fixture.psql("p04_audit", "postgres", "\\set reviewed_connect_consumers 'reviewed'\n" + CLUSTER_CONNECT.read_text())
 
     @staticmethod
     def output(fixture, role, sql, database="opsflow_dev"):
@@ -539,11 +557,129 @@ class OpsflowDatabaseNativeRehearsal(unittest.TestCase):
             project_pointer = pointer.replace("hy-home.docker", "Project-Template")
             self.assertEqual(concurrent_id.encode(), self.output(restore, "opsflow_reader", project_pointer))
 
+    def test_v2_unknown_retry_migrates_to_quarantine(self):
+        source = self.fixture("p04_audit")
+        source.psql("p04_audit", "postgres", provision_sql())
+        for path in (MIGRATION_1, MIGRATION_2):
+            source.psql("opsflow_migrator", "opsflow_dev", migration_sql(path))
+        _, publication = publish_sql("hy-home.k8s", "7" * 64, "2026-04-02T00:00:00Z")
+        self.assertEqual(b"published", self.output(source, "opsflow_ingest", publication))
+        claim = "SELECT id||'|'||lease_token FROM ops_flow.claim_notification();"
+        row = self.output(source, "opsflow_notifier", claim).decode().split("|")
+        legacy_retry = f"SELECT ops_flow.retry_notification({int(row[0])},'{row[1]}'::uuid);"
+        self.assertEqual(b"t", self.output(source, "opsflow_notifier", legacy_retry))
+        source.psql("p04_audit", "opsflow_dev", "UPDATE ops_flow.outbox SET next_attempt_at=clock_timestamp()-interval '1 second';")
+        source.psql("opsflow_migrator", "opsflow_dev", migration_sql(WORKLOAD / "sql/004_notification_quarantine.sql"))
+        self.assertEqual(b"unknown", self.output(source, "opsflow_reader", "SELECT state FROM ops_flow.delivery_status;"))
+        self.assertEqual(b"", self.output(source, "opsflow_notifier", claim))
+        self.receipt["legacy_v2_retry_quarantined"] = "PASS"
+
+    def test_notification_unknown_expiry_reconciliation_and_restore(self):
+        source = self.fixture("p04_audit")
+        source.psql("p04_audit", "postgres", provision_sql())
+        for path in (MIGRATION_1, MIGRATION_2, WORKLOAD / "sql/004_notification_quarantine.sql"):
+            source.psql("opsflow_migrator", "opsflow_dev", migration_sql(path))
+        _, publication = publish_sql("hy-home.docker", "6" * 64, "2026-04-01T00:00:00Z")
+        self.assertEqual(b"published", self.output(source, "opsflow_ingest", publication))
+        claim = "SELECT id||'|'||lease_token FROM ops_flow.claim_notification();"
+        row = self.output(source, "opsflow_notifier", claim).decode().split("|")
+        outbox_id, token = int(row[0]), row[1]
+        unknown = f"SELECT ops_flow.unknown_notification({outbox_id},'{token}'::uuid);"
+        legacy = f"SELECT ops_flow.retry_notification({outbox_id},'{token}'::uuid);"
+        self.assertEqual(b"t", self.output(source, "opsflow_notifier", legacy))
+        self.assertEqual(b"", self.output(source, "opsflow_notifier", claim))
+        self.assertEqual(b"unknown", self.output(source, "opsflow_reader", "SELECT state FROM ops_flow.delivery_status;"))
+        rejected = source.psql("opsflow_notifier", "opsflow_dev", f"SELECT ops_flow.reconcile_notification({outbox_id},'not_sent','{'a' * 64}');", check=False)
+        self.assertNotEqual(0, rejected.returncode)
+        reconcile = f"SELECT ops_flow.reconcile_notification({outbox_id},'not_sent','{'a' * 64}');"
+        self.assertEqual(b"t", self.output(source, "opsflow_migrator", "SET ROLE opsflow_owner;" + reconcile))
+        row = self.output(source, "opsflow_notifier", claim).decode().split("|")
+        new_token = row[1]
+        self.assertNotEqual(token, new_token)
+        self.assertEqual(b"f", self.output(source, "opsflow_notifier", unknown))
+        event = f"SELECT evidence_sha256 FROM ops_flow.notification_reconciliations WHERE outbox_id={outbox_id} AND attempt=1;"
+        self.assertEqual(b"a" * 64, self.output(source, "p04_audit", event))
+        for statement in ("INSERT INTO ops_flow.notification_reconciliations VALUES (1,1,'not_sent','" + "a" * 64 + "',clock_timestamp());", "UPDATE ops_flow.notification_reconciliations SET result='not_sent';", "DELETE FROM ops_flow.notification_reconciliations;"):
+            denied = source.psql("opsflow_notifier", "opsflow_dev", statement, check=False)
+            self.assertTrue(psql_error_is_expected(denied, "42501"))
+        source.psql("p04_audit", "opsflow_dev", f"UPDATE ops_flow.outbox SET lease_until=clock_timestamp()-interval '1 second' WHERE id={outbox_id};")
+        self.assertEqual(b"f", self.output(source, "opsflow_notifier", f"SELECT ops_flow.ack_notification({outbox_id},'{new_token}'::uuid);"))
+        self.assertEqual(b"", self.output(source, "opsflow_notifier", claim))
+        self.assertEqual(b"unknown", self.output(source, "opsflow_reader", "SELECT state FROM ops_flow.delivery_status;"))
+        # A simulated capture acceptance plus lost DB ack remains quarantined after dump/restore.
+        roles = source.pipe("pg_dumpall", "--roles-only", "--no-role-passwords", "-U", "p04_audit").stdout
+        dump = source.pipe("pg_dump", "-Fc", "--create", "-U", "p04_audit", "-d", "opsflow_dev").stdout
+        restore = self.fixture("p04_audit")
+        restored_roles = restore.pipe("psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=0", "-v", "VERBOSITY=verbose", "-U", "p04_audit", "-d", "postgres", "-f", "-", input_=roles, check=False)
+        self.assertTrue(roles_restore_error_is_expected(roles, restored_roles.stderr, restored_roles.returncode))
+        restore.pipe("pg_restore", "--exit-on-error", "--create", "-U", "p04_audit", "-d", "postgres", input_=dump)
+        self.assertEqual(b"", self.output(restore, "opsflow_notifier", claim))
+        self.assertEqual(b"a" * 64, self.output(restore, "p04_audit", event))
+        accepted = f"SELECT ops_flow.reconcile_notification({outbox_id},'accepted_by_smtp','{'b' * 64}');"
+        self.assertEqual(b"t", self.output(restore, "opsflow_migrator", "SET ROLE opsflow_owner;" + accepted))
+        self.assertEqual(b"", self.output(restore, "opsflow_notifier", claim))
+        self.assertEqual(b"accepted_by_smtp", self.output(restore, "opsflow_reader", "SELECT state FROM ops_flow.delivery_status;"))
+        self.assertEqual(b"2", self.output(restore, "p04_audit", f"SELECT count(*) FROM ops_flow.notification_reconciliations WHERE outbox_id={outbox_id};"))
+        self.assertEqual(b"a" * 64, self.output(restore, "p04_audit", event))
+        _, next_publication = publish_sql("hy-home.k8s", "8" * 64, "2026-04-03T00:00:00Z")
+        self.assertEqual(b"published", self.output(restore, "opsflow_ingest", next_publication))
+        next_id, next_token = self.output(restore, "opsflow_notifier", claim).decode().split("|")
+        self.assertEqual(b"t", self.output(restore, "opsflow_notifier", f"SELECT ops_flow.unknown_notification({int(next_id)},'{next_token}'::uuid);"))
+        self.assertEqual(b"t", self.output(restore, "opsflow_migrator", f"SET ROLE opsflow_owner;SELECT ops_flow.reconcile_notification({int(next_id)},'not_sent','{'c' * 64}');"))
+        retry_id, retry_token = self.output(restore, "opsflow_notifier", claim).decode().split("|")
+        self.assertEqual(next_id, retry_id)
+        self.assertEqual(b"t", self.output(restore, "opsflow_notifier", f"SELECT ops_flow.ack_notification({int(retry_id)},'{retry_token}'::uuid);"))
+        self.assertEqual(b"c" * 64, self.output(restore, "p04_audit", f"SELECT evidence_sha256 FROM ops_flow.notification_reconciliations WHERE outbox_id={int(next_id)} AND attempt=1;"))
+        self.receipt["reconciliation_history_restore"] = "PASS"
+        self.receipt["quarantine_expiry_ack_loss_restore"] = "PASS"
+
+    def test_monitor_admission_requires_reviewed_cluster_before_login(self):
+        source = self.fixture("p04_audit", reviewed_cluster=False)
+        blocked = source.psql("p04_audit", "postgres", monitor_sql(), check=False)
+        self.assertNotEqual(0, blocked.returncode)
+        self.assertIn(b"monitor_cross_database_connect_requires_cluster_review", blocked.stderr)
+        self.assertEqual(b"f", self.output(source, "p04_audit", "SELECT rolcanlogin FROM pg_roles WHERE rolname='dev_pg_monitor';", "postgres"))
+        self.cluster_connect(source)
+        source.psql("p04_audit", "postgres", monitor_sql())
+        self.assertEqual(b"1", self.output(source, "dev_pg_monitor", "SELECT 1;", "postgres"))
+        self.assertEqual(2, source.psql("dev_pg_monitor", "template1", "SELECT 1;", check=False).returncode)
+        self.receipt["monitor_cluster_admission"] = "PASS"
+
     def test_cross_database_connect_is_denied(self):
         source = self.fixture("p04_audit")
         source.psql("p04_audit", "postgres", provision_sql())
-        result = source.psql("opsflow_ingest", "postgres", "SELECT 1;", check=False)
-        self.receipt["cross_database_denial"] = "PASS" if result.returncode else "FAIL_ALLOWED"
-        self.assertNotEqual(0, result.returncode)
+        for role in ("opsflow_migrator", "opsflow_ingest", "opsflow_notifier", "opsflow_reader"):
+            for database in ("postgres", "template1"):
+                result = source.psql(role, database, "SELECT 1;", check=False)
+                self.assertEqual(2, result.returncode, (role, database))
+                self.assertIn(f'FATAL:  permission denied for database "{database}"'.encode(), result.stderr)
+                effective = f"SELECT has_database_privilege('{role}','{database}','CONNECT');"
+                self.assertEqual(b"f", self.output(source, "p04_audit", effective, "postgres"))
+            self.assertEqual(b"1", self.output(source, role, "SELECT 1;"))
+        self.receipt["cross_database_denial"] = "PASS"
+
+    def test_cross_database_admission_precedes_login_and_preserves_explicit_grants(self):
+        source = self.fixture("p04_audit", reviewed_cluster=False)
+        rejected = source.psql("p04_audit", "postgres", provision_sql(), check=False)
+        self.assertNotEqual(0, rejected.returncode)
+        self.assertIn(b"cross_database_connect_requires_cluster_review", rejected.stderr)
+        self.assertEqual(b"0\n0", self.output(source, "p04_audit", "SELECT count(*) FROM pg_roles WHERE rolname LIKE 'opsflow_%' AND rolcanlogin;SELECT count(*) FROM pg_database WHERE datname='opsflow_dev';", "postgres"))
+        source.psql("p04_audit", "postgres", "CREATE ROLE third_party LOGIN;GRANT CONNECT ON DATABASE postgres TO third_party;CREATE ROLE dev_pg_monitor LOGIN;COMMENT ON ROLE dev_pg_monitor IS 'dev-pg:development:monitor';")
+        self.cluster_connect(source)
+        self.cluster_connect(source)
+        self.assertEqual(b"1", self.output(source, "third_party", "SELECT 1;", "postgres"))
+        self.assertEqual(b"1", self.output(source, "dev_pg_monitor", "SELECT 1;", "postgres"))
+        self.assertEqual(2, source.psql("dev_pg_monitor", "template1", "SELECT 1;", check=False).returncode)
+        for grant, revoke in (
+            ("GRANT CONNECT ON DATABASE postgres TO opsflow_ingest;", "REVOKE CONNECT ON DATABASE postgres FROM opsflow_ingest;"),
+            ("CREATE ROLE other_reader;GRANT CONNECT ON DATABASE postgres TO other_reader;GRANT other_reader TO opsflow_ingest;", "REVOKE other_reader FROM opsflow_ingest;"),
+        ):
+            source.psql("p04_audit", "postgres", grant)
+            denied = source.psql("p04_audit", "postgres", provision_sql(), check=False)
+            self.assertNotEqual(0, denied.returncode)
+            self.assertEqual(b"0\n0", self.output(source, "p04_audit", "SELECT count(*) FROM pg_roles WHERE rolname LIKE 'opsflow_%' AND rolcanlogin;SELECT count(*) FROM pg_database WHERE datname='opsflow_dev';", "postgres"))
+            source.psql("p04_audit", "postgres", revoke)
+        source.psql("p04_audit", "postgres", provision_sql())
+        self.receipt["public_direct_inherited_admission"] = "PASS"
 
 # fmt: on
