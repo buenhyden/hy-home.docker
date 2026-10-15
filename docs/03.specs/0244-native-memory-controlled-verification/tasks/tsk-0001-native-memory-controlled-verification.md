@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -100,6 +100,15 @@ remains pending. The operator may start the one frozen attempt after this Task
 record; all other boundaries and stop conditions in the approved plan remain
 in force.
 
+### Forced-off Hook Attempt
+
+The one authorized forced-off provider attempt failed closed at startup with
+exit 1. It produced no stdout; stderr was discarded. No hook, tool, or model
+output occurred and no timeout was observed. Therefore its sole successful
+label was not earned. The normal no-model UI observation remains limited to
+`SessionStart=1` and `SessionEnd=1`, and normal merged auto-memory remains
+unknown.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -124,6 +133,7 @@ in force.
 | Global marker cleanup boundary | 5 | W5 | Delete only proven-new zero-byte privacy-environment placeholders at the user-global location | Eight proven-new zero-byte files detected; automatic deletion rejected; four ambiguous files and all directories retained | FAIL | Cleanup Follow-up | required | - |
 | Global marker cleanup | 5 | W5 | Delete only proven-new zero-byte privacy-environment placeholders at the user-global location | Guarded cleanup deleted all eight approved proven-new zero-byte files; four ambiguous files and all directories preserved | PASS | Cleanup Follow-up | required | Global marker cleanup boundary |
 | Forced-off hook plan review | 4 | W4 | Security review of one session-only forced-off hook-delivery attempt without privacy-environment scrub | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`; sole PASS label `HOOK_DELIVERY_VERIFIED_WITH_SESSION_FORCED_MEMORY_OFF`; normal merged effective-off remains unknown | PASS | Forced-off Hook Delivery Plan | required | - |
+| Forced-off hook attempt | 4 | W4 | One approved session-only forced-off hook-delivery attempt | Startup exit 1; stdout absent; stderr discarded; zero hooks, tools, and model output; no timeout | FAIL | Forced-off Hook Attempt | required | - |
 
 ## Criterion Acceptance
 
