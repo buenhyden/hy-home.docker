@@ -96,8 +96,11 @@ immutable-binding rule.
 W25's doc-writer exception owns only
 `.agents/governance/environment-constraints.md` and
 `docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`.
-It clarifies only the full-commit/current-byte source-pin contract; no policy
-schema, runtime procedure, or historical record changes in this exception.
+After an actual required-check readback and scoped review, it also owns only
+`.github/rulesets/main-protection.md` for that canonical observation. These
+exceptions clarify the full-commit/current-byte source-pin contract and the
+observed protection state; they do not change a policy schema, runtime
+procedure, or historical record.
 
 ### Exact writer map
 

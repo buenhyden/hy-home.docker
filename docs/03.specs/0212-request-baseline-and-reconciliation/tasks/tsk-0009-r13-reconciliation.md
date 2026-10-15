@@ -1,8 +1,8 @@
 ---
 title: "R13 Reconciliation Follow-up Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -70,6 +70,10 @@ and `docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.
 it clarifies the full-commit/current-byte source pin without changing a policy
 schema, runtime procedure, or historical record.
 
+After an actual required-check readback and scoped review, the doc-writer
+exception also owns only `.github/rulesets/main-protection.md` for the
+canonical observed protection state. It does not authorize a ruleset mutation.
+
 ### Hosted validation authorization and plan
 
 The approved Spec and Plan, completed local source receipts, and the observed
@@ -88,6 +92,32 @@ changes a leaf-owner acceptance decision.
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0009 | draft | ready | #hosted-validation-authorization-and-plan |
+| SPEC-0212-TSK-0009 | ready | in-progress | #draft-pull-request-and-observational-boundaries |
+
+### Draft pull request and observational boundaries
+
+Draft PR [#506](https://github.com/buenhyden/hy-home.docker/pull/506) was
+observed with head `0c598de264c0302f5032738b14ffbefe36b53cc7`, base
+`5a88c7937bf427021f2fd0441e04b1011ecd28a9`, and candidate-quality run
+`38818745829` / check `116709839952` in progress. This observed direct edge
+starts the delivery work; it neither accepts criterion 20 nor records a hosted
+result.
+
+Read-only current-host Docker observation found the five named services healthy,
+OpenBao status exit `0`, and public health HTTP `200` with TLS verification
+`0`. Traefik had the read-only CA mount; Prometheus and Gatus lacked their
+declared CA mounts, so their maintenance-window integration is NOT_DEPLOYED.
+No secret, raw configuration, log, database, restart, deployment, restore, or
+unseal action was performed.
+
+The public Codex CLI feature diagnostic reported `memories=false`; this is only
+an effective public CLI feature-boundary observation. It does not establish
+desktop-app internal memory-off, project-trust application, or individual native
+event delivery. Claude's tracked project declaration was observed, but its
+merged effective memory-off remains UNVERIFIED. Sanitized Git resolution gave
+the separate worktree and main checkout the same store target path without
+opening the database. A proposed `claude doctor` diagnostic was automatically
+rejected because it could report authentication state; it was not run.
 
 ### Local delivery ledger
 
@@ -178,6 +208,10 @@ not execute a PR leaf.
 | Clean changed-gate observation | 20 | W25 | `run-ci-gate changed local --explain` | Clean isolated worktree | NOT_APPLICABLE | No changed-path selection; routing observation only | optional | - |
 | Protection and hook observation | 20 | W25 | Read-only remote and Git configuration inspection | `origin/main` `e6807a7`; strict protection with no contexts; hooksPath and init.templateDir unset | PASS | r13 isolated worktree | optional | - |
 | Advisory graph availability | 20 | W25 | Graphify CLI and report discovery | Current source environment | NOT_APPLICABLE | No tracked report or CLI found | optional | - |
+| Draft PR observation | 20 | W25 | Read-only pull-request and check observation | PR #506 draft; head `0c598de264c0302f5032738b14ffbefe36b53cc7`; base `5a88c7937bf427021f2fd0441e04b1011ecd28a9`; candidate-quality run `38818745829` / check `116709839952` in progress | PASS | Hosted observation | required | - |
+| Current-host Docker observation | 20 | W25 | Read-only current-host Docker preflight | Five named services healthy; OpenBao status exit 0; public health HTTP 200/TLS 0; Traefik CA mount present; Prometheus/Gatus declared CA mounts absent and NOT_DEPLOYED | PASS | Sanitized runtime observation | required | - |
+| Native memory boundary observation | 20 | W25 | Public CLI and static native-memory observation | Codex public CLI feature boundary `memories=false`; Claude merged effective setting and provider native-event delivery UNVERIFIED; store target paths equal without database open | PASS | Sanitized native observation | required | - |
+| Rejected native diagnostic | 20 | W25 | Proposed `claude doctor` observation | DEFER: automatic review rejected possible authentication-state reporting; command not run | NOT_RUN | Sanitized native observation | required | - |
 | Script-manifest observation | 20 | W25 | Script-manifest validation | 106 manifest paths active or retained | PASS | r13 isolated worktree | optional | - |
 | Operations-catalog observation | 20 | W25 | Operations catalog validation | Current catalog | PASS | r13 isolated worktree | optional | - |
 | Inventory-scope observation | 20 | W25 | Tracked-path inventory | 2,280 tracked paths; 1,371 Markdown; 386 script/code candidates; classification only, not whole-body semantic audit | PASS | r13 isolated worktree | optional | - |
