@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Guide"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -32,11 +32,13 @@ root Compose가 [해당 구현](../../../../infra/08-ai/comfyui/docker-compose.y
 빌드 권한이다. [파생된 Compose 이미지 프로젝션](../../../../infra/tech-stack.versions.json)은
 drift 확인용 뷰일 뿐이다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden`이 대상이다. 목표는 승인된 워크플로로 ComfyUI를 쓰고, 모델·custom node·사용자 데이터의 보존 경계를 알고 운영하는 것이다.
 
-## Usage
+## Concepts
 
 ### 데이터와 설정 경계
 
@@ -53,6 +55,8 @@ AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden
 유지해야 한다. `HF_HOME`, `TORCH_HOME`, NVIDIA compute/utility capability,
 `gpus: all`과 linked Compose의 CPU/memory 설정은 선언된 소스 한도일 뿐 측정된 여유 자원이
 아니다. Ollama와의 공유 GPU 피크 동시성은 검증되지 않았다.
+
+## Usage
 
 ### 일반적인 운영
 
@@ -87,15 +91,6 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 
 활성 이미지의 영속성 중단 조건은 [정책의 Active-image persistence stop condition](../../policies/09-ai-and-search/0081-comfyui.md#active-image-persistence-stop-condition)이 소유한다. 해소되기 전에는 재생성, 이미지 업그레이드, cache/volume 정리, 완전한 백업 판정을 하지 않는다.
 
-### Common Checks
-
-- [Compose 소스](../../../../infra/08-ai/comfyui/docker-compose.yml)에서 profile,
-  라우트, 마운트, 리소스, healthcheck를 점검한다.
-- 업그레이드 전에 실제 custom-node와 모델 출처를 점검한다; 캐시 디렉터리를
-  출처로 신뢰하지 않는다.
-- 영속 콘텐츠를 변경하기 전에 중앙 [백업 정책](../../policies/10-platform-and-backup/0021-backup-and-restore.md)을
-  사용한다.
-
 ### Runbook Handoff
 
 승인 게이트된 진단과 복구에는 [ComfyUI Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)을
@@ -106,6 +101,17 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 - Governing architecture: [AD-0008](../../../02.architecture/descriptions/0008-ai-architecture.md)
 - [Policy](../../policies/09-ai-and-search/0081-comfyui.md), [Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)
 - [Official custom-node management guidance](https://docs.comfy.org/manager/overview)
+
+## Troubleshooting
+
+### Common Checks
+
+- [Compose 소스](../../../../infra/08-ai/comfyui/docker-compose.yml)에서 profile,
+  라우트, 마운트, 리소스, healthcheck를 점검한다.
+- 업그레이드 전에 실제 custom-node와 모델 출처를 점검한다; 캐시 디렉터리를
+  출처로 신뢰하지 않는다.
+- 영속 콘텐츠를 변경하기 전에 중앙 [백업 정책](../../policies/10-platform-and-backup/0021-backup-and-restore.md)을
+  사용한다.
 
 ## Related Documents
 

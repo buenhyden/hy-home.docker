@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway) Product Requirements"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0001"
 created: "2026-03-26"
@@ -12,8 +12,6 @@ created: "2026-03-26"
 # Gateway Tier (01-gateway) Product Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -25,33 +23,7 @@ This document defines the product requirements for the `01-gateway` tier, the un
 - Without automated service discovery, operational complexity increases.
 - Centralized control and visibility (logging/metrics) over externally exposed paths are lacking.
 
-## Requirements
-
-### Requirements
-
-### Functional Requirements
-
-- **REQ-0001-FR-0001**: HTTP(80) traffic must be forcibly redirected to HTTPS(443).
-- **REQ-0001-FR-0002**: The system must detect container creation via the Docker Provider and automatically generate routes.
-- **REQ-0001-FR-0003**: The system must support TLS 1.2/1.3 and modern cipher suites to guarantee communication security.
-- **REQ-0001-FR-0004**: The system must integrate with OAuth2 Proxy to provide authentication (SSO) middleware for specific paths.
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-### Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0001-FR-0001**: All externally exposed services must be accessed via TLS 100% of the time.
-- **REQ-0001-FR-0002**: When a new container is deployed, routing must become active within 60 seconds without any separate configuration file edits.
-
 ## Scope
-
-### Scope
 
 ### Stakeholders and User Needs
 
@@ -92,6 +64,28 @@ Provide a unified, secure, and observable entry point for all external traffic t
 
 - **Dependency**: Docker Socket access is required for container discovery.
 - **Assumption**: The required certificates and files are prepared in advance via `scripts/operations/gen-secrets.sh`.
+
+## Requirements
+
+### Functional Requirements
+
+- **REQ-0001-FR-0001**: HTTP(80) traffic must be forcibly redirected to HTTPS(443).
+- **REQ-0001-FR-0002**: The system must detect container creation via the Docker Provider and automatically generate routes.
+- **REQ-0001-FR-0003**: The system must support TLS 1.2/1.3 and modern cipher suites to guarantee communication security.
+- **REQ-0001-FR-0004**: The system must integrate with OAuth2 Proxy to provide authentication (SSO) middleware for specific paths.
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0001-FR-0001**: All externally exposed services must be accessed via TLS 100% of the time.
+- **REQ-0001-FR-0002**: When a new container is deployed, routing must become active within 60 seconds without any separate configuration file edits.
 
 ## Related Documents
 

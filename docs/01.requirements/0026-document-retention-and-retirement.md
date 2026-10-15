@@ -1,10 +1,10 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "2.2.0"
+version: "2.2.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -14,8 +14,6 @@ created: "2026-09-01"
 
 ## Overview
 
-### Overview
-
 ### Problem and Goals
 
 Retention rules must outlive the change that introduced them. A document remains
@@ -24,9 +22,42 @@ what existed, why it left, its current owner, and recoverable source evidence.
 Capture facts, current assessment, and availability are distinct. Age, corpus
 size, and absent incoming links cannot by themselves authorize deletion.
 
-## Requirements
+## Scope
 
-### Requirements
+### Stakeholders and User Needs
+
+- Maintainers need durable retention and review criteria independent of old Tasks.
+- Agents need enforceable lifecycle, approval, preservation, and citation boundaries.
+- Auditors need discoverable provenance and the original context of decisions.
+
+### Constraints
+
+- The exact-preservation cutover is the registered baseline
+  `be949f338056ee05ca139ea72403576aa18f21d8`; captures already present there retain
+  legacy comparison. The named ADR-0036 bootstrap exception permits only its
+  registered metadata transition. All other new captures use prepared full-byte
+  originals. Do not invent source commits without commit authorization.
+- Packages captured while ADR-0031 was accepted may historically contain only
+  their Spec. Preserve that scope; do not manufacture missing members.
+- Keep sealed Tombstones and Migrations in their original form. Assessment does
+  not change capture disposition, source envelope, or original terminal status.
+- Distinguish worktree, index, target commit, and original-link context. Missing
+  objects, unsupported object formats, gitlinks, and external large-object
+  recovery are explicit verification limits. Do not fetch or execute filters
+  merely to conceal a limit.
+- Restore history into a separately explained current owner; do not silently
+  recreate a removed frozen unit as current authority. Secret exposure requires
+  separately authorized security response, not ordinary archive removal.
+
+### Traceability
+
+- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
+- [Document lifecycle architecture](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
+- ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
+- [ADR-0037 Archive lifecycle and preservation decision](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
+
+## Requirements
 
 ### Functional Requirements
 
@@ -148,43 +179,6 @@ size, and absent incoming links cannot by themselves authorize deletion.
   exceptions, and no current link points at a removed payload.
 - Current metadata, lifecycle, catalog, link, and affected regression checks
   pass on the explicitly selected snapshot; unavailable checks are reported.
-
-## Scope
-
-### Scope
-
-### Stakeholders and User Needs
-
-- Maintainers need durable retention and review criteria independent of old Tasks.
-- Agents need enforceable lifecycle, approval, preservation, and citation boundaries.
-- Auditors need discoverable provenance and the original context of decisions.
-
-### Constraints
-
-- The exact-preservation cutover is the registered baseline
-  `be949f338056ee05ca139ea72403576aa18f21d8`; captures already present there retain
-  legacy comparison. The named ADR-0036 bootstrap exception permits only its
-  registered metadata transition. All other new captures use prepared full-byte
-  originals. Do not invent source commits without commit authorization.
-- Packages captured while ADR-0031 was accepted may historically contain only
-  their Spec. Preserve that scope; do not manufacture missing members.
-- Keep sealed Tombstones and Migrations in their original form. Assessment does
-  not change capture disposition, source envelope, or original terminal status.
-- Distinguish worktree, index, target commit, and original-link context. Missing
-  objects, unsupported object formats, gitlinks, and external large-object
-  recovery are explicit verification limits. Do not fetch or execute filters
-  merely to conceal a limit.
-- Restore history into a separately explained current owner; do not silently
-  recreate a removed frozen unit as current authority. Secret exposure requires
-  separately authorized security response, not ordinary archive removal.
-
-### Traceability
-
-- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
-- [Document lifecycle architecture](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
-- [ADR-0037 Archive lifecycle and preservation decision](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
 
 ## Related Documents
 

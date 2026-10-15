@@ -1,10 +1,10 @@
 ---
 title: "Prompt v9 Residual Corrections Task"
-version: "0.7.2"
+version: "0.7.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0232-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-13"
 
 # Prompt v9 Residual Corrections Task
 
-## Objective
+## Overview
+
+### Objective
 
 Close the four prompt v9 findings that still hold on `main` after SPEC-0230
 and SPEC-0231: F26, F20, F22 and F02.

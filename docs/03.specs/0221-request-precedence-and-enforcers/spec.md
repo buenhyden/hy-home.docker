@@ -1,10 +1,10 @@
 ---
 title: "Request Precedence and Enforcers"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0221"
 parent_ids:
@@ -78,6 +78,13 @@ and hooks, other repositories, and hosted workflow behavior.
 4. Every row of the TSK-0001 conflict table is closed as changed, kept with its
    reason, or limited by a named permission.
 5. The changed gate, the staged style check and `candidate-quality` pass.
+
+## Failure Conditions
+
+Missing precedence clauses or restoration of the blanket approval rule
+must fail the governance contract. Local candidate preflight must fail
+without the merge-base, on either constituent check, or on unsupported
+arguments; a local pass cannot stand in for hosted candidate acceptance.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Operations Policy"
-version: "1.2.4"
+version: "1.2.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0065"
 parent_ids:
@@ -53,11 +53,6 @@ TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트�
 신뢰할 수 없는 평문 자격 증명 전송, 작성자(writer)가 있는 상태의 GC, 아티팩트의
 유일한 사본 삭제를 허용하는 예외는 없다.
 
-### Verification
-
-`/v2/` 헬스만으로는 충분하지 않다. 런타임 수용 기준에는 네트워크 경계, 필요 시
-TLS/인증, push, pull, digest 일치가 포함된다.
-
 ### Review Cadence
 
 노출, 인증, 저장소, 삭제, 이미지, 아티팩트 보존이 변경될 때 검토한다.
@@ -67,6 +62,11 @@ TLS/인증, push, pull, digest 일치가 포함된다.
 - [가이드](../../guides/10-platform-and-backup/0065-registry.md) (`GDE-0065`)
 - [런북](../../runbooks/10-platform-and-backup/0065-registry.md) (`RUN-0065`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Verification
+
+`/v2/` 헬스만으로는 충분하지 않다. 런타임 수용 기준에는 네트워크 경계, 필요 시
+TLS/인증, push, pull, digest 일치가 포함된다.
 
 ## Related Documents
 

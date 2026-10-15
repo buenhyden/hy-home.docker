@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.13.6"
+version: "1.13.7"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -24,7 +24,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 - **Optional overlays**: 아래 typed 계약으로 분류한 추적된 root 서비스 확장 소스. 독립 entrypoint나 새 서비스 inventory가 아니다.
 - **Environments**: HOME, DEV, OPTIONAL, LAB 및 명시적 migration/maintenance 작업. LAB은 root의 profile 선택 대상이 아니다.
 
-## Definitions
+### Definitions
 
 각 이름은 정확히 한 행, 한 category와 비어 있지 않은 purpose를 가진다.
 `baseline`은 공통 출발점, `domain`은 기능 영역, `capability`는 선택 기능,
@@ -290,7 +290,23 @@ source·문서·secret을 함께 제거한다.
 고가용성을 증명하지 않는다. 알려진 조합 제약을 숨기기 위해 검증을 우회하지
 않으며 승인된 예외는 이유·범위·복구·종료 조건을 current Task에 기록한다.
 
-### Verification
+### Review Cadence
+
+- **Owner**: @buenhyden. Infra/DevOps 역할은 책임 설명이다.
+- **Cadence**: profile 또는 서비스 선언을 변경할 때.
+- **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
+
+### Traceability
+
+- [Workspace catalog](../../README.md)
+- [Independent LAB entrypoints](../../../../labs/postgresql-ha.md)
+- [Supabase LAB source](../../../../labs/supabase/README.md)
+- [Convergence specification](../../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
+- [Runtime version projection](../../../../infra/tech-stack.versions.json)
+- [Original enablement decision](../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
+- [Sibling resolution](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
+
+## Verification
 
 ```bash
 bash scripts/validation/validate-docker-compose.sh
@@ -322,22 +338,6 @@ category와 필수 dependency 폐포를 검사한다.
 선택 closure 성공은 optional dependency의 앱 endpoint나 provisioning 완료를
 보장하지 않는다. 예를 들어 Grafana DB provisioning 선택과 실제 앱 사용 준비는
 [Grafana Guide](../../guides/07-observability/0041-grafana.md)에서 확인한다.
-
-### Review Cadence
-
-- **Owner**: @buenhyden. Infra/DevOps 역할은 책임 설명이다.
-- **Cadence**: profile 또는 서비스 선언을 변경할 때.
-- **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
-
-### Traceability
-
-- [Workspace catalog](../../README.md)
-- [Independent LAB entrypoints](../../../../labs/postgresql-ha.md)
-- [Supabase LAB source](../../../../labs/supabase/README.md)
-- [Convergence specification](../../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
-- [Runtime version projection](../../../../infra/tech-stack.versions.json)
-- [Original enablement decision](../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
-- [Sibling resolution](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
 
 ## Related Documents
 

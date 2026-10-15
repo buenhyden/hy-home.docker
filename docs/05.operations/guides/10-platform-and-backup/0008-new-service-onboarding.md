@@ -1,17 +1,16 @@
 ---
 title: "New Service Onboarding Guide"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0008"
 parent_ids:
 - "RUN-0009"
 created: "2026-06-04"
 ---
-
 
 # New Service Onboarding Guide
 
@@ -22,7 +21,9 @@ created: "2026-06-04"
 (`docs/99.templates/templates/specs/spec.template.md`)을 사용해, 보안 하드닝·이미지 핀·
 healthcheck 표준을 처음부터 갖춘 서비스를 만든다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 운영자, 개발자, 기여자, AI Agent다.
 
@@ -30,7 +31,7 @@ healthcheck 표준을 처음부터 갖춘 서비스를 만든다.
 구현·운영 계약을 canonical service README와 Stage 05 subject에 연결하며 필요한
 bounded change를 유효한 Spec Package로 기록할 수 있게 한다.
 
-## Usage
+## Concepts
 
 사전 조건:
 
@@ -58,6 +59,8 @@ bounded change를 유효한 Spec Package로 기록할 수 있게 한다.
 충족했다고 보지 않는다. 예제의 `service.md`는 sample 전용이며 infra의 운영
 권위를 대신하지 않는다. package 위치는 현재 티어 책임으로 정하고, 디렉터리
 이동이나 profile 추가를 activation 승인으로 해석하지 않는다.
+
+## Usage
 
 ### Common Checks
 

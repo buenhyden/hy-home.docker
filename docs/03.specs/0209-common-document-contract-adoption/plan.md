@@ -1,10 +1,10 @@
 ---
 title: "Common Document Contract Adoption Plan"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0209-PLAN-0001"
 parent_ids:
@@ -19,6 +19,14 @@ created: "2026-10-05"
 Adopt the approved common-document contract across Stage 99 and current
 authored documents. W4/W5 also own the remaining bounded consumer-recovery
 slice. The Task is the only progress and evidence ledger.
+
+## Scope
+
+W1–W3 adopt the common profiles, schemas and templates and migrate current
+authored documents and links. W4–W5 cover generation 3–5 consumer recovery,
+including raw-byte proof in the three named consumers and five regression
+files, followed by review and the final changed gate; preserved Task bodies
+and archive disposition remain outside the migration.
 
 ## Work Breakdown
 
@@ -49,7 +57,9 @@ inputs. Identical leaf/input/configuration/tool/mode/trust checks are not repeat
 An out-of-scope required failure or a remaining failure after that correction
 blocks closure and local commit; it does not expand the file or operation scope.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 The primary risks are rewriting preserved historical evidence, weakening native
 provider envelopes, or leaving mismatched headings and links. Revert the

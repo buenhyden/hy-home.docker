@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Agent Telemetry and Alert Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0239-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-14"
 
 # OpenBao Agent Telemetry and Alert Task
 
-## Objective
+## Overview
+
+### Objective
 
 Give `openbao-agent` a metrics endpoint, a Prometheus job and alerts, as
 SPEC-0239 states.

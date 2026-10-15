@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Usage Guide"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0022"
 parent_ids:
@@ -18,13 +18,15 @@ created: "2026-05-10"
 
 이 가이드는 선택적 six-node Valkey Cluster 실습을 설명한다. 모든 node가 Docker host 하나를 공유하므로 M0021은 모든 service를 **LAB**으로 분류한다. 이 cluster는 HOME workflow broker가 아니며 독립 LAB에서만 실행된다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: LAB 전용 six-node Valkey Cluster의 구성, 노출, 영속성, 백업·복원 경계를 현재 Compose와 맞춰 이해한다. HOME의 Airflow와 n8n은 이 cluster가 아니라 `mng-valkey`를 사용한다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -41,6 +43,8 @@ Docker secret을 읽는다. tracked configuration은 주기적인 RDB snapshot�
 node-local cluster identity이다. resource limit과 health check는 공유
 Compose template에서 오며 선택하기 전에 렌더링된 LAB configuration에서
 점검해야 한다.
+
+## Usage
 
 ### Identity-specific behavior
 
@@ -114,16 +118,18 @@ BSD 3-Clause license를 사용하며, client와 image는 자체 license를 유�
 - [Valkey security](https://valkey.io/topics/security/)
 - [Valkey license](https://github.com/valkey-io/valkey/blob/unstable/COPYING)
 
+### Traceability
+
+- Artifact: `GDE-0022`; governing policy: `POL-0022`.
+- Runtime authority: `labs/valkey-cluster.yml`.
+
+## Troubleshooting
+
 ### Common Checks
 
 정확한 LAB profile, service, health/resource control, writable-state
 ownership, secret reference, exposure, engine별 recovery boundary를 확인한다.
 static pass는 configuration 증거일 뿐이다. runtime과 restore는 별개로 남는다.
-
-### Traceability
-
-- Artifact: `GDE-0022`; governing policy: `POL-0022`.
-- Runtime authority: `labs/valkey-cluster.yml`.
 
 ## Related Documents
 

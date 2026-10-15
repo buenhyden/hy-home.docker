@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.3.4"
+version: "1.3.5"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0094"
 parent_ids:
@@ -35,11 +35,13 @@ REST 카탈로그가 관리한다. Spark는 배치와 테이블 유지보수 엔
 사용하고 Great Expectations는 Trino를 통해 테이블을 검사한다. Iceberg는
 서비스가 아니라 테이블 포맷이다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 레이크하우스(Iceberg, Spark, Trino, Flink, Great Expectations)를 사용하는 데이터 엔지니어와 운영자를 위한 문서다. 각 엔진의 역할과 명령의 부작용을 이해하고 안전하게 사용·점검하는 것이 목표다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -94,6 +96,8 @@ REST 카탈로그가 관리한다. Spark는 배치와 테이블 유지보수 엔
   목록을 표시하고, `validate`는 expectation 실패 시 `1`, 검사할 수 없을
   때 `2`로 종료한다.
 
+## Usage
+
 ### Identity-specific behavior
 
 `seaweedfs-table-bucket`은 admin 권한으로 policy를 매번 다시 쓰고, namespace/table delete 권한도 scoped identity에 부여한다. Flink JobManager와 TaskManager는 같은 build를 쓰지만 command, heap, slot, health가 다르다. TaskManager에는 healthcheck가 없으므로 JobManager overview와 TaskManager 등록, job checkpoint를 따로 확인한다. Spark는 local one-shot이고 Trino는 인증 없는 single-node SQL이다. Great Expectations는 임시 context로 suite 목록을 표시하는 것이 기본이며 종료 코드 `0`은 통과, `1`은 expectation 실패, `2`는 검사 불가다. Trino username은 권한 제한이 아니다. build의 JAR 중 일부만 checksum으로 고정되며 Hadoop과 Iceberg 기준선 차이는 (미검증)이다. 재생 가능한 증거 없이 Flink checkpoint와 catalog/object를 삭제하지 않는다.
@@ -133,11 +137,6 @@ REST 카탈로그가 관리한다. Spark는 배치와 테이블 유지보수 엔
 | `docker compose exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | job 중지; 이전 체크포인트에서 커밋된 데이터는 유지 |
 | `docker compose --profile lakehouse run --rm --no-deps great-expectations validate [SUITE...]` | Trino를 통해 테이블을 읽음; expectation 실패 시 `1`로 종료 |
 
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES=lakehouse bash scripts/validation/validate-docker-compose.sh`
-- `python3 scripts/validation/check-operations-catalog.py`
-
 ### Runbook Handoff
 
 카탈로그 오류, 접근 거부, job 실패, 테이블 복구는
@@ -148,6 +147,13 @@ REST 카탈로그가 관리한다. Spark는 배치와 테이블 유지보수 엔
 - [Policy](../../policies/13-analytics-and-data-quality/0094-lakehouse.md) (`POL-0094`)
 - [Runbook](../../runbooks/13-analytics-and-data-quality/0094-lakehouse.md) (`RUN-0094`)
 - [SeaweedFS guide](../05-databases-and-storage/0024-seaweedfs.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES=lakehouse bash scripts/validation/validate-docker-compose.sh`
+- `python3 scripts/validation/check-operations-catalog.py`
 
 ## Related Documents
 

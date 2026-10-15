@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Operations Policy"
-version: "2.1.2"
+version: "2.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0019"
 parent_ids:
@@ -47,12 +47,6 @@ created: "2026-05-17"
 
 임시 index setting, LAB cluster 실험, security config 변경은 owner의 별도 실행 승인과 before/after health evidence가 필요하다. custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 실제 빌드 호환성 및 LAB 인증서 검증은 아직 확인되지 않았으며 (미검증), runtime admission blocker로 남는다.
 
-### Verification
-
-- `test -f infra/04-data/opensearch/docker-compose.yml`
-- `test -f labs/opensearch-cluster.yml`
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-
 ### Review Cadence
 
 - image/build, 인증서, secret, security config, cluster topology 변경 시
@@ -62,6 +56,12 @@ created: "2026-05-17"
 
 - Declared parent: [Analytics Tier Architecture Description](../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 - Subject peers: [Guide](../../guides/05-databases-and-storage/0019-opensearch.md) (`GDE-0019`), [Runbook](../../runbooks/05-databases-and-storage/0019-opensearch.md) (`RUN-0019`)
+
+## Verification
+
+- `test -f infra/04-data/opensearch/docker-compose.yml`
+- `test -f labs/opensearch-cluster.yml`
+- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Related Documents
 

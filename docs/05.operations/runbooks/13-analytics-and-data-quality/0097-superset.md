@@ -1,10 +1,10 @@
 ---
 title: "Superset Runbook"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0097"
 parent_ids:
@@ -18,9 +18,11 @@ created: "2026-09-23"
 
 Superset의 최초 설정, 로그인 실패, 웹 서버 비정상, 업그레이드를 다루는 런북이다.
 
-## Trigger and Preconditions
+## Trigger
 
 최초 설정, 로그인 실패, 웹 서버가 healthy 상태가 되지 않을 때, 또는 업그레이드할 때 사용한다.
+
+## Prerequisites
 
 ### Execution and stop boundary
 
@@ -63,7 +65,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 client ID, 역할 이름, Admin이 부여된 사용자 이름, exit code, 소스 커밋을
 기록한다. secret, token, session cookie는 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

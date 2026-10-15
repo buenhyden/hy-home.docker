@@ -1,10 +1,10 @@
 ---
 title: "Library Tests"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 created: "2026-09-27"
 ---
 
@@ -34,6 +34,11 @@ library-unit 테스트 공간입니다. library 도메인마다 짝이 되는 �
 직접 하위 디렉터리는 `scripts/lib/`의 도메인 이름과 같습니다. 도메인과
 테스트 파일의 정확한 대응은 [Script Manifest](../../scripts/manifest.yaml)의
 `tests` 항목이 소유합니다.
+
+`hooks/test_agent_memory.py`는 기존 공유 memory engine과
+`ops/memory_sources.py`의 provenance 경계를 합성 SQLite/Git worktree로 검증합니다.
+schema 1 보존, current 재사용, 재시도/conflict, 용량 경쟁, 재연결 page 상한과
+동시 backup/restore를 포함하며 실제 private DB/native memory는 사용하지 않습니다.
 
 ## Usage
 

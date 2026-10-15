@@ -1,10 +1,10 @@
 ---
 title: "Canonical Knowledge and Prompt Surfaces"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0034"
 parent_ids:
@@ -74,11 +74,7 @@ or remote branch protection.
   that [RES-0002-m0003](../../90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md)
   describes but the current Provider Registry no longer carries.
 
-## Decision
-
-### Decision
-
-### Decision Drivers
+## Decision Drivers
 
 - Short-term execution state must stay in the current Spec Package Task; no
   second progress or handoff authority may return.
@@ -90,36 +86,7 @@ or remote branch protection.
 - A new category must not become a place to duplicate policy, design, or
   runbook bodies.
 
-### Decision
-
-Adopt Option A.
-
-`.agents/knowledge/` holds verified, living, non-normative knowledge that
-routes a reader to a canonical owner. It owns a project map of surface to
-authority, a repository vocabulary index, and a verification surface map.
-It never holds a policy body, a detailed design, a specification, or a runbook;
-it links to the owner instead. Each member declares its observation date and
-refresh trigger so staleness is detectable rather than assumed.
-
-`.agents/prompts/` holds reusable prompt contracts. Each member declares its
-purpose, required inputs, output contract, prohibitions, failure handling, and
-the roles, skills, and evaluation criteria it applies under. A prompt never
-restates a skill's ordered procedure; it names the skill and the role whose
-permission profile governs the work.
-
-Neither category holds execution state. The current Spec Package Task remains
-the only progress and handoff authority, and the existing unsupported-token
-guard against the retired shared progress ledger stays in force unchanged.
-
-Both categories are registered the same way the existing three are: a Stage 99
-profile pair per category (a member profile and an index profile), a copyable
-template, a `living` lifecycle mapping, a `canonical_sources` entry per file,
-and an entry in the canonical root inventory the agent governance contract
-pins.
-
-## Alternatives
-
-### Alternatives
+## Options
 
 ### Options Considered
 
@@ -147,6 +114,33 @@ prompt contract to be written as a procedure it is not.
 Rejected: the routing knowledge and prompt contracts continue to be
 reconstructed per session, and the agency-agents capability-intake decision
 boundary stays without a current owner.
+
+## Decision
+
+Adopt Option A.
+
+`.agents/knowledge/` holds verified, living, non-normative knowledge that
+routes a reader to a canonical owner. It owns a project map of surface to
+authority, a repository vocabulary index, and a verification surface map.
+It never holds a policy body, a detailed design, a specification, or a runbook;
+it links to the owner instead. Each member declares its observation date and
+refresh trigger so staleness is detectable rather than assumed.
+
+`.agents/prompts/` holds reusable prompt contracts. Each member declares its
+purpose, required inputs, output contract, prohibitions, failure handling, and
+the roles, skills, and evaluation criteria it applies under. A prompt never
+restates a skill's ordered procedure; it names the skill and the role whose
+permission profile governs the work.
+
+Neither category holds execution state. The current Spec Package Task remains
+the only progress and handoff authority, and the existing unsupported-token
+guard against the retired shared progress ledger stays in force unchanged.
+
+Both categories are registered the same way the existing three are: a Stage 99
+profile pair per category (a member profile and an index profile), a copyable
+template, a `living` lifecycle mapping, a `canonical_sources` entry per file,
+and an entry in the canonical root inventory the agent governance contract
+pins.
 
 ## Consequences
 

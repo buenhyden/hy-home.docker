@@ -3,16 +3,98 @@
 from __future__ import annotations
 
 import pathlib
+import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 # Imported for its side effect and as the script manifest's evidence that this
 # test covers that module. The entrypoint re-exports its names, so the module
 # must be loaded before those attributes resolve. Not dead code.
 from scripts.lib.document_governance.metadata import (
-    lifecycle as lifecycle_module,  # noqa: F401
+    lifecycle as lifecycle_module,
 )
 from tests.lib.document_governance.metadata._support import REGISTRY, metadata
+
+
+class HistoricalBlobBatchTests(unittest.TestCase):
+    def test_batch_preserves_exact_unicode_and_newline_payloads(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+
+            def git(*args):
+                return subprocess.run(
+                    ["git", "-C", str(root), *args], check=True, capture_output=True
+                ).stdout
+
+            git("init", "-q")
+            git("config", "core.hooksPath", "")
+            git("config", "user.name", "Fixture")
+            git("config", "user.email", "fixture@example.invalid")
+            paths = ("docs/one (copy).md", "docs/한글.md", "docs/a[1].md", "docs/a1.md")
+            for path in paths:
+                target = root / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(
+                    "# Payload\n\nblob 123\n한글 and a final newline.\n",
+                    encoding="utf-8",
+                )
+            git("add", ".")
+            git("commit", "-qm", "fixture")
+            expected = {
+                path: git("show", f"HEAD:{path}").decode("utf-8") for path in paths
+            }
+            self.assertEqual(
+                expected,
+                lifecycle_module._read_markdown_texts_at_ref(root, paths, "HEAD"),
+            )
+            self.assertEqual(
+                {"docs/a[1].md": expected["docs/a[1].md"]},
+                lifecycle_module._read_markdown_texts_at_ref(
+                    root, ("docs/a[1].md",), "HEAD"
+                ),
+            )
+            self.assertEqual(
+                {},
+                lifecycle_module._read_markdown_texts_at_ref(
+                    root, ("docs/missing.md",), "HEAD"
+                ),
+            )
+            oid = git("rev-parse", f"HEAD:{paths[0]}").decode("ascii").strip()
+            size = len(expected[paths[0]].encode("utf-8"))
+            for payload in (
+                b"missing missing\n",
+                f"{oid} blob {size}\nshort\n".encode("ascii"),
+            ):
+                with (
+                    self.subTest(payload=payload),
+                    mock.patch.object(
+                        lifecycle_module,
+                        "_bounded_git",
+                        return_value=subprocess.CompletedProcess([], 0, payload, b""),
+                    ),
+                ):
+                    with self.assertRaises(metadata.ProfileError):
+                        lifecycle_module._read_markdown_texts_at_ref(
+                            root, paths, "HEAD"
+                        )
+            (root / "docs/link.md").symlink_to("one (copy).md")
+            git("add", ".")
+            git("commit", "-qm", "symlink fixture")
+            with self.assertRaisesRegex(metadata.ProfileError, "regular blob"):
+                lifecycle_module._read_markdown_texts_at_ref(
+                    root, ("docs/link.md",), "HEAD"
+                )
+            large = "# Large\n" + "x" * lifecycle_module._GIT_OUTPUT_BYTES
+            (root / "docs/large.md").write_text(large, encoding="utf-8")
+            git("add", ".")
+            git("commit", "-qm", "oversized fixture")
+            self.assertEqual(
+                {"docs/large.md": large},
+                lifecycle_module._read_markdown_texts_at_ref(
+                    root, ("docs/large.md",), "HEAD"
+                ),
+            )
 
 
 class TransitionOverrideEvidencePathTests(unittest.TestCase):

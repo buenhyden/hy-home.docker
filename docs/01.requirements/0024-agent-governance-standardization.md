@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.5.0"
+version: "1.6.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0024"
 created: "2026-06-01"
@@ -12,8 +12,6 @@ created: "2026-06-01"
 # Agent Governance Standardization Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -23,9 +21,32 @@ separate the owners of policy, provider translation, document format, and
 execution evidence, and to keep `.claude/` and `.codex/` from degrading into
 independent policy sources.
 
-## Requirements
+## Scope
 
-### Requirements
+### Stakeholders and User Needs
+
+- The maintainer must be able to immediately tell which document is
+  canonical in case of a conflict.
+- An AI agent must load only the minimum policy, role, skill, Spec, and Task
+  needed for the request.
+- A reviewer must be able to reproduce the difference between provider
+  projection and the canonical source, the approval boundary, and the
+  verification result.
+- An operator needs an explicit approval boundary so agent work does not
+  expand into secrets, runtime, deployment, or remote state.
+
+### Constraints
+
+- Shared agent governance policy changes are made only within the approved
+  repository scope.
+- Provider adapters do not use user-global settings or credentials as
+  canonical input.
+- Historical body clones, compatibility redirects, and separate progress
+  documents are not created.
+- Runtime, deployment, secret, and remote GitHub state changes require
+  separate explicit approval.
+
+## Requirements
 
 ### Functional Requirements
 
@@ -94,8 +115,10 @@ independent policy sources.
 - **REQ-0024-NFR-0009**: Rule interpretation and provider projection
   verification must be deterministic and fail closed, with no conflicting
   fallback.
-- **REQ-0024-NFR-0010**: `.agents/` must stay English-only except for
-  `README.md`, whose language follows the
+- **REQ-0024-NFR-0010**: Newly authored shared agent explanations default to
+  Korean. Existing English originals remain readable without a bulk translation;
+  native keys, required headings, commands, quotations and preserved evidence
+  retain their original syntax. Profile languages and READMEs follow the
   [document language rule](../../.agents/governance/documentation-protocol.md#document-language).
   Provider adapters must not lose meaning.
 - **REQ-0024-NFR-0011**: Agent permissions must be minimum scope and must not
@@ -118,41 +141,15 @@ independent policy sources.
 - The native entry of a canonical skill and its nested governance metadata
   preserve the same ID, owner, and scope, and explicit invocation
   configuration does not expand permissions.
-- Every Spec/Plan parent of an active Task is active, and no terminal parent
-  has an active child.
+- Spec/Plan states express approval authority, while Task/item states express
+  execution. Executing Tasks have approved parents; cancelled or superseded
+  parents have no active children.
 - Registered governance and document suites pass without duplicate
   predicates or dependence on historical fixtures.
 - The current authority does not use Stage 98 documents or deleted execution
   ledgers as input.
 - Both providers read and revise the same memory record from different
   worktrees, and a stale revision changes nothing.
-
-## Scope
-
-### Scope
-
-### Stakeholders and User Needs
-
-- The maintainer must be able to immediately tell which document is
-  canonical in case of a conflict.
-- An AI agent must load only the minimum policy, role, skill, Spec, and Task
-  needed for the request.
-- A reviewer must be able to reproduce the difference between provider
-  projection and the canonical source, the approval boundary, and the
-  verification result.
-- An operator needs an explicit approval boundary so agent work does not
-  expand into secrets, runtime, deployment, or remote state.
-
-### Constraints
-
-- Shared agent governance policy changes are made only within the approved
-  repository scope.
-- Provider adapters do not use user-global settings or credentials as
-  canonical input.
-- Historical body clones, compatibility redirects, and separate progress
-  documents are not created.
-- Runtime, deployment, secret, and remote GitHub state changes require
-  separate explicit approval.
 
 ## Related Documents
 

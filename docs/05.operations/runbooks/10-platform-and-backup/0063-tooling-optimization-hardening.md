@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
@@ -21,9 +21,14 @@ created: "2026-05-17"
 k6 volume 계약, 문서·검증 링크를 현재 구현 기준으로 되돌린다.
 범위는 선택한 profile에 해당하는 패키지로 한정한다.
 
-## Trigger and Preconditions
+## Trigger
 
 service-local compose 단독 검증과 root compose context를 혼동하지 않고 하드닝 기준선을 다시 확인한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 다음 중 하나일 때 사용한다.
 
 - `09-platform-ops`·`11-quality`의 CI 또는 로컬 하드닝 검사가 실패한다.
@@ -108,7 +113,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 - **Metrics**: 문서 하드닝에는 런타임 지표가 적용되지 않는다. 리허설 지표는 별도 근거다.
 - **Evidence to Capture**: 실패한 검사, 변경 파일, 변경 전후 하드닝 결과와 문서 링크 결과.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

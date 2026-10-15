@@ -1,10 +1,10 @@
 ---
 title: "Supabase Operations Policy"
-version: "1.0.8"
+version: "1.0.9"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0029"
 parent_ids:
@@ -97,13 +97,6 @@ database/storage/config를 하나의 recovery unit으로 관리하는 것이다.
 서비스, secret-safety 고려사항, 검증 output, rollback/escalation state를
 관련 task나 incident evidence에 기록해야 한다.
 
-### Verification
-
-- Compose 관련 문서를 변경한 뒤 `python3 scripts/operations/lab.py check supabase`를 실행한다.
-- 정책, guide, runbook, README, 링크 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
-- Commit 전에 갱신된 문서에서 direct Studio host-port 가정, 오래된 Compose CLI
-  표기, template copyright 잔여물, secret 자료를 검색한다.
-
 ### Review Cadence
 
 Supabase compose 서비스, port, profile, network, secret 참조, runtime mount,
@@ -114,6 +107,13 @@ Stage 05 운영 audit 동안 검토한다.
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](../../guides/15-labs/0029-supabase.md) (`GDE-0029`), [Runbook](../../runbooks/15-labs/0029-supabase.md) (`RUN-0029`)
+
+## Verification
+
+- Compose 관련 문서를 변경한 뒤 `python3 scripts/operations/lab.py check supabase`를 실행한다.
+- 정책, guide, runbook, README, 링크 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
+- Commit 전에 갱신된 문서에서 direct Studio host-port 가정, 오래된 Compose CLI
+  표기, template copyright 잔여물, secret 자료를 검색한다.
 
 ## Related Documents
 

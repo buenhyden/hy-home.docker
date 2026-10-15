@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0058"
 parent_ids:
@@ -71,12 +71,6 @@ AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별
 - 장애 대응으로 일시 완화가 필요할 경우 승인 기록과 종료 시점이 필수다.
 - 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
 
-### Verification
-
-점검 명령은 [가이드의 Common Checks](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Review Cadence
 
 - 월 1회 정기 검토
@@ -86,6 +80,12 @@ AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별
 
 - Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: [Guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md) (`GDE-0058`), [Runbook](../../runbooks/09-ai-and-search/0058-ai-optimization-hardening.md) (`RUN-0058`)
+
+## Verification
+
+점검 명령은 [가이드의 Common Checks](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Related Documents
 

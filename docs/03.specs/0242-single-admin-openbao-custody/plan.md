@@ -1,10 +1,10 @@
 ---
 title: "Single-Administrator OpenBao Custody Plan"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0242-PLAN-0001"
 parent_ids:
@@ -18,6 +18,14 @@ created: "2026-10-14"
 
 Rewrite the custody text in one pull request, review it, then record the
 owner's step 5 statement.
+
+## Scope
+
+W1–W2 align RUN-0085 custody/window text with POL-0085 and ADR-0042's
+accepted single-administrator exposure. W3 reviews the documents and W4
+records the owner's step-5 attestation in SPEC-0204 TSK-0006; the work neither
+reads the second copy nor runs HOME operations or determines the rest of the
+window's readiness.
 
 ## Work Breakdown
 
@@ -34,7 +42,9 @@ Run changed metadata, links `--mode all`, markdownlint and the operations
 catalog tests; obtain independent `security-auditor` and `rules-engineer`
 reviews of the branch.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - **One account holds every key.** A compromise of the password manager
   account exposes the R2 copy, every secret and every share. Accepted by the

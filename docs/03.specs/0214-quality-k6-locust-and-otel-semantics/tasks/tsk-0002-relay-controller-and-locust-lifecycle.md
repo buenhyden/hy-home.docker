@@ -1,10 +1,10 @@
 ---
 title: "Relay Controller and Locust Lifecycle Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0214-TSK-0002"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-08"
 
 # Relay Controller and Locust Lifecycle Task
 
-## Objective
+## Overview
+
+### Objective
 
 Close the runtime gaps TSK-0001 left open: a tracked per-run relay controller,
 a proven path from an isolated target through k6, the relay, the

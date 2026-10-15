@@ -1,10 +1,10 @@
 ---
 title: "WireMock Recovery Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0092"
 parent_ids:
@@ -18,16 +18,22 @@ created: "2026-09-23"
 
 WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 도달을 다루는 런북이다.
 
-## Trigger and Preconditions
+## Trigger
+
+### Trigger and Preconditions
 
 기능 또는 load 모드가 비정상이거나, 스텁이 예상된 위치에서 요청이 404를 반환하거나,
 매핑 파일이 로드에 실패하거나, 컨테이너가 메모리 제한에 도달했을 때 사용한다.
 
-## Procedure
+## Prerequisites
 
-1. 먼저 활성 mode를 확인한다. root의 `api-mock`은 기능 모드, root와 load
+먼저 활성 mode를 확인한다. root의 `api-mock`은 기능 모드, root와 load
    override를 함께 지정한 `api-mock`은 journal 없는 부하 모드다. 두 mode를
    동시에 복구하지 않는다.
+
+## Procedure
+
+1.
    기능 모드만 다음 loopback 상태 확인을 실행한다.
 
    ```bash
@@ -91,7 +97,7 @@ reset 및 journal 조회 없이 새 Compose model로 시작한다. 실패하면 
 소스 커밋만 기록한다. journal의 요청 본문이나 헤더는 기록하지 않는다. 테스트가
 크리덴셜을 전송했을 수 있다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

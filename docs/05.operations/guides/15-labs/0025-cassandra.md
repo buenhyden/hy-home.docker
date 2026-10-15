@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Usage Guide"
-version: "2.1.1"
+version: "2.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0025"
 parent_ids:
@@ -18,13 +18,15 @@ created: "2026-05-10"
 
 독립 `labs/cassandra.yml`은 공식 `labs/cassandra.yml`에 선언된 공식 Cassandra 이미지의 단일 `cassandra-node1` 실습용 정의다. HOME root는 include하지 않으며 확인된 HOME 소비자는 없다. 이미지 선언 버전은 Compose가 소유한다. 현재 공식 이미지의 기본 `AllowAllAuthenticator`/`AllowAllAuthorizer`는 계정 인증을 제공하지 않는다. 이를 인증된 업무 저장소로 사용하지 않는다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: 현재 LAB 서비스·데이터·인증 경계를 소스와 일치시킨다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -36,6 +38,8 @@ created: "2026-05-10"
 | 입력 | `labs/.env.example`과 비공개 `labs/.env`의 `LAB_DATA_DIR`; 인증 secret·exporter 없음 |
 | 건강·자원 | `nodetool status` health와 Compose 한도; 실제 CQL·디스크·복원은 미검증 |
 | 백업 | schema/keyspace/topology·snapshot tag·SSTable 세트를 함께 보존하고 빈 격리 대상에 복원 검증 필요 |
+
+## Usage
 
 ### Identity-specific behavior
 

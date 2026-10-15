@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Runbook"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0081"
 parent_ids:
@@ -18,10 +18,16 @@ created: "2026-09-19"
 
 이 런북은 ComfyUI(`comfyui`, profile `ai`/`ai-image`)의 승인 게이트된 진단과 복구, custom-node·이미지 변경 실패 대응, 격리 복원 계획을 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
 승인된 ComfyUI 배포, UI 접근 불가, healthcheck 실패, 또는 계획된 데이터/이미지/custom-node
-복구에 사용한다. 런타임 변경 전에 commit, 선택한 서비스, mount 위치, 이미지 식별자와 backup
+복구에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+런타임 변경 전에 commit, 선택한 서비스, mount 위치, 이미지 식별자와 backup
 증거를 기록한다.
 
 ### Service lifecycle prerequisites
@@ -75,7 +81,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 현재 Task에 기록한다. 사용자 자산, workflow 콘텐츠, 비공개 환경, 토큰, 원격 다운로드
 credential은 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

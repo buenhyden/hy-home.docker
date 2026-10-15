@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI as Primary AI/RAG Interface"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0016"
 parent_ids:
@@ -17,8 +17,6 @@ created: "2026-03-27"
 
 This document records the architecture decision for selecting Open WebUI as the default AI interface and RAG (Retrieval-Augmented Generation) orchestrator of the `hy-home.docker` ecosystem.
 
-Local LLM interaction requires a user-friendly, feature-complete interface that supports document-based knowledge expansion (RAG). We need a solution that integrates natively with Ollama and Qdrant while supporting modern web standards and security (SSO).
-
 ### Follow-up
 
 performance.
@@ -27,23 +25,11 @@ performance.
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
-## Decision
+## Decision Drivers
 
-- Use **Open WebUI** (formerly Ollama WebUI) as the primary entry point for AI chat.
-- **Decision 1**: Deploy Svelte-based Open WebUI for premium frontend.
-- **Decision 2**: Use SQLite for state persistence (chat history).
-- **Decision 3**: Integrate with Traefik SSO middleware for auth.
-- **Decision 4**: Use Ollama as primary inference engine.
+Local LLM interaction requires a user-friendly, feature-complete interface that supports document-based knowledge expansion (RAG). We need a solution that integrates natively with Ollama and Qdrant while supporting modern web standards and security (SSO).
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### [LibreChat]
 
@@ -54,6 +40,14 @@ The decision context above records the applicable drivers and evidence.
 
 - Good: Extremely lightweight.
 - Bad: No visual RAG, no multi-user history, high barrier for non-technical users.
+
+## Decision
+
+- Use **Open WebUI** (formerly Ollama WebUI) as the primary entry point for AI chat.
+- **Decision 1**: Deploy Svelte-based Open WebUI for premium frontend.
+- **Decision 2**: Use SQLite for state persistence (chat history).
+- **Decision 3**: Integrate with Traefik SSO middleware for auth.
+- **Decision 4**: Use Ollama as primary inference engine.
 
 ## Consequences
 

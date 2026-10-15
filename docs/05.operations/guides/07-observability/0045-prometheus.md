@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.4.5"
+version: "1.4.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -23,7 +23,9 @@ created: "2026-05-10"
 
 이 가이드는 `06-observability` 계층의 Prometheus 사용 맥락과 설정 확인 방법을 설명한다. Prometheus는 `infra/06-observability/prometheus/config/prometheus.yml`의 scrape job을 기준으로 metrics를 수집하고, `config/alert_rules/`의 rule files를 평가하며, `prometheus-data` TSDB volume에 데이터를 저장한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 운영자, SRE, 개발자, AI agent다.
 
@@ -33,9 +35,11 @@ created: "2026-05-10"
 - 새 scrape target이나 alert rule을 검토할 때 확인할 파일과 검증 명령을 찾는다.
 - 반복 실행, reload, restart, TSDB 증상 분류는 연결된 runbook으로 넘긴다.
 
-## Usage
+## Concepts
 
 Repository checkout과 `infra/06-observability/docker-compose.yml`, `infra/06-observability/prometheus/config/prometheus.yml`을 읽을 권한이 필요하다. 실행 중인 서비스를 볼 때는 `obs` profile과 `prometheus` container에 대한 읽기 전용 점검 권한이면 충분하다. Docker Secret 값은 열람하지 않고, 문서에는 secret ID와 file reference만 적는다.
+
+## Usage
 
 ### Normal use
 

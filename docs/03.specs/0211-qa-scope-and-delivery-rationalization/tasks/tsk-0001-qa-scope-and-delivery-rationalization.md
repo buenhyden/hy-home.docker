@@ -1,10 +1,10 @@
 ---
 title: "QA Scope and Delivery Rationalization Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0211-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-07"
 
 # QA Scope and Delivery Rationalization Task
 
-## Objective
+## Overview
+
+### Objective
 
 Implement the requested QA scope, phase, commit and release ownership changes
 with current guarantees and source history preserved.

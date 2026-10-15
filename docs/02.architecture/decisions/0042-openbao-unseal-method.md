@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Unseal Method"
-version: "0.2.5"
+version: "0.2.6"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0042"
 parent_ids:
@@ -82,11 +82,7 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - [PKCS#11 seal (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/pkcs11/)
 - [AWS KMS seal](https://openbao.org/docs/configuration/seal/awskms/)
 
-## Decision
-
-### Decision
-
-### Decision Drivers
+## Decision Drivers
 
 - Whether the service must come back without the owner after a reboot
   (currently both unseal and SecretID need the owner).
@@ -99,32 +95,7 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - The effect on the W11 cold start runbook and the Agent SecretID delivery
   method.
 
-### Decision
-
-**(e) Defer, keep (a) manual Shamir unseal** (owner decision, 2026-09-25). The
-owner is @buenhyden. Whichever of the following triggers comes first opens a
-new ADR that supersedes this decision.
-
-- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
-  while the owner is unavailable.
-- hy-home.k8s or another service comes to require OpenBao immediately after
-  boot.
-- ADR-0041 selects a cloud provider (Cloudflare R2 was chosen, but R2 has no
-  KMS, so this trigger fires when a provider that offers a KMS is chosen).
-- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
-
-Rationale:
-
-- Auto-unseal alone does not give an unattended reboot. The Agent needs a
-  single-use SecretID issued by the owner at every restart, so the owner is
-  already part of the reboot procedure regardless.
-- A same-host key (d) widens the key-exposure surface with no security gain.
-  Another device (b) or cloud (c) creates a new availability dependency. At
-  the current scale, this cost outweighs the benefit.
-
-## Alternatives
-
-### Alternatives
+## Options
 
 ### Options Considered
 
@@ -209,6 +180,29 @@ Candidate triggers:
 - ADR-0041 selects a cloud provider (creating grounds to review KMS on the
   same account).
 - OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
+
+## Decision
+
+**(e) Defer, keep (a) manual Shamir unseal** (owner decision, 2026-09-25). The
+owner is @buenhyden. Whichever of the following triggers comes first opens a
+new ADR that supersedes this decision.
+
+- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
+  while the owner is unavailable.
+- hy-home.k8s or another service comes to require OpenBao immediately after
+  boot.
+- ADR-0041 selects a cloud provider (Cloudflare R2 was chosen, but R2 has no
+  KMS, so this trigger fires when a provider that offers a KMS is chosen).
+- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
+
+Rationale:
+
+- Auto-unseal alone does not give an unattended reboot. The Agent needs a
+  single-use SecretID issued by the owner at every restart, so the owner is
+  already part of the reboot procedure regardless.
+- A same-host key (d) widens the key-exposure surface with no security gain.
+  Another device (b) or cloud (c) creates a new availability dependency. At
+  the current scale, this cost outweighs the benefit.
 
 ## Consequences
 

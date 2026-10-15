@@ -1,10 +1,10 @@
 ---
 title: "Prompt v9 Residual Corrections"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0232"
 parent_ids:
@@ -100,6 +100,14 @@ receipts and README records, the Airflow candidate rehearsal.
    Services rows removed, and the catalog test for an unbound LAB service
    passes.
 10. Each of the six findings has a record with evidence and an outcome.
+
+## Failure Conditions
+
+PostToolUse validation fails on normalization defects while preserving
+bytes and returning the failure context to the model. A pre-commit hook that
+mutates the isolated candidate fails even if it exits successfully;
+classified tombstone identity and guide-bound LAB ownership must retain
+their canonical consumers rather than duplicate them.
 
 ## Related Documents
 

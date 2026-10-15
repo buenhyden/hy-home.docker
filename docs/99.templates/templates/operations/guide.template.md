@@ -21,9 +21,15 @@ created: "{{CREATED}}"
 
 {{OVERVIEW}}
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 {{AUDIENCE_AND_GOAL}}
+
+## Concepts
+
+{{CONCEPTS_AND_IMPLEMENTATION_BOUNDARIES}}
 
 ## Usage
 
@@ -48,6 +54,10 @@ created: "{{CREATED}}"
 ### Traceability
 
 {{SUBJECT_AND_AUTHORITY_LINKS}}
+
+## Troubleshooting
+
+{{SYMPTOMS_DIAGNOSIS_AND_RUNBOOK_HANDOFF}}
 
 ## Related Documents
 

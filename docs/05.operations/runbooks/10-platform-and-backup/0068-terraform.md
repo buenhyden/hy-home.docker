@@ -1,10 +1,10 @@
 ---
 title: "Terraform Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0068"
 parent_ids:
@@ -18,9 +18,15 @@ created: "2026-05-17"
 
 기존 Terraform workspace를 OpenTofu 운영으로 이관하는 절차다. state 보호와 복제 workspace 검증을 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
-기존 Terraform workspace를 현재 OpenTofu 운영으로 이관할 때 사용한다. 저장소에는
+기존 Terraform workspace를 현재 OpenTofu 운영으로 이관할 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소에는
 기동할 Terraform 서비스가 없으므로 과거 Compose 명령을 재실행하지 않는다.
 
 ## Procedure
@@ -40,7 +46,7 @@ created: "2026-05-17"
 원본 CLI/source commit, provider/module identity, 비교 결과와 복구 시험 상태만 남긴다.
 state, plan 파일 내용, credential과 token은 출력하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

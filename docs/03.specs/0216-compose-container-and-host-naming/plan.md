@@ -1,10 +1,10 @@
 ---
 title: "Compose Container and Host Naming Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0216-PLAN-0001"
 parent_ids:
@@ -19,6 +19,13 @@ created: "2026-10-08"
 Land the rule, its exceptions and its test with the Compose edits in one
 commit, update the documents that name containers, then recreate the affected
 HOME containers after the merge.
+
+## Scope
+
+W1 adds the naming rule, reasoned exceptions and Compose regression;
+W2 updates operation and README references; W3 recreates the affected HOME
+containers from merged source. Service keys, service-to-service addresses
+and standalone LAB Compose files retain their existing names.
 
 ## Work Breakdown
 
@@ -36,7 +43,9 @@ gate and the staged lint. Remote PR `candidate-quality` owns candidate
 acceptance. HOME recreation keeps named volumes and checks health and
 Prometheus targets afterwards.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 Renaming a container drops the old name from Docker DNS. A search found the
 old names only in Compose files, documents and READMEs, not in configuration

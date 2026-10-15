@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.6.0"
+version: "1.6.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -150,15 +150,6 @@ GO-2026-6608과 GO-2026-6609는 Traefik 인증 뒤에, 그리고 Docker network 
 날이다. WAN 노출이나 공개 exploit이 생기면 수용을 앞당겨 철회한다. publisher 서명 확인은 아직
 하지 않았으며 수용 범위가 아니라 열린 증거다. 다른 image로 고정을 바꾸면 이 수용은 이어지지 않는다.
 
-### Verification
-
-- Compose service boundary:
-  `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
-- Prometheus config:
-  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
-- Repository contracts:
-  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-
 ### Review Cadence
 
 - Prometheus image, runtime flags, scrape jobs, alert rules, recording rules,
@@ -169,6 +160,15 @@ GO-2026-6608과 GO-2026-6609는 Traefik 인증 뒤에, 그리고 Docker network 
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](../../guides/07-observability/0045-prometheus.md) (`GDE-0045`), [Runbook](../../runbooks/07-observability/0045-prometheus.md) (`RUN-0045`)
+
+## Verification
+
+- Compose service boundary:
+  `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
+- Prometheus config:
+  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
+- Repository contracts:
+  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.1.2"
+version: "0.1.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -30,13 +30,15 @@ created: "2026-10-03"
 프로젝트의 공용 DB가 아니며, 현재 source integration은 그 DB의 삭제·이관·전환을
 승인하지 않는다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 미래 외부 프로젝트의 개발 DB를 준비하는 운영자와 프로젝트 소유자를 위한 문서다. 목표는
 `dev-db`의 구성 경계, 최소 권한 원칙, 정적 검사 방법과 HOME 실행 전에 필요한 승인
 범위를 이해하는 것이다.
 
-## Usage
+## Concepts
 
 [`infra/04-data/dev-db/docker-compose.yml`](../../../../infra/04-data/dev-db/docker-compose.yml)은
 TimescaleDB Community 기반 `dev-pg`, 승인된 내부 fixture의 계정·DB를 만드는
@@ -59,6 +61,8 @@ schema를 준비한다. 해당 job의 실행과 프로젝트별 결과 writer/re
 앱 provision이나 HOME cutover가 아니다. runtime과 reader는 schema/database owner가
 아니며 migration 계정도 아니다.
 
+## Usage
+
 ### 시간 데이터 계약
 
 현재 `platform_dev`에는 승인된 hypertable이 없고 provision은 Timescale 확장만 준비한다. 외부 앱 migration이 시간 이력 테이블을 소유할 때 다음 항목을 프로젝트 계약에 명시한다. 사용자·권한·구독·outbox는 필요가 입증되지 않으면 일반 관계형 테이블로 유지한다.
@@ -74,6 +78,20 @@ SPEC-0202-TSK-0002의 합성 격리 환경에서는 오프라인 전체 백업�
 WAL 연속 보관·PITR, 관리 DB 복구, HOME 서비스 기동·정지·재시작, 실제 데이터 이관,
 기존 자격 증명 회전은 실행하지 않았으며 별도 승인 범위다.
 
+### Runbook Handoff
+
+정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md)이
+소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002에 있다. HOME 기동·실제 프로젝트
+provision·운영 백업/복원·이관·전환은 각각 `NOT_RUN`이며 별도 승인이 필요하다.
+
+### Traceability
+
+- Artifact: `GDE-0100`; governing policy: `POL-0100`.
+- Source contract: `SPEC-0202`; architecture context: `AD-0031`.
+- Runtime authority: `infra/04-data/dev-db/docker-compose.yml`.
+
+## Troubleshooting
+
 ### Common Checks
 
 저장소 root에서 정적 Compose와 permission contract만 확인한다. 명령은
@@ -88,18 +106,6 @@ project grant, 백업 또는 application readiness를 증명하지 않는다.
 RUN-0021의 순서대로 repository 최상위 디렉터리를 `70:70 0750`으로 두고 `dev` stanza를
 만든다. stanza 없이 시작하면 `archive_timeout`(300초)마다 archive가 실패하고
 `pg_wal`이 2 GiB 한도까지 자란 뒤 WAL이 버려진다.
-
-### Runbook Handoff
-
-정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md)이
-소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002에 있다. HOME 기동·실제 프로젝트
-provision·운영 백업/복원·이관·전환은 각각 `NOT_RUN`이며 별도 승인이 필요하다.
-
-### Traceability
-
-- Artifact: `GDE-0100`; governing policy: `POL-0100`.
-- Source contract: `SPEC-0202`; architecture context: `AD-0031`.
-- Runtime authority: `infra/04-data/dev-db/docker-compose.yml`.
 
 ## Related Documents
 

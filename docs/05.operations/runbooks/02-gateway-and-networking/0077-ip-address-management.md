@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0077"
 parent_ids:
@@ -18,10 +18,16 @@ created: "2026-05-10"
 
 Compose 서비스의 network membership과 고정 주소를 변경하거나 DNS/IP 충돌을 진단하는 절차다.
 
-## Trigger and Preconditions
+## Trigger
 
 신규 서비스의 peer 연결, 기존 membership·고정 주소 변경 또는 DNS/IP 충돌을
-검토할 때 사용한다. 저장소 루트에서 정확한 Compose service·fragment·network·peer,
+검토할 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소 루트에서 정확한 Compose service·fragment·network·peer,
 선택 profile과 변경 이유를 기록한다. 공개 source 검토와 runtime 조회·변경은
 별도다. 승인된 Docker context와 기존 대상이 없으면 runtime 단계는 `NOT_RUN`이다.
 
@@ -83,7 +89,7 @@ network connect/disconnect, 전체 restart나 network/volume 삭제를 실행하
 종료 상태를 기록한다. runtime 미실행은 명시한다. 원문 환경, 전체 inspect, secret,
 개인 path나 payload를 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

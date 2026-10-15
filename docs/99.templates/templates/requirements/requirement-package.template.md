@@ -19,6 +19,18 @@ created: "{{CREATED}}"
 
 {{PROBLEM_AND_GOALS}}
 
+## Scope
+
+{{CONSTRAINTS}}
+
+### Assumptions
+
+{{ASSUMPTIONS}}
+
+### Risks
+
+{{RISKS}}
+
 ## Requirements
 
 ### Functional Requirements
@@ -40,18 +52,6 @@ created: "{{CREATED}}"
 ## Acceptance Criteria
 
 {{ACCEPTANCE_CRITERIA}}
-
-## Scope
-
-{{CONSTRAINTS}}
-
-### Assumptions
-
-{{ASSUMPTIONS}}
-
-### Risks
-
-{{RISKS}}
 
 ## Related Documents
 

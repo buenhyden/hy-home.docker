@@ -1,10 +1,10 @@
 ---
 title: "Development Database Source Preflight Runbook"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0100"
 parent_ids:
@@ -18,9 +18,14 @@ created: "2026-10-03"
 
 `dev-db` source 변경의 정적 사전 검사와 DEV 지표 경보·중지 절차를 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
 `dev-db` source change를 검토하거나 runtime execution request를 준비할 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 현재 완료 범위는 소스 통합·정적 검증, 신규 dev/LAB 비밀 파일 20개 발급과
 합성 격리 엔진의 기동·권한·오프라인 백업·별도 볼륨 복원이다(SPEC-0202-TSK-0002).
 HOME 배포·기동·정지·재시작, 외부 프로젝트 계정 발급, 실데이터 이관,
@@ -83,7 +88,7 @@ Task에는 source SHA, changed paths, 명령, exit code, 실행 시각, 정적·
 운영 `NOT_RUN` 경계를 각각 기록한다. secret 값, private file 내용, raw log, DB row,
 resolved mount path는 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

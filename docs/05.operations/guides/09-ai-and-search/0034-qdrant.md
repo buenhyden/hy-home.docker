@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Usage Guide"
-version: "1.2.4"
+version: "1.2.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -21,13 +21,15 @@ created: "2026-05-10"
 
 이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../infra/04-data/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, SSO 뒤의 REST route와 `/readyz` healthcheck를 사용한다. gRPC는 network 안의 `qdrant:6334`로만 쓴다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: Qdrant를 vector storage로 사용할 때 현재 repository의 service name, route, protocol, persistence, snapshot path, API key를 compose와 맞춰 이해하도록 한다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -42,6 +44,8 @@ created: "2026-05-10"
 | Health·자원 | `/readyz`와 `template-stateful-med`를 사용한다. |
 | Backup·upgrade | 약 2x의 disk 용량으로 같은 minor 또는 다음 minor 대상에 snapshot을 복구한다. 승격 전에 collection/alias/count를 검증한다. |
 | License·edition | Qdrant source에는 Apache-2.0이 적용된다. managed-cloud 기능은 이 self-hosted single-node 계약에 포함되지 않는다. |
+
+## Usage
 
 ### Identity-specific behavior
 

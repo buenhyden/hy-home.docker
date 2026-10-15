@@ -1,10 +1,10 @@
 ---
 title: "AI Hardening and HA Expansion Strategy"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0023"
 parent_ids:
@@ -17,34 +17,15 @@ created: "2026-03-28"
 
 This document records the decision to first carry out immediately applicable hardening (boundary security, GPU concurrency ceilings, stateful template alignment, exporter health-gating, CI gate) for the `08-ai` layer, while pursuing catalog expansion items (model promotion/access separation/log policy) in phases.
 
-The AI tier handles GPU/model resources and user conversation paths at the same time, so an imbalance in security/availability/operational control can quickly lead to failures and policy violations. The catalog requires strengthened operating standards for 08-ai, so a decision that separates short-term stabilization from mid-term expansion is needed.
-
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
-## Decision
+## Decision Drivers
 
-- Carry out immediate hardening.
-  - Enforce `gateway-standard-chain@file,sso-errors@file,sso-auth@file` on the Ollama/Open WebUI router.
-  - Specify `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, and `OLLAMA_MAX_QUEUE` ceilings on Ollama.
-  - Align Open WebUI to `template-stateful-med`.
-  - Enforce a health-gated `ollama` dependency and a metrics healthcheck on `ollama-exporter`.
-  - Introduce `scripts/hardening/check-all-hardening.sh 08-ai` and the CI `infrastructure-hardening` job.
-- Carry out catalog expansion in phases.
-  - Establish an Ollama model promotion (experimental -> production) procedure
-  - Establish an Open WebUI model access permission separation policy
-  - Establish a conversation log retention/masking policy
+The AI tier handles GPU/model resources and user conversation paths at the same time, so an imbalance in security/availability/operational control can quickly lead to failures and policy violations. The catalog requires strengthened operating standards for 08-ai, so a decision that separates short-term stabilization from mid-term expansion is needed.
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### Implement all catalog expansion immediately
 
@@ -59,6 +40,19 @@ The decision context above records the applicable drivers and evidence.
   - Reduces short-term implementation cost
 - Bad:
   - Cannot automatically block policy violations/regressions
+
+## Decision
+
+- Carry out immediate hardening.
+  - Enforce `gateway-standard-chain@file,sso-errors@file,sso-auth@file` on the Ollama/Open WebUI router.
+  - Specify `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, and `OLLAMA_MAX_QUEUE` ceilings on Ollama.
+  - Align Open WebUI to `template-stateful-med`.
+  - Enforce a health-gated `ollama` dependency and a metrics healthcheck on `ollama-exporter`.
+  - Introduce `scripts/hardening/check-all-hardening.sh 08-ai` and the CI `infrastructure-hardening` job.
+- Carry out catalog expansion in phases.
+  - Establish an Ollama model promotion (experimental -> production) procedure
+  - Establish an Open WebUI model access permission separation policy
+  - Establish a conversation log retention/masking policy
 
 ## Consequences
 

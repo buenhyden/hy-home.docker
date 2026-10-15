@@ -1,10 +1,10 @@
 ---
 title: "Hook Outputs and Main Push Guard Task"
-version: "0.1.1"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0241-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-13"
 
 # Hook Outputs and Main Push Guard Task
 
-## Objective
+## Overview
+
+### Objective
 
 Deliver valid hook outputs to the model, align the Codex hook bindings, and
 close the routes to a direct push to `main`, as SPEC-0241 states.
@@ -362,6 +364,27 @@ commit-msg --hook-type pre-push` (pre-commit 4.6.2), and `enforce_admins` was
 enabled on `main` with read-back at 2026-10-14T08:46:11Z, every other
 protection field unchanged. A push blocked by the installed hook has not been
 observed.
+
+### R10 lifecycle reconciliation
+
+Read on 2026-10-15 from `49f8dd661acf37bf292ee0aa59abfe1af16cde10`.
+The six accepted rows above retain the owner's actual 2026-10-14 decision.
+Their scope is the listed test/review/candidate criteria; criterion 3 does
+not require or demonstrate a live denial through the installed hook.
+The merged candidate, hook installation and remote protection read-back are
+separate dated observations. The original Inputs exclusion names the earlier
+source-work boundary; the later owner request in Review and Completion is
+the recorded authority for the subsequent installation/protection actions.
+
+This Task and its Spec/Plan remain `draft` because this audit has not
+established separate parent approval and execution-transition evidence.
+Acceptance, authority metadata, integration and runtime observations are not
+interchangeable. Draft metadata does not withdraw the six historical accepted
+criteria, and accepted criteria do not manufacture a completion receipt.
+SPEC-0212-TSK-0007 owns r10's follow-up, including isolated installed-stage
+verification and source correction; it does not rerun seven historical review
+rounds as a standing requirement. No current completed/archive-ready claim
+is made here.
 
 ## Related Documents
 

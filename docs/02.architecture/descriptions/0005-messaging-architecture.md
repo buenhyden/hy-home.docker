@@ -1,10 +1,10 @@
 ---
 title: "Messaging Architecture Description"
-version: "1.3.1"
+version: "1.3.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0005"
 parent_ids:
@@ -16,17 +16,13 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 `05-messaging` is the optional Kafka event-streaming boundary. The current
 HOME implementation contains one Kafka KRaft broker, Schema Registry, Kafka Connect,
 Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second broker family is part of the current architecture.
+
+## Scope
 
 ### System Boundaries
 
@@ -37,9 +33,7 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 - **Does not own:** Keycloak lifecycle, OAuth2 Proxy sessions, workflow
   orchestration, producer source-of-truth data, or external connector systems.
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -49,6 +43,8 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
   selectors documented in [GDE-0036](../../05.operations/guides/06-messaging-and-cdc/0036-kafka.md).
 - The HOME init job declares replication factor 1; the LAB init job declares
   replication factor 3 and requires three healthy LAB brokers.
+
+## Runtime and Deployment
 
 ### Data Flow
 
@@ -82,7 +78,9 @@ protocol, topology or security changes require compatibility, license, isolated
 restore and rollback evidence. Confluent edition-specific capabilities are not
 assumed from the selected images.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Reliability:** health checks, explicit persistent broker/Connect volumes and
   complete topic/offset/schema/connector recovery. The separate three-broker LAB on one host does

@@ -1,10 +1,10 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -32,13 +32,15 @@ Airflow/n8n이 공유하는 broker/cache다. Grafana는 현재 Compose에서 man
 PostgreSQL에 연결되지 않는다. 자체 `grafana-data`를 소유하고 기본 데이터베이스
 구성을 그대로 사용한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 management database를 사용하는 서비스 소유자와 운영자를 위한 문서다. 목표는 서비스
 구성, 공유 의존성의 영향 범위, 지표 수집 구조, 백업·복구·업그레이드 경계를 이해하고
 정적 검사로 구성을 확인하는 것이다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -76,6 +78,8 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 (`VALKEY_MNG_HOST_PORT`, 기본값 `26379`)는 `HOST_LAN_BIND_IP`(기본값
 `192.168.0.13`)에 게시해 k3d Argo CD 캐시가 도달한다. healthcheck와 리소스
 제한은 공유 템플릿에서 온다.
+
+## Usage
 
 ### Identity-specific behavior
 
@@ -134,16 +138,18 @@ backup, rollback이 필요하다. 새 major PostgreSQL 이미지를 기존 `PGDA
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 
+### Traceability
+
+- Artifact: `GDE-0028`; 거버넌스 정책: `POL-0028`.
+- Runtime authority: `infra/04-data/mng-db/docker-compose.yml`.
+
+## Troubleshooting
+
 ### Common Checks
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이며, runtime과 restore는 별개로 남는다.
-
-### Traceability
-
-- Artifact: `GDE-0028`; 거버넌스 정책: `POL-0028`.
-- Runtime authority: `infra/04-data/mng-db/docker-compose.yml`.
 
 ## Related Documents
 

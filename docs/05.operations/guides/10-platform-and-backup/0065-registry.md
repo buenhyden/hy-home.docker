@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Usage Guide"
-version: "1.2.4"
+version: "1.2.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0065"
 parent_ids:
@@ -22,13 +22,15 @@ created: "2026-05-10"
 Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하는 HOME OCI 이미지 저장소다.
 `registry` 또는 `tooling` profile에서 선택된다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 이미지를 push·pull하고 저장소를 유지하는 운영자다. 목표는 현재 구현의 노출·인증 한계를
 이해하고, 일반 사용과 백업·업그레이드 경계를 확인하는 것이다. 실행 절차는
 [Registry Runbook](../../runbooks/10-platform-and-backup/0065-registry.md)이 맡는다.
 
-## Usage
+## Concepts
 
 ### 분류와 저장소 범위
 
@@ -37,6 +39,8 @@ push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. �
 이미지는 추적되는 Dockerfile로부터 재현할 수 있지만, push된 서드파티나 고유
 아티팩트는 digest/콘텐츠가 백업되어 있거나 신뢰할 수 있는 업스트림에서 여전히
 구할 수 있을 때만 복구할 수 있다.
+
+## Usage
 
 ### 현재 구현과 보안 격차
 
@@ -73,12 +77,6 @@ push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. �
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0065-registry.md)의 `계획된 저장소 유지보수` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Common Checks
-
-- `docker compose --profile registry config --quiet`
-- `docker compose --profile registry config --services`
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
-
 ### Runbook Handoff
 
 push/pull 실패, 스토리지 복구, 계획된 업그레이드, 별도로 승인된 garbage collection에는
@@ -96,6 +94,14 @@ push/pull 실패, 스토리지 복구, 계획된 업그레이드, 별도로 승�
 - [Policy](../../policies/10-platform-and-backup/0065-registry.md) (`POL-0065`)
 - [Runbook](../../runbooks/10-platform-and-backup/0065-registry.md) (`RUN-0065`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile registry config --quiet`
+- `docker compose --profile registry config --services`
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
 ## Related Documents
 

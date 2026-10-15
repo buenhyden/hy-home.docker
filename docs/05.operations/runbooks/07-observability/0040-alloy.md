@@ -1,10 +1,10 @@
 ---
 title: "Alloy Readiness and Pipeline Recovery Runbook"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0040"
 parent_ids:
@@ -18,9 +18,13 @@ created: "2026-05-17"
 
 이 런북은 Grafana Alloy의 준비 상태 점검, Docker discovery 증거, OTLP 입력 진단, downstream exporter 검증, 재시작과 설정 rollback을 다룬다. 설명은 [GDE-0040](../../guides/07-observability/0040-alloy.md)과 [POL-0040](../../policies/07-observability/0040-alloy.md)에 두고, 여기서는 실행 가능한 진단, 안전한 restart, evidence 수집, escalation 기준만 둔다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - Alloy UI 또는 `/-/healthy` endpoint가 실패할 때.
 - Docker 로그, metric, trace가 backend에 도착하지 않을 때.
@@ -153,7 +157,7 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - mount나 endpoint 변경이 필요해 보이면 승인 상태.
 - secret이 담긴 label이나 payload가 의심되면 원문 값은 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

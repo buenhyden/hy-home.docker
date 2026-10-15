@@ -1,10 +1,10 @@
 ---
 title: "Local Gate Governance Timeout Task"
-version: "0.3.2"
+version: "0.3.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0235-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-13"
 
 # Local Gate Governance Timeout Task
 
-## Objective
+## Overview
+
+### Objective
 
 Let the local changed gate finish on the owner's host by raising two local
 only node timeouts and letting the reachability test accept a class

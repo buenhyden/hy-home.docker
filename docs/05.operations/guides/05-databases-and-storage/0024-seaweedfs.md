@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.5.6"
+version: "1.5.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -28,13 +28,15 @@ consumer profile을 통해 HOME에 속한다. `http://seaweedfs-s3:8333`
 (path-style, region `us-east-1`)의 S3가 유일한 interface이다. privileged
 FUSE mount는 S04에서 제거되었으며 master와 filer에는 route가 없다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 SeaweedFS S3를 쓰는 서비스 소유자와 운영자를 위한 문서다. 목표는 consumer별 bucket과
 identity, 네트워크·보안 경계, 지표와 경보, 백업·복구 방향을 이해하고 정적 검사와
 rehearsal로 구성을 확인하는 것이다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -63,6 +65,8 @@ network의 다른 구성원은 Prometheus뿐이며 Prometheus는 SeaweedFS 신�
 `SeaweedFSS3Down`(target down 2분), `SeaweedFSNodeMetricsDown`(master·volume·filer metric
 target down 5분)과 `SeaweedFSDataDiskLow`(node-exporter 기준 data-disk
 filesystem free 15% 미만 10분).
+
+## Usage
 
 ### Identity-specific behavior
 
@@ -151,17 +155,19 @@ SeaweedFS의 license는 Apache-2.0이다.
 - [SeaweedFS security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
 - [SeaweedFS repository and license](https://github.com/seaweedfs/seaweedfs)
 
+### Traceability
+
+- Artifact: `GDE-0024`; governing policy: `POL-0024`.
+- Runtime authority: `infra/04-data/seaweedfs/docker-compose.yml`.
+
+## Troubleshooting
+
 ### Common Checks
 
 정확한 root profile, service, health/resource control, writable-state
 ownership, secret reference, exposure, engine별 recovery boundary를
 확인한다. static pass는 configuration 증거일 뿐이다. runtime과 restore는
 별개로 남는다.
-
-### Traceability
-
-- Artifact: `GDE-0024`; governing policy: `POL-0024`.
-- Runtime authority: `infra/04-data/seaweedfs/docker-compose.yml`.
 
 ## Related Documents
 

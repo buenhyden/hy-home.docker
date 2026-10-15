@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: floating reference"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -17,6 +17,18 @@ enabled: true
 event: "file"
 name: "block-unpinned-gha-action"
 ---
+
+# BLOCKED: floating reference
+
+## Overview
+
+Apply the declared `block` action for block-unpinned-gha-action.
+
+## Scope
+
+`file` 이벤트의 `block-unpinned-gha-action` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+
+## Rules
 
 **Floating GitHub Actions reference blocked (project rule)**
 
@@ -35,16 +47,6 @@ name: "block-unpinned-gha-action"
 ```yaml
 # BLOCKED: floating reference
 
-## Overview
-
-Apply the declared `block` action for block-unpinned-gha-action.
-
-## Scope
-
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
-
-## Rules
-
 - uses: actions/checkout@main
 - uses: actions/setup-python@latest
 
@@ -60,6 +62,10 @@ The declared action applies when the pattern matches.
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
 
 ## Related Documents
 

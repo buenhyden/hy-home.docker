@@ -1,10 +1,10 @@
 ---
 title: "HOME Residual Backlog Specification"
-version: "0.5.2"
+version: "0.5.3"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0182"
 parent_ids:
@@ -20,6 +20,49 @@ Close the SPEC-0180 residuals that [SPEC-0181](../../98.archive/completed/03.spe
 did not take: repository follow-ups, runtime follow-ups and legacy data, and
 recovery and authentication acceptance. The owner put all three groups in
 scope on 2026-09-25 and retired the rest with reasons recorded below.
+
+### Technical Approach
+
+Three Tasks carry the work. Task 0001 makes the repository changes and their
+live applies. Task 0002 handles runtime follow-ups and legacy disposal in
+approved windows. Task 0003 runs the recovery and authentication acceptance,
+writes the two options memos and, after the owner's decisions, the reboot
+runbook and its rehearsal. The agent runs every step that needs no secret
+input; the owner runs steps that do, and makes the decisions.
+
+### Interfaces and Data
+
+Qdrant and Prometheus secrets and scrape jobs, Open WebUI environment, the n8n
+Valkey exporter, SeaweedFS S3 metrics and alert rules, the document-metadata
+runtime-version check, the compose-core-readiness example, the `mng-pg`
+image, single-file bind mounts, legacy directories, volumes, files and
+images, the Restic include set, pgBackRest and Restic repositories, Traefik
+SSO routes, and Keycloak test identities.
+
+### Open Questions
+
+None open for design. The owner accepted ADR-0041 (Cloudflare R2 offsite
+target) and ADR-0042 (auto-unseal deferred, manual Shamir kept) on
+2026-09-25, and chose the W8 window 2026-09-26 to 2026-10-02. Task 0002
+records the six-container re-decision and subsequent CDC retirement on
+2026-09-29; that owner decision is closed. Its completed W3–W6 receipts
+cover criteria 3–6, with dated results and the disclosed Pyroscope hash
+limitation. Task 0003 now records W8/criterion 8 observations, including
+sample gaps and identity deduplication. Criterion 7 still needs current-policy PostgreSQL
+recovery evidence; criterion 10 still needs the R2 scratch restore and offline
+key custody. Those operational holds prevent package completion.
+
+### Operational Impact
+
+Recreates of Qdrant, Prometheus, SeaweedFS (S3, master, volume, filer), Open
+WebUI, `mng-pg` and any kept Superset or Kafbat UI, each in an approved
+window. `mng-pg` restarts every management-database consumer, Keycloak
+included. The SeaweedFS recreates interrupt Loki, Tempo and MLflow writes
+briefly and stay clear of the nightly backup. Legacy disposal frees about 1.2
+GB. The reboot rehearsal takes the host, and the hy-home.k8s containers on it,
+down.
+
+## Scope
 
 ### Boundaries and Inputs
 
@@ -58,74 +101,7 @@ Live mutation, credential work, data disposal and remote changes each need an
 approval that names the target. Secret values never enter output, diffs,
 Tasks or PRs.
 
-### Technical Approach
-
-Three Tasks carry the work. Task 0001 makes the repository changes and their
-live applies. Task 0002 handles runtime follow-ups and legacy disposal in
-approved windows. Task 0003 runs the recovery and authentication acceptance,
-writes the two options memos and, after the owner's decisions, the reboot
-runbook and its rehearsal. The agent runs every step that needs no secret
-input; the owner runs steps that do, and makes the decisions.
-
-### Interfaces and Data
-
-Qdrant and Prometheus secrets and scrape jobs, Open WebUI environment, the n8n
-Valkey exporter, SeaweedFS S3 metrics and alert rules, the document-metadata
-runtime-version check, the compose-core-readiness example, the `mng-pg`
-image, single-file bind mounts, legacy directories, volumes, files and
-images, the Restic include set, pgBackRest and Restic repositories, Traefik
-SSO routes, and Keycloak test identities.
-
-### Failure Modes and Guardrails
-
-Record a final inventory before any deletion: names, sizes and hashes for
-data, and names, sizes, modes and times only for credential files. Do not
-delete what the approval does not name; the approval names the exact
-commands, including root-level removal for root- or container-owned trees.
-Restore rehearsals run on the data disk, on named isolated networks, and never
-reach production SeaweedFS, `mng-pg` or the production replication slot.
-Database dumps are written owner-only and deleted after verification.
-
-The SSO outage check cuts only OAuth2 Proxy off from Valkey (network
-disconnect and reconnect). Stopping `mng-valkey` would also stall the n8n
-queue and the Airflow broker and is out of scope. Recreating `mng-pg`
-restarts every management-database consumer, Keycloak included, so SSO is
-down for that window; it never overlaps the SSO checks.
-
-Existing Restic snapshots keep the Vault tree and the quarantined credential
-files (the host set covers all of `secrets/`) until their retention expires,
-up to twelve months; that is the accepted cost of not rewriting snapshots.
-
-### Open Questions
-
-None open for design. The owner accepted ADR-0041 (Cloudflare R2 offsite
-target) and ADR-0042 (auto-unseal deferred, manual Shamir kept) on
-2026-09-25, and chose the W8 window 2026-09-26 to 2026-10-02. Task 0002
-records the six-container re-decision and subsequent CDC retirement on
-2026-09-29; that owner decision is closed. Its completed W3–W6 receipts
-cover criteria 3–6, with dated results and the disclosed Pyroscope hash
-limitation. Task 0003 now records W8/criterion 8 observations, including
-sample gaps and identity deduplication. Criterion 7 still needs current-policy PostgreSQL
-recovery evidence; criterion 10 still needs the R2 scratch restore and offline
-key custody. Those operational holds prevent package completion.
-
-### Operational Impact
-
-Recreates of Qdrant, Prometheus, SeaweedFS (S3, master, volume, filer), Open
-WebUI, `mng-pg` and any kept Superset or Kafbat UI, each in an approved
-window. `mng-pg` restarts every management-database consumer, Keycloak
-included. The SeaweedFS recreates interrupt Loki, Tempo and MLflow writes
-briefly and stay clear of the nightly backup. Legacy disposal frees about 1.2
-GB. The reboot rehearsal takes the host, and the hy-home.k8s containers on it,
-down.
-
-## Scope
-
-### Scope
-
 ## Contracts
-
-### Contracts
 
 ### Behavior Contract
 
@@ -136,8 +112,6 @@ custody. A rehearsal on synthetic data is never reported as a HOME recovery
 result. A failed or unexecuted step is never recorded as done.
 
 ## Acceptance Criteria
-
-### Acceptance Criteria
 
 ### Acceptance Contract
 
@@ -187,6 +161,28 @@ result. A failed or unexecuted step is never recorded as done.
     evidence: Terrakube, the CI alignment follow-ups, SEC-002, mode 664, the
     Renovate units, the Vault-based compose-core-readiness rig kept as a
     generic fixture, and Open WebUI keeping its local vector store.
+
+## Failure Conditions
+
+### Failure Modes and Guardrails
+
+Record a final inventory before any deletion: names, sizes and hashes for
+data, and names, sizes, modes and times only for credential files. Do not
+delete what the approval does not name; the approval names the exact
+commands, including root-level removal for root- or container-owned trees.
+Restore rehearsals run on the data disk, on named isolated networks, and never
+reach production SeaweedFS, `mng-pg` or the production replication slot.
+Database dumps are written owner-only and deleted after verification.
+
+The SSO outage check cuts only OAuth2 Proxy off from Valkey (network
+disconnect and reconnect). Stopping `mng-valkey` would also stall the n8n
+queue and the Airflow broker and is out of scope. Recreating `mng-pg`
+restarts every management-database consumer, Keycloak included, so SSO is
+down for that window; it never overlaps the SSO checks.
+
+Existing Restic snapshots keep the Vault tree and the quarantined credential
+files (the host set covers all of `secrets/`) until their retention expires,
+up to twelve months; that is the accepted cost of not rewriting snapshots.
 
 ## Related Documents
 

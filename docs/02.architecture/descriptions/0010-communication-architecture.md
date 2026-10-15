@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier Architecture Description"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0010"
 parent_ids:
@@ -16,17 +16,13 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 The mail requirements separate development message capture in `11-quality/mailpit` from the optional internal mail server in `10-communication/stalwart`. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
 `mail-dev`. Stalwart is selected only by `mail-server` and requires mail-domain,
 DNS, TLS, authentication, relay, abuse, and backup ownership before use.
+
+## Scope
 
 ### System Boundaries
 
@@ -46,15 +42,15 @@ DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 - [Mailpit operations](../../05.operations/guides/11-mail-and-notifications/0084-mailpit.md)
 - [Stalwart operations](../../05.operations/guides/11-mail-and-notifications/0070-mail.md)
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
 Mailpit is the development SMTP/UI component backed by one SQLite database.
 Stalwart is the optional mail-protocol and administration component backed by
 the operator-selected storage configuration under its persistent mount.
+
+## Runtime and Deployment
 
 ### Data Flow
 
@@ -74,7 +70,9 @@ The root project includes both leaves. Profile choice determines activation:
 currently running optional service may remain running when another profile is
 rendered; profile rendering is not a stop operation.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Isolation:** applications choose Mailpit explicitly for tests; no captured
   development message may be relayed externally.

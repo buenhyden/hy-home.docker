@@ -25,9 +25,13 @@ created: "{{CREATED}}"
 
 {{SYSTEM_BOUNDARIES}}
 
-## Architecture
+## Structure
+
+### Architecture
 
 {{COMPONENTS}}
+
+## Runtime and Deployment
 
 ### Runtime View
 
@@ -37,7 +41,9 @@ created: "{{CREATED}}"
 
 {{DEPLOYMENT_VIEW}}
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 {{QUALITY_ATTRIBUTES}}
 

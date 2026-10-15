@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Operations Policy"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0037"
 parent_ids:
@@ -74,12 +74,6 @@ pass는 configuration evidence일 뿐이다. Runtime startup, OIDC login, load
 않는다. exception은 runtime mutation, plaintext secret, raw active storage
 copy, same-host availability 주장을 승인하지 않는다.
 
-### Verification
-
-root 구성과 scoped static policy check를 검증한 다음, promotion이나
-cutover 전에 application-level acceptance를 갖춘 isolated compatible
-restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
-
 ### Review Cadence
 
 profile, image, volume, credential, consumer, retention, upstream
@@ -90,6 +84,12 @@ lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다
 - Artifact: `POL-0037`; parent: `AD-0005`.
 - Runtime authority는 연결된 Compose/source file에 남는다; exact pin은
   그곳에 유지된다.
+
+## Verification
+
+root 구성과 scoped static policy check를 검증한 다음, promotion이나
+cutover 전에 application-level acceptance를 갖춘 isolated compatible
+restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
 
 ## Related Documents
 

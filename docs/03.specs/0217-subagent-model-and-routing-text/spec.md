@@ -1,10 +1,10 @@
 ---
 title: "Subagent Model and Routing Text"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0217"
 parent_ids:
@@ -53,6 +53,13 @@ cites the earlier models.
    governance contract check passes.
 3. No authored surface outside Stage 90, Stage 98 and this package's own
    baseline narration still names `claude-opus-5` or `claude-sonnet-5`.
+
+## Failure Conditions
+
+Rendering must fail when a role lacks Overview or Use When, rather than
+emit a description without routing cases. Generated drift, obsolete Claude
+model names on current authored surfaces, or changes to the excluded Codex,
+Haiku and effort selections violate the bounded migration.
 
 ## Related Documents
 

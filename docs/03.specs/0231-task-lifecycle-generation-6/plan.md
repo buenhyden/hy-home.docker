@@ -1,10 +1,10 @@
 ---
 title: "Task Lifecycle Generation 6 Plan"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0231-PLAN-0001"
 parent_ids:
@@ -19,6 +19,14 @@ created: "2026-10-13"
 Change the contract first, then the reader behind failing fixtures, then the
 archive consumers, then migrate the active corpus and the text that states
 the rules. Each unit is one logical commit on one branch with one writer.
+
+## Scope
+
+W1–W3 separate parent authority from Task execution, implement generation 6
+Evidence/acceptance rules and share one archive-readiness predicate. W4–W6
+migrate active records with source proof, align REQ-0026/AD-0030/ADR-0048 and
+governance, then validate integration while preserving generation 4 terminal
+bodies and frozen archive meaning.
 
 ## Work Breakdown
 
@@ -39,7 +47,9 @@ comparison of generation 4 historical Tasks and archive bodies; the metadata,
 corpus lifecycle and archive recovery checks; the changed gate and the remote
 candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - Other writers keep active Tasks open on parallel branches; a branch that
   still writes generation 5 Evidence after this merges fails the reader and

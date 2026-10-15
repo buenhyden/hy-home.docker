@@ -1,10 +1,10 @@
 ---
 title: "Superset Operations Policy"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0097"
 parent_ids:
@@ -52,12 +52,6 @@ Superset는 자체 로그인, 메타데이터 데이터베이스, lakehouse 데�
 수 있고 Admin이 role을 부여한다. 소유자는 realm이 사용자 한 명뿐인
 2026-09-24 시점에 이를 유지하기로 했다.
 
-### Verification
-
-Compose 렌더링, hardening 고정값, 그리고 예행연습: 프로비저닝, idempotent
-마이그레이션, 등록된 `lakehouse` 데이터베이스, `/health`, 익명 API `401`,
-Keycloak 로그인 옵션, 컨테이너 환경 변수에 자격 증명이 없음.
-
 ### Review Cadence
 
 Superset 또는 Flask-AppBuilder 업그레이드, Keycloak client 변경, 새 데이터
@@ -68,6 +62,12 @@ Superset 또는 Flask-AppBuilder 업그레이드, Keycloak client 변경, 새 �
 - [가이드](../../guides/13-analytics-and-data-quality/0097-superset.md) (`GDE-0097`)
 - [런북](../../runbooks/13-analytics-and-data-quality/0097-superset.md) (`RUN-0097`)
 - [Application auth integration policy](../03-identity-and-access/0079-application-auth-integration.md)
+
+## Verification
+
+Compose 렌더링, hardening 고정값, 그리고 예행연습: 프로비저닝, idempotent
+마이그레이션, 등록된 `lakehouse` 데이터베이스, `/health`, 익명 API `401`,
+Keycloak 로그인 옵션, 컨테이너 환경 변수에 자격 증명이 없음.
 
 ## Related Documents
 

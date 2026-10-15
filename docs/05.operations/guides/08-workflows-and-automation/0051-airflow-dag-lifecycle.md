@@ -1,10 +1,10 @@
 ---
 title: "Airflow Dag Basics Operations"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0051"
 parent_ids:
@@ -18,7 +18,9 @@ created: "2026-03-25"
 
 이 문서는 `hy-home.docker` 환경에서 Airflow DAG를 작성하는 기본 방법과 권장 패턴을 설명합니다. 현재 compose는 DAG 파일을 repo 내부 Airflow 하위 경로가 아니라 `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에서 bind mount합니다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 **대상**
 
@@ -29,12 +31,14 @@ created: "2026-03-25"
 
 프로젝트용으로 작성한 모든 DAG가 일관된 pattern을 따르고 공유 infrastructure(PostgreSQL, SeaweedFS)를 올바르게 사용하도록 보장한다. `hy-home.docker` stack에서 Airflow DAG를 작성하는 기본 pattern을 다룬다.
 
-## Usage
+## Concepts
 
 ### 사전 조건
 
 - `${DEFAULT_WORKFLOW_DIR}/airflow/dags` 접근 권한.
 - Python과 Apache Airflow TaskFlow API에 대한 기본 이해.
+
+## Usage
 
 ### DAG Definition Pattern
 

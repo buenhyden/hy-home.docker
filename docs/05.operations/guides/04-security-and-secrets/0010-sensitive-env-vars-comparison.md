@@ -1,10 +1,10 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "3.3.1"
+version: "3.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0010"
 created: "2026-06-04"
@@ -16,13 +16,15 @@ created: "2026-06-04"
 
 이 가이드는 공개 secret registry 예제와 로컬 registry의 메타데이터를 비교하는 기준과 방법을 설명한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 secret registry를 정리하거나 점검하는 운영자와 agent다.
 
 목표는 값을 노출하지 않고 공개/개인 registry의 ID와 env-key 집합을 정확히 일치시키는 것이다.
 
-## Usage
+## Concepts
 
 `secrets/SENSITIVE_ENV_VARS.md.example`은 공개 ID·env key·파일 경로·용도 계약을
 소유한다. 실제 값은 Git에서 제외된 로컬 registry와 secret 파일에 보관한다.
@@ -33,6 +35,23 @@ created: "2026-06-04"
 중복 ID, 중복 env mapping, 중복 경로, 경로 이탈, 현재 Compose 선언과 service
 grant의 대응 관계를 함께 확인한다. 실제 점검 수치와 결과는 날짜·commit을 붙여
 현재 Task에 기록한다.
+
+## Usage
+
+### Runbook Handoff
+
+[Secret 관리 안내](../../../../secrets/README.md)와 해당 서비스 Runbook을 따른다.
+승인된 경로 재배치에서는 보호 백업을 만든 뒤 기존 HOME 경로의 호환 참조와 새
+Compose 경로를 함께 검사한다. 호환 참조 제거, 실제 credential 변경, 재시작 또는
+데이터 복구는 대상과 영향을 명시한 별도 운영 승인 범위에서 수행한다.
+단순 줄 수가 아니라 소비자 근거와 정확한 키 집합으로 정리하며, 유지 대상의
+개인 값을 덮어쓰지 않는다.
+
+### Traceability
+
+- 같은 번호 `0010`의 Policy/Runbook은 없다.
+
+## Troubleshooting
 
 ### Common Checks
 
@@ -67,19 +86,6 @@ profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 
 로컬 registry가 없으면 관찰되지 않음으로 기록한다. 존재하는 경우 Git ignore와
 0600 권한을 확인하고 값, 원문 행, 인증 파일이나 token 내용을 증거에 남기지 않는다.
 `--check`는 생성 도구의 설치 여부까지 검사하며 `htpasswd` 누락 등은 별도로 보고한다.
-
-### Runbook Handoff
-
-[Secret 관리 안내](../../../../secrets/README.md)와 해당 서비스 Runbook을 따른다.
-승인된 경로 재배치에서는 보호 백업을 만든 뒤 기존 HOME 경로의 호환 참조와 새
-Compose 경로를 함께 검사한다. 호환 참조 제거, 실제 credential 변경, 재시작 또는
-데이터 복구는 대상과 영향을 명시한 별도 운영 승인 범위에서 수행한다.
-단순 줄 수가 아니라 소비자 근거와 정확한 키 집합으로 정리하며, 유지 대상의
-개인 값을 덮어쓰지 않는다.
-
-### Traceability
-
-- 같은 번호 `0010`의 Policy/Runbook은 없다.
 
 ## Related Documents
 

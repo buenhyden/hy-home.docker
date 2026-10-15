@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Architecture Description"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0011"
 parent_ids:
@@ -16,18 +16,14 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 The former Laboratory capabilities now reside in their owning Data, Observability, AI and Analytics tiers under SPEC-0197. This description preserves their optional operator and knowledge-work obligations. It is
 outside HOME and must not affect core traffic when absent. Its broad visibility
 into Docker, Redis/Valkey, provider APIs, and notebook content makes it an admin
 security boundary rather than a harmless dashboard layer.
+
+## Scope
 
 ### System Boundaries
 
@@ -53,9 +49,7 @@ security boundary rather than a harmless dashboard layer.
 - [Open Notebook operations](../../05.operations/guides/09-ai-and-search/0073-open-notebook.md)
 - [RedisInsight operations](../../05.operations/guides/05-databases-and-storage/0076-redisinsight.md)
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -69,6 +63,8 @@ flowchart LR
   Notebook --> Providers[approved model/provider APIs]
 ```
 
+## Runtime and Deployment
+
 ### Data Flow
 
 Dozzle requests Docker log streams, RedisInsight opens operator-defined target
@@ -80,7 +76,9 @@ narrow profile must not grant another tool's target or API access.
 
 The root project includes five package leaves across four tiers and seven service identities. `admin` selects Dozzle and RedisInsight; `admin-logs`/`admin-data` select each separately. `notebook` selects Open Notebook and nested SurrealDB, `surrealdb` only that DB. `mlops` selects MLflow and its provisioner; `data-science` also selects JupyterLab. Dozzle is a separate Observability leaf, not an entry in the aggregate Compose file. Profiles, host paths and service identities remain unchanged.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Security:** preserve gateway/allowlist/authentication controls, protect local
   settings databases, and never expose provider credentials, target passwords,

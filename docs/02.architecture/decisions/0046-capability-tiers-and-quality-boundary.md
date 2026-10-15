@@ -1,10 +1,10 @@
 ---
 title: "Capability Tiers and Quality Boundary"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0046"
 parent_ids:
@@ -34,17 +34,21 @@ Future container recreation must account for relocated source mounts. Runtime,
 image builds, deployment and data recovery need separately scoped authorization;
 static source acceptance does not prove their success.
 
-## Decision
-
-### Decision
-
-### Decision Drivers
+## Decision Drivers
 
 Use capability ownership, retain cohesive packages and helper jobs, preserve
 runtime configuration and persistent data, and keep existing Operations IDs.
 Directory placement must not imply activation order or security isolation.
 
-### Decision
+## Options
+
+### Options Considered
+
+- A: retain the current directories and clarify navigation only.
+- B: move six packages/eight labels into existing capability tiers.
+- C: establish a Quality capability and relocate twelve packages/sixteen labels.
+
+## Decision
 
 Adopt C. `11-quality` owns k6, Locust, WireMock, Pact Broker, SonarQube, Conftest
 and Mailpit. `09-platform-ops` retains OpenTofu, Terrakube, Registry, Renovate and
@@ -64,16 +68,6 @@ The retained five platform lifecycle packages use09-platform-ops and nine
 platform-ops labels; existing Compose profiles, including tooling, remain intact.
 The tracked Restic unit source path follows the move; installed-unit refresh
 is a separately controlled operational handoff.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-- A: retain the current directories and clarify navigation only.
-- B: move six packages/eight labels into existing capability tiers.
-- C: establish a Quality capability and relocate twelve packages/sixteen labels.
 
 ## Consequences
 

@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Valkey Inspection"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0223"
 parent_ids:
@@ -76,6 +76,14 @@ dedicated n8n, Airflow and OAuth2 Proxy Valkey stores.
    inspector secret remains readable in the RedisInsight store.
 4. Every service that uses MNG or DEV Valkey is reviewed for impact.
 5. The changed gate, the staged style check and `candidate-quality` pass.
+
+## Failure Conditions
+
+ACL rendering rejects missing, malformed or shared role secrets, and
+inspectors must be denied writes and dangerous commands. UI reachability
+from data or edge peers, plaintext stored credentials or broken MNG default
+authentication violate the inspection boundary; a healthy UI alone does not
+prove either database connection.
 
 ## Related Documents
 

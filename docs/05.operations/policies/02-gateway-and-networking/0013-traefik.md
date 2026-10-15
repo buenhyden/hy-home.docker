@@ -1,6 +1,6 @@
 ---
 title: "01-Gateway Traefik Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -83,12 +83,6 @@ GO-2026-6605·6610·6613은 UNPROVEN이다. 만료는 이 결함들을 고친 Go
 노출이나 공개 exploit이 생기면 수용을 앞당겨 철회한다. publisher 서명 확인은 아직 하지 않았으며
 수용 범위가 아니라 열린 증거다. 다른 image로 고정을 바꾸면 이 수용은 이어지지 않는다.
 
-### Verification
-
-- `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
-- `docker compose exec traefik traefik healthcheck --ping`과 같은 runtime health evidence는 승인된 root stack이 실행 중일 때만 유효하다.
-
 ### Recovery and Upgrade Controls
 
 Config rollback과 certificate rollback을 구분한다. 이전 config와 certificate가
@@ -105,6 +99,12 @@ representative routes, metrics, and explicit prior-image rollback을 요구한�
 
 - Declared parent: [Gateway Tier Architecture Description](../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: [Guide](../../guides/02-gateway-and-networking/0013-traefik.md) (`GDE-0013`), [Runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md) (`RUN-0013`)
+
+## Verification
+
+- `bash scripts/hardening/check-all-hardening.sh 01-gateway`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
+- `docker compose exec traefik traefik healthcheck --ping`과 같은 runtime health evidence는 승인된 root stack이 실행 중일 때만 유효하다.
 
 ## Related Documents
 

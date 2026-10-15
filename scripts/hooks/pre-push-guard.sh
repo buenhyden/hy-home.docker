@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 # pre-push-guard.sh - refuse any push that updates refs/heads/main.
 #
-# Runs as the `pre-push` stage of .pre-commit-config.yaml, so it also covers
-# pushes an agent hook never sees, such as an editor's sync. pre-commit exposes
-# the remote ref as PRE_COMMIT_REMOTE_BRANCH; a direct git hook passes
-# "<local ref> <local sha> <remote ref> <remote sha>" lines on stdin. Both are read.
+# The native hook installed by install-pre-push-guard.sh passes every raw
+# "<local ref> <local sha> <remote ref> <remote sha>" line, including deletions.
 set -euo pipefail
 
 refs=("${PRE_COMMIT_REMOTE_BRANCH:-}")

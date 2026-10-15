@@ -1,10 +1,10 @@
 ---
 title: "Tempo Usage Guide"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0049"
 parent_ids:
@@ -21,7 +21,9 @@ created: "2026-05-10"
 
 이 가이드는 `06-observability` 계층의 Tempo 사용 맥락과 설정 확인 방법을 설명한다. Tempo는 Alloy가 전달한 OTLP trace를 수집하고, SeaweedFS S3 backend의 `tempo-bucket`에 저장하며, `metrics_generator`를 통해 span metrics와 service graphs를 Prometheus remote write endpoint로 전송한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 백엔드 개발자, SRE, 운영자, AI agent다.
 
@@ -29,7 +31,7 @@ created: "2026-05-10"
 - Grafana에서 TraceQL, span metrics, service graph를 확인하는 진입점을 찾는다.
 - 복구, restart, WAL 증상 분류, storage 장애 대응은 runbook으로 넘긴다.
 
-## Usage
+## Concepts
 
 ### Preconditions
 
@@ -37,6 +39,8 @@ created: "2026-05-10"
 - [SeaweedFS](../../../../infra/04-data/seaweedfs/README.md)에 `tempo-bucket`이 준비되어 있어야 한다.
 - [Grafana](0041-grafana.md)에 Tempo datasource URL `http://tempo:3200`이 provisioning되어 있어야 한다.
 - Docker Secret value는 열람하지 않는다. `seaweedfs_s3_tempo_secret_key` secret ID와 file reference만 문서화한다.
+
+## Usage
 
 ### Normal use
 

@@ -1,10 +1,10 @@
 ---
 title: "HOME Residual Backlog Plan"
-version: "0.4.2"
+version: "0.4.3"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0182-PLAN-0001"
 parent_ids:
@@ -31,6 +31,14 @@ completion receipt and its current Task status.
   test identities, browser checks, the measurement window, the two design
   decisions and the reboot window.
 - W11 follows W10; the reboot runbook documents the unseal method in place.
+
+## Scope
+
+The three Task groups cover six repository follow-ups and their live
+applies, management-database and bind-mount repairs with approved legacy
+disposal, then recovery, resource measurement, SSO and reboot acceptance.
+Existing snapshots age out normally; data deletion, outage probes and reboot
+retain the named-target and recovery prerequisites in Work Details.
 
 ## Work Breakdown
 
@@ -151,9 +159,11 @@ Focused tests per repository change, promtool on rule changes, metadata,
 links, operations catalog, corpus lifecycle and pre-commit; live checks by
 target health, hashes, counts and log line counts, never by value.
 
-## Risks and Rollback
+## Risks and Recovery
 
-### Risk and Rollback
+### Risks and Rollback
+
+#### Risk and Rollback
 
 - Every recreate keeps the previous image or configuration commit;
   `mng-pg` rolls back to its `:pre-0182` tag under RUN-0021 step 2.

@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Operations Policy"
-version: "2.1.1"
+version: "2.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0025"
 parent_ids:
@@ -40,10 +40,6 @@ created: "2026-05-17"
 
 승인된 예외 없음.
 
-### Verification
-
-`LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra.yml --profile cassandra config --quiet`와 문서 링크 검사를 수행한다. 실제 CQL·복원은 `NOT_RUN`으로 기록한다.
-
 ### Review Cadence
 
 이미지·profile·mount·접속·인증 계약 변경 시 검토한다.
@@ -52,6 +48,10 @@ created: "2026-05-17"
 
 - Declared parent: [AD-0004](../../../02.architecture/descriptions/0004-data-architecture.md)
 - Subject peers: [GDE-0025](../../guides/15-labs/0025-cassandra.md), [RUN-0025](../../runbooks/15-labs/0025-cassandra.md)
+
+## Verification
+
+`LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra.yml --profile cassandra config --quiet`와 문서 링크 검사를 수행한다. 실제 CQL·복원은 `NOT_RUN`으로 기록한다.
 
 ## Related Documents
 

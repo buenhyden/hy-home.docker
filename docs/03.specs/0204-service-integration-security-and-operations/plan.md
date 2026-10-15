@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.12"
+version: "1.8.13"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -94,6 +94,15 @@ UNKNOWN. Existing feature/native/recovery Tasks retain exact scopes;
 user-accepted SMTP01/CLN01 and completed P09 stay accepted. Version/source
 acceptance is distinct from deployed-service acceptance. Each future delivery
 uses the owning-Spec PR, exact-head CI and independent review before merge.
+
+## Scope
+
+The work units cover shared-service compatibility and integration,
+OpenBao maintenance and secret catalog/migration interfaces, SMTP, independent
+Airflow/n8n opsflow jobs, common endpoint contracts and the named recovery
+slice. Offline Wiki preparation and typed Stage 05 document moves keep their
+separate boundaries; missing consumer or operational targets do not authorize
+provisioning, LAB runtime or learning-application work.
 
 ## Work Breakdown
 
@@ -737,9 +746,11 @@ data migration and real external-project
 connection remain `NOT_RUN` here. The separately approved synthetic dev-pg
 Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 
-## Risks and Rollback
+## Risks and Recovery
 
-### Risk and Rollback
+### Risks and Rollback
+
+#### Risk and Rollback
 
 | Risk | Bound and recovery |
 | --- | --- |

@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0101"
 parent_ids:
@@ -78,15 +78,6 @@ group 추가와 외부 design account 사용은 담당자 @buenhyden의 별도 �
 수행하는 follow-up trigger다. 정적 origin의 관리자 제한을
 완화하는 예외는 이 정책에 포함되지 않는다.
 
-### Verification
-
-`experience`와 HOME profile을 각각 정적 render하여 서비스 선택, router,
-middleware, network, port, health, resource와 read-only 계약을 비교한다. 합성
-격리 실행에서는 index, iframe, JS/CSS, deep link, 404, cache, CSP/frame,
-로그인 만료와 비인증 asset 거절을 확인한다. 실제 HOME DNS/TLS/OIDC와
-관리자 세션은 운영 실행 승인 후에만 관찰한다. 로컬 MCP 성공을 원격 MCP의
-인증 성공으로 기록하지 않는다.
-
 ### Review Cadence
 
 Storybook image, Compose route/profile, OAuth2 Proxy 허용 그룹, manifest, package export,
@@ -96,6 +87,15 @@ MCP 도구 또는 디자인 공유 범위를 변경할 때 검토한다.
 
 - Artifact: `POL-0101`. 역사적 source/static 완료 근거: `SPEC-0206`. 아키텍처 맥락 `AD-0031`은 draft 상태다.
 - Runtime declaration: [Storybook Compose](../../../../infra/13-experience/storybook/docker-compose.yml).
+
+## Verification
+
+`experience`와 HOME profile을 각각 정적 render하여 서비스 선택, router,
+middleware, network, port, health, resource와 read-only 계약을 비교한다. 합성
+격리 실행에서는 index, iframe, JS/CSS, deep link, 404, cache, CSP/frame,
+로그인 만료와 비인증 asset 거절을 확인한다. 실제 HOME DNS/TLS/OIDC와
+관리자 세션은 운영 실행 승인 후에만 관찰한다. 로컬 MCP 성공을 원격 MCP의
+인증 성공으로 기록하지 않는다.
 
 ## Related Documents
 

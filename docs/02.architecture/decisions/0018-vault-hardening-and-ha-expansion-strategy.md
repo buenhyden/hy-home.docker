@@ -1,10 +1,10 @@
 ---
 title: "Vault Hardening and HA Expansion Strategy"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0018"
 parent_ids:
@@ -17,34 +17,15 @@ created: "2026-03-28"
 
 This document records the decision to prioritize immediate hardening items for the `03-security` Vault layer, while managing auto-unseal/remote audit through a phased transition.
 
-The existing Vault Agent template used placeholder paths, and lacked a `vault-agent` healthcheck, output persistence, and a dedicated CI gate. Auto-unseal and remote audit, on the other hand, require coordinating operational policy, approval, and external dependencies (KMS/HSM, remote storage), so immediate implementation carries high risk.
-
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
-## Decision
+## Decision Drivers
 
-- Implement the immediate-application items first.
-  - Remove template placeholders and fix the `secret/data/hy-home/...` path contract
-  - Add a process-based healthcheck for `vault-agent`
-  - Add a persistent `/vault/out` volume
-  - Introduce `scripts/hardening/check-all-hardening.sh 03-security` plus the CI `infrastructure-hardening` gate
-- At this stage, specify auto-unseal/remote audit ingestion only as a policy/architecture/runbook transition procedure.
-- Keep the internal communication model as-is.
-  - External TLS termination: Traefik
-  - Internal `infra_net`: HTTP
-- Restore the existing regression (`scripts/hardening/check-all-hardening.sh 02-auth`) in the same change set.
+The existing Vault Agent template used placeholder paths, and lacked a `vault-agent` healthcheck, output persistence, and a dedicated CI gate. Auto-unseal and remote audit, on the other hand, require coordinating operational policy, approval, and external dependencies (KMS/HSM, remote storage), so immediate implementation carries high risk.
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### Implement auto-unseal/remote audit at the same time, immediately
 
@@ -60,6 +41,19 @@ The decision context above records the applicable drivers and evidence.
   - Short-term change risk is low.
 - Bad:
   - Placeholder/healthcheck/CI regressions remain.
+
+## Decision
+
+- Implement the immediate-application items first.
+  - Remove template placeholders and fix the `secret/data/hy-home/...` path contract
+  - Add a process-based healthcheck for `vault-agent`
+  - Add a persistent `/vault/out` volume
+  - Introduce `scripts/hardening/check-all-hardening.sh 03-security` plus the CI `infrastructure-hardening` gate
+- At this stage, specify auto-unseal/remote audit ingestion only as a policy/architecture/runbook transition procedure.
+- Keep the internal communication model as-is.
+  - External TLS termination: Traefik
+  - Internal `infra_net`: HTTP
+- Restore the existing regression (`scripts/hardening/check-all-hardening.sh 02-auth`) in the same change set.
 
 ## Consequences
 

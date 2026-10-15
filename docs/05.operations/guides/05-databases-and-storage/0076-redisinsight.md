@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0076"
 parent_ids:
@@ -24,12 +24,14 @@ RedisInsight는 `admin`과 `admin-data` 하위의 OPTIONAL admin UI이다. Redis
 `${DEFAULT_MANAGEMENT_DIR}/redisinsight` 아래에 연결 정의, credential, workbench
 history, 로그를 영속화한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자를 위한 문서다. 목표는
 사전 등록된 inspector 연결로 안전하게 조회하고, 설정과 암호화 경계를 이해하는 것이다.
 
-## Usage
+## Concepts
 
 ### 현재 구현과 격차
 
@@ -52,16 +54,11 @@ DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자를
 - 업스트림은 RedisInsight를 SSPL 라이선스로 명시하며 해당 약관 동의를 요구한다.
   이 저장소는 다른 edition/라이선스를 주장하지 않는다.
 
+## Usage
+
 ### 일반적인 사용, 백업, 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/05-databases-and-storage/0076-redisinsight.md)의 `승인된 사용·설정 보존·업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
-
-### Common Checks
-
-- `docker compose --profile admin-data config --quiet`
-- `bash scripts/hardening/check-all-hardening.sh 04-data`
-- `HYHOME_REDISINSIGHT_REHEARSAL=1 python3 -m unittest tests.validation.test_redisinsight_rehearsal`
-  (격리 망에서 접속·거부·중단·회전을 시험한다)
 
 ### Runbook Handoff
 
@@ -106,6 +103,15 @@ RedisInsight는 시작할 때마다 아래 두 연결을 다시 만든다. 목�
 - [Policy](../../policies/05-databases-and-storage/0076-redisinsight.md) (`POL-0076`)
 - [Runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md) (`RUN-0076`)
 - [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile admin-data config --quiet`
+- `bash scripts/hardening/check-all-hardening.sh 04-data`
+- `HYHOME_REDISINSIGHT_REHEARSAL=1 python3 -m unittest tests.validation.test_redisinsight_rehearsal`
+  (격리 망에서 접속·거부·중단·회전을 시험한다)
 
 ## Related Documents
 

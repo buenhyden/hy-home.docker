@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Cluster Triage Runbook"
-version: "2.0.2"
+version: "2.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0026"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-05-17"
 
 CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구현에 없는 서비스명이나 secret control을 사용하지 않도록 한다.
 
-## Trigger and Preconditions
+## Trigger
 
 - 한 개 이상의 CouchDB 노드가 unhealthy, stopped 또는 missing 상태일 때
 - `couchdb-cluster-init`가 실패했거나 membership이 세 노드를 표시하지 않을 때
@@ -31,7 +31,13 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 
 ### Execution and stop boundary
 
-대상: `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+대상: `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
 기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
@@ -117,7 +123,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - **Health**: `/_up`, `/_membership`, `/_scheduler/docs`
 - **Route**: HOME Traefik label 없음; `couchdb-1` loopback port `${LAB_COUCHDB_HOST_PORT:-35984}`만 게시 (SPEC-0215)
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

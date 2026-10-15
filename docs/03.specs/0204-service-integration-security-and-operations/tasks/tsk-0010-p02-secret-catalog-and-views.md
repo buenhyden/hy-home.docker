@@ -1,10 +1,10 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-11"
 
 # P02 Secret Catalog and Value-Free Views Task
 
-## Objective
+## Overview
+
+### Objective
 
 Own criterion 16 and W32: one value-free catalog, per-ID classification,
 generated views and regeneration guards, reusing existing parsers and issued

@@ -1,10 +1,10 @@
 ---
 title: "Approval Boundaries"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 ---
 
 # Approval Boundaries
@@ -105,6 +105,12 @@ redaction boundary are defined by
   `code-reviewer` remain read-only even when they route or review writable work.
 - Policy changes require `rules-engineer` review.
 
+## Exceptions
+
+A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
+
+## Verification
+
 **Protected Surfaces**
 
 | Surface | Required evidence | Recovery |
@@ -116,10 +122,6 @@ redaction boundary are defined by
 | `.claude/**`, `.codex/**` | canonical contract, authored/native distinction, and renderer parity | restore authored/native controls; regenerate only registered outputs |
 | `.agents/**` | canonical contract, links, and Task evidence | restore approved authored sources; never treat them as generated cleanup |
 | `docs/99.templates/**` | registry/schema validation and Task evidence | revert logical commit |
-
-## Exceptions
-
-A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
 
 ## Related Documents
 

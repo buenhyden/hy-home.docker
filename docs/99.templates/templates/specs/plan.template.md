@@ -23,6 +23,10 @@ created: "{{CREATED}}"
 
 {{OVERVIEW}}
 
+## Scope
+
+{{WORK_BOUNDARY_AND_EXCLUSIONS_FROM_PARENT_SPEC}}
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -33,7 +37,9 @@ created: "{{CREATED}}"
 
 {{VERIFICATION_PLAN}}
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 {{RISKS_AND_ROLLBACK}}
 

@@ -1,10 +1,10 @@
 ---
 title: "Security Tier Architecture Description"
-version: "2.0.1"
+version: "2.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0003"
 parent_ids:
@@ -16,11 +16,11 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
+OpenBao owns eligible consumer-secret storage and rendering. Independent
+bootstrap, recovery and backup custody keeps service restoration possible
+without depending on OpenBao availability.
 
 ## Scope
-
-### Scope
 
 ### Context and Stakeholders
 
@@ -37,6 +37,9 @@ consumer tiers own the least-privilege paths they request.
   OIDC for humans; Traefik UI route.
 - **Storage:** Raft snapshots
   protect stored state; Shamir/unseal or recovery custody protects access to it.
+- **Independent custody:** unseal shares, the CA key and backup recovery material
+  follow the current single-administrator policy. Backup/R2 credentials and
+  account recovery are not ordinary OpenBao consumer migrations.
 - **Credentials:** root tokens, unseal shares, AppRole RoleID/SecretID, Agent
   tokens, OIDC client secret, and rendered values remain outside Git and evidence.
 - **Non-goals:** this architecture does not claim automatic credential generation,
@@ -47,9 +50,7 @@ consumer tiers own the least-privilege paths they request.
 
 Operational detail lives in [OpenBao operations](../../05.operations/guides/04-security-and-secrets/0085-openbao.md).
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -69,12 +70,19 @@ Human OIDC group claims map to narrow Bao policies; root remains break-glass.
 The initial and temporary recovery roots are revoked only after a working non-root
 administrative path, Agent rendering, protected snapshot, and denial tests exist.
 
+## Runtime and Deployment
+
 ### Data Flow
 
 An operator or Agent authenticates to OpenBao, policy limits the requested KV
 paths, and the Agent writes only declared templates to the consumer output volume.
 Snapshots flow from the authenticated Raft API to protected operator custody;
 unseal shares follow a separate custodial path and never enter the snapshot.
+The renderer issuer, backup snapshot token and administrative access have
+different capabilities. Their source fixtures retain denial, no-overwrite,
+publication-race and uncertain-cleanup checks. A token-operation test is not a
+deployed credential ceremony, and a valid Raft snapshot is not an isolated
+semantic restore.
 
 ### Deployment View
 
@@ -83,7 +91,9 @@ commands name `openbao`/`openbao-agent`; leaf-only Compose
 execution is not valid root-stack readiness evidence. The preserved Vault data
 path stays out of service and must never share storage with OpenBao.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Security:** fail closed on auth/seal/CA failure; trust the Keycloak CA; never
   disable TLS validation or expose unauthenticated generate-root on the ordinary
@@ -93,13 +103,18 @@ path stays out of service and must never share storage with OpenBao.
 - **Recoverability:** capture authenticated Raft snapshots and rehearse restore on
   isolated new storage with consumers/egress disabled. A snapshot can restore the
   token state present at capture, so recovered root tokens must be rechecked.
+- **Measurement:** REQ-0003's quality measures distinguish source render,
+  isolated security tests, actual audit observations and timed recovery. The
+  owning service Task records inputs and results; this Description does not
+  duplicate them or assert an unmeasured latency/recovery threshold.
 - **Scalability:** current single-node Raft is not HA. Cluster expansion requires
   a separate design and failure-domain evidence.
 
 ## Related Documents
 
 - [Security requirement](../../01.requirements/0003-security.md)
-- [Central secrets manager decision](../decisions/0003-vault-as-secrets-manager.md)
+- [Historical central secrets manager decision](../decisions/0003-vault-as-secrets-manager.md)
+- [Current OpenBao custody policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
 - [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the

@@ -1,10 +1,10 @@
 ---
 title: "Laboratory Services Selection and Configuration"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0011"
 parent_ids:
@@ -17,11 +17,19 @@ created: "2026-03-26"
 
 This document records the architecture decision for selecting the core management tools of the `11-laboratory` tier.
 
-To raise system operating efficiency, we need to build a container management, database inspection, and service navigation environment. This requires selecting tools that are lightweight, reliable, and integrate smoothly with Traefik and Keycloak.
-
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
+## Decision Drivers
+
+To raise system operating efficiency, we need to build a container management, database inspection, and service navigation environment. This requires selecting tools that are lightweight, reliable, and integrate smoothly with Traefik and Keycloak.
+
+## Options
+
+### Options Considered
+
+The retained decision selects Homer, Portainer, RedisInsight, Dozzle and Open Notebook with SurrealDB. It records the chosen roles, but no named rejected candidates or comparative evaluation. The historical selection below is preserved; this record cannot establish how unrecorded alternatives were evaluated.
 
 ## Decision
 
@@ -32,18 +40,6 @@ We select the following service stack as the standard tooling for `11-laboratory
 3. **Data Inspection (RedisInsight)**: Redis/Valkey data structure visualization and analysis.
 4. **Log Viewer (Dozzle)**: Real-time log streaming across multiple containers.
 5. **Local Notebook Lab (Open Notebook + SurrealDB)**: Manages local knowledge work and experimental notebook state.
-
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
 
 ## Consequences
 

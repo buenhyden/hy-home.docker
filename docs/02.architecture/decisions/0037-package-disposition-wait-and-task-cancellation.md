@@ -1,10 +1,10 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
@@ -51,11 +51,7 @@ completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
 the completed Spec's PASS receipt, and that completion receipts are checked
 before moving. The rest of this decision stays in force.
 
-## Decision
-
-### Decision
-
-### Decision Drivers
+## Decision Drivers
 
 - Status records actual lifecycle facts; cancellation must retain evidence and
   account for acceptance criteria.
@@ -67,7 +63,20 @@ before moving. The rest of this decision stays in force.
 - Current citation permission depends on assessment before source-profile exceptions.
 - Registry owns shapes, states and ordered judgments; code implements those contracts.
 
-### Decision
+## Options
+
+### Options Considered
+
+1. **Keep retained-only storage and simultaneous completion/disposition.** Rejected:
+   this cannot express approved waiting, truthful cancellation or reassessment.
+2. **Add a waiting status and duplicate machine catalog.** Rejected: waiting is
+   derivable from member statuses, and a second catalog creates conflicting authority.
+3. **Extend existing package judgments, Task metadata and Markdown catalog.** Selected:
+   preserves identities and historical rows while making current management explicit.
+4. **Rewrite all old captures to exact bytes.** Rejected: original lifecycle evidence
+   and historical transformations cannot be retroactively manufactured.
+
+## Decision
 
 1. A completed Spec may wait in Stage 03 when its Plan is completed and
    every Task is completed or validly cancelled. Nonterminal members fail. Waiting
@@ -122,21 +131,6 @@ before moving. The rest of this decision stays in force.
     metadata, authoring guidance and indexes change in place. Incident `resolved_at`,
     Postmortem `reviewed_at`, whole-unit preservation and external-route-only records
     remain required. No new document ID or second recovery ledger is needed.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-1. **Keep retained-only storage and simultaneous completion/disposition.** Rejected:
-   this cannot express approved waiting, truthful cancellation or reassessment.
-2. **Add a waiting status and duplicate machine catalog.** Rejected: waiting is
-   derivable from member statuses, and a second catalog creates conflicting authority.
-3. **Extend existing package judgments, Task metadata and Markdown catalog.** Selected:
-   preserves identities and historical rows while making current management explicit.
-4. **Rewrite all old captures to exact bytes.** Rejected: original lifecycle evidence
-   and historical transformations cannot be retroactively manufactured.
 
 ## Consequences
 

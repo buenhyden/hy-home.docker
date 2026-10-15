@@ -1,10 +1,10 @@
 ---
 title: "Owner Follow-ups"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0229"
 parent_ids:
@@ -46,6 +46,13 @@ approval, holding or using the OpenBao admin token, and changing image pins.
 2. Both pinned AI images are scanned and the results recorded.
 3. The snapshot-token commands parse and follow the backup's token handling.
 4. The changed gate, the staged style check and `candidate-quality` pass.
+
+## Failure Conditions
+
+The follow-up does not resolve refresh errors merely by changing server
+images or user-global Codex settings. Grype seeding grants no network
+approval, and snapshot-token commands fail their handling contract if the
+admin token is echoed, stored or passed anywhere other than stdin.
 
 ## Related Documents
 

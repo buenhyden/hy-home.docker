@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
@@ -62,13 +62,6 @@ digest로 대체하지 않는다.
 검증을 면제할 수 없다. 예외를 제거하기 전에 이미지 호환성을 검토한다. 태그 변경이
 GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 
-### Verification
-
-기존 synchronization `--check`가 registry drift gate다. 추가, 제거, 중복 저장소와
-소스/분류 drift를 거부한다. write 모드는 derived 항목을 원자적으로 재조정한다. Compose,
-수정된 빌드 소스, 문서 계약, 공식 Renovate 설정은 독립적으로 검증한다. registry 출력을
-런타임 health나 backup/restore의 증거로 받아들이지 않는다.
-
 ### Review Cadence
 
 매월, 그리고 manager 범위, 소스 parser, 이미지 예외, major 업데이트가 변경될 때
@@ -78,6 +71,13 @@ GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 
 - [Home/Dev architecture](../../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
 - [Guide](../../guides/10-platform-and-backup/0086-dependency-version-management.md), [Policy](0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
+
+## Verification
+
+기존 synchronization `--check`가 registry drift gate다. 추가, 제거, 중복 저장소와
+소스/분류 drift를 거부한다. write 모드는 derived 항목을 원자적으로 재조정한다. Compose,
+수정된 빌드 소스, 문서 계약, 공식 Renovate 설정은 독립적으로 검증한다. registry 출력을
+런타임 health나 backup/restore의 증거로 받아들이지 않는다.
 
 ## Related Documents
 

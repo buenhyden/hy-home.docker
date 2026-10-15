@@ -1,10 +1,10 @@
 ---
 title: "npm Risk Acceptance Extension"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0222"
 parent_ids:
@@ -56,6 +56,13 @@ closed on expiry, a published patch, or any other finding.
    timestamp, a missing `approved_at`, and a changed pinned field.
 2. The quality standard states the extension rule without restating dates.
 3. The changed gate, the staged style check and `candidate-quality` pass.
+
+## Failure Conditions
+
+The acceptance contract rejects changed advisory identity, unknown fields,
+missing or impossible timestamps, nonpositive windows and windows longer
+than 30 days. The audit still fails closed at expiry, when a patch is
+published or on any finding outside the pinned acceptance.
 
 ## Related Documents
 

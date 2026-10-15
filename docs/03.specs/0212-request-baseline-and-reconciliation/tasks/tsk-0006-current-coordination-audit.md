@@ -1,10 +1,10 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0006"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-13"
 
 # Current Coordination Audit Task
 
-## Objective
+## Overview
+
+### Objective
 
 Execute W14–W15: create a current, value-free routing and handoff record for
 requirements 11–30. This Task owns criteria 9–10 only. It does not reopen the

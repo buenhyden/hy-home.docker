@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Operations Policy"
-version: "2.1.3"
+version: "2.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0027"
 parent_ids:
@@ -66,15 +66,6 @@ created: "2026-05-17"
 
 N/A - 현재 승인된 예외 없음.
 
-### Verification
-
-- Compose 변경 후 이 정책을 [MongoDB guide](../../guides/15-labs/0027-mongodb.md),
-  [MongoDB runbook](../../runbooks/15-labs/0027-mongodb.md),
-  [LAB 설명](../../../../labs/mongodb.md)와 비교한다.
-- 서비스 이름, replica set, route, secret, keyfile 문서 갱신을
-  승인하기 전에 `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile mongodb config --quiet`를 실행한다.
-- 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
-
 ### Review Cadence
 
 - MongoDB compose image/profile/secret/keyfile/replica-member 변경 시
@@ -85,6 +76,15 @@ N/A - 현재 승인된 예외 없음.
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](../../guides/15-labs/0027-mongodb.md) (`GDE-0027`), [Runbook](../../runbooks/15-labs/0027-mongodb.md) (`RUN-0027`)
+
+## Verification
+
+- Compose 변경 후 이 정책을 [MongoDB guide](../../guides/15-labs/0027-mongodb.md),
+  [MongoDB runbook](../../runbooks/15-labs/0027-mongodb.md),
+  [LAB 설명](../../../../labs/mongodb.md)와 비교한다.
+- 서비스 이름, replica set, route, secret, keyfile 문서 갱신을
+  승인하기 전에 `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile mongodb config --quiet`를 실행한다.
+- 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
 ## Related Documents
 

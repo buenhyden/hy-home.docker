@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Recovery Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0089"
 parent_ids:
@@ -18,10 +18,12 @@ created: "2026-09-21"
 
 JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실, 이미지 업그레이드를 다루는 복구 런북이다.
 
-## Trigger and Preconditions
+## Trigger
 
 시작 실패, 토큰 노출, 멈춘 커널, 작업 파일 손실, 이미지 업그레이드 시
 사용한다.
+
+## Prerequisites
 
 ### 작업 선택과 복구 전제
 
@@ -75,7 +77,7 @@ client version을 server와 맞춘다.
 종료 코드, 이미지 태그, 소스 커밋, 파일 개수를 기록한다. 토큰이나 노트북
 내용은 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

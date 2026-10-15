@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging) Product Requirements"
-version: "1.0.5"
+version: "1.0.6"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0006"
 created: "2026-03-26"
@@ -12,8 +12,6 @@ created: "2026-03-26"
 # Messaging Tier (05-messaging) Product Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -23,34 +21,7 @@ This document defines the product requirements for the messaging tier (`05-messa
 
 In the current complex microservice and infrastructure environment, direct communication between components does not scale well and can cause data loss risk and reduced system availability. A layered messaging solution is needed to handle diverse traffic characteristics (high throughput vs. simple queuing).
 
-## Requirements
-
-### Requirements
-
-### Functional Requirements
-
-- **REQ-0006-FR-0001**: Provide Apache Kafka (KRaft mode). The root `docker-compose.yml` includes the single-broker `infra/05-messaging/kafka/docker-compose.yml` definition. Three-broker training uses the separate `labs/kafka-cluster.yml` Compose project, cluster ID, data directory and network.
-- **REQ-0006-FR-0002**: Support the standard AMQP 0-9-1 protocol via RabbitMQ.
-- **REQ-0006-FR-0003**: Provide Schema Registry for Avro/JSON schema management.
-- **REQ-0006-FR-0004**: Provide web-based management UIs (Kafbat, RabbitMQ Management).
-- **REQ-0006-FR-0005**: Provide an operations API and metrics collection boundary through Kafka REST Proxy and Kafka Exporter.
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-### Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0006-FR-0001**: `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh` passes with 0 failures on the root-included messaging configuration.
-- **REQ-0006-FR-0002**: `bash scripts/hardening/check-all-hardening.sh 05-messaging` blocks regressions in image pinning, router middleware, SSO, and path baselines.
-
 ## Scope
-
-### Scope
 
 ### Stakeholders and User Needs
 
@@ -93,6 +64,29 @@ Provide a robust, dedicated messaging infrastructure that lowers coupling betwee
 - **Risks**: Possible delayed partition rebalancing after a Kafka node failure. Risk of backward-compatibility violations on schema changes.
 - **Dependencies**: Depends on the `02-auth` tier for authentication and authorization management. The Flink consumer/processing boundary depends on `12-analytics/flink`.
 - **Assumptions**: All nodes communicate within `kafka_net` and store data on dedicated volumes.
+
+## Requirements
+
+### Functional Requirements
+
+- **REQ-0006-FR-0001**: Provide Apache Kafka (KRaft mode). The root `docker-compose.yml` includes the single-broker `infra/05-messaging/kafka/docker-compose.yml` definition. Three-broker training uses the separate `labs/kafka-cluster.yml` Compose project, cluster ID, data directory and network.
+- **REQ-0006-FR-0002**: Support the standard AMQP 0-9-1 protocol via RabbitMQ.
+- **REQ-0006-FR-0003**: Provide Schema Registry for Avro/JSON schema management.
+- **REQ-0006-FR-0004**: Provide web-based management UIs (Kafbat, RabbitMQ Management).
+- **REQ-0006-FR-0005**: Provide an operations API and metrics collection boundary through Kafka REST Proxy and Kafka Exporter.
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0006-FR-0001**: `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh` passes with 0 failures on the root-included messaging configuration.
+- **REQ-0006-FR-0002**: `bash scripts/hardening/check-all-hardening.sh 05-messaging` blocks regressions in image pinning, router middleware, SSO, and path baselines.
 
 ## Related Documents
 

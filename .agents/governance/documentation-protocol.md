@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.3.0"
+version: "3.4.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 ---
 
 # Documentation Protocol
@@ -138,8 +138,8 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
     direct registered edge and same-Task evidence. A Plan has one Spec parent
     and a Task has one Plan parent where their Registry profiles require it.
     Structural records do not authenticate approval, review, or execution.
-15. Validate metadata, links, and stage-specific contracts before completion.
-16. Keep a fenced command block runnable: every repository path it names must be
+
+15. Keep a fenced command block runnable: every repository path it names must be
     a path a reader can open. Where a block's paths illustrate a rule or a shape
     rather than naming a file — an anti-pattern example, a `git check-ignore`
     probe, a deliberately absent search pattern — say so inside the block with
@@ -164,12 +164,13 @@ its prose. The profiles follow one priority order:
 2. Every other document under `docs/05.operations/` is Korean.
 3. Every other document under `docs/` that declares a language is English.
 
-Canonical governance sources under `.agents/`, the authored native provider
-documents, and the Stage 99 registry, schema, and template sources stay
-English, except for their `README.md` files. A template source is English, but
-its author prompt names the language of the document it produces, which is the
-language of the target profile. Stage 98 records, template sources, and
-generated runtime adapters declare no language and are not judged.
+공통 거버넌스·역할·스킬·지식·프롬프트와 provider 안내의 새 설명은 한국어를
+기본으로 작성합니다. 해당 profile의 `ko-or-en`은 기존 영어 원문과 새 한국어
+설명의 공존을 허용하는 이행 계약이며, 기존 본문의 일괄 번역을 요구하지 않습니다.
+Stage 01·02·03의 non-README 본문은 계속 영어이고 README와 운영 본문은 한국어입니다.
+template 작성 안내는 대상 profile의 언어를 명시합니다. native key, 필수 heading,
+명령·코드·인용·외부 원문은 원래 문법을 유지합니다. Stage 98 원문, template source,
+generated runtime adapter에는 현재 저술 언어를 소급 적용하지 않습니다.
 
 Structure tokens keep their original form in every language: required headings,
 identifiers, paths, command text, metadata keys, environment variables, profile
@@ -552,17 +553,21 @@ place, and the receipt cannot reconcile Task self-events, path-reused carriers,
 side-merge-only history, unrelated packages, unknown history, or an unproven
 duplicate.
 
-#### Implementation coverage
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
+ 1. Validate metadata, links, and stage-specific contracts before completion.
+
+### Implementation coverage
 
 Every capability implemented in this workspace has one Stage 01 Requirement
 owner for its obligation and one Stage 02 Description or ADR owner for its
 structure and durable decision. Retiring a Stage 03 package never removes that
 coverage: the package's implemented outcome moves to those owners before the
 package is retired.
-
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

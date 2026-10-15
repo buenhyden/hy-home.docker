@@ -1,10 +1,10 @@
 ---
 title: "RAG Workflow Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0059"
 created: "2026-03-25"
@@ -16,7 +16,9 @@ created: "2026-03-25"
 
 이 가이드는 Open WebUI가 Ollama 임베딩 모델로 문서를 벡터화하고 검색 컨텍스트를 생성하는 RAG 사용 흐름을 설명한다. 현재 구현은 `infra/08-ai/open-webui/docker-compose.yml`의 `OLLAMA_BASE_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL` 환경변수로 정의된다. `VECTOR_DB`를 설정하지 않으므로 벡터는 Open WebUI 기본 로컬 저장소(`open-webui` 데이터 볼륨)에 저장되며 Qdrant는 쓰지 않는다(SPEC-0182에서 쓰이지 않던 `VECTOR_DB_URL`을 제거했다).
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 **대상**
 
@@ -31,12 +33,14 @@ created: "2026-03-25"
 - RAG 연결성 점검은 현재 compose env와 선택한 profile 경계에 맞춰 수행한다.
 - 장애 대응과 rollback은 Open WebUI runbook으로 넘긴다.
 
-## Usage
+## Concepts
 
 ### 사전 조건
 
 - root `docker-compose.yml`은 AI compose 파일을 무조건 include하므로, `ai` profile을 선택해야 기동된다.
 - Compose가 선언한 `RAG_EMBEDDING_MODEL` 모델이 Ollama에 준비되어야 한다.
+
+## Usage
 
 ### 사용 절차
 

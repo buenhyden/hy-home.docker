@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Frontmatter and Task Lifecycle Plan"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0208-PLAN-0001"
 parent_ids:
@@ -29,6 +29,13 @@ for truthful Task lifecycle evidence and completion-item receipts.
 - Recorded facts in nonterminal SPEC-0182 and SPEC-0204 documents.
 - Read-only review and focused validation before completion. Commit and remote
   integration require their separately recorded authorization and evidence.
+
+## Scope
+
+W1–W4 inventory Stage 99, align optional lifecycle and receipt contracts
+with schemas, templates and validators, migrate current SPEC-0182/0204/0207/0208
+records, and record the v3/v4 local checkpoints. Frozen records, terminal
+Task bodies, service operations and remote delivery are excluded.
 
 ## Work Breakdown
 
@@ -74,9 +81,11 @@ Use the registered metadata, lifecycle, and link checks selected by the owning
 validation work, then independently review the diff. Record each actual command
 and result in Task 0001; no structural check proves approval or execution.
 
-## Risks and Rollback
+## Risks and Recovery
 
-### Risk and Rollback
+### Risks and Rollback
+
+#### Risk and Rollback
 
 An over-broad schema or template can turn descriptive prose into a parallel
 machine contract. Roll back the bounded working-tree changes before integration

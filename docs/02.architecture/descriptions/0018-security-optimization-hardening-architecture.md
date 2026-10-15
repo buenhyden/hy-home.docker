@@ -1,10 +1,10 @@
 ---
 title: "Security Optimization and Hardening Architecture"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0018"
 parent_ids:
@@ -15,18 +15,14 @@ created: "2026-03-28"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document describes the OpenBao and OpenBao Agent boundary implemented in
 `infra/03-security/`. The maintainer, service owner, and operator must clearly
 separate ownership of the source secret, the rendered output, health, and the
 recovery procedure.
+
+## Scope
 
 ### System Boundaries
 
@@ -38,9 +34,7 @@ recovery procedure.
 - Per-application configuration parsing and external KMS/HSM operation are
   outside this architecture.
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -49,6 +43,8 @@ The current HOME implementation consists of `openbao` and `openbao-agent` from
 template files, and a persistent volume. Traefik provides the external
 boundary, and OpenBao Agent provides only minimum-scope output to consuming
 services.
+
+## Runtime and Deployment
 
 ### Data Flow
 
@@ -65,7 +61,9 @@ the tracked configuration. Raft 3-node, auto-unseal, and a remote audit sink
 are not the current implementation, and are not treated as the current
 topology without a separately approved Requirement and ADR.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Security**: rejects plaintext secrets and placeholder paths, and keeps
   least privilege.

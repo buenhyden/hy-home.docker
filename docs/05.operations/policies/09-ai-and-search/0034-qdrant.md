@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Operations Policy"
-version: "1.2.4"
+version: "1.2.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0034"
 parent_ids:
@@ -50,12 +50,6 @@ created: "2026-05-17"
 
 N/A - 현재 승인된 예외 없음.
 
-### Verification
-
-- compose 변경 후 이 정책을 [Qdrant guide](../../guides/09-ai-and-search/0034-qdrant.md), [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md), [infra README](../../../../infra/04-data/qdrant/README.md)와 비교한다.
-- service-name, image, route, secret, healthcheck, volume 문서 갱신을 승인하기 전에 `docker compose --profile qdrant config --quiet`를 실행한다.
-- 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
-
 ### Review Cadence
 
 - Qdrant compose image/profile/secret/route/snapshot-path 변경 시 검토한다.
@@ -65,6 +59,12 @@ N/A - 현재 승인된 예외 없음.
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](../../guides/09-ai-and-search/0034-qdrant.md) (`GDE-0034`), [Runbook](../../runbooks/09-ai-and-search/0034-qdrant.md) (`RUN-0034`)
+
+## Verification
+
+- compose 변경 후 이 정책을 [Qdrant guide](../../guides/09-ai-and-search/0034-qdrant.md), [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md), [infra README](../../../../infra/04-data/qdrant/README.md)와 비교한다.
+- service-name, image, route, secret, healthcheck, volume 문서 갱신을 승인하기 전에 `docker compose --profile qdrant config --quiet`를 실행한다.
+- 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
 ## Related Documents
 

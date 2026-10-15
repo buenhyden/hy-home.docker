@@ -17,7 +17,7 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Overview
+## Summary
 
 {{SUMMARY}}
 
@@ -25,7 +25,13 @@ created: "{{CREATED}}"
 
 {{IMPACT}}
 
-## Causes
+## Timeline
+
+<!-- Author prompt: Record factual events with ISO 8601 timestamps and explicit UTC offsets; distinguish hypotheses. -->
+
+{{TIMELINE}}
+
+## Analysis
 
 ### Root Cause
 
@@ -34,22 +40,6 @@ created: "{{CREATED}}"
 ### Contributing Factors
 
 {{CONTRIBUTING_FACTORS}}
-
-### Timeline
-
-<!-- Author prompt: Record factual events with ISO 8601 timestamps and explicit UTC offsets; distinguish hypotheses. -->
-
-{{TIMELINE}}
-
-## Lessons
-
-### Learning
-
-{{LEARNING}}
-
-### Detection and Response
-
-{{DETECTION_AND_RESPONSE}}
 
 ## Corrective Actions
 
@@ -62,6 +52,16 @@ created: "{{CREATED}}"
 ### Follow-up Review
 
 {{FOLLOW_UP_REVIEW}}
+
+## Lessons
+
+### Learning
+
+{{LEARNING}}
+
+### Detection and Response
+
+{{DETECTION_AND_RESPONSE}}
 
 ## Related Documents
 

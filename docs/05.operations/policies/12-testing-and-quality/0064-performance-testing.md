@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0064"
 parent_ids:
@@ -70,12 +70,6 @@ created: "2026-05-17"
 
 현재 승인된 예외는 없다. 예외가 필요하면 대상, 위험, 만료 조건, 소유자를 기록하고 target owner와 `@buenhyden`의 승인을 받는다.
 
-### Verification
-
-- 중요한 운영 변경 전에는 같은 주제의 가이드·런북 및 연결된 구현 설정과 함께 정책을 검토한다.
-- 정책이나 연결된 운영 문서를 변경하면 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))로 검증한다.
-- 실행·운영 링크를 바꾸면 `python3 scripts/validation/check-document-links.py --mode traceability`로 검증한다.
-
 ### Review Cadence
 
 - 연결된 서비스 설정, 아키텍처 또는 런북 동작이 바뀔 때 검토한다.
@@ -84,6 +78,12 @@ created: "2026-05-17"
 
 - 상위 문서: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - 동일 주제 문서: [Guide](../../guides/12-testing-and-quality/0064-performance-testing.md) (`GDE-0064`), [Runbook](../../runbooks/12-testing-and-quality/0064-performance-testing.md) (`RUN-0064`)
+
+## Verification
+
+- 중요한 운영 변경 전에는 같은 주제의 가이드·런북 및 연결된 구현 설정과 함께 정책을 검토한다.
+- 정책이나 연결된 운영 문서를 변경하면 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))로 검증한다.
+- 실행·운영 링크를 바꾸면 `python3 scripts/validation/check-document-links.py --mode traceability`로 검증한다.
 
 ## Related Documents
 

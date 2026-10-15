@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Architecture Description"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0013"
 parent_ids:
@@ -15,15 +15,11 @@ created: "2026-03-27"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document defines the reference architecture and quality attributes of Open WebUI. It is the baseline document that records the system boundary, responsibilities, data flow (Ollama interface, Qdrant RAG integration), and the operational view.
+
+## Scope
 
 ### Stakeholders and Concerns
 
@@ -53,11 +49,7 @@ This section preserves the system boundary, consumption relationships, non-goals
 
 The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Viewpoints and Views
 
@@ -77,7 +69,7 @@ Open WebUI communicates internally via `ai_net` with Ollama; RAG vectors stay in
 - **Guardrail Boundary**: gateway TLS/standard controls, application-native OIDC,
   and source GPU/resource limits.
 
-### Data Flow
+## Runtime and Deployment
 
 ### Data and Control Flows
 
@@ -106,7 +98,7 @@ an isolated project and coordinate the separately owned Qdrant snapshot before
 RAG verification; neither a live filesystem copy nor a WebUI-only backup proves
 complete RAG recovery.
 
-## Quality Attributes
+## Quality and Risks
 
 ### Quality Scenarios
 

@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Usage Guide"
-version: "1.1.5"
+version: "1.1.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0037"
 parent_ids:
@@ -18,16 +18,20 @@ created: "2026-05-17"
 
 이 가이드는 05-messaging 계층의 hardening 점검 범위를 설명한다. 현재 messaging surface는 Kafka 전용이며 OPTIONAL이다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 Kafka family 구성을 바꾸고 그 hardening 상태를 검증하는 운영자다. 목표는 정적 확인으로 무엇을 증명하고 무엇을 증명하지 못하는지 구분하는 것이다. 정확한 명령은 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md#procedure)이 소유한다.
 
-## Usage
+## Concepts
 
 현재 messaging surface는 Kafka 전용이며 OPTIONAL이다. hardening은
 root-rendered Kafka family, Kafbat native OIDC, persistence, health, 리소스,
 네트워크 exposure를 검증한다. PLAINTEXT broker listener가 안전하다거나 동일
 host의 세 broker가 host 가용성을 제공한다고 주장하지 않는다.
+
+## Usage
 
 ### Source-backed checks
 
@@ -55,16 +59,18 @@ static 성공은 runtime health, 인증 흐름, 성능, 데이터 내구성, res
 TLS/SASL, credential 회전, topic 변경, 서비스 재시작 같은 runtime 보안
 작업에는 명시된 계획과 rollback이 필요하다.
 
+### Traceability
+
+- Artifact: `GDE-0037`; 거버넌스 정책: `POL-0037`.
+- Runtime authority: `root Kafka Compose plus scripts/hardening/check-all-hardening.sh`.
+
+## Troubleshooting
+
 ### Common Checks
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이고 runtime과 restore는 별개 문제로 남는다.
-
-### Traceability
-
-- Artifact: `GDE-0037`; 거버넌스 정책: `POL-0037`.
-- Runtime authority: `root Kafka Compose plus scripts/hardening/check-all-hardening.sh`.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Edge Routing Stack Operations"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0012"
 created: "2026-07-06"
@@ -15,7 +15,9 @@ created: "2026-07-06"
 
 이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 루트 stack은 두 파일을 모두 무조건 include하고 profile이 기동을 가른다. Traefik은 `core`/`dev`/`local`이, Nginx는 전용 `nginx` profile이 선택하며, 컨테이너 실행은 승인된 runtime context에서만 다룬다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상은 Infrastructure Operator, Backend Developer, Contributor다. `core`/`dev`/`local`이 선택하는 Traefik edge router를 검증하고, `nginx` profile이 그리는 Nginx path-proxy boundary를 이해하는 것이 목적이다.
 
@@ -26,7 +28,7 @@ created: "2026-07-06"
 - 승인된 secret owner가 준비한 기존 credential과 참조가 있어야 한다. 생성·회전은 이 Guide의 검증 절차에 포함하지 않는다.
 - `secrets/certs/`에 certificate가 있어야 한다.
 
-## Usage
+## Concepts
 
 ### Verify the network contract
 
@@ -35,6 +37,8 @@ network를 임의로 만드는 대신 root compose validator를 사용한다. ro
 ```bash
 HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
 ```
+
+## Usage
 
 ### Configure Traefik
 

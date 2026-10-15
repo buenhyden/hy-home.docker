@@ -1,10 +1,10 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.11"
+version: "0.6.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0005"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-08"
 
 # Cross-tier Contracts Second Round Task
 
-## Objective
+## Overview
+
+### Objective
 
 Re-run prompt 04 against the current tree: observe authentication, workflow,
 CDC and backup state on the HOME host, close the source gaps that can be

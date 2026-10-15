@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Standards"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 ---
 
 # AI Agent Standards
@@ -32,13 +32,6 @@ Loading cost, language, stage gates, execution discipline, and GitHub delivery s
 - Conversational responses follow the user's active language preference under
   `.agents/governance/output-style.md`.
 
-### 3. Stage-Gate Compliance
-
-- Treat `docs/01` to `docs/99` as project SSoT.
-- Do not bypass `docs/01.requirements` and `docs/03.specs` for implementation work.
-- Keep reciprocal traceability across Requirement Package, Architecture
-  Description, ADR, Spec, Plan, Task, Guide, Policy, and Runbook artifacts.
-
 ### 4. Execution Discipline
 
 - Use checklists from `.agents/governance/task-checklists.md` before, during, and after work.
@@ -59,6 +52,15 @@ This section is intentionally thin to avoid duplication. Refer to that document 
 ## Exceptions
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
+### 3. Stage-Gate Compliance
+
+- Treat `docs/01` to `docs/99` as project SSoT.
+- Do not bypass `docs/01.requirements` and `docs/03.specs` for implementation work.
+- Keep reciprocal traceability across Requirement Package, Architecture
+  Description, ADR, Spec, Plan, Task, Guide, Policy, and Runbook artifacts.
 
 ## Related Documents
 

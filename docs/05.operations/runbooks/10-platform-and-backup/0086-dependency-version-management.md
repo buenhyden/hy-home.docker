@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Runbook"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0086"
 parent_ids:
@@ -18,10 +18,16 @@ created: "2026-09-19"
 
 이 런북은 소스 이미지, 빌드 의존성, updater 정책, 파생 버전 projection을 바꿀 때 따르는 검증과 적용 절차를 안내한다.
 
-## Trigger and Preconditions
+## Trigger
 
 소스 이미지·빌드 의존성·updater 정책·파생 버전 projection 또는 단일 파일 config를
-변경할 때 사용한다. 저장소 루트의 정확한 diff와 소유 service·profile을 기록한다.
+변경할 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소 루트의 정확한 diff와 소유 service·profile을 기록한다.
 공개 source 검증은 runtime 적용이나 Renovate 작업 실행 승인이 아니다. private
 입력·Docker 작업이 필요한 단계는 대상 checkout/context와 별도 승인을 확인한다.
 
@@ -129,7 +135,7 @@ exit0만으로 완료하지 않으며 기대 coverage와 unreadable0/diff0을 �
 실패/중단을 현재 Task에 기록한다. private 값·원문 환경·raw log를 남기지 않는다.
 local 검사와 remote bot/hosted 실행, 실제 적용·복구를 구분하고 미실행은 명시한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

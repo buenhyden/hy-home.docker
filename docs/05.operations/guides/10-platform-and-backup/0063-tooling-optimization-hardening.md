@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -20,7 +20,9 @@ created: "2026-05-17"
 공개 경계 보안, 네트워크 경계 표준화, 테스트 도구 안정성 계약, 검증 절차를 다룬다.
 `system-guide | how-to` 유형이다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 SRE/Platform Operator, DevOps Engineer, Platform Product Owner다.
 목표는 다음과 같다.
@@ -31,7 +33,7 @@ created: "2026-05-17"
 - 하드닝 회귀를 script와 CI로 일찍 막는다.
 - 카탈로그 확장 항목을 실행 가능한 로드맵으로 반영한다.
 
-## Usage
+## Concepts
 
 ### 사전 조건
 
@@ -41,18 +43,14 @@ created: "2026-05-17"
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 `검토된 하드닝 변경 순서` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
+## Usage
+
 ### 흔한 실수
 
 - 공개 라우터에 SSO 체인을 빠뜨린다.
 - service-local compose의 단독 config 실패를 root compose context와 구분하지 못한다.
 - 독립 LAB Locust worker의 health 상태를 root profile 검사로 오해한다.
 - k6 leaf에 없는 worker나 Traefik route를 문서에 적는다.
-
-### Common Checks
-
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ### Runbook Handoff
 
@@ -65,6 +63,14 @@ created: "2026-05-17"
 - 동일 주제 문서: [Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`POL-0063`), [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`RUN-0063`)
 
 현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [migration handoff](0068-terraform.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+
+## Troubleshooting
+
+### Common Checks
+
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ## Related Documents
 

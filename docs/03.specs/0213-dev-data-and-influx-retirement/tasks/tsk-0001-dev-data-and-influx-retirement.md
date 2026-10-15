@@ -1,10 +1,10 @@
 ---
 title: "DEV Data Boundary and InfluxDB Retirement Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0213-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-07"
 
 # DEV Data Boundary and InfluxDB Retirement Task
 
-## Objective
+## Overview
+
+### Objective
 
 Accept ADR-0047, close the DEV/MNG variable coupling, add connection budgets,
 retire every active InfluxDB surface and record the backup evidence.

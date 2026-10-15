@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.6.2"
+version: "1.6.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 ---
 
 # Agent Quality and Security Standards
@@ -163,17 +163,15 @@ main-push security remains a post-merge observation.
   changed link destinations, without repeating the whole link corpus.
   Local focused feedback does not become hosted evidence or trigger another
   candidate aggregate.
-- **Before local commit**: run
-  `scripts/validation/run-ci-precommit.sh --mode local-staged` immediately after
-  staging the reviewed candidate and before the ordinary commit. It reads the
-  index's configuration and staged paths, runs every registered hook from the
-  shared pins on an isolated copy, with check modes where a hook has one, and
-  fails on source/index drift. A fixer without a check mode may change only
-  that copy, and any change fails the run; a hook that changes the copy and
-  still passes fails as a hidden mutator. Formatting
-  defects require an explicit reviewed fix and restaging. Any subsequent index
-  change requires a new check. Keep the effective secret guard; do not install
-  or replace a user-global hook as part of this route.
+- **Before local commit**: 검토한 변경을 stage한 뒤 정상 `git commit`에서
+  관측한 읽기 전용 pre-commit·commit-msg hook이 최종 index·설정·메시지를
+  검사한다. 설치·실행이 확인된 동일 hook을 수동으로 먼저 반복하지 않는다.
+  설치된 검사의 전달이 확인되지 않았거나 별도 진단이 필요하면
+  `scripts/validation/run-ci-precommit.sh --mode local-staged`로 같은 등록
+  pin과 index를 격리 복사하여 검사한다. 복사본 수정이나 source/index drift도
+  실패이며 정상 hook의 우회 근거가 되지 않는다. 실패하면 명시적으로 수정하고
+  diff 검토·재staging 후 다시 정상 커밋한다. index가 바뀌면 이전 결과를
+  재사용하지 않는다. 유효한 secret guard와 user-global hook을 보존한다.
 - **Server final defense**: the PR candidate runs the same controller with
   `--mode pr-merge` on its authenticated merge input before accepting selected
   builds. As in local mode, every hook runs on an isolated copy and a fixer
@@ -204,7 +202,7 @@ main-push security remains a post-merge observation.
 
 | Boundary | Automatic owner | Distinct evidence |
 | --- | --- | --- |
-| Commit | Explicit local-staged lint/format immediately before commit; Commitizen; observed installed hooks | Exact index/config and message; effective secret guard |
+| Commit | 관측한 읽기 전용 installed pre-commit·commit-msg; 미확인 전달 또는 진단은 local-staged controller | Exact index/config and message; effective secret guard |
 | Feature push | No repeated public QA | New commits become PR candidate input |
 | Agent Stop | Diagnostics only | Working tree; no second aggregate run |
 | Before submission | Selected local-only implementation and link leaves once | Final source/index, base/history, tools and actual local result |
@@ -230,6 +228,29 @@ can remain pending. Title edits do not cancel revision validation. See
 CodeQL and external security integrations are distinct remote observations;
 source edits do not prove that their server-side settings changed. Actual
 protection settings require approved mutation and authenticated read-back.
+
+### 8. Workflow and Language Routing
+
+- Follow the sole load order in `.agents/governance/bootstrap.md#canonical-load-order`.
+- Follow repeatable orchestration in `.agents/governance/workflows.md`.
+- Apply the document language priority in
+  `.agents/governance/documentation-protocol.md#document-language` and the
+  README navigation rule in
+  `.agents/governance/documentation-protocol.md#readme-navigation`.
+- Resolve write permission through `.agents/governance/approval-boundaries.md`.
+
+### 9. Completion Routing
+
+Use only `.agents/governance/task-checklists.md#before-completion`. Its conditional
+harness, evidence, documentation, and controlled-gate clauses determine which
+quality checks apply. PR-specific completion remains owned by the Completion
+Gate in `.agents/governance/github-governance.md`.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
 
 ### 5. Change-Type Verification Matrix
 
@@ -340,24 +361,15 @@ require model execution or a second all-files sweep for wording-only edits.
 Retain negative cases for authorization, ownership, symlinks, and fail-closed
 execution. A smaller suite must not mean missing behavioral coverage.
 
-### 8. Workflow and Language Routing
-
-- Follow the sole load order in `.agents/governance/bootstrap.md#canonical-load-order`.
-- Follow repeatable orchestration in `.agents/governance/workflows.md`.
-- Apply the document language priority in
-  `.agents/governance/documentation-protocol.md#document-language` and the
-  README navigation rule in
-  `.agents/governance/documentation-protocol.md#readme-navigation`.
-- Resolve write permission through `.agents/governance/approval-boundaries.md`.
-
-### 9. Completion Routing
-
-Use only `.agents/governance/task-checklists.md#before-completion`. Its conditional
-harness, evidence, documentation, and controlled-gate clauses determine which
-quality checks apply. PR-specific completion remains owned by the Completion
-Gate in `.agents/governance/github-governance.md`.
-
 ### 10. Formatting and Linting Ownership
+
+커밋 단계에서는 EOF·trailing whitespace를 읽기 전용 검사기로 확인하고,
+mixed-line-ending은 `--fix=no`, Ruff format은 `--check`, markdownlint는
+`fix: false`로 실행한다. 수정이 필요하면 대상 파일을 명시하여 기존
+`end-of-file-fixer`·`trailing-whitespace`의 manual hook, `ruff format`,
+`markdownlint-cli2 --fix`를 별도로 실행한다. 수정 diff를 검토하고 필요한
+파일·헝크만 다시 stage한 뒤 정상 커밋한다. 검사기가 unstaged 내용을
+자동으로 index에 포함하거나 별도 포맷 도구를 추가해서는 안 된다.
 
 - `.pre-commit-config.yaml` owns shared formatter and linter invocations;
   registered project-local package scripts own their actual package scope.
@@ -393,10 +405,6 @@ Gate in `.agents/governance/github-governance.md`.
   exemption belongs on the line as a stated marker.
 - Adopting or changing a formatter reformats the corpus once, in its own
   commit, after every check that the reformatting would break is fixed.
-
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

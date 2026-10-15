@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Operations Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0073"
 parent_ids:
@@ -56,11 +56,6 @@ Laboratory Operator가 매월 검토하고 사용할 rollback 이미지 식별�
 API를 광범위하게 노출하거나, 키를 소스에 저장하거나, 대응하는 암호화 키와
 격리된 검증 없이 데이터를 복구하는 예외는 없다.
 
-### Verification
-
-UI/앱 인증, API 경계, DB 준비 상태, 키 복호화, 하나의 합성 노트북을
-검증하며, provider 접근은 별도로 승인된 경우에만 검증한다.
-
 ### Review Cadence
 
 릴리스, provider/모델, API 경로, DB 스키마, 키, 보존 정책 변경 시
@@ -71,6 +66,11 @@ UI/앱 인증, API 경계, DB 준비 상태, 키 복호화, 하나의 합성 노
 - [가이드](../../guides/09-ai-and-search/0073-open-notebook.md) (`GDE-0073`)
 - [런북](../../runbooks/09-ai-and-search/0073-open-notebook.md) (`RUN-0073`)
 - [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+## Verification
+
+UI/앱 인증, API 경계, DB 준비 상태, 키 복호화, 하나의 합성 노트북을
+검증하며, provider 접근은 별도로 승인된 경우에만 검증한다.
 
 ## Related Documents
 

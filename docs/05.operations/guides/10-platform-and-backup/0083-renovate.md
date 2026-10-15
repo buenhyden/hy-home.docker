@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -22,18 +22,22 @@ created: "2026-09-19"
 Renovate는 `infra/09-platform-ops/renovate/`의 `renovate` service로 실행하는 의존성 갱신 작업이다.
 `dependency-update` profile에서만 선택된다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 의존성 갱신 PR을 승인하고 운영하는 담당자다. 목표는 job의 경계, 정적 검증 방법,
 systemd timer 동작을 확인하는 것이다. live run과 복구 절차는 [Renovate Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)이 맡는다.
 
-## Usage
+## Concepts
 
 Renovate는 `dependency-update`에서만 선택하는 **DEV** one-shot repository
 유지보수 작업이다. HOME과 일반 `tooling` 시작에서는 제외된다. root Compose
 project는 `renovate.json5`, self-host 설정, `renovate_token` Docker Secret,
 cache volume을 제공한다. live run은 원격 repository를 읽고 branch와 pull
 request를 생성하거나 갱신할 수 있다.
+
+## Usage
 
 ### 구현 원본
 
@@ -111,13 +115,6 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 
 호스트 설치·timer 활성화·수동 실행·중지는 [런북](../../runbooks/10-platform-and-backup/0083-renovate.md)의 승인된 systemd 절차를 따른다.
 
-### Common Checks
-
-- repository와 self-host 설정에 대한 strict validation.
-- `bash scripts/operations/sync-tech-stack-versions.sh --check`.
-- 승인된 live job의 경우, sanitized 결과를 생성된 모든 branch/PR과 대조하고
-  이 job 승인으로는 merge가 일어나지 않았는지 확인한다.
-
 ### 과거 호스트 관측
 
 원본 위치: `docs/05.operations/guides/10-platform-and-backup/0083-renovate.md`, SPEC-0198 이전 Git 기록. 아래는 현재 호스트 상태의 근거가 아니다.
@@ -156,6 +153,15 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 
 - 설계 근거: [AD-0009](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - 동일 주제 문서: [Policy](../../policies/10-platform-and-backup/0083-renovate.md), [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- repository와 self-host 설정에 대한 strict validation.
+- `bash scripts/operations/sync-tech-stack-versions.sh --check`.
+- 승인된 live job의 경우, sanitized 결과를 생성된 모든 branch/PR과 대조하고
+  이 job 승인으로는 merge가 일어나지 않았는지 확인한다.
 
 ## Related Documents
 

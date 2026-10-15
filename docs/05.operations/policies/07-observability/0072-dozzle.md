@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Operations Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0072"
 parent_ids:
@@ -48,11 +48,6 @@ ForwardAuth를 중복 추가하는 일반 절차를 적용하지 않는다. 이 
 인증/CIDR 통제 없이 Dozzle을 노출하거나 읽기 전용 소켓 마운트를 Docker API
 권한 부여로 취급하는 예외는 없다.
 
-### Verification
-
-헬스, OIDC claim/역할, CIDR 거부, 예상 컨테이너 가시성, 승인되지 않은
-shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다.
-
 ### Review Cadence
 
 이미지/보안 권고 OIDC/CIDR, 소켓, 설정 변경 시 검토한다.
@@ -62,6 +57,11 @@ shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다
 - [가이드](../../guides/07-observability/0072-dozzle.md) (`GDE-0072`)
 - [런북](../../runbooks/07-observability/0072-dozzle.md) (`RUN-0072`)
 - [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+## Verification
+
+헬스, OIDC claim/역할, CIDR 거부, 예상 컨테이너 가시성, 승인되지 않은
+shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다.
 
 ## Related Documents
 

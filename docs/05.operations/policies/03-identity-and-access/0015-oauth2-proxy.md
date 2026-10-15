@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0015"
 parent_ids:
@@ -90,13 +90,6 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.
 - 단, 승인자 기록과 종료 조건(원복 기준)을 사전에 명시해야 한다.
 
-### Verification
-
-- `bash scripts/hardening/check-all-hardening.sh 02-auth`
-- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
-- Runtime-only: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
-
 ### Session and Upgrade Controls
 
 - Cookie, client, Valkey credential 값은 각각의 secret 소유자가 관리한다.
@@ -116,6 +109,13 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 
 - Declared parent: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md) (`GDE-0015`), [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md) (`RUN-0015`)
+
+## Verification
+
+- `bash scripts/hardening/check-all-hardening.sh 02-auth`
+- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
+- Runtime-only: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Frontmatter and Task Lifecycle Specification"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0208"
 parent_ids:
@@ -26,17 +26,6 @@ frontmatter value grammar. This package owns the bounded contract, validator
 behavior and tests, template and navigation migration, the v3 checkpoint, and
 the v4 evidence amendment.
 
-### Boundaries and Inputs
-
-Inputs are REQ-0024, REQ-0026, AD-0027, AD-0030, ADR-0037, the Stage 99
-Registry and document-profile schema, the three Stage 03 templates, and current
-SPEC-0182, SPEC-0204, and SPEC-0207 package records. The initial observed
-registry allocation is `SPEC-0207` high-water and `SPEC-0208` next number; the
-Registry now retains `208`/`209`. No archive rewrite, terminal Task body or
-Commit Ledger rewrite, service execution, secret access, remote action, push,
-PR, or merge is in scope. The successful v3 checkpoint and the v4 amendment
-are separately recorded local commits when their actual receipts exist.
-
 ### Technical Approach
 
 Inventory the registered profile/template/schema surfaces and their consumers,
@@ -55,16 +44,6 @@ declares `Work Log`, `Lifecycle Events`, and the four headers `Artifact`,
 `From`, `To`, and `Evidence`, with a generation-4 migration proof shape. The
 profile schema receives typed optional counterparts. Markdown templates render
 these contracts; validators remain their existing consumers.
-
-### Failure Modes and Guardrails
-
-Do not infer approval, review, execution, transition, PASS evidence, or a
-commit from structural fields. Do not create lifecycle events for unobserved
-stages. A mixed terminal/nonterminal multi-item Task or any in-progress item
-remains in-progress; queued means planned/ready and does not become a new enum.
-Task and Plan parents are direct and singular only where this contract assigns
-them. The known completed Task 0001 in SPEC-0182 with review pending remains a
-limitation, not a reason to reopen it.
 
 ### Open Questions
 
@@ -85,11 +64,18 @@ closure.
 
 ## Scope
 
-### Scope
+### Boundaries and Inputs
+
+Inputs are REQ-0024, REQ-0026, AD-0027, AD-0030, ADR-0037, the Stage 99
+Registry and document-profile schema, the three Stage 03 templates, and current
+SPEC-0182, SPEC-0204, and SPEC-0207 package records. The initial observed
+registry allocation is `SPEC-0207` high-water and `SPEC-0208` next number; the
+Registry now retains `208`/`209`. No archive rewrite, terminal Task body or
+Commit Ledger rewrite, service execution, secret access, remote action, push,
+PR, or merge is in scope. The successful v3 checkpoint and the v4 amendment
+are separately recorded local commits when their actual receipts exist.
 
 ## Contracts
-
-### Contracts
 
 ### Behavior Contract
 
@@ -113,8 +99,6 @@ closure.
 
 ## Acceptance Criteria
 
-### Acceptance Criteria
-
 ### Acceptance Contract
 
 1. The Task inventories every affected named family, Registry/profile/schema,
@@ -136,6 +120,18 @@ closure.
    verified gate, review, and actual v4 local source-commit receipt. Focused
    validation, review, and both local-commit boundaries are recorded without a
    self-referential Task SHA.
+
+## Failure Conditions
+
+### Failure Modes and Guardrails
+
+Do not infer approval, review, execution, transition, PASS evidence, or a
+commit from structural fields. Do not create lifecycle events for unobserved
+stages. A mixed terminal/nonterminal multi-item Task or any in-progress item
+remains in-progress; queued means planned/ready and does not become a new enum.
+Task and Plan parents are direct and singular only where this contract assigns
+them. The known completed Task 0001 in SPEC-0182 with review pending remains a
+limitation, not a reason to reopen it.
 
 ## Related Documents
 

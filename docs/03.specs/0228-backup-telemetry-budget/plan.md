@@ -1,10 +1,10 @@
 ---
 title: "Backup Telemetry and Budget Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0228-PLAN-0001"
 parent_ids:
@@ -18,6 +18,14 @@ created: "2026-10-10"
 
 Exclude the telemetry collections, raise the budget, document both, apply the
 budget on HOME and confirm with the next scheduled run.
+
+## Scope
+
+W1 excludes only Loki/Tempo SeaweedFS buckets and sets the 8 GiB state
+budget with tests and a dry run. W2 updates backup/telemetry guidance and
+earlier completion records, W3 applies the HOME budget and observes the next
+scheduled backup, and W4 verifies delivery; snapshots and the offsite target
+are not removed or redesigned.
 
 ## Work Breakdown
 
@@ -34,7 +42,9 @@ A Restic dry run against the live SeaweedFS tree in a throwaway repository,
 the restic tests, the document checks, the gate, and the journal and
 snapshot listing of the next scheduled run.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - Logs and traces are lost if SeaweedFS is lost; the owner accepted this.
 - Existing snapshots still hold telemetry until they age out, so the

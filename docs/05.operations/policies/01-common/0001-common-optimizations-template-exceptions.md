@@ -1,15 +1,14 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.4.2"
+version: "1.4.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0001"
 created: "2026-06-04"
 ---
-
 
 # Common Optimizations Template Exceptions Policy
 
@@ -71,19 +70,6 @@ created: "2026-06-04"
 >   - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init`
 >   - `secrets`: `etcd-1`, `etcd-2`, `etcd-3`
 
-### Verification
-
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/compose_controls.py --report`(등록 전 control 포함 전체 편차 보고)
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-- `bash scripts/validation/validate-docker-compose.sh`
-
-검증기는 root 전체 profile과 모든 LAB을 렌더하지만 정적 선언만 검사한다.
-runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량은 증명하지 않는다.
-`verification` 필드에 그 근거(실행 기록, 시험)를 적는다. 공개 입력·임시 파일 경계는
-[RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)을
-따른다. 구현이 통제를 충족하지 못하면 예외를 임의 추가하지 않고 별도 remediation으로 남긴다.
-
 ### Review Cadence
 
 책임 소유자는 @buenhyden이다. registry의 role 표기는 책임 설명이며 별도 팀이나
@@ -95,6 +81,19 @@ runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량�
 ### Traceability
 
 - 같은 번호 `0001`의 Guide/Runbook은 없다.
+
+## Verification
+
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/compose_controls.py --report`(등록 전 control 포함 전체 편차 보고)
+- `python3 scripts/validation/check-document-links.py --mode traceability`
+- `bash scripts/validation/validate-docker-compose.sh`
+
+검증기는 root 전체 profile과 모든 LAB을 렌더하지만 정적 선언만 검사한다.
+runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량은 증명하지 않는다.
+`verification` 필드에 그 근거(실행 기록, 시험)를 적는다. 공개 입력·임시 파일 경계는
+[RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)을
+따른다. 구현이 통제를 충족하지 못하면 예외를 임의 추가하지 않고 별도 remediation으로 남긴다.
 
 ## Related Documents
 

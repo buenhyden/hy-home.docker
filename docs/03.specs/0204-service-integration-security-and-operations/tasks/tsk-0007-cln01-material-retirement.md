@@ -1,10 +1,10 @@
 ---
 title: "CLN01 Material Retirement Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0007"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-10"
 
 # CLN01 Material Retirement Task
 
-## Objective
+## Overview
+
+### Objective
 
 Implement the narrow, audited retirement path for material that another owner
 has retired in source. A candidate is deletable only after source, runtime,

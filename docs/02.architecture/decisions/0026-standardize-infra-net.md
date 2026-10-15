@@ -1,10 +1,10 @@
 ---
 title: "Standardize infra_net Subnet and Static IP Assignment"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0026"
 parent_ids:
@@ -20,12 +20,6 @@ all infrastructure services (`infra_net`) to `172.19.0.0/16`, and to manage
 `infra_net` connections of Compose services with dictionary-based static IP
 assignment.
 
-Several Docker Compose files are currently `include`d, and each could carry its
-own separate network configuration. If the range for the `infra_net` used across
-the infrastructure is unclear or conflicts, this causes inter-service
-communication failures or difficulty managing IPs. Therefore all infrastructure
-services need to be forced to run on the same virtual network plane.
-
 ### Traceability
 
 The confirmation basis for this decision is limited to the Architecture
@@ -33,26 +27,15 @@ Description, Spec, and Operations documents linked in `Related Documents`, and
 the current repository configuration. Runtime state without separate execution
 evidence is not claimed.
 
-## Decision
+## Decision Drivers
 
-- **Decision item 1**: Fix the subnet of `infra_net` to `${INFRA_SUBNET:-172.19.0.0/16}`
-  in the root `docker-compose.yml`.
-- **Decision item 2**: Explicitly declare `infra_net` for services in every
-  individual `include`d configuration file.
-- **Decision item 3**: If a service is already connected to another network such
-  as `k3d-hyhome`, keep that connection and add `infra_net` rather than removing it.
-- **Decision item 4**: Write a service's `infra_net` declaration as a dictionary,
-  and assign a static IP within `172.19.0.0/16` through `ipv4_address`.
+Several Docker Compose files are currently `include`d, and each could carry its
+own separate network configuration. If the range for the `infra_net` used across
+the infrastructure is unclear or conflicts, this causes inter-service
+communication failures or difficulty managing IPs. Therefore all infrastructure
+services need to be forced to run on the same virtual network plane.
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### Alternative 1: Docker Default Bridge (Automatic CIDR)
 
@@ -66,6 +49,17 @@ The decision context above records the applicable drivers and evidence.
   management.
 - Bad: Adds excessive configuration and operational complexity for a small
   Docker Compose-based local infrastructure.
+
+## Decision
+
+- **Decision item 1**: Fix the subnet of `infra_net` to `${INFRA_SUBNET:-172.19.0.0/16}`
+  in the root `docker-compose.yml`.
+- **Decision item 2**: Explicitly declare `infra_net` for services in every
+  individual `include`d configuration file.
+- **Decision item 3**: If a service is already connected to another network such
+  as `k3d-hyhome`, keep that connection and add `infra_net` rather than removing it.
+- **Decision item 4**: Write a service's `infra_net` declaration as a dictionary,
+  and assign a static IP within `172.19.0.0/16` through `ipv4_address`.
 
 ## Consequences
 

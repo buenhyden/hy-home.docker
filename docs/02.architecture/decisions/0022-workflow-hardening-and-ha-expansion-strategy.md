@@ -1,10 +1,10 @@
 ---
 title: "Workflow Hardening and HA Expansion Strategy"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0022"
 parent_ids:
@@ -17,11 +17,29 @@ created: "2026-03-28"
 
 This document records the decision to first carry out immediately applicable hardening (boundary security, health-based dependencies, n8n image hardening, CI gate) for the `07-workflow` layer, while pursuing catalog expansion items in phases.
 
-The workflow tier has a broad operational impact scope, and failure propagation risk grows high if management path exposure/startup race conditions/image drift accumulate. At the same time, the catalog requires Airflow/n8n expansion items, so a decision that separates short-term stabilization from mid-term expansion is needed.
-
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
+## Decision Drivers
+
+The workflow tier has a broad operational impact scope, and failure propagation risk grows high if management path exposure/startup race conditions/image drift accumulate. At the same time, the catalog requires Airflow/n8n expansion items, so a decision that separates short-term stabilization from mid-term expansion is needed.
+
+## Options
+
+### Implement all catalog expansion immediately
+
+- Good:
+  - Short-term functional expansion is felt
+- Bad:
+  - Increased change scope raises stabilization/rollback difficulty
+
+### Update documentation only, hold off on runtime/CI hardening
+
+- Good:
+  - Reduces short-term implementation cost
+- Bad:
+  - Lacks the ability to actually block regressions
 
 ## Decision
 
@@ -41,30 +59,6 @@ The verification basis for this decision is limited to the Architecture Descript
 - Carry out catalog expansion in phases.
   - Document and gradually introduce Airflow DAG quality gate/worker autoscale criteria
   - Standardize n8n workflow Git backup/Vault credential integration
-
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-### Implement all catalog expansion immediately
-
-- Good:
-  - Short-term functional expansion is felt
-- Bad:
-  - Increased change scope raises stabilization/rollback difficulty
-
-### Update documentation only, hold off on runtime/CI hardening
-
-- Good:
-  - Reduces short-term implementation cost
-- Bad:
-  - Lacks the ability to actually block regressions
 
 ## Consequences
 

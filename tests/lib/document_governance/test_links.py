@@ -2311,23 +2311,6 @@ class DocumentLinksCliTests(unittest.TestCase):
             self.assertIn("failures=0", output.getvalue())
             self.assertIn("warnings=1", output.getvalue())
 
-    def test_historical_command_evidence_does_not_hide_current_commands(self) -> None:
-        from scripts.lib.agent_governance.agent_governance_contract import (
-            HISTORICAL_TABLE_MARKER,
-            current_markdown_authority,
-        )
-
-        command = "python3 scripts/validation/check-document-links.py --mode all"
-        table = f"{HISTORICAL_TABLE_MARKER}\n| Command | Result |\n| --- | --- |\n| `{command}` | observed PASS |\n"
-        self.assertNotIn(command, current_markdown_authority(table))
-        self.assertIn(command, current_markdown_authority(table + f"\n{command}\n"))
-        self.assertIn(
-            command,
-            current_markdown_authority(
-                table.replace("| --- | --- |", "invalid separator")
-            ),
-        )
-
     def test_entrypoint_mode_allows_readme_and_directory_navigation(
         self,
     ) -> None:

@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Recovery Runbook"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0069"
 parent_ids:
@@ -19,10 +19,16 @@ created: "2026-05-17"
 Terrakube(`terrakube-api`, `terrakube-ui`, `terrakube-executor`)의 장애 진단, 조정된 백업·격리 복원,
 업그레이드 절차다.
 
-## Trigger and Preconditions
+## Trigger
 
 API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
-승인된 backup/restore/upgrade에 사용한다. 저장소 루트에서 작업한다.
+승인된 backup/restore/upgrade에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소 루트에서 작업한다.
 
 ### 작업 선택과 복구 전제
 
@@ -104,7 +110,7 @@ API/executor를 정지한다. provider와 webhook egress를 비활성화한 격�
 정제된 컴포넌트 health·run/workspace 개수·백업 ID/checksum·state-key 개수·
 release/source 커밋·비적용 plan 결과와 최종 상태를 기록한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

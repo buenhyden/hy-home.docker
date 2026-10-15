@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Operations Policy"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0011"
 parent_ids:
@@ -73,12 +73,6 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 
 - 장애 대응 중 임시 timeout 완화 가능. 단, 원복 계획과 변경 로그를 남겨야 한다.
 
-### Verification
-
-- `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-- `docker compose exec nginx nginx -t`와 같은 Nginx runtime lint는 root network와 backend 의존성을 갖춘 승인된 Nginx context가 실행 중일 때만 유효하다.
-- `infra/01-gateway/nginx/docker-compose.yml`만 독립적으로 compose rendering한 결과는 readiness 증거가 아니다.
-
 ### Recovery and Upgrade Controls
 
 Rollback은 검토된 config commit과 이에 맞는 private certificate 세트를 복구한 뒤,
@@ -95,6 +89,12 @@ image upgrade에는 `nginx -t`, 대표 route의 수용 검증, 같은 config로 
 
 - Declared parent: [Gateway Tier Architecture Description](../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: [Guide](../../guides/02-gateway-and-networking/0011-nginx.md) (`GDE-0011`), [Runbook](../../runbooks/02-gateway-and-networking/0011-nginx.md) (`RUN-0011`)
+
+## Verification
+
+- `bash scripts/hardening/check-all-hardening.sh 01-gateway`
+- `docker compose exec nginx nginx -t`와 같은 Nginx runtime lint는 root network와 backend 의존성을 갖춘 승인된 Nginx context가 실행 중일 때만 유효하다.
+- `infra/01-gateway/nginx/docker-compose.yml`만 독립적으로 compose rendering한 결과는 readiness 증거가 아니다.
 
 ## Related Documents
 

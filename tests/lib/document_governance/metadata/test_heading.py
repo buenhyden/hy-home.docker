@@ -35,6 +35,67 @@ class CurrentBodyContractTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.profiles = current_profiles()
 
+    def test_current_role_templates_use_r10_ordered_sections(self) -> None:
+        expected = {
+            "requirements-package": "Overview|Scope|Requirements|Acceptance Criteria|Related Documents",
+            "architecture-description": "Overview|Scope|Structure|Runtime and Deployment|Quality and Risks|Related Documents",
+            "adr": "Context|Decision Drivers|Options|Decision|Consequences|Related Documents",
+            "spec": "Overview|Scope|Contracts|Acceptance Criteria|Failure Conditions|Related Documents",
+            "plan": "Overview|Scope|Work Breakdown|Verification Plan|Risks and Recovery|Related Documents",
+            "task": "Overview|Inputs and Authorization|Work Log|Evidence|Criterion Acceptance|Review and Completion|Related Documents",
+            "guide": "Overview|Scope|Concepts|Usage|Troubleshooting|Related Documents",
+            "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
+            "runbook": "Overview|Trigger|Prerequisites|Procedure|Verification|Failure and Recovery|Related Documents",
+            "incident": "Overview|Impact|Timeline|Response|Resolution|Follow-up|Related Documents",
+            "postmortem": "Summary|Impact|Timeline|Analysis|Corrective Actions|Lessons|Related Documents",
+            "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
+            "governance-hook-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
+        }
+        registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
+        for profile_id, names in expected.items():
+            with self.subTest(profile=profile_id):
+                profile = registry.profiles[profile_id]
+                headings = names.split("|")
+                self.assertEqual(tuple(headings), profile["required_sections"])
+                self.assertTrue(profile.get("ordered_sections"))
+                self.assertTrue(profile.get("nonempty_sections"))
+                role = registry.template_roles[profile["template_id"]]
+                source = (ROOT / role["source"]).read_text(encoding="utf-8")
+                self.assertEqual(
+                    [f"## {name}" for name in headings],
+                    heading_module.extract_markdown_headings(source)[1],
+                )
+
+    def test_current_role_accepts_nested_content_and_rejects_empty_sections(
+        self,
+    ) -> None:
+        registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
+        profile = registry.profiles["spec"]
+        valid = body_with_headings(
+            *(f"## {name}" for name in profile["required_sections"])
+        ).replace(
+            "## Failure Conditions\n\nFixture content.",
+            "## Failure Conditions\n\n### Observable rejection\n\nReject invalid input.",
+        )
+        record = self.requirement_record()
+        self.assertEqual(
+            [], heading_module._registered_section_findings(record, valid, profile)
+        )
+        for broken in (
+            valid.replace("Reject invalid input.", ""),
+            valid.replace("## Scope\n\nFixture content.", "## Scope"),
+        ):
+            with self.subTest(body=broken):
+                self.assertIn(
+                    "body-section-empty",
+                    [
+                        finding.code
+                        for finding in heading_module._registered_section_findings(
+                            record, broken, profile
+                        )
+                    ],
+                )
+
     def requirement_record(self) -> object:
         return metadata.Record(
             pathlib.Path("docs/01.requirements/0001-body-fixture.md"),
@@ -836,7 +897,7 @@ class SectionStructureTests(unittest.TestCase):
             for profile in registry["profiles"]
             if profile.get("ordered_sections") and profile.get("nonempty_sections")
         }
-        self.assertEqual({"guide", "policy", "runbook"}, flagged)
+        self.assertTrue({"guide", "policy", "runbook"} <= flagged)
 
 
 class SealedSectionShapeTests(unittest.TestCase):

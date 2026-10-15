@@ -1,10 +1,10 @@
 ---
 title: "Agent Memory Restic Coverage"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0237"
 parent_ids:
@@ -53,6 +53,13 @@ service run or restore on HOME.
 3. An independent IaC review finds nothing blocking.
 4. A real `hyhome-backup.service` run includes `agent-memory.sqlite3` in the
    Restic snapshot.
+
+## Failure Conditions
+
+A missing store must skip the export without invoking the CLI or creating
+an empty database. A failed online backup removes partial staging output and
+fails the daily run; source and synthetic checks alone do not prove the real
+Restic snapshot contains the store.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Operations Policy"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -66,12 +66,6 @@ created: "2026-05-10"
 - 장애 대응 시 일시적 접근제어 완화는 허용될 수 있다.
 - 단, 변경 승인 기록과 동일 릴리스 내 원상 복구/재검증이 필수다.
 
-### Verification
-
-점검 명령은 [가이드의 Common Checks](../../guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Review Cadence
 
 - 월 1회 정기 검토
@@ -81,6 +75,12 @@ created: "2026-05-10"
 
 - Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
 - Subject peers: [Guide](../../guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`GDE-0054`), [Runbook](../../runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`RUN-0054`)
+
+## Verification
+
+점검 명령은 [가이드의 Common Checks](../../guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Related Documents
 

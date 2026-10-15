@@ -1,10 +1,10 @@
 ---
 title: "AI Runtime Pin Verification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0226"
 parent_ids:
@@ -75,6 +75,13 @@ settings and the OIDC client in Keycloak.
 5. HOME runs both services from the pinned references with the existing
    session key and sign-in settings; steps that need the owner are NOT_RUN.
 6. The changed gate, the staged style check and `candidate-quality` pass.
+
+## Failure Conditions
+
+A mismatch among declared tag and digest, running image and reported
+version leaves image identity unverified. Recovery or rollout that loses the
+Open WebUI key, persisted state or Ollama catalog digests fails acceptance;
+image rollback alone does not restore data or prove cross-user isolation.
 
 ## Related Documents
 

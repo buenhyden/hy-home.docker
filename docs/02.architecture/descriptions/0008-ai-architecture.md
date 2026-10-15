@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
@@ -15,15 +15,11 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document defines the reference architecture and quality attributes of the `08-ai` layer. It provides structural guidelines on GPU resource allocation, service boundaries, and data flow for high-performance local LLM inference and RAG systems.
+
+## Scope
 
 ### Stakeholders and Concerns
 
@@ -59,11 +55,7 @@ This section preserves the system boundaries, consumption relationships, non-goa
 
 The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Viewpoints and Views
 
@@ -80,7 +72,7 @@ The system operates as a hybrid structure.
 - **Tooling Boundary**: The agent uses the Ollama API as its interface and does not directly manipulate model weights or the GPU driver.
 - **Latency / Cost Budget**: Maximizes resource efficiency by minimizing the number of model reloads and using a lightweight embedding model (`qwen3-embedding:0.6b`).
 
-### Data Flow
+## Runtime and Deployment
 
 ### Data and Control Flows
 
@@ -100,7 +92,7 @@ Data and control flows include only the interactions specified in this section a
   not measured shared-GPU headroom. `notebook`/`surrealdb`, `mlops`/`data-science` and Crawl4AI retain their existing optional profiles; `ai` does not select every package now located in this directory.
 - **Operational Evidence**: Real-time GPU status check through `nvidia-smi` and the `ollama-exporter` dashboard.
 
-## Quality Attributes
+## Quality and Risks
 
 ### Quality Scenarios
 

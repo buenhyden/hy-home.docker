@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0066"
 parent_ids:
@@ -22,13 +22,15 @@ created: "2026-05-10"
 SonarQube Community Build는 `infra/11-quality/sonarqube/`의 `sonarqube` service로 운영하는 코드 품질·SAST 도구다.
 `tooling`과 `sast` profile에서만 선택되며 HOME에서는 제외된다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 코드 분석을 실행하는 개발자와 서비스를 운영하는 담당자다. 목표는 현재 구현의 인증 경계와
 데이터 위치를 이해하고, 분석 토큰으로 스캐너를 안전하게 실행하는 것이다. DB 복구와 업그레이드는
 [SonarQube Runbook](../../runbooks/12-testing-and-quality/0066-sonarqube.md)이 맡는다.
 
-## Usage
+## Concepts
 
 ### 분류와 범위
 
@@ -36,6 +38,8 @@ SonarQube Community Build는 `tooling`과 `sast` 하위의 온디맨드 **OPTION
 코드 품질/SAST 서비스이며 HOME에서 제외된다. 이 저장소는 이 서비스 가이드에서
 범용 병합 품질 게이트를 정의하지 않는다. 분석 결과로 배포를 어떻게 게이팅할지는
 프로젝트/CI 소유자가 정한다.
+
+## Usage
 
 ### 현재 구현과 흐름
 
@@ -71,12 +75,6 @@ SonarQube Community Build는 `tooling`과 `sast` 하위의 온디맨드 **OPTION
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/12-testing-and-quality/0066-sonarqube.md)의 `보존 대상과 사전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Common Checks
-
-- `docker compose --profile sast config --quiet`
-- `docker compose --profile sast config --services`
-- `bash scripts/hardening/check-all-hardening.sh 11-quality`
-
 ### Runbook Handoff
 
 DB 장애, 인덱싱 복구, 분석 큐, 업그레이드에는 [runbook](../../runbooks/12-testing-and-quality/0066-sonarqube.md)을
@@ -100,6 +98,14 @@ Sonar 토큰만으로 cookie 기반 ForwardAuth를 통과할 수 있는 것은 �
 - [Policy](../../policies/12-testing-and-quality/0066-sonarqube.md) (`POL-0066`)
 - [Runbook](../../runbooks/12-testing-and-quality/0066-sonarqube.md) (`RUN-0066`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile sast config --quiet`
+- `docker compose --profile sast config --services`
+- `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
 ## Related Documents
 

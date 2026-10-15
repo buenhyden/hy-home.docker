@@ -1,10 +1,10 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0002"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-11"
 
 # P07 Root Resource Optimization
 
-## Objective
+## Overview
+
+### Objective
 
 Continue existing common controls with measured root-service resource and
 least-privilege optimization. Own criterion3's open HOME residual and

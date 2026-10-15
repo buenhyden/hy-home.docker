@@ -1,10 +1,10 @@
 ---
 title: "Ollama and Open WebUI for Local AI Infrastructure"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0008"
 parent_ids:
@@ -17,27 +17,15 @@ created: "2026-03-26"
 
 This document records the decision to select Ollama and Open WebUI as the core technology stack for building the AI infrastructure. Local resource use, data privacy, and RAG extensibility were the top considerations.
 
-To provide intelligent services within the project, an LLM inference engine and a user interface that can use it are needed. In addition, RAG (Retrieval-Augmented Generation) is essential for generating answers based on internal documents. Commercial APIs (OpenAI, etc.) were excluded due to cost and security concerns, and various open-source alternatives capable of local operation were reviewed.
-
 ### Traceability
 
 The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
-## Decision
+## Decision Drivers
 
-- **Inference engine**: adopt `Ollama`. (Go-based fast execution, easy model deployment, strong GPU acceleration support)
-- **UI/RAG**: adopt `Open WebUI`. (UI convenience, built-in Qdrant-integrated RAG support, OpenAI API spec compatibility)
-- **Accelerator**: keep a dedicated technical GPU pass-through via the NVIDIA Docker runtime.
+To provide intelligent services within the project, an LLM inference engine and a user interface that can use it are needed. In addition, RAG (Retrieval-Augmented Generation) is essential for generating answers based on internal documents. Commercial APIs (OpenAI, etc.) were excluded due to cost and security concerns, and various open-source alternatives capable of local operation were reviewed.
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### vLLM
 
@@ -48,6 +36,12 @@ The decision context above records the applicable drivers and evidence.
 
 - Good: broadly supports various models (audio, image, etc.).
 - Bad: less optimized for performance than Ollama, and deployment configuration is relatively heavy.
+
+## Decision
+
+- **Inference engine**: adopt `Ollama`. (Go-based fast execution, easy model deployment, strong GPU acceleration support)
+- **UI/RAG**: adopt `Open WebUI`. (UI convenience, built-in Qdrant-integrated RAG support, OpenAI API spec compatibility)
+- **Accelerator**: keep a dedicated technical GPU pass-through via the NVIDIA Docker runtime.
 
 ## Consequences
 

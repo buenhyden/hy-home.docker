@@ -11,6 +11,37 @@ import unittest
 from scripts.lib.document_governance import spec_packages as module
 from scripts.lib.document_governance.registry import load_registry
 
+
+def generation6_registry():
+    """Keep legacy reader tests on their own generation's contract."""
+    registry = load_registry()
+    return dataclasses.replace(
+        registry,
+        common={
+            **registry.common,
+            "lifecycle_generation": 6,
+            "contract_id": "SDLC-COMMON-v5",
+            "evidence_columns": (
+                "Evidence",
+                "Criteria",
+                "Work Unit",
+                "Check",
+                "Input",
+                "Result",
+                "Location",
+                "Resolves",
+            ),
+            "criterion_acceptance_columns": (
+                "Criterion",
+                "Acceptance",
+                "Evidence",
+                "Decision",
+            ),
+            "result_domain": ("NOT_RUN", "PASS", "FAIL", "DEFER", "NOT_APPLICABLE"),
+        },
+    )
+
+
 ROOT = pathlib.PurePosixPath("docs/03.specs/0001-example")
 SPEC = module.SpecDocument(
     ROOT / "spec.md",
@@ -99,7 +130,7 @@ def outcome(call, *args, **kwargs) -> str:
 
 
 class Generation6EvidenceTests(unittest.TestCase):
-    registry = load_registry()
+    registry = generation6_registry()
 
     def contract(self, *tasks: module.SpecDocument) -> module.PackageEvidence:
         return module._v6_evidence_contract(SPEC, PLAN, tasks, self.registry)
@@ -222,7 +253,7 @@ ITEMS_HEADER = """## Work Log
 
 
 class Generation6ItemTests(unittest.TestCase):
-    registry = load_registry()
+    registry = generation6_registry()
 
     def test_items_derive_the_task_status(self) -> None:
         body = ITEMS_HEADER + (
@@ -377,7 +408,7 @@ created: "2026-10-13"
 
 
 class Generation6DepartureTests(unittest.TestCase):
-    registry = load_registry()
+    registry = generation6_registry()
 
     def test_only_a_ready_base_enters_the_completed_archive(self) -> None:
         done = task(PASS_BOTH, ACCEPT_BOTH, "completed")

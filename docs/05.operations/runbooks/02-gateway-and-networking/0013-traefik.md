@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0013"
 parent_ids:
@@ -22,9 +22,13 @@ created: "2026-05-17"
 
 목적은 `gateway-standard-chain` 회귀 시 신속 복구, Dashboard 인증/접근 장애 진단, Traefik 서비스 정상성 복원이다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - dashboard 접근 실패(401 loop, 429 burst, 5xx)
 - 미들웨어 체인 누락/오타/잘못된 순서
@@ -93,7 +97,7 @@ post-apply hash 검사를 수행한다. healthy, dashboard BasicAuth 성공·거
 결과만 Task/Incident에 남긴다. secret 값, Authorization/Cookie, 원문 access/error
 로그는 첨부하지 않는다. 증거별 static/runtime/NOT_RUN을 구분한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Identity Routing"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 ---
 
 # AI Agent Identity Routing
@@ -24,13 +24,15 @@ scope, permission profile, work profile, and skill IDs without inventing a
 provider-local identity. Provider-native adapters preserve role intent but do
 not own names, permissions, or model policy.
 
-If no role matches or multiple roles conflict, stop and route the ambiguity to
-`workflow-supervisor`. Multi-role work keeps one supervising owner and separates
-implementation from independent review.
-
 ## Exceptions
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
+If no role matches or multiple roles conflict, stop and route the ambiguity to
+`workflow-supervisor`. Multi-role work keeps one supervising owner and separates
+implementation from independent review.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.1.5"
+version: "1.1.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
@@ -22,7 +22,9 @@ created: "2026-05-10"
 
 이 가이드는 `06-observability` 계층의 Grafana 사용 맥락과 설정 확인 방법을 설명한다. Grafana는 [grafana/grafana image declaration](../../../../infra/06-observability/docker-compose.yml)으로 실행되는 visualization hub이며 provisioned datasources, provisioned dashboards, Keycloak OAuth role mapping, protected route를 통해 metrics, logs, traces, alerts, profiles를 한 화면에서 탐색한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 개발자, 운영자, SRE, AI Agent.
 
@@ -30,7 +32,7 @@ created: "2026-05-10"
 - Explore와 dashboard에서 Prometheus, Loki, Tempo, Alertmanager, Pyroscope 연결을 확인한다.
 - 장애 대응, restart, provisioning rollback, SSO/datasource 분류는 [RUN-0041](../../runbooks/07-observability/0041-grafana.md)로 넘긴다.
 
-## Usage
+## Concepts
 
 사용 전에 다음을 확인한다.
 
@@ -84,6 +86,8 @@ created: "2026-05-10"
      `/admins`에 있고 읽기 전용 사용자를 위한 `/viewers` group이 존재하는지
      확인한다. 그렇지 않으면 해당 사용자들이 접근 권한을 잃는다. rollback은
      이전 Compose 값과 recreate이며, Grafana 데이터는 초기화되지 않는다.
+
+## Usage
 
 ### Source-backed operating contract
 
@@ -147,14 +151,6 @@ Airflow mixin은 `airflow_dagrun_*`, `airflow_pool_*` 같은 이름을 쓰는데
 - **Role mapping drift**: `/admins`와 `/editors` mapping은 `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`가 제어한다.
 - **Dashboard edit lock**: provider `editable: false`가 provisioned dashboard를 code-owned 상태로 유지한다.
 
-### Common Checks
-
-- `docker compose --profile obs ps grafana`
-- `docker logs --tail=100 grafana`
-- `docker exec grafana wget -q --spider http://localhost:3000/api/health`
-- `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
-- `python3 -m unittest tests.validation.test_compose_baseline_gates.ObservabilityDashboardContractTests`
-
 ### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/07-observability/0041-grafana.md)을 따른다.
@@ -164,6 +160,16 @@ Airflow mixin은 `airflow_dagrun_*`, `airflow_pool_*` 같은 이름을 쓰는데
 - Declared parent: [Grafana Operations Policy](../../policies/07-observability/0041-grafana.md) (`POL-0041`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Policy](../../policies/07-observability/0041-grafana.md) (`POL-0041`), [Runbook](../../runbooks/07-observability/0041-grafana.md) (`RUN-0041`)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile obs ps grafana`
+- `docker logs --tail=100 grafana`
+- `docker exec grafana wget -q --spider http://localhost:3000/api/health`
+- `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
+- `python3 -m unittest tests.validation.test_compose_baseline_gates.ObservabilityDashboardContractTests`
 
 ## Related Documents
 

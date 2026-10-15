@@ -1,10 +1,10 @@
 ---
 title: "Management Database Operations Policy"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -82,12 +82,6 @@ Workflow queue state에는 cache-only 예외가 적용되지 않는다. 예외�
 mutation, plaintext secret, raw active storage 복사, 동일 host 가용성 주장을
 허용하지 않는다.
 
-### Verification
-
-Root 구성과 범위가 지정된 static policy check를 검증한 뒤, 승격이나 cutover
-전에 application 수준 acceptance를 갖춘 isolated compatible restore를
-요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
-
 ### Review Cadence
 
 Profile, image, volume, credential, consumer, retention 또는 upstream
@@ -97,6 +91,12 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 
 - Artifact: `POL-0028`; parent: `AD-0004`.
 - Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
+
+## Verification
+
+Root 구성과 범위가 지정된 static policy check를 검증한 뒤, 승격이나 cutover
+전에 application 수준 acceptance를 갖춘 isolated compatible restore를
+요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 
 ## Related Documents
 

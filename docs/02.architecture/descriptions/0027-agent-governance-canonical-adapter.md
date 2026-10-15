@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.4.0"
+version: "1.5.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -15,11 +15,11 @@ created: "2026-06-01"
 
 ## Overview
 
-### Overview
+Policy, provider translation, document shape and execution evidence have
+separate canonical owners. Both providers read the same repository-owned
+instructions and shared memory interface through their native adapters.
 
 ## Scope
-
-### Scope
 
 ### Context and Stakeholders
 
@@ -55,9 +55,7 @@ verifies projection drift.
   the current Task owns execution and acceptance. New evidence requires bounded
   Stage 99 classification; representative scores grant no runtime authority.
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -73,6 +71,14 @@ verifies projection drift.
 | Generated native adapters | role translation and thin Claude skill pointers |
 | Stage 99 Registry | document shape and lifecycle machine contract |
 | Validators and suites | focused predicate execution and routing |
+
+Shared explanation prose defaults to Korean for new authoring; existing English
+sources and machine syntax remain valid. The document profile declares that
+language compatibility, and the documentation protocol owns authoring behavior.
+Native adapters consume the same meaning without creating another language or
+policy authority.
+
+## Runtime and Deployment
 
 ### Data Flow
 
@@ -97,7 +103,9 @@ validation scripts. Provider sync and governance tests check projection
 freshness. A document or adapter change alone does not require Docker
 runtime, a remote service, or secret mutation.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Determinism**: the same source and registry must produce the same
   projection and verdict.

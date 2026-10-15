@@ -1,10 +1,10 @@
 ---
 title: "DEV Data Boundary and InfluxDB Retirement Plan"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0213-PLAN-0001"
 parent_ids:
@@ -19,6 +19,13 @@ created: "2026-10-07"
 Land the decision and contract first, then the DEV variable and provisioner
 change, then the InfluxDB retirement, then the backup evidence. Each work unit
 is one reviewable commit.
+
+## Scope
+
+W1–W4 amend the data architecture, separate DEV consumer variables,
+enforce provisioner budgets and retire InfluxDB source while retaining its
+data, then rehearse DEV recovery. W5–W8 add exporter monitor accounts, safe
+volume roots and DEV WAL/PITR before the separately ordered HOME activation.
 
 ## Work Breakdown
 
@@ -47,7 +54,9 @@ The 2026-10-08 extension (W5–W8) adds isolated exporter, WAL and PITR runs
 with labelled resources and a Compose validation regression. W8 runs on HOME
 only after W5–W7 merge, in the order RUN-0021 sets.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 Revert the logical commits to restore the InfluxDB source and documents; the
 archived bytes return through the same revert. The preserved data directory

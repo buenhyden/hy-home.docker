@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -76,14 +76,6 @@ created: "2026-05-10"
 - 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
 - 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
 
-### Verification
-
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-- 프로필로 선택한 서비스는 루트 Compose의 네트워크·secret·의존성 문맥으로 검증한다. 개별 서비스 파일만으로 실행 구성을 판정하지 않는다.
-
 ### Review Cadence
 
 - 월 1회 정기 검토
@@ -95,6 +87,14 @@ created: "2026-05-10"
 - 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`), [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`RUN-0063`)
 
 현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [migration handoff](../../guides/10-platform-and-backup/0068-terraform.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+
+## Verification
+
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
+- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+- 프로필로 선택한 서비스는 루트 Compose의 네트워크·secret·의존성 문맥으로 검증한다. 개별 서비스 파일만으로 실행 구성을 판정하지 않는다.
 
 ## Related Documents
 

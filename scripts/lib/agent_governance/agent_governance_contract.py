@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import ast
 import fnmatch
 import json
 import os
@@ -68,16 +67,6 @@ MAX_SKILL_RESOURCE_MARKDOWN_BRACKETS = 16_384
 IDENTIFIER_PATTERN = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*")
 SAFE_REPOSITORY_PATH_PART = re.compile(r"\.?[A-Za-z0-9][A-Za-z0-9._-]*")
 _RETIRED_PROVIDER = "ge" + "mini"
-_RETIRED_EXPERIMENT = "anti" + "gravity"
-_RETIRED_HANDOFF = "project" + r"[- .]?" + "memory"
-_RETIRED_CURRENT = "memory" + "/current"
-UNSUPPORTED_TOKEN = re.compile(
-    rf"(?i)(?:\b{_RETIRED_PROVIDER}\b|\b{_RETIRED_EXPERIMENT}\b|"
-    rf"{_RETIRED_HANDOFF}|{_RETIRED_CURRENT}|"
-    r"docs/00\.agent-governance(?:/|\b)|"
-    r"subagent-protocol\.md|harness-implementation-map\.md|"
-    r"memory\.template\.md|progress\.template\.md)"
-)
 _RESOURCE_CODE_TOKEN = re.compile(
     r"`+((?:(?:[.][.]/|[.]/)*)(?:scripts|references|assets)/[^`\n]+)`+"
 )
@@ -91,9 +80,6 @@ RETIRED_PROVIDER_DIRECTORY = "." + _RETIRED_PROVIDER
 RETIRED_PROVIDER_SHIM = _RETIRED_PROVIDER.upper() + ".md"
 GENERATED_AUTHORITY = re.compile(
     r"(?i)(?:policy source of truth|owns? policy|normative authority)"
-)
-HISTORICAL_QUOTE_MARKER = (
-    "> Historical evidence (not current authority; source: Git history):"
 )
 HISTORICAL_TABLE_MARKER = (
     "<!-- Historical evidence table (not current authority; source: Git history). -->"
@@ -1234,121 +1220,6 @@ def _active_text_paths(
     return tuple(sorted(paths))
 
 
-def current_markdown_authority(text: str) -> str:
-    """Remove only explicitly delimited historical source quotations."""
-    lines = text.splitlines()
-    current_lines = []
-    quoted_history = False
-    table_history = False
-    for index, line in enumerate(lines):
-        if line == HISTORICAL_TABLE_MARKER and index + 2 < len(lines):
-            header, separator = lines[index + 1 : index + 3]
-            if (
-                re.fullmatch(r"\|(?:[^|\n]+\|)+", header)
-                and re.fullmatch(r"\|(?:\s*:?-{3,}:?\s*\|)+", separator)
-                and len(header.split("|")) == len(separator.split("|"))
-                and all(cell.strip() for cell in header.split("|")[1:-1])
-            ):
-                table_history = True
-                continue
-        if table_history and line.startswith("|"):
-            continue
-        table_history = False
-        if line == HISTORICAL_QUOTE_MARKER:
-            quoted_history = True
-            continue
-        if quoted_history and (line == ">" or line.startswith("> ")):
-            continue
-        quoted_history = False
-        current_lines.append(line)
-    return "\n".join(current_lines)
-
-
-def _has_unsupported_active_token(relative: str, text: str) -> bool:
-    if relative.startswith("docs/") and relative.endswith(".md"):
-        text = current_markdown_authority(text)
-    if relative.endswith(".py"):
-        # Strip only literal values in module-level retired-path inventories;
-        # formatting cannot turn adjacent executable statements into evidence.
-        try:
-            nodes = ast.parse(text).body
-        except SyntaxError:
-            nodes = []
-        payload = text.encode("utf-8")
-        offsets = [0]
-        for line in payload.splitlines(keepends=True):
-            offsets.append(offsets[-1] + len(line))
-        spans = []
-        for node in nodes:
-            if isinstance(node, ast.Assign) and len(node.targets) == 1:
-                target, value = node.targets[0], node.value
-            elif isinstance(node, ast.AnnAssign):
-                target, value = node.target, node.value
-            else:
-                continue
-            if (
-                isinstance(target, ast.Name)
-                and re.fullmatch(r"\w*(?:REMOVED|RETIRED)_PATHS", target.id)
-                and isinstance(value, ast.Tuple)
-                and all(
-                    isinstance(item, ast.Constant) and isinstance(item.value, str)
-                    for item in value.elts
-                )
-                and value.end_lineno is not None
-                and value.end_col_offset is not None
-            ):
-                spans.append(
-                    (
-                        offsets[value.lineno - 1] + value.col_offset,
-                        offsets[value.end_lineno - 1] + value.end_col_offset,
-                    )
-                )
-        for start, end in reversed(spans):
-            payload = payload[:start] + payload[end:]
-        text = payload.decode("utf-8")
-        return UNSUPPORTED_TOKEN.search(text) is not None
-    # A search pattern names evidence, not an adopted provider. Strip only the
-    # quoted pattern, retaining adjacent commands and all remaining arguments.
-    text = re.sub(r"(?m)^(\s*!?\s*rg -n(?: -i)? )(['\"])[^\n]*?\2", r"\1", text)
-    statements = re.split(
-        r"\n\s*\n|\n(?=\s*(?:[-*] |\d+[.] |\|))|(?<=[.!?])\s+(?=[A-Z])|;|\bbut\b", text
-    )
-    for statement in statements:
-        if UNSUPPORTED_TOKEN.search(statement) is None:
-            continue
-        normalized = re.sub(r"\s+", " ", statement).strip()
-        if re.match(r"Add mutation cases for\b", normalized):
-            continue
-        positive = re.search(
-            rf"(?i)(?:\b(?:use|load|enable|support|adopt|create|restore|retain)\s+(?:the\s+)?`?(?:{UNSUPPORTED_TOKEN.pattern[4:]})|"
-            r"\b(?:must|should)\s+(?:remain|become)\s+active|\bcurrent active authority|"
-            rf"(?:{UNSUPPORTED_TOKEN.pattern[4:]}).*?\b(?:is|are|remains?|must be|should be)\s+(?:the\s+)?(?:current|active|default|supported|adopted|enabled|required|canonical)\b|"
-            r"\b(?:do not|must not|never)\s+(?:remove|retire|delete))",
-            normalized,
-        )
-        if positive:
-            return True
-        if re.search(
-            r"(?i)\b(?:remov(?:e[ds]?|ing|al)|retir(?:e[ds]?|ing|ement)|delet(?:e[ds]?|ing|ion)|absent|absence|forbidden|reject|fail)\b",
-            normalized,
-        ):
-            continue
-        if re.search(
-            rf"(?i)\bno\s+[^.;]*(?:{UNSUPPORTED_TOKEN.pattern[4:]})|\bdo(?:es)? not exist\b",
-            normalized,
-        ):
-            continue
-        if re.match(r"(?i)(?:[-*] )?Move:", normalized) and " to " in normalized:
-            if not UNSUPPORTED_TOKEN.search(normalized.split(" to ", 1)[1]):
-                continue
-        if re.search(
-            r"(?:self[.])?assertFalse\(Path\([^\n]+\)[.]exists\(\)\)", normalized
-        ):
-            continue
-        return True
-    return False
-
-
 def _canonical_source_paths(
     registry: Mapping[str, object],
 ) -> tuple[pathlib.PurePosixPath, ...]:
@@ -1846,14 +1717,6 @@ def validate_repository(
                 )
                 continue
             relative = relative_path.as_posix()
-            if _has_unsupported_active_token(relative, text):
-                findings.append(
-                    _finding(
-                        relative,
-                        "AGC-UNSUPPORTED-TOKEN",
-                        "retired provider or handoff token",
-                    )
-                )
             if relative.startswith(
                 (".claude/", ".codex/")
             ) and GENERATED_AUTHORITY.search(text):

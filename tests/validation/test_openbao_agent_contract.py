@@ -611,6 +611,10 @@ class AgentMetricsTests(unittest.TestCase):
             )
             self.assertNotIn("bearer_token_file", job, name)
 
+
+class AgentMetricsNativeTests(unittest.TestCase):
+    """Cached promtool execution; listener and scrape contracts stay required."""
+
     def test_agent_alert_rules_pass_their_promtool_cases(self):
         try:
             present = (

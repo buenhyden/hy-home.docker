@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Valkey Inspection Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0223-PLAN-0001"
 parent_ids:
@@ -19,6 +19,14 @@ created: "2026-10-09"
 Measure what RedisInsight needs, add the inspector roles and MNG ACL, close the
 listener and register the connections, rehearse, document, roll out on HOME,
 review the consumers, and validate.
+
+## Scope
+
+W1–W3 introduce distinct DEV/MNG inspector ACLs and the restricted
+RedisInsight listener, preset connections, encryption and health checks.
+W4–W6 rehearse isolation and rotation, update the subject documents and
+review existing Valkey consumers before HOME rollout and final checks;
+write roles and dedicated service stores are excluded.
 
 ## Work Breakdown
 
@@ -38,7 +46,9 @@ isolated rehearsal against the pinned images, HOME probes without secret
 output, a client inventory of both Valkey servers, the changed gate, the staged
 style check and the remote candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - Recreating MNG Valkey drops every shared connection for a few seconds; AOF
   keeps the data and consumers reconnect.

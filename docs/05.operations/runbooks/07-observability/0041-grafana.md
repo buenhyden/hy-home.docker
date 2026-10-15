@@ -1,10 +1,10 @@
 ---
 title: "Grafana Provisioning and Access Recovery Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0041"
 parent_ids:
@@ -22,9 +22,13 @@ created: "2026-05-17"
 
 운영자가 `grafana` 상태를 확인하고 Keycloak OAuth 환경변수, Docker Secret 참조, datasource provisioning, dashboard provider lock, dashboard JSON 경로, 보호된 route를 검증한다. Secret 노출이나 SSO/route/provisioning 정책 변경 같은 위험 조치는 별도 승인으로 분리한다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - Grafana UI `https://grafana.${DEFAULT_URL}` 또는 `/api/health`가 실패할 때.
 - OAuth login loop, `OAuth Login Failed` 또는 unexpected Viewer/Editor/Admin role이 발생할 때.
@@ -183,7 +187,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - Datasource/dashboard 장애는 affected dashboard/panel, datasource UID, backend endpoint, redacted log excerpt, provisioning diff를 함께 기록한다.
 - Role mapping/secret/datasource UID/provider/route 변경 필요성이 보이면 approval state를 기록한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

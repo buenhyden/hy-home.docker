@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-09"
 
 # Common Controls and Exceptions Task
 
-## Objective
+## Overview
+
+### Objective
 
 Check every root and LAB service's effective controls against exact
 exceptions, fix the templates and leaves where the defaults were wrong, and

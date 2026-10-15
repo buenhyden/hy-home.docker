@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -21,7 +21,9 @@ created: "2026-05-10"
 
 이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. Traefik의 lifecycle class는 **HOME**이다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상은 Infra/DevOps 엔지니어, 운영자, 기여자다. 목적은 두 가지다.
 
@@ -35,9 +37,11 @@ created: "2026-05-10"
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 - root `core` profile compose validation 실행 가능
 
-## Usage
+## Concepts
 
 구현 소스는 [infra/01-gateway/traefik/docker-compose.yml](../../../../infra/01-gateway/traefik/docker-compose.yml)이다.
+
+## Usage
 
 ### Source, activation and middleware behavior
 

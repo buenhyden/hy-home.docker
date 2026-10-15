@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Health and Recovery Triage Runbook"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0031"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-05-17"
 
 PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수집하고, 승인된 상태 확인으로 범위를 좁힌다. 상태 triage는 재기동을 승인하지 않는다.
 
-## Trigger and Preconditions
+## Trigger
 
 - `pg-router` write/read endpoint가 응답하지 않을 때
 - `patronictl list`에서 leader/member 상태 확인이 필요할 때
@@ -31,7 +31,13 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 
 ### Execution and stop boundary
 
-대상: `etcd-1`, `etcd-2`, `etcd-3`, `pg-0`, `pg-0-exporter`, `pg-1`, `pg-1-exporter`, `pg-2`, `pg-2-exporter`, `pg-cluster-init`, `pg-router`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+대상: `etcd-1`, `etcd-2`, `etcd-3`, `pg-0`, `pg-0-exporter`, `pg-1`, `pg-1-exporter`, `pg-2`, `pg-2-exporter`, `pg-cluster-init`, `pg-router`.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
 기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
@@ -120,7 +126,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - **Routing**: HAProxy healthcheck; 이전 stats label은 HOME gateway와 연결되지 않음
 - **Metrics**: `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

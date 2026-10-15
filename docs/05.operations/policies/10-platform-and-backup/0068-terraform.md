@@ -1,10 +1,10 @@
 ---
 title: "Terraform Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0068"
 parent_ids:
@@ -39,11 +39,6 @@ Terraform 운영 주제는 MIGRATE 상태의 사용 맥락이며 현재 실행 �
 호환성 때문에 기존 CLI가 필요하면 담당자, 대상 workspace, 지원 종료 조건과
 검증 계획을 기록한다. 예외는 기존 private state 공개를 허용하지 않는다.
 
-### Verification
-
-원래 plan과 이관 plan의 resource action을 로컬에서 비교하고 변경 개수와 결과만
-기록한다. 서비스 부재를 실패한 daemon 상태로 판단하지 않는다.
-
 ### Review Cadence
 
 각 state 이관 및 provider/backend 변경 때 검토한다.
@@ -53,6 +48,11 @@ Terraform 운영 주제는 MIGRATE 상태의 사용 맥락이며 현재 실행 �
 - 설계 근거: [AD-0009](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - 유지되는 이관 주제: [Guide](../../guides/10-platform-and-backup/0068-terraform.md), [Policy](0068-terraform.md), [Runbook](../../runbooks/10-platform-and-backup/0068-terraform.md)
 - 현재 구현 소유자: [OpenTofu](../../guides/10-platform-and-backup/0082-opentofu.md)
+
+## Verification
+
+원래 plan과 이관 plan의 resource action을 로컬에서 비교하고 변경 개수와 결과만
+기록한다. 서비스 부재를 실패한 daemon 상태로 판단하지 않는다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: prints a secret to logs"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -17,6 +17,18 @@ enabled: true
 event: "file"
 name: "block-gha-secrets-in-run"
 ---
+
+# BLOCKED: prints a secret to logs
+
+## Overview
+
+Apply the declared `block` action for block-gha-secrets-in-run.
+
+## Scope
+
+`file` 이벤트의 `block-gha-secrets-in-run` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+
+## Rules
 
 **GitHub Actions secret exposure pattern blocked (project rule)**
 
@@ -39,16 +51,6 @@ name: "block-gha-secrets-in-run"
 ```yaml
 # BLOCKED: prints a secret to logs
 
-## Overview
-
-Apply the declared `block` action for block-gha-secrets-in-run.
-
-## Scope
-
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
-
-## Rules
-
 - run: echo ${{ secrets.API_KEY }}
 
 # ALLOWED: passes the secret as a masked environment variable
@@ -64,6 +66,10 @@ The declared action applies when the pattern matches.
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
 
 ## Related Documents
 

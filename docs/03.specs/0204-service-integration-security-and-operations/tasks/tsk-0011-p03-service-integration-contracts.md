@@ -1,10 +1,10 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.6"
+version: "0.2.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0011"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-11"
 
 # P03 Service Integration and Four-location Port Contracts Task
 
-## Objective
+## Overview
+
+### Objective
 
 Own criterion 17/W33: reconcile current service integration, environment,
 identity and four-location port contracts without duplicating the current

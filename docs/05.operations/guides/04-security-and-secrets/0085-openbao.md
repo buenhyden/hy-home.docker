@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Guide"
-version: "0.7.0"
+version: "0.7.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -22,11 +22,13 @@ created: "2026-09-19"
 
 OpenBao는 HOME secret control plane이다. 레거시 Vault runtime/data는 2026-09-25 폐기된 역사적 대상이며 현재 migration/rollback 입력으로 사용할 수 없다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상은 OpenBao를 운영하거나 secret 소비 경로를 연결하는 보안·인프라 운영자다. 구성과 persistent input, 사람 관리자 접근(Keycloak native OIDC), credential 경계를 이해하고, 실행 절차가 필요하면 Runbook으로 넘어가는 것이 목표다.
 
-## Usage
+## Concepts
 
 구현 소스는 [infra/03-security/openbao/docker-compose.yml](../../../../infra/03-security/openbao/docker-compose.yml)이다.
 
@@ -40,6 +42,8 @@ Raft data, AppRole bootstrap material, 렌더링된 출력은 별도의 bind vol
 [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과
 [version projection](../../../../infra/tech-stack.versions.json)이 runtime pin을
 관장한다.
+
+## Usage
 
 ### Service behavior and persistent inputs
 
@@ -174,12 +178,6 @@ W5 Agent 업그레이드와 재발급, W6 audit 확인, W7 root 폐기 순서다
 credential 규칙과 받아들인 잔여 위험은 [policy](../../policies/04-security-and-secrets/0085-openbao.md)가
 소유한다.
 
-### Common Checks
-
-사용 전에 선택된 service, 선언된 mount, 공개된 interface, container 상태를
-확인한다. readiness와 data recovery는 runbook evidence를 수집하기 전까지
-검증되지 않은 상태다.
-
 ### Runbook Handoff
 
 [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 command, 예상 결과, recovery를
@@ -257,6 +255,14 @@ alias이다. 별도 값·KV entry나 재발급 대상이 아니며, 이 표시�
 뜻하지 않는다. 실제 COMM-003 폐기는 SMTP01이 소유한다. P06은 catalog API로 합성 binding을
 검사할 수 있지만 실제 pilot은 발급된 대상 ID·KV path·ACL·delivery와 P01 인증·복구,
 P03 소비자 신원, P04 실제 DEV/S3 수용을 기다린다. opsflow ID나 ACL을 임의로 만들지 않는다.
+
+## Troubleshooting
+
+### Common Checks
+
+사용 전에 선택된 service, 선언된 mount, 공개된 interface, container 상태를
+확인한다. readiness와 data recovery는 runbook evidence를 수집하기 전까지
+검증되지 않은 상태다.
 
 ## Related Documents
 

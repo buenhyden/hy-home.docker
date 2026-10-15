@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.1.7"
+version: "1.1.8"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -23,11 +23,13 @@ created: "2026-09-22"
 
 HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackRest, Restic, R2 오프사이트 사본, SQLite export, host orchestrator가 각각 무엇을 보호하고 무엇을 보호하지 않는지 설명한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 백업을 운영하거나 복구 가능성을 판단하는 운영자와 검토자를 위한 문서다. 목표는 도구별 소유 범위, 저장 위치, 일정과 부하, 용량 증가, 키 보관 규칙을 이해하고 정상 상태를 확인하는 것이다.
 
-## Usage
+## Concepts
 
 ### What owns which copy
 
@@ -41,6 +43,8 @@ HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackR
 
 실행 중인 PostgreSQL data directory의 복사본은 database backup이 아니다.
 구현된 자동 PostgreSQL 경로는 pgBackRest이며 database별 logical 복구 요구를 대체하지 않는다.
+
+## Usage
 
 ### Destinations
 
@@ -126,6 +130,20 @@ restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune �
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
+### Runbook Handoff
+
+초기 설정, manual 실행, restore, point-in-time recovery, retention delete
+절차는 [RUN-0021](../../runbooks/10-platform-and-backup/0021-backup-and-restore.md)에 있다.
+
+### Traceability
+
+- Policy: [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
+- Implementation: [Restic Compose](../../../../infra/09-platform-ops/restic/docker-compose.yml),
+  [Restic package](../../../../infra/09-platform-ops/restic/README.md),
+  [pgBackRest image](../../../../infra/04-data/mng-db/pg/backup/Dockerfile)
+
+## Troubleshooting
+
 ### Common Checks
 
 backup data를 변경하지 않는 점검이다(Restic은 여전히 짧게 유지되는 lock을 기록한다):
@@ -139,18 +157,6 @@ journalctl -u hyhome-backup.service -n 50 --no-pager
 
 정상이면 output에 최근 backup과 WAL archive range가 담긴 `status: ok`,
 최근 `hyhome-state`와 `hyhome-host` snapshot, 성공한 마지막 실행이 나온다.
-
-### Runbook Handoff
-
-초기 설정, manual 실행, restore, point-in-time recovery, retention delete
-절차는 [RUN-0021](../../runbooks/10-platform-and-backup/0021-backup-and-restore.md)에 있다.
-
-### Traceability
-
-- Policy: [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
-- Implementation: [Restic Compose](../../../../infra/09-platform-ops/restic/docker-compose.yml),
-  [Restic package](../../../../infra/09-platform-ops/restic/README.md),
-  [pgBackRest image](../../../../infra/04-data/mng-db/pg/backup/Dockerfile)
 
 ## Related Documents
 

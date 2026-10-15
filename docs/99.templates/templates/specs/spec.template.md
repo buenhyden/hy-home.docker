@@ -37,6 +37,10 @@ created: "{{CREATED}}"
 
 {{ACCEPTANCE_CRITERIA}}
 
+## Failure Conditions
+
+{{OBSERVABLE_FAILURE_CONDITIONS_AND_STOP_BOUNDARIES}}
+
 ## Related Documents
 
 {{RELATED_DOCUMENTS}}

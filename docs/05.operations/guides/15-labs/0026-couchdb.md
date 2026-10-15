@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Usage Guide"
-version: "2.1.2"
+version: "2.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0026"
 parent_ids:
@@ -18,13 +18,15 @@ created: "2026-05-10"
 
 이 문서는 [CouchDB Compose 구현](../../../../labs/couchdb.yml)의 3노드 클러스터 사용 기준을 설명한다. `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`는 정확히 `couchdb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이며 세 노드는 한 Docker host에 있으므로 host-level HA가 아니다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: CouchDB HTTP API, cluster-init job, 독립 LAB network, Docker Secret 기반 admin/cookie 설정을 현재 compose 이름과 맞춰 사용할 수 있게 한다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -40,6 +42,8 @@ created: "2026-05-10"
 | 보안 | admin/cookie secret mount와 database `_security` object를 사용하며 직접 노출한 host port는 없다. |
 | Backup·upgrade | replication을 우선한다. file backup은 쓰기를 멈춘 일관된 상태에서 생성해야 한다. 격리된 restore evidence를 확보한 후에만 upstream upgrade 순서를 따른다. |
 | License·edition | Apache CouchDB source에는 Apache-2.0이 적용되며 상용 clustering 기능을 가정하지 않는다. |
+
+## Usage
 
 ### Identity-specific behavior
 

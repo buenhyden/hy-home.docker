@@ -1,10 +1,10 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -18,10 +18,12 @@ created: "2026-09-21"
 
 MLflow tracking server의 프로비저닝 실패, 크리덴셜 회전, 복원, 업그레이드를 다루는 복구 런북이다.
 
-## Trigger and Preconditions
+## Trigger
 
 프로비저닝 작업 실패, 서버 시작 또는 헬스 실패, 크리덴셜 교체, 아티팩트 접근
 거부, 트래킹 저장소 복원 또는 업그레이드 시 사용한다.
+
+## Prerequisites
 
 ### 작업 선택과 복구 전제
 
@@ -113,7 +115,7 @@ secret 파일 교체·서비스 재생성은 [공통 수명주기 정책](../../
 명령 종료, 작업 종료 코드, 이미지, 소스 커밋, 개수, 체크섬을 기록한다.
 비밀번호, 액세스 키, 아티팩트 내용은 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

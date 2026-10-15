@@ -1,10 +1,10 @@
 ---
 title: "Alloy Operations Policy"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0040"
 parent_ids:
@@ -65,11 +65,6 @@ created: "2026-05-17"
 
 pipeline, exporter, Docker discovery, route, mount 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다. 장애 대응 중 임시 조치가 필요하면 [RUN-0040](../../runbooks/07-observability/0040-alloy.md)에서 최소 조치와 rollback evidence를 기록한다. 책임 소유자는 **@buenhyden**이다. 예외와 통제 변경에는 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Verification
-
-- Compose 경계, pipeline 경계, 품질 metric 수신기 확인 명령은 [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks)와 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#procedure)가 소유한다.
-- Repository contracts: 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-
 ### Review Cadence
 
 - Alloy image, config, Docker discovery, relabel rule, exporter endpoint, mount 경로, OTLP port, route, healthcheck가 바뀔 때 검토한다.
@@ -79,6 +74,11 @@ pipeline, exporter, Docker discovery, route, mount 예외는 사용자 승인과
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](../../guides/07-observability/0040-alloy.md) (`GDE-0040`), [Runbook](../../runbooks/07-observability/0040-alloy.md) (`RUN-0040`)
+
+## Verification
+
+- Compose 경계, pipeline 경계, 품질 metric 수신기 확인 명령은 [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks)와 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#procedure)가 소유한다.
+- Repository contracts: 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Related Documents
 

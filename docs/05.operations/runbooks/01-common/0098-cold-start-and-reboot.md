@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.3.4"
+version: "0.3.5"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0098"
 parent_ids:
@@ -18,11 +18,17 @@ created: "2026-09-25"
 
 이 런북은 호스트 재부팅 전후에 HOME Docker Compose 스택과 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 단계 사이의 health gate를 확인하는 절차를 제공한다.
 
-## Trigger and Preconditions
+## Trigger
 
 호스트를 계획된 이유로 재부팅하기 전과 재부팅 직후, HOME Docker Compose 스택과
 같은 호스트의 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 각 단계
-사이의 health gate를 확인할 때 사용한다. 정전이나 예정에 없던 재부팅 뒤 같은
+사이의 health gate를 확인할 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+정전이나 예정에 없던 재부팅 뒤 같은
 순서로 상태를 점검할 때도 쓴다. 이 런북은 unseal share, SecretID, root token,
 KV 값을 출력하거나 요청하지 않는다; 실제 재부팅 실행은 owner가 감독 아래
 수행하며 이 문서의 범위가 아니다.
@@ -241,7 +247,7 @@ SecretID, token 값은 기록하지 않는다.
 | 2026-09-30 | 6. SecretID delivery (owner, RUN-0085) | before 10:30:27 KST | 10:30:29 KST | PASS: Agent restarted 10:30:27, `authentication successful` 10:30:29, SecretID `consumed`, token renewed, no error after the restart |
 | 2026-09-30 | 7. k3d | 10:03:53 KST | 10:31 KST | PASS: five `k3d-hyhome-*` Up, 38 pods Running; `vault-backend` revalidated `Ready=True` at 10:11:17 after the unseal, and all six ExternalSecrets `SecretSynced` |
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Agent Telemetry and Alert Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0239-PLAN-0001"
 parent_ids:
@@ -18,6 +18,14 @@ created: "2026-10-14"
 
 Add the listener and telemetry, the network and scrape job, then the alerts
 and their cases; observe the pinned image locally; review; deliver.
+
+## Scope
+
+W1 adds the Agent's metrics-only listener, observability network and
+matching scrape jobs with a pinned-image probe; W2 tests scrape/authentication
+alerts; W3–W4 update guide/navigation and obtain review and hosted evidence.
+The change adds no dashboard, listener TLS, template-staleness metric or HOME
+deployment.
 
 ## Work Breakdown
 
@@ -37,7 +45,9 @@ rules`, changed metadata, links and markdownlint. Start the pinned Agent image
 with `--network none` and no credentials, read its metrics path and probe the
 other paths.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - **Unauthenticated endpoint.** Any `obs_net` or `secrets_net` peer can read
   the Agent's counters; they carry no secret or token.

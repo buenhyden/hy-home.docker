@@ -1,10 +1,10 @@
 ---
 title: "Choice of Spilo/Patroni for PostgreSQL HA"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0004"
 parent_ids:
@@ -17,13 +17,27 @@ created: "2026-03-26"
 
 This document is the architecture decision record for adopting a Patroni and Etcd based high-availability (HA) cluster solution, instead of a single PostgreSQL instance, to guarantee data integrity and uptime for `hy-home.docker`.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+## Decision Drivers
+
 - Need to prevent a single point of failure (SPOF) in the data tier.
 - Need automated failover and replication-lag monitoring.
 - Need flexible cluster configuration and operational convenience in a container environment.
 
-### Traceability
+## Options
 
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+### Vanilla PostgreSQL with Replication
+
+- Good: simple configuration and low resource consumption.
+- Bad: needs manual failover and replication-lag monitoring is difficult.
+
+### Postgres Operator (K8s)
+
+- Good: highly automated in a Kubernetes environment.
+- Bad: introduces significant overhead since the current environment is Docker Compose based.
 
 ## Decision
 
@@ -36,26 +50,6 @@ exercises replication and failover but is not host HA.
 - **Patroni**: works with Etcd to provide stable leader election and automatic failover.
 - **Spilo Image**: uses the proven PostgreSQL HA image maintained by Zalando.
 - **Etcd**: manages cluster state as a strongly consistent store.
-
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-### Vanilla PostgreSQL with Replication
-
-- Good: simple configuration and low resource consumption.
-- Bad: needs manual failover and replication-lag monitoring is difficult.
-
-### Postgres Operator (K8s)
-
-- Good: highly automated in a Kubernetes environment.
-- Bad: introduces significant overhead since the current environment is Docker Compose based.
 
 ## Consequences
 

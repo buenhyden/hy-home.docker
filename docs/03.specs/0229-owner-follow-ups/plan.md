@@ -1,10 +1,10 @@
 ---
 title: "Owner Follow-ups Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0229-PLAN-0001"
 parent_ids:
@@ -17,6 +17,14 @@ created: "2026-10-10"
 ## Overview
 
 Diagnose, fix or document each item, record the results and validate.
+
+## Scope
+
+W1 diagnoses Storybook MCP refresh errors and documents reauthentication;
+W2 adjusts the Grype seed cap and scans the two pinned AI images offline;
+W3 documents stdin-only snapshot-token issuance in RUN-0021. W4 validates
+these owner follow-ups without changing image pins, global Codex settings
+or holding the OpenBao admin token.
 
 ## Work Breakdown
 
@@ -33,7 +41,9 @@ Keycloak event counts by type, client, reason and source; the seed tests; the
 offline scans; a shell syntax check of the RUN-0021 block; the document
 checks, the gate and the remote candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - The scan findings stay open until the owner decides on newer images.
 - The token commands run only with the owner's admin token; a failed proof

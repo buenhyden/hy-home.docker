@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0093"
 parent_ids:
@@ -18,10 +18,12 @@ created: "2026-09-23"
 
 Pact Broker의 프로비저닝 실패, 비정상 상태, 401 오류, 데이터베이스 손실, 크리덴셜 교체를 다루는 복구 런북이다.
 
-## Trigger and Preconditions
+## Trigger
 
 프로비저닝 실패, 비정상 broker, 인가되어야 할 클라이언트에 대한 401 오류,
 데이터베이스 손실, 크리덴셜 교체 시 사용한다.
+
+## Prerequisites
 
 ### 작업 선택과 복구 전제
 
@@ -79,7 +81,7 @@ broker 선언 버전의 release/schema 근거 및 이전 이미지·DB 복구점
 종료 코드, heartbeat 상태, pacticipant와 pact 개수, 소스 커밋을 기록한다.
 크리덴셜이나 pact 본문은 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

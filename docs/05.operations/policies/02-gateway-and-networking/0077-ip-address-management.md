@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0077"
 parent_ids:
@@ -46,7 +46,19 @@ created: "2026-04-01"
 현재 예외는 없다. `k3d-hyhome` 공유 membership 예외는 2026-09-23 종료되었다.
 별도 LAN endpoint 연동은 [POL-0096](../10-platform-and-backup/0096-k8s-integration.md)의 기존 경계를 따른다.
 
-### Verification
+### Review Cadence
+
+책임 소유자는 @buenhyden이며, 주소·membership·노출 예외를 승인한다.
+
+- **Monthly**: AD-0026 **Networks** 표와 현재 Compose 파일 사이의 실태를 점검한다.
+- **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
+
+### Traceability
+
+- 상위 문서: [Compose Network Segmentation Architecture Description](../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+- 같은 주제: [Guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md) (`RUN-0077`)
+
+## Verification
 
 - `bash scripts/validation/validate-docker-compose.sh`를 통한 root compose 구조 검증.
 - 변경한 tier profile은 `HYHOME_COMPOSE_PROFILES`로 지정해 동일 검증을 반복한다.
@@ -59,18 +71,6 @@ created: "2026-04-01"
 전부 검증하지 않는다. `rg`는 후보 목록일 뿐이다. subnet·dynamic pool·network별
 중복은 별도로 검토한다. 이 구현 한계는 중복 금지 통제를 면제하지 않는다.
 검사 입력·임시 파일 효과는 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)을 따른다.
-
-### Review Cadence
-
-책임 소유자는 @buenhyden이며, 주소·membership·노출 예외를 승인한다.
-
-- **Monthly**: AD-0026 **Networks** 표와 현재 Compose 파일 사이의 실태를 점검한다.
-- **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
-
-### Traceability
-
-- 상위 문서: [Compose Network Segmentation Architecture Description](../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
-- 같은 주제: [Guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md) (`RUN-0077`)
 
 ## Related Documents
 

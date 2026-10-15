@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Architecture"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0028"
 parent_ids:
@@ -15,12 +15,6 @@ created: "2026-07-19"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This architecture aligns Compose readiness, PostgreSQL logical recovery,
@@ -28,6 +22,8 @@ sample-service supply chain, and local delivery under one isolation
 principle. The maintainer, operator, security reviewer, and release reviewer
 must each independently verify the subject identity, failure boundary,
 cleanup, and evidence of every lane.
+
+## Scope
 
 ### System Boundaries
 
@@ -42,9 +38,7 @@ cleanup, and evidence of every lane.
 - Raw artifacts and logs are transient, and only a redacted summary remains
   in the current Task.
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -58,6 +52,8 @@ cleanup, and evidence of every lane.
 Focused tests supply deterministic positive and negative fixtures for these
 components. Operations documents provide operator-facing invocation and
 recovery guidance without owning the architectural decision.
+
+## Runtime and Deployment
 
 ### Data Flow
 
@@ -76,7 +72,9 @@ signature working files, and database state are task-scoped transient
 resources. Before execution, confirm the exact target and approval boundary,
 and never run automatic cleanup or promotion against an unknown identity.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Isolation**: protect other workloads with a unique project identity and
   label.

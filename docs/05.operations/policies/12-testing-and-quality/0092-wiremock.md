@@ -1,10 +1,10 @@
 ---
 title: "WireMock Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0092"
 parent_ids:
@@ -58,12 +58,6 @@ rollback 원본을 확보하고 적용한다.
 현재 승인된 예외는 없다. 새로운 consumer의 네트워크 연결은 범위와 admin API
 권한을 검토한 변경이어야 한다. host binding이나 기본 네트워크 참여를 자동으로 넓히지 않는다.
 
-### Verification
-
-각 모드의 Compose 렌더링, 운영 catalog 검사, 추적되는 stub, non-root user,
-read-only root filesystem을 확인한다. 기능 모드는 bounded journal/reset, load 모드는
-host port 없음과 `--no-request-journal`을 격리된 실행에서 별도로 확인한다.
-
 ### Review Cadence
 
 WireMock major 업그레이드, 신규 consumer, loopback을 넘는 노출이 제안될 때마다
@@ -74,6 +68,12 @@ WireMock major 업그레이드, 신규 consumer, loopback을 넘는 노출이 �
 - [Guide](../../guides/12-testing-and-quality/0092-wiremock.md) (`GDE-0092`)
 - [Runbook](../../runbooks/12-testing-and-quality/0092-wiremock.md) (`RUN-0092`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Verification
+
+각 모드의 Compose 렌더링, 운영 catalog 검사, 추적되는 stub, non-root user,
+read-only root filesystem을 확인한다. 기능 모드는 bounded journal/reset, load 모드는
+host port 없음과 `--no-request-journal`을 격리된 실행에서 별도로 확인한다.
 
 ## Related Documents
 

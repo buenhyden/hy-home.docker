@@ -1,10 +1,10 @@
 ---
 title: "Datastore Observation Split Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0224-PLAN-0001"
 parent_ids:
@@ -20,6 +20,14 @@ Measure what the exporters need, narrow the monitor roles and give MNG its
 own, move the exporters onto them, label the scrapes, split the alerts and
 dashboards by scope, rehearse in isolation, roll out on HOME, document, and
 validate. Commits follow that order.
+
+## Scope
+
+W1–W4 provision least-privilege datastore monitors, wire the four
+exporters, render DEV expected state and scope alerts and dashboards.
+W5–W7 rehearse collector/authentication failures and rotation, review HOME
+consumers and update operations guidance; no new metric store, metric rename
+or database TLS deployment is included.
 
 ## Work Breakdown
 
@@ -40,7 +48,9 @@ scenarios, the isolated rehearsal against the pinned images, HOME probes and
 Prometheus queries without secret output, a client inventory of MNG Valkey,
 the changed gate, the staged style check and the remote candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - Recreating MNG Valkey drops every shared connection for a few seconds; AOF
   keeps the data and consumers reconnect.

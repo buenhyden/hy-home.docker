@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Recovery Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0073"
 parent_ids:
@@ -18,11 +18,13 @@ created: "2026-05-17"
 
 이 런북은 OPTIONAL Open Notebook(`open_notebook`, `surrealdb`, profile `notebook`)의 장애 진단, 백업·격리 복원, 업그레이드 절차를 다룬다. 데이터베이스와 앱 데이터, 암호화 키가 하나의 복구 세트다.
 
-## Trigger and Preconditions
+## Trigger
+
+### Trigger and Preconditions
 
 앱 또는 DB readiness 실패, 읽을 수 없는 provider key, 사라진 노트북 콘텐츠, API 노출 우려, 백업·복원, 승인된 업그레이드가 있을 때 사용한다.
 
-## Procedure
+## Prerequisites
 
 ### 작업 선택과 복구 전제
 
@@ -48,6 +50,8 @@ created: "2026-05-17"
    않는다.
 4. database를 먼저 재시작하고 readiness를 확인한 뒤 app만 재시작한다. content와
    credential 점검이 통과할 때까지 provider/model egress를 비활성화 상태로 유지한다.
+
+## Procedure
 
 ### Backup and isolated restore
 
@@ -92,7 +96,7 @@ credential을 보호된 방식으로 보관한다. provider/network egress를 �
 종료 코드·source 커밋·export/app-data checksum·개수·인증/복호화 판정·API 경계와
 최종 상태를 기록한다. content나 secret 값은 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

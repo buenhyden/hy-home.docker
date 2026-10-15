@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0065"
 parent_ids:
@@ -19,10 +19,12 @@ created: "2026-05-17"
 Registry(`registry` service)의 장애 진단, 일관된 백업·복원, 업그레이드, 별도로 승인된
 garbage collection 절차다.
 
-## Trigger and Preconditions
+## Trigger
 
 `/v2/` failure, push/pull 또는 digest mismatch, storage exhaustion, consistent
 backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용한다.
+
+## Prerequisites
 
 ### 작업 선택과 복구 전제
 
@@ -102,7 +104,7 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 exit, endpoint boundary, source commit, snapshot ID/checksum, count, 선택된
 digest, 최종 service state를 기록한다. credential이나 layer는 캡처하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

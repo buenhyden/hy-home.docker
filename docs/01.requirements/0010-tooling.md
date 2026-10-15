@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Software Verification Requirements"
-version: "2.0.2"
+version: "2.0.3"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0010"
 created: "2026-03-26"
@@ -12,8 +12,6 @@ created: "2026-03-26"
 # Platform Operations and Software Verification Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -23,34 +21,7 @@ This document retains the tooling requirements across `09-platform-ops` platform
 
 When infrastructure changes are managed manually, tracking becomes difficult, and code quality and performance verification are fragmented, so a centralized tool is needed to guarantee the system's overall stability.
 
-## Requirements
-
-### Requirements
-
-### Functional Requirements
-
-- **REQ-0010-FR-0001**: Support an OpenTofu CLI helper for IaC execution and state management, plus centralized orchestration (Terrakube).
-- **REQ-0010-FR-0002**: Support multi-language static code analysis and quality gate enforcement (SonarQube).
-- **REQ-0010-FR-0003**: Support Python-based scenario definition and distributed load generation (Locust).
-- **REQ-0010-FR-0004**: Provide a single-node private image registry for internal service deployment.
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-### Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0010-FR-0001**: 100% IaC adoption rate for all infrastructure changes.
-- **REQ-0010-FR-0002**: Keep the technical debt ratio of key service code under 5%.
-- **REQ-0010-FR-0003**: Reduce new environment build time by 70% or more.
-
 ## Scope
-
-### Scope
 
 ### Stakeholders and User Needs
 
@@ -90,6 +61,29 @@ N/A
 
 - **Risks**: Risk of blocked infrastructure changes during a Terrakube API failure.
 - **Dependencies**: Selected services such as Terrakube/SonarQube use the declared `04-data` backend and `02-auth` boundary. The registry and OpenTofu helper are currently local/bind-mount centric. Preserving a single host's volume alone does not guarantee backup or host failure recovery.
+
+## Requirements
+
+### Functional Requirements
+
+- **REQ-0010-FR-0001**: Support an OpenTofu CLI helper for IaC execution and state management, plus centralized orchestration (Terrakube).
+- **REQ-0010-FR-0002**: Support multi-language static code analysis and quality gate enforcement (SonarQube).
+- **REQ-0010-FR-0003**: Support Python-based scenario definition and distributed load generation (Locust).
+- **REQ-0010-FR-0004**: Provide a single-node private image registry for internal service deployment.
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0010-FR-0001**: 100% IaC adoption rate for all infrastructure changes.
+- **REQ-0010-FR-0002**: Keep the technical debt ratio of key service code under 5%.
+- **REQ-0010-FR-0003**: Reduce new environment build time by 70% or more.
 
 ## Related Documents
 

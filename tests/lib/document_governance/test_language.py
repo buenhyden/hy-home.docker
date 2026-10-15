@@ -47,6 +47,10 @@ class LanguageJudgeTests(unittest.TestCase):
     def test_korean_prose_fails_as_english(self) -> None:
         self.assertIsNotNone(language_mismatch(KOREAN, "en"))
 
+    def test_common_governance_accepts_new_korean_and_legacy_english(self) -> None:
+        for text in (KOREAN, ENGLISH):
+            self.assertIsNone(language_mismatch(text, "ko-or-en"))
+
     def test_too_little_prose_is_not_judged(self) -> None:
         self.assertIsNone(hangul_ratio("# Title\n\nSee `a/b.md`.\n"))
         self.assertIsNone(language_mismatch("# Title\n\nShort.\n", "ko"))
@@ -85,7 +89,7 @@ class TemplateLanguageProjectionTests(unittest.TestCase):
             }
             declared = languages.pop() if len(languages) == 1 else None
             source = role.get("source")
-            if declared is None or not str(source).endswith(".md"):
+            if declared not in self.SAMPLES or not str(source).endswith(".md"):
                 continue
             text = (root / str(source)).read_text(encoding="utf-8")
             other = "en" if declared == "ko" else "ko"
@@ -107,6 +111,7 @@ class TemplateLanguageProjectionTests(unittest.TestCase):
         words = {
             "ko": "Write body prose in Korean",
             "en": "Write body prose in English",
+            "ko-or-en": "Write new common guidance prose in Korean",
         }
         for role_id, role in registry.template_roles.items():
             languages = {

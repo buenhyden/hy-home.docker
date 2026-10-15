@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Runbook"
-version: "1.1.5"
+version: "1.1.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0037"
 parent_ids:
@@ -18,9 +18,15 @@ created: "2026-05-17"
 
 이 런북은 Kafka family hardening baseline을 컨테이너를 시작하지 않고 정적으로 점검하는 절차를 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
-현재 Kafka hardening baseline에 대한 승인된 정적 진단에 사용한다. runtime
+현재 Kafka hardening baseline에 대한 승인된 정적 진단에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+runtime
 변경, restore, 정리, credential rotation은 별도 task가 필요하다.
 
 ### Execution and stop boundary
@@ -58,7 +64,7 @@ hardening script가 통과하고 native OIDC와 standard gateway routing이
 일치하고 recovery ownership이 명시되었다는 뜻이다. runtime, 성능, OIDC 로그인,
 failover, restore는 입증하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

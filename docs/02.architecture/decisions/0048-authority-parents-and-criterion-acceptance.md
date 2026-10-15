@@ -1,10 +1,10 @@
 ---
 title: "Authority Parents and Criterion Acceptance"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0048"
 parent_ids:
@@ -25,11 +25,21 @@ column held 275 `accepted` and 275 `pending` rows, and a `FAIL` row with
 `pending` acceptance blocked nothing. The prompt v9 request (findings F03 and
 F06) asks for one owner for execution state, acceptance and readiness.
 
-### Decision Drivers
+## Decision Drivers
 
 One writer per fact; no status copied between documents. Acceptance decided
 once per criterion. Readiness computed, never stored. Frozen records keep the
 meaning of the generation that wrote them.
+
+## Options
+
+### Options Considered
+
+- Keep projected parent statuses and only relax the waiting rule: rejected;
+  the duplicate execution state stays.
+- Keep per-row acceptance and add an unresolved-`FAIL` check: rejected; a
+  criterion would still carry several independent decisions.
+- Defer the multi-item mode: rejected by the owner on 2026-10-13.
 
 ## Decision
 
@@ -66,16 +76,6 @@ profile lifecycles decide member terminality while disposition-entry statuses
 are registered separately; and that templates do not seed approvals.
 ADR-0037 decisions 4 onward, on assessments, history-only availability and
 capture identity, are unchanged.
-
-## Alternatives
-
-### Options Considered
-
-- Keep projected parent statuses and only relax the waiting rule: rejected;
-  the duplicate execution state stays.
-- Keep per-row acceptance and add an unresolved-`FAIL` check: rejected; a
-  criterion would still carry several independent decisions.
-- Defer the multi-item mode: rejected by the owner on 2026-10-13.
 
 ## Consequences
 

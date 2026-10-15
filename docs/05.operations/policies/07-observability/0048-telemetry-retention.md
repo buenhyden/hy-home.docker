@@ -1,10 +1,10 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0048"
 parent_ids:
@@ -77,17 +77,6 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Verification
-
-- Loki retention config:
-  `rg -n 'retention_enabled: true|retention_period: 168h' infra/06-observability/loki/config/loki-config.yaml`
-- Tempo 필수값 점검(현재 일치하지 않으며 구현 결함으로 기록하고 PASS로 처리하지 않는다):
-  `rg -n 'block_retention: 24h|compacted_block_retention: 1h' infra/06-observability/tempo/config/tempo.yaml`
-- Pyroscope의 고정 retention 미선언 경계(출력이 없어야 정상):
-  `rg -n 'retention' infra/06-observability/pyroscope/config/pyroscope.yaml`
-- Documentation contracts:
-  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-
 ### Review Cadence
 
 - 서비스 storage, retention, resource cap, SeaweedFS bucket, dashboard provisioning
@@ -98,6 +87,17 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: 없음. 번호 `0048`을 공유하는 Guide나 Runbook은 없다.
+
+## Verification
+
+- Loki retention config:
+  `rg -n 'retention_enabled: true|retention_period: 168h' infra/06-observability/loki/config/loki-config.yaml`
+- Tempo 필수값 점검(현재 일치하지 않으며 구현 결함으로 기록하고 PASS로 처리하지 않는다):
+  `rg -n 'block_retention: 24h|compacted_block_retention: 1h' infra/06-observability/tempo/config/tempo.yaml`
+- Pyroscope의 고정 retention 미선언 경계(출력이 없어야 정상):
+  `rg -n 'retention' infra/06-observability/pyroscope/config/pyroscope.yaml`
+- Documentation contracts:
+  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Related Documents
 

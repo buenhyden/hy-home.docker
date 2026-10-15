@@ -1,10 +1,10 @@
 ---
 title: "Prompt v9 Residual Corrections Plan"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0232-PLAN-0001"
 parent_ids:
@@ -17,6 +17,14 @@ created: "2026-10-13"
 ## Overview
 
 Four independent source edits, a governance review, then the gates.
+
+## Scope
+
+W1–W7 correct read-only PostToolUse validation and model context, retire
+the stale n8n rehearsal, align frozen-payload and tombstone identities and
+keep the three-step entry shim. W8–W10 enforce read-only pre-commit behavior,
+remove duplicate guide-bound LAB checks and record the six findings; Stop,
+shared memory and the Airflow rehearsal are excluded.
 
 ## Work Breakdown
 
@@ -39,7 +47,9 @@ New and changed tests with a RED state on `main`, the update-gate and SEC01
 routing tests for the removed rehearsal, an independent `rules-engineer`
 review of the policy text, the changed gate and the remote candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - Trailing whitespace an agent leaves now fails the hook instead of being
   fixed; the agent fixes it or runs `--write`.

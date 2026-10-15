@@ -1,10 +1,10 @@
 ---
 title: "Task Evidence Table Integrity Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0210"
 parent_ids:
@@ -68,6 +68,13 @@ runtime actions, secret access, and archive disposition are outside scope.
    retain their existing behavior.
 3. Authoring guidance, Stage 03 routing, validation evidence, promotion, and
    independent review trace to one current Task before package closure.
+
+## Failure Conditions
+
+A visible generation 5 Plan or Evidence row outside its one contiguous
+canonical table is a validation failure, including headerless and orphan
+fragments. The correction must not join or rewrite those rows, alter legacy
+reader behavior, or change the preserved auxiliary-table bytes.
 
 ## Related Documents
 

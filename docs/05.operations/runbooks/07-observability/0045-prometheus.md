@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Readiness and Recovery Runbook"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0045"
 parent_ids:
@@ -20,9 +20,13 @@ created: "2026-05-17"
 
 운영자가 `prometheus` 상태를 안전하게 확인하고, config/rule 변경을 검증한 뒤 reload나 restart를 수행하게 한다. 데이터 손실 가능성이 있는 TSDB 조치는 별도 승인으로 격리한다. 정책과 가이드의 설명은 반복하지 않고 실행 가능한 확인 절차와 증거 기준만 둔다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 중 하나일 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - Prometheus UI나 `/-/healthy` endpoint가 실패한다.
 - Grafana dashboard에서 metrics가 비어 있거나 오래된 값으로 보인다.
@@ -143,7 +147,7 @@ MNG·DEV 고유 경보는 각 DB runbook이 다룬다.
 - **Metrics**: `prometheus_rule_evaluation_failures_total`, `prometheus_tsdb_compactions_failed_total`, target `up`
 - **Evidence to Capture**: 실패한 job 이름과 target, 명령 출력 요약, reload·재시작 시각, 최종 복구 또는 보고 상태
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

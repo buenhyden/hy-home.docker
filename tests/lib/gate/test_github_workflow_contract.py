@@ -14,6 +14,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+from scripts.lib.gate import ci_gate_adapters
 from scripts.lib.gate import ci_gate_contract as gate_contract
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
@@ -120,7 +121,22 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_datastore_rehearsal_boundary",
                 "tests.lib.ops.test_openbao_issuance",
                 "tests.lib.ops.test_openbao_issuance_trust",
+                "tests.lib.ops.test_openbao_issuance_custody",
                 "tests.validation.test_openbao_candidate",
+                "tests.validation.test_openbao_protected_maintenance",
+                "tests.validation.test_openbao_protected_maintenance_review",
+                "tests.validation.test_openbao_protected_token_operations",
+                "tests.validation.test_openbao_protected_token_operations_review",
+                "tests.validation.test_openbao_protected_raft_snapshot",
+                "tests.validation.test_openbao_protected_raft_snapshot_review",
+                "tests.validation.test_openbao_protected_semantic_restore",
+                "tests.validation.test_openbao_protected_semantic_execution",
+                "tests.validation.test_openbao_protected_renderer_roles",
+                "tests.validation.test_openbao_protected_restore_inputs",
+                "tests.validation.test_openbao_window_overrides",
+                "tests.validation.test_restic_offsite_artifact",
+                "tests.validation.test_openbao_audit_rotation",
+                "tests.validation.test_openbao_owned_image_contract",
                 "tests.validation.test_sec01_version_contract",
                 "tests.validation.test_sec01_next_stable_candidates",
                 "tests.validation.test_sec01_next_tool_candidates",
@@ -133,7 +149,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ],
             arguments[1:boundary],
         )
-        self.assertEqual(15, len(arguments[boundary + 1 : -1]))
+        self.assertEqual(18, len(arguments[boundary + 1 : -1]))
         self.assertTrue(
             all(
                 scope.rsplit(".", 1)[0] in arguments[1:boundary]
@@ -149,6 +165,39 @@ class GithubWorkflowContractTests(unittest.TestCase):
             arguments[boundary + 1 : -1],
         )
         self.assertEqual([], gate["allowed_env_keys"])
+
+    def test_openbao_opt_in_skips_preserve_required_static_checks(self) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        gate = next(
+            node
+            for node in document["gate_nodes"]
+            if node["gate_id"] == "leaf.compose-baseline-regressions"
+        )
+        arguments = gate["argv"]
+        boundary = arguments.index("--optional-runtime-skips")
+        scopes = tuple(arguments[boundary + 1 : -1])
+        optional = {
+            "tests.validation.test_openbao_agent_contract.AgentMetricsNativeTests",
+            "tests.validation.test_openbao_protected_renderer_roles.NativeRehearsalTests",
+            "tests.validation.test_openbao_protected_restore_inputs.NativeRehearsalTests",
+        }
+        self.assertTrue(optional.issubset(scopes))
+        required = "tests.validation.test_openbao_agent_contract.AgentMetricsTests"
+        self.assertNotIn(required, scopes)
+        receipts = b"".join(
+            f"test_case ({scope}.test_case) ... ".encode()
+            + (b"skipped 'opt-in'\n" if scope in optional else b"ok\n")
+            for scope in scopes
+        )
+        summary = b"OK (skipped=3)\n"
+        ci_gate_adapters._validate_unittest_skips(receipts + summary, scopes)
+        with self.assertRaises(ci_gate_adapters.AdapterError):
+            ci_gate_adapters._validate_unittest_skips(
+                receipts
+                + f"test_static ({required}.test_static) ... skipped 'missing'\n".encode()
+                + b"OK (skipped=4)\n",
+                scopes,
+            )
 
     def test_airflow_workload_paths_select_required_suites_and_explicit_roots(
         self,
@@ -218,7 +267,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         boundary = compose_arguments.index("--optional-runtime-skips")
         optional = compose_arguments[boundary + 1 : -1]
         self.assertNotIn(module, optional)
-        self.assertEqual(15, len(optional))
+        self.assertEqual(18, len(optional))
 
     def setUp(self) -> None:
         self.module = load_contract_module()
@@ -441,8 +490,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         pre_commit = self.module._read_bounded_yaml(
             ROOT, pathlib.PurePosixPath(".pre-commit-config.yaml")
         )[1]
-        # A local hook may only be the push-time main-branch guard; any other
-        # local entry would copy a gate command into pre-commit.
+        # Git supplies push refs to the native hook, outside pre-commit's dispatcher.
         local_entries = tuple(
             (hook["entry"], tuple(hook.get("stages", ())))
             for repository in pre_commit["repos"]
@@ -450,7 +498,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
             for hook in repository["hooks"]
         )
         self.assertEqual(
-            {("scripts/hooks/pre-push-guard.sh", ("pre-push",))}, set(local_entries)
+            (
+                ("python3 scripts/validation/check-text-style.py --check eof --", ()),
+                (
+                    "python3 scripts/validation/check-text-style.py --check trailing --",
+                    (),
+                ),
+            ),
+            local_entries,
         )
 
         active_surfaces = "\n".join(

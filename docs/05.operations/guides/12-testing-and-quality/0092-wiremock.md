@@ -1,10 +1,10 @@
 ---
 title: "WireMock Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0092"
 parent_ids:
@@ -24,11 +24,13 @@ WireMock은 기능 검사와 mock 자체 부하 측정에 공통 `api-mock` prof
 대신해 실제 서비스를 호출하지 않고도 소비자를 테스트할 수 있게 한다. 주 데이터를
 보유하지 않고 웹 UI도 없어 라우트나 OIDC 클라이언트는 없고 필요하지도 않다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 외부 HTTP 의존성을 스텁으로 대체해 테스트하는 개발자와 운영자를 위한 문서다. 스텁 추가와 보존 방식을 이해하고 정상 사용과 점검 방법을 찾는 것이 목표다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -53,15 +55,11 @@ WireMock은 기능 검사와 mock 자체 부하 측정에 공통 `api-mock` prof
   확인한다. 부하 모드의 무저널 응답 시간은 application performance가 아니라 mock
   performance로 표시한다.
 
+## Usage
+
 ### Adding a stub
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/12-testing-and-quality/0092-wiremock.md)의 `매핑 변경·기동·재적용` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
-
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES=api-mock bash scripts/validation/validate-docker-compose.sh`
-- `docker compose --env-file .env.example -f docker-compose.yml -f infra/11-quality/wiremock/wiremock.load.yml --profile api-mock config --quiet`
-- `python3 scripts/validation/check-operations-catalog.py`
 
 ### Runbook Handoff
 
@@ -83,6 +81,14 @@ WireMock은 외부 대상과의 실제 계약 검증을 대신하지 않는다. 
 - [Policy](../../policies/12-testing-and-quality/0092-wiremock.md) (`POL-0092`)
 - [Runbook](../../runbooks/12-testing-and-quality/0092-wiremock.md) (`RUN-0092`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES=api-mock bash scripts/validation/validate-docker-compose.sh`
+- `docker compose --env-file .env.example -f docker-compose.yml -f infra/11-quality/wiremock/wiremock.load.yml --profile api-mock config --quiet`
+- `python3 scripts/validation/check-operations-catalog.py`
 
 ## Related Documents
 

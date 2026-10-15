@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0058"
 parent_ids:
@@ -18,7 +18,9 @@ created: "2026-05-17"
 
 이 문서는 `08-ai` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 경계 보안, GPU concurrency 제어, stateful 템플릿 일관성, health 기반 검증 절차를 제공한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 **대상**
 
@@ -34,13 +36,15 @@ created: "2026-05-17"
 - AI 하드닝 회귀를 script/CI로 조기 차단한다.
 - 카탈로그 확장 항목(모델 승격/접근 분리/로그 정책)을 운영 기준으로 반영한다.
 
-## Usage
+## Concepts
 
 ### 사전 조건
 
 - Docker / Docker Compose 실행 환경
 - `infra/08-ai` 수정 권한
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
+
+## Usage
 
 ### 사용 절차
 

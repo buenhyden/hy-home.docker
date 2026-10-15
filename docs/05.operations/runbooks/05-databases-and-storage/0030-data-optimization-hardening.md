@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Runbook"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0030"
 parent_ids:
@@ -18,9 +18,14 @@ created: "2026-05-17"
 
 data tier(`infra/04-data`)의 정적 hardening 점검 절차와 회귀 대응을 다룬다. 서비스 실행과 데이터 복구는 포함하지 않는다.
 
-## Trigger and Preconditions
+## Trigger
 
 승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
 ### Execution and stop boundary
@@ -78,7 +83,7 @@ secret, raw payload, private resolved path는 제외한다.
 날짜가 기록된 scoped evidence package가 달리 명시하지 않는 한 runtime 상태,
 암호화, 용량, restore는 입증되지 않은 상태로 남는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

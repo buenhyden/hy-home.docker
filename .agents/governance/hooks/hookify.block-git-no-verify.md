@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: git commit --no-verify"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 action: "block"
 enabled: true
 event: "bash"
@@ -27,8 +27,6 @@ pattern: "git\\s+commit\\s+.*(--no-verify|-n\\s+-m|-n\\s+['\"]|-n$)"
 The [execution boundary](../quality-standards.md#4-execution-boundary) owns the
 direct pre-commit prohibition and the sole approved all-files route. This hook
 retains the separate block on bypassing configured commit checks.
-
-The declared Bash event and unchanged native pattern identify matching commands.
 
 ## Rules
 
@@ -61,6 +59,10 @@ git commit -m "fix(scope): Actual fix"
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared Bash event and unchanged native pattern identify matching commands.
 
 ## Related Documents
 

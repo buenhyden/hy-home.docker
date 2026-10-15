@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Usage Guide"
-version: "2.2.1"
+version: "2.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0027"
 parent_ids:
@@ -18,13 +18,15 @@ created: "2026-05-10"
 
 이 문서는 [MongoDB Compose 구현](../../../../labs/mongodb.yml)의 replica set 사용 기준을 설명한다. 일곱 서비스는 모두 정확히 `mongodb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이고 두 data-bearing member와 arbiter가 한 host에 있으므로 host-level HA가 아니다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express 접속 경계를 현재 compose와 맞춰 사용하도록 한다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -40,6 +42,8 @@ created: "2026-05-10"
 | 보안 | 내부 keyfile 인증과 secret 기반 root/UI password를 사용한다. 같은 host의 topology는 DR이 아니다. |
 | Backup·upgrade | `mongodump --oplog`와 격리된 `--oplogReplay`를 사용한다. upgrade/제거 전에 tool/server 호환성과 restore evidence가 필요하다. |
 | License·edition | MongoDB Community에는 SSPL 조건이 적용된다. 이 topology는 Enterprise backup이나 관리 기능을 제공한다고 주장하지 않는다. |
+
+## Usage
 
 ### Identity-specific behavior
 

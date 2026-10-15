@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0046"
 parent_ids:
@@ -55,16 +55,6 @@ created: "2026-05-17"
 
 예외는 운영 owner가 승인해야 하며, 승인 사유, label cardinality boundary, cleanup 절차, rollback 기준, 관련 task or incident evidence를 남겨야 한다. Emergency cleanup은 runbook 절차로 수행하고 사후에 evidence를 보강한다.
 
-### Verification
-
-- **Compose Check**: `rg -n 'service: template-infra-readonly-low|image: prom/pushgateway:|PUSHGATEWAY_PORT|/-/ready|pushgateway.middlewares' infra/06-observability/docker-compose.yml`
-- **Scrape Contract Check**: `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/prometheus.yml`. Match가 없으면 Prometheus integration을 gap으로 기록하고 runtime 설정 변경 task를 별도로 만든다.
-- **Stale Metric Check**: scrape job이 존재하는 환경에서는 `push_time_seconds` 기준으로 1시간 이상 갱신되지 않은 `job` group을 식별한다.
-- **API Audit**: Pushgateway API or UI에서 비정상적으로 큰 metric group, high-cardinality labels, cleanup되지 않은 debug groups를 확인한다.
-- **Documentation Check**: guide and runbook은 사용법과 복구 절차만 설명하고, policy control은 이 문서에 유지한다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Review Cadence
 
 분기마다, 그리고 image·profile·route middleware·healthcheck·영속성·scrape job·label 정책·cleanup 자동화가 바뀔 때 검토한다.
@@ -73,6 +63,16 @@ created: "2026-05-17"
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`), [Runbook](../../runbooks/07-observability/0046-pushgateway.md) (`RUN-0046`)
+
+## Verification
+
+- **Compose Check**: `rg -n 'service: template-infra-readonly-low|image: prom/pushgateway:|PUSHGATEWAY_PORT|/-/ready|pushgateway.middlewares' infra/06-observability/docker-compose.yml`
+- **Scrape Contract Check**: `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/prometheus.yml`. Match가 없으면 Prometheus integration을 gap으로 기록하고 runtime 설정 변경 task를 별도로 만든다.
+- **Stale Metric Check**: scrape job이 존재하는 환경에서는 `push_time_seconds` 기준으로 1시간 이상 갱신되지 않은 `job` group을 식별한다.
+- **API Audit**: Pushgateway API or UI에서 비정상적으로 큰 metric group, high-cardinality labels, cleanup되지 않은 debug groups를 확인한다.
+- **Documentation Check**: guide and runbook은 사용법과 복구 절차만 설명하고, policy control은 이 문서에 유지한다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Related Documents
 

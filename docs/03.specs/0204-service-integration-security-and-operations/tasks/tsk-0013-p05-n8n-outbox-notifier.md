@@ -1,10 +1,10 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.3.4"
+version: "0.3.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0013"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-11"
 
 # P05 n8n Independent Outbox Notifier Task
 
-## Objective
+## Overview
+
+### Objective
 
 Own criterion19/W40-W45: one independent DEV manifest-publication notifier
 using P04's outbox and the existing n8n queue worker with restricted Mailpit

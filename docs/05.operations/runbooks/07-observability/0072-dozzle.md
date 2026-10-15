@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Recovery Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0072"
 parent_ids:
@@ -18,10 +18,12 @@ created: "2026-05-17"
 
 이 런북은 Dozzle의 OIDC/CIDR 거부, 로그 스트림 누락, socket 오류, 설정 손실, 침해 의심과 승인된 업그레이드를 다루는 절차를 정의한다.
 
-## Trigger and Preconditions
+## Trigger
 
 OIDC/CIDR 거부, 로그 스트림 누락, socket 오류, 설정 손실, 침해 의심 또는 승인된
 업그레이드에 사용한다.
+
+## Prerequisites
 
 ### 작업 선택과 복구 전제
 
@@ -69,7 +71,7 @@ client/claim을 확인한 다음 Dozzle만 시작한다. 최소 권한 테스트
 종료 코드·source 커밋·OIDC/CIDR 허용/거부 판정·표시 컨테이너 수·설정 checksum과
 최종 socket/service 상태를 기록한다. log 내용은 redact한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

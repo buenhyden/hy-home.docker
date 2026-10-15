@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Collection and Egress Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0220-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-09"
 
 # Crawl4AI Collection and Egress Task
 
-## Objective
+## Overview
+
+### Objective
 
 Enforce Crawl4AI egress outside its container, define the source rights
 registry and consumer admission, ship a reference adapter with a bounded job

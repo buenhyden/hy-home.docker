@@ -1,10 +1,10 @@
 ---
 title: "DEV Backup Activation and Monitoring Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0213-TSK-0002"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-08"
 
 # DEV Backup Activation and Monitoring Task
 
-## Objective
+## Overview
+
+### Objective
 
 Close the SPEC-0213 residuals that TSK-0001 left outside source: least-privilege
 DEV exporter accounts with a metrics consumer, a guard against empty or

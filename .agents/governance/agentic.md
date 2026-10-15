@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.5.1"
+version: "1.5.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 ---
 
 # Agentic Engineering Policy
@@ -98,6 +98,21 @@ Record the decision and its evidence in the current Task. Stage 90 research may
 describe an external catalog and recommend intake, but it never records the
 decision itself.
 
+### Lifecycle
+
+The sequence is discovery, applicability, approved execution, focused
+verification, independent review, and completion evidence. Failed verification
+returns to implementation; rejected design stays in planning; missing authority
+stops at approval. Retry bounds come from [workflows.md](workflows.md); provider
+controls come from the provider registry. Neither may be replaced by
+prompt-local policy.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
 ### Evaluation Evidence
 
 A paired Skill evaluation is a separately scoped experiment, not recurring
@@ -124,19 +139,6 @@ check or the existing workflow retry bound stops the evaluation or handoff.
 Evaluation scores do not authorize publication, provider calls or remote writes.
 Execution and acceptance stay in the Task; aggregate scores are not a second
 progress ledger.
-
-### Lifecycle
-
-The sequence is discovery, applicability, approved execution, focused
-verification, independent review, and completion evidence. Failed verification
-returns to implementation; rejected design stays in planning; missing authority
-stops at approval. Retry bounds come from [workflows.md](workflows.md); provider
-controls come from the provider registry. Neither may be replaced by
-prompt-local policy.
-
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

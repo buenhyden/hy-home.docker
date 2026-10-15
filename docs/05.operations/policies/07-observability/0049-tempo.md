@@ -1,10 +1,10 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -86,7 +86,18 @@ Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](
 - 장애 대응 중 임시 조치가 필요하면 Tempo runbook에서 최소 조치와 rollback
   evidence를 기록한다.
 
-### Verification
+### Review Cadence
+
+- Tempo image, config, retention, SeaweedFS bucket, metrics generator,
+  remote_write, route, secret reference, OTLP receiver가 변경될 때 검토한다.
+- 정기 검토는 quarterly cadence로 수행한다.
+
+### Traceability
+
+- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`), [Runbook](../../runbooks/07-observability/0049-tempo.md) (`RUN-0049`)
+
+## Verification
 
 - Compose service boundary:
   `rg -n 'service: template-stateful-high|image: hy/tempo:|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml`
@@ -98,17 +109,6 @@ Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](
   원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
-### Review Cadence
-
-- Tempo image, config, retention, SeaweedFS bucket, metrics generator,
-  remote_write, route, secret reference, OTLP receiver가 변경될 때 검토한다.
-- 정기 검토는 quarterly cadence로 수행한다.
-
-### Traceability
-
-- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`), [Runbook](../../runbooks/07-observability/0049-tempo.md) (`RUN-0049`)
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Notification Recovery Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0039"
 parent_ids:
@@ -22,9 +22,13 @@ created: "2026-05-17"
 
 운영자가 `alertmanager` 상태를 확인하고 Prometheus의 `alertmanager:9093` 전달, route/receiver 설정, Docker Secret으로 렌더링한 runtime 경계, 보호된 UI route를 검증한다. Secret 노출이나 receiver 정책 변경 같은 위험 조치는 별도 승인으로 분리한다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - Prometheus에서 firing alert가 있는데 Alertmanager UI나 Slack receiver에서 보이지 않을 때.
 - Alertmanager UI `https://alertmanager.${DEFAULT_URL}` 또는 `/-/ready` endpoint가 실패할 때.
@@ -149,7 +153,7 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - Notification 장애는 affected receiver, matching route, alert labels, log excerpt, silence/inhibition state를 함께 기록한다.
 - Receiver/channel/secret/middleware 변경 필요성이 보이면 approval state를 기록한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

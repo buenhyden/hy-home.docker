@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0073"
 parent_ids:
@@ -25,11 +25,13 @@ Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_noteb
 [Open Notebook Compose](../../../../infra/08-ai/open-notebook/docker-compose.yml)에
 함께 들어 있고 같은 selector를 공유하며 영속 데이터베이스를 제공한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 Laboratory Operator와 `@buenhyden`이 OPTIONAL 노트북 워크스페이스를 `notebook` selector로 켜고 쓰는 경우를 다룬다. 목표는 승인된 비밀번호와 허용된 모델/provider만으로 노트북을 사용하고, 데이터·키·이미지 한계를 알고 운영하는 것이다.
 
-## Usage
+## Concepts
 
 ### 현재 구현과 데이터
 
@@ -50,6 +52,8 @@ Laboratory Operator와 `@buenhyden`이 OPTIONAL 노트북 워크스페이스를 
 - 디렉터리 health는 마운트 가용성만 증명할 뿐 DB, provider, 모델, 노트북 기능은
   증명하지 않는다.
 
+## Usage
+
 ### 일반적인 사용, 백업, 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/09-ai-and-search/0073-open-notebook.md)의 `승인된 사용과 일관된 복구 세트` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
@@ -64,12 +68,6 @@ secret 파일 선언과 shell의 환경변수 전달은 실제 이미지의 모�
 선택한 이미지 식별자·호환성·자격 증명 복호화 결과를 별도 승인된 검증으로 확인한다.
 자원·마운트 설정은 Compose가 소유하며 프로필 분리가 물리적 격리를 뜻하지 않는다.
 
-### Common Checks
-
-- `docker compose --profile notebook config --quiet`
-- `docker compose --profile notebook config --services`
-- `bash scripts/hardening/check-all-hardening.sh 08-ai`
-
 ### Runbook Handoff
 
 데이터베이스/키/provider 복구와 업그레이드에는
@@ -80,6 +78,14 @@ secret 파일 선언과 shell의 환경변수 전달은 실제 이미지의 모�
 - [Policy](../../policies/09-ai-and-search/0073-open-notebook.md) (`POL-0073`)
 - [Runbook](../../runbooks/09-ai-and-search/0073-open-notebook.md) (`RUN-0073`)
 - [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile notebook config --quiet`
+- `docker compose --profile notebook config --services`
+- `bash scripts/hardening/check-all-hardening.sh 08-ai`
 
 ## Related Documents
 

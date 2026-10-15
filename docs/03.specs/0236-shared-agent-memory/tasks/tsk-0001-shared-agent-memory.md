@@ -1,10 +1,10 @@
 ---
 title: "Shared Agent Memory Task"
-version: "0.5.1"
+version: "0.5.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0236-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-13"
 
 # Shared Agent Memory Task
 
-## Objective
+## Overview
+
+### Objective
 
 Give Claude and Codex one shared memory store in place of separate native
 memories, as SPEC-0236 states.
@@ -399,8 +401,13 @@ recorded at the time.
 ## Review and Completion
 
 ADR-0049 changed to `accepted` after #450 merged, as the owner decided on
-2026-10-13. W8 and W9 passed. Open: the local changed gate and the deferred
-Restic coverage; no criterion is accepted until the owner accepts it.
+2026-10-13. W8 and W9 passed. The local changed gate remains unrun, and
+Codex project `[memories]` effectiveness remains unverified. Restic coverage
+is no longer deferred: SPEC-0237 records the source change and a real snapshot
+path in W4; that memory step succeeded while the whole service run failed on
+the separate OpenBao snapshot-token gap. Its source/snapshot observation does
+not establish a restore or accept this package's pending criteria. No criterion
+is accepted until the owner accepts it.
 
 W2 to W7 merged in #450 with the review and re-review fixes, after the final
 rules review approved.

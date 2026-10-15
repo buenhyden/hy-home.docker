@@ -2,7 +2,7 @@
 title: "{{TITLE}}"
 version: "0.1.0"
 type: "operation/incident"
-status: "detected"
+status: "open"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "operations"
@@ -58,6 +58,10 @@ occurred_at: "{{OCCURRED_AT}}"
 <!-- Author prompt: Record observed mitigation and tracked next actions; move causal analysis and durable follow-up to the postmortem after stabilization. -->
 
 {{CORRECTIVE_ACTIONS}}
+
+## Follow-up
+
+{{TRACKED_FOLLOW_UP_OWNERS_AND_POSTMORTEM_LINK}}
 
 ## Related Documents
 

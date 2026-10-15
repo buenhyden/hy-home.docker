@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -15,12 +15,6 @@ created: "2026-04-01"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 The Compose services once shared one bridge network, `infra_net`, so every
@@ -28,6 +22,8 @@ container could reach every other one. SPEC-0180 S05 replaced that mesh with
 networks that each carry one kind of flow. Maintainers and operators need to
 know which network owns a flow, who declares membership, and what still holds a
 fixed address.
+
+## Scope
 
 ### System Boundaries
 
@@ -44,11 +40,7 @@ fixed address.
   architecture's ownership. No service joins `k3d-hyhome`; the owner removed
   the k3d integration on 2026-09-23. This removes shared-bridge membership, not the separately approved Kubernetes LAN endpoints governed by POL-0096.
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Networks (SPEC-0180 S05)
 
@@ -78,6 +70,8 @@ project default network. WireMock also uses it until a named consumer exists;
 that network is then its trust boundary, and the consumer gets a scoped network. `restic` and `backup-sqlite-export` keep
 `network_mode: none`; only `restic-offsite` has egress. Registry joins `obs_net` for its metrics scrape; its loopback host publication remains separately declared. Stalwart and Mailpit keep `edge_net` for their routed UIs and share `mail_net` for SMTP; listener bindings also permit peer access from both networks.
 
+## Runtime and Deployment
+
 ### Data Flow
 
 Services resolve names through Docker DNS and use static addresses only where
@@ -103,7 +97,9 @@ verification uses scripts/validation/validate-docker-compose.sh, the
 environment and compares `docker network inspect` output with the tracked
 Compose configuration.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - Reliability: duplicate or out-of-subnet static addresses fail validation.
 - Security: services are exposed through the gateway unless their architecture

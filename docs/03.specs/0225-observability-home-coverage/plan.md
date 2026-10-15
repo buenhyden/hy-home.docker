@@ -1,10 +1,10 @@
 ---
 title: "Observability HOME Coverage Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0225-PLAN-0001"
 parent_ids:
@@ -19,6 +19,14 @@ created: "2026-10-09"
 Audit every dashboard query on HOME, classify each empty panel, move the
 LAB-only items out, add the missing collection, correct or remove the
 dashboard queries, roll out on HOME, document and validate.
+
+## Scope
+
+W1 removes LAB-only dashboards and rules from HOME provisioning; W2
+adjusts SeaweedFS/host metrics and the named retention, bucket, collector
+and TLS checks. W3–W5 correct dashboard queries, re-audit HOME after rollout
+and update Stage 05 documents, leaving hy-home.k8s telemetry and legitimate
+idle panels outside the correction.
 
 ## Work Breakdown
 
@@ -37,7 +45,9 @@ before and after, unit and contract tests, promtool, Compose rendering, HOME
 target and listener checks, the changed gate, the staged style check and the
 remote candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - Recreating SeaweedFS master, volume and filer pauses object storage for
   Loki, Tempo and MLflow for seconds; clients retry.

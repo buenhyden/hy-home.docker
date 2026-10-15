@@ -1,10 +1,10 @@
 ---
 title: "Shared Agent Memory Store"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0049"
 parent_ids:
@@ -24,11 +24,21 @@ are created for formal symmetry. The prompt v9 request (findings F24, F27 and
 F36) asks for one memory both providers share, which is a working need rather
 than symmetry.
 
-### Decision Drivers
+## Decision Drivers
 
 One store for every worktree and provider. No silent lost update. No claim of
 a limit or a concurrency guarantee the host cannot keep. Memory never becomes
 a second owner of Task state or governance rules.
+
+## Options
+
+### Options Considered
+
+- Keep separate native memories: rejected; knowledge stays split by provider.
+- A store per worktree: rejected; a removed worktree loses its memory.
+- WAL with a single-writer rule: rejected; nothing enforces one writer, and
+  two providers writing is the purpose.
+- A remote database: rejected; it adds a service for a local, small store.
 
 ## Decision
 
@@ -50,16 +60,6 @@ a second owner of Task state or governance rules.
 This narrows ADR-0032's rule against creating memory or `.codex/config.toml`
 for these two items only. The rest of that rule, on plugins, servers and
 extra common directories, stays in force.
-
-## Alternatives
-
-### Options Considered
-
-- Keep separate native memories: rejected; knowledge stays split by provider.
-- A store per worktree: rejected; a removed worktree loses its memory.
-- WAL with a single-writer rule: rejected; nothing enforces one writer, and
-  two providers writing is the purpose.
-- A remote database: rejected; it adds a service for a local, small store.
 
 ## Consequences
 

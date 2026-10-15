@@ -1,10 +1,10 @@
 ---
 title: "Request Precedence and Enforcers Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0221-PLAN-0001"
 parent_ids:
@@ -20,6 +20,13 @@ Inventory the rules that block a request, fix the local gate first because it
 let failures through to CI, then change the precedence and approval text,
 then add the contract check that holds it, then record the conflict table and
 validate. Each unit is one commit.
+
+## Scope
+
+W1 records blocking-rule conflicts; W2 adds committed-branch change
+collection and the local candidate preflight; W3–W4 align canonical request
+precedence and its enforcement tests. W5 verifies the integrated change;
+user-global hooks/settings and hosted workflow behavior are excluded.
 
 ## Work Breakdown
 
@@ -38,7 +45,9 @@ script with stub validators; the agent-governance contract on the repository
 and on a mutated copy; the changed gate with the new preflight, the staged
 style check, and the remote candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - The preflight needs a fetched `origin/main`; without it it fails rather than
   passing, and the changed-path view falls back to the working tree.

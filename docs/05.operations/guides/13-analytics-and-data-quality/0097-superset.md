@@ -1,10 +1,10 @@
 ---
 title: "Superset Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0097"
 parent_ids:
@@ -25,11 +25,13 @@ Superset은 `bi`로 선택되는 OPTIONAL BI 웹 애플리케이션이다. Trino
 통해 레이크하우스 테이블을 탐색하고 차트로 만든다. Grafana는 운영
 관측 도구로 남고, Superset은 데이터 분석용이다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영자를 위한 문서다. 접근 방식과 명령의 부작용을 이해하고 정상 사용·점검 방법을 찾는 것이 목표다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -55,6 +57,8 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
   tmpfs를 둔 읽기 전용 루트; 네트워크는 `edge_net`(Traefik, Keycloak
   별칭), `mng_data_net`(`mng-pg`), `object_net`(Trino)이다.
 
+## Usage
+
 ### Identity-specific behavior
 
 `superset-init`과 `superset` app은 같은 build와 config를 쓰지만, app은 upstream gunicorn command를 실행하고 init은 db upgrade, init, Trino URI 등록을 실행한다. provision은 PostgreSQL runner로 별도 metadata DB와 role을 만든다. 공유 PostgreSQL을 복원하면 다른 consumer에도 영향이 간다. Keycloak OIDC, PKCE S256, Gamma 등록은 유지하고 Admin identity 매칭은 별도로 검증한다. Secret signing key는 encrypted metadata 연결을 복원할 때도 필요하다. Trino URI의 superset user는 인증 없는 SQL의 표시값이며 DB 권한 경계가 아니다. 직접 package pin은 transitive lock이 아니며 `/health`는 OIDC나 SQL query의 증거가 아니다. 실행 버전은 [Dockerfile](../../../../infra/12-analytics/superset/Dockerfile)이 소유한다.
@@ -76,11 +80,6 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
 | `docker compose --profile bi run --rm superset-init` | 마이그레이션과 역할 동기화 재실행(업그레이드 후) |
 | `docker compose --profile bi exec superset superset fab create-admin --username <keycloak username> …` | 해당 사용자의 첫 OIDC 로그인 전에 Admin 생성 |
 
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES=bi bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
-
 ### Runbook Handoff
 
 최초 설정, 로그인 실패, 업그레이드는 [runbook](../../runbooks/13-analytics-and-data-quality/0097-superset.md)을 따른다.
@@ -91,6 +90,13 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
 - [Runbook](../../runbooks/13-analytics-and-data-quality/0097-superset.md) (`RUN-0097`)
 - [Application auth integration guide](../03-identity-and-access/0079-application-auth-integration.md)
 - [Lakehouse guide](0094-lakehouse.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES=bi bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
 
 ## Related Documents
 

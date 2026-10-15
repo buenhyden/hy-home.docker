@@ -1,10 +1,10 @@
 ---
 title: "Tooling Services Selection and Configuration"
-version: "2.0.1"
+version: "2.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0009"
 parent_ids:
@@ -17,11 +17,19 @@ created: "2026-03-26"
 
 This document is the ADR that tracks the background, choices, and outcomes of this architecture decision. The 2026-09-19 correction reflects the removed Syncthing obligation and the current OpenTofu execution owner; the original decision is preserved in Git history.
 
-The `09-tooling` layer includes auxiliary tools for maximizing development and operational efficiency. Proven open-source solutions must be selected and integrated to satisfy various needs such as infrastructure automation (IaC), code quality analysis, performance testing, and internal image storage.
-
 ### Traceability
 
 The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+## Decision Drivers
+
+The `09-tooling` layer includes auxiliary tools for maximizing development and operational efficiency. Proven open-source solutions must be selected and integrated to satisfy various needs such as infrastructure automation (IaC), code quality analysis, performance testing, and internal image storage.
+
+## Options
+
+### Options Considered
+
+The retained decision selects OpenTofu/Terrakube, SonarQube, Locust and an OCI registry, and records the withdrawal of Syncthing. It contains selection rationale, but no named rejected candidates or comparative evaluation for that stack. This section records that limit of the historical decision; it does not invent an alternatives review.
 
 ## Decision
 
@@ -46,18 +54,6 @@ The following service stack is selected as the standard tooling for `09-tooling`
 ### Decision Record
 
 Accepted (2026-03-26). Amended on 2026-09-19 to withdraw Syncthing and align the CLI helper with OpenTofu; no runtime deployment or recovery success is asserted.
-
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
 
 ## Consequences
 

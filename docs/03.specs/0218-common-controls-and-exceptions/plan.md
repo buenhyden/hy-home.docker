@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions Plan"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0218-PLAN-0001"
 parent_ids:
@@ -24,6 +24,14 @@ W1–W8 below preserve the earlier source/LAB/initial-budget execution contract
 and TSK-0001 evidence. P07 continues through TSK-0002, which owns criterion3's
 open HOME residual and criteria6–10. Public preparation may begin now;
 measurements and mutation wait for each service's exact readiness and lease.
+
+## Scope
+
+W1–W8 establish schema-v2 exceptions and effective-control validation with
+targeted leaf, Conftest and operations changes. P07 W9–W16 reuse the root
+inventory for consumer assessment, read-only observations, measured budgets
+and least privilege, then reviewed leaf changes and bounded recovery/rollout;
+no new LAB execution or blanket resource adjustment is included.
 
 ## Work Breakdown
 
@@ -90,7 +98,9 @@ preparation, not delivery acceptance. Do not merge before the P04/coordinator
 repair and relevant gates and review. Source admission is not full main-gate
 acceptance.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 The template changes reach HOME services only when they are recreated. The
 group removal could break a service that reads or writes through group 1000;

@@ -1,10 +1,10 @@
 ---
 title: "Management Database Health and Init Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0028"
 parent_ids:
@@ -18,9 +18,14 @@ created: "2026-05-17"
 
 management database의 정적 진단, 계획된 백업·격리 복구, monitor 계정과 경보 대응 절차를 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
 승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
 ### Execution and stop boundary
@@ -109,7 +114,7 @@ source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

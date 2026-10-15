@@ -1,10 +1,10 @@
 ---
 title: "Shared Agent Memory"
-version: "0.3.0"
+version: "0.4.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0236"
 parent_ids:
@@ -124,8 +124,9 @@ The owner decided on 2026-10-13:
    revision, eligibility correction, usage report and backup.
    - Both providers call the same command.
    - A write succeeds only after commit.
-   - A stale expected revision returns a conflict and changes nothing. There
-     is no silent last-write-wins.
+   - A stale expected revision preserves every committed revision and returns
+     a conflict. Its incoming payload is retained when capacity permits;
+     otherwise `stored=false` names the expected and current revisions.
 5. **Storage safety.** The store uses a rollback journal on a local
    filesystem, takes the single write lock with `BEGIN IMMEDIATE`, sets
    `busy_timeout`, and handles `SQLITE_BUSY` and `SQLITE_FULL` explicitly.
@@ -158,6 +159,36 @@ The owner decided on 2026-10-13:
    - The workspace guidance names the root and its owner.
    - Git exclusion is not a backup.
 
+### R10 currentness and retention amendment
+
+Existing schema 1 rows and native migration provenance remain lossless. New
+revisions use `schema_version=2` for the contract that includes review state,
+domain ID and request identity in separate provenance. Unpinned existing records
+are never promoted to current automatically. Default `get`/`list` return only
+eligible records reviewed as current whose source pins match. Historical bodies
+are accessed explicitly through `get --historical`, `history`, `list --all` or
+`export`. Source-pin formats, allowed paths and tier/domain/metadata/page limits
+belong to [environment constraints section 5](../../../.agents/governance/environment-constraints.md#5-shared-agent-memory).
+Comparison uses the caller worktree; source changes, deletion or inaccessibility
+invalidate current reuse. Personal native memories are not collected again.
+
+An optional request key binds the complete target, expected revision, body,
+sources and allowed scope within the same transaction. Different inputs never
+return a previous success. Conflicts are retained in the same store and charged
+against capacity. Database page limits are reapplied on every reconnect.
+Concurrent online backups serialize through the source inode lock and replace
+the previous good copy atomically. Restore checks schema 1/2 and revision-to-
+provenance relationships, builds a unique temporary file, then publishes only
+to an absent target.
+
+Execution, synthetic tests and review of this amendment belong to
+[SPEC-0212 current Task W22/criterion 17](../0212-request-baseline-and-reconciliation/tasks/tsk-0007-r10-reconciliation.md).
+This package's existing criteria and W8/W9 acceptance records receive no duplicate
+acceptance. Actual provider/worktree and Restic evidence dated 2026-10-13 is
+reused within its original scope; the new engine is tested only on synthetic
+databases. Applying the amendment to the real private store and observing the
+effective Codex project-memory settings remain separate, uncompleted work.
+
 ## Acceptance Criteria
 
 1. Project settings for both providers turn native memory off. A fresh session
@@ -176,6 +207,14 @@ The owner decided on 2026-10-13:
 6. One governance owner states the memory rules, and the workspace guidance
    routes to it.
 7. The changed gate and `candidate-quality` pass.
+
+## Failure Conditions
+
+Unresolvable main-store identity must report memory unavailable without
+creating a second store. Stale revisions, busy/full storage, capacity limits
+and failed backups must preserve committed records and the last good copy;
+unreviewed or changed source pins cannot yield current memory, and source
+settings do not establish effective native-memory suppression.
 
 ## Related Documents
 

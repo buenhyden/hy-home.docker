@@ -1,10 +1,10 @@
 ---
 title: "Backup Telemetry and Budget"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0228"
 parent_ids:
@@ -49,6 +49,13 @@ token gap the same run reported.
 2. Tests pin the exclusions and the budget; the documents state both.
 3. HOME uses the new budget and the next scheduled run backs up the state set.
 4. The changed gate, the staged style check and `candidate-quality` pass.
+
+## Failure Conditions
+
+The exclusion is wrong if Restic still selects a Loki or Tempo bucket
+file or excludes another SeaweedFS collection. Meeting the 8 GiB state budget
+must not delete snapshots, and the change provides no restored log or trace
+history after loss.
 
 ## Related Documents
 

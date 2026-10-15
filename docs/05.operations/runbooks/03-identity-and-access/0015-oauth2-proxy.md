@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Runbook"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -22,9 +22,13 @@ created: "2026-05-17"
 
 목적은 인증 경로 장애의 신속한 복구, degraded-mode 수행/종료 통제, config lint 실패 시 안전한 롤백이다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - 로그인 루프(무한 redirect)
 - OIDC issuer 접근 실패
@@ -174,7 +178,7 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
 위 outage 관찰은 당시 공유 backend와 unauthenticated 요청만 다룬다. 현재 선언
 이미지에서 재실행한 결과도, 인증된 기존 세션의 fail-closed 검증도 아니다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

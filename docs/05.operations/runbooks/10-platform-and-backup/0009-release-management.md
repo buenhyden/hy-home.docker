@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0009"
 created: "2026-06-04"
@@ -18,10 +18,17 @@ main 대상 릴리스 준비 PR과 승인된 SemVer 게시 절차를 소유한�
 QA는 PR의 changed-profile 한 번으로 검증하며 릴리스에서 다시 전체 QA를
 실행하지 않는다. 배포·secret·HOME 복구 수용은 해당 운영 Task의 별도 작업이다.
 
-## Trigger and Preconditions
+## Trigger
 
-- main 대상 준비 PR에서 `CHANGELOG.md`의 실제 변경을 작성한다. 개발 push마다
+- main 대상 준비 PR에서 `CHANGELOG.md`의 실제 변경을 작성한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+개발 push마다
   자동 생성하거나 이미 게시된 릴리스 이력을 덮어쓰지 않는다.
+
 - `.cz.toml`의 Commitizen 문법과 [Git 정책](../../../../.agents/governance/git-workflow.md)을 따른다.
 - 최종 후보의 원격 QA, 독립 리뷰, 실제 main 통합과 revision을 확인한다.
 - 게시할 정확한 SemVer와 main commit, 대상 저장소, 승인 및 실패 복구 소유자를
@@ -187,7 +194,7 @@ bash scripts/operations/check-compose-core-readiness.sh
 - Local-delivery record의 현재 verdict와 교체 전후 hash/inode는 해당 실행
   Task의 실제 증거에서 확인한다. 과거 문서 서술은 현재 실행 결과가 아니다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

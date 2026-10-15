@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Guide"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0082"
 parent_ids:
@@ -22,12 +22,14 @@ created: "2026-09-19"
 OpenTofu는 `infra/09-platform-ops/opentofu/`의 `opentofu` service로 요청 시 실행하는 DEV IaC CLI 작업이다.
 `iac` profile에서만 선택된다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 IaC plan과 apply를 승인하고 실행하는 운영자다. 목표는 실행 경계, state와 명령의 의미,
 일반 사용 순서를 확인하는 것이다. state 복구와 lock 진단은 [OpenTofu Runbook](../../runbooks/10-platform-and-backup/0082-opentofu.md)이 맡는다.
 
-## Usage
+## Concepts
 
 ### 실행 경계
 
@@ -40,6 +42,8 @@ credential 마운트라도 원격 API 권한을 부여한다.
 이 작업에는 daemon healthcheck가 없고 `restart: "no"`이다. `template-job-low`가
 resource/security 기준선을 정의한다. 선언된 기본 네트워크의 도달 가능성을 별도로 확인한다. private `object_net`의
 tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가는 별도 검토가 필요하다. 이 leaf에는 Docker secret이나 공개된 port가 없다.
+
+## Usage
 
 ### State와 명령 의미
 
@@ -73,12 +77,6 @@ tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가�
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0082-opentofu.md)의 `상태 보존과 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Common Checks
-
-- `docker compose --profile iac config --quiet`
-- `docker compose --profile iac run --rm --no-deps opentofu version`
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
-
 ### Runbook Handoff
 
 state 복구, lock 진단, plan/apply 분리, upgrade에는
@@ -89,6 +87,14 @@ state 복구, lock 진단, plan/apply 분리, upgrade에는
 - [Policy](../../policies/10-platform-and-backup/0082-opentofu.md) (`POL-0082`)
 - [Runbook](../../runbooks/10-platform-and-backup/0082-opentofu.md) (`RUN-0082`)
 - [OpenTofu Compose](../../../../infra/09-platform-ops/opentofu/docker-compose.yml)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile iac config --quiet`
+- `docker compose --profile iac run --rm --no-deps opentofu version`
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
 ## Related Documents
 

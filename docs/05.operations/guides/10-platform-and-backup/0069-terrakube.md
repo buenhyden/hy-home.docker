@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Usage Guide"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0069"
 parent_ids:
@@ -24,12 +24,14 @@ created: "2026-05-10"
 Terrakube는 `infra/09-platform-ops/terrakube/`의 `terrakube-api`, `terrakube-ui`, `terrakube-executor`로 구성한
 온디맨드 DEV IaC 자동화·제어 플레인이다. 세 service는 `iac` profile에서만 선택된다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 IaC 실행을 승인하고 운영하는 담당자다. 목표는 구성 요소 간 흐름, 현재 인증 경로의 제한,
 일반 사용 순서를 확인하는 것이다. 장애 진단과 백업·복원은 [Terrakube Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)이 맡는다.
 
-## Usage
+## Concepts
 
 ### 분류와 토폴로지
 
@@ -38,6 +40,8 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
 실행과 private module/registry 워크플로 용도로 유지한다. 추적되는 토폴로지는
 각 컴포넌트를 하나의 복제본으로만 두고 외부 의존성도 단일 호스트로 구성한다.
 고가용성을 제공하거나 주장하지 않는다.
+
+## Usage
 
 ### 구현과 데이터 흐름
 
@@ -76,12 +80,6 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md)의 `복구 세트와 버전 변경` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Common Checks
-
-- `docker compose --profile iac config --quiet`
-- `docker compose --profile iac config --services`
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
-
 ### Runbook Handoff
 
 실행 실패, 조정된 백업/복원, OIDC 진단, 업그레이드에는
@@ -109,6 +107,14 @@ UI와 executor는 API의 health를 기다린다. API/executor의 버킷 초기�
 - [Policy](../../policies/10-platform-and-backup/0069-terrakube.md) (`POL-0069`)
 - [Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md) (`RUN-0069`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile iac config --quiet`
+- `docker compose --profile iac config --services`
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
 ## Related Documents
 

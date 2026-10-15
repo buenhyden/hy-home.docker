@@ -96,6 +96,7 @@ _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "leaf.local-script-manifest",
     "leaf.local-shell-syntax",
     "leaf.local-tech-stack-version-drift",
+    "leaf.repo-contracts-control-plane-regressions",
     "leaf.repository-integrity-regressions",
     "leaf.storybook-contract",
     "local.workflow-harness",

@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Recovery Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0091"
 parent_ids:
@@ -18,9 +18,11 @@ created: "2026-09-21"
 
 이 런북은 OPTIONAL `crawl4ai`(`crawl4ai`, `crawl4ai-egress`, profile `crawl4ai`)의 시작 실패, 토큰 노출, 메모리 압박 대응과 consumer 연결·해제, 제거 절차를 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
 시작 실패, 토큰 노출, 메모리 압박, 컨슈머 연결/해제 시 사용한다.
+
+## Prerequisites
 
 ### Service lifecycle prerequisites
 
@@ -64,7 +66,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 종료 코드, 이미지, 소스 커밋을 기록한다. 토큰이나 크롤링된 내용은 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

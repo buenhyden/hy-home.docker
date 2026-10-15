@@ -1,10 +1,10 @@
 ---
 title: "npm Risk Acceptance Extension Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0222-PLAN-0001"
 parent_ids:
@@ -20,6 +20,13 @@ Confirm that no patch exists, move the expiry from code to an approved window
 in the contract data, restate the quality standard as a rule, and validate
 before the current acceptance expires.
 
+## Scope
+
+W1 updates and tests the bounded acceptance window in the workflow
+contract while retaining its pinned advisory identity. W2 states the extension
+rule once in quality standards, and W3 verifies delivery; the audit adapter's
+expiry, patched-version and other-finding refusal behavior is unchanged.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -34,7 +41,9 @@ Contract tests for the window and pinned fields; adapter tests for expiry and
 patch availability; the agent-governance contract; the changed gate, the
 staged style check and the remote candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - Merging after 2026-10-10T15:00:00Z leaves the audit leaf failing until it
   merges; the adapter keeps failing closed rather than passing.

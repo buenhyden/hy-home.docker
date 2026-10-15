@@ -1,10 +1,10 @@
 ---
 title: "Compose Container and Host Naming Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0216-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-08"
 
 # Compose Container and Host Naming Task
 
-## Objective
+## Overview
+
+### Objective
 
 Give every `infra/` Compose service a `container_name` and a `hostname` equal
 to its service key, register the exceptions, enforce the rule, and run HOME

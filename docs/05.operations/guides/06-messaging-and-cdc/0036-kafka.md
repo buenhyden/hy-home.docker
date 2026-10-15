@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -28,17 +28,21 @@ created: "2026-05-10"
 
 이 가이드는 OPTIONAL 이벤트 스트리밍 기능인 Kafka family의 구성, 프로파일, 접근 경계를 설명한다. 정상 root는 단일 KRaft broker와 Schema Registry, Connect, REST Proxy, Kafbat UI, exporter, init job을 정의한다. 다중 broker 학습은 독립 LAB으로 분리했다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 Kafka family를 켜거나 변경하는 운영자와 개발자다. 목표는 어떤 서비스가 어느 profile에서 선택되는지, 어디까지 보호되는지, 복구가 무엇을 포함하는지 확인하는 것이다. 실행 절차는 [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md)이 소유한다.
 
-## Usage
+## Concepts
 
 Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. 정상 root에는 단일
 `kafka-1`만 있고, 다중 broker 학습은 독립 LAB 진입점의 `lab-kafka`
 프로파일로 분리했다. 세 LAB broker도 한 Docker host를 공유하므로 host
 가용성을 증명하지 않는다. 정상 서비스를 지속 실행해야 한다는 HOME consumer는
 현재 확인되지 않았다.
+
+## Usage
 
 ### Current implementation
 
@@ -158,12 +162,6 @@ REST 이미지는 Confluent가 제공하며 별도의 현재 license/edition 검
 필요하다. Cluster Linking이나 다른 edition 전용 기능은 선언하지도 가정하지도
 않는다.
 
-### Common Checks
-
-정확한 root profile, service, health/resource 제어, writable-state 소유권,
-secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
-증거일 뿐이며, runtime과 restore는 별개로 남는다.
-
 ### Runbook Handoff
 
 Kafka 복구 범위는 broker 디렉터리보다 넓다. topic 데이터와 config,
@@ -185,6 +183,14 @@ artifact 및 rollback이 필요하다.
 - Artifact: `GDE-0036`; 상위 정책: `POL-0036`.
 - Runtime authority: `infra/05-messaging/kafka/docker-compose.yml`과
   [Connect image Dockerfile](../../../../infra/05-messaging/kafka/Dockerfile.connect).
+
+## Troubleshooting
+
+### Common Checks
+
+정확한 root profile, service, health/resource 제어, writable-state 소유권,
+secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
+증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
 ## Related Documents
 

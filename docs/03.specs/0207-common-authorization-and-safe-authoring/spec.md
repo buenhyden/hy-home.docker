@@ -1,10 +1,10 @@
 ---
 title: "Common Authorization and Safe Authoring Specification"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0207"
 parent_ids:
@@ -97,14 +97,6 @@ trusted user/operator/native channel; no automatic source authenticator is
 introduced by this Spec. Repository fields cannot automatically verify the
 account identity behind a trusted origin.
 
-### Failure Modes and Guardrails
-
-Stop protected operations when authorization is missing, mismatched, expired,
-revoked, or outside scope. Do not claim that a Task field, review, hook, schema,
-or provider delivery authenticates approval. Safety denial cannot be converted
-into a budget exception; required-check budget and environment gaps stop through
-agentic preflight. No wrapper or command variation bypasses a boundary.
-
 ## Acceptance Criteria
 
 ### Acceptance Contract
@@ -126,6 +118,16 @@ agentic preflight. No wrapper or command variation bypasses a boundary.
    new archive action requires a current trusted-operator source; fixture checks
    cover missing and mismatched historical-record integrity without claiming
    automatic revocation enforcement.
+
+## Failure Conditions
+
+### Failure Modes and Guardrails
+
+Stop protected operations when authorization is missing, mismatched, expired,
+revoked, or outside scope. Do not claim that a Task field, review, hook, schema,
+or provider delivery authenticates approval. Safety denial cannot be converted
+into a budget exception; required-check budget and environment gaps stop through
+agentic preflight. No wrapper or command variation bypasses a boundary.
 
 ## Related Documents
 

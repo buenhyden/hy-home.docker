@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.2.0"
+version: "1.3.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -18,6 +18,19 @@ created: "2026-10-07"
 
 The current 11–30 request preserves completed P00 Tasks. SEC01 delivers first,
 SMTP01 owns the source transition second, and CLN01 deletes the old file third.
+
+R10 adds W16–W23 in TSK-0007 from the 2026-10-15 source baseline. Existing
+W1–W15 and completed bodies retain their earlier scope and evidence. The direct user request authorizes this bounded local contract and Plan;
+that authority is not inferred from historical acceptance and does not approve
+a shared edition or remote action.
+
+## Scope
+
+W9–W15 reconcile the request baseline, owner routes, shared-file leases
+and SEC01 → SMTP01 → CLN01 handoffs; W1–W8 retain their historical receipts.
+R10 W16–W23 add the current authority, document, lifecycle, retention,
+hook/release, memory and OpenBao source corrections in TSK-0007 without
+reopening completed Tasks or assigning new downstream acceptance owners.
 
 ## Work Breakdown
 
@@ -38,6 +51,14 @@ SMTP01 owns the source transition second, and CLN01 deletes the old file third.
 | W13 | 8 | Record current routing and SEC01 → SMTP01 → CLN01 ordering | W12 | TSK-0005 | Value-free contract probe; Stage 99 checks |
 | W14 | 10 | Bind current main, supplied COORD input, observed worktree/PR state and active-package inventory; retain PR #457's merged receipt as input only | None | TSK-0006 | Value-free Git/source and lifecycle audit |
 | W15 | 9 | Map requirements 11–30, reconcile active routing conflicts, record writer locks/recovery boundaries, run Stage99 selectors and hand off exact current inputs | W14 | TSK-0006 | Cross-package source, Task and document audit |
+| W16 | 11 | P01 source/permission/delta baseline, attachment identity and classified finding map | None | TSK-0007 | Read-only Git and canonical-owner audit |
+| W17 | 12 | P02 role, language, section and link correction; coupled Stage99 target amendment design | W16 | TSK-0007 | Changed metadata/links and affected contract regressions |
+| W18 | 13 | P03 distinguish existing approval, Task state, acceptance, integration and observations | W16 | TSK-0007 | Generation-6 reader and exact lifecycle/acceptance evidence |
+| W19 | 14 | P04 consumer/assurance/hold assessment and authorized retention or retirement | W16 | TSK-0007 | Direct consumer trace and applicable archive integrity checks |
+| W20 | 15 | P05 hook/CI call graph and reproduced push-stage or duplicate assurance correction | W16 | TSK-0007 | Focused hook/routing tests and isolated installed-stage probe |
+| W21 | 16 | P06 branch/release/CHANGELOG/rollback producer audit and concrete source corrections | W16 | TSK-0007 | Current producer/config trace and scoped contracts |
+| W22 | 17 | P07 shared-memory/native-off/Restic reuse and justified missing assurance design or implementation | W16 | TSK-0007 | Existing receipts plus synthetic memory/backup regressions |
+| W23 | 18 | P08 OpenBao optional-skip and CA-overlay discrepancies, operations promotion and quality limits | W16 | TSK-0007 | Focused OpenBao synthetic tests and changed document checks |
 
 ### Exact writer map
 
@@ -103,6 +124,22 @@ preceding source identity and review are fixed.
 5. Each feature owner completes its Task, independent review and per-Spec PR.
    P00's inventory or merge receipt cannot complete a downstream native run.
 
+### R10 ownership and integration
+
+The coordinator assigns one writer per slice. The documentation writer owns
+this Spec, Plan and TSK-0007. Hook/CI implementation, Stage 99 and governance
+contracts, and OpenBao source each have a distinct writer; the controller
+integrates shared files and releases their lease before another writer edits.
+No worktree path alone proves a lease released. Do not rewrite earlier Tasks.
+
+Start with the Stage 99 stale authority prose and empty REQ-0024/AD-0030
+scaffolding. Align new common-guidance language at its policy owner. Reproduce
+pre-push multiple-ref/deletion behavior in an isolated repository. Independently
+fix the OpenBao optional-skip contract and SPEC-0243 CA-overlay source wording.
+The controller sequences any table/lifecycle/memory amendment after its exact
+consumer impact and compatibility are reviewable; unimplemented targets stay
+pending in TSK-0007 rather than being treated as completed by this Plan.
+
 ## Verification Plan
 
 Run a value-free source-set audit, actual frontmatter parse and read-only PR
@@ -132,7 +169,18 @@ staged set. Read actual branch protection and PR checks. Push this request's
 branch, create its PR and attach it; merge only when its current review/check
 conditions are satisfied. Record hosted results separately from local results.
 
-## Risks and Rollback
+For r10, select the smallest checks that establish each changed guarantee.
+Content-only edits use changed metadata, relationships, links and diff checks;
+Registry/parser/permission/workflow changes add their directly affected
+regressions. Use synthetic repositories and DBs for failure probes. Record
+actual commands, revisions, result and elapsed observations once. Hosted CI,
+real provider effectiveness, HOME backup/restore and remote main protection
+remain separate observations. Never create credentials or change managed
+settings to make a source check pass.
+
+## Risks and Recovery
+
+### Risks and Rollback
 
 Revert only the logical W13 documentation commit through a protected PR to
 restore the prior active contract; preserve historical Tasks and issued IDs.
@@ -144,6 +192,7 @@ change invalidates affected inputs and requires a fresh scoped check.
 ## Related Documents
 
 - [Spec](spec.md)
+- [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)
 - [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
 - [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)

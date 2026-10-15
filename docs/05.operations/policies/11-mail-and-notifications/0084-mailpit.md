@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Policy"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0084"
 parent_ids:
@@ -55,11 +55,6 @@ gateway 경로만 SSO를 거친다. 직접 loopback UI와 두 네트워크의 pe
 외부 노출, SMTP relay/forwarding, 실제 메일, 완화된 보존 요구는 별도의 보안 및 데이터
 승인이 필요하다. 일상적인 예외로는 승인할 수 없다.
 
-### Verification
-
-정적 검사는 메일 캡처나 restore를 증명하지 않는다. 런타임 증거에는 메시지 내용을 남기지 않고
-합성 식별자/개수와 최종 상태만 기록해야 한다.
-
 ### Review Cadence
 
 포트, 인증, 보존, 데이터베이스 경로, 프로필, 이미지가 변경될 때 검토한다.
@@ -69,6 +64,11 @@ gateway 경로만 SSO를 거친다. 직접 loopback UI와 두 네트워크의 pe
 - [Guide](../../guides/11-mail-and-notifications/0084-mailpit.md) (`GDE-0084`)
 - [Runbook](../../runbooks/11-mail-and-notifications/0084-mailpit.md) (`RUN-0084`)
 - [Communication architecture](../../../02.architecture/descriptions/0010-communication-architecture.md)
+
+## Verification
+
+정적 검사는 메일 캡처나 restore를 증명하지 않는다. 런타임 증거에는 메시지 내용을 남기지 않고
+합성 식별자/개수와 최종 상태만 기록해야 한다.
 
 ## Related Documents
 

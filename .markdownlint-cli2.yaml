@@ -69,5 +69,5 @@ ignores:
   - "docs/98.archive/migrations/0002-operations-catalog-convergence.md"
   - "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 
-# Markdown auto-fix remains the canonical document formatter in pre-commit.
-fix: true
+# Explicit markdownlint-cli2 --fix owns formatting; commit checks never fix.
+fix: false

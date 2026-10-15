@@ -1,10 +1,10 @@
 ---
 title: "Agent Memory Restic Coverage Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0237-PLAN-0001"
 parent_ids:
@@ -18,6 +18,13 @@ created: "2026-10-13"
 
 Write the failing test, add the step, update the policy row and the
 runbook, then review and observe one real run.
+
+## Scope
+
+W1 adds the existing CLI's SQLite backup to daily Restic staging with
+synthetic absent-store and failure cases; W2 updates POL-0021 and RUN-0021.
+W3 reviews the source, and W4 separately observes a real HOME backup;
+Compose, include sets, systemd and retention are unchanged.
 
 ## Work Breakdown
 
@@ -36,7 +43,9 @@ script manifest check, changed metadata, corpus lifecycle, links and
 markdownlint. W4 reads the run journal and lists the snapshot for the file
 name only.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - **Plaintext in staging.** The copy is plaintext like the other exports and
   is removed by the EXIT trap; Restic stores it encrypted.

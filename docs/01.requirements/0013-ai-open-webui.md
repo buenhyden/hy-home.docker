@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Product Requirements"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0013"
 created: "2026-03-27"
@@ -12,8 +12,6 @@ created: "2026-03-27"
 # Open WebUI Product Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -23,33 +21,7 @@ This document defines the product requirements for Open WebUI. Open WebUI provid
 
 Interacting with local LLMs often requires CLI knowledge or fragmented tools. Users need a unified, visual, and secure interface that supports multi-user collaboration, document indexing, and seamless integration with existing AI/Data tiers (Ollama, Qdrant).
 
-## Requirements
-
-### Requirements
-
-### Functional Requirements
-
-- **REQ-0013-FR-0001**: Support multi-model selection from the Ollama backend.
-- **REQ-0013-FR-0002**: Provide a RAG engine integrating with Qdrant for document indexing and retrieval.
-- **REQ-0013-FR-0003**: Support persistent chat history and document metadata storage.
-- **REQ-0013-FR-0004**: Integration with Traefik for SSL termination and SSO middleware.
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-### Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0013-FR-0001**: Successful connection to Ollama and Qdrant services within the local network.
-- **REQ-0013-FR-0002**: Document indexing latency under 5 seconds for standard PDF files (using CUDA acceleration).
-
 ## Scope
-
-### Scope
 
 ### Stakeholders and User Needs
 
@@ -90,6 +62,28 @@ Provide a premium, ChatGPT-like interface for the `hy-home.docker` ecosystem tha
 - **Dependency**: Requires `ollama` service to be healthy for inference.
 - **Dependency**: Requires `qdrant` service for vector storage.
 - **Assumption**: Users have sufficient GPU memory for CUDA-accelerated embedding/inference.
+
+## Requirements
+
+### Functional Requirements
+
+- **REQ-0013-FR-0001**: Support multi-model selection from the Ollama backend.
+- **REQ-0013-FR-0002**: Provide a RAG engine integrating with Qdrant for document indexing and retrieval.
+- **REQ-0013-FR-0003**: Support persistent chat history and document metadata storage.
+- **REQ-0013-FR-0004**: Integration with Traefik for SSL termination and SSO middleware.
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0013-FR-0001**: Successful connection to Ollama and Qdrant services within the local network.
+- **REQ-0013-FR-0002**: Document indexing latency under 5 seconds for standard PDF files (using CUDA acceleration).
 
 ## Related Documents
 

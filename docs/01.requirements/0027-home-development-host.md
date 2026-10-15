@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/requirement"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -13,8 +13,6 @@ created: "2026-09-19"
 # Home and Development Host Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -26,9 +24,34 @@ requirement is a draft recording the full audit/redesign scope the user
 requested. Authoring documents and implementation does not imply approval to
 deploy real services or change data.
 
-## Requirements
+## Scope
 
-### Requirements
+### Stakeholders and User Needs
+
+- A HOME user must be able to use the access/authentication foundation and
+  AI/workflow features at all times.
+- A developer must be able to select the development/experiment features
+  they need and know the impact on HOME availability.
+- An operator must align configuration without exposing values and verify
+  state and recoverability before and after a change.
+
+### Constraints
+
+Targets a single physical host with real operational data. Multiple
+containers or profiles on the same host do not provide physical failure
+isolation. Secret rotation, destructive data operations, reboots, and
+running-service changes follow a separate approval scope. Frozen historical
+documents and the meaning of issued identifiers are preserved.
+
+### Risks
+
+Failures and resource contention on shared host, storage, and GPU affect
+multiple HOME features. The user's requirement for always-on availability is
+not a verification result that all concurrent workloads are possible on the
+current hardware, so real resource measurement and recovery rehearsal are
+needed.
+
+## Requirements
 
 ### Functional Requirements
 
@@ -85,35 +108,6 @@ deploy real services or change data.
    execution deployment happens only after concrete approval.
 5. A reviewable change history, verification results, residual risk, and
    incomplete execution verification are provided.
-
-## Scope
-
-### Scope
-
-### Stakeholders and User Needs
-
-- A HOME user must be able to use the access/authentication foundation and
-  AI/workflow features at all times.
-- A developer must be able to select the development/experiment features
-  they need and know the impact on HOME availability.
-- An operator must align configuration without exposing values and verify
-  state and recoverability before and after a change.
-
-### Constraints
-
-Targets a single physical host with real operational data. Multiple
-containers or profiles on the same host do not provide physical failure
-isolation. Secret rotation, destructive data operations, reboots, and
-running-service changes follow a separate approval scope. Frozen historical
-documents and the meaning of issued identifiers are preserved.
-
-### Risks
-
-Failures and resource contention on shared host, storage, and GPU affect
-multiple HOME features. The user's requirement for always-on availability is
-not a verification result that all concurrent workloads are possible on the
-current hardware, so real resource measurement and recovery rehearsal are
-needed.
 
 ## Related Documents
 

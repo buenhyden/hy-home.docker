@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.3.0"
+version: "1.3.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 ---
 
 # Git Workflow Governance
@@ -45,17 +45,17 @@ Use Conventional Commits with explicit scopes where possible.
 Immediately before an ordinary commit, stage the reviewed changes and run:
 
 ```bash
-cz check --message-length-limit 75 --commit-msg-file /tmp/commit-message.txt
-scripts/validation/run-ci-precommit.sh --mode local-staged
 git commit -F /tmp/commit-message.txt
 ```
 
-Prepare the message file before those commands. The style controller checks the
-index with the registered tool pins and read-only modes. It installs no Git
-hook and preserves the effective secret guard. A failed check stops the commit;
-fix, review and restage changed bytes before checking again. A change to the
-index after PASS invalidates that result. Do not replace a user-global hook or
-claim automatic lint enforcement from tracked configuration alone.
+메시지 파일은 위 명령 전에 준비한다. 정상 커밋에서 실제 관측한 읽기 전용
+pre-commit·commit-msg hook이 최종 index와 메시지를 검사하며 같은 입력의
+스타일 검사를 미리 반복하지 않는다. 설치된 검사의 전달이 확인되지 않았거나
+진단이 필요하면 `scripts/validation/run-ci-precommit.sh --mode local-staged`가
+등록 pin으로 index의 격리 복사본을 검사한다. 이 제어기는 hook을 설치하지
+않으며 유효한 secret guard를 보존한다. 실패하면 수정·diff 검토·재staging
+후 정상 커밋하고, index가 바뀌면 이전 PASS를 재사용하지 않는다.
+user-global hook을 대체하거나 설정만으로 자동 강제를 주장하지 않는다.
 
 ### 2. Branching Strategy
 
@@ -131,14 +131,16 @@ claim automatic lint enforcement from tracked configuration alone.
   would include secrets or unrelated changes. In that case, report the reason and
   remaining state.
 
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
 ### 6. Enforcement
 
 Changes that bypass checks or violate secret safety must not be merged.
 GitHub-specific enforcement rules (branch protection, required checks, CODEOWNERS, Actions security) are governed by `.agents/governance/github-governance.md`.
-
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

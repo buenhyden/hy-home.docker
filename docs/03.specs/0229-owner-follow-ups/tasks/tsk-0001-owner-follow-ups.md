@@ -1,10 +1,10 @@
 ---
 title: "Owner Follow-ups Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0229-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-10"
 
 # Owner Follow-ups Task
 
-## Objective
+## Overview
+
+### Objective
 
 Close the Keycloak, Grype and OpenBao snapshot items the owner approved.
 

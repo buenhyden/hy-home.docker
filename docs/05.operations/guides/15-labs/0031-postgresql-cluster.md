@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Usage Guide"
-version: "2.1.2"
+version: "2.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
@@ -18,13 +18,15 @@ created: "2026-05-10"
 
 이 문서는 [PostgreSQL cluster Compose 구현](../../../../labs/postgresql-ha.yml)의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 `LAB`이고 모든 members가 한 Docker host에 있으므로 host-level HA나 off-host disaster recovery를 제공하지 않는다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: 관계형 데이터베이스 연결과 일반 점검을 현재 compose의 service name, host port, secret mount, init job, exporter 경계와 맞춰 수행하도록 한다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -40,6 +42,8 @@ created: "2026-05-10"
 | 보안 | secret을 처리하는 Spilo entrypoint와 라우팅된 client 연결을 사용한다. 같은 host의 member는 다른 host를 통한 DR이 아니다. |
 | Backup·upgrade | globals와 database별 logical dump를 보존한다. upgrade/제거 전에 새 DCS/cluster에 복구하고 `RUN-0032`를 사용한다(synthetic single-DB rehearsal만 해당하며 HA globals/ACL/router 복원은 미구현). |
 | License·edition | PostgreSQL에는 PostgreSQL License가 적용된다. Spilo, Patroni, etcd, HAProxy와 exporter는 각각 별도 license가 적용되는 의존성이다. |
+
+## Usage
 
 ### Identity-specific behavior
 

@@ -1,10 +1,10 @@
 ---
 title: "WARNING: parallel replacement document file"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -14,6 +14,18 @@ enabled: true
 event: "file"
 name: "warn-parallel-doc-file"
 ---
+
+# WARNING: parallel replacement document file
+
+## Overview
+
+Apply the declared `warn` action for warn-parallel-doc-file.
+
+## Scope
+
+`file` 이벤트의 `warn-parallel-doc-file` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+
+## Rules
 
 **Parallel replacement document file detected (project rule)**
 
@@ -34,16 +46,6 @@ Edit the existing canonical file in place.
 ```bash
 # doc-paths: illustrative
 
-## Overview
-
-Apply the declared `warn` action for warn-parallel-doc-file.
-
-## Scope
-
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
-
-## Rules
-
 # WARNING: parallel replacement document file
 docs/03.specs/0158-example/spec-new.md
 
@@ -60,6 +62,10 @@ change record.
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
 
 ## Related Documents
 

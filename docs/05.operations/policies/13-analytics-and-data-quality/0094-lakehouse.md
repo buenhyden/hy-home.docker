@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Operations Policy"
-version: "1.3.4"
+version: "1.3.5"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0094"
 parent_ids:
@@ -58,12 +58,6 @@ Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 
 없음. 카탈로그 credential vending이나 라우트를 활성화하려면 검토된 변경이
 필요하다.
 
-### Verification
-
-Compose 렌더링, 카탈로그 확인, 그리고 범위가 한정된 identity가 테이블을
-생성·쓰기·compact·삭제할 수 있고 다른 버킷은 읽을 수 없음을 증명하는
-격리된 실행.
-
 ### Review Cadence
 
 SeaweedFS, Iceberg, 엔진 업그레이드 시, 새 엔진 추가 시, 새 namespace가
@@ -74,6 +68,12 @@ SeaweedFS, Iceberg, 엔진 업그레이드 시, 새 엔진 추가 시, 새 names
 - [가이드](../../guides/13-analytics-and-data-quality/0094-lakehouse.md) (`GDE-0094`)
 - [런북](../../runbooks/13-analytics-and-data-quality/0094-lakehouse.md) (`RUN-0094`)
 - [SeaweedFS policy](../05-databases-and-storage/0024-seaweedfs.md)
+
+## Verification
+
+Compose 렌더링, 카탈로그 확인, 그리고 범위가 한정된 identity가 테이블을
+생성·쓰기·compact·삭제할 수 있고 다른 버킷은 읽을 수 없음을 증명하는
+격리된 실행.
 
 ## Related Documents
 

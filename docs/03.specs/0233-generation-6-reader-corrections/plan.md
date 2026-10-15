@@ -1,10 +1,10 @@
 ---
 title: "Generation 6 Reader Corrections Plan"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0233-PLAN-0001"
 parent_ids:
@@ -20,6 +20,14 @@ Fix the three reader gaps with failing fixtures first, complete the corpus
 rows the first fix requires, add the missing rule fixtures, then correct the
 text and run the gates. W7 then aligns REQ-0026, the Task template and stale
 Stage 03 wording with the corrected rules.
+
+## Scope
+
+W1–W4 enforce assigned acceptance rows, equivalent item/Task closure and
+completed-archive departure with positive and negative fixtures. W5–W7
+align SDLC, ADR-0048, REQ-0026, navigation and Task wording, including the
+required active-corpus acceptance rows; ADR acceptance and execution-status
+decisions remain outside this reader correction.
 
 ## Work Breakdown
 
@@ -42,7 +50,9 @@ independent `rules-engineer` review; the changed gate and the remote
 candidate. W7 adds a second independent review of the Stage 01 to 03
 alignment.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - A Task that lacked an acceptance row now fails until one is added; the
   active corpus had two such criteria, both in SPEC-0204.
