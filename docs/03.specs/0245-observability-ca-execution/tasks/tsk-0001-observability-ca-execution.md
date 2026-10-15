@@ -1,8 +1,8 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -67,11 +67,20 @@ The Task transitions to `in-progress` only when an approved W2 or W4 recovery
 gate actually starts. The reviewed recovery packet must still pass its
 independent IaC/security review before the relevant operation proceeds.
 
+### In-progress Transition
+
+On 2026-10-16, independent IaC and security reviews returned READY for the
+backup phase only, bound to the final W1 packet. The operator was released to
+hash-recheck that packet and start the approved W2/W4 recovery gate. This
+transition records the release and start boundary only; it does not claim any
+backup, restore, image build, CA application, recreation, or health outcome.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0245-TSK-0001 | draft | ready | Ready backup packet binding |
+| SPEC-0245-TSK-0001 | ready | in-progress | Backup phase release |
 
 ## Evidence
 
@@ -79,6 +88,7 @@ independent IaC/security review before the relevant operation proceeds.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Initial operational execution state | 1, 2, 3, 4, 5, 6, 7 | W1, W2, W3, W4, W5, W6, W7 | No preflight, backup, isolated restore, image build, recreation, review, or selected gate had run when this Task was created | Initial record on `89eb43f683a11587cf4f125be534ae720c20a55c` | NOT_RUN | Initial State | optional | - |
 | Ready backup packet binding | 1 | W1 | SHA-256 binding of the final frozen backup phase contract and guard helpers | Contract `d70944844623e5733a7e6dff4a5e999bf29078a5f5c0bd91fd11e48950db0d88`; phase script `1ce35b3a0e4759f4b37b8c6d0f86d48d41c8452dc92d0f32179835561cf7475a`; archive guard `a85ab831c3369f1d04b5dc6abd14fa83ae5bb4ced495f594d85955474c42b385` | PASS | Ready Transition | required | - |
+| Backup phase independent reviews | 7 | W7 | Independent IaC and security reviews of the final backup phase packet | READY limited to backup phase; no execution outcome | PASS | In-progress Transition | required | - |
 
 ## Criterion Acceptance
 
