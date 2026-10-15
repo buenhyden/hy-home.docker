@@ -1,10 +1,10 @@
 ---
 title: "Operations Library"
-version: "0.1.5"
+version: "0.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 created: "2026-10-10"
 ---
 
@@ -18,6 +18,9 @@ created: "2026-10-10"
 ## Structure
 
 - `compose-core-readiness.sh`: Compose 핵심 서비스 readiness와 격리 복구 검사.
+- `memory_sources.py`: 공유 memory CLI가 caller worktree의 tracked 일반 파일
+  pin을 확인하는 helper입니다. source 크기·경로·symlink·FIFO를 제한하고 개인
+  native memory나 외부 URL을 읽지 않습니다. 검토 상태와 현재성을 구분합니다.
 - `root_resource_assessment.py`: 공개 JSON의 측정 선언·unknown·기존 공통 통제를
   범위 제한 평가합니다. 출력의 runtime 수용·변경 승인 플래그는 항상 false이며,
   정본 예외 등록과 실제 서비스의 결합은 후속 검증 대상입니다.

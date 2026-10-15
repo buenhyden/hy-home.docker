@@ -604,6 +604,17 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_compose_core_readiness.py
+- path: scripts/lib/ops/memory_sources.py
+  kind: library
+  authority: .agents/governance/environment-constraints.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/agent_memory.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/hooks/test_agent_memory.py
 - path: scripts/lib/ops/openbao_consumer_migration.py
   kind: library
   authority: docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md

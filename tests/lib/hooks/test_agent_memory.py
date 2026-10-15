@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import sqlite3
@@ -148,6 +149,84 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(memory.EXIT_FULL, caught.exception.code)
         self.assertEqual(before, self.rows())
 
+    def test_request_identity_replays_only_the_same_semantic_write(self) -> None:
+        arguments = dict(
+            memory_id="retry",
+            expected_revision=0,
+            workspace_id="test",
+            tier="long-term",
+            owner="claude",
+            body="kept",
+            source_refs=[],
+            request_key="request-1",
+            review_state="candidate",
+        )
+        self.assertEqual(1, memory.put(self.connection, **arguments))
+        self.assertEqual(1, memory.put(self.connection, **arguments))
+        with self.assertRaises(memory.MemoryStoreError) as caught:
+            memory.put(self.connection, **{**arguments, "owner": "codex"})
+        self.assertEqual(memory.EXIT_CONFLICT, caught.exception.code)
+        self.assertTrue(caught.exception.details["stored"])
+        self.assertEqual(1, caught.exception.details["current_revision"])
+        self.assertEqual(0, caught.exception.details["expected_revision"])
+        self.assertEqual(
+            1, self.connection.execute("SELECT count(*) FROM conflicts").fetchone()[0]
+        )
+        for changed in (
+            {"body": "different"},
+            {"source_refs": ["other"]},
+            {"expected_revision": 1},
+            {"tier": "short-term"},
+            {"workspace_id": "other"},
+            {"review_state": "needs-review"},
+        ):
+            with self.subTest(changed=changed):
+                with self.assertRaises(memory.MemoryStoreError):
+                    memory.put(self.connection, **{**arguments, **changed})
+        self.assertEqual(1, len(self.rows()))
+
+    def test_conflict_reports_no_room_without_losing_either_revision(self) -> None:
+        write(self.connection, "kept", 0, "first")
+        with mock.patch.object(memory, "MAX_TOTAL_BODY_BYTES", 5):
+            with self.assertRaises(memory.MemoryStoreError) as caught:
+                write(self.connection, "kept", 0, "incoming")
+        self.assertFalse(caught.exception.details["stored"])
+        self.assertEqual("first", memory.get(self.connection, "kept")["body"])
+
+    def test_reconnect_reapplies_the_page_limit(self) -> None:
+        other = memory.connect(self.path)
+        try:
+            self.assertEqual(
+                memory.MAX_DATABASE_BYTES
+                // other.execute("PRAGMA page_size").fetchone()[0],
+                other.execute("PRAGMA max_page_count").fetchone()[0],
+            )
+        finally:
+            other.close()
+
+    def test_tier_domain_and_metadata_limits_keep_old_revisions(self) -> None:
+        arguments = dict(
+            memory_id="domain",
+            expected_revision=0,
+            workspace_id="test",
+            tier="domain",
+            domain_id="sqlite",
+            owner="claude",
+            body="sixsix",
+            source_refs=[],
+            review_state="candidate",
+        )
+        with mock.patch.object(memory, "MAX_DOMAIN_BODY_BYTES", 5):
+            with self.assertRaises(memory.MemoryStoreError):
+                memory.put(self.connection, **arguments)
+        with mock.patch.dict(memory.TIER_BODY_BYTES, {"domain": 5}):
+            with self.assertRaises(memory.MemoryStoreError):
+                memory.put(self.connection, **arguments)
+        with mock.patch.object(memory, "MAX_METADATA_BYTES", 5):
+            with self.assertRaises(memory.MemoryStoreError):
+                memory.put(self.connection, **arguments)
+        self.assertEqual([], self.rows())
+
     def test_backup_restores_records_and_a_failure_keeps_the_previous_one(self) -> None:
         write(self.connection, "gate", 0, "kept")
         output = self.base / "backup" / "memory.sqlite3"
@@ -172,6 +251,96 @@ class StoreTests(unittest.TestCase):
         self.assertEqual("kept", memory.get(connection, "gate")["body"])
         with self.assertRaisesRegex(memory.MemoryStoreError, "MEMORY_RESTORE_REFUSED"):
             memory.restore(output, self.path)
+
+    def test_backup_serializes_competing_copies_and_preserves_conflicts(self) -> None:
+        write(self.connection, "kept", 0)
+        with self.assertRaises(memory.MemoryStoreError):
+            write(self.connection, "kept", 0, "incoming")
+        output = self.base / "backup" / "memory.sqlite3"
+        output.parent.mkdir(mode=0o700)
+        memory.backup(self.connection, output)
+        before = output.read_bytes()
+        started, release = threading.Event(), threading.Event()
+        failures: list[Exception] = []
+
+        def first_backup() -> None:
+            connection = memory.connect(self.path)
+            wrapped = mock.MagicMock(wraps=connection)
+
+            def paused(target: sqlite3.Connection) -> None:
+                started.set()
+                if not release.wait(5):
+                    raise AssertionError("backup test did not release")
+                connection.backup(target)
+
+            wrapped.backup.side_effect = paused
+            try:
+                memory.backup(wrapped, output)
+            except Exception as error:
+                failures.append(error)
+            finally:
+                connection.close()
+
+        thread = threading.Thread(target=first_backup)
+        thread.start()
+        try:
+            self.assertTrue(started.wait(5))
+            with self.assertRaisesRegex(memory.MemoryStoreError, "another backup"):
+                memory.backup(self.connection, output)
+            self.assertEqual(before, output.read_bytes())
+        finally:
+            release.set()
+            thread.join(5)
+        self.assertEqual([], failures)
+        self.assertFalse(thread.is_alive())
+        target = self.base / "restored" / "memory.sqlite3"
+        memory.restore(output, target)
+        restored = memory.connect(target)
+        try:
+            self.assertEqual(
+                "incoming", restored.execute("SELECT body FROM conflicts").fetchone()[0]
+            )
+            self.assertEqual("note", memory.get(restored, "kept")["body"])
+        finally:
+            restored.close()
+
+    def test_schema_one_records_remain_exact_and_need_review(self) -> None:
+        legacy = self.base / "legacy" / "memory.sqlite3"
+        legacy.parent.mkdir()
+        connection = sqlite3.connect(legacy)
+        connection.execute(memory.SCHEMA)
+        values = (
+            "old",
+            1,
+            1,
+            "original-workspace",
+            "domain",
+            "claude",
+            "2026-10-13",
+            '["native-claude-memory:approved-once"]',
+            "eligible",
+            "internal",
+            "preserve every byte",
+        )
+        connection.execute(
+            f"INSERT INTO revisions VALUES ({','.join('?' * len(values))})", values
+        )
+        connection.commit()
+        connection.close()
+        connection = memory.connect(legacy)
+        try:
+            self.assertEqual(
+                values, tuple(connection.execute("SELECT * FROM revisions").fetchone())
+            )
+            self.assertIsNone(memory.get(connection, "old", current_only=True))
+            record = memory.get(connection, "old")
+            self.assertEqual(1, record["schema_version"])
+            self.assertEqual("needs-review", record["provenance"]["reuse_state"])
+            self.assertEqual(
+                "preserve every byte", memory.history(connection, "old", 1)[0]["body"]
+            )
+        finally:
+            connection.close()
 
     def test_backup_refuses_the_store_and_unsafe_directories(self) -> None:
         write(self.connection, "gate", 0)
@@ -301,7 +470,7 @@ class StoreTests(unittest.TestCase):
         output = self._backup_file()
         target = self.base / "denied" / "memory.sqlite3"
         with mock.patch.object(
-            memory, "_create_private", side_effect=PermissionError("denied")
+            memory, "_private_directory", side_effect=PermissionError("denied")
         ):
             with self.assertRaisesRegex(
                 memory.MemoryStoreError, "MEMORY_RESTORE_FAILED"
@@ -364,7 +533,7 @@ class WorktreeStoreTests(unittest.TestCase):
             self.assertTrue((main / ".workspace-memory" / "memory.sqlite3").is_file())
             self.assertFalse((linked / ".workspace-memory").exists())
 
-            read = self.cli(main, "get", "shared")
+            read = self.cli(main, "get", "shared", "--historical")
             self.assertEqual(0, read.returncode, read.stderr)
             record = json.loads(read.stdout)
             self.assertEqual(
@@ -374,14 +543,102 @@ class WorktreeStoreTests(unittest.TestCase):
             stale = self.cli(main, *put, body="lost update")
             self.assertEqual(memory.EXIT_CONFLICT, stale.returncode)
             self.assertIn("MEMORY_REVISION_CONFLICT", stale.stderr)
-
             subprocess.run(
                 [*GIT, "worktree", "remove", str(linked)], cwd=main, check=True
             )
             self.assertEqual(
                 "from the worktree",
-                json.loads(self.cli(main, "get", "shared").stdout)["body"],
+                json.loads(self.cli(main, "get", "shared", "--historical").stdout)[
+                    "body"
+                ],
             )
+
+    def test_current_retrieval_checks_the_callers_worktree_and_safe_sources(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            main = base / "main"
+            (main / "scripts/operations").mkdir(parents=True)
+            (main / "scripts/operations/agent_memory.py").write_bytes(CLI.read_bytes())
+            source = main / "source.md"
+            source.write_text("reviewed source")
+            subprocess.run([*GIT, "init", "-q"], cwd=main, check=True)
+            subprocess.run([*GIT, "add", "."], cwd=main, check=True)
+            subprocess.run([*GIT, "commit", "-qm", "seed"], cwd=main, check=True)
+            linked = base / "linked"
+            subprocess.run(
+                [*GIT, "worktree", "add", "-q", str(linked)], cwd=main, check=True
+            )
+            reference = dict(
+                kind="repository-file",
+                path="source.md",
+                revision="reviewed-seed",
+                hash_algorithm="sha256",
+                digest=hashlib.sha256(source.read_bytes()).hexdigest(),
+                context="synthetic regression",
+            )
+            args = [
+                "put",
+                "current",
+                "--expected-revision",
+                "0",
+                "--tier",
+                "long-term",
+                "--owner",
+                "reviewer",
+                "--review-state",
+                "current",
+                "--source-ref",
+                json.dumps(reference),
+            ]
+            written = self.cli(main, *args, body="reviewed claim")
+            self.assertEqual(0, written.returncode, written.stderr)
+            self.assertEqual(0, self.cli(linked, "get", "current").returncode)
+            (linked / "source.md").write_text("changed branch source")
+            self.assertEqual(1, self.cli(linked, "get", "current").returncode)
+            self.assertEqual([], json.loads(self.cli(linked, "list").stdout))
+            preserved = json.loads(
+                self.cli(linked, "get", "current", "--historical").stdout
+            )
+            self.assertEqual("needs-review", preserved["provenance"]["reuse_state"])
+            self.assertEqual("reviewed claim", preserved["body"])
+            self.assertEqual(0, self.cli(main, "get", "current").returncode)
+            (linked / "source.md").unlink()
+            (linked / "source.md").symlink_to(source)
+            self.assertEqual(1, self.cli(linked, "get", "current").returncode)
+            (linked / "source.md").unlink()
+            os.mkfifo(linked / "source.md")
+            fifo = subprocess.run(
+                [
+                    sys.executable,
+                    str(linked / "scripts/operations/agent_memory.py"),
+                    "get",
+                    "current",
+                ],
+                cwd=linked,
+                capture_output=True,
+                text=True,
+                timeout=2,
+                check=False,
+                env={**os.environ, "PYTHONPATH": str(ROOT)},
+            )
+            self.assertEqual(1, fifo.returncode, fifo.stderr)
+            from scripts.lib.ops.memory_sources import source_is_current
+
+            for path in (
+                "../outside",
+                ".workspace-memory/memory.sqlite3",
+                ".claude/agent-memory/context.md",
+            ):
+                with (
+                    self.subTest(path=path),
+                    mock.patch("scripts.lib.ops.memory_sources.os.open") as opened,
+                ):
+                    self.assertFalse(
+                        source_is_current({**reference, "path": path}, linked)
+                    )
+                    opened.assert_not_called()
 
     def test_outside_a_repository_memory_is_unavailable_and_nothing_is_created(
         self,
