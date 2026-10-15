@@ -1,6 +1,6 @@
 ---
 title: "R10 Reconciliation Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 owner: "@buenhyden"
 updated: "2026-10-15"
@@ -79,19 +79,20 @@ this audit. They do not authenticate a separate historical approval.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0007 | draft | ready | #current-local-authority-and-start |
 | SPEC-0212-TSK-0007 | ready | in-progress | #current-local-authority-and-start |
+| SPEC-0212-TSK-0007 | in-progress | completed | #review-and-completion |
 
 ### Execution Items
 
 | Item | Work Unit | Scope | Owner | Status | Blocker |
 | --- | --- | --- | --- | --- | --- |
-| P01 | W16 | Source baseline, findings and authority | workflow-supervisor | in-progress | - |
-| P02 | W17 | Document role/language/link and contract consistency | doc-writer | in-progress | - |
-| P03 | W18 | Execution, acceptance and lifecycle reconciliation | qa-engineer | in-progress | - |
-| P04 | W19 | Retention, consumers and temporary QA | workflow-supervisor | in-progress | - |
-| P05 | W20 | Git/native hooks and QA/CI leaf producers | hook-developer | in-progress | - |
-| P06 | W21 | Change/release producers and protected-main boundary | ci-cd-engineer | in-progress | - |
-| P07 | W22 | Shared memory, native-off and backup assurances | qa-engineer | in-progress | - |
-| P08 | W23 | OpenBao/operations and purpose quality | ci-cd-engineer | in-progress | - |
+| P01 | W16 | Source baseline, findings and authority | workflow-supervisor | completed | - |
+| P02 | W17 | Document role/language/link and contract consistency | doc-writer | completed | - |
+| P03 | W18 | Execution, acceptance and lifecycle reconciliation | qa-engineer | completed | - |
+| P04 | W19 | Retention, consumers and temporary QA | workflow-supervisor | completed | - |
+| P05 | W20 | Git/native hooks and QA/CI leaf producers | hook-developer | completed | - |
+| P06 | W21 | Change/release producers and protected-main boundary | ci-cd-engineer | completed | - |
+| P07 | W22 | Shared memory, native-off and backup assurances | qa-engineer | completed | - |
+| P08 | W23 | OpenBao/operations and purpose quality | ci-cd-engineer | completed | - |
 
 These execution records run under the bounded local authority above.
 Read-only audit observations below do not claim implementation acceptance.
@@ -387,7 +388,7 @@ runbook supplies the actual installation procedure. The existing complex
 shell push parser was retained. No standing seven-review rule was added.
 Independent implementation review remains a separate step. The controller
 then invoked `rtk proxy bash scripts/hooks/install-pre-push-guard.sh` on the
-actual main checkout: exit 0, with `pre-push.before-native` preserved. An
+actual primary checkout: exit 0, with `pre-push.before-native` preserved. An
 independent reviewer found no actionable defect in the reviewed installer
 after its 69 synthetic tests. The actual installed `.git/hooks/pre-push`
 was invoked directly with synthetic refs: main returned exit 1 and the
@@ -446,8 +447,12 @@ actual Git calls changed from 21 to 3, with observed wall times 0.2088 s and
 0.0811 s. Bounded batch framing preserves blob identity, type, mode, size,
 UTF-8 and error handling. This small measurement is not a universal speedup.
 The earlier broad library run remains FAIL (245 tests, 11 changed-contract
-expectation failures and one legacy fixture error, 802.048 s); final corrected
-input validation is recorded separately when it finishes.
+expectation failures and one legacy fixture error, 802.048 s). The same four-module
+selection finally passed all 246 tests in 795.463 s, exit 0. Reader/test source
+bytes stayed frozen; HEAD changed during that run from initial `49f8dd661` to
+`3745b3db2d4483eb9eb4ddb95c0229e6feefbd7a`. This is an actual whole-selection
+PASS, with both observed Git identities, not a fixed-HEAD suite claim. Each
+historical reader snapshot resolves its own commit identity.
 
 Local tool observations were Git 2.43.0, Python 3.12.3, Docker Compose v5.6.0,
 pre-commit 4.6.2 and Ruff 0.16.10. Worker interpreter environments are distinct
@@ -479,8 +484,7 @@ The earlier independent code review ran 115 tests, OK with 30 skips in 23.884 s:
 9.623 s plus the post-generation-7 baseline case in 3.274 s. Final lifecycle
 focused checks passed 51 tests in 17.319 s. The exact cloned fragmented-evidence
 integration case passed in 254.994 s. An intervening broad 246-test run had one
-failure in 717.863 s before the final source-bound fix; it remains a FAIL, with
-a new same-suite execution pending.
+failure in 717.863 s before the final source-bound fix; it remains a FAIL, resolved by the separately recorded final same-suite PASS.
 
 The first final changed-body metadata run selected 479 documents and failed with
 146 findings in 229.826 s. One blank line split this Task's Evidence table.
@@ -488,7 +492,10 @@ Package parse then failed before historical alias projection, producing 145
 cascading archive-route type findings. Removing only that blank line restored
 36 parsed packages, zero lifecycle findings and all 145 historical aliases in
 the narrow probe. No archive bytes or checker code changed. The identical
-479-input final run is recorded separately below.
+479-input final run passed: selected 479, violations 0, 243.165 s. The later
+three-path check on the two final policies and this Task also passed against
+explicit committed generation-7 base `3745b3db2`: selected 3, violations 0.
+Final result-only closure is checked separately on this Task alone.
 
 ### Effective hook and hosted-source inventory
 
@@ -562,7 +569,7 @@ prove those historical destinations.
 | OpenBao override contract | 18 | W23 | `tests.validation.test_openbao_window_overrides` | OpenBao writer corrected SPEC-0243 and existing tracked override fixtures | PASS | OpenBao source implementation and actual checks; three tests in 0.081 s | required | - |
 | Generation-7 package reader | 13 | W18 | Lifecycle writer `load_spec_packages` under generation 7 after legacy source admission | Current local r10 source; immutable old receipt tables retained | PASS | Lifecycle writer handoff; 36 active packages load | required | - |
 | Generation-7 focused regressions | 13 | W18 | Lifecycle writer focused contract tests | Current local r10 reader/schema/templates | PASS | Lifecycle writer handoff; 41 tests | required | - |
-| Native hook installation | 15 | W20 | `rtk proxy bash scripts/hooks/install-pre-push-guard.sh` | Actual main checkout; exact known prior template | PASS | P05 before and after graph; exit 0 and prior shim retained | required | - |
+| Native hook installation | 15 | W20 | `rtk proxy bash scripts/hooks/install-pre-push-guard.sh` | Actual primary checkout; exact known prior template | PASS | P05 before and after graph; exit 0 and prior shim retained | required | - |
 | Installed hook direct input | 15 | W20 | Invoke actual `.git/hooks/pre-push` with synthetic main and feature ref lines | Main checkout installed native hook; no Git push or remote write | PASS | P05 before and after graph; main exit 1, feature exit 0 | required | - |
 | Retention consumer trace | 14 | W19 | Bounded `rg` of SPEC-0240 and selected OpenBao module consumers | Current tracked source scopes named in Work Log | PASS | P04 direct-consumer trace; retention kept, deletion not established | required | - |
 | Pre-commit before-after measurement | 15 | W20 | Actual synthetic pushes through pre-commit 4.6.2 and native wrapper in temporary bare repositories | Existing feature-ref mixed push and main deletion; separate fixture commits | PASS | P05 before and after graph; original bypass reproduced, corrected refs unchanged, one sample each | required | - |
@@ -605,27 +612,73 @@ prove those historical destinations.
 | Final script manifest | 11 | W16 | Script manifest validation | All five new tracked source/Task/test files; sorted 106-entry manifest; real subprocess call recognized | PASS | Controller check-script-manifest.py exit 0; validator unchanged | required | Initial script manifest, Final manifest invocation proof |
 | Final internal link corpus | 12 | W17 | Registered check-document-links.py --mode all | Final role/headings and existing historical-link source policy | PASS | 1310 documents; 11677 links; failures 0; warning: 2870 legacy links lack capture source | required | - |
 | Additional policy and Task format | 12 | W17 | Installed markdownlint-cli2 on final three writer paths | quality-standards, git-workflow and this Task | PASS | Controller three-file format check; zero issues, 0.620 s | required | - |
+| Final broad library | 13 | W18 | Registry/spec/metadata library regressions | Frozen final source; start HEAD 49f8dd661, end HEAD 3745b3db2; same four modules | PASS | Lifecycle handoff; all 246 tests, 795.463 s, exit 0; both Git identities disclosed | required | Broad library baseline, Broad library intermediate |
+| Committed-gen7 policy and Task metadata | 13 | W18 | Final selected metadata on committed generation-7 base | quality-standards, git-workflow and Task; explicit 3745b3db2 base | PASS | Controller check-changed: selected 3, violations 0, no overrides/exceptions | required | - |
+| Normal local commit hooks | 16 | W21 | Observed ordinary git commit with installed pre-commit and commit-msg | Three logical commit index/config/message inputs in local branch | PASS | Local delivery ledger; style/secret/message hooks passed, unmatched file-type hooks skipped normally | required | - |
+| Scoped verification 11 final | 11 | W16 | Changed-document and directly affected implementation checks | Final r10 source; actual individual check inputs and identities above | PASS | Baseline identity; final script manifest; exact local delivery ledger | required | Scoped verification 11 |
+| Scoped verification 12 final | 12 | W17 | Changed-document and directly affected implementation checks | Final r10 source; actual individual check inputs and identities above | PASS | 479-body metadata; final internal links; heading/content preservation; final policy check | required | Scoped verification 12 |
+| Scoped verification 13 final | 13 | W18 | Changed-document and directly affected implementation checks | Final r10 source; actual individual check inputs and identities above | PASS | 246-test final suite; committed-gen7 metadata; old SPEC-0241/0236 reconciliation | required | Scoped verification 13 |
+| Scoped verification 14 final | 14 | W19 | Changed-document and directly affected implementation checks | Final r10 source; actual individual check inputs and identities above | PASS | Direct-consumer trace; retained archive/guards; obsolete lexer/helper removed | required | Scoped verification 14 |
+| Scoped verification 15 final | 15 | W20 | Changed-document and directly affected implementation checks | Final r10 source; actual individual check inputs and identities above | PASS | Installed push fixtures; actual synthetic dispatcher; readonly partial-staging; graph and independent review | required | Scoped verification 15 |
+| Scoped verification 16 final | 16 | W21 | Changed-document and directly affected implementation checks | Final r10 source; actual individual check inputs and identities above | PASS | Actual release/CHANGELOG/message producers; authenticated read-only protection; normal local commits | required | Scoped verification 16 |
+| Scoped verification 17 final | 17 | W22 | Changed-document and directly affected implementation checks | Final r10 source; actual individual check inputs and identities above | PASS | Registered 39-test synthetic memory leaf; independent FIFO/freshness/conflict/quota/backup review | required | Scoped verification 17 |
+| Scoped verification 18 final | 18 | W23 | Changed-document and directly affected implementation checks | Final r10 source; actual individual check inputs and identities above | PASS | OpenBao optional static/workflow/isolated security checks; source-only security render; retained live-operation limits | required | Scoped verification 18 |
+| Final Task closure metadata | 11 | W16 | Final Task check-changed against actual source commit | Explicit base 05235344690fdc1f7efbe7db8ce824d1387b63f8; completed items and accepted local criteria | PASS | Controller final receipt check: selected 1, violations 0, legacy exceptions 0, transition overrides 0 | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 11 | pending | - | - | @buenhyden |
-| 12 | pending | - | - | @buenhyden |
-| 13 | pending | - | - | @buenhyden |
-| 14 | pending | - | - | @buenhyden |
-| 15 | pending | - | - | @buenhyden |
-| 16 | pending | - | - | @buenhyden |
-| 17 | pending | - | - | @buenhyden |
-| 18 | pending | - | - | @buenhyden |
+| 11 | accepted | Scoped verification 11 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
+| 12 | accepted | Scoped verification 12 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
+| 13 | accepted | Scoped verification 13 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
+| 14 | accepted | Scoped verification 14 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
+| 15 | accepted | Scoped verification 15 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
+| 16 | accepted | Scoped verification 16 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
+| 17 | accepted | Scoped verification 17 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
+| 18 | accepted | Scoped verification 18 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
 
 ## Review and Completion
 
-Initial source audit and executable work mapping are prepared. Implementation,
-scoped final checks, independent review and promotion receipts remain pending.
-No criterion is accepted, no item is completed and no remote/runtime outcome
-is inferred. Final commits and delivery identifiers are recorded only after
-they exist.
+P01–P08 local execution items are complete. The controller's criterion decisions
+accept this request's bounded source correction, preservation, synthetic
+assurance and documented handoff. The Current Owner is the delegated local
+workflow supervisor; the human owner field does not authenticate a new user
+approval. This does not reopen or accept the old pending SPEC-0236/0237/0241/0243
+criteria, certify WGOV-CORE/3.0.0 or imply four-repository adoption. No required
+observation remains unresolved; earlier required FAIL/NOT_RUN rows remain and
+are explicitly resolved by equivalent final checks. Optional failed diagnostics
+and skipped native rehearsals remain visible with their limits.
+
+Durable meaning is in Stage 99, governance, REQ-0003/AD-0003, the harness/OpenBao
+runbooks and existing memory owners; this Task is the execution receipt.
+Completed historical Tasks and archive payloads were not changed. Current source
+and regression fixtures remain only where a current failure consumer exists;
+owned synthetic rehearsal copies were removed by their runners. No private store,
+HOME memory migration, deployment, credential ceremony or real remote push ran.
+
+The remote main protection read still has empty required check names; the source
+proposal is ready for separately authorized remote application/read-back. Global
+plugin/managed runtime composition, provider native-memory-off effectiveness,
+original 67-path shared digest authentication, live restore/RTO/latency and the
+2,870 uncaptured legacy links remain unverified in their respective scopes.
+These are disclosed handoff boundaries, not silently passing runtime outcomes.
+
+The final closure metadata check passed against source commit `052353446`: one
+Task selected, zero violations, no legacy exceptions or transition overrides.
+The final remote read still returned initial main `49f8dd661`; no remote writes
+were made. This result-only addition preserves the checked state and links.
+
+### Local delivery ledger
+
+| Commit | Logical unit | Actual delivery |
+| --- | --- | --- |
+| `3745b3db2d4483eb9eb4ddb95c0229e6feefbd7a` | Coupled document/governance/reader/hook/CI reconciliation | Normal pre-commit and commit-msg passed; local only |
+| `0c6fb2d4b66190cc7f693266464238dddcd9e249` | Memory engine, provenance helper and synthetic regressions | Normal pre-commit and commit-msg passed; local only |
+| `05235344690fdc1f7efbe7db8ce824d1387b63f8` | Compose preflight render reuse and regression | Normal pre-commit and commit-msg passed; local only |
+
+The final receipt is a separate document-only commit after its scoped validation.
+No remote PR, merge, release, issue/project update or deployment ID is invented.
 
 ## Related Documents
 
