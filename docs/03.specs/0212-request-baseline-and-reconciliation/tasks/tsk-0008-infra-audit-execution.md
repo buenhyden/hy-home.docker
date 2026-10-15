@@ -2,7 +2,7 @@
 title: "Infrastructure Audit Execution Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -55,11 +55,12 @@ criteria, evidence, merge, and operation disposition under its primary owner.
 
 ### P0 execution state
 
-W24 is in progress. Its scope is source inventory, owner routing, shared
-leases, evidence ladder, QA/CI mapping, and P1–P9 handoff. Final P0 source
-findings and independent review remain pending; they do not block unrelated,
-reversible owner source/test/document work. P1 blocks only live or irreversible
-operations until its named prerequisites are met.
+W24 source preparation is active while this newly issued Task remains `draft`
+under the lifecycle contract. Its scope is source inventory, owner routing,
+shared leases, evidence ladder, QA/CI mapping, and P1–P9 handoff. Final P0
+source findings and independent review remain pending; they do not block
+unrelated, reversible owner source/test/document work. P1 blocks only live or
+irreversible operations until its named prerequisites are met.
 
 ### Current P0 source snapshot
 
