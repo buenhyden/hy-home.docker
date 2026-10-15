@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.7"
+version: "0.1.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -42,6 +42,16 @@ unverified or unknown.
 
 The approved Spec and Plan define W1 through W6. No new native-session action
 has run under this Task.
+
+### Spec Approval
+
+The direct 2026-10-16 user authorization approved the bounded SPEC-0244
+contract before this Task was created.
+
+### Plan Approval
+
+The same direct authorization approved SPEC-0244-PLAN-0001's bounded work and
+verification sequence before this Task was created.
 
 ### Ready Transition
 
@@ -109,14 +119,25 @@ label was not earned. The normal no-model UI observation remains limited to
 `SessionStart=1` and `SessionEnd=1`, and normal merged auto-memory remains
 unknown.
 
+### Forced-off Hook Retry 02 Plan
+
+Security approved one fresh retry plan with digest
+`4f59ea1279ac9233b50cc33262a3ca50a3015920a6b1f1ce37280e389d92e414`.
+It is session-only forced-off with `sandbox=false`, so it makes no OS
+confinement claim. The task-owned witness accepts only the exact guarded
+fixture `Write` payload and denies every other operation. The attempt permits
+no Read, Bash, or MCP tool; it has at most two turns, USD 1, and 180 seconds.
+It is one new retry only. Guard tests passed before release. Normal merged
+auto-memory remains unknown, and this plan does not change its criterion.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
-| SPEC-0244 | draft | approved | Direct user authorization recorded in Inputs and Authorization |
-| SPEC-0244-PLAN-0001 | draft | approved | Direct user authorization recorded in Inputs and Authorization |
-| SPEC-0244-TSK-0001 | draft | ready | Ready security plan review |
-| SPEC-0244-TSK-0001 | ready | in-progress | Final UI witness observation |
+| SPEC-0244 | draft | approved | #spec-approval |
+| SPEC-0244-PLAN-0001 | draft | approved | #plan-approval |
+| SPEC-0244-TSK-0001 | draft | ready | #ready-transition |
+| SPEC-0244-TSK-0001 | ready | in-progress | #in-progress-observation |
 
 ## Evidence
 
@@ -134,6 +155,7 @@ unknown.
 | Global marker cleanup | 5 | W5 | Delete only proven-new zero-byte privacy-environment placeholders at the user-global location | Guarded cleanup deleted all eight approved proven-new zero-byte files; four ambiguous files and all directories preserved | PASS | Cleanup Follow-up | required | Global marker cleanup boundary |
 | Forced-off hook plan review | 4 | W4 | Security review of one session-only forced-off hook-delivery attempt without privacy-environment scrub | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`; sole PASS label `HOOK_DELIVERY_VERIFIED_WITH_SESSION_FORCED_MEMORY_OFF`; normal merged effective-off remains unknown | PASS | Forced-off Hook Delivery Plan | required | - |
 | Forced-off hook attempt | 4 | W4 | One approved session-only forced-off hook-delivery attempt | Startup exit 1; stdout absent; stderr discarded; zero hooks, tools, and model output; no timeout | FAIL | Forced-off Hook Attempt | required | - |
+| Forced-off hook retry 02 plan review | 4 | W4 | Security review of one fresh session-only forced-off retry with guarded Write-only witness | Plan `4f59ea1279ac9233b50cc33262a3ca50a3015920a6b1f1ce37280e389d92e414`; sandbox false with no OS-confinement claim; no Read/Bash/MCP; max two turns/USD 1/180 seconds; guard tests PASS | PASS | Forced-off Hook Retry 02 Plan | required | - |
 
 ## Criterion Acceptance
 

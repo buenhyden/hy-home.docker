@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -53,6 +53,16 @@ The approved Spec and Plan define the execution order. No backup, isolated
 restore, image build, CA application, recreation, or operational review has
 run under this Task.
 
+### Spec Approval
+
+The direct 2026-10-16 user authorization approved the bounded SPEC-0245
+contract before this Task was created.
+
+### Plan Approval
+
+The same direct authorization approved SPEC-0245-PLAN-0001's bounded work and
+verification sequence before this Task was created.
+
 ### Ready Transition
 
 On 2026-10-16, W1 bound the exact, value-free backup phase contract and its
@@ -79,10 +89,10 @@ backup, restore, image build, CA application, recreation, or health outcome.
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
-| SPEC-0245 | draft | approved | Direct user authorization recorded in Inputs and Authorization |
-| SPEC-0245-PLAN-0001 | draft | approved | Direct user authorization recorded in Inputs and Authorization |
-| SPEC-0245-TSK-0001 | draft | ready | Ready backup packet binding |
-| SPEC-0245-TSK-0001 | ready | in-progress | Backup phase release |
+| SPEC-0245 | draft | approved | #spec-approval |
+| SPEC-0245-PLAN-0001 | draft | approved | #plan-approval |
+| SPEC-0245-TSK-0001 | draft | ready | #ready-transition |
+| SPEC-0245-TSK-0001 | ready | in-progress | #in-progress-transition |
 
 ## Evidence
 
