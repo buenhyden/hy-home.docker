@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.11"
+version: "0.1.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -170,6 +170,19 @@ reviewed plan. It cannot prove normal merged auto-memory is off; that state
 remains unknown. Its only successful hook-delivery label remains
 `HOOK_DELIVERY_VERIFIED_WITH_SESSION_FORCED_MEMORY_OFF`.
 
+### Forced-off Hook Retry 03 Result
+
+The released retry exited 0 with a valid stream and no stderr. It reached one
+final token and one `Write` tool. The tracked wrapper delivered
+`SessionStart=1`, `UserPromptSubmit=1`, `PreToolUse=1`, `Stop=1`, and
+`SessionEnd=1`; `PostToolUse=0` and `PreCompact=0`. No output file or exact
+output was retained, and one nested-Bash token was classified `UNEXPECTED`.
+
+The required full label was therefore not earned. This is a failed-closed,
+partial delivery receipt, not proof of complete hook delivery or a normal
+merged memory-off state. Cleanup and Git-status restoration passed. No further
+retry is planned.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -200,6 +213,7 @@ remains unknown. Its only successful hook-delivery label remains
 | Forced-off MCP static diagnosis | 4 | W4 | No-session validation of the retry MCP argument forms | Empty `--mcp-config '{}'` and empty wrapped `mcpServers` each reject as `Invalid MCP` before lifecycle initialization; no third attempt | PASS | Forced-off Hook Retry 02 Result | optional | - |
 | Forced-off hook retry 03 plan review | 4 | W4 | Independent security review of one frozen strict-MCP, no-config retry with the Retry 02 guards retained | Harness `98af87fab954dc515d54f43153bab36966f328a2137ed64868eda97c9b2ebc02`; pinned 2.1.301 headless strict path selects empty servers; no `--mcp-config`; Write-only, max two turns/USD 1/180 seconds, sandbox false without OS-confinement claim | PASS | Forced-off Hook Retry 03 Plan | required | - |
 | Forced-off MCP dynamic-proof boundary | 4 | W4 | Public `mcp list` observation under the reviewed investigation | Timed out health-checking normally approved servers; subcommand bypasses the headless strict resolver; no child remains | NOT_RUN | Forced-off Hook Retry 03 Plan | optional | - |
+| Forced-off hook retry 03 attempt | 4 | W4 | One released frozen strict-MCP, no-config hook-delivery retry | Exit 0; valid stream; no stderr; final token and one Write; SessionStart/UserPromptSubmit/PreToolUse/Stop/SessionEnd each 1; PostToolUse and PreCompact each 0; no output file or exact output retained; one nested-Bash token `UNEXPECTED`; cleanup/status PASS | FAIL | Forced-off Hook Retry 03 Result | required | - |
 
 ## Criterion Acceptance
 
