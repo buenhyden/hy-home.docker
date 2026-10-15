@@ -1,10 +1,10 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.22"
+version: "0.1.23"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0012"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-11"
 
 # P04 Airflow Independent Manifest Pipeline Task
 
-## Objective
+## Overview
+
+### Objective
 
 Own criterion18/W34-W39: implement the independent synthetic manifest
 validation/publication batch using the existing DEV PostgreSQL, object storage

@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier (10-communication) Product Requirements"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0011"
 created: "2026-03-26"
@@ -12,8 +12,6 @@ created: "2026-03-26"
 # Communication Tier (10-communication) Product Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -23,35 +21,7 @@ This document retains mail requirements across Stalwart in `10-communication` an
 
 Mail sending logic is currently fragmented, and inconsistent performance and security policy make it hard to guarantee reliability under large-scale notification load. There is also a risk that development environments send real production mail.
 
-## Requirements
-
-### Requirements
-
-### Functional Requirements
-
-- **REQ-0011-FR-0001**: Provide a development SMTP trap service (Mailpit).
-- **REQ-0011-FR-0002**: Provide a high-performance production IMAP/SMTP/JMAP mail server (Stalwart).
-- **REQ-0011-FR-0003**: Support real-time UI monitoring and search of mail transmission data.
-- **REQ-0011-FR-0004**: Guarantee secure communication through TLS encryption.
-- **REQ-0011-FR-0005**: Control access to the admin UI based on system SSO (Keycloak).
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-### Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0011-FR-0001**: Zero accidental production mail sends from the development environment.
-- **REQ-0011-FR-0002**: The optional mail compose passes hardening verification with valid network membership, Docker Secret references, and an SSO-protected UI route.
-- **REQ-0011-FR-0003**: External delivery success rate, TLS version, and DNS deliverability metrics are verified as separate evidence at production promotion, and are not treated as completion criteria for the current optional compose.
-
 ## Scope
-
-### Scope
 
 ### Stakeholders and User Needs
 
@@ -89,6 +59,30 @@ N/A
 
 - **Risks**: risk of outbound delivery stopping if the mail server IP is blacklisted.
 - **Dependencies**: `02-auth` (SSO authentication), `secrets/certs` (TLS certificates).
+
+## Requirements
+
+### Functional Requirements
+
+- **REQ-0011-FR-0001**: Provide a development SMTP trap service (Mailpit).
+- **REQ-0011-FR-0002**: Provide a high-performance production IMAP/SMTP/JMAP mail server (Stalwart).
+- **REQ-0011-FR-0003**: Support real-time UI monitoring and search of mail transmission data.
+- **REQ-0011-FR-0004**: Guarantee secure communication through TLS encryption.
+- **REQ-0011-FR-0005**: Control access to the admin UI based on system SSO (Keycloak).
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0011-FR-0001**: Zero accidental production mail sends from the development environment.
+- **REQ-0011-FR-0002**: The optional mail compose passes hardening verification with valid network membership, Docker Secret references, and an SSO-protected UI route.
+- **REQ-0011-FR-0003**: External delivery success rate, TLS version, and DNS deliverability metrics are verified as separate evidence at production promotion, and are not treated as completion criteria for the current optional compose.
 
 ## Related Documents
 

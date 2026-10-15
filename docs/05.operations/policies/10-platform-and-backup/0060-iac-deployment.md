@@ -1,10 +1,10 @@
 ---
 title: "IaC Deployment Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0060"
 parent_ids:
@@ -44,12 +44,6 @@ socket 권한과 외부 도구 선택은 OpenTofu의 읽기 전용 cloud credent
 
 - 정책 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
 
-### Verification
-
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-- OpenTofu/Terrakube guide/runbook과 compose service names가 일치하는지 검토한다.
-
 ### Review Cadence
 
 - 서비스 구성 변경 시 검토
@@ -60,6 +54,12 @@ socket 권한과 외부 도구 선택은 OpenTofu의 읽기 전용 cloud credent
 
 - 상위 문서: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - 동일 주제 문서: 없음 — `0060`은 독립 정책이며 같은 번호의 Guide/Runbook은 없다.
+
+## Verification
+
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
+- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+- OpenTofu/Terrakube guide/runbook과 compose service names가 일치하는지 검토한다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Compose Container and Host Naming"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0216"
 parent_ids:
@@ -52,6 +52,14 @@ service-to-service addresses, which already use service keys.
 3. The root Compose model renders, and the full Compose validation passes.
 4. HOME runs the renamed containers under their new names, with their
    volumes, health and scrape targets intact, or the Task records why not.
+
+## Failure Conditions
+
+A missing service-key hostname or container name fails unless the latter
+has an exact, reasoned naming exception. Retired container references or a
+HOME recreation that loses volumes, health or scrape targets leave the
+naming change unverified; service keys and inter-service addresses are not
+renamed.
 
 ## Related Documents
 

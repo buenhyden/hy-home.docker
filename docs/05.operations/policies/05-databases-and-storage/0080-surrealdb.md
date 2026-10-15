@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Policy"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0080"
 parent_ids:
@@ -59,13 +59,6 @@ created: "2026-09-19"
 소유자 `@buenhyden`은 편차 전에 범위, 위험, 만료, 종료 조건, 백업 식별자,
 롤백 증거를 기록해야 한다.
 
-### Verification
-
-- `docker compose --profile surrealdb config --quiet`
-- 서비스/프로필/마운트/시크릿 사실을 연결된 가이드, 런북, infra README와
-  비교한다.
-- `python3 scripts/validation/check-document-links.py --mode all`를 실행한다.
-
 ### Review Cadence
 
 매월, 그리고 이미지, 저장 형식, 영속성, 인증, namespace/database, 노출,
@@ -75,6 +68,13 @@ created: "2026-09-19"
 
 - 상위 아키텍처: [AD-0011](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 - 대상 동위 문서: [가이드](../../guides/05-databases-and-storage/0080-surrealdb.md), [런북](../../runbooks/05-databases-and-storage/0080-surrealdb.md)
+
+## Verification
+
+- `docker compose --profile surrealdb config --quiet`
+- 서비스/프로필/마운트/시크릿 사실을 연결된 가이드, 런북, infra README와
+  비교한다.
+- `python3 scripts/validation/check-document-links.py --mode all`를 실행한다.
 
 ## Related Documents
 

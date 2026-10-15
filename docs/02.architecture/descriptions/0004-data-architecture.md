@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.0.8"
+version: "1.0.9"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -16,12 +16,6 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 Data provides storage and data-platform packages for HOME applications and
@@ -29,6 +23,8 @@ explicitly selected development workloads. Operators need to distinguish
 shared HOME state from OPTIONAL platforms and LAB topologies. Package names
 are direct children of `infra/04-data`; Analytics processing lives in
 `infra/12-analytics` under ADR-0045.
+
+## Scope
 
 ### System Boundaries
 
@@ -46,9 +42,7 @@ No package is split solely to make a folder taxonomy more uniform.
 - [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
 - [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -70,6 +64,8 @@ components do not describe HOME's mng-pg topology. SurrealDB stays with its
 sole consumer Open Notebook in `08-ai`. RedisInsight owns only its administration metadata; target engine backups remain owned by the corresponding Data service. Restic stays in `09-platform-ops` as cross-platform orchestration.
 InfluxDB is retired (ADR-0047); DEV TimescaleDB owns time-series history.
 
+## Runtime and Deployment
+
 ### Data Flow
 
 Auth, Workflow, Tooling and Analytics use declared mng-db identities. AI uses
@@ -90,7 +86,9 @@ credential contracts. Exact profiles and networks remain in source and POL-0078.
 ports, secrets, persistent volume identities and host paths. It does not
 restart containers or reconcile existing source mounts.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - HOME mng-pg and mng-valkey are shared single-instance dependencies, separate
   from LAB PostgreSQL/Valkey clusters. Same-host replicas do not provide host HA.

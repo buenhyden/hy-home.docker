@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.22"
+version: "1.4.24"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -18,13 +18,19 @@ created: "2026-09-22"
 
 pgBackRest, Restic, SQLite export, R2 오프사이트 사본과 공유 에이전트 memory 저장소의 설정·실행·검증·복구 절차를 다룬다. 정책은 [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md), 설명은 [GDE-0021](../../guides/10-platform-and-backup/0021-backup-and-restore.md)이 소유한다.
 
-## Trigger and Preconditions
+## Trigger
 
 backup repository를 준비하거나, `mng-pg`를 pgBackRest image로 전환하거나,
 backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 시점으로
 복원하거나, Restic에서 파일을 복원하거나, 오래된 snapshot을 삭제하거나,
 R2 오프사이트 사본을 설정하거나 그 사본에서 복원하거나, 공유 에이전트 memory 저장소를
-backup·restore할 때 사용한다. service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
+backup·restore할 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
 모든 단계는 target을 명시한 별도의 approval이 필요하다.
 
 ### Execution and stop boundary
@@ -454,6 +460,27 @@ restore는 HOME/offsite custody를 대신하지 않는다.
 
 ### 공유 에이전트 memory 저장소
 
+기본 `get <id>`와 `list`는 검토된 `current` 기억과 caller worktree의 source
+pin이 일치할 때만 본문을 반환한다. 새 쓰기는 `candidate`이며, 기존 schema 1의
+본문·출처·revision을 삭제하지 않고 pin 없는 기록을 `needs-review`로 표시한다.
+보존된 기억은 `get <id> --historical`, `history <id>`, `list --all`, `export`로
+명시적으로 조회한다. 역사 본문은 현재 실행·승인·검증 증거가 아니다.
+`put --review-state current`는 owner 검토와 아래 구조의 matching source pin이
+필요하다. `--source-ref`는 JSON 객체를 인자로 받고 기존 문자열도 보존한다.
+
+```json
+{"kind":"repository-file","path":"docs/example.md","revision":"reviewed-source-revision","hash_algorithm":"sha256","digest":"<64 lowercase hex characters>","context":"검토한 적용 조건"}
+```
+
+실제 tracked 일반 파일의 bytes를 SHA-256으로 pin한다. Git blob ID를 쓰면
+`hash_algorithm`은 `git-blob`으로 구분한다. 예시는 실행 가능한 pin이 아니다.
+영역 기억은 `--domain-id`, 안전한 재시도는 `--request-key`를 명시한다. 같은 키와
+다른 의미 입력은 충돌이며, 충돌 diagnostic의 `stored`와 양쪽 revision을
+확인한다. `stored=false`이면 incoming 본문이 보존되었다고 보고하지 않는다.
+16 KiB 본문/32 MiB 전체 본문과 계층·영역·metadata·page 상한은 환경 제약 5절이
+소유하며, 초과해도 기존 기억을 삭제하지 않는다. 작업 worktree는 이 schema 2
+CLI와 helper를 함께 사용한다. 구버전 CLI는 새 재사용/용량 계약을 보장하지 않는다.
+
 Claude와 Codex가 함께 쓰는 memory 저장소(`.workspace-memory/memory.sqlite3`,
 규칙은 [환경 제약](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory))는
 Git이 무시하므로 Git으로 복구되지 않는다. 매일 `hyhome-backup.service`가 SQLite
@@ -474,12 +501,23 @@ Restic snapshot에 들어가지 않는다. 일일 snapshot에서 복구하려면
 검토한 `hyhome-state` snapshot에서 `/src/state/exports/agent-memory.sqlite3`만
 소유한 scratch에 꺼내고, 그 파일을 아래 restore의 `--input`으로 쓴다. 일일 실행은
 다른 에이전트가 저장소에 5초보다 오래 쓰고 있으면 이 단계를 실패로 기록한다.
+동시 백업은 원본 DB inode의 advisory lock을 사용한다. 이미 백업 중이면 exit 7로
+거절하고 기존 정상본을 유지한다. snapshot은 schema/identity/revision/provenance와
+conflict를 보존하고 검사한 뒤 교체한다. DB/backup/임시 복사본은 64 MiB 예산이며
+파일시스템 quota가 아니다. journal의 같은 크기 예산은 관측 대상이다.
 
 복구는 저장소가 없을 때만 한다. 다른 에이전트 세션을 모두 멈춘 뒤 main
 checkout의 저장소 root에서 다음을 실행한다. CLI는 현재 디렉터리의 저장소가
 스크립트의 저장소와 다르면 거절한다. 저장소가 이미 있으면 exit 3으로 거절하며 기존 기록을 덮어쓰지 않는다.
 백업의 schema가 저장소 schema와 다르면 거절하고, 복사가 실패하면 만들던 저장소를
 지운다.
+원본 main checkout을 이동했다면 Git common directory가 새 main checkout의
+실제 `.git`을 가리키고 기존 `.workspace-memory`가 함께 이동했는지 먼저 확인한다.
+분리 Git directory와 main checkout이 없는 구조는 `MEMORY_UNAVAILABLE`이며 새
+DB를 만들지 않는다. 지원되는 main checkout 구조를 복구하고 검토한 snapshot을
+빠진 저장소에만 연결한다. 복원된 기존 `workspace_id`를 이후 쓰기에도 재사용한다.
+독립 clone/다른 host가 같은 물리 DB라고 주장하지 않는다. 과거 native migration을
+재실행하거나 개인 native 파일을 읽고 지우지 않는다.
 
 ```bash
 python3 scripts/operations/agent_memory.py restore --input "<수동 백업 또는 Restic에서 꺼낸 agent-memory.sqlite3>"
@@ -495,7 +533,7 @@ command, exit status, pgBackRest backup label, Restic snapshot ID, 복원된 row
 count 또는 file hash, 소요 시간을 기록한다. key 값, dump 내용, rendered
 configuration은 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

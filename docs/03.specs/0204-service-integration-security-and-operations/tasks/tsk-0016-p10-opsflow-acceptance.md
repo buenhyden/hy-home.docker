@@ -1,10 +1,10 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.20"
+version: "0.1.21"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0016"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-11"
 
 # P10 Opsflow Acceptance Task
 
-## Objective
+## Overview
+
+### Objective
 
 Own criterion 21 and W63–W69: acceptance of one bounded Opsflow vertical slice,
 from a manifest input through authenticated Airflow publication, DEV transaction

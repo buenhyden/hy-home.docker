@@ -1,10 +1,10 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.18"
+version: "1.0.19"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
@@ -19,7 +19,9 @@ branch_integration_receipts:
 
 # Runtime Compatibility and Security Task
 
-## Objective
+## Overview
+
+### Objective
 
 After owner approval, correct the confirmed n8n compatibility and secret
 consumer defects, check Crawl4AI's security pin, and separate OpenBao sealed
@@ -910,8 +912,6 @@ and [OpenBao status exit codes](https://openbao.org/docs/commands/status/).
 Recheck exact stable image, digest and compatibility at implementation time;
 none of these links is a tested HOME deployment.
 
-### Evidence Notes
-
 ### Storybook blocker and alternative assessment — 2026-10-04
 
 The user requested investigation and alternatives if no immediate fix exists,
@@ -1136,8 +1136,6 @@ ran hosted CI `37162825263`: metadata selected8/violations0, operations catalog
 PASS and formatting hooks PASS, but the gate exited1 with five high findings
 under `GHSA-vfj7-8cjw-p6xm`. The owner's braces hold remains; this document
 edge adds no security exception and does not merge that PR.
-
-### Protected registration repair — 2026-10-04
 
 ### Required gate result and existing security hold — 2026-10-04
 
@@ -1432,8 +1430,6 @@ assumption for `n8nio/runners`; verify its entrypoint first. If the pinned
 runner lacks a safe supported file-consumption path, stop and amend this Task
 with the exact wrapper/Dockerfile path before writing one. Existing LAB
 Cassandra work is a verification item, not a repeat implementation.
-
-### Deferred Items
 
 ### Approved combined protected delivery
 

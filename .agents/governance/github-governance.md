@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.3.1"
+version: "1.4.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 ---
 
 # GitHub Governance Policy
@@ -145,6 +145,25 @@ not passing evidence.
 No task is complete by citing a CI-only gate alone when a cheap local check is
 available, and no local-only check replaces required protected-branch gates.
 
+#### 5.3 QA Definition Trust and Amendment
+
+QA 정의를 바꾸는 변경은 현재 소유자의 실제 수용을 해당 diff·revision과
+연결하고, 비교한 trusted base 정의의 출처·revision을 Task에 기록한다.
+대상은 `.github/workflows/`, `.github/workflow-contract.yml`,
+`scripts/lib/gate/`, `scripts/validation/ci_gate_runner.py`,
+`scripts/validation/run-ci-gate.py`, QA dependency pins와
+`.pre-commit-config.yaml`이다. 일반 문서 변경에는 이 승인 절차를 추가하지
+않으며 이미 같은 범위에 주어진 명시적 승인을 다시 요구하지 않는다.
+
+후보가 자신의 workflow·controller·설정을 실행한 성공 결과만으로 QA 정의가
+변경되지 않았거나 승인되었다고 판정하지 않는다. 현재 `candidate-quality`는
+후보 실행의 증거이며 trusted base 실행기나 독립적인 정의 변경 승인 증거가
+아니다. 원격에서 이 경계를 강제하려면 후보가 수정할 수 없는 검증 정의와
+그 결과를 소비하는 보호 설정을 별도로 승인·적용·read-back해야 한다.
+이 정책의 로컬 개정은 그런 원격 강제의 관측이 아니다. 이를 구현한다며
+권한 있는 `pull_request_target` 실행기에 후보 코드를 checkout·실행하거나
+새 App·credential을 암묵적으로 만들지 않는다.
+
 ### 6. Local Instruction Authority
 
 - This repository does not adopt a GitHub-native instruction hierarchy for agent execution.
@@ -155,18 +174,6 @@ available, and no local-only check replaces required protected-branch gates.
   - Codex runtime hooks: `.codex/hooks.json`
 - GitHub is used here for repository protection, PR workflow, and Actions execution; it is not the canonical home of agent instruction policy.
 - Any future GitHub-native instruction file must be treated as out-of-scope until the repository governance explicitly adopts it.
-
-### 7. Completion Gate (GitHub-Specific)
-
-Before an agent declares any PR-related task complete, it must confirm:
-
-1. All required status checks are green (or note which are pending and why), and remote branch protection state is verified or explicitly reported as unverified.
-2. All required reviews are approved (or note which are outstanding and who owns them).
-3. No BLOCK-severity findings remain from code review or security audit.
-4. CODEOWNERS-triggered reviewers have been notified if paths are owned and remote protection enforces owner review; when it does not, state that instead of claiming a review.
-5. No secrets, long-lived credentials, or unpinned action references were introduced.
-
-If any gate is unmet, the task status is "blocked" not "done."
 
 ### 8. CI/CD Job Taxonomy
 
@@ -215,6 +222,20 @@ not add an App/PAT just to mirror Task state. See
 ## Exceptions
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
+### 7. Completion Gate (GitHub-Specific)
+
+Before an agent declares any PR-related task complete, it must confirm:
+
+1. All required status checks are green (or note which are pending and why), and remote branch protection state is verified or explicitly reported as unverified.
+2. All required reviews are approved (or note which are outstanding and who owns them).
+3. No BLOCK-severity findings remain from code review or security audit.
+4. CODEOWNERS-triggered reviewers have been notified if paths are owned and remote protection enforces owner review; when it does not, state that instead of claiming a review.
+5. No secrets, long-lived credentials, or unpinned action references were introduced.
+
+If any gate is unmet, the task status is "blocked" not "done."
 
 ## Related Documents
 

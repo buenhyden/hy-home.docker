@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Guide"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0080"
 parent_ids:
@@ -27,14 +27,16 @@ SurrealDB는 Open Notebook을 위한 `OPTIONAL` 데이터베이스로, 업스트
 프로세스를 소유하고, `surrealdb-data`가 `/mydata`를 영속화하며,
 `surreal_db_password`가 Compose에 리터럴 없이 root 인증을 제공한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: 라이브 복구 테스트를 주장하지 않으면서 현재 profile, 노출, 영속성, 인증,
 namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한다.
 
-## Usage
+## Concepts
 
 ### 현재 구현
 
@@ -49,6 +51,8 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
 | Health / 리소스 | `surreal is-ready`는 도달 가능성만 증명한다. 커스텀 서비스는 Compose에 선언된 템플릿을 사용한다. |
 | 백업 / 업그레이드 | 새로 호환되는 대상으로의 명시적 namespace/database export/import; 부분 import 대상은 격리 보존하고 재사용하지 않는다; v2 내에서 업스트림 스토리지 형식 순서를 따른다. |
 | 라이선스 / edition | SurrealDB 사용은 현재 공식 라이선스 조건을 준수해야 한다. 이 문서는 프로덕션이나 상업적 권리를 확장하지 않는다. |
+
+## Usage
 
 ### 빌드·상태와 버전 한계
 

@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Recovery Runbook"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0019"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-05-17"
 - 정상 root와 별도 LAB project를 혼동하지 않는다.
 - index/shard 작업 전 snapshot이나 escalation evidence를 확보한다.
 
-## Trigger and Preconditions
+## Trigger
 
 - primary `opensearch` healthcheck가 실패할 때
 - Dashboards가 OpenSearch에 연결할 수 없을 때
@@ -30,7 +30,13 @@ created: "2026-05-17"
 
 ### Execution and stop boundary
 
-대상: 정상 `opensearch`, `opensearch-dashboards`; LAB `opensearch-node1..3`, `lab-opensearch-dashboards`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+대상: 정상 `opensearch`, `opensearch-dashboards`; LAB `opensearch-node1..3`, `lab-opensearch-dashboards`.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
 기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
@@ -110,7 +116,7 @@ Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 �
 - compose file, service 이름, health 상태, 로그 요약, escalation 결정을 기록한다.
 - password 값은 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

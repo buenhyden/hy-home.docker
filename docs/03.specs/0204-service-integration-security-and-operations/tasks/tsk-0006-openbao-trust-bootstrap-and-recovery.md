@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.24"
+version: "0.2.25"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-10"
 
 # OpenBao Trust Bootstrap and Recovery Task
 
-## Objective
+## Overview
+
+### Objective
 
 Implement P01 before P06: native verified TLS, fresh AppRole authentication,
 functional renderer readiness, HMAC audit and recoverable restricted snapshots.

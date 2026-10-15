@@ -1,10 +1,10 @@
 ---
 title: "Communication Services Selection and Configuration"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0010"
 parent_ids:
@@ -17,11 +17,19 @@ created: "2026-03-26"
 
 This document is the ADR that tracks the background, choices, and outcomes of this architecture decision. This alignment section does not change the existing decision content.
 
-The `10-communication` layer handles the system's email-based notifications and message sending/receiving. During development, incidents where mail is sent to real users must be prevented, and in operation, a mail server with high deliverability and security is needed. For this, a lightweight sandbox and a modern, high-performance mail server solution must be selected.
-
 ### Traceability
 
 The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+## Decision Drivers
+
+The `10-communication` layer handles the system's email-based notifications and message sending/receiving. During development, incidents where mail is sent to real users must be prevented, and in operation, a mail server with high deliverability and security is needed. For this, a lightweight sandbox and a modern, high-performance mail server solution must be selected.
+
+## Options
+
+### Options Considered
+
+The retained decision selects MailHog for development capture and Stalwart for mail service. It records their selected roles and rationale, but no named rejected candidates or comparative evaluation. Those historical selections are retained below without asserting a new alternatives review or current deployment.
 
 ## Decision
 
@@ -41,18 +49,6 @@ The following service stack is selected as the standard tooling for `10-communic
 ### Decision Record
 
 Accepted (2026-03-26)
-
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
 
 ## Consequences
 

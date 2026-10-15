@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0014"
 parent_ids:
@@ -59,12 +59,6 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 
 - 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
 
-### Verification
-
-- `bash scripts/hardening/check-all-hardening.sh 02-auth`
-- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
-
 ### Backup and Upgrade Controls
 
 - `mng-pg`의 Keycloak database를 권위 백업으로 취급한다. realm export만으로
@@ -85,6 +79,12 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 
 - Declared parent: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Guide](../../guides/03-identity-and-access/0014-keycloak.md) (`GDE-0014`), [Runbook](../../runbooks/03-identity-and-access/0014-keycloak.md) (`RUN-0014`)
+
+## Verification
+
+- `bash scripts/hardening/check-all-hardening.sh 02-auth`
+- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 
 ## Related Documents
 

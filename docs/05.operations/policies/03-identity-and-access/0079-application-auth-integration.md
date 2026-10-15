@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.6.1"
+version: "0.6.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -89,20 +89,6 @@ owner 예외가 아니므로, 새 예외가 필요하면 정확한 범위·위�
 기록한 경우에만 허용한다. Native OIDC 앱에 임시 ForwardAuth를 적용하려면
 `Authorization` header 충돌이 없음을 먼저 검증해야 한다.
 
-### Verification
-
-정적 검증: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md#서비스별-정적-검증)의
-profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
-
-추가 검증:
-
-- Airflow/Kafbat/OpenBao/Open WebUI/Gatus/Superset router = gateway-only; Gatus는 외부 metrics 제외
-- ForwardAuth 대상 서비스 = SSO chain 유지
-- Keycloak client redirect URI/public URL 정합
-- Compose client secret의 Docker Secret mapping
-- OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 비밀값 없는 점검 절차로 확인
-- Airflow provider/Authorization Services bootstrap 상태
-
 ### Review Cadence
 
 - Keycloak update
@@ -117,6 +103,20 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 - Parent: [ADR-0038](../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
 - Child: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md)
 - Architecture: [AD-0002](../../../02.architecture/descriptions/0002-auth-architecture.md)
+
+## Verification
+
+정적 검증: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md#서비스별-정적-검증)의
+profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
+
+추가 검증:
+
+- Airflow/Kafbat/OpenBao/Open WebUI/Gatus/Superset router = gateway-only; Gatus는 외부 metrics 제외
+- ForwardAuth 대상 서비스 = SSO chain 유지
+- Keycloak client redirect URI/public URL 정합
+- Compose client secret의 Docker Secret mapping
+- OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 비밀값 없는 점검 절차로 확인
+- Airflow provider/Authorization Services bootstrap 상태
 
 ## Related Documents
 

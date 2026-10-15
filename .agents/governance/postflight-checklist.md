@@ -1,10 +1,10 @@
 ---
 title: "Postflight Routing"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 ---
 
 # Postflight Routing
@@ -19,11 +19,6 @@ Completion verification selected for the changed canonical and protected surface
 
 ## Rules
 
-`task-checklists.md` is the completion authority. Apply only validators mapped
-to the changed canonical source and protected surface. For provider projections,
-run the agent governance contract and renderer check; write mode is used only through
-the registered renderer.
-
 Completion evidence belongs in the co-located Stage 03 Task. Git history is the
 recovery boundary. Do not create a second handoff or progress authority.
 
@@ -36,6 +31,13 @@ exit 20 for unexpected paths.
 ## Exceptions
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
+`task-checklists.md` is the completion authority. Apply only validators mapped
+to the changed canonical source and protected surface. For provider projections,
+run the agent governance contract and renderer check; write mode is used only through
+the registered renderer.
 
 ## Related Documents
 

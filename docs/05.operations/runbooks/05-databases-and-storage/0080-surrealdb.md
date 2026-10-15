@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Runbook"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0080"
 parent_ids:
@@ -20,9 +20,14 @@ created: "2026-09-19"
 
 안전한 증거를 수집하고, namespace, database, auth scope, 스키마와 데이터를 보존하는 반복 가능한 복구 테스트를 정의한다.
 
-## Trigger and Preconditions
+## Trigger
 
 - `surrealdb`가 없거나, 비정상이거나, 접근 불가한 경우.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 - 인증, namespace/database 선택, 영속성이 의심되는 경우.
 - 승인된 backup, upgrade, 또는 격리 restore 리허설을 계획 중인 경우.
 
@@ -61,7 +66,7 @@ created: "2026-09-19"
 - 격리된 target이 스키마, permission, count, 대표 read 검사를 통과한다.
 - source volume, route, credential, runtime이 전혀 변경되지 않았다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

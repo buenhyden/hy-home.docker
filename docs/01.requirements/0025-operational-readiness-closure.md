@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
@@ -12,8 +12,6 @@ created: "2026-07-19"
 # Operational Readiness Closure Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -23,9 +21,30 @@ requirement reproduces the four behaviors in a locally isolated environment
 using sample artifacts and synthetic state owned by the repository, and
 records the actually verified scope without overstatement.
 
-## Requirements
+## Scope
 
-### Requirements
+### Stakeholders and User Needs
+
+- The maintainer must distinguish implemented readiness behavior from
+  unapproved remote operations.
+- The operator needs a guarantee that the rehearsal does not change another
+  Docker project or real data.
+- The security reviewer must confirm that supply-chain verdicts are bound to
+  the same image digest.
+- The release reviewer must reproduce that a failed canary is not promoted
+  and is rolled back to the previous digest.
+
+### Constraints
+
+- Scope is limited to local isolated Compose readiness, synthetic PostgreSQL
+  logical recovery, sample-service supply chain, and local
+  promotion/rollback.
+- Production/shared runtime, real data, registry publication, OIDC signing,
+  and remote GitHub configuration and deployment are out of scope.
+- Automatic cleanup is allowed only for precisely identified task-owned
+  resources.
+
+## Requirements
 
 ### Functional Requirements
 
@@ -87,31 +106,6 @@ records the actually verified scope without overstatement.
   failure, and rollback.
 - Related focused tests and the registered full profile pass, and Task
   evidence contains no secrets or raw runtime logs.
-
-## Scope
-
-### Scope
-
-### Stakeholders and User Needs
-
-- The maintainer must distinguish implemented readiness behavior from
-  unapproved remote operations.
-- The operator needs a guarantee that the rehearsal does not change another
-  Docker project or real data.
-- The security reviewer must confirm that supply-chain verdicts are bound to
-  the same image digest.
-- The release reviewer must reproduce that a failed canary is not promoted
-  and is rolled back to the previous digest.
-
-### Constraints
-
-- Scope is limited to local isolated Compose readiness, synthetic PostgreSQL
-  logical recovery, sample-service supply chain, and local
-  promotion/rollback.
-- Production/shared runtime, real data, registry publication, OIDC signing,
-  and remote GitHub configuration and deployment are out of scope.
-- Automatic cleanup is allowed only for precisely identified task-owned
-  resources.
 
 ## Related Documents
 

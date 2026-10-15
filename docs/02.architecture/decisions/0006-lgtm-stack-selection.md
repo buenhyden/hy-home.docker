@@ -1,10 +1,10 @@
 ---
 title: "LGTM Stack and Grafana Alloy Selection"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0006"
 parent_ids:
@@ -17,27 +17,15 @@ created: "2026-03-26"
 
 This document records the background and reasons for selecting the currently implemented Grafana LGTM stack (Loki, Grafana, Tempo, Prometheus) and the Grafana Alloy collector as the observability tools for the `hy-home.docker` platform. Long-term metrics storage is treated only as a separate expansion candidate not currently implemented in tracked compose.
 
-In a modern microservices environment, correlation across metrics, logs, and tracing is essential. Existing fragmented tools lacked a connecting link between data types, causing loss of context during incident response. In addition, there was an operational burden of managing a different agent for each data type (Promtail, Otel-Collector, etc.).
-
 ### Traceability
 
 The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
-## Decision
+## Decision Drivers
 
-- **Adopt the Grafana LGTM Stack**: use an integrated ecosystem that supports free navigation between data (e.g., jump to logs from traces).
-- **Adopt Grafana Alloy**: use a unified agent that supports both the OpenTelemetry (OTLP) and Prometheus ecosystems, collecting, processing, and routing various telemetry data in a single binary.
-- **S3 (MinIO) Backend**: store Loki and Tempo data in cloud-native S3 (MinIO) to secure durability and scalability.
+In a modern microservices environment, correlation across metrics, logs, and tracing is essential. Existing fragmented tools lacked a connecting link between data types, causing loss of context during incident response. In addition, there was an operational burden of managing a different agent for each data type (Promtail, Otel-Collector, etc.).
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### Alternative 1: ELK Stack (Elasticsearch, Logstash, Kibana)
 
@@ -48,6 +36,12 @@ The decision context above records the applicable drivers and evidence.
 
 - **Good**: industry standard and vendor-neutral.
 - **Bad**: lacks tight integration features (discovery, etc.) with the Grafana ecosystem (Loki/Prometheus, etc.) compared to Alloy.
+
+## Decision
+
+- **Adopt the Grafana LGTM Stack**: use an integrated ecosystem that supports free navigation between data (e.g., jump to logs from traces).
+- **Adopt Grafana Alloy**: use a unified agent that supports both the OpenTelemetry (OTLP) and Prometheus ecosystems, collecting, processing, and routing various telemetry data in a single binary.
+- **S3 (MinIO) Backend**: store Loki and Tempo data in cloud-native S3 (MinIO) to secure durability and scalability.
 
 ## Consequences
 

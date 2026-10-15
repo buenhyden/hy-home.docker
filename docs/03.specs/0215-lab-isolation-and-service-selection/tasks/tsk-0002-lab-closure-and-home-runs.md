@@ -1,10 +1,10 @@
 ---
 title: "LAB Closure and HOME LAB Run Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0215-TSK-0002"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-08"
 
 # LAB Closure and HOME LAB Run Task
 
-## Objective
+## Overview
+
+### Objective
 
 Close what TSK-0001 left open: pin the LAB inventory and selection rules with
 tests, give every optional service a cost and retirement condition, audit the

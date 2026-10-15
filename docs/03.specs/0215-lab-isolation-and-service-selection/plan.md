@@ -1,10 +1,10 @@
 ---
 title: "LAB Isolation and Service Selection Plan"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0215-PLAN-0001"
 parent_ids:
@@ -19,6 +19,14 @@ created: "2026-10-08"
 Lock the root closure first, then tighten each LAB and add the controller,
 then record selection and disposition, then correct documents. Each unit is
 one commit.
+
+## Scope
+
+W1–W4 remove LAB services and networks from root and establish independent inputs, leases,
+budgets and disposition rules. W5–W8 retire the unused MongoDB exporter,
+check inventories and cluster/network isolation, extend cost/retention
+records and audit HOME residue before named LAB runs, preserving existing
+HOME and LAB data.
 
 ## Work Breakdown
 
@@ -41,7 +49,9 @@ a synthetic LAB data root, then the registered changed-profile local gate and
 the pinned staged lint. Remote PR `candidate-quality` owns candidate
 acceptance.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 MongoDB and OpenSearch cluster state moves from project named volumes to
 `LAB_DATA_DIR` binds; existing named volumes are left untouched and are not

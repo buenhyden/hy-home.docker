@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.17"
+version: "0.1.19"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -14,7 +14,9 @@ created: "2026-10-14"
 
 # OpenBao Maintenance Window Readiness Task
 
-## Objective
+## Overview
+
+### Objective
 
 Make RUN-0085's maintenance window executable, as SPEC-0243 states.
 
@@ -563,7 +565,7 @@ After round 5 the Low notes were applied:
 
 A dev-server rehearsal of the sweep used five parent root tokens with child roots and a stderr warning containing "root" on every call. It gave `revoked=11 remaining=0`, and kept the non-root token and the new root.
 
-**Spec scope.** Contract 6 in the Spec still says the overlays keep the running images. #497 changed that by SEC01 acceptance, and this Task records it without editing the approved Spec.
+**Historical scope mismatch, before r10.** Contract 6 in the Spec still said the overlays kept the running images. #497 changed that by SEC01 acceptance, and this Task originally recorded it without editing the Spec. The r10 source reconciliation below corrects that current contract; this paragraph preserves the earlier mismatch and does not establish approval of the draft Spec.
 
 ### Policy and Guide Alignment
 
@@ -637,6 +639,41 @@ Known gaps:
 - there is no stalled audit rotation alert.
 
 All session worktrees and merged or superseded `claude/*` branches were removed. Only this PR's branch remains. The owner removes the session scratch under `/tmp/claude-1000/` with sudo (some files are UID 100) and the leftover `/dev/shm/p01-rehearsal-*` directories.
+
+### R10 source and operational handoff reconciliation — 2026-10-15
+
+[SPEC-0212 TSK-0007](../../0212-request-baseline-and-reconciliation/tasks/tsk-0007-r10-reconciliation.md)
+owns the current reconciliation request. Contract 6 and Plan W6 now state
+the source behavior already recorded above: promotion uses the service's
+accepted Compose pin, and the pre-window-image overrides serve rollback only.
+The original dated review failures, owner decisions and criterion acceptance
+rows remain historical evidence, with no new acceptance inferred here.
+
+The earlier instruction to leave this package draft until the window evidence
+exists mixed readiness acceptance with operational execution. Criteria 1 to 7
+cover source readiness; the live window is outside this Spec's scope.
+Spec and Plan remain draft because the recorded criterion decisions do not
+separately approve these amended parent documents. This Task retains its draft
+frontmatter under those parents; it does not mean the recorded work or accepted
+criteria were unexecuted. Pending source review, including the policy/guide
+security review and later source deltas, must have its own actual receipt.
+Future package closure must follow the lifecycle contract on that source
+evidence rather than wait for an unrelated deployment result.
+
+Window authorization, W0 checks, HOME restore and cold-boot evidence remain
+separate under [RUN-0085](../../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+and [SPEC-0204 TSK-0006](../../0204-service-integration-security-and-operations/tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md).
+This reconciliation performs none of those operations; their current action
+status is `NOT_RUN`. The scheduled window and dated runtime observations above
+are retained as recorded, without a new deployment or recovery claim.
+
+[SPEC-0242](../../0242-single-admin-openbao-custody/spec.md) replaced SPEC-0240;
+the withdrawn backup-exclusion/rekey proposal is already preserved under
+`docs/98.archive/superseded/03.specs/0240-unseal-backup-exclusion/`. Its current
+Policy/ADR references explain the supersession; they do not reactivate it.
+The protected token, issuer, Raft and restore suites have direct gate consumers
+and distinct failure checks, so they remain. Neither a review filename nor
+completion of the change establishes that its regressions are disposable.
 
 ## Evidence
 

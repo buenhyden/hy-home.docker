@@ -50,6 +50,7 @@ MUTATION_OVERRIDES = {
     "scripts/lib/ops/secret_catalog.py": "check-write",
     "scripts/lib/ops/smtp_contract.py": "runtime",
     "scripts/hooks/post-tool-validate.sh": "check-write",
+    "scripts/hooks/install-pre-push-guard.sh": "runtime",
     "scripts/operations/gen-secrets.sh": "runtime",
     "scripts/operations/retire-materials.py": "runtime",
     "scripts/operations/lab.py": "runtime",

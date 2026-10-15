@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.3.2"
+version: "1.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -17,9 +17,13 @@ created: "2026-06-04"
 
 이 런북은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약이 계속 유효한지 반복 검증하는 절차를 제공한다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 실행한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - Root instruction 파일이 변경될 때
 - `.claude` 또는 `.codex` 파일이 변경될 때
@@ -94,6 +98,39 @@ created: "2026-06-04"
 
 7. 변경 파일, command 결과, Graphify 유효성, 실제 선택 범위와 범위 밖 infra 실패를 현재 Task에 기록한다. 실패를 지우기 위해 범위를 넓히거나 통제를 낮추지 않는다.
 
+### Git push guard installation and recovery
+
+Git `pre-push`의 전체 ref 입력은
+[`pre-push-guard.sh`](../../../../scripts/hooks/pre-push-guard.sh)가 검사한다.
+pre-commit의 push stage는 첫 변경 ref만 선택하고 삭제를 건너뛰므로 이
+보호를 생산하지 않는다. `.pre-commit-config.yaml`은 commit/message stage만
+설치하며 같은 guard를 중복 호출하지 않는다.
+
+승인된 checkout에서 다음 명령을 실행한다. 이는 Git common directory의
+`hooks/pre-push`만 수정하며 global 설정·다른 stage hook을 변경하지 않는다.
+installer는 정확히 알려진 pre-commit shim만 교체하고 원본을
+`pre-push.before-native`로 보존한다. 알 수 없는 hook·기존 legacy chain·선택된
+`core.hooksPath`는 덮어쓰지 않고 소유자 조정을 요구한다.
+
+```bash
+bash scripts/hooks/install-pre-push-guard.sh
+```
+
+설치된 wrapper는 현재 worktree의 추적된 guard를 실행하므로 guard가 없거나
+실행 불가능하면 push가 실패한다. 합성 local bare remote의 실제 `git push`로
+feature 허용, 여러 ref의 main 차단과 main 삭제 차단을 확인한다. 실제 원격
+main push를 시험하지 않으며 합성 결과를 원격 보호나 editor sync 관측으로
+승격하지 않는다. `stop_hook_active: true`인 Stop 재진입은 추가 block·QA 없이
+반환하며 최초 미커밋 변경 진단은 유지한다.
+
+복구가 승인되면 보존한 `pre-push.before-native`와 현재 native wrapper를 먼저
+대조한다. 원본 shim은 당시 `.pre-commit-config.yaml`의 push guard 등록을
+소비하므로 승인된 이전 source/config를 함께 복원한 뒤 shim을 `pre-push`로
+복원한다. 현재 설정에서 shim만 복원하면 push 보호가 사라진다. 원본이 없던
+설치에는 복원할 shim도 없으므로 별도 owner 판단으로 처리한다.
+`pre-commit install --hook-type pre-push`를 다시 실행해 native guard를
+migration chain으로 이동시키지 않는다.
+
 ### CI quality-gate version alignment
 
 1. `.github/workflows/ci-quality.yml`, `.github/workflow-contract.yml`,
@@ -122,6 +159,14 @@ created: "2026-06-04"
 6. caller·등록·소유자 조사 후 필요 없어진 QA만 폐기한다. 현재 DAG와 정책에
    계속되는 보장을 이전하고 전용 helper·fixture·test를 제거한다. 현재 관측과
    과거 완료 사건의 고정 SHA·수량은 같은 보장이 아니다.
+
+QA 정의 자체를 바꾼 경우에는
+[정의 변경 신뢰 경계](../../../../.agents/governance/github-governance.md#53-qa-definition-trust-and-amendment)를
+따라 trusted base의 정의 출처·revision과 현재 소유자가 실제 검토·수용한
+diff·revision을 Task에 연결한다. 후보 workflow가 후보 controller와 설정을
+실행한 초록색 결과는 그 정의의 승인 증거가 아니다. 현재 원격에서 trusted
+정의 검증을 강제하는지 확인되지 않으면 그 주장만 미확인으로 남긴다.
+일반 문서 교정에 새로운 전체 QA나 반복 승인을 추가하지 않는다.
 
 ### Evaluation and QA Ownership
 
@@ -159,7 +204,7 @@ QA가 아니다. 현재 [품질 정책](../../../../.agents/governance/quality-s
 - 이 runbook을 실행할 때마다 command 출력, timestamp, operator 또는 agent 조치를 기록한다.
 - 실패한 check, 관찰된 증상, 최종 recovery 또는 escalation 상태를 관련 task 또는 incident evidence에 기록한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

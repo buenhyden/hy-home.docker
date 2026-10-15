@@ -1,10 +1,10 @@
 ---
 title: "System Operations Guide"
-version: "0.1.1"
+version: "0.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -18,7 +18,9 @@ created: "2026-10-01"
 
 이 가이드는 한 호스트에서 HOME 서비스와 개발 작업을 함께 운영할 때 필요한 요청 경로, 공통 의존성, 장애 영향과 다음 절차를 설명한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 한 호스트에서 HOME 서비스와 개발 작업을 함께 운영하는 사람이다.
 목표는 필요한 선택과 점검을 찾는 것이며, 서비스 기동이나 복구 성공을 선언하는
@@ -31,7 +33,7 @@ created: "2026-10-01"
 고른 뒤 subject 행의 세 역할을 따라간다. 서비스가 여러 개 묶인 subject의
 초기화·exporter·worker도 같은 소유 문서에서 확인한다.
 
-## Usage
+## Concepts
 
 ### Selection and readiness
 
@@ -64,6 +66,8 @@ workflow의 실제 관리 DB·broker 연결도 각 선언에서 확인한다. �
 [Compose 기동 순서](https://docs.docker.com/compose/how-tos/startup-order/)를 따른다.
 재부팅 뒤에는 [RUN-0098](../../runbooks/01-common/0098-cold-start-and-reboot.md)의 단계별 확인을
 사용하며, 이전 날짜의 리허설을 현재 상태의 증거로 대신하지 않는다.
+
+## Usage
 
 ### Request and authentication paths
 
@@ -149,6 +153,22 @@ object 저장 경로와 [lakehouse](../13-analytics-and-data-quality/0094-lakeho
 | 11 Quality | [성능 검사](../12-testing-and-quality/0064-performance-testing.md), [SonarQube](../12-testing-and-quality/0066-sonarqube.md), [WireMock](../12-testing-and-quality/0092-wiremock.md), [Pact](../12-testing-and-quality/0093-pact-broker.md), [Conftest](../12-testing-and-quality/0095-conftest.md), [Mailpit](../11-mail-and-notifications/0084-mailpit.md) | 승인된 대상·합성 데이터·계약·정책 검사; 개발 캡처와 운영 메일 구분 |
 | 12 Analytics | [Lakehouse](../13-analytics-and-data-quality/0094-lakehouse.md), [Superset](../13-analytics-and-data-quality/0097-superset.md), [dbt](../13-analytics-and-data-quality/0090-dbt.md), [JupyterLab](../13-analytics-and-data-quality/0089-jupyterlab.md) | 공유 객체·catalog·관리 DB와 명시적 분석 작업; 선택이 전체 파이프라인 기동을 뜻하지 않음 |
 
+### Runbook Handoff
+
+장애 원인이 여러 티어에 걸치면 [RUN-0099](../../runbooks/01-common/0099-system-operations.md)의
+관찰 → 분기 → 서비스 절차 흐름을 사용한다. 예정된 재부팅은 RUN-0098,
+백업과 복원은 RUN-0021, 업데이트는 RUN-0086에서 시작한다. 인증·data·network
+변경이나 파괴적 복구는 대상, 승인, 중단 조건을 해당 절차에서 다시 확인한다.
+
+### Traceability
+
+- [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md): 시스템 구조와 단일 호스트 한계.
+- [REQ-0027](../../../01.requirements/0027-home-development-host.md): 운영 문서·검증·복구 요구.
+- [루트 구현](../../../../docker-compose.yml), [공통 template](../../../../infra/common-optimizations.yml): 선언의 원본.
+- [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md), [POL-0078](../../policies/01-common/0078-compose-profile-vocabulary.md): 공통 통제와 선택의 원본.
+
+## Troubleshooting
+
 ### Common Checks
 
 | 운영 필요 | 공통 소유자와 점검 범위 | 확인되지 않았을 때의 경계 |
@@ -164,20 +184,6 @@ object 저장 경로와 [lakehouse](../13-analytics-and-data-quality/0094-lakeho
 연결된 기존 Policy가 소유한다. 출력에는 secret 값, 인증 헤더·cookie, raw payload,
 비공개 resolved path를 넣지 않는다. 읽지 않았거나 실행하지 않은 항목은 `NOT_RUN`으로
 남긴다. source와 공식 문서 비교는 정적 근거이며 현재 운영·복구 결과가 아니다.
-
-### Runbook Handoff
-
-장애 원인이 여러 티어에 걸치면 [RUN-0099](../../runbooks/01-common/0099-system-operations.md)의
-관찰 → 분기 → 서비스 절차 흐름을 사용한다. 예정된 재부팅은 RUN-0098,
-백업과 복원은 RUN-0021, 업데이트는 RUN-0086에서 시작한다. 인증·data·network
-변경이나 파괴적 복구는 대상, 승인, 중단 조건을 해당 절차에서 다시 확인한다.
-
-### Traceability
-
-- [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md): 시스템 구조와 단일 호스트 한계.
-- [REQ-0027](../../../01.requirements/0027-home-development-host.md): 운영 문서·검증·복구 요구.
-- [루트 구현](../../../../docker-compose.yml), [공통 template](../../../../infra/common-optimizations.yml): 선언의 원본.
-- [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md), [POL-0078](../../policies/01-common/0078-compose-profile-vocabulary.md): 공통 통제와 선택의 원본.
 
 ## Related Documents
 

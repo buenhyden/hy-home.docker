@@ -63,6 +63,17 @@ files:
   disposition: retain
   successor: null
   tests: []
+- path: scripts/hooks/install-pre-push-guard.sh
+  kind: operations
+  authority: docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agent_governance_ci_routing.py
 - path: scripts/hooks/post-tool-validate.sh
   kind: hook
   authority: docs/99.templates/registry.json
@@ -82,7 +93,8 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - .pre-commit-config.yaml
+  - docs/05.operations/runbooks/01-common/0004-harness-agent-first-engineering.md
+  - scripts/hooks/install-pre-push-guard.sh
   disposition: retain
   successor: null
   tests:
@@ -459,6 +471,8 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/lib/document_governance/test_generation6.py
+  - tests/lib/document_governance/test_generation7.py
   - tests/lib/document_governance/test_spec_packages.py
 - path: scripts/lib/document_governance/taxonomy.py
   kind: library
@@ -1158,6 +1172,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_compose_baseline_gates.py
+- path: scripts/validation/check-text-style.py
+  kind: validator
+  authority: .pre-commit-config.yaml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .pre-commit-config.yaml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agent_governance_ci_routing.py
 - path: scripts/validation/ci_gate_runner.py
   kind: runner
   authority: .github/workflow-contract.yml

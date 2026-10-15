@@ -1,10 +1,10 @@
 ---
 title: "Storybook Build and Delivery"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0219"
 parent_ids:
@@ -90,6 +90,14 @@ TypeScript 7 upgrade, which waits for `typescript-eslint` support, and a
 5. Operations documents, the gate contract and the service catalog match, and
    the changed gate passes. HOME, Keycloak and live client steps are recorded
    as not run.
+
+## Failure Conditions
+
+Builds without the source commit or matching revision and artifact hashes
+are refused, and missing locally pinned images must fail startup. Anonymous
+static content, invalid or underprivileged MCP tokens, accessibility
+violations and a design export outside its exact safe allowlist fail their
+respective delivery boundaries; HOME activation remains separately scoped.
 
 ## Related Documents
 

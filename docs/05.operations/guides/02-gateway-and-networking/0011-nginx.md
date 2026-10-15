@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0011"
 parent_ids:
@@ -21,7 +21,9 @@ created: "2026-05-10"
 
 이 문서는 01-gateway의 Nginx 특수 경로 프록시 구성과 하드닝 포인트를 설명한다. Nginx의 lifecycle class는 **OPTIONAL** alternative gateway다. readonly/tmpfs 운영, timeout/failover, 정적 캐시 정책의 의도를 중심으로 다룬다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상은 Infra/DevOps 엔지니어, 운영자, 기여자다. 목적은 두 가지다.
 
@@ -35,9 +37,11 @@ created: "2026-05-10"
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 - Nginx runtime 검증 시 명시적 root network/dependency context 승인 필요
 
-## Usage
+## Concepts
 
 구현 소스는 [infra/01-gateway/nginx/docker-compose.yml](../../../../infra/01-gateway/nginx/docker-compose.yml)이다.
+
+## Usage
 
 ### Source, activation and route limits
 

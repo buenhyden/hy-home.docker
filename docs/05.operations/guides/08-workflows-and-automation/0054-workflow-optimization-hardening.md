@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Usage Guide"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -18,7 +18,9 @@ created: "2026-05-17"
 
 이 문서는 `07-workflow` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. compose 보안 경계, health 기반 startup 계약, n8n 이미지 하드닝, 검증 절차를 제공한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 **대상**
 
@@ -33,13 +35,15 @@ created: "2026-05-17"
 - workflow 하드닝 회귀를 script/CI로 조기 차단한다.
 - 카탈로그 확장 항목의 운영 기준(Airflow/n8n)을 문서화한다.
 
-## Usage
+## Concepts
 
 ### 사전 조건
 
 - Docker / Docker Compose 실행 환경
 - `infra/07-workflow` 수정 권한
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
+
+## Usage
 
 ### 사용 절차
 

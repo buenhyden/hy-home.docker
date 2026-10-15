@@ -1,10 +1,10 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0014"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-11"
 
 # P06 OpenBao Consumer Migration Task
 
-## Objective
+## Overview
+
+### Objective
 
 Own criterion20/W46-W55: one existing consumer pilot, sequential catalog-bound
 same-byte OpenBao copy, verified rendering/consumption and recovery, followed

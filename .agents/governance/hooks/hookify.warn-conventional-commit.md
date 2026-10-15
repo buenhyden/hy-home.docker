@@ -1,10 +1,10 @@
 ---
 title: "WARNING: non-Conventional Commit message"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 action: "warn"
 enabled: true
 event: "bash"
@@ -20,7 +20,7 @@ Apply the declared `warn` action for warn-conventional-commit.
 
 ## Scope
 
-The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+`bash` 이벤트의 `warn-conventional-commit` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
 
 ## Rules
 
@@ -65,6 +65,10 @@ Reference issue IDs, ADR IDs, or plan/task IDs in the footer when applicable.
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
 
 ## Related Documents
 

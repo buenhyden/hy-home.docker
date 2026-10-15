@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0218"
 parent_ids:
@@ -131,6 +131,14 @@ with P08. Consumer retirement remains with CLN01 and the owning executor.
     health/function checks, benchmark comparison, backup and empty-target
     recovery evidence. Rollback preserves data and restores the named service
     boundary; whole-stack recreation or source revert alone is insufficient.
+
+## Failure Conditions
+
+Malformed, orphaned, expired or mismatched exceptions and missing enforced
+controls fail effective-model validation. Unmeasured limits cannot be called
+optimal, and least-privilege proof cannot be replaced by blanket secret-group,
+read-only or ownership changes; root rollout requires its exact service,
+function, backup and recovery evidence.
 
 ## Related Documents
 

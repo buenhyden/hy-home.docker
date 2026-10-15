@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Collection and Egress Plan"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0220-PLAN-0001"
 parent_ids:
@@ -41,6 +41,14 @@ registry entries and admission change before collection.
 Candidate A remains a prospective first consumer when its owner admits it.
 No learning-app planning, code or resources are added by this Plan.
 
+## Scope
+
+W1–W7 establish rights/admission contracts, the pinned crawler's external
+egress gateway and bounded reference adapter, then synthetic image rehearsal,
+operations records and security review. W8 retains the named HOME activation
+boundary; the source slice admits no consumer, collects no real data and
+changes no host firewall.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -63,7 +71,9 @@ golden extraction set; Compose static checks; an isolated rehearsal of the
 real image whose networks, fixtures and targets are all local; and the
 changed gate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - A direct path from the crawler to a consumer on `crawl4ai_net` remains at
   the network layer; the in-image broker is the only control there, and the

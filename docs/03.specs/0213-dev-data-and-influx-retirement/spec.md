@@ -1,10 +1,10 @@
 ---
 title: "DEV Data Boundary and InfluxDB Retirement"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0213"
 parent_ids:
@@ -115,6 +115,15 @@ or other unrelated upgrades.
    to a chosen time that matches the row count and hash at that time.
 10. The HOME activation (stanza, WAL, first full backup, restore canary) is
     recorded with its exact steps, or kept `NOT_RUN` with the reason.
+
+## Failure Conditions
+
+Provisioning must fail before SQL on unsafe names, invalid or reused
+secrets and non-development targets, and reject ownership mismatches without
+rotating existing passwords. Empty, shared, nested or unsafe volume roots,
+administrator exporter credentials and an active InfluxDB consumer fail this
+change; source retirement never authorizes data purge or an untested PITR
+claim.
 
 ## Related Documents
 

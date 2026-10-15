@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Usage Guide"
-version: "1.4.2"
+version: "1.4.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0096"
 parent_ids:
@@ -23,11 +23,13 @@ k3d 제거 이후로는 어떤 Compose 서비스도 이와 Docker 네트워크�
 그 계약을 설명하고 [runbook](../../runbooks/10-platform-and-backup/0096-k8s-integration.md)은 계약을 설정하고 클러스터를
 재구축할 때마다 반복하는 전체 절차다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 hy-home.k8s 클러스터를 이 스택과 연결하는 운영자를 위한 문서다. 클러스터가 이 쪽에 기대는 계약을 이해하고 일상 점검 방법을 찾는 것이 목표다.
 
-## Usage
+## Concepts
 
 ### Contract
 
@@ -50,6 +52,8 @@ Kiali는 대신 Viewer 토큰을 사용). `config.home.alloy`는 `4317`/`4318`�
 `192.168.0.13`)에 게시된다. Traefik에는 `*.k8s.hy.home.arpa` 라우트가
 없다. 네이티브 k3s NodePort로 가는 인증 없는 catch-all은 지난 7일간
 요청이 없어 2026-09-24에 제거했다.
+
+## Usage
 
 ### hy-home.k8s가 이 쪽에 요구하는 것
 

@@ -1,10 +1,10 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0007"
 parent_ids:
@@ -17,6 +17,12 @@ created: "2026-03-26"
 
 This document is the architecture decision record for the background and hybrid operating strategy behind adopting both Apache Airflow and n8n as workflow engines.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+## Decision Drivers
+
 The project faces two different workflow needs.
 
 1. **Complex data engineering**: ETL work that needs strict scheduling, retries, failure handling, and deep integration with the Python ecosystem.
@@ -24,9 +30,17 @@ The project faces two different workflow needs.
 
 Solving both with a single solution does not work well: Airflow is too heavy for simple integrations, and n8n has limits managing complex data pipelines.
 
-### Traceability
+## Options
 
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+### [Alternative 1: Airflow Only]
+
+- Good: simple with single-engine operation, strong control.
+- Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
+
+### [Alternative 2: n8n Only]
+
+- Good: very fast development speed, intuitive visualization.
+- Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
 
 ## Decision
 
@@ -45,26 +59,6 @@ The confirming evidence for this decision is limited to the Architecture Descrip
   `mng-valkey`. The decision remains valid and only its realized form
   changed, so the sentence above is preserved as a record of its time.
   Recorded by SPEC-0176.
-
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-### [Alternative 1: Airflow Only]
-
-- Good: simple with single-engine operation, strong control.
-- Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
-
-### [Alternative 2: n8n Only]
-
-- Good: very fast development speed, intuitive visualization.
-- Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
 
 ## Consequences
 

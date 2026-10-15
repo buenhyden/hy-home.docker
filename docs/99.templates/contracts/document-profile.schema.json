@@ -213,16 +213,31 @@
         "contract_id": {
           "enum": [
             "SDLC-COMMON-v4",
-            "SDLC-COMMON-v5"
+            "SDLC-COMMON-v5",
+            "SDLC-COMMON-r10-local-v1"
           ]
         },
         "result_domain": {
-          "const": [
-            "NOT_RUN",
-            "PASS",
-            "FAIL",
-            "DEFER",
-            "NOT_APPLICABLE"
+          "oneOf": [
+            {
+              "const": [
+                "NOT_RUN",
+                "PASS",
+                "FAIL",
+                "DEFER",
+                "NOT_APPLICABLE"
+              ]
+            },
+            {
+              "const": [
+                "PASS",
+                "FAIL",
+                "ERROR",
+                "NOT_RUN",
+                "CANCELLED",
+                "NOT_APPLICABLE"
+              ]
+            }
           ]
         },
         "acceptance_domain": {
@@ -234,15 +249,32 @@
           ]
         },
         "evidence_columns": {
-          "const": [
-            "Evidence",
-            "Criteria",
-            "Work Unit",
-            "Check",
-            "Input",
-            "Result",
-            "Location",
-            "Resolves"
+          "oneOf": [
+            {
+              "const": [
+                "Evidence",
+                "Criteria",
+                "Work Unit",
+                "Check",
+                "Input",
+                "Result",
+                "Location",
+                "Resolves"
+              ]
+            },
+            {
+              "const": [
+                "Evidence",
+                "Criteria",
+                "Work Unit",
+                "Check",
+                "Input",
+                "Result",
+                "Location",
+                "Required",
+                "Resolves"
+              ]
+            }
           ]
         },
         "plan_columns": {
@@ -268,11 +300,24 @@
           "const": "Criterion Acceptance"
         },
         "criterion_acceptance_columns": {
-          "const": [
-            "Criterion",
-            "Acceptance",
-            "Evidence",
-            "Decision"
+          "oneOf": [
+            {
+              "const": [
+                "Criterion",
+                "Acceptance",
+                "Evidence",
+                "Decision"
+              ]
+            },
+            {
+              "const": [
+                "Criterion",
+                "Acceptance",
+                "Evidence",
+                "Decision",
+                "Current Owner"
+              ]
+            }
           ]
         },
         "execution_items": {
@@ -765,7 +810,8 @@
         "language": {
           "enum": [
             "ko",
-            "en"
+            "en",
+            "ko-or-en"
           ]
         },
         "artifact_id_pattern": {

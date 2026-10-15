@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Source Preflight Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0101"
 parent_ids:
@@ -18,9 +18,14 @@ created: "2026-10-03"
 
 공유 Storybook 정적 origin과 문서 MCP의 빌드, 기동, 검증, 복구를 다루는 런북이다.
 
-## Trigger and Preconditions
+## Trigger
 
 `storybook` 정적 origin의 소스, route 또는 image 변경을 검토할 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원격 MCP 공개는 별도
 구체적 승인이 필요하다. SPEC-0206은 source/static completion의 역사적 근거이며,
 이 runbook은 이후 운영 trigger와 evidence handoff를 소유한다.
@@ -107,7 +112,7 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
 issuer/audience/client 승인, DNS/TLS 관찰 요청 또는 external design account 승인이다. host secret, 세션 cookie, 인증 HTML 원문, private Compose 전체 출력,
 실사용자 데이터와 원시 로그는 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

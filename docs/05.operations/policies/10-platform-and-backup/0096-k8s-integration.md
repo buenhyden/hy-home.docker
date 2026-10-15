@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Operations Policy"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0096"
 parent_ids:
@@ -72,17 +72,6 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 없음. 새 엔드포인트, 다른 인증 방식, 더 긴 토큰 수명은 이 정책과 가이드의
 contract 표에 대한 검토된 변경이 필요하다.
 
-### Verification
-
-- Hardening이 Prometheus API 라우트, 그 middleware, `usersFile`을 고정하고
-  두 k8s OpenBao 정책을 읽기 전용이며 wildcard 없는 상태로 유지한다.
-- 런북의 확인 항목은 잘못된 Basic 401, 유효한 Basic 200, header 없는 API/UI의
-  SSO 302, role/config, bootstrap의 정확한 정책·orphan·TTL과 허용 읽기 전후의
-  금지 읽기403이다. 서버 건강·unsealed와 동일 token으로 확인하며 다른 오류는
-  거절 증거가 아니다. root/bootstrap의 로컬 파일 삭제는 서버 token 폐기가 아니다.
-- 클러스터 재구축 뒤 CA 갱신 이후의 새 ESO 인증과 소비자별 기능 결과를 확인한다.
-  Tempo 3200 조회/API와 Alloy 4317/4318 trace 수집을 구분한다.
-
 ### Review Cadence
 
 책임 소유자는 @buenhyden이다. consumer를 추가하는 모든 hy-home.k8s 변경 시, OpenBao나 Traefik 업그레이드
@@ -93,6 +82,17 @@ contract 표에 대한 검토된 변경이 필요하다.
 - [가이드](../../guides/10-platform-and-backup/0096-k8s-integration.md) (`GDE-0096`)
 - [런북](../../runbooks/10-platform-and-backup/0096-k8s-integration.md) (`RUN-0096`)
 - [OpenBao 정책](../04-security-and-secrets/0085-openbao.md)
+
+## Verification
+
+- Hardening이 Prometheus API 라우트, 그 middleware, `usersFile`을 고정하고
+  두 k8s OpenBao 정책을 읽기 전용이며 wildcard 없는 상태로 유지한다.
+- 런북의 확인 항목은 잘못된 Basic 401, 유효한 Basic 200, header 없는 API/UI의
+  SSO 302, role/config, bootstrap의 정확한 정책·orphan·TTL과 허용 읽기 전후의
+  금지 읽기403이다. 서버 건강·unsealed와 동일 token으로 확인하며 다른 오류는
+  거절 증거가 아니다. root/bootstrap의 로컬 파일 삭제는 서버 token 폐기가 아니다.
+- 클러스터 재구축 뒤 CA 갱신 이후의 새 ESO 인증과 소비자별 기능 결과를 확인한다.
+  Tempo 3200 조회/API와 Alloy 4317/4318 trace 수집을 구분한다.
 
 ## Related Documents
 

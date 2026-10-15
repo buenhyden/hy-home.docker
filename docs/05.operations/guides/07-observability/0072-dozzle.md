@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0072"
 parent_ids:
@@ -21,11 +21,13 @@ created: "2026-05-10"
 
 이 가이드는 OPTIONAL admin 로그 뷰어 Dozzle의 구성, 인증 경계, 일반 사용 방법을 설명한다. `admin`과 `admin-logs` profile에서만 선택된다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 컨테이너 로그를 조회하거나 Dozzle 구성을 바꾸는 운영자다. 목표는 Dozzle이 로그 아카이브가 아니라는 점, Docker socket과 OIDC 경계가 어디에 있는지 이해하고 안전하게 조회하는 것이다. 장애와 복구 절차는 [RUN-0072](../../runbooks/07-observability/0072-dozzle.md)가 소유한다.
 
-## Usage
+## Concepts
 
 ### 목적과 분류
 
@@ -33,6 +35,8 @@ Dozzle은 `admin`과 `admin-logs` 하위의 OPTIONAL admin 로그 뷰어이다. 
 아니다. 컨테이너 로그는 여전히 Docker/로깅 백엔드가 소유한다. Dozzle은
 `${DEFAULT_MANAGEMENT_DIR}/dozzle`에 UI/사용자 설정을 영속화하지만, 조회한 로그의
 두 번째 권위 사본을 보관하지는 않는다.
+
+## Usage
 
 ### 현재 구현과 위험
 
@@ -55,11 +59,6 @@ Dozzle은 `admin`과 `admin-logs` 하위의 OPTIONAL admin 로그 뷰어이다. 
 socket 준비는 따로 확인한다. 자원 상한은 선언된 템플릿을 따르며 로그 지연과 CPU·메모리
 증가를 함께 관찰한다. TLS/OIDC secret 변경은 공통 인증 소유자와 조정한다.
 
-### Common Checks
-
-- `docker compose --profile admin-logs config --quiet`
-- `bash scripts/hardening/check-all-hardening.sh 06-observability`
-
 ### Runbook Handoff
 
 OIDC, socket, 로그 스트림, 설정, 업그레이드 복구에는
@@ -70,6 +69,13 @@ OIDC, socket, 로그 스트림, 설정, 업그레이드 복구에는
 - [Policy](../../policies/07-observability/0072-dozzle.md) (`POL-0072`)
 - [Runbook](../../runbooks/07-observability/0072-dozzle.md) (`RUN-0072`)
 - [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile admin-logs config --quiet`
+- `bash scripts/hardening/check-all-hardening.sh 06-observability`
 
 ## Related Documents
 

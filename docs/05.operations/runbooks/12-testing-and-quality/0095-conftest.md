@@ -1,10 +1,10 @@
 ---
 title: "Conftest Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0095"
 parent_ids:
@@ -18,9 +18,15 @@ created: "2026-09-23"
 
 `conftest` 정책 검사 작업이 실패했을 때 원인을 찾고 수정하는 런북이다.
 
-## Trigger and Preconditions
+## Trigger
+
+### Trigger and Preconditions
 
 `conftest` 작업이 0이 아닌 상태로 종료될 때 사용한다.
+
+## Prerequisites
+
+저장소 루트의 승인된 로컬 컨테이너 작업만 대상으로 한다. 원본이 읽기 전용이어도 컨테이너 생성은 정적 문서 검사와 구분한다.
 
 ## Procedure
 
@@ -56,7 +62,7 @@ created: "2026-09-23"
 실제로 실행된 단계의 요약·exit와 소스 커밋을 기록한다. 첫 실패 뒤 실행되지 않은
 단계는 미실행으로 남기며 세 요약을 만들거나 전체 PASS로 해석하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

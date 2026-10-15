@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Logical Upgrade and Restore Rehearsal Runbook"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0032"
 created: "2026-07-22"
@@ -18,7 +18,7 @@ created: "2026-07-22"
 
 이 문서는 `infra/04-data`의 새 service를 설명하지 않는다. 실제 구현은 repository operation entrypoint와 `examples/operations/postgres-logical-upgrade/`에 있는 reusable non-service harness다.
 
-## Trigger and Preconditions
+## Trigger
 
 - PostgreSQL source/target image pin, fixture, oracle, wrapper, or recovery boundary가 바뀐 뒤 local representative evidence를 갱신할 때
 - Backup capture와 restore/integrity를 별도 gate로 검증해야 할 때
@@ -28,7 +28,13 @@ created: "2026-07-22"
 | --- | --- | --- |
 | PostgreSQL pin 또는 logical recovery wrapper 변경 후 representative rehearsal | Docker Compose와 exact Plan/Task approval | synthetic SQL만 사용; source/target image pin은 연결된 harness source가 소유함; host port, bind mount, external network, named/shared volume, `${DEFAULT_DATA_DIR}`, raw log, row, 비밀번호, dump evidence 없음 |
 
-Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`는 readiness semantics boundary를 설명하는 upstream evidence일 뿐 이 데이터 복구 rehearsal의 operational prerequisite가 아니다. 이 런북은 그 handoff의 존재 또는 내용에 의존하지 않는다.
+Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`는 readiness semantics boundary를 설명하는 upstream evidence일 뿐 이 데이터 복구 rehearsal의 operational prerequisite가 아니다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+이 런북은 그 handoff의 존재 또는 내용에 의존하지 않는다.
 
 ### Scope separation from actual HA recovery
 
@@ -56,7 +62,7 @@ Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652
 | Local isolated Docker, 2026-07-22 | reviewer invalidation 이후 단일 승인된 final-state 정상 rehearsal | project `hyhome-ior-20260719-229164-source/target`가 인증된 TCP readiness, integrity, cleanup, redaction을 통과함; fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`; 보존된 dump SHA-256 `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`, 4,484 bytes; backup 1s; restore 0s; owned resource 없음 | 무시된 정확한 12-key, mode-0600 canonical `recovery-verdict.json`, SHA-256 `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`; schema 1; scope `synthetic-local`; integrity, cleanup, redaction 통과; 이후 canonical-mutating 명령 없음 |
 | Local isolated Docker, 2026-07-22 | 네 개의 negative 명령 | 기대 class `50/50/10/20`; cleanup 통과; canonical 잔존 없음 | Infrastructure Task |
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -23,7 +23,9 @@ created: "2026-05-10"
 
 이 문서는 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하는 방법을 설명한다. `oauth2-proxy`의 lifecycle class는 **HOME**이고, `oauth2-proxy-valkey`와 `oauth2-proxy-valkey-exporter` helper의 class는 **OPTIONAL**이다. Keycloak OIDC provider, redis/Valkey session storage, cookie와 token의 차이, callback/logout 경계를 함께 다룬다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. OAuth2 Proxy 전체 login/logout acceptance는 별도 런북 증거가 필요하다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상은 Infra/DevOps 엔지니어, 운영자, 기여자다. 목적은 세 가지다.
 
@@ -42,9 +44,11 @@ created: "2026-05-10"
   전용 경로는 `Dockerfile`/`docker-entrypoint.sh`의 `oauth2_valkey_password`를 사용한다.
   이미지 선택은 기존 `OAUTH2_PROXY_DOCKERFILE` 구성에 따른다.
 
-## Usage
+## Concepts
 
 구현 소스는 [infra/02-auth/oauth2-proxy/docker-compose.yml](../../../../infra/02-auth/oauth2-proxy/docker-compose.yml)이다. `oauth2-proxy-valkey-exporter`는 OAuth2 session-store metric을 제공하며, 활성화 여부는 작성된 Compose profile을 따른다.
+
+## Usage
 
 ### Build selection and effective startup
 
@@ -117,24 +121,6 @@ The tracked config requests `openid email profile offline_access groups`, uses P
 
 공식 OAuth2 Proxy endpoint 문서에 따르면 `/oauth2/sign_out`은 OAuth2 Proxy cookie만 삭제한다. 사용자는 여전히 Keycloak에 로그인된 상태일 수 있으며 즉시 다시 로그인될 수도 있다. Keycloak SSO logout에는 허용된 `rd` 목적지와 일치하는 whitelist 설정을 사용하여 provider end-session endpoint로 redirect하는 과정이 필요하다. 현재 추적되는 설정은 `OAUTH2_PROXY_WHITELIST_DOMAINS=.${DEFAULT_URL}`을 지정하지만, 모든 서비스의 logout 버튼이 Keycloak end-session redirect를 호출한다는 증거는 아니다. 현재 logout이 Keycloak SSO까지 종료한다고 일괄적으로 주장하지 않는다.
 
-### Common Checks
-
-1. Compose 런타임 계약 확인
-   - `template-infra-readonly-med` 사용
-   - 기본 경로는 `docker-compose.yml`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, 공유 `mng-valkey`를 사용
-   - `dedicated-valkey` profile은 같은 `docker-compose.yml`에서 `oauth2-proxy-valkey`와 그 exporter를 추가로 선택
-   - Compose command override는 없고 선택 entrypoint가 기본 `--config /etc/oauth2-proxy.cfg`를 추가하는지 확인
-   - `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS` 확인
-2. 엔트리포인트 시크릿 주입 확인
-   - root-active `docker-entrypoint.dev.sh`에서 `mng_valkey_password`를 읽어 환경 변수에 export하는지 확인
-   - local/full `docker-entrypoint.sh`에서 `oauth2_valkey_password`를 읽어 환경 변수에 export하는지 확인
-3. 이미지 권한 모델 확인
-   - local/full `Dockerfile`에서 UID 100/GID 101을 명시적으로 생성하고 `USER 100:101`을 적용하는지 확인
-   - root-active `dev.Dockerfile`에서 `USER oauth2proxy:oauth2proxy`를 적용하는지 확인
-4. 정적 검증
-   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
-   - `bash scripts/hardening/check-all-hardening.sh 02-auth`
-
 ### Pitfalls
 
 - `DEFAULT_URL`, Keycloak realm issuer, OAuth2 Proxy callback 도메인 불일치
@@ -166,6 +152,26 @@ Valkey 세션과 cookie/client/저장소 자격 증명은 서로 다른 복구 �
 - Declared parent: [02-Auth OAuth2 Proxy Operations Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md) (`POL-0015`)
 - Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md) (`POL-0015`), [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md) (`RUN-0015`)
+
+## Troubleshooting
+
+### Common Checks
+
+1. Compose 런타임 계약 확인
+   - `template-infra-readonly-med` 사용
+   - 기본 경로는 `docker-compose.yml`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, 공유 `mng-valkey`를 사용
+   - `dedicated-valkey` profile은 같은 `docker-compose.yml`에서 `oauth2-proxy-valkey`와 그 exporter를 추가로 선택
+   - Compose command override는 없고 선택 entrypoint가 기본 `--config /etc/oauth2-proxy.cfg`를 추가하는지 확인
+   - `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS` 확인
+2. 엔트리포인트 시크릿 주입 확인
+   - root-active `docker-entrypoint.dev.sh`에서 `mng_valkey_password`를 읽어 환경 변수에 export하는지 확인
+   - local/full `docker-entrypoint.sh`에서 `oauth2_valkey_password`를 읽어 환경 변수에 export하는지 확인
+3. 이미지 권한 모델 확인
+   - local/full `Dockerfile`에서 UID 100/GID 101을 명시적으로 생성하고 `USER 100:101`을 적용하는지 확인
+   - root-active `dev.Dockerfile`에서 `USER oauth2proxy:oauth2proxy`를 적용하는지 확인
+4. 정적 검증
+   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
 ## Related Documents
 

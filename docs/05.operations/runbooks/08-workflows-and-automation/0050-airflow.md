@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.3.4"
+version: "1.3.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -24,9 +24,14 @@ created: "2026-05-17"
 - 파이프라인 중단 시간 최소화
 - 시스템 상태 검증 및 정상화 확인
 
-## Trigger and Preconditions
+## Trigger
 
 - 태스크가 `Queued` 상태에서 장시간 머물러 있을 때.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 - Web UI 접근 시 DB 연결 에러 또는 50x 에러가 발생할 때.
 - 워커(Worker) 프로세스가 비정상 종료되거나 리소스 부족으로 경고가 발생할 때.
 - Airflow UI 로그인, Keycloak token exchange, 또는 TLS verification이 실패할 때.
@@ -140,7 +145,7 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 - 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
 - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

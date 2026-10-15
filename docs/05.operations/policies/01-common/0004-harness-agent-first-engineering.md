@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -78,12 +78,6 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 - `rtk`는 active shell에서 사용할 수 없을 때 우회할 수 있다.
 - 승인되지 않은 Compose/include/IP remediation은 이 하네스 점검의 실행 범위가 아니다.
 
-### Verification
-
-변경 영향에 맞춰 quality policy와 canonical public plan이 선택한 검사만 수행한다.
-[Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md#procedure)은 승인된
-관측의 실행 경로를 안내하며 모든 변경에 전체 hook/runtime bundle을 요구하지 않는다.
-
 ### Review Cadence
 
 - 현재 owner나 계약이 바뀌면 영향받는 소비자와 필요한 회귀를 검토한다.
@@ -95,6 +89,12 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 
 - 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
 - 같은 주제: [Guide](../../guides/01-common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md) (`RUN-0004`)
+
+## Verification
+
+변경 영향에 맞춰 quality policy와 canonical public plan이 선택한 검사만 수행한다.
+[Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md#procedure)은 승인된
+관측의 실행 경로를 안내하며 모든 변경에 전체 hook/runtime bundle을 요구하지 않는다.
 
 ## Related Documents
 

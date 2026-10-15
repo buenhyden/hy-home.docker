@@ -1,10 +1,10 @@
 ---
 title: "Task Checklists"
-version: "1.4.0"
+version: "1.4.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 ---
 
 # Task Checklists
@@ -36,6 +36,12 @@ Approved repository edits, ongoing implementation, and completion evidence.
 - [ ] Record actual evidence in the Task, not a second progress or handoff document.
 - [ ] Stop on missing authority, destructive ambiguity, or unexpected scope.
 
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
 ### Before Completion
 
 - [ ] Follow the [execution boundary](quality-standards.md#4-execution-boundary)
@@ -60,10 +66,6 @@ Approved repository edits, ongoing implementation, and completion evidence.
 - [ ] Distinguish worktree, index, commit, and historical-link checks, and report
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.
-
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

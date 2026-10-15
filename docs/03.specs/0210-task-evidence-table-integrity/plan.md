@@ -1,10 +1,10 @@
 ---
 title: "Task Evidence Table Integrity Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0210-PLAN-0001"
 parent_ids:
@@ -20,6 +20,14 @@ Add a strict opt-in to the shared registered-table reader, activate it only for
 generation 5 Work Breakdown and Evidence, and prove the boundary through focused
 and public metadata checks. The Task owns actual execution, validation, review,
 and acceptance records.
+
+## Scope
+
+W1 adds the strict generation 5 Plan/Evidence reader, its public metadata
+fixture and byte-preserving auxiliary-table relocation in the named current
+Tasks. W2–W3 add contiguous-table guidance and Stage 03 routing, then validate
+and review the twelve-file change without altering legacy readers or table
+vocabularies.
 
 ## Work Breakdown
 
@@ -41,7 +49,9 @@ P03-owned correction may receive one additional run on a distinct input. Final
 receipt-only document changes receive only their minimum metadata, link, and
 style checks.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 A strict reader can expose auxiliary pipe tables in a registered section. The
 authorized resumption corrects only the two observed current owners by moving

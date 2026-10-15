@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Usage Guide"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0064"
 parent_ids:
@@ -19,13 +19,15 @@ created: "2026-05-10"
 성능 시험은 `k6`(기본 부하 발생기), WireMock(외부 HTTP 의존성 모의 서버), Locust(독립 LAB 선택 도구)로
 수행한다. 이 가이드는 세 도구의 역할과 시험 입력, 결과 판정 기준을 정리한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 성능 시험을 계획하고 판정하는 운영자와 시나리오 소유자다. 목표는 도구를 고르고,
 실행 전 입력을 갖추고, 결과를 올바르게 해석하는 것이다. 중단·복구 절차는
 [성능 시험 런북](../../runbooks/12-testing-and-quality/0064-performance-testing.md)이 맡는다.
 
-## Usage
+## Concepts
 
 `k6`는 기본 부하 발생기, WireMock은 외부 HTTP 의존성의 모의 서버,
 Locust는 독립 LAB에서 사용하는 선택 도구다. 실제 경로는
@@ -50,6 +52,8 @@ Dockerfile/Compose 및 공식 프로젝트 자료에서 재확인한다.
 fixture, API 계약, 완료 확인 및 임계값을 소유한다. 이 저장소는 공용 runner,
 실행 manifest, 결과 판정·적재 도구, `perf_db` 권한과 대시보드를 소유한다.
 외부 앱 전체 경로는 루트 Compose에 include하지 않는다.
+
+## Usage
 
 ### 실행 전 입력
 
@@ -96,18 +100,6 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 재시작을 넘는 메트릭 영속성 증거가 아니다. 실제 reader·bucket·부하 대상이
 선정되기 전에는 소스 계약만 소비하며 자동 연결·배포하지 않는다.
 
-### Common Checks
-
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))는 변경 경로의
-  소스·문서 회귀를 검사한다. 통과해도 실행 대상의 준비 상태는 증명하지 않는다.
-- root `--profile '*'` 렌더에 Locust가 없고, 독립 `labs/locust.yml`의
-  master/worker closure가 별도 프로젝트·네트워크·볼륨을 사용하는지 본다.
-- WireMock 기능 모드의 journal·reset과 부하 모드의 journal 비활성화를
-  구분한다. 무저널 모드에서 `GET /__admin/requests`의 HTTP 500은 빈 저널의
-  증거가 아니며, 호출 횟수 판정에 사용하지 않는다. admin API는 인증이
-  없으므로 호스트 공개와 내부 peer 접근을 제한한다.
-- 실제 실행은 `RUN-0064`의 대상·자원·정리 사전 점검과 별도 승인을 따른다.
-
 ### Runbook Handoff
 
 [RUN-0064](../../runbooks/12-testing-and-quality/0064-performance-testing.md)는 부하 중단과 대상
@@ -121,6 +113,20 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 - [RUN-0064](../../runbooks/12-testing-and-quality/0064-performance-testing.md)
 - [SPEC-0203](../../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
 - [ADR-0046](../../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))는 변경 경로의
+  소스·문서 회귀를 검사한다. 통과해도 실행 대상의 준비 상태는 증명하지 않는다.
+- root `--profile '*'` 렌더에 Locust가 없고, 독립 `labs/locust.yml`의
+  master/worker closure가 별도 프로젝트·네트워크·볼륨을 사용하는지 본다.
+- WireMock 기능 모드의 journal·reset과 부하 모드의 journal 비활성화를
+  구분한다. 무저널 모드에서 `GET /__admin/requests`의 HTTP 500은 빈 저널의
+  증거가 아니며, 호출 횟수 판정에 사용하지 않는다. admin API는 인증이
+  없으므로 호스트 공개와 내부 peer 접근을 제한한다.
+- 실제 실행은 `RUN-0064`의 대상·자원·정리 사전 점검과 별도 승인을 따른다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "2.1.1"
+version: "2.1.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -16,11 +16,11 @@ created: "2026-09-01"
 
 ## Overview
 
-### Overview
+The Registry defines document shape; current stage owners retain durable
+meaning, Tasks record actual execution, and the archive preserves source bytes.
+Approval, criterion acceptance, integration and preservation are separate facts.
 
 ## Scope
-
-### Scope
 
 ### Context and Stakeholders
 
@@ -45,9 +45,7 @@ remain separately authorized actions.
 - [ADR-0037 Archive lifecycle and preservation decision](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -74,6 +72,8 @@ remain separately authorized actions.
   that catalog. Capture classes are completed, superseded, retired, and
   resolved; Tombstones and Migrations hold routes rather than original bodies.
   Disposition directories are created on first use.
+
+## Runtime and Deployment
 
 ### Data Flow
 
@@ -163,7 +163,9 @@ retain their own authorization and execution evidence requirements.
 - History-only availability does not imply secure erasure of Git history,
   clones, caches, or forks. Security response remains a separate workflow.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - Fail closed: unsafe traversal, missing approval, missing source objects, and
   unsupported recovery contexts yield findings instead of exemptions.

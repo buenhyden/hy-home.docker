@@ -1,10 +1,10 @@
 ---
 title: "Conftest Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0095"
 parent_ids:
@@ -49,12 +49,6 @@ baseline의 실행 가능한 부분집합이다. 새 규칙을 추가하지 않�
 
 정책 파일의 allowlist를 넘어서는 예외는 없다.
 
-### Verification
-
-`conftest verify`(정책 unit test)와 모든 Compose 파일 및 Dockerfile에 대한
-깨끗한 `conftest test`. 의도적으로 잘못된 파일은 모든 규칙에서 실패해야
-한다.
-
 ### Review Cadence
 
 컨테이너 baseline 통제가 바뀔 때, Conftest 또는 OPA major 업그레이드 시,
@@ -65,6 +59,12 @@ allowlist 항목이 추가될 때마다 검토한다.
 - [가이드](../../guides/12-testing-and-quality/0095-conftest.md) (`GDE-0095`)
 - [런북](../../runbooks/12-testing-and-quality/0095-conftest.md) (`RUN-0095`)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)
+
+## Verification
+
+`conftest verify`(정책 unit test)와 모든 Compose 파일 및 Dockerfile에 대한
+깨끗한 `conftest test`. 의도적으로 잘못된 파일은 모든 규칙에서 실패해야
+한다.
 
 ## Related Documents
 

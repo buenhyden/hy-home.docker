@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0057"
 parent_ids:
@@ -60,7 +60,17 @@ Open WebUI 서비스 운영 전반:
 
 - 로컬 단독 개발 환경에서 SSO 우회를 검토해야 하면 외부 네트워크 비노출, 명시 승인, 작업 종료 즉시 복구가 필수다.
 
-### Verification
+### Review Cadence
+
+- **Quarterly**: 정책/권한/데이터 취급 기준 검토
+- **Per Release**: 모델/임베딩/연동 구성 변경 시 사전 검토
+
+### Traceability
+
+- Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](../../guides/09-ai-and-search/0057-open-webui.md) (`GDE-0057`), [Runbook](../../runbooks/09-ai-and-search/0057-open-webui.md) (`RUN-0057`)
+
+## Verification
 
 - 배포 전 체크:
   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
@@ -73,16 +83,6 @@ Open WebUI 서비스 운영 전반:
   - 변경 티켓(또는 PR), 검증 로그, 롤백 결과
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
-### Review Cadence
-
-- **Quarterly**: 정책/권한/데이터 취급 기준 검토
-- **Per Release**: 모델/임베딩/연동 구성 변경 시 사전 검토
-
-### Traceability
-
-- Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](../../guides/09-ai-and-search/0057-open-webui.md) (`GDE-0057`), [Runbook](../../runbooks/09-ai-and-search/0057-open-webui.md) (`RUN-0057`)
 
 ## Related Documents
 

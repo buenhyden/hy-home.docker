@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -29,7 +29,9 @@ Alloy는 세 가지 신호를 전달한다.
 
 Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정 파일 모두 Alloy 안에 자체 remote-write를 두지 않는다. 같은 series가 `integrations/self`로 한 번 더 들어오기 때문이다(SPEC-0193).
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 개발자, 운영자, SRE, AI Agent다. 이 가이드로 다음을 빠르게 파악한다.
 
@@ -39,7 +41,7 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 
 복구, restart, endpoint 장애 대응, 설정 rollback은 [RUN-0040](../../runbooks/07-observability/0040-alloy.md)이 맡는다.
 
-## Usage
+## Concepts
 
 ### 설정 파일의 역할
 
@@ -57,6 +59,8 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 - profile: `pyroscope.scrape "go_services"`가 10개 대상을, 별도 `pyroscope.scrape "seaweedfs"`가 지원되지 않는 block/mutex를 제외한 profile을 수집해 Pyroscope로 보낸다. eBPF는 쓰지 않는다.
 
 `config.home.alloy`의 OTLP trace 수신 주석에 따르면 hy-home.k8s의 Istio가 `192.168.0.13:4317`로 보낸다. k3d OTLP 진입은 [POL-0096](../../policies/10-platform-and-backup/0096-k8s-integration.md)이 관장한다.
+
+## Usage
 
 ### 정상 사용
 
@@ -80,6 +84,18 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 - **수명 주기**: config와 component별로 검증된 state를 보존한다. 전송을 drain하거나 문서화된 전송 중 손실을 허용하고, 고정된 version을 하나씩 update한다. component 호환성을 검증한 뒤 log/trace/metric을 확인한다.
 - **공식 문서·license**: 공식 [Alloy 동작 방식](https://grafana.com/docs/alloy/latest/introduction/how-alloy-works/)과 [remote_write/WAL](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/) 문서를 따른다. Grafana Alloy에는 Apache-2.0 license가 적용된다.
 
+### Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback, escalation은 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#procedure)를 따른다.
+
+### Traceability
+
+- Declared parent: [Alloy Operations Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`)
+- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`), [Runbook](../../runbooks/07-observability/0040-alloy.md) (`RUN-0040`)
+
+## Troubleshooting
+
 ### Common Checks
 
 - `docker compose --profile obs ps alloy`
@@ -95,16 +111,6 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 - backend가 unhealthy이면 pipeline이 정상이어도 telemetry가 보이지 않을 수 있다.
 - `pyroscope.write` endpoint가 있다고 profile이 자동 수집되지는 않는다. 선언된 pprof 대상(10개 + SeaweedFS 1개)만 수집한다.
 - `ALLOY_CONFIG_FILE` 공개 기본값으로 비공개 runtime 선택을 단정하지 않는다. 지원하는 두 파일을 검토하고 RUN-0040에서 승인한 선택 설정만 적용한다.
-
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback, escalation은 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#procedure)를 따른다.
-
-### Traceability
-
-- Declared parent: [Alloy Operations Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`)
-- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`), [Runbook](../../runbooks/07-observability/0040-alloy.md) (`RUN-0040`)
 
 ## Related Documents
 

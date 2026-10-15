@@ -1,10 +1,10 @@
 ---
 title: "Renovate Runbook"
-version: "0.1.2"
+version: "0.1.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0083"
 parent_ids:
@@ -18,10 +18,16 @@ created: "2026-09-19"
 
 Renovate job의 정적 점검, 승인된 live run, 잘못된 변경의 복구, systemd timer 운영 절차다.
 
-## Trigger and Preconditions
+## Trigger
 
 정적 readiness 점검, 구체적으로 승인된 live job, 또는 잘못된 Renovate 변경의 복구에
-사용한다. 저장소 루트에서 작업한다.
+사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소 루트에서 작업한다.
 
 ## Procedure
 
@@ -117,7 +123,7 @@ Renovate job이 실행 중이지 않고, config가 검증되고, remote 변경 �
 처리 상태가 확인되면 복구가 완료된 것이다. 이 복구 단계는 2026-09-20 수정 때 문서로만
 남겼고 실행하지 않았다. remote 저장소 변경이나 token validation은 주장하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

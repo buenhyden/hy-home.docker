@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Usage Guide"
-version: "1.2.3"
+version: "1.2.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0101"
 parent_ids:
@@ -22,11 +22,13 @@ created: "2026-10-03"
 
 공유 Storybook은 `projects/storybook/nextjs`의 UI story와 문서를 읽기 전용 정적 origin(`storybook`)과 문서 MCP(`storybook-mcp`)로 제공하는 선택형 `experience` 서비스다. HOME 기본 선택에는 포함되지 않는다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 공유 Storybook과 문서 MCP를 운영하거나 다른 워크스페이스에서 소비하는 운영자와 개발자를 위한 문서다. 빌드, 접근 경로, 소비 워크스페이스 설정과 점검 방법을 이해하는 것이 목표다.
 
-## Usage
+## Concepts
 
 `projects/storybook/nextjs`는 공유 UI 구성요소의 story와 문서를 소유한다.
 `storybook`은 그 빌드 결과를 읽기 전용으로 제공하는 선택형 정적 origin이다.
@@ -59,6 +61,8 @@ HTML이 200으로 오지 않는다. 브라우저 탐색은 302를 따라 Keycloa
 않게 한다. 이 결과는 Compose label에서 만든 router와 실제 Traefik·OAuth2 Proxy·
 Keycloak을 쓰는 격리 rehearsal(`HYHOME_STORYBOOK_REHEARSAL=1`)이 검사한다.
 HOME DNS/TLS와 실제 관리자 세션은 별도 관찰 대상이다.
+
+## Usage
 
 ### 코드 재사용과 문서
 
@@ -297,6 +301,21 @@ bundle은 `projects/storybook/nextjs/design-export.allowlist.json`이 이름 붙
 계정 권한의 증거가 아니다. 공무원 학습·언어 앱의 미승인 기획을 이 Storybook의
 업무 화면이나 음성 원본으로 추가하지 않는다.
 
+### Runbook Handoff
+
+이미지 빌드·격리 HTTP 검사·HOME 실행 사전 점검과 rollback 순서는
+[RUN-0101](../../runbooks/14-design-system/0101-storybook.md)을 따른다. 운영 follow-up 소유자는
+GDE/POL/RUN-0101이며 trigger는 HOME route 활성화, 검토자 그룹 승인, 원격 MCP
+OIDC 승인, 외부 디자인 계정 사용 승인 또는 DNS/TLS 관찰 요청이다.
+
+### Traceability
+
+- Artifact: `GDE-0101`; governing policy: `POL-0101`.
+- 역사적 source/static 완료 근거: `SPEC-0206`. 아키텍처 맥락 `AD-0031`은 draft 상태이며 이 가이드가 승격하지 않는다.
+- Runtime declaration: `infra/13-experience/storybook/docker-compose.yml`.
+
+## Troubleshooting
+
 ### Common Checks
 
 저장소 root에서 공개 예제 환경으로 선택형 서비스 선언만 정적 확인한다.
@@ -310,19 +329,6 @@ python3 scripts/validation/check-operations-catalog.py
 Claude Design 계정 연동을 증명하지 않는다. image와 격리 인증 검사는
 [RUN-0101](../../runbooks/14-design-system/0101-storybook.md)의 `storybook_image.py`와 rehearsal이 맡는다. 해당 증거와 승인 경계는
 [RUN-0101](../../runbooks/14-design-system/0101-storybook.md)과 승인된 운영 Task에서 구분한다.
-
-### Runbook Handoff
-
-이미지 빌드·격리 HTTP 검사·HOME 실행 사전 점검과 rollback 순서는
-[RUN-0101](../../runbooks/14-design-system/0101-storybook.md)을 따른다. 운영 follow-up 소유자는
-GDE/POL/RUN-0101이며 trigger는 HOME route 활성화, 검토자 그룹 승인, 원격 MCP
-OIDC 승인, 외부 디자인 계정 사용 승인 또는 DNS/TLS 관찰 요청이다.
-
-### Traceability
-
-- Artifact: `GDE-0101`; governing policy: `POL-0101`.
-- 역사적 source/static 완료 근거: `SPEC-0206`. 아키텍처 맥락 `AD-0031`은 draft 상태이며 이 가이드가 승격하지 않는다.
-- Runtime declaration: `infra/13-experience/storybook/docker-compose.yml`.
 
 ## Related Documents
 

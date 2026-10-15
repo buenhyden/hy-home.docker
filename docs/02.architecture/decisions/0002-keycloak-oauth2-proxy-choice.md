@@ -1,10 +1,10 @@
 ---
 title: "Choice of Keycloak and OAuth2 Proxy for IAM and SSO"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0002"
 parent_ids:
@@ -17,6 +17,12 @@ created: "2026-03-26"
 
 This document covers the technical background for choosing Keycloak and OAuth2 Proxy as the authentication scheme for `hy-home.docker`. It is a choice made for standard OIDC protocol compliance, support for various authentication methods, and implementation of a ForwardAuth architecture that protects existing services without client-side code changes.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+## Decision Drivers
+
 We need an authentication system that is:
 
 1. Centrally managed.
@@ -24,9 +30,13 @@ We need an authentication system that is:
 3. Easily integrable with Traefik.
 4. Capable of protecting "dumb" upstream services that don't have built-in auth.
 
-### Traceability
+## Options
 
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+### Options Considered
+
+- **Authelia**: A lightweight alternative. While good, it lacks the advanced identity provider features and wide community support of Keycloak.
+- **Casdoor**: Another IAM. Less "enterprise-proven" compared to Keycloak in our assessment.
+- **App-level Auth**: Implementing auth in each app. Rejected due to high maintenance and lack of unified security policy.
 
 ## Decision
 
@@ -40,20 +50,6 @@ We decided to use:
 - **Keycloak** is the industry standard for open-source IAM, offering rich features like SSO, Identity Brokering, and MFA out of the box.
 - **OAuth2 Proxy** allows us to enforce authentication at the ingress layer (Traefik) without modifying the source code of internal applications.
 - This combination is well-supported, highly configurable, and integrates natively with our Traefik gateway via the ForwardAuth middleware pattern.
-
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-- **Authelia**: A lightweight alternative. While good, it lacks the advanced identity provider features and wide community support of Keycloak.
-- **Casdoor**: Another IAM. Less "enterprise-proven" compared to Keycloak in our assessment.
-- **App-level Auth**: Implementing auth in each app. Rejected due to high maintenance and lack of unified security policy.
 
 ## Consequences
 

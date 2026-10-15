@@ -11,12 +11,14 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 import yaml
 
 from scripts.lib.gate import ci_gate_contract as contract
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+TEXT_STYLE_CHECKER = ROOT / "scripts/validation/check-text-style.py"
 POST_TOOL = ROOT / "scripts/hooks/post-tool-validate.sh"
 EVENT_HOOK = ROOT / "scripts/hooks/agent-event-hook.sh"
 QA_CI_TOOLS = ROOT / "scripts/operations/use-qa-ci-tools.sh"
@@ -30,7 +32,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
         hooks = [hook for repo in config["repos"] for hook in repo["hooks"]]
         for hook in hooks:
-            if hook["id"] == "trailing-whitespace":
+            if hook["id"] in {"trailing-whitespace", "check-trailing-whitespace"}:
                 self.assertIn("diff", hook.get("exclude_types", []))
             else:
                 self.assertNotIn("diff", hook.get("exclude_types", []))
@@ -233,7 +235,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertFalse((repo / ".gate-calls").exists())
 
-    def test_stop_retry_never_runs_changed_profile_or_completes(self) -> None:
+    def test_stop_retry_returns_without_blocking_or_running_checks(self) -> None:
         for provider in ("claude", "codex"):
             with self.subTest(provider=provider), tempfile.TemporaryDirectory() as name:
                 repo = self._hook_repo(name)
@@ -246,9 +248,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 )
                 self.assertEqual(0, retry.returncode, retry.stderr)
                 self.assertNotIn("Session ending", retry.stdout)
-                response = json.loads(retry.stdout.splitlines()[-1])
-                self.assertIs(response["continue"], False)
-                self.assertIn("stopReason", response)
+                self.assertEqual("", retry.stdout)
                 self.assertFalse((repo / ".gate-calls").exists())
 
     def test_logical_commit_blocked_retry_skips_changed_profile(self) -> None:
@@ -266,7 +266,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     allow_uncommitted=False,
                 )
                 self.assertEqual(0, retry.returncode, retry.stderr)
-                self.assertIn("Stop retry limit", retry.stdout)
+                self.assertEqual("", retry.stdout)
                 self.assertFalse((repo / ".gate-calls").exists())
 
     def test_stop_git_status_failure_blocks_without_session_end(self) -> None:
@@ -2288,6 +2288,412 @@ class RequestPrecedenceContractTests(unittest.TestCase):
         )
 
 
+class ReadOnlyCommitStyleTests(unittest.TestCase):
+    def test_commit_formatter_invocations_are_read_only(self) -> None:
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        hooks = {hook["id"]: hook for repo in config["repos"] for hook in repo["hooks"]}
+        for name in ("end-of-file-fixer", "trailing-whitespace"):
+            self.assertEqual(["manual"], hooks[name]["stages"])
+        self.assertEqual(["--fix=no"], hooks["mixed-line-ending"]["args"])
+        self.assertEqual(["--check"], hooks["ruff-format"]["args"])
+        self.assertIs(
+            False, yaml.safe_load((ROOT / ".markdownlint-cli2.yaml").read_text())["fix"]
+        )
+        for checked, formatter in (
+            ("check-end-of-file", "end-of-file-fixer"),
+            ("check-trailing-whitespace", "trailing-whitespace"),
+        ):
+            self.assertEqual(["text"], hooks[checked]["types"])
+            self.assertEqual(hooks[formatter]["exclude"], hooks[checked]["exclude"])
+        self.assertIn("diff", hooks["check-trailing-whitespace"]["exclude_types"])
+        self.assertNotIn("diff", hooks["check-end-of-file"].get("exclude_types", []))
+
+    def test_checker_preserves_bytes_and_upstream_text_semantics(self) -> None:
+        cases = (
+            ("eof", b"", 0),
+            ("eof", b"value\n", 0),
+            ("eof", b"value\r\n", 0),
+            ("eof", b"value\r", 0),
+            ("eof", b"value", 1),
+            ("eof", b"value\n\n", 1),
+            ("eof", b"\n", 1),
+            ("eof", b"value\n\r", 1),
+            ("trailing", b"value\n", 0),
+            ("trailing", b"value\r\n", 0),
+            ("trailing", b"value\finside\n", 0),
+            ("trailing", b"value \n", 1),
+            ("trailing", b"value\t\r\n", 1),
+            ("trailing", b"value\v\n", 1),
+            ("trailing", b"value\r", 1),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            target = pathlib.Path(directory) / "-공백 path.txt"
+            for kind, data, expected in cases:
+                with self.subTest(kind=kind, data=data):
+                    target.write_bytes(data)
+                    result = subprocess.run(
+                        [
+                            sys.executable,
+                            str(TEXT_STYLE_CHECKER),
+                            "--check",
+                            kind,
+                            "--",
+                            str(target),
+                        ],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    self.assertEqual(expected, result.returncode, result.stderr)
+                    self.assertEqual(data, target.read_bytes())
+                    self.assertNotIn("value", result.stdout + result.stderr)
+
+    def test_installed_commit_hook_checks_index_and_preserves_partial_staging(
+        self,
+    ) -> None:
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        local = [repo for repo in config["repos"] if repo["repo"] == "local"]
+        self.assertTrue(local)
+        for bad in (b"staged secret-sentinel ", b"staged secret-sentinel \n"):
+            with self.subTest(bad=bad), tempfile.TemporaryDirectory() as directory:
+                repo = pathlib.Path(directory)
+                source = repo / TEXT_STYLE_CHECKER.relative_to(ROOT)
+                source.parent.mkdir(parents=True)
+                shutil.copy2(TEXT_STYLE_CHECKER, source)
+                (repo / ".pre-commit-config.yaml").write_text(
+                    yaml.safe_dump({"repos": local})
+                )
+                target = repo / "부분 staging.txt"
+                target.write_bytes(b"seed\n")
+                for arguments in (
+                    ("init", "-q", "-b", "main"),
+                    ("config", "user.name", "Test"),
+                    ("config", "user.email", "test@example.com"),
+                    ("add", "."),
+                    ("commit", "-qm", "Seed"),
+                ):
+                    subprocess.run(
+                        ["git", *arguments], cwd=repo, check=True, capture_output=True
+                    )
+                environment = {
+                    **os.environ,
+                    "PRE_COMMIT_HOME": str(repo / ".pre-commit-cache"),
+                }
+                subprocess.run(
+                    ["pre-commit", "install", "--hook-type", "pre-commit"],
+                    cwd=repo,
+                    env=environment,
+                    check=True,
+                    capture_output=True,
+                )
+                target.write_bytes(bad)
+                subprocess.run(["git", "add", target.name], cwd=repo, check=True)
+                target.write_bytes(b"unstaged local bytes\n")
+                result = subprocess.run(
+                    ["git", "commit", "-qm", "fix: Check staged input"],
+                    cwd=repo,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn(
+                    "check-trailing-whitespace", result.stdout + result.stderr
+                )
+                self.assertNotIn("secret-sentinel", result.stdout + result.stderr)
+                self.assertEqual(
+                    bad,
+                    subprocess.check_output(
+                        ["git", "show", f":{target.name}"], cwd=repo
+                    ),
+                )
+                self.assertEqual(b"unstaged local bytes\n", target.read_bytes())
+
+    def test_checker_refuses_symlinks_and_fifos_without_blocking(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            target = root / "target.txt"
+            target.write_bytes(b"unchanged\n")
+            link = root / "link.txt"
+            link.symlink_to(target)
+            fifo = root / "fifo"
+            os.mkfifo(fifo)
+            for path in (link, fifo):
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(TEXT_STYLE_CHECKER),
+                        "--check",
+                        "eof",
+                        "--",
+                        str(path),
+                    ],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    timeout=2,
+                )
+                self.assertEqual(2, result.returncode)
+            self.assertEqual(b"unchanged\n", target.read_bytes())
+
+
+class AgentGovernanceStructuralBoundaryTests(unittest.TestCase):
+    @staticmethod
+    def _bundle(agc):
+        return agc.ContractBundle(
+            agc.AgentGovernanceState(
+                providers=agc.SUPPORTED_PROVIDERS,
+                provider_records=(),
+                root_entries=(),
+                provider_entries=(),
+                roles=(),
+                skills=(),
+                registry={"projections": [], "hook_contracts": {}},
+            )
+        )
+
+    def test_memory_observations_and_quoted_examples_are_not_provider_registrations(
+        self,
+    ) -> None:
+        from scripts.lib.agent_governance import agent_governance_contract as agc
+
+        observations = (
+            "Codex project memory effectiveness unverified.",
+            "Effective Codex project-memory settings remain separate, uncompleted work.",
+            "프로젝트 메모리의 효과는 아직 확인되지 않았다.",
+            "An audit quotes `project-memory` and `memory/current` as examples.",
+            f"A historical example names `{agc.RETIRED_PROVIDER_DIRECTORY}`.",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            relative = pathlib.PurePosixPath("docs/03.specs/observation.md")
+            source = root / relative
+            source.parent.mkdir(parents=True)
+            for observation in observations:
+                with self.subTest(observation=observation):
+                    source.write_text(observation, encoding="utf-8")
+                    with (
+                        mock.patch.object(
+                            agc, "validate_canonical_agent_home", return_value=[]
+                        ),
+                        mock.patch.object(
+                            agc, "_active_text_paths", return_value=(relative,)
+                        ),
+                    ):
+                        self.assertEqual(
+                            [],
+                            agc.validate_repository(root, self._bundle(agc), "harness"),
+                        )
+
+    def test_actual_retired_surfaces_still_fail(self) -> None:
+        from scripts.lib.agent_governance import agent_governance_contract as agc
+
+        for surface, expected in (
+            (agc.RETIRED_PATHS[0], "AGC-RETIRED-SURFACE"),
+            (agc.RETIRED_PROVIDER_DIRECTORY, "AGC-UNSUPPORTED-PROVIDER"),
+            (agc.RETIRED_PROVIDER_SHIM, "AGC-UNSUPPORTED-PROVIDER"),
+        ):
+            with (
+                self.subTest(surface=surface),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                target = root / surface
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.touch()
+                with (
+                    mock.patch.object(
+                        agc, "validate_canonical_agent_home", return_value=[]
+                    ),
+                    mock.patch.object(agc, "_active_text_paths", return_value=()),
+                ):
+                    findings = agc.validate_repository(
+                        root, self._bundle(agc), "harness"
+                    )
+                self.assertEqual({expected}, {finding.code for finding in findings})
+
+    def test_unknown_registry_provider_and_wrong_native_binding_still_fail(
+        self,
+    ) -> None:
+        from scripts.lib.agent_governance import agent_governance_contract as agc
+
+        registry = yaml.safe_load((ROOT / agc.REGISTRY).read_text())
+        for override, expected in (
+            ({"provider_id": "unregistered-provider"}, "field=provider_id"),
+            (
+                {"native_config_path": ".codex/hooks.json"},
+                "AGC-PROVIDER-PROJECTION-CROSS-REFERENCE",
+            ),
+        ):
+            with self.subTest(override=override):
+                changed = {
+                    **registry,
+                    "providers": [
+                        {**registry["providers"][0], **override},
+                        *registry["providers"][1:],
+                    ],
+                }
+                with self.assertRaisesRegex(agc.ContractLoadError, expected):
+                    agc._validate_registry(ROOT, changed)
+
+
+class InstalledPrePushGuardTests(unittest.TestCase):
+    @staticmethod
+    def _git(repo: pathlib.Path, *arguments: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["git", *arguments], cwd=repo, capture_output=True, text=True, check=False
+        )
+
+    def _repository(self, directory: str) -> pathlib.Path:
+        base = pathlib.Path(directory)
+        repo = base / "checkout with space 한글"
+        repo.mkdir()
+        for arguments in (
+            ("init", "-q", "-b", "main"),
+            ("config", "user.email", "test@example.com"),
+            ("config", "user.name", "Test"),
+        ):
+            result = self._git(repo, *arguments)
+            self.assertEqual(0, result.returncode, result.stderr)
+        source = repo / "scripts/hooks/pre-push-guard.sh"
+        source.parent.mkdir(parents=True)
+        shutil.copy2(ROOT / "scripts/hooks/pre-push-guard.sh", source)
+        source.write_text(
+            source.read_text().replace(
+                "set -euo pipefail",
+                "set -euo pipefail\nprintf . >> .guard-invocations",
+                1,
+            ),
+            encoding="utf-8",
+        )
+        (repo / ".pre-commit-config.yaml").write_text("repos: []\n", encoding="utf-8")
+        self.assertEqual(0, self._git(repo, "add", ".").returncode)
+        self.assertEqual(0, self._git(repo, "commit", "-qm", "Seed").returncode)
+        remote = base / "remote.git"
+        result = self._git(repo, "init", "--bare", "-q", str(remote))
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(
+            0, self._git(repo, "remote", "add", "origin", str(remote)).returncode
+        )
+        result = self._git(repo, "push", "-q", "origin", "main")
+        self.assertEqual(0, result.returncode, result.stderr)
+        result = self._git(repo, "push", "-q", "origin", "main:refs/heads/a-feature")
+        self.assertEqual(0, result.returncode, result.stderr)
+        (repo / "change.txt").write_text("new commit\n", encoding="utf-8")
+        self.assertEqual(0, self._git(repo, "add", ".").returncode)
+        self.assertEqual(0, self._git(repo, "commit", "-qm", "Change").returncode)
+        result = subprocess.run(
+            ["pre-commit", "install", "--hook-type", "pre-push"],
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            check=False,
+            env={**os.environ, "PRE_COMMIT_HOME": str(base / "pre-commit-cache")},
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        return repo
+
+    def _install(self, repo: pathlib.Path) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["bash", str(ROOT / "scripts/hooks/install-pre-push-guard.sh")],
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    def test_real_push_blocks_main_in_mixed_refs_and_deletion(self) -> None:
+        for refs in (("main",), ("a-feature", "main"), (":refs/heads/main",)):
+            with self.subTest(refs=refs), tempfile.TemporaryDirectory() as directory:
+                repo = self._repository(directory)
+                self.assertEqual(0, self._git(repo, "branch", "a-feature").returncode)
+                installed = self._install(repo)
+                self.assertEqual(0, installed.returncode, installed.stderr)
+                before = self._git(repo, "ls-remote", "origin").stdout
+                result = self._git(repo, "push", "origin", *refs)
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn("direct push to main refused", result.stderr)
+                self.assertEqual(before, self._git(repo, "ls-remote", "origin").stdout)
+                self.assertEqual(".", (repo / ".guard-invocations").read_text())
+
+    def test_real_feature_push_and_deletion_work_but_missing_guard_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._repository(directory)
+            installed = self._install(repo)
+            self.assertEqual(0, installed.returncode, installed.stderr)
+            for ref in ("HEAD:refs/heads/feature", ":refs/heads/feature"):
+                result = self._git(repo, "push", "origin", ref)
+                self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual("..", (repo / ".guard-invocations").read_text())
+            (repo / "scripts/hooks/pre-push-guard.sh").unlink()
+            result = self._git(repo, "push", "origin", "HEAD:refs/heads/feature")
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("pre-push-guard.sh", result.stderr)
+
+    def test_installer_preserves_known_shim_and_other_hooks_and_is_idempotent(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._repository(directory)
+            hooks = repo / ".git/hooks"
+            prior = (hooks / "pre-push").read_bytes()
+            other = hooks / "commit-msg"
+            other.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            for _ in range(2):
+                result = self._install(repo)
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(prior, (hooks / "pre-push.before-native").read_bytes())
+                self.assertEqual("#!/bin/sh\nexit 0\n", other.read_text())
+
+    def test_installer_refuses_unknown_hook_or_selected_hook_directory(self) -> None:
+        for condition in (
+            "unknown",
+            "legacy",
+            "hooksPath",
+            "modified-shim",
+            "modified-python",
+            "symlink",
+        ):
+            with (
+                self.subTest(condition=condition),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                repo = self._repository(directory)
+                hook = repo / ".git/hooks/pre-push"
+                if condition == "unknown":
+                    hook.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+                elif condition == "legacy":
+                    hook.with_name("pre-push.legacy").write_text("old hook\n")
+                elif condition == "hooksPath":
+                    self.assertEqual(
+                        0,
+                        self._git(
+                            repo, "config", "core.hooksPath", "custom-hooks"
+                        ).returncode,
+                    )
+                elif condition == "modified-python":
+                    hook.write_text(
+                        re.sub(
+                            r"^INSTALL_PYTHON=.*$",
+                            "INSTALL_PYTHON=/bin/python; echo unknown",
+                            hook.read_text(),
+                            flags=re.M,
+                        )
+                    )
+                elif condition == "symlink":
+                    target = hook.with_name("owner-hook")
+                    hook.rename(target)
+                    hook.symlink_to(target)
+                else:
+                    hook.write_text(hook.read_text() + "echo unexpected\n")
+                before = hook.read_bytes()
+                result = self._install(repo)
+                self.assertNotEqual(0, result.returncode)
+                self.assertEqual(before, hook.read_bytes())
+                self.assertFalse(hook.with_name("pre-push.before-native").exists())
+
+
 class HookOutputAndMainPushTests(unittest.TestCase):
     """Hook outputs the providers accept, and every route to a direct main push."""
 
@@ -2595,7 +3001,7 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 )
                 self.assertEqual(expected, result.returncode, result.stderr)
         config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
-        self.assertIn("pre-push", config["default_install_hook_types"])
+        self.assertNotIn("pre-push", config["default_install_hook_types"])
         self.assertNotIn("pre-push", config["default_stages"])
         # Upstream manifests declare pre-push for some hooks; pin them back.
         for hook_id in (
@@ -2609,10 +3015,15 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 for hook in repo["hooks"]
                 if hook["id"] == hook_id
             )
-            self.assertEqual(["pre-commit", "manual"], hook["stages"], hook_id)
+            self.assertEqual(
+                ["pre-commit", "manual"]
+                if hook_id == "check-added-large-files"
+                else ["manual"],
+                hook["stages"],
+                hook_id,
+            )
         hooks = [hook for repo in config["repos"] for hook in repo["hooks"]]
-        guard_hook = next(hook for hook in hooks if hook["id"] == "block-main-push")
-        self.assertEqual(["pre-push"], guard_hook["stages"])
+        self.assertFalse(any(hook["id"] == "block-main-push" for hook in hooks))
 
     def test_native_hook_files_match_the_registry(self) -> None:
         registry = yaml.safe_load(

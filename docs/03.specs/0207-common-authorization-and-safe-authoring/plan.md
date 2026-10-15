@@ -1,10 +1,10 @@
 ---
 title: "Common Authorization and Safe Authoring Plan"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0207-PLAN-0001"
 parent_ids:
@@ -36,6 +36,14 @@ The completed Tasks retain their original implementation scopes and evidence.
   the Task's source/consumer matrix.
 - Read-only policy review before final completion; focused documentation and
   governance checks. Remote integration requires separate approval and evidence.
+
+## Scope
+
+W1–W4 converge canonical authorization policy and its archive-record and
+pre-tool consumers, including safe failure diagnostics and focused review.
+W5 compares current P01 authority and blocker lanes in this package's three
+documents while preserving the earlier completed Tasks and unrelated
+operational recovery work.
 
 ## Work Breakdown
 
@@ -100,7 +108,9 @@ checks once after the final local diff. Run provider rendering only if a provide
 surface changes. Record missing tools, sandbox limits, and hosted checks as
 `NOT_RUN` or `BLOCKED`, never as a pass.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 Ambiguous wording can create a parallel owner or overstate native capabilities.
 Rollback is one logical revert of the P01 policy/package change after preserving

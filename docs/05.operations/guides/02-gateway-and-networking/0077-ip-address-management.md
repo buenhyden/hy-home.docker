@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Usage Guide"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0077"
 parent_ids:
@@ -18,16 +18,20 @@ created: "2026-05-17"
 
 이 가이드는 Compose 서비스의 Docker network 소속과 고정 주소 사용 기준을 설명한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 개발자, 운영자, AI Agent다. 목표는 실제 호출 흐름에 맞는 network를 고르고
 불필요한 고정 주소를 만들지 않는 것이다.
 
-## Usage
+## Concepts
 
 구조적 할당은 [AD-0026 Networks](../../../02.architecture/descriptions/0026-standardize-infra-net.md#networks-spec-0180-s05),
 선언은 [루트 Compose](../../../../docker-compose.yml)와 해당 service fragment가
 소유한다. 서비스가 여러 network를 공유해도 개별 인증·권한 검증을 대신하지 않는다.
+
+## Usage
 
 ### Flow and membership
 
@@ -65,13 +69,6 @@ Docker network를 공유하지 않으며 기존 LAN endpoint 연동은
 - 필요한 Compose 기능은 [개발환경 Guide](../10-platform-and-backup/0002-developer-environment.md)를 따른다.
   쓰기·runtime 권한이 없어도 공개 선언을 읽을 수 있지만 변경·조회 승인은 별도다.
 
-### Common Checks
-
-root/leaf network 선언, peer와 endpoint, static 주소 이유, host 노출과 profile을
-함께 대조한다. [RUN-0077](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)의 승인된
-공개 구성 검증은 live 연결이나 static-IP 무충돌의 완전한 증거가 아니다.
-선택·준비 상태의 차이는 [시스템 Guide](../01-common/0099-system-operations.md)를 따른다.
-
 ### Runbook Handoff
 
 membership·주소 변경, 충돌 진단과 scoped rollback은
@@ -82,6 +79,15 @@ membership·주소 변경, 충돌 진단과 scoped rollback은
 - 상위 Policy: [POL-0077](../../policies/02-gateway-and-networking/0077-ip-address-management.md)
 - 구조: [AD-0026](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
 - 같은 주제: [Policy](../../policies/02-gateway-and-networking/0077-ip-address-management.md), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)
+
+## Troubleshooting
+
+### Common Checks
+
+root/leaf network 선언, peer와 endpoint, static 주소 이유, host 노출과 profile을
+함께 대조한다. [RUN-0077](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)의 승인된
+공개 구성 검증은 live 연결이나 static-IP 무충돌의 완전한 증거가 아니다.
+선택·준비 상태의 차이는 [시스템 Guide](../01-common/0099-system-operations.md)를 따른다.
 
 ## Related Documents
 

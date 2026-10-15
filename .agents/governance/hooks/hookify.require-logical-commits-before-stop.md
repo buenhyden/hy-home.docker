@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: incomplete logical commits"
-version: "1.0.1"
+version: "1.0.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 action: "block"
 enabled: true
 event: "stop"
@@ -20,7 +20,7 @@ Apply the declared `block` action for require-logical-commits-before-stop.
 
 ## Scope
 
-The declared `stop` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+`stop` 이벤트의 `require-logical-commits-before-stop` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
 
 ## Rules
 
@@ -38,9 +38,17 @@ The shared Stop hook blocks when task-owned repository changes remain
 uncommitted. Use this as a completion gate, not as a substitute for reviewing
 the staged diff.
 
+A repeated Stop payload (`stop_hook_active: true`) returns without another
+block or verification run. The first attempt retains the uncommitted-change
+check; a retry does not certify completion.
+
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared `stop` event and `pattern` define the matching scope; native event delivery remains a separate observation.
 
 ## Related Documents
 

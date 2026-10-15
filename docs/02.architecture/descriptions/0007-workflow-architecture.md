@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow) Architecture Description"
-version: "1.2.1"
+version: "1.2.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0007"
 parent_ids:
@@ -15,12 +15,6 @@ created: "2026-03-26"
 # Workflow Tier (07-workflow) Architecture Description
 
 ## Overview
-
-### Overview
-
-## Scope
-
-### Scope
 
 ### Context and Stakeholders
 
@@ -34,6 +28,8 @@ selecting the profile alone does not change the default `mng-valkey` connection.
   Keycloak Auth Manager.
 - **n8n**: low-code automation and integration.
   The public UI keeps the approved OAuth2 Proxy ForwardAuth boundary.
+
+## Scope
 
 ### System Boundaries
 
@@ -52,11 +48,7 @@ selecting the profile alone does not change the default `mng-valkey` connection.
   - external CI/CD
   - stream processing
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Programmatic Orchestration — Airflow
 
@@ -99,7 +91,7 @@ switch `N8N_VALKEY_HOST`/`N8N_VALKEY_SECRET`, as a matching pair to use the
 dedicated broker. Core services are `HOME`; the two broker/exporter pairs are
 `OPTIONAL`.
 
-### Data Flow
+## Runtime and Deployment
 
 ### Airflow
 
@@ -142,7 +134,9 @@ Airflow auth:
 - CA bundle + `--proxy-headers`
 - gateway-only router
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Reliability**: scheduler/worker/triggerer health and broker availability.
 - **Security**: Airflow uses Native OIDC; Flower/n8n each use their approved gateway auth policy.

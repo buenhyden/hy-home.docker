@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Product Requirements"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0012"
 created: "2026-03-26"
@@ -12,8 +12,6 @@ created: "2026-03-26"
 # Administration and Experimentation Product Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -23,32 +21,7 @@ This document preserves the former Laboratory obligations across capability tier
 
 When infrastructure service access points, container state, data store debugging tools, and local notebook-style experiment tools are scattered, operators waste time on status checks and incident response. Shared Operations navigation must make RedisInsight, Dozzle and Open Notebook discoverable while preserving each service's approved authentication and gateway boundary.
 
-## Requirements
-
-### Requirements
-
-### Functional Requirements
-
-- **REQ-0012-FR-0001**: Every active infrastructure service must be exposed on the dashboard, either automatically or through manual configuration.
-- **REQ-0012-FR-0002**: Every admin tool UI route must preserve its approved gateway, authentication and allowlist boundary. RedisInsight uses ForwardAuth; Dozzle uses native OIDC with the gateway CIDR control; Open Notebook uses its password-file authentication with the gateway CIDR control. These existing service-specific exceptions are recorded in POL-0073 and the corresponding source, not introduced by relocation. MLflow and JupyterLab browser routes use ForwardAuth; direct network/API paths require separate access evidence.
-- **REQ-0012-FR-0004**: Root Compose validation must cover `admin` (Dozzle and RedisInsight), `notebook` (Open Notebook and SurrealDB), `surrealdb`, `mlops` (MLflow and its provisioner), and `data-science` (MLflow, its provisioner and JupyterLab), preserving existing selections.
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-### Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0012-FR-0001**: root validation renders the administration and experimentation profile selections without failure; this is not evidence of a running dashboard or live access.
-- **REQ-0012-FR-0002**: RedisInsight, Dozzle and Open Notebook retain their declared gateway and service-specific authentication/CIDR controls. Validate direct network access separately; a gateway check does not prove that peer-network access is denied.
-
 ## Scope
-
-### Scope
 
 ### Stakeholders and User Needs
 
@@ -80,6 +53,27 @@ N/A
 
 - **Dependency**: `02-auth` (Keycloak) availability for SSO.
 - **Risk**: Exposing Docker Socket to Dozzle; bounded by the read-only mount and native OIDC; a read-only socket mount does not restrict Docker API reads.
+
+## Requirements
+
+### Functional Requirements
+
+- **REQ-0012-FR-0001**: Every active infrastructure service must be exposed on the dashboard, either automatically or through manual configuration.
+- **REQ-0012-FR-0002**: Every admin tool UI route must preserve its approved gateway, authentication and allowlist boundary. RedisInsight uses ForwardAuth; Dozzle uses native OIDC with the gateway CIDR control; Open Notebook uses its password-file authentication with the gateway CIDR control. These existing service-specific exceptions are recorded in POL-0073 and the corresponding source, not introduced by relocation. MLflow and JupyterLab browser routes use ForwardAuth; direct network/API paths require separate access evidence.
+- **REQ-0012-FR-0004**: Root Compose validation must cover `admin` (Dozzle and RedisInsight), `notebook` (Open Notebook and SurrealDB), `surrealdb`, `mlops` (MLflow and its provisioner), and `data-science` (MLflow, its provisioner and JupyterLab), preserving existing selections.
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0012-FR-0001**: root validation renders the administration and experimentation profile selections without failure; this is not evidence of a running dashboard or live access.
+- **REQ-0012-FR-0002**: RedisInsight, Dozzle and Open Notebook retain their declared gateway and service-specific authentication/CIDR controls. Validate direct network access separately; a gateway check does not prove that peer-network access is denied.
 
 ## Related Documents
 

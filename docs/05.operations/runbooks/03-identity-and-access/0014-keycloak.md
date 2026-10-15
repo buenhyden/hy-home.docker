@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -22,9 +22,13 @@ created: "2026-05-17"
 
 목적은 Keycloak 가용성을 빠르게 복구하고, issuer, redirect URI, proxy header, CA trust 불일치를 안전하게 좁히며, 시크릿/설정 회귀 시 안전하게 롤백하는 것이다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - `/health/ready` 실패 지속
 - DB 인증 오류 또는 연결 오류
@@ -192,7 +196,7 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

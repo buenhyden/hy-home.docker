@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Policy"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0081"
 parent_ids:
@@ -67,15 +67,6 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 
 예외에는 소유자, 범위, 위험, 만료, 복구 조건이 있어야 한다.
 
-### Verification
-
-배포 전에 소스와 메타데이터 점검을 사용한다. 런타임 시작, 모델 다운로드,
-워크플로 실행, GPU 활용, 복구에는 별도로 승인된 대상과 마스킹된 증거가
-필요하다. 누락된 백업/출처, 예상치 못한 포트 노출, 또는 검토되지 않은
-커스텀 노드는 에스컬레이션한다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Review Cadence
 
 매월, 그리고 이미지, 커스텀 노드, 영속 데이터, 노출, 또는 GPU 정책 변경 전에
@@ -85,6 +76,15 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 
 - 상위 아키텍처: [AD-0008](../../../02.architecture/descriptions/0008-ai-architecture.md)
 - 대상 동위 문서: [가이드](../../guides/09-ai-and-search/0081-comfyui.md), [런북](../../runbooks/09-ai-and-search/0081-comfyui.md)
+
+## Verification
+
+배포 전에 소스와 메타데이터 점검을 사용한다. 런타임 시작, 모델 다운로드,
+워크플로 실행, GPU 활용, 복구에는 별도로 승인된 대상과 마스킹된 증거가
+필요하다. 누락된 백업/출처, 예상치 못한 포트 노출, 또는 검토되지 않은
+커스텀 노드는 에스컬레이션한다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Related Documents
 

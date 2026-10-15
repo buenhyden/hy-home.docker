@@ -1,10 +1,10 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Incident"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/incident"
 status: "resolved"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "inc-2026-0002"
 parent_ids:
@@ -30,29 +30,14 @@ permission strategy, OAuth state/cookie, resource-level authorization 문제를
 확인되어 resolved로 닫는다. 어느 조치가 마지막 `403`을 해소했는지와 그 시각은
 기록되어 있지 않다.
 
-### Impact
+## Impact
 
 - API server 초기 기동 실패
 - UI/API 500/403
 - DAG/Pool/Asset dashboard 일부 접근 제한
 - 반복 재로그인과 Keycloak/Airflow 양측 진단 필요
 
-### Coordination
-
-관련 시스템:
-
-- Airflow 3.3.1
-- Keycloak
-- OAuth2 Proxy
-- Traefik
-- `apache-airflow-providers-keycloak` 0.8.2 -> 0.9.0
-
-관련 Runbook:
-
-- `RUN-0050`
-- `RUN-0014`
-
-### Timeline
+## Timeline
 
 1. `/opt/airflow/config/airflow.cfg` PermissionError.
 2. DB migration/version mismatch.
@@ -78,6 +63,23 @@ permission strategy, OAuth state/cookie, resource-level authorization 문제를
     `/ui/config`), `403` 0건. `/api/v2/pools`, `/ui/dags`,
     `/api/v2/assets`, `/api/v2/dags/{dag}/dagRuns/{run}/hitlDetails`가 `200`.
 
+## Response
+
+### Coordination
+
+관련 시스템:
+
+- Airflow 3.3.1
+- Keycloak
+- OAuth2 Proxy
+- Traefik
+- `apache-airflow-providers-keycloak` 0.8.2 -> 0.9.0
+
+관련 Runbook:
+
+- `RUN-0050`
+- `RUN-0014`
+
 ### Mitigation
 
 - shared Airflow file ownership/runtime UID 정렬
@@ -88,6 +90,12 @@ permission strategy, OAuth state/cookie, resource-level authorization 문제를
 - provider 0.9.0 upgrade
 - non-team `create-permissions` 재적용
 - stale callback/session 제거
+
+### Communications
+
+token/refresh token/id token/client secret 원문은 incident/issue/PR에 기록하지 않는다.
+
+## Resolution
 
 ### Current Status
 
@@ -103,6 +111,8 @@ Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
 
 후속 조치의 상태는 [postmortem](postmortem.md)이 추적한다.
 
+## Follow-up
+
 ### Corrective Actions
 
 1. `RUN-0050`에 auth troubleshooting 시나리오 추가.
@@ -114,26 +124,6 @@ Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
 7. 노출된 live token/session 폐기: 2026-09-27 완료. Keycloak `home-airflow`
    session은 0건이었고, `airflow_api_jwt_secret`을 교체해 기존 Airflow JWT를
    무효화했다. 상세는 [postmortem](postmortem.md)에 있다.
-
-### Communications
-
-token/refresh token/id token/client secret 원문은 incident/issue/PR에 기록하지 않는다.
-
-### Impact
-
-### Timeline
-
-### Response
-
-### Resolution
-
-## Impact
-
-## Timeline
-
-## Response
-
-## Resolution
 
 ## Related Documents
 

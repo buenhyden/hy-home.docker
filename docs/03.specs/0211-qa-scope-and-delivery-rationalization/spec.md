@@ -1,10 +1,10 @@
 ---
 title: "QA Scope and Delivery Rationalization"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0211"
 parent_ids:
@@ -133,6 +133,14 @@ with only changed slices revalidated after correction or result-only records.
 5. Current policy, templates and Issue/Project guidance agree on ownership;
    meaningful regression, selected validation and independent review evidence
    is recorded in the Task with observed and unobserved lanes distinct.
+
+## Failure Conditions
+
+A removed check with a live caller or an assurance without a current owner
+leaves QA retirement incomplete. Selection must fail closed on rename,
+deletion and unknown input, propagate required candidate failures, and refuse
+reuse across unproven input or trust boundaries; release production must not
+overwrite published versions or historical tags.
 
 ## Related Documents
 

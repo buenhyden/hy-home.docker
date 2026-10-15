@@ -1,10 +1,10 @@
 ---
 title: "Gatus Policy"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0087"
 parent_ids:
@@ -57,13 +57,6 @@ Build 수용에는 source commit·checksum·local patch·생성 image digest가 
 
 예외는 owner, scope, risk, expiry, recovery condition이 필요하다.
 
-### Verification
-
-정적 소스와 catalog 검사는 선언만 검증한다. 컨테이너 health, native 로그인, 세션 만료,
-probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 런타임 증거로 남는다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Review Cadence
 
 매월, 그리고 인증, probe inventory, 소스, storage가 변경될 때 검토한다.
@@ -72,6 +65,13 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 
 - Governing architecture: [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)
 - Subject peers: [Guide](../../guides/07-observability/0087-gatus.md) and [Runbook](../../runbooks/07-observability/0087-gatus.md)
+
+## Verification
+
+정적 소스와 catalog 검사는 선언만 검증한다. 컨테이너 health, native 로그인, 세션 만료,
+probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 런타임 증거로 남는다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Related Documents
 

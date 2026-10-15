@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Agent Telemetry and Alert"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0239"
 parent_ids:
@@ -66,6 +66,14 @@ which its owner updates after merge.
 4. Independent IaC and security reviews find nothing blocking, and the
    changed tests, metadata, links and markdownlint pass.
 5. Hosted `candidate-quality` passes.
+
+## Failure Conditions
+
+The metrics listener must expose no proxy, cache, quit route or secret,
+and the two Prometheus configurations must agree on the Agent job. Alert
+cases fail if scrape loss or the bao-prefixed authentication counter does
+not fire and clear as specified; render staleness remains a Docker health
+signal rather than an invented Agent metric.
 
 ## Related Documents
 

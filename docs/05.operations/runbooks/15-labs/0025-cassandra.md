@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Health and Recovery Triage Runbook"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0025"
 parent_ids:
@@ -18,9 +18,11 @@ created: "2026-05-17"
 
 독립 Cassandra 단일 노드 LAB의 정적 점검과 승인 후 read-only triage 순서다. 이번 변경에서 실제 서비스·데이터를 실행하지 않았다.
 
-## Trigger and Preconditions
+## Trigger
 
 `cassandra-node1`의 선언·건강·데이터 경로를 점검하거나 격리 복구 범위를 설계할 때 사용한다.
+
+## Prerequisites
 
 ### Execution and stop boundary
 
@@ -55,7 +57,7 @@ created: "2026-05-17"
 
 Compose health와 요약된 node 상태를 사용한다. exporter는 현재 LAB에 없다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

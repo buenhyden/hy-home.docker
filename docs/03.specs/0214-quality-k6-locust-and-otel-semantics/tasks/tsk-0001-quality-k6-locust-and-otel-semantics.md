@@ -1,10 +1,10 @@
 ---
 title: "Quality Load Tools and OTel Metric Semantics Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0214-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-07"
 
 # Quality Load Tools and OTel Metric Semantics Task
 
-## Objective
+## Overview
+
+### Objective
 
 Preserve the k6 result contract, add one authenticated live metrics path,
 keep metric identities intact, and bound the Locust LAB.

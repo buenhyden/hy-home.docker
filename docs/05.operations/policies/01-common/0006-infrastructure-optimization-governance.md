@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.0.5"
+version: "2.0.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -245,7 +245,18 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 - 승인된 실험성 service에는 대상·이유·risk·owner·종료 조건을 갖춘 제한적 예외만 허용 가능. 예전 `11-laboratory` directory membership은 현재 예외 승인이 아니다.
   단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
 
-### Verification
+### Review Cadence
+
+책임 소유자는 @buenhyden이며 미충족 통제는 별도 구현 변경으로 해결한다.
+
+- 월 1회 정기 검토
+- 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
+
+### Traceability
+
+- 같은 번호 `0006`의 Guide/Runbook은 없다.
+
+## Verification
 
 - Compose 정적 점검: `bash scripts/validation/validate-docker-compose.sh`
 - 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
@@ -259,17 +270,6 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 Compose 정적 검증도 임시 파일 생성과 기존 입력 읽기가 있을 수 있으므로
 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)의
 공개/sanitized 입력 경계를 따른다. check PASS는 필수 통제의 전체 runtime 증명이 아니다.
-
-### Review Cadence
-
-책임 소유자는 @buenhyden이며 미충족 통제는 별도 구현 변경으로 해결한다.
-
-- 월 1회 정기 검토
-- 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
-
-### Traceability
-
-- 같은 번호 `0006`의 Guide/Runbook은 없다.
 
 ## Related Documents
 

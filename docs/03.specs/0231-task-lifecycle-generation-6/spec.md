@@ -1,10 +1,10 @@
 ---
 title: "Task Lifecycle Generation 6"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0231"
 parent_ids:
@@ -116,6 +116,14 @@ archive approval itself, which stays a separate owner decision.
 5. Governance and README text states the generation 6 rules once, and the
    repeated `### Usage` heading in the Stage 01, 02 and 03 READMEs is gone.
 6. The changed gate and `candidate-quality` pass.
+
+## Failure Conditions
+
+The reader rejects parent authority derived from execution, stored summary
+status on multi-item Tasks, invalid Evidence resolution and acceptance
+without the required PASS or with an unresolved FAIL. Archive readiness
+cannot authorize archive removal, and migration must preserve terminal source
+bytes and generation-specific historical meaning.
 
 ## Related Documents
 

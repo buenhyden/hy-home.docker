@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.19"
+version: "0.4.20"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -14,7 +14,9 @@ created: "2026-10-10"
 
 # SEC01 Stable Security Integration Task
 
-## Objective
+## Overview
+
+### Objective
 
 Integrate the SEC01 stable/security source ledger and bounded repairs without
 treating candidate images, source receipts or isolated recovery rehearsal as

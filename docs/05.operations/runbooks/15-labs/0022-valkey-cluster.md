@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Health Runbook"
-version: "2.1.1"
+version: "2.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
@@ -18,10 +18,16 @@ created: "2026-05-17"
 
 LAB 전용 Valkey Cluster(`labs/valkey-cluster.yml`)의 정적 점검, 백업 계획, 격리 복원 절차를 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
 이 subject의 승인된 static diagnosis, backup 계획, isolated recovery에
-사용한다. live write, restore, cutover, cleanup, credential 변경은 별도로
+사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+live write, restore, cutover, cleanup, credential 변경은 별도로
 승인된 task가 필요하다.
 
 ### Scope
@@ -95,7 +101,7 @@ source revision/version, scope, timestamp, manifest/checksum 요약, command와
 exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
 gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

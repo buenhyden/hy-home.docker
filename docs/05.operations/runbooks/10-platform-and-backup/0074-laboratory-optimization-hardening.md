@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Hardening Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0074"
 parent_ids:
@@ -20,9 +20,13 @@ created: "2026-05-17"
 네트워크 경계 드리프트, CI 게이트 실패를 점검하고 복구한다. 관리 UI 보안 경계와 운영 안정성 기준을
 빠르게 되돌리고, compose/script/CI 회귀를 표준 절차로 차단하는 것이 목표다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 중 하나일 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - `infrastructure-hardening` CI가 실패할 때
 - dozzle/redisinsight/open-notebook 접근 경계가 비정상일 때
@@ -107,7 +111,7 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
   - compose config 결과
   - 관련 compose/script/docs diff
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

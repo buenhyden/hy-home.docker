@@ -1,10 +1,10 @@
 ---
 title: "Local Gate Governance Timeout Plan"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0235-PLAN-0001"
 parent_ids:
@@ -18,6 +18,13 @@ created: "2026-10-13"
 
 Measure each node's batch, change its timeout, let the reachability test accept
 a class selection, then prove the local gate passes the node.
+
+## Scope
+
+W1–W4 measure the two local module batches, set their respective 45-
+and 30-minute limits and repair class-selection reachability tests. W5
+observes the local changed gate and hosted candidate; node splitting, suite
+optimization and hosted timeout changes are excluded.
 
 ## Work Breakdown
 
@@ -37,7 +44,9 @@ run `tests.lib.test_surface_ownership` on `main` (RED) and with the change
 (GREEN); run the local changed gate with no outer limit; read hosted
 `candidate-quality`.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - **A hung test waits longer.** A real hang now takes 45 minutes to surface
   locally instead of 15, or 30 instead of 10 in the metadata node. Hosted CI

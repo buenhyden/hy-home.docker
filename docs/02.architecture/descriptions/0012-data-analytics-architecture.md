@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier Architecture Description"
-version: "1.1.4"
+version: "1.1.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0012"
 parent_ids:
@@ -16,18 +16,14 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 `infra/12-analytics` groups stream/batch processing, SQL queries, transformation,
 data quality and BI for data engineers and analysts. The former description
 covered only `04-data/analytics` storage engines; ADR-0045 makes the storage
 versus processing boundary explicit. OpenSearch remains in Data; InfluxDB is retired (ADR-0047).
+
+## Scope
 
 ### System Boundaries
 
@@ -43,9 +39,7 @@ failure isolation nor a separate Compose project.
 - [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
 - [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -58,6 +52,8 @@ failure isolation nor a separate Compose project.
 | Superset | BI, Keycloak OIDC and mng-pg metadata; configured Trino datasource | bi |
 | dbt | PostgreSQL transformations using feature-owned grants/schema | analytics-engineering |
 | JupyterLab | interactive data analysis, token-protected kernels and optional MLflow SDK access | data-science |
+
+## Runtime and Deployment
 
 ### Data Flow
 
@@ -75,7 +71,9 @@ control selection. No new analytics profile or HOME activation is added.
 persistent host paths, volume identities and services remain unchanged.
 Running-container reconciliation is a separate operational action.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 Retain optional profiles and current network/secret boundaries. Preserve
 Flink checkpoints and Superset metadata; processing packages are not assumed

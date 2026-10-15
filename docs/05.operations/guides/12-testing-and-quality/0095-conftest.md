@@ -1,10 +1,10 @@
 ---
 title: "Conftest Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0095"
 parent_ids:
@@ -23,11 +23,13 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 중인 컨테이너가 아니라 인프라 소스에 대해 Open Policy Agent(Rego) 규칙을
 평가하므로, 시작 전에 잘못된 선언을 잡아낸다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 인프라 소스에 정책 검사를 실행하는 개발자와 운영자를 위한 문서다. 검사 범위와 규칙을 이해하고 실패 신호를 해석하는 것이 목표다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -38,6 +40,8 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 - `run.sh`는 먼저 정책 자체 테스트에 대해 `conftest verify`를 실행한 다음
   `infra/` 아래의 모든 `docker-compose*.yml`과 `Dockerfile*`을 테스트한다.
   `deny`는 job을 실패시키고 `warn`은 출력만 한다.
+
+## Usage
 
 ### Rules
 
@@ -57,12 +61,6 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 | --- | --- |
 | `docker compose --profile policy-check run --rm conftest` | 정책을 검증한 다음 run.sh가 선택한 raw Compose 파일과 Dockerfile을 테스트 |
 
-### Common Checks
-
-- CI는 `repository-integrity` suite에서 `leaf.conftest-policy`
-  (`scripts/validation/check-conftest-policy.sh`)로 이 job을 실행한다.
-- `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
-
 ### Runbook Handoff
 
 job이 실패하면 [runbook](../../runbooks/12-testing-and-quality/0095-conftest.md)을 사용한다.
@@ -80,6 +78,14 @@ job이 실패하면 [runbook](../../runbooks/12-testing-and-quality/0095-conftes
 - [Policy](../../policies/12-testing-and-quality/0095-conftest.md) (`POL-0095`)
 - [Runbook](../../runbooks/12-testing-and-quality/0095-conftest.md) (`RUN-0095`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- CI는 `repository-integrity` suite에서 `leaf.conftest-policy`
+  (`scripts/validation/check-conftest-policy.sh`)로 이 job을 실행한다.
+- `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
 
 ## Related Documents
 

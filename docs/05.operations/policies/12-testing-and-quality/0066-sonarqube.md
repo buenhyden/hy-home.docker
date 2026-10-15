@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Operations Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0066"
 parent_ids:
@@ -57,12 +57,6 @@ created: "2026-05-17"
 유료 기능, 네이티브 SAML/OIDC 프로비저닝, 더 넓은 품질 게이트 요구사항은
 각자의 소유 requirement/policy가 필요하며 여기서 유추할 수 없다.
 
-### Verification
-
-헬스는 부분적이다. 런타임 수용 기준에는 DB 접근, gateway와 앱 권한 부여,
-백그라운드 작업 완료, 대표 분석이 포함되며 백업/복구를 주장하는 경우 그
-증거도 포함된다.
-
 ### Review Cadence
 
 릴리스, DB/플러그인/인증/토큰, 리소스, 보존 정책 변경 시 검토한다.
@@ -72,6 +66,12 @@ created: "2026-05-17"
 - [가이드](../../guides/12-testing-and-quality/0066-sonarqube.md) (`GDE-0066`)
 - [런북](../../runbooks/12-testing-and-quality/0066-sonarqube.md) (`RUN-0066`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Verification
+
+헬스는 부분적이다. 런타임 수용 기준에는 DB 접근, gateway와 앱 권한 부여,
+백그라운드 작업 완료, 대표 분석이 포함되며 백업/복구를 주장하는 경우 그
+증거도 포함된다.
 
 ## Related Documents
 

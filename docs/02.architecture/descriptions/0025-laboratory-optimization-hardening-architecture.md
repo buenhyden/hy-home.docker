@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Hardening Architecture Description"
-version: "1.1.3"
+version: "1.1.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0025"
 parent_ids:
@@ -15,16 +15,12 @@ created: "2026-03-28"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
 administration and experimentation capabilities across Data, Observability, AI and Analytics. Existing source-specific authentication remains authoritative: RedisInsight ForwardAuth, Dozzle native OIDC, and Open Notebook password-file authentication with gateway CIDR controls. These exceptions predate relocation (POL-0073); the move grants no new authentication exemption. CI checks source drift, not live access acceptance.
+
+## Scope
 
 ### Stakeholders and Concerns
 
@@ -68,11 +64,7 @@ non-goals, and constraints already recorded in the current document.
 
 The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Viewpoints and Views
 
@@ -86,7 +78,7 @@ as the view for that concern.
   - redisinsight -> valkey/redis endpoints
   - open-notebook -> surrealdb
 
-### Data Flow
+## Runtime and Deployment
 
 ### Data and Control Flows
 
@@ -117,7 +109,7 @@ This hardening Architecture Description does not introduce production data owner
   retention/expiration policy, direct API/DB host-port exposure review
   before production promotion
 
-## Quality Attributes
+## Quality and Risks
 
 ### Quality Scenarios
 

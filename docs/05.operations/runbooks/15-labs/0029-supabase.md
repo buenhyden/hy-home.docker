@@ -1,10 +1,10 @@
 ---
 title: "Supabase Stack Health Runbook"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0029"
 parent_ids:
@@ -23,9 +23,14 @@ recovery가 필요한 경우 빠르게 escalation한다. 아래 native 기동과
 database/storage/config 복원, secret 읽기·이동·복제·삭제는 이번 문서 변경에서
 실행하지 않았다.
 
-## Trigger and Preconditions
+## Trigger
 
 - `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `db`, `analytics`, 또는 `supavisor`가 unhealthy이거나 누락된 경우.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 - Kong HTTP/HTTPS 접근이 compose가 선언한 host port에서 응답하지 않는 경우.
 - JWT rotation, dashboard 비밀번호 재설정, storage 용량, 또는 DB restore를 검토 중이며 변경 전 evidence가 필요한 경우.
 - 연결된 Supabase 운영 문서나 compose 참조가 변경되어 로컬 검증 evidence가 필요한 경우.
@@ -124,7 +129,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
   destructive recovery·credential rotation을 생략한 이유를 기록한다.
 - 실패한 검증 출력이나 서비스 증상은 secret 값을 복사하지 않고 관련 task나 incident evidence에 첨부한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

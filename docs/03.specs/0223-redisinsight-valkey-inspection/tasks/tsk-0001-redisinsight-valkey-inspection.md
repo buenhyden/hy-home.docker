@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Valkey Inspection Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0223-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-09"
 
 # RedisInsight Valkey Inspection Task
 
-## Objective
+## Overview
+
+### Objective
 
 Give RedisInsight read-only inspector access to DEV and MNG Valkey, close the
 direct UI path around SSO, and roll it out on HOME without breaking the

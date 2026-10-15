@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: direct push to main"
-version: "1.1.0"
+version: "1.2.1"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 action: "block"
 enabled: true
 event: "bash"
@@ -34,13 +34,6 @@ show: `HEAD` and `@`, implicit refspecs, `heads/main`, wildcard refspecs,
 push runs in (`cd`, `pushd`, `git -C`, `--git-dir`, `GIT_DIR`). A push from a
 repository it cannot read is denied.
 
-The tracked `pre-push` guard in `.pre-commit-config.yaml` covers pushes no
-agent hook sees, once installed, with known limits: under pre-commit it sees
-only the first pushed ref with new commits, pre-commit skips deletions and
-pushes it judges empty, and `--no-verify` skips it. Native event delivery and
-editor sync remain separate observations. Only a remote ruleset without bypass
-enforces the boundary.
-
 ## Rules
 
 ```bash
@@ -66,6 +59,17 @@ The declared action applies when the pattern matches.
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The native Git hook installed by `scripts/hooks/install-pre-push-guard.sh`
+passes all raw refs to `scripts/hooks/pre-push-guard.sh`, including mixed-ref
+pushes and deletions. It refuses every destination `refs/heads/main` before
+any pre-commit ref selection. The installer preserves a recognized pre-commit
+shim for recovery and refuses unknown hooks or a selected `core.hooksPath`;
+it does not replace another host owner's chain. Hook bypass remains possible,
+so only remote protection without bypass enforces the boundary. Installation,
+synthetic pushes, provider delivery and editor sync are separate observations.
 
 ## Related Documents
 

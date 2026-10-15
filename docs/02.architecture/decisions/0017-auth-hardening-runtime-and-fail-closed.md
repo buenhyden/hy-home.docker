@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Runtime Hardening and Fail-closed Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0017"
 parent_ids:
@@ -17,29 +17,15 @@ created: "2026-03-28"
 
 This document records the decision on the `02-auth` layer's runtime hardening approach and the fail-closed policy for authentication failures.
 
-The OAuth2 Proxy in `infra/02-auth` handled secret injection through an inline Compose shell. This approach had low change traceability and reusability, and did not align with operating standards (minimal-privilege runtime, a clear entrypoint contract). Also, whether bypass is allowed during an authentication failure was not clearly fixed in documentation.
-
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
-## Decision
+## Decision Drivers
 
-- Unify OAuth2 Proxy secret injection into `docker-entrypoint.sh`.
-- Run the OAuth2 Proxy container as a non-root user (`oauth2proxy`).
-- Keep fail-closed as the default behavior for authentication failures.
-- Perform degraded-mode only in a limited way, per policy/runbook procedure, and require restoring the prior state afterward.
-- Keep Keycloak on `template-infra-high`, given its stateful characteristics and current resource baseline (do not force a switch to readonly).
+The OAuth2 Proxy in `infra/02-auth` handled secret injection through an inline Compose shell. This approach had low change traceability and reusability, and did not align with operating standards (minimal-privilege runtime, a clear entrypoint contract). Also, whether bypass is allowed during an authentication failure was not clearly fixed in documentation.
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### Keep the Compose inline shell
 
@@ -55,6 +41,14 @@ The decision context above records the applicable drivers and evidence.
   - Short-term availability may rise during an IdP failure.
 - Bad:
   - Authentication bypass risk grows and the security boundary collapses.
+
+## Decision
+
+- Unify OAuth2 Proxy secret injection into `docker-entrypoint.sh`.
+- Run the OAuth2 Proxy container as a non-root user (`oauth2proxy`).
+- Keep fail-closed as the default behavior for authentication failures.
+- Perform degraded-mode only in a limited way, per policy/runbook procedure, and require restoring the prior state afterward.
+- Keep Keycloak on `template-infra-high`, given its stateful characteristics and current resource baseline (do not force a switch to readonly).
 
 ## Consequences
 

@@ -1,10 +1,10 @@
 ---
 title: "Single-Administrator OpenBao Custody"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0242"
 parent_ids:
@@ -70,6 +70,14 @@ window's readiness, and SPEC-0240's lifecycle disposition.
 3. Independent security and rules reviews find nothing blocking, and the
    document checks pass.
 4. The owner's step 5 record is in SPEC-0204 TSK-0006 as `PASS`.
+
+## Failure Conditions
+
+The custody record is NOT_RUN when an owner-attestation cell is empty and
+FAIL when any answer is negative; the same-disk second copy is never
+off-host custody. R2 recovery remains intended until exercised, the accepted
+single-reader exposure and open exception remain explicit, and this change
+does not execute rekeying or a maintenance window.
 
 ## Related Documents
 

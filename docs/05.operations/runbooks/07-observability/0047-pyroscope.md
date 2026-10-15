@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0047"
 parent_ids:
@@ -22,9 +22,13 @@ created: "2026-05-17"
 
 운영자가 `pyroscope` 상태를 확인하고 Alloy/Grafana 연결, ingestion limit, 로컬 저장소 경계를 검증한다. 데이터 삭제나 retention/capacity 변경 같은 위험 조치는 별도 승인으로 분리한다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - Grafana Pyroscope datasource에서 최근 profile이 보이지 않을 때.
 - Alloy `pyroscope.write` endpoint는 선언되어 있지만 profile ingestion gap이 의심될 때.
@@ -145,7 +149,7 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - Ingestion 장애는 Alloy writer check, Pyroscope ready state, Grafana datasource result를 함께 기록한다.
 - Storage/capacity symptom은 로그 발췌, `pyroscope-data` volume 경계, approval state를 기록한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

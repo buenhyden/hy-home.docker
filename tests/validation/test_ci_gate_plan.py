@@ -750,6 +750,33 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 )
                 self.assertLessEqual(targets, {item.gate_id for item in plan})
 
+    def test_hook_changes_select_their_regressions_without_whole_harness(self) -> None:
+        for path in (
+            "scripts/hooks/hook_rules.py",
+            "scripts/hooks/agent-event-hook.sh",
+            "scripts/hooks/pre-push-guard.sh",
+            "scripts/hooks/install-pre-push-guard.sh",
+            "scripts/lib/hooks/tool_payload.py",
+            "scripts/lib/agent_governance/agent_governance_contract.py",
+            ".agents/governance/hooks/hookify.block-direct-main-push.md",
+        ):
+            with self.subTest(path=path):
+                local = build_public_plan(
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
+                )
+                ids = [item.gate_id for item in local]
+                self.assertEqual(
+                    1, ids.count("leaf.repo-contracts-control-plane-regressions")
+                )
+                self.assertNotIn("leaf.ci-gate-runner-regressions", ids)
+                hosted = build_public_plan(
+                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                )
+                self.assertNotIn(
+                    "leaf.repo-contracts-control-plane-regressions",
+                    {item.gate_id for item in hosted},
+                )
+
     def test_gate_and_workflow_implementation_changes_omit_document_regressions(
         self,
     ) -> None:

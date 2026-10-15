@@ -1,10 +1,10 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Postmortem"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/postmortem"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "inc-2026-0002-PM"
 parent_ids:
@@ -15,16 +15,16 @@ reviewed_at: "2026-09-27"
 
 # Airflow Keycloak Native Authentication Migration Postmortem
 
-## Overview
+## Summary
 
-### Summary
+### Overview
 
 Airflow 3.3.1을 OAuth2 Proxy ForwardAuth에서 native Keycloak Auth Manager로
 옮기는 과정에서 API server 기동 실패, UI/API `500`/`403`, 반복 재로그인이
 이어졌다. 2026-09-26 owner의 Admin 세션에서 Pool, DAG, Asset, HITL이 모두
 `200`으로 확인되어 [incident](incident.md)를 resolved로 닫았다.
 
-### Impact
+## Impact
 
 - Airflow API server 초기 기동 실패
 - UI/API `500`/`403`, DAG/Pool/Asset 화면 일부 접근 불가
@@ -32,7 +32,7 @@ Airflow 3.3.1을 OAuth2 Proxy ForwardAuth에서 native Keycloak Auth Manager로
 
 사용자 수, 중단 시간, 누락된 DAG run은 기록되어 있지 않다.
 
-### Timeline
+## Timeline
 
 - 2026-09-18T15:43:32+09:00: incident 발생 시각 (`occurred_at`).
 - 시각 미기록: incident Timeline 1–15단계 (파일 권한, DB migration,
@@ -44,7 +44,11 @@ Airflow 3.3.1을 OAuth2 Proxy ForwardAuth에서 native Keycloak Auth Manager로
 - 2026-09-26T22:02:37+09:00–22:03:08+09:00: owner Admin 세션의 요청 111건
   중 `403` 0건. Pool, DAG, Asset, HITL 경로 모두 `200`.
 
-### Root Cause
+## Analysis
+
+### Causes
+
+#### Root Cause
 
 기록된 원인은 여러 겹이다.
 
@@ -58,19 +62,13 @@ Airflow 3.3.1을 OAuth2 Proxy ForwardAuth에서 native Keycloak Auth Manager로
 Pool/DAG/Asset `403`을 마지막으로 해소한 조치가 provider 0.9.0 upgrade인지
 `create-permissions` 재적용인지는 기록되어 있지 않다.
 
-### Contributing Factors
+#### Contributing Factors
 
 - ForwardAuth 경로를 native OIDC 앱에도 기본으로 적용하던 구성
 - provider 업그레이드 절차에 permission 재적용 단계가 없었음
 - 인증된 resource 접근을 확인하는 검증 경로가 없어 403 해소 여부를 늦게 확인
 
-### Detection and Response
-
-API server 기동 실패와 UI 오류로 발견했다. 단계별 대응은 incident의
-Timeline과 Mitigation에 있다. 최종 확인은 owner 로그인 세션의 Traefik
-access log에서 경로와 상태 코드만 읽어 수행했고, token·cookie는 읽지 않았다.
-
-### Corrective Actions
+## Corrective Actions
 
 | Action | Owner | Due date | Tracking ID | Verification |
 | --- | --- | --- | --- | --- |
@@ -82,6 +80,8 @@ access log에서 경로와 상태 코드만 읽어 수행했고, token·cookie�
 | provider 변경 시 permission 재적용을 checklist에 포함 | @buenhyden | 완료 (2026-09-26) | RUN-0050 Checklist | provider 변경 시 `create-permissions`와 Pool/DAG/Asset/HITL 확인 항목 존재 |
 | 노출된 live token/session 폐기 | @buenhyden | 완료 (2026-09-27) | RUN-0014, RUN-0050 | owner가 유지 결정을 바꿔 폐기를 지시했다. Keycloak `home-airflow` session은 온라인·offline 모두 0건이라 삭제할 대상이 없었다(SSO idle 1800초, access token 300초). `airflow_api_jwt_secret`을 2026-09-27T07:58:02+09:00에 교체하고 Airflow 5개 서비스를 재생성했다. 다섯 컨테이너가 새 secret을 읽고, 다른 key로 서명한 JWT는 `InvalidSignatureError`로 거부된다. client secret은 노출 기록이 없어 교체하지 않았다 |
 
+## Lessons
+
 ### Learning
 
 - Native OIDC 앱에 gateway ForwardAuth를 겹치면 `Authorization` header가
@@ -89,27 +89,17 @@ access log에서 경로와 상태 코드만 읽어 수행했고, token·cookie�
 - provider의 permission 모델이 바뀌면 로그인 성공이 resource 권한을
   보장하지 않는다. 로그인 후 resource 화면까지 확인해야 한다.
 
-### Impact
+### Detection and Response
 
-### Causes
-
-### Lessons
-
-### Corrective Actions
-
-## Impact
-
-## Causes
-
-## Lessons
-
-## Corrective Actions
+API server 기동 실패와 UI 오류로 발견했다. 단계별 대응은 incident의
+Timeline과 Mitigation에 있다. 최종 확인은 owner 로그인 세션의 Traefik
+access log에서 경로와 상태 코드만 읽어 수행했고, token·cookie는 읽지 않았다.
 
 ## Related Documents
 
 ### Traceability
 
 - Incident: [inc-2026-0002](incident.md)
-- Runbooks: [RUN-0050](../../../runbooks/0050-airflow.md), [RUN-0014](../../../runbooks/0014-keycloak.md)
-- Policy and Guide: [POL-0079](../../../policies/0079-application-auth-integration.md), [GDE-0079](../../../guides/0079-application-auth-integration.md)
+- Runbooks: [RUN-0050](../../../runbooks/08-workflows-and-automation/0050-airflow.md), [RUN-0014](../../../runbooks/03-identity-and-access/0014-keycloak.md)
+- Policy and Guide: [POL-0079](../../../policies/03-identity-and-access/0079-application-auth-integration.md), [GDE-0079](../../../guides/03-identity-and-access/0079-application-auth-integration.md)
 - Decision: [ADR-0038](../../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)

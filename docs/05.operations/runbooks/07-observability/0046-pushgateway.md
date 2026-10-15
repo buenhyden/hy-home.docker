@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Metrics Buffer Recovery Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0046"
 parent_ids:
@@ -18,9 +18,13 @@ created: "2026-05-17"
 
 이 런북은 Pushgateway 운영 중 생기는 stale metric, metric group 오염, 메모리 압박, push 실패를 복구하는 실행 절차를 정의한다. 범위는 오래된 지표 정리, 준비 상태 확인, 메모리 버퍼 초기화다. Pushgateway의 안정적인 버퍼 상태를 유지하고 비정상 지표를 정리해 가시성 품질을 지키는 것이 목적이다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 중 하나일 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - 특정 batch나 CI job의 metric이 갱신되지 않고 오래된 값을 유지한다.
 - Pushgateway metric group이 오염되었거나 high-cardinality label이 잘못 push되었다.
@@ -114,7 +118,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - **Metrics**: `pushgateway_http_requests_total`, `process_resident_memory_bytes`, `push_time_seconds` (Prometheus가 수집할 때)
 - **Evidence to Capture**: 상태 명령, 삭제한 지표 group 경로, 전후 `/metrics` 발췌, 수집 job 점검 결과
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

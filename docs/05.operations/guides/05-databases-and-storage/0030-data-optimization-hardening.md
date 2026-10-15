@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:
@@ -21,13 +21,15 @@ created: "2026-05-17"
 소유권. service 활성화, 데이터 접근, cleanup, migration, tuning을 승인하지
 않는다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: data tier의 정적 hardening 확인이 무엇을 증명하고 무엇을 증명하지 않는지 이해하고, root profile 렌더링과 점검 스크립트를 올바르게 사용한다.
 
-## Usage
+## Concepts
 
 ### Root validation
 
@@ -45,6 +47,8 @@ profile 정합성, 고유한 writable volume, 선언된 네트워크, secret 파
 healthcheck, CPU/메모리 제한, 의도된 포트 게시, 엔진별 backup/restore
 소유자를 확인한다.
 
+## Usage
+
 ### Interpretation
 
 static pass는 parse와 정책 준수만 증명한다. runtime health, storage 용량,
@@ -59,16 +63,18 @@ backup 완전성, 복구 시간, encryption at rest, 애플리케이션 호환�
 재실행하고 정확한 diff를 점검한다. 복구에는 엔진 runbook을 사용하며, 일반
 data-copy나 cleanup 명령을 적용하지 않는다.
 
+### Traceability
+
+- Artifact: `GDE-0030`; 거버넌스 정책: `POL-0030`.
+- Runtime authority: `root Compose plus scripts/hardening/check-all-hardening.sh`.
+
+## Troubleshooting
+
 ### Common Checks
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이며, runtime과 restore는 별개로 남는다.
-
-### Traceability
-
-- Artifact: `GDE-0030`; 거버넌스 정책: `POL-0030`.
-- Runtime authority: `root Compose plus scripts/hardening/check-all-hardening.sh`.
 
 ## Related Documents
 

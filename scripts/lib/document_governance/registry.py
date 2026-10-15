@@ -496,7 +496,7 @@ def validate_registry(
     generation = (
         common.get("lifecycle_generation") if isinstance(common, Mapping) else None
     )
-    if generation in {5, 6}:
+    if generation in {5, 6, 7}:
         exact_common = {
             "contract_id": "SDLC-COMMON-v4" if generation == 5 else "SDLC-COMMON-v5",
             "spec_section": "Acceptance Criteria",
@@ -534,13 +534,43 @@ def validate_registry(
                 "Verification",
             ),
         }
-        if generation == 6:
+        if generation >= 6:
             exact_common["criterion_acceptance_section"] = "Criterion Acceptance"
             exact_common["criterion_acceptance_columns"] = (
                 "Criterion",
                 "Acceptance",
                 "Evidence",
                 "Decision",
+            )
+        if generation == 7:
+            exact_common.update(
+                contract_id="SDLC-COMMON-r10-local-v1",
+                result_domain=(
+                    "PASS",
+                    "FAIL",
+                    "ERROR",
+                    "NOT_RUN",
+                    "CANCELLED",
+                    "NOT_APPLICABLE",
+                ),
+                evidence_columns=(
+                    "Evidence",
+                    "Criteria",
+                    "Work Unit",
+                    "Check",
+                    "Input",
+                    "Result",
+                    "Location",
+                    "Required",
+                    "Resolves",
+                ),
+                criterion_acceptance_columns=(
+                    "Criterion",
+                    "Acceptance",
+                    "Evidence",
+                    "Decision",
+                    "Current Owner",
+                ),
             )
         for key, expected in exact_common.items():
             value = common.get(key)

@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.2.3"
+version: "1.2.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -15,12 +15,6 @@ created: "2026-03-28"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
@@ -28,6 +22,8 @@ the `05-messaging` layer. It describes the structure that aligns the
 currently implemented Kafka management traffic path with the gateway
 standard chain and the authentication boundary, and blocks operational
 regression through CI baseline verification.
+
+## Scope
 
 ### Stakeholders and Concerns
 
@@ -66,11 +62,7 @@ non-goals, and constraints already recorded in the current document.
 
 The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Viewpoints and Views
 
@@ -96,7 +88,7 @@ as the view for that concern.
   changes, and ungrounded exposure expansion
 - **Latency / Cost Budget**: managed in the operational policy
 
-### Data Flow
+## Runtime and Deployment
 
 ### Data and Control Flows
 
@@ -122,7 +114,7 @@ section and the existing infrastructure/deployment descriptions.
   - `scripts/hardening/check-all-hardening.sh 05-messaging`
   - The `infrastructure-hardening` job in `.github/workflows/ci-quality.yml`
 
-## Quality Attributes
+## Quality and Risks
 
 ### Quality Scenarios
 

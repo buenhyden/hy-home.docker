@@ -1,10 +1,10 @@
 ---
 title: "Common Document Contract Adoption Specification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0209"
 parent_ids:
@@ -70,6 +70,14 @@ belongs to this slice.
    3, 4, and 5 and validate the new shapes.
 5. Focused document checks and the final changed gate have recorded actual
    results, review, and acceptance before closure.
+
+## Failure Conditions
+
+Adoption fails if Registry, schema, template and consumer meanings diverge,
+if current links cease to resolve after heading migration, or if frozen or
+completed Task bodies change. Consumer recovery must retain raw-byte proof
+and the bounded generation 3–5 historical compatibility; structural fields
+cannot supply cancellation authorization or criterion acceptance.
 
 ## Related Documents
 

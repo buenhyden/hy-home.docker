@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Product Requirements"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0023"
 created: "2026-04-01"
@@ -12,8 +12,6 @@ created: "2026-04-01"
 # Compose Network Segmentation Product Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -23,32 +21,7 @@ This document defines product requirements to split the Docker network membershi
 
 Multiple `docker-compose` files are fragmented, once all services shared a single `infra_net` mesh and could reach each other, and some services may have no declared network or ambiguous subnet settings. This raises inter-microservice communication complexity and can cause confusion during troubleshooting.
 
-## Requirements
-
-### Requirements
-
-### Functional Requirements
-
-- **REQ-0023-FR-0001**: Every active service must connect only to networks with peers it actually uses, and use the project default network when it has no peer.
-- **REQ-0023-FR-0002**: Each network's subnet must be declared as `10.250.x.0/24` in the root Compose.
-- **REQ-0023-FR-0003**: No service connects to the `k3d-hyhome` network (k3d integration removed by owner decision on 2026-09-23).
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-### Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0023-FR-0001**: In `docker-compose config` output, each service's network matches its declared flow.
-- **REQ-0023-FR-0002**: Each network's IPAM setting points to the declared `10.250.x.0/24` block.
-
 ## Scope
-
-### Scope
 
 ### Stakeholders and User Needs
 
@@ -83,6 +56,27 @@ N/A
 - **Risks**: possibility of IP conflicts (if IPs were previously assigned manually).
 - **Dependencies**: depends on the `networks` base definitions in the root `docker-compose.yml`.
 - **Assumptions**: configuration is merged using the `include` feature of `docker compose` V2.
+
+## Requirements
+
+### Functional Requirements
+
+- **REQ-0023-FR-0001**: Every active service must connect only to networks with peers it actually uses, and use the project default network when it has no peer.
+- **REQ-0023-FR-0002**: Each network's subnet must be declared as `10.250.x.0/24` in the root Compose.
+- **REQ-0023-FR-0003**: No service connects to the `k3d-hyhome` network (k3d integration removed by owner decision on 2026-09-23).
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0023-FR-0001**: In `docker-compose config` output, each service's network matches its declared flow.
+- **REQ-0023-FR-0002**: Each network's IPAM setting points to the declared `10.250.x.0/24` block.
 
 ## Related Documents
 

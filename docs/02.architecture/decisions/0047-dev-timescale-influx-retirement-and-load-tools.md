@@ -1,10 +1,10 @@
 ---
 title: "DEV Timescale, InfluxDB Retirement and Load Tools"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0047"
 parent_ids:
@@ -27,12 +27,26 @@ root-included with its own profile and Traefik route. ADR-0045 lists InfluxDB
 in the Data tier and REQ-0005-FR-0001 still requires it. SPEC-0212 records the
 baseline and inventory.
 
-### Decision Drivers
+## Decision Drivers
 
 Reuse running engines and contracts. Keep one owner per data role. Do not
 duplicate raw results across stores. Keep normal startup free of lab topology.
 Removal must be complete in source while data disposal stays a separate,
 verified operation.
+
+## Options
+
+### Options Considered
+
+- Keep InfluxDB as an optional service: rejected; the request retires it and
+  it would remain a second time-series owner.
+- QuestDB, ClickHouse or VictoriaMetrics: deferred to LAB comparison when a
+  measured bottleneck appears; none has a current consumer.
+- TimescaleDB on MNG: rejected; no MNG consumer needs it.
+- Locust as default: rejected for now; k6 already owns the result contract.
+  The choice is reopened if Python protocol needs dominate.
+- Root profiles for HA services: rejected; explicit service targeting
+  activates a profiled service, so a profile cannot keep lab services out.
 
 ## Decision
 
@@ -52,20 +66,6 @@ verified operation.
 5. HA, replica and multi-broker topologies stay in standalone LAB files with
    their own project, network, data root, secrets and ports. They are never
    root-included; a profile is a selector, not an isolation boundary.
-
-## Alternatives
-
-### Options Considered
-
-- Keep InfluxDB as an optional service: rejected; the request retires it and
-  it would remain a second time-series owner.
-- QuestDB, ClickHouse or VictoriaMetrics: deferred to LAB comparison when a
-  measured bottleneck appears; none has a current consumer.
-- TimescaleDB on MNG: rejected; no MNG consumer needs it.
-- Locust as default: rejected for now; k6 already owns the result contract.
-  The choice is reopened if Python protocol needs dominate.
-- Root profiles for HA services: rejected; explicit service targeting
-  activates a profiled service, so a profile cannot keep lab services out.
 
 ## Consequences
 

@@ -17,13 +17,14 @@
       "completed",
       "cancelled",
       "ready",
-      "detected",
       "investigating",
       "mitigated",
       "resolved",
       "published",
       "sealed",
-      "review"
+      "review",
+      "open",
+      "closed"
     ],
     "archive_disposition_model": "adopted",
     "archive_source_prefixes": [
@@ -191,12 +192,13 @@
       "resolved_at",
       "archived_at"
     ],
-    "contract_id": "SDLC-COMMON-v5",
+    "contract_id": "SDLC-COMMON-r10-local-v1",
     "result_domain": [
-      "NOT_RUN",
       "PASS",
       "FAIL",
-      "DEFER",
+      "ERROR",
+      "NOT_RUN",
+      "CANCELLED",
       "NOT_APPLICABLE"
     ],
     "acceptance_domain": [
@@ -213,6 +215,7 @@
       "Input",
       "Result",
       "Location",
+      "Required",
       "Resolves"
     ],
     "plan_columns": [
@@ -231,7 +234,8 @@
       "Criterion",
       "Acceptance",
       "Evidence",
-      "Decision"
+      "Decision",
+      "Current Owner"
     ],
     "execution_items": {
       "section": "Work Log",
@@ -254,7 +258,7 @@
       "Owner"
     ],
     "template_initial_version": "0.1.0",
-    "lifecycle_generation": 6,
+    "lifecycle_generation": 7,
     "task_lifecycle_events": {
       "section": "Work Log",
       "subsection": "Lifecycle Events",
@@ -668,9 +672,9 @@
       ],
       "required_sections": [
         "Overview",
+        "Scope",
         "Requirements",
         "Acceptance Criteria",
-        "Scope",
         "Related Documents"
       ],
       "optional_sections": [
@@ -703,7 +707,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "architecture-description",
@@ -733,8 +739,9 @@
       "required_sections": [
         "Overview",
         "Scope",
-        "Architecture",
-        "Quality Attributes",
+        "Structure",
+        "Runtime and Deployment",
+        "Quality and Risks",
         "Related Documents"
       ],
       "optional_sections": [
@@ -763,7 +770,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "adr",
@@ -792,8 +801,9 @@
       ],
       "required_sections": [
         "Context",
+        "Decision Drivers",
+        "Options",
         "Decision",
-        "Alternatives",
         "Consequences",
         "Related Documents"
       ],
@@ -801,7 +811,6 @@
         "Options Considered",
         "Traceability",
         "Compliance",
-        "Decision Drivers",
         "Follow-up"
       ],
       "lifecycle_id": "architecture-decision",
@@ -819,7 +828,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "spec",
@@ -854,6 +865,7 @@
         "Scope",
         "Contracts",
         "Acceptance Criteria",
+        "Failure Conditions",
         "Related Documents"
       ],
       "optional_sections": [
@@ -880,7 +892,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "data-model-contract",
@@ -1018,9 +1032,10 @@
       ],
       "required_sections": [
         "Overview",
+        "Scope",
         "Work Breakdown",
         "Verification Plan",
-        "Risks and Rollback",
+        "Risks and Recovery",
         "Related Documents"
       ],
       "optional_sections": [
@@ -1044,7 +1059,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "task",
@@ -1078,7 +1095,7 @@
         "archive_authorizations"
       ],
       "required_sections": [
-        "Objective",
+        "Overview",
         "Inputs and Authorization",
         "Work Log",
         "Evidence",
@@ -1105,7 +1122,9 @@
         "cancelled": [
           "cancellation"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "guide",
@@ -1137,12 +1156,13 @@
       ],
       "required_sections": [
         "Overview",
-        "Audience and Goal",
+        "Scope",
+        "Concepts",
         "Usage",
+        "Troubleshooting",
         "Related Documents"
       ],
       "optional_sections": [
-        "Troubleshooting",
         "Runbook Handoff"
       ],
       "ordered_sections": true,
@@ -1214,6 +1234,7 @@
         "Scope",
         "Rules",
         "Exceptions",
+        "Verification",
         "Related Documents"
       ],
       "optional_sections": [
@@ -1286,10 +1307,11 @@
       ],
       "required_sections": [
         "Overview",
-        "Trigger and Preconditions",
+        "Trigger",
+        "Prerequisites",
         "Procedure",
         "Verification",
-        "Rollback and Escalation",
+        "Failure and Recovery",
         "Related Documents"
       ],
       "optional_sections": [
@@ -1377,10 +1399,10 @@
         "Timeline",
         "Response",
         "Resolution",
+        "Follow-up",
         "Related Documents"
       ],
       "optional_sections": [
-        "Follow-up",
         "Summary",
         "Coordination",
         "Mitigation",
@@ -1402,7 +1424,9 @@
       ],
       "frontmatter_values": {
         "layer": "operations"
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "postmortem",
@@ -1431,16 +1455,15 @@
         "reviewed_at"
       ],
       "required_sections": [
-        "Overview",
+        "Summary",
         "Impact",
-        "Causes",
-        "Lessons",
+        "Timeline",
+        "Analysis",
         "Corrective Actions",
+        "Lessons",
         "Related Documents"
       ],
       "optional_sections": [
-        "Summary",
-        "Timeline",
         "Root Cause",
         "Contributing Factors",
         "Detection and Response",
@@ -1461,7 +1484,9 @@
       ],
       "frontmatter_values": {
         "layer": "operations"
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "reference-category-readme",
@@ -2586,7 +2611,7 @@
     {
       "id": "governance-policy",
       "type": "governance/policy",
-      "language": "en",
+      "language": "ko-or-en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/bootstrap.md",
       "artifact_id_pattern": null,
@@ -2614,6 +2639,7 @@
         "Scope",
         "Rules",
         "Exceptions",
+        "Verification",
         "Related Documents"
       ],
       "optional_sections": [
@@ -2643,12 +2669,14 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-hook-policy",
       "type": "governance/rule",
-      "language": "en",
+      "language": "ko-or-en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/hooks/{hook_slug}.md",
       "artifact_id_pattern": null,
@@ -2680,6 +2708,7 @@
         "Scope",
         "Rules",
         "Exceptions",
+        "Verification",
         "Related Documents"
       ],
       "optional_sections": [
@@ -2694,12 +2723,14 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-role",
       "type": "governance/role",
-      "language": "en",
+      "language": "ko-or-en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/roles/{slug}.md",
       "artifact_id_pattern": null,
@@ -2756,7 +2787,7 @@
     {
       "id": "governance-skill",
       "type": "governance/skill",
-      "language": "en",
+      "language": "ko-or-en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/skills/{slug}/SKILL.md",
       "artifact_id_pattern": null,
@@ -2810,7 +2841,7 @@
     {
       "id": "governance-provider",
       "type": "governance/provider",
-      "language": "en",
+      "language": "ko-or-en",
       "frontmatter_policy": "required",
       "path_pattern": ".claude/provider.md",
       "artifact_id_pattern": null,
@@ -2897,7 +2928,7 @@
     {
       "id": "governance-sdlc",
       "type": "governance/workflow",
-      "language": "en",
+      "language": "ko-or-en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/sdlc.md",
       "artifact_id_pattern": null,
@@ -2942,7 +2973,7 @@
     {
       "id": "governance-knowledge",
       "type": "governance/control",
-      "language": "en",
+      "language": "ko-or-en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/knowledge/{slug}.md",
       "artifact_id_pattern": null,
@@ -3029,7 +3060,7 @@
     {
       "id": "governance-prompt",
       "type": "governance/prompt",
-      "language": "en",
+      "language": "ko-or-en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/prompts/{slug}.md",
       "artifact_id_pattern": null,
@@ -3605,6 +3636,7 @@
           "retired"
         ],
         "active": [
+          "in-review",
           "deprecated",
           "superseded",
           "retired"
@@ -3654,6 +3686,7 @@
           "retired"
         ],
         "approved": [
+          "in-review",
           "superseded",
           "retired"
         ],
@@ -3687,6 +3720,7 @@
           "retired"
         ],
         "active": [
+          "in-review",
           "deprecated",
           "superseded",
           "retired"
@@ -3707,15 +3741,14 @@
       "initial_status": "proposed",
       "terminal_statuses": [
         "rejected",
-        "superseded",
-        "retired"
+        "superseded"
       ],
       "statuses": [
         "proposed",
         "accepted",
         "rejected",
-        "superseded",
-        "retired"
+        "deprecated",
+        "superseded"
       ],
       "transitions": {
         "proposed": [
@@ -3723,12 +3756,14 @@
           "rejected"
         ],
         "accepted": [
-          "superseded",
-          "retired"
+          "deprecated",
+          "superseded"
         ],
         "rejected": [],
         "superseded": [],
-        "retired": []
+        "deprecated": [
+          "superseded"
+        ]
       }
     },
     "spec": {
@@ -3744,8 +3779,7 @@
         "draft": [
           "in-review",
           "approved",
-          "cancelled",
-          "superseded"
+          "cancelled"
         ],
         "in-review": [
           "approved",
@@ -3779,8 +3813,7 @@
         "draft": [
           "in-review",
           "approved",
-          "cancelled",
-          "superseded"
+          "cancelled"
         ],
         "in-review": [
           "approved",
@@ -3818,7 +3851,7 @@
         ],
         "ready": [
           "in-progress",
-          "completed",
+          "blocked",
           "cancelled"
         ],
         "in-progress": [
@@ -3827,8 +3860,8 @@
           "cancelled"
         ],
         "blocked": [
+          "ready",
           "in-progress",
-          "completed",
           "cancelled"
         ],
         "completed": [],
@@ -3861,6 +3894,7 @@
           "retired"
         ],
         "active": [
+          "in-review",
           "deprecated",
           "superseded",
           "retired"
@@ -3878,30 +3912,34 @@
       ]
     },
     "incident": {
-      "initial_status": "detected",
+      "initial_status": "open",
       "statuses": [
-        "detected",
+        "open",
         "investigating",
         "mitigated",
-        "resolved"
+        "resolved",
+        "closed"
       ],
       "transitions": {
-        "detected": [
-          "investigating",
-          "resolved"
+        "open": [
+          "investigating"
         ],
         "investigating": [
           "mitigated",
           "resolved"
         ],
         "mitigated": [
-          "resolved",
-          "investigating"
+          "investigating",
+          "resolved"
         ],
-        "resolved": []
+        "resolved": [
+          "investigating",
+          "closed"
+        ],
+        "closed": []
       },
       "terminal_statuses": [
-        "resolved"
+        "closed"
       ]
     },
     "postmortem": {

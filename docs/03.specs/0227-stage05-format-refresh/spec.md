@@ -1,10 +1,10 @@
 ---
 title: "Stage 05 Format Refresh"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0227"
 parent_ids:
@@ -63,6 +63,13 @@ historical Task records that link to old anchors.
    corrected facts are recorded.
 4. The link check and the operations catalog pass.
 5. The changed gate, the staged style check and `candidate-quality` pass.
+
+## Failure Conditions
+
+Out-of-order, empty and self-repeating required sections fail the profile
+rule. Restructuring is incomplete if a command, caution, recovery step, link
+or token disappears without an accounted correction, if active anchors break,
+or if Compose service bindings and the Guide's authority diverge.
 
 ## Related Documents
 

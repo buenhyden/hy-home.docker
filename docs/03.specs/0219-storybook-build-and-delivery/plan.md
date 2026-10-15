@@ -1,10 +1,10 @@
 ---
 title: "Storybook Build and Delivery Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0219-PLAN-0001"
 parent_ids:
@@ -20,6 +20,14 @@ Fix the build contract first, then the ingress regression, then the shared
 UI, then the dependencies, the remote MCP, the design export and the
 documents; build the images from the last source commit, pin them, and prove
 them in the rehearsal. Each unit is one commit.
+
+## Scope
+
+W1–W7 deliver commit-derived static and MCP images, shared UI states,
+compatible dependencies, authenticated ingress rehearsals and the safe
+design export with operations records. W8 retains the owner-named HOME
+activation gate; live Keycloak client creation, client sign-in, unrelated
+workspaces and the deferred TypeScript upgrade are outside this source slice.
 
 ## Work Breakdown
 
@@ -42,7 +50,9 @@ Chromium; lint, type and build checks; a real build pushed to the local
 registry with attestation checks; the Storybook ingress rehearsal with real
 Traefik, OAuth2 Proxy and Keycloak; and the changed-profile local gate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 The Button API changes incompatibly in 0.2.0; no consumer exists yet. The
 remote MCP is reachable only after the operator creates the Keycloak client

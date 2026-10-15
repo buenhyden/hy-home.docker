@@ -1,10 +1,10 @@
 ---
 title: "Tooling Hardening and HA Expansion Strategy"
-version: "2.0.1"
+version: "2.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0024"
 parent_ids:
@@ -17,35 +17,15 @@ created: "2026-03-28"
 
 This document records the decision to first carry out immediately applicable hardening (public path SSO chain alignment, explicit network boundaries, locust/k6 runtime contract reinforcement, CI gate introduction) for the `09-tooling` layer, while pursuing catalog expansion items in phases.
 
-The tooling tier corresponds to the platform's operational control plane, and if the boundaries around security/quality/test tools are weak, this directly affects organization-wide deployment stability. At the same time, the catalog requires expansion/strengthened policy per tool, so separating short-term stabilization from mid-term expansion is needed.
-
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
-## Decision
+## Decision Drivers
 
-- Carry out immediate hardening.
-  - Align the SonarQube/Terrakube routers to `gateway-standard-chain + sso-errors + sso-auth`.
-  - Make the `infra_net` external boundary declaration explicit in the tooling compose.
-  - Add a locust-worker healthcheck and align k6 volume reference drift.
-  - Introduce `scripts/hardening/check-all-hardening.sh 09-tooling` and the CI `infrastructure-hardening` job.
-- Carry out catalog expansion in phases.
-  - OpenTofu approval/backup/drift automatic detection
-  - Strengthen terrakube permissions/audit log
-  - Registry signing/scan blocking policy
-  - Redefine sonarqube quality gate
-  - Standardize k6/locust tests
+The tooling tier corresponds to the platform's operational control plane, and if the boundaries around security/quality/test tools are weak, this directly affects organization-wide deployment stability. At the same time, the catalog requires expansion/strengthened policy per tool, so separating short-term stabilization from mid-term expansion is needed.
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### Implement all catalog expansion immediately
 
@@ -60,6 +40,20 @@ The decision context above records the applicable drivers and evidence.
   - Reduces short-term implementation cost
 - Bad:
   - Lacks the ability to block regressions
+
+## Decision
+
+- Carry out immediate hardening.
+  - Align the SonarQube/Terrakube routers to `gateway-standard-chain + sso-errors + sso-auth`.
+  - Make the `infra_net` external boundary declaration explicit in the tooling compose.
+  - Add a locust-worker healthcheck and align k6 volume reference drift.
+  - Introduce `scripts/hardening/check-all-hardening.sh 09-tooling` and the CI `infrastructure-hardening` job.
+- Carry out catalog expansion in phases.
+  - OpenTofu approval/backup/drift automatic detection
+  - Strengthen terrakube permissions/audit log
+  - Registry signing/scan blocking policy
+  - Redefine sonarqube quality gate
+  - Standardize k6/locust tests
 
 ## Consequences
 

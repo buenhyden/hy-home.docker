@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -21,7 +21,9 @@ created: "2026-05-10"
 
 이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 현재 구현은 `infra/08-ai/open-webui/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `open-webui`는 `ai` profile을 선택할 때 기동된다. 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검은 그 profile이 선택된 런타임을 기준으로 수행한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 **대상**
 
@@ -36,7 +38,7 @@ created: "2026-05-10"
 - RAG 인덱싱 및 질의 흐름을 `OLLAMA_BASE_URL`, `RAG_EMBEDDING_MODEL` 기준으로 이해한다. `VECTOR_DB`가 없으므로 벡터는 Open WebUI 로컬 저장소에 있다.
 - 장애 징후를 빠르게 식별하고 런북으로 연결한다.
 
-## Usage
+## Concepts
 
 ### 사전 조건
 
@@ -48,6 +50,8 @@ created: "2026-05-10"
   - `RAG_EMBEDDING_MODEL` (현재 값은 Compose 선언 확인)
 - Keycloak의 전용 `home-openwebui` client와 native OIDC 경로가 정상이어야 한다.
   이 서비스는 `sso-auth@file`을 사용하지 않는다.
+
+## Usage
 
 ### 사용 절차
 

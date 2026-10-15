@@ -8,7 +8,7 @@ updated: "{{UPDATED}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
-<!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
+<!-- Author prompt: Write new common guidance prose in Korean; preserved English remains valid; keep headings, paths, identifiers, and commands unchanged. -->
 
 # {{TITLE}}
 
@@ -27,6 +27,10 @@ updated: "{{UPDATED}}"
 ## Exceptions
 
 {{SCOPED_EXCEPTIONS_AND_AUTHORIZATION_BOUNDARIES}}
+
+## Verification
+
+{{SCOPED_CHECKS_EXPECTED_SIGNALS_AND_EVIDENCE_LIMITS}}
 
 ## Related Documents
 

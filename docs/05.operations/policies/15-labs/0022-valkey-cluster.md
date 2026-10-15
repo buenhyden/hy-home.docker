@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Operations Policy"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0022"
 parent_ids:
@@ -72,12 +72,6 @@ backup, isolated restore evidence, rollback artifact가 필요하다. Membership
 runtime mutation, plaintext secret, active storage의 raw 복사, 또는
 same-host availability 주장을 승인하지 않는다.
 
-### Verification
-
-독립 LAB configuration과 scoped static policy check를 검증한 다음, promotion
-또는 cutover 전에 application-level acceptance를 갖춘 isolated compatible
-restore를 요구한다. 미검증 runtime 속성은 명시적으로 기록한다.
-
 ### Review Cadence
 
 profile, image, volume, credential, consumer, retention, 또는 upstream
@@ -88,6 +82,12 @@ lifecycle 변경 이후, 그리고 보존되는 동안 최소 연 1회 검토한
 - Runtime source: [Valkey Cluster Compose](../../../../labs/valkey-cluster.yml).
 - Artifact: `POL-0022`; parent: `AD-0004`.
 - Runtime authority는 연결된 Compose/source 파일에 남는다; 정확한 pin도 그 파일에 있다.
+
+## Verification
+
+독립 LAB configuration과 scoped static policy check를 검증한 다음, promotion
+또는 cutover 전에 application-level acceptance를 갖춘 isolated compatible
+restore를 요구한다. 미검증 runtime 속성은 명시적으로 기록한다.
 
 ## Related Documents
 

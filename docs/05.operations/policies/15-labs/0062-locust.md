@@ -1,10 +1,10 @@
 ---
 title: "Locust Operations Policy"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0062"
 parent_ids:
@@ -69,12 +69,6 @@ scaling, image upgrade.
 owner를 명시해야 한다. exception은 target authorization이나 secret
 handling을 면제할 수 없다.
 
-### Verification
-
-Static Compose와 hardening check는 configuration만 증명한다. Runtime
-evidence는 worker registration, target SLI, sanitized result, 최종
-stopped state를 포함해야 한다.
-
 ### Review Cadence
 
 프로필·Dockerfile 의존성·시나리오 저장소·대상 네트워크·확장 동작이 바뀔 때 검토한다.
@@ -84,6 +78,12 @@ stopped state를 포함해야 한다.
 - [Guide](../../guides/15-labs/0062-locust.md) (`GDE-0062`)
 - [Runbook](../../runbooks/15-labs/0062-locust.md) (`RUN-0062`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+
+## Verification
+
+Static Compose와 hardening check는 configuration만 증명한다. Runtime
+evidence는 worker registration, target SLI, sanitized result, 최종
+stopped state를 포함해야 한다.
 
 ## Related Documents
 

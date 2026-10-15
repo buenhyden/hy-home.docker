@@ -1,10 +1,10 @@
 ---
 title: "Observability Architecture Description"
-version: "1.0.6"
+version: "1.0.7"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0006"
 parent_ids:
@@ -15,15 +15,11 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document defines the reference architecture of `06-observability`, the observability layer of the `hy-home.docker` platform. To secure cloud-level observability in a local environment, it integrates the currently implemented LGTM stack (Loki, Grafana, Tempo, Prometheus) with Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, and Pyroscope.
+
+## Scope
 
 ### Stakeholders and Concerns
 
@@ -56,11 +52,7 @@ This section preserves the system boundaries, consumption relationships, non-goa
 
 The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Viewpoints and Views
 
@@ -68,7 +60,7 @@ This section uses the context, component, or deployment representation as the vi
 
 In the current source, Docker logs and OTLP traces pass through **Grafana Alloy** to Loki/Tempo, and Prometheus scrapes exporters/services directly. Prometheus scrapes Alloy self-metrics directly; the former Alloy self-remote-write loop is absent. Alloy declares pprof sources forwarding to Pyroscope, but successful end-to-end collection still needs runtime evidence. Users query each datasource in **Grafana**.
 
-### Data Flow
+## Runtime and Deployment
 
 ### Data and Control Flows
 
@@ -100,7 +92,7 @@ Data and control flows include only the interactions specified in this section a
 - **Optional inspection:** `infra/06-observability/dozzle/docker-compose.yml` remains a separate leaf selected by `admin`/`admin-logs`; native OIDC, CIDR controls, socket visibility and settings persistence stay unchanged.
 - **Operational Evidence**: Grafana provisioning files, root compose profile validation, service-local compose validation with root network/secret context, and hardening script output.
 
-## Quality Attributes
+## Quality and Risks
 
 ### Quality Scenarios
 

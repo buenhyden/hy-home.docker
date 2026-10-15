@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.2.6"
+version: "0.2.7"
 type: "sdlc/architecture-description"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -16,12 +16,6 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 One Linux server shares HOME service and development experiments. The user
@@ -29,6 +23,8 @@ also designated AI and workflow as always-on HOME capabilities. The goal is
 to keep the service within the scope where one operator can explain state
 and the recovery path. An optional capability with no confirmed real
 consumer does not push its always-on startup cost onto HOME.
+
+## Scope
 
 ### System Boundaries
 
@@ -44,9 +40,7 @@ prove complete network isolation.
 Storage and Redis administration packages are flat under `04-data`; processing, data quality, BI, dbt and JupyterLab are under `12-analytics`. Software verification and development mail capture belong to `11-quality`; platform tools remain in `09-platform-ops`. Dozzle belongs to Observability; Open Notebook/SurrealDB and MLflow belong to AI. This is source organization only and does
 not change HOME selection or the root Compose project (ADR-0045).
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -80,6 +74,8 @@ The [registration contract](../../../infra/09-platform-ops/project-registration/
 and [development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md)
 own the current interfaces; metadata approval does not deploy or issue secrets.
 The independent 07/08 product-planning tracks grant no runtime resource authority.
+
+## Runtime and Deployment
 
 ### Data Flow
 
@@ -130,7 +126,9 @@ rewriting history or deleting unverified data.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies image drift verification.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - Availability: initialization completion, daemon health and application readiness
   are separate evidence. Unseal and authenticated functional checks are explicit.

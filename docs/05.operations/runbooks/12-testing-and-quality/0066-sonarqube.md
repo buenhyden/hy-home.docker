@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0066"
 parent_ids:
@@ -18,10 +18,12 @@ created: "2026-05-17"
 
 SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다.
 
-## Trigger and Preconditions
+## Trigger
 
 health·DB 연결 실패, 백그라운드 작업 지연, 검색 인덱스 실패, 토큰·인증 사고,
 DB 복원 또는 승인된 업그레이드에 사용한다.
+
+## Prerequisites
 
 ### 작업 선택과 복구 전제
 
@@ -101,7 +103,7 @@ command exit, image/source commit, DB backup/checksum/schema, project와 task
 count, health/index status, plugin inventory, 최종 상태를 기록한다. DB 내용,
 source code, personal data, token은 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

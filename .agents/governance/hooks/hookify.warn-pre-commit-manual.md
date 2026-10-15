@@ -1,10 +1,10 @@
 ---
 title: "WARNING: manual pre-commit execution"
-version: "1.1.1"
+version: "1.1.2"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 action: "warn"
 enabled: true
 event: "bash"
@@ -26,8 +26,6 @@ all-files gate uses only its controlled route and conditions. The admitted
 scoped route immediately before local commit is
 `scripts/validation/run-ci-precommit.sh --mode local-staged`; server PR checks
 use its authenticated `--mode pr-merge` route.
-
-The declared Bash event and unchanged native pattern identify matching commands.
 
 ## Rules
 
@@ -56,6 +54,10 @@ If lint or format issues exist, fix the affected files directly before committin
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared Bash event and unchanged native pattern identify matching commands.
 
 ## Related Documents
 

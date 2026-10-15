@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.31"
+version: "0.12.32"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -18,9 +18,15 @@ created: "2026-09-19"
 
 이 런북은 OpenBao(`openbao`, `openbao-agent`)의 상태 점검, 승인된 대상 기동·중지, initial bootstrap, Renderer SecretID 전달, 복구를 다룬다. OpenBao는 재시작 뒤 owner가 직접 하는 수동 Shamir unseal이 필요하다. 이 문서의 어떤 단계도 unseal share를 대신 입력하거나 자동화하지 않는다.
 
-## Trigger and Preconditions
+## Trigger
 
-`openbao openbao-agent` readiness 점검과 승인된 대상 지정 배포 또는 복구에 사용한다. 저장소
+`openbao openbao-agent` readiness 점검과 승인된 대상 지정 배포 또는 복구에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소
 루트에서 작업한다. 런타임 변경 전에 configuration commit, 이미지 source, 기존 데이터 위치,
 보호된 backup을 확인한다.
 
@@ -1621,7 +1627,7 @@ guard가 거부해야 한다. 공개 staging만으로 실제 발급·수집·이
 복구를 수용하지 않는다. ACL/delivery mapping은 `BLOCKED_P01`, 실제 pilot은 대상 ID·KV
 path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 있어야 한다. 현재 HOME/P06 hold를 유지한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

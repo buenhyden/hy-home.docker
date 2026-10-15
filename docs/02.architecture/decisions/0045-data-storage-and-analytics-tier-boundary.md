@@ -1,10 +1,10 @@
 ---
 title: "Data Storage and Analytics Tier Boundary"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0045"
 parent_ids:
@@ -33,17 +33,23 @@ source acceptance. Task evidence records actual results and limitations.
 Runtime reconciliation requires a separately scoped operation. Do not treat
 source validation as live rollout, HA, authentication or recovery evidence.
 
-## Decision
-
-### Decision
-
-### Decision Drivers
+## Decision Drivers
 
 Make package discovery predictable; keep storage and processing ownership
 explicit; preserve runtime identities, profiles and persistent data; reuse
 root Compose and existing operations/verification contracts.
 
-### Decision
+## Options
+
+### Options Considered
+
+- Keep eight categories: smallest move but retains mixed classification axes.
+- Flatten all seventeen Data packages: removes nesting, keeps BI/processing
+  mixed with storage, and leaves dbt elsewhere.
+- Flatten twelve Data packages and establish Analytics with the five processing
+  packages plus dbt: one additional tier with a clear capability boundary.
+
+## Decision
 
 Adopt the third option. Data keeps mng-db, Supabase, PostgreSQL/Valkey clusters,
 Cassandra, CouchDB, MongoDB, SeaweedFS, OpenSearch, Neo4j and Qdrant.
@@ -56,18 +62,6 @@ Messaging transports, Workflow orchestrates and Observability monitors.
 Tier numbering is a namespace, not startup order or an isolation guarantee.
 Keep the root project, service names, opt-in selectors and storage identities.
 Only source relocations and Analytics tier labels change in rendered models.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-- Keep eight categories: smallest move but retains mixed classification axes.
-- Flatten all seventeen Data packages: removes nesting, keeps BI/processing
-  mixed with storage, and leaves dbt elsewhere.
-- Flatten twelve Data packages and establish Analytics with the five processing
-  packages plus dbt: one additional tier with a clear capability boundary.
 
 ## Consequences
 

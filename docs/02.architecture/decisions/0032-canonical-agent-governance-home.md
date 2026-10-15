@@ -1,10 +1,10 @@
 ---
 title: "Canonical Agent Governance Home"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0032"
 parent_ids:
@@ -47,11 +47,7 @@ other records are left as they are. Required static checks, protected-path
 approval status, and pending native verification continue to be tracked in the
 current Task.
 
-## Decision
-
-### Decision
-
-### Decision Drivers
+## Decision Drivers
 
 - Keep exactly one canonical source per shared meaning and changeable list.
 - Align Codex's repository skill discovery with the actual owning path.
@@ -64,7 +60,17 @@ current Task.
 - Do not modify archived Tasks or already-frozen bodies for the sake of path
   cleanup.
 
-### Decision
+## Options
+
+### Options Considered
+
+| Alternative | Effect and cost | Judgment |
+| --- | --- | --- |
+| Move the reviewed canonical source to `.agents` | Aligns native skill discovery with ownership; requires converting all consumers | Fits the request's goal |
+| Keep the canonical source at the current document Stage | Preserves existing explicit reads; misses the requested canonical location/discovery goal | Not adopted for this request |
+| Full duplication or root symlink | Duplicate authority, format mixing, output/input cycle and boundary risk | Not adopted |
+
+## Decision
 
 Adopt the following location model after an independent design review.
 
@@ -91,18 +97,6 @@ Adopt the following location model after an independent design review.
 - Remove the old common directory from current reading, generation, linking,
   and fallback targets. Old paths in frozen records and regression-test
   strings are classified as history/negative examples.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-| Alternative | Effect and cost | Judgment |
-| --- | --- | --- |
-| Move the reviewed canonical source to `.agents` | Aligns native skill discovery with ownership; requires converting all consumers | Fits the request's goal |
-| Keep the canonical source at the current document Stage | Preserves existing explicit reads; misses the requested canonical location/discovery goal | Not adopted for this request |
-| Full duplication or root symlink | Duplicate authority, format mixing, output/input cycle and boundary risk | Not adopted |
 
 ## Consequences
 

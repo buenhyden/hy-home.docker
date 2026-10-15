@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Runbook"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0084"
 parent_ids:
@@ -18,10 +18,16 @@ created: "2026-09-19"
 
 이 런북은 Mailpit의 캡처 실패, database lock·손상, 보존 한도 이상을 진단하고, 승인된 export·restore·upgrade를 수행하는 절차를 정의한다. 저장소 루트에서 작업하며 캡처된 콘텐츠를 증거로 노출하지 않는다.
 
-## Trigger and Preconditions
+## Trigger
 
 synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거나, 보존 한도가 예상과
-다르거나, backup/restore/upgrade가 승인된 경우에 사용한다. 저장소 루트에서 작업하고 캡처된
+다르거나, backup/restore/upgrade가 승인된 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소 루트에서 작업하고 캡처된
 콘텐츠를 증거로 노출하지 않는다.
 
 ### 작업 선택과 복구 전제
@@ -80,7 +86,7 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
 명령 exit, 이미지/source commit, database/export checksum, 메시지 개수, synthetic 식별자,
 최종 상태를 기록한다. 수신자, 헤더, 본문, 첨부파일, credential은 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

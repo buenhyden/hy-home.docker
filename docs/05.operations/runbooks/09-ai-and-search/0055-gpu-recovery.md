@@ -1,10 +1,10 @@
 ---
 title: "AI GPU Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0055"
 created: "2026-03-25"
@@ -22,9 +22,14 @@ created: "2026-03-25"
 - Docker daemon 또는 GPU-dependent container 재시작 전에 증적과 승인 기준을 남긴다.
 - 복구 후 Ollama와 Open WebUI 연동 상태를 확인한다.
 
-## Trigger and Preconditions
+## Trigger
 
 - Ollama 로그에 GPU driver load failure 또는 CPU-only fallback이 나타난다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 - `docker compose exec ollama nvidia-smi`가 실패한다.
 - 모델 로딩이 GPU 미할당 또는 VRAM 접근 오류로 실패한다.
 - Open WebUI에서 모델 응답이 급격히 느려지고 GPU 사용률이 0에 머문다.
@@ -112,7 +117,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - 명령·시각, daemon 재시작 승인과 GPU 전후 상태를 기록한다.
 - 실패 검사·증상과 최종 복구 또는 에스컬레이션 상태를 Task/Incident에 남긴다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

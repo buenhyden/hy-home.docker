@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import dataclasses
 import io
+import json
 import pathlib
 import shutil
 import subprocess
@@ -481,6 +482,12 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         from scripts.lib.document_governance.registry import load_registry
         from scripts.lib.document_governance.spec_packages import load_spec_packages
 
+        current_registry = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text()
+        )
+        fixture_number = current_registry["identity_spaces"]["spec"]["next_number"]
+        fixture_id = f"SPEC-{fixture_number:04d}"
+
         def materialize_in_progress_package(
             root: pathlib.Path,
             package_relative: pathlib.Path,
@@ -513,7 +520,7 @@ created: "2026-10-06"
 
 ## Overview
 
-Exercise the generation 5 Evidence contract.
+Exercise the current Evidence contract.
 
 ## Scope
 
@@ -620,15 +627,15 @@ The controlled fixture is in progress.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Baseline | 1 | W1 | Fixture control | synthetic | NOT_RUN | This Task | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Baseline | 1 | W1 | Fixture control | synthetic | NOT_RUN | This Task | required | - |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 1 | pending | - | - |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | pending | - | - | [Spec](../spec.md) |
 
 ## Review and Completion
 
@@ -641,6 +648,12 @@ The fixture is intentionally in progress.
 """,
                 encoding="utf-8",
             )
+            for member in (
+                package / "spec.md",
+                package / "plan.md",
+                tasks / "tsk-0001-task-evidence-table-integrity.md",
+            ):
+                member.write_text(member.read_text().replace("SPEC-0210", fixture_id))
             index = root / "docs/03.specs/README.md"
             index_text = index.read_text(encoding="utf-8")
             row_count = index_text.count(index_row)
@@ -667,8 +680,9 @@ The fixture is intentionally in progress.
                 check=False,
             )
             self.assertEqual(0, cloned.returncode, cloned.stdout + cloned.stderr)
+            copy_registry_contract_fixture(root)
             package_relative = pathlib.Path(
-                "docs/03.specs/0210-task-evidence-table-integrity"
+                f"docs/03.specs/{fixture_number:04d}-fixture-evidence-integrity"
             )
             index_anchor = (
                 "| SPEC-0209 | [0209-common-document-contract-adoption/]"
@@ -676,8 +690,8 @@ The fixture is intentionally in progress.
                 "Registry, 현재 문서, 소비자 정합화 |"
             )
             index_row = (
-                "| SPEC-0210 | [0210-task-evidence-table-integrity/]"
-                "(./0210-task-evidence-table-integrity/) | generation 5 Plan과 "
+                f"| {fixture_id} | [{fixture_number:04d}-fixture-evidence-integrity/]"
+                f"(./{fixture_number:04d}-fixture-evidence-integrity/) | 현재 Plan과 "
                 "Task 증거 표의 분절 누락 방지 |"
             )
             materialize_in_progress_package(
@@ -692,9 +706,14 @@ The fixture is intentionally in progress.
                 index_anchor,
                 index_row,
             )
-            shutil.copy2(
-                ROOT / "docs/99.templates/registry.json",
-                root / "docs/99.templates/registry.json",
+            fixture_registry = json.loads(
+                (root / "docs/99.templates/registry.json").read_text()
+            )
+            fixture_registry["identity_spaces"]["spec"].update(
+                high_water=fixture_number, next_number=fixture_number + 1
+            )
+            (root / "docs/99.templates/registry.json").write_text(
+                json.dumps(fixture_registry, ensure_ascii=False, indent=2) + "\n"
             )
             shutil.copy2(
                 ROOT / "scripts/lib/document_governance/spec_packages.py",
@@ -736,7 +755,7 @@ The fixture is intentionally in progress.
             fixture_package = next(
                 package
                 for package in packages
-                if package.spec.artifact_id == "SPEC-0210"
+                if package.spec.artifact_id == fixture_id
             )
             self.assertEqual("approved", fixture_package.spec.status)
             self.assertEqual("approved", fixture_package.plan.status)
@@ -762,7 +781,7 @@ The fixture is intentionally in progress.
                     marker,
                     "\nDetached evidence fragment.\n\n"
                     "| Hidden failure | 1 | W1 | Source check | fixture | FAIL | "
-                    "detached | - |\n" + marker,
+                    "detached | required | - |\n" + marker,
                     1,
                 ),
                 encoding="utf-8",

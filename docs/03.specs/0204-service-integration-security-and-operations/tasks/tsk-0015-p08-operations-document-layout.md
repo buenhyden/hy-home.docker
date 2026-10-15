@@ -1,10 +1,10 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.2.4"
+version: "0.2.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0015"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-11"
 
 # P08 Operations Document Layout Task
 
-## Objective
+## Overview
+
+### Objective
 
 Deliver SPEC-0212 requirement 25 through Plan W56–W62, W70 and Spec criterion 8: one
 meaningful location for each current Stage05 Guide, Policy and Runbook, populated

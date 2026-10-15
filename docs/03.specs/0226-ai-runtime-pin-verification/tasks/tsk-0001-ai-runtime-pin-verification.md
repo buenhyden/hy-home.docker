@@ -1,10 +1,10 @@
 ---
 title: "AI Runtime Pin Verification Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0226-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-10"
 
 # AI Runtime Pin Verification Task
 
-## Objective
+## Overview
+
+### Objective
 
 Verify, pin and bound the requested Ollama and Open WebUI images, prove their
 backup and feature paths in isolation and bring HOME in line.

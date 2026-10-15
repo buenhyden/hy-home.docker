@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.2.0"
+version: "2.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "templates"
 ---
 
@@ -103,6 +103,15 @@ Markdown에도 적용됩니다. `absent`는 Markdown frontmatter를 쓰지 않�
 fallback과 등록된 frozen archive payload를 포괄하며, 둘 다 현재 작성
 대상이 아닙니다.
 
+### Local r10 Role Forms
+
+`SDLC-COMMON-r10-local-v1`는 이번 직접 요청에 따른 지역 개정 식별자다.
+역할별 필수 H2와 순서는 Registry의 `required_sections`와 `ordered_sections`가
+소유하고, 복사 양식과 현행 본문은 같은 순서를 따른다. 기존 고유 절차·명령·증거는
+해당 역할 절에 보존하며 제목이 바뀐 기존 anchor는 의미가 있는 하위 절로 유지한다.
+완료·취소 Task와 보관 원본은 원래 본문과 source-bound 판정으로 읽는다.
+이 지역 개정은 기록된 WGOV-CORE/3.0.0의 새 승인이나 네 저장소 공동 채택을 뜻하지 않는다.
+
 ### Identity and Lifecycle Rules
 
 #### Stage 03 Evidence
@@ -113,7 +122,8 @@ Work Log 아래 `Execution Items` 표의 각 행이 상태를 가지며 frontmat
 unit, 실제 check와 input, result, location, 그리고 앞선 `FAIL` 행을 해소했는지
 나타내는 `Resolves`를 기록합니다. 수용 판정은 criterion마다 한 번, Task의
 `Criterion Acceptance` 표에 둡니다. Plan의 `Work Breakdown`은 여섯 열이고
-Task의 `Evidence`는 여덟 열입니다. 정확한 열 순서와 vocabulary는 Registry가
+새 Task의 `Evidence`는 필수성을 포함한 아홉 열이고 수용 표에는 현재 owner를
+기록합니다. 이전 판본의 보존 기록은 당시 표로 읽습니다. 정확한 열 순서와 vocabulary는 Registry가
 소유합니다.
 Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 기록하며
 승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
@@ -182,8 +192,9 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
   terminal 상태에는 나가는 전이가 없습니다.
 
 의미적 흐름은 profile마다 다릅니다: Requirement는 검토 후 승인하고, ADR은
-수락하거나 거부하며, Spec과 Plan은 승인 후 진행·차단·완료될 수 있고, Task는
-준비 상태를 거쳐 진행 중이 됩니다. Guide·Policy·Runbook과 common rule·Skill은
+수락하거나 거부합니다. Spec과 Plan은 계약·계획의 승인 권한만 나타내며,
+진행·차단·완료는 Task 또는 Execution Item이 소유합니다.
+Task는 준비 상태를 거쳐 진행 중이 됩니다. Guide·Policy·Runbook과 common rule·Skill은
 검토 후 active가 되며, Postmortem과 reference는 게시되고, Navigation README와
 current archive catalog는 active로 유지되며 Migration과 Tombstone 기록은
 draft 또는 sealed입니다. `registry.json`이 모든 진입 상태, edge, terminal

@@ -1,10 +1,10 @@
 ---
 title: "Renovate Policy"
-version: "0.1.3"
+version: "0.1.4"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0083"
 parent_ids:
@@ -53,11 +53,6 @@ resolved digest와 같지 않으므로 불변성 통제의 충족 여부를 따�
 토큰 권한, 저장소 범위, 허용 명령어, 스크립트 실행, 원격 변경의 확대는 기록된 owner,
 만료일, 롤백, 보안 검토가 필요하다. 구문 검증을 통과해도 실제 실행 승인은 면제되지 않는다.
 
-### Verification
-
-[Runbook step 1](../../runbooks/10-platform-and-backup/0083-renovate.md#procedure)에 따라 실제 실행 전에 저장소와
-self-host 설정 검증을 반드시 통과해야 한다.
-
 ### Review Cadence
 
 매월, 그리고 이미지, 토큰 범위, 저장소 목록, manager, 허용 명령어, `POL-0086`이 변경될
@@ -67,6 +62,11 @@ self-host 설정 검증을 반드시 통과해야 한다.
 
 - 설계 근거: [AD-0009](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0083-renovate.md), [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)
+
+## Verification
+
+[Runbook step 1](../../runbooks/10-platform-and-backup/0083-renovate.md#procedure)에 따라 실제 실행 전에 저장소와
+self-host 설정 검증을 반드시 통과해야 한다.
 
 ## Related Documents
 

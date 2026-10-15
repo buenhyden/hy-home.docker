@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Guide"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0084"
 parent_ids:
@@ -21,11 +21,13 @@ created: "2026-09-19"
 
 이 가이드는 DEV 메일 캡처 서비스 Mailpit의 구성, 접근 경계, 일반 사용 방법을 설명한다. Mailpit은 전달용 MTA가 아니며 `dev`, `local`, `mail-dev` profile에서만 선택된다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 애플리케이션과 integration test에서 발송 메일을 확인하는 개발자와 운영자다. 목표는 테스트 메일을 안전하게 캡처하고 조회하며, 접근 경계와 데이터 취급 범위를 이해하는 것이다. 복구와 업그레이드 절차는 [RUN-0084](../../runbooks/11-mail-and-notifications/0084-mailpit.md)가 소유한다.
 
-## Usage
+## Concepts
 
 ### Purpose and classification
 
@@ -33,6 +35,8 @@ Mailpit은 application과 integration test를 위한 DEV mail-capture
 service이다. delivery MTA가 아니며 선택적인 Stalwart를 대체하지 않는다.
 `dev`, `local`, `mail-dev`에 속하며 HOME에서는 제외된다. UI와 SMTP host
 port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅된다.
+
+## Usage
 
 ### Current implementation
 
@@ -68,12 +72,6 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
 
 gateway 경로만 SSO를 거치고, 직접 loopback UI와 두 네트워크의 peer listener에는 동등한 네이티브 UI 인증이 없다. 통제는 [POL-0084](../../policies/11-mail-and-notifications/0084-mailpit.md)가 소유한다. 책임자 `@buenhyden`은 이 경계와 테스트 데이터 소유자를 확인한다.
 
-### Common Checks
-
-- `docker compose --profile mail-dev config --quiet`
-- `docker compose --profile mail-dev config --services`
-- `bash scripts/hardening/check-all-hardening.sh 11-quality`
-
 ### Runbook Handoff
 
 capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade에는
@@ -84,6 +82,14 @@ capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade�
 - [Policy](../../policies/11-mail-and-notifications/0084-mailpit.md) (`POL-0084`)
 - [Runbook](../../runbooks/11-mail-and-notifications/0084-mailpit.md) (`RUN-0084`)
 - [Communication architecture](../../../02.architecture/descriptions/0010-communication-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile mail-dev config --quiet`
+- `docker compose --profile mail-dev config --services`
+- `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
 ## Related Documents
 

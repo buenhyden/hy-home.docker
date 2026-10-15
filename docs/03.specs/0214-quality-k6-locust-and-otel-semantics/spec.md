@@ -1,10 +1,10 @@
 ---
 title: "Quality Load Tools and OTel Metric Semantics"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0214"
 parent_ids:
@@ -153,6 +153,14 @@ consumer, and Locust OpenTelemetry, which the pinned image cannot export.
    loss, with the resulting CSV state and exact cleanup.
 9. HOME Alloy joins `quality_otlp_net`, and a HOME relay run reaches the HOME
    Prometheus, or the step is recorded as `NOT_RUN` with its reason.
+
+## Failure Conditions
+
+Invalid telemetry input or a nonconforming ingress or relay must fail
+before load begins, and forged producer identity must not reach Prometheus.
+Missing Locust workers, deadlines, cancellation and relay failure must retain
+their bounded exit and run-scoped cleanup behavior; absent measurements must
+not be displayed as a successful zero result.
 
 ## Related Documents
 

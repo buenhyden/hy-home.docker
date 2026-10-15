@@ -1,10 +1,10 @@
 ---
 title: "Airflow Operations Policy"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0050"
 parent_ids:
@@ -59,14 +59,6 @@ created: "2026-05-17"
 
 - **Emergency Hotfix**: 중대한 파이프라인 중단 시, 사후 보고를 조건으로 수동 DB 수정 또는 워커 강제 재시작 가능 (관리자 승인 필요).
 
-### Verification
-
-점검 명령은 [가이드의 Common Checks](../../guides/08-workflows-and-automation/0050-airflow.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
-
-- **Runtime Check**: 실행 중인 환경에서 `docker compose exec airflow-apiserver airflow db check`와 `docker compose exec airflow-apiserver airflow dags list` 결과를 확인한다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Review Cadence
 
 - **Quarterly**: 매 분기별 리소스 사용량 분석 및 쿼터 조정.
@@ -76,6 +68,14 @@ created: "2026-05-17"
 
 - Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
 - Subject peers: [Guide](../../guides/08-workflows-and-automation/0050-airflow.md) (`GDE-0050`), [Runbook](../../runbooks/08-workflows-and-automation/0050-airflow.md) (`RUN-0050`)
+
+## Verification
+
+점검 명령은 [가이드의 Common Checks](../../guides/08-workflows-and-automation/0050-airflow.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
+
+- **Runtime Check**: 실행 중인 환경에서 `docker compose exec airflow-apiserver airflow db check`와 `docker compose exec airflow-apiserver airflow dags list` 결과를 확인한다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Related Documents
 

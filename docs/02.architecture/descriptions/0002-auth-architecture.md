@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.5.1"
+version: "1.5.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -18,15 +18,11 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 The `02-auth` architecture centers on `Keycloak`, which serves the central IAM role, and `OAuth2 Proxy`, the gateway authentication layer. Not every application is forced into the same ingress auth pattern. Services that provide their own OIDC and application-level RBAC connect directly to Keycloak, while services without their own OIDC, or for which gateway authentication fits, use OAuth2 Proxy ForwardAuth.
+
+## Scope
 
 ### Status
 
@@ -74,9 +70,7 @@ The `02-auth` architecture centers on `Keycloak`, which serves the central IAM r
   - A fail-open default policy
   - Forcing every service's authentication implementation into a single middleware
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -165,6 +159,8 @@ Traefik handles only TLS and routing/gateway middleware. The application perform
 - `dedicated-valkey` profile: adds `oauth2-proxy-valkey`
 - Native OIDC application session/RBAC: owned by each application
 
+## Runtime and Deployment
+
 ### Data Flow
 
 The browser request enters through Traefik HTTPS ingress and then branches according to the service's auth pattern.
@@ -188,7 +184,9 @@ Kafbat UI configures native OAuth2 in `infra/05-messaging/kafka/docker-compose.y
 The OpenBao router also uses only `gateway-standard-chain@file`. The Keycloak group `/openbao-admins` is a condition for the OpenBao OIDC role `home-admin`, and the login result is an OpenBao token under the `hy-home-operator` policy. Keycloak users/groups and OpenBao roles/policies are separate objects. The actual login verification is owned by the
 [OpenBao work record](../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md).
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Performance**: ForwardAuth targets use the lightweight `/oauth2/auth` check.
 - **Security**: Avoids unnecessary `Authorization` header injection into Native OIDC apps.

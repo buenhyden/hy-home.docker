@@ -1,10 +1,10 @@
 ---
 title: "Observability Hardening and HA Expansion Strategy"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0021"
 parent_ids:
@@ -17,32 +17,15 @@ created: "2026-03-28"
 
 This document records the decision to first apply immediately applicable hardening (gateway chain + SSO, strengthened health dependencies, container runtime hardening, CI baseline) for the `06-observability` layer, while pursuing catalog-based HA expansion in phases.
 
-The observability layer provides many management paths, and failures can spread easily if the security chain is missing, startup order is unstable, or runtime hardening is insufficient. Layer-specific verification automation is needed to block operational regressions at the PR stage.
-
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
-## Decision
+## Decision Drivers
 
-- Perform immediate hardening.
-  - Apply `gateway-standard-chain@file` plus `sso-errors@file,sso-auth@file` to the observability public router.
-  - Raise the Loki/Tempo dependency for Alloy/Grafana to `service_healthy`.
-  - Add a cAdvisor healthcheck.
-  - Specify non-root execution/secret guard for the Loki/Tempo custom images.
-  - Introduce `check-all-hardening.sh 06-observability` and the CI `infrastructure-hardening` job.
-  - Create the PRD-through-Runbook document set to secure bidirectional traceability.
-- Introduce catalog expansion (sampling/long-term retention/modularization) in phases through a policy approval procedure.
+The observability layer provides many management paths, and failures can spread easily if the security chain is missing, startup order is unstable, or runtime hardening is insufficient. Layer-specific verification automation is needed to block operational regressions at the PR stage.
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### Implement all catalog expansion immediately
 
@@ -57,6 +40,17 @@ The decision context above records the applicable drivers and evidence.
   - Reduces short-term implementation burden
 - Bad:
   - Lacks the ability to actually block regressions
+
+## Decision
+
+- Perform immediate hardening.
+  - Apply `gateway-standard-chain@file` plus `sso-errors@file,sso-auth@file` to the observability public router.
+  - Raise the Loki/Tempo dependency for Alloy/Grafana to `service_healthy`.
+  - Add a cAdvisor healthcheck.
+  - Specify non-root execution/secret guard for the Loki/Tempo custom images.
+  - Introduce `check-all-hardening.sh 06-observability` and the CI `infrastructure-hardening` job.
+  - Create the PRD-through-Runbook document set to secure bidirectional traceability.
+- Introduce catalog expansion (sampling/long-term retention/modularization) in phases through a policy approval procedure.
 
 ## Consequences
 

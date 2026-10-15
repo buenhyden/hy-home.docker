@@ -1,10 +1,10 @@
 ---
 title: "Observability HOME Coverage Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0225-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-09"
 
 # Observability HOME Coverage Task
 
-## Objective
+## Overview
+
+### Objective
 
 Keep LAB-only observability out of HOME and make every provisioned dashboard
 show the data its purpose needs on HOME.

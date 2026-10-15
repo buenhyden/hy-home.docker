@@ -1,10 +1,10 @@
 ---
 title: "MLflow Operations Policy"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0088"
 parent_ids:
@@ -56,14 +56,6 @@ MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저
 경로가 승인될 때까지 받아들이고 기록해 둔 gap일 뿐, 보증이 아니다. 어떤 예외도 gateway
 SSO를 비활성화할 수 없다.
 
-### Verification
-
-정적 profile 렌더링, provisioning 계약 테스트, 일회성 PostgreSQL 리허설. 런타임 검증은
-다음을 요구한다: 세션 없는 gateway 요청이 인증 경계에서 거부·로그인 redirect되고
-인가 거부 403이 유지된다, artifact가 있는 run이 proxy를 통해
-round-trip한다, MLflow SeaweedFS user가 다른 bucket에서 거부된다, restore 리허설이
-수행된다.
-
 ### Review Cadence
 
 MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, credential 회전 시 검토한다.
@@ -73,6 +65,14 @@ MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, 
 - [Guide](../../guides/13-analytics-and-data-quality/0088-mlflow.md) (`GDE-0088`)
 - [Runbook](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md) (`RUN-0088`)
 - [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+## Verification
+
+정적 profile 렌더링, provisioning 계약 테스트, 일회성 PostgreSQL 리허설. 런타임 검증은
+다음을 요구한다: 세션 없는 gateway 요청이 인증 경계에서 거부·로그인 redirect되고
+인가 거부 403이 유지된다, artifact가 있는 run이 proxy를 통해
+round-trip한다, MLflow SeaweedFS user가 다른 bucket에서 거부된다, restore 리허설이
+수행된다.
 
 ## Related Documents
 

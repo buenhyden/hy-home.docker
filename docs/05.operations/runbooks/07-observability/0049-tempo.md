@@ -1,10 +1,10 @@
 ---
 title: "Tempo Readiness and Recovery Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0049"
 parent_ids:
@@ -18,9 +18,14 @@ created: "2026-05-17"
 
 이 런북은 Tempo 장애 대응 절차를 정의한다. 범위는 준비 상태, OTLP 수집, SeaweedFS S3 저장, metrics generator, WAL 증상 진단과 재시작이다. 데이터 손실 가능성이 있는 WAL·bucket 조치는 별도 승인으로 격리한다.
 
-## Trigger and Preconditions
+## Trigger
 
 - Grafana Tempo datasource에서 최근 trace가 검색되지 않을 때.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 - Alloy는 trace를 수신하지만 Tempo에 trace가 도착하지 않는다고 의심될 때.
 - Tempo log에 S3, bucket, access denied, compaction, WAL 관련 오류가 보일 때.
 - Service graph or span metrics가 Prometheus/Grafana에서 보이지 않을 때.
@@ -122,7 +127,7 @@ Retention gap과 Tempo HTTP `3200`의 LAN 게시 예외는 [POL-0049](../../poli
 - **Storage**: `tempo-bucket` 경계와 SeaweedFS endpoint `seaweedfs-s3:8333`, `tempo-data` volume
 - **Evidence to Capture**: 실패 증상, secret을 제거한 로그, 영향받은 경로·endpoint, 재시작 시각, 최종 복구 또는 보고 상태
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

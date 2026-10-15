@@ -1,10 +1,10 @@
 ---
 title: "Operations Role Layout"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0043"
 parent_ids:
@@ -49,18 +49,27 @@ check, and `check-document-links.py --mode all` enforce this decision.
   evidence (SPEC-0183 Task W13), and its postmortem is published.
 - Fixing links in other repositories is performed by each repository's owner.
 
-## Decision
-
-### Decision
-
-### Decision Drivers
+## Decision Drivers
 
 - People look first by role (understand, control, execute).
 - Do not change issued IDs (documentation protocol authoring rule 5).
 - Do not run two discovery systems in parallel.
 - Do not rewrite Stage 98 frozen bodies and sealed records.
 
-### Decision
+## Options
+
+### Options Considered
+
+1. **Keep the catalog**: No change cost, but leaves a structure the owner has
+   explicitly said conflicts with the goal.
+2. **Keep the catalog and add a per-role index**: Two discovery systems run in
+   parallel permanently, exactly the state the README prohibits by banning
+   "publishing a parallel per-role index."
+3. **Switch to role-first paths (adopted)**: `guides/`, `policies/`,
+   `runbooks/`, `incidents/` own the role, and domain remains an index
+   classification.
+
+## Decision
 
 - Path: under `docs/05.operations/`, `guides/####-<slug>.md`,
   `policies/####-<slug>.md`, `runbooks/####-<slug>.md`. Incident and
@@ -83,21 +92,6 @@ check, and `check-document-links.py --mode all` enforce this decision.
   violation.
 - For external repository consumers, MIG-0005 announces the move's scope and
   current owner.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-1. **Keep the catalog**: No change cost, but leaves a structure the owner has
-   explicitly said conflicts with the goal.
-2. **Keep the catalog and add a per-role index**: Two discovery systems run in
-   parallel permanently, exactly the state the README prohibits by banning
-   "publishing a parallel per-role index."
-3. **Switch to role-first paths (adopted)**: `guides/`, `policies/`,
-   `runbooks/`, `incidents/` own the role, and domain remains an index
-   classification.
 
 ## Consequences
 

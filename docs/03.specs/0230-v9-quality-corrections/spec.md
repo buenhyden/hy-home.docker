@@ -1,10 +1,10 @@
 ---
 title: "Prompt v9 Quality Corrections"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0230"
 parent_ids:
@@ -60,6 +60,13 @@ historical census in the ledger.
 2. The workflow contract tests and the update-gate tests pass on the branch.
 3. The changed gate and `candidate-quality` pass.
 4. The normalizer leaves every file the registered owners accept unchanged.
+
+## Failure Conditions
+
+Any inactivity-only thread closure, unregistered selector or unsupported
+ledger digest refresh violates the correction boundary. The opt-in normalizer
+must leave owner-accepted files unchanged, preserve CRLF and LF semantics,
+and never rewrite frozen archive payloads or files outside the edit input.
 
 ## Related Documents
 

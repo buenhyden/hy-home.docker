@@ -1,10 +1,10 @@
 ---
 title: "Local Gate Governance Timeout"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0235"
 parent_ids:
@@ -69,6 +69,13 @@ metadata node's timeout from 10 to 30 minutes.
 5. `leaf.local-document-metadata-tests` has `timeout_minutes: 30`, its
    module batch, measured on this host, finishes inside it with margin, and
    the contract tests pass.
+
+## Failure Conditions
+
+The timeout correction is unsupported without measured module-batch
+runtime inside the selected 45- and 30-minute limits with margin. Class and
+method selections must count toward their module's reachability without
+changing hosted timeouts or unrelated nodes.
 
 ## Related Documents
 

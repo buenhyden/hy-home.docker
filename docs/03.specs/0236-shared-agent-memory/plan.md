@@ -1,10 +1,10 @@
 ---
 title: "Shared Agent Memory Plan"
-version: "0.2.0"
+version: "0.3.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0236-PLAN-0001"
 parent_ids:
@@ -19,6 +19,23 @@ created: "2026-10-13"
 The investigation is complete and the owner decisions are recorded in the
 Spec. W2 to W7 implement them; W8 needs two real provider sessions. W9 runs
 once after merge.
+
+The R10 amendment preserves existing bodies/schema 1 while adding schema 2
+provenance, caller-worktree freshness, semantically bound retries, conflict
+retention, tier/domain/metadata/page limits and concurrent backup safety.
+The sole execution, synthetic regression and independent-review record is
+[SPEC-0212 Task W22/criterion 17](../0212-request-baseline-and-reconciliation/tasks/tsk-0007-r10-reconciliation.md).
+This Plan adds no acceptance criterion or duplicate Task. Existing W8/W9 and
+SPEC-0237 actual Restic observations are reused; private databases and native
+files are neither read nor changed.
+
+## Scope
+
+W1–W7 implement the shared root, revisioned SQLite CLI, logical limits,
+backup and hook/export protections with project native-memory settings.
+W8 checks both providers/worktrees and W9 performs the originally authorized
+one-time migration; r10 currentness implementation and acceptance remain
+assigned to SPEC-0212 W22 without duplicating those historical decisions.
 
 ## Work Breakdown
 
@@ -44,7 +61,9 @@ once after merge.
   and revise the same record from two worktrees. A single-process synthetic
   test does not count as acceptance.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - **Lost native recall.** Turning native memory off stops what Claude loads
   today. Order W6 after the CLI exists and after the migration decision.

@@ -1,10 +1,10 @@
 ---
 title: "Subagent Model and Routing Text Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0217-PLAN-0001"
 parent_ids:
@@ -19,6 +19,13 @@ created: "2026-10-08"
 Change the description renderer with its test, then move the Claude model
 selections, regenerating the projections after each so every commit keeps
 renderer parity.
+
+## Scope
+
+W1 renders both provider descriptions from each role's Overview and all
+Use When cases, tests the result and regenerates the projections. W2 updates
+only the selected Claude Opus/Sonnet model profiles and regenerates again;
+Codex choices, Haiku, effort and canonical role bodies are excluded.
 
 ## Work Breakdown
 
@@ -35,7 +42,9 @@ Run the description test before and after the renderer change, then
 for the earlier model IDs. Remote PR `candidate-quality` owns candidate
 acceptance.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 Descriptions with routing text make automatic delegation more likely than the
 earlier boilerplate did. Sonnet 5.5 recalibrates effort levels, so the same

@@ -351,18 +351,12 @@ PY
 
 emit_stop_block() {
   local reason="$1"
-  local retry="${2:-0}"
-  STOP_RETRY="$retry" python3 3<<<"$reason" <<'PY'
+  python3 3<<<"$reason" <<'PY'
 import json
 import os
 
 reason = os.fdopen(3, encoding="utf-8").read().removesuffix("\n")
-retry = os.environ.get("STOP_RETRY") == "1"
-if retry:
-    reason = f"Stop retry limit reached. {reason}"
-if retry:
-    print(json.dumps({"continue": False, "stopReason": reason}))
-elif os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex":
+if os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex":
     print(json.dumps({"decision": "block", "reason": reason}))
 else:
     print(json.dumps({
@@ -439,7 +433,6 @@ PY
 
 stop() {
   if stop_retry_active; then
-    emit_stop_block "Stop already ran for this interaction. Resolve any reported issue and request a new stop interaction." 1
     return 0
   fi
 

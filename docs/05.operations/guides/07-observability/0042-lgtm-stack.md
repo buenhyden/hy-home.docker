@@ -1,10 +1,10 @@
 ---
 title: "LGTM Stack Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0042"
 created: "2026-03-25"
@@ -16,7 +16,9 @@ created: "2026-03-25"
 
 이 가이드는 `hy-home.docker`의 `06-observability` tier가 제공하는 통합 관측성 stack을 설명한다. 현재 stack은 Prometheus, Loki, Tempo, Grafana에 Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope를 더해 metrics, logs, traces, alerts, profiles를 연결한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 개발자, 운영자, SRE, AI Agent.
 
@@ -24,7 +26,7 @@ created: "2026-03-25"
 - Grafana에서 metrics/logs/traces/profiles/alerts를 탐색할 때 어떤 datasource와 backend를 확인해야 하는지 연결한다.
 - 개별 서비스 장애 대응은 service별 runbook으로 넘긴다.
 
-## Usage
+## Concepts
 
 사용 전에 다음을 확인한다.
 
@@ -75,6 +77,8 @@ created: "2026-03-25"
    - Pushgateway: ephemeral/batch metric
    - Pyroscope: profile
 
+## Usage
+
 ### 운영 시 주의점
 
 - **Single-pane assumption**: Grafana UI가 정상이어도 backend datasource가 unhealthy이면 일부 panels만 실패할 수 있다.
@@ -82,13 +86,6 @@ created: "2026-03-25"
 - **Collector assumption**: Alloy pipeline이 실패하면 Loki/Tempo/Prometheus/Grafana가 정상이어도 telemetry가 비어 보일 수 있다.
 - **Secret evidence**: SeaweedFS, Grafana, Alertmanager, Prometheus secret 값은 기록하지 않는다.
 - **Runbook scope**: 이 stack guide는 복구 절차가 아니다. 장애 대응은 service별 runbook을 따른다.
-
-### Common Checks
-
-- `docker compose --profile obs ps`
-- `rg -n '^  (prometheus|loki|tempo|alloy|grafana|cadvisor|pyroscope|alertmanager|pushgateway):' infra/06-observability/docker-compose.yml`
-- `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
-- `bash scripts/validation/validate-docker-compose.sh`
 
 ### Runbook Handoff
 
@@ -98,6 +95,15 @@ stack 전체를 다루는 runbook은 없다. 반복 실행 절차와 장애 대�
 
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: 없음. 번호 `0042`를 공유하는 Policy나 Runbook은 없다.
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile obs ps`
+- `rg -n '^  (prometheus|loki|tempo|alloy|grafana|cadvisor|pyroscope|alertmanager|pushgateway):' infra/06-observability/docker-compose.yml`
+- `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
+- `bash scripts/validation/validate-docker-compose.sh`
 
 ## Related Documents
 

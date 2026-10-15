@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Usage Guide"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0047"
 parent_ids:
@@ -21,7 +21,9 @@ created: "2026-05-10"
 
 이 가이드는 `06-observability` 계층의 Pyroscope 사용 맥락과 설정 확인 방법을 설명한다. Pyroscope는 profile 데이터를 로컬 filesystem backend `/var/lib/pyroscope`에 저장하고, Grafana Pyroscope datasource와 Alloy `pyroscope.write` endpoint를 통해 flamegraph 분석 경로를 제공한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 개발자, SRE, 운영자, AI Agent.
 
@@ -29,7 +31,7 @@ created: "2026-05-10"
 - Grafana에서 flamegraph, diff view, profile label을 확인하는 진입점을 안내한다.
 - 복구, restart, 용량 압박, storage 변경 판단은 [RUN-0047](../../runbooks/07-observability/0047-pyroscope.md)로 넘긴다.
 
-## Usage
+## Concepts
 
 사용 전에 다음을 확인한다.
 
@@ -61,6 +63,8 @@ created: "2026-05-10"
 
 5. Flamegraph에서 CPU hot path 또는 allocation-heavy path를 확인한다. 성능 저하 전후를 비교해야 하면 Grafana diff view를 사용한다.
 
+## Usage
+
 ### Source-backed operating contract
 
 - **목적/분류/출처**: `pyroscope`는 `obs`/`profiling`이 선택하는 `HOME` continuous-profile store다. [Compose](../../../../infra/06-observability/docker-compose.yml)와 [Pyroscope config](../../../../infra/06-observability/pyroscope/config/pyroscope.yaml)가 authoritative하다.
@@ -81,13 +85,6 @@ created: "2026-05-10"
 - **Storage assumption**: 현재 backend는 local filesystem이다. 오래된 profile data 삭제나 retention 변경은 guide 범위가 아니라 runbook escalation 대상이다.
 - **Language support**: 언어와 runtime에 따라 CPU, memory, goroutine, mutex, block profile 지원 범위가 다르다.
 
-### Common Checks
-
-- `docker compose --profile obs ps pyroscope`
-- `docker logs --tail=100 pyroscope`
-- `docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}`
-- `rg -n 'ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml`
-
 ### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/07-observability/0047-pyroscope.md)을 따른다.
@@ -97,6 +94,15 @@ created: "2026-05-10"
 - Declared parent: [Pyroscope Operations Policy](../../policies/07-observability/0047-pyroscope.md) (`POL-0047`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Policy](../../policies/07-observability/0047-pyroscope.md) (`POL-0047`), [Runbook](../../runbooks/07-observability/0047-pyroscope.md) (`RUN-0047`)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile obs ps pyroscope`
+- `docker logs --tail=100 pyroscope`
+- `docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}`
+- `rg -n 'ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml`
 
 ## Related Documents
 

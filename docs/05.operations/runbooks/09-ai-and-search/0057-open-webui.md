@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Runbook"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0057"
 parent_ids:
@@ -24,9 +24,14 @@ created: "2026-05-17"
 - RAG 기능(인덱싱/검색) 정상 상태를 재확인한다.
 - 동일 장애 재발 시 일관된 증적을 남긴다.
 
-## Trigger and Preconditions
+## Trigger
 
 - `https://chat.${DEFAULT_URL}` 접속 실패 또는 5xx 증가.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 - 모델 목록 미표시, 채팅 응답 실패.
 - 문서 업로드 후 RAG 인덱싱 실패.
 - Open WebUI healthcheck 실패.
@@ -129,7 +134,7 @@ docker compose restart open-webui
   - 복구 전후 확인 화면/지표
   - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태는 관련 Task/Incident에 남긴다
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

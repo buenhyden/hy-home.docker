@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.0.5"
+version: "1.0.6"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0021"
 parent_ids:
@@ -15,18 +15,14 @@ created: "2026-03-28"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
 the `06-observability` layer. It organizes the gateway boundary security,
 health-based dependency, custom image runtime hardening, and catalog-based
 expansion strategy from an architecture perspective.
+
+## Scope
 
 ### Stakeholders and Concerns
 
@@ -63,11 +59,7 @@ non-goals, and constraints already recorded in the current document.
 
 The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Viewpoints and Views
 
@@ -83,7 +75,7 @@ as the view for that concern.
 - Internal Path:
   - OTLP/log/trace traffic over `obs_net`
 
-### Data Flow
+## Runtime and Deployment
 
 ### Data and Control Flows
 
@@ -116,7 +108,7 @@ section and the existing infrastructure/deployment descriptions.
 - Tempo: per-service/endpoint sampling policy + span-burst protection
 - Alloy: onboarding templating + modularized collection pipeline
 
-## Quality Attributes
+## Quality and Risks
 
 ### Quality Scenarios
 

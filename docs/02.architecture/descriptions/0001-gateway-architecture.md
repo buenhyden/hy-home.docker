@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier Architecture Description"
-version: "1.2.3"
+version: "1.2.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0001"
 parent_ids:
@@ -15,15 +15,11 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document defines the architecture of the Gateway tier, the unified entry point for the `hy-home.docker` system. It describes a structure that achieves dynamic service discovery and fine-grained path routing at the same time through a hybrid Traefik and Nginx configuration.
+
+## Scope
 
 ### Stakeholders and Concerns
 
@@ -56,11 +52,7 @@ This section preserves the system boundaries, consumption relationships, non-goa
 
 The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Viewpoints and Views
 
@@ -70,7 +62,7 @@ Gateway leaves join `edge_net`, but they are alternative host listeners. Normal
 HOME traffic enters Traefik. The `nginx` profile instead selects Nginx for its
 special-path routes; Nginx is not chained behind Traefik in the current Compose.
 
-### Data Flow
+## Runtime and Deployment
 
 ### Data and Control Flows
 
@@ -92,7 +84,7 @@ Data and control flows include only the interactions specified in this section a
   the root network and healthy SeaweedFS S3 dependency context.
 - **Operational Evidence**: root `core` profile compose validation, `check-all-hardening.sh 01-gateway`, Traefik Dashboard (`dashboard.DEFAULT_URL`) and sanitized runtime logs when the approved stack is running.
 
-## Quality Attributes
+## Quality and Risks
 
 ### Quality Scenarios
 

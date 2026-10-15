@@ -1,10 +1,10 @@
 ---
 title: "Analytics Services Product Requirements"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "requirements"
 artifact_id: "REQ-0005"
 created: "2026-03-26"
@@ -12,8 +12,6 @@ created: "2026-03-26"
 # Analytics Services Product Requirements
 
 ## Overview
-
-### Overview
 
 ### Problem and Goals
 
@@ -23,37 +21,7 @@ This document defines the platform's analytics requirements. Time-series history
 
 The current implementation holds OpenSearch compose under `infra/04-data`, and Flink and Trino compose under `infra/12-analytics`. This PRD defines the requirement that these engines remain an optional tier separate from core transactional data: even though the root compose unconditionally includes the files, they do not belong to the `core` profile and do not start without a separate profile selection. ksqlDB and StarRocks, which previously handled stream processing and OLAP, were removed in SPEC-0180 S19 after the Flink and Trino live acceptance (2026-09-24).
 
-## Requirements
-
-### Requirements
-
-### Functional Requirements
-
-- **REQ-0005-FR-0001**: Provide a dedicated write and query interface for time-series data (TSDB).
-- **REQ-0005-FR-0003**: Integrate full-text search and log collection pipelines.
-- **REQ-0005-FR-0005**: Write events to an Iceberg table via SQL-based stream processing, resuming from the last checkpoint after a failure.
-- **REQ-0005-FR-0006**: Provide interactive SQL/OLAP queries against Iceberg tables.
-
-FR numbers 0002 (ksqlDB stream processing) and 0004 (StarRocks OLAP) were retired along with the engine removal and are not reused. The same needs are redefined in an engine-neutral way by 0005 and 0006.
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-### Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0005-FR-0001**: InfluxDB is retired (ADR-0047, SPEC-0213). No root profile, route, environment key, version projection or active operations document may deploy it. Time-series history uses DEV TimescaleDB tables; a hypertable is created only for a named consumer.
-- **REQ-0005-FR-0003**: The OpenSearch documentation must describe, without exaggeration, the single primary stack the current compose proves, the cluster topology selected by the profile, and the secret/volume/healthcheck boundary. Live performance figures (P95, indexing latency) are recorded as success evidence only when separate runtime benchmark evidence exists.
-- **REQ-0005-FR-0005**: Flink must write to the Iceberg table via batch INSERT and checkpointed streaming INSERT, with checkpoints recorded to the host directory. This passed live acceptance on 2026-09-24 (SPEC-0180 Task 0008).
-- **REQ-0005-FR-0006**: Trino must read the same table that Flink wrote, and the Great Expectations suite must pass through Trino. This passed live acceptance on 2026-09-24. Interactive performance figures are recorded only when separate benchmark evidence exists.
-
 ## Scope
-
-### Scope
 
 ### Stakeholders and User Needs
 
@@ -88,6 +56,32 @@ Build a high-performance analytics hub that collects, processes, and analyzes al
 - **Dependency**: All analytics engines depend on declared networks, compose profiles, bind-backed named volumes, and Docker Secrets; the lakehouse engines also depend on the Iceberg catalog in SeaweedFS and Kafka (stream input).
 - **Risk**: Risk of resource shortage on analytics nodes (storage/compute) during large-scale data inflow.
 - **Assumption**: Source data is reliably supplied through the core data tier or the messaging tier.
+
+## Requirements
+
+### Functional Requirements
+
+- **REQ-0005-FR-0001**: Provide a dedicated write and query interface for time-series data (TSDB).
+- **REQ-0005-FR-0003**: Integrate full-text search and log collection pipelines.
+- **REQ-0005-FR-0005**: Write events to an Iceberg table via SQL-based stream processing, resuming from the last checkpoint after a failure.
+- **REQ-0005-FR-0006**: Provide interactive SQL/OLAP queries against Iceberg tables.
+
+FR numbers 0002 (ksqlDB stream processing) and 0004 (StarRocks OLAP) were retired along with the engine removal and are not reused. The same needs are redefined in an engine-neutral way by 0005 and 0006.
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0005-FR-0001**: InfluxDB is retired (ADR-0047, SPEC-0213). No root profile, route, environment key, version projection or active operations document may deploy it. Time-series history uses DEV TimescaleDB tables; a hypertable is created only for a named consumer.
+- **REQ-0005-FR-0003**: The OpenSearch documentation must describe, without exaggeration, the single primary stack the current compose proves, the cluster topology selected by the profile, and the secret/volume/healthcheck boundary. Live performance figures (P95, indexing latency) are recorded as success evidence only when separate runtime benchmark evidence exists.
+- **REQ-0005-FR-0005**: Flink must write to the Iceberg table via batch INSERT and checkpointed streaming INSERT, with checkpoints recorded to the host directory. This passed live acceptance on 2026-09-24 (SPEC-0180 Task 0008).
+- **REQ-0005-FR-0006**: Trino must read the same table that Flink wrote, and the Great Expectations suite must pass through Trino. This passed live acceptance on 2026-09-24. Interactive performance figures are recorded only when separate benchmark evidence exists.
 
 ## Related Documents
 

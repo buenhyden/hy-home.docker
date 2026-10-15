@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.2.0"
+version: "1.3.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -21,12 +21,21 @@ created: "2026-10-07"
 
 ## Overview
 
-The current 11–30 request replaces P00's active routing while preserving issued
+The earlier 11–30 request replaced P00's routing while preserving issued
 IDs, created dates and completed Task bodies. The current coordination audit is
 bound to main `262dc2dde6eea27195f7d8909e9453f5ccc97f66`, after PR #457 merged.
 SEC01 delivery is prerequisite to the SMTP source transition, which precedes
 CLN01 old-file deletion. Historical Tasks grant no current learning-app planning
 or execution.
+
+The r10 request dated 2026-10-15 extends this existing reconciliation owner
+with P01–P08. Its starting HEAD is
+`49f8dd661acf37bf292ee0aa59abfe1af16cde10`; TSK-0007 owns the new audit and
+implementation evidence. Criteria 1–10 and their original decisions remain
+historical facts. The direct r10 request authorizes this bounded local revision and
+implementation; it does not establish WGOV-CORE/3.0.0 adoption or remote
+authority. Independent implementation review and criterion acceptance remain
+separate.
 
 ## Scope
 
@@ -145,6 +154,31 @@ activity remains a handoff fact rather than an inferred lock release.
    and snapshot work delivered by PRs #409/#410; residual HOME and migration/
    recovery verification remains separate work.
 
+### R10 reconciliation boundaries
+
+P01–P08 are purposes within this package, not eight new Specs. Preserve
+existing feature owners, issued IDs, historical failures and acceptance.
+Reversible source, documentation, governance and scoped checker changes are
+authorized by the direct request. Remote push, PR, merge, publication,
+deployment, credentials, managed/global settings and actual data removal
+retain their action-specific authorization boundary. Unknown execution and
+approval evidence remain unknown; a local source PASS does not replace them.
+
+The current local Stage 99 Registry remains the executable input while the
+r10 target changes are made concrete. Record the proposed Evidence `Required`
+column and result-domain changes, Criterion Acceptance `Current Owner`,
+Execution Items columns, lifecycle edges and role headings as a coupled
+Registry/schema/template/reader/test amendment. No revised shared meaning is
+silently issued as an already approved WGOV-CORE/3.0.0 contract. Existing
+records retain their original generation and acceptance meaning.
+
+P02 also reconciles the language owner for new common agent explanations
+with the request's Korean default; it does not bulk-translate old instructions
+or frozen records. Existing memory source, physical store and backup remain
+in place; no repeat native-memory migration or private-body audit is implied.
+P04 retires an asset only after its current consumers, retained assurance,
+hold, authorization and recovery requirements have been established.
+
 ## Acceptance Criteria
 
 1. The current Task records local/remote baseline and worktree evidence,
@@ -182,9 +216,44 @@ activity remains a handoff fact rather than an inferred lock release.
     source/static checks it ran, and hands the exact next input to the owner
     without creating a duplicate acceptance record.
 
+11. P01 binds the actual branch, HEAD, index/worktree, historical delta,
+    request identity and available authority to a classified finding map;
+    recorded shared approval and local adoption are separate claims.
+12. P02 corrects current role/language/template/link conflicts at their
+    canonical owner and affected consumers; coupled contract changes preserve
+    historical records and distinguish proposed shared meaning from approval.
+13. P03 reconciles Task execution, criterion acceptance and parent authority
+    against actual evidence, including SPEC-0241 and SPEC-0236/0237, without
+    converting a merge, static PASS or old approval into a new acceptance.
+14. P04 assesses completed/superseded units and temporary QA by direct
+    consumers and required assurances, promotes durable meaning and performs
+    only justified, authorized retention or retirement with source preserved.
+15. P05 maps Git/native hooks and hosted jobs to actual inputs and leaf
+    producers, fixes reproduced push-stage or duplicate-call defects, and
+    distinguishes declared, installed, synthetic and real-push observations.
+16. P06 identifies the actual branch/change/release/CHANGELOG producers and
+    authorization boundary; source corrections preserve main protection,
+    immutable history and separate release, deployment and recovery results.
+17. P07 reuses SPEC-0236/0237 memory and backup records, assesses native-off,
+    shared-store identity, freshness, conflict, capacity and secret boundaries,
+    and implements justified gaps with synthetic data; private bodies and
+    actual provider acceptance remain outside unobserved claims.
+18. P08 corrects demonstrated OpenBao/operations source discrepancies while
+    retaining service-specific security and recovery checks; purpose quality
+    measures and durable owner promotion trace actual evidence and limits.
+
+## Failure Conditions
+
+Reconciliation fails when a request item has competing acceptance owners,
+a source or historical receipt is presented as fresh runtime acceptance, or
+shared paths change without the assigned writer. Learning-app work, actual
+Wiki implementation, unproven consumer retirement and unnamed operational
+targets remain outside the routed execution boundaries.
+
 ## Related Documents
 
 - [Plan](plan.md)
+- [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)
 - [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
 - [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)

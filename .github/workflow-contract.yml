@@ -322,6 +322,7 @@
         "tests.lib.document_governance.test_archive_catalog_contract",
         "tests.lib.document_governance.test_archive_snapshots",
         "tests.lib.document_governance.test_generation6",
+        "tests.lib.document_governance.test_generation7",
         "tests.lib.document_governance.test_identity_history",
         "tests.lib.document_governance.test_language",
         "tests.lib.document_governance.test_links",
@@ -755,6 +756,9 @@
         "tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests",
         "tests.validation.test_supabase_smtp_rehearsal.SupabaseSMTPRehearsalTests",
         "tests.validation.test_openbao_candidate.CandidateNative",
+        "tests.validation.test_openbao_agent_contract.AgentMetricsNativeTests",
+        "tests.validation.test_openbao_protected_renderer_roles.NativeRehearsalTests",
+        "tests.validation.test_openbao_protected_restore_inputs.NativeRehearsalTests",
         "tests.validation.test_workflow_version_bundle.WorkflowCandidateRehearsalTests",
         "-v"
       ],
@@ -1246,6 +1250,7 @@
         "ci.storybook-coverage",
         "ci.zizmor",
         "leaf.release-regressions",
+        "leaf.repo-contracts-control-plane-regressions",
         "leaf.repository-integrity-regressions",
         "ci.opsflow-smtp-node-package"
       ]
@@ -1538,6 +1543,7 @@
       {
         "prefixes": [
           "scripts/lib/agent_governance/",
+          ".agents/governance/hooks/",
           "scripts/hooks/",
           "scripts/lib/hooks/",
           "scripts/operations/agent_memory.py",
@@ -1772,6 +1778,17 @@
       }
     ],
     "changed_root_rules": [
+      {
+        "prefixes": [
+          "scripts/lib/agent_governance/",
+          "scripts/hooks/",
+          "scripts/lib/hooks/",
+          ".agents/governance/hooks/"
+        ],
+        "root_gate_ids": [
+          "leaf.repo-contracts-control-plane-regressions"
+        ]
+      },
       {
         "prefixes": [
           "package-lock.json",

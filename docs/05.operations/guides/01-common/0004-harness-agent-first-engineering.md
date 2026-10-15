@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -18,13 +18,15 @@ created: "2026-06-04"
 
 이 가이드는 `hy-home.docker`에서 하네스 엔지니어링과 Agent-first Engineering 상태를 다시 조사하거나 보완할 때 따라야 할 절차를 설명한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 AI Agent, 문서 작성자, 인프라 운영자, 저장소 유지보수자다.
 
 목표는 workspace purpose, rules, runtime surface, governance contract, validation gate를 반복 가능한 방식으로 조사하는 것이다. 필요하면 stage 문서와 README를 템플릿에 맞춰 갱신한다. 이 문서는 하네스 구조와 감사 경계를 설명하는 가이드다.
 
-## Usage
+## Concepts
 
 시작하기 전에 다음을 확인한다.
 
@@ -48,6 +50,8 @@ advisory이면 그 사실을 기록하고 tracked source를 사용한다. health
 HEAD가 다르면 bootstrap의 stale-snapshot 경계가 적용된다. 실행 순서와 hook
 payload 검증은 [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md#procedure)이
 소유하며, syntax 성공만으로 payload parsing이나 native 전달을 증명하지 않는다.
+
+## Usage
 
 ### CI quality-gate version alignment
 

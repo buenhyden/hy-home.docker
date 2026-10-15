@@ -1,10 +1,10 @@
 ---
 title: "Output Style"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 ---
 
 # Output Style
@@ -42,6 +42,12 @@ Write an instruction in the active voice with one action per step and one
 expected result. Keep a command runnable as written; mark a non-executable
 snippet explicitly.
 
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
 ### Completion Reporting
 
 Report outcomes faithfully. Show failing output rather than summarizing it, name
@@ -57,10 +63,6 @@ another.
 
 Provider-native presentation may adapt rendering but may not change governance
 authority, language routing, or acceptance criteria.
-
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

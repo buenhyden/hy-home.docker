@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.11"
+version: "1.7.12"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -35,34 +35,6 @@ P03 routes endpoint/port integration, P04 Airflow, P05 n8n, P01/P02/P06
 secret classification/mapping/consumption, P09 offline Wiki preparation and P10 the
 named user vertical slice. Each residual stays with one existing acceptance
 owner; the new stage labels do not reserve Spec IDs.
-
-### Boundaries and Inputs
-
-Use the current root include graph, service Compose/Dockerfiles/entrypoints,
-tracked configuration and key-only environment contracts, current Stage 01/02/03
-and Stage 05 owners, and official vendor documentation at implementation time.
-SPEC-0201 supplies the source inventory and exclusive-writer handoff. SPEC-0202
-supplies the dev-pg/dev-valkey source contract, synthetic restore result, and
-operational exclusions. SPEC-0203 supplies completed source and historical
-isolated synthetic quality/Alloy contract, including actual importer replay/concurrency/outage and metrics
-temporality/retry/restart evidence. Its real application target, SeaweedFS
-object handoff and live Grafana result reader remain unverified; synthetic
-metrics acceptance is not a live external-project receipt. Archived
-SPEC-0199/0200 provide no current approval.
-
-No business project ID, external deployment topology, application endpoint,
-OIDC client, S3 identity, search authority, traffic budget, or speech product
-scope is approved here. Registering metadata is not a grant of network
-access, credentials, runtime deployment, or storage. Civil-service exam, English
-and Japanese learning applications are excluded, including planning, code,
-databases, collection and resources. The current request does not reopen merged
-LAB service/source relocation, image, secret, data or execution work; existing
-pins and source remain untouched unless a separate request establishes a
-concrete operational boundary. P08 may move typed LAB documents to their
-Stage05 family `labs/` destinations with required folder and parent README
-navigation, Registry links and path checks; that documentation exception
-authorizes no LAB runtime action. Do not read secret values, private environment
-files, authentication files, raw HOME logs, or user data.
 
 ### Technical Approach
 
@@ -127,21 +99,6 @@ only when a current conflict is found; otherwise record NO_CHANGE.
   coverage after Qdrant role-order parity correction; latest-head CI, review
   and delivery remain pending gates. It changes no operational resource.
 
-### Failure Modes and Guardrails
-
-Reject version mismatch, unsupported `_FILE` variables, missing selected
-secret, unsafe redirect, public unauthenticated machine API, unknown project
-label, cross-project read/write, unbounded crawler egress, sealed-is-healthy
-claims, missing WAL/backups, and projection drift. Preserve unrelated worker
-changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
-credential rotation, DNS/firewall edit or HOME restart without the named target
-and recovery boundary. The current request authorizes source/docs/tests and
-logical commits; each remaining owning-Spec delivery uses its PR, exact-head CI
-and independent review before merge. `dev` is excluded throughout. This does
-not reclassify historical local-main receipts or absorb unrelated
-integration/runtime commits.
-Missing permission or target defers only the dependent operation.
-
 ### Open Questions
 
 A real external project must identify its project ID, endpoint topology,
@@ -164,11 +121,35 @@ runtime change; authorized delivery is independent of those unexecuted lanes.
 
 ## Scope
 
-### Scope
+### Boundaries and Inputs
+
+Use the current root include graph, service Compose/Dockerfiles/entrypoints,
+tracked configuration and key-only environment contracts, current Stage 01/02/03
+and Stage 05 owners, and official vendor documentation at implementation time.
+SPEC-0201 supplies the source inventory and exclusive-writer handoff. SPEC-0202
+supplies the dev-pg/dev-valkey source contract, synthetic restore result, and
+operational exclusions. SPEC-0203 supplies completed source and historical
+isolated synthetic quality/Alloy contract, including actual importer replay/concurrency/outage and metrics
+temporality/retry/restart evidence. Its real application target, SeaweedFS
+object handoff and live Grafana result reader remain unverified; synthetic
+metrics acceptance is not a live external-project receipt. Archived
+SPEC-0199/0200 provide no current approval.
+
+No business project ID, external deployment topology, application endpoint,
+OIDC client, S3 identity, search authority, traffic budget, or speech product
+scope is approved here. Registering metadata is not a grant of network
+access, credentials, runtime deployment, or storage. Civil-service exam, English
+and Japanese learning applications are excluded, including planning, code,
+databases, collection and resources. The current request does not reopen merged
+LAB service/source relocation, image, secret, data or execution work; existing
+pins and source remain untouched unless a separate request establishes a
+concrete operational boundary. P08 may move typed LAB documents to their
+Stage05 family `labs/` destinations with required folder and parent README
+navigation, Registry links and path checks; that documentation exception
+authorizes no LAB runtime action. Do not read secret values, private environment
+files, authentication files, raw HOME logs, or user data.
 
 ## Contracts
-
-### Contracts
 
 ### Behavior Contract
 
@@ -293,8 +274,6 @@ exact-head CI and independent review before merge; operational acceptance is not
 inferred from document relocation.
 
 ## Acceptance Criteria
-
-### Acceptance Criteria
 
 ### Acceptance Contract
 
@@ -524,6 +503,23 @@ inferred from document relocation.
     acceptance-only fixtures/tests; shared registration and feature fixes remain
     single-writer proposals. Local source delivery cannot close this criterion.
 <!-- markdownlint-enable MD029 -->
+
+## Failure Conditions
+
+### Failure Modes and Guardrails
+
+Reject version mismatch, unsupported `_FILE` variables, missing selected
+secret, unsafe redirect, public unauthenticated machine API, unknown project
+label, cross-project read/write, unbounded crawler egress, sealed-is-healthy
+claims, missing WAL/backups, and projection drift. Preserve unrelated worker
+changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
+credential rotation, DNS/firewall edit or HOME restart without the named target
+and recovery boundary. The current request authorizes source/docs/tests and
+logical commits; each remaining owning-Spec delivery uses its PR, exact-head CI
+and independent review before merge. `dev` is excluded throughout. This does
+not reclassify historical local-main receipts or absorb unrelated
+integration/runtime commits.
+Missing permission or target defers only the dependent operation.
 
 ## Related Documents
 

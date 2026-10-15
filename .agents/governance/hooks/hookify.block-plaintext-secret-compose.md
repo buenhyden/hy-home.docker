@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: plaintext secrets"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -17,6 +17,18 @@ enabled: true
 event: "file"
 name: "block-plaintext-secret-compose"
 ---
+
+# BLOCKED: plaintext secrets
+
+## Overview
+
+Apply the declared `block` action for block-plaintext-secret-compose.
+
+## Scope
+
+`file` 이벤트의 `block-plaintext-secret-compose` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+
+## Rules
 
 **Plaintext secret detected in Docker Compose file (project rule)**
 
@@ -32,16 +44,6 @@ name: "block-plaintext-secret-compose"
 
 ```yaml
 # BLOCKED: plaintext secrets
-
-## Overview
-
-Apply the declared `block` action for block-plaintext-secret-compose.
-
-## Scope
-
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
-
-## Rules
 
 environment:
   POSTGRES_PASSWORD: mysecretpassword
@@ -81,6 +83,10 @@ The declared action applies when the pattern matches.
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
 
 ## Related Documents
 

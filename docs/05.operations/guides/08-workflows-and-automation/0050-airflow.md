@@ -1,10 +1,10 @@
 ---
 title: "Airflow Usage Guide"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0050"
 parent_ids:
@@ -30,7 +30,9 @@ created: "2026-05-10"
 
 이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 현재 구현은 Airflow, `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`, `airflow-statsd-exporter`를 기준으로 한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 **대상**
 
@@ -44,9 +46,11 @@ created: "2026-05-10"
 - 웹 UI 및 모니터링 도구 접근 방법 확인
 - 기본 개발 환경 설정 및 검증 절차 습득
 
-## Usage
+## Concepts
 
 `airflow-valkey-exporter`는 별도로 선택한 Airflow 전용 broker의 관측기다. HOME 관리 broker는 자체 exporter를 사용하며 exporter health로 broker readiness를 대신하지 않는다.
+
+## Usage
 
 ### 사전 조건
 

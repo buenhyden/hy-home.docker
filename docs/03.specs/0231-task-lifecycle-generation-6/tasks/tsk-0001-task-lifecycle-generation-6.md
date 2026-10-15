@@ -1,10 +1,10 @@
 ---
 title: "Task Lifecycle Generation 6 Task"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0231-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-13"
 
 # Task Lifecycle Generation 6 Task
 
-## Objective
+## Overview
+
+### Objective
 
 Give execution state, acceptance and archive readiness one owner each, as
 SPEC-0231 states, and move the active Stage 03 corpus to that contract.

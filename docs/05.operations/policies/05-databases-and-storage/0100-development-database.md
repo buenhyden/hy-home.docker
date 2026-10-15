@@ -1,10 +1,10 @@
 ---
 title: "Development Database Operations Policy"
-version: "0.1.2"
+version: "0.1.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0100"
 parent_ids:
@@ -55,14 +55,6 @@ queue, 기존 PGDATA와 backup chain은 이 정책으로 변경하지 않는다.
 생성 또는 writer 전환의 근거가 되지 않는다. 예외는 @buenhyden의 승인, 대상 manifest,
 rollback 보존 기간과 검증 결과를 기록할 때만 종료한다.
 
-### Verification
-
-source change는 Compose render와 permission regression test를 통과해야 한다. fresh PGDATA,
-repeat provision, app A/B isolation, reader write/DDL rejection, Timescale behavior, Valkey ACL,
-backup/restore, CDC replay와 external consumer switching은 runtime task에서 별도로 증명한다.
-SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다.
-정적 통과나 격리 시험을 HOME deployment, 운영 recovery 또는 data migration 증거로 사용하지 않는다.
-
 ### Review Cadence
 
 Compose image/profile/network/mount/secret reference, project provision schema, 권한 계약,
@@ -73,6 +65,14 @@ backup declaration 또는 external consumer가 바뀔 때 검토한다. runtime 
 
 - Artifact: `POL-0100`; parents: `AD-0031`, `SPEC-0204`.
 - Runtime declaration: `infra/04-data/dev-db/docker-compose.yml`.
+
+## Verification
+
+source change는 Compose render와 permission regression test를 통과해야 한다. fresh PGDATA,
+repeat provision, app A/B isolation, reader write/DDL rejection, Timescale behavior, Valkey ACL,
+backup/restore, CDC replay와 external consumer switching은 runtime task에서 별도로 증명한다.
+SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다.
+정적 통과나 격리 시험을 HOME deployment, 운영 recovery 또는 data migration 증거로 사용하지 않는다.
 
 ## Related Documents
 

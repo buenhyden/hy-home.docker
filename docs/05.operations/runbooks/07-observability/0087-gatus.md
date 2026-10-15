@@ -1,10 +1,10 @@
 ---
 title: "Gatus Runbook"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0087"
 parent_ids:
@@ -22,9 +22,15 @@ created: "2026-09-19"
 라우팅을 소유한다. [Dockerfile](../../../../infra/06-observability/gatus/Dockerfile)이
 업스트림 빌드 핀을 소유하며, 로컬 이미지 이름은 업스트림 버전이 아니다.
 
-## Trigger and Preconditions
+## Trigger
 
-Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구에 사용한다. 저장소
+Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소
 루트에서 작업한다. 런타임 변경 전에 설정 커밋, 실제 마운트된 데이터 경로,
 백업 대상을 기록한다.
 
@@ -111,7 +117,7 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 기록한다. 소스 검증만으로는 런타임 준비 상태나 복원된 이력을 입증하지
 못한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

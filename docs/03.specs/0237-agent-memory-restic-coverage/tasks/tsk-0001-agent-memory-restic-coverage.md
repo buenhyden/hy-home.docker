@@ -1,10 +1,10 @@
 ---
 title: "Agent Memory Restic Coverage Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0237-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-13"
 
 # Agent Memory Restic Coverage Task
 
-## Objective
+## Overview
+
+### Objective
 
 Put the shared agent memory store into the daily Restic backup, as SPEC-0237
 states.

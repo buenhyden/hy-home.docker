@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Docker infrastructure completion routing"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 action: "warn"
 enabled: true
 event: "stop"
@@ -20,7 +20,7 @@ Apply the declared `warn` action for warn-docker-infra-stop.
 
 ## Scope
 
-The declared `stop` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+`stop` 이벤트의 `warn-docker-infra-stop` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
 
 ## Rules
 
@@ -36,6 +36,10 @@ co-located Task with the exact command result, rollback, and skipped checks.
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared `stop` event and `pattern` define the matching scope; native event delivery remains a separate observation.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Observability HOME Coverage"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0225"
 parent_ids:
@@ -69,6 +69,14 @@ only because the activity they measure has not happened yet.
 3. On HOME every query of every provisioned dashboard runs without error, and
    the remaining empty panels are explained as idle, on demand or stopped.
 4. The changed gate, the staged style check and `candidate-quality` pass.
+
+## Failure Conditions
+
+A LAB-only target in HOME provisioning or a panel for a metric or feature
+HOME does not produce fails coverage reconciliation. SeaweedFS and host
+metric listeners must keep their declared network boundaries, and empty
+panels require an observed idle, on-demand or stopped explanation rather
+than an invented measurement.
 
 ## Related Documents
 

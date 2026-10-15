@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Incident Runbook"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0064"
 parent_ids:
@@ -20,9 +20,13 @@ created: "2026-05-17"
 부하를 먼저 멈추고, root `k6` 작업 또는 독립 Locust LAB의 정확한 프로젝트를 확인한 뒤
 대상 회복과 증거 완전성을 판정한다.
 
-## Trigger and Preconditions
+## Trigger
 
 성능 테스트 실행 중 target service 또는 shared gateway/auth/data tier에 영향이 생겼을 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - 테스트 중 target SLI가 승인된 한계 아래로 떨어진다.
 - Gateway/Auth/Data tier가 부하 테스트 영향으로 degraded 상태가 된다.
@@ -88,7 +92,7 @@ created: "2026-05-17"
 - **Metrics**: 대상 SLI, 요청 오류율, 응답 지연과 Locust 요청 통계
 - **Evidence to Capture**: 서비스명, 테스트 매개변수, 중단·회복 시각과 실패 검사
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

@@ -18,7 +18,13 @@ from scripts.lib.document_governance.frontmatter import (
 from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
-from scripts.lib.document_governance.git_provenance import resolve_git_provenance
+from scripts.lib.document_governance.git_provenance import (
+    _GIT_OUTPUT_BYTES,
+    resolve_git_provenance,
+)
+from scripts.lib.document_governance.git_provenance import (
+    _run_git as _bounded_git,
+)
 from scripts.lib.document_governance.metadata.heading import _validate_template_source
 from scripts.lib.document_governance.metadata.identity import (
     _decode_git_paths,
@@ -1332,6 +1338,100 @@ def _record_from_text(
     )
 
 
+def _read_markdown_texts_at_ref(
+    root: pathlib.Path, paths: Sequence[str], ref: str
+) -> dict[str, str]:
+    """Read exact regular blobs with bounded batches; omit missing paths."""
+    if not paths:
+        return {}
+    selected = set(paths)
+    listed = _run_git(
+        root,
+        ["ls-tree", "-r", "-l", "-z", ref, "--", *sorted(selected)],
+        operation="historical Markdown blob discovery",
+    )
+    if listed.returncode != 0:
+        raise ProfileError("cannot enumerate historical Markdown blobs")
+    entries: list[tuple[str, str, int]] = []
+    for raw in filter(None, listed.stdout.split(b"\0")):
+        try:
+            header, raw_path = raw.split(b"\t", 1)
+            mode, kind, oid, raw_size = header.decode("ascii").split()
+            path = raw_path.decode("utf-8")
+            size = int(raw_size)
+        except (ValueError, UnicodeError) as error:
+            raise ProfileError("malformed historical Markdown tree entry") from error
+        if (
+            path not in selected
+            or mode not in {"100644", "100755"}
+            or kind != "blob"
+            or re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", oid) is None
+            or size < 0
+            or any(entry[0] == path for entry in entries)
+        ):
+            raise ProfileError(
+                "historical Markdown entry must be an exact regular blob"
+            )
+        entries.append((path, oid, size))
+    texts: dict[str, str] = {}
+    pending = entries
+    while pending:
+        batch: list[tuple[str, str, int]] = []
+        output_bytes = 0
+        for entry in pending:
+            _, oid, size = entry
+            frame_bytes = len(oid) + len(str(size)) + size + 8
+            if output_bytes + frame_bytes > _GIT_OUTPUT_BYTES:
+                break
+            batch.append(entry)
+            output_bytes += frame_bytes
+        if not batch:
+            # Preserve the existing individual-read behavior for oversized documents.
+            path, oid, _ = pending[0]
+            shown = _run_git(
+                root,
+                ["cat-file", "blob", oid],
+                operation="large historical Markdown read",
+                text=True,
+            )
+            if shown.returncode != 0:
+                raise ProfileError(f"cannot read historical Markdown record: {path}")
+            texts[path] = shown.stdout
+            pending = pending[1:]
+            continue
+        shown = _bounded_git(
+            root,
+            ["cat-file", "--batch"],
+            input_bytes=("\n".join(oid for _, oid, _ in batch) + "\n").encode("ascii"),
+        )
+        if shown.returncode != 0:
+            raise ProfileError("bounded historical Markdown batch failed")
+        cursor = 0
+        for path, oid, size in batch:
+            end = shown.stdout.find(b"\n", cursor)
+            expected = f"{oid} blob {size}".encode("ascii")
+            if end < 0 or shown.stdout[cursor:end] != expected:
+                raise ProfileError(
+                    "historical Markdown batch has a missing or malformed blob"
+                )
+            cursor = end + 1
+            payload = shown.stdout[cursor : cursor + size]
+            cursor += size
+            if len(payload) != size or shown.stdout[cursor : cursor + 1] != b"\n":
+                raise ProfileError("historical Markdown batch payload is truncated")
+            try:
+                texts[path] = payload.decode("utf-8")
+            except UnicodeError as error:
+                raise ProfileError("historical Markdown blob is not UTF-8") from error
+            cursor += 1
+        if cursor != len(shown.stdout):
+            raise ProfileError(
+                "historical Markdown batch has unexpected trailing bytes"
+            )
+        pending = pending[len(batch) :]
+    return texts
+
+
 def collect_records_at_ref(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -1375,20 +1475,19 @@ def collect_records_at_ref(
         },
         key=lambda path: path.as_posix(),
     )
+    texts = _read_markdown_texts_at_ref(
+        root, [path.as_posix() for path in paths], base_ref
+    )
     records: list[Record] = []
     for relative_path in paths:
-        shown = _run_git(
-            root,
-            ["show", f"{base_ref}:{relative_path.as_posix()}"],
-            operation="base Markdown record discovery",
-            text=True,
-        )
-        if shown.returncode != 0:
+        if relative_path.as_posix() not in texts:
             raise ProfileError(
                 f"cannot read base Markdown record: {relative_path.as_posix()}"
             )
         records.append(
-            _record_from_text(relative_path, shown.stdout, profiles=profiles)
+            _record_from_text(
+                relative_path, texts[relative_path.as_posix()], profiles=profiles
+            )
         )
     return records
 
@@ -1401,24 +1500,18 @@ def collect_selected_records_at_ref(
 ) -> dict[str, Record]:
     """Collect selected records that exist at a ref without scanning its full corpus."""
 
-    records: dict[str, Record] = {}
-    for path_text in sorted(set(selected_paths)):
-        relative_path = _normalized_target_path(path_text)
-        if relative_path is None:
-            continue
-        shown = _run_git(
-            root,
-            ["show", f"{ref}:{relative_path.as_posix()}"],
-            operation="selected historical record discovery",
-            text=True,
-        )
-        if shown.returncode == 0:
-            records[relative_path.as_posix()] = _record_from_text(
-                relative_path,
-                shown.stdout,
-                profiles=profiles,
-            )
-    return records
+    paths = sorted(
+        {
+            path.as_posix()
+            for value in selected_paths
+            if (path := _normalized_target_path(value)) is not None
+        }
+    )
+    texts = _read_markdown_texts_at_ref(root, paths, ref)
+    return {
+        path: _record_from_text(pathlib.Path(path), text, profiles=profiles)
+        for path, text in texts.items()
+    }
 
 
 def collect_records(
@@ -1741,7 +1834,7 @@ def _declares_execution_items(record: Record, common: Mapping[str, object]) -> b
     contract = common.get("execution_items")
     if (
         record.artifact_type != "task"
-        or common.get("lifecycle_generation") != 6
+        or common.get("lifecycle_generation", 0) < 6
         or not isinstance(contract, Mapping)
     ):
         return False

@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -24,9 +24,14 @@ created: "2026-05-17"
 - GPU 경로 이상과 리소스 고갈 문제를 표준 절차로 처리한다.
 - 복구 후 Open WebUI 연동 상태를 검증한다.
 
-## Trigger and Preconditions
+## Trigger
 
 - Ollama API(`/api/tags`, `/api/generate`) 호출 실패.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 - 컨테이너 내부 GPU 미인식 또는 CPU fallback 발생.
 - 모델 로드 시 VRAM OOM으로 추론 실패.
 - Open WebUI에서 모델 목록 미표시.
@@ -138,7 +143,7 @@ curl -f http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/api/tags
   - 복구 전후 지표 스냅샷
   - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태는 관련 Task/Incident에 남긴다
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

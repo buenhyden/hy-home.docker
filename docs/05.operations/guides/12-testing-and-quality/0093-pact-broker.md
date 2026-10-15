@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0093"
 parent_ids:
@@ -25,11 +25,13 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
 검증하며, `can-i-deploy`는 기록된 검증 결과로 답한다. 브로커는 실제
 프로바이더와 스텁을 비교 검증하지 않는 WireMock을 보완한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 계약 테스트를 게시하고 검증하는 개발자와 운영자를 위한 문서다. pact 게시·검증 흐름과 준비 상태 확인 방법을 이해하는 것이 목표다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -50,6 +52,8 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
   Traefik 라우트나 OIDC 클라이언트는 없다.
 - `PACT_DO_NOT_TRACK`은 이미지의 분석 핑을 비활성화한다.
 
+## Usage
+
 ### Publishing and verifying
 
 | Command | Effect |
@@ -61,11 +65,6 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
 
 자격 증명은 `pact_broker_basic_auth_password` 시크릿이다. 명령줄이 아니라
 클라이언트 환경 변수(`PACT_BROKER_PASSWORD`)로 전달한다.
-
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES=contract-testing bash scripts/validation/validate-docker-compose.sh`
-- `python3 -m unittest tests.validation.test_compose_baseline_gates`
 
 ### Runbook Handoff
 
@@ -88,6 +87,13 @@ secret은 Compose에 값으로 적히지 않지만 wrapper가 프로세스 환�
 - [Policy](../../policies/12-testing-and-quality/0093-pact-broker.md) (`POL-0093`)
 - [Runbook](../../runbooks/12-testing-and-quality/0093-pact-broker.md) (`RUN-0093`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES=contract-testing bash scripts/validation/validate-docker-compose.sh`
+- `python3 -m unittest tests.validation.test_compose_baseline_gates`
 
 ## Related Documents
 

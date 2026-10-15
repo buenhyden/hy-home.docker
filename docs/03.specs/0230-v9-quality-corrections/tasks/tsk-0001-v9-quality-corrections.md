@@ -1,10 +1,10 @@
 ---
 title: "Prompt v9 Quality Corrections Task"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0230-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-13"
 
 # Prompt v9 Quality Corrections Task
 
-## Objective
+## Overview
+
+### Objective
 
 Stop the stale workflow from closing threads on inactivity alone, and repair
 the two checks that fail on `main` for every branch that selects them.

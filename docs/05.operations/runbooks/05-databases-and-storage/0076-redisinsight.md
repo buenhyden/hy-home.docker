@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Recovery Runbook"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0076"
 parent_ids:
@@ -18,10 +18,12 @@ created: "2026-05-17"
 
 RedisInsight의 gateway 접근, 설정 보존, inspector 비밀 회전, 업그레이드와 복구 절차를 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
 gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 증명 노출, 설정 복원
 또는 업그레이드에 사용한다.
+
+## Prerequisites
 
 ### 작업 선택과 복구 전제
 
@@ -126,7 +128,7 @@ listener는 `redisinsight_ingress_net`의 `10.250.18.3`에만 열린다. 데이�
 대상 계정 범위와 최종 상태를 기록한다. password,
 key, query history, data 값은 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

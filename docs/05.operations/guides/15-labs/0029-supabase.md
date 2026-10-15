@@ -1,10 +1,10 @@
 ---
 title: "Supabase Usage Guide"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0029"
 parent_ids:
@@ -38,7 +38,9 @@ Kong, Auth, REST, Realtime, Storage, Studio, Functions, analytics/logging과 poo
 unit이다. database dump만으로는 Storage objects, mounted functions/config,
 JWT/provider settings를 복구할 수 없다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 Supabase stack을 운영하거나 사용하는 운영자, 개발자, SRE, AI 에이전트를 위한 문서다. 목표는 현재 서비스 구성, 접근 경로, secret 경계, 일반 확인 방법을 이해하는 것이다. Studio에 직접 host port가 있다고 가정하지 않고, compose가 선언한 Kong/API 경로와 운영 runbook을 기준으로 상태를 확인한다.
 
@@ -55,7 +57,7 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
 다른 증거입니다. LAB source 이동은 11개 secret 파일을 읽거나 이동·복제·삭제하지
 않았고 현재 Supabase 비선택 상태를 바꾸어 전체 stack을 가동하지 않았습니다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -73,6 +75,8 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
 | Security | Kong 경계, secret mount, JWT/provider 일관성, 생성된 증거에 credential 자료가 없어야 함. |
 | Backup / upgrade | PostgreSQL + Storage + config/functions + Auth/secret reference가 하나의 recovery set을 이루며, upstream update config backup만으로는 부족하다. |
 | License / edition | self-hosted stack은 저장소에 문서화된 라이선스를 가진 구성 요소를 결합하므로, 재배포나 managed-service 사용 전에 정확한 구성 요소/이미지 집합을 검토해야 한다. |
+
+## Usage
 
 ### Identity-specific behavior
 
@@ -148,13 +152,6 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
   가정하거나 controller를 우회해 기동하는 것.
 - self-hosted update config backup을 데이터베이스나 Storage backup으로 사용하는 것 — upstream 문서는 update backup을 구성 전용으로만 설명한다.
 
-### Common Checks
-
-- `python3 scripts/operations/lab.py check supabase`
-- `python3 scripts/operations/lab.py status`
-- 커밋 전에 짝을 이루는 guide/policy/runbook에서 직접 Studio host-port 가정, 오래된 Compose CLI 표기, template copyright 잔재를 검색한다.
-- 기대 결과: compose가 렌더링되고, 서비스가 compose 파일과 일치하며, 오래된 Studio/직접 포트 또는 template 잔재가 없다.
-
 ### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
@@ -165,6 +162,15 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
 - Declared parent: [Supabase Operations Policy](../../policies/15-labs/0029-supabase.md) (`POL-0029`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Policy](../../policies/15-labs/0029-supabase.md) (`POL-0029`), [Runbook](../../runbooks/15-labs/0029-supabase.md) (`RUN-0029`)
+
+## Troubleshooting
+
+### Common Checks
+
+- `python3 scripts/operations/lab.py check supabase`
+- `python3 scripts/operations/lab.py status`
+- 커밋 전에 짝을 이루는 guide/policy/runbook에서 직접 Studio host-port 가정, 오래된 Compose CLI 표기, template copyright 잔재를 검색한다.
+- 기대 결과: compose가 렌더링되고, 서비스가 compose 파일과 일치하며, 오래된 Studio/직접 포트 또는 template 잔재가 없다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Hardening Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0074"
 parent_ids:
@@ -65,13 +65,6 @@ created: "2026-05-10"
 - 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
 - 예외 종료 후 동일 릴리스 내 기준선 복구 및 재검증을 수행한다.
 
-### Verification
-
-- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-
 ### Review Cadence
 
 - 월 1회 정기 검토
@@ -81,6 +74,13 @@ created: "2026-05-10"
 
 - 상위 문서: [Administration and Experimentation Architecture Description](../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
+
+## Verification
+
+- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
+- `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ## Related Documents
 

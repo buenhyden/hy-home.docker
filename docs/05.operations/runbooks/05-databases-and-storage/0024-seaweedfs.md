@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.4.6"
+version: "1.4.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -18,10 +18,16 @@ created: "2026-05-17"
 
 SeaweedFS 스택의 정적 진단, 경보 대응, 최초 활성화, 백업·격리 복구 절차를 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
 이 subject의 승인된 static diagnosis, backup 계획, isolated recovery에
-사용한다. live write, restore, cutover, cleanup, credential 변경은 별도로
+사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+live write, restore, cutover, cleanup, credential 변경은 별도로
 승인된 task가 필요하다.
 
 ### Execution and stop boundary
@@ -119,7 +125,7 @@ source revision/version, scope, timestamp, manifest/checksum 요약, command와
 exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
 gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

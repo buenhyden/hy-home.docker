@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Operations Policy"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0076"
 parent_ids:
@@ -53,13 +53,6 @@ RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gate
 대상 권한 부여를 우회하거나 gateway 로그인을 데이터베이스 권한으로 취급하는
 예외는 없다. `encryption` 동의가 꺼진 저장소는 안전하다고 할 수 없다.
 
-### Verification
-
-gateway/CIDR 허용/거부, 데이터 망에서의 직접 접속 거부, inspector의 읽기
-허용과 쓰기·금지 명령 거부, UI health와 별개인 DB 접속, 저장 비밀번호의 평문
-부재, 설정 지속성을 검증하고, 복구 테스트가 프로덕션 대상에 도달할 수 없음을
-검증한다.
-
 ### Review Cadence
 
 이미지/라이선스, 인증/CIDR, 암호화 키, 대상, 저장소 변경 시 검토한다.
@@ -69,6 +62,13 @@ gateway/CIDR 허용/거부, 데이터 망에서의 직접 접속 거부, inspect
 - [가이드](../../guides/05-databases-and-storage/0076-redisinsight.md) (`GDE-0076`)
 - [런북](../../runbooks/05-databases-and-storage/0076-redisinsight.md) (`RUN-0076`)
 - [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+## Verification
+
+gateway/CIDR 허용/거부, 데이터 망에서의 직접 접속 거부, inspector의 읽기
+허용과 쓰기·금지 명령 거부, UI health와 별개인 DB 접속, 저장 비밀번호의 평문
+부재, 설정 지속성을 검증하고, 복구 테스트가 프로덕션 대상에 도달할 수 없음을
+검증한다.
 
 ## Related Documents
 

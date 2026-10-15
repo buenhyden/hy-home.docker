@@ -1,10 +1,10 @@
 ---
 title: "LAB Isolation and Service Selection Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0215-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-08"
 
 # LAB Isolation and Service Selection Task
 
-## Objective
+## Overview
+
+### Objective
 
 Keep HA and replica LABs out of the root, make their runs bounded and
 self-cleaning, and record why each optional service is or is not resident.

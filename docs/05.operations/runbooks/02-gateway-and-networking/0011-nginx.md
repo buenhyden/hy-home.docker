@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0011"
 parent_ids:
@@ -22,9 +22,13 @@ created: "2026-05-17"
 
 목적은 readonly/tmpfs 운영 안정성 확보, config lint 실패 시 안전 롤백, 특수 경로 프록시(`/oauth2/`, `/keycloak/`, `/cdn/`) 정상성 회복이다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - `nginx -t` 실패
 - `/ping` healthcheck 반복 실패
@@ -103,7 +107,7 @@ reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s re
 최소 상태 코드, 수행하지 않은 검증을 Task/Incident에 기록한다. 원문 access/error
 로그와 인증정보는 수집하지 않고 오류 종류·빈도만 전달한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

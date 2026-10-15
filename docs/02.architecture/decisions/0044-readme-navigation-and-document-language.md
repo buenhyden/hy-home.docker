@@ -1,10 +1,10 @@
 ---
 title: "README Navigation and Document Language"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0044"
 parent_ids:
@@ -52,11 +52,7 @@ Catalog profile. The Registry schema rejects an undeclared `language` value.
   done by [SPEC-0187](../../98.archive/completed/03.specs/0187-document-language-migration/).
 - Script and legacy-code cleanup found by the same audit.
 
-## Decision
-
-### Decision
-
-### Decision Drivers
+## Decision Drivers
 
 - A README must route readers, not duplicate the membership its children own.
 - One owner per fact: the Registry owns type-to-template mapping and each
@@ -65,7 +61,23 @@ Catalog profile. The Registry schema rejects an undeclared `language` value.
 - Frozen Stage 98 bodies, template sources, and generated adapters keep their
   own contracts.
 
-### Decision
+## Options
+
+### Options Considered
+
+1. **Prose-only correction.** Edit the READMEs and the policy text. This is
+   cheap, but nothing stops a regression, and the validators that require
+   enumeration would still fail the corrected READMEs.
+2. **Role-contract enforcement (chosen).** Derive folder-only status from the
+   tracked tree and enforce a `navigation` link mode. Give every Registry
+   profile a declared `language` that the body validator reads. Move the
+   Retention Catalog into its own registered record. Retire the checks that
+   demanded enumeration.
+3. **Generated routers.** Render router READMEs from the Registry. This is
+   strong, but it replaces authored explanation with generated lists, and the
+   request needs purpose and workflow prose.
+
+## Decision
 
 Adopt option 2.
 
@@ -102,24 +114,6 @@ becomes a router.
 `spec.md`, `plan.md`, or Tasks. The Registry `template_roles` map is the only
 type-to-template owner, and the `template_catalog` key and its check are
 retired.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-1. **Prose-only correction.** Edit the READMEs and the policy text. This is
-   cheap, but nothing stops a regression, and the validators that require
-   enumeration would still fail the corrected READMEs.
-2. **Role-contract enforcement (chosen).** Derive folder-only status from the
-   tracked tree and enforce a `navigation` link mode. Give every Registry
-   profile a declared `language` that the body validator reads. Move the
-   Retention Catalog into its own registered record. Retire the checks that
-   demanded enumeration.
-3. **Generated routers.** Render router READMEs from the Registry. This is
-   strong, but it replaces authored explanation with generated lists, and the
-   request needs purpose and workflow prose.
 
 ## Consequences
 

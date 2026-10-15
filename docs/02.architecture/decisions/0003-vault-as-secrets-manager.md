@@ -1,10 +1,10 @@
 ---
 title: "HashiCorp Vault as Centralized Secrets Manager"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "deprecated"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0003"
 parent_ids:
@@ -17,13 +17,23 @@ created: "2026-03-26"
 
 A dedicated secrets management solution is needed to manage sensitive information (passwords, API keys, certificates, etc.) across the platform. As the decision, HashiCorp Vault is adopted, and this document records the concrete reasons and alternatives.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+## Decision Drivers
+
 - Existing hardcoded configuration or `.env` file approaches have high security vulnerability and risk exposing secrets.
 - Docker Secrets has limited functionality, and complex secret rotation or fine-grained access control (ACL) is difficult.
 - In a cloud-native environment, dynamic secret injection is required based on trust relationships between services.
 
-### Traceability
+## Options
 
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+### Options Considered
+
+1. **Docker Secrets**: simple to use, but lacks functionality and has low flexibility.
+2. **SOPS**: good for file-based encryption, but dynamic injection and API-based management are difficult.
+3. **AWS/GCP Secrets Manager**: creates cloud dependency, with cost and availability issues in an on-premises/Docker environment.
 
 ## Decision
 
@@ -39,21 +49,19 @@ The confirming evidence for this decision is limited to the Architecture Descrip
 - **Proposed**: 2026-03-26
 - **Accepted**: 2026-03-26
 
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-1. **Docker Secrets**: simple to use, but lacks functionality and has low flexibility.
-2. **SOPS**: good for file-based encryption, but dynamic injection and API-based management are difficult.
-3. **AWS/GCP Secrets Manager**: creates cloud dependency, with cost and availability issues in an on-premises/Docker environment.
-
 ## Consequences
+
+### Current Applicability
+
+The direct r10 request of 2026-10-15 authorizes deprecating this record's current
+Vault vendor choice. The original Decision and its 2026-03-26 acceptance remain
+historical evidence. The current [Security Architecture Description](../descriptions/0003-security-architecture.md)
+owns OpenBao and eligible consumer-secret storage and rendering. The current
+[OpenBao Policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
+owns operational controls and independent bootstrap, recovery and backup custody.
+The historical all-secrets consequence below does not extend OpenBao eligibility
+to those independently held materials. This source reconciliation records no new
+historical approval, deployed migration or recovery result.
 
 ### Positive
 

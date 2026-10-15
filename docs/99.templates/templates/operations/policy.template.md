@@ -35,10 +35,6 @@ created: "{{CREATED}}"
 
 {{EXCEPTIONS}}
 
-### Verification
-
-{{VERIFICATION}}
-
 ### Review Cadence
 
 {{REVIEW_CADENCE}}
@@ -46,6 +42,10 @@ created: "{{CREATED}}"
 ### Traceability
 
 {{SUBJECT_AND_AUTHORITY_LINKS}}
+
+## Verification
+
+{{VERIFICATION}}
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "DAG Deployment Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0052"
 parent_ids:
@@ -41,12 +41,6 @@ created: "2026-03-25"
 
 - 정책 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
 
-### Verification
-
-Compliance는 [Airflow Procedure](../../runbooks/08-workflows-and-automation/0050-airflow.md)에 문서화된 Airflow static/runtime check와 Airflow metadata DB의 monthly audit으로 확인한다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Review Cadence
 
 - Quarterly
@@ -55,6 +49,12 @@ Compliance는 [Airflow Procedure](../../runbooks/08-workflows-and-automation/005
 
 - Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
 - Subject peers: [Guide](../../guides/08-workflows-and-automation/0051-airflow-dag-lifecycle.md) (`GDE-0051`)
+
+## Verification
+
+Compliance는 [Airflow Procedure](../../runbooks/08-workflows-and-automation/0050-airflow.md)에 문서화된 Airflow static/runtime check와 Airflow metadata DB의 monthly audit으로 확인한다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Related Documents
 

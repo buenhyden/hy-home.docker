@@ -1,10 +1,10 @@
 ---
 title: "MLflow Usage Guide"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0088"
 parent_ids:
@@ -24,11 +24,13 @@ MLflow는 `mlops` 또는 `data-science`가 선택하는 OPTIONAL experiment trac
 server이다. HOME에도, 현재 8개 profile 운용 명령에도 들어 있지 않다.
 추가하려면 별도로 활성화를 결정해야 한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문서다. 선택 방법, 인증 경계, artifact 처리 방식을 이해하고 정상 사용과 점검 방법을 찾는 것이 목표다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -45,6 +47,8 @@ MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문
   보유하지 않는다. MLflow SeaweedFS identity는 다른 bucket을 읽을 수 없다.
 - 공유 `mng-pg-init` job은 더 이상 MLflow object를 생성하지 않고 MLflow
   secret도 읽지 않으므로 `core`/`mng`/`dev`/`local`은 이것들 없이 시작한다.
+
+## Usage
 
 ### Sizing
 
@@ -84,12 +88,6 @@ SSO 없이 route를 열지 않는다.
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md)의 `Tracking 데이터와 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
-- `python3 -m unittest tests.validation.test_compose_baseline_gates`
-- `docker compose --profile core --profile mlops ps mlflow mlflow-db-provision`
-
 ### Runbook Handoff
 
 provisioning 실패, credential 회전, restore, upgrade에는
@@ -120,6 +118,14 @@ health는 DB 복구·artifact round-trip·사용자 인가를 증명하지 않�
 - [Runbook](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md) (`RUN-0088`)
 - [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 - [Current Task](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0007-optional-capability-restructure.md)
+
+## Troubleshooting
+
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
+- `python3 -m unittest tests.validation.test_compose_baseline_gates`
+- `docker compose --profile core --profile mlops ps mlflow mlflow-db-provision`
 
 ## Related Documents
 

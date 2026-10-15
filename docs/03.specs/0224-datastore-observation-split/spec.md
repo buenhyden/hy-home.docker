@@ -1,10 +1,10 @@
 ---
 title: "Datastore Observation Split"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0224"
 parent_ids:
@@ -104,6 +104,14 @@ other Valkey consumers' accounts.
    Valkey consumer reconnects, an exporter stop while declared on raises a
    pending DEV alert and recovers, and a declared-off stop raises none.
 4. The changed gate, the staged style check and `candidate-quality` pass.
+
+## Failure Conditions
+
+PostgreSQL monitor provisioning rejects an unsafe secret before changing
+roles, and extra inherited or direct privileges fail the least-privilege
+check. Invalid DEV expected state must stop Prometheus startup; wrong
+credentials, missing collectors and target loss must retain their distinct
+signals without leaking secrets or silencing an expected-on outage.
 
 ## Related Documents
 

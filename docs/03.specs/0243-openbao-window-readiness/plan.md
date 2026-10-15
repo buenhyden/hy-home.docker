@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window Readiness Plan"
-version: "0.1.1"
+version: "0.1.3"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0243-PLAN-0001"
 parent_ids:
@@ -19,6 +19,14 @@ created: "2026-10-14"
 Fix the window text first so every gap is visible and blocked, then build
 and review each missing tool or mount in its own pull request.
 
+## Scope
+
+W1 repairs RUN-0085 prerequisites and stops; W2–W5 prepare and rehearse
+the restore start, renderer apply, W3a producers and W3b transfer receipts.
+W6 covers accepted-pin CA mounts, pre-window rollback overrides, hourly
+logrotate and W4 recovery choice; actual window execution, SEC01 image
+acceptance and P06 remain separate.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -28,7 +36,7 @@ and review each missing tool or mount in its own pull request.
 | W3 | 3, 7 | W1c apply command and receipt | W1 | TSK-0001 | Task evidence |
 | W4 | 4, 7 | W3a input producers | W2, W3 | TSK-0001 | Task evidence |
 | W5 | 5, 7 | W3b R2 transfer tool and receipt | W1 | TSK-0001 | Task evidence |
-| W6 | 6, 7 | CA mount overrides, hourly logrotate timer drop-in, W4 rollback decision | W1 | TSK-0001 | Task evidence |
+| W6 | 6, 7 | CA mounts at accepted Compose pins, pre-window-image rollback overrides, hourly logrotate timer drop-in, W4 rollback decision | W1 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 
@@ -36,12 +44,16 @@ Document checks for W1; unit tests, synthetic native rehearsals and static
 Compose validation for W2 to W6; independent `iac-reviewer` and
 `security-auditor` reviews of each unit.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - **Scope.** Each tool is security-sensitive; one pull request per unit keeps
   reviews bounded.
-- **Rollback.** Each unit reverts on its own; the window stays blocked until
-  every unit lands.
+- **Rollback.** Each unit reverts on its own; pre-window image overrides are
+  rollback inputs, while promotion uses the service's accepted Compose pin.
+  Reverting source does not authorize a Raft downgrade or restore. The window
+  stays blocked until every unit lands.
 
 ## Related Documents
 

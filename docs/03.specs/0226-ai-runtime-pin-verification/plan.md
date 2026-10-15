@@ -1,10 +1,10 @@
 ---
 title: "AI Runtime Pin Verification Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0226-PLAN-0001"
 parent_ids:
@@ -19,6 +19,14 @@ created: "2026-10-10"
 Record the source facts, pin and bound the runtime, rehearse restore and
 features in isolation, roll the two services out on HOME, document and
 validate.
+
+## Scope
+
+W1–W2 verify and pin Ollama/Open WebUI identities and load settings;
+W3–W4 rehearse catalog/state recovery and application features with GPU
+measurements. W5–W6 preserve the key and sign-in settings through HOME
+recreation and operations updates; model-store relocation, embedding changes,
+ComfyUI and Keycloak client changes are excluded.
 
 ## Work Breakdown
 
@@ -38,7 +46,9 @@ isolated restore and feature rehearsals, the GPU measurement, HOME health and
 log checks, the changed gate, the staged style check and the remote
 candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - Recreating Open WebUI signs users out unless the running key is copied into
   the volume first; the rollout copies it before recreation.

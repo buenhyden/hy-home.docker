@@ -1,10 +1,10 @@
 ---
 title: "Analytics Engines after Lakehouse Convergence"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0039"
 parent_ids:
@@ -18,13 +18,6 @@ created: "2026-09-24"
 
 ## Context
 
-ADR-0015 adopted InfluxDB (time series), ksqlDB (stream processing), OpenSearch
-(log/search), and StarRocks (OLAP) as dedicated engines in `04-data/analytics`.
-SPEC-0180 introduced a lakehouse that places Iceberg tables on SeaweedFS, and
-its engines, Flink and Trino, take on the same roles as ksqlDB and StarRocks.
-Keeping two engines for the same role doubles images, configuration, security
-review, and operations documentation without gaining any feature.
-
 The S01 ruling decided to remove ksqlDB after Flink live acceptance and
 StarRocks after Trino live acceptance. Both acceptances passed on 2026-09-24.
 Flink wrote a table with a streaming INSERT that went through batch INSERT and
@@ -37,6 +30,29 @@ data or volume.
 The basis is the S01 ruling of SPEC-0180 Task 0008, the S12-S15 source
 stages, the 2026-09-24 live acceptance record, and the current repository
 configuration. Unrecorded runtime state is not claimed.
+
+## Decision Drivers
+
+ADR-0015 adopted InfluxDB (time series), ksqlDB (stream processing), OpenSearch
+(log/search), and StarRocks (OLAP) as dedicated engines in `04-data/analytics`.
+SPEC-0180 introduced a lakehouse that places Iceberg tables on SeaweedFS, and
+its engines, Flink and Trino, take on the same roles as ksqlDB and StarRocks.
+Keeping two engines for the same role doubles images, configuration, security
+review, and operations documentation without gaining any feature.
+
+## Options
+
+### Alternative 01: Keep ksqlDB and StarRocks alongside Flink and Trino
+
+- **Good**: Does not change the existing decision.
+- **Bad**: Operates two engines for the same role, and keeps maintaining
+  documentation and validation for engines that were never deployed.
+
+### Alternative 02: Handle stream and OLAP with Spark alone
+
+- **Good**: Reduces to a single engine.
+- **Bad**: Heavier than Trino for interactive SQL queries, and S12 Spark is
+  kept for table maintenance and batch purposes.
 
 ## Decision
 
@@ -53,24 +69,6 @@ configuration. Unrecorded runtime state is not claimed.
 
 Tracked Compose files fix the runtime image tags, and
 `infra/tech-stack.versions.json` holds the current image list.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-### Alternative 01: Keep ksqlDB and StarRocks alongside Flink and Trino
-
-- **Good**: Does not change the existing decision.
-- **Bad**: Operates two engines for the same role, and keeps maintaining
-  documentation and validation for engines that were never deployed.
-
-### Alternative 02: Handle stream and OLAP with Spark alone
-
-- **Good**: Reduces to a single engine.
-- **Bad**: Heavier than Trino for interactive SQL queries, and S12 Spark is
-  kept for table maintenance and batch purposes.
 
 ## Consequences
 

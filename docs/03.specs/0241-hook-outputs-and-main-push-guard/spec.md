@@ -1,10 +1,10 @@
 ---
 title: "Hook Outputs and Main Push Guard"
-version: "0.1.0"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0241"
 parent_ids:
@@ -49,9 +49,12 @@ its `.pre-commit-config.yaml` stage, `.claude/settings.json`,
 `environment-constraints.md` §1 and §5, the Storybook guide's Codex MCP
 location, the `.github/rulesets/main-protection.md` record, and tests.
 
-Out of scope: remote GitHub protection settings, installing the local git
-hook, user-global provider settings, and the review findings the owner did not
-choose (more destructive-command denials, removing project `autoMode` and
+The original implementation excluded remote GitHub protection settings and
+local Git-hook installation. A later owner request installed the hooks and
+enabled `enforce_admins` on 2026-10-14, as the Task records. These are dated
+post-delivery observations, not source-test or live push-denial evidence.
+User-global provider settings remain out of scope, together with findings
+the owner did not choose (more destructive-command denials, removing project `autoMode` and
 `"$defaults"`).
 
 Owner decisions on 2026-10-13: fix the PreCompact hook, the Codex hooks and the
@@ -96,6 +99,26 @@ reads of secrets (AskUserQuestion).
    contract, changed metadata, corpus lifecycle and links pass, and an
    independent review finds nothing blocking.
 6. Hosted `candidate-quality` passes.
+
+### Current lifecycle disposition
+
+The Task records the owner's acceptance of criteria 1–6, a merged candidate,
+installed hooks and the protection read-back. Those facts have distinct scope.
+A push blocked by the installed hook remains unobserved. Spec and Plan
+frontmatter still records draft authority; no separate approval record for
+those parents or complete execution-transition receipt has been established
+by this reconciliation. The accepted criteria are preserved, and no parent
+approval, Task completion or archive readiness is inferred from the merge.
+R10 follow-up evidence belongs to SPEC-0212-TSK-0007 rather than reopening
+this package's historical accepted scope.
+
+## Failure Conditions
+
+Main-target push forms must be denied without blocking feature pushes,
+and hook output or binding drift fails the provider contract. A merged
+candidate, installed hook or protection read-back cannot establish parent
+approval, execution completion or an observed push denial; unsupported Codex
+interception remains unverified.
 
 ## Related Documents
 

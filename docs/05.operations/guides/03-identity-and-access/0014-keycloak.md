@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Usage Guide"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0014"
 parent_ids:
@@ -21,7 +21,9 @@ created: "2026-05-10"
 
 이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. Keycloak의 lifecycle class는 **HOME**이다. DB/관리자 시크릿 주입, hostname/proxy header, health endpoint, OAuth2 Proxy 및 native OIDC client 정합성을 구분한다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. Keycloak/OAuth2 Proxy 전체 SSO 플로우는 별도 런북 증거가 필요하다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상은 Infra/DevOps 엔지니어, 운영자, 기여자다. 목적은 세 가지다.
 
@@ -29,9 +31,11 @@ created: "2026-05-10"
 - OAuth2 Proxy ForwardAuth와 application native OIDC client를 혼동하지 않는다.
 - 로그인, 로그아웃, token/session 장애의 진단 기준을 공식 Keycloak 동작과 tracked config에 맞춘다.
 
-## Usage
+## Concepts
 
 구현 소스는 [infra/02-auth/keycloak/docker-compose.yml](../../../../infra/02-auth/keycloak/docker-compose.yml)이다.
+
+## Usage
 
 ### Tracked Configuration Snapshot
 
@@ -91,27 +95,6 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 확인했다. release pin은 [Compose](../../../../infra/02-auth/keycloak/docker-compose.yml)가
 소유하며 현재 실행 버전·provider 호환성·로그인은 다시 측정하지 않았다.
 
-### Common Checks
-
-1. Compose 설정 확인
-   - `template-infra-high` 적용 여부 확인
-   - `KC_DB_PASSWORD_FILE`, `keycloak_db_password`, `keycloak_admin_password` 연결 확인
-   - `KC_HOSTNAME=keycloak.${DEFAULT_URL}`, `KC_HTTP_ENABLED=true`, `KC_PROXY_HEADERS=xforwarded` 확인
-2. hostname/proxy 계약 확인
-   - Traefik이 `https://keycloak.${DEFAULT_URL}`로 TLS를 종료하고 Keycloak에는 HTTP `8080`으로 전달하는지 확인
-   - `X-Forwarded-*` 헤더가 proxy에서 overwrite되는지 확인한다. Client가 직접 Keycloak container에 접근해 forged header를 보낼 수 있으면 안 된다.
-   - management port `9000`은 외부 proxy 대상이 아니다.
-3. OIDC client 정합 확인
-   - OAuth2 Proxy client `home-proxy-client`의 Valid Redirect URI가 `https://auth.${DEFAULT_URL}/oauth2/callback`과 일치해야 한다.
-   - OpenBao client `home-openbao`는 OpenBao native OIDC callback을 사용하며 OAuth2 Proxy callback과 다르다.
-   - PKCE를 쓰는 client는 해당 client의 flow와 redirect URI가 서로 맞아야 한다.
-4. 헬스체크 계약 확인
-   - readiness는 management port `/health/ready`에서 확인한다.
-   - readiness success는 DB와 Keycloak process readiness 신호이며 application login acceptance 증거가 아니다.
-5. 정적 검증
-   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
-   - `bash scripts/hardening/check-all-hardening.sh 02-auth`
-
 ### Pitfalls
 
 - `KC_HOSTNAME`, OAuth2 Proxy issuer, Keycloak realm frontend URL이 서로 다른 host/scheme를 가리키는 경우
@@ -143,6 +126,29 @@ realm export는 세션·event 등 전체 상태와 시점 일관성을 보장하
 - Declared parent: [02-Auth Keycloak Operations Policy](../../policies/03-identity-and-access/0014-keycloak.md) (`POL-0014`)
 - Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Policy](../../policies/03-identity-and-access/0014-keycloak.md) (`POL-0014`), [Runbook](../../runbooks/03-identity-and-access/0014-keycloak.md) (`RUN-0014`)
+
+## Troubleshooting
+
+### Common Checks
+
+1. Compose 설정 확인
+   - `template-infra-high` 적용 여부 확인
+   - `KC_DB_PASSWORD_FILE`, `keycloak_db_password`, `keycloak_admin_password` 연결 확인
+   - `KC_HOSTNAME=keycloak.${DEFAULT_URL}`, `KC_HTTP_ENABLED=true`, `KC_PROXY_HEADERS=xforwarded` 확인
+2. hostname/proxy 계약 확인
+   - Traefik이 `https://keycloak.${DEFAULT_URL}`로 TLS를 종료하고 Keycloak에는 HTTP `8080`으로 전달하는지 확인
+   - `X-Forwarded-*` 헤더가 proxy에서 overwrite되는지 확인한다. Client가 직접 Keycloak container에 접근해 forged header를 보낼 수 있으면 안 된다.
+   - management port `9000`은 외부 proxy 대상이 아니다.
+3. OIDC client 정합 확인
+   - OAuth2 Proxy client `home-proxy-client`의 Valid Redirect URI가 `https://auth.${DEFAULT_URL}/oauth2/callback`과 일치해야 한다.
+   - OpenBao client `home-openbao`는 OpenBao native OIDC callback을 사용하며 OAuth2 Proxy callback과 다르다.
+   - PKCE를 쓰는 client는 해당 client의 flow와 redirect URI가 서로 맞아야 한다.
+4. 헬스체크 계약 확인
+   - readiness는 management port `/health/ready`에서 확인한다.
+   - readiness success는 DB와 Keycloak process readiness 신호이며 application login acceptance 증거가 아니다.
+5. 정적 검증
+   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
 ## Related Documents
 

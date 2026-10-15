@@ -21,17 +21,19 @@ created: "{{CREATED}}"
 
 {{CONTEXT}}
 
-### Decision Drivers
+## Decision Drivers
 
 {{DECISION_DRIVERS}}
+
+## Options
+
+### Alternatives
+
+{{OPTIONS}}
 
 ## Decision
 
 {{DECISION}}
-
-## Alternatives
-
-{{OPTIONS}}
 
 ## Consequences
 

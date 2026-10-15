@@ -1,10 +1,10 @@
 ---
 title: "System Operations Diagnostic Runbook"
-version: "0.1.1"
+version: "0.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0099"
 parent_ids:
@@ -18,10 +18,16 @@ created: "2026-10-01"
 
 이 런북은 여러 앱의 접속·로그인·작업·저장이 함께 실패할 때 공유 의존성 후보를 좁히고 기존 서비스 Runbook으로 전달하는 읽기 전용 진단 절차를 제공한다.
 
-## Trigger and Preconditions
+## Trigger
 
 여러 앱의 접속·로그인·작업·저장이 함께 실패하거나, 앱과 관측 화면의 장애가
-같은 원인인지 모를 때 사용한다. 공유 host·gateway·인증·DB·broker·객체 저장소
+같은 원인인지 모를 때 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+공유 host·gateway·인증·DB·broker·객체 저장소
 후보를 좁히고 기존 서비스 Runbook으로 전달하는 읽기 전용 진단이다.
 예정된 재부팅 또는 재부팅 직후의 정해진 확인은
 [RUN-0098](0098-cold-start-and-reboot.md)이 소유한다.
@@ -113,7 +119,7 @@ source revision, 대상 context·선택의 확인 여부, 영향·정상 기능,
 `PASS`/`FAIL`/`NOT_RUN`을 구분하고, 장애 원인 후보는 확정 사실과 분리한다.
 원문 로그, secret 값, 인증 헤더·cookie, 사용자 데이터, 비공개 경로는 첨부하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

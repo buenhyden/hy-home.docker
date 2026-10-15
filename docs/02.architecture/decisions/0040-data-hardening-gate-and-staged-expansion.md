@@ -1,10 +1,10 @@
 ---
 title: "04-Data Hardening Gate and Staged Expansion"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0040"
 parent_ids:
@@ -25,15 +25,29 @@ normalizing the `ksql` tier label no longer has a target because ksqlDB was
 removed in SPEC-0180 S19 (ADR-0039). The remaining decisions stay valid, so
 this ADR rewrites the same decisions against the current services.
 
-04-data consists of several engines, so changing them all at once has a large
-blast radius. An automated validation gate is therefore needed to prevent
-regressions.
-
 ### Traceability
 
 The basis is `check-all-hardening.sh`'s 04-data checks, the CI
 `infrastructure-hardening` gate, and the current repository configuration.
 Unrecorded runtime state is not claimed.
+
+## Decision Drivers
+
+04-data consists of several engines, so changing them all at once has a large
+blast radius. An automated validation gate is therefore needed to prevent
+regressions.
+
+## Options
+
+### Expand all 04-data services to an HA standard at once
+
+- **Good**: Can raise availability quickly.
+- **Bad**: Large change radius makes it hard to isolate regression causes.
+
+### Update only documentation and defer Compose and CI changes
+
+- **Good**: Low short-term change risk.
+- **Bad**: Does not prevent actual operational regressions.
 
 ## Decision
 
@@ -50,22 +64,6 @@ Unrecorded runtime state is not claimed.
 - Manage expansions such as HA, lifecycle, and backup/recovery drills through
   the approved transition procedure in policy and runbooks.
 - Keep the `template-stateful-*` and `template-infra-*` inheritance model.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-### Expand all 04-data services to an HA standard at once
-
-- **Good**: Can raise availability quickly.
-- **Bad**: Large change radius makes it hard to isolate regression causes.
-
-### Update only documentation and defer Compose and CI changes
-
-- **Good**: Low short-term change risk.
-- **Bad**: Does not prevent actual operational regressions.
 
 ## Consequences
 

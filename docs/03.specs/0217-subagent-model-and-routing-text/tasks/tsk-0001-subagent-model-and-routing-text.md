@@ -1,10 +1,10 @@
 ---
 title: "Subagent Model and Routing Text Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0217-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-08"
 
 # Subagent Model and Routing Text Task
 
-## Objective
+## Overview
+
+### Objective
 
 Move the generated Claude subagents to the current Claude generation and give
 each generated subagent description the routing text its role already states.

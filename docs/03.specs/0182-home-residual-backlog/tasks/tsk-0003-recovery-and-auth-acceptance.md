@@ -1,10 +1,10 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.16"
+version: "0.7.17"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0003"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-09-25"
 
 # Recovery and Authentication Acceptance
 
-## Objective
+## Overview
+
+### Objective
 
 Carry out W7–W12 of the [Plan](../plan.md) and hold the completion receipt.
 

@@ -1,10 +1,10 @@
 ---
 title: "Laboratory Hardening and HA Expansion Strategy"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0025"
 parent_ids:
@@ -17,11 +17,29 @@ created: "2026-03-28"
 
 This document records the decision to first apply immediately applicable hardening (ingress boundary strengthening, removal of direct exposure, network contract alignment, minimal-privilege improvements, CI gate introduction) for the `11-laboratory` layer, while introducing catalog expansion items in phases.
 
-The laboratory tier greatly affects operator productivity but provides UIs with strong privileges. Therefore, loose security/operating standards can create bypass paths into the entire core tier. Boundary hardening is needed in the short term, and strengthened experimental-service operating governance (expiration/approval/audit) is needed in the mid term.
-
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
+## Decision Drivers
+
+The laboratory tier greatly affects operator productivity but provides UIs with strong privileges. Therefore, loose security/operating standards can create bypass paths into the entire core tier. Boundary hardening is needed in the short term, and strengthened experimental-service operating governance (expiration/approval/audit) is needed in the mid term.
+
+## Options
+
+### Implement all catalog items immediately
+
+- Good:
+  - Fast rise in policy maturity
+- Bad:
+  - Expanded change scope can reduce short-term stability
+
+### Update documentation only, hold off on runtime/CI hardening
+
+- Good:
+  - Reduces short-term change volume
+- Bad:
+  - Lacks the ability to actually block regressions
 
 ## Decision
 
@@ -38,30 +56,6 @@ The verification basis for this decision is limited to the Architecture Descript
   - Portainer session/approval policy
   - RedisInsight minimal-privilege/audit log policy
   - open-notebook notebook data retention/expiration and direct API/DB host-port exposure review
-
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
-
-### Implement all catalog items immediately
-
-- Good:
-  - Fast rise in policy maturity
-- Bad:
-  - Expanded change scope can reduce short-term stability
-
-### Update documentation only, hold off on runtime/CI hardening
-
-- Good:
-  - Reduces short-term change volume
-- Bad:
-  - Lacks the ability to actually block regressions
 
 ## Consequences
 

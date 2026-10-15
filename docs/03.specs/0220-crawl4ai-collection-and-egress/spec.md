@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Collection and Egress"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0220"
 parent_ids:
@@ -115,6 +115,15 @@ changes, and any application, learning database, GPU, ASR or TTS service in
 5. Operations documents, the service catalog and the gate contract match, and
    the changed gate passes. HOME activation, consumer admission and host
    firewall enforcement are recorded as not run.
+
+## Failure Conditions
+
+Private, metadata, transition-form and unapproved-port destinations must
+be refused across DNS, redirects, subresources and caller overrides, while
+direct crawler egress remains unreachable. Unadmitted sources, exceeded job
+bounds, invalid extraction or lost provenance prevent collection acceptance;
+rights metadata grants neither a consumer network attachment nor real-data
+collection permission.
 
 ## Related Documents
 

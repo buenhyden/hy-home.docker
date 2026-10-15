@@ -1,10 +1,10 @@
 ---
 title: "npm Risk Acceptance Extension Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0222-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-09"
 
 # npm Risk Acceptance Extension Task
 
-## Objective
+## Overview
+
+### Objective
 
 Extend the GHSA-vfj7-8cjw-p6xm acceptance by the owner's approval and let a
 future approval extend it without a code or governance change.

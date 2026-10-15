@@ -1,10 +1,10 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.2.3"
+version: "1.2.4"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 ---
 
 # Stage Authoring Matrix
@@ -74,13 +74,15 @@ observed evidence and never authenticates an approval source. The Registry owns
 document-family state vocabulary, direct parent cardinality, result and review
 table shapes, and lifecycle generation; the SDLC owns their execution meaning.
 
-The canonical home contains only registered canonical category sources.
-Unknown or unsafe entries fail closed and are preserved for review; they are not
-stale generated files eligible for automatic deletion.
-
 ## Exceptions
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
+The canonical home contains only registered canonical category sources.
+Unknown or unsafe entries fail closed and are preserved for review; they are not
+stale generated files eligible for automatic deletion.
 
 ## Related Documents
 

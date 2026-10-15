@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.8.0"
+version: "0.8.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -180,11 +180,6 @@ swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 
 | sealed 정리의 관리 접근 상실 | server가 sealed인 채 window가 멈추면 OIDC 확인 없이 root custody를 지운다. 복구는 share 2개로 unseal한 뒤 OIDC operator와 W1 절차 | 정리 전에 unseal할 수 있는 검토된 절차 |
 | 남겨 둔 W2 custody | W2가 INDETERMINATE로 끝나면 snapshot 전용 token(최대 720시간)이 tmpfs에 남고, 다음 window의 W2·W3는 BLOCKED다 | 검토된 W2 복구 절차 |
 
-### Verification
-
-Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 별도의 정적/런타임 증거를
-제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
-
 ### P01 Native Trust and Audit Gate
 
 정상 경로는 내부 native TLS와 검증된 CA/SAN이다. bootstrap key/CA trust는 해당
@@ -254,6 +249,11 @@ consumer zero 또는 운영 수용 증거로 보고하지 않는다.
 - OpenBao 공식 deprecated legacy root generation API: <https://openbao.org/docs/api/system/generate-root/>
 - unauthenticated generate-root를 다루는 OpenBao 공식 deprecation note: <https://openbao.org/community/deprecation/unauthed-generate-root/>
 - authenticated root generation을 다루는 OpenBao 공식 release notes: <https://openbao.org/community/release-notes/2-6-0/>
+
+## Verification
+
+Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 별도의 정적/런타임 증거를
+제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
 
 ## Related Documents
 

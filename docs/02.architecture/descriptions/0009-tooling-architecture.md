@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Software Verification Architecture Description"
-version: "2.1.2"
+version: "2.1.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -15,15 +15,11 @@ created: "2026-03-26"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document defines the reference architecture and quality attributes of platform operations in `09-platform-ops` and software verification in `11-quality`. It provides the system boundary, responsibilities, and integration structure with common infrastructure for infrastructure automation, quality analysis, and performance testing tools.
+
+## Scope
 
 ### Stakeholders and Concerns
 
@@ -57,11 +53,7 @@ This section preserves the system boundaries, consumption relationships, non-goa
 
 The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-## Architecture
-
-### Architecture
-
-### Components
+## Structure
 
 ### Viewpoints and Views
 
@@ -72,7 +64,7 @@ The system is divided into "Managed Tools" and "Execution Tools."
 1. **Management**: SonarQube, the Terrakube API, and similar services manage central state in an environment where the matching profile is selected. They are not automatically included as HOME always-on targets.
 2. **Execution**: Terrakube Worker, Locust Worker, and similar services occupy resources and perform the actual computation when a job occurs.
 
-### Data Flow
+## Runtime and Deployment
 
 ### Data and Control Flows
 
@@ -97,7 +89,7 @@ Data and control flows include only the interactions specified in this section a
   profile names span capability tiers and are unchanged by relocation. Registry is a HOME service; the other listed optional/job capabilities are not implicitly activated by a directory move. dbt belongs to Analytics.
 - **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`, service healthcheck, approved root-context runtime evidence.
 
-## Quality Attributes
+## Quality and Risks
 
 ### Quality Scenarios
 

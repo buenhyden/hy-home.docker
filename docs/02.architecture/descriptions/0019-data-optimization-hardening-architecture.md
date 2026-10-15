@@ -1,10 +1,10 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -15,18 +15,14 @@ created: "2026-03-28"
 
 ## Overview
 
-### Overview
-
-## Scope
-
-### Scope
-
 ### Context and Stakeholders
 
 This document describes the relational, NoSQL, cache, object storage,
 analytics, and graph/vector service structure of `infra/04-data/`. The
 maintainer and operator manage the common Compose contract and the per-engine
 lifecycle/recovery procedure separately.
+
+## Scope
 
 ### System Boundaries
 
@@ -39,9 +35,7 @@ lifecycle/recovery procedure separately.
 - Product business schema/query and cloud migration are outside this
   architecture.
 
-## Architecture
-
-### Architecture
+## Structure
 
 ### Components
 
@@ -55,6 +49,8 @@ lifecycle/recovery procedure separately.
 
 Each component keeps its own configuration and volume, and combines the
 common optimization, secret, healthcheck, and network contract in Compose.
+
+## Runtime and Deployment
 
 ### Data Flow
 
@@ -72,7 +68,9 @@ automation, and failover drills are not treated as implemented for every
 engine today, and are introduced only through a separately approved current
 Requirement and ADR.
 
-## Quality Attributes
+## Quality and Risks
+
+### Quality Attributes
 
 - **Security**: keeps credential injection consistent and reduces unnecessary
   exposure.

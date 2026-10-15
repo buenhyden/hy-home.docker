@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0044"
 parent_ids:
@@ -22,9 +22,13 @@ created: "2026-05-17"
 
 운영자는 관측 관리 route, Compose 의존성, healthcheck, custom image, hardening 검증 경계를 확인한다. runtime/security 정책 변경이 필요하면 별도 승인으로 분리한다.
 
-## Trigger and Preconditions
+## Trigger
 
 다음 경우에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
 
 - `infrastructure-hardening` CI가 실패할 때.
 - 관측성 UI/API가 Traefik 경유로 비정상 응답할 때.
@@ -136,7 +140,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - Hardening 장애는 failed check name, affected service/router, before/after command output, relevant redacted diff, recovery/escalation state를 함께 기록한다.
 - Route/resource/secret/workflow/security policy 변경 필요성이 보이면 approval state를 기록한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

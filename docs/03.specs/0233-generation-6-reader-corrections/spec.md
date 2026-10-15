@@ -1,10 +1,10 @@
 ---
 title: "Generation 6 Reader Corrections"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0233"
 parent_ids:
@@ -82,6 +82,13 @@ change, which are the owner's decisions.
    REQ-0026 and the Task template state the corrected rules; an independent
    rules review finds nothing blocking.
 6. The changed gate and `candidate-quality` pass.
+
+## Failure Conditions
+
+Missing or duplicate assigned acceptance rows, pending criteria on
+completed work and invalid Execution Items or Resolves relationships fail
+the reader. A draft or unready base cannot enter the completed archive;
+correcting these rules does not accept ADR-0048 or authorize status changes.
 
 ## Related Documents
 

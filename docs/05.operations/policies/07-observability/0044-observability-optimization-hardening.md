@@ -1,10 +1,10 @@
 ---
 title: "Observability Optimization Hardening Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0044"
 parent_ids:
@@ -93,14 +93,6 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Verification
-
-- `bash scripts/hardening/check-all-hardening.sh 06-observability`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-- `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
-- Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
-
 ### Review Cadence
 
 - 월 1회 정기 검토
@@ -110,6 +102,14 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](../../guides/07-observability/0044-observability-optimization-hardening.md) (`GDE-0044`), [Runbook](../../runbooks/07-observability/0044-observability-optimization-hardening.md) (`RUN-0044`)
+
+## Verification
+
+- `bash scripts/hardening/check-all-hardening.sh 06-observability`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
+- `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
+- Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
 
 ## Related Documents
 

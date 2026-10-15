@@ -1,10 +1,10 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.4.0"
+version: "1.5.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-15"
 ---
 
 # Agent Bootstrap Policy
@@ -74,9 +74,9 @@ that preserved record is what was removed.
 
 ### Hard Constraints
 
-- Canonical governance, roles, skills, knowledge, prompts, evaluations, and native provider
-  sources remain English-only, except their `README.md` files, which follow the
-  [documentation protocol](documentation-protocol.md#document-language).
+- 공통 안내의 새 설명은 한국어를 기본으로 작성합니다. 기존 영어 원문과 native
+  문법·인용·보존 증거는 유지하며, 문서별 언어는
+  [문서화 정책](documentation-protocol.md#document-language)을 따릅니다.
 - Stage documents are read-only unless the request authorizes change.
 - Keep root shims concise.
 - Never write plaintext credentials or secret values.
@@ -84,15 +84,17 @@ that preserved record is what was removed.
 - Use in-place canonical edits; do not create legacy redirects or parallel
   authority copies.
 
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
 ### Verification Routing
 
 Use [task-checklists.md](task-checklists.md) for completion and
 [approval-boundaries.md](approval-boundaries.md) for protected surfaces. Stage
 99 owns document shapes; registered scripts own executable checks.
-
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

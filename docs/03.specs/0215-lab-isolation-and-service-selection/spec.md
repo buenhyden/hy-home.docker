@@ -1,10 +1,10 @@
 ---
 title: "LAB Isolation and Service Selection"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0215"
 parent_ids:
@@ -103,6 +103,14 @@ or HOME data, and observing which services run on the HOME host.
 7. Each LAB starts on the HOME host through `lab.py` with synthetic inputs,
    reaches its own readiness signal or records why not, and stops without
    leaving containers or networks and without changing the HOME project.
+
+## Failure Conditions
+
+Root selection must reject LAB services, and the controller must refuse
+name, port, path or cluster-ID collisions, HOME-nested data roots, exceeded
+budgets and excess concurrency before start. Lease expiry and stop may remove
+only the selected project's runtime resources, preserving volumes and data;
+an unobserved HOME service state cannot be reported as stopped.
 
 ## Related Documents
 

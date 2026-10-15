@@ -1,10 +1,10 @@
 ---
 title: "Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0005"
 parent_ids:
@@ -17,6 +17,12 @@ created: "2026-03-26"
 
 This document is the decision record for the polyglot messaging strategy that adopts both Apache Kafka and RabbitMQ on the `hy-home.docker` platform. It is a choice made to satisfy the different needs of streaming data and asynchronous task queues.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+## Decision Drivers
+
 A modern microservices architecture has two types of messaging patterns interacting together:
 
 1. **High-throughput event streaming**: large-volume data transfer such as log collection, real-time analytics, and data replication.
@@ -24,29 +30,7 @@ A modern microservices architecture has two types of messaging patterns interact
 
 Trying to satisfy both needs with a single solution (Kafka or RabbitMQ) leads to high operational complexity and low efficiency, so an approach that maximizes each tool's strengths is needed.
 
-### Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision
-
-- Select **Apache Kafka** as the **Primary Event Backbone**.
-  - For large-scale log collection and durable event stream retention.
-  - For data-centric work that needs strong ordering guarantees and replay capability.
-- Select **RabbitMQ** as the **Lightweight Task Queue**.
-  - For pure asynchronous jobs and low-latency message delivery.
-  - For cases that need complex routing rules (Exchange) based on the AMQP standard.
-- Adopt **Kafka KRaft Mode** to remove the Zookeeper dependency and simplify cluster management.
-
-### Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
-
-## Alternatives
-
-### Alternatives
-
-### Options Considered
+## Options
 
 ### [Only Apache Kafka]
 
@@ -57,6 +41,16 @@ The decision context above records the applicable drivers and evidence.
 
 - Good: excellent routing flexibility and simplicity.
 - Bad: lacks horizontal scalability and replay capability for large-volume data such as log streaming.
+
+## Decision
+
+- Select **Apache Kafka** as the **Primary Event Backbone**.
+  - For large-scale log collection and durable event stream retention.
+  - For data-centric work that needs strong ordering guarantees and replay capability.
+- Select **RabbitMQ** as the **Lightweight Task Queue**.
+  - For pure asynchronous jobs and low-latency message delivery.
+  - For cases that need complex routing rules (Exchange) based on the AMQP standard.
+- Adopt **Kafka KRaft Mode** to remove the Zookeeper dependency and simplify cluster management.
 
 ## Consequences
 

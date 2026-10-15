@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Usage Guide"
-version: "2.1.2"
+version: "2.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
@@ -22,7 +22,9 @@ created: "2026-05-10"
 
 정상 `opensearch`는 선택형 단일 노드다. 정상 root는 `infra/04-data/opensearch/docker-compose.yml`의 `opensearch`와 `opensearch-dashboards`만 include한다. 세 노드 학습 구성과 전용 Dashboard는 별도 [LAB Compose](../../../../labs/opensearch-cluster.yml)와 [LAB 설명](../../../../labs/opensearch-cluster.md)에만 있고 HOME 서비스가 아니다. 소스 분리는 실행 중인 서비스를 중지하거나 복구하지 않는다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 개발자, 운영자, 보안 검토자, AI 에이전트를 위한 문서다. 목표는 다음과 같다.
 
@@ -30,7 +32,7 @@ created: "2026-05-10"
 - HTTPS, Docker Secrets, Traefik route, Dashboards route를 이해한다.
 - index 작업 전에 policy와 runbook 인계 지점을 확인한다.
 
-## Usage
+## Concepts
 
 ### Current implementation
 
@@ -43,6 +45,8 @@ created: "2026-05-10"
 | 구현 | [정상 Compose](../../../../infra/04-data/opensearch/docker-compose.yml) | [LAB Compose](../../../../labs/opensearch-cluster.yml)와 [LAB 설명](../../../../labs/opensearch-cluster.md) |
 
 정상 custom Dockerfile은 OpenSearch 기본 이미지와 exporter plugin을 함께 설치한다. LAB도 같은 Dockerfile을 재사용한다. 양쪽의 실제 이미지 빌드, 인증서 신뢰, health, Dashboard 연결, snapshot/restore는 정적 render로 검증되지 않았다 (미검증). 별도 실행 증거가 나오기 전에는 runtime 준비 상태를 주장하지 않는다. 선택한 service의 resource template과 각 Compose override를 함께 읽고, 같은 호스트의 세 LAB node를 호스트 HA로 간주하지 않는다.
+
+## Usage
 
 ### 준비물과 사용
 
@@ -67,13 +71,6 @@ created: "2026-05-10"
 - HTTP로 `9200`을 호출하지 않는다.
 - admin password를 command line literal이나 문서에 남기지 않는다.
 
-### Common Checks
-
-- `test -f infra/04-data/opensearch/docker-compose.yml`
-- `test -f labs/opensearch-cluster.yml`
-- `docker compose -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet`
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-
 ### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/05-databases-and-storage/0019-opensearch.md)을 따른다.
@@ -83,6 +80,15 @@ created: "2026-05-10"
 - Declared parent: [OpenSearch Operations Policy](../../policies/05-databases-and-storage/0019-opensearch.md) (`POL-0019`)
 - Governing authority: [Analytics Tier Architecture Description](../../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 - Subject peers: [Policy](../../policies/05-databases-and-storage/0019-opensearch.md) (`POL-0019`), [Runbook](../../runbooks/05-databases-and-storage/0019-opensearch.md) (`RUN-0019`)
+
+## Troubleshooting
+
+### Common Checks
+
+- `test -f infra/04-data/opensearch/docker-compose.yml`
+- `test -f labs/opensearch-cluster.yml`
+- `docker compose -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet`
+- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Related Documents
 

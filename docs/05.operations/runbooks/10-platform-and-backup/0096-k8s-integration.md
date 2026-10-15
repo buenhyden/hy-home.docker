@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Runbook"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0096"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-09-23"
 
 hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 증명 회전, 문제 해결을 다루는 런북이다. 계약은 가이드가 설명한다.
 
-## Trigger and Preconditions
+## Trigger
 
 | 상황 | 단계 |
 | --- | --- |
@@ -33,6 +33,11 @@ hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 �
 모든 단계에 적용되는 규칙:
 
 - HOME 호스트의 저장소 루트에서 작업한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 - 각 명령은 한 줄로 입력한다. 붙여넣은 줄 연속(line continuation)은
   인자를 조용히 빠뜨릴 수 있다.
 - secret 값은 파일이나 숨겨진 프롬프트로만 전달한다. 인자, 채팅, 로그로는
@@ -584,7 +589,7 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 Phase 8에 나열된 단계 출력, 소스 커밋, Trigger and Preconditions에서 적용된 상황을
 기록한다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

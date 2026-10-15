@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Recovery Runbook"
-version: "1.3.4"
+version: "1.3.5"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0094"
 parent_ids:
@@ -18,11 +18,13 @@ created: "2026-09-23"
 
 레이크하우스의 Spark·Trino·Flink·Great Expectations 실패, 카탈로그 오류, 접근 거부, 테이블 롤백을 다루는 런북이다.
 
-## Trigger and Preconditions
+## Trigger
 
 Spark 작업, Trino, Flink 작업 또는 Great Expectations 스위트가 실패하거나,
 카탈로그가 오류를 반환하거나, 접근이 거부되거나, 잘못된 쓰기 이후 테이블
 롤백이 필요할 때 사용한다.
+
+## Prerequisites
 
 ### Execution and stop boundary
 
@@ -86,7 +88,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 네임스페이스, 테이블 이름, 스냅샷 ID, 행 개수, 종료 코드, 소스 커밋을
 기록한다. 데이터 값이나 시크릿은 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

@@ -64,8 +64,8 @@ settings by itself.
   `enforce_admins=false`, under which an admin credential can push to `main`
   directly; it was not read again on 2026-10-13. The owner can close that by enabling
   admin enforcement or a ruleset with no bypass actor. The repository now adds
-  a tracked `pre-push` guard (`scripts/hooks/pre-push-guard.sh`), active only
-  after `pre-commit install --hook-type pre-push`, and agent-side denials
+  a tracked `pre-push` guard (`scripts/hooks/pre-push-guard.sh`), initially
+  installed through pre-commit, and agent-side denials
   (SPEC-0241); neither changes the remote settings.
 - On 2026-10-14, at the owner's direction (AskUserQuestion), `enforce_admins`
   was enabled with `gh api -X POST
@@ -78,6 +78,14 @@ settings by itself.
   same day the main checkout installed the `pre-commit`, `commit-msg` and
   `pre-push` hooks. Rollback is `gh api -X DELETE` on the same endpoint, by
   separate approval.
+- On 2026-10-15, authenticated read-only protection lookup confirmed
+  `enforce_admins=true`, `strict=true`, empty `contexts` and `checks`, zero
+  required approvals, conversation resolution on, and force pushes and
+  deletion off. The current producer's name is still not a required remote
+  check. Local source tests do not close that gap. The raw-ref guard now has
+  a repository-local installer so every ref, including deletions, is checked
+  before any pre-commit selection; installation and an observed Git push
+  rejection remain separate evidence in the current Task.
 
 ## Target Ruleset
 

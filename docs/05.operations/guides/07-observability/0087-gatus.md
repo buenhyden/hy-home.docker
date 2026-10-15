@@ -1,10 +1,10 @@
 ---
 title: "Gatus Guide"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0087"
 parent_ids:
@@ -21,11 +21,13 @@ created: "2026-09-19"
 
 Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability monitor이다. native Keycloak OIDC로 보호되는 status UI와 SQLite probe history를 제공한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상은 observability와 availability probe를 운영하는 @buenhyden과 기여자다. Gatus의 구성, 인증 경계, 상태 저장 방식을 이해하고, 승인이 필요한 진단·재시작·복구는 Runbook으로 넘기는 것이 목표다.
 
-## Usage
+## Concepts
 
 Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability
 monitor이다. root Compose가 포함 여부를 관장하며,
@@ -44,6 +46,8 @@ UI가 아니라 내부 monitoring 경계이다. Gatus session은 local에서 1�
 SQLite history는 `gatus-data`를 통해 `/data/gatus.db`에 저장된다. probe
 결과는 운영 data이다. 설정과 database는 probe 대상 application이 완전히
 수용되었음을 증명하지 않으며, 선언된 endpoint check만 기록한다.
+
+## Usage
 
 ### Selected source and readiness
 
@@ -93,13 +97,6 @@ SQLite backup에는 조율된 quiescence나 engine이 지원하는 consistent sn
   [Gatus repository/release](https://github.com/TwiN/gatus)를 따른다. Gatus는
   Apache-2.0 license이며 patch provenance를 보존한다.
 
-### Common Checks
-
-- [Observability Compose](../../../../infra/06-observability/docker-compose.yml)에서
-  native OIDC, `/metrics` router 제외, healthcheck를 점검한다.
-- 승인된 upgrade 전에 source와 SQLite custody를 검토한다. health는 login이나
-  probe coverage를 증명하지 않는다.
-
 ### Runbook Handoff
 
 승인 게이트가 걸린 진단, 재시작, recovery에는
@@ -109,6 +106,15 @@ SQLite backup에는 조율된 quiescence나 engine이 지원하는 consistent sn
 
 - [Policy](../../policies/07-observability/0087-gatus.md), [Runbook](../../runbooks/07-observability/0087-gatus.md)
 - [Gatus configuration reference](https://github.com/TwiN/gatus#configuration)
+
+## Troubleshooting
+
+### Common Checks
+
+- [Observability Compose](../../../../infra/06-observability/docker-compose.yml)에서
+  native OIDC, `/metrics` router 제외, healthcheck를 점검한다.
+- 승인된 upgrade 전에 source와 SQLite custody를 검토한다. health는 login이나
+  probe coverage를 증명하지 않는다.
 
 ## Related Documents
 

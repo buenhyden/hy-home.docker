@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0093"
 parent_ids:
@@ -54,13 +54,6 @@ DB 보존·복원·삭제는 영향을 받는 소유자를 확인하고 승인�
 
 없음. 읽기 전용인 두 번째 자격 증명은 consumer가 필요로 할 때만 추가한다.
 
-### Verification
-
-정적 렌더링과 프로비저닝 계약 테스트, 그리고 자격 증명 없이 401이 나오는지,
-heartbeat가 공개되는지, 자격 증명으로 publish와 read-back이 되는지, 컨테이너가
-non-root이고 읽기 전용인지, Compose 설정·argv·로그에 비밀 값이 노출되지 않는지를 확인하는
-격리된 실행.
-
 ### Review Cadence
 
 브로커 major 업그레이드, 새 publishing 파이프라인, loopback을 넘어서는 노출이
@@ -71,6 +64,13 @@ non-root이고 읽기 전용인지, Compose 설정·argv·로그에 비밀 값�
 - [가이드](../../guides/12-testing-and-quality/0093-pact-broker.md) (`GDE-0093`)
 - [런북](../../runbooks/12-testing-and-quality/0093-pact-broker.md) (`RUN-0093`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Verification
+
+정적 렌더링과 프로비저닝 계약 테스트, 그리고 자격 증명 없이 401이 나오는지,
+heartbeat가 공개되는지, 자격 증명으로 publish와 read-back이 되는지, 컨테이너가
+non-root이고 읽기 전용인지, Compose 설정·argv·로그에 비밀 값이 노출되지 않는지를 확인하는
+격리된 실행.
 
 ## Related Documents
 

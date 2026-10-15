@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Operations Policy"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0069"
 parent_ids:
@@ -59,13 +59,6 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 예외는 provider/apply 승인, Docker 소켓 검토, 시크릿 취급, 협조된 백업을
 우회할 수 없다. 만료 시점과 복구 담당자를 기록한다.
 
-### Verification
-
-정적 Compose와 컴포넌트 헬스는 부분적인 신호다. 엔드투엔드 증거에는
-로그인/권한 부여, DB/객체 접근 가능성, executor 등록, 그리고 검토된
-비적용(non-applying) plan이 필요하다. 복구는 리허설하기 전까지 검증되지
-않은 상태로 남는다.
-
 ### Review Cadence
 
 각 릴리스, 인증 변경, 저장소/백엔드 변경, Docker 소켓 권한 변경 전에
@@ -76,6 +69,13 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 - [가이드](../../guides/10-platform-and-backup/0069-terrakube.md) (`GDE-0069`)
 - [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md) (`RUN-0069`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Verification
+
+정적 Compose와 컴포넌트 헬스는 부분적인 신호다. 엔드투엔드 증거에는
+로그인/권한 부여, DB/객체 접근 가능성, executor 등록, 그리고 검토된
+비적용(non-applying) plan이 필요하다. 복구는 리허설하기 전까지 검증되지
+않은 상태로 남는다.
 
 ## Related Documents
 

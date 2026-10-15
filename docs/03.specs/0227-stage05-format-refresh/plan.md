@@ -1,10 +1,10 @@
 ---
 title: "Stage 05 Format Refresh Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0227-PLAN-0001"
 parent_ids:
@@ -18,6 +18,14 @@ created: "2026-10-10"
 
 Add the validator rule first, convert the documents in subject batches with
 one writer per file, repair links and bindings, then verify the full list.
+
+## Scope
+
+W1 defines section-shape validation; W2 restructures the tracked Guide,
+Policy and Runbook bodies in subject batches; W3 repairs renamed anchors and
+service bindings. W4–W5 compare the processed corpus and content-loss account
+before review and gates, preserving README profiles, incidents, archives and
+historical Task links.
 
 ## Work Breakdown
 
@@ -37,7 +45,9 @@ before-and-after comparison of fenced blocks, links and inline code per
 subject, an independent review, the changed gate, the staged style check and
 the remote candidate.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 - Batch agents worked in parallel; each owned disjoint files and none ran Git,
   and every batch was checked again before its commit.

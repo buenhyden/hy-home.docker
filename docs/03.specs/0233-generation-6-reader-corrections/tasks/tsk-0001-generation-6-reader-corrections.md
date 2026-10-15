@@ -1,10 +1,10 @@
 ---
 title: "Generation 6 Reader Corrections Task"
-version: "0.4.1"
+version: "0.4.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0233-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-13"
 
 # Generation 6 Reader Corrections Task
 
-## Objective
+## Overview
+
+### Objective
 
 Make the generation 6 reader and its text do what SPEC-0231 and ADR-0048
 state, as the 2026-10-13 review found.

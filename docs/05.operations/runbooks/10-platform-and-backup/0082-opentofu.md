@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Runbook"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0082"
 parent_ids:
@@ -18,10 +18,16 @@ created: "2026-09-19"
 
 OpenTofu(`opentofu` job)의 plan 검토, lock 실패, state 백업·복구, 업그레이드 절차다.
 
-## Trigger and Preconditions
+## Trigger
 
 검토된 plan, lock 실패, 보호된 state backup/recovery, 또는 런타임/provider upgrade에
-사용한다. 저장소 루트에서 작업한다. backend/provider에 접근하는 명령은 아래 명시된 승인이
+사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소 루트에서 작업한다. backend/provider에 접근하는 명령은 아래 명시된 승인이
 필요하다.
 
 ## Procedure
@@ -82,7 +88,7 @@ exit, 버전, configuration/plan digest, backend/workspace 식별자, 정제된 
 owner 결정, 최종 처리 상태를 기록한다. state, plan 본문, credential, 또는 secret을 포함한
 provider 응답은 절대 기록하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

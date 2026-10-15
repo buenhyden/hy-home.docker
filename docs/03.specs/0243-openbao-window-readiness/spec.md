@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window Readiness"
-version: "0.1.0"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0243"
 parent_ids:
@@ -49,10 +49,11 @@ and P06.
    each have a reviewed producer.
 5. W3b sends the W3 snapshot and receipt to R2 and records a value-free
    receipt through a reviewed tool.
-6. Traefik, Prometheus and Gatus get the OpenBao CA mount through scoped
-   overrides that keep their running images; an hourly logrotate call shares
-   the daily state; W4 has a reviewed cut-over procedure or a recorded owner
-   decision to fix forward.
+6. Traefik, Prometheus and Gatus get the OpenBao CA mount at their declared
+   Compose pins, with image promotion subject to each service's recorded
+   SEC01 acceptance. Scoped overrides retain the observed pre-window images
+   for rollback only. An hourly logrotate call shares the daily state; W4 has
+   a reviewed cut-over procedure or a recorded owner decision to fix forward.
 
 ## Acceptance Criteria
 
@@ -63,6 +64,14 @@ and P06.
 5. The W3b tool passes review and a read-only R2 rehearsal.
 6. The mount overrides, logrotate unit and W4 rollback decision pass review.
 7. Independent IaC and security reviews of each unit find nothing blocking.
+
+## Failure Conditions
+
+Missing window prerequisites or unbuilt input producers keep their steps
+BLOCKED. A source-only server-start fix, unreviewed renderer apply or absent
+R2 transfer receipt cannot establish restore or window readiness; rollback
+overrides retain pre-window images without replacing SEC01 image acceptance
+or executing the window.
 
 ## Related Documents
 

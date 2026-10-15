@@ -1,10 +1,10 @@
 ---
 title: "QA Scope and Delivery Rationalization Plan"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0211-PLAN-0001"
 parent_ids:
@@ -18,6 +18,14 @@ created: "2026-10-07"
 
 Publish the initial draft contract, then implement the approved scope in
 independent writer slices with a shared registration owner and read-only review.
+
+## Scope
+
+W1–W7 classify and retire obsolete QA, narrow changed-path selection,
+restore remote candidate ownership, consolidate commit/changelog/SemVer
+producers and align governance with Issue/Project navigation. Continuing
+assurances keep their consumers, while historical refs, frozen evidence and
+runtime authorization remain preserved.
 
 ## Work Breakdown
 
@@ -58,7 +66,9 @@ Initial draft publication and final evidence-only records use document-minimum
 checks. Generic preserved-source compatibility remains separate from historical
 cutover completion evidence.
 
-## Risks and Rollback
+## Risks and Recovery
+
+### Risks and Rollback
 
 Recover retired source through the logical Git commit. Preserve frozen records
 and existing tag refs. Reject scope drift, missing continuing owners, duplicate

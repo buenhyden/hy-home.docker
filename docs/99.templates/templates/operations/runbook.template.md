@@ -19,9 +19,13 @@ created: "{{CREATED}}"
 
 {{OPERATIONAL_PURPOSE_AND_SUBJECT}}
 
-## Trigger and Preconditions
+## Trigger
 
 {{WHEN_TO_USE}}
+
+## Prerequisites
+
+{{TARGET_ACCESS_AUTHORIZATION_BACKUP_AND_STARTING_STATE}}
 
 ## Procedure
 
@@ -35,7 +39,7 @@ created: "{{CREATED}}"
 
 {{EVIDENCE}}
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

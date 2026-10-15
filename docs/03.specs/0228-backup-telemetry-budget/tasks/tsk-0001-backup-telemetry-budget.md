@@ -1,10 +1,10 @@
 ---
 title: "Backup Telemetry and Budget Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0228-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-10"
 
 # Backup Telemetry and Budget Task
 
-## Objective
+## Overview
+
+### Objective
 
 Make the nightly state backup fit its budget again without deleting restore
 points.

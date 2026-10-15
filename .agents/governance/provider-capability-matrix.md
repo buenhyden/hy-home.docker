@@ -1,10 +1,10 @@
 ---
 title: "Provider Capability Matrix"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 ---
 
 # Provider Capability Matrix
@@ -44,6 +44,16 @@ Native skill frontmatter uses `name`, `description`, and nested governance
 `metadata`; the folder, name, and stable function identity agree. Discovery is
 not invocation or approval. No skill adds tool grants or installers.
 
+`.agents/` is the authored canonical source home, separate from generated native
+roots. Unknown or unsafe entries fail closed and are preserved for review;
+canonical files are never deleted or quarantined as stale projections.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
 Provider-native files may narrow behavior to actual capabilities. They cannot
 invent shared policy, roles, skills, approvals, or unsupported parity. A documented capability, configured source, observed runtime result, and
 hard-enforced control are separate facts. A configured event or discoverable
@@ -52,14 +62,6 @@ acceptance remains distinct from repository support. Account or subscription
 limits remain unknown until directly observed. Git hooks, provider hooks, editor
 actions, and CI are separate surfaces; an editor action requires its observed
 version and action ID.
-
-`.agents/` is the authored canonical source home, separate from generated native
-roots. Unknown or unsafe entries fail closed and are preserved for review;
-canonical files are never deleted or quarantined as stale projections.
-
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

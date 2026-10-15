@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0039"
 parent_ids:
@@ -21,7 +21,9 @@ created: "2026-05-10"
 
 이 가이드는 `06-observability` 계층의 Alertmanager 사용 맥락과 설정 확인 방법을 설명한다. Alertmanager는 Prometheus가 보낸 알림을 grouping, deduplication, inhibition, silence, receiver routing으로 처리하고 Slack receiver로 전달한다. Compose는 `infra/06-observability/alertmanager/config/config.yml`을 `/etc/alertmanager/config.yml.template`로 마운트한 뒤 Docker Secret 값을 런타임 `/tmp/config.yml`에 렌더링한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: 개발자, 운영자, SRE, AI Agent.
 
@@ -29,7 +31,7 @@ created: "2026-05-10"
 - Prometheus 알림 전달, Grafana datasource, 보호된 route, 알림 receiver의 관계를 확인한다.
 - 장애 대응, restart, 설정 rollback, 알림 실패 분류는 [RUN-0039](../../runbooks/07-observability/0039-alertmanager.md)로 넘긴다.
 
-## Usage
+## Concepts
 
 사용 전에 다음을 확인한다.
 
@@ -71,6 +73,8 @@ created: "2026-05-10"
    - Silence는 expiry 없이 생성하지 않는다.
    - Secret, webhook, SMTP credential 값은 silence comment나 evidence에 남기지 않는다.
 
+## Usage
+
 ### Source-backed operating contract
 
 - **목적·분류·구현 소유권**: `alertmanager`는 `HOME` 알림 라우팅 서비스이며 `obs`/`alerting`으로 선택한다. [observability Compose](../../../../infra/06-observability/docker-compose.yml), mount된 config template과 entrypoint가 구현을 소유한다.
@@ -91,13 +95,6 @@ created: "2026-05-10"
 - **Route drift**: `group_by`, `repeat_interval`, receiver name을 바꾸면 policy와 runbook evidence도 함께 갱신해야 한다.
 - **Direct access assumption**: 외부 UI 접근은 Traefik protected route와 SSO middleware를 통한다. 내부 compose network에서는 `alertmanager:9093`를 사용한다.
 
-### Common Checks
-
-- `docker compose --profile obs ps alertmanager`
-- `docker logs --tail=100 alertmanager`
-- `rg -n 'route:|receivers:|inhibit_rules:|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml`
-- `rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]' infra/06-observability/prometheus/config/prometheus.yml`
-
 ### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/07-observability/0039-alertmanager.md)을 따른다.
@@ -107,6 +104,15 @@ created: "2026-05-10"
 - Declared parent: [Alertmanager Operations Policy](../../policies/07-observability/0039-alertmanager.md) (`POL-0039`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Policy](../../policies/07-observability/0039-alertmanager.md) (`POL-0039`), [Runbook](../../runbooks/07-observability/0039-alertmanager.md) (`RUN-0039`)
+
+## Troubleshooting
+
+### Common Checks
+
+- `docker compose --profile obs ps alertmanager`
+- `docker logs --tail=100 alertmanager`
+- `rg -n 'route:|receivers:|inhibit_rules:|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml`
+- `rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]' infra/06-observability/prometheus/config/prometheus.yml`
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0089"
 parent_ids:
@@ -50,11 +50,6 @@ work 복구본과 원본은 격리하고 파일·노트북 출력의 민감성�
 내부 MLflow SDK 경로는 인증되지 않는다 (`POL-0088` 참고). terminal은 단일 사용자를
 위해 활성화 상태로 유지한다. 추가 검토 없이 비활성화해도 된다.
 
-### Verification
-
-정적 렌더링 후 런타임 검사: 세션 없는 gateway 로그인 redirect·인가 거부와 토큰 없는 서버 거부, route를 통한
-kernel 시작과 WebSocket, 토큰을 받지 못한 realm user의 거부.
-
 ### Review Cadence
 
 이미지나 라이브러리 변경, 인증 변경, 신규 사용자, JupyterHub 결정 시 검토한다.
@@ -64,6 +59,11 @@ kernel 시작과 WebSocket, 토큰을 받지 못한 realm user의 거부.
 - [Guide](../../guides/13-analytics-and-data-quality/0089-jupyterlab.md) (`GDE-0089`)
 - [Runbook](../../runbooks/13-analytics-and-data-quality/0089-jupyterlab.md) (`RUN-0089`)
 - [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+## Verification
+
+정적 렌더링 후 런타임 검사: 세션 없는 gateway 로그인 redirect·인가 거부와 토큰 없는 서버 거부, route를 통한
+kernel 시작과 WebSocket, 토큰을 받지 못한 realm user의 거부.
 
 ## Related Documents
 

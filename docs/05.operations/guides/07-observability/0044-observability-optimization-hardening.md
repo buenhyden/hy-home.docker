@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Usage Guide"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -21,7 +21,9 @@ created: "2026-05-17"
 
 이 문서는 `06-observability` 계층의 최적화/하드닝 항목을 운영자/개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 체인+SSO 정렬, health 기반 의존성, 커스텀 이미지 하드닝, CI 검증 절차를 제공한다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자: SRE와 플랫폼 운영자, DevOps 엔지니어, 관측성 유지보수자.
 
@@ -29,7 +31,7 @@ created: "2026-05-17"
 - 초기 기동 안정성과 회귀 차단 능력을 강화한다.
 - 카탈로그 기반 확장(샘플링/retention/pipeline module) 준비 상태를 확보한다.
 
-## Usage
+## Concepts
 
 사용 전에 다음을 확인한다.
 
@@ -57,6 +59,8 @@ created: "2026-05-17"
 6. 문서 추적성 동기화
    - PRD~Procedure optimization-hardening 문서 링크를 점검한다.
 
+## Usage
+
 ### Source-backed operating contract
 
 - **목적·분류·구현 소유권**: `cadvisor`는 `HOME` container metric exporter이며 `obs`/`obs-host`/`dev`로 선택한다. node-exporter의 소유 문서는 [GDE-0045](0045-prometheus.md#host-and-gpu-exporter-boundary)이며 [Compose](../../../../infra/06-observability/docker-compose.yml)가 구현을 소유한다.
@@ -78,12 +82,6 @@ created: "2026-05-17"
 - custom 이미지에 root 실행 경로를 재도입하는 실수
 - 하드닝 스크립트/README 인덱스를 함께 갱신하지 않는 실수
 
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
-- Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
-- `bash scripts/hardening/check-all-hardening.sh 06-observability`
-
 ### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/07-observability/0044-observability-optimization-hardening.md)을 따른다.
@@ -93,6 +91,14 @@ created: "2026-05-17"
 - Declared parent: [Observability Optimization Hardening Policy](../../policies/07-observability/0044-observability-optimization-hardening.md) (`POL-0044`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Policy](../../policies/07-observability/0044-observability-optimization-hardening.md) (`POL-0044`), [Runbook](../../runbooks/07-observability/0044-observability-optimization-hardening.md) (`RUN-0044`)
+
+## Troubleshooting
+
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
+- Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
+- `bash scripts/hardening/check-all-hardening.sh 06-observability`
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "04-Data Storage Exhaustion Runbook"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0035"
 created: "2026-06-04"
@@ -16,9 +16,14 @@ created: "2026-06-04"
 
 디스크 여유 공간이 부족할 때 데이터를 삭제하지 않고 원인 owner를 가려 조치를 정하는 triage 절차다.
 
-## Trigger and Preconditions
+## Trigger
 
 승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
 ### Scope and safety
@@ -67,7 +72,7 @@ secret, raw payload, private resolved path는 제외한다.
 rollback 상태, 수정된 alert 임계값을 기록한다. 데이터 무결성이 미검증 상태로
 남아 있으면 여유 공간 evidence만으로 종료하지 않는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0046"
 parent_ids:
@@ -21,17 +21,21 @@ created: "2026-05-10"
 
 이 문서는 Pushgateway의 역할과 기본 사용법을 설명한다. Pushgateway는 Prometheus pull 모델이 직접 적용되기 어려운 단기 실행·배치 작업의 metric을 일시적으로 받아 두는 버퍼다. 장기 실행 서비스의 일반 metric 수집 경로로 쓰지 않는다.
 
-## Audience and Goal
+## Scope
+
+### Audience and Goal
 
 대상 독자는 개발자, 운영자, agent 튜닝 담당자다. Pushgateway의 역할과 동작 방식을 이해하고, 배치 작업에서 메트릭을 올바르게 전송하고 관리하는 방법을 익히는 것이 목표다.
 
-## Usage
+## Concepts
 
 ### Preconditions
 
 - `pushgateway` service가 `obs` 또는 `batch-metrics` profile에서 실행 중이어야 한다.
 - 작업이 `obs_net` 또는 Pushgateway에 도달할 수 있는 네트워크 경로에 있어야 한다.
 - Prometheus에 의존하는 dashboard or alert를 만들기 전에는 `prometheus.yml`의 Pushgateway scrape job 존재를 확인해야 한다.
+
+## Usage
 
 ### Normal use
 

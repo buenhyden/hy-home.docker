@@ -1,10 +1,10 @@
 ---
 title: "Offsite Backup Target"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "architecture"
 artifact_id: "ADR-0041"
 parent_ids:
@@ -63,11 +63,7 @@ over 5 GiB; the cost estimates below assume the earlier 5 GiB cap.
 - [pgBackRest multiple repositories and S3](https://pgbackrest.org/user-guide.html)
 - [rest-server append-only mode](https://github.com/restic/rest-server)
 
-## Decision
-
-### Decision
-
-### Decision Drivers
+## Decision Drivers
 
 - Recovery must be possible even if the host is lost (the gap in POL-0021
   control 1).
@@ -81,26 +77,7 @@ over 5 GiB; the cost estimates below assume the earlier 5 GiB cap.
   timer, minimal manual procedure).
 - The remote copy must not be deletable by ransomware or mistake.
 
-### Decision
-
-Use **(b) S3-compatible cloud, Cloudflare R2** (owner decision, 2026-09-25).
-
-- Place a single remote Restic repository in an R2 bucket, and upload state
-  and host snapshots with `restic copy` after the local backup and `check`.
-  The 5 GiB cap fits inside the free tier (10 GB) and free egress.
-- pgBackRest starts by loading its repository directory into the remote
-  Restic (day-level remote RPO, no egress or keys on `mng-pg`). If WAL-level
-  RPO becomes necessary remotely too, a new decision opens to move to
-  `repo2-type=s3`.
-- Enable lock (retention rules) on the bucket, and scope this host's token to
-  that bucket only. Remote `forget-prune` is kept as a separate manual
-  procedure.
-- Store R2 credentials only as a file under `secrets/backup/` (0600, injected
-  as a Docker Secret) plus an offline copy; do not store them in OpenBao.
-
-## Alternatives
-
-### Alternatives
+## Options
 
 ### Options Considered
 
@@ -198,6 +175,23 @@ repository via `repo2-type=s3` (and `gcs`, `azure`, `sftp`).
 - **Good**: Nothing to do right now.
 - **Bad**: The state where host loss loses everything remains. SPEC-0182
   criterion 10 requires an owner and a trigger or date when deferring.
+
+## Decision
+
+Use **(b) S3-compatible cloud, Cloudflare R2** (owner decision, 2026-09-25).
+
+- Place a single remote Restic repository in an R2 bucket, and upload state
+  and host snapshots with `restic copy` after the local backup and `check`.
+  The 5 GiB cap fits inside the free tier (10 GB) and free egress.
+- pgBackRest starts by loading its repository directory into the remote
+  Restic (day-level remote RPO, no egress or keys on `mng-pg`). If WAL-level
+  RPO becomes necessary remotely too, a new decision opens to move to
+  `repo2-type=s3`.
+- Enable lock (retention rules) on the bucket, and scope this host's token to
+  that bucket only. Remote `forget-prune` is kept as a separate manual
+  procedure.
+- Store R2 credentials only as a file under `secrets/backup/` (0600, injected
+  as a Docker Secret) plus an offline copy; do not store them in OpenBao.
 
 ## Consequences
 

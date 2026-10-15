@@ -1,10 +1,10 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -19,11 +19,17 @@ created: "2026-05-17"
 Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다.
 시나리오 파일 복구와 승인된 upgrade canary도 다룬다.
 
-## Trigger and Preconditions
+## Trigger
 
 test 중 target health가 저하되거나, worker 연결이 끊기거나, master UI가 실패하거나,
 scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
-사용한다. 모든 command는 저장소 루트에서 독립 LAB Compose file을 지정한다.
+사용한다.
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+모든 command는 저장소 루트에서 독립 LAB Compose file을 지정한다.
 아래 공개 명령은 `labs/.env.example`와 명시한 합성 경로만 사용한다. 실제 승인된
 실행 값은 승인된 실행 도구가 주입하며 문서에 비공개 env 파일 경로를 적지 않는다.
 
@@ -112,7 +118,7 @@ dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 
 - scenario/result restore와 upgrade rehearsal은 Task가 protected path, command,
   관찰된 결과를 기록할 때까지 **미실행** 상태로 남는다.
 
-## Rollback and Escalation
+## Failure and Recovery
 
 ### Rollback or Recovery
 

@@ -1,10 +1,10 @@
 ---
 title: "Ollama Operations Policy"
-version: "2.0.2"
+version: "2.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0056"
 parent_ids:
@@ -63,7 +63,17 @@ Ollama 추론 엔진 운영 전반:
 - 장애 복구 목적의 단기 예외(예: 임시 모델 fallback)는 온콜 승인 하에 허용.
 - 예외 종료 후 기본 정책으로 즉시 복귀하고 기록을 남겨야 한다.
 
-### Verification
+### Review Cadence
+
+- **Quarterly**: 모델 포트폴리오/자원 정책 검토
+- **Per Model Change**: 모델 도입/교체 건별 검토
+
+### Traceability
+
+- Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](../../guides/09-ai-and-search/0056-ollama.md) (`GDE-0056`), [Runbook](../../runbooks/09-ai-and-search/0056-ollama.md) (`RUN-0056`)
+
+## Verification
 
 - 배포 전:
   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
@@ -77,16 +87,6 @@ Ollama 추론 엔진 운영 전반:
   - 배포 로그, 모델 태그 기록, hardening/compose 검증 결과, 롤백 결과
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
-### Review Cadence
-
-- **Quarterly**: 모델 포트폴리오/자원 정책 검토
-- **Per Model Change**: 모델 도입/교체 건별 검토
-
-### Traceability
-
-- Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](../../guides/09-ai-and-search/0056-ollama.md) (`GDE-0056`), [Runbook](../../runbooks/09-ai-and-search/0056-ollama.md) (`RUN-0056`)
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Single-Administrator OpenBao Custody Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-15"
 layer: "specs"
 artifact_id: "SPEC-0242-TSK-0001"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-10-14"
 
 # Single-Administrator OpenBao Custody Task
 
-## Objective
+## Overview
+
+### Objective
 
 Keep OpenBao custody on the host for a single administrator, with only the
 backup and R2 keys off the host, as SPEC-0242 states.

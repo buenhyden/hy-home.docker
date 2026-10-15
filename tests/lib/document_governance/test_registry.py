@@ -1507,17 +1507,18 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertIn("in-progress", registry.transitions["task"]["ready"])
         self.assertIn("blocked", registry.transitions["task"]["in-progress"])
         self.assertIn("in-progress", registry.transitions["task"]["blocked"])
-        self.assertIn("completed", registry.transitions["task"]["blocked"])
+        self.assertNotIn("completed", registry.transitions["task"]["blocked"])
+        self.assertIn("ready", registry.transitions["task"]["blocked"])
         self.assertEqual(
-            ("investigating", "resolved"),
-            registry.transitions["incident"]["detected"],
+            ("investigating",),
+            registry.transitions["incident"]["open"],
         )
         self.assertEqual(
             ("mitigated", "resolved"),
             registry.transitions["incident"]["investigating"],
         )
         self.assertEqual(
-            ("resolved", "investigating"),
+            ("investigating", "resolved"),
             registry.transitions["incident"]["mitigated"],
         )
 
@@ -3229,6 +3230,8 @@ class ProfileLanguageTests(unittest.TestCase):
                 "archive-record-"
             ):
                 expected = None
+            elif profile_id.startswith("governance-"):
+                expected = "ko-or-en"
             else:
                 expected = "en"
             with self.subTest(profile=profile_id):
@@ -3384,7 +3387,7 @@ class ExecutionLifecycleTests(unittest.TestCase):
         # Generation 6: execution state belongs to Tasks, never to the Plan.
         transitions = self._transitions("plan")
         self.assertEqual(
-            ["in-review", "approved", "cancelled", "superseded"],
+            ["in-review", "approved", "cancelled"],
             transitions["draft"],
         )
         self.assertIn("approved", transitions["in-review"])
@@ -3401,7 +3404,7 @@ class ExecutionLifecycleTests(unittest.TestCase):
         # A Spec Package is reviewed and approved before activation.
         self.assertNotIn("completed", self._transitions("spec")["draft"])
         self.assertEqual(
-            ["in-review", "approved", "cancelled", "superseded"],
+            ["in-review", "approved", "cancelled"],
             self._transitions("spec")["draft"],
         )
 

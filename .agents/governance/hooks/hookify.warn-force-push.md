@@ -1,16 +1,28 @@
 ---
 title: "Prefer --force-with-lease over --force."
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-15"
 action: "warn"
 enabled: true
 event: "bash"
 name: "warn-force-push"
 pattern: "git\\s+push\\s+.*(--force\\b|--force-with-lease\\b|-f\\s|-f$)"
 ---
+
+# Prefer --force-with-lease over --force
+
+## Overview
+
+Apply the declared `warn` action for warn-force-push.
+
+## Scope
+
+`bash` 이벤트의 `warn-force-push` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+
+## Rules
 
 **Force push detected (project rule)**
 
@@ -38,22 +50,16 @@ pattern: "git\\s+push\\s+.*(--force\\b|--force-with-lease\\b|-f\\s|-f$)"
 ```bash
 # Prefer --force-with-lease over --force.
 
-## Overview
-
-Apply the declared `warn` action for warn-force-push.
-
-## Scope
-
-The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
-
-## Rules
-
 git push --force-with-lease origin feat/42-my-feature
 ```
 
 ## Exceptions
 
 No exception is declared by this rule.
+
+## Verification
+
+The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
 
 ## Related Documents
 
