@@ -101,6 +101,13 @@ _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "leaf.storybook-contract",
     "local.workflow-harness",
 )
+HOSTED_UNIT_GATE_IDS = frozenset(
+    {
+        "leaf.ci-gate-contract-regressions",
+        "leaf.compose-baseline-regressions",
+        "leaf.repository-integrity-regressions",
+    }
+)
 _LOCAL_AGGREGATE_CHILDREN = {
     "local.document-corpus-lifecycle": ("leaf.local-document-corpus-lifecycle",),
     "local.workflow-harness": (
@@ -425,6 +432,7 @@ class PublicGateContract:
     changed_root_rules: tuple[ChangedRootRule, ...]
     changed_fallback_suites: tuple[str, ...]
     local_only_gate_ids: tuple[str, ...]
+    hosted_unit_bindings: tuple[tuple[str, pathlib.PurePosixPath, tuple[str, ...]], ...]
 
     @property
     def suite_names(self) -> tuple[str, ...]:
@@ -940,11 +948,26 @@ def parse_public_gate_contract(
         and record.get("argv", ())[:1] == ["run-unittest"]
     }
     registered_unit_gate_ids.add("leaf.conftest-policy-tests")
-    if not registered_unit_gate_ids.issubset(local_only_set):
+    hosted_unit_bindings = tuple(
+        (
+            str(record["gate_id"]),
+            pathlib.PurePosixPath(str(record["entrypoint"])),
+            tuple(str(argument) for argument in record["argv"]),
+        )
+        for record in raw_nodes
+        if record.get("gate_id") in HOSTED_UNIT_GATE_IDS
+    )
+    local_unit_gate_ids = registered_unit_gate_ids - HOSTED_UNIT_GATE_IDS
+    if (
+        not HOSTED_UNIT_GATE_IDS.issubset(registered_unit_gate_ids)
+        or {binding[0] for binding in hosted_unit_bindings} != HOSTED_UNIT_GATE_IDS
+        or HOSTED_UNIT_GATE_IDS.intersection(local_only_set)
+        or not local_unit_gate_ids.issubset(local_only_set)
+    ):
         raise GateContractError(
             "ci-gate-local-only-gates",
             "public_gate/local_only_gate_ids",
-            "every registered isolated unit leaf must be typed local-only",
+            "only the closed hosted contract regression set may run outside the local-only unit lane",
         )
     for validator in validators:
         contexts_are_local_only = validator.contexts == ("local",)
@@ -1085,6 +1108,7 @@ def parse_public_gate_contract(
         tuple(root_rules),
         fallback,
         local_only_gate_ids,
+        hosted_unit_bindings,
     )
 
 

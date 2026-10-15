@@ -26,6 +26,7 @@ if __package__ in {None, ""}:
 
 from scripts.lib.gate import ci_gate_adapters
 from scripts.lib.gate.ci_gate_contract import (
+    HOSTED_UNIT_GATE_IDS,
     PUBLIC_SUITE_NAMES,
     GateContractError,
     GateRegistry,
@@ -89,6 +90,30 @@ _LOCAL_EXCLUDED_GATE_IDS = frozenset(
 _PR_ONLY_GATE_IDS = frozenset({"leaf.changed-style", "leaf.commit-message-contract"})
 
 
+def _trusted_git_executable(environ: Mapping[str, str]) -> str:
+    value = environ.get("TRUSTED_GIT_PATH", "")
+    path = pathlib.Path(value)
+    try:
+        metadata = path.stat()
+    except OSError:
+        metadata = None
+    if (
+        not path.is_absolute()
+        or ".." in path.parts
+        or metadata is None
+        or not stat.S_ISREG(metadata.st_mode)
+        or metadata.st_uid != 0
+        or metadata.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+        or not os.access(path, os.X_OK)
+    ):
+        raise GateContractError(
+            "ci-gate-execution-context",
+            "git",
+            "hosted execution requires the pre-install system Git executable",
+        )
+    return str(path)
+
+
 @dataclasses.dataclass(frozen=True, slots=True)
 class GateInvocation:
     gate_id: str
@@ -116,8 +141,6 @@ class ExecutionContext(enum.Enum):
     WORKFLOW_DISPATCH = "workflow_dispatch"
 
 
-_ALL_EXECUTION_CONTEXTS = frozenset(ExecutionContext)
-_CI_EXECUTION_CONTEXTS = _ALL_EXECUTION_CONTEXTS - {ExecutionContext.LOCAL}
 _INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
 _PR_STYLE_INVOCATION = (
     pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"),
@@ -142,8 +165,20 @@ _INTERNAL_CHECK_INVOCATIONS = frozenset(
 def _is_admitted_internal_invocation(
     invocation: GateInvocation,
     context: ExecutionContext,
+    hosted_unit_bindings: tuple[
+        tuple[str, pathlib.PurePosixPath, tuple[str, ...]], ...
+    ],
 ) -> bool:
     if invocation.entrypoint == _INTERNAL_ADAPTER_PATH:
+        if (
+            context is ExecutionContext.PULL_REQUEST
+            and invocation.gate_id in HOSTED_UNIT_GATE_IDS
+        ):
+            return (
+                invocation.gate_id,
+                invocation.entrypoint,
+                invocation.argv,
+            ) in hosted_unit_bindings
         return ci_gate_adapters.admits_adapter_invocation(
             invocation.argv, context.value
         )
@@ -163,31 +198,21 @@ def derive_execution_context(environ: Mapping[str, str]) -> ExecutionContext:
     """Derive a closed execution context without extending the public CLI."""
 
     github_actions = environ.get("GITHUB_ACTIONS", "")
-    event_name = environ.get("EVENT_NAME", "")
-    if not github_actions and not event_name:
+    github_event_name = environ.get("GITHUB_EVENT_NAME", "")
+    controller_event_name = environ.get("EVENT_NAME", "")
+    if not github_actions and not github_event_name and not controller_event_name:
         return ExecutionContext.LOCAL
-    if github_actions != "true" or event_name not in {
-        "pull_request",
-        "push",
-        "workflow_dispatch",
-    }:
-        raise GateContractError(
-            "ci-gate-execution-context",
-            "environment",
-            "GitHub execution requires GITHUB_ACTIONS=true and a registered event",
-        )
-    if event_name == "pull_request" and (
-        not _FULL_SHA.fullmatch(environ.get("PR_BASE_SHA", ""))
-        or environ.get("PR_BASE_SHA") == "0" * 40
-        or not _FULL_SHA.fullmatch(environ.get("PR_HEAD_SHA", ""))
-        or environ.get("PR_HEAD_SHA") == "0" * 40
-        or environ.get("PR_BASE_SHA") == environ.get("PR_HEAD_SHA")
+    if (
+        github_actions != "true"
+        or github_event_name not in {"pull_request", "push", "workflow_dispatch"}
+        or (controller_event_name and controller_event_name != github_event_name)
     ):
         raise GateContractError(
             "ci-gate-execution-context",
-            "pull_request",
-            "pull-request execution requires validated base and head SHAs",
+            "environment",
+            "GitHub execution requires an unmodified registered event",
         )
+    event_name = github_event_name
     if event_name == "push":
         before = environ.get("PUSH_BEFORE_SHA", "")
         if not _FULL_SHA.fullmatch(before):
@@ -205,6 +230,115 @@ def derive_execution_context(environ: Mapping[str, str]) -> ExecutionContext:
             "workflow dispatch must not invent a comparison base",
         )
     return ExecutionContext(event_name)
+
+
+def _authenticated_execution_environment(
+    root: pathlib.Path,
+    environ: Mapping[str, str],
+) -> dict[str, str]:
+    """Bind hosted PR inputs to GitHub's merge SHA and raw commit parents."""
+
+    authenticated = dict(environ)
+    context = derive_execution_context(authenticated)
+    if context is not ExecutionContext.PULL_REQUEST:
+        return authenticated
+
+    merge_sha = authenticated.get("GITHUB_SHA", "")
+    trusted_values = {
+        "event": authenticated.get("TRUSTED_EVENT_NAME", ""),
+        "merge": authenticated.get("TRUSTED_MERGE_SHA", ""),
+        "base": authenticated.get("TRUSTED_BASE_SHA", ""),
+        "head": authenticated.get("TRUSTED_HEAD_SHA", ""),
+    }
+    if (
+        not _FULL_SHA.fullmatch(merge_sha)
+        or merge_sha == "0" * 40
+        or trusted_values["event"] != "pull_request"
+        or trusted_values["merge"] != merge_sha
+    ):
+        raise GateContractError(
+            "ci-gate-execution-context",
+            "pull_request",
+            "pull-request execution requires the pre-install GitHub merge identity",
+        )
+
+    git_environment = {
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "PATH": os.defpath,
+    }
+    git_executable = _trusted_git_executable(authenticated)
+    try:
+        resolved = subprocess.run(
+            (git_executable, "rev-parse", "--verify", "HEAD^{commit}"),
+            cwd=root,
+            env=git_environment,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            timeout=_GIT_TIMEOUT_SECONDS,
+            check=False,
+        )
+        commit = subprocess.run(
+            (git_executable, "cat-file", "commit", merge_sha),
+            cwd=root,
+            env=git_environment,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            timeout=_GIT_TIMEOUT_SECONDS,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        raise GateContractError(
+            "ci-gate-execution-context",
+            "pull_request",
+            "pull-request merge topology could not be authenticated",
+        ) from None
+    resolved_sha = resolved.stdout.decode("ascii", errors="replace").strip()
+    if resolved.returncode != 0 or resolved_sha != merge_sha or commit.returncode != 0:
+        raise GateContractError(
+            "ci-gate-execution-context",
+            "pull_request",
+            "the checkout does not match the GitHub merge identity",
+        )
+    try:
+        header = commit.stdout.split(b"\n\n", 1)[0]
+        parents = tuple(
+            line.removeprefix(b"parent ").decode("ascii", errors="strict")
+            for line in header.splitlines()
+            if line.startswith(b"parent ")
+        )
+    except UnicodeDecodeError:
+        parents = ()
+    if (
+        len(parents) != 2
+        or any(not _FULL_SHA.fullmatch(parent) for parent in parents)
+        or trusted_values["base"] != parents[0]
+        or trusted_values["head"] != parents[1]
+    ):
+        raise GateContractError(
+            "ci-gate-execution-context",
+            "pull_request",
+            "the checkout is not the pre-install pull-request merge topology",
+        )
+    for key, expected in (
+        ("PR_BASE_SHA", parents[0]),
+        ("PR_HEAD_SHA", parents[1]),
+    ):
+        supplied = authenticated.get(key, "")
+        if supplied and supplied != expected:
+            raise GateContractError(
+                "ci-gate-execution-context",
+                "pull_request",
+                "mutable pull-request identity does not match the merge topology",
+            )
+        authenticated[key] = expected
+    authenticated["EVENT_NAME"] = "pull_request"
+    return authenticated
 
 
 @dataclasses.dataclass(slots=True)
@@ -577,7 +711,9 @@ def validate_public_execution_parity(
     }
     counts: collections.Counter[str] = collections.Counter()
     for invocation in plan:
-        if _is_admitted_internal_invocation(invocation, context):
+        if _is_admitted_internal_invocation(
+            invocation, context, public_contract.hosted_unit_bindings
+        ):
             continue
         if invocation.gate_id not in expected:
             raise GateContractError(
@@ -653,6 +789,7 @@ def _filter_execution_context(
     excluded = set(local_only_gate_ids)
     if context is not ExecutionContext.PULL_REQUEST:
         excluded.update(_PR_ONLY_GATE_IDS)
+        excluded.update(HOSTED_UNIT_GATE_IDS)
     return tuple(
         invocation for invocation in plan if invocation.gate_id not in excluded
     )
@@ -746,6 +883,8 @@ def main(argv: list[str] | None = None) -> int:
             if root_value
             else pathlib.Path(__file__).resolve().parents[2]
         )
+        execution_environment = _authenticated_execution_environment(root, os.environ)
+        context = derive_execution_context(execution_environment)
         document = load_contract_document(root)
         registry = parse_gate_registry(
             document,
@@ -760,7 +899,6 @@ def main(argv: list[str] | None = None) -> int:
                 )
             return 1
         public_contract = parse_public_gate_contract(document)
-        context = derive_execution_context(os.environ)
         if arguments.local_only and context is not ExecutionContext.LOCAL:
             raise GateContractError(
                 "ci-gate-local-only-context",
@@ -770,7 +908,7 @@ def main(argv: list[str] | None = None) -> int:
         changed_paths = (
             ()
             if arguments.profile == "full"
-            else collect_changed_paths(root, os.environ)
+            else collect_changed_paths(root, execution_environment)
         )
         selected_suites = select_public_suites(
             public_contract,
@@ -832,7 +970,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"node={'true' if prerequisites.node else 'false'}")
             print(f"docker={'true' if prerequisites.docker else 'false'}")
             return 0
-        return execute_execution_plan(root, plan, os.environ)
+        return execute_execution_plan(root, plan, execution_environment)
     except (GateContractError, argparse.ArgumentError) as error:
         if isinstance(error, GateContractError):
             code = error.code
@@ -887,9 +1025,18 @@ def collect_changed_paths(
         "GIT_NO_REPLACE_OBJECTS": "1",
         "LANG": "C",
         "LC_ALL": "C",
-        "PATH": environ.get("PATH", os.defpath),
+        "PATH": (
+            os.defpath
+            if environ.get("GITHUB_ACTIONS") == "true"
+            else environ.get("PATH", os.defpath)
+        ),
     }
     event = environ.get("EVENT_NAME", "")
+    git_executable = (
+        _trusted_git_executable(environ)
+        if environ.get("GITHUB_ACTIONS") == "true"
+        else "git"
+    )
     name_status = ("--name-status", "-z", "--find-renames")
     if event == "pull_request":
         base = environ.get("PR_BASE_SHA", "")
@@ -906,7 +1053,7 @@ def collect_changed_paths(
                 "git",
                 "the pull-request comparison base is unavailable",
             )
-        commands = (("git", "diff", *name_status, f"{base}...{head}"),)
+        commands = ((git_executable, "diff", *name_status, f"{base}...{head}"),)
     elif event == "push":
         base = environ.get("PUSH_BEFORE_SHA", "")
         if not _FULL_SHA.fullmatch(base):
@@ -916,9 +1063,9 @@ def collect_changed_paths(
                 "the push comparison base is unavailable",
             )
         commands = (
-            (("git", "ls-tree", "-r", "--name-only", "-z", "HEAD"),)
+            ((git_executable, "ls-tree", "-r", "--name-only", "-z", "HEAD"),)
             if base == "0" * 40
-            else (("git", "diff", *name_status, base, "HEAD"),)
+            else ((git_executable, "diff", *name_status, base, "HEAD"),)
         )
     elif event:
         raise GateContractError(

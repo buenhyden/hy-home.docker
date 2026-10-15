@@ -200,6 +200,7 @@ class PublicSuiteModelTests(unittest.TestCase):
                 "changed_root_rules",
                 "changed_fallback_suites",
                 "local_only_gate_ids",
+                "hosted_unit_bindings",
             ),
             tuple(field.name for field in dataclasses.fields(public)),
         )
@@ -280,11 +281,13 @@ class PublicSuiteModelTests(unittest.TestCase):
             "local": {},
             "ci-pr": {
                 "GITHUB_ACTIONS": "true",
+                "GITHUB_EVENT_NAME": "pull_request",
                 "EVENT_NAME": "pull_request",
                 "PR_BASE_SHA": "1" * 40,
                 "PR_HEAD_SHA": "2" * 40,
             },
         }
+        hosted_unit_suites = {"repository-integrity"}
         for context, environ in environments.items():
             for suite, expected in expected_by_suite.items():
                 with self.subTest(context=context, suite=suite):
@@ -297,7 +300,11 @@ class PublicSuiteModelTests(unittest.TestCase):
                         and invocation.argv[-1:] == ("-v",)
                         for module in invocation.argv[1:-1]
                     }
-                    context_expected = expected if context == "local" else set()
+                    context_expected = (
+                        expected
+                        if context == "local" or suite in hosted_unit_suites
+                        else set()
+                    )
                     self.assertEqual(context_expected, actual & current_modules)
 
     def test_validator_ownership_is_derived_from_the_workflow_contract(self) -> None:

@@ -86,6 +86,17 @@ settings by itself.
   a repository-local installer so every ref, including deletions, is checked
   before any pre-commit selection; installation and an observed Git push
   rejection remain separate evidence in the current Task.
+- On 2026-10-16, authenticated read-only lookups returned HTTP 200 and again
+  confirmed `strict=true`, `enforce_admins=true`, `contexts=[]`, `checks=[]`,
+  zero required approvals, no CODEOWNERS review, conversation resolution on,
+  and force pushes and deletion off. Effective branch rules were also empty.
+  Therefore `candidate-quality` is produced but is not required for merge.
+  The latest successful PR run observed for `.github/workflows/ci-quality.yml`
+  was run `38695709347` on head
+  `8b0a264b9dc8d903d407b15064ef09cbcbd7df00`; check-run `116291678906`
+  was named `candidate-quality`, completed successfully, and was produced by
+  GitHub Actions App ID `15368` (`github-actions`). This dated source identity
+  supports a proposal only; no protection mutation was performed.
 
 ## Target Ruleset
 
@@ -123,6 +134,103 @@ of the new producer does not activate protection. Before proposing its actual
 setting, verify the PR job's exact name, source App, head/merge revision and
 success/failure behavior, then capture the full before-state and scoped rollback.
 No stale retired `validation-changed` context may be restored from old prose.
+
+The minimal proposed change is limited to
+`branches/main/protection/required_status_checks` with this reviewed payload:
+
+```json
+{"strict":true,"contexts":[],"checks":[{"context":"candidate-quality","app_id":15368}]}
+```
+
+It preserves strict mode and binds the one candidate check to its observed
+GitHub Actions App. Because the endpoint is scoped, administrator enforcement,
+reviews, conversation resolution, force-push denial and deletion denial are not
+part of the PATCH. Capture and compare those fields before and after anyway.
+Applying this payload requires separate owner approval.
+
+The operator may stage the proposed and rollback payloads locally, without
+printing any credential. First establish an exclusive operator window for this
+field; GitHub exposes no compare-and-swap guarantee for this endpoint. The
+fresh read must still equal the reviewed empty-check state, and the full
+resource must remain unchanged immediately before the approved PATCH:
+
+```bash
+set -euo pipefail
+umask 077
+workdir="$(mktemp -d /tmp/hyhome-main-protection.XXXXXX)"
+before="$workdir/before.json"
+immediate="$workdir/immediate-before.json"
+after="$workdir/after.json"
+proposed="$workdir/proposed.json"
+rollback="$workdir/rollback.json"
+gh api repos/buenhyden/hy-home.docker/branches/main/protection > "$before"
+jq -e '.required_status_checks.strict == true and .required_status_checks.contexts == [] and .required_status_checks.checks == []' "$before"
+jq '.required_status_checks | {strict,contexts,checks}' "$before" > "$rollback"
+printf '%s\n' '{"strict":true,"contexts":[],"checks":[{"context":"candidate-quality","app_id":15368}]}' > "$proposed"
+gh api repos/buenhyden/hy-home.docker/branches/main/protection > "$immediate"
+cmp -s "$before" "$immediate"
+gh api --method PATCH repos/buenhyden/hy-home.docker/branches/main/protection/required_status_checks --input "$proposed"
+gh api repos/buenhyden/hy-home.docker/branches/main/protection > "$after"
+jq -S 'del(.required_status_checks)' "$before" > "$workdir/before-unmodified.json"
+jq -S 'del(.required_status_checks)' "$after" > "$workdir/after-unmodified.json"
+cmp -s "$workdir/before-unmodified.json" "$workdir/after-unmodified.json"
+```
+
+The `gh api --method PATCH` command is the approval boundary. After an approved
+PATCH, the configuration read-back and historical producer-metadata assertions
+are:
+
+```bash
+jq -e '.required_status_checks.strict == true and .required_status_checks.contexts == [] and .required_status_checks.checks == [{"context":"candidate-quality","app_id":15368}]' "$after"
+gh api repos/buenhyden/hy-home.docker/commits/8b0a264b9dc8d903d407b15064ef09cbcbd7df00/check-runs > /tmp/hyhome-candidate-check-runs.json
+jq -e '[.check_runs[] | select(.name == "candidate-quality" and .status == "completed" and .conclusion == "success" and .app.id == 15368 and .app.slug == "github-actions")] | length == 1' /tmp/hyhome-candidate-check-runs.json
+jq -e '[.check_runs[] | select(.name == "candidate-quality" and .app.id != 15368)] | length == 0' /tmp/hyhome-candidate-check-runs.json
+```
+
+Any failed assertion stops acceptance. For rollback after a separately approved
+application, PATCH the captured empty-check payload, read the full protection
+resource again, and assert `strict=true`, `contexts=[]`, `checks=[]` while the
+preserved fields still match the before-state:
+
+```bash
+gh api --method PATCH repos/buenhyden/hy-home.docker/branches/main/protection/required_status_checks --input "$rollback"
+gh api repos/buenhyden/hy-home.docker/branches/main/protection > "$workdir/rollback-readback.json"
+jq -e '.required_status_checks.strict == true and .required_status_checks.contexts == [] and .required_status_checks.checks == []' "$workdir/rollback-readback.json"
+jq -S 'del(.required_status_checks)' "$workdir/rollback-readback.json" > "$workdir/rollback-unmodified.json"
+cmp -s "$workdir/before-unmodified.json" "$workdir/rollback-unmodified.json"
+```
+
+The check-run filters above prove only metadata on one past SHA. They do not
+prove that protection accepts or denies a current PR. All enforcement cases are
+`NOT_RUN` until the separately approved PATCH and fresh test inputs exist:
+
+| Case | Required current input | Expected observation | Current status |
+| --- | --- | --- | --- |
+| Missing check | Current PR head with no `candidate-quality` check | Merge state blocked; no matching current-head check run | NOT_RUN |
+| Failed check | Current PR head with App 15368 `candidate-quality` failure | Merge state blocked; matching current-head conclusion is failure | NOT_RUN |
+| Stale success | New PR head after a prior head succeeded | Merge state blocked; success exists only on the old SHA | NOT_RUN |
+| Wrong App | Same check name from a separately installed App | Merge state blocked; App ID differs from 15368 | BLOCKED until such an independently permissioned App exists |
+| Matching success | Current PR head with App 15368 success and every other protection condition satisfied | Required-check state satisfied for that head | NOT_RUN |
+
+For every available case, capture both the PR merge state and the exact current
+head's check runs, then assert the expected pair. Substitute reviewed PR and SHA
+values literally; do not infer the SHA from an older run:
+
+```bash
+gh pr view <test-pr-number> --json headRefOid,mergeStateStatus,statusCheckRollup > /tmp/hyhome-required-check-case.json
+gh api repos/buenhyden/hy-home.docker/commits/<current-head-sha>/check-runs > /tmp/hyhome-required-check-case-runs.json
+jq -e '.headRefOid == "<current-head-sha>"' /tmp/hyhome-required-check-case.json
+jq -e '[.check_runs[] | select(.name == "candidate-quality" and .app.id == 15368)]' /tmp/hyhome-required-check-case-runs.json
+```
+
+The case-specific assertion must check `mergeStateStatus` together with absence,
+failure, stale SHA, wrong App, or matching success on the same current head.
+Resolve every other protection condition before interpreting the matching
+success case. Do not invoke a merge as a test. If an actual merge attempt is
+ever required, first obtain separate authorization for a disposable protected
+fixture branch and its cleanup; never use `main` as that fixture. A wrong-App
+case cannot be synthesized by editing JSON or an App ID and remains blocked
+until a real separately permissioned App produces the check.
 
 A whole workflow skipped by path/branch filters or commit instructions can leave
 an expected check pending. Selection happens inside the PR workflow; title edits

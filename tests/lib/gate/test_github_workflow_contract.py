@@ -295,19 +295,72 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "github.event_name == 'pull_request'",
             candidate["if"],
         )
+        self.assertNotIn("env", candidate)
+        steps = candidate["steps"]
+        capture = next(
+            step
+            for step in steps
+            if step.get("name") == "Capture trusted pull request context"
+        )
+        install_index = next(
+            index
+            for index, step in enumerate(steps)
+            if step.get("name") == "Install validation controller dependencies"
+        )
+        self.assertLess(steps.index(capture), install_index)
+        self.assertEqual("trusted-context", capture["id"])
         self.assertEqual(
-            {
-                "EVENT_NAME": "pull_request",
-                "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
-                "PR_HEAD_SHA": "${{ github.event.pull_request.head.sha }}",
-            },
-            candidate["env"],
+            "/usr/bin/bash --noprofile --norc -eo pipefail {0}", capture["shell"]
+        )
+        for required in (
+            'test "$GITHUB_EVENT_NAME" = pull_request',
+            "export GIT_NO_REPLACE_OBJECTS=1",
+            '"$git_path" cat-file commit "$GITHUB_SHA"',
+            'test "${#parents[@]}" -eq 2',
+            "printf 'git-path=%s\\n' \"$git_path\"",
+            "printf 'python-path=%s\\n' \"$python_path\"",
+        ):
+            self.assertIn(required, capture["run"])
+        trusted_environment = {
+            "TRUSTED_EVENT_NAME": "${{ steps.trusted-context.outputs.event-name }}",
+            "TRUSTED_MERGE_SHA": "${{ steps.trusted-context.outputs.merge-sha }}",
+            "TRUSTED_BASE_SHA": "${{ steps.trusted-context.outputs.base-sha }}",
+            "TRUSTED_HEAD_SHA": "${{ steps.trusted-context.outputs.head-sha }}",
+            "TRUSTED_GIT_PATH": "${{ steps.trusted-context.outputs.git-path }}",
+            "TRUSTED_PYTHON_PATH": "${{ steps.trusted-context.outputs.python-path }}",
+        }
+        for name in (
+            "Select candidate prerequisites",
+            "Run changed candidate validation",
+        ):
+            step = next(item for item in steps if item.get("name") == name)
+            self.assertEqual(trusted_environment, step["env"])
+        for name in (
+            "Capture trusted pull request context",
+            "Install validation controller dependencies",
+            "Select candidate prerequisites",
+            "Verify selected Docker prerequisite",
+            "Run changed candidate validation",
+        ):
+            step = next(item for item in steps if item.get("name") == name)
+            self.assertEqual(
+                "/usr/bin/bash --noprofile --norc -eo pipefail {0}",
+                step["shell"],
+            )
+        install = next(
+            item
+            for item in steps
+            if item.get("name") == "Install validation controller dependencies"
+        )
+        self.assertEqual(
+            {"TRUSTED_PYTHON_PATH": "${{ steps.trusted-context.outputs.python-path }}"},
+            install["env"],
         )
         self.assertEqual(
             1,
             sum(
                 step.get("run")
-                == "python3 scripts/validation/run-ci-gate.py --profile changed"
+                == '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed'
                 for step in candidate["steps"]
                 if isinstance(step, dict)
             ),
@@ -476,13 +529,19 @@ class GithubWorkflowContractTests(unittest.TestCase):
             for step in job.get("steps", ())
             if isinstance(step, dict) and "run" in step
         )
+        capture_run = next(
+            step["run"]
+            for step in ci.data["jobs"]["candidate-quality"]["steps"]
+            if step.get("name") == "Capture trusted pull request context"
+        )
         self.assertEqual(
             {
+                capture_run,
                 "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif",
-                "python3 -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt",
-                'python3 scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
+                '"$TRUSTED_PYTHON_PATH" -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt',
+                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
                 "docker version",
-                "python3 scripts/validation/run-ci-gate.py --profile changed",
+                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed',
             },
             set(run_values),
         )
@@ -619,14 +678,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(REQUIRED_CI_JOBS, set(workflow.data["jobs"]))
         self.assertNotIn("env", workflow.data)
-        self.assertEqual(
-            {
-                "EVENT_NAME": "pull_request",
-                "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
-                "PR_HEAD_SHA": "${{ github.event.pull_request.head.sha }}",
-            },
-            workflow.data["jobs"]["candidate-quality"]["env"],
-        )
+        self.assertNotIn("env", workflow.data["jobs"]["candidate-quality"])
         self.assertNotIn("HYHOME_COMPOSE_PROFILES", str(workflow.data))
 
     def test_required_workflow_rejects_inherited_compose_selection(self) -> None:
@@ -893,13 +945,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
             1,
             sum(
                 step.get("run")
-                == "python3 scripts/validation/run-ci-gate.py --profile changed"
+                == '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed'
                 for step in candidate["steps"]
             ),
         )
         self.assertTrue(
             any("upload-sarif@" in step.get("uses", "") for step in security["steps"])
         )
+
         document = next(
             item
             for item in self.module.load_workflows(ROOT)
@@ -950,6 +1003,12 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "workflow-gate-projection-mismatch",
             ),
             (
+                "candidate-mutable-shell-path",
+                "candidate-quality",
+                lambda job: job["steps"][-1].pop("shell"),
+                "workflow-gate-execution-context-invalid",
+            ),
+            (
                 "security-checkout-order",
                 "main-security",
                 lambda job: job["steps"].insert(1, job["steps"].pop(0)),
@@ -970,6 +1029,35 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     document.path, data, data["jobs"], contract
                 )
                 self.assertIn(expected, {finding.code for finding in findings})
+
+    def test_candidate_commands_ignore_a_hostile_path(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            hostile = pathlib.Path(directory)
+            for name in ("bash", "python3"):
+                executable = hostile / name
+                executable.write_text("#!/bin/sh\nexit 99\n", encoding="utf-8")
+                executable.chmod(0o755)
+            environment = {
+                "PATH": str(hostile),
+                "TRUSTED_PYTHON_PATH": sys.executable,
+            }
+            result = subprocess.run(
+                [
+                    "/usr/bin/bash",
+                    "--noprofile",
+                    "--norc",
+                    "-eo",
+                    "pipefail",
+                    "-c",
+                    '"$TRUSTED_PYTHON_PATH" -c "print(\'trusted-python\')"',
+                ],
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual("trusted-python\n", result.stdout)
 
     def test_legacy_profile_root_substitution_fails_closed(self) -> None:
         with self.workflow_fixture() as root:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Unified Infrastructure Hardening Verification Script
-# Consolidates checks for all 12 tiers into a single execution and report.
+# Consolidates checks for all 13 tiers into a single execution and report.
 
 set -euo pipefail
 
@@ -317,7 +317,7 @@ requested tiers are checked.
 Supported tiers:
   01-gateway, 02-auth, 03-security, 04-data, 05-messaging,
   06-observability, 07-workflow, 08-ai, 09-platform-ops,
-  10-communication, 11-quality, 12-analytics
+  10-communication, 11-quality, 12-analytics, 13-experience
 EOF
 }
 
@@ -771,6 +771,22 @@ check_12_analytics() {
   check_contains "$dbt_compose" "./profiles:/config:ro" "dbt profiles must remain read-only"
 }
 
+# --- Tier 13: Experience ---
+check_13_experience() {
+  local tier="13-experience"
+  start_tier "$tier"
+
+  local compose_file="infra/13-experience/storybook/docker-compose.yml"
+  check_file "$compose_file"
+  check_contains "$compose_file" "traefik.http.routers.storybook.middlewares: req-rate-limit@file,gateway-standard-chain@file,sso-auth@file" "storybook sso middleware chain missing"
+  check_contains "$compose_file" "traefik.http.routers.storybook-mcp.middlewares: req-rate-limit@file,gateway-standard-chain@file" "storybook MCP gateway chain missing"
+  check_not_contains "$compose_file" "ports:" "storybook services must not publish host ports"
+  check_service_network "$compose_file" "storybook" "experience_ingress_net"
+  check_service_network "$compose_file" "storybook-mcp" "edge_net"
+  check_service_healthcheck "$compose_file" "storybook"
+  check_service_healthcheck "$compose_file" "storybook-mcp"
+}
+
 run_tier() {
   local tier="$1"
 
@@ -787,6 +803,7 @@ run_tier() {
   10-communication | communication | comm) check_10_communication ;;
   11-quality | quality) check_11_quality ;;
   12-analytics | analytics) check_12_analytics ;;
+  13-experience | experience) check_13_experience ;;
   -h | --help)
     usage
     exit 0
@@ -821,6 +838,7 @@ main() {
     run_tier 10-communication
     run_tier 11-quality
     run_tier 12-analytics
+    run_tier 13-experience
   else
     local tier
     for tier in "$@"; do

@@ -45,10 +45,16 @@ def _invocation(
 class LocalExecutionBoundaryTests(unittest.TestCase):
     LOCAL_UNIT_GATE_IDS = frozenset(
         {
-            "leaf.compose-baseline-regressions",
             "leaf.conftest-policy-tests",
             "leaf.release-regressions",
             "leaf.supply-chain-fixture-policy",
+        }
+    )
+    HOSTED_CONTRACT_GATE_IDS = frozenset(
+        {
+            "leaf.ci-gate-contract-regressions",
+            "leaf.compose-baseline-regressions",
+            "leaf.repository-integrity-regressions",
         }
     )
     OPSFLOW_SMTP_HOSTED_GATE_IDS = frozenset(
@@ -87,7 +93,7 @@ class LocalExecutionBoundaryTests(unittest.TestCase):
         planned = {invocation.gate_id for invocation in plan}
         self.assertEqual(set(), planned & runner._LOCAL_EXCLUDED_GATE_IDS)
 
-    def test_unit_regressions_are_local_and_conftest_corpus_remains_hosted(
+    def test_unit_regressions_have_explicit_execution_owners(
         self,
     ) -> None:
         document = contract.load_contract_document(ROOT)
@@ -116,6 +122,8 @@ class LocalExecutionBoundaryTests(unittest.TestCase):
         hosted_ids = {item.gate_id for item in hosted}
         self.assertLessEqual(self.LOCAL_UNIT_GATE_IDS, local_ids)
         self.assertFalse(self.LOCAL_UNIT_GATE_IDS & hosted_ids)
+        self.assertLessEqual(self.HOSTED_CONTRACT_GATE_IDS, local_ids)
+        self.assertLessEqual(self.HOSTED_CONTRACT_GATE_IDS, hosted_ids)
         self.assertIn("leaf.conftest-policy", hosted_ids)
 
         entrypoint = pathlib.PurePosixPath(
@@ -192,6 +200,52 @@ class LocalExecutionBoundaryTests(unittest.TestCase):
                     )
                 }
                 self.assertFalse(set(public.local_only_gate_ids) & hosted_ids)
+
+    def test_promoted_units_run_only_locally_and_on_pull_requests(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        registry = contract.parse_gate_registry(
+            document, ".github/workflow-contract.yml"
+        )
+        public = contract.parse_public_gate_contract(document)
+        roots = contract.public_root_gate_ids(public, public.suite_names)
+
+        for context in runner.ExecutionContext:
+            with self.subTest(context=context):
+                plan = runner.build_public_validation_plan(
+                    registry,
+                    roots,
+                    public,
+                    public.suite_names,
+                    context,
+                    profile="full",
+                    root=ROOT,
+                )
+                gate_ids = {item.gate_id for item in plan}
+                if context in {
+                    runner.ExecutionContext.LOCAL,
+                    runner.ExecutionContext.PULL_REQUEST,
+                }:
+                    self.assertLessEqual(self.HOSTED_CONTRACT_GATE_IDS, gate_ids)
+                else:
+                    self.assertFalse(self.HOSTED_CONTRACT_GATE_IDS & gate_ids)
+
+        binding = public.hosted_unit_bindings[0]
+        invocation = dataclasses.replace(
+            _invocation(binding[0], binding[1].as_posix()),
+            argv=binding[2],
+        )
+        for context in runner.ExecutionContext:
+            with self.subTest(admission_context=context):
+                self.assertEqual(
+                    context
+                    in {
+                        runner.ExecutionContext.LOCAL,
+                        runner.ExecutionContext.PULL_REQUEST,
+                    },
+                    runner._is_admitted_internal_invocation(
+                        invocation, context, public.hosted_unit_bindings
+                    ),
+                )
 
 
 class DescriptorExecutionTests(unittest.TestCase):
