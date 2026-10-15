@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -106,6 +106,14 @@ CA change.
 The receipts are durable task evidence for the completed captures. A separate
 independent rehash and each isolated restore remain required recovery gates.
 
+### Structural Validation Receipt
+
+Before the backup-capture receipt commit, the complete active-document
+metadata selection passed at source snapshot `78684ac`. This validates the
+seven selected document records and their lifecycle bindings at that snapshot;
+it does not validate the later receipt edit, the pending independent rehashes
+or restores, or any runtime CA result.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -128,6 +136,7 @@ independent rehash and each isolated restore remain required recovery gates.
 | Gatus backup integrity rehash | 3 | W3 | Independent rehash of the captured Gatus archive | Not yet run after capture | NOT_RUN | Backup Capture Receipts | required | - |
 | Prometheus isolated restore | 2 | W2 | Isolated restoration and validation of the captured Prometheus archive | Not yet run | NOT_RUN | Backup Capture Receipts | required | - |
 | Gatus isolated restore | 3 | W3 | Isolated restoration and validation of the captured Gatus archive | Not yet run | NOT_RUN | Backup Capture Receipts | required | - |
+| Pre-capture document metadata validation | 7 | W7 | `rtk proxy python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 89eb43f683a11587cf4f125be534ae720c20a55c --changed-path docs/03.specs/0244-native-memory-controlled-verification/spec.md --changed-path docs/03.specs/0244-native-memory-controlled-verification/plan.md --changed-path docs/03.specs/0244-native-memory-controlled-verification/tasks/tsk-0001-native-memory-controlled-verification.md --changed-path docs/03.specs/0245-observability-ca-execution/spec.md --changed-path docs/03.specs/0245-observability-ca-execution/plan.md --changed-path docs/03.specs/0245-observability-ca-execution/tasks/tsk-0001-observability-ca-execution.md --changed-path docs/03.specs/README.md --changed-path docs/99.templates/registry.json` | Snapshot `78684ac`; exit 0; selected 7; violations 0; legacy exceptions 0; transition overrides 0; predates backup-capture receipt `23224aa` | PASS | Structural Validation Receipt | required | - |
 
 ## Criterion Acceptance
 
