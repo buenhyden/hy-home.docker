@@ -3144,6 +3144,343 @@
         "response_bytes": 194028,
         "tag": "v3.0.0",
         "channel": "github_latest_candidate_only"
+      },
+      {
+        "supplier": "postgresql-support",
+        "checked_at": "2026-10-15T18:59:04.362847+00:00",
+        "status": 200,
+        "response_url": "https://www.postgresql.org/support/versioning/",
+        "response_sha256": "8d775531633207777233d0bad61a3efe630ab5b23cb040748e12807ec8e7d823",
+        "response_bytes": 12669,
+        "facts": {
+          "version_18_6_present": true,
+          "support_end_2030_11_14_present": true
+        },
+        "request_url": "https://www.postgresql.org/support/versioning/"
+      },
+      {
+        "supplier": "postgresql-security",
+        "checked_at": "2026-10-15T18:59:04.363914+00:00",
+        "status": 200,
+        "response_url": "https://www.postgresql.org/support/security/",
+        "response_sha256": "cf45079043ba101c99670f73eae44fced7004c256c87a3f141dedaeaf58b6216",
+        "response_bytes": 68575,
+        "cve_ids": [
+          "CVE-2026-19385",
+          "CVE-2026-18408",
+          "CVE-2026-18024",
+          "CVE-2026-16241",
+          "CVE-2026-16239",
+          "CVE-2026-16238",
+          "CVE-2026-15742",
+          "CVE-2026-15741",
+          "CVE-2026-14681",
+          "CVE-2026-14680",
+          "CVE-2026-14679",
+          "CVE-2026-14678",
+          "CVE-2026-14677",
+          "CVE-2026-14676",
+          "CVE-2026-14673",
+          "CVE-2026-14672",
+          "CVE-2026-14671",
+          "CVE-2026-14670",
+          "CVE-2026-14669",
+          "CVE-2026-14668",
+          "CVE-2026-14666",
+          "CVE-2026-14664",
+          "CVE-2026-14663",
+          "CVE-2026-14662",
+          "CVE-2026-6638",
+          "CVE-2026-6637",
+          "CVE-2026-6575",
+          "CVE-2026-6479",
+          "CVE-2026-6478",
+          "CVE-2026-6477",
+          "CVE-2026-6476",
+          "CVE-2026-6475",
+          "CVE-2026-6474",
+          "CVE-2026-6473",
+          "CVE-2026-6472",
+          "CVE-2026-6471",
+          "CVE-2026-6470",
+          "CVE-2026-6469",
+          "CVE-2026-6464",
+          "CVE-2026-2007",
+          "CVE-2026-2006",
+          "CVE-2026-2005",
+          "CVE-2026-2004",
+          "CVE-2026-2003"
+        ],
+        "facts": {
+          "fix_version_18_6_present": true,
+          "component_specific_not_image_scan": true
+        },
+        "request_url": "https://www.postgresql.org/support/security/"
+      },
+      {
+        "supplier": "confluent-support",
+        "checked_at": "2026-10-15T18:59:04.364862+00:00",
+        "status": 200,
+        "response_url": "https://docs.confluent.io/platform/current/installation/versions-interoperability.html",
+        "response_sha256": "bb996067086c0b1ede6b3b378b1c3136011687e7a2a057fe8d1fae8d602b19e8",
+        "response_bytes": 360231,
+        "facts": {
+          "patch_8_3_2_present": true,
+          "community_end_2027_06_17_present": true,
+          "enterprise_entitlement_not_observed": true
+        },
+        "request_url": "https://docs.confluent.io/platform/current/installation/versions-interoperability.html"
+      },
+      {
+        "supplier": "jupyter-tag-policy",
+        "checked_at": "2026-10-15T18:59:04.365849+00:00",
+        "status": 200,
+        "response_url": "https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html",
+        "response_sha256": "26417ad3c2e7ca30dd90f29a208b23e38af7cdd64e5c1895d969126e7f243b61",
+        "response_bytes": 86714,
+        "facts": {
+          "date_sha_tags_supported": true,
+          "keyless_signing_documented": true,
+          "verification_not_run": true
+        },
+        "request_url": "https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html"
+      },
+      {
+        "supplier": "pact-wrapper-source",
+        "checked_at": "2026-10-15T18:59:04.561062+00:00",
+        "status": 200,
+        "response_url": "https://raw.githubusercontent.com/pact-foundation/pact-broker-docker/v3.0.0/Dockerfile",
+        "response_sha256": "9616ef46fbc061140d94f419112f814a5ce71ae4f777c2f32403ccbd01789739",
+        "response_bytes": 7292,
+        "version_lines": [
+          "ARG VERSION=dev"
+        ],
+        "request_url": "https://raw.githubusercontent.com/pact-foundation/pact-broker-docker/v3.0.0/Dockerfile"
+      },
+      {
+        "supplier": "traefik-release",
+        "checked_at": "2026-10-15T18:59:04.804743+00:00",
+        "status": 200,
+        "response_url": "https://github.com/traefik/traefik/releases/tag/v3.7.15",
+        "response_sha256": "c88b8ac734c2f65330cd5d8e10af0d392d30326160597c8483d9b5dcd3a21fad",
+        "response_bytes": 211425,
+        "facts": {
+          "release_heading_present": true,
+          "not_a_full_advisory_review": true
+        },
+        "request_url": "https://github.com/traefik/traefik/releases/tag/v3.7.15"
+      },
+      {
+        "supplier": "mailpit-release",
+        "checked_at": "2026-10-15T18:59:05.314835+00:00",
+        "status": 200,
+        "response_url": "https://github.com/axllent/mailpit/releases/tag/v1.31.6",
+        "response_sha256": "5a83198755509ffe38df142b4b29bf61cc85fb856381c47c75af1d272751ed84",
+        "response_bytes": 192287,
+        "facts": {
+          "release_heading_present": true,
+          "not_a_full_advisory_review": true
+        },
+        "request_url": "https://github.com/axllent/mailpit/releases/tag/v1.31.6"
+      },
+      {
+        "supplier": "jupyter-image-tags",
+        "checked_at": "2026-10-15T18:59:05.450009+00:00",
+        "status": 200,
+        "response_url": "https://quay.io/api/v1/repository/jupyter/scipy-notebook/tag/?limit=10&page=1&onlyActiveTags=true",
+        "response_sha256": "9c3d6681d034e5691de06e9e3d869728101341128bcdd844b9f043eca0dbb54a",
+        "response_bytes": 7980,
+        "tags": [
+          {
+            "name": "hub-6.0.1",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777584,
+            "last_modified": "Mon, 12 Oct 2026 03:59:44 -0000",
+            "size": null
+          },
+          {
+            "name": "lab-4.6.4",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777580,
+            "last_modified": "Mon, 12 Oct 2026 03:59:40 -0000",
+            "size": null
+          },
+          {
+            "name": "notebook-7.6.3",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777578,
+            "last_modified": "Mon, 12 Oct 2026 03:59:38 -0000",
+            "size": null
+          },
+          {
+            "name": "conda-26.9.2",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777575,
+            "last_modified": "Mon, 12 Oct 2026 03:59:35 -0000",
+            "size": null
+          },
+          {
+            "name": "mamba-2.8.1",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777572,
+            "last_modified": "Mon, 12 Oct 2026 03:59:32 -0000",
+            "size": null
+          },
+          {
+            "name": "python-3.13.16",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777569,
+            "last_modified": "Mon, 12 Oct 2026 03:59:29 -0000",
+            "size": null
+          },
+          {
+            "name": "python-3.13",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777566,
+            "last_modified": "Mon, 12 Oct 2026 03:59:26 -0000",
+            "size": null
+          },
+          {
+            "name": "ubuntu-26.04",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777563,
+            "last_modified": "Mon, 12 Oct 2026 03:59:23 -0000",
+            "size": null
+          },
+          {
+            "name": "2026-10-12",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777560,
+            "last_modified": "Mon, 12 Oct 2026 03:59:20 -0000",
+            "size": null
+          },
+          {
+            "name": "adc7e9095e38",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "start_ts": 1791777557,
+            "last_modified": "Mon, 12 Oct 2026 03:59:17 -0000",
+            "size": null
+          }
+        ],
+        "has_additional": true,
+        "request_url": "https://quay.io/api/v1/repository/jupyter/scipy-notebook/tag/?limit=10&page=1&onlyActiveTags=true"
+      },
+      {
+        "supplier": "jupyter-latest-alias",
+        "checked_at": "2026-10-15T19:00:38.100956+00:00",
+        "status": 200,
+        "response_sha256": "6eb309a8d2ceca88398b959cf8122f734669ced2631e6a0f74ee94ba60f2b793",
+        "response_bytes": 835,
+        "tags": [
+          {
+            "name": "latest",
+            "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+            "last_modified": "Mon, 12 Oct 2026 03:59:14 -0000"
+          }
+        ],
+        "request_url": "https://quay.io/api/v1/repository/jupyter/scipy-notebook/tag/?specificTag=latest&onlyActiveTags=true&limit=1"
+      },
+      {
+        "supplier": "ollama-exporter-publisher",
+        "checked_at": "2026-10-15T19:03:57.291554+00:00",
+        "status": 200,
+        "response_sha256": "3a339453683b09847f357d04fdeae0f061578658b636118eb92684471a9eb402",
+        "response_bytes": 3570,
+        "repo_name": "lucabecker42/ollama-exporter",
+        "github_source_links": [],
+        "last_updated": "2026-07-14T14:57:43.279376Z",
+        "request_url": "https://hub.docker.com/v2/repositories/lucabecker42/ollama-exporter/"
+      },
+      {
+        "supplier": "ollama-exporter-latest",
+        "checked_at": "2026-10-15T19:05:54.936557+00:00",
+        "status": 200,
+        "response_sha256": "4ff9fdb11e0e72f5e931498d48be4528b460a21785d3740bdd8929e4be262692",
+        "response_bytes": 1759,
+        "tag": "latest",
+        "digest": "sha256:9fb1f4c5bc4ff819eb13e148debeb7fd474a4c8956d83d39928ea22d95d3de5c",
+        "images": [
+          {
+            "architecture": "amd64",
+            "os": "linux",
+            "digest": "sha256:948e06a3e3a94ac9d1a82f3277782da75d5911ff0a1b6ce9f696d29143d5cadd",
+            "status": "active"
+          },
+          {
+            "architecture": "arm64",
+            "os": "linux",
+            "digest": "sha256:63ffcfc22e72d42f835b2f5ea456af7a4ca6585fc49d2bcc7a41c2c0e373e367",
+            "status": "active"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown",
+            "digest": "sha256:0a319b9c90f06d45e54cee23a61555079767ab019559ba91717d02a1c72438f1",
+            "status": "active"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown",
+            "digest": "sha256:075f4381fe03013c23b13a4920f904af0b870a58343dc0a4126d9c015dc7a2c6",
+            "status": "active"
+          }
+        ],
+        "request_url": "https://hub.docker.com/v2/repositories/lucabecker42/ollama-exporter/tags/latest"
+      },
+      {
+        "supplier": "ollama-exporter-version",
+        "checked_at": "2026-10-15T19:05:54.937343+00:00",
+        "status": 200,
+        "response_sha256": "de260ba674f08b937050e10e6731fe218774a9090ef9de864efc96ed9d9cf62b",
+        "response_bytes": 1759,
+        "tag": "1.0.3",
+        "digest": "sha256:9fb1f4c5bc4ff819eb13e148debeb7fd474a4c8956d83d39928ea22d95d3de5c",
+        "images": [
+          {
+            "architecture": "amd64",
+            "os": "linux",
+            "digest": "sha256:948e06a3e3a94ac9d1a82f3277782da75d5911ff0a1b6ce9f696d29143d5cadd",
+            "status": "active"
+          },
+          {
+            "architecture": "arm64",
+            "os": "linux",
+            "digest": "sha256:63ffcfc22e72d42f835b2f5ea456af7a4ca6585fc49d2bcc7a41c2c0e373e367",
+            "status": "active"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown",
+            "digest": "sha256:0a319b9c90f06d45e54cee23a61555079767ab019559ba91717d02a1c72438f1",
+            "status": "active"
+          },
+          {
+            "architecture": "unknown",
+            "os": "unknown",
+            "digest": "sha256:075f4381fe03013c23b13a4920f904af0b870a58343dc0a4126d9c015dc7a2c6",
+            "status": "active"
+          }
+        ],
+        "request_url": "https://hub.docker.com/v2/repositories/lucabecker42/ollama-exporter/tags/1.0.3"
+      },
+      {
+        "supplier": "dbt-postgres-final",
+        "checked_at": "2026-10-15T19:05:54.937935+00:00",
+        "status": 200,
+        "response_sha256": "c6cc7fae83f5f29cbc6447177e69689198cda10a543150cff421658915395726",
+        "response_bytes": 6047,
+        "version": "1.11.0",
+        "package": "dbt-postgres",
+        "all_files_yanked": false,
+        "has_release_files": true,
+        "primary_project_urls": {
+          "Changelog": "https://github.com/dbt-labs/dbt-adapters/blob/main/dbt-postgres/CHANGELOG.md",
+          "Documentation": "https://docs.getdbt.com",
+          "Homepage": "https://github.com/dbt-labs/dbt-adapters/tree/main/dbt-postgres",
+          "Issues": "https://github.com/dbt-labs/dbt-adapters/issues",
+          "Repository": "https://github.com/dbt-labs/dbt-adapters.git#subdirectory=dbt-postgres"
+        },
+        "request_url": "https://pypi.org/pypi/dbt-postgres/1.11.0/json"
       }
     ],
     "vendor_channel_interpretations": [
@@ -3249,6 +3586,753 @@
     },
     "supplier_reference_owner": "update-ledger.json#/entries/*/official_supplier_lookup_refs",
     "verified_security_or_runtime": false,
-    "meaning": "Current public official release candidates only; preserve failed HTTP requests and successful fallbacks. GitHub latest non-prerelease alone is not vendor stable or OCI/API/schema compatibility, signature, SBOM/advisory, license, EOL or native/HOME/recovery acceptance. Debezium3.7 latest stable and3.6 stable are distinct upgrade lines."
+    "meaning": "Current public official release candidates only; preserve failed HTTP requests and successful fallbacks. GitHub latest non-prerelease alone is not vendor stable or OCI/API/schema compatibility, signature, SBOM/advisory, license, EOL or native/HOME/recovery acceptance. Debezium3.7 latest stable and3.6 stable are distinct upgrade lines.",
+    "release_metadata_refresh": {
+      "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+      "proposal_sha256": "6ecff30f3bfc5a0bb5a31613c091441eee4e140e731adf69530549c5bdef2a33",
+      "original_observations_preserved": 92,
+      "additional_observations": 13,
+      "total_observations": 105,
+      "github_release_rule": "Correct official product repository latest published non-draft/non-prerelease final release is sufficient stable RELEASE proof; no extra invented vendor stable-page requirement. Different product, LTS, wrapper, rolling and custom image mapping remain explicit.",
+      "semantic_reference": "https://docs.github.com/en/rest/releases/releases#get-the-latest-release (official latest published full releases; drafts/prereleases cannot be latest)",
+      "supplier_release_interpretations": {
+        "Comfy-Org/ComfyUI": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.40.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "Comfy-Org/ComfyUI",
+          "checked_at": "2026-10-15T15:44:11.179419+00:00",
+          "primary_release_url": "https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.40.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "NVIDIA/dcgm-exporter": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "4.8.4",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "NVIDIA/dcgm-exporter",
+          "checked_at": "2026-10-15T15:44:11.180332+00:00",
+          "primary_release_url": "https://github.com/NVIDIA/dcgm-exporter/releases/tag/4.8.4",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "RedisInsight/RedisInsight": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.8.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "RedisInsight/RedisInsight",
+          "checked_at": "2026-10-15T15:44:11.181033+00:00",
+          "primary_release_url": "https://github.com/redis/RedisInsight/releases/tag/3.8.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "SonarSource/docker-sonarqube": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "2026.5.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "SonarSource/docker-sonarqube",
+          "checked_at": "2026-10-15T15:44:11.181813+00:00",
+          "primary_release_url": "https://github.com/SonarSource/docker-sonarqube/releases/tag/2026.5.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "TwiN/gatus": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "5.37.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "TwiN/gatus",
+          "checked_at": "2026-10-15T15:44:11.562977+00:00",
+          "primary_release_url": "https://github.com/TwiN/gatus/releases/tag/v5.37.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "YanWenKun/ComfyUI-Docker": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "6.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "YanWenKun/ComfyUI-Docker",
+          "checked_at": "2026-10-15T15:44:11.570210+00:00",
+          "primary_release_url": "https://github.com/YanWenKun/ComfyUI-Docker/releases/tag/v6.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "amir20/dozzle": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "11.3.2",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "amir20/dozzle",
+          "checked_at": "2026-10-15T15:44:11.588613+00:00",
+          "primary_release_url": "https://github.com/amir20/dozzle/releases/tag/v11.3.2",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "apache/airflow": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.3.2",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "apache/airflow",
+          "checked_at": "2026-10-15T15:44:11.884294+00:00",
+          "primary_release_url": "https://github.com/apache/airflow/releases/tag/3.3.2",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "apache/iceberg": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.12.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "apache/iceberg",
+          "checked_at": "2026-10-15T15:44:11.896735+00:00",
+          "primary_release_url": "https://github.com/apache/iceberg/releases/tag/apache-iceberg-1.12.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "apache/superset": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "6.1.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "apache/superset",
+          "checked_at": "2026-10-15T15:44:11.932500+00:00",
+          "primary_release_url": "https://github.com/apache/superset/releases/tag/6.1.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "axllent/mailpit": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.31.6",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "axllent/mailpit",
+          "checked_at": "2026-10-15T15:44:12.268315+00:00",
+          "primary_release_url": "https://github.com/axllent/mailpit/releases/tag/v1.31.6",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "danielqsj/kafka_exporter": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.10.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "danielqsj/kafka_exporter",
+          "checked_at": "2026-10-15T15:44:12.274272+00:00",
+          "primary_release_url": "https://github.com/danielqsj/kafka_exporter/releases/tag/v1.10.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "dbt-labs/dbt-adapters": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.10.4",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "dbt-labs/dbt-adapters",
+          "checked_at": "2026-10-15T15:44:12.303657+00:00",
+          "primary_release_url": "https://github.com/dbt-labs/dbt-adapters/releases/tag/v1.10.4",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "distribution/distribution": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.1.2",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "distribution/distribution",
+          "checked_at": "2026-10-15T15:44:12.699591+00:00",
+          "primary_release_url": "https://github.com/distribution/distribution/releases/tag/v3.1.2",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "fivetran/great_expectations": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.24.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "fivetran/great_expectations",
+          "checked_at": "2026-10-15T15:44:12.701562+00:00",
+          "primary_release_url": "https://github.com/fivetran/great_expectations/releases/tag/1.24.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "google/cadvisor": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.60.6",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "google/cadvisor",
+          "checked_at": "2026-10-15T15:44:12.731718+00:00",
+          "primary_release_url": "https://github.com/google/cadvisor/releases/tag/v0.60.6",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "grafana/alloy": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.20.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "grafana/alloy",
+          "checked_at": "2026-10-15T15:44:12.953541+00:00",
+          "primary_release_url": "https://github.com/grafana/alloy/releases/tag/v1.20.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "grafana/grafana": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "13.2.4",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "grafana/grafana",
+          "checked_at": "2026-10-15T15:44:13.045859+00:00",
+          "primary_release_url": "https://github.com/grafana/grafana/releases/tag/v13.2.4",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "grafana/k6": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "2.3.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "grafana/k6",
+          "checked_at": "2026-10-15T15:44:13.049964+00:00",
+          "primary_release_url": "https://github.com/grafana/k6/releases/tag/v2.3.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "grafana/loki": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.7.8",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "grafana/loki",
+          "checked_at": "2026-10-15T15:44:13.310807+00:00",
+          "primary_release_url": "https://github.com/grafana/loki/releases/tag/v3.7.8",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "grafana/pyroscope": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "2.4.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "grafana/pyroscope",
+          "checked_at": "2026-10-15T15:44:13.443873+00:00",
+          "primary_release_url": "https://github.com/grafana/pyroscope/releases/tag/v2.4.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "grafana/tempo": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.1.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "grafana/tempo",
+          "checked_at": "2026-10-15T15:44:13.563876+00:00",
+          "primary_release_url": "https://github.com/grafana/tempo/releases/tag/v3.1.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "kafbat/kafka-ui": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.5.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "kafbat/kafka-ui",
+          "checked_at": "2026-10-15T15:44:13.771639+00:00",
+          "primary_release_url": "https://github.com/kafbat/kafka-ui/releases/tag/v1.5.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "keycloak/keycloak": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "26.8.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "keycloak/keycloak",
+          "checked_at": "2026-10-15T15:44:13.819969+00:00",
+          "primary_release_url": "https://github.com/keycloak/keycloak/releases/tag/26.8.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "lfnovo/open-notebook": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.15.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "lfnovo/open-notebook",
+          "checked_at": "2026-10-15T15:44:13.970014+00:00",
+          "primary_release_url": "https://github.com/lfnovo/open-notebook/releases/tag/v1.15.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "mlflow/mlflow": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.17.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "mlflow/mlflow",
+          "checked_at": "2026-10-15T15:44:14.028718+00:00",
+          "primary_release_url": "https://github.com/mlflow/mlflow/releases/tag/v3.17.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "n8n-io/n8n": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "2.43.6",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "n8n-io/n8n",
+          "checked_at": "2026-10-15T15:44:14.159647+00:00",
+          "primary_release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.43.6",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "oauth2-proxy/oauth2-proxy": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "7.15.5",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "oauth2-proxy/oauth2-proxy",
+          "checked_at": "2026-10-15T15:44:14.195667+00:00",
+          "primary_release_url": "https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.5",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "oliver006/redis_exporter": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.94.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "oliver006/redis_exporter",
+          "checked_at": "2026-10-15T15:44:14.289647+00:00",
+          "primary_release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.94.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "ollama/ollama": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.40.4",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "ollama/ollama",
+          "checked_at": "2026-10-15T15:44:14.333981+00:00",
+          "primary_release_url": "https://github.com/ollama/ollama/releases/tag/v0.40.4",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "open-policy-agent/conftest": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.71.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "open-policy-agent/conftest",
+          "checked_at": "2026-10-15T15:44:14.521804+00:00",
+          "primary_release_url": "https://github.com/open-policy-agent/conftest/releases/tag/v0.71.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "open-webui/open-webui": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.12.2",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "open-webui/open-webui",
+          "checked_at": "2026-10-15T15:44:14.582885+00:00",
+          "primary_release_url": "https://github.com/open-webui/open-webui/releases/tag/v0.12.2",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "openbao/openbao": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "2.7.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "openbao/openbao",
+          "checked_at": "2026-10-15T15:44:14.678991+00:00",
+          "primary_release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "opensearch-project/OpenSearch": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.9.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "opensearch-project/OpenSearch",
+          "checked_at": "2026-10-15T15:44:14.756315+00:00",
+          "primary_release_url": "https://github.com/opensearch-project/OpenSearch/releases/tag/3.9.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "opensearch-project/OpenSearch-Dashboards": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.9.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "opensearch-project/OpenSearch-Dashboards",
+          "checked_at": "2026-10-15T15:44:14.901372+00:00",
+          "primary_release_url": "https://github.com/opensearch-project/OpenSearch-Dashboards/releases/tag/3.9.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "opentofu/opentofu": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.13.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "opentofu/opentofu",
+          "checked_at": "2026-10-15T15:44:14.960423+00:00",
+          "primary_release_url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "pact-foundation/pact_broker": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "2.122.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "pact-foundation/pact_broker",
+          "checked_at": "2026-10-15T15:44:15.210788+00:00",
+          "primary_release_url": "https://github.com/pact-foundation/pact_broker/releases/tag/v2.122.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "pgbackrest/pgbackrest": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "2.59.3",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "pgbackrest/pgbackrest",
+          "checked_at": "2026-10-15T15:44:15.227280+00:00",
+          "primary_release_url": "https://github.com/pgbackrest/pgbackrest/releases/tag/release/2.59.3",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "prometheus-community/postgres_exporter": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.20.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "prometheus-community/postgres_exporter",
+          "checked_at": "2026-10-15T15:44:15.356705+00:00",
+          "primary_release_url": "https://github.com/prometheus-community/postgres_exporter/releases/tag/v0.20.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "prometheus/alertmanager": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.34.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "prometheus/alertmanager",
+          "checked_at": "2026-10-15T15:44:15.540734+00:00",
+          "primary_release_url": "https://github.com/prometheus/alertmanager/releases/tag/v0.34.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "prometheus/node_exporter": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.12.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "prometheus/node_exporter",
+          "checked_at": "2026-10-15T15:44:15.566830+00:00",
+          "primary_release_url": "https://github.com/prometheus/node_exporter/releases/tag/v1.12.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "prometheus/prometheus": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.15.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "prometheus/prometheus",
+          "checked_at": "2026-10-15T15:44:15.610205+00:00",
+          "primary_release_url": "https://github.com/prometheus/prometheus/releases/tag/v3.15.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "prometheus/pushgateway": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.11.4",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "prometheus/pushgateway",
+          "checked_at": "2026-10-15T15:44:15.930849+00:00",
+          "primary_release_url": "https://github.com/prometheus/pushgateway/releases/tag/v1.11.4",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "prometheus/statsd_exporter": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.31.0",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "prometheus/statsd_exporter",
+          "checked_at": "2026-10-15T15:44:15.936956+00:00",
+          "primary_release_url": "https://github.com/prometheus/statsd_exporter/releases/tag/v0.31.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "qdrant/qdrant": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.19.2",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "qdrant/qdrant",
+          "checked_at": "2026-10-15T15:44:16.004734+00:00",
+          "primary_release_url": "https://github.com/qdrant/qdrant/releases/tag/v1.19.2",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "renovatebot/renovate": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "44.164.5",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "renovatebot/renovate",
+          "checked_at": "2026-10-15T15:44:16.019762+00:00",
+          "primary_release_url": "https://github.com/renovatebot/renovate/releases/tag/44.164.5",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "restic/restic": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.19.1",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "restic/restic",
+          "checked_at": "2026-10-15T15:44:16.315404+00:00",
+          "primary_release_url": "https://github.com/restic/restic/releases/tag/v0.19.1",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "seaweedfs/seaweedfs": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "4.48",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "seaweedfs/seaweedfs",
+          "checked_at": "2026-10-15T15:44:16.326632+00:00",
+          "primary_release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "stalwartlabs/cli": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "1.0.13",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "stalwartlabs/cli",
+          "checked_at": "2026-10-15T15:44:16.341004+00:00",
+          "primary_release_url": "https://github.com/stalwartlabs/cli/releases/tag/v1.0.13",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "stalwartlabs/stalwart": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.16.26",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "stalwartlabs/stalwart",
+          "checked_at": "2026-10-15T15:44:16.344534+00:00",
+          "primary_release_url": "https://github.com/stalwartlabs/stalwart/releases/tag/v0.16.26",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "terrakube-io/terrakube": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "2.33.2",
+          "basis": "Official mapped product repository latest published final release; API draft=false/prerelease=false",
+          "observation_ref": "terrakube-io/terrakube",
+          "checked_at": "2026-10-15T15:44:16.704294+00:00",
+          "primary_release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.2",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "surrealdb/surrealdb public-latest": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.3.0",
+          "basis": "Official mapped product repository latest published release redirect; GitHub latest excludes drafts/prereleases",
+          "observation_ref": "surrealdb/surrealdb public-latest",
+          "checked_at": "2026-10-15T15:45:36.694526+00:00",
+          "primary_release_url": "https://github.com/surrealdb/surrealdb/releases/tag/v3.3.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "timescale/timescaledb public-latest": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "2.30.2",
+          "basis": "Official mapped product repository latest published release redirect; GitHub latest excludes drafts/prereleases",
+          "observation_ref": "timescale/timescaledb public-latest",
+          "checked_at": "2026-10-15T15:45:36.695418+00:00",
+          "primary_release_url": "https://github.com/timescale/timescaledb/releases/tag/2.30.2",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "traefik/traefik public-latest": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.7.15",
+          "basis": "Official mapped product repository latest published release redirect; GitHub latest excludes drafts/prereleases",
+          "observation_ref": "traefik/traefik public-latest",
+          "checked_at": "2026-10-15T15:45:36.696214+00:00",
+          "primary_release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.15",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "trinodb/trino public-latest": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "483",
+          "basis": "Official mapped product repository latest published release redirect; GitHub latest excludes drafts/prereleases",
+          "observation_ref": "trinodb/trino public-latest",
+          "checked_at": "2026-10-15T15:45:36.696960+00:00",
+          "primary_release_url": "https://github.com/trinodb/trino/releases/tag/483",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "unclecode/crawl4ai public-latest": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "0.9.5",
+          "basis": "Official mapped product repository latest published release redirect; GitHub latest excludes drafts/prereleases",
+          "observation_ref": "unclecode/crawl4ai public-latest",
+          "checked_at": "2026-10-15T15:45:37.748395+00:00",
+          "primary_release_url": "https://github.com/unclecode/crawl4ai/releases/tag/v0.9.5",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "valkey-io/valkey public-latest": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "9.1.2",
+          "basis": "Official mapped product repository latest published release redirect; GitHub latest excludes drafts/prereleases",
+          "observation_ref": "valkey-io/valkey public-latest",
+          "checked_at": "2026-10-15T15:45:37.765104+00:00",
+          "primary_release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "wiremock/wiremock public-latest": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.13.2",
+          "basis": "Official mapped product repository latest published release redirect; GitHub latest excludes drafts/prereleases",
+          "observation_ref": "wiremock/wiremock public-latest",
+          "checked_at": "2026-10-15T15:45:37.891718+00:00",
+          "primary_release_url": "https://github.com/wiremock/wiremock/releases/tag/3.13.2",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "pact-broker-docker-release": {
+          "status": "VERIFIED_STABLE_RELEASE",
+          "version": "3.0.0",
+          "basis": "Official mapped product repository latest published release redirect; GitHub latest excludes drafts/prereleases",
+          "observation_ref": "pact-broker-docker-release",
+          "checked_at": "2026-10-15T15:45:39.565420+00:00",
+          "primary_release_url": "https://github.com/pact-foundation/pact-broker-docker/releases/tag/v3.0.0",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "nginx": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "stable_candidate": "1.30.6",
+            "alternate_mainline": "1.31.7"
+          },
+          "basis": "Official download page labels stable and mainline separately.",
+          "observation_ref": "nginx",
+          "checked_at": "2026-10-15T15:44:18.647783+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "postgresql": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "stable_candidate": "18.6",
+            "excluded_preview": "19 RC1"
+          },
+          "basis": "Official current release notes identify18 as current supported major and18.6 first release note;19 is development/RC.",
+          "observation_ref": "postgresql",
+          "checked_at": "2026-10-15T15:44:16.894805+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "flink": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "stable_candidate": "2.3.0"
+          },
+          "basis": "Official downloads explicitly identifies2.3.0 latest stable.",
+          "observation_ref": "flink",
+          "checked_at": "2026-10-15T15:44:16.931747+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "python-downloads": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "latest_candidate": "3.15.0",
+            "current_minor_patch_candidate": "3.13.16"
+          },
+          "basis": "Official downloads release list; immutable image/compatibility still unverified.",
+          "observation_ref": "python-downloads",
+          "checked_at": "2026-10-15T15:45:38.922356+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "spark": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "stable_candidate": "4.2.0"
+          },
+          "basis": "Official download coordinates and stable release list;current4.1.3 retained until compatibility/recovery review.",
+          "observation_ref": "spark",
+          "checked_at": "2026-10-15T15:44:16.907721+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "trino": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "latest_candidate": "483"
+          },
+          "basis": "Official download page identifies current release483 and matching container.",
+          "observation_ref": "trino",
+          "checked_at": "2026-10-15T15:44:17.734039+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "confluent-platform": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "current_release_line_candidate": "8.3.2"
+          },
+          "basis": "Official current release notes identify8.3.2 September2026; full support policy review outstanding.",
+          "observation_ref": "confluent-platform",
+          "checked_at": "2026-10-15T15:44:17.763695+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "neo4j": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "latest_calendar_candidate": "2026.09.0",
+            "current_lts_patch_candidate": "5.26.32"
+          },
+          "basis": "Official deployment center lists both; do not merge channels.",
+          "observation_ref": "neo4j",
+          "checked_at": "2026-10-15T15:44:18.090401+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "debezium-release-page": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "stable_candidate": "3.7.0.Final",
+            "current_line_stable_candidate": "3.6.3.Final"
+          },
+          "basis": "Official releases page marks3.7 latest stable and3.6 stable; Confluent compatibility upgrade not proven.",
+          "observation_ref": "debezium-release-page",
+          "checked_at": "2026-10-15T15:45:38.328310+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "aws-cli-changelog": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "latest_candidate": "2.38.1"
+          },
+          "basis": "Official AWS CLI v2 changelog first release entry; image latest and platform mapping not proven.",
+          "observation_ref": "aws-cli-changelog",
+          "checked_at": "2026-10-15T15:45:38.028636+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "sonarqube-community-downloads": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "community_build_candidate": "26.10.0.133078",
+            "server_candidate": "2026.5.2"
+          },
+          "basis": "Official downloads distinguishes community build and server; not comparable to docker repo GitHub latest2026.5.0.",
+          "observation_ref": "sonarqube-community-downloads",
+          "checked_at": "2026-10-15T15:45:39.326028+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "alpine": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "stable_candidate": "3.24.2",
+            "main_support_end": "2028-06-01"
+          },
+          "basis": "Official release branch table; vendor notes community support ends with next stable release.",
+          "observation_ref": "alpine",
+          "checked_at": "2026-10-15T15:44:18.992933+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "go": {
+          "status": "VERIFIED_VENDOR_CHANNEL_FACT",
+          "channels": {
+            "stable_candidate": "1.27.2"
+          },
+          "basis": "Official go.dev JSON stable=true; build/dependency acceptance not proven.",
+          "observation_ref": "go",
+          "checked_at": "2026-10-15T15:44:18.539406+00:00",
+          "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+        },
+        "dbt-postgres-final": {
+          "status": "VERIFIED_STABLE_PACKAGE_RELEASE",
+          "version": "1.11.0",
+          "checked_at": "2026-10-15T19:05:54.937935+00:00",
+          "basis": "Existing official PyPI latest info.version1.11.0 plus exact final-version release with non-yanked release files; correct package not monorepo tag.",
+          "observation_ref": "dbt-postgres-final",
+          "primary_release_url": "https://pypi.org/project/dbt-postgres/1.11.0/"
+        },
+        "ollama-exporter-versioned-alias": {
+          "status": "VERIFIED_PUBLISHER_VERSIONED_IMAGE_ALIAS",
+          "version": "1.0.3",
+          "checked_at": "2026-10-15T19:05:54.937343+00:00",
+          "basis": "Known image publisher official registry latest and1.0.3 tags have equal index digest and equal amd64/arm64 platform descriptors. No application source-project link in publisher metadata.",
+          "observation_refs": [
+            "ollama-exporter-latest",
+            "ollama-exporter-version",
+            "ollama-exporter-supplier"
+          ],
+          "primary_release_url": "https://hub.docker.com/r/lucabecker42/ollama-exporter/tags",
+          "index_digest": "sha256:9fb1f4c5bc4ff819eb13e148debeb7fd474a4c8956d83d39928ea22d95d3de5c",
+          "amd64_manifest_digest": "sha256:948e06a3e3a94ac9d1a82f3277782da75d5911ff0a1b6ce9f696d29143d5cadd",
+          "source_provenance_signature_fullimage_security": "NOT_VERIFIED"
+        },
+        "jupyter-image-snapshot": {
+          "status": "VERIFIED_VENDOR_IMAGE_SNAPSHOT_CHANNEL",
+          "version": "2026-10-12",
+          "checked_at": "2026-10-15T19:00:38.100956+00:00",
+          "basis": "Vendor priorUTCdate/SHA selection policy, official Quay datedtag/sourcecommitadc7e9095e38 and explicit latest alias equal same manifest.",
+          "observation_refs": [
+            "jupyter-tag-policy",
+            "jupyter-image-tags",
+            "jupyter-latest-alias"
+          ],
+          "primary_release_url": "https://quay.io/repository/jupyter/scipy-notebook?tab=tags",
+          "manifest_digest": "sha256:8f8a5763d9a01e7f488eff8d9379654788e9cc08286dbcbc6bcda129c1b0edcd",
+          "platform_config_signature": "NOT_VERIFIED"
+        }
+      },
+      "component_support_advisory_facts": [
+        {
+          "component": "PostgreSQL18",
+          "current_minor": "18.6",
+          "support_end": "2030-11-14",
+          "support_url": "https://www.postgresql.org/support/versioning/",
+          "advisory_url": "https://www.postgresql.org/support/security/",
+          "fixed_in_18_6_examples": [
+            "CVE-2026-19385",
+            "CVE-2026-18408"
+          ],
+          "meaning": "Component facts, not overall custom-image lifecycle or installed-image clean scan."
+        },
+        {
+          "component": "ConfluentPlatform8.3",
+          "current_patch": "8.3.2",
+          "community_support_end": "2027-06-17",
+          "enterprise_standard_end": "2028-06-17",
+          "enterprise_platinum_end": "2029-06-17",
+          "entitlement": "UNKNOWN",
+          "url": "https://docs.confluent.io/platform/current/installation/versions-interoperability.html"
+        }
+      ],
+      "row_classification_counts": {
+        "VERIFIED_STABLE_RELEASE_FACTS": 101,
+        "COMPONENT_RELEASES_VERIFIED_IMAGE_MAPPING_REQUIRED": 6,
+        "VENDOR_IMAGE_SNAPSHOT_CHANNEL_VERIFIED_CUSTOM_BUILD_GATE": 1,
+        "PUBLISHER_VERSION_ALIAS_VERIFIED_SOURCE_PROVENANCE_REQUIRED": 1,
+        "INTERNAL_BUILD_PROVENANCE": 2
+      },
+      "interpretation_scope": "For correct official product mappings, published final GitHub latest releases establish stable RELEASE facts. This dated assessment supersedes the earlier generic candidate-only interpretation in that narrow scope; image selection, OCI/platform/dependency, support/advisory applicability, signatures, scans, native and HOME remain distinct. Internal images require owner provenance; date-tag vendor images use their documented channel."
+    }
   }
 }

@@ -192,6 +192,70 @@ Full n8n workflow/queue/runner execution, full-image vulnerability scan,
 signature/provenance verification, HOME upgrade, combined backup/restore and
 runtime clock/quiescence proof remain NOT_RUN or BLOCKED in their owners.
 
+### ROOT official release metadata continuation — 2026-10-16
+
+The controller granted a separate writer lease limited to the existing
+`release-lookups.json` and `update-ledger.json` after independent review of
+proposal SHA256
+`6ecff30f3bfc5a0bb5a31613c091441eee4e140e731adf69530549c5bdef2a33`.
+The original 92 requests, including failed API attempts and successful official
+fallbacks, remain exact historical evidence. Thirteen bounded primary followup
+observations produce 105 total observations and dated assessments for all 111
+current ROOT service identities. The classification is 101 stable RELEASE fact
+rows, 6 component/image-mapping rows, 1 verified vendor image snapshot,1 verified
+publisher alias with a source-provenance gap and 2 internal build-provenance rows.
+
+An official correct-product repository's latest published full non-draft,
+non-prerelease release establishes a stable RELEASE fact. This current narrow
+interpretation supersedes the earlier generic candidate-only label for those
+products. Explicit vendor channels, calendar/LTS and wrapper/component splits
+remain separate. The source writer refreshed only latest_version/channel/
+checked_at/release_url on 82 unambiguous rows and archived their prior four
+fields under the existing root refresh owner. Actual field changes comprise 43
+version values,27 channel values,28 URLs and82 timestamps. This does not choose
+new target pins or reuse old image/security/native signatures for new releases.
+
+Independent direct comparison against the protected public before snapshot
+verified every source/target/digest/security/native/deployment field unchanged
+across 111 rows. Only the release lookup's dated refresh / 13 observations and the
+ledger's dated assessments/four release fields changed. The current n8n 16-file
+image source binding remains
+`03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985`.
+The frozen metadata file SHAs are release-lookups
+`1d8a6a543edc4c003d35df35090277731872d9c5a606fefb4d26959de8ff6f36`
+and update-ledger
+`845f23be15d78da61c659d29903782cc41058ed9e671c6224520108aad6178f2`.
+No LAB, Compose, Dockerfile, package, frozen native fixture or deployment input
+was changed by this metadata continuation.
+
+Jupyter's dated/source-SHA/latest aliases now resolve to the same observed
+manifest; the remaining platform/config/signature/custom-build gates are stated
+explicitly. PostgreSQL 18 support end 2030-11-14 and security references are
+component facts and do not claim the complete custom Timescale image lifecycle
+or a clean installed-image vulnerability scan. Internal Storybook images still
+need owner build provenance. The legacy historical 92-map count remains preserved;
+the nested dated refresh explicitly records the current 105 total.
+
+The source writer executed
+`rtk proxy python3 -m unittest tests.lib.supply_chain.test_update_gates tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests -v`:
+35 PASS, exit 0, 5.693 seconds. The supply-chain policy check passed 5 external
+contracts / 13 cases; the two-file diff check passed. The protected invariance
+receipt is `/tmp/hyhome-root-release-join-invariance-20261016.json`, SHA256
+`9a593591cb6447292ad99bb1375daef3e4f6a4898e7a1cd9608a8c4157040f74`;
+independent field comparison reproduced its preservation result.
+
+The actual latest-version gate remains not ready, exit 2. Its 111 rows report
+39 latest-unresolved,16 latest-mismatch,29 fresh-lookup,12 stable-channel and11
+primary-reference diagnostics; these sets may overlap. The dated component
+assessments must be read alongside the gate's legacy top-level release fields.
+There are no missing or unexpected service identities, no deployed promotion
+and no external acceptance claim. Exact report
+`/tmp/hyhome-root-release-join-latest-gate-20261016.json`, SHA256
+`0ea128ba26aee7abf1fdb15eef46f394e7f6822d8d1d9299412336e9c87798d3`.
+The gate was not weakened or made green by assigning untested targets. Remaining
+artifact selection, OCI/platform, applicability/support, signatures, SBOM,
+compatibility, native/HOME and recovery decisions need their own evidence.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -211,6 +275,9 @@ runtime clock/quiescence proof remain NOT_RUN or BLOCKED in their owners.
 | Native peer loading RED | 2 | W71 | Actual pinned PackageDirectoryLoader | Original cd628 image; missing framework peer; exit1 and cleanupPASS | FAIL | Exact isolated image build and native peer correction — 2026-10-16 | required | - |
 | Native peer loading GREEN | 2 | W71 | Actual pinned PackageDirectoryLoader | Corrected03892 image; core2.43.6/framework2.43.4; exit0/4.545s and cleanupPASS | PASS | Exact isolated image build and native peer correction — 2026-10-16 | required | Native peer loading RED |
 | Isolated corrected build | 2 | W71 | Exact Git candidate image build | Treef511528; image1fda18; exit0/28.177s; budgets respected | PASS | Exact isolated image build and native peer correction — 2026-10-16 | required | - |
+| ROOT release metadata join | 2 | W71 | Fresh official product release facts and exact service join |105 observations;111 assessments;82 release-only updates;35 source tests PASS | PASS | ROOT official release metadata continuation — 2026-10-16 | required | - |
+| ROOT metadata preservation | 2 | W71 | Source target and security evidence remain scoped | Independent 111-row comparison; original 92 observations and n8n 03892 binding preserved | PASS | ROOT official release metadata continuation — 2026-10-16 | required | - |
+| Current latest artifact target gate | 2 | W71 | Latest target and release readiness | Actual gate exit 2 ready false; unresolved/mismatch/applicability decisions remain | FAIL | ROOT official release metadata continuation — 2026-10-16 | required | - |
 | Native and recovery | 2 | W71 | Complete workflow and HOME recovery acceptance | Isolated module smoke does not prove workflow/queue/runner/HOME/restore | NOT_RUN | Exact isolated image build and native peer correction — 2026-10-16 | optional | - |
 
 ## Criterion Acceptance
@@ -222,8 +289,9 @@ provides supporting source evidence and does not create a duplicate acceptance r
 
 The current Plan owns criterion routing. This continuation does not rewrite
 prior Task acceptance. Independent final source/security review and exact-head
-gates remain pending. Full ROOT supplier, advisory, signature, SBOM and recovery
-coverage remains incomplete; a four-service version preparation is no substitute.
+gates remain pending. Current ROOT release research is joined above. Exact image/advisory/support,
+signature, SBOM, compatibility and recovery coverage remains incomplete; neither
+release metadata nor the earlier four-service version preparation accepts it.
 
 ## Related Documents
 
