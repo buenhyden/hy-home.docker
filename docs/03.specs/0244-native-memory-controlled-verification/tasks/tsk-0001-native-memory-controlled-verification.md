@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -76,6 +76,16 @@ Git snapshot. This is a delivery-granularity limitation, not a claim that a
 direct `draft` to `in-progress` transition occurred. Future transitions record
 one clear actual event per commit where practical.
 
+### Cleanup Follow-up
+
+The thirteen proven-new zero-byte markers in the old isolated checkout were
+removed and its Git status returned to the recorded state. A privacy environment
+scrub also created eight proven-new zero-byte placeholders at a user-global
+location. Automatic deletion there was rejected because it would mutate global
+state; four ambiguous files and all directories remain untouched. A narrowly
+scoped user approval is pending for the global removal. No provider retry or
+further probe ran.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -94,6 +104,8 @@ one clear actual event per commit where practical.
 | Effective memory-off view | 3 | W3 | Provider exposes a non-mutating effective Auto-memory value | Final UI attempt: value unknown | NOT_RUN | In-progress Observation | required | - |
 | Conditional fixture probe | 4, 5 | W4, W5 | Exact ignored-fixture read/write provider prompt after effective-memory-off proof | Precondition not met because effective value is unknown | NOT_RUN | In-progress Observation | required | - |
 | Native marker cleanup finding | 5 | W5 | Detect and remove only proven-new zero-byte markers from the old isolated native checkout | Thirteen untracked zero-byte markers; security-approved cleanup method not yet executed | FAIL | In-progress Observation | required | - |
+| Local marker cleanup | 5 | W5 | Detect and remove only proven-new zero-byte markers from the old isolated native checkout | Thirteen proven-new zero-byte markers removed; Git status restored | PASS | Cleanup Follow-up | required | Native marker cleanup finding |
+| Global marker cleanup boundary | 5 | W5 | Delete only proven-new zero-byte privacy-environment placeholders at the user-global location | Eight proven-new zero-byte files detected; automatic deletion rejected; four ambiguous files and all directories retained | FAIL | Cleanup Follow-up | required | - |
 
 ## Criterion Acceptance
 
