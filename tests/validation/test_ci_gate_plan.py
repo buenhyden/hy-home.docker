@@ -1188,9 +1188,24 @@ class CiGateRunnerContractTests(unittest.TestCase):
             requirements(("projects/storybook/nextjs/package.json",)),
         )
         self.assertEqual(
-            runner.SelectedPrerequisites(node=False, docker=True),
+            runner.SelectedPrerequisites(node=True, docker=True),
             requirements(("infra/01-gateway/docker-compose.yml",)),
         )
+
+    def test_promoted_node_consumers_require_node_directly(self) -> None:
+        for gate_id in (
+            "leaf.compose-baseline-regressions",
+            "leaf.repository-integrity-regressions",
+        ):
+            with self.subTest(gate_id=gate_id):
+                invocation = _invocation(
+                    gate_id,
+                    "scripts/lib/gate/ci_gate_adapters.py",
+                )
+                self.assertEqual(
+                    runner.SelectedPrerequisites(node=True, docker=False),
+                    runner.selected_prerequisites((invocation,), ()),
+                )
 
     def test_opsflow_smtp_hosted_leaf_requires_node_without_docker(self) -> None:
         invocation = dataclasses.replace(

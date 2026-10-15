@@ -638,6 +638,8 @@ def selected_prerequisites(
             "leaf.opsflow-smtp-npm-audit",
             "leaf.opsflow-smtp-npm-production-audit",
             "leaf.opsflow-smtp-package",
+            "leaf.compose-baseline-regressions",
+            "leaf.repository-integrity-regressions",
         }
         & gate_ids
     )

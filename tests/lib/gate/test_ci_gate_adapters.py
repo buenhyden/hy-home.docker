@@ -520,6 +520,32 @@ class CiGateAdapterTests(unittest.TestCase):
         )
         self.assertEqual(3, code)
 
+    def test_optional_runtime_multiline_skip_receipts_are_closed(self) -> None:
+        module = "tests.lib.test_fixture"
+        scope = module + ".Runtime"
+        argv = ("run-unittest", module, "--optional-runtime-skips", scope, "-v")
+        header = b"test_one (tests.lib.test_fixture.Runtime.test_one)\n"
+        status = b"Native restore description. ... skipped 'opt-in'\n"
+        summary = b"Ran 1 test in 0.001s\n\nOK (skipped=1)\n"
+        code, _ = self.run_with_recorder(
+            argv,
+            results=[
+                subprocess.CompletedProcess((), 0, b"", header + status + summary)
+            ],
+        )
+        self.assertEqual(0, code)
+        for output in (
+            header.replace(b".Runtime.", b".RuntimeExtra.") + status + summary,
+            header + status + status + summary,
+            header + status.replace(b" ... ", b" .. ") + summary,
+            header + summary,
+        ):
+            with self.subTest(output=output), self.assertRaises(adapters.AdapterError):
+                self.run_with_recorder(
+                    argv,
+                    results=[subprocess.CompletedProcess((), 0, b"", output)],
+                )
+
     def test_run_unittest_requires_modules_then_literal_verbose_flag(
         self,
     ) -> None:

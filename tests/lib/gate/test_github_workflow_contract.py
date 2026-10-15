@@ -149,20 +149,18 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ],
             arguments[1:boundary],
         )
-        self.assertEqual(18, len(arguments[boundary + 1 : -1]))
+        optional = arguments[boundary + 1 : -1]
+        self.assertEqual(len(optional), len(set(optional)))
         self.assertTrue(
-            all(
-                scope.rsplit(".", 1)[0] in arguments[1:boundary]
-                for scope in arguments[boundary + 1 : -1]
-            )
+            all(scope.rsplit(".", 1)[0] in arguments[1:boundary] for scope in optional)
         )
         self.assertIn(
             "tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests",
-            arguments[boundary + 1 : -1],
+            optional,
         )
         self.assertNotIn(
             "tests.validation.test_openbao_rehearsal.OpenBaoCleanupTests",
-            arguments[boundary + 1 : -1],
+            optional,
         )
         self.assertEqual([], gate["allowed_env_keys"])
 
@@ -264,10 +262,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(1, repository_arguments.count(module))
 
         compose_arguments = nodes["leaf.compose-baseline-regressions"]["argv"]
-        boundary = compose_arguments.index("--optional-runtime-skips")
-        optional = compose_arguments[boundary + 1 : -1]
-        self.assertNotIn(module, optional)
-        self.assertEqual(18, len(optional))
+        self.assertNotIn(module, compose_arguments)
 
     def setUp(self) -> None:
         self.module = load_contract_module()

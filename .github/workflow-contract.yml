@@ -749,6 +749,7 @@
         "tests.validation.test_mng_pg_init_sql.MngPgInitSqlTests",
         "tests.validation.test_redisinsight_rehearsal.RedisInsightRehearsalTests",
         "tests.validation.test_datastore_observation_rehearsal.DatastoreObservationRehearsalTests",
+        "tests.validation.test_restic_offsite_artifact.ArtifactRehearsalTests",
         "tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests",
         "tests.validation.test_supabase_smtp_rehearsal.SupabaseSMTPRehearsalTests",
         "tests.validation.test_openbao_candidate.CandidateNative",
