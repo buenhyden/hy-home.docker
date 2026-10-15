@@ -66,6 +66,7 @@ schema, runtime procedure, or historical record.
 | --- | --- | --- |
 | `15ffbca5c28a11dba034757640df597bad779ce9` | Link selection and immutable archive-binding transport | `fix(docs): Preserve archive proofs and parse each source once`; local commit only |
 | `141c963cb6bc8677d5b1e4d0098c50ba660b2063` | Repository-file provenance and sanitized Git-context isolation | `fix(memory): Bind provenance and isolate Git context`; local commit only |
+| `ff6d33ffaac3215543b2f64e2bf4336e703cbf71` | Published W24/TSK-0008 and W25/TSK-0009 document integration | `chore(merge): Preserve published infrastructure audit records`; local merge only |
 
 The pending Task record and its separate document-only receipt are not a remote
 delivery, merge, release, or deployment claim.
@@ -134,7 +135,9 @@ selection and is only a routing observation, not an implementation result.
 PR-leaf results remain NOT_RUN until the final changed set is evaluated by the
 configured workflow. The metadata reference module and its focused test are
 local W25 producers; `Scoped-metadata-GREEN` records the final
-changed-document metadata result.
+changed-document metadata result. The final merged metadata receipt is
+recorded below; the final PR selector explanation selected three leaves but did
+not execute a PR leaf.
 
 ## Evidence
 
@@ -153,6 +156,9 @@ changed-document metadata result.
 | Pre-merge document link alignment | 20 | W25 | Three-document link alignment | SPEC-0212 Spec, Plan, and TSK-0009: 0 findings | PASS | r13 isolated worktree | required | - |
 | Pre-merge PR selector explanation | 20 | W25 | Three-leaf PR selector `--explain` | PASS explanation only; no PR leaf executed | PASS | r13 isolated worktree | optional | - |
 | Final document integration review | 20 | W25 | Independent document integration review | APPROVED; 0 findings | PASS | r13 isolated worktree | required | - |
+| Final merged scoped metadata | 20 | W25 | `check-document-metadata.py --mode check-changed` | HEAD `ff6d33ffaac3215543b2f64e2bf4336e703cbf71`; ref and merge base `5a88c7937bf427021f2fd0441e04b1011ecd28a9`; selected 5, violations 0, legacy exceptions 0, transition overrides 0 | PASS | r13 isolated worktree | required | - |
+| Final document corpus lifecycle | 20 | W25 | `check-document-corpus-lifecycle.py --base-ref 5a88c7937bf427021f2fd0441e04b1011ecd28a9` | Violations 0; migrations 5, tombstones 140, preserved 354, decisions 286, recovery rows 374 | PASS | r13 isolated worktree | required | - |
+| Final PR selector explanation | 20 | W25 | Three-leaf PR selector `--explain` | PASS explanation; same three leaves selected; no PR leaf executed | PASS | r13 isolated worktree | optional | - |
 | Memory revision RED | 20 | W25 | Focused bogus-revision source-pin regression | Earlier helper accepts an invalid revision | FAIL | W25 memory slice | required | - |
 | Memory revision GREEN | 20 | W25 | Focused bogus-revision source-pin regression | Current W25 memory slice | PASS | W25 memory slice | required | Memory revision RED |
 | Memory helper regression | 20 | W25 | Focused agent-memory tests | 24 tests; 5.273 s | PASS | W25 memory slice | required | - |
