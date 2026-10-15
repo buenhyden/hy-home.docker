@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.3.1"
+version: "1.3.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-16"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -36,6 +36,11 @@ historical facts. The direct r10 request authorizes this bounded local revision 
 implementation; it does not establish WGOV-CORE/3.0.0 adoption or remote
 authority. Independent implementation review and criterion acceptance remain
 separate.
+
+The r13 request dated 2026-10-16 adds one follow-up acceptance criterion and
+Task for current-source revalidation. It preserves the independently issued
+infrastructure criterion 19 and W24 on its separate worktree; this package
+does not import, alter, or accept that concurrent change.
 
 ## Scope
 
@@ -241,6 +246,14 @@ hold, authorization and recovery requirements have been established.
 18. P08 corrects demonstrated OpenBao/operations source discrepancies while
     retaining service-specific security and recovery checks; purpose quality
     measures and durable owner promotion trace actual evidence and limits.
+<!-- markdownlint-disable-next-line MD029 -->
+20. TSK-0009 classifies current P01-P08 follow-up findings, removes a
+    demonstrated same-input link-graph duplicate, and corrects memory-source
+    revision trust and CLI shared-store identity only with scoped regression and
+    CI-consumer checks. It keeps
+    historical criteria 11-18 unchanged, records unavailable checks as
+    NOT_RUN, and leaves runtime, remote, and named leaf-owner acceptance
+    outside this criterion.
 
 ## Failure Conditions
 
