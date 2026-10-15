@@ -483,7 +483,12 @@ class WorktreeStoreTests(unittest.TestCase):
     """Every worktree of one checkout reaches the same store through the CLI."""
 
     def cli(
-        self, cwd: Path, *args: str, body: str = "", script: Path | None = None
+        self,
+        cwd: Path,
+        *args: str,
+        body: str = "",
+        script: Path | None = None,
+        environment: dict[str, str] | None = None,
     ) -> subprocess.CompletedProcess[str]:
         # Each checkout runs its own copy of the CLI, as an agent session does.
         if script is None:
@@ -496,7 +501,11 @@ class WorktreeStoreTests(unittest.TestCase):
             input=body,
             capture_output=True,
             text=True,
-            env={**os.environ, "PYTHONPATH": str(ROOT)},
+            env={
+                **os.environ,
+                "PYTHONPATH": str(ROOT),
+                **({} if environment is None else environment),
+            },
             check=False,
         )
 
@@ -562,10 +571,29 @@ class WorktreeStoreTests(unittest.TestCase):
             (main / "scripts/operations").mkdir(parents=True)
             (main / "scripts/operations/agent_memory.py").write_bytes(CLI.read_bytes())
             source = main / "source.md"
-            source.write_text("reviewed source")
+            source.write_text("older source")
             subprocess.run([*GIT, "init", "-q"], cwd=main, check=True)
             subprocess.run([*GIT, "add", "."], cwd=main, check=True)
             subprocess.run([*GIT, "commit", "-qm", "seed"], cwd=main, check=True)
+            older_revision = subprocess.run(
+                [*GIT, "rev-parse", "HEAD"],
+                cwd=main,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            source.write_text("reviewed source")
+            subprocess.run([*GIT, "add", "source.md"], cwd=main, check=True)
+            subprocess.run(
+                [*GIT, "commit", "-qm", "review source"], cwd=main, check=True
+            )
+            reviewed_revision = subprocess.run(
+                [*GIT, "rev-parse", "HEAD"],
+                cwd=main,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
             linked = base / "linked"
             subprocess.run(
                 [*GIT, "worktree", "add", "-q", str(linked)], cwd=main, check=True
@@ -573,7 +601,7 @@ class WorktreeStoreTests(unittest.TestCase):
             reference = dict(
                 kind="repository-file",
                 path="source.md",
-                revision="reviewed-seed",
+                revision=reviewed_revision,
                 hash_algorithm="sha256",
                 digest=hashlib.sha256(source.read_bytes()).hexdigest(),
                 context="synthetic regression",
@@ -626,6 +654,37 @@ class WorktreeStoreTests(unittest.TestCase):
             self.assertEqual(1, fifo.returncode, fifo.stderr)
             from scripts.lib.ops.memory_sources import source_is_current
 
+            self.assertTrue(source_is_current(reference, main))
+            self.assertFalse(
+                source_is_current({**reference, "revision": "0" * 40}, main)
+            )
+            self.assertFalse(
+                source_is_current({**reference, "revision": older_revision}, main)
+            )
+            blob = subprocess.run(
+                [*GIT, "rev-parse", f"{reviewed_revision}:source.md"],
+                cwd=main,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            self.assertTrue(
+                source_is_current(
+                    {**reference, "hash_algorithm": "git-blob", "digest": blob}, main
+                )
+            )
+            self.assertFalse(
+                source_is_current(
+                    {**reference, "hash_algorithm": "git-blob", "digest": "f" * 40},
+                    main,
+                )
+            )
+            pathspec = main / ":(glob)*"
+            pathspec.write_text("reviewed source")
+            self.assertFalse(
+                source_is_current({**reference, "path": pathspec.name}, main)
+            )
+
             for path in (
                 "../outside",
                 ".workspace-memory/memory.sqlite3",
@@ -639,6 +698,237 @@ class WorktreeStoreTests(unittest.TestCase):
                         source_is_current({**reference, "path": path}, linked)
                     )
                     opened.assert_not_called()
+
+    def test_source_pin_ignores_ambient_git_state_and_replace_refs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            main = base / "main"
+            main.mkdir()
+            source = main / "source.md"
+            source.write_text("reviewed source")
+            subprocess.run([*GIT, "init", "-q"], cwd=main, check=True)
+            subprocess.run([*GIT, "add", "source.md"], cwd=main, check=True)
+            subprocess.run([*GIT, "commit", "-qm", "reviewed"], cwd=main, check=True)
+            reviewed_revision = subprocess.run(
+                [*GIT, "rev-parse", "HEAD"],
+                cwd=main,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            reference = {
+                "kind": "repository-file",
+                "path": "source.md",
+                "revision": reviewed_revision,
+                "hash_algorithm": "sha256",
+                "digest": hashlib.sha256(source.read_bytes()).hexdigest(),
+                "context": "synthetic git boundary regression",
+            }
+
+            source.write_text("replacement source")
+            subprocess.run([*GIT, "add", "source.md"], cwd=main, check=True)
+            subprocess.run([*GIT, "commit", "-qm", "replacement"], cwd=main, check=True)
+            replacement = subprocess.run(
+                [*GIT, "rev-parse", "HEAD"],
+                cwd=main,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            subprocess.run(
+                [*GIT, "reset", "-q", "--hard", reviewed_revision],
+                cwd=main,
+                check=True,
+            )
+            subprocess.run(
+                [*GIT, "replace", reviewed_revision, replacement],
+                cwd=main,
+                check=True,
+            )
+
+            foreign = base / "foreign"
+            foreign.mkdir()
+            (foreign / "source.md").write_text("foreign source")
+            subprocess.run([*GIT, "init", "-q"], cwd=foreign, check=True)
+            subprocess.run([*GIT, "add", "source.md"], cwd=foreign, check=True)
+            subprocess.run([*GIT, "commit", "-qm", "foreign"], cwd=foreign, check=True)
+            poisoned = {
+                "GIT_DIR": str(foreign / ".git"),
+                "GIT_WORK_TREE": str(foreign),
+                "GIT_COMMON_DIR": str(foreign / ".git"),
+                "GIT_INDEX_FILE": str(foreign / ".git/index"),
+                "GIT_OBJECT_DIRECTORY": str(foreign / ".git/objects"),
+                "GIT_ALTERNATE_OBJECT_DIRECTORIES": str(foreign / ".git/objects"),
+                "GIT_CONFIG_COUNT": "1",
+                "GIT_CONFIG_KEY_0": "core.bare",
+                "GIT_CONFIG_VALUE_0": "true",
+            }
+            from scripts.lib.ops.memory_sources import source_is_current
+
+            with mock.patch.dict(os.environ, poisoned):
+                self.assertTrue(source_is_current(reference, main))
+
+    def test_source_pin_fails_closed_when_git_times_out(self) -> None:
+        reference = {
+            "kind": "repository-file",
+            "path": "source.md",
+            "revision": "1" * 40,
+            "hash_algorithm": "sha256",
+            "digest": "2" * 64,
+            "context": "synthetic timeout regression",
+        }
+        from scripts.lib.ops.memory_sources import source_is_current
+
+        with mock.patch(
+            "scripts.lib.ops.memory_sources.subprocess.run",
+            side_effect=subprocess.TimeoutExpired(["git"], 5),
+        ):
+            self.assertFalse(source_is_current(reference, ROOT))
+
+    def test_source_pin_requires_the_full_sha256_commit_id(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = Path(directory).resolve()
+            source = repository / "source.md"
+            source.write_text("reviewed sha256 source")
+            subprocess.run(
+                [*GIT, "init", "-q", "--object-format=sha256"],
+                cwd=repository,
+                check=True,
+            )
+            subprocess.run([*GIT, "add", "source.md"], cwd=repository, check=True)
+            subprocess.run(
+                [*GIT, "commit", "-qm", "reviewed"], cwd=repository, check=True
+            )
+            revision = subprocess.run(
+                [*GIT, "rev-parse", "HEAD"],
+                cwd=repository,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            self.assertEqual(64, len(revision))
+            reference = {
+                "kind": "repository-file",
+                "path": "source.md",
+                "revision": revision,
+                "hash_algorithm": "sha256",
+                "digest": hashlib.sha256(source.read_bytes()).hexdigest(),
+                "context": "synthetic sha256 oid regression",
+            }
+            from scripts.lib.ops.memory_sources import source_is_current
+
+            self.assertTrue(source_is_current(reference, repository))
+            self.assertFalse(
+                source_is_current({**reference, "revision": revision[:40]}, repository)
+            )
+
+    def test_source_pin_never_lazy_fetches_a_missing_tree(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            complete = base / "complete"
+            partial = base / "partial"
+            complete.mkdir()
+            partial.mkdir()
+            source = complete / "source.md"
+            source.write_text("reviewed source")
+            subprocess.run([*GIT, "init", "-q"], cwd=complete, check=True)
+            subprocess.run([*GIT, "add", "source.md"], cwd=complete, check=True)
+            subprocess.run(
+                [*GIT, "commit", "-qm", "reviewed"], cwd=complete, check=True
+            )
+            revision = subprocess.run(
+                [*GIT, "rev-parse", "HEAD"],
+                cwd=complete,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            tree = subprocess.run(
+                [*GIT, "rev-parse", "HEAD^{tree}"],
+                cwd=complete,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            blob = subprocess.run(
+                [*GIT, "rev-parse", "HEAD:source.md"],
+                cwd=complete,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            commit = subprocess.run(
+                [*GIT, "cat-file", "commit", revision],
+                cwd=complete,
+                capture_output=True,
+                check=True,
+            ).stdout
+
+            subprocess.run([*GIT, "init", "-q"], cwd=partial, check=True)
+            subprocess.run(
+                [*GIT, "hash-object", "-t", "commit", "-w", "--stdin"],
+                cwd=partial,
+                input=commit,
+                capture_output=True,
+                check=True,
+            )
+            subprocess.run(
+                [*GIT, "update-ref", "refs/heads/main", revision],
+                cwd=partial,
+                check=True,
+            )
+            subprocess.run(
+                [*GIT, "symbolic-ref", "HEAD", "refs/heads/main"],
+                cwd=partial,
+                check=True,
+            )
+            subprocess.run(
+                [
+                    *GIT,
+                    "update-index",
+                    "--add",
+                    "--info-only",
+                    "--cacheinfo",
+                    f"100644,{blob},source.md",
+                ],
+                cwd=partial,
+                check=True,
+            )
+            (partial / "source.md").write_text("reviewed source")
+            for key, value in (
+                ("remote.origin.promisor", "true"),
+                ("remote.origin.partialclonefilter", "tree:0"),
+                ("extensions.partialClone", "origin"),
+                ("protocol.ext.allow", "always"),
+            ):
+                subprocess.run([*GIT, "config", key, value], cwd=partial, check=True)
+            marker = base / "remote-invoked"
+            helper = base / "remote-helper"
+            helper.write_text(
+                "#!/usr/bin/python3\n"
+                "from pathlib import Path\n"
+                f"Path({str(marker)!r}).touch()\n"
+                "raise SystemExit(1)\n"
+            )
+            helper.chmod(0o700)
+            subprocess.run(
+                [*GIT, "config", "remote.origin.url", f"ext::{helper}"],
+                cwd=partial,
+                check=True,
+            )
+            self.assertFalse((partial / ".git/objects" / tree[:2] / tree[2:]).exists())
+            reference = {
+                "kind": "repository-file",
+                "path": "source.md",
+                "revision": revision,
+                "hash_algorithm": "sha256",
+                "digest": hashlib.sha256(source.read_bytes()).hexdigest(),
+                "context": "synthetic no-lazy-fetch regression",
+            }
+            from scripts.lib.ops.memory_sources import source_is_current
+
+            self.assertFalse(source_is_current(reference, partial))
+            self.assertFalse(marker.exists())
 
     def test_outside_a_repository_memory_is_unavailable_and_nothing_is_created(
         self,
@@ -656,6 +946,15 @@ class WorktreeStoreTests(unittest.TestCase):
             result = self.cli(other, "usage", script=CLI)
             self.assertEqual(memory.EXIT_UNAVAILABLE, result.returncode)
             self.assertIn("run the CLI of the repository you are in", result.stderr)
+            self.assertFalse((other / ".workspace-memory").exists())
+            poisoned = {
+                "GIT_DIR": str(other / ".git"),
+                "GIT_WORK_TREE": str(other),
+                "GIT_INDEX_FILE": str(other / ".git/index"),
+                "GIT_OBJECT_DIRECTORY": str(other / ".git/objects"),
+            }
+            result = self.cli(other, "usage", script=CLI, environment=poisoned)
+            self.assertEqual(memory.EXIT_UNAVAILABLE, result.returncode)
             self.assertFalse((other / ".workspace-memory").exists())
 
 

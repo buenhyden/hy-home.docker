@@ -101,6 +101,17 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         self.assertEqual(root_tool_paths, set(matching_rules))
         self.assertEqual({("repository-integrity",)}, set(matching_rules.values()))
 
+    def test_memory_sources_uses_the_focused_agent_governance_route(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        self.assertEqual(
+            ("agent-governance", "repository-integrity"),
+            contract.select_public_suites(
+                public, "changed", ("scripts/lib/ops/memory_sources.py",)
+            ),
+        )
+
     @staticmethod
     def _write_executable(path: pathlib.Path, text: str) -> None:
         path.write_text(text, encoding="utf-8")
@@ -3045,13 +3056,15 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                     self.assertEqual(binding.get("on_failure"), hook.get("onFailure"))
         self.assertEqual("block", registry["claude"]["PreToolUse"]["on_failure"])
 
-    def test_codex_project_config_keeps_native_memory_off(self) -> None:
+    def test_project_configs_keep_native_memory_off(self) -> None:
         import tomllib
 
         config = tomllib.loads((ROOT / ".codex/config.toml").read_text())
         self.assertEqual(
             {"generate_memories": False, "use_memories": False}, config["memories"]
         )
+        settings = json.loads((ROOT / ".claude/settings.json").read_text())
+        self.assertIs(settings["autoMemoryEnabled"], False)
 
     def test_claude_settings_deny_secret_reads_and_main_pushes(self) -> None:
         permissions = json.loads((ROOT / ".claude/settings.json").read_text())[
