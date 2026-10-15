@@ -86,6 +86,18 @@ settings by itself.
   a repository-local installer so every ref, including deletions, is checked
   before any pre-commit selection; installation and an observed Git push
   rejection remain separate evidence in the current Task.
+- On 2026-10-16 KST, an observed successful `candidate-quality` PR check from
+  GitHub Actions app ID 15368 preceded a PATCH limited to
+  `branches/main/protection/required_status_checks`. A general progress
+  approval preceded an automatic-review rejection because the change persists
+  for future main PRs. An exact follow-up question named `main`, required
+  status checks, and that future-PR effect; the user then approved main required
+  check settings. Authenticated before/after read-back verified the normalized
+  before state `{"strict":true,"contexts":[],"checks":[]}` and after state
+  `{"strict":true,"contexts":["candidate-quality"],"checks":[{"context":"candidate-quality","app_id":15368}]}`.
+  All other protection fields and empty rulesets were unchanged. The narrow
+  rollback is `{"strict":true,"contexts":[],"checks":[]}`; use it only
+  after a fresh read-back and separate approval.
 
 ## Target Ruleset
 
@@ -102,8 +114,7 @@ settings by itself.
 - Block branch deletion.
 - Require the one produced PR candidate context `candidate-quality` from
   GitHub Actions. Pull requests, resolved conversations, force-push denial and
-  deletion denial remain separate controls. Applying this new target requires
-  its own approved setting change after a real check-run is observed.
+  deletion denial remain separate controls.
 - Do not enforce squash/rebase-only or linear-history settings that would
   discard referenced objects, so delivered history can keep them.
 - Recovery-commit preservation and branch deletion are stated once, in
@@ -118,11 +129,23 @@ There is no feature-push QA, title-edit validation, or main full-profile repeat.
 Main security/SARIF uses merged input and a different trust purpose; it is not
 candidate acceptance. Manual SemVer publication is a separate approved action.
 
-The current last read-back is the empty context set above. Source implementation
-of the new producer does not activate protection. Before proposing its actual
-setting, verify the PR job's exact name, source App, head/merge revision and
-success/failure behavior, then capture the full before-state and scoped rollback.
-No stale retired `validation-changed` context may be restored from old prose.
+The current 2026-10-16 KST authenticated read-back has `strict=true` and the
+single required check `candidate-quality` from GitHub Actions app ID `15368`;
+the API contexts are `candidate-quality`. It followed an observed successful
+PR check, a first automatic-review rejection because the setting affects all
+future main PRs, and a new exact user approval. The scoped PATCH changed only
+`branches/main/protection/required_status_checks`; the before, after, PATCH,
+and rollback scratch receipts are supplementary only at
+`/tmp/hyhome-r13-main-protection-before.json`,
+`/tmp/hyhome-r13-main-protection-after.json`,
+`/tmp/hyhome-r13-required-status-checks-patch.json`, and
+`/tmp/hyhome-r13-required-status-checks-rollback.json`. This document retains
+the canonical normalized before state `{"strict":true,"contexts":[],"checks":[]}`,
+after state `{"strict":true,"contexts":["candidate-quality"],"checks":[{"context":"candidate-quality","app_id":15368}]}`, and rollback
+`{"strict":true,"contexts":[],"checks":[]}`. Read-back confirmed
+all other protection fields unchanged, including admin enforcement, conversation
+resolution, review settings, force-push/deletion denial, and empty rulesets.
+No stale retired `validation-changed` context was restored.
 
 A whole workflow skipped by path/branch filters or commit instructions can leave
 an expected check pending. Selection happens inside the PR workflow; title edits

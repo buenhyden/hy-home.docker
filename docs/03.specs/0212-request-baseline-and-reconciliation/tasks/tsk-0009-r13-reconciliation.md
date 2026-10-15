@@ -1,8 +1,8 @@
 ---
 title: "R13 Reconciliation Follow-up Task"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -93,6 +93,7 @@ changes a leaf-owner acceptance decision.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0009 | draft | ready | #hosted-validation-authorization-and-plan |
 | SPEC-0212-TSK-0009 | ready | in-progress | #draft-pull-request-and-observational-boundaries |
+| SPEC-0212-TSK-0009 | in-progress | completed | #source-only-criterion-acceptance |
 
 ### Draft pull request and observational boundaries
 
@@ -102,6 +103,31 @@ observed with head `0c598de264c0302f5032738b14ffbefe36b53cc7`, base
 `38818745829` / check `116709839952` in progress. This observed direct edge
 starts the delivery work; it neither accepts criterion 20 nor records a hosted
 result.
+
+The bootstrap candidate-quality run later succeeded at that head. A general
+progress approval preceded the first automatic-review rejection because the
+proposed persistent main required-check PATCH lacked an exact target and
+approval. A follow-up question named `main`, required status checks, and the
+effect on all future PRs; the user then approved main required check settings.
+That authorized `buenhyden/hy-home.docker`, `main`, and
+`required_status_checks`; authenticated after-readback reports strict
+`candidate-quality` from app ID `15368`. The canonical normalized before state
+is `{"strict":true,"contexts":[],"checks":[]}`, the after state is
+`{"strict":true,"contexts":["candidate-quality"],"checks":[{"context":"candidate-quality","app_id":15368}]}`, and the narrow rollback is
+`{"strict":true,"contexts":[],"checks":[]}`. Use rollback only after a
+fresh read-back and separate approval. Scratch before/after, PATCH, and rollback
+receipts are supplementary at `/tmp/hyhome-r13-main-protection-before.json`,
+`/tmp/hyhome-r13-main-protection-after.json`,
+`/tmp/hyhome-r13-required-status-checks-patch.json`, and
+`/tmp/hyhome-r13-required-status-checks-rollback.json`. This applies no other
+protection field and does not accept the later local documentation head.
+
+The prior metadata-wrapper invocation has no observed terminal result, so it
+remains an optional NOT_RUN diagnostic rather than PASS. Prometheus CA recreate
+is DEFERRED/DO_NOT_EXECUTE because the 3.14-to-3.15 RW TSDB compatibility,
+backup, and rollback are unproven. Gatus CA recreate is DEFERRED/DO_NOT_EXECUTE
+because a consistent RW SQLite backup and restore are unproven. Both decisions
+are outside source-only criterion 20 and remain named operations work.
 
 Read-only current-host Docker observation found the five named services healthy,
 OpenBao status exit `0`, and public health HTTP `200` with TLS verification
@@ -119,6 +145,33 @@ the separate worktree and main checkout the same store target path without
 opening the database. A proposed `claude doctor` diagnostic was automatically
 rejected because it could report authentication state; it was not run.
 
+### Source-only criterion acceptance
+
+The approved normal Claude session completed `/status`, `/memory`, `/hooks`,
+and `/exit` without a hook-failure marker, setting change, model prompt, or
+tool invocation. It verified menu availability only: the permitted top-level
+memory view did not display an on/off indicator, and no item was selected.
+Claude merged effective memory-off and individual native event receipts remain
+UNVERIFIED. This is distinct from the rejected `claude doctor` diagnostic and
+does not bypass its boundary.
+
+Criterion 20 accepts only the completed W25 source corrections: same-input link
+selection, repository-file provenance binding, sanitized shared-store identity,
+and immutable legacy-archive binding transport. The exact acceptance evidence
+is `Memory revision GREEN`, `Memory helper regression final`, `Changed-path
+route GREEN`, `Link selection GREEN`, `Link full regression`, `Metadata full
+regression`, `Scoped-metadata-GREEN`, `Final merged scoped metadata`, `Final
+document corpus lifecycle`, `W25 source security review GREEN`, and `Final
+document integration review`. Historical FAIL rows are resolved by their named
+same-check GREEN rows.
+
+This completed source-only Task does not make PR #506 merge-ready. Its bootstrap
+candidate-quality success covers head `0c598de264c0302f5032738b14ffbefe36b53cc7`;
+the final documentation head requires a future push and hosted check. Runtime
+CA recreates, live provider behavior, native-memory effective state, event
+delivery, data, secret, restart, deployment, restore, and merge acceptance
+remain outside criterion 20 and with their named leaf owners.
+
 ### Local delivery ledger
 
 | Commit | Logical unit | Actual delivery |
@@ -127,7 +180,7 @@ rejected because it could report authentication state; it was not run.
 | `141c963cb6bc8677d5b1e4d0098c50ba660b2063` | Repository-file provenance and sanitized Git-context isolation | `fix(memory): Bind provenance and isolate Git context`; local commit only |
 | `ff6d33ffaac3215543b2f64e2bf4336e703cbf71` | Published W24/TSK-0008 and W25/TSK-0009 document integration | `chore(merge): Preserve published infrastructure audit records`; local merge only |
 
-The pending Task record and its separate document-only receipt are not a remote
+This Task record and its separate document-only receipt are not a remote
 delivery, merge, release, or deployment claim.
 
 ### Initial findings
@@ -178,7 +231,7 @@ the 145 archived records or introduce a new immutable-binding rule.
 | R13-003 | P03 | `docs/03.specs/{0236,0237,0241,0243}@e6807a7` | static | Draft package status and stored Task acceptance have distinct lifecycle meanings. | retain | each package owner | 20 | current frontmatter and Task records |
 | R13-004 | P04 | `docs/98.archive/superseded/03.specs/0240-unseal-backup-exclusion@e6807a7` | recorded | Archived OpenBao history has current provenance consumers and retained assurance checks. | retain | REQ-0026 / SPEC-0242 | 20 | TSK-0007 P04 consumer trace |
 | R13-005 | P05 | `scripts/hooks/pre-push-guard.sh@e6807a7` | recorded | Installed-hook and real-push observations remain separate. | retain boundary | hook owner | 20 | TSK-0007 supported dispatcher probe |
-| R13-006 | P06 | `.github/rulesets/main-protection.md@e6807a7` | recorded | Protection has strict status enabled but no named contexts; no remote mutation is authorized. | retain boundary | GitHub governance owner | 20 | current read-only protection observation |
+| R13-006 | P06 | `.github/rulesets/main-protection.md@e6807a7` | recorded | At the e680 baseline, protection was strict with no named contexts and no remote mutation authorization. | resolved by exact approval/readback | GitHub governance owner | 20 | Main required-check application; canonical 2026-10-16 readback |
 | R13-007 | P07 | `scripts/lib/ops/memory_sources.py@e6807a7` | reproduced | Baseline static inspection found `revision` unbound; the old helper accepted a bogus revision in the focused RED check. | changed with regression | W25 memory writer | 20 | Memory revision RED/GREEN |
 | R13-008 | P08 | `docs/03.specs/0243-openbao-window-readiness/tasks/tsk-0001-openbao-window-readiness.md@e6807a7` | recorded | Source acceptance does not replace maintenance-window, recovery, or live-service proof. | retain boundary | SPEC-0243 | 20 | existing W0 prerequisites |
 | R13-009 | P07 | `scripts/operations/agent_memory.py@e6807a7` | static | CLI common-directory lookup uses ambient Git resolution and can select a foreign repository's store. | changed with regression | W25 memory writer | 20 | shared-store identity regression after sanitized-runner implementation |
@@ -209,9 +262,14 @@ not execute a PR leaf.
 | Protection and hook observation | 20 | W25 | Read-only remote and Git configuration inspection | `origin/main` `e6807a7`; strict protection with no contexts; hooksPath and init.templateDir unset | PASS | r13 isolated worktree | optional | - |
 | Advisory graph availability | 20 | W25 | Graphify CLI and report discovery | Current source environment | NOT_APPLICABLE | No tracked report or CLI found | optional | - |
 | Draft PR observation | 20 | W25 | Read-only pull-request and check observation | PR #506 draft; head `0c598de264c0302f5032738b14ffbefe36b53cc7`; base `5a88c7937bf427021f2fd0441e04b1011ecd28a9`; candidate-quality run `38818745829` / check `116709839952` in progress | PASS | Hosted observation | required | - |
+| Bootstrap hosted candidate | 20 | W25 | Candidate-quality hosted check | Run `38818745829` / check `116709839952` succeeded at head `0c598de264c0302f5032738b14ffbefe36b53cc7`; later local head is not covered | PASS | Hosted observation | required | - |
+| Main required-check application | 20 | W25 | Authenticated main protection before/after readback | Target `buenhyden/hy-home.docker` / `main` / `required_status_checks`; strict `candidate-quality`, app ID `15368`, all other protection fields deep-equal, empty rulesets; named before/after/PATCH/rollback receipts | PASS | Hosted observation | required | - |
+| Metadata-wrapper terminal diagnostic | 20 | W25 | Scoped metadata wrapper invocation | DEFER: terminal exit was not observed; no PASS claim | NOT_RUN | r13 isolated worktree | optional | - |
+| CA recreate decision | 20 | W25 | Prometheus/Gatus maintenance-window preflight | DEFERRED/DO_NOT_EXECUTE: Prometheus RW TSDB upgrade backup/rollback and Gatus RW SQLite consistent backup/restore are unproven | NOT_RUN | Sanitized runtime observation; outside AC20 | optional | - |
 | Current-host Docker observation | 20 | W25 | Read-only current-host Docker preflight | Five named services healthy; OpenBao status exit 0; public health HTTP 200/TLS 0; Traefik CA mount present; Prometheus/Gatus declared CA mounts absent and NOT_DEPLOYED | PASS | Sanitized runtime observation | required | - |
 | Native memory boundary observation | 20 | W25 | Public CLI and static native-memory observation | Codex public CLI feature boundary `memories=false`; Claude merged effective setting and provider native-event delivery UNVERIFIED; store target paths equal without database open | PASS | Sanitized native observation | required | - |
-| Rejected native diagnostic | 20 | W25 | Proposed `claude doctor` observation | DEFER: automatic review rejected possible authentication-state reporting; command not run | NOT_RUN | Sanitized native observation | required | - |
+| Approved normal native session | 20 | W25 | Approved normal Claude menu observation | Observation SHA-256 `bb823e26dcdaad750fb5d65a2a7e018bb4b193728c4c09a791f6ee66eb288491`; `/status`, `/memory`, `/hooks`, `/exit` menus observed; no setting action, model prompt, tool, or hook-failure marker | PASS | Sanitized native observation | optional | - |
+| Rejected native diagnostic | 20 | W25 | Proposed `claude doctor` observation | DEFER: automatic review rejected possible authentication-state reporting; command not run | NOT_RUN | Sanitized native observation | optional | - |
 | Script-manifest observation | 20 | W25 | Script-manifest validation | 106 manifest paths active or retained | PASS | r13 isolated worktree | optional | - |
 | Operations-catalog observation | 20 | W25 | Operations catalog validation | Current catalog | PASS | r13 isolated worktree | optional | - |
 | Inventory-scope observation | 20 | W25 | Tracked-path inventory | 2,280 tracked paths; 1,371 Markdown; 386 script/code candidates; classification only, not whole-body semantic audit | PASS | r13 isolated worktree | optional | - |
@@ -256,14 +314,14 @@ not execute a PR leaf.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 20 | pending | Scoped-metadata-GREEN, Memory helper regression final, Link full regression, W25 source security review GREEN, Metadata full regression | Source checks are recorded; this ready Task awaits remote selected-check execution and criterion acceptance. | SPEC-0212 TSK-0009 |
+| 20 | accepted | Memory revision GREEN, Memory helper regression final, Changed-path route GREEN, Link selection GREEN, Link full regression, Metadata full regression, Scoped-metadata-GREEN, Final merged scoped metadata, Final document corpus lifecycle, W25 source security review GREEN, Final document integration review | W25 source behavior is accepted; final PR-head hosted validation, merge, runtime, and native/provider claims remain outside this source-only decision. | SPEC-0212 TSK-0009 |
 
 ## Review and Completion
 
-This ready Task does not convert static inspection, stored Task evidence,
-a merged change, or an unavailable runtime target into acceptance. It completes
-only after the required W25 checks pass with the final source input; runtime,
-remote, and leaf-owner acceptance stay separate.
+This completed Task does not convert static inspection, stored Task evidence,
+a merged change, or an unavailable runtime target into source-only acceptance.
+It completes after the required W25 source checks pass; runtime, remote, and
+leaf-owner acceptance stay separate.
 
 The local hook boundary follows [Git hooks](https://git-scm.com/docs/githooks)
 and [pre-commit](https://pre-commit.com/); it does not prove a real push.
