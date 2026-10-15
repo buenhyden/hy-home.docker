@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -85,6 +85,27 @@ hash-recheck that packet and start the approved W2/W3 recovery gate. This
 transition records the release and start boundary only; it does not claim any
 backup, restore, image build, CA application, recreation, or health outcome.
 
+### Backup Capture Receipts
+
+The approved backup phase captured both production service archives on
+2026-10-16. These are capture receipts only: their independent integrity
+rehashes and isolated restores have not run, and neither receipt authorizes a
+CA change.
+
+- **Prometheus (W2):** receipt `e325f552…`; archive SHA-256 prefix
+  `2bb0edc…`, 6,860,012,544 bytes. The service stop/restart timestamps were
+  `23:31:10Z` and `23:42:33Z` (reported locally as 08:31–08:42 KST). The
+  post-capture check found the original container ID and image unchanged and
+  the service healthy; no helper remained.
+- **Gatus (W3):** receipt `e325f552…`; archive SHA-256 prefix `01f0f92d…`,
+  4,541,440 bytes. The service stop/restart timestamps were `23:46:05Z` and
+  `23:46:25Z` (reported locally as 08:46 KST). The post-capture check found
+  the original container ID and image unchanged and the service healthy; no
+  helper remained.
+
+The receipts are durable task evidence for the completed captures. A separate
+independent rehash and each isolated restore remain required recovery gates.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -101,14 +122,20 @@ backup, restore, image build, CA application, recreation, or health outcome.
 | Initial operational execution state | 1 | W1 | No preflight, backup, isolated restore, image build, recreation, review, or selected gate had run when this Task was created | Initial record on `89eb43f683a11587cf4f125be534ae720c20a55c` | NOT_RUN | Initial State | optional | - |
 | Ready backup packet binding | 1 | W1 | SHA-256 binding of the final frozen backup phase contract and guard helpers | Contract `d70944844623e5733a7e6dff4a5e999bf29078a5f5c0bd91fd11e48950db0d88`; phase script `1ce35b3a0e4759f4b37b8c6d0f86d48d41c8452dc92d0f32179835561cf7475a`; archive guard `a85ab831c3369f1d04b5dc6abd14fa83ae5bb4ced495f594d85955474c42b385` | PASS | Ready Transition | required | - |
 | Backup phase independent reviews | 7 | W7 | Independent IaC and security reviews of the final backup phase packet | READY limited to backup phase; no execution outcome | PASS | In-progress Transition | required | - |
+| Prometheus backup capture | 2 | W2 | Reviewed Prometheus backup capture | Receipt `e325f552…`; archive SHA-256 prefix `2bb0edc…`; 6,860,012,544 bytes; stop `23:31:10Z`, restart `23:42:33Z`; original ID/image and health retained | PASS | Backup Capture Receipts | required | - |
+| Gatus backup capture | 3 | W3 | Reviewed Gatus backup capture | Receipt `e325f552…`; archive SHA-256 prefix `01f0f92d…`; 4,541,440 bytes; stop `23:46:05Z`, restart `23:46:25Z`; original ID/image and health retained | PASS | Backup Capture Receipts | required | - |
+| Prometheus backup integrity rehash | 2 | W2 | Independent rehash of the captured Prometheus archive | Not yet run after capture | NOT_RUN | Backup Capture Receipts | required | - |
+| Gatus backup integrity rehash | 3 | W3 | Independent rehash of the captured Gatus archive | Not yet run after capture | NOT_RUN | Backup Capture Receipts | required | - |
+| Prometheus isolated restore | 2 | W2 | Isolated restoration and validation of the captured Prometheus archive | Not yet run | NOT_RUN | Backup Capture Receipts | required | - |
+| Gatus isolated restore | 3 | W3 | Isolated restoration and validation of the captured Gatus archive | Not yet run | NOT_RUN | Backup Capture Receipts | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 1 | pending | - | Await W1 preflight | @buenhyden |
-| 2 | pending | - | Await W2 backup and isolated restore | @buenhyden |
-| 3 | pending | - | Await W3 backup and isolated restore | @buenhyden |
+| 2 | pending | - | Backup captured; await independent rehash and isolated restore | @buenhyden |
+| 3 | pending | - | Backup captured; await independent rehash and isolated restore | @buenhyden |
 | 4 | pending | - | Await W3 build identity | @buenhyden |
 | 5 | pending | - | Await W4 and W5 service results | @buenhyden |
 | 6 | pending | - | Await W6 outcome if a gate fails | @buenhyden |
