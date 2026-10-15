@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -66,6 +66,15 @@ older isolated native checkout. The markers contain no observed payload, but
 their cleanup remains a required open finding. Security approved a narrowly
 proven-new cleanup method; its cause and execution result remain separate from
 this observation until recorded.
+
+### Lifecycle Delivery Note
+
+The first post-draft source commit recorded the already observed `draft` to
+`ready` planning event and the subsequent `ready` to `in-progress` UI attempt
+together. It contains both registered direct-edge rows but no separate ready
+Git snapshot. This is a delivery-granularity limitation, not a claim that a
+direct `draft` to `in-progress` transition occurred. Future transitions record
+one clear actual event per commit where practical.
 
 ### Lifecycle Events
 

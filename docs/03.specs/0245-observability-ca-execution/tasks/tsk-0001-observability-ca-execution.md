@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -78,7 +78,7 @@ independent IaC/security review before the relevant operation proceeds.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Initial operational execution state | 1, 2, 3, 4, 5, 6, 7 | W1, W2, W3, W4, W5, W6, W7 | No preflight, backup, isolated restore, image build, recreation, review, or selected gate had run when this Task was created | Initial record on `89eb43f683a11587cf4f125be534ae720c20a55c` | NOT_RUN | Initial State | optional | - |
-| Ready backup packet binding | 1 | W1 | SHA-256 binding of the frozen backup phase contract and guard helpers | Contract `98a93a8ac0454bdf080c0d97f9e46f39882b53b84245f5754eed7130721ab1e3`; phase script `4728e8408a4531b9577ab5ada31cda6282a1eed0ad81656f43485c94fd97ae98`; archive guard `a85ab831c3369f1d04b5dc6abd14fa83ae5bb4ced495f594d85955474c42b385` | PASS | Ready Transition | required | - |
+| Ready backup packet binding | 1 | W1 | SHA-256 binding of the final frozen backup phase contract and guard helpers | Contract `3740d66b0c9d0e16cdc7a081471369434f1bf30f9562fc071e067b18da6ebfe2`; phase script `e893ed55acf64821b17395067a573ed0e45f4ffb55ff17a8f6ea02a0898beac1`; archive guard `a85ab831c3369f1d04b5dc6abd14fa83ae5bb4ced495f594d85955474c42b385` | PASS | Ready Transition | required | - |
 
 ## Criterion Acceptance
 
