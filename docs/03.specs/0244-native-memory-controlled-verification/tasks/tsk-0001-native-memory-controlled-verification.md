@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -82,9 +82,23 @@ The thirteen proven-new zero-byte markers in the old isolated checkout were
 removed and its Git status returned to the recorded state. A privacy environment
 scrub also created eight proven-new zero-byte placeholders at a user-global
 location. Automatic deletion there was rejected because it would mutate global
-state; four ambiguous files and all directories remain untouched. A narrowly
-scoped user approval is pending for the global removal. No provider retry or
-further probe ran.
+state; four ambiguous files and all directories remain untouched. The owner
+then approved guarded removal of exactly those eight proven-new files, which
+completed without touching the retained entries. No provider retry or further
+probe ran.
+
+### Forced-off Hook Delivery Plan
+
+Security approved one conditional, session-only hook-delivery attempt after the
+guarded global cleanup. It sets `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` for that
+session only and does not use the privacy-environment scrub that created the
+placeholders. Its sole successful label is
+`HOOK_DELIVERY_VERIFIED_WITH_SESSION_FORCED_MEMORY_OFF`. The attempt is a
+distinct hook-delivery proof class: it neither changes configuration nor proves
+that the normal merged project setting is effectively off, so criterion 3
+remains pending. The operator may start the one frozen attempt after this Task
+record; all other boundaries and stop conditions in the approved plan remain
+in force.
 
 ### Lifecycle Events
 
@@ -106,6 +120,8 @@ further probe ran.
 | Native marker cleanup finding | 5 | W5 | Detect and remove only proven-new zero-byte markers from the old isolated native checkout | Thirteen untracked zero-byte markers; security-approved cleanup method not yet executed | FAIL | In-progress Observation | required | - |
 | Local marker cleanup | 5 | W5 | Detect and remove only proven-new zero-byte markers from the old isolated native checkout | Thirteen proven-new zero-byte markers removed; Git status restored | PASS | Cleanup Follow-up | required | Native marker cleanup finding |
 | Global marker cleanup boundary | 5 | W5 | Delete only proven-new zero-byte privacy-environment placeholders at the user-global location | Eight proven-new zero-byte files detected; automatic deletion rejected; four ambiguous files and all directories retained | FAIL | Cleanup Follow-up | required | - |
+| Global marker cleanup | 5 | W5 | Delete only proven-new zero-byte privacy-environment placeholders at the user-global location | Guarded cleanup deleted all eight approved proven-new zero-byte files; four ambiguous files and all directories preserved | PASS | Cleanup Follow-up | required | Global marker cleanup boundary |
+| Forced-off hook plan review | 4, 5, 6 | W4, W5, W6 | Security review of one session-only forced-off hook-delivery attempt without privacy-environment scrub | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`; sole PASS label `HOOK_DELIVERY_VERIFIED_WITH_SESSION_FORCED_MEMORY_OFF`; normal merged effective-off remains unknown | PASS | Forced-off Hook Delivery Plan | required | - |
 
 ## Criterion Acceptance
 
