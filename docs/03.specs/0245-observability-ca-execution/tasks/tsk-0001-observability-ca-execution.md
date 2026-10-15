@@ -1,8 +1,8 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.0"
+version: "0.1.2"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -39,23 +39,46 @@ before Gatus while preserving production data boundaries.
   current running immutable base and `COPY` of only the reviewed tracked
   CA-aware entrypoint, with its binary unchanged, before recreation; a
   same-image recreation is not accepted as CA evidence.
+- **Planned protected artifacts:** the reviewed backup/isolated-restore packet
+  selects `/home/hyunyoun/storage/backups/r13-observability-ca-20261016-01`.
+  Workspace artifacts require mode 0700 and isolated-restore tar siblings mode
+  0400. The path shares device 2064 with production data, so it is a
+  pre-recreate recovery gate only, not a disk-failure disaster-recovery claim.
 
 ## Work Log
 
 ### Initial State
 
-This Task begins in `draft`. The approved Spec and Plan define the execution
-order. No backup, isolated restore, image build, CA application, recreation,
-or operational review has run under this Task. A later transition to `ready`
-requires the W1 preflight and reviewed procedure. A transition to
-`in-progress` requires an actual W2 or W4 backup/restore gate attempt; it is
-not a documentation-only transition.
+The approved Spec and Plan define the execution order. No backup, isolated
+restore, image build, CA application, recreation, or operational review has
+run under this Task.
+
+### Ready Transition
+
+On 2026-10-16, W1 bound the exact, value-free backup phase contract and its
+two guard helpers to the selected host-local protected artifact path. The
+contract specifies the two recovery gates before either CA recreation, the
+Prometheus-then-Gatus recreation order, same-device non-DR limitation, and
+the mode-0700 workspace/mode-0400 tar-sibling controls. This makes the Task
+`ready` to begin a reviewed W2 or W4 gate; it is not a backup, restore, image
+build, service recreation, or operational-review result.
+
+The Task transitions to `in-progress` only when an approved W2 or W4 recovery
+gate actually starts. The reviewed recovery packet must still pass its
+independent IaC/security review before the relevant operation proceeds.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0245-TSK-0001 | draft | ready | Ready backup packet binding |
 
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Initial operational execution state | 1, 2, 3, 4, 5, 6, 7 | W1, W2, W3, W4, W5, W6, W7 | No preflight, backup, isolated restore, image build, recreation, review, or selected gate has run for this Task | Initial record on `89eb43f683a11587cf4f125be534ae720c20a55c` | NOT_RUN | Initial State | required | - |
+| Initial operational execution state | 1, 2, 3, 4, 5, 6, 7 | W1, W2, W3, W4, W5, W6, W7 | No preflight, backup, isolated restore, image build, recreation, review, or selected gate had run when this Task was created | Initial record on `89eb43f683a11587cf4f125be534ae720c20a55c` | NOT_RUN | Initial State | optional | - |
+| Ready backup packet binding | 1 | W1 | SHA-256 binding of the frozen backup phase contract and guard helpers | Contract `98a93a8ac0454bdf080c0d97f9e46f39882b53b84245f5754eed7130721ab1e3`; phase script `4728e8408a4531b9577ab5ada31cda6282a1eed0ad81656f43485c94fd97ae98`; archive guard `a85ab831c3369f1d04b5dc6abd14fa83ae5bb4ced495f594d85955474c42b385` | PASS | Ready Transition | required | - |
 
 ## Criterion Acceptance
 
