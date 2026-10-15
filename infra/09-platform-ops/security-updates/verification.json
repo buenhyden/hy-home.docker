@@ -4794,6 +4794,14 @@
         "transition_overrides": 0,
         "observed_at": "2026-10-15T16:04:37.865532+00:00",
         "scope": "corrected current Task/Plan and Spec/n8n documents; resolves prior scoped metadata failure, not the separate incomplete canonical static helper"
+      },
+      {
+        "command": "python3 -m unittest tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests -q",
+        "exit_code": 0,
+        "tests_run": 8,
+        "duration_seconds": 0.084,
+        "source_binding": "03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985",
+        "scope": "Current source/loader assertions and complete source metadata binding only; no new native execution."
       }
     ],
     "states": {
@@ -4810,7 +4818,161 @@
       "recovery": "NOT_RUN",
       "delivery": "NOT_RUN"
     },
-    "meaning": "Current n8n-specific source preparation. Historical global/runtime fields retain their original scope; no current native acceptance is inferred."
+    "meaning": "Current n8n-specific source preparation. Historical global/runtime fields retain their original scope; no current native acceptance is inferred.",
+    "source_continuations": [
+      {
+        "checked_at": "2026-10-15T16:35:15.922344+00:00",
+        "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
+        "previous_input_sha256": "cd628778fccbd13e04e73c6bf8fbabb750bf1062177af078889939270894fbcc",
+        "current_input_sha256": "03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985",
+        "reason": "Actual-loader resolution fix in both Dockerfiles plus focused version regression; writer reports RED2 then GREEN1. Independent metadata tests and rebuilt native image pending.",
+        "native_rebuild": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "home": "NOT_RUN",
+        "recovery": "NOT_RUN"
+      }
+    ],
+    "historical_failed_image_preparations": [
+      {
+        "recorded_at": "2026-10-15T16:35:56.878545+00:00",
+        "source_binding": "cd628778fccbd13e04e73c6bf8fbabb750bf1062177af078889939270894fbcc",
+        "image_index_or_id": "sha256:22991d699454d44ae806ea525aea22c329cf7b1432b457c8820ff22c2e8eb304",
+        "build": {
+          "exit_code": 0,
+          "elapsed_seconds": 234.116,
+          "command": [
+            "docker",
+            "buildx",
+            "build",
+            "--builder",
+            "default",
+            "--platform",
+            "linux/amd64",
+            "--resource",
+            "memory=2g",
+            "--resource",
+            "cpu-period=100000",
+            "--resource",
+            "cpu-quota=100000",
+            "--network",
+            "default",
+            "--load",
+            "--progress",
+            "plain",
+            "--iidfile",
+            "/tmp/hyhome-n8n-build-cd628778fccb-x8cyw22u/image.id",
+            "--metadata-file",
+            "/tmp/hyhome-n8n-build-cd628778fccb-x8cyw22u/build-metadata.json",
+            "--label",
+            "hyhome.build-owner=spec0204-n8n-cd628778fccb",
+            "--label",
+            "hyhome.source-binding=cd628778fccbd13e04e73c6bf8fbabb750bf1062177af078889939270894fbcc",
+            "--label",
+            "org.opencontainers.image.revision=8306839bb377228f76881cadaeb1ebe0f14656b5",
+            "--label",
+            "hyhome.reviewed-document-head=64434387a86b4edb65d4583ee449785eb6ec1276",
+            "-t",
+            "hy-home/sec01-n8n:2.43.6-opsflow-cd628778fccb",
+            "-f",
+            "/tmp/hyhome-n8n-build-cd628778fccb-x8cyw22u/context/Dockerfile",
+            "/tmp/hyhome-n8n-build-cd628778fccb-x8cyw22u/context"
+          ],
+          "resource_enforcement_observed": false
+        },
+        "native": {
+          "exit_code": 1,
+          "elapsed_seconds": 3.13,
+          "cleanup": "PASS",
+          "failure_class": "MODULE_NOT_FOUND: n8n-workflow",
+          "failure_class_origin": "Actual loader failure reported by owning workflow writer; native exit/image/cleanup independently reread from named JSON receipt."
+        },
+        "receipt_files": [
+          {
+            "name": "build-command.json",
+            "sha256": "e66fc46f015c2d46a0ee341ca064a742130c5f85dff171fbd1f32097dfc94c52"
+          },
+          {
+            "name": "build-result.json",
+            "sha256": "6eaf8986a6a7fb481676c3f00b58271d5f3056ebe7239de6e0cec0ae341a5acd"
+          },
+          {
+            "name": "image-inspection.json",
+            "sha256": "d72fa7da5e71f2c7fb79ee5355538627f127269a573d8e1d7b2624c2c2f4e9f4"
+          },
+          {
+            "name": "native-result.json",
+            "sha256": "8bc7a9faebaf92bd04ba2581d50da99388476340bdd61b6aaad87ad8405a1a12"
+          },
+          {
+            "name": "actual-native-package-loader.log",
+            "sha256": "9179cfcbb4f95d468672fb5a0acfba2f6796afb3decc695691e231125c10e698"
+          }
+        ],
+        "disposition": "Historical failed first-image preparation. Build success does not prove module loading. Superseded by NODE_PATH plus build-time class assertions; current corrected image rebuild/native/signature/full-image scan/HOME/recovery remain NOT_RUN."
+      }
+    ],
+    "isolated_candidate_build_and_module_smoke": {
+      "recorded_at": "2026-10-15T16:38:26.517250+00:00",
+      "source_binding": "03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985",
+      "candidate_tree": "f511528aba724372aa0ed61b7b3c2e271d2d6942",
+      "parent_head": "64434387a86b4edb65d4583ee449785eb6ec1276",
+      "image_index_or_id": "sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153",
+      "image_descriptor": {
+        "mediaType": "application/vnd.oci.image.index.v1+json",
+        "digest": "sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153",
+        "size": 856
+      },
+      "platform": "linux/amd64",
+      "image_size_bytes": 2033739028,
+      "build_exit_code": 0,
+      "build_elapsed_seconds": 28.177,
+      "resource_enforcement_observed": false,
+      "module_smoke_exit_code": 0,
+      "module_smoke_elapsed_seconds": 4.545,
+      "cleanup": "PASS",
+      "module_smoke": {
+        "nativePackageLoader": "PASS",
+        "core": "2.43.6",
+        "framework": "2.43.4",
+        "peerSameBase": true,
+        "bridge": "PASS",
+        "fonts": "PASS",
+        "actualNode": "v26.7.0",
+        "loadedNodes": [
+          {
+            "name": "opsflowSmtp",
+            "version": 1
+          }
+        ]
+      },
+      "receipt_files": [
+        {
+          "name": "build-result.json",
+          "sha256": "41af1147b3baf06306119b7610b8bbc57eb69aa1ccc3c0e8ef3cf4ab98007faf"
+        },
+        {
+          "name": "native-result.json",
+          "sha256": "4cfcf174b5bb1f31dbaef244db7502b7fed127fe7ede0acc86f9c19eb6bba63a"
+        },
+        {
+          "name": "context-receipt.json",
+          "sha256": "079dca8701e51b0dce28b148337910b7824780fb16c4c8ace85ac55a94e0595d"
+        },
+        {
+          "name": "image-inspection.json",
+          "sha256": "063a9c6e3bb26a46e7bd65bc822b02694125e0ffd4e58324a1f1a19118cdaa19"
+        }
+      ],
+      "scope": "One isolated candidate image build and actual n8n package-loader/module/bridge/font smoke only. Not both Dockerfile variants, actual queue/workflow/SQL/SMTP service acceptance, signatures, full-image SBOM/scan, HOME, migration or recovery.",
+      "signature": "NOT_RUN",
+      "full_image_sbom_scan": "NOT_RUN",
+      "full_service_native": "NOT_RUN",
+      "home": "NOT_RUN",
+      "migration": "NOT_RUN",
+      "recovery": "NOT_RUN",
+      "prior_harness_attempt": "Owning workflow writer reports a temporary harness newline syntax failure before corrected same-image PASS; not a source acceptance failure and not silently erased."
+    }
   },
   "root_official_refresh": {
     "lookup_reference": "release-lookups.json#/root_official_refresh",

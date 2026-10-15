@@ -53,13 +53,14 @@ python3 -m unittest tests.validation.test_workflow_version_bundle.WorkflowVersio
 tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests.test_opsflow_package_matches_upstream_workflow_api`.
 It exited 1 with two expected version mismatches (2.42.7 and 2.42.3).
 
-The frozen source binding is
+The initial source-only frozen binding was
 `cd628778fccbd13e04e73c6bf8fbabb750bf1062177af078889939270894fbcc`
 across sixteen n8n build/COPY and local unit inputs. `update-ledger.json`
 owns this binding; `build-inputs.json` now records both Dockerfile variants and
 package/lock/TypeScript inputs. It excludes independent P05 SQL/provisioning
-acceptance, which Task0018 records. No image was pulled or built. All new custom
-image digests remain unknown; signature/full-image SBOM/native/HOME/migration/
+acceptance, which Task0018 records. At that initial source-only check no image was pulled or built; the later
+isolated receipts below supersede only that build/module-loading scope. At that
+point all new custom image digests remained unknown; signature/full-image SBOM/native/HOME/migration/
 backup/restore remain NOT_RUN. Four n8n service rows carry fresh independent
 stable/digest facts; other rows have no new target or security acceptance.
 
@@ -134,6 +135,63 @@ CI policy integration; pre-rebase tests are not relabeled as final-head or
 hosted CI evidence. The separate blocked image-native/HOME/recovery lanes
 remain visible.
 
+### Exact isolated image build and native peer correction — 2026-10-16
+
+The authorized isolated build of the committed source at
+`8306839bb377228f76881cadaeb1ebe0f14656b5` produced image
+`sha256:22991d699454d44ae806ea525aea22c329cf7b1432b457c8820ff22c2e8eb304`,
+binding `cd628778fccbd13e04e73c6bf8fbabb750bf1062177af078889939270894fbcc`.
+Build exit0/234.116s did not prove runtime loading: actual n8n
+`PackageDirectoryLoader` failed with `MODULE_NOT_FOUND: n8n-workflow`, exit1.
+The pruned package lives under `/opt`, outside the base framework's ordinary
+module ancestry. This confirmed production failure is retained in
+`verification.json#/n8n_source_preparation`; it is not an accepted image.
+
+The minimal correction adds the fixed base framework path
+`NODE_PATH=/usr/local/lib/node_modules/n8n/node_modules` in both Dockerfiles.
+It installs no second framework copy and keeps development dependencies pruned.
+Both builds now instantiate the actual compiled `OpsflowSmtp` class and assert
+its name and `NodeConnectionTypes.Main` API after checking n8n's version.
+The focused regression command was `rtk proxy python3 -m unittest
+tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests.test_pruned_custom_node_uses_pinned_base_framework_and_loads_at_build -v`:
+RED two Dockerfile failures exit1, then GREEN one test exit0.
+
+The corrected complete sixteen-file binding is
+`03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985`.
+Before the fix commit, `git write-tree` recorded immutable candidate tree
+`f511528aba724372aa0ed61b7b3c2e271d2d6942`, parent
+`64434387a86b4edb65d4583ee449785eb6ec1276`. The context contained only its
+32 regular tracked n8n files; ignored files and symlinks were rejected.
+The existing default builder received `--platform linux/amd64 --resource
+memory=2g --resource cpu-period=100000 --resource cpu-quota=100000 --load`.
+One build, fifteen minutes, eight GiB disk growth and six GiB host available
+memory were the stop bounds. Requested stage controls were accepted, but their
+actual cgroup enforcement and daemon pull overhead remain unobserved.
+The cached build passed exit0/28.177s, minimum available memory11781218304bytes,
+maximum observed Docker disk growth7589888bytes, no budget stop.
+
+The unique corrected tag is `hy-home/sec01-n8n:2.43.6-opsflow-03892eb1a9a4`,
+image ID `sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`.
+The actual pinned `PackageDirectoryLoader` passed exit0/4.545s under the
+production image ENV: n8n2.43.6, n8n-workflow2.43.4, the same base peer,
+compiled execute/Main API, immutable bridge and CJK/emoji font artifacts.
+The synthetic container used `--network none --read-only --cpus 1 --memory 1g
+--memory-swap 1g --pids-limit 128 --cap-drop ALL --security-opt
+no-new-privileges=true`; only owned64MiB tmpfs at `/tmp` and
+`/home/node/.n8n` were writable. It used no ports, host mounts or production
+entrypoint. Exact container
+`2bda571aa4712e1517527f26529c9a85715c6f7878d5a1423ac67f3dc2ff79ad`
+was absent after automatic cleanup. A first temporary smoke-script newline
+syntax error exited1/1.586s and was retained separately, then corrected without
+changing the image or assertions. Source, build and native command/result
+receipts are summarized durably in the existing SEC01 JSON owners.
+
+This accepts isolated image compilation and actual package loading only.
+The worker variant has the same source guard but was not separately built.
+Full n8n workflow/queue/runner execution, full-image vulnerability scan,
+signature/provenance verification, HOME upgrade, combined backup/restore and
+runtime clock/quiescence proof remain NOT_RUN or BLOCKED in their owners.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -150,7 +208,10 @@ remain visible.
 | Canonical helper | 2 | W71 | Required infrastructure static helper | External-absolute-path;11PASS/0FAIL/4BLOCKED/2NOT_RUN; exit2 | NOT_RUN | W71 stable source preparation | required | - |
 | Initial document metadata | 2 | W71 | Six-path document metadata | Initial Task/Plan defects and archive fallback;148 findings; exit 1 | FAIL | W71 stable source preparation | required | - |
 | Corrected document metadata | 2 | W71 | Six-path document metadata | Seven paths including the initial six; zero violations/exceptions/overrides; exit 0 | PASS | W71 stable source preparation | required | Initial document metadata |
-| Native and recovery | 2 | W71 | New exact images and isolated feature/recovery acceptance | No new build/native/HOME/restore receipt | NOT_RUN | W71 stable source preparation | optional | - |
+| Native peer loading RED | 2 | W71 | Actual pinned PackageDirectoryLoader | Original cd628 image; missing framework peer; exit1 and cleanupPASS | FAIL | Exact isolated image build and native peer correction — 2026-10-16 | required | - |
+| Native peer loading GREEN | 2 | W71 | Actual pinned PackageDirectoryLoader | Corrected03892 image; core2.43.6/framework2.43.4; exit0/4.545s and cleanupPASS | PASS | Exact isolated image build and native peer correction — 2026-10-16 | required | Native peer loading RED |
+| Isolated corrected build | 2 | W71 | Exact Git candidate image build | Treef511528; image1fda18; exit0/28.177s; budgets respected | PASS | Exact isolated image build and native peer correction — 2026-10-16 | required | - |
+| Native and recovery | 2 | W71 | Complete workflow and HOME recovery acceptance | Isolated module smoke does not prove workflow/queue/runner/HOME/restore | NOT_RUN | Exact isolated image build and native peer correction — 2026-10-16 | optional | - |
 
 ## Criterion Acceptance
 

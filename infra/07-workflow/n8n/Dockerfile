@@ -49,11 +49,14 @@ RUN test "$(id -u node)" = "1000" && \
 USER 1000
 
 ENV NODE_ENV=production
+# Resolve the framework peer from the pinned n8n base after pruning build dependencies.
+ENV NODE_PATH=/usr/local/lib/node_modules/n8n/node_modules
 ENV GENERIC_TIMEZONE=Asia/Seoul
 
 WORKDIR /home/node
 
-RUN test "$(n8n --version)" = "${N8N_VERSION}"
+RUN test "$(n8n --version)" = "${N8N_VERSION}" && \
+  node -e "const assert = require('node:assert/strict'); const workflow = require('n8n-workflow'); const { OpsflowSmtp } = require('/opt/hyhome/n8n-custom/opsflow/dist/OpsflowSmtp.node.js'); const node = new OpsflowSmtp(); assert(node.description.name === 'opsflowSmtp'); assert(node.description.inputs[0] === workflow.NodeConnectionTypes.Main);"
 
 RUN mkdir -p /home/node/.n8n/custom && \
   chown -R node:node /home/node/.n8n

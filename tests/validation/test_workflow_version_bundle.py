@@ -128,6 +128,25 @@ class WorkflowVersionBundleTests(unittest.TestCase):
                 "apk --no-network info -v > /font-builder-packages.txt", source
             )
 
+    def test_pruned_custom_node_uses_pinned_base_framework_and_loads_at_build(self):
+        for name in ("Dockerfile", "dev.Dockerfile"):
+            with self.subTest(name=name):
+                source = (N8N / name).read_text()
+                self.assertIn(
+                    "ENV NODE_PATH=/usr/local/lib/node_modules/n8n/node_modules",
+                    source,
+                )
+                self.assertIn("npm prune --omit=dev", source)
+                self.assertIn(
+                    "require('/opt/hyhome/n8n-custom/opsflow/dist/OpsflowSmtp.node.js')",
+                    source,
+                )
+                self.assertIn("node.description.name === 'opsflowSmtp'", source)
+                self.assertIn(
+                    "node.description.inputs[0] === workflow.NodeConnectionTypes.Main",
+                    source,
+                )
+
     def test_opsflow_package_matches_upstream_workflow_api(self):
         package_root = N8N / "workloads/manifest-outbox-notifier/nodes/OpsflowSmtp"
         package = json.loads((package_root / "package.json").read_text())
