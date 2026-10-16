@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.17"
+version: "0.1.18"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -315,6 +315,26 @@ The result can identify a candidate class only: it cannot validate or forward a
 script, prove `PostToolUse`, or accept criterion 4. It has not run. Root may
 release exactly this control after the Task receipt is committed.
 
+### Merged Hook Listing Control Result
+
+The released control completed with receipt SHA-256
+`8345aa34cdf14e06f3d3fa0dbd7d16e372bbb87ea103bb3b8764260ee724d2fc` and
+classification `CLAUDE_ADDITIONAL_PRETOOL_HOOK_IDENTIFIED`. It found 12
+PreTool entries: six active Write entries, comprising one tracked project entry
+and five plugin-hook entries. The aggregate command kinds were one Bash
+(tracked project) and five Node (plugin); ECC, additional Bash, and their
+intersection were each zero.
+
+Initialization, listing, and session end succeeded with exit 0. There were no
+user, assistant, model, tool, permission, MCP, or unexpected frames; stderr,
+timeout, and malformed flags were false; repository status was equal and
+empty. Raw/private fields and fingerprints were absent.
+
+This removes an additional top-level Bash PreTool command as the explanation
+for Attempt 04's unknown invocation. A nested Bash path from a plugin Node
+hook or CLI internals remains possible. The control identifies neither script
+delivery nor `PostToolUse`, so criterion 4 remains pending.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -352,6 +372,7 @@ release exactly this control after the Task receipt is committed.
 | Forced-off hook attempt 04 | 4 | W4 | One released final forced-off exact-Write diagnostic | Receipt `89ea175746a446cb58b3c1dbc068e418a2b1ebc194b540529a78c87026aa0d2a`; failed closed; process exit 0/harness 1; Write observed once but tool result error/output absent; one forwarded guard; native/dispatcher SS/UserPromptSubmit/PreToolUse/Stop/SE each 1; PostToolUse/PreCompact/PostToolValidate 0; UNKNOWN 1; filesystem unchanged; cleanup/status PASS; post-result security pending | FAIL | Forced-off Hook Attempt 04 Result | required | - |
 | Metadata validation after native contract alignment | 6 | W6 | Full changed-document metadata selection with the active eight-path/base selection | Launched at `8219c9b`; exit 0; selected 7; violations 0; legacy exceptions 0; transition overrides 0; concurrent Task receipt edits, while Spec/Plan/registry bytes unchanged; not an immutable worktree snapshot | PASS | Metadata Validation Provenance | required | - |
 | Merged hook listing control plan review | 4 | W4 | Independent security review of one read-only merged-hook aggregate query | Plan `75ccecddb0fc621e1225fd8e965f054a41dc7692a68253a532e6817e28bc3d40`; harness `f92d170c438cea41ec8b5f5bbe8524eeb1c63e817b09659c959c08a5961d573c`; initialize/get_hooks_listing/end only; fixed enum/count aggregate; no model/user/tool/MCP/settings mutation or raw hook data | PASS | Merged Hook Listing Control Plan | required | - |
+| Merged hook listing control result | 4 | W4 | One released read-only merged-hook aggregate query | Receipt `8345aa34cdf14e06f3d3fa0dbd7d16e372bbb87ea103bb3b8764260ee724d2fc`; `CLAUDE_ADDITIONAL_PRETOOL_HOOK_IDENTIFIED`; PreTool 12; active Write 6 = tracked 1 + plugin 5; Bash 1 tracked, Node 5 plugin, ECC/additional-Bash/intersection 0; exit 0; no unexpected frames/stderr/timeout/malformed; status equal/empty | PASS | Merged Hook Listing Control Result | required | - |
 
 ## Criterion Acceptance
 
