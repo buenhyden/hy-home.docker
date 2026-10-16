@@ -309,6 +309,28 @@ while another branch holds a newly allocated identity. Whether that scan
 should cover only refs reachable from HEAD is an owner decision; this Task
 does not change it.
 
+The local changed profile on this branch did not reach a clean result in
+either available interpreter, and every failure is environmental:
+
+- System Python 3.12.3 (Ubuntu `jsonschema`, no `referencing`): every suite
+  through the 1,051-test suite passed, including the 152-test metadata suite
+  in 261 s (589 s in FULL run 1) and the 773-test suite in 1,041 s. The
+  525-test suite failed with 16 failures and 17 errors: 17 modules could not
+  import `referencing`, and `gen-secrets.sh` ran the embedded checks with the
+  `python3` found first on `PATH`.
+- Python 3.14.8 from `uv`, with `scripts/requirements-controller.lock`
+  installed with hashes in a scratch environment: those 205 tests passed. The
+  1,051-test suite then failed with 11 errors in the OpsFlow CA tests, because
+  this interpreter's OpenSSL lists no default CA certificates; they pass on
+  the system interpreter.
+
+No failing test exercises a file W74 changes. Both local FULL runs on main also
+used the system interpreter, while hosted CI uses Python 3.14.8 with the
+controller lock, so local FULL has not matched the hosted toolchain; the
+runner records the interpreter but does not reject a mismatch. That check is
+a follow-up outside W74. The hosted changed profile on the PR is the
+authoritative result for this branch.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -343,6 +365,7 @@ does not change it.
 | E20-local-full-main-refs | 2, 5 | W73 | local-full-observation | Same command on the same main, run 2 | FAIL | Work Log: Local FULL observations on main, item 2 (1 of 773 failed, 39:31) | required | - |
 | E21-full-test-profile | 1, 2 | W74 | per-test-timing | 940 document-governance and lifecycle tests run in isolation | PASS | Work Log: W74 Real-Tree Test Duplication (six tests, 794 s) | required | - |
 | E22-real-tree-dedup | 1, 2 | W74 | focused-red-green | Seven rewritten tests; ruff check and format | PASS | Work Log: W74 Real-Tree Test Duplication (all pass; 515 s removed) | required | - |
+| E23-local-changed-branch | 1, 2 | W74 | local-changed-profile | `run-ci-gate.py --profile changed` on `4500700ea` in system 3.12.3 and `uv` 3.14.8 | FAIL | Work Log: W74 Real-Tree Test Duplication (environment-only failures; hosted result pending) | required | - |
 
 ## Criterion Acceptance
 
