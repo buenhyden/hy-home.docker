@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.15"
+version: "0.1.16"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -249,6 +249,44 @@ immediate hash recheck, after which exactly one post-completion diagnostic may
 run. It cannot change the accepted normal merged memory-off result, and it
 does not turn Retry 03's partial hook evidence into complete delivery proof.
 
+### Forced-off Hook Attempt 04 Result
+
+Attempt 04 produced the sanitized receipt SHA-256
+`89ea175746a446cb58b3c1dbc068e418a2b1ebc194b540529a78c87026aa0d2a` with
+classification `HOOK_DELIVERY_PROBE_FAILED_CLOSED` and
+`provider_probe_ok=false`. The process exited 0 while the harness returned 1;
+there was no timeout, cap breach, or stderr. Stdout was present and a final
+token was observed.
+
+The exact offered Write was observed once, but its tool result was an error
+with string content and output was absent. The only guard decision was
+forwarded, not denied: the root, input, tool, path, normalized path, marker,
+fixture, runtime, binary identity, and output-absent checks were all true;
+the marker had one line feed. The Write never changed the filesystem.
+
+Native and dispatcher each recorded `SessionStart=1`,
+`UserPromptSubmit=1`, `PreToolUse=1`, `Stop=1`, and `SessionEnd=1`.
+`PostToolUse=0`, `PreCompact=0`, and `PostToolValidate=0`; `UNKNOWN=1`.
+Static review of the tracked project branch found no additional Bash and one
+project Pre hook. The unknown event is therefore an inference of an additional
+merged, non-project Bash hook (plugin or user layer), not an exact retained
+argv or path; the fail-closed shim blocked it. Cleanup and status restoration
+passed (status SHA-256 prefix `e3b0…`).
+
+The security pre-execution GO covered the exact plan and harness; post-result
+review remains pending. This failed-closed receipt leaves criterion 4 pending
+and does not affect the accepted normal merged memory-off result.
+
+### Metadata Validation Provenance
+
+The full changed-document metadata check after SPEC-0244/Plan v0.1.1 alignment
+exited 0 with seven selected documents, zero violations, zero legacy
+exceptions, and zero transition overrides. It launched at `8219c9b` using the
+same eight-path/base-`89eb43f683a11587cf4f125be534ae720c20a55c` selection as
+the prior record. Task receipt edits occurred while it ran; the Spec, Plan,
+and registry bytes were unchanged. This is not an immutable whole-worktree
+snapshot, and later Task receipts rely on their own narrow checks.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -283,6 +321,8 @@ does not turn Retry 03's partial hook evidence into complete delivery proof.
 | Normal settings memory-control query plan review | 3 | W3 | Independent security review of one read-only normal-settings memory query | Plan `a30ac627797ebb013c9e6f9b87cf56f4b544f70e2e908a24b55a8543e811565c`; harness `bf8baf16b7a3d64317f64c2d9e74e8f3f16061489577717b833baf1188555eda`; initialize/get_memory_dialog/end_session only; no model/user/tool/MCP; sandbox false with no OS-confinement claim | PASS | Normal Settings Memory Control Query Plan | required | - |
 | Normal settings memory-control query result | 3 | W3 | One released non-mutating normal-session effective-memory query | `CLAUDE_NORMAL_MERGED_AUTO_MEMORY_OFF_VERIFIED`; enabled false/plain off/no detail/settings-source suffix/toggleable false; init/get/end PASS; exit 0; no stderr/timeout/model/user/tool/MCP/permission/status change; receipt `e24e56cbfc5c2a022462029df4f3c2c686603bffb110d27b76d7ea1c7679015f`; observation `a245a0d61d190482d0985c3dd89312b655072202d8f3c7993b70240a5b574a1f`; independent security PASS | PASS | Normal Settings Memory Control Query Result | required | - |
 | Forced-off hook attempt 04 plan review | 4 | W4 | Independent security review of one final forced-off exact-Write attempt | Plan `b1511ff25ffb89b0d7050bf9f506f7733d50b8e2622267f5681875d1fbacc6ae`; harness `3105c920cb2a2250f58a7f8f917c24d449d441d9dc3dcb93b69f42d1661978c2`; Write only, max two turns/USD 1/180 seconds; forced-off session; sandbox false with no OS-confinement claim; 11 `O_NOFOLLOW` pins and guard-directory recheck | PASS | Forced-off Hook Attempt 04 Plan | required | - |
+| Forced-off hook attempt 04 | 4 | W4 | One released final forced-off exact-Write diagnostic | Receipt `89ea175746a446cb58b3c1dbc068e418a2b1ebc194b540529a78c87026aa0d2a`; failed closed; process exit 0/harness 1; Write observed once but tool result error/output absent; one forwarded guard; native/dispatcher SS/UserPromptSubmit/PreToolUse/Stop/SE each 1; PostToolUse/PreCompact/PostToolValidate 0; UNKNOWN 1; filesystem unchanged; cleanup/status PASS; post-result security pending | FAIL | Forced-off Hook Attempt 04 Result | required | - |
+| Metadata validation after native contract alignment | 6 | W6 | Full changed-document metadata selection with the active eight-path/base selection | Launched at `8219c9b`; exit 0; selected 7; violations 0; legacy exceptions 0; transition overrides 0; concurrent Task receipt edits, while Spec/Plan/registry bytes unchanged; not an immutable worktree snapshot | PASS | Metadata Validation Provenance | required | - |
 
 ## Criterion Acceptance
 
