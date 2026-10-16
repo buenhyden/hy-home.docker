@@ -1,8 +1,8 @@
 ---
 title: "Airflow Native Publication Rehearsal Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "blocked"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -331,6 +331,18 @@ The first scoped editorial metadata command on Task SHA `d51f29be3c89633fe10f43f
 | 4 | Final owner normal48tests=47PASS/1nativeSKIP0.943s; optimized same0.744s; scoped Ruff PASS. Both renewed independent source reviews APPROVED V2: focused23PASS/1nativeSKIP under normal/optimized Python; prechange broader shared/evidence54PASS/1SKIP. The closed role parser now denies the reproduced whitespace bypass. Review and Docker-free GREEN are source evidence only, not a repeated native run or restored generation2. |
 | 5 | Current actual V11 remains runtime ERROR, publication/retry/replay and actual generation1 Celery PASS, generation2UNVERIFIED/recoveryNOT_RUN/original causeUNKNOWN. The0483 barrier has no deletion authority and current-state inventory is not capture-time custody. Runtime recovery stays BLOCKED until future protected original scenario evidence, independent packet/readiness review and separate fresh execution authorization; no rerun, migration, HOME, TimescaleDB/offsite or whole-function acceptance follows this correction. |
 
+### Merged source custody
+
+PR #509 merged this Task's sources after delivery formatting. The merged fixture and native test hashes therefore differ from the reviewed V2 hashes above; the Evidence row `Merged source custody` records the exact difference. It is formatting plus one gitleaks-safe assignment, so it does not revoke the V2 source reviews and is not a new runtime result.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0020 | draft | ready | #inputs-and-authorization |
+| SPEC-0204-TSK-0020 | ready | in-progress | #w75-boundary-and-execution-plan |
+| SPEC-0204-TSK-0020 | in-progress | blocked | #editorial-preservation-and-current-recovery-handoff |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -413,6 +425,7 @@ The first scoped editorial metadata command on Task SHA `d51f29be3c89633fe10f43f
 | Current runtime recovery handoff | 18 | W75 | Independent empty restoration with original failure custody | BLOCKED runtime recovery: original V11 scenario causeUNKNOWN; generation2UNVERIFIED; current-state-only inventory, no capture manifest or delete authority | NOT_RUN | Editorial preservation and current recovery handoff: source fix then future protected scenario evidence, review and separate fresh authorization | required | - |
 | First failure and closed role parser RED | 18 | W75 | Preserve first failure and exact closed role scope | Two initial RED cases exit1, followed by independent whitespace-bypass RED; V1 parser approval revoked | FAIL | 2026-10-16 V11 follow-up source: first failure and closed role parsing | required | - |
 | First failure and closed role parser GREEN | 18 | W75 | Preserve first failure and exact closed role scope | Reviewed exact V2; owner47PASS/1nativeSKIP normal/optimized, independent23PASS/1SKIP and broader54PASS/1SKIP | PASS | 2026-10-16 V11 follow-up source: first failure and closed role parsing; source-only, runtime recovery BLOCKED | required | First failure and closed role parser RED |
+| Merged source custody | 18 | W75 | Compare merged test sources with the reviewed V2 hashes | Reviewed fixture `1981a748a461e5dffa00ce13ad0e753bc28154c8462357061fbcf83369d045f1` and native test `1a3e6dee892274ddc14a37220c94bd8be62fe0e58868bda217d6122d5b5cf95a`, read from unreachable local Git blobs that are not durable; merged main `76e64933f` fixture `43f1ae528442669c…`, native test `3311383f4ad3a11c…` | PASS | Fixture: `ruff format` of V2 equals the merged bytes and the AST is identical. Native test: one function, `test_empty_restored_cluster_keeps_reviewed_connect_boundary`, assigns the same synthetic value without a chained literal for gitleaks; every other node is identical. Quiescence test hash unchanged | optional | - |
 
 ## Criterion Acceptance
 
@@ -426,6 +439,8 @@ Initial artifact status remains draft before first commit. Source validation,
 independent review, actual runtime and cleanup receipts remain distinct. Revert
 only owning source commits; delete only exact invocation-owned fixture identities.
 A fixture PASS cannot complete HOME, actual TimescaleDB, OIDC or offsite recovery.
+
+PR #509 landed the draft baseline. Runtime recovery is BLOCKED as recorded above, so the current status is `blocked` with the same owner and resume conditions.
 
 ## Related Documents
 

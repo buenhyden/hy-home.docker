@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.22"
+version: "0.1.23"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -468,7 +468,7 @@ preserved. Attempt 06 has not run; root may release this exact plan once.
 
 ## Review and Completion
 
-This draft has no accepted criterion. Completion is limited to the source
+This Task has no accepted criterion. Completion is limited to the source
 verification contract in SPEC-0244; it does not accept provider-global state,
 individual hook delivery without a receipt, or shared-memory implementation.
 

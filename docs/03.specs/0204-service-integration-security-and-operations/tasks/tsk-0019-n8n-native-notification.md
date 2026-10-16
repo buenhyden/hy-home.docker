@@ -1,8 +1,8 @@
 ---
 title: "n8n Native Notification Rehearsal Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "blocked"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -767,6 +767,14 @@ Before receipt `c848413e07050e249272667c980db8b8a115148a939c9651bb07bd1f979f7d17
 bind that manual `PASS`; independent final zero found both attempt globs and owner resources empty and the lock exact/free.
 Local `/tmp` receipts have no durability guarantee. This later cleanup does not rewrite the native result; worker, runner, workflow import, SMTP and restore remain `NOT_RUN`.
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0019 | draft | ready | #inputs-and-authorization |
+| SPEC-0204-TSK-0019 | ready | in-progress | #w74-source-and-execution-boundary |
+| SPEC-0204-TSK-0019 | in-progress | blocked | #review-and-completion |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -783,6 +791,8 @@ vertical acceptance. W74 adds supporting native evidence only and does not add a
 ## Review and Completion
 
 Runtime work is blocked: V16 proved liveness 200 and readiness 503, while the false connected, migrated or fully-ready predicate or exact startup stage remains `UNKNOWN`. This new artifact must retain its required initial `draft` frontmatter until that baseline lands; the truthful follow-up chain is `draft → ready → in-progress → blocked`. Owner `@buenhyden` and named n8n implementer `native_workflow_rehearsal` may resume only with exact protected startup-stage/predicate evidence and a source-reviewed cause fix under fresh review and an approved slot; blind rerun and guessed timeout, egress or license changes are prohibited, joint same-data execution remains `NOT_RUN`/`BLOCKED`, and manual cleanup does not complete HOME deployment, recovery, real SMTP or exactly-once delivery.
+
+PR #509 landed the draft baseline, so the stated chain now applies and the current status is `blocked`. The blocker, owner and resume condition are the ones stated above.
 
 ## Related Documents
 

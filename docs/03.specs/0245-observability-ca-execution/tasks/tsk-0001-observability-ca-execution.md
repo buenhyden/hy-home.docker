@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.18"
+version: "0.1.19"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -281,7 +281,7 @@ accept either recovery gate.
 
 ## Review and Completion
 
-This draft has no accepted criterion. Completion requires the service-specific
+This Task has no accepted criterion. Completion requires the service-specific
 execution evidence listed in SPEC-0245; a source-only check, image build, or
 Compose render does not prove a production backup, isolated restore, or CA
 application.
