@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.17"
+version: "0.1.18"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -213,6 +213,19 @@ remains conditional on operator READY, this Task receipt, and immediate hash
 and target checks. No restore-03 action has run, and CA work remains blocked
 until the recovery gate succeeds.
 
+### Isolated Restore Attempt 03 Failure
+
+`restore-03` completed the full Prometheus archive extraction, then failed
+closed at `prometheus-offline-preflight` with exit 1. Its immutable sanitized
+receipt SHA-256 is
+`ee9900e4df12a952ee8956d921c7f3c80ba496e943158823e4720786c65a67aa`, mode
+0400, inode `174588497`. Cleanup passed; scratch artifacts are quarantined;
+the original services remain healthy with restart count 0. No CA, image-build,
+or retry action ran.
+
+The diagnosis remains open. This receipt does not infer archive corruption or
+accept either recovery gate.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -251,6 +264,8 @@ until the recovery gate succeeds.
 | Isolated restore attempt 02 containment | 6 | W6 | Contain the failed isolated attempt and preserve production boundaries | Independent reviewers accepted the truthful guard-source failure; no archive extraction; no helper; originals healthy; no CA/image-build work; restore-03 review required | PASS | Isolated Restore Attempt 02 Failure | required | - |
 | Released Prometheus isolated restore attempt 03 plan | 2 | W2 | Independent READY reviews and conditional root GO for the new Prometheus isolated-clone sibling | Contract `322414d13c3655155b95cd2ad84a25b0307fdf085283e3ee9830d3f90cf213a4`; script `174d5bf307ca944ac5b8ea7ae15c4595dc6edf18b76580e66830963a9662a438`; test `8153f9003713ab9b36db669dc828179c144cbb88961b43a557f2e2486184bf0a`; helpers unchanged; zero attempt-02 labels/nine old names absent; 64-hex/no-LF regression PASS; operator READY/hash and target checks pending | PASS | Isolated Restore Attempt 03 Release | required | - |
 | Released Gatus isolated restore attempt 03 plan | 3 | W3 | Independent READY reviews and conditional root GO for the new Gatus isolated-clone sibling | Contract `322414d13c3655155b95cd2ad84a25b0307fdf085283e3ee9830d3f90cf213a4`; script `174d5bf307ca944ac5b8ea7ae15c4595dc6edf18b76580e66830963a9662a438`; test `8153f9003713ab9b36db669dc828179c144cbb88961b43a557f2e2486184bf0a`; helpers unchanged; zero attempt-02 labels/nine old names absent; 64-hex/no-LF regression PASS; operator READY/hash and target checks pending | PASS | Isolated Restore Attempt 03 Release | required | - |
+| Isolated restore attempt 03 | 2 | W2 | Released Prometheus isolated restore through offline preflight | Receipt `ee9900e4df12a952ee8956d921c7f3c80ba496e943158823e4720786c65a67aa`; full Prometheus extraction completed; `prometheus-offline-preflight` exit 1; receipt mode 0400/inode `174588497`; cleanup PASS; scratch quarantined; originals healthy/restart 0; diagnosis open | FAIL | Isolated Restore Attempt 03 Failure | required | - |
+| Isolated restore attempt 03 containment | 6 | W6 | Contain the failed Prometheus isolated restore and preserve production boundaries | Cleanup PASS; scratch quarantined; originals healthy/restart 0; no CA, image-build, or retry; no archive-corruption inference | PASS | Isolated Restore Attempt 03 Failure | required | - |
 
 ## Criterion Acceptance
 

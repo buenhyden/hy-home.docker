@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.18"
+version: "0.1.19"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -335,6 +335,19 @@ for Attempt 04's unknown invocation. A nested Bash path from a plugin Node
 hook or CLI internals remains possible. The control identifies neither script
 delivery nor `PostToolUse`, so criterion 4 remains pending.
 
+### Merged Hook Listing Classification Qualification
+
+The immutable control receipt remains valid for transport and cleanup, but its
+classifier undercounted the aggregate. The public ECC identifier is `ecc@ecc`,
+where the prior allowlist expected a different identifier; `.*` matchers also
+missed applicable rows. The actual plugin Write aggregate is seven rather than
+the receipt's five. The receipt is retained unchanged with this qualification.
+
+The control transport remains valid, but candidate attribution and counts are
+not complete proof. Independent security review qualified the result on that
+boundary. It cannot attribute Attempt 04's unknown invocation or establish
+hook delivery, so criterion 4 remains pending.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -372,7 +385,8 @@ delivery nor `PostToolUse`, so criterion 4 remains pending.
 | Forced-off hook attempt 04 | 4 | W4 | One released final forced-off exact-Write diagnostic | Receipt `89ea175746a446cb58b3c1dbc068e418a2b1ebc194b540529a78c87026aa0d2a`; failed closed; process exit 0/harness 1; Write observed once but tool result error/output absent; one forwarded guard; native/dispatcher SS/UserPromptSubmit/PreToolUse/Stop/SE each 1; PostToolUse/PreCompact/PostToolValidate 0; UNKNOWN 1; filesystem unchanged; cleanup/status PASS; post-result security pending | FAIL | Forced-off Hook Attempt 04 Result | required | - |
 | Metadata validation after native contract alignment | 6 | W6 | Full changed-document metadata selection with the active eight-path/base selection | Launched at `8219c9b`; exit 0; selected 7; violations 0; legacy exceptions 0; transition overrides 0; concurrent Task receipt edits, while Spec/Plan/registry bytes unchanged; not an immutable worktree snapshot | PASS | Metadata Validation Provenance | required | - |
 | Merged hook listing control plan review | 4 | W4 | Independent security review of one read-only merged-hook aggregate query | Plan `75ccecddb0fc621e1225fd8e965f054a41dc7692a68253a532e6817e28bc3d40`; harness `f92d170c438cea41ec8b5f5bbe8524eeb1c63e817b09659c959c08a5961d573c`; initialize/get_hooks_listing/end only; fixed enum/count aggregate; no model/user/tool/MCP/settings mutation or raw hook data | PASS | Merged Hook Listing Control Plan | required | - |
-| Merged hook listing control result | 4 | W4 | One released read-only merged-hook aggregate query | Receipt `8345aa34cdf14e06f3d3fa0dbd7d16e372bbb87ea103bb3b8764260ee724d2fc`; `CLAUDE_ADDITIONAL_PRETOOL_HOOK_IDENTIFIED`; PreTool 12; active Write 6 = tracked 1 + plugin 5; Bash 1 tracked, Node 5 plugin, ECC/additional-Bash/intersection 0; exit 0; no unexpected frames/stderr/timeout/malformed; status equal/empty | PASS | Merged Hook Listing Control Result | required | - |
+| Merged hook listing control result | 4 | W4 | One released read-only merged-hook aggregate query | Immutable receipt `8345aa34cdf14e06f3d3fa0dbd7d16e372bbb87ea103bb3b8764260ee724d2fc`; historical classifier output `CLAUDE_ADDITIONAL_PRETOOL_HOOK_IDENTIFIED`; transport/cleanup PASS; counts qualified separately | PASS | Merged Hook Listing Control Result | required | - |
+| Merged hook listing classifier qualification | 4 | W4 | Validate candidate attribution and aggregate counts from the immutable control receipt | Public ECC identifier `ecc@ecc` differed from prior allowlist expectation; `.*` matchers missed rows; actual plugin Write aggregate 7, not receipt 5; transport valid but classification incomplete; independent security qualified result | FAIL | Merged Hook Listing Classification Qualification | required | - |
 
 ## Criterion Acceptance
 
