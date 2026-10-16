@@ -339,6 +339,15 @@ proof of a hosted result. Do not fake GitHub environment variables to
 invoke CI-only wrappers locally. Record missing tools and unexecuted checks
 explicitly; neither absence nor a skipped check is a PASS.
 
+로컬 실행은 hosted controller와 같은 toolchain에서만 결과를 남깁니다. runner는
+LOCAL 실행 전에 interpreter 버전이 `.github/workflows/ci-quality.yml`의
+`python-version` pin과 같은지, `scripts/requirements-controller.lock`의 활성
+패키지가 같은 버전으로 설치되어 있는지 확인하고 다르면
+`ci-gate-local-toolchain`으로 실행 없이 실패합니다. hosted와 같은 build는
+`actions/python-versions`의 해당 Ubuntu 배포본이며, uv standalone build처럼
+memfd seal 상수가 없는 build도 거부합니다. `--explain`은 실행이 아니므로 이
+확인을 거치지 않습니다.
+
 The local runner validates `.github/workflow-contract.yml` and the registered
 workflow definitions through
 `scripts/validation/check-github-workflow-contract.py`. The required

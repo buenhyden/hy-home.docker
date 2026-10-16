@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import dataclasses
 import io
 import json
@@ -767,6 +768,33 @@ class CiGateRunnerContractTests(unittest.TestCase):
         execute.assert_not_called()
         self.assertIn("ci-gate-local-only-context", stderr.getvalue())
 
+    def test_local_run_with_a_mismatched_toolchain_executes_nothing(self) -> None:
+        environment = {"HYHOME_CI_GATE_ROOT": str(ROOT), "PATH": os.defpath}
+        stderr = io.StringIO()
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "_authenticated_execution_environment",
+                return_value=environment,
+            ),
+            mock.patch.object(
+                runner,
+                "collect_changed_paths",
+                return_value=(".github/workflow-contract.yml",),
+            ),
+            mock.patch.object(
+                runner,
+                "local_toolchain_mismatch",
+                return_value="Python 3.0.0 differs from the hosted 3.14.8",
+            ),
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            contextlib.redirect_stderr(stderr),
+        ):
+            self.assertEqual(1, runner.main(["--profile", "changed"]))
+        execute.assert_not_called()
+        self.assertIn("ci-gate-local-toolchain", stderr.getvalue())
+
     def test_local_only_cli_executes_and_explains_only_the_selected_local_slice(
         self,
     ) -> None:
@@ -804,6 +832,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "execute_execution_plan",
                 side_effect=capture_execution,
             ),
+            # Plan selection is under test, not the local interpreter.
+            mock.patch.object(runner, "local_toolchain_mismatch", return_value=None),
         ):
             self.assertEqual(
                 0,

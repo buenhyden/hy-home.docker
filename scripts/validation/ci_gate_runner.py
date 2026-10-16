@@ -50,6 +50,7 @@ from scripts.lib.gate.ci_gate_evidence import (
     EvidenceStore,
     capture_controller_toolchain,
     capture_runtime_observation,
+    local_toolchain_mismatch,
 )
 
 _GIT_TIMEOUT_SECONDS = 5
@@ -1515,6 +1516,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"node={'true' if prerequisites.node else 'false'}")
             print(f"docker={'true' if prerequisites.docker else 'false'}")
             return 0
+        if context is ExecutionContext.LOCAL and (
+            mismatch := local_toolchain_mismatch(root)
+        ):
+            raise GateContractError(
+                "ci-gate-local-toolchain",
+                "toolchain",
+                f"{mismatch}; a local result would not reproduce hosted CI",
+            )
         prerequisites = selected_prerequisites(plan, changed_paths)
         evidence = _execution_evidence_request(
             execution_environment,
