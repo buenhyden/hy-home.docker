@@ -90,11 +90,24 @@ class WorkflowSpec:
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
+class ExecutionEvidenceContract:
+    schema_version: int
+    owner: str
+    directory_name: str
+    plan_file: str
+    result_file: str
+    manifest_file: str
+    max_file_bytes: int
+    retention_days: int
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
 class WorkflowContract:
     schema_version: int
     workflows: tuple[WorkflowSpec, ...]
     actions: tuple[ActionDependency, ...]
     gate_registry: GateRegistry
+    execution_evidence: ExecutionEvidenceContract
 
 
 class WorkflowContractError(ValueError):
@@ -532,6 +545,28 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
             error.path,
             error.message,
         ) from None
+    evidence_mapping = _expect_mapping(
+        raw["execution_evidence"],
+        path=WORKFLOW_CONTRACT.as_posix(),
+        field="execution_evidence",
+    )
+    expected_evidence = {
+        "schema_version": 1,
+        "owner": "SPEC-0211-TSK-0003",
+        "directory_name": "ci-gate-evidence",
+        "plan_file": "plan.json",
+        "result_file": "result.json",
+        "manifest_file": "evidence-manifest.json",
+        "max_file_bytes": 262144,
+        "retention_days": 14,
+    }
+    if evidence_mapping != expected_evidence:
+        raise WorkflowContractError(
+            "contract-execution-evidence-invalid",
+            WORKFLOW_CONTRACT.as_posix(),
+            "execution evidence custody must match the bounded contract",
+        )
+    execution_evidence = ExecutionEvidenceContract(**expected_evidence)
     workflow_mapping = _expect_mapping(
         raw["workflows"],
         path=WORKFLOW_CONTRACT.as_posix(),
@@ -844,6 +879,7 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         workflows=tuple(workflows),
         actions=tuple(actions),
         gate_registry=gate_registry,
+        execution_evidence=execution_evidence,
     )
 
 
@@ -1031,8 +1067,10 @@ def _workflow_projection_findings(
             fixed_shell = "/usr/bin/bash --noprofile --norc -eo pipefail {0}"
             for name in (
                 "Capture trusted pull request context",
+                "Capture trusted uv context",
                 "Install validation controller dependencies",
                 "Select candidate prerequisites",
+                "Capture selected Node context",
                 "Verify selected Docker prerequisite",
                 "Run changed candidate validation",
             ):
@@ -1059,9 +1097,13 @@ def _workflow_projection_findings(
             if tuple(step.get("name") for step in steps if isinstance(step, dict)) != (
                 "Checkout repository",
                 "Set up Python",
+                "Capture trusted main context",
                 "Install uv",
+                "Capture trusted uv context",
+                "Install security controller dependencies",
                 "Audit merged workflow revision",
                 "Upload SARIF file",
+                "Upload gate evidence",
             ):
                 findings.append(
                     _finding(
@@ -1070,25 +1112,135 @@ def _workflow_projection_findings(
                         "main security steps differ from the required audit sequence",
                     )
                 )
-            commands = [
+            commands = {
                 step.get("run")
                 for step in steps
                 if isinstance(step, dict) and isinstance(step.get("run"), str)
-            ]
-            if commands != [
-                "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif"
-            ] or steps_by_name.get("Upload SARIF file", {}).get("uses") != (
-                "github/codeql-action/upload-sarif@"
-                f"{action_shas.get('github/codeql-action/upload-sarif')}"
+            }
+            required_commands = {
+                '"$TRUSTED_UV_PATH" pip install --python "$TRUSTED_PYTHON_PATH" '
+                "--require-hashes -r scripts/requirements-controller.lock",
+                '"$TRUSTED_PYTHON_PATH" scripts/lib/gate/ci_gate_adapters.py '
+                "run-zizmor-sarif",
+            }
+            main_capture = steps_by_name.get("Capture trusted main context", {}).get(
+                "run", ""
+            )
+            uv_capture = steps_by_name.get("Capture trusted uv context", {}).get(
+                "run", ""
+            )
+            capture_tokens = (
+                'test "$GITHUB_EVENT_NAME" = push',
+                '/usr/bin/sha256sum -- "$git_path"',
+                '/usr/bin/sha256sum -- "$python_path"',
+                "printf 'image-version=%s\\n' \"$ImageVersion\"",
+            )
+            uv_tokens = (
+                'uv_path="$(/usr/bin/readlink -f -- "$(type -P uv)")"',
+                '/usr/bin/sha256sum -- "$uv_path"',
+                "printf 'uv-version=%s\\n' \"$uv_version\"",
+            )
+            if (
+                not required_commands <= commands
+                or not isinstance(main_capture, str)
+                or not all(token in main_capture for token in capture_tokens)
+                or not isinstance(uv_capture, str)
+                or not all(token in uv_capture for token in uv_tokens)
+                or steps_by_name.get("Upload SARIF file", {}).get("uses")
+                != (
+                    "github/codeql-action/upload-sarif@"
+                    f"{action_shas.get('github/codeql-action/upload-sarif')}"
+                )
             ):
                 findings.append(
                     _finding(
                         "workflow-gate-projection-mismatch",
                         path,
-                        "main security job must retain its single audit and SARIF upload",
+                        "main security job must retain its locked controller, audit and SARIF upload",
                     )
                 )
+            if steps_by_name.get("Audit merged workflow revision", {}).get("env") != {
+                "TRUSTED_PYTHON_PATH": "${{ steps.main-context.outputs.python-path }}",
+                "TRUSTED_GIT_PATH": "${{ steps.main-context.outputs.git-path }}",
+                "TRUSTED_GIT_VERSION": "${{ steps.main-context.outputs.git-version }}",
+                "TRUSTED_GIT_SHA256": "${{ steps.main-context.outputs.git-sha256 }}",
+                "TRUSTED_PYTHON_VERSION": "${{ steps.main-context.outputs.python-version }}",
+                "TRUSTED_PYTHON_SHA256": "${{ steps.main-context.outputs.python-sha256 }}",
+                "TRUSTED_UV_PATH": "${{ steps.main-uv-context.outputs.uv-path }}",
+                "TRUSTED_UV_VERSION": "${{ steps.main-uv-context.outputs.uv-version }}",
+                "TRUSTED_UV_SHA256": "${{ steps.main-uv-context.outputs.uv-sha256 }}",
+                "TRUSTED_IMAGE_OS": "${{ steps.main-context.outputs.image-os }}",
+                "TRUSTED_IMAGE_VERSION": "${{ steps.main-context.outputs.image-version }}",
+                "TRUSTED_RUNNER_ARCH": "${{ steps.main-context.outputs.runner-arch }}",
+                "CI_GATE_EVIDENCE_DIR": "${{ runner.temp }}/ci-gate-evidence",
+            }:
+                findings.append(
+                    _finding(
+                        "workflow-gate-execution-context-invalid",
+                        path,
+                        "main security audit must receive the captured Git/Python and evidence paths",
+                    )
+                )
+            fixed_shell = "/usr/bin/bash --noprofile --norc -eo pipefail {0}"
+            for name in (
+                "Capture trusted main context",
+                "Capture trusted uv context",
+                "Install security controller dependencies",
+                "Audit merged workflow revision",
+            ):
+                if steps_by_name.get(name, {}).get("shell") != fixed_shell:
+                    findings.append(
+                        _finding(
+                            "workflow-gate-execution-context-invalid",
+                            path,
+                            f"main security step {name} must use the fixed system shell",
+                        )
+                    )
+        expected_upload = _expected_evidence_upload_step(
+            raw_job_id,
+            action_shas.get("actions/upload-artifact"),
+        )
+        if (
+            expected_upload is not None
+            and steps_by_name.get("Upload gate evidence") != expected_upload
+        ):
+            findings.append(
+                _finding(
+                    "workflow-gate-projection-mismatch",
+                    path,
+                    f"job {raw_job_id} evidence upload differs from the audited projection",
+                )
+            )
     return tuple(findings)
+
+
+def _expected_evidence_upload_step(
+    job_id: str,
+    action_sha: str | None,
+) -> dict[str, object] | None:
+    artifact_name = {
+        "candidate-quality": "candidate-quality-gate-evidence",
+        "main-security": "main-security-gate-evidence",
+    }.get(job_id)
+    if artifact_name is None or action_sha is None:
+        return None
+    return {
+        "name": "Upload gate evidence",
+        "if": "always()",
+        "uses": f"actions/upload-artifact@{action_sha}",
+        "with": {
+            "name": artifact_name,
+            "path": (
+                "${{ runner.temp }}/ci-gate-evidence/plan.json\n"
+                "${{ runner.temp }}/ci-gate-evidence/result.json\n"
+                "${{ runner.temp }}/ci-gate-evidence/evidence-manifest.json\n"
+            ),
+            "if-no-files-found": "error",
+            "retention-days": 14,
+            "overwrite": False,
+            "include-hidden-files": False,
+        },
+    }
 
 
 def _finding(code: str, path: str, message: str) -> WorkflowFinding:
@@ -1120,6 +1272,14 @@ def validate_workflows(
 
     job_owners: dict[str, str] = {}
     action_consumers: dict[tuple[str, str], set[str]] = {}
+    upload_artifact_sha = next(
+        (
+            action.sha
+            for action in contract.actions
+            if action.action == "actions/upload-artifact"
+        ),
+        None,
+    )
     sha_pattern = re.compile(r"[0-9a-f]{40}")
     forbidden_events = {"pull_request_target", "workflow_run", "workflow_call"}
     workflow_names: dict[str, str] = {}
@@ -1425,13 +1585,18 @@ def validate_workflows(
                     continue
                 action, sha = uses.rsplit("@", 1)
                 if action.casefold() == "actions/upload-artifact":
-                    findings.append(
-                        _finding(
-                            "workflow-artifact-upload-forbidden",
-                            path,
-                            "artifact upload is outside the approved workflow contract",
-                        )
+                    expected_upload = _expected_evidence_upload_step(
+                        job_id,
+                        upload_artifact_sha,
                     )
+                    if step != expected_upload:
+                        findings.append(
+                            _finding(
+                                "workflow-artifact-upload-forbidden",
+                                path,
+                                "artifact upload differs from the bounded evidence contract",
+                            )
+                        )
                 if sha_pattern.fullmatch(sha) is None:
                     findings.append(
                         _finding(

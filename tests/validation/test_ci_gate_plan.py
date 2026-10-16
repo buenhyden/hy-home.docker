@@ -780,6 +780,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             root: pathlib.Path,
             plan: tuple[runner.GateInvocation, ...],
             environ: dict[str, str],
+            **_: object,
         ) -> int:
             self.assertEqual(ROOT, root)
             self.assertEqual(os.defpath, environ["PATH"])
@@ -1425,6 +1426,158 @@ class CiGateRunnerContractTests(unittest.TestCase):
             )
         execute.assert_not_called()
         self.assertEqual("node=false\ndocker=false\n", stdout.getvalue())
+
+    def test_requirements_seeds_authenticated_evidence_before_reporting(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            evidence = pathlib.Path(directory) / "ci-gate-evidence"
+            environment = {
+                "HYHOME_CI_GATE_ROOT": str(ROOT),
+                "PATH": os.defpath,
+                "GITHUB_ACTIONS": "true",
+                "GITHUB_EVENT_NAME": "pull_request",
+                "GITHUB_SHA": "c" * 40,
+                "EVENT_NAME": "pull_request",
+                "PR_BASE_SHA": "a" * 40,
+                "PR_HEAD_SHA": "b" * 40,
+                "GITHUB_RUN_ID": "12345",
+                "GITHUB_RUN_ATTEMPT": "2",
+                "GITHUB_JOB": "candidate-quality",
+                "CI_GATE_EVIDENCE_DIR": str(evidence),
+            }
+            with (
+                mock.patch.dict(os.environ, environment, clear=True),
+                mock.patch.object(
+                    runner,
+                    "_authenticated_execution_environment",
+                    return_value=environment,
+                ),
+                mock.patch.object(
+                    runner,
+                    "collect_changed_paths",
+                    return_value=(".github/workflow-contract.yml",),
+                ),
+                mock.patch.object(
+                    runner,
+                    "_controller_toolchain",
+                    return_value={"status": "fixture"},
+                ),
+                mock.patch.object(runner, "seed_execution_evidence") as seed,
+                mock.patch("sys.stdout", new_callable=io.StringIO),
+            ):
+                self.assertEqual(
+                    0,
+                    runner.main(["--profile", "changed", "--requirements"]),
+                )
+            seed.assert_called_once()
+            request = seed.call_args.args[3]
+            self.assertEqual(evidence, request.directory)
+            self.assertEqual("c" * 40, request.identity["input_sha"])
+            self.assertEqual("a" * 40, request.identity["base_sha"])
+            self.assertEqual("b" * 40, request.identity["head_sha"])
+            self.assertTrue(request.selection_reasons)
+            self.assertEqual({"status": "fixture"}, request.toolchain)
+            self.assertTrue(
+                all(
+                    reason.startswith(("suite:", "root:", "dependency:"))
+                    for reason in request.selection_reasons.values()
+                )
+            )
+
+    def test_explicit_local_evidence_uses_clean_head_and_local_identity(self) -> None:
+        toolchain = {"status": "CAPTURED"}
+        runtime = {"node": {"status": "NOT_SELECTED"}}
+        with (
+            mock.patch.object(runner, "_local_clean_head", return_value="a" * 40),
+            mock.patch.object(
+                runner,
+                "_local_toolchain_environment",
+                return_value={"LOCAL_CAPTURE": "true"},
+            ) as local_environment,
+            mock.patch.object(
+                runner, "_controller_toolchain", return_value=toolchain
+            ) as capture_toolchain,
+            mock.patch.object(
+                runner, "_runtime_observation", return_value=runtime
+            ) as capture_runtime,
+            mock.patch.object(runner.time, "time_ns", return_value=123456789),
+        ):
+            request = runner._execution_evidence_request(
+                {
+                    "PATH": os.defpath,
+                    "CI_GATE_EVIDENCE_DIR": "/tmp/local-evidence",
+                },
+                root=ROOT,
+                profile="full",
+                context=runner.ExecutionContext.LOCAL,
+                selection_reasons={"leaf.example": "root:ci.full"},
+                node_selected=False,
+                observe_runtime=True,
+            )
+        self.assertIsNotNone(request)
+        assert request is not None
+        self.assertEqual(
+            {
+                "event_name": "local",
+                "profile": "full",
+                "execution_context": "local",
+                "input_sha": "a" * 40,
+                "base_sha": "NOT_AVAILABLE",
+                "head_sha": "a" * 40,
+                "run_id": "123456789",
+                "run_attempt": "1",
+                "job": "local",
+            },
+            request.identity,
+        )
+        self.assertIs(request.toolchain, toolchain)
+        self.assertIs(request.runtime_observation, runtime)
+        local_environment.assert_called_once_with(
+            {
+                "PATH": os.defpath,
+                "CI_GATE_EVIDENCE_DIR": "/tmp/local-evidence",
+            },
+            node_selected=False,
+        )
+        capture_toolchain.assert_called_once_with(
+            ROOT, {"LOCAL_CAPTURE": "true"}, node_selected=False
+        )
+        capture_runtime.assert_called_once_with(
+            {"LOCAL_CAPTURE": "true"}, node_selected=False
+        )
+
+    def test_local_evidence_head_rejects_tracked_worktree_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._changed_path_repo(pathlib.Path(directory))
+            expected = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+            self.assertEqual(expected, runner._local_clean_head(repo))
+            tracked = repo / "modified.txt"
+            tracked.write_text("drift\n", encoding="utf-8")
+            with self.assertRaisesRegex(runner.GateContractError, "clean Git HEAD"):
+                runner._local_clean_head(repo)
+
+    def test_local_toolchain_environment_records_resolved_allowlisted_tools(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            bin_path = pathlib.Path(directory)
+            for name, version in (("uv", "uv 0.12.18"), ("node", "v24.22.0")):
+                executable = bin_path / name
+                executable.write_text(
+                    f"#!/bin/sh\nprintf '%s\\n' '{version}'\n",
+                    encoding="utf-8",
+                )
+                executable.chmod(0o755)
+            captured = runner._local_toolchain_environment(
+                {"PATH": str(bin_path)}, node_selected=True
+            )
+        for name in ("GIT", "PYTHON", "UV", "NODE"):
+            path = pathlib.Path(captured[f"TRUSTED_{name}_PATH"])
+            self.assertTrue(path.is_absolute())
+            self.assertRegex(captured[f"TRUSTED_{name}_SHA256"], r"^[0-9a-f]{64}$")
+            self.assertTrue(captured[f"TRUSTED_{name}_VERSION"])
+        self.assertEqual("uv 0.12.18", captured["TRUSTED_UV_VERSION"])
+        self.assertEqual("v24.22.0", captured["TRUSTED_NODE_VERSION"])
+        self.assertTrue(captured["TRUSTED_IMAGE_OS"].startswith("LOCAL-"))
 
     def test_pull_request_identity_is_bound_to_raw_merge_topology(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

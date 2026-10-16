@@ -1,6 +1,6 @@
 ---
 title: "Release Management Runbook"
-version: "1.3.4"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -17,10 +17,13 @@ created: "2026-06-04"
 main 대상 릴리스 준비 PR과 승인된 SemVer 게시 절차를 소유한다. 일반 후보
 QA는 PR의 changed-profile 한 번으로 검증하며 릴리스에서 다시 전체 QA를
 실행하지 않는다. 배포·secret·HOME 복구 수용은 해당 운영 Task의 별도 작업이다.
+실제 ROOT 인프라 image 승격은 아래 대상별 증거 절차를 따른다. Repository
+SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이 아니다.
 
 ## Trigger
 
 - main 대상 준비 PR에서 `CHANGELOG.md`의 실제 변경을 작성한다.
+- 승인된 owning Task가 ROOT service의 image·custom build·migration·운영 승격을 요청한다.
 
 ## Prerequisites
 
@@ -88,6 +91,50 @@ QA는 PR의 changed-profile 한 번으로 검증하며 릴리스에서 다시 �
    draft가 있다면 그 정확한 대상과 자산 상태를 Task에 남기고 소유자에게 복구를
    요청한다. 이미 게시된 버전은 수정하지 않는다. 실제 배포·backup·rollback 수용은
    해당 service Task에 별도로 기록하며 Release 게시를 배포 성공으로 표현하지 않는다.
+
+### ROOT 인프라 image 후보와 승격
+
+이 절차는 실제 ROOT image 승격에 적용한다. 일반 repository SemVer 게시 때문에 동일 입력의
+전체 QA를 다시 실행하지 않는다. 실제 승격에는 아래 순서의 대상별 증거가 필요하며, 같은
+입력·플랫폼·도구/DB 시점·trust·승인 경계에 묶인 유효한 기존 영수증은 재참조한다. 소스·build 입력·image·schema·
+복구 시점이 바뀌면 영향을 받은 증거를 다시 확보한다.
+
+1. owning Task에 source/base/head SHA, 정확한 service/profile·image·platform, 현재/후보의
+   index·platform manifest·config/image ID와 build-input SHA를 고정한다. operator·독립
+   reviewer·backup/복구 소유자, 허용 CPU/RAM/disk/time·중단 한도·정리 범위, 실제 credential·
+   data 사용 승인과 이전 상태 복귀 경계를 기록한다. 값·평문·원문 payload는 남기지 않는다.
+2. 기존 [보안 업데이트 증거](../../../../infra/09-platform-ops/security-updates/README.md)의
+   `update-ledger.json`, `build-inputs.json`, `verification.json`을 해당 service·Task로 연결한다.
+   별도 registry나 readiness boolean을 추가하지 않는다. NULL·UNKNOWN·NOT_RUN·FAIL은 PASS가
+   아니며 누락 항목마다 실제 blocker, 다음 담당자·구체적 다음 작업을 기록한다.
+
+| 순서 | 대상에 필요한 실제 증거 | 중단 경계 |
+| --- | --- | --- |
+| 후보 산출 | custom image는 검토한 source context·잠금 입력으로 bounded build; upstream image는 공급자 산출물의 정확한 platform identity 확인 | mutable tag·다른 architecture·혼합 build context만 있으면 중단 |
+| 공급망 | 같은 후보 digest의 SBOM·취약점 scan, scanner/DB 시점, signature/trust 결과와 source/build provenance | release 사실·npm audit·OCI label을 full-image scan/서명으로 승격하지 않음 |
+| 소스 계약 | owning 변경에 선택된 unit/contract와 등록된 candidate QA의 exact head/결과 | local 모델/fixture/과거 다른 image 결과로 대체하지 않음 |
+| 격리 native | 후보 exact image·dependency·실제 consumer의 승인된 positive/negative 흐름, caps·deadline·출력 custody·정리 영수증 | loader·health·cleanup만으로 업무 성공 판정 금지 |
+| migration 예행 | stateful 변경이면 승인한 격리 복구본에 실제 migrator/ACL·schema·재실행 및 실패 경계 검증 | 운영 DB 직접 dry-run 금지; 미승인 실데이터·credential 사용 금지 |
+| 독립 복원 | 별도 빈 대상에서 승인한 backup·key/custody·roles/ACL·S3/volume 등 실제 의존성을 복원하고 consumer readback 확인 | schema dump 단독·같은 process의 단순 replay는 독립 전체 복원 증거가 아님 |
+| 승격 판단 | 독립 review, exact artifact·대상·window·writer drain·rollback/복구 준비를 owning Task에서 확인하고 승인 | 이전 image tag만 되돌리는 것을 data/schema rollback으로 간주하지 않음 |
+| HOME 기능 | 승인된 승격 후 exact running image·consumer의 authenticated 기능·dependency·실패/재시작 경계 readback | 단순 health/HTTP200으로 HOME_PASS 처리 금지 |
+
+승격 전 단계가 실패하면 후보/backup과 원래 실패 증거를 보존하고 운영 상태를 바꾸지 않는다.
+이미 실행한 승격의 실패는 owning service의 승인된 rollback/복구 절차로 처리하며 exact
+previous artifact·data/schema 호환성·복원 시점과 실제 결과를 기록한다. Unknown 자원이나
+custody이면 broad prune/reset/자동 재시도를 하지 않는다. 상태가 없는 service의 migration·
+backup/복원 N/A는 독립 reviewer가 확인한 영향 없음 근거가 있어야 하며 NULL을 N/A로 바꾸지 않는다.
+
+위 단계의 build·SBOM/scan·signature/provenance·source/native·migration·복원·HOME 결과를 각각 구분하고, 명령·입력 SHA·
+UTC 시각·종료 코드·정제 artifact SHA·보존 위치/기한·담당자·승인/정리·rollback 상태를 기존 Task와
+장부에 연결한다. 장부 gate의 exit0은 집합·형식 정합만 뜻한다. 도구/cache/trust·target·예산이
+실제로 부족하면 그 사실을 BLOCKED로 기록하되, 수행 가능한 조회·source 검증을 생략하는
+일괄 blocker로 사용하지 않는다. 승인되지 않은 실행을 문서 예제로 자동 dispatch하지 않는다.
+
+n8n/Airflow의 격리 선택·capture·pressure·정리 명령은
+[RUN-0053](../08-workflows-and-automation/0053-n8n.md)이 소유한다. 그 fixture의 논리 PG 복원은
+실제 DEV Timescale·HOME·physical/offsite 복원의 대체 증거가 아니다. 다른 service의 구체
+build/migration/복원 명령과 budget은 해당 owning Task·기존 service Runbook이 소유한다.
 
 ### Optional Compose service observation
 
@@ -181,6 +228,10 @@ bash scripts/operations/check-compose-core-readiness.sh
 
 ## Verification
 
+- ROOT 운영 승격을 실행했다면 위 각 단계의 exact 대상·source/image·artifact SHA,
+  독립 review·실제 승인·rollback·HOME 기능 결과를 owning Task에서 확인한다. 미실행
+  단계와 repository SemVer 게시 결과를 합치지 않는다.
+
 - 현재 branch와 clean/예상된 작업 트리 상태.
 - 정확한 base/candidate SHA, 두 commit 사이 diff 요약과 `git diff --check` 결과.
 - 선택한 저장소 계약·문서 traceability 검사와 승인 범위에 해당하는 Compose 검증 결과. 등록에서 폐기된 surface의 freshness를 현재 gate로 요구하지 않는다.
@@ -198,21 +249,27 @@ bash scripts/operations/check-compose-core-readiness.sh
 
 ### Candidate Required-Check Handoff
 
-The 2026-10-16 authenticated read-back in
-[main-protection.md](../../../../.github/rulesets/main-protection.md) records
-zero required contexts and checks even though the latest successful
-`candidate-quality` check came from GitHub Actions App ID 15368. Release or
-merge readiness must not claim remote CI enforcement while that gap remains.
+2026-10-16의 이전 empty-context/check read-back은 과거 관측으로 보존한다.
+현재 [main-protection.md](../../../../.github/rulesets/main-protection.md)와
+[TSK-0009](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0009-r13-reconciliation.md)는
+별도 승인한 strict `candidate-quality` / GitHub Actions App ID 15368 적용을
+기록한다. PR505 head `e459c4e`의 failed-current-head 차단과 PR506의 성공한
+check·merge는 날짜가 있는 별도 실제 관측이다. 이후 PR505 head
+`9bf618a80d192d974d494b164b8af4df07dfb6ae`의 현재 check가 통과하여
+`2de045e3b6f79967b4b4050e5cff53ee0b38158f`로 병합되었다. 이 영수증은
+missing·stale·wrong-App adversarial case, workflow source 불변성이나 runtime
+수용을 입증하지 않는다.
 
-That record owns the exact scoped PATCH proposal, current empty-check rollback
-payload, full protection read-back, producer metadata assertions and the
-missing/failed/stale/wrong-App/matching enforcement rehearsal matrix. The past
-check-run filters prove metadata only; every enforcement case remains NOT_RUN
-or BLOCKED. An operator may prepare and review the local payload files.
-Running the PATCH requires separate owner approval, after which the operator
-must compare every preserved protection field and record the result in the
-active Task. A failed check name, App identity, conclusion or read-back blocks
-the handoff; restoring an old `validation-changed` context is not a rollback.
+해당 기록이 정확한 범위의 PATCH 이력, 과거 empty-check rollback payload,
+전체 protection read-back, producer metadata assertion과
+missing/failed/stale/wrong-App/matching enforcement rehearsal matrix를 소유한다.
+과거 check-run filter는 metadata만 증명한다. missing·stale은 NOT_RUN이며,
+wrong-App은 독립적으로 권한을 부여한 App이 준비될 때까지 BLOCKED다. 운영자는
+local recovery payload를 준비·검토할 수 있지만 PATCH 실행에는 별도 소유자
+승인이 필요하다. 실행 후에는 보존한 모든 protection field를 비교하고 실제
+결과를 active Task에 기록한다. check 이름·App identity·conclusion·read-back이
+실패하면 handoff를 차단한다. 과거 `validation-changed` context 복구를 rollback으로
+취급하지 않는다.
 
 ### Rollback or Recovery
 

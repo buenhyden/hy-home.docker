@@ -988,6 +988,16 @@ files:
   tests:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/requirements-controller.lock
+  kind: dependency-manifest
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflows/ci-quality.yml
+  disposition: retain
+  successor: null
+  tests: []
 - path: scripts/requirements-pre-commit.txt
   kind: dependency-manifest
   authority: .github/workflow-contract.yml

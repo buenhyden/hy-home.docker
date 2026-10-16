@@ -79,6 +79,7 @@ _TOP_LEVEL_FIELDS = frozenset(
         "workflows",
         "gate_nodes",
         "public_gate",
+        "execution_evidence",
         "actions",
     }
 )

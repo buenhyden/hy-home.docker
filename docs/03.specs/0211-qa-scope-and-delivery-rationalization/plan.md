@@ -1,6 +1,6 @@
 ---
 title: "QA Scope and Delivery Rationalization Plan"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -27,6 +27,13 @@ producers and align governance with Issue/Project navigation. Continuing
 assurances keep their consumers, while historical refs, frozen evidence and
 runtime authorization remain preserved.
 
+W71–W73 support the existing criteria after W70 integrates: capture exact
+selected toolchain/dependency and secure artifact identity, extend the existing
+runner's per-gate evidence, and reconcile ROOT release obligations plus actual
+QA04 execution. The CI audit implementer owns source/Plan writing; the root
+agent integrates. The document writer owns the bounded RUN-0009 edit after this
+Plan assignment. Task0001 retains sole Criterion Acceptance decisions.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -39,6 +46,9 @@ runtime authorization remain preserved.
 | W6 | 5 | Align current governance and Issue/Project views | W4, W5 | TSK-0001 | Task evidence |
 | W7 | 1, 2, 3, 4, 5 | Validate final input, review and record residual owners | W6 | TSK-0001 | Task evidence |
 | W70 | 2, 3, 5 | Support the existing criteria by promoting deterministic contract regressions to hosted changed selection and restoring tier 13 hardening coverage | W7 | TSK-0002 | RED/GREEN path selection, failure propagation and hardening behavior |
+| W71 | 2, 3, 5 | Bind actual toolchain and dependency identity to the existing runner and define secure bounded artifact custody | W70 | TSK-0003 | Focused identity drift and artifact-boundary RED/GREEN |
+| W72 | 2, 3, 5 | Record per-gate identity, selection, timing and terminal state in the existing runner for authenticated PR and explicitly evidenced clean-HEAD local runs; persist early remaining NOT_RUN evidence | W71 | TSK-0003 | Success, failure, timeout, cancellation, local identity and incomplete-receipt RED/GREEN |
+| W73 | 2, 3, 4, 5 | Add ROOT promotion evidence to RUN-0009 and record service/path joins, actual QA04 changed/FULL/requirements and current-head remote proof or owned blockers | W72 | TSK-0003 | Actual final-input execution, exact-head observations, scoped docs and independent review |
 
 ## Verification Plan
 
@@ -75,6 +85,22 @@ Initial draft publication and final evidence-only records use document-minimum
 checks. Generic preserved-source compatibility remains separate from historical
 cutover completion evidence.
 
+For the user's execution prompt04 on 2026-10-16 only, W73 runs an actual
+changed-profile audit, explicit FULL-profile audit and requirements paths on
+the final integrated input. This request-specific full-audit scope overrides
+the ordinary no-full-repeat default for this execution; it does not make FULL
+mandatory for every future commit, Release or unchanged input. Keep the
+existing one-invocation and input/mode/trust reuse contracts, and never label
+model/explain output as an actual run. W71 binds actual executable/dependency
+identity and secure artifact custody; W72 records each selected node before
+execution and preserves remaining NOT_RUN nodes on early stop. Current remote
+PR/check issuer and merged-main security observations remain distinct from
+local results. The configured strict App-bound required check and empty
+effective rules are dated observations, not workflow-source immutability. No
+protection PATCH, operational credential use, real data, HOME action or release
+publication is authorized. RUN-0009 remains the release procedure owner;
+source-only additions create no deployment workflow or scanner.
+
 ## Risks and Recovery
 
 ### Risks and Rollback
@@ -90,3 +116,5 @@ or remote-protection mutation is implied by source validation.
 - [Spec](spec.md)
 - [Task](tasks/tsk-0001-qa-scope-and-delivery-rationalization.md)
 - [Hosted contract and tier 13 hardening task](tasks/tsk-0002-hosted-contract-and-tier13-hardening.md)
+
+- [QA04 execution evidence and ROOT release support](tasks/tsk-0003-qa04-execution-evidence-and-root-release-support.md)
