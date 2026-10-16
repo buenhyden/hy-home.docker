@@ -4,7 +4,8 @@
   "business_date": "2026-10-10",
   "synthetic_claim": {
     "id": 1,
-    "lease_token": "00000000-0000-0000-0000-000000000001"
+    "lease_token": "00000000-0000-0000-0000-000000000001",
+    "lease_until": "2099-01-01T00:00:00.000Z"
   },
   "invalid_manifests": [
     {
@@ -39,7 +40,8 @@
       "state": "accepted_by_smtp",
       "ack": false,
       "retry": false,
-      "expected": "ack_uncertain"
+      "expected": "quarantined",
+      "quarantine": true
     },
     {
       "name": "truthy_ack_is_not_true",
@@ -47,7 +49,8 @@
       "state": "accepted_by_smtp",
       "ack": 1,
       "retry": false,
-      "expected": "ack_uncertain"
+      "expected": "quarantined",
+      "quarantine": true
     },
     {
       "name": "receipt_wrong_run",
@@ -55,7 +58,8 @@
       "state": "accepted_by_smtp",
       "ack": true,
       "retry": false,
-      "expected": "delivery_uncertain"
+      "expected": "delivery_uncertain",
+      "quarantine": null
     },
     {
       "name": "uncertain_retry_recorded",
@@ -63,7 +67,8 @@
       "state": "uncertain",
       "ack": false,
       "retry": true,
-      "expected": "retry_recorded_uncertain"
+      "expected": "quarantined",
+      "quarantine": true
     },
     {
       "name": "retry_lost_lease",
@@ -71,7 +76,8 @@
       "state": "cancelled",
       "ack": false,
       "retry": false,
-      "expected": "retry_lost_lease"
+      "expected": "quarantine_uncertain",
+      "quarantine": null
     },
     {
       "name": "unknown_delivery_state",
@@ -79,7 +85,8 @@
       "state": "delivered",
       "ack": true,
       "retry": true,
-      "expected": "delivery_uncertain"
+      "expected": "delivery_uncertain",
+      "quarantine": null
     }
   ]
 }

@@ -48,6 +48,15 @@ class SmtpRoutingTests(unittest.TestCase):
             optional,
         )
         self.assertNotIn(STORAGE_MODULE, optional)
+        for module in (
+            "tests.validation.test_opsflow_native_evidence",
+            "tests.validation.test_opsflow_native_health_probe",
+            "tests.validation.test_opsflow_airflow_native_evidence",
+            "tests.validation.test_opsflow_airflow_native_quiescence",
+        ):
+            self.assertIn(module, argv[:split])
+            self.assertNotIn(module, optional)
+        self.assertEqual(21, len(optional))
         required_modules = {
             selector for selector in argv[:split] if selector.startswith("tests.")
         }

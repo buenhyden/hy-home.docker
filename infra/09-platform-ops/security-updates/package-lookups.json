@@ -768,5 +768,80 @@
       "next_validation_due": "2026-10-17T10:42:12.204797+00:00"
     }
   ],
-  "meaning": "Public source requirements/package.json and package-index latest metadata; not installed SBOM/advisory or candidate native proof."
+  "meaning": "Public source requirements/package.json and package-index latest metadata; not installed SBOM/advisory or candidate native proof.",
+  "n8n_source_preparation": {
+    "source_revision": "e6807a7d16d8b9e180ff58456ab64e4ee721ca69",
+    "checked_at": "2026-10-15T15:42:45.268224+00:00",
+    "npm": {
+      "url": "https://registry.npmjs.org/n8n/latest",
+      "checked_at": "2026-10-15T15:42:45.268224+00:00",
+      "http_status": 200,
+      "response_sha256": "7f561629c453d15b7d1608f04ea43487b5bf18f3d5fe7fcc89022e35444f0236",
+      "version": "2.43.6",
+      "engines": {
+        "node": ">=24.0.0"
+      },
+      "n8n_workflow": "2.43.4",
+      "integrity": "sha512-1vk6Esi3MAD6NMqTfT1+x0SkHFqofYApAe1oFC+lIjId8eB7lEYSPLZu/boR9E3e6REXSFJscSPaSYJWXnFUfQ=="
+    },
+    "workflow_package": {
+      "url": "https://registry.npmjs.org/n8n-workflow/2.43.4",
+      "checked_at": "2026-10-15T15:42:45.268224+00:00",
+      "http_status": 200,
+      "response_sha256": "cfee9d5da41d76770f0cf873e312595f8625999255d55340fadd96af25c48230",
+      "version": "2.43.4",
+      "integrity": "sha512-PwA5kqdoVmjIjn7+KNZw8hw4nkFgvYAU4bZ3so8IyKdOabHh/idPz8PHclVSn/FbhizTuGv4rU/w3FUgVbbCuw=="
+    },
+    "audit_all": {
+      "command": "npm audit --package-lock-only --ignore-scripts --json --registry=https://registry.npmjs.org/",
+      "observed_at": "2026-10-15T15:41:21.655093+00:00",
+      "exit_code": 0,
+      "metadata": {
+        "vulnerabilities": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 0,
+          "critical": 0,
+          "total": 0
+        },
+        "dependencies": {
+          "prod": 2,
+          "dev": 154,
+          "optional": 23,
+          "peer": 0,
+          "peerOptional": 0,
+          "total": 155
+        }
+      },
+      "error": null,
+      "findings": {}
+    },
+    "audit_production": {
+      "command": "npm audit --package-lock-only --ignore-scripts --json --registry=https://registry.npmjs.org/ --omit=dev",
+      "observed_at": "2026-10-15T15:41:22.350864+00:00",
+      "exit_code": 0,
+      "metadata": {
+        "vulnerabilities": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 0,
+          "critical": 0,
+          "total": 0
+        },
+        "dependencies": {
+          "prod": 2,
+          "dev": 154,
+          "optional": 23,
+          "peer": 0,
+          "peerOptional": 0,
+          "total": 155
+        }
+      },
+      "error": null,
+      "findings": {}
+    },
+    "meaning": "Official npm metadata/audit for custom-node lock only; not a full-image or upstream n8n transitive scan."
+  }
 }

@@ -3,7 +3,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { Duplex } = require('node:stream');
 const { createCaptureTransport, sendClaim, POLICY } = require('../dist/transport.js');
-const claim = { id: 1, run_id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', source: 'hy-home.docker', row_count: 1, lease_token: '22222222-2222-4222-8222-222222222222' };
+const claim = { id: 1, run_id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', source: 'hy-home.docker', row_count: 1, lease_token: '22222222-2222-4222-8222-222222222222', lease_until: '2099-01-01T00:00:00.000Z' };
 const credential = { host: 'mailpit', port: 1025, secure: false, disableStartTls: true, user: '', password: '', hostName: '' };
 
 // A byte stream only: no listen(), DNS lookup, net connect, SMTP server or credential.

@@ -16,13 +16,14 @@ SQL 파일 존재는 실제 migration·권한·복구 수용을 뜻하지 않습
 
 ## Scope
 
-Ingest는 게시 함수, notifier는 claim/ack/retry, reader는 승인된 view만
+Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 승인된 view만
 소비합니다. Owner·migration capability는 runtime에 전달하지 않습니다.
 
 ## Structure
 
 - [001_opsflow.sql](001_opsflow.sql): DB·role·기존 shape/ACL 검사와 원자적 게시 계약.
 - [002_checks.sql](002_checks.sql): 합성 직접 호출·역할·lease 검사.
+- [004_notification_quarantine.sql](004_notification_quarantine.sql): 만료·불확실 통지의 version 3 격리와 운영자 대조.
 - [003_business_date.sql](003_business_date.sql): 같은 source의 UTC 업무일 중복을
   거부하는 version 2 migration.
 
@@ -98,8 +99,8 @@ outbox를 보존한 채, 검토된 backup을 별도의 빈 workload 복구 대�
 
 ### P05 draft interface
 
-Source version은 2입니다. Version 2는 아래 함수·view·lease 계약과 여섯 인자
-`publish_manifest` signature를 바꾸지 않습니다. SQL·보안 검토 뒤 파일 hash를
+현재 source version은 3입니다. 여섯 인자 `publish_manifest`와 여섯 claim 필드를
+유지하며 불확실 통지의 retry 의미는 아래 격리 계약으로 바꿉니다. SQL·보안 검토 뒤 파일 hash를
 고정하며, P05의 실제 소비자 검토와 native 수용은 아직 NOT_RUN입니다.
 
 | 호출 | 입력 | 결과 |
@@ -107,10 +108,13 @@ Source version은 2입니다. Version 2는 아래 함수·view·lease 계약과 
 | `publish_manifest` | source, run ID, raw SHA256, captured_at, records JSONB, artifact key | published / historical / replayed |
 | `claim_notification` | 없음 | id, run_id, source, row_count, lease_token, lease_until |
 | `ack_notification` | id, lease_token | 유효 lease의 SMTP acceptance 여부 boolean |
-| `retry_notification` | id, lease_token | 유효 lease의 retry/dead 전이 여부 boolean |
+| `retry_notification` | id, lease_token | 구버전 호출의 unknown 격리 여부 boolean |
+| `retry_not_sent_notification` | id, lease_token | SMTP 미시작이 증명된 유효 lease의 retry/dead 여부 boolean |
+| `unknown_notification` | id, lease_token | 현재 token의 불확실 전송 격리 여부 boolean |
+| `reconcile_notification` | id, result, evidence SHA256 | 검토한 운영자 대조·attempt별 이력 기록 여부 boolean |
 | `published_documents` / `delivery_status` | reader SELECT | 승인된 현재 문서 / 제한된 통지 장부 |
 
-Lease는 10분이고 만료·stale token은 거부합니다. 최대 다섯 번 claim 후 dead로
+Lease는 10분이고 ack·no-send retry는 만료·stale token을 거부합니다. 최대 다섯 번 claim 후 dead로
 종료하며 retry delay는 30×2^attempt seconds, 상한 900초입니다. 역사적 게시에는
 새 outbox를 만들지 않고 기존 run의 최초 게시 결과를 유지합니다. 같은 source와
 captured_at의 다른 입력 및 같은 source·UTC 업무일의 다른 입력은 전체 역사에서
@@ -124,6 +128,35 @@ caller 입력을 실제 Git 내용 인증으로 취급하지 않습니다.
 Ack는 SMTP acceptance만 기록하며 실제 배달을 보장하지 않습니다. 안정된
 run-derived Message-ID, at-least-once 중복 불확실성과 accepted event 복원 정합은
 P05와 별도 native 검증에서 확인합니다. 현재 P05 소비자 검토와 native는 NOT_RUN입니다.
+
+### Version 3 notification quarantine
+
+`004_notification_quarantine.sql`은 고정된 version 2 receipt와 실제 schema fingerprint를
+먼저 검증하며 과거 migration 파일은 수정하지 않습니다. 검토한 001→002 검사→003→002
+검사 순서 뒤에 별도 migration session에서 004와 그 SHA256을 적용합니다. 002는 version
+1/2의 보존된 검사이므로 version 3의 최종 검사는 새 native quarantine/restore 시험으로
+수행합니다. Source revert는 실행한 schema/ACL rollback이 아닙니다.
+
+Migration 시 기존 version 2의 retry는 전부 불확실 전송 이력이므로 unknown으로 옮깁니다.
+만료된 sending도 unknown으로 격리하고 자동 claim하지 않습니다. 기존
+`retry_notification(id,token)`도 구버전 workflow가 불확실 전송을 재시도하지 않도록
+unknown으로 바꿉니다. 새 `retry_not_sent_notification(id,token)`만 실제 SMTP 시작 전
+취소가 증명된 경우 유효 lease의 제한된 retry/dead 전이를 허용합니다.
+`unknown_notification(id,token)`은 응답·전송·ack가 불확실한 현재 token을 격리합니다.
+DB 장애로 격리 기록이 실패하면 sending을 유지하며 다음 claim 때 만료 상태를 격리합니다.
+
+SMTP capture와 DB ack는 원자적이지 않습니다. 실제 capture·Message-ID·run과 기존
+영수증을 운영자가 대조하기 전에는 unknown을 재전송하지 않습니다. Migrator session이
+명시적으로 `SET ROLE opsflow_owner`한 뒤에만
+`reconcile_notification(id, result, evidence_sha256)`를 호출합니다. Result는
+`accepted_by_smtp` 또는 `not_sent`이며 공개 가능한 대조 증거의 SHA256을 attempt별 `notification_reconciliations`에 원자적으로
+보존합니다. 새 claim이 이 이력을 지우거나 다음 attempt의 영수증으로 재사용하지 않습니다.
+Runtime에는 이 table의 직접 쓰기 권한이 없으며 신뢰된 owner의 관리 불변성까지 주장하지 않습니다.
+개별 execution과 전송 가능한 모든 worker를 drain하거나 종료한 영수증도 먼저 필요합니다.
+멈춘 worker가 다시 전송할 수 있거나 capture 부재만 관측했으면 no-send로 판정하지 않고
+unknown을 유지합니다. 실제 no-send가 확인되어도 다섯 번 상한에
+도달한 건은 dead로 남습니다. Runtime notifier에는 대조 권한이 없습니다.
+독립 복원 뒤 unknown·accepted 상태와 claim 결과를 확인한 후 polling을 허용합니다.
 
 ## Related Documents
 

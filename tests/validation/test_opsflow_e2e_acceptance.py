@@ -176,6 +176,7 @@ class OpsflowAcceptanceSeams(unittest.TestCase):
                     {"run_id": receipt_id, "state": case["state"]},
                     case["ack"],
                     case["retry"],
+                    case["quarantine"],
                 )
                 self.assertEqual(actual, case["expected"])
         invalid = dict(row, lease_until="synthetic-only-not-consumer-field")

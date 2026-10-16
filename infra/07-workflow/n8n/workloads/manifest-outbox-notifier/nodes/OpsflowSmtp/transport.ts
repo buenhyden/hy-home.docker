@@ -6,13 +6,13 @@ export const POLICY = Object.freeze({
   host: 'mailpit', port: 1025,
   from: 'notifier@opsflow.invalid', to: 'manifest@opsflow.invalid',
   connectionTimeout: 3000, greetingTimeout: 3000, socketTimeout: 5000,
-  totalTimeoutMs: 15000, maxTextBytes: 512,
+  totalTimeoutMs: 15000, ackReserveMs: 5000, clockSkewReserveMs: 5000, maxTextBytes: 512,
 });
-const CLAIM_KEYS = Object.freeze(['id', 'run_id', 'source', 'row_count', 'lease_token']);
+const CLAIM_KEYS = Object.freeze(['id', 'run_id', 'source', 'row_count', 'lease_token', 'lease_until']);
 const CREDENTIAL_KEYS = Object.freeze(['host', 'port', 'secure', 'disableStartTls', 'user', 'password', 'hostName']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const SOURCES = Object.freeze(['hy-home.docker', 'hy-home.k8s', 'Project-Template', 'blog-data']);
-export type Claim = Readonly<{ id: string | number; run_id: string; source: string; row_count: number; lease_token: string }>;
+export type Claim = Readonly<{ id: string | number; run_id: string; source: string; row_count: number; lease_token: string; lease_until: string }>;
 export type Outcome = Readonly<{ run_id: string; state: 'accepted_by_smtp' | 'uncertain' | 'cancelled' }>;
 export type CaptureTransport = { sendMail(message: ReturnType<typeof messageFor>): Promise<unknown>; close(): void };
 export type TransportFactory = (options: ReturnType<typeof transportOptions>) => CaptureTransport;
@@ -30,11 +30,13 @@ export function validateClaim(value: unknown): Claim {
   if (!validId || typeof value.run_id !== 'string' || !/^[0-9a-f]{64}$/.test(value.run_id) ||
       typeof value.source !== 'string' || !SOURCES.includes(value.source) ||
       typeof value.row_count !== 'number' || !Number.isSafeInteger(value.row_count) || value.row_count < 1 || value.row_count > 5000 ||
-      typeof value.lease_token !== 'string' || !UUID.test(value.lease_token)) {
+      typeof value.lease_token !== 'string' || !UUID.test(value.lease_token) ||
+      typeof value.lease_until !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value.lease_until) ||
+      !Number.isFinite(Date.parse(value.lease_until)) || new Date(value.lease_until).toISOString() !== value.lease_until) {
     throw new Error('OPSFLOW_INVALID_CLAIM');
   }
   return Object.freeze({ id: value.id as string | number, run_id: value.run_id,
-    source: value.source, row_count: value.row_count, lease_token: value.lease_token });
+    source: value.source, row_count: value.row_count, lease_token: value.lease_token, lease_until: value.lease_until });
 }
 
 export function transportOptions(value: unknown) {
@@ -107,7 +109,9 @@ export async function sendClaim(
   const claim = validateClaim(rawClaim);
   const options = transportOptions(credential);
   const result = (state: Outcome['state']): Outcome => Object.freeze({ run_id: claim.run_id, state });
-  if (signal?.aborted) return result('cancelled');
+  const currentLease = () => Date.parse(claim.lease_until) - Date.now() >
+    POLICY.totalTimeoutMs + POLICY.ackReserveMs + POLICY.clockSkewReserveMs;
+  if (signal?.aborted || !currentLease()) return result('cancelled');
   let transport: CaptureTransport | undefined;
   let timer: ReturnType<typeof setTimeout> | undefined;
   let cancellation: (() => void) | undefined;
@@ -119,7 +123,7 @@ export async function sendClaim(
       signal?.addEventListener('abort', cancellation, { once: true });
       timer = setTimeout(() => resolve('uncertain'), POLICY.totalTimeoutMs);
     });
-    if (signal?.aborted) state = 'cancelled';
+    if (signal?.aborted || !currentLease()) state = 'cancelled';
     else {
       const sending = Promise.resolve(transport.sendMail(messageFor(claim))).then(
         info => accepted(info) ? 'accepted_by_smtp' as const : 'uncertain' as const,

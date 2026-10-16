@@ -1396,5 +1396,130 @@
         "classification": "PUBLIC_UPSTREAM_METADATA"
       }
     ]
+  },
+  "n8n_source_preparation": {
+    "source_revision": "e6807a7d16d8b9e180ff58456ab64e4ee721ca69",
+    "checked_at": "2026-10-15T15:42:45.268224+00:00",
+    "images": [
+      {
+        "repository": "n8nio/n8n",
+        "image": "n8nio/n8n:2.43.6@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833",
+        "checked_at": "2026-10-15T15:42:45.268224+00:00",
+        "index_digest": "sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833",
+        "index_response": {
+          "url": "https://registry-1.docker.io/v2/n8nio/n8n/manifests/2.43.6",
+          "checked_at": "2026-10-15T15:42:45.268224+00:00",
+          "http_status": 200,
+          "response_sha256": "dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833"
+        },
+        "channels": [
+          {
+            "channel": "stable",
+            "url": "https://registry-1.docker.io/v2/n8nio/n8n/manifests/stable",
+            "checked_at": "2026-10-15T15:42:45.268224+00:00",
+            "http_status": 200,
+            "response_sha256": "dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833",
+            "index_digest": "sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833"
+          },
+          {
+            "channel": "latest",
+            "url": "https://registry-1.docker.io/v2/n8nio/n8n/manifests/latest",
+            "checked_at": "2026-10-15T15:42:45.268224+00:00",
+            "http_status": 200,
+            "response_sha256": "dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833",
+            "index_digest": "sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833"
+          }
+        ],
+        "platforms": [
+          {
+            "platform": {
+              "architecture": "amd64",
+              "os": "linux"
+            },
+            "manifest_digest": "sha256:371dd463f02e8c35a4bc5aaf9855fc4cfec1babab97e5a02a1e31923a2ec8f5a",
+            "config_digest": "sha256:c8d7cd6bf08e1837180b767d77903889e0f3f022accda90579f5e99ca2a2bdfb",
+            "compressed_layer_bytes": 273155054,
+            "url": "https://registry-1.docker.io/v2/n8nio/n8n/manifests/sha256:371dd463f02e8c35a4bc5aaf9855fc4cfec1babab97e5a02a1e31923a2ec8f5a",
+            "checked_at": "2026-10-15T15:42:45.268224+00:00",
+            "http_status": 200,
+            "response_sha256": "371dd463f02e8c35a4bc5aaf9855fc4cfec1babab97e5a02a1e31923a2ec8f5a"
+          },
+          {
+            "platform": {
+              "architecture": "arm64",
+              "os": "linux"
+            },
+            "manifest_digest": "sha256:4648e019655401905bd394a3bf448f8abaca900bd2722a5770c375df2762b6ca",
+            "config_digest": "sha256:0a622c726b93f6d9275b0f42abe2e7579f968a38b433ea6b2dbb67bb9d8dc852",
+            "compressed_layer_bytes": 272364274,
+            "url": "https://registry-1.docker.io/v2/n8nio/n8n/manifests/sha256:4648e019655401905bd394a3bf448f8abaca900bd2722a5770c375df2762b6ca",
+            "checked_at": "2026-10-15T15:42:45.268224+00:00",
+            "http_status": 200,
+            "response_sha256": "4648e019655401905bd394a3bf448f8abaca900bd2722a5770c375df2762b6ca"
+          }
+        ],
+        "trust": "Official public registry digest integrity only; publisher signature, config blob and SBOM not verified."
+      },
+      {
+        "repository": "n8nio/runners",
+        "image": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+        "checked_at": "2026-10-15T15:42:45.268224+00:00",
+        "index_digest": "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+        "index_response": {
+          "url": "https://registry-1.docker.io/v2/n8nio/runners/manifests/2.43.6",
+          "checked_at": "2026-10-15T15:42:45.268224+00:00",
+          "http_status": 200,
+          "response_sha256": "3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf"
+        },
+        "channels": [
+          {
+            "channel": "stable",
+            "url": "https://registry-1.docker.io/v2/n8nio/runners/manifests/stable",
+            "checked_at": "2026-10-15T15:42:45.268224+00:00",
+            "http_status": 200,
+            "response_sha256": "3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+            "index_digest": "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf"
+          },
+          {
+            "channel": "latest",
+            "url": "https://registry-1.docker.io/v2/n8nio/runners/manifests/latest",
+            "checked_at": "2026-10-15T15:42:45.268224+00:00",
+            "http_status": 200,
+            "response_sha256": "3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+            "index_digest": "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf"
+          }
+        ],
+        "platforms": [
+          {
+            "platform": {
+              "architecture": "amd64",
+              "os": "linux"
+            },
+            "manifest_digest": "sha256:f9e0b2826586dcb2c56ebf4ab437b0636aef829c5d161091e86618a0ff61dc45",
+            "config_digest": "sha256:28c5a510d7624e5ce079d2204e4d8421bc96ced83ebc2e1717d6ee33a0ccc1bb",
+            "compressed_layer_bytes": 190859242,
+            "url": "https://registry-1.docker.io/v2/n8nio/runners/manifests/sha256:f9e0b2826586dcb2c56ebf4ab437b0636aef829c5d161091e86618a0ff61dc45",
+            "checked_at": "2026-10-15T15:42:45.268224+00:00",
+            "http_status": 200,
+            "response_sha256": "f9e0b2826586dcb2c56ebf4ab437b0636aef829c5d161091e86618a0ff61dc45"
+          },
+          {
+            "platform": {
+              "architecture": "arm64",
+              "os": "linux"
+            },
+            "manifest_digest": "sha256:bdc21be78c9e9d73d4f20cc537c464674220298454afc9932623e4232f1a6854",
+            "config_digest": "sha256:77946868ef40a47fea170da9a71d741228d45787a117de6fb1f21e713ce8cd80",
+            "compressed_layer_bytes": 188820992,
+            "url": "https://registry-1.docker.io/v2/n8nio/runners/manifests/sha256:bdc21be78c9e9d73d4f20cc537c464674220298454afc9932623e4232f1a6854",
+            "checked_at": "2026-10-15T15:42:45.268224+00:00",
+            "http_status": 200,
+            "response_sha256": "bdc21be78c9e9d73d4f20cc537c464674220298454afc9932623e4232f1a6854"
+          }
+        ],
+        "trust": "Official public registry digest integrity only; publisher signature, config blob and SBOM not verified."
+      }
+    ],
+    "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt."
   }
 }

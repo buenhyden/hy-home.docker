@@ -28,7 +28,8 @@ class OutboxContractTests(unittest.TestCase):
     def test_claim_projects_only_consumer_fields_from_p04_source(self):
         nodes = {node["name"]: node for node in builder().build_workflow()["nodes"]}
         self.assertEqual(
-            "SELECT id,run_id,source,row_count,lease_token "
+            "SELECT id,run_id,source,row_count,lease_token, "
+            "to_char(lease_until AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS lease_until "
             "FROM ops_flow.claim_notification();",
             nodes["Claim"]["parameters"]["query"],
         )
@@ -37,7 +38,7 @@ class OutboxContractTests(unittest.TestCase):
         self.assertEqual("SOURCE_REVIEW_ONLY", reference["scope"])
         self.assertEqual("NOT_RUN", reference["native_acceptance"])
         self.assertEqual(
-            contract["draft"]["claim_fields"] + ["lease_until"],
+            contract["draft"]["claim_fields"],
             reference["claim_output_fields"],
         )
         for name, expected in reference["sql_sha256"].items():
@@ -88,7 +89,7 @@ class OutboxContractTests(unittest.TestCase):
         nodes = {node["name"]: node for node in workflow["nodes"]}
         for name, function, result in (
             ("Ack", "ack_notification", "acknowledged"),
-            ("Retry Unknown", "retry_notification", "requeued"),
+            ("Retry Not Sent", "retry_not_sent_notification", "requeued"),
         ):
             parameters = nodes[name]["parameters"]
             self.assertEqual(
@@ -108,8 +109,33 @@ class OutboxContractTests(unittest.TestCase):
             "Ack", workflow["connections"]["SMTP Accepted"]["main"][0][0]["node"]
         )
         self.assertEqual(
-            "Redact Lost Lease",
+            "Mark Unknown",
             workflow["connections"]["Verify Retry"]["main"][1][0]["node"],
+        )
+
+    def test_ambiguous_outcomes_and_ack_loss_only_reach_quarantine(self):
+        workflow = builder().build_workflow()
+        connections = workflow["connections"]
+        nodes = {node["name"]: node for node in workflow["nodes"]}
+        for name in (
+            "Capture Mail",
+            "Ack",
+            "Verify Ack",
+            "Verify Retry",
+            "Retry Not Sent",
+        ):
+            self.assertEqual("Mark Unknown", connections[name]["main"][1][0]["node"])
+        self.assertEqual(
+            "SELECT ops_flow.unknown_notification($1::bigint,$2::uuid) AS quarantined;",
+            nodes["Mark Unknown"]["parameters"]["query"],
+        )
+        condition = nodes["Retryable Receipt"]["parameters"]["conditions"][
+            "conditions"
+        ][0]["leftValue"]
+        self.assertIn('$json.state === "cancelled"', condition)
+        self.assertNotIn('"uncertain"', condition)
+        self.assertEqual(
+            "Mark Unknown", connections["Retryable Receipt"]["main"][1][0]["node"]
         )
 
     def test_privacy_and_error_branches_have_no_unbounded_payload_options(self):
@@ -123,11 +149,14 @@ class OutboxContractTests(unittest.TestCase):
         self.assertEqual(120, settings["executionTimeout"])
         nodes = {node["name"]: node for node in workflow["nodes"]}
         self.assertEqual({"claim": "={{ $json }}"}, nodes["Capture Mail"]["parameters"])
-        for name in ("Claim", "Ack", "Retry Unknown"):
+        for name in ("Claim", "Ack", "Retry Not Sent", "Mark Unknown"):
             self.assertEqual("continueErrorOutput", nodes[name]["onError"])
             target = workflow["connections"][name]["main"][1][0]["node"]
-            self.assertTrue(target.startswith("Redact "))
-            self.assertNotIn("$input", nodes[target]["parameters"]["jsCode"])
+            if name in ("Ack", "Retry Not Sent"):
+                self.assertEqual("Mark Unknown", target)
+            else:
+                self.assertTrue(target.startswith("Redact "))
+                self.assertNotIn("$input", nodes[target]["parameters"]["jsCode"])
         for node in nodes.values():
             for credential in node.get("credentials", {}).values():
                 self.assertEqual("REPLACE_WITH_LOCAL_CREDENTIAL_ID", credential["id"])
@@ -165,8 +194,13 @@ class OutboxContractTests(unittest.TestCase):
             "ACL-normalization correction",
             " ".join(receipt.split()),
         )
-        for value in contract["source_reference"]["sql_sha256"].values():
-            self.assertIn(value, receipt)
+        for name, value in contract["source_reference"]["sql_sha256"].items():
+            if name != "004_notification_quarantine.sql":
+                self.assertIn(value, receipt)
+        self.assertEqual(3, contract["source_reference"]["schema_version"])
+        self.assertTrue(
+            (ROOT / contract["source_reference"]["safety_review_receipt"]).is_file()
+        )
 
 
 class OutboxWorkerPlacementTests(unittest.TestCase):

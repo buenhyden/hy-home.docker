@@ -3,16 +3,19 @@
 import argparse
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 
-CLAIM_KEYS = frozenset({"id", "run_id", "source", "row_count", "lease_token"})
+CLAIM_KEYS = frozenset(
+    {"id", "run_id", "source", "row_count", "lease_token", "lease_until"}
+)
 SOURCES = frozenset({"hy-home.docker", "hy-home.k8s", "Project-Template", "blog-data"})
 UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 CLAIM_VALIDATOR_JS = r"""(rows) => {
   if (!Array.isArray(rows) || rows.length !== 1) return false;
   const r = rows[0];
   if (!r || typeof r !== 'object' || Array.isArray(r)) return false;
-  const keys = ['id','run_id','source','row_count','lease_token'];
+  const keys = ['id','run_id','source','row_count','lease_token','lease_until'];
   if (Object.keys(r).length !== keys.length || !keys.every(k => Object.hasOwn(r,k))) return false;
   const full = (pattern, value) => typeof value === 'string' && new RegExp('^(?:'+pattern+')(?![\\s\\S])').test(value);
   const id = typeof r.id === 'number' ? Number.isSafeInteger(r.id) && r.id > 0 :
@@ -20,8 +23,30 @@ CLAIM_VALIDATOR_JS = r"""(rows) => {
   return id && full('[0-9a-f]{64}',r.run_id) &&
     ['hy-home.docker','hy-home.k8s','Project-Template','blog-data'].includes(r.source) &&
     Number.isSafeInteger(r.row_count) && r.row_count >= 1 && r.row_count <= 5000 &&
-    full('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',r.lease_token);
+    full('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',r.lease_token) &&
+    full('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z',r.lease_until) &&
+    Number.isFinite(Date.parse(r.lease_until)) && new Date(r.lease_until).toISOString() === r.lease_until;
 }"""
+
+
+def _lease_timestamp(value):
+    if (
+        not isinstance(value, str)
+        or re.fullmatch(
+            r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z", value
+        )
+        is None
+    ):
+        return False
+    try:
+        return (
+            datetime.fromisoformat(value.replace("Z", "+00:00"))
+            .isoformat(timespec="milliseconds")
+            .replace("+00:00", "Z")
+            == value
+        )
+    except ValueError:
+        return False
 
 
 def validate_claim(rows):
@@ -47,12 +72,13 @@ def validate_claim(rows):
         and 1 <= row["row_count"] <= 5000
         and isinstance(row["lease_token"], str)
         and re.fullmatch(UUID, row["lease_token"]) is not None
+        and _lease_timestamp(row["lease_until"])
     ):
         raise ValueError("invalid_claim")
     return dict(row)
 
 
-def evaluate_outcome(rows, receipt, ack, retry):
+def evaluate_outcome(rows, receipt, ack, retry, quarantine=None):
     """Synthetic transition oracle; this never performs claim/send/ack/retry."""
     if rows == []:
         return "empty"
@@ -67,9 +93,19 @@ def evaluate_outcome(rows, receipt, ack, retry):
     ):
         return "delivery_uncertain"
     if receipt["state"] == "accepted_by_smtp":
-        return "acknowledged" if ack is True else "ack_uncertain"
-    if receipt["state"] in ("uncertain", "cancelled"):
-        return "retry_recorded_uncertain" if retry is True else "retry_lost_lease"
+        return (
+            "acknowledged"
+            if ack is True
+            else ("quarantined" if quarantine is True else "quarantine_uncertain")
+        )
+    if receipt["state"] == "cancelled":
+        return (
+            "retry_recorded_not_sent"
+            if retry is True
+            else ("quarantined" if quarantine is True else "quarantine_uncertain")
+        )
+    if receipt["state"] == "uncertain":
+        return "quarantined" if quarantine is True else "quarantine_uncertain"
     return "delivery_uncertain"
 
 
@@ -136,7 +172,8 @@ def _entry_nodes(pg, smtp):
             2.6,
             {
                 "operation": "executeQuery",
-                "query": "SELECT id,run_id,source,row_count,lease_token "
+                "query": "SELECT id,run_id,source,row_count,lease_token, "
+                "to_char(lease_until AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS lease_until "
                 "FROM ops_flow.claim_notification();",
                 "options": {"queryBatching": "independently"},
             },
@@ -166,7 +203,7 @@ def _entry_nodes(pg, smtp):
         ),
         boolean_node(
             "Retryable Receipt",
-            '={{ Object.keys($json).length === 2 && $json.run_id === $("Claim").first().json.run_id && ["uncertain","cancelled"].includes($json.state) }}',
+            '={{ Object.keys($json).length === 2 && $json.run_id === $("Claim").first().json.run_id && $json.state === "cancelled" }}',
             (1120, 180),
         ),
     ]
@@ -179,7 +216,8 @@ def _database_nodes(pg):
     nodes = []
     for name, function, result, position in (
         ("Ack", "ack_notification", "acknowledged", (1140, -250)),
-        ("Retry Unknown", "retry_notification", "requeued", (1350, 150)),
+        ("Retry Not Sent", "retry_not_sent_notification", "requeued", (1350, 150)),
+        ("Mark Unknown", "unknown_notification", "quarantined", (1350, 400)),
     ):
         nodes.append(
             node(
@@ -234,7 +272,7 @@ def _failure_nodes():
         ("Invalid Claim", "invalid_claim", (680, 350)),
         ("Ack Uncertain", "ack_lost_or_lease_expired", (1600, -150)),
         ("Lost Lease", "retry_lost_or_lease_expired", (1800, 300)),
-        ("Retry Recorded", "retry_recorded_delivery_uncertain", (1800, -20)),
+        ("Retry Recorded", "retry_recorded_not_sent", (1800, -20)),
         ("Delivery Uncertain", "delivery_uncertain_fresh_claim_required", (1800, 80)),
     ):
         nodes.extend(
@@ -273,13 +311,14 @@ def _connections():
         "Every Minute": branches("Claim"),
         "Claim": branches("Valid Claim", "Redact DB Uncertain"),
         "Valid Claim": branches("Capture Mail", "Redact Invalid Claim"),
-        "Capture Mail": branches("SMTP Accepted", "Retry Unknown"),
+        "Capture Mail": branches("SMTP Accepted", "Mark Unknown"),
         "SMTP Accepted": branches("Ack", "Retryable Receipt"),
-        "Retryable Receipt": branches("Retry Unknown", "Redact Delivery Uncertain"),
-        "Ack": branches("Verify Ack", "Redact Ack Uncertain"),
-        "Retry Unknown": branches("Verify Retry", "Redact DB Uncertain"),
-        "Verify Ack": branches("Acknowledged", "Redact Ack Uncertain"),
-        "Verify Retry": branches("Redact Retry Recorded", "Redact Lost Lease"),
+        "Retryable Receipt": branches("Retry Not Sent", "Mark Unknown"),
+        "Ack": branches("Verify Ack", "Mark Unknown"),
+        "Retry Not Sent": branches("Verify Retry", "Mark Unknown"),
+        "Mark Unknown": branches("Redact Delivery Uncertain", "Redact DB Uncertain"),
+        "Verify Ack": branches("Acknowledged", "Mark Unknown"),
+        "Verify Retry": branches("Redact Retry Recorded", "Mark Unknown"),
         **{
             "Redact " + name: branches(name)
             for name in (

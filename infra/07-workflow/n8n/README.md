@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.9"
+version: "1.2.11"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-16"
 created: "2025-11-12"
 ---
 
@@ -66,7 +66,7 @@ n8n/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
 | Secret refs | main/worker는 선택된 `mng_valkey_password` 또는 `n8n_valkey_password` 하나와 `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`을 마운트함. runner 둘은 `n8n_runner_auth_token`만 마운트함 |
 | Healthcheck | `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, `dedicated-valkey` 프로필의 `n8n-valkey`에 Compose 헬스체크가 선언되어 있음. exporter는 의존성 기반으로 게이트됨. main은 `/healthz/readiness`, worker·runner는 각 선언된 `/healthz`를 사용하며 같은 신호가 아님; probe 통과가 작업 실행 성공이나 runner 호환성을 입증하지 않음 |
-| Operations | Guide (`docs/05.operations/guides/0053-n8n.md`), Policy (`docs/05.operations/policies/0053-n8n.md`), Runbook (`docs/05.operations/runbooks/0053-n8n.md`) |
+| Operations | 아래 Related Documents의 Guide·Policy·Runbook 탐색점에서 `GDE-0053`·`POL-0053`·`RUN-0053`을 선택합니다. |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `HYHOME_COMPOSE_PROFILES='workflow-n8n' bash scripts/validation/validate-docker-compose.sh`로 시작한 뒤 서비스 로그와 연결된 런북 근거를 확인합니다. |
 
@@ -106,7 +106,7 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 - **PRD**: 07-workflow PRD (`docs/01.requirements/0008-workflow.md`)
 - **ARD**: 07-workflow Architecture Description (`docs/02.architecture/descriptions/0007-workflow-architecture.md`)
 - **ADR**: N8N Integration ADR (`docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md`)
-- **Plan**: 활성 Spec 패키지 없음. 이전 SPEC-0008은 폐기되었습니다 (`docs/98.archive/tombstones/03.specs/0008-workflow.md`).
+- **Plan**: [Spec Package 탐색](../../../docs/03.specs/README.md)의 SPEC-0204 Task0017이 이번 버전 소스 준비를 담당합니다.
 
 ## Validation
 
@@ -115,10 +115,10 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 
 ### SEC01 안정판 묶음
 
-2026-10-12 [공식 릴리스](https://github.com/n8n-io/n8n/releases/tag/n8n%402.42.7), <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
-[npm stable 배포](https://registry.npmjs.org/n8n/latest)와 Docker stable channel의 OCI index를 대조했습니다.
-공식 Docker 설치 문서의 이전 stable 표기는 아직 갱신되지 않아 배포 채널의 동일 digest를 확인했습니다.
-이번 패치는 credential 시험의 공유 node registry와 deferred tool 호출 재개를 수정합니다.
+2026-10-16 KST [공식 릴리스](https://github.com/n8n-io/n8n/releases/tag/n8n%402.43.6), <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
+[npm stable 배포](https://registry.npmjs.org/n8n/latest)와 Docker stable/latest channel의 OCI index를 대조했습니다.
+요청에 인용된 이전 안정판 다음으로 발표된 패치는 webhook 요청마다 XML parser를 생성하도록 수정합니다.
+공식 index·amd64 manifest·config descriptor의 digest를 각각 구분해 장부에 기록했습니다.
 main·worker와 두 task runner를 같은 vendor stable로 맞추고 두 custom Dockerfile의 base·font builder
 OCI index digest를 고정합니다. platform manifest·custom build image ID·실제 running digest는 별도 증거입니다.
 fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정 채널의 명시 버전으로 설치합니다.
@@ -127,7 +127,13 @@ fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정
 
 UNIT의 네 role 정합 검사는 native workflow import·실행이나 HOME 배포를 입증하지 않습니다.
 deprecated node import 거부·JSON typeVersion·webhook·Code runner·queue·PostgreSQL·SMTP·실패 경로는 NOT_RUN입니다.
-SEC01 담당자는 2026-10-17까지 독립 매니페스트 배치로 다음 검증을 수행해야 합니다.
+Opsflow custom node의 peer/dev API와 lock도 upstream 본체가 사용하는 버전에 정렬했습니다.
+Task0017의 고정 입력으로 빌드한 production 이미지와 실제 PackageDirectoryLoader의 custom node
+등록·동일 base peer 해석·font 검사는 ISOLATED PASS입니다. dev recipe는 별도로 빌드하지
+않았습니다. 후속 전체 시험도 main readiness에서 ERROR였고 migration 완료와 cleanup
+PASS까지만 확인했습니다. fixture의 mount·alias·user-folder를 맞췄으며 production
+entrypoint·이미지는 바꾸지 않았습니다. SMTP·runner 업무는 미검증이고 서명·SBOM·
+full-image scan·HOME 수용은 NOT_RUN입니다.
 Wiki 예약이나 실제 Wiki 소비자는 이 업데이트에 추가하지 않습니다.
 
 HOME 전환 전 MNG DB와 n8n data, 동일 encryption key의 독립 보관, queue/진행 중 실행의
@@ -154,8 +160,8 @@ Airflow의 명시 shell lint 보완으로 해당 후보만 다시 빌드한 후,
 전체 immutable-candidate 시험 8건을 새로 수행해 PASS(EXIT 0)였습니다. n8n 이미지 내용은
 그 보완에서 변경하지 않았으며, 최신 시험 입력과 새 Airflow artifact는 연결된 검증 기록에 있습니다.
 
-위 후보 build·native 결과는 과거 고정 입력의 기록입니다. 이번 패치 입력의 custom build·
-workflow import·runner 실행·scan·HOME·DB 복원은 NOT_RUN입니다. 위 후보 시험은 현재
+위 후보 build·native 결과는 과거 고정 입력의 기록입니다. Task0017 고정 입력의 production build·
+module loading 결과는 위 안정판 묶음에서 구분합니다. 위 후보 시험은 현재
 bundle 버전과 맞지 않아 저장소 시험에서 제외했습니다. 현재 bundle 회귀는
 `WorkflowVersionBundleTests`가 계속 검사합니다.
 
@@ -164,6 +170,10 @@ bundle 버전과 맞지 않아 저장소 시험에서 제외했습니다. 현재
 [매니페스트 outbox 통지](workloads/manifest-outbox-notifier/README.md)는
 P04 SQL을 소비하는 비활성 workflow·제한된 SMTP node·합성 시험입니다.
 실제 import·예약·credential·복구는 P05 Task 선행 계약 이후 검증합니다.
+전체 native 시험의 자동 cleanup FAIL과 후속 정확한 소유 대상 reconciliation PASS는
+별도 결과입니다. 기본 시험은 native 실행을 skip하며 명시 선택자와 고정 캐시 이미지가
+필요합니다. 실행·중단·정리 절차는 아래 Runbook 탐색점의 RUN-0053이 소유합니다.
+Airflow 게시 데이터의 실제 n8n 인계·combined E2E·HOME 복구는 미검증입니다.
 
 ## Troubleshooting
 
@@ -175,13 +185,13 @@ P04 SQL을 소비하는 비활성 workflow·제한된 SMTP node·합성 시험�
 - n8n core/worker/task runner는 `workflow`/`workflow-n8n`에서 **HOME**이며, n8n Valkey와 exporter는 `dedicated-valkey`에서 **OPTIONAL**입니다.
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d n8n n8n-worker n8n-task-runner n8n-task-runner-worker`.
 - `dedicated-valkey`는 해당 쌍만 시작합니다. 실제 선택은 `N8N_VALKEY_HOST`와 `N8N_VALKEY_SECRET`을 함께 일치시켜야 합니다. 두 entrypoint는 선택된 파일의 존재를 확인하고, 두 runner는 마운트된 `n8n_runner_auth_token`을 launcher에 전달합니다. 선언 버전은 모두 일치하지만 Code 노드와 DB upgrade의 격리 실행은 별도로 검증해야 합니다.
-- 안정적인 진입점: [docs/README.md](../../../docs/README.md). 정확한 Stage 05 경로: `docs/05.operations/guides/0053-n8n.md`; ID: `GDE-0053`, `POL-0053`, `RUN-0053`. 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다.
+- 운영 문서는 아래 탐색점의 `GDE-0053`, `POL-0053`, `RUN-0053`을 사용합니다. HOME 격리 복구는 미실행입니다.
 
 ## Related Documents
 
-- **Guide**: n8n usage guide (`docs/05.operations/guides/0053-n8n.md`)
-- **Policy**: n8n operations policy (`docs/05.operations/policies/0053-n8n.md`)
-- **Runbook**: n8n recovery runbook (`docs/05.operations/runbooks/0053-n8n.md`)
+- [Guide 탐색](../../../docs/05.operations/guides/08-workflows-and-automation/README.md)
+- [Policy 탐색](../../../docs/05.operations/policies/08-workflows-and-automation/README.md)
+- [Runbook 탐색](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)
 - [Documentation index](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
