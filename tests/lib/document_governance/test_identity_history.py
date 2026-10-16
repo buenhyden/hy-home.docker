@@ -809,19 +809,20 @@ class IdentityHistoryTests(unittest.TestCase):
         self.assertIn(131, issued.numbers["tombstone"])
         self.assertNotIn(153, issued.numbers["tombstone"])
 
-    def test_registry_high_water_is_not_below_repository_history(self) -> None:
+    def test_registry_high_water_is_not_below_observed_history(self) -> None:
+        # The real-tree scan is the full-profile metadata gate's job; its
+        # result depends on local refs, so this test pins the rule instead.
         registry = load_registry()
-        started = time.monotonic()
-        issued = collect_issued_identities(
-            pathlib.Path(__file__).resolve().parents[3], refs=("--all",)
-        )
-        self.assertGreater(issued.high_water("spec"), 0)
+        high_water = registry.identity_spaces["spec"].high_water
 
-        self.assertEqual((), validate_identity_history(registry, issued))
-        self.assertLessEqual(
-            time.monotonic() - started,
-            identity_history.MAX_GIT_SCAN_SECONDS + 5,
-        )
+        def findings(observed: int) -> set[str]:
+            issued = IssuedIdentities(MappingProxyType({"spec": frozenset({observed})}))
+            return {
+                finding.code for finding in validate_identity_history(registry, issued)
+            }
+
+        self.assertNotIn("identity-history-regression", findings(high_water))
+        self.assertIn("identity-history-regression", findings(high_water + 1))
 
     def test_history_uses_only_bounded_object_name_scans(self) -> None:
         root = pathlib.Path(__file__).resolve().parents[3]

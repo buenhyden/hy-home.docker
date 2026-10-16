@@ -681,7 +681,8 @@ class EvidenceStore:
             raise EvidenceError("evidence output directory already exists") from error
         except OSError as error:
             raise EvidenceError(
-                f"cannot create evidence output directory: {error}"
+                "cannot create evidence output directory "
+                f"({errno.errorcode.get(error.errno, 'unknown')})"
             ) from error
         directory_fd = cls._open_directory(path)
         store = cls(path, directory_fd, plan, hashlib.sha256(plan_bytes).hexdigest())

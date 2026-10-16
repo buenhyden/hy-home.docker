@@ -370,6 +370,21 @@ def _source_bound_legacy_archive_types(
     )
 
 
+def _workspace_inventory_findings() -> list[Finding]:
+    if (
+        any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES)
+        or _normalized_target_path("_workspace/README.md") is not None
+    ):
+        return [
+            Finding(
+                "scripts/validation/check-document-metadata.py",
+                "workspace-inventory-coupling",
+                "_workspace must remain outside docs metadata inventory inference",
+            )
+        ]
+    return []
+
+
 def _validate_repository_contracts(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -693,17 +708,7 @@ def _validate_repository_contracts(
                 if finding.severity == "error"
             )
 
-    if (
-        any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES)
-        or _normalized_target_path("_workspace/README.md") is not None
-    ):
-        findings.append(
-            Finding(
-                "scripts/validation/check-document-metadata.py",
-                "workspace-inventory-coupling",
-                "_workspace must remain outside docs metadata inventory inference",
-            )
-        )
+    findings.extend(_workspace_inventory_findings())
 
     readme_registry = profiles.get("_registry") if registry_native else None
     for path in tracked_markdown:

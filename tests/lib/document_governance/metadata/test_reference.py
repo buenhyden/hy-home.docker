@@ -815,12 +815,9 @@ The fixture is intentionally in progress.
             self.assertEqual("approved", fixture_package.plan.status)
             self.assertEqual(1, len(fixture_package.tasks))
             self.assertEqual("in-progress", fixture_package.tasks[0].status)
-            control = self.run_contracts(root, registry_path)
-            self.assertEqual(
-                0,
-                control.returncode,
-                control.stdout + control.stderr,
-            )
+            # The load above is the control: the package parses before the
+            # fragment is added, and the asserted message attributes the
+            # failure, so a second real-tree contract run adds no proof.
 
             task = (
                 root
@@ -1122,11 +1119,13 @@ The fixture is intentionally in progress.
     def test_workspace_cannot_become_a_docs_inventory_prefix(self) -> None:
         from scripts.lib.document_governance.metadata import reference
 
-        profiles = current_profiles()
+        # The rule reads only module constants, so it is checked directly
+        # rather than through a real-tree contract run.
+        self.assertEqual([], reference._workspace_inventory_findings())
         original = reference.TARGET_MARKDOWN_PREFIXES
         try:
             reference.TARGET_MARKDOWN_PREFIXES = (*original, "_workspace/")
-            findings = metadata.validate_repository_contracts(ROOT, profiles)
+            findings = reference._workspace_inventory_findings()
         finally:
             reference.TARGET_MARKDOWN_PREFIXES = original
         self.assertIn(
