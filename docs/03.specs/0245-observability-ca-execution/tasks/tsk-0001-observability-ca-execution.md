@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -145,6 +145,21 @@ production-target state. No isolated restore has started or completed. These
 plan and release receipts change neither the required integrity rehashes nor
 the pending acceptance of criteria 2 and 3.
 
+### Isolated Restore Attempt 01 Failure
+
+The released `restore-01` reached its synthetic-ownership probe and failed
+closed. Its immutable sanitized failure receipt SHA-256 is
+`77c2fe7ec8ee76d5cc12fed60ca944fc05123723fba37c73696772a20f56f236`.
+Cleanup passed; no labeled isolated container remained, no archive was
+extracted, and the original containers retained their exact identities,
+healthy state, and restart count 0.
+
+Read-only confirmation found that the exact BusyBox tar 1.37 lacks
+`--same-owner` but supports `--numeric-owner`. A prior quote/unbound-variable
+launcher diagnostic occurred before script entry and created no restore state;
+it is not classified as this attempt failure. A new reviewed sibling attempt
+is required before any retry. CA work remains blocked.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -175,6 +190,8 @@ the pending acceptance of criteria 2 and 3.
 | Released Prometheus isolated restore plan | 2 | W2 | Independent READY reviews and root release for the first isolated Prometheus clone | Contract `e65e379c168749d2a4f106cdaa1af5a482831869dcae53d8811fb0e52a81e07b`; script `10391132b53bf001dc284b2a3ef17c299a24fc4d267ecaf1fe95024ec89beffe`; helpers unchanged; IaC/security/operator READY; full source hash and same-inode metadata recheck required before execution | PASS | Isolated Restore Plan and Release Receipts | required | - |
 | Released Gatus isolated restore plan | 3 | W3 | Independent READY reviews and root release for the first isolated Gatus clone | Contract `e65e379c168749d2a4f106cdaa1af5a482831869dcae53d8811fb0e52a81e07b`; script `10391132b53bf001dc284b2a3ef17c299a24fc4d267ecaf1fe95024ec89beffe`; helpers unchanged; IaC/security/operator READY; full source hash and same-inode metadata recheck required before execution | PASS | Isolated Restore Plan and Release Receipts | required | - |
 | Isolated restore quarantine evidence leaf | 2 | W2 | Retain only sanitized execution evidence for the released isolated clones | No clone execution receipt yet; raw payloads, secrets, and production-target state excluded | NOT_RUN | Isolated Restore Plan and Release Receipts | required | - |
+| Isolated restore attempt 01 | 2 | W2 | Released synthetic-ownership probe for the first isolated restore attempt | Failure receipt `77c2fe7ec8ee76d5cc12fed60ca944fc05123723fba37c73696772a20f56f236`; BusyBox tar 1.37 lacks `--same-owner` and supports `--numeric-owner`; no archive extraction; no labeled container; cleanup PASS; originals exact healthy with restart count 0 | FAIL | Isolated Restore Attempt 01 Failure | required | - |
+| Isolated restore attempt 01 containment | 6 | W6 | Contain the failed isolated attempt and preserve production boundaries | Cleanup PASS; no isolated container or archive extraction; originals exact healthy with restart count 0; CA work blocked pending a new reviewed sibling | PASS | Isolated Restore Attempt 01 Failure | required | - |
 
 ## Criterion Acceptance
 
