@@ -219,33 +219,38 @@ class DockerClientBoundary:
                 cwd=ROOT,
                 start_new_session=True,
             )
-            while process.poll() is None:
+            try:
+                while process.poll() is None:
+                    stdout_size = os.fstat(stdout_file.fileno()).st_size
+                    stderr_size = os.fstat(stderr_file.fileno()).st_size
+                    if stdout_size > self.max_output_bytes:
+                        raise AssertionError(
+                            "Docker stdout exceeded the rehearsal bound"
+                        )
+                    if stderr_size > self.max_output_bytes:
+                        raise AssertionError(
+                            "Docker stderr exceeded the rehearsal bound"
+                        )
+                    if time.monotonic() >= work_deadline:
+                        raise subprocess.TimeoutExpired(command, call_timeout)
+                    time.sleep(0.01)
                 stdout_size = os.fstat(stdout_file.fileno()).st_size
                 stderr_size = os.fstat(stderr_file.fileno()).st_size
                 if stdout_size > self.max_output_bytes:
-                    self._terminate_process_group(process, call_deadline)
                     raise AssertionError("Docker stdout exceeded the rehearsal bound")
                 if stderr_size > self.max_output_bytes:
-                    self._terminate_process_group(process, call_deadline)
                     raise AssertionError("Docker stderr exceeded the rehearsal bound")
-                if time.monotonic() >= work_deadline:
-                    self._terminate_process_group(process, call_deadline)
-                    raise subprocess.TimeoutExpired(command, call_timeout)
-                time.sleep(0.01)
-            stdout_size = os.fstat(stdout_file.fileno()).st_size
-            stderr_size = os.fstat(stderr_file.fileno()).st_size
-            if stdout_size > self.max_output_bytes:
-                raise AssertionError("Docker stdout exceeded the rehearsal bound")
-            if stderr_size > self.max_output_bytes:
-                raise AssertionError("Docker stderr exceeded the rehearsal bound")
-            stdout_file.seek(0)
-            stderr_file.seek(0)
-            return subprocess.CompletedProcess(
-                command,
-                process.returncode,
-                stdout_file.read().decode(errors="replace"),
-                stderr_file.read().decode(errors="replace"),
-            )
+                stdout_file.seek(0)
+                stderr_file.seek(0)
+                return subprocess.CompletedProcess(
+                    command,
+                    process.returncode,
+                    stdout_file.read().decode(errors="replace"),
+                    stderr_file.read().decode(errors="replace"),
+                )
+            except BaseException:
+                self._terminate_process_group(process, call_deadline)
+                raise
 
     def _raw_result(
         self,
@@ -1065,6 +1070,57 @@ class DatastoreRehearsalBoundaryTests(unittest.TestCase):
         with mock.patch("os.killpg"), self.assertRaises(RuntimeError):
             client._terminate_process_group(stuck, time.monotonic() + 0.01)
         self.assertLessEqual(stuck.wait.call_args.kwargs["timeout"], 0.01)
+
+    def test_bounded_capture_interruptions_kill_and_reap_exact_process_group(self):
+        for failure in (KeyboardInterrupt, OSError):
+            with self.subTest(failure=failure.__name__):
+                client = object.__new__(DockerClientBoundary)
+                client.binary = Path(sys.executable)
+                client.environment = {"PATH": "/usr/bin:/bin"}
+                client.deadline = time.monotonic() + 10
+                client.cleanup_deadline = None
+                client.max_output_bytes = 1024
+                launched = []
+                real_popen, real_sleep = subprocess.Popen, time.sleep
+                interrupted = False
+
+                def launch(*args, _popen=real_popen, _launched=launched, **kwargs):
+                    process = _popen(*args, **kwargs)
+                    _launched.append(process)
+                    return process
+
+                def interrupt_once(delay, _failure=failure, _sleep=real_sleep):
+                    nonlocal interrupted
+                    if not interrupted:
+                        interrupted = True
+                        raise _failure("synthetic interruption")
+                    return _sleep(delay)
+
+                try:
+                    with (
+                        mock.patch("subprocess.Popen", side_effect=launch),
+                        mock.patch("time.sleep", side_effect=interrupt_once),
+                        mock.patch.object(
+                            client,
+                            "_terminate_process_group",
+                            wraps=client._terminate_process_group,
+                        ) as terminate,
+                        self.assertRaises(failure),
+                    ):
+                        client._raw_result("-c", "import time; time.sleep(30)")
+                    process = launched[0]
+                    terminate.assert_called_once()
+                    self.assertIs(terminate.call_args.args[0], process)
+                    self.assertEqual(process.returncode, -signal.SIGKILL)
+                    with self.assertRaises(ProcessLookupError):
+                        os.killpg(process.pid, 0)
+                    with self.assertRaises(ProcessLookupError):
+                        os.kill(process.pid, 0)
+                finally:
+                    for process in launched:
+                        if process.poll() is None:
+                            os.killpg(process.pid, signal.SIGKILL)
+                        process.wait(timeout=2)
 
     def test_fixed_client_rechecks_binary_socket_daemon_and_minimal_env(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

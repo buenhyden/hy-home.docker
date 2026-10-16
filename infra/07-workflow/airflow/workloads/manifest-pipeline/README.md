@@ -1,10 +1,10 @@
 ---
 title: "Independent Manifest Pipeline"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-16"
 ---
 
 # Independent Manifest Pipeline
@@ -81,10 +81,26 @@ Admin·reader·notifier 자격 증명은 이 폴더에 두지 않습니다.
 실제 실행은 고정 이미지의 DAG import, SQL 직접 호출·역할/다른 DB/S3 거부,
 Celery worker 게시·재실행·경합·backfill·객체 후 DB 실패 및 빈 대상 복원이
 필요합니다. 관련 계약 미확정 상태에서는 이 항목을 NOT_RUN으로 기록합니다.
+고정 캐시 이미지·명시 선택자가 없는 기본 시험은 native 실행을 skip합니다. 별도
+`AirflowNativeRehearsal`의 첫 전체 실행은 migration session의 role 선택 오류로
+ERROR였으며 게시·빈 대상 복원은 미검증입니다. 자동 cleanup FAIL과 잔여 대상
+대조 결과를 합쳐 PASS로 바꾸지 않습니다. 정확한 선택자·직렬 lock·자원·private capture·
+cleanup HOLD 조건은 [워크플로 Runbook 탐색](../../../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의
+RUN-0053을 따릅니다. 별도 SQL 시험의 논리 dump/restore는 실제 DEV Timescale·HOME·
+물리 백업·offsite 복구를 검증하지 않으며 n8n과 같은 데이터를 주고받는 시험도 남아 있습니다.
+후속 전체 실행도 8개 role 기동 뒤 migration 명령에서 ERROR였으며 내부 원인은
+UNKNOWN입니다. 세 번째 실행은 보호된 진단으로 metadata DB의 pg_hba 규칙 누락
+FATAL을 확인했으며 자동 cleanup FAIL과 별도 exact reconciliation PASS를 보존합니다.
+새 인증 규칙은 아직 실제 게시·복원 성공 증거가 아닙니다. 해당 실행도 자동 cleanup FAIL과 후속 exact reconciliation PASS를
+구분합니다. source config 수정과 실제 오류 원인의 입증은 별개입니다.
 PG/S3는 하나의 원자적 트랜잭션이 아니므로 DB 실패 후 객체는 unpublished로
 남고 같은 bytes를 readback한 뒤 재사용합니다. Orphan 삭제는 게시 장부와 별도
 보존 정책으로만 판단합니다. Rollback은 이 DAG pause와 검토한 migration 복구이며
 MNG reset·공유 volume 초기화·전체 restart를 사용하지 않습니다.
+
+현재 V6 전체 실행은 worker Python 호출의 PutObject InternalError로 ERROR였습니다.
+Seaweed 내부 원인은 UNKNOWN이며 게시 수용·복원 성공 증거는 없습니다. Docker 잔여는
+없고 자동 cleanup FAIL은 보호된 진단 보존이며 별도 reconciliation·독립 확인 상태는 Task0020의 최신 증거를 확인합니다.
 
 ## Related Documents
 

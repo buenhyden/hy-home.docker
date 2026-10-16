@@ -281,6 +281,21 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 )
                 self.assertEqual(service.get("build"), row["build_source"])
 
+    def test_current_root_supplier_references_resolve_without_acceptance_promotion(
+        self,
+    ):
+        root = Path(__file__).resolve().parents[3]
+        package = root / "infra/09-platform-ops/security-updates"
+        ledger = json.loads((package / "update-ledger.json").read_text())
+        releases = json.loads((package / "release-lookups.json").read_text())
+        refresh = releases["root_official_refresh"]
+        suppliers = {row["supplier"] for row in refresh["observations"]}
+        for row in ledger["entries"]:
+            references = row["official_supplier_lookup_refs"]
+            self.assertTrue(references or row["supplier_lookup_blocker"])
+            self.assertLessEqual(set(references), suppliers)
+        self.assertFalse(refresh["verified_security_or_runtime"])
+
     def test_current_root_census_excludes_relocated_lab_history(self):
         from scripts.lib.supply_chain.latest_version_gate import expected_from_root
 

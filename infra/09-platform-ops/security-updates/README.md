@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-16"
 ---
 
 # 보안 업데이트 조사 증거
@@ -33,13 +33,22 @@ PASS이며 강제 버전 변경은 필요하지 않습니다. 조회 실패·UNK
 같은 판정이 아니며 서명·취약점·호환·복구·HOME 검증도 각각 남습니다.
 관찰 시점의 서비스 개수는 결과이며 검사 상수로 사용하지 않습니다.
 
-2026-10-13 현재 요청은 현행 ROOT 이미지의 보안 경고가 확인된 경우에만
-이미지 버전과 해당 경고의 판별·해소에 필요한 scanner 소스를 변경하도록
-제한합니다. 전체 안정판 갱신을 허용한 이전 재개 지시는 역사 기록으로
-보존하며 앞으로의 실행 범위를 넓히지 않습니다. 기존 latest/security gate를
-재사용하고 적합한 완료 구현과 경고 미확인 서비스는 `NO_CHANGE`로 둡니다.
-미조회·오래된 결과·`UNKNOWN`은 경고 없음이나 최신판 확인으로 바꾸지 않습니다.
-새 scanner·gate를 만들거나 source 수용을 실제 배포로 표시하지 않습니다.
+2026-10-16 현재 직접 요청은 ROOT 전체의 공식 최신 안정판·보안 조사를 허용합니다.
+2026-10-13의 보안 경고 한정 변경 정책은 역사로 보존하며 현재 범위를 제한하지 않습니다.
+이번 [Task0017](../../../docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0017-n8n-stable-source-preparation.md)은
+공식 release/npm/OCI stable가 일치한 n8n 묶음의 소스만 준비합니다.
+`release-lookups.json`, `image-source-lookups.json`, `package-lookups.json`의
+`n8n_source_preparation`에 조회 시각·응답 SHA·공식 URL을 기록했습니다.
+과거 후보와 빌드/native 영수증은 `historical_n8n_source_preparations`로 보존하며
+새 custom image digest, signature·full-image SBOM/scan·native·HOME·복원은 `NOT_RUN`입니다.
+custom node lock의 공식 npm audit 결과는 해당 lock에만 적용되며 전체 이미지가 안전하다는 뜻이 아닙니다.
+다른 ROOT 이미지의 오래된 조회와 미확정 channel은 여전히 전체 완료를 차단합니다.
+`release-lookups.json`의 `root_official_refresh`에는 추가로 공식 공급자 조회 92건과
+vendor channel 해석 13건을 기록했고, 기존 장부 111행이 공급자 ID로 참조합니다.
+최초 HTTP403/404와 성공한 fallback은 함께 보존했습니다. GitHub latest의
+non-prerelease 표기는 stable·이미지 digest·보안·호환·실기동 수용으로 승격하지 않습니다.
+Debezium 최신 stable과 현재 minor의 stable, PostgreSQL 지원 major와 RC,
+NGINX stable/mainline 등 서로 다른 channel은 업그레이드 판단에서 구분합니다.
 이번 ROOT include 재계산에서는 111개 서비스와 44개 입력이 관측됐습니다.
 Supabase/GoTrue 13개 행은 `labs/supabase.yml`에 속하므로 현재 ROOT 장부에서
 제외하고 원래 행은 `historical_lab_entries`에 보존했습니다. 이 정합화는 실제

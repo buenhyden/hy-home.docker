@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 const { createCaptureTransport, transportOptions, messageFor, POLICY } = require('../dist/transport.js');
 const credential = { host: 'mailpit', port: 1025, secure: false, disableStartTls: true, user: '', password: '', hostName: '' };
-const claim = { id: 1, run_id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', source: 'hy-home.docker', row_count: 1, lease_token: '22222222-2222-4222-8222-222222222222' };
+const claim = { id: 1, run_id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', source: 'hy-home.docker', row_count: 1, lease_token: '22222222-2222-4222-8222-222222222222', lease_until: '2099-01-01T00:00:00.000Z' };
 
 function fixture() {
   const socket = new EventEmitter();

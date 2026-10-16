@@ -90,25 +90,25 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         compose = yaml.safe_load((N8N / "docker-compose.yml").read_text())
         for name in ("n8n", "n8n-worker"):
             service = compose["services"][name]
-            self.assertEqual("2.42.7", str(service["build"]["args"]["N8N_VERSION"]))
-            self.assertEqual("hyhome/n8n:2.42.7-local", service["image"])
+            self.assertEqual("2.43.6", str(service["build"]["args"]["N8N_VERSION"]))
+            self.assertEqual("hyhome/n8n:2.43.6-local", service["image"])
         runners = {
             compose["services"][n]["image"]
             for n in ("n8n-task-runner", "n8n-task-runner-worker")
         }
         self.assertEqual(1, len(runners))
         self.assertEqual(
-            "n8nio/runners:2.42.7@sha256:c74f7fe2a9acaf08d78d2d2ad9359c897ad0270883ba959d57150cc9bbdc48e1",
+            "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
             runners.pop(),
         )
         for name in ("Dockerfile", "dev.Dockerfile"):
             source = (N8N / name).read_text()
             self.assertEqual(
-                {"2.42.7"}, set(re.findall(r"^ARG N8N_VERSION=(\S+)$", source, re.M))
+                {"2.43.6"}, set(re.findall(r"^ARG N8N_VERSION=(\S+)$", source, re.M))
             )
             self.assertIn('RUN test "$(n8n --version)" = "${N8N_VERSION}"', source)
             self.assertIn(
-                "FROM n8nio/n8n:${N8N_VERSION}@sha256:906dd7fb0a2f23869001d1767168359489c518ff34d4f67427abf2dc59e868fe",
+                "FROM n8nio/n8n:${N8N_VERSION}@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833",
                 source,
             )
             self.assertRegex(
@@ -126,6 +126,60 @@ class WorkflowVersionBundleTests(unittest.TestCase):
             self.assertIn("COPY --from=font-builder /font-builder-packages.txt", source)
             self.assertIn(
                 "apk --no-network info -v > /font-builder-packages.txt", source
+            )
+
+    def test_pruned_custom_node_uses_pinned_base_framework_and_loads_at_build(self):
+        for name in ("Dockerfile", "dev.Dockerfile"):
+            with self.subTest(name=name):
+                source = (N8N / name).read_text()
+                self.assertIn(
+                    "ENV NODE_PATH=/usr/local/lib/node_modules/n8n/node_modules",
+                    source,
+                )
+                self.assertIn("npm prune --omit=dev", source)
+                self.assertIn(
+                    "require('/opt/hyhome/n8n-custom/opsflow/dist/OpsflowSmtp.node.js')",
+                    source,
+                )
+                self.assertIn("node.description.name === 'opsflowSmtp'", source)
+                self.assertIn(
+                    "node.description.inputs[0] === workflow.NodeConnectionTypes.Main",
+                    source,
+                )
+
+    def test_opsflow_package_matches_upstream_workflow_api(self):
+        package_root = N8N / "workloads/manifest-outbox-notifier/nodes/OpsflowSmtp"
+        package = json.loads((package_root / "package.json").read_text())
+        lock = json.loads((package_root / "package-lock.json").read_text())
+        for section in ("peerDependencies", "devDependencies"):
+            self.assertEqual("2.43.4", package[section]["n8n-workflow"])
+            self.assertEqual(package[section], lock["packages"][""][section])
+        self.assertEqual(
+            "2.43.4", lock["packages"]["node_modules/n8n-workflow"]["version"]
+        )
+
+    def test_n8n_source_receipt_does_not_reuse_previous_native_acceptance(self):
+        evidence = ROOT / "infra/09-platform-ops/security-updates"
+        ledger = json.loads((evidence / "update-ledger.json").read_text())
+        self.assertTrue(ledger["historical_n8n_source_preparations"])
+        for row in ledger["entries"]:
+            if row["service"] not in {
+                "n8n",
+                "n8n-worker",
+                "n8n-task-runner",
+                "n8n-task-runner-worker",
+            }:
+                continue
+            for field in ("signature", "sbom_scan", "native_test", "deployment"):
+                self.assertEqual("NOT_RUN", row[field])
+            self.assertNotIn("candidate_workflow_receipt", row)
+            if row["service"] in {"n8n", "n8n-worker"}:
+                self.assertEqual("UNKNOWN", row["target_index_digest"])
+        binding = ledger["n8n_source_preparation"]["source_binding"]
+        for item in binding["input_files"]:
+            self.assertEqual(
+                item["sha256"],
+                hashlib.sha256((ROOT / item["path"]).read_bytes()).hexdigest(),
             )
 
     def test_candidate_mismatch_blocks_before_container_creation(self):

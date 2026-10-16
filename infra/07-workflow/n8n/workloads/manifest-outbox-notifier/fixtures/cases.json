@@ -5,19 +5,50 @@
     "run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "source": "hy-home.docker",
     "row_count": 2,
-    "lease_token": "00000000-0000-4000-8000-000000000002"
+    "lease_token": "00000000-0000-4000-8000-000000000002",
+    "lease_until": "2099-01-01T00:00:00.000Z"
   },
   "outcomes": [
-    {"state": "accepted_by_smtp", "ack": true, "retry": null, "expected": "acknowledged"},
-    {"state": "accepted_by_smtp", "ack": false, "retry": null, "expected": "ack_uncertain"},
-    {"state": "uncertain", "ack": null, "retry": true, "expected": "retry_recorded_uncertain"},
-    {"state": "uncertain", "ack": null, "retry": false, "expected": "retry_lost_lease"}
+    {
+      "state": "accepted_by_smtp",
+      "ack": true,
+      "retry": null,
+      "expected": "acknowledged",
+      "quarantine": null
+    },
+    {
+      "state": "accepted_by_smtp",
+      "ack": false,
+      "retry": null,
+      "expected": "quarantined",
+      "quarantine": true
+    },
+    {
+      "state": "uncertain",
+      "ack": null,
+      "retry": true,
+      "expected": "quarantined",
+      "quarantine": true
+    },
+    {
+      "state": "uncertain",
+      "ack": null,
+      "retry": false,
+      "expected": "quarantined",
+      "quarantine": true
+    }
   ],
   "negative_marker": "SYNTHETIC_PRIVATE_LEAK_MARKER",
   "native_required_cases": [
-    "empty queue", "two notifiers one claim", "expired lease old ack rejection",
-    "DB/SMTP outage", "DATA response loss", "ack loss duplicate diagnosis",
-    "attempt cap/dead and fresh requeue", "restart", "native credential rotation",
+    "empty queue",
+    "two notifiers one claim",
+    "expired lease old ack rejection",
+    "DB/SMTP outage",
+    "DATA response loss",
+    "ack loss duplicate diagnosis",
+    "attempt cap/dead and fresh requeue",
+    "restart",
+    "native credential rotation",
     "paired metadata and encryption-key restore to empty isolated target"
   ]
 }

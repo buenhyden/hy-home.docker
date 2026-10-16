@@ -43,6 +43,25 @@ created: "2026-10-02"
 
 상위 [Compose](../docker-compose.yml)의 `dev-pg`와 `dev-platform-provision`이 `dev_data_net`, 새 PGDATA 경로, 역할별 Docker secret, 비활성 백업 설정을 연결합니다.
 
+### 함수 전용 프로젝트의 cluster CONNECT 경계
+
+Schema v2 provisioner는 다섯 marked role을 확인한 뒤 DB 생성·ACL·LOGIN 변경 전에
+모든 `datallowconn` database의 유효 CONNECT를 검사합니다. 대상 DB 밖의 PUBLIC,
+직접 grant 또는 inherited grant가 하나라도 있으면 중단합니다. 이는 그 시점의
+입장 검사이며 이후 다른 owner가 만든 DB까지 계속 통제하는 기능은 아닙니다.
+Schema v1 플랫폼 프로젝트의 기존 동작은 이번 단위에서 바꾸지 않습니다.
+
+관리자 전용 [cluster-connect.sql](provision/cluster-connect.sql)은 별도 검토 후에만
+postgres/template1의 PUBLIC CONNECT를 회수하고 명시적 grant는 보존합니다.
+`reviewed_connect_consumers=reviewed` 입력은 실행 실수를 막는 확인값이며 승인이나
+소비자 조사의 증거가 아닙니다. 숨겨진 소비자를 확인하지 못했거나 원래 ACL·복원
+영수증이 없으면 HOME 실행은 BLOCKED입니다. 임의 PUBLIC 재grant로 rollback하지
+말고 기록한 이전 ACL만 복원합니다. Monitor job도 LOGIN/명시적 grant 전에 postgres 밖의 유효 CONNECT를 검사하며
+PUBLIC template1이나 새 DB를 통해 접근할 수 있으면 NOLOGIN 상태에서 실패합니다.
+검토한 bootstrap 뒤 postgres에만 CONNECT를 명시적으로 부여하며 template1·프로젝트 DB
+접근을 추가하지 않습니다. 기존 활성 role의 권한 변경·세션 종료는 별도 운영 조정 대상입니다. 복원 순서는 globals/roles,
+검토된 cluster ACL, 프로젝트 DB 복원과 실제 역할별 거부 시험입니다.
+
 ## Validation
 
 `python3 -m unittest tests.validation.test_dev_pg_provision`과 `project.py --validate-only`를 저장소 루트에서 실행합니다. 이미지·권한·복구의 실제 결과는 Task에 별도로 기록합니다.

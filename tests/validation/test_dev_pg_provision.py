@@ -65,6 +65,20 @@ def opsflow_manifest(*, bound=True):
 
 
 class ProjectProvisionTests(unittest.TestCase):
+    def test_function_only_rejects_cross_database_connect_before_login(self):
+        sql = MODULE.sql_for(MODULE.validate(opsflow_manifest()))
+        guard = sql.index("cross_database_connect_requires_cluster_review")
+        self.assertLess(guard, sql.index("ALTER ROLE opsflow_migrator WITH PASSWORD"))
+        self.assertIn("d.datallowconn AND d.datname<>'opsflow_dev'", sql)
+        self.assertIn("has_database_privilege(r.oid,d.oid,'CONNECT')", sql)
+        for role in (
+            "opsflow_migrator",
+            "opsflow_ingest",
+            "opsflow_notifier",
+            "opsflow_reader",
+        ):
+            self.assertIn("'" + role + "'", sql)
+
     def test_v1_generated_sql_is_byte_stable(self):
         sql = MODULE.sql_for(MODULE.validate(manifest())).encode()
         self.assertEqual(
@@ -392,6 +406,14 @@ class MonitorProvisionTests(unittest.TestCase):
         self.module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.module)
 
+    def test_monitor_rejects_non_postgres_connect_before_grant_or_login(self):
+        sql = self.module.sql()
+        guard = sql.index("monitor_cross_database_connect_requires_cluster_review")
+        self.assertLess(guard, sql.index("GRANT CONNECT ON DATABASE postgres"))
+        self.assertLess(guard, sql.index("ALTER ROLE dev_pg_monitor WITH LOGIN"))
+        self.assertIn("d.datallowconn AND d.datname<>'postgres'", sql)
+        self.assertIn("has_database_privilege('dev_pg_monitor',d.oid,'CONNECT')", sql)
+
     def test_monitor_role_has_collector_reads_only_and_follows_its_secret(self):
         sql = self.module.sql()
         self.assertIn(
@@ -408,7 +430,10 @@ class MonitorProvisionTests(unittest.TestCase):
         self.assertIn("default_transaction_read_only = on", sql)
         self.assertIn("'dev-pg:development:monitor'", sql)
         self.assertIn("RAISE EXCEPTION 'role ownership mismatch'", sql)
-        self.assertNotIn("GRANT CONNECT", sql)
+        self.assertEqual(
+            ["GRANT CONNECT ON DATABASE postgres TO dev_pg_monitor;"],
+            [line for line in sql.splitlines() if line.startswith("GRANT CONNECT")],
+        )
         # The secret is checked before any role change and applied every run,
         # so rewriting it and rerunning the job rotates the password.
         password = sql.index("ALTER ROLE dev_pg_monitor WITH LOGIN")

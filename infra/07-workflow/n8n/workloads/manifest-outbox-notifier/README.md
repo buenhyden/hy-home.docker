@@ -1,10 +1,10 @@
 ---
 title: "독립 매니페스트 outbox 통지"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-16"
 ---
 
 # 독립 매니페스트 outbox 통지
@@ -13,15 +13,18 @@ updated: "2026-10-13"
 
 P04의 DEV 매니페스트 게시 outbox에서 한 건을 claim하고 제한된 Mailpit에
 캡처하는 n8n 소비자입니다. 현재 산출물은 공개 소스와 합성 시험이며 workflow는
-비활성입니다. 실제 import·capture·예약·회전·복구는 NOT_RUN입니다.
+비활성입니다. Task0017에서 고정한 production 이미지의 실제 custom node 로딩은 ISOLATED PASS이나
+후속 전체 native 실행도 main readiness에서 ERROR였습니다. migration 완료와 해당 실행의
+cleanup PASS를 확인했지만 업무 import·capture·예약·회전·복구의 성공 증거는 없습니다.
 
 ## Scope
 
 SQL·migration·DB role·dead requeue는 P04가 단독 소유합니다.
 [소비자 계약](outbox-contract.json)은 P04 Task의 독립 SQL·보안 검토와 일치하는
 v1 commit·migration hash를 연결합니다. `reviewed`는 이 소스 인터페이스의 상태입니다.
-P04 source SQL의 여섯 claim 필드 중 소비자가 쓰는 다섯 필드만 명시적으로
-조회합니다. `lease_until`은 SQL에 남으며 SMTP 입력으로 전달하지 않습니다.
+P04 source SQL의 여섯 claim 필드를 조회하며 `lease_until`은 서버에서 UTC millisecond
+문자열로 고정합니다. SMTP 입력 경계에서 형식·만료·남은 시간을 확인하지만 메일에는
+lease capability나 deadline을 넣지 않습니다. SQL004의 새 안전 계약은 Task0018이 소유합니다.
 계약의 source hash는 소스 호환성 검사에만 쓰고 native DB·권한·게시 수용은
 `NOT_RUN`입니다. 실제 실행 대상·credential·DB timeout은 계속 미확정입니다.
 native 인계 전 설치하거나 운영 워크플로우로 취급하지 않습니다.
@@ -60,23 +63,34 @@ executor 배치는 별도 증거입니다. P03이 확정한 executor만 DEV와 c
 
 정상 수락은 `accepted_by_smtp`이며 외부 배달 증거가 아닙니다. SMTP 수락과 DB ack는
 원자적이지 않아 응답 또는 ack 유실 후 중복 전송될 수 있습니다. 같은 run의
-Message-ID는 진단을 돕지만 exactly-once를 보장하지 않습니다. ack/retry가 false이면
-stale lease로 처리하고 성공으로 보고하지 않습니다. 장애 후에는 전체 workflow에서
-새 claim을 받습니다. 오래된 실행의 SMTP node부터 재개하지 않습니다.
+Message-ID는 진단을 돕지만 exactly-once를 보장하지 않습니다. ack 유실·SMTP 응답 유실·node 오류는 unknown으로 격리하며 자동으로 다시 보내지 않습니다.
+SQL004의 legacy retry도 격리하므로 구버전 workflow가 불확실 전송을 자동 재시도하지 않습니다.
+실제 SMTP 시작 전 취소만 새 no-send retry 함수로 제한합니다. 기록이 실패하면 불확실한
+sending을 유지하고 만료 뒤 격리합니다. 오래된 SMTP node에서 재개하지 않습니다.
 
 dead 복구는 원인·수락/불확실 증거 확인 후 P04의 검토된 함수와 지정 operator role로
 해당 건만 requeue하고 새 claim합니다. 직접 table UPDATE나 전체 상태 reset은 금지합니다.
 rollback은 이 workflow의 polling 중지·inactive·선택 실행 조정과 outbox 보존입니다.
 
+### Lease와 대조 조건
+
+Transport 생성 전과 send 직전에 SMTP 15초·ack 5초·시계 오차 5초를 합한 25초보다
+많은 lease가 남아야 합니다. 누락·비정상·만료·시간 부족은 전송 전에 취소합니다.
+DB와 worker의 실제 시계 오차가 5초 이내이고 DB timeout/cancellation이 ack 예산에
+맞는지 native로 검증하기 전에는 활성화하지 않습니다. 이 시간 검사는 분산 fencing이나
+exactly-once 보장이 아닙니다. Unknown은 SQL owner의 capture/증거 대조 후에만 해제하며,
+정확한 함수·권한·독립 복원 조건은 P04 SQL README를 따릅니다.
+
 ## Validation
 
-```sh
-python -m unittest tests.lib.ops.test_n8n_outbox_workflow \
-  tests.validation.test_n8n_outbox_contract \
-  tests.validation.test_n8n_outbox_rehearsal -v
-```
-
 합성 시험은 실제 DB claim·SMTP capture·native n8n 동작을 증명하지 않습니다.
+명시 선택자와 고정 캐시 이미지가 없으면 `OpsflowN8nNativeRehearsal`은 기본 skip입니다.
+실행 명령·직렬 lock·자원·capture·cleanup 조건은
+[워크플로 Runbook 탐색](../../../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의
+RUN-0053을 따릅니다. 첫 전체 시험의 자동 cleanup FAIL과 후속 정확한 대상의
+reconciliation PASS는 별도로 보존합니다. 별도 SQL 논리 dump/restore PASS를 n8n
+metadata·encryption-key 복원 또는 HOME 복구로 확대하지 않습니다. Airflow가 게시한
+같은 outbox 데이터를 실제로 인계하는 통합 시험은 남아 있습니다.
 native 실행은 연결된 P04 SQL과 실제 게시 인계, SEC01의 설치 이미지·node 호환성,
 P02 credential 분류, P03 endpoint·실행 worker·접근 경계가 확정된 뒤 진행합니다.
 먼저 inactive import와 manual capture를 확인하고 이후 1분 polling 하나만 활성화합니다.
