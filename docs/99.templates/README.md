@@ -183,6 +183,9 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
   Requirement Package에서 독립적으로 발급될 수 있습니다.
 - 발급된 번호는 다시 사용하지 않습니다. `high_water`는 절대 감소하지
   않고 `next_number`는 항상 `high_water`보다 큽니다.
+- 재사용 검사의 이력 범위는 HEAD에서 도달 가능한 commit입니다. 병합되지
+  않은 다른 branch가 같은 번호를 발급하면 Registry `high_water` 줄의 병합
+  충돌로 드러나며, 그 branch가 이 checkout의 검사 결과를 바꾸지 않습니다.
 - Operations subject와 role artifact는 독립적인 안정 ID를 가집니다.
   Registry는 네 자리 subject route와 각 role ID 형태를 검증하지만 그
   번호를 서로 동일시하지 않습니다. 현재 catalog 디렉터리 포함 관계가

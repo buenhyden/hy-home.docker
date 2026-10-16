@@ -1757,7 +1757,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 2
         if args.history_scope == "full":
             try:
-                issued = collect_issued_identities(root, refs=("--all",))
+                # HEAD-reachable history: another branch's unmerged allocation
+                # surfaces as a Registry merge conflict, not as a finding here.
+                issued = collect_issued_identities(root, refs=("HEAD",))
             except IdentityHistoryError as error:
                 print(f"configuration-error: {error}", file=sys.stderr)
                 return 2
