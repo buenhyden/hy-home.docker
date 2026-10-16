@@ -215,7 +215,8 @@ def _capture_executable(environ: Mapping[str, str], *, name: str) -> dict[str, s
             offset += len(chunk)
     except OSError as error:
         raise EvidenceError(
-            f"captured executable identity is unavailable: {name}"
+            f"captured executable identity is unavailable: {name} "
+            f"({errno.errorcode.get(error.errno, 'unknown')})"
         ) from error
     finally:
         if descriptor >= 0:
