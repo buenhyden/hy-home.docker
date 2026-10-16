@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.19"
+version: "0.1.20"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -348,6 +348,32 @@ not complete proof. Independent security review qualified the result on that
 boundary. It cannot attribute Attempt 04's unknown invocation or establish
 hook delivery, so criterion 4 remains pending.
 
+### Native PostToolUse Attempt 05 Plan
+
+Security approved one Native-05 diagnostic with plan
+`/tmp/hyhome-r13-posttool-probe-plan-05.md` SHA-256
+`139634cb63898f23d82dfa4a0d0892313655d13f102eb6741fd249eb486dba4f` and
+harness `/tmp/hyhome-r13-run-native-hook-probe-05.py` SHA-256
+`ce345a4ed7b1091f0607560f427623dfc452a5a32b9d7fee3e480692261d7e9e`. Its
+prospective sanitized receipt is
+`/tmp/hyhome-r13-native-hook-probe-receipt-05.json`.
+
+The diagnostic retains normal merged memory OFF without an override and sets
+`ECC_HOOKS_ENABLED=false` for this session only. It tests only named project
+Claude native wrappers, dispatcher, and post validator; it makes no ECC plugin
+delivery, global hook correctness, or OS-sandbox claim. The exact double-slash
+Write permission and path/content guard is bounded to two turns, USD 1, and
+180 seconds with strict no-MCP.
+
+Raw stdout/stderr, authentication, session IDs, tool bodies, hook payloads,
+memory rows, plugin-private identifiers, model and error text are excluded.
+Only fixed enums/counts/booleans, public source identities, output hash/line
+feed, and cleanup/status hashes may be retained. Same-UID TOCTOU, provider
+authentication/telemetry, and non-ECC merged hooks remain residual boundaries.
+The only full-pass label is
+`POSTTOOLUSE_DELIVERY_VERIFIED_WITH_NORMAL_MERGED_MEMORY_OFF`. Attempt 05 has
+not run; root may release exactly this plan after its Task receipt commits.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -387,6 +413,7 @@ hook delivery, so criterion 4 remains pending.
 | Merged hook listing control plan review | 4 | W4 | Independent security review of one read-only merged-hook aggregate query | Plan `75ccecddb0fc621e1225fd8e965f054a41dc7692a68253a532e6817e28bc3d40`; harness `f92d170c438cea41ec8b5f5bbe8524eeb1c63e817b09659c959c08a5961d573c`; initialize/get_hooks_listing/end only; fixed enum/count aggregate; no model/user/tool/MCP/settings mutation or raw hook data | PASS | Merged Hook Listing Control Plan | required | - |
 | Merged hook listing control result | 4 | W4 | One released read-only merged-hook aggregate query | Immutable receipt `8345aa34cdf14e06f3d3fa0dbd7d16e372bbb87ea103bb3b8764260ee724d2fc`; historical classifier output `CLAUDE_ADDITIONAL_PRETOOL_HOOK_IDENTIFIED`; transport/cleanup PASS; counts qualified separately | PASS | Merged Hook Listing Control Result | required | - |
 | Merged hook listing classifier qualification | 4 | W4 | Validate candidate attribution and aggregate counts from the immutable control receipt | Public ECC identifier `ecc@ecc` differed from prior allowlist expectation; `.*` matchers missed rows; actual plugin Write aggregate 7, not receipt 5; transport valid but classification incomplete; independent security qualified result | FAIL | Merged Hook Listing Classification Qualification | required | - |
+| Native PostToolUse attempt 05 plan review | 4 | W4 | Independent security review of one ECC-disabled, normal-memory-off named-project wrapper diagnostic | Plan `139634cb63898f23d82dfa4a0d0892313655d13f102eb6741fd249eb486dba4f`; harness `ce345a4ed7b1091f0607560f427623dfc452a5a32b9d7fee3e480692261d7e9e`; session-only `ECC_HOOKS_ENABLED=false`; double-slash Write guard; max two turns/USD 1/180 seconds; strict no-MCP; no ECC delivery claim | PASS | Native PostToolUse Attempt 05 Plan | required | - |
 
 ## Criterion Acceptance
 
