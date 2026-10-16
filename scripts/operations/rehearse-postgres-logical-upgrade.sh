@@ -892,7 +892,7 @@ assert_safe_images_paths_and_project() {
   # rehearsal, not for reading its configuration. `--check-config-only` still
   # verifies every pinned literal, the fixtures, the owned paths and the
   # rendered topology; a hosted runner has no reason to hold a PostgreSQL
-  # 17.6/18.4 image, so demanding one there failed the required gate without
+  # 17/18 rehearsal image, so demanding one there failed the required gate without
   # proving anything about the configuration. Every mode that starts a
   # container still asserts identity here, before any compose or runtime call.
   if [ "$RUN_MODE" != check ]; then
