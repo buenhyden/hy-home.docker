@@ -430,6 +430,7 @@ class EvidenceStoreTests(unittest.TestCase):
             {**self.rows[0], "source": {**self.rows[0]["source"], "path": "../secret"}},
             {**self.rows[0], "source": {**self.rows[0]["source"], "sha256": "bad"}},
             {**self.rows[0], "argv": ["x" * 5000]},
+            {**self.rows[0], "argv": ["scripts/validation/example.py"] * 257},
         ]
         for index, row in enumerate(cases):
             with self.subTest(index=index), self.assertRaises(EvidenceError):
@@ -444,6 +445,15 @@ class EvidenceStoreTests(unittest.TestCase):
         store.initialize_result()
         with self.assertRaisesRegex(EvidenceError, "UTC timestamp"):
             store.mark_started("leaf.example", started_at_utc="not-a-time")
+
+    def test_registered_module_list_argv_is_accepted(self) -> None:
+        row = {
+            **self.rows[0],
+            "argv": ["scripts/validation/example.py", *(["tests.m"] * 80)],
+        }
+        EvidenceStore.create(
+            self.output, identity=self.identity, rows=[row], retention_days=14
+        )
 
     def test_output_directory_must_be_new_visible_and_private(self) -> None:
         hidden = pathlib.Path(self.temp.name) / ".hidden"

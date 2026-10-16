@@ -63,6 +63,8 @@ _RUNTIME_FIELDS = frozenset({"node"})
 _NODE_FIELDS = frozenset({"status", "version", "sha256"})
 _SHA1 = re.compile(r"[0-9a-f]{40}\Z")
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+# Registered leaves pass explicit test-module lists (80 arguments today).
+_MAX_ROW_ARGV = 256
 _IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}\Z")
 _ENV_KEY = re.compile(r"[A-Z_][A-Z0-9_]{0,127}\Z")
 _UTC_TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z\Z")
@@ -530,7 +532,7 @@ def _normalize_rows(rows: Sequence[Mapping[str, object]]) -> list[dict[str, obje
         if (
             isinstance(argv, (str, bytes))
             or not isinstance(argv, Sequence)
-            or not 1 <= len(argv) <= 64
+            or not 1 <= len(argv) <= _MAX_ROW_ARGV
         ):
             observed = (
                 len(argv)
@@ -538,7 +540,7 @@ def _normalize_rows(rows: Sequence[Mapping[str, object]]) -> list[dict[str, obje
                 else type(argv).__name__
             )
             raise EvidenceError(
-                f"row[{index}].argv must contain 1 to 64 arguments "
+                f"row[{index}].argv must contain 1 to {_MAX_ROW_ARGV} arguments "
                 f"(gate {gate_id}: {observed})"
             )
         normalized_argv = [
