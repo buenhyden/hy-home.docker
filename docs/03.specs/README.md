@@ -1,6 +1,6 @@
 ---
 title: "명세 패키지"
-version: "1.3.2"
+version: "1.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -78,6 +78,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0243 | [OpenBao 유지보수 창 준비](./0243-openbao-window-readiness/) | 창 NOT READY 판정의 선행 조건·결함(D1~D4)·W4 rollback을 문서로 막고 restore·W1c·W3a·W3b 도구와 CA mount를 단위별로 준비 |
 | SPEC-0244 | [Native memory 통제 검증](./0244-native-memory-controlled-verification/) | Claude native memory effective-state와 hook delivery를 설정·메뉴·영수증별로 분리해 통제 검증 |
 | SPEC-0245 | [Observability CA 실행](./0245-observability-ca-execution/) | Prometheus·Gatus의 백업·격리 복원 검증 후 순차 CA 재생성과 rollback 경계 |
+| SPEC-0246 | [호스트 저장소 계층화](./0246-host-storage-tiering/) | Docker 저장소 종류별 SSD·HDD 배치 정책: containerd 이미지 저장소는 HDD, Ollama 모델은 SSD, 빌드 캐시 한도와 미사용 이미지의 registry 보관 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
