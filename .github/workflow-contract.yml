@@ -269,6 +269,7 @@
       "argv": [
         "run-unittest",
         "tests.lib.gate.test_ci_gate_contract",
+        "tests.lib.gate.test_ci_gate_evidence",
         "-v"
       ],
       "cwd": ".",
