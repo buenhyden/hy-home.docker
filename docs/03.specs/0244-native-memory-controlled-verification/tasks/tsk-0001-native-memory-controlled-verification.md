@@ -269,9 +269,11 @@ Native and dispatcher each recorded `SessionStart=1`,
 `PostToolUse=0`, `PreCompact=0`, and `PostToolValidate=0`; `UNKNOWN=1`.
 Static review of the tracked project branch found no additional Bash and one
 project Pre hook. The unknown event is therefore an inference of an additional
-merged, non-project Bash hook (plugin or user layer), not an exact retained
-argv or path; the fail-closed shim blocked it. Cleanup and status restoration
-passed (status SHA-256 prefix `e3b0…`).
+unclassified, non-project invocation, not an exact retained argv or path. It
+may be a plugin or user layer, or a CLI Write internal Bash helper; the current
+evidence does not distinguish those possibilities. The fail-closed shim
+blocked it. Cleanup and status restoration passed (status SHA-256 prefix
+`e3b0…`).
 
 The security pre-execution GO covered the exact plan and harness; post-result
 review remains pending. This failed-closed receipt leaves criterion 4 pending
