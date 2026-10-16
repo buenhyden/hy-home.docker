@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.16"
+version: "0.1.17"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -195,6 +195,24 @@ remained, and the original services remained healthy. No CA or image-build
 work started. A newly reviewed `restore-03` sibling is required; Attempt 01
 and Attempt 02 receipts remain preserved.
 
+### Isolated Restore Attempt 03 Release
+
+`restore-03` is a new, unused sibling that preserves both prior failure
+receipts. Its final v3 contract SHA-256 is
+`322414d13c3655155b95cd2ad84a25b0307fdf085283e3ee9830d3f90cf213a4`, restore
+script SHA-256 is
+`174d5bf307ca944ac5b8ea7ae15c4595dc6edf18b76580e66830963a9662a438`, and
+test SHA-256 is
+`8153f9003713ab9b36db669dc828179c144cbb88961b43a557f2e2486184bf0a`.
+Helpers are unchanged.
+
+The v3 packet confirms zero Attempt 02 labels and the absence of nine old
+names, then handles the real 64-hex/no-line-feed CID form. Its related
+regressions passed. Independent IaC and security reviews are READY. Root GO
+remains conditional on operator READY, this Task receipt, and immediate hash
+and target checks. No restore-03 action has run, and CA work remains blocked
+until the recovery gate succeeds.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -231,6 +249,8 @@ and Attempt 02 receipts remain preserved.
 | Released Gatus isolated restore attempt 02 plan | 3 | W3 | Independent READY reviews and conditional root GO for the new Gatus isolated-clone sibling | Contract `6aea3453f2fab65d93a885759fa8a9358eceab3d433636aec61f443ed95fd1e5`; script `8203382c97f0b6b8816cca7bb1ac0799b1472bdad6506128b5638f143de90cf3`; test `18fcb193a3d29a491b251bc93b0a50c13c878398f4c1e1e2f7e03dbdc96c16b3`; helpers unchanged; synthetic ownership before archives; numeric-owner default; nine guards bound; operator READY/hash rechecks pending | PASS | Isolated Restore Attempt 02 Release | required | - |
 | Isolated restore attempt 02 | 2 | W2 | Released synthetic-owner stage for the second isolated restore attempt | Failure receipt `977651535b5659d29c039ee5088d74b96319d6cabf53a2a53779bd3778158ee1`; 64-hex CID file without trailing newline; Bash `read` populated ID but returned 1 at EOF; guard classified `UNKNOWN_CREATE`; no archive extraction; no helper; originals healthy | FAIL | Isolated Restore Attempt 02 Failure | required | - |
 | Isolated restore attempt 02 containment | 6 | W6 | Contain the failed isolated attempt and preserve production boundaries | Independent reviewers accepted the truthful guard-source failure; no archive extraction; no helper; originals healthy; no CA/image-build work; restore-03 review required | PASS | Isolated Restore Attempt 02 Failure | required | - |
+| Released Prometheus isolated restore attempt 03 plan | 2 | W2 | Independent READY reviews and conditional root GO for the new Prometheus isolated-clone sibling | Contract `322414d13c3655155b95cd2ad84a25b0307fdf085283e3ee9830d3f90cf213a4`; script `174d5bf307ca944ac5b8ea7ae15c4595dc6edf18b76580e66830963a9662a438`; test `8153f9003713ab9b36db669dc828179c144cbb88961b43a557f2e2486184bf0a`; helpers unchanged; zero attempt-02 labels/nine old names absent; 64-hex/no-LF regression PASS; operator READY/hash and target checks pending | PASS | Isolated Restore Attempt 03 Release | required | - |
+| Released Gatus isolated restore attempt 03 plan | 3 | W3 | Independent READY reviews and conditional root GO for the new Gatus isolated-clone sibling | Contract `322414d13c3655155b95cd2ad84a25b0307fdf085283e3ee9830d3f90cf213a4`; script `174d5bf307ca944ac5b8ea7ae15c4595dc6edf18b76580e66830963a9662a438`; test `8153f9003713ab9b36db669dc828179c144cbb88961b43a557f2e2486184bf0a`; helpers unchanged; zero attempt-02 labels/nine old names absent; 64-hex/no-LF regression PASS; operator READY/hash and target checks pending | PASS | Isolated Restore Attempt 03 Release | required | - |
 
 ## Criterion Acceptance
 
