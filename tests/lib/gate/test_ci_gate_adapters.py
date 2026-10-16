@@ -1375,6 +1375,75 @@ class CiGateAdapterTests(unittest.TestCase):
             hashlib.sha256(b'{"runs":[]}\n').hexdigest(), artifact["sha256"]
         )
 
+    def test_controller_error_after_start_finalizes_error_evidence(
+        self,
+    ) -> None:
+        source = self.root / "scripts/lib/gate/ci_gate_adapters.py"
+        source.parent.mkdir(parents=True)
+        source.write_bytes((ROOT / "scripts/lib/gate/ci_gate_adapters.py").read_bytes())
+        self.git("init", "-q")
+        self.git("add", "scripts/lib/gate/ci_gate_adapters.py")
+        evidence = self.root / "runner-temp/ci-gate-evidence"
+        evidence.parent.mkdir()
+
+        def write_sarif(
+            argv: tuple[str, ...],
+            **kwargs: object,
+        ) -> subprocess.CompletedProcess[bytes]:
+            os.write(kwargs["stdout"], b'{"runs":[]}\n')  # type: ignore[arg-type]
+            return subprocess.CompletedProcess(argv, 0, b"", b"")
+
+        environment = {
+            "PATH": "/usr/bin",
+            "CI_GATE_EVIDENCE_DIR": str(evidence),
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "push",
+            "GITHUB_SHA": "1" * 40,
+            "GITHUB_RUN_ID": "12345",
+            "GITHUB_RUN_ATTEMPT": "1",
+            "GITHUB_JOB": "main-security",
+            "TRUSTED_GIT_PATH": shutil.which("git") or "/usr/bin/git",
+        }
+        toolchain = {
+            "status": "CAPTURED",
+            "executables": [
+                {"name": "git", "version": "git 2.43", "sha256": "a" * 64},
+                {"name": "python", "version": "Python 3.14.8", "sha256": "b" * 64},
+                {"name": "uv", "version": "uv 0.12.18", "sha256": "c" * 64},
+            ],
+            "dependency_inputs": [
+                {"path": "scripts/requirements-controller.lock", "sha256": "d" * 64}
+            ],
+            "installed_packages": [{"name": "zizmor", "version": "1.28.0"}],
+            "runner_image": {
+                "image_os": "ubuntu24",
+                "image_version": "20261015.1",
+                "architecture": "X64",
+                "image_digest": "NOT_AVAILABLE",
+            },
+            "node": {"status": "NOT_SELECTED", "version": None, "sha256": None},
+        }
+        (self.root / "results.sarif").write_bytes(b"stale")
+        with (
+            self.assertRaises(adapters.AdapterError),
+            mock.patch.object(adapters, "_run_child", side_effect=write_sarif),
+            mock.patch.object(
+                adapters,
+                "capture_controller_toolchain",
+                return_value=toolchain,
+            ),
+        ):
+            adapters.run_adapter(
+                self.root,
+                ("run-zizmor-sarif",),
+                environment,
+            )
+        result = json.loads((evidence / "result.json").read_bytes())
+        self.assertTrue(result["complete"])
+        self.assertEqual("ERROR", result["rows"][0]["status"])
+        self.assertEqual("CONTROLLER_ERROR", result["rows"][0]["reason"])
+        self.assertTrue((evidence / "evidence-manifest.json").exists())
+
     def test_zizmor_failure_remains_primary_when_evidence_finalize_fails(self) -> None:
         store = mock.Mock()
         store.finalize.side_effect = adapters.EvidenceError("finalize failed")

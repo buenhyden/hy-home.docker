@@ -275,6 +275,21 @@ class EvidenceStoreTests(unittest.TestCase):
         ):
             capture_controller_toolchain(ROOT, environment, node_selected=False)
 
+        environment["TRUSTED_UV_SHA256"] = hashlib.sha256(
+            (pathlib.Path(self.temp.name) / "uv").read_bytes()
+        ).hexdigest()
+        for mode in (0o777, 0o775, 0o757):
+            (pathlib.Path(self.temp.name) / "python").chmod(mode)
+            with (
+                self.subTest(mode=oct(mode)),
+                mock.patch(
+                    "scripts.lib.gate.ci_gate_evidence.importlib.metadata.version",
+                    side_effect=versions.__getitem__,
+                ),
+                self.assertRaisesRegex(EvidenceError, r"python \(EPERM: .*mode="),
+            ):
+                capture_controller_toolchain(ROOT, environment, node_selected=False)
+
     def test_open_rejects_mismatched_or_noncanonical_plan(self) -> None:
         self.create()
         changed = {**self.identity, "run_attempt": "3"}
@@ -431,6 +446,7 @@ class EvidenceStoreTests(unittest.TestCase):
             {**self.rows[0], "source": {**self.rows[0]["source"], "sha256": "bad"}},
             {**self.rows[0], "argv": ["x" * 5000]},
             {**self.rows[0], "argv": ["scripts/validation/example.py"] * 257},
+            {**self.rows[0], "argv": []},
         ]
         for index, row in enumerate(cases):
             with self.subTest(index=index), self.assertRaises(EvidenceError):
@@ -453,6 +469,13 @@ class EvidenceStoreTests(unittest.TestCase):
         }
         EvidenceStore.create(
             self.output, identity=self.identity, rows=[row], retention_days=14
+        )
+        boundary = {**row, "argv": ["scripts/validation/example.py"] * 256}
+        EvidenceStore.create(
+            pathlib.Path(self.temp.name) / "boundary",
+            identity=self.identity,
+            rows=[boundary],
+            retention_days=14,
         )
 
     def test_output_directory_must_be_new_visible_and_private(self) -> None:

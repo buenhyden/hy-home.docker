@@ -128,6 +128,7 @@ jobs:
         run: |
           node_path="$(/usr/bin/readlink -f -- "$(type -P node)")"
           test -n "$node_path" && test -x "$node_path"
+          /usr/bin/chmod go-w -- "$node_path"
           node_version="$("$node_path" --version)"
           read -r node_sha256 _ < <(/usr/bin/sha256sum -- "$node_path")
           {

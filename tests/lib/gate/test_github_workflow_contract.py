@@ -800,6 +800,48 @@ class GithubWorkflowContractTests(unittest.TestCase):
             }
         self.assertIn("workflow-gate-environment-invalid", codes)
 
+    def test_candidate_capture_steps_must_drop_group_and_other_write(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        documents = self.module.load_workflows(ROOT)
+        document = next(
+            item
+            for item in documents
+            if item.path == ".github/workflows/ci-quality.yml"
+        )
+        for step_name, token in (
+            ("Capture trusted pull request context", '"$python_path"'),
+            ("Capture trusted uv context", '"$uv_path"'),
+            ("Capture selected Node context", '"$node_path"'),
+        ):
+            data = copy.deepcopy(document.data)
+            step = next(
+                item
+                for item in data["jobs"]["candidate-quality"]["steps"]
+                if item.get("name") == step_name
+            )
+            line = f"/usr/bin/chmod go-w -- {token}\n"
+            self.assertIn(line, step["run"])
+            step["run"] = step["run"].replace(line, "")
+            changed = dataclasses.replace(document, data=data)
+            with (
+                self.subTest(step=step_name),
+                mock.patch.object(
+                    self.module,
+                    "load_workflows",
+                    return_value=tuple(
+                        changed if item.path == document.path else item
+                        for item in documents
+                    ),
+                ),
+            ):
+                messages = [
+                    finding.message
+                    for finding in self.module.validate_workflows(ROOT, contract)
+                ]
+                self.assertTrue(
+                    any(step_name in message for message in messages), messages
+                )
+
     def test_canonical_schema_v2_registry_is_complete_and_expandable(
         self,
     ) -> None:

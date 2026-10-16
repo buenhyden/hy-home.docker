@@ -1385,6 +1385,7 @@ def _run_zizmor_sarif(
     evidence_started_monotonic = time.monotonic()
     result_code: int | None = None
     product_error: BaseException | None = None
+    evidence_open = False
     try:
         evidence_store = _create_main_security_evidence(root, root_fd, environ)
         if evidence_store is not None:
@@ -1401,6 +1402,7 @@ def _run_zizmor_sarif(
                 "leaf.zizmor",
                 started_at_utc=_evidence_timestamp(evidence_started),
             )
+            evidence_open = True
         try:
             output_fd = os.open(
                 "results.sarif",
@@ -1430,6 +1432,7 @@ def _run_zizmor_sarif(
         if evidence_store is not None:
             ended = datetime.now(UTC)
             artifact = _sarif_artifact(output_fd) if result_code == 0 else None
+            evidence_open = False
             evidence_store.mark_terminal(
                 "leaf.zizmor",
                 status="PASS" if result_code == 0 else "FAIL",
@@ -1458,6 +1461,26 @@ def _run_zizmor_sarif(
             if isinstance(error, OSError)
             else error
         )
+        if evidence_store is not None and evidence_open:
+            try:
+                evidence_store.mark_terminal(
+                    "leaf.zizmor",
+                    status="ERROR",
+                    exit_code=1,
+                    ended_at_utc=_evidence_timestamp(datetime.now(UTC)),
+                    duration_ms=max(
+                        0,
+                        round((time.monotonic() - evidence_started_monotonic) * 1000),
+                    ),
+                    reason=(
+                        "CANCELLED"
+                        if isinstance(error, (KeyboardInterrupt, SystemExit))
+                        else "CONTROLLER_ERROR"
+                    ),
+                )
+                evidence_store.finalize(blocked_reason="blocked_by_prior")
+            except EvidenceError:
+                pass
 
     evidence_close_failed = False
     if evidence_store is not None:

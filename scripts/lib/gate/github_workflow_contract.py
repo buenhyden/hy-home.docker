@@ -1082,6 +1082,31 @@ def _workflow_projection_findings(
                             f"candidate step {name} must use the fixed system shell",
                         )
                     )
+            capture_pins = {
+                "Capture trusted pull request context": (
+                    'test "$GITHUB_EVENT_NAME" = pull_request',
+                    '/usr/bin/chmod go-w -- "$python_path"',
+                    '/usr/bin/sha256sum -- "$python_path"',
+                ),
+                "Capture trusted uv context": (
+                    '/usr/bin/chmod go-w -- "$uv_path"',
+                    '/usr/bin/sha256sum -- "$uv_path"',
+                ),
+                "Capture selected Node context": (
+                    '/usr/bin/chmod go-w -- "$node_path"',
+                    '/usr/bin/sha256sum -- "$node_path"',
+                ),
+            }
+            for name, tokens in capture_pins.items():
+                run = steps_by_name.get(name, {}).get("run")
+                if not isinstance(run, str) or not all(t in run for t in tokens):
+                    findings.append(
+                        _finding(
+                            "workflow-gate-projection-mismatch",
+                            path,
+                            f"candidate step {name} must drop group/other write before hashing",
+                        )
+                    )
             node_step = steps_by_name.get("Set up Node.js")
             if not isinstance(node_step, dict) or node_step.get("if") != (
                 "steps.prerequisites.outputs.node == 'true'"
