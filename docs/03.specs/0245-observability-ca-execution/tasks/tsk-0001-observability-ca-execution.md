@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.11"
+version: "0.1.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -114,19 +114,26 @@ seven selected document records and their lifecycle bindings at that snapshot;
 it does not validate the later receipt edit, the pending independent rehashes
 or restores, or any runtime CA result.
 
-### Isolated Restore Plan Receipt
+### Isolated Restore Plan Receipts
 
-The first isolated-mode restore attempt, `restore-01`, is prepared against
-workspace identity `174588272`. Its frozen contract SHA-256 is
+The initial isolated-mode `restore-01` packet was prepared against workspace
+identity `174588272`. Its frozen contract SHA-256 was
 `dd027cad5a53e84eeb4ef091a059e9ba146eee0fe9a9a7b8f3fd721fdd81d13f` and
-its restore script SHA-256 is
+its restore script SHA-256 was
 `8d49b6aa3ff2f7cb16d72a92efcaeec4d180b730b108049f40bede1d702d68f1`.
 All restore helpers and their tests passed the pre-execution packet check.
+Before GO or any restore execution, the packet was superseded because the
+target-inode row was incomplete. It remains a non-executed historical plan
+receipt.
 
-This is a current `in-progress` plan receipt only. Independent reviewers and
+The corrected current candidate is frozen at contract SHA-256
+`1b9300690aa6c86eca0a9afe71742ac6d6597a0ebcb27ab506afb7cde321de2b`, restore
+script SHA-256
+`965a751ae225484f0f94691250f97057d6d2c62f621a8c7358f0848b392954ed`, and
+test SHA-256 prefix `9a27ebc5…`; the helpers are unchanged. Independent reviewers and
 the operator have not yet issued GO, and no isolated restore has started or
-completed. The receipt changes neither the required integrity rehashes nor
-the pending acceptance of criteria 2 and 3.
+completed. These plan receipts change neither the required integrity rehashes
+nor the pending acceptance of criteria 2 and 3.
 
 ### Lifecycle Events
 
@@ -151,8 +158,10 @@ the pending acceptance of criteria 2 and 3.
 | Prometheus isolated restore | 2 | W2 | Isolated restoration and validation of the captured Prometheus archive | Not yet run | NOT_RUN | Backup Capture Receipts | required | - |
 | Gatus isolated restore | 3 | W3 | Isolated restoration and validation of the captured Gatus archive | Not yet run | NOT_RUN | Backup Capture Receipts | required | - |
 | Pre-capture document metadata validation | 7 | W7 | `rtk proxy python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 89eb43f683a11587cf4f125be534ae720c20a55c --changed-path docs/03.specs/0244-native-memory-controlled-verification/spec.md --changed-path docs/03.specs/0244-native-memory-controlled-verification/plan.md --changed-path docs/03.specs/0244-native-memory-controlled-verification/tasks/tsk-0001-native-memory-controlled-verification.md --changed-path docs/03.specs/0245-observability-ca-execution/spec.md --changed-path docs/03.specs/0245-observability-ca-execution/plan.md --changed-path docs/03.specs/0245-observability-ca-execution/tasks/tsk-0001-observability-ca-execution.md --changed-path docs/03.specs/README.md --changed-path docs/99.templates/registry.json` | Snapshot `78684ac`; exit 0; selected 7; violations 0; legacy exceptions 0; transition overrides 0; predates backup-capture receipt `23224aa` | PASS | Structural Validation Receipt | required | - |
-| Prometheus isolated restore plan binding | 2 | W2 | Bind the first isolated-mode Prometheus restore attempt to its frozen contract and script | `restore-01`; workspace identity `174588272`; contract `dd027cad5a53e84eeb4ef091a059e9ba146eee0fe9a9a7b8f3fd721fdd81d13f`; script `8d49b6aa3ff2f7cb16d72a92efcaeec4d180b730b108049f40bede1d702d68f1`; helpers/tests PASS; GO pending | PASS | Isolated Restore Plan Receipt | required | - |
-| Gatus isolated restore plan binding | 3 | W3 | Bind the first isolated-mode Gatus restore attempt to its frozen contract and script | `restore-01`; workspace identity `174588272`; contract `dd027cad5a53e84eeb4ef091a059e9ba146eee0fe9a9a7b8f3fd721fdd81d13f`; script `8d49b6aa3ff2f7cb16d72a92efcaeec4d180b730b108049f40bede1d702d68f1`; helpers/tests PASS; GO pending | PASS | Isolated Restore Plan Receipt | required | - |
+| Initial Prometheus isolated restore plan binding | 2 | W2 | Bind the initial isolated-mode Prometheus restore packet to its frozen contract and script | `restore-01`; workspace identity `174588272`; contract `dd027cad5a53e84eeb4ef091a059e9ba146eee0fe9a9a7b8f3fd721fdd81d13f`; script `8d49b6aa3ff2f7cb16d72a92efcaeec4d180b730b108049f40bede1d702d68f1`; helpers/tests PASS; target-inode row gap; superseded before GO/execution | NOT_RUN | Isolated Restore Plan Receipts | required | - |
+| Initial Gatus isolated restore plan binding | 3 | W3 | Bind the initial isolated-mode Gatus restore packet to its frozen contract and script | `restore-01`; workspace identity `174588272`; contract `dd027cad5a53e84eeb4ef091a059e9ba146eee0fe9a9a7b8f3fd721fdd81d13f`; script `8d49b6aa3ff2f7cb16d72a92efcaeec4d180b730b108049f40bede1d702d68f1`; helpers/tests PASS; target-inode row gap; superseded before GO/execution | NOT_RUN | Isolated Restore Plan Receipts | required | - |
+| Current Prometheus isolated restore plan binding | 2 | W2 | Bind the corrected isolated-mode Prometheus restore candidate to its frozen artifacts | Contract `1b9300690aa6c86eca0a9afe71742ac6d6597a0ebcb27ab506afb7cde321de2b`; script `965a751ae225484f0f94691250f97057d6d2c62f621a8c7358f0848b392954ed`; test SHA-256 prefix `9a27ebc5…`; helpers unchanged; reviewer/operator GO pending | PASS | Isolated Restore Plan Receipts | required | - |
+| Current Gatus isolated restore plan binding | 3 | W3 | Bind the corrected isolated-mode Gatus restore candidate to its frozen artifacts | Contract `1b9300690aa6c86eca0a9afe71742ac6d6597a0ebcb27ab506afb7cde321de2b`; script `965a751ae225484f0f94691250f97057d6d2c62f621a8c7358f0848b392954ed`; test SHA-256 prefix `9a27ebc5…`; helpers unchanged; reviewer/operator GO pending | PASS | Isolated Restore Plan Receipts | required | - |
 
 ## Criterion Acceptance
 
