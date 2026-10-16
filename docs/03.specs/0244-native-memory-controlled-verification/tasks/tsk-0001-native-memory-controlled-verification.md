@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.14"
+version: "0.1.15"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -224,6 +224,31 @@ The earlier UI observation remains historical `UNKNOWN`; it is superseded only
 for the normal effective-memory result. The forced-off hook Retry 03 remains
 partial, with `PostToolUse` and complete Write delivery unverified.
 
+### Forced-off Hook Attempt 04 Plan
+
+Security independently approved one final forced-off session attempt with plan
+SHA-256
+`b1511ff25ffb89b0d7050bf9f506f7733d50b8e2622267f5681875d1fbacc6ae` and
+harness SHA-256
+`3105c920cb2a2250f58a7f8f917c24d449d441d9dc3dcb93b69f42d1661978c2`.
+It retains a session-only forced-memory setting and `sandbox=false`, with no
+OS-confinement claim. The offered provider capability is exact-fixture Write
+only, bounded to two turns, USD 1, and 180 seconds.
+
+The harness has explicit exact rules for both Write and Edit dispatches, but
+the offered attempt allows Write only. Its nested dispatcher reports known
+counts transparently through the new decision categories; those counts are
+not promoted to delivery proof. It permits only known zero-to-two
+line-feed-delimited markers, bounds raw pipes, requires empty stderr, pins 11
+source paths through `O_NOFOLLOW`, and rechecks the guard directory before
+use. No raw payload, memory body, credential, or private diagnostic may enter
+Task evidence.
+
+Attempt 04 has not run. Root GO is conditional on this Task receipt and an
+immediate hash recheck, after which exactly one post-completion diagnostic may
+run. It cannot change the accepted normal merged memory-off result, and it
+does not turn Retry 03's partial hook evidence into complete delivery proof.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -257,6 +282,7 @@ partial, with `PostToolUse` and complete Write delivery unverified.
 | Forced-off hook retry 03 attempt | 4 | W4 | One released frozen strict-MCP, no-config hook-delivery retry | Exit 0; valid stream; no stderr; final token and one Write; SessionStart/UserPromptSubmit/PreToolUse/Stop/SessionEnd each 1; PostToolUse and PreCompact each 0; no output file or exact output retained; one nested-Bash token `UNEXPECTED`; cleanup/status PASS | FAIL | Forced-off Hook Retry 03 Result | required | - |
 | Normal settings memory-control query plan review | 3 | W3 | Independent security review of one read-only normal-settings memory query | Plan `a30ac627797ebb013c9e6f9b87cf56f4b544f70e2e908a24b55a8543e811565c`; harness `bf8baf16b7a3d64317f64c2d9e74e8f3f16061489577717b833baf1188555eda`; initialize/get_memory_dialog/end_session only; no model/user/tool/MCP; sandbox false with no OS-confinement claim | PASS | Normal Settings Memory Control Query Plan | required | - |
 | Normal settings memory-control query result | 3 | W3 | One released non-mutating normal-session effective-memory query | `CLAUDE_NORMAL_MERGED_AUTO_MEMORY_OFF_VERIFIED`; enabled false/plain off/no detail/settings-source suffix/toggleable false; init/get/end PASS; exit 0; no stderr/timeout/model/user/tool/MCP/permission/status change; receipt `e24e56cbfc5c2a022462029df4f3c2c686603bffb110d27b76d7ea1c7679015f`; observation `a245a0d61d190482d0985c3dd89312b655072202d8f3c7993b70240a5b574a1f`; independent security PASS | PASS | Normal Settings Memory Control Query Result | required | - |
+| Forced-off hook attempt 04 plan review | 4 | W4 | Independent security review of one final forced-off exact-Write attempt | Plan `b1511ff25ffb89b0d7050bf9f506f7733d50b8e2622267f5681875d1fbacc6ae`; harness `3105c920cb2a2250f58a7f8f917c24d449d441d9dc3dcb93b69f42d1661978c2`; Write only, max two turns/USD 1/180 seconds; forced-off session; sandbox false with no OS-confinement claim; 11 `O_NOFOLLOW` pins and guard-directory recheck | PASS | Forced-off Hook Attempt 04 Plan | required | - |
 
 ## Criterion Acceptance
 
