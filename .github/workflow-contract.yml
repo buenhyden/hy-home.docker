@@ -269,6 +269,7 @@
       "argv": [
         "run-unittest",
         "tests.lib.gate.test_ci_gate_contract",
+        "tests.lib.gate.test_ci_gate_evidence",
         "-v"
       ],
       "cwd": ".",
@@ -1614,6 +1615,7 @@
           ".pre-commit-config.yaml",
           "projects/",
           "scripts/lib/gate/",
+          "scripts/requirements-controller.lock",
           "scripts/requirements-pre-commit.txt",
           "scripts/requirements.txt",
           "scripts/validation/check-github-workflow-contract.py",
@@ -1898,6 +1900,7 @@
           ".prettierignore",
           ".yamllint",
           "ruff.toml",
+          "scripts/requirements-controller.lock",
           "scripts/requirements-pre-commit.txt",
           "scripts/requirements.txt",
           "tests/validation/test_agent_governance_ci_routing.py",
@@ -2164,6 +2167,16 @@
       "repository-integrity"
     ]
   },
+  "execution_evidence": {
+    "schema_version": 1,
+    "owner": "SPEC-0211-TSK-0003",
+    "directory_name": "ci-gate-evidence",
+    "plan_file": "plan.json",
+    "result_file": "result.json",
+    "manifest_file": "evidence-manifest.json",
+    "max_file_bytes": 262144,
+    "retention_days": 14
+  },
   "actions": {
     "actions/checkout": {
       "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1",
@@ -2223,6 +2236,16 @@
       "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/stale.yml"
+      ],
+      "security_disposition": "approved-node24"
+    },
+    "actions/upload-artifact": {
+      "sha": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+      "runtime": "node24",
+      "manifest_url": "https://raw.githubusercontent.com/actions/upload-artifact/cf430e030ddbb5b0abf93d22962f4752f3646cd9/action.yml",
+      "retrieved_at": "2026-10-16",
+      "consumers": [
+        ".github/workflows/ci-quality.yml"
       ],
       "security_disposition": "approved-node24"
     },

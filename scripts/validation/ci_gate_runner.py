@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import argparse
 import collections.abc
+import contextlib
 import dataclasses
+import datetime
 import enum
 import errno
+import hashlib
 import json
 import os
 import pathlib
@@ -16,6 +19,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 from collections.abc import Mapping
 
@@ -40,6 +44,12 @@ from scripts.lib.gate.ci_gate_contract import (
     select_public_suites,
     validate_gate_registry,
     validate_public_execution_argv,
+)
+from scripts.lib.gate.ci_gate_evidence import (
+    EvidenceError,
+    EvidenceStore,
+    capture_controller_toolchain,
+    capture_runtime_observation,
 )
 
 _GIT_TIMEOUT_SECONDS = 5
@@ -128,6 +138,55 @@ class GateInvocation:
 class SelectedPrerequisites:
     node: bool
     docker: bool
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class ExecutionEvidenceRequest:
+    directory: pathlib.Path
+    identity: Mapping[str, object]
+    selection_reasons: Mapping[str, str]
+    retention_days: int
+    toolchain: Mapping[str, object] | None = None
+    runtime_observation: Mapping[str, object] | None = None
+
+
+class _ChildOutcome(int):
+    timed_out: bool
+
+    def __new__(cls, value: int, *, timed_out: bool = False) -> _ChildOutcome:
+        outcome = int.__new__(cls, value)
+        outcome.timed_out = timed_out
+        return outcome
+
+
+class _ExecutionCancelled(BaseException):
+    def __init__(self, signum: int) -> None:
+        super().__init__(signum)
+        self.signum = signum
+
+
+@contextlib.contextmanager
+def _cancellation_handlers() -> collections.abc.Iterator[None]:
+    if threading.current_thread() is not threading.main_thread():
+        yield
+        return
+    signums = tuple(
+        signum
+        for signum in (signal.SIGINT, signal.SIGTERM, getattr(signal, "SIGHUP", None))
+        if isinstance(signum, int)
+    )
+    previous: dict[int, object] = {}
+
+    def cancel(signum: int, _frame: object) -> None:
+        raise _ExecutionCancelled(signum)
+
+    try:
+        for signum in signums:
+            previous[signum] = signal.signal(signum, cancel)
+        yield
+    finally:
+        for signum, handler in previous.items():
+            signal.signal(signum, handler)
 
 
 GateExecutor = collections.abc.Callable[[GateInvocation], int]
@@ -347,6 +406,9 @@ class _VerifiedInvocation:
     entrypoint_fd: int
     cwd_fd: int
     interpreter: str
+    tracked_object: str = ""
+    source_sha256: str = ""
+    source_size: int = 0
 
 
 @dataclasses.dataclass(slots=True)
@@ -797,11 +859,376 @@ def _filter_execution_context(
     )
 
 
+def _evidence_error(error: EvidenceError) -> GateContractError:
+    return GateContractError(
+        "ci-gate-evidence-invalid",
+        "execution-evidence",
+        str(error),
+    )
+
+
+def _git_path_for_verification(environ: Mapping[str, str], path_value: str) -> str:
+    if environ.get("GITHUB_ACTIONS") != "true":
+        return path_value
+    trusted_git = pathlib.Path(_trusted_git_executable(environ))
+    return os.pathsep.join((str(trusted_git.parent), os.defpath))
+
+
+def _evidence_rows(
+    verified: tuple[_VerifiedInvocation, ...],
+    request: ExecutionEvidenceRequest,
+) -> tuple[dict[str, object], ...]:
+    gate_ids = {item.invocation.gate_id for item in verified}
+    if set(request.selection_reasons) != gate_ids:
+        raise GateContractError(
+            "ci-gate-evidence-selection",
+            "execution-evidence",
+            "evidence selection reasons must match the executable plan exactly",
+        )
+    return tuple(
+        {
+            "gate_id": item.invocation.gate_id,
+            "argv": [
+                item.invocation.entrypoint.as_posix(),
+                *item.invocation.argv,
+            ],
+            "selection_reason": request.selection_reasons[item.invocation.gate_id],
+            "environment_keys": sorted(item.invocation.allowed_env_keys),
+            "source": {
+                "path": item.invocation.entrypoint.as_posix(),
+                "sha256": item.source_sha256,
+                "git_object": item.tracked_object,
+                "size_bytes": item.source_size,
+            },
+            "tool_image_digest": "NOT_AVAILABLE",
+        }
+        for item in verified
+    )
+
+
+def _verified_plan(
+    root: pathlib.Path,
+    plan: tuple[GateInvocation, ...],
+    environ: Mapping[str, str],
+) -> tuple[int, list[_VerifiedInvocation]]:
+    path_value = environ.get("PATH", "")
+    if not path_value:
+        raise GateContractError(
+            "ci-gate-environment",
+            "PATH",
+            "the controller PATH must be nonempty",
+        )
+    root_fd = _open_root(_canonical_root(root))
+    verified: list[_VerifiedInvocation] = []
+    try:
+        git_path = _git_path_for_verification(environ, path_value)
+        for invocation in plan:
+            verified.append(_verify_invocation(root_fd, invocation, git_path))
+    except BaseException:
+        for item in verified:
+            _close(item.entrypoint_fd)
+            _close(item.cwd_fd)
+        _close(root_fd)
+        raise
+    return root_fd, verified
+
+
+def seed_execution_evidence(
+    root: pathlib.Path,
+    plan: tuple[GateInvocation, ...],
+    environ: Mapping[str, str],
+    request: ExecutionEvidenceRequest,
+) -> str:
+    root_fd, verified = _verified_plan(root, plan, environ)
+    try:
+        rows = _evidence_rows(tuple(verified), request)
+        try:
+            with EvidenceStore.create(
+                request.directory,
+                identity=request.identity,
+                rows=rows,
+                retention_days=request.retention_days,
+                toolchain=request.toolchain,
+            ) as store:
+                return store.plan_sha256
+        except EvidenceError as error:
+            raise _evidence_error(error) from error
+    finally:
+        for item in verified:
+            _close(item.entrypoint_fd)
+            _close(item.cwd_fd)
+        _close(root_fd)
+
+
+def _selection_reasons(
+    registry: GateRegistry,
+    public_contract: PublicGateContract,
+    selected_suites: tuple[str, ...],
+    root_gate_ids: tuple[str, ...],
+    plan: tuple[GateInvocation, ...],
+) -> dict[str, str]:
+    suite_by_gate = {
+        route.gate_id: route.suite
+        for route in public_contract.validators
+        if route.suite in selected_suites
+    }
+    expanded_by_root = {
+        root_gate_id: set(expand_public_gate_ids(registry, (root_gate_id,)))
+        for root_gate_id in root_gate_ids
+    }
+    reasons: dict[str, str] = {}
+    for invocation in plan:
+        suite = suite_by_gate.get(invocation.gate_id)
+        if suite is not None:
+            reasons[invocation.gate_id] = f"suite:{suite}"
+            continue
+        owner = next(
+            (
+                root_gate_id
+                for root_gate_id in root_gate_ids
+                if invocation.gate_id in expanded_by_root[root_gate_id]
+            ),
+            None,
+        )
+        if owner is None:
+            raise GateContractError(
+                "ci-gate-evidence-selection",
+                invocation.gate_id,
+                "the executable gate has no selected root or suite owner",
+            )
+        reasons[invocation.gate_id] = (
+            f"root:{owner}" if invocation.gate_id == owner else f"dependency:{owner}"
+        )
+    return reasons
+
+
+def _execution_evidence_request(
+    environ: Mapping[str, str],
+    *,
+    root: pathlib.Path,
+    profile: str,
+    context: ExecutionContext,
+    selection_reasons: Mapping[str, str],
+    node_selected: bool,
+    observe_runtime: bool,
+) -> ExecutionEvidenceRequest | None:
+    directory = environ.get("CI_GATE_EVIDENCE_DIR", "")
+    if not directory:
+        return None
+    if context not in {ExecutionContext.LOCAL, ExecutionContext.PULL_REQUEST}:
+        raise GateContractError(
+            "ci-gate-evidence-context",
+            "execution-evidence",
+            "runner evidence requires a local or authenticated pull-request context",
+        )
+    toolchain_environment = environ
+    if context is ExecutionContext.LOCAL:
+        head_sha = _local_clean_head(root)
+        identity = {
+            "event_name": "local",
+            "profile": profile,
+            "execution_context": context.value,
+            "input_sha": head_sha,
+            "base_sha": "NOT_AVAILABLE",
+            "head_sha": head_sha,
+            "run_id": str(time.time_ns()),
+            "run_attempt": "1",
+            "job": "local",
+        }
+        toolchain_environment = _local_toolchain_environment(
+            environ, node_selected=node_selected
+        )
+    else:
+        identity = {
+            "event_name": environ.get("GITHUB_EVENT_NAME", ""),
+            "profile": profile,
+            "execution_context": context.value,
+            "input_sha": environ.get("GITHUB_SHA", ""),
+            "base_sha": environ.get("PR_BASE_SHA", ""),
+            "head_sha": environ.get("PR_HEAD_SHA", ""),
+            "run_id": environ.get("GITHUB_RUN_ID", ""),
+            "run_attempt": environ.get("GITHUB_RUN_ATTEMPT", ""),
+            "job": environ.get("GITHUB_JOB", ""),
+        }
+    return ExecutionEvidenceRequest(
+        directory=pathlib.Path(directory),
+        identity=identity,
+        selection_reasons=dict(selection_reasons),
+        retention_days=14,
+        toolchain=_controller_toolchain(
+            root, toolchain_environment, node_selected=node_selected
+        ),
+        runtime_observation=(
+            _runtime_observation(toolchain_environment, node_selected=node_selected)
+            if observe_runtime
+            else None
+        ),
+    )
+
+
+def _local_clean_head(root: pathlib.Path) -> str:
+    git_path = _local_executable("git", os.defpath)
+    git_environment = {
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "PATH": os.defpath,
+    }
+    try:
+        head = subprocess.run(
+            (git_path, "rev-parse", "--verify", "HEAD^{commit}"),
+            cwd=root,
+            env=git_environment,
+            capture_output=True,
+            check=False,
+            timeout=_GIT_TIMEOUT_SECONDS,
+        )
+        status = subprocess.run(
+            (git_path, "status", "--porcelain=v1", "-z", "--untracked-files=no"),
+            cwd=root,
+            env=git_environment,
+            capture_output=True,
+            check=False,
+            timeout=_GIT_TIMEOUT_SECONDS,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise GateContractError(
+            "ci-gate-evidence-context",
+            "local-head",
+            "local evidence requires an available clean Git HEAD",
+        ) from error
+    value = head.stdout.decode("ascii", errors="replace").strip()
+    if (
+        head.returncode != 0
+        or status.returncode != 0
+        or status.stdout
+        or _FULL_SHA.fullmatch(value) is None
+    ):
+        raise GateContractError(
+            "ci-gate-evidence-context",
+            "local-head",
+            "local evidence requires an available clean Git HEAD",
+        )
+    return value
+
+
+def _local_executable(name: str, path_value: str) -> str:
+    value = shutil.which(name, path=path_value)
+    if value is None:
+        raise GateContractError(
+            "ci-gate-evidence-toolchain",
+            name,
+            "local evidence requires the allowlisted executable",
+        )
+    try:
+        path = pathlib.Path(value).resolve(strict=True)
+        metadata = path.stat()
+    except OSError as error:
+        raise GateContractError(
+            "ci-gate-evidence-toolchain",
+            name,
+            "local evidence requires the allowlisted executable",
+        ) from error
+    if not stat.S_ISREG(metadata.st_mode) or metadata.st_mode & (
+        stat.S_IWGRP | stat.S_IWOTH
+    ):
+        raise GateContractError(
+            "ci-gate-evidence-toolchain",
+            name,
+            "local evidence executable is writable by another principal",
+        )
+    return str(path)
+
+
+def _local_executable_identity(path: str, *version_argv: str) -> tuple[str, str]:
+    try:
+        payload = pathlib.Path(path).read_bytes()
+        result = subprocess.run(
+            (path, *version_argv),
+            env={"LANG": "C", "LC_ALL": "C", "PATH": os.defpath},
+            capture_output=True,
+            check=False,
+            timeout=_GIT_TIMEOUT_SECONDS,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise GateContractError(
+            "ci-gate-evidence-toolchain",
+            pathlib.Path(path).name,
+            "local executable identity is unavailable",
+        ) from error
+    version = (result.stdout + result.stderr).decode("utf-8", errors="replace").strip()
+    if result.returncode != 0 or not version or len(version) > 128:
+        raise GateContractError(
+            "ci-gate-evidence-toolchain",
+            pathlib.Path(path).name,
+            "local executable version is unavailable",
+        )
+    return version, hashlib.sha256(payload).hexdigest()
+
+
+def _local_toolchain_environment(
+    environ: Mapping[str, str], *, node_selected: bool
+) -> dict[str, str]:
+    path_value = environ.get("PATH", os.defpath)
+    paths = {
+        "git": _local_executable("git", os.defpath),
+        "python": str(pathlib.Path(sys.executable).resolve(strict=True)),
+        "uv": _local_executable("uv", path_value),
+    }
+    if node_selected:
+        paths["node"] = _local_executable("node", path_value)
+    captured: dict[str, str] = {
+        "TRUSTED_IMAGE_OS": f"LOCAL-{os.uname().sysname}",
+        "TRUSTED_IMAGE_VERSION": os.uname().release,
+        "TRUSTED_RUNNER_ARCH": os.uname().machine,
+    }
+    for name, path in paths.items():
+        version, digest = _local_executable_identity(path, "--version")
+        prefix = f"TRUSTED_{name.upper()}"
+        captured[f"{prefix}_PATH"] = path
+        captured[f"{prefix}_VERSION"] = version
+        captured[f"{prefix}_SHA256"] = digest
+    return captured
+
+
+def _controller_toolchain(
+    root: pathlib.Path,
+    environ: Mapping[str, str],
+    *,
+    node_selected: bool,
+) -> dict[str, object]:
+    try:
+        return capture_controller_toolchain(root, environ, node_selected=node_selected)
+    except EvidenceError as error:
+        raise GateContractError(
+            "ci-gate-evidence-toolchain",
+            "controller-toolchain",
+            str(error),
+        ) from error
+
+
+def _runtime_observation(
+    environ: Mapping[str, str],
+    *,
+    node_selected: bool,
+) -> dict[str, object]:
+    try:
+        return capture_runtime_observation(environ, node_selected=node_selected)
+    except EvidenceError as error:
+        raise GateContractError(
+            "ci-gate-evidence-toolchain", "runtime-observation", str(error)
+        ) from error
+
+
 def execute_execution_plan(
     root: pathlib.Path,
     plan: tuple[GateInvocation, ...],
     environ: Mapping[str, str],
     executor: GateExecutor | None = None,
+    *,
+    evidence: ExecutionEvidenceRequest | None = None,
 ) -> int:
     canonical_root = _canonical_root(root)
     path_value = environ.get("PATH", "")
@@ -825,22 +1252,29 @@ def execute_execution_plan(
                 "/proc/self/fd",
                 "descriptor execution is unavailable",
             )
-        root_fd = _open_root(canonical_root)
-        verified: list[_VerifiedInvocation] = []
+        root_fd, verified = _verified_plan(canonical_root, plan, environ)
+        store: EvidenceStore | None = None
         try:
             descriptor_root = f"/proc/self/fd/{root_fd}"
             python_bootstrap = _create_python_bootstrap(
                 home,
                 descriptor_root,
             )
-            for invocation in plan:
-                verified.append(
-                    _verify_invocation(
-                        root_fd,
-                        invocation,
-                        path_value,
+            if evidence is not None:
+                rows = _evidence_rows(tuple(verified), evidence)
+                try:
+                    store = EvidenceStore.open(
+                        evidence.directory,
+                        identity=evidence.identity,
+                        rows=rows,
+                        retention_days=evidence.retention_days,
+                        toolchain=evidence.toolchain,
                     )
-                )
+                    store.initialize_result(
+                        runtime_observation=evidence.runtime_observation
+                    )
+                except EvidenceError as error:
+                    raise _evidence_error(error) from error
             for item in verified:
                 child_environment = _child_environment(
                     root_fd,
@@ -850,21 +1284,114 @@ def execute_execution_plan(
                     environ,
                     python_bootstrap=python_bootstrap,
                 )
-                result = _run_verified_child(
-                    root_fd,
-                    item,
-                    child_environment,
-                )
+                started_at = datetime.datetime.now(datetime.UTC)
+                started_monotonic = time.monotonic()
+                if store is not None:
+                    try:
+                        store.mark_started(
+                            item.invocation.gate_id,
+                            started_at_utc=_utc_timestamp(started_at),
+                        )
+                    except EvidenceError as error:
+                        raise _evidence_error(error) from error
+                try:
+                    with _cancellation_handlers():
+                        result = _run_verified_child(
+                            root_fd,
+                            item,
+                            child_environment,
+                        )
+                except BaseException as error:
+                    if store is not None:
+                        ended_at = datetime.datetime.now(datetime.UTC)
+                        try:
+                            store.mark_terminal(
+                                item.invocation.gate_id,
+                                status="ERROR",
+                                exit_code=1,
+                                ended_at_utc=_utc_timestamp(ended_at),
+                                duration_ms=max(
+                                    0,
+                                    round(
+                                        (time.monotonic() - started_monotonic) * 1000
+                                    ),
+                                ),
+                                reason=(
+                                    "CANCELLED"
+                                    if isinstance(
+                                        error,
+                                        (
+                                            KeyboardInterrupt,
+                                            SystemExit,
+                                            _ExecutionCancelled,
+                                        ),
+                                    )
+                                    else "CONTROLLER_ERROR"
+                                ),
+                            )
+                            store.finalize(blocked_reason="blocked_by_prior")
+                        except EvidenceError:
+                            pass
+                    if isinstance(error, _ExecutionCancelled):
+                        return 128 + error.signum
+                    raise
+                if store is not None:
+                    ended_at = datetime.datetime.now(datetime.UTC)
+                    timed_out = bool(getattr(result, "timed_out", False))
+                    status = "PASS" if result == 0 else "ERROR" if timed_out else "FAIL"
+                    reason = (
+                        None
+                        if result == 0
+                        else "TIMEOUT"
+                        if timed_out
+                        else "NONZERO_EXIT"
+                    )
+                    try:
+                        store.mark_terminal(
+                            item.invocation.gate_id,
+                            status=status,
+                            exit_code=int(result),
+                            ended_at_utc=_utc_timestamp(ended_at),
+                            duration_ms=max(
+                                0,
+                                round((time.monotonic() - started_monotonic) * 1000),
+                            ),
+                            reason=reason,
+                        )
+                    except EvidenceError as error:
+                        if result != 0:
+                            return int(result)
+                        raise _evidence_error(error) from error
                 if result != 0:
-                    return result
+                    if store is not None:
+                        try:
+                            store.finalize(blocked_reason="blocked_by_prior")
+                        except EvidenceError:
+                            return int(result)
+                    return int(result)
+            if store is not None:
+                try:
+                    store.finalize(blocked_reason="blocked_by_prior")
+                except EvidenceError as error:
+                    raise _evidence_error(error) from error
             return 0
         finally:
+            if store is not None:
+                store.close()
             for item in verified:
                 _close(item.entrypoint_fd)
                 _close(item.cwd_fd)
             _close(root_fd)
     finally:
         _remove_home(home)
+
+
+def _utc_timestamp(value: datetime.datetime) -> str:
+    return (
+        value.astimezone(datetime.UTC)
+        .isoformat(timespec="microseconds")
+        .replace("+00:00", "Z")
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -917,15 +1444,14 @@ def main(argv: list[str] | None = None) -> int:
             arguments.profile,
             changed_paths,
         )
+        selected_root_gate_ids = public_root_gate_ids(
+            public_contract,
+            selected_suites,
+            changed_paths=(changed_paths if arguments.profile == "changed" else None),
+        )
         plan = build_public_validation_plan(
             registry,
-            public_root_gate_ids(
-                public_contract,
-                selected_suites,
-                changed_paths=(
-                    changed_paths if arguments.profile == "changed" else None
-                ),
-            ),
+            selected_root_gate_ids,
             public_contract,
             selected_suites,
             context,
@@ -969,10 +1495,48 @@ def main(argv: list[str] | None = None) -> int:
                     "hosted prerequisites require a pull-request context",
                 )
             prerequisites = selected_prerequisites(plan, changed_paths)
+            evidence = _execution_evidence_request(
+                execution_environment,
+                root=root,
+                profile=arguments.profile,
+                context=context,
+                selection_reasons=_selection_reasons(
+                    registry,
+                    public_contract,
+                    selected_suites,
+                    selected_root_gate_ids,
+                    plan,
+                ),
+                node_selected=prerequisites.node,
+                observe_runtime=False,
+            )
+            if evidence is not None:
+                seed_execution_evidence(root, plan, execution_environment, evidence)
             print(f"node={'true' if prerequisites.node else 'false'}")
             print(f"docker={'true' if prerequisites.docker else 'false'}")
             return 0
-        return execute_execution_plan(root, plan, execution_environment)
+        prerequisites = selected_prerequisites(plan, changed_paths)
+        evidence = _execution_evidence_request(
+            execution_environment,
+            root=root,
+            profile=arguments.profile,
+            context=context,
+            selection_reasons=_selection_reasons(
+                registry,
+                public_contract,
+                selected_suites,
+                selected_root_gate_ids,
+                plan,
+            ),
+            node_selected=prerequisites.node,
+            observe_runtime=True,
+        )
+        return execute_execution_plan(
+            root,
+            plan,
+            execution_environment,
+            evidence=evidence,
+        )
     except (GateContractError, argparse.ArgumentError) as error:
         if isinstance(error, GateContractError):
             code = error.code
@@ -1343,17 +1907,44 @@ def _verify_invocation(
                 invocation.entrypoint.as_posix(),
                 "the entrypoint identity differs from the tracked object",
             )
+        source_sha256 = _descriptor_sha256(entrypoint_fd, metadata.st_size)
         return _VerifiedInvocation(
             invocation,
             entrypoint_fd,
             cwd_fd,
             interpreter,
+            object_id,
+            source_sha256,
+            metadata.st_size,
         )
     except BaseException:
         if entrypoint_fd >= 0:
             _close(entrypoint_fd)
         _close(cwd_fd)
         raise
+
+
+def _descriptor_sha256(descriptor: int, expected_size: int) -> str:
+    digest = hashlib.sha256()
+    offset = 0
+    while offset < expected_size:
+        chunk = os.pread(descriptor, min(65536, expected_size - offset), offset)
+        if not chunk:
+            raise GateContractError(
+                "ci-gate-entrypoint-identity",
+                "entrypoint",
+                "the verified entrypoint changed while it was hashed",
+            )
+        digest.update(chunk)
+        offset += len(chunk)
+    metadata = os.fstat(descriptor)
+    if metadata.st_size != expected_size or os.pread(descriptor, 1, expected_size):
+        raise GateContractError(
+            "ci-gate-entrypoint-identity",
+            "entrypoint",
+            "the verified entrypoint changed while it was hashed",
+        )
+    return digest.hexdigest()
 
 
 def _git_environment(path_value: str) -> dict[str, str]:
@@ -1544,7 +2135,7 @@ def _run_verified_child(
     root_fd: int,
     item: _VerifiedInvocation,
     environment: Mapping[str, str],
-) -> int:
+) -> _ChildOutcome:
     argv = [
         f"/proc/self/fd/{item.entrypoint_fd}",
         *item.invocation.argv,
@@ -1591,13 +2182,14 @@ def _run_verified_child(
             if lifecycle.process is not None:
                 lifecycle.mark_cleanup_failed()
         cleanup_failed = lifecycle.cleanup_failed
-    return _resolve_process_result(
+    result = _resolve_process_result(
         item.invocation.gate_id,
         lifecycle,
         product_error,
         cleanup_failed=cleanup_failed,
         timed_out=timed_out,
     )
+    return _ChildOutcome(result, timed_out=timed_out)
 
 
 def _finalize_process_group(

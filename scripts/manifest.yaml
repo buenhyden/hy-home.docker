@@ -511,6 +511,19 @@ files:
   tests:
   - tests/lib/gate/test_ci_gate_contract.py
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/lib/gate/ci_gate_evidence.py
+  kind: validator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/gate/ci_gate_adapters.py
+  - scripts/validation/ci_gate_runner.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/gate/test_ci_gate_evidence.py
+  - tests/validation/test_ci_gate_execution_context.py
 - path: scripts/lib/gate/github_workflow_contract.py
   kind: validator
   authority: .github/workflow-contract.yml
@@ -988,6 +1001,16 @@ files:
   tests:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/requirements-controller.lock
+  kind: dependency-manifest
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflows/ci-quality.yml
+  disposition: retain
+  successor: null
+  tests: []
 - path: scripts/requirements-pre-commit.txt
   kind: dependency-manifest
   authority: .github/workflow-contract.yml

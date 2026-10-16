@@ -354,17 +354,44 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "TRUSTED_HEAD_SHA": "${{ steps.trusted-context.outputs.head-sha }}",
             "TRUSTED_GIT_PATH": "${{ steps.trusted-context.outputs.git-path }}",
             "TRUSTED_PYTHON_PATH": "${{ steps.trusted-context.outputs.python-path }}",
+            "TRUSTED_GIT_VERSION": "${{ steps.trusted-context.outputs.git-version }}",
+            "TRUSTED_GIT_SHA256": "${{ steps.trusted-context.outputs.git-sha256 }}",
+            "TRUSTED_PYTHON_VERSION": "${{ steps.trusted-context.outputs.python-version }}",
+            "TRUSTED_PYTHON_SHA256": "${{ steps.trusted-context.outputs.python-sha256 }}",
+            "TRUSTED_UV_PATH": "${{ steps.uv-context.outputs.uv-path }}",
+            "TRUSTED_UV_VERSION": "${{ steps.uv-context.outputs.uv-version }}",
+            "TRUSTED_UV_SHA256": "${{ steps.uv-context.outputs.uv-sha256 }}",
+            "TRUSTED_IMAGE_OS": "${{ steps.trusted-context.outputs.image-os }}",
+            "TRUSTED_IMAGE_VERSION": "${{ steps.trusted-context.outputs.image-version }}",
+            "TRUSTED_RUNNER_ARCH": "${{ steps.trusted-context.outputs.runner-arch }}",
+            "CI_GATE_EVIDENCE_DIR": "${{ runner.temp }}/ci-gate-evidence",
         }
-        for name in (
-            "Select candidate prerequisites",
-            "Run changed candidate validation",
-        ):
-            step = next(item for item in steps if item.get("name") == name)
-            self.assertEqual(trusted_environment, step["env"])
+        prerequisite_step = next(
+            item
+            for item in steps
+            if item.get("name") == "Select candidate prerequisites"
+        )
+        self.assertEqual(trusted_environment, prerequisite_step["env"])
+        run_step = next(
+            item
+            for item in steps
+            if item.get("name") == "Run changed candidate validation"
+        )
+        self.assertEqual(
+            {
+                **trusted_environment,
+                "TRUSTED_NODE_PATH": "${{ steps.node-context.outputs.node-path }}",
+                "TRUSTED_NODE_VERSION": "${{ steps.node-context.outputs.node-version }}",
+                "TRUSTED_NODE_SHA256": "${{ steps.node-context.outputs.node-sha256 }}",
+            },
+            run_step["env"],
+        )
         for name in (
             "Capture trusted pull request context",
+            "Capture trusted uv context",
             "Install validation controller dependencies",
             "Select candidate prerequisites",
+            "Capture selected Node context",
             "Verify selected Docker prerequisite",
             "Run changed candidate validation",
         ):
@@ -379,7 +406,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if item.get("name") == "Install validation controller dependencies"
         )
         self.assertEqual(
-            {"TRUSTED_PYTHON_PATH": "${{ steps.trusted-context.outputs.python-path }}"},
+            {
+                "TRUSTED_PYTHON_PATH": "${{ steps.trusted-context.outputs.python-path }}",
+                "TRUSTED_UV_PATH": "${{ steps.uv-context.outputs.uv-path }}",
+            },
             install["env"],
         )
         self.assertEqual(
@@ -450,6 +480,24 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "leaf.zizmor",
         ):
             self.assertLess(positions["leaf.changed-style"], positions[gate_id])
+
+    def test_controller_lock_routes_to_the_existing_workflow_harness(self) -> None:
+        document = self.load_contract_document(ROOT)
+        public = gate_contract.parse_public_gate_contract(document)
+        changed_paths = ("scripts/requirements-controller.lock",)
+        explicit_prefixes = {
+            prefix
+            for rule in (*public.changed_rules, *public.changed_root_rules)
+            for prefix in rule.prefixes
+        }
+        self.assertIn(changed_paths[0], explicit_prefixes)
+        suites = gate_contract.select_public_suites(public, "changed", changed_paths)
+        roots = gate_contract.public_root_gate_ids(
+            public,
+            suites,
+            changed_paths=changed_paths,
+        )
+        self.assertIn("local.workflow-harness", roots)
 
     def test_storybook_shell_accepts_typed_full_route_direct_and_held(self) -> None:
         script = ROOT / "scripts/validation/check-storybook-contract.sh"
@@ -560,11 +608,31 @@ class GithubWorkflowContractTests(unittest.TestCase):
             for step in ci.data["jobs"]["candidate-quality"]["steps"]
             if step.get("name") == "Capture trusted pull request context"
         )
+        main_capture_run = next(
+            step["run"]
+            for step in ci.data["jobs"]["main-security"]["steps"]
+            if step.get("name") == "Capture trusted main context"
+        )
+        uv_capture_runs = {
+            step["run"]
+            for job in ci.data["jobs"].values()
+            for step in job.get("steps", ())
+            if isinstance(step, dict)
+            and step.get("name") == "Capture trusted uv context"
+        }
+        node_capture_run = next(
+            step["run"]
+            for step in ci.data["jobs"]["candidate-quality"]["steps"]
+            if step.get("name") == "Capture selected Node context"
+        )
         self.assertEqual(
             {
                 capture_run,
-                "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif",
-                '"$TRUSTED_PYTHON_PATH" -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt',
+                main_capture_run,
+                *uv_capture_runs,
+                node_capture_run,
+                '"$TRUSTED_PYTHON_PATH" scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif',
+                '"$TRUSTED_UV_PATH" pip install --python "$TRUSTED_PYTHON_PATH" --require-hashes -r scripts/requirements-controller.lock',
                 '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
                 "docker version",
                 '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed',
@@ -831,7 +899,17 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     def test_action_registry_and_ci_precommit_wiring_are_exact(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
-        self.assertEqual(8, len(contract.actions))
+        self.assertEqual(9, len(contract.actions))
+        self.assertEqual(1, contract.execution_evidence.schema_version)
+        self.assertEqual("SPEC-0211-TSK-0003", contract.execution_evidence.owner)
+        self.assertEqual("ci-gate-evidence", contract.execution_evidence.directory_name)
+        self.assertEqual("plan.json", contract.execution_evidence.plan_file)
+        self.assertEqual("result.json", contract.execution_evidence.result_file)
+        self.assertEqual(
+            "evidence-manifest.json", contract.execution_evidence.manifest_file
+        )
+        self.assertEqual(262144, contract.execution_evidence.max_file_bytes)
+        self.assertEqual(14, contract.execution_evidence.retention_days)
         self.assertEqual(
             {"node24"},
             {action.runtime for action in contract.actions},
@@ -862,21 +940,132 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
             security_steps[1]["uses"],
         )
+        self.assertEqual({"python-version": "3.14.8"}, security_steps[1]["with"])
         setup_uv = next(
             f"{action.action}@{action.sha}"
             for action in contract.actions
             if action.action == "astral-sh/setup-uv"
         )
-        self.assertEqual(setup_uv, security_steps[2]["uses"])
-        self.assertEqual(
-            "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif",
-            security_steps[3]["run"],
+        security_uv = next(
+            step for step in security_steps if step.get("name") == "Install uv"
         )
-        self.assertIn("github/codeql-action/upload-sarif@", security_steps[4]["uses"])
+        security_capture = next(
+            step
+            for step in security_steps
+            if step.get("name") == "Capture trusted main context"
+        )
+        self.assertEqual(setup_uv, security_uv["uses"])
+        expected_uv_inputs = {
+            "version": "0.12.18",
+            "checksum": "89eadd7c76fc063887959510d5ba0ab1264dfd5f1143b925ddb73021a40acf16",
+            "enable-cache": False,
+        }
+        self.assertEqual(expected_uv_inputs, security_uv["with"])
+        self.assertEqual("main-context", security_capture["id"])
+        self.assertEqual(
+            "/usr/bin/bash --noprofile --norc -eo pipefail {0}",
+            security_capture["shell"],
+        )
+        candidate_steps = ci_jobs["candidate-quality"]["steps"]
+        candidate_python = next(
+            step for step in candidate_steps if step.get("name") == "Set up Python"
+        )
+        candidate_uv = next(
+            step for step in candidate_steps if step.get("name") == "Install uv"
+        )
+        candidate_node = next(
+            step for step in candidate_steps if step.get("name") == "Set up Node.js"
+        )
+        self.assertEqual({"python-version": "3.14.8"}, candidate_python["with"])
+        self.assertEqual(expected_uv_inputs, candidate_uv["with"])
+        self.assertEqual(
+            {"node-version": "24.22.0", "package-manager-cache": False},
+            candidate_node["with"],
+        )
+        security_runs = {
+            step.get("name"): step["run"] for step in security_steps if "run" in step
+        }
+        self.assertEqual(
+            '"$TRUSTED_UV_PATH" pip install --python "$TRUSTED_PYTHON_PATH" --require-hashes -r scripts/requirements-controller.lock',
+            security_runs["Install security controller dependencies"],
+        )
+        self.assertEqual(
+            '"$TRUSTED_PYTHON_PATH" scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif',
+            security_runs["Audit merged workflow revision"],
+        )
+        security_audit = next(
+            step
+            for step in security_steps
+            if step.get("name") == "Audit merged workflow revision"
+        )
+        self.assertEqual(
+            {
+                "TRUSTED_PYTHON_PATH": "${{ steps.main-context.outputs.python-path }}",
+                "TRUSTED_GIT_PATH": "${{ steps.main-context.outputs.git-path }}",
+                "TRUSTED_GIT_VERSION": "${{ steps.main-context.outputs.git-version }}",
+                "TRUSTED_GIT_SHA256": "${{ steps.main-context.outputs.git-sha256 }}",
+                "TRUSTED_PYTHON_VERSION": "${{ steps.main-context.outputs.python-version }}",
+                "TRUSTED_PYTHON_SHA256": "${{ steps.main-context.outputs.python-sha256 }}",
+                "TRUSTED_UV_PATH": "${{ steps.main-uv-context.outputs.uv-path }}",
+                "TRUSTED_UV_VERSION": "${{ steps.main-uv-context.outputs.uv-version }}",
+                "TRUSTED_UV_SHA256": "${{ steps.main-uv-context.outputs.uv-sha256 }}",
+                "TRUSTED_IMAGE_OS": "${{ steps.main-context.outputs.image-os }}",
+                "TRUSTED_IMAGE_VERSION": "${{ steps.main-context.outputs.image-version }}",
+                "TRUSTED_RUNNER_ARCH": "${{ steps.main-context.outputs.runner-arch }}",
+                "CI_GATE_EVIDENCE_DIR": "${{ runner.temp }}/ci-gate-evidence",
+            },
+            security_audit["env"],
+        )
+        self.assertTrue(
+            any(
+                "github/codeql-action/upload-sarif@" in step.get("uses", "")
+                for step in security_steps
+            )
+        )
         self.assertEqual(
             "pre-commit==4.6.2\ncommitizen==4.15.1\n",
             (ROOT / "scripts/requirements-pre-commit.txt").read_text(encoding="utf-8"),
         )
+        self.assertIn(
+            "zizmor==1.28.0\n",
+            (ROOT / "scripts/requirements.txt").read_text(encoding="utf-8"),
+        )
+
+        upload_action = next(
+            f"{action.action}@{action.sha}"
+            for action in contract.actions
+            if action.action == "actions/upload-artifact"
+        )
+        self.assertEqual(
+            "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            upload_action,
+        )
+        for job_id, artifact_name in (
+            ("candidate-quality", "candidate-quality-gate-evidence"),
+            ("main-security", "main-security-gate-evidence"),
+        ):
+            upload = next(
+                step
+                for step in ci_jobs[job_id]["steps"]
+                if step.get("name") == "Upload gate evidence"
+            )
+            self.assertEqual("always()", upload["if"])
+            self.assertEqual(upload_action, upload["uses"])
+            self.assertEqual(
+                {
+                    "name": artifact_name,
+                    "path": (
+                        "${{ runner.temp }}/ci-gate-evidence/plan.json\n"
+                        "${{ runner.temp }}/ci-gate-evidence/result.json\n"
+                        "${{ runner.temp }}/ci-gate-evidence/evidence-manifest.json\n"
+                    ),
+                    "if-no-files-found": "error",
+                    "retention-days": 14,
+                    "overwrite": False,
+                    "include-hidden-files": False,
+                },
+                upload["with"],
+            )
 
     def test_forbidden_trigger_and_action_mutations_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -901,6 +1090,33 @@ class GithubWorkflowContractTests(unittest.TestCase):
         codes = {finding.code for finding in findings}
         self.assertIn("workflow-trigger-forbidden", codes)
         self.assertIn("action-ref-mutable", codes)
+
+    def test_evidence_upload_rejects_broader_or_missing_paths(self) -> None:
+        for replacement in (
+            "${{ runner.temp }}/ci-gate-evidence/*.json",
+            "${{ runner.temp }}/ci-gate-evidence/plan.json",
+        ):
+            with self.subTest(replacement=replacement), self.workflow_fixture() as root:
+                workflow = root / ".github/workflows/ci-quality.yml"
+                text = workflow.read_text(encoding="utf-8")
+                expected = (
+                    "${{ runner.temp }}/ci-gate-evidence/plan.json\n"
+                    "            ${{ runner.temp }}/ci-gate-evidence/result.json\n"
+                    "            ${{ runner.temp }}/ci-gate-evidence/evidence-manifest.json"
+                )
+                self.assertIn(expected, text)
+                workflow.write_text(
+                    text.replace(expected, replacement, 1),
+                    encoding="utf-8",
+                )
+                findings = self.module.validate_workflows(
+                    root,
+                    self.module.load_workflow_contract(root),
+                )
+                self.assertIn(
+                    "workflow-gate-projection-mismatch",
+                    {finding.code for finding in findings},
+                )
 
     @staticmethod
     def _required_quality_jobs(module, root: pathlib.Path):
@@ -931,9 +1147,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
             [
                 (
                     "candidate-quality",
+                    "Capture selected Node context",
+                    "steps.prerequisites.outputs.node == 'true'",
+                ),
+                (
+                    "candidate-quality",
                     "Verify selected Docker prerequisite",
                     "steps.prerequisites.outputs.docker == 'true'",
-                )
+                ),
             ],
             conditioned_steps,
         )
@@ -964,7 +1185,21 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual({"contents": "read"}, candidate["permissions"])
         self.assertEqual(
-            ["python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif"],
+            [
+                next(
+                    step["run"]
+                    for step in security["steps"]
+                    if step.get("name") == "Capture trusted main context"
+                ),
+                next(
+                    step["run"]
+                    for step in security["steps"]
+                    if step.get("name") == "Capture trusted uv context"
+                ),
+                '"$TRUSTED_UV_PATH" pip install --python "$TRUSTED_PYTHON_PATH" --require-hashes -r '
+                "scripts/requirements-controller.lock",
+                '"$TRUSTED_PYTHON_PATH" scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif',
+            ],
             [step["run"] for step in security["steps"] if "run" in step],
         )
         self.assertEqual(
@@ -1031,7 +1266,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "candidate-mutable-shell-path",
                 "candidate-quality",
-                lambda job: job["steps"][-1].pop("shell"),
+                lambda job: next(
+                    step
+                    for step in job["steps"]
+                    if step.get("name") == "Run changed candidate validation"
+                ).pop("shell"),
                 "workflow-gate-execution-context-invalid",
             ),
             (
@@ -1043,7 +1282,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "security-command-injection",
                 "main-security",
-                lambda job: job["steps"][3].update({"run": "bash -c true"}),
+                lambda job: next(
+                    step
+                    for step in job["steps"]
+                    if step.get("name") == "Capture trusted main context"
+                ).update({"run": "bash -c true"}),
                 "workflow-gate-projection-mismatch",
             ),
         )
@@ -1272,7 +1515,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "unsafe-run-interpolation",
                 ".github/workflows/ci-quality.yml",
-                "        run: python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif\n",
+                "        run: '\"$TRUSTED_PYTHON_PATH\" scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif'\n",
                 f'        run: echo "${{{{ github.event.pull_request.title }}}}-{sentinel}"\n',
                 "workflow-run-interpolation-unsafe",
             ),

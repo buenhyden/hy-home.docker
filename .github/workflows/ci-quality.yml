@@ -30,7 +30,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: '3.14'
+          python-version: '3.14.8'
       - name: Capture trusted pull request context
         id: trusted-context
         shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
@@ -38,11 +38,17 @@ jobs:
           export GIT_CONFIG_GLOBAL=/dev/null
           export GIT_CONFIG_NOSYSTEM=1
           export GIT_NO_REPLACE_OBJECTS=1
-          git_path="$(type -P git)"
-          python_path="$(type -P python3)"
+          git_path="$(/usr/bin/readlink -f -- "$(type -P git)")"
+          python_path="$(/usr/bin/readlink -f -- "$(type -P python3)")"
           test -n "$git_path" && test -x "$git_path"
           test -n "$python_path" && test -x "$python_path"
+          /usr/bin/chmod go-w -- "$python_path"
           test "$GITHUB_EVENT_NAME" = pull_request
+          git_version="$("$git_path" --version)"
+          python_version="$("$python_path" --version 2>&1)"
+          read -r git_sha256 _ < <(/usr/bin/sha256sum -- "$git_path")
+          read -r python_sha256 _ < <(/usr/bin/sha256sum -- "$python_path")
+          test -n "$ImageOS" && test -n "$ImageVersion" && test -n "$RUNNER_ARCH"
           test "$("$git_path" rev-parse --verify 'HEAD^{commit}')" = "$GITHUB_SHA"
           mapfile -t parents < <("$git_path" cat-file commit "$GITHUB_SHA" | sed -n 's/^parent \([0-9a-f]\{40\}\)$/\1/p')
           test "${#parents[@]}" -eq 2
@@ -52,15 +58,41 @@ jobs:
             printf 'base-sha=%s\n' "${parents[0]}"
             printf 'head-sha=%s\n' "${parents[1]}"
             printf 'git-path=%s\n' "$git_path"
+            printf 'git-version=%s\n' "$git_version"
+            printf 'git-sha256=%s\n' "$git_sha256"
             printf 'python-path=%s\n' "$python_path"
+            printf 'python-version=%s\n' "$python_version"
+            printf 'python-sha256=%s\n' "$python_sha256"
+            printf 'image-os=%s\n' "$ImageOS"
+            printf 'image-version=%s\n' "$ImageVersion"
+            printf 'runner-arch=%s\n' "$RUNNER_ARCH"
           } >> "$GITHUB_OUTPUT"
       - name: Install uv
         uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+        with:
+          version: '0.12.18'
+          checksum: 89eadd7c76fc063887959510d5ba0ab1264dfd5f1143b925ddb73021a40acf16
+          enable-cache: false
+      - name: Capture trusted uv context
+        id: uv-context
+        shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
+        run: |
+          uv_path="$(/usr/bin/readlink -f -- "$(type -P uv)")"
+          test -n "$uv_path" && test -x "$uv_path"
+          /usr/bin/chmod go-w -- "$uv_path"
+          uv_version="$("$uv_path" --version)"
+          read -r uv_sha256 _ < <(/usr/bin/sha256sum -- "$uv_path")
+          {
+            printf 'uv-path=%s\n' "$uv_path"
+            printf 'uv-version=%s\n' "$uv_version"
+            printf 'uv-sha256=%s\n' "$uv_sha256"
+          } >> "$GITHUB_OUTPUT"
       - name: Install validation controller dependencies
         env:
           TRUSTED_PYTHON_PATH: ${{ steps.trusted-context.outputs.python-path }}
+          TRUSTED_UV_PATH: ${{ steps.uv-context.outputs.uv-path }}
         shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
-        run: '"$TRUSTED_PYTHON_PATH" -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt'
+        run: '"$TRUSTED_UV_PATH" pip install --python "$TRUSTED_PYTHON_PATH" --require-hashes -r scripts/requirements-controller.lock'
       - name: Select candidate prerequisites
         id: prerequisites
         env:
@@ -70,13 +102,39 @@ jobs:
           TRUSTED_HEAD_SHA: ${{ steps.trusted-context.outputs.head-sha }}
           TRUSTED_GIT_PATH: ${{ steps.trusted-context.outputs.git-path }}
           TRUSTED_PYTHON_PATH: ${{ steps.trusted-context.outputs.python-path }}
+          TRUSTED_GIT_VERSION: ${{ steps.trusted-context.outputs.git-version }}
+          TRUSTED_GIT_SHA256: ${{ steps.trusted-context.outputs.git-sha256 }}
+          TRUSTED_PYTHON_VERSION: ${{ steps.trusted-context.outputs.python-version }}
+          TRUSTED_PYTHON_SHA256: ${{ steps.trusted-context.outputs.python-sha256 }}
+          TRUSTED_UV_PATH: ${{ steps.uv-context.outputs.uv-path }}
+          TRUSTED_UV_VERSION: ${{ steps.uv-context.outputs.uv-version }}
+          TRUSTED_UV_SHA256: ${{ steps.uv-context.outputs.uv-sha256 }}
+          TRUSTED_IMAGE_OS: ${{ steps.trusted-context.outputs.image-os }}
+          TRUSTED_IMAGE_VERSION: ${{ steps.trusted-context.outputs.image-version }}
+          TRUSTED_RUNNER_ARCH: ${{ steps.trusted-context.outputs.runner-arch }}
+          CI_GATE_EVIDENCE_DIR: ${{ runner.temp }}/ci-gate-evidence
         shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
         run: '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"'
       - name: Set up Node.js
         if: steps.prerequisites.outputs.node == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: '24'
+          node-version: '24.22.0'
+          package-manager-cache: false
+      - name: Capture selected Node context
+        if: steps.prerequisites.outputs.node == 'true'
+        id: node-context
+        shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
+        run: |
+          node_path="$(/usr/bin/readlink -f -- "$(type -P node)")"
+          test -n "$node_path" && test -x "$node_path"
+          node_version="$("$node_path" --version)"
+          read -r node_sha256 _ < <(/usr/bin/sha256sum -- "$node_path")
+          {
+            printf 'node-path=%s\n' "$node_path"
+            printf 'node-version=%s\n' "$node_version"
+            printf 'node-sha256=%s\n' "$node_sha256"
+          } >> "$GITHUB_OUTPUT"
       - name: Verify selected Docker prerequisite
         if: steps.prerequisites.outputs.docker == 'true'
         shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
@@ -89,8 +147,35 @@ jobs:
           TRUSTED_HEAD_SHA: ${{ steps.trusted-context.outputs.head-sha }}
           TRUSTED_GIT_PATH: ${{ steps.trusted-context.outputs.git-path }}
           TRUSTED_PYTHON_PATH: ${{ steps.trusted-context.outputs.python-path }}
+          TRUSTED_GIT_VERSION: ${{ steps.trusted-context.outputs.git-version }}
+          TRUSTED_GIT_SHA256: ${{ steps.trusted-context.outputs.git-sha256 }}
+          TRUSTED_PYTHON_VERSION: ${{ steps.trusted-context.outputs.python-version }}
+          TRUSTED_PYTHON_SHA256: ${{ steps.trusted-context.outputs.python-sha256 }}
+          TRUSTED_UV_PATH: ${{ steps.uv-context.outputs.uv-path }}
+          TRUSTED_UV_VERSION: ${{ steps.uv-context.outputs.uv-version }}
+          TRUSTED_UV_SHA256: ${{ steps.uv-context.outputs.uv-sha256 }}
+          TRUSTED_NODE_PATH: ${{ steps.node-context.outputs.node-path }}
+          TRUSTED_NODE_VERSION: ${{ steps.node-context.outputs.node-version }}
+          TRUSTED_NODE_SHA256: ${{ steps.node-context.outputs.node-sha256 }}
+          TRUSTED_IMAGE_OS: ${{ steps.trusted-context.outputs.image-os }}
+          TRUSTED_IMAGE_VERSION: ${{ steps.trusted-context.outputs.image-version }}
+          TRUSTED_RUNNER_ARCH: ${{ steps.trusted-context.outputs.runner-arch }}
+          CI_GATE_EVIDENCE_DIR: ${{ runner.temp }}/ci-gate-evidence
         shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
         run: '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed'
+      - name: Upload gate evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: candidate-quality-gate-evidence
+          path: |
+            ${{ runner.temp }}/ci-gate-evidence/plan.json
+            ${{ runner.temp }}/ci-gate-evidence/result.json
+            ${{ runner.temp }}/ci-gate-evidence/evidence-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: false
+          include-hidden-files: false
 
   main-security:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -109,13 +194,91 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: '3.14'
+          python-version: '3.14.8'
+      - name: Capture trusted main context
+        id: main-context
+        shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
+        run: |
+          git_path="$(/usr/bin/readlink -f -- "$(type -P git)")"
+          python_path="$(/usr/bin/readlink -f -- "$(type -P python3)")"
+          test -n "$git_path" && test -x "$git_path"
+          test -n "$python_path" && test -x "$python_path"
+          /usr/bin/chmod go-w -- "$python_path"
+          test "$GITHUB_EVENT_NAME" = push
+          git_version="$("$git_path" --version)"
+          python_version="$("$python_path" --version 2>&1)"
+          read -r git_sha256 _ < <(/usr/bin/sha256sum -- "$git_path")
+          read -r python_sha256 _ < <(/usr/bin/sha256sum -- "$python_path")
+          test -n "$ImageOS" && test -n "$ImageVersion" && test -n "$RUNNER_ARCH"
+          {
+            printf 'git-path=%s\n' "$git_path"
+            printf 'git-version=%s\n' "$git_version"
+            printf 'git-sha256=%s\n' "$git_sha256"
+            printf 'python-path=%s\n' "$python_path"
+            printf 'python-version=%s\n' "$python_version"
+            printf 'python-sha256=%s\n' "$python_sha256"
+            printf 'image-os=%s\n' "$ImageOS"
+            printf 'image-version=%s\n' "$ImageVersion"
+            printf 'runner-arch=%s\n' "$RUNNER_ARCH"
+          } >> "$GITHUB_OUTPUT"
       - name: Install uv
         uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+        with:
+          version: '0.12.18'
+          checksum: 89eadd7c76fc063887959510d5ba0ab1264dfd5f1143b925ddb73021a40acf16
+          enable-cache: false
+      - name: Capture trusted uv context
+        id: main-uv-context
+        shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
+        run: |
+          uv_path="$(/usr/bin/readlink -f -- "$(type -P uv)")"
+          test -n "$uv_path" && test -x "$uv_path"
+          /usr/bin/chmod go-w -- "$uv_path"
+          uv_version="$("$uv_path" --version)"
+          read -r uv_sha256 _ < <(/usr/bin/sha256sum -- "$uv_path")
+          {
+            printf 'uv-path=%s\n' "$uv_path"
+            printf 'uv-version=%s\n' "$uv_version"
+            printf 'uv-sha256=%s\n' "$uv_sha256"
+          } >> "$GITHUB_OUTPUT"
+      - name: Install security controller dependencies
+        env:
+          TRUSTED_PYTHON_PATH: ${{ steps.main-context.outputs.python-path }}
+          TRUSTED_UV_PATH: ${{ steps.main-uv-context.outputs.uv-path }}
+        shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
+        run: '"$TRUSTED_UV_PATH" pip install --python "$TRUSTED_PYTHON_PATH" --require-hashes -r scripts/requirements-controller.lock'
       - name: Audit merged workflow revision
-        run: python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif
+        env:
+          TRUSTED_PYTHON_PATH: ${{ steps.main-context.outputs.python-path }}
+          TRUSTED_GIT_PATH: ${{ steps.main-context.outputs.git-path }}
+          TRUSTED_GIT_VERSION: ${{ steps.main-context.outputs.git-version }}
+          TRUSTED_GIT_SHA256: ${{ steps.main-context.outputs.git-sha256 }}
+          TRUSTED_PYTHON_VERSION: ${{ steps.main-context.outputs.python-version }}
+          TRUSTED_PYTHON_SHA256: ${{ steps.main-context.outputs.python-sha256 }}
+          TRUSTED_UV_PATH: ${{ steps.main-uv-context.outputs.uv-path }}
+          TRUSTED_UV_VERSION: ${{ steps.main-uv-context.outputs.uv-version }}
+          TRUSTED_UV_SHA256: ${{ steps.main-uv-context.outputs.uv-sha256 }}
+          TRUSTED_IMAGE_OS: ${{ steps.main-context.outputs.image-os }}
+          TRUSTED_IMAGE_VERSION: ${{ steps.main-context.outputs.image-version }}
+          TRUSTED_RUNNER_ARCH: ${{ steps.main-context.outputs.runner-arch }}
+          CI_GATE_EVIDENCE_DIR: ${{ runner.temp }}/ci-gate-evidence
+        shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
+        run: '"$TRUSTED_PYTHON_PATH" scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif'
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
         with:
           sarif_file: results.sarif
           category: zizmor
+      - name: Upload gate evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: main-security-gate-evidence
+          path: |
+            ${{ runner.temp }}/ci-gate-evidence/plan.json
+            ${{ runner.temp }}/ci-gate-evidence/result.json
+            ${{ runner.temp }}/ci-gate-evidence/evidence-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: false
+          include-hidden-files: false
