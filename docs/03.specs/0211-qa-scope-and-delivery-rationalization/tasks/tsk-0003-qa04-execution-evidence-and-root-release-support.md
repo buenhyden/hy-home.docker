@@ -1,6 +1,6 @@
 ---
 title: "QA04 Execution Evidence and ROOT Release Support"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -243,6 +243,28 @@ Current receipt:
   remote observations. This source delivery does not relabel those future
   receipts or close the Task.
 
+### Hosted PR 508 observations
+
+The first hosted runs of PR [#508](https://github.com/buenhyden/hy-home.docker/pull/508)
+exposed four defects that local focused tests could not reach. Each fix is a
+separate logical commit on the PR branch.
+
+1. The hosted `setup-python` interpreter is installed `0o100777` and owned by
+   the runner user, so the group/other-write rejection failed with `EPERM` on
+   every hosted run. The capture steps now remove group and other write
+   (`chmod go-w`) from the resolved `python3` and `uv` before hashing, and the
+   workflow contract pins that command. The rejection itself is unchanged.
+2. `leaf.compose-baseline-regressions` passes 80 explicit module arguments, but
+   the evidence row bound was 64. The bound is now 256, with an accepted
+   81-argument regression and a rejected 257-argument case.
+3. `scripts/lib/gate/ci_gate_evidence.py` had no script-manifest row.
+4. `tests.lib.gate.test_ci_gate_evidence` was not reachable from the full
+   profile; it now runs in `leaf.ci-gate-contract-regressions`.
+
+Diagnostic messages now name the OS reason, file mode, and failing gate ID;
+they expose no path content or secret value. These observations do not run
+E07 or E08 and do not change any criterion decision.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -258,6 +280,14 @@ Current receipt:
 | E08-actual-full | 2, 3, 5 | W73 | qa04-explicit-full-and-requirements | Same declared final input and full audit mode | NOT_RUN | Work Log: W73 | required | - |
 | E09-remote-current-head | 3, 5 | W73 | exact-head-remote-and-protection-observation | Final PR and merged-main identities | NOT_RUN | Work Log: W73 | required | - |
 | E10-independent-review | 2, 3, 4, 5 | W73 | final-source-and-evidence-review | Frozen logical diff and actual receipts | NOT_RUN | Review and Completion | required | - |
+| E11-hosted-toolchain-mode | 2, 3, 5 | W71 | hosted-toolchain-identity | PR 508 runs `38855633760`, `38857315650` | FAIL | `EPERM`: interpreter mode `0o100777`, owner is runner | required | - |
+| E12-hosted-toolchain-mode-green | 2, 3, 5 | W71 | hosted-toolchain-identity | PR 508 run `38857640474` after `chmod go-w` capture | PASS | Prerequisite selection passed | required | E11-hosted-toolchain-mode |
+| E13-hosted-argv-bound | 2, 3, 5 | W72 | hosted-evidence-row-bound | PR 508 run `38857498273` | FAIL | `leaf.compose-baseline-regressions` argv 81 exceeded 64 | required | - |
+| E14-hosted-argv-bound-green | 2, 3, 5 | W72 | hosted-evidence-row-bound | PR 508 run `38857640474` after the 256 bound | PASS | Evidence rows accepted; changed validation started | required | E13-hosted-argv-bound |
+| E15-manifest-row | 2, 5 | W72 | script-manifest-coverage | PR 508 run `38857640474` | FAIL | `manifest-record-missing` for `ci_gate_evidence.py` | required | - |
+| E16-manifest-row-green | 2, 5 | W72 | script-manifest-coverage | `check-script-manifest.py`; PR 508 run `38858240031` | PASS | No manifest finding | required | E15-manifest-row |
+| E17-full-profile-reachability | 2, 5 | W72 | full-profile-test-reachability | PR 508 run `38858240031` | FAIL | `test_ci_gate_evidence` unreachable from the full profile | required | - |
+| E18-full-profile-reachability-green | 2, 5 | W72 | full-profile-test-reachability | `test_surface_ownership`; PR 508 run `38860325987` | PASS | 955 tests OK (79 skipped) | required | E17-full-profile-reachability |
 
 ## Criterion Acceptance
 
