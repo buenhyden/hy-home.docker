@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.2.6"
+version: "1.2.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-16"
 created: "2025-11-12"
 ---
 
@@ -152,6 +152,27 @@ Dockerfile lint에서 pipeline shell의 명시 선언 누락을 확인해 upstre
 선택하는 위 manifest에서 전체 8건을 새로 실행했습니다. 이전 후보의 시험 결과나 scan을
 새 digest의 증거로 재사용하지 않습니다. 새 digest의 서명·SBOM·scan은 NOT_RUN입니다.
 
+### 독립 게시 워크로드의 native 검증
+
+고정 캐시 이미지의 import·provider 검사는 ISOLATED 증거입니다. 별도 opt-in Celery
+게시·재실행·빈 대상 복원 시험의 첫 전체 실행은 migration 세션의 role 선택 오류로
+ERROR였으며 게시·복원 성공 증거는 없습니다. 자동 cleanup FAIL과 후속 정확한 대상의
+reconciliation PASS는 별도로 보존합니다. 새 실행은 source 수정과 fresh admission을
+다시 확인한 뒤에만 선택합니다. 실행 선택자·자원·capture·
+cleanup 조건은 [워크플로 Runbook 탐색](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의
+RUN-0053, 워크로드 소스는 [manifest pipeline](workloads/manifest-pipeline/README.md)을 따릅니다.
+Airflow가 만든 같은 outbox 데이터를 n8n이 소비하는 통합 인계는 아직 검증되지 않았습니다.
+후속 전체 실행도 8개 role 기동 뒤 scheduler의 migration 명령에서 ERROR였습니다.
+당시 내부 오류 출력을 보존하지 않아 원인은 UNKNOWN입니다. 이 실행의 자동 cleanup
+FAIL과 별도 exact reconciliation PASS를 유지하며 새 config 수정이 과거 실패의 원인으로
+입증됐다고 해석하지 않습니다. 세 번째 실행은 보호된 진단에서 metadata DB의 pg_hba 규칙
+누락 FATAL을 확인했습니다. 자동 cleanup FAIL과 별도 진단·exact reconciliation PASS를
+보존하며 새 인증 규칙의 실제 게시·복원 통과는 아직 확인하지 않았습니다.
+
+현재 V6 전체 실행은 worker Python 호출의 PutObject InternalError로 ERROR였습니다.
+Seaweed 내부 원인은 UNKNOWN이며 게시 수용·복원 성공 증거는 없습니다. Docker 잔여는
+없고 자동 cleanup FAIL은 보호된 진단 보존이며 별도 reconciliation·독립 확인 상태는 Task0020의 최신 증거를 확인합니다.
+
 ## Keycloak Bootstrap
 
 Required realm roles:
@@ -217,15 +238,14 @@ docker compose exec airflow-apiserver airflow dags list
 - Airflow core/Flower/StatsD 서비스는 `workflow`/`workflow-airflow`에서 **HOME**이며 Airflow Valkey와 그 exporter는 `dedicated-valkey`에서 **OPTIONAL**입니다.
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d airflow-apiserver airflow-scheduler airflow-dag-processor airflow-worker airflow-triggerer flower airflow-statsd-exporter`.
 - `dedicated-valkey`는 해당 쌍만 시작합니다. 실제로 선택하려면 `AIRFLOW_VALKEY_HOST`와 `AIRFLOW_VALKEY_SECRET`을 함께 일치시켜야 합니다.
-- 안정적인 진입점: [docs/README.md](../../../docs/README.md). 정확한 Stage 05 경로: `docs/05.operations/guides/0050-airflow.md`; ID: `GDE-0050`, `POL-0050`, `RUN-0050`. 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다.
+- 운영 문서는 아래 탐색점의 `GDE-0050`, `POL-0050`, `RUN-0050`을 사용합니다. HOME 격리 복구는 미실행입니다.
 
 ## Related Documents
 
-- **Architecture**: `docs/02.architecture/descriptions/0007-workflow-architecture.md`
-- **Guide**: `docs/05.operations/guides/0050-airflow.md`
-- **Policy**: `docs/05.operations/policies/0050-airflow.md`
-- **Runbook**: `docs/05.operations/runbooks/0050-airflow.md`
-- **Auth Integration**: `docs/05.operations/guides/0079-application-auth-integration.md`
-- **Incident**: `docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md`
+- [Architecture 탐색](../../../docs/02.architecture/descriptions/README.md)
+- [Guide 탐색](../../../docs/05.operations/guides/08-workflows-and-automation/README.md)
+- [Policy 탐색](../../../docs/05.operations/policies/08-workflows-and-automation/README.md)
+- [Runbook 탐색](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)
+- [Incident 탐색](../../../docs/05.operations/incidents/2026/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.

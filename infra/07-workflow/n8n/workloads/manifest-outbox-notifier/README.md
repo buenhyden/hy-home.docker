@@ -1,10 +1,10 @@
 ---
 title: "독립 매니페스트 outbox 통지"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-16"
 ---
 
 # 독립 매니페스트 outbox 통지
@@ -13,7 +13,9 @@ updated: "2026-10-13"
 
 P04의 DEV 매니페스트 게시 outbox에서 한 건을 claim하고 제한된 Mailpit에
 캡처하는 n8n 소비자입니다. 현재 산출물은 공개 소스와 합성 시험이며 workflow는
-비활성입니다. 실제 import·capture·예약·회전·복구는 NOT_RUN입니다.
+비활성입니다. Task0017에서 고정한 production 이미지의 실제 custom node 로딩은 ISOLATED PASS이나
+후속 전체 native 실행도 main readiness에서 ERROR였습니다. migration 완료와 해당 실행의
+cleanup PASS를 확인했지만 업무 import·capture·예약·회전·복구의 성공 증거는 없습니다.
 
 ## Scope
 
@@ -81,13 +83,14 @@ exactly-once 보장이 아닙니다. Unknown은 SQL owner의 capture/증거 대�
 
 ## Validation
 
-```sh
-python -m unittest tests.lib.ops.test_n8n_outbox_workflow \
-  tests.validation.test_n8n_outbox_contract \
-  tests.validation.test_n8n_outbox_rehearsal -v
-```
-
 합성 시험은 실제 DB claim·SMTP capture·native n8n 동작을 증명하지 않습니다.
+명시 선택자와 고정 캐시 이미지가 없으면 `OpsflowN8nNativeRehearsal`은 기본 skip입니다.
+실행 명령·직렬 lock·자원·capture·cleanup 조건은
+[워크플로 Runbook 탐색](../../../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의
+RUN-0053을 따릅니다. 첫 전체 시험의 자동 cleanup FAIL과 후속 정확한 대상의
+reconciliation PASS는 별도로 보존합니다. 별도 SQL 논리 dump/restore PASS를 n8n
+metadata·encryption-key 복원 또는 HOME 복구로 확대하지 않습니다. Airflow가 게시한
+같은 outbox 데이터를 실제로 인계하는 통합 시험은 남아 있습니다.
 native 실행은 연결된 P04 SQL과 실제 게시 인계, SEC01의 설치 이미지·node 호환성,
 P02 credential 분류, P03 endpoint·실행 worker·접근 경계가 확정된 뒤 진행합니다.
 먼저 inactive import와 manual capture를 확인하고 이후 1분 polling 하나만 활성화합니다.

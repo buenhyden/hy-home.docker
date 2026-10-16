@@ -146,10 +146,22 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.lib.ops.test_opsflow_provision_contract",
                 "tests.validation.test_opsflow_airflow_contract",
                 "tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests",
+                "tests.validation.test_opsflow_native_boundaries",
+                "tests.validation.test_opsflow_native_evidence",
+                "tests.validation.test_opsflow_native_health_probe",
+                "tests.validation.test_opsflow_native_rehearsal",
+                "tests.validation.test_opsflow_airflow_native_evidence",
+                "tests.validation.test_opsflow_airflow_native_quiescence",
+                "tests.validation.test_opsflow_airflow_native_rehearsal",
             ],
             arguments[1:boundary],
         )
-        self.assertEqual(18, len(arguments[boundary + 1 : -1]))
+        self.assertEqual(20, len(arguments[boundary + 1 : -1]))
+        for selector in (
+            "tests.validation.test_opsflow_native_rehearsal.OpsflowN8nNativeRehearsal",
+            "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowNativeRehearsal",
+        ):
+            self.assertIn(selector, arguments[boundary + 1 : -1])
         self.assertTrue(
             all(
                 scope.rsplit(".", 1)[0] in arguments[1:boundary]
@@ -199,7 +211,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 scopes,
             )
 
-    def test_airflow_workload_paths_select_required_suites_and_explicit_roots(
+    def test_opsflow_workload_paths_select_required_suites_and_explicit_roots(
         self,
     ) -> None:
         document = gate_contract.load_contract_document(ROOT)
@@ -213,6 +225,21 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "tests/lib/ops/test_opsflow_adapters.py",
             "tests/lib/ops/test_opsflow_provision_contract.py",
             "tests/validation/test_opsflow_airflow_contract.py",
+            "tests/validation/_opsflow_airflow_native_guards.py",
+            "tests/validation/_opsflow_airflow_native_evidence.py",
+            "tests/validation/_opsflow_airflow_native_fixture.py",
+            "tests/validation/test_opsflow_airflow_native_evidence.py",
+            "tests/validation/test_opsflow_airflow_native_quiescence.py",
+            "tests/validation/test_opsflow_airflow_native_rehearsal.py",
+            "tests/validation/_opsflow_evidence_redaction.py",
+            "tests/validation/_opsflow_native_inputs.py",
+            "tests/validation/_opsflow_native_evidence.py",
+            "tests/validation/_opsflow_native_ownership.py",
+            "tests/validation/_opsflow_native_fixture.py",
+            "tests/validation/test_opsflow_native_boundaries.py",
+            "tests/validation/test_opsflow_native_evidence.py",
+            "tests/validation/test_opsflow_native_health_probe.py",
+            "tests/validation/test_opsflow_native_rehearsal.py",
         )
         paths = (
             workload + "README.md",
@@ -267,7 +294,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         boundary = compose_arguments.index("--optional-runtime-skips")
         optional = compose_arguments[boundary + 1 : -1]
         self.assertNotIn(module, optional)
-        self.assertEqual(18, len(optional))
+        self.assertEqual(20, len(optional))
 
     def setUp(self) -> None:
         self.module = load_contract_module()

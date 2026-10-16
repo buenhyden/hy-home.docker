@@ -181,6 +181,8 @@ provisioning, LAB runtime or learning-application work.
 | W71 | 2 | Prepare one compatible n8n stable source bundle | None | TSK-0017 | Exact pins, locked package, compile/tests; native separately |
 | W72 | 18 | Reject cross-database CONNECT before workload login | None | TSK-0018 | Shared provision guard, operator bootstrap, isolated native denials/restore |
 | W73 | 19 | Quarantine ambiguous sends and reject expired SMTP leases | W72 | TSK-0018 | Versioned SQL004, closed consumer contract, deadline and native quarantine tests |
+| W74 | 19 | Execute the existing n8n notifier through an actual isolated queue worker, external runner and SMTP capture, then perform serial empty restoration | W73 | TSK-0019 | Exact reviewed images, terminal execution and Code-node proof, capture/unknown/reconciliation/no-resend and separate metadata/DEV restore; no accepted-response-loss or HOME claim |
+| W75 | 18 | Execute existing Airflow manifest DAG through actual isolated Celery publication, retry, replay and serial empty restoration | None | TSK-0020 | Exact cached-image driver/UID preflight, terminal DagRun/task/Celery identity, real S3 readback and separate DEV/metadata PG18.6 restore |
 
 ### P10 staged admission and acceptance ownership
 
@@ -777,6 +779,8 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 
 ## Related Documents
 
+- [W74 n8n native notification Task](tasks/tsk-0019-n8n-native-notification.md)
+- [W75 Airflow native publication Task](tasks/tsk-0020-airflow-native-publication.md)
 - [P10 opsflow acceptance Task](tasks/tsk-0016-p10-opsflow-acceptance.md)
 
 - [P08 operations-document layout Task](tasks/tsk-0015-p08-operations-document-layout.md)

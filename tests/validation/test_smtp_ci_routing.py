@@ -48,7 +48,15 @@ class SmtpRoutingTests(unittest.TestCase):
             optional,
         )
         self.assertNotIn(STORAGE_MODULE, optional)
-        self.assertEqual(15, len(optional))
+        for module in (
+            "tests.validation.test_opsflow_native_evidence",
+            "tests.validation.test_opsflow_native_health_probe",
+            "tests.validation.test_opsflow_airflow_native_evidence",
+            "tests.validation.test_opsflow_airflow_native_quiescence",
+        ):
+            self.assertIn(module, argv[:split])
+            self.assertNotIn(module, optional)
+        self.assertEqual(20, len(optional))
 
     def test_fixture_storage_regression_and_changed_routes_are_required(self):
         argv = self.nodes["leaf.repository-integrity-regressions"]["argv"]

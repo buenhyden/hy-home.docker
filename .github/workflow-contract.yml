@@ -741,6 +741,13 @@
         "tests.lib.ops.test_opsflow_provision_contract",
         "tests.validation.test_opsflow_airflow_contract",
         "tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests",
+        "tests.validation.test_opsflow_native_boundaries",
+        "tests.validation.test_opsflow_native_evidence",
+        "tests.validation.test_opsflow_native_health_probe",
+        "tests.validation.test_opsflow_native_rehearsal",
+        "tests.validation.test_opsflow_airflow_native_evidence",
+        "tests.validation.test_opsflow_airflow_native_quiescence",
+        "tests.validation.test_opsflow_airflow_native_rehearsal",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",
@@ -760,6 +767,8 @@
         "tests.validation.test_openbao_protected_renderer_roles.NativeRehearsalTests",
         "tests.validation.test_openbao_protected_restore_inputs.NativeRehearsalTests",
         "tests.validation.test_workflow_version_bundle.WorkflowCandidateRehearsalTests",
+        "tests.validation.test_opsflow_native_rehearsal.OpsflowN8nNativeRehearsal",
+        "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowNativeRehearsal",
         "-v"
       ],
       "cwd": ".",
@@ -1720,7 +1729,13 @@
           "tests/lib/ops/test_opsflow_manifest.py",
           "tests/lib/ops/test_opsflow_adapters.py",
           "tests/lib/ops/test_opsflow_provision_contract.py",
-          "tests/validation/test_opsflow_airflow_contract.py"
+          "tests/validation/test_opsflow_airflow_contract.py",
+          "tests/validation/_opsflow_airflow_native_guards.py",
+          "tests/validation/_opsflow_airflow_native_evidence.py",
+          "tests/validation/_opsflow_airflow_native_fixture.py",
+          "tests/validation/test_opsflow_airflow_native_evidence.py",
+          "tests/validation/test_opsflow_airflow_native_quiescence.py",
+          "tests/validation/test_opsflow_airflow_native_rehearsal.py"
         ],
         "suites": [
           "operations",
@@ -1748,9 +1763,19 @@
           "tests/lib/ops/test_n8n_outbox_workflow.py",
           "tests/validation/test_n8n_outbox_contract.py",
           "tests/validation/test_n8n_outbox_rehearsal.py",
+          "tests/validation/_opsflow_evidence_redaction.py",
+          "tests/validation/_opsflow_native_inputs.py",
+          "tests/validation/_opsflow_native_evidence.py",
+          "tests/validation/_opsflow_native_ownership.py",
+          "tests/validation/_opsflow_native_fixture.py",
+          "tests/validation/test_opsflow_native_boundaries.py",
+          "tests/validation/test_opsflow_native_evidence.py",
+          "tests/validation/test_opsflow_native_health_probe.py",
+          "tests/validation/test_opsflow_native_rehearsal.py",
           "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/"
         ],
         "suites": [
+          "operations",
           "repository-integrity"
         ]
       },
@@ -2061,7 +2086,13 @@
           "tests/lib/ops/test_opsflow_manifest.py",
           "tests/lib/ops/test_opsflow_adapters.py",
           "tests/lib/ops/test_opsflow_provision_contract.py",
-          "tests/validation/test_opsflow_airflow_contract.py"
+          "tests/validation/test_opsflow_airflow_contract.py",
+          "tests/validation/_opsflow_airflow_native_guards.py",
+          "tests/validation/_opsflow_airflow_native_evidence.py",
+          "tests/validation/_opsflow_airflow_native_fixture.py",
+          "tests/validation/test_opsflow_airflow_native_evidence.py",
+          "tests/validation/test_opsflow_airflow_native_quiescence.py",
+          "tests/validation/test_opsflow_airflow_native_rehearsal.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"
@@ -2087,7 +2118,16 @@
           "infra/07-workflow/n8n/workloads/",
           "tests/lib/ops/test_n8n_outbox_workflow.py",
           "tests/validation/test_n8n_outbox_contract.py",
-          "tests/validation/test_n8n_outbox_rehearsal.py"
+          "tests/validation/test_n8n_outbox_rehearsal.py",
+          "tests/validation/_opsflow_evidence_redaction.py",
+          "tests/validation/_opsflow_native_inputs.py",
+          "tests/validation/_opsflow_native_evidence.py",
+          "tests/validation/_opsflow_native_ownership.py",
+          "tests/validation/_opsflow_native_fixture.py",
+          "tests/validation/test_opsflow_native_boundaries.py",
+          "tests/validation/test_opsflow_native_evidence.py",
+          "tests/validation/test_opsflow_native_health_probe.py",
+          "tests/validation/test_opsflow_native_rehearsal.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"
