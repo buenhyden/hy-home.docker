@@ -101,26 +101,7 @@ def capture_controller_toolchain(
             {"path": relative, "sha256": hashlib.sha256(payload).hexdigest()}
         )
 
-    try:
-        lock = (root / "scripts/requirements-controller.lock").read_text(
-            encoding="utf-8"
-        )
-    except OSError as error:
-        raise EvidenceError("controller lock is unavailable") from error
-    locked = _active_locked_packages(lock)
-    if not locked or len(locked) != len({name for name, _version in locked}):
-        raise EvidenceError("locked dependency inventory is invalid")
-    installed_packages = []
-    for name, expected_version in locked:
-        try:
-            actual_version = importlib.metadata.version(name)
-        except importlib.metadata.PackageNotFoundError as error:
-            raise EvidenceError(
-                f"locked dependency is not installed: {name}"
-            ) from error
-        if actual_version != expected_version:
-            raise EvidenceError(f"installed dependency differs from lock: {name}")
-        installed_packages.append({"name": name, "version": actual_version})
+    installed_packages = _verify_locked_packages(root)
 
     runner_image = {
         "image_os": environ.get("TRUSTED_IMAGE_OS", ""),
@@ -148,6 +129,61 @@ def capture_controller_toolchain(
             else {"status": "NOT_SELECTED", "version": None, "sha256": None}
         ),
     }
+
+
+def _verify_locked_packages(root: pathlib.Path) -> list[dict[str, str]]:
+    try:
+        lock = (root / "scripts/requirements-controller.lock").read_text(
+            encoding="utf-8"
+        )
+    except OSError as error:
+        raise EvidenceError("controller lock is unavailable") from error
+    locked = _active_locked_packages(lock)
+    if not locked or len(locked) != len({name for name, _version in locked}):
+        raise EvidenceError("locked dependency inventory is invalid")
+    installed_packages = []
+    for name, expected_version in locked:
+        try:
+            actual_version = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError as error:
+            raise EvidenceError(
+                f"locked dependency is not installed: {name}"
+            ) from error
+        if actual_version != expected_version:
+            raise EvidenceError(f"installed dependency differs from lock: {name}")
+        installed_packages.append({"name": name, "version": actual_version})
+    return installed_packages
+
+
+_HOSTED_PYTHON_PIN = re.compile(r"^ +python-version: '([0-9]+\.[0-9]+\.[0-9]+)'$", re.M)
+
+
+def local_toolchain_mismatch(root: pathlib.Path) -> str | None:
+    """Return why this interpreter cannot reproduce the hosted controller, or None."""
+    try:
+        workflow = (root / ".github/workflows/ci-quality.yml").read_text(
+            encoding="utf-8"
+        )
+    except OSError:
+        return "the hosted workflow is unavailable"
+    pins = set(_HOSTED_PYTHON_PIN.findall(workflow))
+    if len(pins) != 1:
+        return "the hosted Python pin is not unique"
+    (pin,) = pins
+    current = ".".join(str(part) for part in sys.version_info[:3])
+    if current != pin:
+        return f"Python {current} differs from the hosted {pin}"
+    # ponytail: one probe for the one known build difference; the uv
+    # standalone build lacks the memfd seal constants the OpsFlow tests use.
+    import fcntl
+
+    if not hasattr(fcntl, "F_ADD_SEALS"):
+        return "this Python build lacks memfd sealing; use the hosted build"
+    try:
+        _verify_locked_packages(root)
+    except EvidenceError as error:
+        return str(error)
+    return None
 
 
 def _active_locked_packages(lock: str) -> tuple[tuple[str, str], ...]:

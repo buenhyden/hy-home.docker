@@ -1005,6 +1005,30 @@ class IdentityHistoryTests(unittest.TestCase):
 
         self.assertGreaterEqual(issued.high_water("requirement"), 99)
 
+    def test_default_scan_ignores_an_unmerged_branch_allocation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q", "-b", "main")
+            self._git(root, "config", "user.name", "Registry Test")
+            self._git(root, "config", "user.email", "registry@example.invalid")
+            target = root / "docs/01.requirements/0098-example.md"
+            target.parent.mkdir(parents=True)
+            target.write_text("artifact_id: REQ-0098\n", encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "main requirement")
+            self._git(root, "switch", "-qc", "feature")
+            other = root / "docs/01.requirements/0099-example.md"
+            other.write_text("artifact_id: REQ-0099\n", encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "branch requirement")
+            self._git(root, "switch", "-q", "main")
+
+            default = collect_issued_identities(root)
+            every_ref = collect_issued_identities(root, refs=("--all",))
+
+        self.assertEqual(98, default.high_water("requirement"))
+        self.assertEqual(99, every_ref.high_water("requirement"))
+
     def test_deleted_worktree_source_is_history_only(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)

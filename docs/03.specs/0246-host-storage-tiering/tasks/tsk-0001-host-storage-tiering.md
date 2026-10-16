@@ -2,7 +2,7 @@
 title: "Host Storage Tiering Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -48,6 +48,8 @@ The user approved the W1–W6 order with the containerd move first.
 | --- | --- | --- | --- |
 | SPEC-0246 | draft | approved | #spec-approval |
 | SPEC-0246-PLAN-0001 | draft | approved | #plan-approval |
+| SPEC-0246-TSK-0001 | draft | ready | #inputs-and-authorization |
+| SPEC-0246-TSK-0001 | ready | in-progress | #baseline-observation |
 
 ### Baseline observation
 
@@ -71,16 +73,18 @@ sudo rsync -aHAXS --numeric-ids --info=progress2 /var/lib/containerd/ /home/hyun
 sudo rsync -aHAXS --numeric-ids --dry-run --itemize-changes /var/lib/containerd/ /home/hyunyoun/storage/containerd/ | head
 sudo cp /etc/containerd/config.toml /etc/containerd/config.toml.bak-20261016
 sudo sed -i 's#^root = "/var/lib/containerd"$#root = "/home/hyunyoun/storage/containerd"#' /etc/containerd/config.toml
-for s in containerd docker; do
-  sudo mkdir -p /etc/systemd/system/$s.service.d
-  printf '[Unit]\nRequiresMountsFor=/home/hyunyoun/storage\n' | sudo tee /etc/systemd/system/$s.service.d/storage-mount.conf
-done
+sudo mkdir -p /etc/systemd/system/containerd.service.d
+printf '[Unit]\nRequiresMountsFor=/home/hyunyoun/storage\n' | sudo tee /etc/systemd/system/containerd.service.d/storage-mount.conf
 sudo systemctl daemon-reload
 sudo mv /var/lib/containerd /var/lib/containerd.old
 sudo systemctl start containerd docker
 ```
 
-The dry-run must print nothing. Remove `/var/lib/containerd.old` only after
+Docker already declares the same dependency in
+`/etc/systemd/system/docker.service.d/10-data-disk.conf`, so only containerd
+gets a drop-in. k3s runs its own containerd at
+`/run/k3s/containerd/containerd.sock` and is not stopped. The dry-run must
+print nothing. Remove `/var/lib/containerd.old` only after
 the agent records criterion 1 as passing. Rollback restores
 `config.toml.bak-20261016`, moves `.old` back, and starts the units.
 
@@ -90,7 +94,13 @@ Before the W1 restart, add
 `"builder": { "gc": { "enabled": true, "defaultKeepStorage": "10GB" } }` to
 the top-level object of `/etc/docker/daemon.json`, keeping `runtimes` and
 `data-root`, then confirm it with
-`sudo python3 -m json.tool /etc/docker/daemon.json`.
+`sudo python3 -m json.tool /etc/docker/daemon.json`:
+
+```bash
+sudo cp /etc/docker/daemon.json /etc/docker/daemon.json.bak-20261016
+sudo python3 -c 'import json,pathlib; p=pathlib.Path("/etc/docker/daemon.json"); d=json.loads(p.read_text()); d["builder"]={"gc":{"enabled":True,"defaultKeepStorage":"10GB"}}; p.write_text(json.dumps(d,indent=4)+"\n")'
+sudo python3 -m json.tool /etc/docker/daemon.json
+```
 
 ### W3 owner copy step
 
@@ -158,7 +168,7 @@ Digests are shown as their first 12 hexadecimal characters.
 
 ## Review and Completion
 
-This Task is issued `draft`. It completes only when every criterion is
+This Task was issued `draft` in PR #512; the pre-migration snapshot and W4 make it `in-progress`. It completes only when every criterion is
 accepted on direct host observation; a hosted CI result does not prove a host
 change.
 

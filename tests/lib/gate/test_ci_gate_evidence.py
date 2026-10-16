@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import fcntl
 import hashlib
+import importlib.metadata
 import json
 import os
 import pathlib
 import stat
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -14,9 +17,53 @@ from scripts.lib.gate.ci_gate_evidence import (
     EvidenceStore,
     _active_locked_packages,
     capture_controller_toolchain,
+    local_toolchain_mismatch,
 )
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
+
+
+class LocalToolchainTests(unittest.TestCase):
+    """A local run must use the hosted Python pin and the controller lock."""
+
+    def fixture(self, pin: str, lock: str) -> pathlib.Path:
+        root = pathlib.Path(self.enterContext(tempfile.TemporaryDirectory()))
+        (root / ".github/workflows").mkdir(parents=True)
+        (root / ".github/workflows/ci-quality.yml").write_text(
+            f"        with:\n          python-version: '{pin}'\n", encoding="utf-8"
+        )
+        (root / "scripts").mkdir()
+        (root / "scripts/requirements-controller.lock").write_text(
+            lock, encoding="utf-8"
+        )
+        return root
+
+    def setUp(self) -> None:
+        self.current = ".".join(str(part) for part in sys.version_info[:3])
+        version = importlib.metadata.version("pyyaml")
+        self.lock = f"pyyaml=={version} \\\n    --hash=sha256:{'0' * 64}\n"
+
+    def test_matching_interpreter_and_lock_pass(self) -> None:
+        with mock.patch.object(fcntl, "F_ADD_SEALS", 1033, create=True):
+            self.assertIsNone(
+                local_toolchain_mismatch(self.fixture(self.current, self.lock))
+            )
+
+    def test_other_python_version_is_rejected(self) -> None:
+        reason = local_toolchain_mismatch(self.fixture("3.0.0", self.lock))
+        self.assertIn("differs from the hosted 3.0.0", reason)
+
+    def test_build_without_memfd_sealing_is_rejected(self) -> None:
+        with mock.patch.object(fcntl, "F_ADD_SEALS", create=True):
+            del fcntl.F_ADD_SEALS
+            reason = local_toolchain_mismatch(self.fixture(self.current, self.lock))
+        self.assertIn("memfd sealing", reason)
+
+    def test_package_drift_from_lock_is_rejected(self) -> None:
+        drift = self.lock.replace("pyyaml==", "pyyaml==0.0.0+")
+        with mock.patch.object(fcntl, "F_ADD_SEALS", 1033, create=True):
+            reason = local_toolchain_mismatch(self.fixture(self.current, drift))
+        self.assertEqual("installed dependency differs from lock: pyyaml", reason)
 
 
 class EvidenceStoreTests(unittest.TestCase):

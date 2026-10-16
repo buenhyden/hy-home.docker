@@ -565,7 +565,7 @@ def _read_identity_source(path: pathlib.Path) -> str:
 
 def collect_issued_identities(
     repo: pathlib.Path,
-    refs: tuple[str, ...] = ("--all",),
+    refs: tuple[str, ...] = ("HEAD",),
     *,
     include_current: bool = True,
 ) -> IssuedIdentities:
