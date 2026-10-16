@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import ast
 import fcntl
+import hashlib
 import io
 import json
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -1140,9 +1142,6 @@ class CiGateAdapterTests(unittest.TestCase):
         self.assertEqual(b'{"runs":[]}\n', (self.root / "results.sarif").read_bytes())
         self.assertEqual(
             (
-                "uvx",
-                "--from",
-                "zizmor==1.28.0",
                 "zizmor",
                 ".",
                 "--format",
@@ -1298,6 +1297,109 @@ class CiGateAdapterTests(unittest.TestCase):
             "ci-gate-adapter-sarif-cleanup",
             priority_error.exception.code,
         )
+
+    def test_run_zizmor_sarif_writes_main_security_evidence_with_artifact_hash(
+        self,
+    ) -> None:
+        source = self.root / "scripts/lib/gate/ci_gate_adapters.py"
+        source.parent.mkdir(parents=True)
+        source.write_bytes((ROOT / "scripts/lib/gate/ci_gate_adapters.py").read_bytes())
+        self.git("init", "-q")
+        self.git("add", "scripts/lib/gate/ci_gate_adapters.py")
+        evidence = self.root / "runner-temp/ci-gate-evidence"
+        evidence.parent.mkdir()
+
+        def write_sarif(
+            argv: tuple[str, ...],
+            **kwargs: object,
+        ) -> subprocess.CompletedProcess[bytes]:
+            os.write(kwargs["stdout"], b'{"runs":[]}\n')  # type: ignore[arg-type]
+            return subprocess.CompletedProcess(argv, 0, b"", b"")
+
+        environment = {
+            "PATH": "/usr/bin",
+            "CI_GATE_EVIDENCE_DIR": str(evidence),
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "push",
+            "GITHUB_SHA": "1" * 40,
+            "GITHUB_RUN_ID": "12345",
+            "GITHUB_RUN_ATTEMPT": "1",
+            "GITHUB_JOB": "main-security",
+            "TRUSTED_GIT_PATH": shutil.which("git") or "/usr/bin/git",
+        }
+        toolchain = {
+            "status": "CAPTURED",
+            "executables": [
+                {"name": "git", "version": "git 2.43", "sha256": "a" * 64},
+                {"name": "python", "version": "Python 3.14.8", "sha256": "b" * 64},
+                {"name": "uv", "version": "uv 0.12.18", "sha256": "c" * 64},
+            ],
+            "dependency_inputs": [
+                {"path": "scripts/requirements-controller.lock", "sha256": "d" * 64}
+            ],
+            "installed_packages": [{"name": "zizmor", "version": "1.28.0"}],
+            "runner_image": {
+                "image_os": "ubuntu24",
+                "image_version": "20261015.1",
+                "architecture": "X64",
+                "image_digest": "NOT_AVAILABLE",
+            },
+            "node": {"status": "NOT_SELECTED", "version": None, "sha256": None},
+        }
+        with (
+            mock.patch.object(adapters, "_run_child", side_effect=write_sarif),
+            mock.patch.object(
+                adapters,
+                "capture_controller_toolchain",
+                return_value=toolchain,
+            ),
+        ):
+            self.assertEqual(
+                0,
+                adapters.run_adapter(
+                    self.root,
+                    ("run-zizmor-sarif",),
+                    environment,
+                ),
+            )
+        plan = json.loads((evidence / "plan.json").read_bytes())
+        result = json.loads((evidence / "result.json").read_bytes())
+        artifact = result["rows"][0]["artifact"]
+        self.assertEqual("leaf.zizmor", plan["rows"][0]["gate_id"])
+        self.assertEqual("CAPTURED", plan["toolchain"]["status"])
+        self.assertEqual(
+            "NOT_SELECTED", result["runtime_observation"]["node"]["status"]
+        )
+        self.assertEqual("CAPTURED", artifact["status"])
+        self.assertEqual(
+            hashlib.sha256(b'{"runs":[]}\n').hexdigest(), artifact["sha256"]
+        )
+
+    def test_zizmor_failure_remains_primary_when_evidence_finalize_fails(self) -> None:
+        store = mock.Mock()
+        store.finalize.side_effect = adapters.EvidenceError("finalize failed")
+        with (
+            mock.patch.object(
+                adapters,
+                "_create_main_security_evidence",
+                return_value=store,
+            ),
+            mock.patch.object(
+                adapters,
+                "_run_child",
+                return_value=subprocess.CompletedProcess(("zizmor",), 17, b"", b""),
+            ),
+        ):
+            self.assertEqual(
+                17,
+                adapters.run_adapter(
+                    self.root,
+                    ("run-zizmor-sarif",),
+                    {"PATH": "/usr/bin"},
+                ),
+            )
+        self.assertFalse((self.root / "results.sarif").exists())
+        store.close.assert_called_once_with()
 
     def test_rejects_unknown_metacharacter_paths_npm_verbs_and_secret_env(
         self,
