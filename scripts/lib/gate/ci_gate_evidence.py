@@ -532,7 +532,15 @@ def _normalize_rows(rows: Sequence[Mapping[str, object]]) -> list[dict[str, obje
             or not isinstance(argv, Sequence)
             or not 1 <= len(argv) <= 64
         ):
-            raise EvidenceError(f"row[{index}].argv must contain 1 to 64 arguments")
+            observed = (
+                len(argv)
+                if isinstance(argv, Sequence) and not isinstance(argv, (str, bytes))
+                else type(argv).__name__
+            )
+            raise EvidenceError(
+                f"row[{index}].argv must contain 1 to 64 arguments "
+                f"(gate {gate_id}: {observed})"
+            )
         normalized_argv = [
             _bounded_text(argument, f"row[{index}].argv", limit=4096)
             for argument in argv
