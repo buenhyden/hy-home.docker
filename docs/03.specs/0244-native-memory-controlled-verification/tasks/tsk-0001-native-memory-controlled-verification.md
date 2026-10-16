@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.16"
+version: "0.1.17"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -289,6 +289,32 @@ the prior record. Task receipt edits occurred while it ran; the Spec, Plan,
 and registry bytes were unchanged. This is not an immutable whole-worktree
 snapshot, and later Task receipts rely on their own narrow checks.
 
+### Merged Hook Listing Control Plan
+
+Security approved one read-only merged-hook control query with plan
+`/tmp/hyhome-r13-hooks-listing-control-plan.md` SHA-256
+`75ccecddb0fc621e1225fd8e965f054a41dc7692a68253a532e6817e28bc3d40` and
+harness `/tmp/hyhome-r13-run-hooks-listing-control-probe.py` SHA-256
+`f92d170c438cea41ec8b5f5bbe8524eeb1c63e817b09659c959c08a5961d573c`. Its
+sanitized receipt target is
+`/tmp/hyhome-r13-native-hooks-listing-control-receipt.json`.
+
+The control may only initialize a session, call `get_hooks_listing`, and end
+the session. It may not mutate settings or invoke a model, user prompt, tool,
+or MCP. It retains fixed enum/count aggregates only: an ECC Bash PreTool
+candidate requires the same row to be active Write, untracked, plugin-hook
+source, exact public ECC, and Bash command kind; generic additional and
+tracked-only classifications are narrower alternatives. If the aggregate is
+insufficient, it fails closed as
+`CLAUDE_MERGED_PRETOOL_HOOKS_REMAIN_UNKNOWN`.
+
+No raw hook listing, command, path, plugin name, label, error, configuration,
+authentication, memory, user, model, tool, or MCP content may be retained or
+emitted. No plugin or command hash and no per-hook row may enter the receipt.
+The result can identify a candidate class only: it cannot validate or forward a
+script, prove `PostToolUse`, or accept criterion 4. It has not run. Root may
+release exactly this control after the Task receipt is committed.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -325,6 +351,7 @@ snapshot, and later Task receipts rely on their own narrow checks.
 | Forced-off hook attempt 04 plan review | 4 | W4 | Independent security review of one final forced-off exact-Write attempt | Plan `b1511ff25ffb89b0d7050bf9f506f7733d50b8e2622267f5681875d1fbacc6ae`; harness `3105c920cb2a2250f58a7f8f917c24d449d441d9dc3dcb93b69f42d1661978c2`; Write only, max two turns/USD 1/180 seconds; forced-off session; sandbox false with no OS-confinement claim; 11 `O_NOFOLLOW` pins and guard-directory recheck | PASS | Forced-off Hook Attempt 04 Plan | required | - |
 | Forced-off hook attempt 04 | 4 | W4 | One released final forced-off exact-Write diagnostic | Receipt `89ea175746a446cb58b3c1dbc068e418a2b1ebc194b540529a78c87026aa0d2a`; failed closed; process exit 0/harness 1; Write observed once but tool result error/output absent; one forwarded guard; native/dispatcher SS/UserPromptSubmit/PreToolUse/Stop/SE each 1; PostToolUse/PreCompact/PostToolValidate 0; UNKNOWN 1; filesystem unchanged; cleanup/status PASS; post-result security pending | FAIL | Forced-off Hook Attempt 04 Result | required | - |
 | Metadata validation after native contract alignment | 6 | W6 | Full changed-document metadata selection with the active eight-path/base selection | Launched at `8219c9b`; exit 0; selected 7; violations 0; legacy exceptions 0; transition overrides 0; concurrent Task receipt edits, while Spec/Plan/registry bytes unchanged; not an immutable worktree snapshot | PASS | Metadata Validation Provenance | required | - |
+| Merged hook listing control plan review | 4 | W4 | Independent security review of one read-only merged-hook aggregate query | Plan `75ccecddb0fc621e1225fd8e965f054a41dc7692a68253a532e6817e28bc3d40`; harness `f92d170c438cea41ec8b5f5bbe8524eeb1c63e817b09659c959c08a5961d573c`; initialize/get_hooks_listing/end only; fixed enum/count aggregate; no model/user/tool/MCP/settings mutation or raw hook data | PASS | Merged Hook Listing Control Plan | required | - |
 
 ## Criterion Acceptance
 
