@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.12"
+version: "0.1.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -183,6 +183,29 @@ partial delivery receipt, not proof of complete hook delivery or a normal
 merged memory-off state. Cleanup and Git-status restoration passed. No further
 retry is planned.
 
+### Normal Settings Memory Control Query Plan
+
+Security approved one normal-settings, read-only memory-control query with
+plan SHA-256
+`a30ac627797ebb013c9e6f9b87cf56f4b544f70e2e908a24b55a8543e811565c` and
+harness SHA-256
+`bf8baf16b7a3d64317f64c2d9e74e8f3f16061489577717b833baf1188555eda`.
+It may only initialize a session, call `get_memory_dialog`, and end the
+session. It may not invoke a model, user prompt, tool, or MCP.
+
+The query uses `sandbox=false` and makes no OS-confinement claim. It leaves
+memory settings unchanged; forced-off, safe, simple, and scrub environment
+controls are absent. Transient private rows are discarded, retaining only the
+classified Boolean or enum result. `enabled=false` with a plain off result is
+the only merged-off PASS. An enabled/on result is known ON; unavailable or
+safe results are narrower classifications; any other result remains unknown.
+
+Normal startup authentication, configuration, update, and telemetry effects,
+along with SessionStart/SessionEnd shared-DB effects, remain residual
+boundaries. The query has not started and can run once after this Task record
+is released; it neither accepts criterion 3 nor changes the prior normal
+merged state from unknown.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -214,6 +237,7 @@ retry is planned.
 | Forced-off hook retry 03 plan review | 4 | W4 | Independent security review of one frozen strict-MCP, no-config retry with the Retry 02 guards retained | Harness `98af87fab954dc515d54f43153bab36966f328a2137ed64868eda97c9b2ebc02`; pinned 2.1.301 headless strict path selects empty servers; no `--mcp-config`; Write-only, max two turns/USD 1/180 seconds, sandbox false without OS-confinement claim | PASS | Forced-off Hook Retry 03 Plan | required | - |
 | Forced-off MCP dynamic-proof boundary | 4 | W4 | Public `mcp list` observation under the reviewed investigation | Timed out health-checking normally approved servers; subcommand bypasses the headless strict resolver; no child remains | NOT_RUN | Forced-off Hook Retry 03 Plan | optional | - |
 | Forced-off hook retry 03 attempt | 4 | W4 | One released frozen strict-MCP, no-config hook-delivery retry | Exit 0; valid stream; no stderr; final token and one Write; SessionStart/UserPromptSubmit/PreToolUse/Stop/SessionEnd each 1; PostToolUse and PreCompact each 0; no output file or exact output retained; one nested-Bash token `UNEXPECTED`; cleanup/status PASS | FAIL | Forced-off Hook Retry 03 Result | required | - |
+| Normal settings memory-control query plan review | 3 | W3 | Independent security review of one read-only normal-settings memory query | Plan `a30ac627797ebb013c9e6f9b87cf56f4b544f70e2e908a24b55a8543e811565c`; harness `bf8baf16b7a3d64317f64c2d9e74e8f3f16061489577717b833baf1188555eda`; initialize/get_memory_dialog/end_session only; no model/user/tool/MCP; sandbox false with no OS-confinement claim | PASS | Normal Settings Memory Control Query Plan | required | - |
 
 ## Criterion Acceptance
 
