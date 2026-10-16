@@ -50,6 +50,7 @@ Plan assignment. Task0001 retains sole Criterion Acceptance decisions.
 | W72 | 2, 3, 5 | Record per-gate identity, selection, timing and terminal state in the existing runner for authenticated PR and explicitly evidenced clean-HEAD local runs; persist early remaining NOT_RUN evidence | W71 | TSK-0003 | Success, failure, timeout, cancellation, local identity and incomplete-receipt RED/GREEN |
 | W73 | 2, 3, 4, 5 | Add ROOT promotion evidence to RUN-0009 and record service/path joins, actual QA04 changed/FULL/requirements and current-head remote proof or owned blockers | W72 | TSK-0003 | Actual final-input execution, exact-head observations, scoped docs and independent review |
 | W74 | 1, 2 | Remove unit tests that repeat a real-tree check the full profile already runs as a gate, or that depend on local Git refs, and replace each with a fixture-bound check of the same rule | W72 | TSK-0003 | Per-test timing before and after; focused RED/GREEN for each replacement; no lost rule coverage |
+| W75 | 1, 2 | Make a local FULL result reproducible: scan identity history reachable from HEAD only, and reject a local run whose interpreter or controller packages differ from the hosted pin | W74 | TSK-0003 | Fixture RED/GREEN for the branch scan and the toolchain check; full-history gate and runner tests |
 
 ## Verification Plan
 

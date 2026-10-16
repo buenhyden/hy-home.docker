@@ -331,6 +331,44 @@ runner records the interpreter but does not reject a mismatch. That check is
 a follow-up outside W74. The hosted changed profile on the PR is the
 authoritative result for this branch.
 
+### W75 Local FULL Reproducibility
+
+The owner asked on 2026-10-16 to review and proceed with the open W74
+decisions.
+
+- Identity history scope. `check-contracts --history-scope full` scanned every
+  local ref, so FULL on main failed while any other branch held a new
+  allocation, and hosted checkouts with `fetch-depth: 0` see every pushed
+  branch. The scan now covers commits reachable from HEAD, and the
+  `collect_issued_identities` default matches. An unmerged allocation on
+  another branch still meets the Registry `high_water` line as a merge
+  conflict, and the strict up-to-date rule makes the branch re-run this scan
+  over main's history. Stage 99 states this scope. A fixture with an
+  allocation only on another branch reads 98 by default and 99 with `--all`.
+- Local toolchain check. A LOCAL run that executes gates now fails with
+  `ci-gate-local-toolchain` before running anything when the interpreter
+  differs from the `python-version` pin in `ci-quality.yml`, when an active
+  `requirements-controller.lock` package is missing or at another version, or
+  when the build lacks the memfd seal constants. The last case is the `uv`
+  standalone 3.14.8 build, which failed the OpsFlow CA tests in E23.
+  `--explain` is not an execution and is not checked. The hosted build from
+  `actions/python-versions` (`python-3.14.8-linux-24.04-x64`) with the lock
+  installed passed the 205 tests and the OpsFlow modules that failed in E23.
+  The quality policy describes the check.
+- PostgreSQL rehearsal. Every HOME PostgreSQL service is on 18.6; the only
+  PostgreSQL 17 is the LAB cluster (`spilo-17`), so the 17 to 18 logical
+  upgrade rehearsal of RUN-0032 still has a consumer and stays a regression.
+  The full profile runs only `--check-config-only` and unit tests, neither of
+  which starts a container. A stale comment naming 17.6 is corrected. Moving
+  the target pin from 18.4 to the HOME 18.6 digest needs a real rehearsal run
+  and stays with the SPEC-0204 SEC01 Task-pinned image updates.
+
+The changed profile on this branch then passed locally for the first time,
+with the hosted build (RUNPATH set to `$ORIGIN/../lib` so it runs outside
+`/opt/hostedtoolcache`) and the controller lock: every suite passed in
+2,666 s with a 181 MB peak RSS, including the 774-test suite in 1,156 s and
+the 1,051-test suite with 80 skips.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -366,12 +404,15 @@ authoritative result for this branch.
 | E21-full-test-profile | 1, 2 | W74 | per-test-timing | 940 document-governance and lifecycle tests run in isolation | PASS | Work Log: W74 Real-Tree Test Duplication (six tests, 794 s) | required | - |
 | E22-real-tree-dedup | 1, 2 | W74 | focused-red-green | Seven rewritten tests; ruff check and format | PASS | Work Log: W74 Real-Tree Test Duplication (all pass; 515 s removed) | required | - |
 | E23-local-changed-branch | 1, 2 | W74 | local-changed-profile | `run-ci-gate.py --profile changed` on `4500700ea` in system 3.12.3 and `uv` 3.14.8 | FAIL | Work Log: W74 Real-Tree Test Duplication (environment-only failures; hosted result pending) | required | - |
+| E24-history-scope | 1, 2 | W75 | focused-red-green | `test_default_scan_ignores_an_unmerged_branch_allocation`; `check-document-metadata.py --mode check-contracts --history-scope full` | PASS | Work Log: W75 Local FULL Reproducibility (fixture 98 versus 99; gate violations 0 in 144 s) | required | - |
+| E25-local-toolchain-check | 1, 2 | W75 | focused-red-green | `LocalToolchainTests`; `test_local_run_with_a_mismatched_toolchain_executes_nothing`; runner on system Python 3.12.3 | PASS | Work Log: W75 Local FULL Reproducibility (system run stops with `ci-gate-local-toolchain`) | required | - |
+| E26-local-changed-hosted-build | 1, 2 | W75 | local-changed-profile | `run-ci-gate.py --profile changed` with hosted Python 3.14.8 and the controller lock | PASS | Work Log: W75 Local FULL Reproducibility (exit 0, 2,666 s) | required | - |
 
 ## Criterion Acceptance
 
 This support Task has no Criterion Acceptance table. SPEC-0211-TSK-0001 retains
 the sole durable decisions for criteria1–5; all remain pending until their
-current owner records an actual decision. W71–W74 provide supporting evidence
+current owner records an actual decision. W71–W75 provide supporting evidence
 for criteria2–5 without adding, accepting, rejecting or reassigning a criterion.
 
 ## Review and Completion
