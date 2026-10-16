@@ -1,6 +1,6 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -206,6 +206,24 @@ boundaries. The query has not started and can run once after this Task record
 is released; it neither accepts criterion 3 nor changes the prior normal
 merged state from unknown.
 
+### Normal Settings Memory Control Query Result
+
+The one released normal-settings query completed with the classified result
+`CLAUDE_NORMAL_MERGED_AUTO_MEMORY_OFF_VERIFIED`. Its sanitized result was
+`enabled=false` with a plain off status, no detail, a settings-source suffix,
+and `toggleable=false`. Initialization, `get_memory_dialog`, and session end
+succeeded; the process exited 0 with no stderr, timeout, model, user prompt,
+tool, MCP, permission event, or status change.
+
+The sanitized receipt SHA-256 is
+`e24e56cbfc5c2a022462029df4f3c2c686603bffb110d27b76d7ea1c7679015f`; the
+sanitized observation SHA-256 is
+`a245a0d61d190482d0985c3dd89312b655072202d8f3c7993b70240a5b574a1f`.
+Independent security review confirmed this normal merged memory-off claim.
+The earlier UI observation remains historical `UNKNOWN`; it is superseded only
+for the normal effective-memory result. The forced-off hook Retry 03 remains
+partial, with `PostToolUse` and complete Write delivery unverified.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -223,7 +241,7 @@ merged state from unknown.
 | Ready security plan review | 1 | W1 | Independent security review approved the exact UI recognition rule and conditional fixture bounds | Sanitized security GO, Claude Code 2.1.301 | PASS | Ready Transition | required | - |
 | Scoped metadata pre-ready attempt | 6 | W6 | `check-document-metadata.py --mode check-changed` | Session 60502 against `92b16fe`; cancelled before completion because the ready transition changed this Task source | CANCELLED | Ready Transition | optional | - |
 | Final UI witness observation | 4 | W4 | Event-name-only wrapper witnesses SessionStart and SessionEnd around the final allowed UI attempt | `SessionStart=1`; `SessionEnd=1`; no provider prompt or tool | PASS | In-progress Observation | required | - |
-| Effective memory-off view | 3 | W3 | Provider exposes a non-mutating effective Auto-memory value | Final UI attempt: value unknown | NOT_RUN | In-progress Observation | required | - |
+| Effective memory-off view | 3 | W3 | Provider exposes a non-mutating effective Auto-memory value | Final UI attempt: value unknown; historical observation superseded for criterion 3 by Normal settings memory-control query result | NOT_RUN | In-progress Observation | optional | - |
 | Conditional fixture probe | 4 | W4 | Exact ignored-fixture read/write provider prompt after effective-memory-off proof | Precondition not met because effective value is unknown | NOT_RUN | In-progress Observation | required | - |
 | Native marker cleanup finding | 5 | W5 | Detect and remove only proven-new zero-byte markers from the old isolated native checkout | Thirteen untracked zero-byte markers; security-approved cleanup method not yet executed | FAIL | In-progress Observation | required | - |
 | Local marker cleanup | 5 | W5 | Detect and remove only proven-new zero-byte markers from the old isolated native checkout | Thirteen proven-new zero-byte markers removed; Git status restored | PASS | Cleanup Follow-up | required | Native marker cleanup finding |
@@ -238,6 +256,7 @@ merged state from unknown.
 | Forced-off MCP dynamic-proof boundary | 4 | W4 | Public `mcp list` observation under the reviewed investigation | Timed out health-checking normally approved servers; subcommand bypasses the headless strict resolver; no child remains | NOT_RUN | Forced-off Hook Retry 03 Plan | optional | - |
 | Forced-off hook retry 03 attempt | 4 | W4 | One released frozen strict-MCP, no-config hook-delivery retry | Exit 0; valid stream; no stderr; final token and one Write; SessionStart/UserPromptSubmit/PreToolUse/Stop/SessionEnd each 1; PostToolUse and PreCompact each 0; no output file or exact output retained; one nested-Bash token `UNEXPECTED`; cleanup/status PASS | FAIL | Forced-off Hook Retry 03 Result | required | - |
 | Normal settings memory-control query plan review | 3 | W3 | Independent security review of one read-only normal-settings memory query | Plan `a30ac627797ebb013c9e6f9b87cf56f4b544f70e2e908a24b55a8543e811565c`; harness `bf8baf16b7a3d64317f64c2d9e74e8f3f16061489577717b833baf1188555eda`; initialize/get_memory_dialog/end_session only; no model/user/tool/MCP; sandbox false with no OS-confinement claim | PASS | Normal Settings Memory Control Query Plan | required | - |
+| Normal settings memory-control query result | 3 | W3 | One released non-mutating normal-session effective-memory query | `CLAUDE_NORMAL_MERGED_AUTO_MEMORY_OFF_VERIFIED`; enabled false/plain off/no detail/settings-source suffix/toggleable false; init/get/end PASS; exit 0; no stderr/timeout/model/user/tool/MCP/permission/status change; receipt `e24e56cbfc5c2a022462029df4f3c2c686603bffb110d27b76d7ea1c7679015f`; observation `a245a0d61d190482d0985c3dd89312b655072202d8f3c7993b70240a5b574a1f`; independent security PASS | PASS | Normal Settings Memory Control Query Result | required | - |
 
 ## Criterion Acceptance
 
@@ -245,7 +264,7 @@ merged state from unknown.
 | --- | --- | --- | --- | --- |
 | 1 | pending | - | Await W1 control record | @buenhyden |
 | 2 | pending | - | Await W2 observation | @buenhyden |
-| 3 | pending | - | Await W3 non-mutating effective-memory-off proof | @buenhyden |
+| 3 | accepted | Normal settings memory-control query result | Normal non-mutating effective-memory-off proof and independent security review passed | @buenhyden |
 | 4 | pending | - | Await W4 receipt classification | @buenhyden |
 | 5 | pending | - | Await W5 boundary and cleanup record | @buenhyden |
 | 6 | pending | - | Await W6 review and gates | @buenhyden |
