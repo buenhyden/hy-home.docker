@@ -42,6 +42,7 @@ jobs:
           python_path="$(/usr/bin/readlink -f -- "$(type -P python3)")"
           test -n "$git_path" && test -x "$git_path"
           test -n "$python_path" && test -x "$python_path"
+          /usr/bin/chmod go-w -- "$python_path"
           test "$GITHUB_EVENT_NAME" = pull_request
           git_version="$("$git_path" --version)"
           python_version="$("$python_path" --version 2>&1)"
@@ -78,6 +79,7 @@ jobs:
         run: |
           uv_path="$(/usr/bin/readlink -f -- "$(type -P uv)")"
           test -n "$uv_path" && test -x "$uv_path"
+          /usr/bin/chmod go-w -- "$uv_path"
           uv_version="$("$uv_path" --version)"
           read -r uv_sha256 _ < <(/usr/bin/sha256sum -- "$uv_path")
           {
@@ -201,6 +203,7 @@ jobs:
           python_path="$(/usr/bin/readlink -f -- "$(type -P python3)")"
           test -n "$git_path" && test -x "$git_path"
           test -n "$python_path" && test -x "$python_path"
+          /usr/bin/chmod go-w -- "$python_path"
           test "$GITHUB_EVENT_NAME" = push
           git_version="$("$git_path" --version)"
           python_version="$("$python_path" --version 2>&1)"
@@ -230,6 +233,7 @@ jobs:
         run: |
           uv_path="$(/usr/bin/readlink -f -- "$(type -P uv)")"
           test -n "$uv_path" && test -x "$uv_path"
+          /usr/bin/chmod go-w -- "$uv_path"
           uv_version="$("$uv_path" --version)"
           read -r uv_sha256 _ < <(/usr/bin/sha256sum -- "$uv_path")
           {

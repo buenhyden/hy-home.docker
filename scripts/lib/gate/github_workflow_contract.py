@@ -1132,11 +1132,13 @@ def _workflow_projection_findings(
             capture_tokens = (
                 'test "$GITHUB_EVENT_NAME" = push',
                 '/usr/bin/sha256sum -- "$git_path"',
+                '/usr/bin/chmod go-w -- "$python_path"',
                 '/usr/bin/sha256sum -- "$python_path"',
                 "printf 'image-version=%s\\n' \"$ImageVersion\"",
             )
             uv_tokens = (
                 'uv_path="$(/usr/bin/readlink -f -- "$(type -P uv)")"',
+                '/usr/bin/chmod go-w -- "$uv_path"',
                 '/usr/bin/sha256sum -- "$uv_path"',
                 "printf 'uv-version=%s\\n' \"$uv_version\"",
             )
