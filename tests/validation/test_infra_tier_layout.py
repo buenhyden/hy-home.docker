@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -421,6 +423,66 @@ class TierLayoutTests(unittest.TestCase):
             self.assertIn(
                 "spark catalog must sign with SigV4", result.stdout + result.stderr
             )
+
+    def test_experience_hardening_runs_explicitly_and_in_the_full_route(self):
+        env = {k: v for k, v in os.environ.items() if k != "HYHOME_CI_GATE_ROOT"}
+        script = "scripts/hardening/check-all-hardening.sh"
+        compose = "infra/13-experience/storybook/docker-compose.yml"
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = Path(directory)
+            for relative in (
+                script,
+                "scripts/lib/hardening-lib.sh",
+                "labs/supabase.yml",
+                "docs/01.requirements/0003-security.md",
+            ):
+                target = fixture / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((ROOT / relative).read_bytes())
+            shutil.copytree(ROOT / "infra", fixture / "infra")
+
+            for alias in ("13-experience", "experience"):
+                result = subprocess.run(
+                    ["bash", str(fixture / script), alias],
+                    cwd=fixture,
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+            target = fixture / compose
+            original = target.read_text()
+            target.write_text(
+                original.replace(
+                    "req-rate-limit@file,gateway-standard-chain@file,sso-auth@file",
+                    "req-rate-limit@file,gateway-standard-chain@file",
+                )
+            )
+            result = subprocess.run(
+                ["bash", str(fixture / script), "experience"],
+                cwd=fixture,
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("storybook sso middleware chain missing", result.stdout)
+
+            target.write_text(original)
+            target.unlink()
+            result = subprocess.run(
+                ["bash", str(fixture / script)],
+                cwd=fixture,
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn(compose, result.stdout + result.stderr)
 
 
 if __name__ == "__main__":

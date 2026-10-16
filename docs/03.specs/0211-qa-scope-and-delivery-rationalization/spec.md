@@ -1,10 +1,10 @@
 ---
 title: "QA Scope and Delivery Rationalization"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-16"
 layer: "specs"
 artifact_id: "SPEC-0211"
 parent_ids:
@@ -73,17 +73,29 @@ tag objects, npm acceptance expiry, and unrelated user configuration.
    checks for operations documents and local-only document-link validation.
    Unrelated hook, tool, whole-library, frontend and Compose checks follow
    their actual changed owners. Implementation changes select their
-   relevant regressions through registered LOCAL path owners. A typed
-   local-only leaf list excludes all isolated unit, document-library, gate/controller,
-   hook and repository fixture regressions and links from every hosted context.
-   The existing runner's local-only mode executes that complementary selected
-   lane before submission. Actual candidate content, machine validators,
+   relevant regressions through registered path owners. A typed local-only leaf
+   list excludes document-library, hook, mocked native and other isolated
+   implementation regressions and links from every hosted context. A closed
+   exception promotes the deterministic CI gate-contract, Compose-baseline and
+   repository-integrity regression leaves to both local and hosted selection.
+   Workflow-contract, Compose, Airflow SQL, n8n workflow and registered
+   repository-owner changes select the applicable promoted leaf in the normal
+   local changed plan and the hosted candidate; arbitrary unittest admission
+   remains rejected. The existing runner's local-only mode executes only the
+   complementary selected lane before submission. Actual candidate content, machine validators,
    Docker/security, current release configuration and browser/HTTP integration
    checks remain remote. Mocked release/service/security negatives stay LOCAL,
    intact and selected; this does not claim their hosted execution. Mixed
    Conftest uses separate closed verify/corpus modes, default all compatibility,
    gate-ID ownership and argv-aware invocation identity. Rename, delete and
    unknown input fail closed before execution-context eligibility.
+   The PR workflow captures the immutable event, merge SHA, raw ordered merge
+   parents, absolute system Git path and configured Python interpreter before
+   installing candidate-controlled dependencies, using the fixed system Bash
+   path for capture. The runner authenticates that capture against the checked-out
+   merge object with replacement refs and inherited Git configuration disabled,
+   uses the captured executable for the hosted diff, and rejects mutable event,
+   SHA or PATH disagreement before loading the candidate contract.
 5. Execute each identical invocation once per declared input, base, history,
    configuration, tool, mode and trust context. Formatting writes are explicit
    authoring actions; required validation is read-only. Reuse cannot cross a
@@ -110,7 +122,11 @@ tests/validation. The directory mirror convention is organizational rather
 than a second proof requirement. Current nonempty, path-safety, semantic-use
 and registration requirements remain.
 
-Keep isolated unittest execution LOCAL even through direct adapter admission.
+Keep isolated unittest execution LOCAL even through direct adapter admission,
+except for the three deterministic hosted regression leaves named in Contract
+4. Their tests must prove selected hosted path coverage and nonzero failure
+propagation. Native or HOME-dependent cases remain opt-in and a skipped case is
+not acceptance evidence.
 Shell syntax validation parses every selected tracked file individually,
 without execution, and preserves inventory failure and the first nonzero code.
 Shell lint corrections preserve the registered Conftest mode, command and
@@ -146,6 +162,7 @@ overwrite published versions or historical tags.
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-qa-scope-and-delivery-rationalization.md)
+- [Hosted contract and tier 13 hardening task](tasks/tsk-0002-hosted-contract-and-tier13-hardening.md)
 - [Governance requirement](../../01.requirements/0024-agent-governance-standardization.md)
 - [Retention requirement](../../01.requirements/0026-document-retention-and-retirement.md)
 - [Home host requirement](../../01.requirements/0027-home-development-host.md)

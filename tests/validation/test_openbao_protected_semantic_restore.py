@@ -912,6 +912,9 @@ class IntegrationBoundaryTests(unittest.TestCase):
 
         effect.runtime.docker.side_effect = docker
         effect.runner = mock.Mock()
+        trusted_group = mock.patch.object(self.subject.os, "getegid", return_value=1000)
+        trusted_group.start()
+        self.addCleanup(trusted_group.stop)
         for mounted in (b"tmpfs rw,nosuid,noexec\n", b"ext4 rw\n", b"tmpfs\n"):
             effect.runner.run.return_value = SimpleNamespace(stdout=mounted, returncode=0)
             with self.subTest(mounted=mounted), self.assertRaises(self.subject.Blocked):

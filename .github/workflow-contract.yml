@@ -37,11 +37,7 @@
           "timeout_minutes": 30,
           "condition": "github.event_name == 'pull_request'",
           "needs": [],
-          "environment": {
-            "EVENT_NAME": "pull_request",
-            "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
-            "PR_HEAD_SHA": "${{ github.event.pull_request.head.sha }}"
-          }
+          "environment": null
         },
         "main-security": {
           "permissions": {
@@ -753,6 +749,7 @@
         "tests.validation.test_mng_pg_init_sql.MngPgInitSqlTests",
         "tests.validation.test_redisinsight_rehearsal.RedisInsightRehearsalTests",
         "tests.validation.test_datastore_observation_rehearsal.DatastoreObservationRehearsalTests",
+        "tests.validation.test_restic_offsite_artifact.ArtifactRehearsalTests",
         "tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests",
         "tests.validation.test_supabase_smtp_rehearsal.SupabaseSMTPRehearsalTests",
         "tests.validation.test_openbao_candidate.CandidateNative",
@@ -1192,7 +1189,6 @@
     ],
     "local_only_gate_ids": [
       "leaf.ci-gate-adapter-regressions",
-      "leaf.ci-gate-contract-regressions",
       "leaf.ci-gate-runner-regressions",
       "leaf.ci-precommit-regressions",
       "leaf.document-governance-library-regressions",
@@ -1200,9 +1196,7 @@
       "leaf.local-hook-rule-tests",
       "leaf.local-document-metadata-tests",
       "leaf.local-document-corpus-lifecycle-tests",
-      "leaf.compose-baseline-regressions",
       "leaf.release-regressions",
-      "leaf.repository-integrity-regressions",
       "leaf.repo-contracts-control-plane-regressions",
       "leaf.local-candidate-preflight",
       "leaf.supply-chain-fixture-policy",
