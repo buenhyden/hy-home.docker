@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.15"
+version: "0.1.16"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -180,6 +180,21 @@ reviews are READY. Root GO remains conditional on operator READY, this Task
 receipt, and fresh hash rechecks. No restore-02 action has run, and CA work
 remains blocked until a successful recovery gate.
 
+### Isolated Restore Attempt 02 Failure
+
+`restore-02` failed closed at its synthetic-owner stage before any archive
+handling. Its immutable sanitized failure receipt SHA-256 is
+`977651535b5659d29c039ee5088d74b96319d6cabf53a2a53779bd3778158ee1`.
+The Docker CID file contained the standard 64-hex form with no trailing
+newline. Bash `read` populated the ID but returned 1 at EOF, and the guard
+incorrectly classified it as `UNKNOWN_CREATE`.
+
+Both independent reviewers accepted this as a truthful failure. It is a guard
+source defect, not backup corruption: no archive was extracted, no helper
+remained, and the original services remained healthy. No CA or image-build
+work started. A newly reviewed `restore-03` sibling is required; Attempt 01
+and Attempt 02 receipts remain preserved.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -214,6 +229,8 @@ remains blocked until a successful recovery gate.
 | Isolated restore attempt 01 containment | 6 | W6 | Contain the failed isolated attempt and preserve production boundaries | Cleanup PASS; no isolated container or archive extraction; originals exact healthy with restart count 0; CA work blocked pending a new reviewed sibling | PASS | Isolated Restore Attempt 01 Failure | required | - |
 | Released Prometheus isolated restore attempt 02 plan | 2 | W2 | Independent READY reviews and conditional root GO for the new Prometheus isolated-clone sibling | Contract `6aea3453f2fab65d93a885759fa8a9358eceab3d433636aec61f443ed95fd1e5`; script `8203382c97f0b6b8816cca7bb1ac0799b1472bdad6506128b5638f143de90cf3`; test `18fcb193a3d29a491b251bc93b0a50c13c878398f4c1e1e2f7e03dbdc96c16b3`; helpers unchanged; synthetic ownership before archives; numeric-owner default; nine guards bound; operator READY/hash rechecks pending | PASS | Isolated Restore Attempt 02 Release | required | - |
 | Released Gatus isolated restore attempt 02 plan | 3 | W3 | Independent READY reviews and conditional root GO for the new Gatus isolated-clone sibling | Contract `6aea3453f2fab65d93a885759fa8a9358eceab3d433636aec61f443ed95fd1e5`; script `8203382c97f0b6b8816cca7bb1ac0799b1472bdad6506128b5638f143de90cf3`; test `18fcb193a3d29a491b251bc93b0a50c13c878398f4c1e1e2f7e03dbdc96c16b3`; helpers unchanged; synthetic ownership before archives; numeric-owner default; nine guards bound; operator READY/hash rechecks pending | PASS | Isolated Restore Attempt 02 Release | required | - |
+| Isolated restore attempt 02 | 2 | W2 | Released synthetic-owner stage for the second isolated restore attempt | Failure receipt `977651535b5659d29c039ee5088d74b96319d6cabf53a2a53779bd3778158ee1`; 64-hex CID file without trailing newline; Bash `read` populated ID but returned 1 at EOF; guard classified `UNKNOWN_CREATE`; no archive extraction; no helper; originals healthy | FAIL | Isolated Restore Attempt 02 Failure | required | - |
+| Isolated restore attempt 02 containment | 6 | W6 | Contain the failed isolated attempt and preserve production boundaries | Independent reviewers accepted the truthful guard-source failure; no archive extraction; no helper; originals healthy; no CA/image-build work; restore-03 review required | PASS | Isolated Restore Attempt 02 Failure | required | - |
 
 ## Criterion Acceptance
 
