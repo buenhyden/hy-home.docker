@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.4.1"
+version: "1.5.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -33,7 +33,9 @@ hook/release, memory and OpenBao source corrections in TSK-0007 without
 reopening completed Tasks or assigning new downstream acceptance owners.
 R13 adds W25 in TSK-0009 for one current-source follow-up. It began separately
 from W24's independent infrastructure work and now preserves the published
-W24/criterion 19 allocation alongside W25/criterion 20.
+W24/criterion 19 allocation alongside W25/criterion 20. W26 in TSK-0010
+classifies the links behind the standing `historical-links-unrecorded` warning
+as a read-only, documentation-only follow-up.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–31.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -68,6 +70,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W23 | 18 | P08 OpenBao optional-skip and CA-overlay discrepancies, operations promotion and quality limits | W16 | TSK-0007 | Focused OpenBao synthetic tests and changed document checks |
 | W24 | 19 | INFRA-P0 inventory scope, owner routes, QA/CI mapping, writer leases, evidence ladder, and P1–P9 handoffs for requirements 11–31 | None | TSK-0008 | Value-free source/static evidence; no native/HOME/recovery claim |
 | W25 | 20 | Classify r13 P01-P08 follow-up findings; remove one reproduced link-graph duplicate, bind repository-file provenance to its declared revision, and retain one shared memory store through sanitized CLI common-directory identity | W16 | TSK-0009 | Focused link and memory regressions, changed-path CI selection, and changed document checks |
+| W26 | 21 | Classify the links counted by `historical-links-unrecorded` against each record's pre-archive Git origin and record the residual set and its proven cause | W25 | TSK-0010 | Read-only Git object resolution; changed document metadata and link checks |
 
 ### W25 file map and checks
 
@@ -269,6 +272,7 @@ only that dependent operation.
 - [Spec](spec.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)
 - [Infrastructure audit execution Task](tasks/tsk-0008-infra-audit-execution.md)
+- [Historical link classification Task](tasks/tsk-0010-historical-link-classification.md)
 - [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
 - [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)

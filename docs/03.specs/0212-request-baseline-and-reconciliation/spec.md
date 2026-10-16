@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.4.1"
+version: "1.5.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -47,6 +47,11 @@ The r13 request dated 2026-10-16 adds a follow-up current-source revalidation
 criterion and Task. It began in a separate worktree while criterion 19/W24 was
 issued; published main now preserves that allocation together with criterion
 20/W25, without altering either Task's acceptance owner.
+
+A follow-up request on the same date classifies the 2,870 links behind the
+standing `historical-links-unrecorded` link warning. Criterion 21/W26 records
+that classification in TSK-0010 without changing an archived body, the
+retention catalog, or a checker.
 
 ## Scope
 
@@ -299,6 +304,11 @@ hold, authorization and recovery requirements have been established.
     historical criteria 11-18 unchanged, records unavailable checks as
     NOT_RUN, and leaves runtime, remote, and named leaf-owner acceptance
     outside this criterion.
+21. TSK-0010 classifies every link counted by the `historical-links-unrecorded`
+    warning against its pre-archive Git origin, separates links proven to
+    resolve historically from the residual set, and names the cause it can
+    prove. It changes no archived body, retention-catalog row, or checker, and
+    it does not convert the warning into a failure or a pass.
 
 ## Failure Conditions
 
@@ -319,6 +329,7 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Plan](plan.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)
 - [Infrastructure audit execution Task](tasks/tsk-0008-infra-audit-execution.md)
+- [Historical link classification Task](tasks/tsk-0010-historical-link-classification.md)
 - [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
 - [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
