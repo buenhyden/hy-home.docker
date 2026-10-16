@@ -1,6 +1,6 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.4.3"
+version: "1.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -53,6 +53,7 @@ scripts/
 ├── security/            # 로컬 supply-chain 검증과 생성된 요약 소유
 ├── requirements.txt     # 저장소 검증 스크립트에 필요한 Python 모듈
 ├── requirements-pre-commit.txt # 로컬 staged·서버 PR 공통 pre-commit 도구 pin
+├── requirements-controller.lock # CI controller의 universal hash lock
 ├── lib/<domain>/        # import 전용 도메인 모듈; 공개 entrypoint 아님
 ├── lib/hardening-lib.sh # tier 하드닝 점검의 공유 구현
 └── README.md            # 이 문서
@@ -107,6 +108,13 @@ direct purpose folders so it does not duplicate that manifest.
 5. `--profile changed --explain`으로 영향을 확인하고, 후보 aggregate 검사는 원격 PR에서 한 번 실행합니다. `full`은 승인된 전체 감사용입니다.
 6. secret 관련 예시는 절차만 남기고, 생성된 secret 값을 출력하거나 문서화하지 않습니다.
 7. 저장소 검증 스크립트의 Python 모듈 의존성은 `scripts/requirements.txt`에 유지합니다.
+
+GitHub Actions controller는 `requirements.txt`와
+`requirements-pre-commit.txt`에서 uv 0.12.18로 생성한
+`requirements-controller.lock`만 `--require-hashes`로 설치합니다. 이 lock은
+Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-commit
+도구 준비는 기존 `requirements-pre-commit.txt`를 계속 직접 소비하며, lock
+재생성은 입력 변경을 동반한 별도 리뷰 대상입니다.
 
 ## Active Surface Retention Rules
 
@@ -187,6 +195,13 @@ admission이 실패합니다. CLI·통합 동작은 `tests/validation/`의 현�
 | Manual operations           | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/check-compose-core-readiness.sh --preflight`, `scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`, `scripts/security/seed-grype-db-cache.sh --preflight`, `scripts/security/seed-grype-db-cache.sh --seed`, `scripts/security/verify-sample-service-supply-chain.sh --preflight`, `scripts/security/verify-sample-service-supply-chain.sh --fixture-only`, `scripts/security/verify-sample-service-supply-chain.sh --advisory`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-sample-service-delivery.sh preflight`, `scripts/operations/rehearse-sample-service-delivery.sh rehearse`, `scripts/operations/rehearse-sample-service-delivery.sh cleanup` |
 | Agent QA/CI environment     | `source scripts/operations/use-qa-ci-tools.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Internal library            | `scripts/lib/hardening-lib.sh`, `scripts/lib/ops/compose-core-readiness.sh` |
+
+`CI_GATE_EVIDENCE_DIR`을 명시한 일반 로컬 `changed` 또는 `full` 실행은 같은
+`plan.json`, `result.json`, `evidence-manifest.json` 계약을 사용합니다. 이
+경로는 추적 파일이 깨끗한 실제 `HEAD`, 로컬 실행 ID, 관찰한 로컬 도구 신원을
+기록하며 GitHub event·App identity를 만들지 않습니다. 로컬
+`--requirements`는 인증된 pull-request merge topology가 없으므로 계속
+실패합니다.
 
 `scripts/operations/gen-secrets.sh`는 수동 운영 entrypoint입니다. 인자 없이
 실행하는 기본 모드는 로컬 secret registry와 secret 파일을 읽거나 쓸 수

@@ -19,6 +19,17 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 from types import MappingProxyType
 
+if __package__ in {None, ""}:
+    _BOOTSTRAP_ROOT = pathlib.Path(__file__).resolve().parents[3]
+    if str(_BOOTSTRAP_ROOT) not in sys.path:
+        sys.path.insert(0, str(_BOOTSTRAP_ROOT))
+
+from scripts.lib.gate.ci_gate_evidence import (
+    EvidenceError,
+    EvidenceStore,
+    capture_controller_toolchain,
+)
+
 SUBCOMMANDS = (
     "verify-metadata-base",
     "check-diff-hygiene",
@@ -1369,13 +1380,31 @@ def _run_zizmor_sarif(
     root_fd = _owned_root_descriptor(root)
     output_fd = -1
     created = False
+    evidence_store: EvidenceStore | None = None
+    evidence_started = datetime.now(UTC)
+    evidence_started_monotonic = time.monotonic()
     result_code: int | None = None
     product_error: BaseException | None = None
     try:
+        evidence_store = _create_main_security_evidence(root, root_fd, environ)
+        if evidence_store is not None:
+            evidence_store.initialize_result(
+                runtime_observation={
+                    "node": {
+                        "status": "NOT_SELECTED",
+                        "version": None,
+                        "sha256": None,
+                    }
+                }
+            )
+            evidence_store.mark_started(
+                "leaf.zizmor",
+                started_at_utc=_evidence_timestamp(evidence_started),
+            )
         try:
             output_fd = os.open(
                 "results.sarif",
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
+                os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
                 0o600,
                 dir_fd=root_fd,
             )
@@ -1387,9 +1416,6 @@ def _run_zizmor_sarif(
             ) from None
         result = _run_child(
             (
-                "uvx",
-                "--from",
-                "zizmor==1.28.0",
                 "zizmor",
                 ".",
                 "--format",
@@ -1401,6 +1427,28 @@ def _run_zizmor_sarif(
             stdout=output_fd,
         )
         result_code = int(result.returncode)
+        if evidence_store is not None:
+            ended = datetime.now(UTC)
+            artifact = _sarif_artifact(output_fd) if result_code == 0 else None
+            evidence_store.mark_terminal(
+                "leaf.zizmor",
+                status="PASS" if result_code == 0 else "FAIL",
+                exit_code=result_code,
+                ended_at_utc=_evidence_timestamp(ended),
+                duration_ms=max(
+                    0,
+                    round((time.monotonic() - evidence_started_monotonic) * 1000),
+                ),
+                reason=None if result_code == 0 else "NONZERO_EXIT",
+                artifact=artifact,
+            )
+            evidence_store.finalize(blocked_reason="blocked_by_prior")
+    except EvidenceError as error:
+        if result_code in {None, 0}:
+            product_error = AdapterError(
+                "ci-gate-adapter-evidence",
+                f"the execution evidence is unavailable: {error}",
+            )
     except BaseException as error:
         product_error = (
             AdapterError(
@@ -1409,6 +1457,18 @@ def _run_zizmor_sarif(
             )
             if isinstance(error, OSError)
             else error
+        )
+
+    evidence_close_failed = False
+    if evidence_store is not None:
+        try:
+            evidence_store.close()
+        except OSError:
+            evidence_close_failed = True
+    if evidence_close_failed and product_error is None and result_code in {None, 0}:
+        product_error = AdapterError(
+            "ci-gate-adapter-evidence",
+            "the execution evidence could not be closed",
         )
 
     output_cleanup_failed = False
@@ -1439,6 +1499,153 @@ def _run_zizmor_sarif(
             product_error = None
     assert result_code is not None
     return result_code
+
+
+def _evidence_timestamp(value: datetime) -> str:
+    return (
+        value.astimezone(UTC).isoformat(timespec="microseconds").replace("+00:00", "Z")
+    )
+
+
+def _create_main_security_evidence(
+    root: pathlib.Path,
+    root_fd: int,
+    environ: Mapping[str, str],
+) -> EvidenceStore | None:
+    directory = environ.get("CI_GATE_EVIDENCE_DIR", "")
+    if not directory:
+        return None
+    source_path = "scripts/lib/gate/ci_gate_adapters.py"
+    source_fd = -1
+    try:
+        source_fd = os.open(
+            source_path,
+            os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
+            dir_fd=root_fd,
+        )
+        metadata = os.fstat(source_fd)
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+            raise EvidenceError("main security source must be a regular file")
+        source_bytes = _read_bounded(source_fd)
+        source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+    except OSError as error:
+        raise EvidenceError("main security source is unavailable") from error
+    finally:
+        if source_fd >= 0:
+            os.close(source_fd)
+    git_object = _tracked_source_object(root, source_path, environ)
+    actual_object = hashlib.sha1(  # Git object identity, not a security digest.
+        f"blob {len(source_bytes)}\0".encode("ascii") + source_bytes,
+        usedforsecurity=False,
+    ).hexdigest()
+    if actual_object != git_object:
+        raise EvidenceError("main security source differs from its tracked object")
+    input_sha = environ.get("GITHUB_SHA", "")
+    identity = {
+        "event_name": environ.get("GITHUB_EVENT_NAME", ""),
+        "profile": "main-security",
+        "execution_context": "push",
+        "input_sha": input_sha,
+        "base_sha": "NOT_AVAILABLE",
+        "head_sha": input_sha,
+        "run_id": environ.get("GITHUB_RUN_ID", ""),
+        "run_attempt": environ.get("GITHUB_RUN_ATTEMPT", ""),
+        "job": environ.get("GITHUB_JOB", ""),
+    }
+    rows = (
+        {
+            "gate_id": "leaf.zizmor",
+            "argv": [source_path, "run-zizmor-sarif"],
+            "selection_reason": "workflow:main-security",
+            "environment_keys": ["CI", "GITHUB_ACTIONS"],
+            "source": {
+                "path": source_path,
+                "sha256": source_sha256,
+                "git_object": git_object,
+                "size_bytes": metadata.st_size,
+            },
+            "tool_image_digest": "NOT_AVAILABLE",
+        },
+    )
+    return EvidenceStore.create(
+        pathlib.Path(directory),
+        identity=identity,
+        rows=rows,
+        retention_days=14,
+        toolchain=capture_controller_toolchain(root, environ, node_selected=False),
+    )
+
+
+def _tracked_source_object(
+    root: pathlib.Path,
+    source_path: str,
+    environ: Mapping[str, str],
+) -> str:
+    git_path = pathlib.Path(environ.get("TRUSTED_GIT_PATH", ""))
+    try:
+        metadata = git_path.stat()
+    except OSError as error:
+        raise EvidenceError("trusted Git is unavailable") from error
+    if (
+        not git_path.is_absolute()
+        or not stat.S_ISREG(metadata.st_mode)
+        or metadata.st_uid != 0
+        or metadata.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+        or not os.access(git_path, os.X_OK)
+    ):
+        raise EvidenceError("trusted Git is unavailable")
+    try:
+        result = subprocess.run(
+            (
+                str(git_path),
+                "--literal-pathspecs",
+                "ls-files",
+                "--stage",
+                "-z",
+                "--error-unmatch",
+                "--",
+                source_path,
+            ),
+            cwd=root,
+            env={
+                "PATH": os.defpath,
+                "LANG": "C",
+                "LC_ALL": "C",
+                "GIT_CONFIG_NOSYSTEM": "1",
+                "GIT_CONFIG_GLOBAL": "/dev/null",
+                "GIT_NO_REPLACE_OBJECTS": "1",
+            },
+            pass_fds=_root_pass_fds(root),
+            capture_output=True,
+            check=False,
+            timeout=5,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise EvidenceError("main security source provenance is unavailable") from error
+    match = re.fullmatch(
+        rb"100(?:644|755) ([0-9a-f]{40}) 0\t"
+        + re.escape(source_path.encode())
+        + rb"\x00?",
+        result.stdout,
+    )
+    if result.returncode != 0 or match is None:
+        raise EvidenceError("main security source provenance is unavailable")
+    return match.group(1).decode("ascii")
+
+
+def _sarif_artifact(descriptor: int) -> dict[str, object]:
+    os.fsync(descriptor)
+    metadata = os.fstat(descriptor)
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    payload = _read_bounded(descriptor)
+    if len(payload) != metadata.st_size:
+        raise EvidenceError("SARIF output changed while it was hashed")
+    return {
+        "status": "CAPTURED",
+        "path": "results.sarif",
+        "sha256": hashlib.sha256(payload).hexdigest(),
+        "size_bytes": len(payload),
+    }
 
 
 def _open_root(root: pathlib.Path) -> int:

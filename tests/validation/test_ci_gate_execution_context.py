@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import dataclasses
+import json
 import os
 import pathlib
 import select
@@ -16,6 +17,7 @@ from unittest import mock
 
 from scripts.lib.gate import ci_gate_adapters as adapters
 from scripts.lib.gate import ci_gate_contract as contract
+from scripts.lib.gate import ci_gate_evidence as evidence
 from scripts.validation import ci_gate_runner as runner
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -311,6 +313,208 @@ class DescriptorExecutionTests(unittest.TestCase):
 
         return intercept
 
+    def evidence_request(
+        self,
+        output: pathlib.Path,
+        gate_ids: tuple[str, ...],
+    ) -> runner.ExecutionEvidenceRequest:
+        return runner.ExecutionEvidenceRequest(
+            directory=output,
+            identity={
+                "event_name": "pull_request",
+                "profile": "changed",
+                "execution_context": "pull_request",
+                "input_sha": "1" * 40,
+                "base_sha": "2" * 40,
+                "head_sha": "3" * 40,
+                "run_id": "12345",
+                "run_attempt": "1",
+                "job": "candidate-quality",
+            },
+            selection_reasons={gate_id: "suite:fixture" for gate_id in gate_ids},
+            retention_days=14,
+        )
+
+    def test_execution_evidence_records_success_and_verified_source(self) -> None:
+        self.add_entrypoint("scripts/validation/one.py")
+        plan = (_invocation("leaf.one", "scripts/validation/one.py"),)
+        request = self.evidence_request(
+            pathlib.Path(self.temporary.name) / "ci-gate-evidence",
+            ("leaf.one",),
+        )
+        runner.seed_execution_evidence(
+            self.root,
+            plan,
+            {"PATH": os.defpath},
+            request,
+        )
+        self.assertEqual(
+            0,
+            runner.execute_execution_plan(
+                self.root,
+                plan,
+                {"PATH": os.defpath},
+                evidence=request,
+            ),
+        )
+        plan_document = json.loads((request.directory / "plan.json").read_bytes())
+        result = json.loads((request.directory / "result.json").read_bytes())
+        source = plan_document["rows"][0]["source"]
+        self.assertEqual("leaf.one", plan_document["rows"][0]["gate_id"])
+        self.assertEqual(64, len(source["sha256"]))
+        self.assertEqual(40, len(source["git_object"]))
+        self.assertEqual("PASS", result["rows"][0]["status"])
+        self.assertTrue(result["complete"])
+
+    def test_execution_evidence_preserves_failure_and_blocks_remaining(self) -> None:
+        self.add_entrypoint(
+            "scripts/validation/fail.py",
+            "#!/usr/bin/env python3\nraise SystemExit(17)\n",
+        )
+        self.add_entrypoint("scripts/validation/later.py")
+        plan = (
+            _invocation("leaf.fail", "scripts/validation/fail.py"),
+            _invocation("leaf.later", "scripts/validation/later.py"),
+        )
+        request = self.evidence_request(
+            pathlib.Path(self.temporary.name) / "ci-gate-evidence",
+            ("leaf.fail", "leaf.later"),
+        )
+        runner.seed_execution_evidence(self.root, plan, {"PATH": os.defpath}, request)
+        self.assertEqual(
+            17,
+            runner.execute_execution_plan(
+                self.root,
+                plan,
+                {"PATH": os.defpath},
+                evidence=request,
+            ),
+        )
+        result = json.loads((request.directory / "result.json").read_bytes())
+        self.assertEqual(["FAIL", "NOT_RUN"], [row["status"] for row in result["rows"]])
+        self.assertEqual(17, result["rows"][0]["exit_code"])
+        self.assertEqual("blocked_by_prior", result["rows"][1]["reason"])
+
+    def test_execution_evidence_distinguishes_controller_timeout(self) -> None:
+        self.add_entrypoint("scripts/validation/timeout.py")
+        plan = (_invocation("leaf.timeout", "scripts/validation/timeout.py"),)
+        request = self.evidence_request(
+            pathlib.Path(self.temporary.name) / "ci-gate-evidence",
+            ("leaf.timeout",),
+        )
+        runner.seed_execution_evidence(self.root, plan, {"PATH": os.defpath}, request)
+        with mock.patch.object(
+            runner,
+            "_run_verified_child",
+            return_value=runner._ChildOutcome(124, timed_out=True),
+        ):
+            self.assertEqual(
+                124,
+                runner.execute_execution_plan(
+                    self.root,
+                    plan,
+                    {"PATH": os.defpath},
+                    evidence=request,
+                ),
+            )
+        result = json.loads((request.directory / "result.json").read_bytes())
+        self.assertEqual("ERROR", result["rows"][0]["status"])
+        self.assertEqual("TIMEOUT", result["rows"][0]["reason"])
+
+    def test_execution_evidence_finalizes_cancellation_without_running_later(
+        self,
+    ) -> None:
+        self.add_entrypoint("scripts/validation/cancel.py")
+        self.add_entrypoint("scripts/validation/later.py")
+        plan = (
+            _invocation("leaf.cancel", "scripts/validation/cancel.py"),
+            _invocation("leaf.later", "scripts/validation/later.py"),
+        )
+        request = self.evidence_request(
+            pathlib.Path(self.temporary.name) / "ci-gate-evidence",
+            ("leaf.cancel", "leaf.later"),
+        )
+        runner.seed_execution_evidence(self.root, plan, {"PATH": os.defpath}, request)
+        with (
+            mock.patch.object(
+                runner,
+                "_run_verified_child",
+                side_effect=KeyboardInterrupt,
+            ),
+            self.assertRaises(KeyboardInterrupt),
+        ):
+            runner.execute_execution_plan(
+                self.root,
+                plan,
+                {"PATH": os.defpath},
+                evidence=request,
+            )
+        result = json.loads((request.directory / "result.json").read_bytes())
+        self.assertEqual(
+            ["ERROR", "NOT_RUN"], [row["status"] for row in result["rows"]]
+        )
+        self.assertEqual("CANCELLED", result["rows"][0]["reason"])
+        self.assertEqual("blocked_by_prior", result["rows"][1]["reason"])
+
+    def test_execution_failure_remains_primary_when_receipt_update_fails(self) -> None:
+        self.add_entrypoint("scripts/validation/fail.py")
+        plan = (_invocation("leaf.fail", "scripts/validation/fail.py"),)
+        request = self.evidence_request(
+            pathlib.Path(self.temporary.name) / "ci-gate-evidence",
+            ("leaf.fail",),
+        )
+        runner.seed_execution_evidence(self.root, plan, {"PATH": os.defpath}, request)
+        with (
+            mock.patch.object(
+                runner,
+                "_run_verified_child",
+                return_value=runner._ChildOutcome(17),
+            ),
+            mock.patch.object(
+                runner.EvidenceStore,
+                "mark_terminal",
+                side_effect=runner.EvidenceError("write failed"),
+            ),
+        ):
+            self.assertEqual(
+                17,
+                runner.execute_execution_plan(
+                    self.root,
+                    plan,
+                    {"PATH": os.defpath},
+                    evidence=request,
+                ),
+            )
+        result = json.loads((request.directory / "result.json").read_bytes())
+        self.assertEqual("STARTED", result["rows"][0]["status"])
+        self.assertFalse(result["complete"])
+
+    def test_termination_signal_is_recorded_before_returning_signal_exit(self) -> None:
+        self.add_entrypoint("scripts/validation/cancel.py")
+        plan = (_invocation("leaf.cancel", "scripts/validation/cancel.py"),)
+        request = self.evidence_request(
+            pathlib.Path(self.temporary.name) / "ci-gate-evidence",
+            ("leaf.cancel",),
+        )
+        runner.seed_execution_evidence(self.root, plan, {"PATH": os.defpath}, request)
+        with mock.patch.object(
+            runner,
+            "_run_verified_child",
+            side_effect=runner._ExecutionCancelled(signal.SIGTERM),
+        ):
+            self.assertEqual(
+                128 + signal.SIGTERM,
+                runner.execute_execution_plan(
+                    self.root,
+                    plan,
+                    {"PATH": os.defpath},
+                    evidence=request,
+                ),
+            )
+        result = json.loads((request.directory / "result.json").read_bytes())
+        self.assertEqual("ERROR", result["rows"][0]["status"])
+        self.assertEqual("CANCELLED", result["rows"][0]["reason"])
+
     def test_minimal_environment_clears_git_and_shares_one_home(self) -> None:
         self.add_entrypoint("scripts/validation/one.py")
         self.add_entrypoint("scripts/validation/two.py")
@@ -591,9 +795,15 @@ class DescriptorExecutionTests(unittest.TestCase):
 
     def _assert_descriptor_root_survives_path_replacement(self) -> None:
         adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
+        evidence_source = pathlib.Path(evidence.__file__).read_text(encoding="utf-8")
         self.add_entrypoint(
             "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
+        )
+        self.add_entrypoint(
+            "scripts/lib/gate/ci_gate_evidence.py",
+            evidence_source,
+            mode=0o644,
         )
         original_root = self.root.with_name(f"{self.root.name}-original")
         real_verify = runner._verify_invocation
@@ -651,18 +861,24 @@ class DescriptorExecutionTests(unittest.TestCase):
             encoding="utf-8",
         )
         adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
+        evidence_source = pathlib.Path(evidence.__file__).read_text(encoding="utf-8")
         self.add_entrypoint(
             "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
+        self.add_entrypoint(
+            "scripts/lib/gate/ci_gate_evidence.py",
+            evidence_source,
+            mode=0o644,
+        )
         fake_bin = self.root / "fake-bin-isolation"
         fake_bin.mkdir()
-        fake_uvx = fake_bin / "uvx"
-        fake_uvx.write_text(
+        fake_zizmor = fake_bin / "zizmor"
+        fake_zizmor.write_text(
             self._fd_inventory_uvx_source(),
             encoding="utf-8",
         )
-        fake_uvx.chmod(0o755)
+        fake_zizmor.chmod(0o755)
         invocation = dataclasses.replace(
             _invocation(
                 "leaf.zizmor",
@@ -687,18 +903,24 @@ class DescriptorExecutionTests(unittest.TestCase):
 
     def _assert_registered_adapter_integrations(self) -> None:
         adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
+        evidence_source = pathlib.Path(evidence.__file__).read_text(encoding="utf-8")
         self.add_entrypoint(
             "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
+        self.add_entrypoint(
+            "scripts/lib/gate/ci_gate_evidence.py",
+            evidence_source,
+            mode=0o644,
+        )
         fake_bin = self.root / "fake-bin"
         fake_bin.mkdir()
-        fake_uvx = fake_bin / "uvx"
-        fake_uvx.write_text(
+        fake_zizmor = fake_bin / "zizmor"
+        fake_zizmor.write_text(
             self._fd_inventory_uvx_source(),
             encoding="utf-8",
         )
-        fake_uvx.chmod(0o755)
+        fake_zizmor.chmod(0o755)
         plan = (
             dataclasses.replace(
                 _invocation(
@@ -808,9 +1030,15 @@ class DescriptorExecutionTests(unittest.TestCase):
             "raise SystemExit(result.returncode)\n"
         )
         adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
+        evidence_source = pathlib.Path(evidence.__file__).read_text(encoding="utf-8")
         self.add_entrypoint(
             "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
+        )
+        self.add_entrypoint(
+            "scripts/lib/gate/ci_gate_evidence.py",
+            evidence_source,
+            mode=0o644,
         )
         self.add_entrypoint("scripts/validation/tree-harness.py", harness)
         for mode, expected in (
