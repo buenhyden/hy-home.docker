@@ -1,10 +1,10 @@
 ---
 title: "QA Scope and Delivery Rationalization Plan"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-16"
 layer: "specs"
 artifact_id: "SPEC-0211-PLAN-0001"
 parent_ids:
@@ -38,14 +38,23 @@ runtime authorization remain preserved.
 | W5 | 4 | Consolidate commit, changelog and SemVer release production | W2 | TSK-0001 | Task evidence |
 | W6 | 5 | Align current governance and Issue/Project views | W4, W5 | TSK-0001 | Task evidence |
 | W7 | 1, 2, 3, 4, 5 | Validate final input, review and record residual owners | W6 | TSK-0001 | Task evidence |
+| W70 | 2, 3, 5 | Support the existing criteria by promoting deterministic contract regressions to hosted changed selection and restoring tier 13 hardening coverage | W7 | TSK-0002 | RED/GREEN path selection, failure propagation and hardening behavior |
 
 ## Verification Plan
 
 Use focused RED/GREEN only for changed behavior and scoped registered style
 checks. Derive final changed selection from the machine contract. The remote
-PR run owns candidate validation excluding typed local-only leaves. The shared
-runner selects necessary units, implementation fixtures and links once in its
-local-only lane before submission; local development does not repeat the remote bundle or full
+PR run owns candidate validation excluding typed local-only leaves while
+admitting the closed deterministic CI gate-contract, Compose-baseline and
+repository-integrity regression set. The shared runner selects the hosted set
+in the normal local changed plan and the changed candidate plan; all other units,
+implementation fixtures and links remain in the local-only lane before
+submission. Capture the immutable event, merge SHA, ordered raw parents and
+absolute system Git path and configured Python interpreter before dependency
+installation through the fixed system Bash path; require exact
+agreement before contract loading, prerequisite selection and changed-path
+execution. Poisoned custom event, SHA and PATH inputs must fail closed. Local
+development does not repeat the remote bundle or full
 profile. Separate Conftest unit verify from actual corpus commands while preserving
 one invocation per registered gate ID/mode and Docker prerequisite ownership.
 Retire completed cutover, fixed corpus and test-only helper units only after
@@ -80,3 +89,4 @@ or remote-protection mutation is implied by source validation.
 
 - [Spec](spec.md)
 - [Task](tasks/tsk-0001-qa-scope-and-delivery-rationalization.md)
+- [Hosted contract and tier 13 hardening task](tasks/tsk-0002-hosted-contract-and-tier13-hardening.md)

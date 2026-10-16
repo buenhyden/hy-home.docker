@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-16"
 layer: "operations"
 artifact_id: "RUN-0009"
 created: "2026-06-04"
@@ -195,6 +195,24 @@ bash scripts/operations/check-compose-core-readiness.sh
   Task의 실제 증거에서 확인한다. 과거 문서 서술은 현재 실행 결과가 아니다.
 
 ## Failure and Recovery
+
+### Candidate Required-Check Handoff
+
+The 2026-10-16 authenticated read-back in
+[main-protection.md](../../../../.github/rulesets/main-protection.md) records
+zero required contexts and checks even though the latest successful
+`candidate-quality` check came from GitHub Actions App ID 15368. Release or
+merge readiness must not claim remote CI enforcement while that gap remains.
+
+That record owns the exact scoped PATCH proposal, current empty-check rollback
+payload, full protection read-back, producer metadata assertions and the
+missing/failed/stale/wrong-App/matching enforcement rehearsal matrix. The past
+check-run filters prove metadata only; every enforcement case remains NOT_RUN
+or BLOCKED. An operator may prepare and review the local payload files.
+Running the PATCH requires separate owner approval, after which the operator
+must compare every preserved protection field and record the result in the
+active Task. A failed check name, App identity, conclusion or read-back blocks
+the handoff; restoring an old `validation-changed` context is not a rollback.
 
 ### Rollback or Recovery
 

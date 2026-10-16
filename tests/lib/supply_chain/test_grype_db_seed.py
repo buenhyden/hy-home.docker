@@ -446,6 +446,18 @@ class NetworkApprovalSurfaceTests(unittest.TestCase):
     APPROVALS = ROOT / "infra/supply-chain.network-approvals.md"
     SEED = ROOT / "scripts/security/seed-grype-db-cache.sh"
     VERIFY = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
+    GRYPE_MARKER = "Grype DB network approval: confirmed"
+    SCORECARD_MARKER = "Scorecard network approval: confirmed"
+
+    def _write_script_library(
+        self, directory: pathlib.Path, script: pathlib.Path
+    ) -> pathlib.Path:
+        source = script.read_text(encoding="utf-8")
+        library = source.split('\ncase "$MODE" in\n', maxsplit=1)[0]
+        self.assertNotEqual(source, library, f"{script.name} dispatch boundary missing")
+        target = directory / f"{script.stem}.lib.sh"
+        target.write_text(library + "\n", encoding="utf-8")
+        return target
 
     def test_the_approval_surface_exists_and_is_read_by_both_scripts(self) -> None:
         self.assertTrue(self.APPROVALS.is_file())
@@ -458,50 +470,78 @@ class NetworkApprovalSurfaceTests(unittest.TestCase):
                 )
                 self.assertNotIn("docs/04.execution", text)
 
-    def test_no_approval_is_currently_granted(self) -> None:
-        """Absence is the fact this file records; granting is an operator act."""
+    def test_current_approval_state_matches_the_operator_record(self) -> None:
+        """The tracked surface grants Grype once and keeps Scorecard closed."""
 
         lines = self.APPROVALS.read_text(encoding="utf-8").splitlines()
-        for marker in (
-            "Grype DB network approval: confirmed",
-            "Scorecard network approval: confirmed",
-        ):
-            with self.subTest(marker=marker):
-                self.assertNotIn(marker, lines)
+        self.assertEqual(1, lines.count(self.GRYPE_MARKER))
+        self.assertNotIn(self.SCORECARD_MARKER, lines)
 
-    def test_each_script_refuses_when_its_marker_is_absent(self) -> None:
-        """The red path, exercised rather than asserted about."""
+    def test_absent_markers_keep_each_network_path_closed(self) -> None:
+        """Missing approval fails the seed and safely skips Scorecard."""
 
-        for script, marker, code in (
-            (
-                self.SEED,
-                "Grype DB network approval: confirmed",
-                "seed-network-approval-missing",
-            ),
-            (self.VERIFY, "Scorecard network approval: confirmed", "scorecard"),
-        ):
-            with self.subTest(script=script.name):
-                text = script.read_text(encoding="utf-8")
-                self.assertIn(f"grep -Fqx '{marker}' \"$APPROVAL_DOC\"", text)
-                self.assertNotIn(
-                    marker, self.APPROVALS.read_text(encoding="utf-8").splitlines()
-                )
-                self.assertTrue(code)
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            approvals = root / "approvals.md"
+            approvals.write_text("## Approvals\n", encoding="utf-8")
 
-    def test_granting_the_marker_would_satisfy_the_scripts_exact_match(self) -> None:
+            seed_library = self._write_script_library(root, self.SEED)
+            seed = subprocess.run(
+                [
+                    "bash",
+                    "-c",
+                    'source "$1"\nAPPROVAL_DOC="$2"\nrun_preflight',
+                    "bash",
+                    str(seed_library),
+                    str(approvals),
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(10, seed.returncode, seed.stdout + seed.stderr)
+            self.assertIn("reason=seed-network-approval-missing", seed.stderr)
+
+            verify_library = self._write_script_library(root, self.VERIFY)
+            scorecard = subprocess.run(
+                [
+                    "bash",
+                    "-c",
+                    (
+                        'source "$1"\nAPPROVAL_DOC="$2"\n'
+                        "run_preflight() { :; }\nrun_scorecard_advisory"
+                    ),
+                    "bash",
+                    str(verify_library),
+                    str(approvals),
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, scorecard.returncode, scorecard.stderr)
+            self.assertEqual(
+                "scorecard_advisory=skipped "
+                "reason=task-read-only-network-approval-not-confirmed\n",
+                scorecard.stdout,
+            )
+
+    def test_granted_grype_marker_satisfies_the_scripts_exact_match(self) -> None:
         """`grep -Fqx` matches a whole line, so the documented form must work."""
 
         with tempfile.TemporaryDirectory() as directory:
             candidate = pathlib.Path(directory) / "approvals.md"
             candidate.write_text(
-                "## Approvals\n\nGrype DB network approval: confirmed\n",
+                f"## Approvals\n\n{self.GRYPE_MARKER}\n",
                 encoding="utf-8",
             )
             result = subprocess.run(
                 [
                     "grep",
                     "-Fqx",
-                    "Grype DB network approval: confirmed",
+                    self.GRYPE_MARKER,
                     str(candidate),
                 ],
                 capture_output=True,
@@ -512,12 +552,10 @@ class NetworkApprovalSurfaceTests(unittest.TestCase):
                 [
                     "grep",
                     "-Fqx",
-                    "Grype DB network approval: confirmed",
+                    self.GRYPE_MARKER,
                     str(self.APPROVALS),
                 ],
                 capture_output=True,
                 check=False,
             )
-            self.assertEqual(
-                1, result.returncode, "the tracked surface must grant nothing"
-            )
+            self.assertEqual(0, result.returncode, "the tracked Grype grant must match")

@@ -1017,8 +1017,8 @@ def _workflow_projection_findings(
                 if isinstance(step, dict) and isinstance(step.get("run"), str)
             }
             required_commands = {
-                'python3 scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
-                "python3 scripts/validation/run-ci-gate.py --profile changed",
+                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
+                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed',
             }
             if not required_commands <= commands:
                 findings.append(
@@ -1028,6 +1028,22 @@ def _workflow_projection_findings(
                         "candidate job must select prerequisites and run the changed profile once",
                     )
                 )
+            fixed_shell = "/usr/bin/bash --noprofile --norc -eo pipefail {0}"
+            for name in (
+                "Capture trusted pull request context",
+                "Install validation controller dependencies",
+                "Select candidate prerequisites",
+                "Verify selected Docker prerequisite",
+                "Run changed candidate validation",
+            ):
+                if steps_by_name.get(name, {}).get("shell") != fixed_shell:
+                    findings.append(
+                        _finding(
+                            "workflow-gate-execution-context-invalid",
+                            path,
+                            f"candidate step {name} must use the fixed system shell",
+                        )
+                    )
             node_step = steps_by_name.get("Set up Node.js")
             if not isinstance(node_step, dict) or node_step.get("if") != (
                 "steps.prerequisites.outputs.node == 'true'"

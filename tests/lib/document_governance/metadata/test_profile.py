@@ -197,7 +197,14 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_governance_policy_profile_binds_approval_boundary_body(self) -> None:
         profile = self.registry.profiles["governance-policy"]
         self.assertEqual(
-            ("Overview", "Scope", "Rules", "Exceptions", "Related Documents"),
+            (
+                "Overview",
+                "Scope",
+                "Rules",
+                "Exceptions",
+                "Verification",
+                "Related Documents",
+            ),
             profile["required_sections"],
         )
         self.assertTrue(profile["free_form_sections"])
@@ -221,6 +228,19 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertEqual([], section_codes(text))
         self.assertEqual(
             [],
+            section_codes(
+                body_with_headings(
+                    "## Overview",
+                    "## Scope",
+                    "## Rules",
+                    "## Exceptions",
+                    "## Verification",
+                    "## Related Documents",
+                )
+            ),
+        )
+        self.assertIn(
+            "body-heading-missing",
             section_codes(
                 body_with_headings(
                     "## Overview",

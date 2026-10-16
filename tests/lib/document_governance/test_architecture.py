@@ -24,7 +24,8 @@ def _child_env() -> dict[str, str]:
     """
 
     environment = dict(os.environ)
-    environment.pop("HYHOME_CI_GATE_ROOT", None)
+    if environment.pop("HYHOME_CI_GATE_ROOT", None) is not None:
+        environment.pop("PYTHONPATH", None)
     return environment
 
 
@@ -442,7 +443,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
                 _document_text(
                     "adr",
                     "0029",
-                    status="retired",
+                    status="proposed",
                     supersedes=("ADR-0027",),
                 ),
             )
@@ -465,6 +466,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
             )
 
         self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+        self.assertNotIn("Error in sitecustomize", result.stderr)
         self.assertIn("configuration-error:", result.stderr)
         self.assertIn("supersession-successor-not-effective", result.stderr)
 

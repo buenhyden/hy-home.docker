@@ -98,6 +98,20 @@ settings by itself.
   All other protection fields and empty rulesets were unchanged. The narrow
   rollback is `{"strict":true,"contexts":[],"checks":[]}`; use it only
   after a fresh read-back and separate approval.
+- Later on 2026-10-16, independent authenticated read-only lookups using API
+  versions `2026-03-10` and `2022-11-28` confirmed the configured target:
+  `strict=true`, projected `contexts=["candidate-quality"]`, and
+  `checks=[{"context":"candidate-quality","app_id":15368}]`. PR 505 at head
+  `e459c4ec1aaf652ad26d17e67daaf7ff5bb23aac` was `BLOCKED` while its only
+  unsatisfied observed condition was the failed App 15368 `candidate-quality`
+  check. This proves the failed-current-head negative case without a merge
+  attempt; it does not prove the remaining enforcement cases below.
+- A later read-only observation bound PR 506 head
+  `2fbcf8982945d6e8d3666e6940e3accde728c768` to a successful App 15368
+  `candidate-quality` check and confirmed the protected PR merged as main
+  `89eb43f683a11587cf4f125be534ae720c20a55c`. This is a matching-success
+  observation for that exact head, not a claim about later revisions or the
+  unexercised missing, stale and wrong-App cases.
 
 ## Target Ruleset
 
@@ -114,7 +128,8 @@ settings by itself.
 - Block branch deletion.
 - Require the one produced PR candidate context `candidate-quality` from
   GitHub Actions. Pull requests, resolved conversations, force-push denial and
-  deletion denial remain separate controls.
+  deletion denial remain separate controls. The live read-back matches this
+  target; any future correction requires its own approved setting change.
 - Do not enforce squash/rebase-only or linear-history settings that would
   discard referenced objects, so delivered history can keep them.
 - Recovery-commit preservation and branch deletion are stated once, in
@@ -147,6 +162,76 @@ all other protection fields unchanged, including admin enforcement, conversation
 resolution, review settings, force-push/deletion denial, and empty rulesets.
 No stale retired `validation-changed` context was restored.
 
+If a future read-back drifts to the exact empty-check state, the minimal
+recovery is limited to
+`branches/main/protection/required_status_checks` with this payload:
+
+```json
+{"strict":true,"checks":[{"context":"candidate-quality","app_id":15368}]}
+```
+
+The payload omits deprecated `contexts`; GitHub may project the check name into
+that read-back field. It preserves strict mode and binds the candidate check to
+the observed GitHub Actions App. Administrator enforcement, reviews,
+conversation resolution, force-push denial and deletion denial are outside the
+scoped PATCH and must compare equal before and after. Recovery requires a fresh
+empty-state read-back, an exclusive operator window and separate owner
+approval. It is not pending while the live target already matches.
+
+```bash
+set -euo pipefail
+umask 077
+workdir="$(mktemp -d /tmp/hyhome-main-protection.XXXXXX)"
+before="$workdir/before.json"
+immediate="$workdir/immediate-before.json"
+after="$workdir/after.json"
+proposed="$workdir/proposed.json"
+rollback="$workdir/rollback.json"
+gh api -H "X-GitHub-Api-Version: 2026-03-10" repos/buenhyden/hy-home.docker/branches/main/protection > "$before"
+jq -e '.required_status_checks.strict == true and .required_status_checks.contexts == [] and .required_status_checks.checks == []' "$before"
+jq '.required_status_checks | {strict,contexts,checks}' "$before" > "$rollback"
+printf '%s\n' '{"strict":true,"checks":[{"context":"candidate-quality","app_id":15368}]}' > "$proposed"
+gh api -H "X-GitHub-Api-Version: 2026-03-10" repos/buenhyden/hy-home.docker/branches/main/protection > "$immediate"
+cmp -s "$before" "$immediate"
+gh api -H "X-GitHub-Api-Version: 2026-03-10" --method PATCH repos/buenhyden/hy-home.docker/branches/main/protection/required_status_checks --input "$proposed"
+gh api -H "X-GitHub-Api-Version: 2026-03-10" repos/buenhyden/hy-home.docker/branches/main/protection > "$after"
+jq -S 'del(.required_status_checks)' "$before" > "$workdir/before-unmodified.json"
+jq -S 'del(.required_status_checks)' "$after" > "$workdir/after-unmodified.json"
+cmp -s "$workdir/before-unmodified.json" "$workdir/after-unmodified.json"
+jq -e '.required_status_checks as $r | $r.strict == true and $r.checks == [{"context":"candidate-quality","app_id":15368}] and (($r.contexts == []) or ($r.contexts == ["candidate-quality"])) and ([($r.contexts[]?), $r.checks[].context] | unique) == ["candidate-quality"]' "$after"
+```
+
+The PATCH command is the approval boundary. Any failed assertion stops
+acceptance. Rolling a recovery back to the captured empty state weakens the
+currently observed control and needs another separate approval. After that
+approval, PATCH the captured payload, read the full resource again, and compare
+all unmodified fields:
+
+```bash
+gh api -H "X-GitHub-Api-Version: 2026-03-10" --method PATCH repos/buenhyden/hy-home.docker/branches/main/protection/required_status_checks --input "$rollback"
+gh api -H "X-GitHub-Api-Version: 2026-03-10" repos/buenhyden/hy-home.docker/branches/main/protection > "$workdir/rollback-readback.json"
+jq -e '.required_status_checks.strict == true and .required_status_checks.contexts == [] and .required_status_checks.checks == []' "$workdir/rollback-readback.json"
+jq -S 'del(.required_status_checks)' "$workdir/rollback-readback.json" > "$workdir/rollback-unmodified.json"
+cmp -s "$workdir/before-unmodified.json" "$workdir/rollback-unmodified.json"
+```
+
+The recorded producer metadata proves only its named SHA. The fresh PR 505
+observation proves only the failed-current-head negative case. No PATCH is
+pending while the live read-back matches the target:
+
+| Case | Required current input | Expected observation | Current status |
+| --- | --- | --- | --- |
+| Missing check | Current PR head with no `candidate-quality` check | Merge state blocked; no matching current-head check run | NOT_RUN |
+| Failed check | PR 505 head `e459c4ec1aaf652ad26d17e67daaf7ff5bb23aac` with App 15368 failure | Merge state `BLOCKED`; current-head conclusion is failure and every other observed check succeeded or skipped | PASS |
+| Stale success | New PR head after a prior head succeeded | Merge state blocked; success exists only on the old SHA | NOT_RUN |
+| Wrong App | Same check name from a separately installed App | Merge state blocked; App ID differs from 15368 | BLOCKED until such an independently permissioned App exists |
+| Matching success | PR 506 head `2fbcf8982945d6e8d3666e6940e3accde728c768` with App 15368 success and every other protection condition satisfied | Required-check state was satisfied and the protected PR merged as main `89eb43f683a11587cf4f125be534ae720c20a55c` | PASS |
+
+For each available case, capture both the PR merge state and current head's
+check runs. Do not invoke a merge as a test. A wrong-App case cannot be
+synthesized by editing JSON and remains blocked until a separately permissioned
+App produces it.
+
 A whole workflow skipped by path/branch filters or commit instructions can leave
 an expected check pending. Selection happens inside the PR workflow; title edits
 do not replace revision evidence. See the
@@ -172,8 +257,8 @@ it in the current Task. Local Git recovery restores tracked definitions only.
 Apply future changes only after explicit owner approval. Remote changes should
 be performed through GitHub UI or an audited `gh api` command, then re-check:
 
-- `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`
-- `gh api repos/buenhyden/hy-home.docker/branches/main/protection`
+- `gh api -H "X-GitHub-Api-Version: 2026-03-10" repos/buenhyden/hy-home.docker/rulesets --paginate`
+- `gh api -H "X-GitHub-Api-Version: 2026-03-10" repos/buenhyden/hy-home.docker/branches/main/protection`
 
 Every dated read-back is point-in-time evidence, not a perpetual guarantee.
 Any later claim of remote enforcement requires a new authenticated read-back;
