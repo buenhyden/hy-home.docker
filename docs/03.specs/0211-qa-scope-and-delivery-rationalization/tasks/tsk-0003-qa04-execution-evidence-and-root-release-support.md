@@ -265,6 +265,50 @@ Diagnostic messages now name the OS reason, file mode, and failing gate ID;
 they expose no path content or secret value. These observations do not run
 E07 or E08 and do not change any criterion decision.
 
+### Local FULL observations on main
+
+Two local `python3 scripts/validation/run-ci-gate.py --profile full` runs on
+main `875d77c45` are recorded as observations, not as E08: E08 requires the
+final integrated input.
+
+1. Run 1 took 43:51 wall clock with a 180 MB peak RSS and exited 254. The
+   checkout was created under umask 002, so tracked helpers were mode 664 and
+   the existing group-writable rejection stopped an OpenBao issuance test.
+   The owner set umask 022; the agent removed group write from tracked files.
+2. Run 2 took 39:31 with a 177 MB peak RSS and exited 1: 773 tests ran with
+   one failure. `test_registry_high_water_is_not_below_repository_history`
+   scanned every local ref and found SPEC-0246 on the unmerged branch of
+   PR #512, so it reported `registry high_water=245 observed=246`. The same
+   test failed the same way in the records of SPEC-0224, SPEC-0231, SPEC-0232,
+   SPEC-0235 and SPEC-0204. The full-history metadata gate run alone on the
+   same main reports the same finding in 171 s.
+
+### W74 Real-Tree Test Duplication
+
+A per-test profile of the document-governance and lifecycle modules (940
+tests, 1,929 s run in isolation) showed six tests taking 794 s. Each one ran
+a real-tree check that the full profile already runs as a gate, or ran it
+more than once. Each test now keeps its rule, checked once or against a
+fixture:
+
+| Test | Before | After | Change |
+| --- | --- | --- | --- |
+| `test_reference` fragmented in-progress evidence | 264 s | 134 s | The package load is the control; the second real-tree contract run is removed |
+| `test_reference` workspace inventory coupling | 127 s | under 1 s | The rule moved to `_workspace_inventory_findings()` and is called directly |
+| `test_profile` current Requirement packages | 124 s | under 1 s | The `check-contracts` subprocess is removed; `leaf.repo-document-metadata` runs it |
+| `test_links` repository modes | 118 s | 56 s | One `--mode all` run replaces four processes; the non-mutation check is kept |
+| `lifecycle/test_public` default route (two tests) | 160 s | 88 s | One run checks both the legacy-contract mock and the report lines |
+| `test_identity_history` high-water against history | real-tree `--all` scan | under 1 s | A synthetic issued set pins `identity-history-regression` at `high_water + 1` |
+
+`test_lab_isolation.test_a_lab_service_cannot_be_targeted_through_the_root`
+is removed. Its nine root renders are implied by the wildcard root render,
+which already proves that no LAB service is in the root model.
+
+The full-history gate still scans every ref, so local FULL on main fails
+while another branch holds a newly allocated identity. Whether that scan
+should cover only refs reachable from HEAD is an owner decision; this Task
+does not change it.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -295,12 +339,16 @@ E07 or E08 and do not change any criterion decision.
 | E16-manifest-row-green | 2, 5 | W72 | script-manifest-coverage | `check-script-manifest.py`; PR 508 run `38858240031` | PASS | No manifest finding | required | E15-manifest-row |
 | E17-full-profile-reachability | 2, 5 | W72 | full-profile-test-reachability | PR 508 run `38858240031` | FAIL | `test_ci_gate_evidence` unreachable from the full profile | required | - |
 | E18-full-profile-reachability-green | 2, 5 | W72 | full-profile-test-reachability | `test_surface_ownership`; PR 508 run `38860325987` | PASS | 955 tests OK (79 skipped) | required | E17-full-profile-reachability |
+| E19-local-full-main-umask | 2, 5 | W73 | local-full-observation | `run-ci-gate.py --profile full` on main `875d77c45`, run 1 | FAIL | Work Log: Local FULL observations on main, item 1 (exit 254, 43:51) | required | - |
+| E20-local-full-main-refs | 2, 5 | W73 | local-full-observation | Same command on the same main, run 2 | FAIL | Work Log: Local FULL observations on main, item 2 (1 of 773 failed, 39:31) | required | - |
+| E21-full-test-profile | 1, 2 | W74 | per-test-timing | 940 document-governance and lifecycle tests run in isolation | PASS | Work Log: W74 Real-Tree Test Duplication (six tests, 794 s) | required | - |
+| E22-real-tree-dedup | 1, 2 | W74 | focused-red-green | Seven rewritten tests; ruff check and format | PASS | Work Log: W74 Real-Tree Test Duplication (all pass; 515 s removed) | required | - |
 
 ## Criterion Acceptance
 
 This support Task has no Criterion Acceptance table. SPEC-0211-TSK-0001 retains
 the sole durable decisions for criteria1–5; all remain pending until their
-current owner records an actual decision. W71–W73 provide supporting evidence
+current owner records an actual decision. W71–W74 provide supporting evidence
 for criteria2–5 without adding, accepting, rejecting or reassigning a criterion.
 
 ## Review and Completion

@@ -147,20 +147,17 @@ class CurrentPublicContractTests(unittest.TestCase):
         self.assertEqual("spec", manifest.entries[0].artifact_type_after)
         self.assertEqual("typed-example", manifest.entries[0].surface_class)
 
-    def test_default_route_does_not_load_a_legacy_contract(self) -> None:
+    def test_default_route_reports_without_a_legacy_contract(self) -> None:
+        # One real-tree run proves both properties; each run scans the corpus.
+        output = io.StringIO()
         with (
             mock.patch.object(
                 lifecycle,
                 "load_migration_contract",
                 side_effect=AssertionError("legacy authority loaded"),
             ),
-            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stdout(output),
         ):
-            self.assertEqual(0, lifecycle.main([]))
-
-    def test_default_route_reports_lifecycle_and_archive_recovery(self) -> None:
-        output = io.StringIO()
-        with contextlib.redirect_stdout(output):
             self.assertEqual(0, lifecycle.main([]))
         rendered = output.getvalue()
         self.assertIn("document corpus lifecycle:", rendered)

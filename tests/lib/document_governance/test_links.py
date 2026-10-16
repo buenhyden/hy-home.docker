@@ -2511,17 +2511,17 @@ class DocumentLinksCliTests(unittest.TestCase):
             check=True,
             capture_output=True,
         ).stdout
-        for mode in ("traceability", "alignment", "entrypoint", "commands"):
-            with self.subTest(mode=mode):
-                result = subprocess.run(
-                    [sys.executable, str(CLI), "--mode", mode],
-                    cwd=ROOT,
-                    text=True,
-                    check=False,
-                    capture_output=True,
-                )
-                self.assertEqual(0, result.returncode, result.stderr)
-                self.assertIn(f"mode={mode}", result.stdout)
+        # `all` runs every handler over one graph build; four separate
+        # processes would rebuild the real-tree graph four times.
+        result = subprocess.run(
+            [sys.executable, str(CLI), "--mode", "all"],
+            cwd=ROOT,
+            text=True,
+            check=False,
+            capture_output=True,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("mode=all", result.stdout)
         after = subprocess.run(
             ["git", "diff", "--name-only"],
             cwd=ROOT,

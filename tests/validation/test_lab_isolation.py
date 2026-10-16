@@ -91,16 +91,6 @@ class RootClosureTests(RenderedModels):
         self.assertNotIn("labs/", root_text)
         self.assertNotIn("${LAB_", root_text)
 
-    def test_a_lab_service_cannot_be_targeted_through_the_root(self) -> None:
-        for name, lab in self.labs.items():
-            service = sorted(lab["services"])[0]
-            with self.subTest(lab=name, service=service):
-                result = compose(
-                    "--env-file", ".env.example", "--profile", "*", "config", service
-                )
-                self.assertNotEqual(0, result.returncode)
-                self.assertIn("no such service", result.stderr.lower())
-
 
 class LabBoundaryTests(RenderedModels):
     def test_every_lab_volume_binds_under_a_required_lab_input(self) -> None:

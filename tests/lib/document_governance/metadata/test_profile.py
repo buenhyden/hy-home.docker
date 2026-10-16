@@ -21,7 +21,6 @@ from tests.lib.document_governance.metadata._support import (
     body_with_headings,
     current_profiles,
     metadata,
-    run_checker,
     write_doc,
 )
 
@@ -78,15 +77,13 @@ class FrontmatterParsingTests(unittest.TestCase):
 
 
 class CurrentRegistryContractTests(unittest.TestCase):
-    def test_current_requirement_packages_satisfy_repository_contracts(self) -> None:
+    def test_current_requirement_packages_load(self) -> None:
+        # The full-profile metadata gate owns the real-tree contract run.
         from scripts.lib.document_governance.requirements import (
             load_requirement_packages,
         )
 
         self.assertTrue(load_requirement_packages(ROOT / "docs/01.requirements"))
-        result = run_checker(ROOT, "check-contracts", profiles=REGISTRY)
-        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertIn("metadata repository contracts: violations=0", result.stdout)
 
 
 class TemplateRoleInferenceTests(unittest.TestCase):
