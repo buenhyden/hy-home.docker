@@ -540,28 +540,32 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "leaf.docs-traceability", {item.gate_id for item in hosted_full}
         )
 
-    def test_implementation_regressions_are_local_only_with_remote_owners(
+    def test_implementation_regressions_have_explicit_execution_owners(
         self,
     ) -> None:
         cases = {
             "scripts/lib/document_governance/spec_packages.py": (
                 "leaf.document-governance-library-regressions",
                 "leaf.repo-document-metadata",
+                False,
             ),
             ".github/workflow-contract.yml": (
                 "leaf.workflow-contract-regressions",
                 "leaf.workflow-contract",
+                False,
             ),
             "scripts/hooks/hook_rules.py": (
                 "leaf.local-hook-rule-tests",
                 "leaf.local-agent-governance-contract",
+                False,
             ),
             "scripts/validation/check-script-manifest.py": (
                 "leaf.repository-integrity-regressions",
                 "leaf.local-script-manifest",
+                True,
             ),
         }
-        for path, (local_only, remote_owner) in cases.items():
+        for path, (regression, remote_owner, hosted) in cases.items():
             with self.subTest(path=path):
                 local_ids = {
                     item.gate_id
@@ -575,9 +579,101 @@ class CiGateRunnerContractTests(unittest.TestCase):
                         "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
                     )
                 }
-                self.assertIn(local_only, local_ids)
-                self.assertNotIn(local_only, remote_ids)
+                self.assertIn(regression, local_ids)
+                if hosted:
+                    self.assertIn(regression, remote_ids)
+                else:
+                    self.assertNotIn(regression, remote_ids)
                 self.assertIn(remote_owner, remote_ids)
+
+    def test_changed_contract_paths_run_required_local_and_hosted_regressions(
+        self,
+    ) -> None:
+        cases = {
+            ".github/workflow-contract.yml": {
+                "leaf.ci-gate-contract-regressions",
+            },
+            "docker-compose.yml": {
+                "leaf.compose-baseline-regressions",
+                "leaf.repository-integrity-regressions",
+            },
+            "infra/07-workflow/airflow/workloads/manifest-pipeline/sql/001_opsflow.sql": {
+                "leaf.compose-baseline-regressions",
+                "leaf.repository-integrity-regressions",
+            },
+            "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflow.json": {
+                "leaf.compose-baseline-regressions",
+                "leaf.repository-integrity-regressions",
+            },
+        }
+        for path, expected in cases.items():
+            for context in (
+                runner.ExecutionContext.LOCAL,
+                runner.ExecutionContext.PULL_REQUEST,
+            ):
+                with self.subTest(path=path, context=context):
+                    plan = build_public_plan("changed", context, (path,))
+                    gate_ids = [item.gate_id for item in plan]
+                    for gate_id in expected:
+                        self.assertEqual(1, gate_ids.count(gate_id))
+
+    def test_promoted_contract_failure_propagates_from_hosted_plan(self) -> None:
+        plan = build_public_plan(
+            "changed",
+            runner.ExecutionContext.PULL_REQUEST,
+            (".github/workflow-contract.yml",),
+        )
+        target = "leaf.ci-gate-contract-regressions"
+        seen: list[str] = []
+
+        def execute(invocation: runner.GateInvocation) -> int:
+            seen.append(invocation.gate_id)
+            return 19 if invocation.gate_id == target else 0
+
+        self.assertEqual(
+            19,
+            runner.execute_execution_plan(
+                ROOT,
+                plan,
+                {"PATH": os.defpath},
+                executor=execute,
+            ),
+        )
+        self.assertEqual(target, seen[-1])
+
+    def test_promoted_gate_id_rejects_another_valid_unit_binding(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        public = contract.parse_public_gate_contract(document)
+        changed_paths = (".github/workflow-contract.yml",)
+        plan = build_public_plan(
+            "changed",
+            runner.ExecutionContext.PULL_REQUEST,
+            changed_paths,
+        )
+        forged = dataclasses.replace(
+            next(
+                item
+                for item in plan
+                if item.gate_id == "leaf.ci-gate-contract-regressions"
+            ),
+            argv=(
+                "run-unittest",
+                "tests.validation.test_ci_gate_model",
+                "-v",
+            ),
+        )
+        mutated = tuple(
+            forged if item.gate_id == "leaf.ci-gate-contract-regressions" else item
+            for item in plan
+        )
+        with self.assertRaises(contract.GateContractError) as raised:
+            runner.validate_public_execution_parity(
+                public,
+                contract.select_public_suites(public, "changed", changed_paths),
+                mutated,
+                runner.ExecutionContext.PULL_REQUEST,
+            )
+        self.assertEqual("ci-gate-public-execution-parity", raised.exception.code)
 
     def test_local_only_plan_intersects_normal_changed_selection(self) -> None:
         document = contract.load_contract_document(ROOT)
@@ -648,12 +744,18 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "HYHOME_CI_GATE_ROOT": str(ROOT),
             "PATH": os.defpath,
             "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "pull_request",
             "EVENT_NAME": "pull_request",
             "PR_BASE_SHA": "a" * 40,
             "PR_HEAD_SHA": "b" * 40,
         }
         with (
             mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "_authenticated_execution_environment",
+                return_value=environment,
+            ),
             mock.patch.object(runner, "collect_changed_paths", return_value=()),
             mock.patch.object(runner, "execute_execution_plan") as execute,
             mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
@@ -688,6 +790,11 @@ class CiGateRunnerContractTests(unittest.TestCase):
             mock.patch.dict(os.environ, environment, clear=True),
             mock.patch.object(
                 runner,
+                "_authenticated_execution_environment",
+                return_value=environment,
+            ),
+            mock.patch.object(
+                runner,
                 "collect_changed_paths",
                 return_value=(".github/workflow-contract.yml",),
             ),
@@ -713,6 +820,11 @@ class CiGateRunnerContractTests(unittest.TestCase):
 
         with (
             mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "_authenticated_execution_environment",
+                return_value=environment,
+            ),
             mock.patch.object(
                 runner,
                 "collect_changed_paths",
@@ -839,27 +951,30 @@ class CiGateRunnerContractTests(unittest.TestCase):
             {item.gate_id for item in ordinary_document},
         )
 
-    def test_changed_unit_owners_run_locally_while_conftest_corpus_stays_hosted(
+    def test_changed_unit_owners_follow_their_declared_execution_boundary(
         self,
     ) -> None:
         cases = {
             "tests/validation/test_compose_baseline_gates.py": (
                 "leaf.compose-baseline-regressions",
                 None,
+                True,
             ),
             "tests/validation/test_supply_chain_wrapper.py": (
                 "leaf.supply-chain-fixture-policy",
                 None,
+                False,
             ),
             "infra/11-quality/conftest/policy/compose.rego": (
                 "leaf.conftest-policy-tests",
                 "leaf.conftest-policy",
+                False,
             ),
         }
         conftest_entrypoint = pathlib.PurePosixPath(
             "scripts/validation/check-conftest-policy.sh"
         )
-        for path, (local_unit, hosted_corpus) in cases.items():
+        for path, (local_unit, hosted_corpus, hosted_unit) in cases.items():
             with self.subTest(path=path):
                 local = build_public_plan(
                     "changed", runner.ExecutionContext.LOCAL, (path,)
@@ -870,7 +985,10 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 local_ids = [item.gate_id for item in local]
                 hosted_ids = [item.gate_id for item in hosted]
                 self.assertEqual(1, local_ids.count(local_unit))
-                self.assertNotIn(local_unit, hosted_ids)
+                if hosted_unit:
+                    self.assertEqual(1, hosted_ids.count(local_unit))
+                else:
+                    self.assertNotIn(local_unit, hosted_ids)
                 if hosted_corpus is not None:
                     self.assertEqual(1, hosted_ids.count(hosted_corpus))
                     self.assertEqual(
@@ -1070,9 +1188,24 @@ class CiGateRunnerContractTests(unittest.TestCase):
             requirements(("projects/storybook/nextjs/package.json",)),
         )
         self.assertEqual(
-            runner.SelectedPrerequisites(node=False, docker=True),
+            runner.SelectedPrerequisites(node=True, docker=True),
             requirements(("infra/01-gateway/docker-compose.yml",)),
         )
+
+    def test_promoted_node_consumers_require_node_directly(self) -> None:
+        for gate_id in (
+            "leaf.compose-baseline-regressions",
+            "leaf.repository-integrity-regressions",
+        ):
+            with self.subTest(gate_id=gate_id):
+                invocation = _invocation(
+                    gate_id,
+                    "scripts/lib/gate/ci_gate_adapters.py",
+                )
+                self.assertEqual(
+                    runner.SelectedPrerequisites(node=True, docker=False),
+                    runner.selected_prerequisites((invocation,), ()),
+                )
 
     def test_opsflow_smtp_hosted_leaf_requires_node_without_docker(self) -> None:
         invocation = dataclasses.replace(
@@ -1266,12 +1399,18 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "HYHOME_CI_GATE_ROOT": str(ROOT),
             "PATH": os.defpath,
             "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "pull_request",
             "EVENT_NAME": "pull_request",
             "PR_BASE_SHA": "a" * 40,
             "PR_HEAD_SHA": "b" * 40,
         }
         with (
             mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "_authenticated_execution_environment",
+                return_value=environment,
+            ),
             mock.patch.object(
                 runner,
                 "collect_changed_paths",
@@ -1286,6 +1425,120 @@ class CiGateRunnerContractTests(unittest.TestCase):
             )
         execute.assert_not_called()
         self.assertEqual("node=false\ndocker=false\n", stdout.getvalue())
+
+    def test_pull_request_identity_is_bound_to_raw_merge_topology(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._changed_path_repo(pathlib.Path(directory))
+            base = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+            initial_branch = self._git(
+                repo, "rev-parse", "--abbrev-ref", "HEAD"
+            ).stdout.strip()
+            self._git(repo, "checkout", "-qb", "candidate")
+            (repo / "candidate.txt").write_text("candidate\n", encoding="utf-8")
+            self._git(repo, "add", "candidate.txt")
+            self._git(repo, "commit", "-qm", "candidate")
+            head = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+            self._git(repo, "checkout", "-q", initial_branch)
+            self._git(repo, "merge", "--no-ff", "-qm", "merge candidate", "candidate")
+            merge = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+            self._git(repo, "replace", merge, base)
+            environment = {
+                "PATH": str(pathlib.Path(directory) / "hostile-bin"),
+                "GITHUB_ACTIONS": "true",
+                "GITHUB_EVENT_NAME": "pull_request",
+                "GITHUB_SHA": merge,
+                "TRUSTED_EVENT_NAME": "pull_request",
+                "TRUSTED_MERGE_SHA": merge,
+                "TRUSTED_BASE_SHA": base,
+                "TRUSTED_HEAD_SHA": head,
+                "TRUSTED_GIT_PATH": shutil.which("git") or "/usr/bin/git",
+                "GIT_DIR": "/tmp/hostile",
+                "GIT_CONFIG_GLOBAL": "/tmp/hostile-config",
+            }
+            hostile_bin = pathlib.Path(environment["PATH"])
+            hostile_bin.mkdir()
+            fake_git = hostile_bin / "git"
+            fake_git.write_text("#!/bin/sh\nexit 99\n", encoding="utf-8")
+            fake_git.chmod(0o755)
+            authenticated = runner._authenticated_execution_environment(
+                repo, environment
+            )
+            self.assertEqual(base, authenticated["PR_BASE_SHA"])
+            self.assertEqual(head, authenticated["PR_HEAD_SHA"])
+            self.assertEqual("pull_request", authenticated["EVENT_NAME"])
+            self.assertEqual(
+                ("candidate.txt",),
+                runner.collect_changed_paths(repo, authenticated),
+            )
+
+            workflow_environment = {
+                **environment,
+                "HYHOME_CI_GATE_ROOT": str(repo),
+            }
+            document = contract.load_contract_document(ROOT)
+            with (
+                mock.patch.dict(os.environ, workflow_environment, clear=True),
+                mock.patch.object(
+                    runner, "load_contract_document", return_value=document
+                ),
+                mock.patch.object(runner, "validate_gate_registry", return_value=()),
+                mock.patch.object(
+                    runner,
+                    "collect_changed_paths",
+                    return_value=("docs/03.specs/example.md",),
+                ),
+                mock.patch.object(
+                    runner, "build_public_validation_plan", return_value=()
+                ),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            ):
+                self.assertEqual(
+                    0,
+                    runner.main(["--profile", "changed", "--requirements"]),
+                )
+            self.assertEqual("node=false\ndocker=false\n", stdout.getvalue())
+
+            poisoned = {
+                **environment,
+                "EVENT_NAME": "push",
+                "PUSH_BEFORE_SHA": "0" * 40,
+            }
+            with self.assertRaises(contract.GateContractError) as raised:
+                runner._authenticated_execution_environment(repo, poisoned)
+            self.assertEqual("ci-gate-execution-context", raised.exception.code)
+
+            for key, value in (
+                ("PR_BASE_SHA", "f" * 40),
+                ("PR_HEAD_SHA", "e" * 40),
+                ("TRUSTED_BASE_SHA", "d" * 40),
+                ("TRUSTED_MERGE_SHA", "c" * 40),
+                ("TRUSTED_GIT_PATH", str(fake_git)),
+            ):
+                with self.subTest(key=key):
+                    with self.assertRaises(contract.GateContractError):
+                        runner._authenticated_execution_environment(
+                            repo, {**environment, key: value}
+                        )
+
+    def test_poisoned_custom_event_fails_before_prerequisite_selection(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        environment = {
+            "HYHOME_CI_GATE_ROOT": str(ROOT),
+            "PATH": os.defpath,
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "pull_request",
+            "EVENT_NAME": "push",
+            "PUSH_BEFORE_SHA": "0" * 40,
+        }
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(runner, "load_contract_document", return_value=document),
+            mock.patch.object(runner, "collect_changed_paths") as collect,
+            mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+        ):
+            self.assertEqual(1, runner.main(["--profile", "changed", "--requirements"]))
+        collect.assert_not_called()
+        self.assertIn("ci-gate-execution-context", stderr.getvalue())
 
     def test_standalone_validator_explain_and_fake_execution_have_exact_parity(
         self,
@@ -1385,6 +1638,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 {
                     "CI": "true",
                     "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "pull_request",
                     "EVENT_NAME": "pull_request",
                     "PR_BASE_SHA": "a" * 40,
                     "PR_HEAD_SHA": "b" * 40,
@@ -1395,6 +1649,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 {
                     "CI": "true",
                     "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "push",
                     "EVENT_NAME": "push",
                     "PUSH_BEFORE_SHA": "b" * 40,
                 },
@@ -1403,6 +1658,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 full,
                 {
                     "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "push",
                     "EVENT_NAME": "push",
                     "PUSH_BEFORE_SHA": "0" * 40,
                 },
@@ -1412,6 +1668,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 {
                     "CI": "true",
                     "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "workflow_dispatch",
                     "EVENT_NAME": "workflow_dispatch",
                 },
             ),
@@ -1710,23 +1967,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
             {"GITHUB_ACTIONS": "true", "EVENT_NAME": "push"},
             {
                 "GITHUB_ACTIONS": "true",
-                "EVENT_NAME": "pull_request",
-                "PR_BASE_SHA": "a" * 40,
-            },
-            {
-                "GITHUB_ACTIONS": "true",
-                "EVENT_NAME": "pull_request",
-                "PR_BASE_SHA": "0" * 40,
-                "PR_HEAD_SHA": "b" * 40,
-            },
-            {
-                "GITHUB_ACTIONS": "true",
-                "EVENT_NAME": "pull_request",
-                "PR_BASE_SHA": "a" * 40,
-                "PR_HEAD_SHA": "a" * 40,
-            },
-            {
-                "GITHUB_ACTIONS": "true",
                 "EVENT_NAME": "push",
                 "PUSH_BEFORE_SHA": "invalid",
             },
@@ -1751,6 +1991,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "pull_request",
                 {
                     "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "pull_request",
                     "EVENT_NAME": "pull_request",
                     "PR_BASE_SHA": "a" * 40,
                     "PR_HEAD_SHA": "b" * 40,
@@ -1762,6 +2003,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "push",
                 {
                     "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "push",
                     "EVENT_NAME": "push",
                     "PUSH_BEFORE_SHA": "b" * 40,
                     "PATH": os.defpath,
@@ -1822,6 +2064,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "initial_push",
                 {
                     "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "push",
                     "EVENT_NAME": "push",
                     "PUSH_BEFORE_SHA": "0" * 40,
                 },
@@ -1830,6 +2073,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "workflow_dispatch",
                 {
                     "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "workflow_dispatch",
                     "EVENT_NAME": "workflow_dispatch",
                 },
             ),

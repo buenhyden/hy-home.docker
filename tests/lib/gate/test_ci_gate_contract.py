@@ -102,7 +102,6 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         document = contract.load_contract_document(ROOT)
         expected = (
             "leaf.ci-gate-adapter-regressions",
-            "leaf.ci-gate-contract-regressions",
             "leaf.ci-gate-runner-regressions",
             "leaf.ci-precommit-regressions",
             "leaf.document-governance-library-regressions",
@@ -110,9 +109,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             "leaf.local-hook-rule-tests",
             "leaf.local-document-metadata-tests",
             "leaf.local-document-corpus-lifecycle-tests",
-            "leaf.compose-baseline-regressions",
             "leaf.release-regressions",
-            "leaf.repository-integrity-regressions",
             "leaf.repo-contracts-control-plane-regressions",
             "leaf.local-candidate-preflight",
             "leaf.supply-chain-fixture-policy",
@@ -149,6 +146,18 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         unordered = json.loads(json.dumps(baseline))
         unordered["public_gate"]["local_only_gate_ids"].reverse()
         cases.append(("order", unordered))
+
+        missing_local_unit = json.loads(json.dumps(baseline))
+        missing_local_unit["public_gate"]["local_only_gate_ids"].remove(
+            "leaf.ci-gate-runner-regressions"
+        )
+        cases.append(("unapproved-hosted-unit", missing_local_unit))
+
+        hosted_unit_moved_local = json.loads(json.dumps(baseline))
+        hosted_unit_moved_local["public_gate"]["local_only_gate_ids"].insert(
+            0, "leaf.ci-gate-contract-regressions"
+        )
+        cases.append(("approved-hosted-unit-moved-local", hosted_unit_moved_local))
 
         remote_context = json.loads(json.dumps(baseline))
         links = next(
@@ -215,6 +224,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
         )
+        optional = set(contract._OPTIONAL_CHANGED_ROOT_GATE_IDS)
         frontend = {"ci.frontend-quality", "ci.storybook-coverage"}
         document = {
             "leaf.local-document-corpus-lifecycle-tests",
@@ -225,27 +235,8 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         release = {"leaf.release-regressions"}
         harness = {"local.workflow-harness"}
         workflow = {"ci.zizmor"} | harness
-        dependency = {
-            "ci.dependency-vulnerability-audit",
-        }
+        dependency = {"ci.dependency-vulnerability-audit"}
         opsflow_smtp = {"ci.opsflow-smtp-node-package"}
-        repository = {
-            "leaf.local-shell-syntax",
-            "leaf.local-script-manifest",
-            "leaf.local-tech-stack-version-drift",
-            "leaf.repository-integrity-regressions",
-            "leaf.storybook-contract",
-        }
-        optional = (
-            frontend
-            | document
-            | catalog
-            | release
-            | workflow
-            | dependency
-            | opsflow_smtp
-            | repository
-        )
         self.assertEqual(
             optional,
             {
@@ -486,7 +477,9 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                     contract.parse_public_gate_contract(document)
                 self.assertEqual("ci-gate-public-validators", raised.exception.code)
 
-    def test_every_registered_unit_leaf_is_typed_local_only(self) -> None:
+    def test_registered_unit_leaves_have_explicit_hosted_or_local_ownership(
+        self,
+    ) -> None:
         document = contract.load_contract_document(ROOT)
         public = contract.parse_public_gate_contract(document)
         registered_units = {
@@ -497,7 +490,17 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             and node.get("argv", ())[:1] == ["run-unittest"]
         }
         registered_units.add("leaf.conftest-policy-tests")
-        self.assertLessEqual(registered_units, set(public.local_only_gate_ids))
+        hosted_units = {
+            "leaf.ci-gate-contract-regressions",
+            "leaf.compose-baseline-regressions",
+            "leaf.repository-integrity-regressions",
+        }
+        self.assertLessEqual(hosted_units, registered_units)
+        self.assertLessEqual(
+            registered_units - hosted_units,
+            set(public.local_only_gate_ids),
+        )
+        self.assertFalse(hosted_units & set(public.local_only_gate_ids))
 
     def test_manifest_reader_rejects_ambiguous_unbounded_and_nonregular_inputs(
         self,

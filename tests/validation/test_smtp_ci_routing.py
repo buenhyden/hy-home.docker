@@ -56,7 +56,18 @@ class SmtpRoutingTests(unittest.TestCase):
         ):
             self.assertIn(module, argv[:split])
             self.assertNotIn(module, optional)
-        self.assertEqual(20, len(optional))
+        self.assertEqual(21, len(optional))
+        required_modules = {
+            selector for selector in argv[:split] if selector.startswith("tests.")
+        }
+        self.assertTrue(optional)
+        for selector in optional:
+            with self.subTest(selector=selector):
+                self.assertTrue(
+                    any(
+                        selector.startswith(module + ".") for module in required_modules
+                    )
+                )
 
     def test_fixture_storage_regression_and_changed_routes_are_required(self):
         argv = self.nodes["leaf.repository-integrity-regressions"]["argv"]

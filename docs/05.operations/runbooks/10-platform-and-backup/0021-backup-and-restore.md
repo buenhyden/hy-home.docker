@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.24"
+version: "1.4.25"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-16"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -469,11 +469,14 @@ pin이 일치할 때만 본문을 반환한다. 새 쓰기는 `candidate`이며,
 필요하다. `--source-ref`는 JSON 객체를 인자로 받고 기존 문자열도 보존한다.
 
 ```json
-{"kind":"repository-file","path":"docs/example.md","revision":"reviewed-source-revision","hash_algorithm":"sha256","digest":"<64 lowercase hex characters>","context":"검토한 적용 조건"}
+{"kind":"repository-file","path":"docs/example.md","revision":"<full Git commit SHA>","hash_algorithm":"sha256","digest":"<64 lowercase hex characters>","context":"검토한 적용 조건"}
 ```
 
-실제 tracked 일반 파일의 bytes를 SHA-256으로 pin한다. Git blob ID를 쓰면
-`hash_algorithm`은 `git-blob`으로 구분한다. 예시는 실행 가능한 pin이 아니다.
+실제 pin은 완전한 Git commit ID, 그 commit의 같은 상대 경로 일반 blob, caller
+worktree의 같은 파일 bytes, 선언한 digest를 함께 결속한다. 어느 하나라도 없거나
+다르면 `current`로 취급하지 않는다. tracked 일반 파일의 bytes를 SHA-256으로
+pin하며 Git blob ID를 쓰면 `hash_algorithm`은 `git-blob`으로 구분한다. 예시는
+실행 가능한 pin이 아니므로 실제 실행에는 해석된 완전 SHA와 digest를 넣는다.
 영역 기억은 `--domain-id`, 안전한 재시도는 `--request-key`를 명시한다. 같은 키와
 다른 의미 입력은 충돌이며, 충돌 diagnostic의 `stored`와 양쪽 revision을
 확인한다. `stored=false`이면 incoming 본문이 보존되었다고 보고하지 않는다.

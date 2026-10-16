@@ -249,7 +249,34 @@ def _unittest_arguments(
 
 
 def _validate_unittest_skips(output: bytes, scopes: tuple[str, ...]) -> None:
-    receipts = re.findall(rb"(?m)^\w+ \(([A-Za-z0-9_.]+)\) \.\.\. (.+)$", output)
+    receipts: list[tuple[bytes, bytes]] = []
+    malformed = False
+    lines = output.splitlines()
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        same_line = re.fullmatch(rb"\w+ \(([A-Za-z0-9_.]+)\) \.\.\. (.+)", line)
+        if same_line is not None:
+            receipts.append((same_line.group(1), same_line.group(2)))
+            index += 1
+            continue
+        header = re.fullmatch(rb"\w+ \(([A-Za-z0-9_.]+)\)", line)
+        if header is not None:
+            continuation = (
+                re.fullmatch(rb".+ \.\.\. (.+)", lines[index + 1])
+                if index + 1 < len(lines)
+                else None
+            )
+            if continuation is None:
+                malformed = True
+                index += 1
+                continue
+            receipts.append((header.group(1), continuation.group(1)))
+            index += 2
+            continue
+        if re.fullmatch(rb".+ \.\.\. (.+)", line) is not None:
+            malformed = True
+        index += 1
     skipped = [
         test_id for test_id, status in receipts if status.startswith(b"skipped ")
     ]
@@ -258,7 +285,8 @@ def _validate_unittest_skips(output: bytes, scopes: tuple[str, ...]) -> None:
     allowed = {scope.encode("ascii") for scope in scopes}
     observed = {test_id.rsplit(b".", 1)[0] for test_id, _ in receipts}
     if (
-        len(counts) > 1
+        malformed
+        or len(counts) > 1
         or count != len(skipped)
         or len(set(skipped)) != len(skipped)
         or any(test_id.rsplit(b".", 1)[0] not in allowed for test_id in skipped)

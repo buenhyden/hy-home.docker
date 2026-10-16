@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.6.3"
+version: "1.6.4"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-16"
 ---
 
 # Agent Quality and Security Standards
@@ -134,23 +134,44 @@ main-push security remains a post-merge observation.
   installed Git hooks separately; tracked configuration does not change a
   user-global hook. Never use SKIP, fake CI variables or `--no-verify`.
 - **Local implementation verification**: the workflow contract's typed
-  `public_gate.local_only_gate_ids` owns document, gate/controller, hook and
-  repository implementation regressions, all isolated unit tests and local
-  links. Use
+  `public_gate.local_only_gate_ids` owns document-library, hook, mocked native
+  and other isolated implementation regressions plus local links. The closed
+  hosted-unit set is the exception: CI gate-contract, Compose-baseline and
+  repository-integrity regressions run in both selected local verification and
+  hosted candidate validation. Use
   `scripts/validation/run-ci-gate.py --profile changed --local-only --explain`
-  to inspect the selected plan, then the same command without `--explain`
-  once on the final implementation input before submission. The shared runner
+  to inspect the complementary local-only plan. Use
+  `scripts/validation/run-ci-gate.py --profile changed --explain` and then the
+  same command without `--explain` once on the final implementation input when
+  a changed owner selects a promoted regression. The shared runner
   and registered path owners remain the execution route; no parallel wrapper
   or command inventory is created. Result-only Task additions receive minimum
   document checks. Do not repeat the local full profile after commit or push.
 - **Candidate acceptance**: the public repository uses remote PR QA through
   `scripts/validation/run-ci-gate.py --profile changed`. Inspect the selected
   plan and prerequisites before execution. Every hosted context excludes the
-  typed local-only leaves. Remote QA retains actual document content and
+  typed local-only leaves; only the PR context admits the closed hosted-unit
+  set above. Push, initial-push and manual-dispatch contexts exclude it so
+  merged-input security observation does not repeat candidate QA.
+  Before installing PR-controlled dependencies, the candidate captures the
+  immutable GitHub event and merge SHA, the raw two-parent merge topology and
+  the absolute system Git executable and the configured Python interpreter;
+  the capture step uses the fixed system Bash path. Both prerequisite selection
+  and gate execution must match that captured identity, ignore replacement refs and
+  reject mutable event, SHA or PATH disagreements before contract loading or
+  changed-path selection. This binding prevents later PATH redirection; it does
+  not make candidate source, installed dependencies or interpreter files
+  immutable, so review and the actual hosted result remain acceptance inputs.
+  Changes to the workflow contract, Compose baselines, Airflow SQL, n8n
+  workflows and their registered repository owners select the applicable
+  hosted regression leaf; a nonzero leaf result fails the candidate. Remote QA retains actual document content and
   catalog, diff/style/commit, machine contracts, selected Docker/security,
   frontend build/HTTP/browser integration and actual release configuration checks.
   Mocked release/service/supply-chain negative cases stay intact and selected
-  locally; hosted PRs no longer execute those unit behaviors. Production guards
+  locally; hosted PRs do not execute those unit behaviors. Optional native
+  Compose cases remain explicit skips or separately authorized observations;
+  the hosted Compose-baseline unit leaf does not start HOME resources or turn a
+  skipped native case into a pass. Production guards
   and independent exact-source review still apply. Mixed unit/corpus commands
   must have distinct registered gate IDs and closed modes; invocation identity
   includes argv, and actual corpus checks cannot be discarded with a unit leaf.

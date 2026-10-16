@@ -19,7 +19,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from scripts.lib.ops.memory_sources import REVIEW_STATES, reuse_state  # noqa: E402
+from scripts.lib.ops.memory_sources import (  # noqa: E402
+    REVIEW_STATES,
+    reuse_state,
+    run_git,
+)
 
 SCHEMA_VERSION = 2
 STORE_DIRECTORY = ".workspace-memory"
@@ -100,14 +104,17 @@ class MemoryStoreError(Exception):
 
 def _common_dir(cwd: Path) -> Path | None:
     try:
-        common = subprocess.run(
-            ["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
-            cwd=cwd,
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout.strip()
-    except (OSError, subprocess.CalledProcessError):
+        common = os.fsdecode(
+            run_git(
+                ("rev-parse", "--path-format=absolute", "--git-common-dir"), cwd
+            ).stdout.strip()
+        )
+    except (
+        OSError,
+        subprocess.CalledProcessError,
+        subprocess.TimeoutExpired,
+        UnicodeError,
+    ):
         return None
     return Path(common).resolve()
 

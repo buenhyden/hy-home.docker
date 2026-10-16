@@ -14,6 +14,7 @@ OFFLINE = (
     "tests.lib.ops.test_openbao_issuance",
     "tests.lib.ops.test_openbao_issuance_trust",
     "tests.validation.test_openbao_candidate",
+    "tests.validation.test_restic_offsite_artifact",
     "tests.validation.test_sec01_version_contract",
     "tests.validation.test_sec01_next_stable_candidates",
     "tests.validation.test_sec01_next_tool_candidates",
@@ -25,6 +26,7 @@ OFFLINE_CLASSES = (
 )
 NATIVE = (
     "tests.validation.test_openbao_candidate.CandidateNative",
+    "tests.validation.test_restic_offsite_artifact.ArtifactRehearsalTests",
     "tests.validation.test_workflow_version_bundle.WorkflowCandidateRehearsalTests",
 )
 
