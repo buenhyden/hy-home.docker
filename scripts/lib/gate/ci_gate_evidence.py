@@ -204,7 +204,11 @@ def _capture_executable(environ: Mapping[str, str], *, name: str) -> dict[str, s
         if not stat.S_ISREG(metadata.st_mode) or metadata.st_mode & (
             stat.S_IWGRP | stat.S_IWOTH
         ):
-            raise OSError(errno.EPERM, "unsafe executable")
+            raise OSError(
+                errno.EPERM,
+                f"unsafe executable mode={oct(metadata.st_mode)} "
+                f"owner_is_self={metadata.st_uid == os.geteuid()}",
+            )
         digest = hashlib.sha256()
         offset = 0
         while offset < metadata.st_size:
@@ -216,7 +220,7 @@ def _capture_executable(environ: Mapping[str, str], *, name: str) -> dict[str, s
     except OSError as error:
         raise EvidenceError(
             f"captured executable identity is unavailable: {name} "
-            f"({errno.errorcode.get(error.errno, 'unknown')})"
+            f"({errno.errorcode.get(error.errno, 'unknown')}: {error.strerror})"
         ) from error
     finally:
         if descriptor >= 0:
