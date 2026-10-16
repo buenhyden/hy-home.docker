@@ -35,7 +35,7 @@ PASS이며 강제 버전 변경은 필요하지 않습니다. 조회 실패·UNK
 
 2026-10-16 현재 직접 요청은 ROOT 전체의 공식 최신 안정판·보안 조사를 허용합니다.
 2026-10-13의 보안 경고 한정 변경 정책은 역사로 보존하며 현재 범위를 제한하지 않습니다.
-이번 [Task0017](../../../docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0017-n8n-stable-source-preparation.md)은
+이번 `SPEC-0204-TSK-0017`은
 공식 release/npm/OCI stable가 일치한 n8n 묶음의 소스만 준비합니다.
 `release-lookups.json`, `image-source-lookups.json`, `package-lookups.json`의
 `n8n_source_preparation`에 조회 시각·응답 SHA·공식 URL을 기록했습니다.

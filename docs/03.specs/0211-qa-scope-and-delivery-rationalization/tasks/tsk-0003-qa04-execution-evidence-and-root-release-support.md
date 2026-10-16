@@ -1,8 +1,8 @@
 ---
 title: "QA04 Execution Evidence and ROOT Release Support"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-16"
 layer: "specs"
@@ -265,6 +265,13 @@ Diagnostic messages now name the OS reason, file mode, and failing gate ID;
 they expose no path content or secret value. These observations do not run
 E07 or E08 and do not change any criterion decision.
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0211-TSK-0003 | draft | ready | #qa04-user-authorization |
+| SPEC-0211-TSK-0003 | ready | in-progress | #w71-toolchain-identity-and-secure-artifact-contract |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -313,6 +320,8 @@ auto-stash foreign unstaged work. Preserve existing owners' bytes and receipts.
 Root records exact source/merge SHAs, current check results, custody/retention,
 rollback and blocker owners; no commit or remote publication is implied by
 this proposal.
+
+This Task was issued `draft` in `14fd25d1f` as required and merged by PR #508. Its recorded authorization and executed W71/W72 work make `in-progress` the current state; W73 evidence E05–E10 remains NOT_RUN and no criterion decision changes.
 
 ## Related Documents
 

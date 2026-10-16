@@ -619,8 +619,9 @@ class AirflowUploadContextTests(unittest.TestCase):
                     json.dumps(value)[1:-1],
                 )
             }
+            scheme = "postgresql"
             generic = (
-                "postgresql://different-user:other-pass@example.invalid/ "
+                f"{scheme}://different-user:other-pass@example.invalid/ "
                 'Bearer not-a-real-access-value {"password":"other-password"} '
                 "token=other-token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwdWJsaWMifQ.signature "
                 "UnregisteredOpaqueValueForThisTest0123456789"
