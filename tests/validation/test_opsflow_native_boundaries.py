@@ -80,6 +80,7 @@ class NativeGuardTests(unittest.TestCase):
             self.assertEqual(env["N8N_VALKEY_SECRET"], "n8n_valkey_password")
             self.assertEqual(env["QUEUE_BULL_REDIS_HOST"], "n8n-valkey")
             self.assertNotIn("N8N_CUSTOM_EXTENSIONS", env)
+            self.assertNotIn("N8N_RUNNERS_ENABLED", env)
             self.assertEqual(env["N8N_LOG_LEVEL"], "debug")
             self.assertEqual(
                 env["QUEUE_BULL_REDIS_PASSWORD_FILE"],
