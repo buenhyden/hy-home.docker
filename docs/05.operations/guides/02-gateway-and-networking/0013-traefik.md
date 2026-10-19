@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -53,11 +53,10 @@ Compose의 `HTTP_PORT`/`HTTPS_PORT`는 일치해야 한다. OPTIONAL Nginx와 �
 대상 앱·OAuth2 Proxy·Keycloak과 공유 DB/Valkey readiness에 의존한다.
 
 [동적 middleware](../../../../infra/01-gateway/traefik/dynamic/middleware.yml)의
-`gateway-standard-chain` 실제 멤버는 `req-retry`, `req-circuit-breaker`다.
-`req-rate-limit` 선언이 있어도 이 chain에는 연결되지 않았다. 세 멤버를 요구하는
-[POL-0013](../../policies/02-gateway-and-networking/0013-traefik.md#rules)의 **구현 미준수**이며 문서 변경으로
-rate limit이 적용된 것은 아니다. route에 chain 이름이 있다는 사실이나 하드닝
-문자열 검사 통과로 준수를 주장하지 않는다. 근거는 소스와
+`gateway-standard-chain` 멤버는 `req-rate-limit`, `req-retry`, `req-circuit-breaker`다.
+limiter는 라우터·TCP peer별 bucket(100 req/s, burst 200)이고 bucket을 넘는 요청은
+곧바로 429를 받는다([POL-0013](../../policies/02-gateway-and-networking/0013-traefik.md#rules)).
+route에 chain 이름이 있다는 사실이나 하드닝 문자열 검사 통과는 HOME 적용 증거가 아니다. 근거는 소스와
 [선언 릴리스 계열의 Chain 동작](https://doc.traefik.io/traefik/v3.7/reference/routing-configuration/http/middlewares/chain/)이다.
 
 `sso-auth`는 `http://oauth2-proxy:4180/`(static upstream)을 호출하며 성공 시 사용자·

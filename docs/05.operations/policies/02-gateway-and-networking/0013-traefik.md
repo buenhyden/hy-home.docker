@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Operations Policy"
-version: "1.2.1"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "operations"
 artifact_id: "POL-0013"
 parent_ids:
@@ -33,8 +33,11 @@ created: "2026-05-17"
   - `check-all-hardening.sh 01-gateway` 실패 0건을 유지해야 한다.
   - 인증 루프, 대량 429, dashboard 접근 장애 발생 시 즉시 런북 절차를 수행해야 한다.
   - Dashboard 라우터는 `dashboard-auth@file,gateway-standard-chain@file`를 사용해야 한다.
-  - `gateway-standard-chain`은 `req-rate-limit`, `req-retry`, `req-circuit-breaker`를 포함해야 한다.
-  - `req-rate-limit`은 기본값 `average=100`, `burst=50`을 유지한다.
+  - `gateway-standard-chain`은 `req-rate-limit`, `req-retry`, `req-circuit-breaker`를 이 순서로 포함해야 한다.
+  - `req-rate-limit`은 `average=100`, `period=1s`, `burst=200`을 사용하고 출발지를
+    TCP peer(`ipStrategy.depth=0`)로 구분한다. 클라이언트가 보낸 헤더를 출발지로 쓰지 않는다.
+  - middlewares가 있는 모든 라우터는 `gateway-standard-chain@file`(또는 이를 포함한
+    `sso-protected-chain@file`)을 거쳐야 한다.
   - `req-retry`는 `attempts=2`, `initialInterval=100ms`를 사용한다.
   - `req-circuit-breaker`는 `NetworkErrorRatio() > 0.30`을 사용한다.
   - Traefik 서비스는 readonly 템플릿(`template-infra-readonly-med`)을 사용한다.
@@ -50,12 +53,15 @@ created: "2026-05-17"
   - 비게이트웨이 소유 라우터에 전역 강제 적용
   - BasicAuth 제거 또는 평문 인증정보 사용
 
-### Known implementation nonconformance
+### Rate-limit basis
 
-현재 `gateway-standard-chain`은 retry와 circuit-breaker만 연결한다. limiter를
-정의만 한 상태는 위의 필수 rate-limit 통제를 충족하지 않는다. @buenhyden이 별도
-구현 변경과 route별 수용 검증을 소유한다. 문서·정적 검사 통과를 통제 복구로
-기록하지 않으며, 기존 비상 예외도 사전 범위·위험·종료 조건 승인 없이 사용하지 않는다.
+2026-10-20 @buenhyden이 burst를 50에서 200으로 올리는 조정을 승인했다. 24시간 access log의
+최대치는 한 출발지·라우터 기준 open-webui 123 req/s, prometheus-api 33 req/s였다.
+Traefik 3.7.14는 average 100에서 최대 지연이 5ms라 bucket을 넘는 요청에 바로 429를 준다.
+bucket은 라우터·출발지별이다. host와 k3d 요청은 docker-proxy를 지나 `edge_net`
+게이트웨이 주소로 들어오므로 라우터마다 한 bucket을 함께 쓴다. 속도 제한은 인증·인가를
+대신하지 않는다. HOME 적용 뒤의 라우터별 수용 증거는 SPEC-0204 TSK-0011이 소유하며,
+문서·정적 검사 통과만으로 HOME 통제 적용을 기록하지 않는다.
 
 ### Shared controls and accountability
 

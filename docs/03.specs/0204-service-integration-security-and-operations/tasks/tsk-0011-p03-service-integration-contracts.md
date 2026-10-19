@@ -1,10 +1,10 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.7"
+version: "0.2.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0011"
 parent_ids:
@@ -842,6 +842,46 @@ merge remain pending.
 Rollback for these two commits is a logical revert of their test/source SHAs;
 the pending documentation commit needs its own logical revert. Neither action
 rolls back live services, data, secrets, rotations, HOME, migration or recovery.
+
+### Gateway rate-limit conformance — 2026-10-20
+
+The v22 prompt (§7.1) asked for per-route rate limiting. POL-0013 required
+`req-rate-limit` in `gateway-standard-chain`, but the chain carried only retry
+and circuit-breaker; 41 of 43 routers had no limiter (the two Storybook routers
+named it directly). The owner approved raising `burst` from 50 to 200.
+
+Read-only basis on the running gateway (Traefik 3.7.14): over 24 h the access
+log held 36,693 requests and no 429. The peak per source and router was
+Open WebUI at 123 req/s (175 in two seconds, one page load) and
+`prometheus-api` at 33 req/s. 23,107 of the requests in 6 h came from
+`10.250.1.128`, the `edge_net` gateway: host and k3d clients pass docker-proxy
+and share that address, so they share one bucket per router. In the v3.7.14
+source (`pkg/middlewares/ratelimiter/rate_limiter.go`) the maximum delay at
+100/s is 5 ms, so a request beyond the bucket gets 429 at once, and buckets are
+per router and source.
+
+Change: the chain is now `req-rate-limit`, `req-retry`, `req-circuit-breaker`;
+`req-rate-limit` is `average: 100`, `period: 1s`, `burst: 200`, keyed on the
+TCP peer; the unused `api-rate-limit` is removed. A new contract test parses
+the chain, the values and every router; it failed on the old chain (RED) and
+passes now. The hardening check also requires the chain member.
+
+Isolated rehearsal with the pinned image and this middleware file (one
+container, 256 MiB, 0.5 CPU, label `hy.rehearsal=ratelimit`, removed with its
+network afterwards): 150 parallel requests all 200; 400 parallel requests 222
+200 and 178 429 in 0.237 s (200 + 23.7 refill); 100 requests with varied
+`X-Forwarded-For` right after, 11 200 and 89 429, so the header does not split
+the bucket; 20 requests from another container right after, all 200; 150
+requests after 2.2 s, all 200.
+
+This Task's Evidence table is a frozen pre-generation-7 table, so these
+results stay here: source and RED/GREEN PASS, ISOLATED rehearsal PASS, HOME
+NOT_RUN. HOME application follows merge, when the file provider reloads the
+dynamic directory. Remaining: the HOME check per router (Open WebUI and Grafana page
+loads without 429, one over-limit probe returning 429 and recovering); the
+two Storybook routers name the limiter twice, which is redundant but harmless;
+`grafana-static` has no middleware and stays outside the limiter, as recorded
+in the auth integration guide.
 
 ## Evidence
 
