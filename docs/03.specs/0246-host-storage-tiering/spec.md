@@ -1,10 +1,10 @@
 ---
 title: "Host Storage Tiering"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-19"
 layer: "specs"
 artifact_id: "SPEC-0246"
 parent_ids:
@@ -25,6 +25,11 @@ containerd's root, `/var/lib/containerd` (127 GB on the SSD), although
 Docker's `data-root` is already on the HDD. Ollama models (14 GB) sit on the
 HDD, where model loading is slow.
 
+After the move, on 2026-10-19, the HDD was busy for 65% of the seven days of
+uptime and 61% in an idle sample, while the SSD stayed near 0%. Most of the
+HDD writes come from the observability stores, and a cold read of an image
+layer from the HDD made Ollama's GPU discovery time out.
+
 This Spec defines one placement and growth policy for every Docker storage
 class on this host and applies it.
 
@@ -34,12 +39,13 @@ In scope: the containerd root and its boot-time mount dependency; Docker
 build-cache garbage collection; a configurable Ollama model directory; an
 archive path for unused images through the loopback registry; removal of
 unowned dangling volumes and stray containers after an ownership inventory;
-and the running registry container matching its Compose pin.
+the running registry container matching its Compose pin; and a measured
+placement decision for the write-heavy observability stores.
 
 Out of scope: image version upgrades and their security review, which
 SPEC-0204 SEC01 owns; k3s and the k3d cluster, which belong to the Kubernetes
-repository; moving any other service data; and deleting anything an inventory
-does not prove unowned.
+repository; moving service data that W7 does not name; and deleting
+anything an inventory does not prove unowned.
 
 ## Contracts
 
@@ -53,11 +59,15 @@ does not prove unowned.
 | Service named volumes | HDD | `${DEFAULT_MOUNT_VOLUME_PATH}` subdirectories | Owned by each service |
 | Ollama models | SSD | `${OLLAMA_MODEL_DIR}` (local `.env`) | Model set owned by the AI tier |
 | Registry blobs | HDD | `${DEFAULT_REGISTRY_DIR}` | Archive ledger per pushed image |
+| Write-heavy observability stores (Prometheus, Loki, Tempo, Pyroscope, Alloy) | HDD until W7 decides | Per-store override variable, as for Ollama | SSD endurance budget measured in W7 |
 | Root filesystem free space | SSD | `/` | Existing `HostSystemDiskLow` alert at 25 GiB free |
 
 A service moves to the SSD only when a measured latency problem names it and
 SSD free space after the move stays above the existing alert threshold.
-Datastores remain on the HDD; their current data sets are small.
+Datastores remain on the HDD; their current data sets are small. A store
+that W7 names moves only when its measured write rate, added to the SSD's
+current rate, keeps the drive's projected wear within its rated endurance for
+five years.
 
 ### Execution boundary
 
@@ -85,7 +95,10 @@ Datastores remain on the HDD; their current data sets are small.
    archived image has a digest-verified ledger row.
 4. The running registry container uses the Compose-pinned image.
 5. The placement policy is promoted to a current operations owner once
-   criteria 1–4 are accepted.
+   criteria 1–4 and 6 are accepted.
+6. W7 records the SSD's SMART wear and written-bytes counters, the 24-hour
+   write rate of each write-heavy observability store, and a keep-or-move
+   decision for each; a moved store serves its existing data from the SSD.
 
 ## Failure Conditions
 

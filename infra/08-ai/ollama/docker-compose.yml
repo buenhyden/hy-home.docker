@@ -12,7 +12,7 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_AI_MODEL_DIR}/ollama
+      device: ${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}
 
 services:
   ollama:

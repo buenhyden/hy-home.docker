@@ -1,10 +1,10 @@
 ---
 title: "Host Storage Tiering Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-19"
 layer: "specs"
 artifact_id: "SPEC-0246-PLAN-0001"
 parent_ids:
@@ -36,7 +36,8 @@ upgrade replaces reuses W4's procedure.
 | W3 | 2 | Add `OLLAMA_MODEL_DIR` to the Ollama Compose file, README, and `.env.example`; stop Ollama; the owner copies the root-owned model directory to the SSD; recreate the volume; start | W1 | TSK-0001 | Rendered Compose device; model list equality; first-load time of one named model before and after |
 | W4 | 3 | Archive unused, tagged images that no Task pins to the loopback registry, and remove the local copy only after digest verification | None | TSK-0001 | Ledger row per image: local ID, stored digest, identical or platform-manifest |
 | W5 | 3, 4 | Inventory dangling volumes and stray containers by owner; remove only unowned items; recreate the registry container from its Compose pin | W1 | TSK-0001 | Inventory with owner per item; registry image digest equals the Compose pin |
-| W6 | 5 | Promote the placement policy to the current operations owner | W1–W5 | TSK-0001 | Changed document metadata and link checks |
+| W7 | 6 | The owner reads SSD SMART counters; the agent measures each observability store's 24-hour write rate, records a keep-or-move decision, and moves an approved store through a per-store override variable with the W3 procedure | W3 | TSK-0001 | SMART wear and written-bytes before and after; per-store write rate; rendered device; the store's data and health after the move |
+| W6 | 5 | Promote the placement policy to the current operations owner | W1–W5, W7 | TSK-0001 | Changed document metadata and link checks |
 
 ## Verification Plan
 
@@ -60,6 +61,13 @@ host change.
   mounts would create an empty root on the SSD; W1 adds the dependency first.
 - W3 rollback: unset `OLLAMA_MODEL_DIR` and recreate the volume; the HDD copy
   is kept until criterion 2 passes.
+- Ollama's GPU discovery gives up after 30 s per library. A cold read of its
+  image layers from the busy HDD exceeded that on 2026-10-19 and the server
+  fell back to the CPU; a restart with warm page cache found CUDA0. After any
+  Ollama start, the `inference compute` log line must name CUDA0.
+- W7 adds SSD writes. A store moves only within the endurance budget in the
+  Spec; rollback unsets its override and recreates its volume from the HDD
+  copy, which is kept until criterion 6 passes.
 - W4 stores a multi-platform image as its platform manifest, so a re-pulled
   image ID differs from the original index ID. Task-pinned images are
   excluded until their owner updates the pin.
