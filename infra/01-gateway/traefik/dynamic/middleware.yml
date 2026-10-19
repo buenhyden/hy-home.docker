@@ -71,14 +71,18 @@ http:
       buffering:
         maxRequestBodyBytes: 104857600  # 100MB
 
+    # Per router and TCP peer. Excess over the bucket gets 429 at once
+    # (maxDelay is 5 ms at 100/s). Burst 200 covers the observed 123-request
+    # Open WebUI page load. Host and k3d clients arrive through docker-proxy
+    # as the edge_net gateway, so they share one bucket per router.
     req-rate-limit:
       rateLimit:
         average: 100 # requests per second
-        burst: 50
+        period: 1s
+        burst: 200
         sourceCriterion:
           ipStrategy:
-            depth: 0 # Direct client IP (adjust if behind another proxy)
-          # requestHost: true
+            depth: 0 # TCP peer; X-Forwarded-For is never trusted
 
     req-retry:
       retry:
@@ -92,13 +96,9 @@ http:
     gateway-standard-chain:
       chain:
         middlewares:
+          - req-rate-limit
           - req-retry
           - req-circuit-breaker
-    api-rate-limit:
-      rateLimit:
-        average: 100
-        period: 1s
-        burst: 50
 
     openclaw-secure-headers:
       headers:
