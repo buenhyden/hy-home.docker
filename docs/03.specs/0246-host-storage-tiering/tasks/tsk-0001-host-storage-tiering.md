@@ -234,8 +234,8 @@ under pressure. The Ollama entrypoint now reads `cuda_v12` before
 `ollama serve`; a probe with that entrypoint found CUDA0.
 
 On CUDA0, from the SSD, `gemma4:e2b` took 55.9 s to load (318.4 s from the
-HDD), measured the same way. The HDD copy at
-`/home/hyunyoun/storage/volumes/ai/ollama` stays until the owner removes it.
+HDD), measured the same way. After criterion 2 passed, the owner removed the
+HDD copy at `/home/hyunyoun/storage/volumes/ai/ollama`.
 
 ### W3 owner copy step
 
@@ -250,6 +250,31 @@ sudo mkdir -p /home/hyunyoun/fast-volumes/ai/ollama
 sudo rsync -aHAX --numeric-ids --info=progress2 /home/hyunyoun/storage/volumes/ai/ollama/ /home/hyunyoun/fast-volumes/ai/ollama/
 sudo rsync -aHAX --numeric-ids --dry-run --itemize-changes /home/hyunyoun/storage/volumes/ai/ollama/ /home/hyunyoun/fast-volumes/ai/ollama/ | head
 ```
+
+### W5 inventory and cleanup
+
+On 2026-10-20, 749 of 830 volumes were dangling, and a recheck before removal
+found no container referencing any candidate:
+
+| Group | Count | Size | Content and owner | Decision |
+| --- | --- | --- | --- | --- |
+| Empty anonymous volumes | 653 | 0 | Test and rehearsal residue, 2026-10-08 to 10-15; no owner | Removed |
+| Anonymous volumes with data | 51 | 15.5 GB | LAB run residue, 2026-10-08 to 10-11: Kafka logs (7, 12.9 GB), numbered data directories (30, 1.9 GB), SonarQube, Prometheus, MongoDB; unnamed, so no Compose project can reattach them | Removed at the owner's direction |
+| LAB named volumes | 35 | 0 | `hy-home-lab-*` and `s0214loc-*` binds to finished sessions' `/tmp` scratchpads, all missing | Removed |
+| `hy-home-infra_*` volumes | 9 | - | Services whose profiles are not running (Kafka 2 and 3, Airflow Valkey, Stalwart, and others); Compose-owned | Kept |
+| `owui-prerollout-226` | 1 | - | Open WebUI pre-rollout backup (SPEC-0226) | Kept |
+
+The three `Created` containers (`jolly_fermi`, `busy_austin`, `sharp_joliot`)
+from local MCP clients and the superseded `registry:3` image were removed at
+the owner's direction; the four exited one-shot provision containers are
+Compose-owned and kept. The owner ran the removals. Afterwards 91 volumes
+remain, 10 of them dangling (the kept rows), and 58 containers are healthy
+with none unhealthy. HDD use fell from 186 GB to 166 GB.
+
+The registry ran `registry:3` (`325b4b29b041`). The agent recreated it from
+the Compose pin; it runs `registry:3.1.2@sha256:ddf754342cfc…`, is healthy,
+and still lists all 19 archived repositories (the `alpine` manifest returns
+HTTP 200). An `alpine:3.22` pulled during the inventory was removed again.
 
 ### W4 image archive
 
@@ -292,8 +317,8 @@ Digests are shown as their first 12 hexadecimal characters.
 | Build-cache floor decision | 3 | W2 | `daemon.json` parse and `docker buildx du` after a build | Owner-accepted policy: GC enabled with a 10 GB reserved-space floor, observed in `docker buildx inspect` | PASS | Work Log: W2 result | required | Build-cache limit |
 | Ollama SSD move | 2 | W3 | Rendered device, model list, first-load time before and after | Compose change and owner copy | PASS | Work Log: W3 result (318.4 s to 55.9 s) | required | - |
 | Image archive | 3 | W4 | Push, stored-digest comparison, local removal | 16 approved candidates | PASS | Work Log: W4 image archive (15 archived, 1 push failure left in place) | required | - |
-| Volume and container cleanup | 3 | W5 | Ownership inventory and removal of unowned items | Host state after W1 | NOT_RUN | Work Log | required | - |
-| Registry pin | 4 | W5 | Running image digest equals the Compose pin | Running `registry:3` versus pinned `registry:3.1.2@sha256:ddf754342cfc…` | NOT_RUN | Work Log | required | - |
+| Volume and container cleanup | 3 | W5 | Ownership inventory and removal of unowned items | Host state after W1 | PASS | Work Log: W5 inventory and cleanup (739 removed, 10 kept) | required | - |
+| Registry pin | 4 | W5 | Running image digest equals the Compose pin | Running `registry:3` versus pinned `registry:3.1.2@sha256:ddf754342cfc…` | PASS | Work Log: W5 inventory and cleanup | required | - |
 | Observability store placement | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Disk load analysis | NOT_RUN | Work Log: Disk load analysis | required | - |
 | Policy promotion | 5 | W6 | Changed metadata and link checks | Operations owner document | NOT_RUN | Work Log | required | - |
 
@@ -303,8 +328,8 @@ Digests are shown as their first 12 hexadecimal characters.
 | --- | --- | --- | --- | --- |
 | 1 | accepted | Pre-migration snapshot, Containerd move | Health, images, and k3d nodes match the r2 snapshot on 2026-10-19. | SPEC-0246 TSK-0001 |
 | 2 | accepted | Ollama SSD move | Same model list from the SSD path; first load 318.4 s before and 55.9 s after. | SPEC-0246 TSK-0001 |
-| 3 | pending | Build-cache limit, Build-cache floor decision, Image archive, Volume and container cleanup | Archive done and the floor accepted; cleanup remains. | SPEC-0246 TSK-0001 |
-| 4 | pending | Registry pin | Waits for W5. | SPEC-0246 TSK-0001 |
+| 3 | accepted | Build-cache limit, Build-cache floor decision, Image archive, Volume and container cleanup | Floor accepted, archive digest-verified, and only unowned items removed. | SPEC-0246 TSK-0001 |
+| 4 | accepted | Registry pin | The running image digest equals the Compose pin. | SPEC-0246 TSK-0001 |
 | 5 | pending | Policy promotion | Waits for criteria 1–4 and 6. | SPEC-0246 TSK-0001 |
 | 6 | pending | Observability store placement | Waits for the SMART reading and W3. | SPEC-0246 TSK-0001 |
 
