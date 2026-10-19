@@ -5403,6 +5403,35 @@ class RouteAuthContractTests(unittest.TestCase):
         )
         self.assertEqual([], bare)
 
+    def test_every_router_chain_rate_limits_by_peer_address(self) -> None:
+        """POL-0013: the standard chain carries the limiter, keyed on the TCP
+        peer, never on a client-supplied header; every router with
+        middlewares uses that chain."""
+        import yaml
+
+        path = ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml"
+        middlewares = yaml.safe_load(path.read_text(encoding="utf-8"))["http"][
+            "middlewares"
+        ]
+        self.assertEqual(
+            ["req-rate-limit", "req-retry", "req-circuit-breaker"],
+            middlewares["gateway-standard-chain"]["chain"]["middlewares"],
+        )
+        limit = middlewares["req-rate-limit"]["rateLimit"]
+        self.assertEqual(
+            (100, "1s", 200), (limit["average"], limit["period"], limit["burst"])
+        )
+        self.assertEqual({"ipStrategy": {"depth": 0}}, limit["sourceCriterion"])
+        limiters = [name for name, m in middlewares.items() if "rateLimit" in m]
+        self.assertEqual(["req-rate-limit"], limiters)
+        chains = {"gateway-standard-chain@file", "sso-protected-chain@file"}
+        unlimited = sorted(
+            (src, name)
+            for src, name, chain in self.routers()
+            if chain and not chain & chains
+        )
+        self.assertEqual([], unlimited)
+
     def test_sso_redirects_browsers_and_refuses_machine_clients(self) -> None:
         """The proxy root sends a browser to Keycloak and answers an
         Accept: application/json client with 401; a login page is never a
