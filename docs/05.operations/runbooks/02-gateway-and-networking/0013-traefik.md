@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "operations"
 artifact_id: "RUN-0013"
 parent_ids:
@@ -52,16 +52,16 @@ bash scripts/hardening/check-all-hardening.sh 01-gateway
 ```
 
 exit 0이더라도 `gateway-standard-chain`의 실제 멤버십을 따로 확인한다.
-현재 `req-rate-limit`은 정의되어 있으나 chain에는 retry/circuit-breaker만 있다.
-이는 [POL-0013](../../policies/02-gateway-and-networking/0013-traefik.md)의 구현 미준수다. 문자열 블록 존재 검사로
-고쳐졌다고 보고하지 않는다. 별도 구현 변경과 수용 검증 전에는 rate limit이
-보장되는 절차로 완료 처리하지 않는다.
+chain 멤버는 `req-rate-limit`, `req-retry`, `req-circuit-breaker` 순서여야 하며
+`tests.validation.test_compose_baseline_gates.RouteAuthContractTests`가 이를 파싱해 확인한다.
+HOME 적용은 실행 중인 Traefik의 실제 429 응답으로 별도로 확인한다
+([POL-0013](../../policies/02-gateway-and-networking/0013-traefik.md#rate-limit-basis)).
 
 | 증상 | 읽기 전용 확인·판단 |
 | --- | --- |
 | Dashboard 401 | 라우터의 `dashboard-auth@file,gateway-standard-chain@file` 순서와 private usersFile 참조를 확인한다. 인증 제거로 복구하지 않는다. |
 | SSO redirect/403 | `sso-errors`는 403만 sign-in 응답으로 바꾸고 401은 그대로 둔다. Proxy 그룹 거부와 issuer/callback 문제를 [RUN-0015](../03-identity-and-access/0015-oauth2-proxy.md)로 분리한다. |
-| 429 또는 5xx | 실제 적용 middleware와 대상 backend를 확인한다. limiter 선언만으로429 원인을 단정하지 않는다. retry 횟수와 circuit-breaker 조건은 Policy에 대조한다. |
+| 429 또는 5xx | access log의 출발지·라우터와 초당 요청 수를 확인한다. 같은 라우터·출발지가 2초 안에 200건을 넘었으면 limiter의 정상 동작이다. `edge_net` 게이트웨이 주소는 host·k3d 요청이 공유하는 출발지다. 값 조정은 Policy 승인 절차를 따르고, 우회 라우터를 만들어 복구하지 않는다. retry 횟수와 circuit-breaker 조건은 Policy에 대조한다. |
 | Route/인증서 실패 | `edge_net`, provider enable label, domain, certificate/CA·file path와 middleware 이름을 확인한다. |
 | Health 실패 | 내부 metrics entrypoint의 ping과 실제 사용자 요청을 구분하고, OOM/restart 상태와 정제된 오류 유형을 확인한다. |
 
