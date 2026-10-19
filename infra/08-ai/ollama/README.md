@@ -105,6 +105,7 @@ ollama/
 | Variable | Required | Default | Description |
 | :--- | :---: | :--- | :--- |
 | `DEFAULT_AI_MODEL_DIR` | Yes | - | 모델 영구 저장 경로 |
+| `OLLAMA_MODEL_DIR` | No | `${DEFAULT_AI_MODEL_DIR}/ollama` | 모델 디렉터리 재지정 경로; SSD 배치에 사용합니다 (SPEC-0246) |
 | `OLLAMA_PORT` | No | 11434 | API 포트 |
 | `OLLAMA_EXPORTER_PORT` | No | `.env.example`에서 8000 | exporter 지표 수집 포트; 설정하지 않으면 compose의 기본값은 `8000`입니다 |
 

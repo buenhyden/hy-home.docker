@@ -203,7 +203,7 @@
     },
     {
       "path": "infra/08-ai/ollama/docker-compose.yml",
-      "sha256": "2a5b27c33de811cdd7be1b5b6cc0ae0cdc7b52db73f3721b3c3e8395bc5c45af"
+      "sha256": "61a096f98bf313939f7481c043483220da0b6c3378affd72b0b36e91c79379f0"
     },
     {
       "path": "infra/08-ai/open-notebook/docker-compose.yml",
