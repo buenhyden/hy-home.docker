@@ -222,10 +222,16 @@ the same keys, and the model list shows the same five names and IDs.
 The new container fell back to the CPU twice. Probes with each service
 constraint alone (CPU, memory and PID limits, dropped capabilities with
 `no-new-privileges` and `init`, the service environment, the model volume)
-all found CUDA0, and a service restart right after them found CUDA0. NVIDIA
-persistence mode is `Disabled`, so the first CUDA initialization after the
-GPU idles is slow enough to exceed the 30 s discovery watchdog; this, not the
-HDD, explains both 2026-10-19 fallbacks.
+all found CUDA0, and a service restart right after them found CUDA0. The
+owner then enabled NVIDIA persistence mode with an `nvidia-persistenced`
+drop-in that removes `--no-persistence-mode`; the next restart still fell back.
+A probe with every service constraint failed once and then passed four times
+in a row, so the failure depends on cache state, not configuration. In the
+failing debug run the `cuda_v12` (1.3 GB) and `cuda_v13` (818 MB) probes
+each took the full 30 s while `vulkan` (39 MB) took 0.2 s: the libraries were
+read cold from the HDD image store, whose page cache the full swap shows is
+under pressure. The Ollama entrypoint now reads `cuda_v12` before
+`ollama serve`; a probe with that entrypoint found CUDA0.
 
 On CUDA0, from the SSD, `gemma4:e2b` took 55.9 s to load (318.4 s from the
 HDD), measured the same way. The HDD copy at
