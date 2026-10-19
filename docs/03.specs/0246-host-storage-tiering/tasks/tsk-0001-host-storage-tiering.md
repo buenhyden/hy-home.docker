@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-19"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0246-TSK-0001"
 parent_ids:
@@ -192,10 +192,10 @@ load average to 383. The agent stopped its own concurrent run, waited, then
 recreated Ollama from main on 0.40.6.
 
 The first 0.40.6 start fell back to the CPU: GPU discovery for `cuda_v12`
-and `cuda_v13` hit the 30 s watchdog. Probe containers without volumes showed
-the cause: with warm page cache 0.40.6 found CUDA0 (GTX 1060, compute 6.1,
-`cuda_v12`) in 1.7 s, and 0.40.0 on a cold read timed out the same way. A
-restart then found CUDA0. The 0.40.0 and 0.40.3 images were removed at the
+and `cuda_v13` hit the 30 s watchdog, and 0.40.0 in a probe container timed out
+the same way. 0.40.6 supports the GPU: probes found CUDA0 (GTX 1060, compute
+6.1, `cuda_v12`) in 1.7 s. A restart right after the probes found CUDA0. The
+cause is identified under W3 result. The 0.40.0 and 0.40.3 images were removed at the
 owner's direction.
 
 `ollama pull` refreshed all five installed models. `tev1:0.8b` (now
@@ -209,6 +209,27 @@ already current. `tev1` answered `/v1/systemone` on the GPU and
 On 0.40.6, from the HDD, `gemma4:e2b` (4.6 GB) took 318.4 s to load
 (`load_duration`, `keep_alive` 0, one generated token), with the HDD at
 about 60% busy.
+
+### W3 result
+
+On 2026-10-20 the owner ran a first copy with Ollama running, the agent
+stopped Ollama, the owner ran a final `rsync --delete` whose dry-run printed
+nothing, and the owner removed the `ollama-data` volume and recreated the
+service; the agent cannot remove volumes in this session. The volume device
+is `/home/hyunyoun/fast-volumes/ai/ollama`, `.env` and `.env.example` hold
+the same keys, and the model list shows the same five names and IDs.
+
+The new container fell back to the CPU twice. Probes with each service
+constraint alone (CPU, memory and PID limits, dropped capabilities with
+`no-new-privileges` and `init`, the service environment, the model volume)
+all found CUDA0, and a service restart right after them found CUDA0. NVIDIA
+persistence mode is `Disabled`, so the first CUDA initialization after the
+GPU idles is slow enough to exceed the 30 s discovery watchdog; this, not the
+HDD, explains both 2026-10-19 fallbacks.
+
+On CUDA0, from the SSD, `gemma4:e2b` took 55.9 s to load (318.4 s from the
+HDD), measured the same way. The HDD copy at
+`/home/hyunyoun/storage/volumes/ai/ollama` stays until the owner removes it.
 
 ### W3 owner copy step
 
@@ -263,7 +284,7 @@ Digests are shown as their first 12 hexadecimal characters.
 | Containerd move | 1 | W1 | Owner procedure and agent comparison against the snapshot | Owner-run host change and r2 snapshot | PASS | Work Log: W1 result | required | - |
 | Build-cache limit | 3 | W2 | `daemon.json` parse and `docker buildx du` after a build | Owner-run host change | FAIL | Work Log: W2 result (15.31 GB after a build) | required | - |
 | Build-cache floor decision | 3 | W2 | `daemon.json` parse and `docker buildx du` after a build | Owner-accepted policy: GC enabled with a 10 GB reserved-space floor, observed in `docker buildx inspect` | PASS | Work Log: W2 result | required | Build-cache limit |
-| Ollama SSD move | 2 | W3 | Rendered device, model list, first-load time before and after | Compose change and owner copy | NOT_RUN | Work Log: W3 owner copy step | required | - |
+| Ollama SSD move | 2 | W3 | Rendered device, model list, first-load time before and after | Compose change and owner copy | PASS | Work Log: W3 result (318.4 s to 55.9 s) | required | - |
 | Image archive | 3 | W4 | Push, stored-digest comparison, local removal | 16 approved candidates | PASS | Work Log: W4 image archive (15 archived, 1 push failure left in place) | required | - |
 | Volume and container cleanup | 3 | W5 | Ownership inventory and removal of unowned items | Host state after W1 | NOT_RUN | Work Log | required | - |
 | Registry pin | 4 | W5 | Running image digest equals the Compose pin | Running `registry:3` versus pinned `registry:3.1.2@sha256:ddf754342cfc…` | NOT_RUN | Work Log | required | - |
@@ -275,7 +296,7 @@ Digests are shown as their first 12 hexadecimal characters.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 1 | accepted | Pre-migration snapshot, Containerd move | Health, images, and k3d nodes match the r2 snapshot on 2026-10-19. | SPEC-0246 TSK-0001 |
-| 2 | pending | Ollama SSD move | Waits for the owner copy. | SPEC-0246 TSK-0001 |
+| 2 | accepted | Ollama SSD move | Same model list from the SSD path; first load 318.4 s before and 55.9 s after. | SPEC-0246 TSK-0001 |
 | 3 | pending | Build-cache limit, Build-cache floor decision, Image archive, Volume and container cleanup | Archive done and the floor accepted; cleanup remains. | SPEC-0246 TSK-0001 |
 | 4 | pending | Registry pin | Waits for W5. | SPEC-0246 TSK-0001 |
 | 5 | pending | Policy promotion | Waits for criteria 1–4 and 6. | SPEC-0246 TSK-0001 |

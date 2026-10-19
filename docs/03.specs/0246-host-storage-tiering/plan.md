@@ -4,7 +4,7 @@ version: "0.2.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-19"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0246-PLAN-0001"
 parent_ids:
@@ -61,10 +61,12 @@ host change.
   mounts would create an empty root on the SSD; W1 adds the dependency first.
 - W3 rollback: unset `OLLAMA_MODEL_DIR` and recreate the volume; the HDD copy
   is kept until criterion 2 passes.
-- Ollama's GPU discovery gives up after 30 s per library. A cold read of its
-  image layers from the busy HDD exceeded that on 2026-10-19 and the server
-  fell back to the CPU; a restart with warm page cache found CUDA0. After any
-  Ollama start, the `inference compute` log line must name CUDA0.
+- Ollama's GPU discovery gives up after 30 s per library. With NVIDIA
+  persistence mode disabled, the first CUDA initialization after the GPU
+  idles exceeded that on 2026-10-19 and the server fell back to the CPU; a
+  start right after another CUDA process found CUDA0. The owner enables
+  `nvidia-persistenced`, and after any Ollama start the `inference compute`
+  log line must name CUDA0.
 - W7 adds SSD writes. A store moves only within the endurance budget in the
   Spec; rollback unsets its override and recreates its volume from the HDD
   copy, which is kept until criterion 6 passes.

@@ -4,7 +4,7 @@ version: "0.2.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-19"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0246"
 parent_ids:
@@ -27,8 +27,7 @@ HDD, where model loading is slow.
 
 After the move, on 2026-10-19, the HDD was busy for 65% of the seven days of
 uptime and 61% in an idle sample, while the SSD stayed near 0%. Most of the
-HDD writes come from the observability stores, and a cold read of an image
-layer from the HDD made Ollama's GPU discovery time out.
+HDD writes come from the observability stores.
 
 This Spec defines one placement and growth policy for every Docker storage
 class on this host and applies it.
