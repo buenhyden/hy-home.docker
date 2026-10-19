@@ -1,10 +1,10 @@
 ---
 title: "n8n Stable Source Preparation Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0017"
 parent_ids:
@@ -255,6 +255,52 @@ and no external acceptance claim. Exact report
 The gate was not weakened or made green by assigning untested targets. Remaining
 artifact selection, OCI/platform, applicability/support, signatures, SBOM,
 compatibility, native/HOME and recovery decisions need their own evidence.
+
+### Runner port aliases and deprecated runner switch — 2026-10-20
+
+The v22 execution prompt §8.3 asks whether the `N8N_BROKER_PORT` and
+`N8N_TASK_RUNNER_PORT` aliases move the real listeners. They did not. The
+aliases set the runner `N8N_RUNNERS_TASK_BROKER_URI`, both `expose` lists and
+the worker and runner healthchecks, but nothing set the listener variables, so
+any non-default value would have pointed the runners and healthchecks at a
+port nobody listened on.
+
+The [task runner variables](https://docs.n8n.io/hosting/configuration/environment-variables/task-runners/)
+name the listeners `N8N_RUNNERS_BROKER_PORT` (n8n, default 5679) and
+`N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT` (launcher, default 5680), and mark
+`N8N_RUNNERS_ENABLED` deprecated from 2.0. The running HOME `n8n` and
+`n8n-worker` (2.41.6) both log `N8N_RUNNERS_ENABLED -> Remove this
+environment variable; it is no longer needed.`
+
+The change sets `N8N_RUNNERS_BROKER_PORT: ${N8N_BROKER_PORT:-5679}` in the
+shared n8n environment, sets
+`N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT: ${N8N_TASK_RUNNER_PORT:-5680}` on both
+runners and removes `N8N_RUNNERS_ENABLED`. `N8N_RUNNERS_TASK_TIMEOUT: 300`
+stays explicit; 2.41.6 warns that its default will drop to 60, and no
+`N8N_RUNNER_TASK_TIMEOUT` remains. Default values render unchanged.
+
+- RED: the new `test_n8n_port_aliases_move_the_listeners_they_advertise`
+  renders the four combinations of 5679/15679 and 5680/15680 and failed all
+  four with `KeyError: 'N8N_RUNNERS_BROKER_PORT'`; the existing timeout test
+  failed on `N8N_RUNNERS_ENABLED`. GREEN after the change.
+- `docker compose --env-file .env.example --profile workflow-n8n config` with
+  15679/15680 renders both listener variables and the matching URIs.
+- Affected suites: 157 OK, 30 opt-in skipped.
+- Isolated runtime, 2026-10-20, internal network, synthetic token, tmpfs data,
+  cached `hyhome/n8n:2.41.6-local` and `n8nio/runners:2.41.6`: with
+  `N8N_RUNNERS_BROKER_PORT=15679` the broker answered `/healthz` on 15679 and
+  refused 5679; with `N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT=15680` the
+  launcher logged its health server on 15680, answered there and refused
+  5680. No `N8N_RUNNERS_ENABLED` warning without the variable. Cleanup left 0
+  containers and 0 networks. The first main attempt used the project
+  entrypoint, which stops without the HOME secrets; the rerun started
+  `n8n start` directly. The declared 2.43.6 images were not cached and were
+  not used.
+
+`tests/validation/_opsflow_native_fixture.py` still passes
+`N8N_RUNNERS_ENABLED=true` to the W74 fixture. That file belongs to TSK-0019's
+reviewed fixture and is left for its owner. HOME recreation with this source is
+`NOT_RUN`; HOME still runs 2.41.6 against the declared 2.43.6.
 
 ## Evidence
 
