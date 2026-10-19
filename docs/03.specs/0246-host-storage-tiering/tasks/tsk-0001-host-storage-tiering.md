@@ -167,6 +167,22 @@ Writes by container since each one's last start (two to three days), from
 writes about 85 GB a day (about 31 TB a year), and its rated endurance and
 current wear are not yet read, so a move to the SSD needs SMART first (W7).
 
+### W7 SMART reading and write-rate start
+
+The owner read the SSD's SMART attributes on 2026-10-19: power-on 39,902 h
+(4.55 years), `Percent_Lifetime_Remain` normalized 76 (24% used), no
+reallocated events, and `Total_LBAs_Written` 81,764,994,229, which is 41.9 TB
+of host writes. That is about 0.57% of lifetime per TB written. At the
+seven-day rate (31 TB a year) the drive has about 4.3 years left; adding the
+observability stores' recent writes (about 42 GB a day) would leave about
+2.9 years, outside the five-year budget, so moving all of them is rejected.
+The seven-day window includes SSD writes from before the containerd move,
+and swap is full (8 GB, about 45 GB swapped out in seven days), so the
+post-move rate is measured directly. The t0 snapshot (`/proc/diskstats` and
+each container's cgroup `wbytes`) was taken at 2026-10-19T23:51:52+09:00 under
+`/home/hyunyoun/storage/ops-snapshots/w7-write-rate-20261019/`; t1 follows 24
+hours later.
+
 ### Ollama 0.40.6 runtime
 
 SEC01 TSK-0009 owns the 0.40.6 pin (PR #516). On 2026-10-19 a
