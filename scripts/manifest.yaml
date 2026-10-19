@@ -967,6 +967,17 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_secret_catalog.py
+- path: scripts/operations/storage-write-rate.py
+  kind: operations
+  authority: infra/09-platform-ops/resource-optimization/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - infra/09-platform-ops/resource-optimization/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_storage_write_rate.py
 - path: scripts/operations/storybook_design_export.py
   kind: operations
   authority: docs/05.operations/runbooks/14-design-system/0101-storybook.md
@@ -989,17 +1000,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_storybook_image.py
-- path: scripts/operations/storage-write-rate.py
-  kind: operations
-  authority: infra/09-platform-ops/resource-optimization/README.md
-  lifecycle: active
-  mutation: none
-  consumers:
-  - infra/09-platform-ops/resource-optimization/README.md
-  disposition: retain
-  successor: null
-  tests:
-  - tests/lib/ops/test_storage_write_rate.py
 - path: scripts/operations/sync-tech-stack-versions.sh
   kind: operations
   authority: .github/workflow-contract.yml

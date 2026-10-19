@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -129,6 +132,39 @@ class AccountingTests(unittest.TestCase):
             Path(tmp, "t1.time").write_text(T1)
             with self.assertRaises(FileExistsError):
                 rate.collect(Path(tmp), "t1", ("sda",))
+
+
+class CliTests(unittest.TestCase):
+    def _run(self, *args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [sys.executable, "scripts/operations/storage-write-rate.py", *args],
+            cwd=Path(__file__).resolve().parents[3],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    def test_compare_prints_json_and_exit_codes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            for label, snap in (
+                ("t0", _snap(T0, 0, _rows(1))),
+                ("t1", _snap(T1, GB, _rows(2))),
+            ):
+                for key, suffix in rate.SUFFIXES.items():
+                    Path(tmp, label + suffix).write_text(snap[key])
+            smart = [
+                "--smart-used-percent",
+                "50",
+                "--smart-host-bytes",
+                str(50 * 10**12),
+            ]
+            done = self._run("compare", tmp, *smart)
+            self.assertEqual(done.returncode, 0, done.stderr)
+            self.assertEqual(
+                json.loads(done.stdout)["stores"]["alloy"]["status"], "valid"
+            )
+            self.assertEqual(self._run("compare", tmp).returncode, 1)
+            self.assertEqual(self._run("compare", tmp, "--t1", "absent").returncode, 2)
 
 
 if __name__ == "__main__":
