@@ -1,10 +1,10 @@
 ---
 title: "합성 부하 시험 HTTP 경로 경계"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-20"
 ---
 
 # 합성 부하 시험 HTTP 경로 경계
@@ -67,12 +67,23 @@ python3 -m unittest tests.validation.test_k6_results -q
 python3 examples/operations/quality-path-guard/acceptance.py \
   --guard-image '<approved-traefik@sha256:digest>' \
   --mock-image '<approved-wiremock@sha256:digest>' \
-  --k6-image '<approved-k6@sha256:digest>'
+  --k6-image '<approved-k6@sha256:digest>' \
+  --evidence-dir '<new-empty-receipt-dir>'
 ```
 
 controller는 context·이미지·용량·subnet 충돌을 사전 검사하며 승인 path 200,
 비승인/admin path 404, 강제 threshold 실패 exit99를 확인합니다. 성공한 정리 뒤에만
 해당 임시 디렉터리를 삭제합니다. 정리 실패 시 정확한 잔여 controller 경로를 조사합니다.
+
+같은 입력 byte로 두 사이클을 실행합니다. 사이클마다 새 project를 올리고 두 attempt를
+실행한 뒤 `down`하고, run label이 붙은 container·network가 0개인지 다시 셉니다. 남은
+자원이 있으면 그 사이클은 실패하고 attempt 파일을 보존하며, 다음 사이클은 시작하지 않습니다.
+`--evidence-dir`은 존재하지 않는 새 경로여야 하며 `cycle-N.json`, 각 attempt의
+`final.json`·`checksums.json`, `comparison.json`을 남깁니다. 두 사이클은 run identity·image
+digest·입력 hash와 attempt별 exit·verdict·evidence state가 같아야 통과합니다. raw point 수와
+`final.json` hash는 기록만 합니다. k6 gauge가 초 단위로 표본을 만들고 `final.json`에 시각이
+들어가기 때문입니다. 이 load mode backend는 요청 저널과 HTTP admin이 꺼져 있어 WireMock
+reset API 대신 container 재생성이 초기화입니다.
 
 별도 fixture 실행 전 Docker context·프로젝트·포트0·망2·볼륨0·자원·이미지와 정확한
 정리 대상을 확인합니다. 승인된 rehearsal만 `--env-file`의 합성 입력으로 render한 뒤 실행합니다.

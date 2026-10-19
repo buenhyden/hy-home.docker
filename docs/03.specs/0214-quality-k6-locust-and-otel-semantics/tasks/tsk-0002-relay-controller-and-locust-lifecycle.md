@@ -1,10 +1,10 @@
 ---
 title: "Relay Controller and Locust Lifecycle Task"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0214-TSK-0002"
 parent_ids:
@@ -269,6 +269,63 @@ series stay in HOME Prometheus until the 15-day retention removes them.
 
 With 410 series per attempt and `max_streams` 10000, about 24 attempts can
 send within one 5-minute `max_stale` window before streams are dropped.
+
+### Quality Reload Cycles — 2026-10-20
+
+The v22 execution prompt §13.3.1 asks for a repeat-run receipt per real
+Quality consumer: initialize, run, keep the result, clean up exactly, reload
+the same input and run again. Before this change the path-guard rehearsal
+brought its project up once and ran both attempts inside it, so it never
+proved that a second bring-up starts clean.
+
+WireMock 3.x documents `POST /__admin/reset` (mappings back to the backing
+store and the request journal), `DELETE /__admin/requests` (journal only) and
+`POST /__admin/scenarios/reset` (scenario state), per the
+[admin API description](https://wiremock.org/js/wiremock-admin-api.json) and
+[stateful behaviour](https://wiremock.org/docs/stateful-behaviour/). The
+path-guard backend runs with `--no-request-journal` and HTTP admin refused,
+so none of them applies there; a fresh container is its reset. k6 keeps no
+state between processes, and its results are the per-attempt files.
+
+`examples/operations/quality-path-guard/acceptance.py` now writes the
+scenario, mappings, both manifests and the guard once and runs two cycles from
+those bytes. Each cycle uses a new Compose project, checks that no container
+or network carries the run label before it starts, runs attempts 1 and 2,
+copies `final.json` and `checksums.json` to `--evidence-dir`, runs
+`compose down` and counts the labelled containers and networks again. A cycle
+with any left fails and keeps its attempt files. `compare_cycles` then
+requires both cycles to match on run identity, image digests, input hashes and
+each attempt's exit, verdict and evidence state. Raw point counts and
+`final.json` hashes are recorded but not compared: k6 samples its gauges once
+a second and `final.json` carries timestamps. The unit test
+`test_reload_cycles_must_reproduce_results_inputs_and_cleanup` covers a
+mismatch in each field; 29 `test_k6_results` tests pass.
+
+Isolated run, 2026-10-20 07:23–07:26 +09:00, Traefik
+`sha256:575fa15b…3fa7c` (v3.7.14), WireMock `sha256:f8c42a38…0e147`
+(3.13.2-alpine, pulled by tag for this run) and k6 `sha256:9c2dee7f…eb34`
+(2.3.0, the Dockerfile pin). Exit 0, `RELOAD_CYCLES_LOGICAL_MATCH_PASS`:
+
+| Cycle | Project | Attempt 1 | Attempt 2 | Raw points | Owned after down |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `hyhome-quality-guard-f7b0549119a4` | exit 0, `passed`, `complete` | exit 99, `failed_threshold`, `complete` | 36 / 34 | 0 containers, 0 networks |
+| 2 | `hyhome-quality-guard-28b55b934004` | exit 0, `passed`, `complete` | exit 99, `failed_threshold`, `complete` | 34 / 34 | 0 containers, 0 networks |
+
+Both cycles used fixture `5c366af4…8d92`, mappings `6fc154d5…8dfe`, guard
+`e98c9dc4…4a71` and manifests `7bfd1739…e643` and `5605dcee…fa51`. The
+receipts stayed in the session scratchpad and were not committed.
+
+Per consumer:
+
+| Consumer | Repeat-run result | Reason |
+| --- | --- | --- |
+| k6 executor through the path guard, WireMock load mode | PASS | The run above |
+| Conftest, `scripts/validation/check-conftest-policy.sh` (CI) | PASS | Two runs, exit 0 each, 364/364 and 69/69 tests both times; logs differ only in the `compose run` container name; 0 containers and networks left for `hyhome-conftest-gate` |
+| WireMock function mode (`api-mock`, journal on) | NOT_RUN | The one-off journal-reset probe was refused in this session; the 2026-10-03 isolated check (journal 1, then 0 after `DELETE /__admin/requests`) in the WireMock README is earlier, separate evidence |
+| `quality-metrics/acceptance.py` (OTLP relay) | NOT_RUN | Not rerun in two cycles; its W9 single run stands |
+| Pact Broker, SonarQube | Not applicable | No script, workflow or project in this repository consumes them; they run only when an operator starts their profiles |
+| Mailpit (HOME, running) | NOT_RUN | Its message store is shared by HOME senders; deleting messages beyond a test's own would reset a shared asset |
+| Locust | Not applicable | LAB runtime is excluded |
 
 ### Review
 
