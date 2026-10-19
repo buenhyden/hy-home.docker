@@ -207,6 +207,39 @@ class K6ResultContractTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("synthetic quality acceptance failed", result.stderr)
 
+    def test_reload_cycles_must_reproduce_results_inputs_and_cleanup(self) -> None:
+        import runpy
+
+        module = runpy.run_path(
+            str(ROOT / "examples/operations/quality-path-guard/acceptance.py")
+        )
+        compare = module["compare_cycles"]
+
+        def receipt(cycle: int) -> dict:
+            return {
+                "cycle": cycle,
+                "run_id": "r",
+                "images": {"k6": "k6@sha256:1"},
+                "inputs": {"fixture_sha256": "f"},
+                "error": None,
+                "cleanup": {"containers": 0, "networks": 0},
+                "attempts": [
+                    {**item, "raw_points": 10 + cycle} for item in module["EXPECTED"]
+                ],
+            }
+
+        self.assertEqual(compare([receipt(1), receipt(2)]), [])
+        self.assertTrue(compare([receipt(1)]))
+        for change in (
+            {"cleanup": {"containers": 1, "networks": 0}},
+            {"error": "RuntimeError: boom"},
+            {"inputs": {"fixture_sha256": "other"}},
+            {"attempts": receipt(2)["attempts"][:1]},
+            {"attempts": [{**receipt(2)["attempts"][0], "verdict": "failed"}]},
+        ):
+            with self.subTest(change=change):
+                self.assertTrue(compare([receipt(1), {**receipt(2), **change}]))
+
     def test_prepare_binds_scenario_and_refuses_existing_attempt(self) -> None:
         attempt = self.prepare()
         self.assertEqual(
