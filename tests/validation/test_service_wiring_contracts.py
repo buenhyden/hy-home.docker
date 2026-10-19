@@ -74,6 +74,14 @@ class AiRuntimeContractTests(unittest.TestCase):
             pattern.format(r"ghcr\.io/open-webui/open-webui:v0\.12\.0-cuda"),
         )
 
+    def test_cuda_libraries_are_warmed_before_gpu_discovery(self) -> None:
+        # SPEC-0246: a cold read from the HDD outlasted the 30 s discovery watchdog.
+        script = self.ollama["entrypoint"][-1]
+        self.assertTrue(
+            script.startswith("cat /usr/lib/ollama/cuda_v12/* > /dev/null;")
+        )
+        self.assertTrue(script.endswith("exec /bin/ollama serve"))
+
     def test_slow_loads_are_not_cut_off(self) -> None:
         # Ollama's limit is for a stalled load; Open WebUI keeps its default of
         # no total request timeout, so a long streamed answer is not cut off.
