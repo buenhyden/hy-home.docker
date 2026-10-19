@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-19"
 layer: "specs"
 artifact_id: "SPEC-0246-TSK-0001"
 parent_ids:
@@ -88,6 +88,33 @@ print nothing. Remove `/var/lib/containerd.old` only after
 the agent records criterion 1 as passing. Rollback restores
 `config.toml.bak-20261016`, moves `.old` back, and starts the units.
 
+### W1 result
+
+The owner ran the procedure on 2026-10-16 after a refreshed snapshot at
+`/home/hyunyoun/storage/ops-snapshots/containerd-migration-20261016-r2/`
+(69 containers, 58 healthy; 98 images; 832 volumes). Docker reports the
+`io.containerd.snapshotter.v1` driver, `config.toml` names
+`/home/hyunyoun/storage/containerd`, and `/var/lib/containerd.old` remains.
+
+Recovery needed three owner steps, none caused by the new root:
+
+- `keycloak` exited 128 because a containerd shim from the restart (no child
+  process) still held its task, so `docker start` returned
+  `task … already exists`. The owner killed the shim on 2026-10-19 and the
+  agent started the container; no other shim lacked a running container.
+- On 2026-10-17 at 20:55 KST, with `dockerd` unchanged since the move,
+  OpenBao and the five k3d nodes were stopped through the API and OpenBao
+  restarted sealed. Gatus, kafbat-ui, and oauth2-proxy then looped on OIDC
+  discovery. The owner unsealed OpenBao (RUN-0098 steps 4–6) and ran
+  `k3d cluster start hyhome`; the agent started `k3d-hyhome-agent-1`, which
+  that command left stopped.
+- After these steps, on 2026-10-19: 58 healthy and 0 unhealthy containers,
+  every snapshot image present, and all four k3d nodes `Ready`. The only
+  missing container is `p01-sweep-probe4`, a `--rm` probe removed by the stop
+  together with its two anonymous volumes (830 volumes). Three `Created`
+  containers from 2026-10-18 belong to local MCP clients and are outside this
+  Task.
+
 ### W2 owner procedure
 
 Before the W1 restart, add
@@ -101,6 +128,18 @@ sudo cp /etc/docker/daemon.json /etc/docker/daemon.json.bak-20261016
 sudo python3 -c 'import json,pathlib; p=pathlib.Path("/etc/docker/daemon.json"); d=json.loads(p.read_text()); d["builder"]={"gc":{"enabled":True,"defaultKeepStorage":"10GB"}}; p.write_text(json.dumps(d,indent=4)+"\n")'
 sudo python3 -m json.tool /etc/docker/daemon.json
 ```
+
+### W2 result
+
+`/etc/docker/daemon.json` (written 2026-10-16 22:20 KST, backup
+`daemon.json.bak-20261016`) parses and keeps `data-root` and the `nvidia`
+runtime. `docker buildx inspect` shows the policy derived from it: rules 1–3
+carry `Reserved Space: 10GiB` and no `Max Used Space`. On 2026-10-19 a
+one-file `FROM scratch` build left `docker buildx du` at 15.31 GB, above the
+10 GB intent, and no prune was logged. Whether `defaultKeepStorage` alone caps
+the cache under this BuildKit version is not established. The next step is an
+owner decision between adding an explicit `defaultMaxUsedSpace` (another daemon
+restart, so another OpenBao unseal) and accepting the reserved-space floor.
 
 ### W3 owner copy step
 
@@ -148,8 +187,8 @@ Digests are shown as their first 12 hexadecimal characters.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Pre-migration snapshot | 1 | W1 | `docker ps -a`, `docker image ls`, `docker volume ls`, `docker info`, `df` | Host state 2026-10-16 | PASS | `/home/hyunyoun/storage/ops-snapshots/containerd-migration-20261016/` | required | - |
-| Containerd move | 1 | W1 | Owner procedure and agent comparison against the snapshot | Owner-run host change | NOT_RUN | Work Log: W1 owner procedure | required | - |
-| Build-cache limit | 3 | W2 | `daemon.json` parse and `docker buildx du` after a build | Owner-run host change | NOT_RUN | Work Log: W2 owner procedure | required | - |
+| Containerd move | 1 | W1 | Owner procedure and agent comparison against the snapshot | Owner-run host change and r2 snapshot | PASS | Work Log: W1 result | required | - |
+| Build-cache limit | 3 | W2 | `daemon.json` parse and `docker buildx du` after a build | Owner-run host change | FAIL | Work Log: W2 result (15.31 GB after a build) | required | - |
 | Ollama SSD move | 2 | W3 | Rendered device, model list, first-load time before and after | Compose change and owner copy | NOT_RUN | Work Log: W3 owner copy step | required | - |
 | Image archive | 3 | W4 | Push, stored-digest comparison, local removal | 16 approved candidates | PASS | Work Log: W4 image archive (15 archived, 1 push failure left in place) | required | - |
 | Volume and container cleanup | 3 | W5 | Ownership inventory and removal of unowned items | Host state after W1 | NOT_RUN | Work Log | required | - |
@@ -160,9 +199,9 @@ Digests are shown as their first 12 hexadecimal characters.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | Pre-migration snapshot, Containerd move | Waits for the owner-run move and comparison. | SPEC-0246 TSK-0001 |
-| 2 | pending | Ollama SSD move | Waits for W1 and the owner copy. | SPEC-0246 TSK-0001 |
-| 3 | pending | Build-cache limit, Image archive, Volume and container cleanup | Archive done; limit and cleanup remain. | SPEC-0246 TSK-0001 |
+| 1 | accepted | Pre-migration snapshot, Containerd move | Health, images, and k3d nodes match the r2 snapshot on 2026-10-19. | SPEC-0246 TSK-0001 |
+| 2 | pending | Ollama SSD move | Waits for the owner copy. | SPEC-0246 TSK-0001 |
+| 3 | pending | Build-cache limit, Image archive, Volume and container cleanup | Archive done; the limit failed and cleanup remains. | SPEC-0246 TSK-0001 |
 | 4 | pending | Registry pin | Waits for W5. | SPEC-0246 TSK-0001 |
 | 5 | pending | Policy promotion | Waits for criteria 1–4. | SPEC-0246 TSK-0001 |
 
