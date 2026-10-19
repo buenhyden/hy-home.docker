@@ -293,6 +293,9 @@ class OutboxImageBridgeTests(unittest.TestCase):
             self.assertNotIn("N8N_CUSTOM_EXTENSIONS", service["environment"])
             mounts = [mount.split(":")[1] for mount in service["volumes"]]
             self.assertIn("/home/node/.n8n/custom", mounts)
+            # n8n-data hides the image copy, so this bind is the only source of
+            # tracked custom nodes; the container must not write code into it.
+            self.assertIn("./custom:/home/node/.n8n/custom:ro", service["volumes"])
             self.assertFalse(
                 any(
                     "/opt/hyhome/n8n-custom/opsflow".startswith(m + "/")
