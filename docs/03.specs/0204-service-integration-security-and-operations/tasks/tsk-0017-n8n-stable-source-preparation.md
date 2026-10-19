@@ -297,10 +297,29 @@ stays explicit; 2.41.6 warns that its default will drop to 60, and no
   `n8n start` directly. The declared 2.43.6 images were not cached and were
   not used.
 
-`tests/validation/_opsflow_native_fixture.py` still passes
-`N8N_RUNNERS_ENABLED=true` to the W74 fixture. That file belongs to TSK-0019's
-reviewed fixture and is left for its owner. HOME recreation with this source is
-`NOT_RUN`; HOME still runs 2.41.6 against the declared 2.43.6.
+On the owner's 2026-10-20 instruction the W74 fixture
+`tests/validation/_opsflow_native_fixture.py` also stops passing
+`N8N_RUNNERS_ENABLED=true`; TSK-0019 records the consequence for its frozen
+source review.
+
+The custom-node bind was reviewed the same day. `n8n-data` is mounted at
+`/home/node/.n8n`, so the `COPY ./custom` in both Dockerfiles is hidden at run
+time and the bind is the only way tracked `custom/` reaches n8n. HOME main and
+worker had it read-write, and the folder holds only `.gitkeep`;
+`N8N_CUSTOM_EXTENSIONS` is unset, so n8n loads `~/.n8n/custom`. A read-write
+bind let the container write code into the tracked folder that n8n would load
+on the next start. Both binds are now `:ro`. The Opsflow package is not
+affected: it lives at `/opt/hyhome/n8n-custom/opsflow` and the entrypoint links
+it under `~/.n8n/nodes/node_modules`. `test_n8n_outbox_contract` and
+`test_opsflow_native_boundaries` failed on the old source (RED) and pass now;
+the n8n, Opsflow native, runtime, Compose and workflow-contract suites give
+245 OK, 31 opt-in skipped. The Dockerfile `COPY ./custom` stays because the
+image build ledger records it; it is dead at run time.
+
+HOME still runs 2.41.6 against the declared 2.43.6, and its image has no
+Opsflow bridge (`/opt/hyhome/n8n-custom` is absent). RUN-0053 stops HOME
+application until an isolated Code-node and DB-upgrade check and an
+independent backup with the same encryption key exist.
 
 ## Evidence
 

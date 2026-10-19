@@ -1,10 +1,10 @@
 ---
 title: "n8n Native Notification Rehearsal Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0019"
 parent_ids:
@@ -774,6 +774,18 @@ Local `/tmp` receipts have no durability guarantee. This later cleanup does not 
 | SPEC-0204-TSK-0019 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0019 | ready | in-progress | #w74-source-and-execution-boundary |
 | SPEC-0204-TSK-0019 | in-progress | blocked | #review-and-completion |
+
+### Fixture runner switch removal — 2026-10-20
+
+On the owner's instruction `_n8n_env` in
+`tests/validation/_opsflow_native_fixture.py` no longer passes
+`N8N_RUNNERS_ENABLED=true`. n8n 2.x reports the variable as no longer needed
+and the HOME Compose removed it in the same change (TSK-0017).
+`test_opsflow_native_boundaries` now rejects it. No other fixture value
+changed, and no Docker resource was created. The fixture file's bytes, and so
+any earlier fixture source hash, changed: the frozen-source review and the
+fresh host readiness check that gate the next W74 run must cover this revision.
+Earlier W74 receipts stay valid for the revision they name.
 
 ## Evidence
 
