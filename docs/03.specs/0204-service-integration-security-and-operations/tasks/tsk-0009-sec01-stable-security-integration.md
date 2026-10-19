@@ -4,7 +4,7 @@ version: "0.4.20"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-19"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -1982,6 +1982,29 @@ read-only check from this session showed:
 The drift comparison before the recreate was not observed here. Prometheus
 moves to its pin at W5. The ledger `deployment` fields stay NOT_RUN until a
 runtime collection refreshes them.
+
+### Ollama 0.40.6 source pin — 2026-10-19
+
+The owner directed moving Ollama to 0.40.6 and refreshing its installed
+models. `gh release view v0.40.6 --repo ollama/ollama` reports a stable
+release published 2026-10-16T22:00:46Z. The registry index is
+`sha256:265409e1d931028a8f7d5a32bcbafddd7bffbc6cc629d77efe9560adf692a5e7`;
+its linux/amd64 manifest is
+`sha256:40c61dbf5091e0b4cc46f406f912fb061cfeca51208f0f7173c87c3b5f795c95`.
+
+The index-digest pin replaces 0.40.3 in the Compose file, both
+`tech-stack.versions.json` entries, the ledger `current_declared` field and
+the two version tests. The ledger `include_inputs` hash for the Compose file
+follows the new content; the dated census copy and the release, target and
+security fields keep their earlier observations. Focused suites (SEC01
+version contract, update gates, Compose baseline, service wiring, tier
+layout, next-tool candidates, workflow bundle) ran 184 tests with 32 skipped
+and no failure.
+
+The running container was still `0.40.0`, so the declared 0.40.3 pin had
+never been deployed. The recreate from main and the model refresh follow the
+merge and are recorded with SPEC-0246 W3. Signature, SBOM and advisory
+applicability stay NOT_RUN.
 
 ## Evidence
 
