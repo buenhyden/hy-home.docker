@@ -828,6 +828,7 @@
         "tests.validation.test_opsflow_e2e_acceptance",
         "tests.lib.ops.test_root_resource_assessment",
         "tests.validation.test_root_resource_contract",
+        "tests.lib.ops.test_storage_write_rate",
         "-v"
       ],
       "cwd": ".",
@@ -1781,6 +1782,9 @@
           "infra/09-platform-ops/resource-optimization/",
           "scripts/lib/ops/root_resource_assessment.py",
           "scripts/operations/root-resource-assessment.py",
+          "scripts/lib/ops/storage_write_rate.py",
+          "scripts/operations/storage-write-rate.py",
+          "tests/lib/ops/test_storage_write_rate.py",
           "tests/lib/ops/test_root_resource_assessment.py",
           "tests/validation/test_root_resource_contract.py"
         ],
@@ -2144,6 +2148,9 @@
           "infra/09-platform-ops/resource-optimization/",
           "scripts/lib/ops/root_resource_assessment.py",
           "scripts/operations/root-resource-assessment.py",
+          "scripts/lib/ops/storage_write_rate.py",
+          "scripts/operations/storage-write-rate.py",
+          "tests/lib/ops/test_storage_write_rate.py",
           "tests/lib/ops/test_root_resource_assessment.py",
           "tests/validation/test_root_resource_contract.py"
         ],

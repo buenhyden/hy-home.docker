@@ -719,6 +719,18 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_smtp_public_source.py
+- path: scripts/lib/ops/storage_write_rate.py
+  kind: library
+  authority: infra/09-platform-ops/resource-optimization/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/storage-write-rate.py
+  - tests/lib/ops/test_storage_write_rate.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_storage_write_rate.py
 - path: scripts/lib/ops/wiki_preparation.py
   kind: library
   authority: infra/09-platform-ops/project-registration/wiki-preparation/README.md
@@ -977,6 +989,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_storybook_image.py
+- path: scripts/operations/storage-write-rate.py
+  kind: operations
+  authority: infra/09-platform-ops/resource-optimization/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - infra/09-platform-ops/resource-optimization/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_storage_write_rate.py
 - path: scripts/operations/sync-tech-stack-versions.sh
   kind: operations
   authority: .github/workflow-contract.yml

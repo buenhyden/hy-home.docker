@@ -1,10 +1,10 @@
 ---
 title: "Root resource optimization preparation"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-10-20"
 created: "2026-10-11"
 ---
 
@@ -70,6 +70,26 @@ python scripts/operations/root-resource-assessment.py infra/09-platform-ops/reso
 `REVIEWABLE`도 운영 승인이나 실제 사용·부하·복구 수용을 뜻하지 않습니다.
 모든 결과는 `SOURCE/UNIT/STATIC`, `runtime_acceptance=false`,
 `mutation_authorized=false`를 유지합니다.
+
+### SSD 쓰기율 측정
+
+`SPEC-0246-TSK-0001` W7은 [쓰기율 CLI](../../../scripts/operations/storage-write-rate.py)로
+관측 저장소(Prometheus·Loki·Tempo·Pyroscope·Alloy)의 24시간 쓰기량을 비교합니다.
+`collect`는 Docker 메타데이터·`/proc/diskstats`·cgroup `io.stat`만 읽고 기존 snapshot을
+덮어쓰지 않습니다. `compare`는 owner가 읽은 SMART 사용률과 누적 host 쓰기 바이트
+(`Total_LBAs_Written` × 512)로 SSD 수명을 추정합니다.
+
+```bash
+python scripts/operations/storage-write-rate.py collect /home/hyunyoun/storage/ops-snapshots/w7-write-rate-20261019 t1
+python scripts/operations/storage-write-rate.py compare /home/hyunyoun/storage/ops-snapshots/w7-write-rate-20261019 \
+  --smart-used-percent 24 --smart-host-bytes 41863677045248
+```
+
+24시간 미만 창, 컨테이너 재시작, 카운터 감소, snapshot 누락, SMART 미입력은
+`DEFER`입니다. cgroup 쓰기량은 t0와 같이 모든 `io.stat` 줄의 합이며 dm-0이 SSD 줄을
+반복하므로 상한값입니다. `ELIGIBLE`은 5년 내구성 예산만 통과했다는 뜻이며, 이동에는
+측정된 지연 문제와 owner 결정이 따로 필요합니다. 종료 코드 `0`은 모든 저장소 표본이
+유효, `1`은 하나 이상 무효, `2`는 입력 오류입니다.
 
 ### Configuration
 
