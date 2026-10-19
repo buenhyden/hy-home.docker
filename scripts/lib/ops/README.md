@@ -1,10 +1,10 @@
 ---
 title: "Operations Library"
-version: "0.1.6"
+version: "0.1.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 created: "2026-10-10"
 ---
 
@@ -33,6 +33,8 @@ created: "2026-10-10"
   보호 입력·고정 HTTPS 전송 경계입니다. origin·numeric connect IP·held CA를
   분리하고 역할의 경로/inode 충돌과 proxy·redirect·ambient 인증을 거부합니다.
 - `smtp_contract.py`: SMTP Compose 모델 검사와 정확한 중복 파일 퇴역 처리.
+- `storage_write_rate.py`: SPEC-0246 W7의 읽기 전용 쓰기율 snapshot과 24시간
+  비교·SSD 내구성 추정. 표본 무효는 `DEFER`이며 이동 결정을 대신하지 않습니다.
   모델·비밀값은 출력하지 않고 canonical 파일은 변경하지 않습니다.
 - `smtp_public_source.py`: ROOT·LAB의 추적된 공개 Compose와 선택된 상속
   설정을 검증합니다. 비밀값을 읽지 않으며 인증·발송·운영 수용을 증명하지 않습니다.

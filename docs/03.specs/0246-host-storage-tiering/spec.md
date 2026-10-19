@@ -1,6 +1,6 @@
 ---
 title: "Host Storage Tiering"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -54,7 +54,7 @@ anything an inventory does not prove unowned.
 | Storage class | Tier | Location | Growth control |
 | --- | --- | --- | --- |
 | Image layers and snapshots | HDD | containerd `root` = `/home/hyunyoun/storage/containerd` | Unused images are archived to the registry, then removed locally |
-| Build cache | HDD (inside the containerd root) | BuildKit | `builder.gc` with `defaultKeepStorage` 10 GB |
+| Build cache | HDD (inside the containerd root) | BuildKit | `builder.gc` with `defaultKeepStorage` 10 GB, which BuildKit applies as a 10 GiB reserved-space floor, not a cap |
 | Container metadata and json-file logs | HDD | Docker `data-root` = `/home/hyunyoun/storage/docker-root/docker` | Shared logging default `max-size` 10m × `max-file` 3 |
 | Service named volumes | HDD | `${DEFAULT_MOUNT_VOLUME_PATH}` subdirectories | Owned by each service |
 | Ollama models | SSD | `${OLLAMA_MODEL_DIR}` (local `.env`) | Model set owned by the AI tier |

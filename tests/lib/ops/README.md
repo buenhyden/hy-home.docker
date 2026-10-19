@@ -1,10 +1,10 @@
 ---
 title: "Operations Library Tests"
-version: "0.1.5"
+version: "0.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-20"
 created: "2026-10-10"
 ---
 
@@ -20,6 +20,8 @@ created: "2026-10-10"
 - `test_compose_core_readiness.py`는 Compose readiness helper를 검증합니다.
 - `test_root_resource_assessment.py`는 P07의 공개 입력 경계·측정 unknown·통제
   불일치와 합성 provenance 거부를 검증합니다. 실제 부하나 HOME 결과는 별도입니다.
+- `test_storage_write_rate.py`는 W7 쓰기율 비교의 24시간 창·재시작·카운터 감소·
+  재부팅·SMART 누락 거부와 t0 호환 집계를 합성 입력으로 검증합니다.
 - `test_wiki_preparation.py`는 P09 준비 계약 helper의 허용·거절 경계를 검증합니다.
 
 - `test_smtp_contract.py`와 `test_smtp_proof.py`는 SMTP 모델·grant·metadata 전환과

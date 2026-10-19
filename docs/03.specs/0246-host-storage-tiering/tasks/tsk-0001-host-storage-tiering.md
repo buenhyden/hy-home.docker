@@ -1,6 +1,6 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -18,8 +18,9 @@ created: "2026-10-16"
 
 ### Objective
 
-Execute W1–W6 of the SPEC-0246 Plan and record who ran each step, the exact
-commands, and the observed results. This Task owns criteria 1–5.
+Execute W1–W7 of the SPEC-0246 Plan and record who ran each step, the exact
+commands, and the observed results. This Task owns criteria 1–6. W7 follows
+W3, and W6 follows W7.
 
 ## Inputs and Authorization
 
@@ -150,6 +151,12 @@ restart, so another OpenBao unseal) and accepting the reserved-space floor.
 On 2026-10-19 the owner accepted the 10 GB reserved-space floor, so the
 cache is bounded by BuildKit's default policies rather than a hard cap.
 
+On 2026-10-20 the agent rechecked the policy read-only: Docker 29.8.2,
+buildx 0.37.1 and BuildKit 0.33.1 on the `docker` driver; rules 1–3 still
+carry `Reserved Space: 10GiB` without `Max Used Space`, and `docker buildx du`
+reports 15.31 GB. The Plan's W2 check now verifies that floor instead of a cap;
+the FAIL row below stays as recorded.
+
 ### Disk load analysis
 
 Observed on 2026-10-19 after 7.3 days of uptime, from `/proc/diskstats`:
@@ -182,6 +189,30 @@ post-move rate is measured directly. The t0 snapshot (`/proc/diskstats` and
 each container's cgroup `wbytes`) was taken at 2026-10-19T23:51:52+09:00 under
 `/home/hyunyoun/storage/ops-snapshots/w7-write-rate-20261019/`; t1 follows 24
 hours later.
+
+### W7 write-rate tooling
+
+`scripts/operations/storage-write-rate.py` takes t1 the same way and compares
+it with t0. The t0 `wbytes` column sums every line of each container's
+cgroup `io.stat`, so dm-0 (`ubuntu--vg-ubuntu--lv`) repeats the SSD line:
+Traefik's t0 value, 12,009,472, is twice its 8:0 line. The tool keeps that
+sum so t0 and t1 compare, and treats store bytes as an upper bound. A window
+under 24 h, a changed StartedAt, a decreased counter, a missing row, or
+missing SMART input defers the store.
+
+A read-only probe at 2026-10-20T03:04:17+09:00 (about 3 h after t0) found all
+five stores with the same StartedAt as t0 and returned `DEFER` for every
+store because the window is under 24 h. t1 is due at
+2026-10-20T23:51:52+09:00:
+
+```bash
+python scripts/operations/storage-write-rate.py collect /home/hyunyoun/storage/ops-snapshots/w7-write-rate-20261019 t1
+python scripts/operations/storage-write-rate.py compare /home/hyunyoun/storage/ops-snapshots/w7-write-rate-20261019 \
+  --smart-used-percent <used> --smart-host-bytes <Total_LBAs_Written × 512>
+```
+
+The owner rereads SMART at t1. A store whose StartedAt changed needs a new
+24-hour window.
 
 ### Ollama 0.40.6 runtime
 
@@ -319,7 +350,7 @@ Digests are shown as their first 12 hexadecimal characters.
 | Image archive | 3 | W4 | Push, stored-digest comparison, local removal | 16 approved candidates | PASS | Work Log: W4 image archive (15 archived, 1 push failure left in place) | required | - |
 | Volume and container cleanup | 3 | W5 | Ownership inventory and removal of unowned items | Host state after W1 | PASS | Work Log: W5 inventory and cleanup (739 removed, 10 kept) | required | - |
 | Registry pin | 4 | W5 | Running image digest equals the Compose pin | Running `registry:3` versus pinned `registry:3.1.2@sha256:ddf754342cfc…` | PASS | Work Log: W5 inventory and cleanup | required | - |
-| Observability store placement | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Disk load analysis | NOT_RUN | Work Log: Disk load analysis | required | - |
+| Observability store placement | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Disk load analysis; t0 at 2026-10-19T23:51:52+09:00, t1 not taken | NOT_RUN | Work Log: Disk load analysis | required | - |
 | Policy promotion | 5 | W6 | Changed metadata and link checks | Operations owner document | NOT_RUN | Work Log | required | - |
 
 ## Criterion Acceptance
@@ -330,8 +361,8 @@ Digests are shown as their first 12 hexadecimal characters.
 | 2 | accepted | Ollama SSD move | Same model list from the SSD path; first load 318.4 s before and 55.9 s after. | SPEC-0246 TSK-0001 |
 | 3 | accepted | Build-cache limit, Build-cache floor decision, Image archive, Volume and container cleanup | Floor accepted, archive digest-verified, and only unowned items removed. | SPEC-0246 TSK-0001 |
 | 4 | accepted | Registry pin | The running image digest equals the Compose pin. | SPEC-0246 TSK-0001 |
-| 5 | pending | Policy promotion | Waits for criteria 1–4 and 6. | SPEC-0246 TSK-0001 |
-| 6 | pending | Observability store placement | Waits for the SMART reading and W3. | SPEC-0246 TSK-0001 |
+| 5 | pending | Policy promotion | Criteria 1–4 are accepted; waits for criterion 6. | SPEC-0246 TSK-0001 |
+| 6 | pending | Observability store placement | SMART t0 is read and W3 is accepted; waits for the 24-hour t1 sample and a decision per store. | SPEC-0246 TSK-0001 |
 
 ## Review and Completion
 
