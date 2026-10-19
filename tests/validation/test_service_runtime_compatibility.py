@@ -370,6 +370,55 @@ class RuntimeCompatibilityTests(unittest.TestCase):
             environment = services[name]["environment"]
             self.assertEqual(300, environment["N8N_RUNNERS_TASK_TIMEOUT"])
             self.assertNotIn("N8N_RUNNER_TASK_TIMEOUT", environment)
+            # n8n 2.x logs "Remove this environment variable; it is no longer needed."
+            self.assertNotIn("N8N_RUNNERS_ENABLED", environment)
+
+    def test_n8n_port_aliases_move_the_listeners_they_advertise(self):
+        source = (N8N / "docker-compose.yml").read_text(encoding="utf-8")
+        for broker, runner in (
+            ("5679", "5680"),
+            ("15679", "5680"),
+            ("5679", "15680"),
+            ("15679", "15680"),
+        ):
+            with self.subTest(broker=broker, runner=runner):
+                values = {"N8N_BROKER_PORT": broker, "N8N_TASK_RUNNER_PORT": runner}
+                rendered = re.sub(
+                    r"(?<!\$)\$\{(\w+):-([^}]*)\}",
+                    lambda match, values=values: values.get(
+                        match.group(1), match.group(2)
+                    ),
+                    source,
+                )
+                services = yaml.safe_load(rendered)["services"]
+                for name in ("n8n", "n8n-worker"):
+                    service = services[name]
+                    self.assertEqual(
+                        broker, str(service["environment"]["N8N_RUNNERS_BROKER_PORT"])
+                    )
+                    self.assertIn(broker, [str(port) for port in service["expose"]])
+                self.assertIn(
+                    f":{broker}/healthz",
+                    " ".join(services["n8n-worker"]["healthcheck"]["test"]),
+                )
+                for name, broker_host in (
+                    ("n8n-task-runner", "n8n"),
+                    ("n8n-task-runner-worker", "n8n-worker"),
+                ):
+                    service = services[name]
+                    environment = service["environment"]
+                    self.assertEqual(
+                        f"http://{broker_host}:{broker}",
+                        environment["N8N_RUNNERS_TASK_BROKER_URI"],
+                    )
+                    self.assertEqual(
+                        runner,
+                        str(environment["N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT"]),
+                    )
+                    self.assertIn(runner, [str(port) for port in service["expose"]])
+                    self.assertIn(
+                        f":{runner}/healthz", " ".join(service["healthcheck"]["test"])
+                    )
 
     def test_n8n_consumes_selected_broker_secret_and_runner_token(self):
         services = compose("infra/07-workflow/n8n/docker-compose.yml")["services"]
