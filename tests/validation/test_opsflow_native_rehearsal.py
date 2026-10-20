@@ -151,14 +151,23 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
         result = self.fixture.exec_result(
             "main", "node", "-e", API_JS, input_=json.dumps(body, separators=(",", ":"))
         )
-        if result.returncode and session:
-            # The session may have ended (for example a main restart).
+        failure = (
+            body_fetch_failure_facts(result, "n8n_api") if result.returncode else None
+        )
+        if (
+            session
+            and failure
+            and failure["kind"] == "http_status"
+            and failure["status"] == 401
+        ):
+            # Only an ended session (for example after a main restart) logs in
+            # again; any other failure is raised, never retried.
             self._session = None
+            receipt = self.fixture.receipt
+            receipt["n8n_session_relogins"] = receipt.get("n8n_session_relogins", 0) + 1
             return self.api(action, **payload)
-        if result.returncode:
-            self.fixture.receipt["last_body_fetch_failure"] = body_fetch_failure_facts(
-                result, "n8n_api"
-            )
+        if failure:
+            self.fixture.receipt["last_body_fetch_failure"] = failure
             raise RehearsalFailure("n8n REST operation failed (payload withheld)")
         try:
             out = json.loads(result.stdout)

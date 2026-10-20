@@ -60,8 +60,7 @@ from tests.validation.test_datastore_rehearsal_boundary import DockerClientBound
 
 # Generation 1 and the restore took about 660 s on 2026-10-20 (SPEC-0204
 # TSK-0019), and a 13-minute limit expired during generation 2's main start.
-# Generation 2 repeats the main, worker and runner starts and the rest of the
-# scenario; its remaining time is not yet measured.
+# The first full pass took 864 s, about 0.58 of this limit.
 WORK_SECONDS = 25 * 60
 
 
@@ -94,7 +93,7 @@ class NativeFixture:
         )
         self.dir_identity: tuple[int, int] | None = None
         self.files: dict[Path, native.PrivateFile] = {}
-        self.mailpit_dirs: list[Path] = []
+        self.mailpit_dirs: dict[Path, tuple[int, int]] = {}
         self.dumps: dict[str, Path] = {}
         self.dump_receipts: dict[str, dict[str, object]] = {}
         self.runtime_images: dict[str, str] = {}
@@ -655,7 +654,8 @@ class NativeFixture:
             raise RehearsalFailure("Mailpit store owner must match its container user")
         data = self.directory / f"mailpit-data-{self.generation}"
         data.mkdir(mode=0o700)
-        self.mailpit_dirs.append(data)
+        created = data.stat(follow_symlinks=False)
+        self.mailpit_dirs[data] = (created.st_dev, created.st_ino)
         self.create("mailpit", MAILPIT_REF, "1000:1000", ("capture",), env=("MP_DATABASE=/data/mailpit.db", "MP_UI_BIND_ADDR=0.0.0.0:8025", "MP_SMTP_BIND_ADDR=0.0.0.0:1025", "MP_MAX_MESSAGES=32"), mounts=(bind_mount(data, "/data", readonly=False),))
         self.start("mailpit")
     def _n8n_env(self) -> tuple[str, ...]:
@@ -809,8 +809,14 @@ class NativeFixture:
                 raise RehearsalFailure("owned host file metadata changed")
             path.unlink()
             self.files.pop(path, None)
-        for data in tuple(self.mailpit_dirs):
-            if data.exists():
+        for data, identity in tuple(self.mailpit_dirs.items()):
+            if os.path.lexists(data):
+                metadata = data.stat(follow_symlinks=False)
+                if (
+                    not stat.S_ISDIR(metadata.st_mode)
+                    or (metadata.st_dev, metadata.st_ino) != identity
+                ):
+                    raise RehearsalFailure("owned Mailpit store metadata changed")
                 for item in data.iterdir():
                     metadata = item.stat(follow_symlinks=False)
                     if (
@@ -821,7 +827,7 @@ class NativeFixture:
                         raise RehearsalFailure("owned Mailpit store metadata changed")
                     item.unlink()
                 data.rmdir()
-            self.mailpit_dirs.remove(data)
+            self.mailpit_dirs.pop(data)
         config = self.directory / "docker-config"
         if config.exists() and not any(config.iterdir()):
             config.rmdir()
