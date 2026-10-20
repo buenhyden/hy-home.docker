@@ -1,6 +1,6 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -232,6 +232,15 @@ python3 scripts/operations/storage-write-rate.py compare /home/hyunyoun/storage/
   --smart-used-percent <used> --smart-host-bytes <Total_LBAs_Written × 512>
 ```
 
+The owner read SMART at about 06:30 on 2026-10-21, about 35 minutes after t1:
+`Percent_Lifetime_Remain` 24 used, `Total_LBAs_Written` 81,875,803,541
+(41,920,411,412,992 bytes; 110,809,312 LBAs, about 56.7 GB, since 2026-10-19).
+With these values the comparison gives an SSD baseline of 8.09 years and
+Loki `ELIGIBLE`: 2,201,448,448 bytes in the window, about 1.76 GB a day
+(an upper bound), and 7.78 years with Loki on the SSD, inside the five-year
+budget. That is eligibility only; the move itself is a separate owner
+decision. Alloy, Prometheus, Pyroscope and Tempo wait for the second window.
+
 ### Ollama 0.40.6 runtime
 
 SEC01 TSK-0009 owns the 0.40.6 pin (PR #516). On 2026-10-19 a
@@ -368,7 +377,7 @@ Digests are shown as their first 12 hexadecimal characters.
 | Image archive | 3 | W4 | Push, stored-digest comparison, local removal | 16 approved candidates | PASS | Work Log: W4 image archive (15 archived, 1 push failure left in place) | required | - |
 | Volume and container cleanup | 3 | W5 | Ownership inventory and removal of unowned items | Host state after W1 | PASS | Work Log: W5 inventory and cleanup (739 removed, 10 kept) | required | - |
 | Registry pin | 4 | W5 | Running image digest equals the Compose pin | Running `registry:3` versus pinned `registry:3.1.2@sha256:ddf754342cfc…` | PASS | Work Log: W5 inventory and cleanup | required | - |
-| Observability store placement | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Disk load analysis; first window (t0 2026-10-19T23:51:52, t1 2026-10-21T05:56:08) all stores DEFER; second window t0 2026-10-21T05:56:40 | NOT_RUN | Work Log: Disk load analysis | required | - |
+| Observability store placement | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Disk load analysis; first window (t0 2026-10-19T23:51:52, t1 2026-10-21T05:56:08) Loki ELIGIBLE with SMART (7.78 years), four stores DEFER; second window t0 2026-10-21T05:56:40 | NOT_RUN | Work Log: Disk load analysis | required | - |
 | Policy promotion | 5 | W6 | Changed metadata and link checks | Operations owner document | NOT_RUN | Work Log | required | - |
 
 ## Criterion Acceptance
