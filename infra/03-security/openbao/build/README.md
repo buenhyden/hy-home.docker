@@ -11,9 +11,9 @@ updated: "2026-10-14"
 
 ## Overview
 
-OpenBao 2.7.1의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.2, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
+OpenBao 2.7.1의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.3, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
 `golang.org/x/net` 0.60.0 및 그 모듈 그래프가 요구하는 일곱 버전을 사용합니다. <!-- runtime-version-exception: migration — 검토된 build packet의 고정 module migration material이며 build-inputs.json이 pin을 소유함 -->
-결과 버전은 `2.7.1+hyhome.go1.27.2.net0.60.0.r1`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
+결과 버전은 `2.7.1+hyhome.go1.27.3.net0.60.0.r1`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
 서명된 이미지가 아닙니다. 다른 의존성의 취약점 해결을 보장하지 않습니다.
 
 ## Audience

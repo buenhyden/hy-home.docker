@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "version": "2.7.1+hyhome.go1.27.2.net0.60.0.r1",
-  "tag": "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1",
+  "version": "2.7.1+hyhome.go1.27.3.net0.60.0.r1",
+  "tag": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1",
   "upstream_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
   "commit_date": "2026-10-01T13:32:54Z",
   "source_date_epoch": 1790861574,
   "source_archive_sha256": "6da0c07e61d8dfd2ab72ad47cb96691fb7abfecd460a55272545346575c37711",
   "source_archive_url": "https://github.com/openbao/openbao/releases/download/v2.7.1/openbao-dist-v2.7.1.tar.xz",
-  "builder": "cgr.dev/chainguard/go@sha256:69e74b89b97ff9775b9e2f7d235e65273556c88b814d3178a13acff8780aa940",
-  "builder_index": "sha256:9540b140744c9f17f0752d19374fa4b26fd27fc79f3c07fc4cd2307187d9ada5",
-  "builder_version": "go1.27.2",
+  "builder": "cgr.dev/chainguard/go@sha256:0c664830ca01dbc9fb797ec3b815ac73ba0a3c9faa42dfe5ad55ab7dc48e66a4",
+  "builder_index": "sha256:79d209c423918068c0cc6061b8452468fad709e1dfdaddbf7be4562aa09bb2c4",
+  "builder_version": "go1.27.3",
   "runtime": "docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395",
   "alpine_key_url": "https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub",
   "alpine_key_sha256": "207e4696d3c05f7cb05966aee557307151f1f00217af4143c1bcaf33b8df733f",
@@ -18,7 +18,7 @@
     "community": "470ddcef361c5a75a1ea21a5fb200f4d479c90242f4c4d44e5281f832af22606"
   },
   "go_patch_sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8",
-  "recipe_sha256": "419dc5d8aba3c099187cab6f72027ca37b951ed4c85d90552cf80090030e6804",
+  "recipe_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
   "modules": {
     "golang.org/x/crypto": "v0.57.0",
     "golang.org/x/mod": "v0.41.0",
@@ -41,7 +41,7 @@
     "zlib": "1.3.2-r1"
   },
   "publisher_receipts": {
-    "builder": "8c8aa261d1605c9541ca2bf5ef55928f04ff6b0375987b5b9c671936a177e440",
+    "builder": "e3eebb04705d6fd3c55ac5f53e437eee76e4b3512e3d8b82eff5835c9bb7eb4e",
     "source_checksums": "3def5c01218790982e65726652945e0ea7ad0e77220cf1a71a728970a6f247f3"
   },
   "boundary": {

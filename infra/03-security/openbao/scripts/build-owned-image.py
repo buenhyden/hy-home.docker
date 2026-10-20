@@ -465,13 +465,13 @@ def build_inputs(build: Path) -> dict:
     inputs = decode_json(read_regular(build / "build-inputs.json", 65536, source=True))
     expected = {
         "schema_version": 1,
-        "builder_version": "go1.27.2",
-        "version": "2.7.1+hyhome.go1.27.2.net0.60.0.r1",
+        "builder_version": "go1.27.3",
+        "version": "2.7.1+hyhome.go1.27.3.net0.60.0.r1",
         "upstream_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
         "source_archive_sha256": "6da0c07e61d8dfd2ab72ad47cb96691fb7abfecd460a55272545346575c37711",
-        "builder": "cgr.dev/chainguard/go@sha256:69e74b89b97ff9775b9e2f7d235e65273556c88b814d3178a13acff8780aa940",
+        "builder": "cgr.dev/chainguard/go@sha256:0c664830ca01dbc9fb797ec3b815ac73ba0a3c9faa42dfe5ad55ab7dc48e66a4",
         "runtime": "docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395",
-        "tag": "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1",
+        "tag": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1",
         "commit_date": "2026-10-01T13:32:54Z",
         "source_date_epoch": 1790861574,
     }
@@ -495,7 +495,7 @@ def compile_command(inputs: dict) -> str:
         f"-X {namespace}{key}={value}"
         for key, value in (
             ("fullVersion", "2.7.1"),
-            ("VersionMetadata", "hyhome.go1.27.2.net0.60.0.r1"),
+            ("VersionMetadata", "hyhome.go1.27.3.net0.60.0.r1"),
             ("GitCommit", inputs["upstream_commit"]),
             ("CommitDate", inputs["commit_date"]),
         )
@@ -527,7 +527,7 @@ def verify_binary(path: Path, information: Path, inputs: dict) -> str:
     ):
         raise Blocked("binary-interpreter-or-header")
     info = read_regular(information, 1024**2, source=True).decode()
-    if not info.splitlines()[0].endswith("go1.27.2"):
+    if not info.splitlines()[0].endswith("go1.27.3"):
         raise Blocked("binary-compiler-version")
     selected = {
         parts[1]: parts[2]

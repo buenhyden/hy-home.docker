@@ -411,7 +411,7 @@ class PipelineProof(unittest.TestCase):
         raw[54:56] = (56).to_bytes(2, "little")
         (output / "bao").write_bytes(raw)
         (output / "build-info.txt").write_text(
-            "/out/bao: go1.27.2\n\tdep\tgolang.org/x/net\tv0.60.0\n"
+            "/out/bao: go1.27.3\n\tdep\tgolang.org/x/net\tv0.60.0\n"
         )
         return hashlib.sha256(raw).hexdigest()
 
