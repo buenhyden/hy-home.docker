@@ -2162,6 +2162,45 @@ it again whatever step the work stops at. Restarting the timer is an owner sudo
 action, and with `Persistent=true` it starts a missed run at once. Neither was
 done here, and the cause of the 2026-10-14 exit 1 is not established.
 
+### Backup timer restart and Valkey child reaping — 2026-10-20
+
+The owner started `hyhome-backup.timer` at 11:30:28 +09:00 and the missed run
+began at once. It ended at 11:50:47 with exit 1 again, so
+`hyhome_backup_last_success_timestamp_seconds` still reads 2026-10-09. The
+local Restic backup and check, the R2 copy (state snapshot `152522c1`,
+5.223 GiB; host `99a33d4c`) and the SQLite exports all succeeded. The two
+failures the script printed were `mng-valkey RDB export failed or timed out`
+and `dev-valkey RDB export failed or timed out`. The state repository ended at
+9,824 MiB against its 8 GiB budget and the R2 repository at 9,347,776,895
+bytes; the budget is checked before the backup, so it did not fail this run,
+but the next run will skip Restic while the state repository stays over 8 GiB.
+
+Earlier runs fail for different reasons: 2026-10-11 and 10-12 printed the same
+two RDB failures, while 2026-10-10, 10-13 and 10-14 printed no failure line
+before exit 1. Some steps set `status=1` without a message, so those causes are
+still unknown.
+
+The RDB failures come from Valkey, not from the script. On both instances the
+replica sync request logged `Delay next BGSAVE for diskless SYNC` and no save
+followed until the 300-second limit dropped the connection. Both run
+`valkey/valkey:9.1.2-alpine` and restarted on 2026-10-16 13:54 UTC.
+mng-valkey last saved at 2026-10-16 23:35:43 UTC (`LASTSAVE`), with 123,383
+changes pending against a `300 100` save rule; dev-valkey last saved at
+14:09:43 UTC. The mng-valkey AOF is 327,825,877 bytes against a 1,291,805-byte
+base, with no rewrite started. A single manual `BGSAVE` on dev-valkey started a
+child that wrote the RDB and exited, but the parent never reaped it: the child
+stayed a zombie and `rdb_bgsave_in_progress` stayed 1. Valkey reaps children and
+schedules saves, rewrites and diskless sync from its periodic task, so that task
+appears to have stopped while commands are still served. A search found no
+matching upstream report.
+
+Consequences and limits: dev-valkey now holds that zombie and reports a save in
+progress, so further `BGSAVE` there is refused until the process restarts. No
+Valkey was restarted. A restart clears the state but replays the 328 MB AOF and
+interrupts the n8n and Airflow queues on mng-valkey, so it needs the owner's
+approval. The state repository budget also needs an owner decision (raise the
+budget or prune by RUN-0021 8.5) before the next 03:30 run.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
