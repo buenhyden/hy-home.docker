@@ -66,7 +66,8 @@ class CapRehearsalTests(unittest.TestCase):
         for name in ("secrets", "r2", "repo", "bin", "data"):
             (self.work / name).mkdir()
         for name in SECRETS:
-            (self.work / "secrets" / name).write_text("synthetic-" + name)
+            # Random throwaway values, not derived from the secret's name.
+            (self.work / "secrets" / name).write_text(os.urandom(16).hex())
         wrapper = self.work / "bin/restic"
         wrapper.write_text(
             "#!/bin/sh\n"
