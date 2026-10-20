@@ -71,7 +71,13 @@ class RehearsalFailure(AssertionError):
 
 class NativeDockerBoundary(DockerClientBoundary):
     def _remaining_timeout(self) -> float:
-        return min(super()._remaining_timeout(), 60.0)
+        timeout = min(super()._remaining_timeout(), 60.0)
+        if self.cleanup_deadline is None:
+            return timeout
+        # `docker rm -f -v` of a running container took 3.9 s (median) and
+        # 6.1 s (max) on this host (2026-10-20), over the shared 2.4 s cleanup
+        # call limit; every removal then read as unknown.
+        return min(10.0, self.cleanup_deadline - time.monotonic())
 
 
 class NativeFixture:

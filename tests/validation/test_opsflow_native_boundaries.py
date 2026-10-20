@@ -646,7 +646,8 @@ class NativeGuardTests(unittest.TestCase):
             mock.patch.object(
                 ownership.time,
                 "monotonic",
-                side_effect=[0.0, 0.0, 5.0, 5.0],
+                # The absence wait spans 15 s (wait_container_absent).
+                side_effect=[0.0, 0.0, 15.0, 15.0],
             ),
             mock.patch.object(ownership.time, "sleep"),
             self.assertRaises(RehearsalFailure),
