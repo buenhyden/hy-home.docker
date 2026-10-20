@@ -223,6 +223,24 @@ def exclusive_json(path, document):
     return _public_materials().exclusive_json(path, document)
 
 
+def scratch_bytes(root: Path) -> int:
+    """Bytes of regular files under root while a build writes there.
+
+    The compile adds and deletes Go cache files during the walk, so a file
+    or directory that vanishes between listing and lstat is skipped.
+    """
+    total = 0
+    for directory, _, files in os.walk(root):
+        for name in files:
+            try:
+                info = os.lstat(os.path.join(directory, name))
+            except FileNotFoundError:
+                continue
+            if stat.S_ISREG(info.st_mode):
+                total += info.st_size
+    return total
+
+
 def current_packet(repository: Path) -> str:
     package = "infra/03-security/openbao/"
     names = [package + "scripts/build-owned-image.py"] + [
@@ -416,11 +434,7 @@ class LocalDocker:
         )
         try:
             while process.poll() is None:
-                used = sum(
-                    path.lstat().st_size
-                    for path in self.directory.rglob("*")
-                    if path.is_file() and not path.is_symlink()
-                )
+                used = scratch_bytes(self.directory)
                 if (
                     time.monotonic() - started > timeout
                     or used > 16 * 1024**3

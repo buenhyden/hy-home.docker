@@ -74,6 +74,23 @@ class MaterialGuards(unittest.TestCase):
 
 
 class ExecutionGuards(unittest.TestCase):
+    def test_scratch_budget_skips_files_the_build_removes_mid_walk(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "cache").mkdir()
+            (root / "kept").write_bytes(b"x" * 10)
+            (root / "cache/gone").write_bytes(b"y" * 5)
+            (root / "link").symlink_to(root / "kept")
+            real = os.lstat
+
+            def vanishing(path, *args, **kwargs):
+                if str(path).endswith("gone"):
+                    raise FileNotFoundError(path)
+                return real(path, *args, **kwargs)
+
+            with mock.patch.object(builder.os, "lstat", vanishing):
+                self.assertEqual(10, builder.scratch_bytes(root))
+
     def test_compile_caps_are_real_and_swap_total_equals_memory(self):
         args = builder.container_limits("compile")
         for flag, value in (
@@ -433,11 +450,15 @@ class PipelineProof(unittest.TestCase):
         args = docker.container.call_args.args
         self.assertTrue(all(row[2] for row in args[4][:2]))
         self.assertEqual("off", args[5]["GOPROXY"])
-        (self.root / "pass/build-info.txt").write_text("/out/bao: go1.27.1\n")
-        with self.assertRaises(builder.Blocked):
-            builder.verify_binary(
-                self.root / "pass/bao", self.root / "pass/build-info.txt", self.inputs
-            )
+        # go1.27.2 lacks the CVE-2026-111943 crypto/x509 fix.
+        for old in ("go1.27.1", "go1.27.2"):
+            (self.root / "pass/build-info.txt").write_text(f"/out/bao: {old}\n")
+            with self.subTest(go=old), self.assertRaises(builder.Blocked):
+                builder.verify_binary(
+                    self.root / "pass/bao",
+                    self.root / "pass/build-info.txt",
+                    self.inputs,
+                )
 
     def test_go_workspace_uses_fresh_directory_on_existing_writable_cache_mount(self):
         docker = mock.Mock()
