@@ -1,6 +1,6 @@
 ---
 title: "Relay Controller and Locust Lifecycle Task"
-version: "0.3.2"
+version: "0.3.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -326,6 +326,44 @@ Per consumer:
 | Pact Broker, SonarQube | Not applicable | No script, workflow or project in this repository consumes them; they run only when an operator starts their profiles |
 | Mailpit (HOME, running) | NOT_RUN | Its message store is shared by HOME senders; deleting messages beyond a test's own would reset a shared asset |
 | Locust | Not applicable | LAB runtime is excluded |
+
+### Remaining reload consumers — 2026-10-20
+
+The owner asked for the three `NOT_RUN` consumers above to be reviewed and
+run ("The Quality items still NOT_RUN 검토후 진행").
+
+WireMock function mode. Two cycles, each with a new internal network and a
+new container from `sha256:f8c42a38…0e147` with the tracked `mappings/` and
+`__files/` read-only and the Compose command (`--max-request-journal-entries
+1000`). Each cycle: `DELETE /__admin/requests` 200, stub `GET /hyhome/ping`
+200 with `{"stub":"wiremock"}`, journal total 1, `DELETE /__admin/requests`,
+journal total 0, `POST /__admin/reset`, mappings total 1 (the tracked file),
+the stub still 200, then stop and network removal. Labelled containers and
+networks were 0/0 before and after both cycles. Both cycles gave identical
+results. PASS.
+
+Mailpit (HOME, shared). Only this run's messages were touched. Each cycle
+sent one message over SMTP to `mailpit:1025` with subject
+`mpreload-<run>-<cycle>`, found it through `/api/v1/search`, deleted it by its
+ID with `DELETE /api/v1/messages`, and checked the search and the total
+again. Both cycles: total before 0, one message found, delete 200, search
+total 0 and total after 0. No other message existed or was deleted. PASS.
+
+`quality-metrics/acceptance.py` (OTLP relay). Two problems surfaced before the
+two cycles could pass. `TAGS["alloy"]` still named `grafana/alloy:v1.19.2`,
+while Compose pins v1.20.1, so the cached-digest check compared the run with a
+superseded image; it now names the Compose pin, tag and digest, as
+`TAGS["prom"]` already did. After `compose up` the harness slept a fixed 3 s
+before its first send, and two runs on the loaded host failed with
+`Connection refused`. It now waits up to 60 s for a TCP connection to the
+receiver its config actually uses (the authenticated `quality` receiver on
+4319) and to Prometheus. The probe sends no payload, so no delta is counted
+twice. A first version probed 4318 and timed out on every run. With
+Alloy `sha256:2aa2099a…`, Prometheus `sha256:efd719c9…` and Python
+`sha256:79e7a9b9…`, both cycles exited 0 with the same 21 `PASS` lines
+(identical MD5 over the PASS lines) and `PASS exact owned cleanup`. PASS.
+
+All three earlier `NOT_RUN` consumers have now repeated with matching results.
 
 ### Review
 
