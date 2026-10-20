@@ -2736,8 +2736,8 @@
     "checked_at": "2026-10-15T16:35:15.922344+00:00",
     "source_binding": {
       "checked_at": "2026-10-20T13:10:00+00:00",
-      "source_revision": "c20ccb36e2c46273d069fd1da572d6928158963a",
-      "source_state": "Compose and binding-test change on fix/n8n-runner-port-aliases on top of this main revision; image build inputs equal the previous binding",
+      "source_revision": "3679fbd41720f2d13ab8682ceeac96d8d602a16a",
+      "source_state": "binding-test change on fix/review-followups-522-526 on top of this main revision, which carries the PR #522 Compose change; image build inputs equal the previous binding",
       "input_sha256": "4730553866b6e24af9fa4f8f6fdfb62d5f53b9021a8d0b5ec4159951a03149b3",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [

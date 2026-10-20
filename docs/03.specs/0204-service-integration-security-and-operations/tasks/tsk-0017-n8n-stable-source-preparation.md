@@ -406,13 +406,14 @@ approve with notes.
 
 | Finding | Severity | Resolution |
 | --- | --- | --- |
-| The binding's `source_revision` named a commit that the rebase removed | Medium | It now names the main revision `c20ccb36e` the change sits on, as the earlier bindings do |
+| The binding's `source_revision` named a commit that the rebase removed | Medium | It now names main revision `3679fbd41`, which carries the merged Compose change, as the earlier bindings name a main revision |
 | `build-inputs.json` kept the `03892eb1…` binding as current | Medium | The binding and its archived predecessor are mirrored there; the test now requires both files to match |
 | No test recomputed the aggregate `input_sha256` | Low | The test recomputes it with the recorded algorithm. The test is itself a bound input, so the binding is now `47305538…`; `2fee9f27…` was recomputed and matched before the test change, and never reached main |
 | `include_inputs` kept the old n8n Compose hash | Low | Refreshed; it was the only one of 44 rows that was stale |
 | `n8n-worker` exposes `${N8N_PORT:-5678}`, but nothing listens there | Low | Not changed here; this was already the case on main. Recorded as a follow-up |
 
-This was a self-requested subagent review, not owner review.
+This was a self-requested subagent review, not owner review. PR #522 was merged
+before these fixes were pushed, so they follow in a separate PR.
 
 ## Evidence
 
