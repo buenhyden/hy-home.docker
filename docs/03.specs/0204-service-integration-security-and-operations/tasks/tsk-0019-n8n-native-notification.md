@@ -1,8 +1,8 @@
 ---
 title: "n8n Native Notification Rehearsal Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
-status: "blocked"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-20"
 layer: "specs"
@@ -774,6 +774,7 @@ Local `/tmp` receipts have no durability guarantee. This later cleanup does not 
 | SPEC-0204-TSK-0019 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0019 | ready | in-progress | #w74-source-and-execution-boundary |
 | SPEC-0204-TSK-0019 | in-progress | blocked | #review-and-completion |
+| SPEC-0204-TSK-0019 | blocked | in-progress | #w74-native-rerun-2026-10-20 |
 
 ### Fixture runner switch removal — 2026-10-20
 
@@ -845,6 +846,55 @@ and the second main start is about 500 s of waiting, which leaves under
 so the deadline is a recorded risk. Docker-free suites
 (`test_opsflow_native_boundaries`, `_evidence`, `_health_probe`, `_rehearsal`): OK, 1 skipped.
 
+### W74 native rerun — 2026-10-20
+
+The owner asked for the blocker to be resolved and approved the reruns
+("점검후 수행하여 Blocked 해결한다"). The registered selector
+`tests.validation.test_opsflow_native_rehearsal.OpsflowN8nNativeRehearsal` ran
+from this worktree with `OPSFLOW_N8N_NATIVE_REHEARSAL=1`, the V16 image
+`1fda18a5…` and context `default`. Each attempt stopped at one step that no
+earlier attempt had reached. Each fix changed only the fixture, and the next
+attempt confirmed it. Every attempt's stdout, stderr and host directory are
+retained under `/home/hyunyoun/storage/ops-snapshots/w74-attempt-*/` with
+`SHA256SUMS`.
+
+| Attempt | Stopped at | Cause | Fixture fix |
+| --- | --- | --- | --- |
+| 1 | Host guard | The retained TSK-0020 barrier matches the stale-attempt glob | Owner-approved custody move (TSK-0020) |
+| 2 | Runner create, `metadata changed: image` | With the containerd image store a container's `Image` is the pinned index digest | `RUNNER_RUNTIME_IDS` accepts the config or the index digest of the same pin |
+| 3 | `await_execution`, HTTP 429 | Every call logged in again; `/rest/login` allows 5 per minute per email | One login per session, with one fresh-login retry |
+| 4 | Outbox lease audit, `psql` failed | `opsflow_reader` may read only `delivery_status` and `published_documents` | That assertion runs as the fixture superuser; the reader is not widened |
+| 5 | Capture after a Mailpit restart, `1 != 0` | Mailpit's `/data` was a tmpfs, which Docker clears on stop | An owned bind per generation; cleanup removes only its `mailpit.db*` files |
+| 6 | `validate_dump`, metadata rejected | Dumps are created 0640 (the foreign-file contract); the check required 0600 | The check requires 0640 |
+| 7 | Roles restore errors rejected | `psql -f <file>` labels errors with the path; the matcher reads `psql:<stdin>:N:` | `psql -f -` on stdin, as in the database rehearsal |
+| 8 | Deadline expired in generation 2 | Generation 1 and the restore took about 660 s of the 13-minute budget | 25-minute work deadline |
+| 9 | `native=PASS`, cleanup `FAIL` | `docker rm -f -v` took 3.9 s median and 6.1 s max, over the 2.4 s cleanup call limit | 10 s cleanup calls and a 15 s absence wait in the native boundary |
+
+Attempt 10, `opsflow-native-a9076a87295ba1ce557e5898`, 19:09:48–19:24:12
++09:00: unittest `OK` in 864.4 s; `native` `PASS`; `cleanup` `PASS`. Every
+role, including both generations, reported `exact_absent`, with no residual
+container, network or host directory. Six executions reached a terminal state
+across the queue, runner, SMTP capture, the unknown outcome, reconciliation,
+restore and restart. Its receipt is in
+`w74-attempt-pass-a9076a87295ba1ce557e5898/` (`run.stdout` `d68b7876…`,
+`run.stderr` `43f5c688…`). All of this is the isolated synthetic fixture; HOME
+deployment, real SMTP delivery and exactly-once delivery are not shown by it.
+
+An independent `code-reviewer` reviewed the step fixes (`2c4ef079b`,
+`2ba2f00e4`): APPROVE WITH NOTES, with no weakened permission, secret or
+cleanup boundary and no fix that belongs in product source. Its Important note
+was that the session retry fired on any failure and left no trace. Now only a
+401 logs in again, and `n8n_session_relogins` counts it. Applied minor notes:
+the Mailpit store directory's identity is pinned before cleanup, unit tests
+cover the retry, the runner identities and the Mailpit refusal paths, and the
+deadline comment gives the measured run time (`aaa5f4ff6`).
+
+Attempt 11, `opsflow-native-d4d77ba49bd1026ff4c1557d`, on that final source,
+19:37:37–19:52:26 +09:00: unittest `OK` in 888.8 s; `native` `PASS`;
+`cleanup` `PASS`. Every role reported `exact_absent`, no re-login happened,
+and six executions reached a terminal state. The receipt is in
+`w74-attempt-pass-d4d77ba49bd1026ff4c1557d/` (`SHA256SUMS`).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -864,13 +914,15 @@ Runtime work is blocked: V16 proved liveness 200 and readiness 503, while the fa
 
 PR #509 landed the draft baseline, so the stated chain now applies and the current status is `blocked`. The blocker, owner and resume condition are the ones stated above.
 
-2026-10-20 update. A source cause fix exists (above), with retained
-reproduction evidence at the fixture caps. That evidence is not V16's own;
-whether it meets "exact protected startup-stage/predicate evidence" is the
-owner's call, and the owner asked for the blocker to be resolved. An
-independent `code-reviewer` first returned REQUEST CHANGES; after the changes,
-its re-review at `6e5c76cdc` returned APPROVE WITH NOTES. Still open: the
-native rerun in an approved slot. Until it passes, the status stays `blocked`.
+2026-10-20 update. A source cause fix exists for the readiness blocker, with
+retained reproduction evidence at the fixture caps; that evidence is not
+V16's own, and the owner asked for the blocker to be resolved. An independent
+`code-reviewer` first returned REQUEST CHANGES; its re-review at `6e5c76cdc`
+returned APPROVE WITH NOTES. In the approved native reruns, attempt 10 passed
+with clean cleanup (above), so the blocker is cleared and the status returns
+to `in-progress`. The step fixes were reviewed independently (APPROVE WITH
+NOTES, notes applied), and attempt 11 passed on the final source. Still open:
+the owner's acceptance of this Task's criteria.
 
 ## Related Documents
 
