@@ -1,6 +1,6 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.8"
+version: "0.2.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -882,6 +882,26 @@ loads without 429, one over-limit probe returning 429 and recovering); the
 two Storybook routers name the limiter twice, which is redundant but harmless;
 `grafana-static` has no middleware and stays outside the limiter, as recorded
 in the auth integration guide.
+
+HOME check after PR #520 merged (`main` `dda746b31`, HOME checkout
+fast-forwarded at 10:09:15 +09:00). Traefik watches the bound `dynamic/`
+directory and reloaded without a restart. During the reload it logged 33
+`middleware ... does not exist` errors in the same second, while the files
+were being replaced, and none afterwards; `gateway-standard-chain` then held
+`req-rate-limit`. Results from the host through `192.168.0.13:443`:
+
+| Probe | Result |
+| --- | --- |
+| `chat` (Open WebUI), 150 parallel requests | 150 × 200 |
+| `mailpit-ui`, 400 parallel requests | 349 × 302 (SSO redirect), 51 × 429 |
+| `mailpit-ui` 2.5 s later, 150 requests | 150 × 302 |
+| `chat` afterwards, 20 requests | 20 × 200 |
+
+More requests passed than in the isolated rehearsal (222 of 400) because TLS
+handshakes spread the arrivals over about a second, during which the bucket
+refilled. The over-limit probe used `mailpit-ui`, a low-traffic router,
+because host and LAN clients share one bucket per router through
+docker-proxy. HOME rate-limit status: PASS.
 
 ## Evidence
 
