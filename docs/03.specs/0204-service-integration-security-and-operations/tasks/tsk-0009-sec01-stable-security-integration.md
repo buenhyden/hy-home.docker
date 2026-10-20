@@ -2277,10 +2277,13 @@ clean runs.
   `KeyCount` 0 for the bucket root and for `keys/`, `snapshots/`, `index/`
   and `data/`. The token authenticates and the bucket `hyhome-restic` is
   empty, so the 9.35 GB copied at 11:50, including objects meant to sit under
-  the 30-day bucket lock, is gone. There is no offsite copy now. Whether the
-  objects were deleted, a rule removed them or the bucket was recreated is not
-  established; the owner decides between investigating and initializing a new
-  repository (RUN-0021 8.1). Nothing was written to R2.
+  the 30-day bucket lock, is gone. There is no offsite copy now. The owner
+  then stated that they deleted everything in `hyhome-restic` because it looked
+  likely to pass 10 GB ("CloudFlare의 hyhome-restic은 10GB를 넘을 것 같아서 내가
+  전부 삭제했다"). So the bucket lock did not stop an owner deletion, and the
+  lock gives no protection against it. A new repository needs `init` and a
+  first `copy` (RUN-0021 8.1), which wait for the owner. Nothing was written
+  to R2.
 
 The change (PR #528):
 
