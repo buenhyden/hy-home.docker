@@ -2735,10 +2735,10 @@
     "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
     "checked_at": "2026-10-15T16:35:15.922344+00:00",
     "source_binding": {
-      "checked_at": "2026-10-15T16:35:15.922344+00:00",
-      "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
-      "source_state": "uncommitted frozen actual-loader peer-resolution correction; native rebuild pending",
-      "input_sha256": "03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985",
+      "checked_at": "2026-10-20T13:10:00+00:00",
+      "source_revision": "c20ccb36e2c46273d069fd1da572d6928158963a",
+      "source_state": "Compose and binding-test change on fix/n8n-runner-port-aliases on top of this main revision; image build inputs equal the previous binding",
+      "input_sha256": "4730553866b6e24af9fa4f8f6fdfb62d5f53b9021a8d0b5ec4159951a03149b3",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -2755,7 +2755,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "5a440a47f172c8280e89df781cc9cdd3ce735d57e8526e01723760edb8b99825"
+          "sha256": "b4ebb85352e9321917f4f50d8d9f777365f9812b685478ce18fcec255e094dac"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -2803,7 +2803,7 @@
         },
         {
           "path": "tests/validation/test_workflow_version_bundle.py",
-          "sha256": "97f8376392cbc2bc6521246b82d4be955d39deb683128ba64fc0207aa819faff"
+          "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
       "meaning": "n8n Compose/build/COPY inputs and custom-node/version unit tests only. Does not bind P05 SQL/provisioning/full native acceptance.",
@@ -2897,6 +2897,89 @@
           "recovery": "NOT_RUN"
         },
         "reason": "Superseded loader source; historical tests do not attest the new image."
+      },
+      {
+        "archived_at": "2026-10-20T00:31:32.539912+00:00",
+        "source_binding": {
+          "checked_at": "2026-10-15T16:35:15.922344+00:00",
+          "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
+          "source_state": "uncommitted frozen actual-loader peer-resolution correction; native rebuild pending",
+          "input_sha256": "03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "5a440a47f172c8280e89df781cc9cdd3ce735d57e8526e01723760edb8b99825"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "97f8376392cbc2bc6521246b82d4be955d39deb683128ba64fc0207aa819faff"
+            }
+          ],
+          "meaning": "n8n Compose/build/COPY inputs and custom-node/version unit tests only. Does not bind P05 SQL/provisioning/full native acceptance.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        },
+        "reason": "Superseded by the n8n Compose runner-listener aliases, the removed N8N_RUNNERS_ENABLED and the read-only custom bind (SPEC-0204-TSK-0017, 2026-10-20). Image build inputs are unchanged; no new native acceptance inferred."
       }
     ],
     "isolated_candidate_build_and_module_smoke": {
