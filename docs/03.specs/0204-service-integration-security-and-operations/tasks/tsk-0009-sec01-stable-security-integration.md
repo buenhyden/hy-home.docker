@@ -2071,10 +2071,14 @@ Problems in this rollout:
 - **Pyroscope ingestion stopped for about 23 minutes**, because the 4.1 GB copy
   of many small files on the HDD took 21 minutes. A live copy with a short
   final stop would be shorter next time.
-- **Pyroscope logs `compaction-worker … no block metadata found; skipping`**
-  about 12 times a minute after the upgrade, and logged `empty ring` errors in
-  its first seconds. Whether 2.3.1 logged the same cannot be checked: Loki holds
-  no `container` label for Pyroscope, so its logs are not collected.
+- **Pyroscope logged `compaction-worker … no block metadata found; skipping`**
+  about 12 times a minute after the upgrade, and `empty ring` errors in its
+  first seconds. Docker logs reach Loki under `container_name`, not `container`
+  (an earlier query used the wrong label and wrongly concluded the logs were
+  not collected). Loki holds 70,212 Pyroscope lines for the 24 hours before the
+  upgrade and none of either message, so both started with this restart. The
+  skip messages stopped at 11:21:39 +09:00, 143 in total, about 13 minutes after
+  the start: a one-off backlog after the 23-minute stop, not a steady state.
 - **Tempo removed one live-store WAL block on start**
   (`failed to replay block. removing.`, its WAL meta JSON could not be read).
   Traces that block held and had not been flushed may be lost; the copy taken
