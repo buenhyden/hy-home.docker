@@ -321,6 +321,66 @@ Opsflow bridge (`/opt/hyhome/n8n-custom` is absent). RUN-0053 stops HOME
 application until an isolated Code-node and DB-upgrade check and an
 independent backup with the same encryption key exist.
 
+### HOME 2.43.6 upgrade — 2026-10-20
+
+The owner asked on 2026-10-20 to review and then carry out the HOME recreation.
+RUN-0053 stops HOME application until an isolated Code-node and DB-upgrade
+check and an independent backup with the same encryption key exist, so both
+ran first.
+
+State before the change: HOME `n8n` and `n8n-worker` ran
+`hyhome/n8n:2.41.6-local` (`sha256:1de3d197…d492`) and both runners
+`n8nio/runners:2.41.6`. The `n8n` database held 0 workflows, 0 executions,
+1 credential, 1 user and 1 project, 16 MB, last migration
+`AddExecutionScopesToCustomRoles1789995003141`. The 2.41.6 image had no
+`/opt/hyhome/n8n-custom`, so the Opsflow package was not loaded on HOME.
+
+Backup in `/home/hyunyoun/storage/backups/n8n-upgrade-20261020/` (mode 0700,
+files 0600): `pg_dump -Fc` of `n8n` (500,436 bytes, 142 table-data entries),
+tar copies of `n8n-data` (without `custom/`) and both runner volumes, and
+`SHA256SUMS` (all four `OK` on re-check). The encryption key stays at its
+registry path and was not copied; its SHA256 prefix `513de1eb…` binds it to this
+backup.
+
+`hyhome/n8n:2.43.6-local` was built from the declared dev recipe
+(`sha256:222a7fd9…1131`); `n8n --version` is 2.43.6 and
+`/opt/hyhome/n8n-custom/opsflow` is present. `n8nio/runners:2.43.6` was pulled
+by its pinned digest.
+
+Isolated upgrade rehearsal, internal network, PostgreSQL 18.6 like HOME, a
+copy of the backup, synthetic database, broker and runner secrets and the real
+encryption key mounted read-only. The first run stopped `pg_restore` at a grant
+to the HOME-only role `grafana_reader`; the second created that role first.
+
+| Check | Result |
+| --- | --- |
+| Restore | rc 0 into an empty database |
+| Migration | 2.43.6 finished the new migrations, 300 in total, last `CreateAgentBudgetSpendTables1791209478293`; readiness `ok` |
+| Opsflow bridge | link to `/opt/hyhome/n8n-custom/opsflow` created |
+| Read-only custom bind | write refused with `Read-only file system` |
+| Queue, worker and external runners | a synthetic schedule workflow ran JS and native Python Code nodes; 4 executions held both outputs, 3 `success` and 1 still running when counted |
+| Credentials | decrypted export inside the container: 1 of 1 objects, file deleted, no value printed |
+| Errors | only `getaddrinfo EAI_AGAIN api.n8n.io` on the internal network; the runner's Node `ExperimentalWarning` is not a failure |
+| Cleanup | 0 containers, 0 networks, scratch removed |
+
+HOME change at 08:53–08:55 +09:00 from the HOME checkout (`main`
+`0f3c7d221`, whose n8n files equal `origin/main`): `docker compose --profile
+workflow-n8n up -d --no-deps --no-build` for `n8n`, `n8n-worker`,
+`n8n-task-runner` and `n8n-task-runner-worker`. No producer needed draining.
+Afterwards all four were healthy on 2.43.6, the database held 300 migrations
+ending in `CreateAgentBudgetSpendTables1791209478293`, readiness was `ok`, the
+Opsflow link existed, the worker broker was ready on 5679, both launchers
+served health on 5680, the one credential decrypted, and the gateway answered
+`/healthz` with the SSO redirect. HOME still logs the `N8N_RUNNERS_ENABLED`
+deprecation and mounts `custom/` read-write, because this PR's Compose change
+is not merged; one more recreation after the merge applies it without a
+migration.
+
+Not run: a HOME workflow execution (HOME has no workflow), SMTP delivery, and
+restore of this backup into HOME. Migrations are forward-only; going back
+means restoring this backup into an emptied database with the 2.41.6 image,
+not retagging the image.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
