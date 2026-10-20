@@ -816,7 +816,8 @@ the fixture's images (n8n `1fda18a5…`, PostgreSQL `77f58511…`, Valkey
 secrets, an internal network and the fixture's `node_status_probe` every
 0.25 s. Host load averaged 5.9–8.3. Logs and the receipt are retained in
 `/home/hyunyoun/storage/ops-snapshots/w74-readiness-20261020/` (0700) with
-`SHA256SUMS`; receipt `cf791714…`. 0 containers and 0 networks were left.
+`SHA256SUMS` (all four `OK` on re-check); receipt `cf791714…`. 0 containers and 0 networks were left.
+The directory is host-local, like the V16 `/tmp` receipts, and has no durability guarantee.
 
 | Phase | First URL 200 | Ready | Log |
 | --- | --- | --- | --- |
@@ -841,7 +842,8 @@ is not retained; the retained tail cannot reproduce them. The fixture's
 13-minute work deadline is unchanged. The scaled worst case for main, worker
 and the second main start is about 500 s of waiting, which leaves under
 5 minutes for the stages before and after them. Those stages are not measured,
-so the deadline is a recorded risk. Docker-free suites pass.
+so the deadline is a recorded risk. Docker-free suites
+(`test_opsflow_native_boundaries`, `_evidence`, `_health_probe`, `_rehearsal`): OK, 1 skipped.
 
 ## Evidence
 
@@ -862,11 +864,13 @@ Runtime work is blocked: V16 proved liveness 200 and readiness 503, while the fa
 
 PR #509 landed the draft baseline, so the stated chain now applies and the current status is `blocked`. The blocker, owner and resume condition are the ones stated above.
 
-2026-10-20 update: of the resume conditions, the startup stage now has
-retained measurement evidence and a source cause fix (above). Still open: an
-independent review of that fix after the review requested on 2026-10-20 asked
-for changes, which are applied here; an approved native slot; and the native
-rerun. Until those pass, the status stays `blocked`.
+2026-10-20 update. A source cause fix exists (above), with retained
+reproduction evidence at the fixture caps. That evidence is not V16's own;
+whether it meets "exact protected startup-stage/predicate evidence" is the
+owner's call, and the owner asked for the blocker to be resolved. An
+independent `code-reviewer` first returned REQUEST CHANGES; after the changes,
+its re-review at `6e5c76cdc` returned APPROVE WITH NOTES. Still open: the
+native rerun in an approved slot. Until it passes, the status stays `blocked`.
 
 ## Related Documents
 
