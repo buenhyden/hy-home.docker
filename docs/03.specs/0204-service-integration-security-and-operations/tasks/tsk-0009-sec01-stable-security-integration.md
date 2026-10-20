@@ -2298,6 +2298,34 @@ removes snapshots whose lock has expired. Until then there is no new offsite
 copy. The cap counts this repository's files only; other R2 use in the same
 account is not counted.
 
+### Remaining HOME image rollout — 2026-10-20
+
+The owner approved the remaining drift ("남은 HOME 이미지 drift 승인"). Each
+group was backed up, checked for data-format change, and recreated one at a
+time from the HOME checkout (`main` `532ff831e`). Backups are in
+`/home/hyunyoun/storage/backups/image-drift-20261020/` (0700) with
+`SHA256SUMS`.
+
+| Group | Change | Backup and check | Result |
+| --- | --- | --- | --- |
+| Qdrant | 1.19.1 → 1.19.2 (fixes GHSA-3gph-6c29-p29v) | `qdrant-data.tar` (the volume holds 20 KiB) | Healthy at 14:46, `Version: 1.19.2` |
+| SeaweedFS ×4 | 4.47 → 4.48 (release notes list no format change) | Cold tars of master, volume (4,880.8 MiB), filer and s3 data after a stop at 14:49; Restic `f59ef5c2` (11:47) also holds volume, master and filer export | Healthy by 15:29. 42 volumes active, all 7 buckets listed, Loki and Tempo write without errors, and Loki has every 10-minute bucket through the stop |
+| Open WebUI | 0.11.4 → 0.12.0 | `open-webui-data.tar` (SQLite DB and `.webui_secret_key`) after a stop at 15:32. Empty-volume restore rehearsed on 0.12.0 with no network: six Alembic upgrades ran, `/health` true, `user` 1 and `auth` 1 as before, `config` 352 → 368 | Healthy at 15:42; the same six upgrades ran; gateway `/` and `/health` 200 |
+| Airflow ×6 | 3.3.1 → 3.3.2 (local build `b7c57ce073b4`) | No queued or running DAG runs or tasks. `airflow.dump` (`pg_dump -Fc`, 73 table-data entries). Both images ship 125 migration files with the same head `0123`; the content hash differs | `airflow-init` exit 0 and the DB stays at `d2f4e1b3c5a7`. All six healthy by 15:59, the Celery worker answers `1 node online`, gateway health 200 |
+
+Two notes. `seaweedfs-filer` and `seaweedfs-volume` exceeded their stop
+timeout and were killed (exit 137); the append-only store came back with all
+volumes. Twice, `docker compose up` gave up with `dependency failed to start`
+while a slow healthcheck was still starting (SeaweedFS master, Airflow API
+server), leaving dependants `Created`. Rerunning `up` for those services
+started them. The rehearsal container `owui-rehearsal` is stopped, and its
+volume `owui-rehearsal-20261020` is kept: deleting a volume needs the owner's
+approval.
+
+After this rollout, the only drift is `openbao` and `openbao-agent` (2.6.2 →
+the owned 2.7.1 build), which stay for the SPEC-0243 window. Signature, SBOM
+and image scans were not run for these images.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
