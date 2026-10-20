@@ -1,10 +1,10 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.5.7"
+version: "1.5.8"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -119,6 +119,25 @@ stanza가 먼저 만들어진 뒤에만 켭니다. stanza가 없거나 `archive_
 2026-09-25에 폐기되었고 이로써 SPEC-0180 S07 rollback path가 종료되었다.
 Restic은 더 이상 `security/vault`를 포함하지 않는다; 이를 담은 기존
 snapshot은 위의 Restic retention에 따라 age out된다.
+
+### Rebuild exception: loopback registry
+
+`${DEFAULT_REGISTRY_DIR}`은 2026-10-20부터 state set에 없다(SPEC-0204 TSK-0009).
+2.9 GiB의 보관 이미지가 SSD repository를 예산 밖으로 밀어냈기 때문이다. 복구는
+Restic이 아니라 다시 pull하거나 다시 빌드하는 것이고, RPO는 "재빌드 또는 재pull"이다.
+19개 repository의 source evidence는 다음과 같다.
+
+| Archive | Source evidence | 복구 |
+| --- | --- | --- |
+| upstream 이미지 11개 | SPEC-0246 TSK-0001 W4 표의 `platform-manifest` 행 | 같은 태그를 다시 pull한다. image ID는 원래와 다르다 |
+| `hy-home/storybook`, `hy-home/storybook-mcp` | 태그가 source commit이다(RUN-0101) | 그 commit에서 다시 빌드한다 |
+| `hy-home/dbt-postgres` | 추적되는 Dockerfile(SPEC-0180 TSK-0007) | 다시 빌드한다 |
+| `hy-home/stalwart-config` | 보관한 태그를 만든 Git 이력의 Compose와 Dockerfile | 이력 commit에서 다시 빌드한다. 현재 pin은 다른 버전이다 |
+| `hy/gatus` 6개 태그, `hy-home-lab-opensearch-*` 3개 | 기록된 source commit이 없다 | 예외에 포함되지 않는다. 디스크를 잃으면 사라진다 |
+
+마지막 행은 source evidence가 없어 이 예외로 승인되지 않는다. owner가 그 손실을
+수용할지, 별도 사본을 남길지는 SPEC-0204 TSK-0009에 대기 항목으로 남는다. 보관 후 로컬
+사본은 지워졌으므로 HDD registry가 host의 유일한 사본이다.
 
 ### Restore acceptance
 
