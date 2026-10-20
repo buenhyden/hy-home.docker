@@ -2254,6 +2254,50 @@ cover them, and losing the data disk would lose them. On 2026-10-20 the owner
 accepted that loss ("y/gatus 태그 6개와 LAB OpenSearch latest 이미지 3개 손실
 수용"); no separate copy is kept.
 
+### R2 size cap — 2026-10-20
+
+The owner set an absolute limit: the Cloudflare R2 backup must never pass
+10 GB. Before this change nothing enforced it. The daily `copy` only reported
+the size afterwards, and the 8e9 alert read a metric that was written only on
+clean runs.
+
+- The 11:30 rerun copied snapshot `67437351` as `152522c1` and logged
+  `R2 repository size: 9347776895 bytes` at 11:50. The run failed, so the
+  metric stayed at the 10-09 value of 4,711,425,000, and
+  `HyhomeOffsiteRepoNearFreeTier` did not fire. The 30-day bucket lock keeps
+  those objects until about 11-19.
+- At 13:12–13:14, read-only `restic-offsite snapshots` and `cmd stats` both
+  returned `repository does not exist: unable to open config file: Stat: The
+  specified key does not exist` for the configured bucket. The Compose
+  settings and `offsite.sh` had not changed. The cause is not established;
+  the owner was asked. While the config is missing, `copy` stops at
+  `require_initialized` with exit 65 and uploads nothing.
+
+The change (PR #528):
+
+- `offsite.sh` refuses `copy` and `artifact` when the stored bytes plus 105%
+  of what they could send exceed 9,000,000,000, with exit 66 before any
+  upload. "Stored" counts every repository file, unused packs included
+  (`stats --mode debug`, which restic prints on stderr). "Could send" is the
+  raw data of all local snapshots minus that of the snapshots R2 already holds
+  (same tree). An environment variable can only lower the cap.
+- `forget-prune` uses `--max-repack-size 0`, so prune never writes repacked
+  packs under the lock. `cmd` passes read-only commands only.
+- The orchestrator writes `hyhome_backup_offsite_repo_bytes` to its own file
+  on every run that measured it, and removes the old line from
+  `hyhome_backup.prom` so no series is doubled. The block was exercised on a
+  copy of the live metrics file.
+- Native rehearsal (`HYHOME_BACKUP_REHEARSAL=1`, pinned image, no network,
+  local stand-in for R2): over the cap, exit 66 and no remote snapshot; under
+  the cap, one snapshot, then a second copy with nothing new passes at a cap
+  just above the stored size; `cmd backup` exits 64. The OpenBao `artifact`
+  rehearsal still passes.
+
+With R2 at 9.35 GB, a working repository would refuse uploads until 8.5
+removes snapshots whose lock has expired. Until then there is no new offsite
+copy. The cap counts this repository's files only; other R2 use in the same
+account is not counted.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
