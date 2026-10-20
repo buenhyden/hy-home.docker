@@ -571,11 +571,14 @@ def main_readiness_failure_facts(
     except (ValueError, TypeError, json.JSONDecodeError):
         inspect_available = False
     try:
-        result = client.run_result("logs", "--tail", "200", record.cid)
+        # Facts read the whole log: a fresh database writes ~300 migration
+        # lines at debug level, which pushed the early listener line out of
+        # the last 200 (V16, 2026-10-16). The retained copy keeps its contract.
+        result = client.run_result("logs", record.cid)
         logs_available = result.returncode == 0
         logs = result.stdout + result.stderr if logs_available else ""
         if retain is not None:
-            retain(result)
+            retain(client.run_result("logs", "--tail", "200", record.cid))
     except Exception:
         logs_available, logs = False, ""
     state = item.get("State") if isinstance(item.get("State"), dict) else {}
@@ -594,6 +597,8 @@ def main_readiness_failure_facts(
         "log_ready": "n8n ready on" in folded_logs,
         "log_migration_started": "starting migration" in folded_logs,
         "log_migration_finished": "finished migration" in folded_logs,
+        # Printed after configure(); markAsReady() follows the n8n.ready hooks.
+        "log_startup_finished": "editor is now accessible" in folded_logs,
         "log_db_init_error": "there was an error initializing db" in folded_logs,
         "log_db_auth_error": "password authentication failed" in folded_logs,
         "log_encryption_error": any(

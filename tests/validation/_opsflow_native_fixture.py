@@ -648,7 +648,9 @@ class NativeFixture:
             ready, facts = n8n_health_probe(lambda *args: self.exec_result("main", *args))
             self.receipt["main_health_probe"] = facts
             return ready
-        self.wait_until(health, "n8n main readiness expired", 90, lambda: self.receipt.__setitem__("main_readiness_failure", main_readiness_failure_facts(self.client, self.containers["main"], self.attempt, lambda result: native.retain_failure_output(self.directory, self.files, self.receipt, result))))  # fmt: skip
+        # A fresh database took 208 s to readiness 200 at these caps (2026-10-20,
+        # SPEC-0204 TSK-0019); 90 s expired during migrations in V16.
+        self.wait_until(health, "n8n main readiness expired", 300, lambda: self.receipt.__setitem__("main_readiness_failure", main_readiness_failure_facts(self.client, self.containers["main"], self.attempt, lambda result: native.retain_failure_output(self.directory, self.files, self.receipt, result))))  # fmt: skip
         self.start("worker")
         def worker_broker_health():
             ready, facts = node_status_probe(lambda *args: self.exec_result("worker", *args), "http://127.0.0.1:5679/healthz")

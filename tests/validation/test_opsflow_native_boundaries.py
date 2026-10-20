@@ -151,6 +151,7 @@ class NativeGuardTests(unittest.TestCase):
                 "log_ready": False,
                 "log_migration_started": True,
                 "log_migration_finished": False,
+                "log_startup_finished": False,
                 "log_db_init_error": True,
                 "log_db_auth_error": True,
                 "log_encryption_error": False,
