@@ -187,7 +187,7 @@
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "5a440a47f172c8280e89df781cc9cdd3ce735d57e8526e01723760edb8b99825"
+      "sha256": "b4ebb85352e9321917f4f50d8d9f777365f9812b685478ce18fcec255e094dac"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -15759,10 +15759,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-10-20T00:31:32.539912+00:00",
-      "source_revision": "2755b2e85ed6c0c7cd1f349c2d909c32c574206f",
-      "source_state": "committed Compose-only change on fix/n8n-runner-port-aliases; build inputs equal the previous binding",
-      "input_sha256": "2fee9f27e518389e3fe6dee1f39c36150df1abb552069348f39f1a21ef960e5d",
+      "checked_at": "2026-10-20T13:10:00+00:00",
+      "source_revision": "3679fbd41720f2d13ab8682ceeac96d8d602a16a",
+      "source_state": "binding-test change on fix/review-followups-522-526 on top of this main revision, which carries the PR #522 Compose change; image build inputs equal the previous binding",
+      "input_sha256": "4730553866b6e24af9fa4f8f6fdfb62d5f53b9021a8d0b5ec4159951a03149b3",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -15827,7 +15827,7 @@
         },
         {
           "path": "tests/validation/test_workflow_version_bundle.py",
-          "sha256": "97f8376392cbc2bc6521246b82d4be955d39deb683128ba64fc0207aa819faff"
+          "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
       "meaning": "n8n Compose/build/COPY inputs and custom-node/version unit tests only. Does not bind P05 SQL/provisioning/full native acceptance.",

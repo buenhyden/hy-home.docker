@@ -287,6 +287,32 @@ elif [[ "$restic_ok" == true ]]; then
     offsite_log="$("${compose[@]}" run --rm --no-deps restic-offsite copy)" || { echo "offsite copy to R2 failed" >&2; status=1; }
     printf '%s\n' "${offsite_log:-}"
     offsite_bytes="$(sed -n 's/^R2 repository size: \([0-9][0-9]*\) bytes$/\1/p' <<<"${offsite_log:-}")"
+    # The R2 size feeds the free-tier alert on every run that measured it,
+    # failed or refused ones included (ADR-0041; owner cap 10 GB).
+    if [[ -n "$offsite_bytes" ]]; then
+        offsite_dir="$state_repo/metrics"
+        if ! { mkdir -p "$offsite_dir" && chmod 0755 "$offsite_dir" &&
+            printf '%s\n' \
+                '# HELP hyhome_backup_offsite_repo_bytes Stored size of the R2 Restic repository at the last offsite run.' \
+                '# TYPE hyhome_backup_offsite_repo_bytes gauge' \
+                "hyhome_backup_offsite_repo_bytes $offsite_bytes" >"$offsite_dir/.hyhome_backup_offsite.tmp" &&
+            chmod 0644 "$offsite_dir/.hyhome_backup_offsite.tmp" &&
+            mv -f "$offsite_dir/.hyhome_backup_offsite.tmp" "$offsite_dir/hyhome_backup_offsite.prom"; }; then
+            echo "R2 size metric was not written" >&2
+            status=1
+        fi
+        # Older runs wrote the size into hyhome_backup.prom; one series in two
+        # files fails the textfile collector, success timestamp included.
+        success_file="$offsite_dir/hyhome_backup.prom"
+        if [[ -f "$success_file" ]] && grep -q hyhome_backup_offsite_repo_bytes "$success_file"; then
+            if ! { grep -v hyhome_backup_offsite_repo_bytes "$success_file" >"$offsite_dir/.hyhome_backup.strip" &&
+                chmod 0644 "$offsite_dir/.hyhome_backup.strip" &&
+                mv -f "$offsite_dir/.hyhome_backup.strip" "$success_file"; }; then
+                echo "old R2 size line was not removed from $success_file" >&2
+                status=1
+            fi
+        fi
+    fi
     if [[ "$(date +%u)" == 7 ]]; then
         "${compose[@]}" run --rm --no-deps restic-offsite check || { echo "offsite check of R2 failed" >&2; status=1; }
     fi
@@ -301,21 +327,11 @@ fi
 if (( status == 0 )); then
     metrics_dir="$state_repo/metrics"
     metrics_tmp="$metrics_dir/.hyhome_backup.tmp"
-    # The R2 size (stored bytes) feeds the free-tier alert (ADR-0041).
-    offsite_metric=()
-    if [[ -n "${offsite_bytes:-}" ]]; then
-        offsite_metric=(
-            '# HELP hyhome_backup_offsite_repo_bytes Stored size of the R2 Restic repository after the last copy.'
-            '# TYPE hyhome_backup_offsite_repo_bytes gauge'
-            "hyhome_backup_offsite_repo_bytes $offsite_bytes"
-        )
-    fi
     if mkdir -p "$metrics_dir" && chmod 0755 "$metrics_dir" &&
         printf '%s\n' \
             '# HELP hyhome_backup_last_success_timestamp_seconds End of the last hyhome-backup run that exited 0.' \
             '# TYPE hyhome_backup_last_success_timestamp_seconds gauge' \
-            "hyhome_backup_last_success_timestamp_seconds $(date +%s)" \
-            "${offsite_metric[@]}" >"$metrics_tmp" &&
+            "hyhome_backup_last_success_timestamp_seconds $(date +%s)" >"$metrics_tmp" &&
         chmod 0644 "$metrics_tmp" &&
         mv -f "$metrics_tmp" "$metrics_dir/hyhome_backup.prom"; then
         :

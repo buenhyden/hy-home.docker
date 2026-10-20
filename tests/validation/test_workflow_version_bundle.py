@@ -176,11 +176,20 @@ class WorkflowVersionBundleTests(unittest.TestCase):
             if row["service"] in {"n8n", "n8n-worker"}:
                 self.assertEqual("UNKNOWN", row["target_index_digest"])
         binding = ledger["n8n_source_preparation"]["source_binding"]
-        for item in binding["input_files"]:
-            self.assertEqual(
-                item["sha256"],
-                hashlib.sha256((ROOT / item["path"]).read_bytes()).hexdigest(),
-            )
+        aggregate = hashlib.sha256()
+        for item in sorted(binding["input_files"], key=lambda item: item["path"]):
+            data = (ROOT / item["path"]).read_bytes()
+            self.assertEqual(item["sha256"], hashlib.sha256(data).hexdigest())
+            aggregate.update(item["path"].encode() + b"\0" + data)
+        self.assertEqual(binding["input_sha256"], aggregate.hexdigest())
+        build_inputs = json.loads(
+            (
+                ROOT / "infra/09-platform-ops/security-updates/build-inputs.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            binding, build_inputs["n8n_source_preparation"]["source_binding"]
+        )
 
     def test_candidate_mismatch_blocks_before_container_creation(self):
         image = "hy-home/sec01-airflow:3.3.2-keycloak-candidate"

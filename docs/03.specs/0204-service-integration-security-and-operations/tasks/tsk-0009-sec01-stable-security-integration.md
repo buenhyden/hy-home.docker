@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.22"
+version: "0.4.23"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2232,6 +2232,108 @@ same approval. It removed 3,182 blobs / 3.466 GiB; 46,476 blobs / 5.240 GiB
 remain, `restic check` found no errors, and the directory is 5,371 MiB against
 the 8 GiB budget. R2 still holds the original as `152522c1`. The next 03:30 run
 copies the registry again unless PR #526 is merged and pulled first.
+
+### Registry exclusion review — 2026-10-20
+
+A read-only `code-reviewer` subagent reviewed PR #526 at local head
+`8a6c0616a`; `git range-diff` shows the pushed head has the same content. It
+had no shell and ran nothing. Verdict: approve with notes. This was a
+self-requested subagent review, not owner review.
+
+| Finding | Severity | Resolution |
+| --- | --- | --- |
+| POL-0021 requires recorded source evidence for a rebuild exception, and the registry had none | Medium | POL-0021 now has a registry rebuild exception and records the source of each archive |
+| The allowlist comment said every archive came from 2026-10-16 | Medium | The comment now points to POL-0021. The live catalog lists 19 repositories, including seven from SPEC-0180 TSK-0007 and two Storybook images |
+| Leaving the registry out lowers protection, because the HDD registry is the host's only copy | Low | Recorded in POL-0021 |
+| The test caught only the exact line `registry` | Low | It now also rejects `registry/…`; adding `registry/docker` makes it fail |
+| `backup.sh` | — | No issue: missing allowlist entries are skipped, and comment lines are ignored |
+
+There is no recorded source for the six `hy/gatus` tags or the three
+`hy-home-lab-opensearch-*` `latest` images, so the rebuild exception does not
+cover them, and losing the data disk would lose them. On 2026-10-20 the owner
+accepted that loss ("y/gatus 태그 6개와 LAB OpenSearch latest 이미지 3개 손실
+수용"); no separate copy is kept.
+
+### R2 size cap — 2026-10-20
+
+The owner set an absolute limit: the Cloudflare R2 backup must never pass
+10 GB. Before this change nothing enforced it. The daily `copy` only reported
+the size afterwards, and the 8e9 alert read a metric that was written only on
+clean runs.
+
+- The 11:30 rerun copied snapshot `67437351` as `152522c1` and logged
+  `R2 repository size: 9347776895 bytes` at 11:50. The run failed, so the
+  metric stayed at the 10-09 value of 4,711,425,000, and
+  `HyhomeOffsiteRepoNearFreeTier` did not fire. The 30-day bucket lock keeps
+  those objects until about 11-19.
+- At 13:12–13:14, read-only `restic-offsite snapshots` and `cmd stats` both
+  returned `repository does not exist: unable to open config file: Stat: The
+  specified key does not exist` for the configured bucket. The Compose
+  settings and `offsite.sh` had not changed. The cause is not established;
+  the owner was asked. While the config is missing, `copy` stops at
+  `require_initialized` with exit 65 and uploads nothing.
+- At 16:13 the same state held. A read-only S3 `ListObjectsV2` with the
+  backup token (values read inside the container, never printed) returned
+  `KeyCount` 0 for the bucket root and for `keys/`, `snapshots/`, `index/`
+  and `data/`. The token authenticates and the bucket `hyhome-restic` is
+  empty, so the 9.35 GB copied at 11:50, including objects meant to sit under
+  the 30-day bucket lock, is gone. There is no offsite copy now. Whether the
+  objects were deleted, a rule removed them or the bucket was recreated is not
+  established; the owner decides between investigating and initializing a new
+  repository (RUN-0021 8.1). Nothing was written to R2.
+
+The change (PR #528):
+
+- `offsite.sh` refuses `copy` and `artifact` when the stored bytes plus 105%
+  of what they could send exceed 9,000,000,000, with exit 66 before any
+  upload. "Stored" counts every repository file, unused packs included
+  (`stats --mode debug`, which restic prints on stderr). "Could send" is the
+  raw data of all local snapshots minus that of the snapshots R2 already holds
+  (same tree). An environment variable can only lower the cap.
+- `forget-prune` uses `--max-repack-size 0`, so prune never writes repacked
+  packs under the lock. `cmd` passes read-only commands only.
+- The orchestrator writes `hyhome_backup_offsite_repo_bytes` to its own file
+  on every run that measured it, and removes the old line from
+  `hyhome_backup.prom` so no series is doubled. The block was exercised on a
+  copy of the live metrics file.
+- Native rehearsal (`HYHOME_BACKUP_REHEARSAL=1`, pinned image, no network,
+  local stand-in for R2): over the cap, exit 66 and no remote snapshot; under
+  the cap, one snapshot, then a second copy with nothing new passes at a cap
+  just above the stored size; `cmd backup` exits 64. The OpenBao `artifact`
+  rehearsal still passes.
+
+With R2 at 9.35 GB, a working repository would refuse uploads until 8.5
+removes snapshots whose lock has expired. Until then there is no new offsite
+copy. The cap counts this repository's files only; other R2 use in the same
+account is not counted.
+
+### Remaining HOME image rollout — 2026-10-20
+
+The owner approved the remaining drift ("남은 HOME 이미지 drift 승인"). Each
+group was backed up, checked for data-format change, and recreated one at a
+time from the HOME checkout (`main` `532ff831e`). Backups are in
+`/home/hyunyoun/storage/backups/image-drift-20261020/` (0700) with
+`SHA256SUMS`.
+
+| Group | Change | Backup and check | Result |
+| --- | --- | --- | --- |
+| Qdrant | 1.19.1 → 1.19.2 (fixes GHSA-3gph-6c29-p29v) | `qdrant-data.tar` (the volume holds 20 KiB) | Healthy at 14:46, `Version: 1.19.2` |
+| SeaweedFS ×4 | 4.47 → 4.48 (release notes list no format change) | Cold tars of master, volume (4,880.8 MiB), filer and s3 data after a stop at 14:49; Restic `f59ef5c2` (11:47) also holds volume, master and filer export | Healthy by 15:29. 42 volumes active, all 7 buckets listed, Loki and Tempo write without errors, and Loki has every 10-minute bucket through the stop |
+| Open WebUI | 0.11.4 → 0.12.0 | `open-webui-data.tar` (SQLite DB and `.webui_secret_key`) after a stop at 15:32. Empty-volume restore rehearsed on 0.12.0 with no network: six Alembic upgrades ran, `/health` true, `user` 1 and `auth` 1 as before, `config` 352 → 368 | Healthy at 15:42; the same six upgrades ran; gateway `/` and `/health` 200 |
+| Airflow ×6 | 3.3.1 → 3.3.2 (local build `b7c57ce073b4`) | No queued or running DAG runs or tasks. `airflow.dump` (`pg_dump -Fc`, 73 table-data entries). Both images ship 125 migration files with the same head `0123`; the content hash differs | `airflow-init` exit 0 and the DB stays at `d2f4e1b3c5a7`. All six healthy by 15:59, the Celery worker answers `1 node online`, gateway health 200 |
+
+Two notes. `seaweedfs-filer` and `seaweedfs-volume` exceeded their stop
+timeout and were killed (exit 137); the append-only store came back with all
+volumes. Twice, `docker compose up` gave up with `dependency failed to start`
+while a slow healthcheck was still starting (SeaweedFS master, Airflow API
+server), leaving dependants `Created`. Rerunning `up` for those services
+started them. The rehearsal container `owui-rehearsal` is stopped, and its
+volume `owui-rehearsal-20261020` is kept: deleting a volume needs the owner's
+approval.
+
+After this rollout, the only drift is `openbao` and `openbao-agent` (2.6.2 →
+the owned 2.7.1 build), which stay for the SPEC-0243 window. Signature, SBOM
+and image scans were not run for these images.
 
 ## Evidence
 

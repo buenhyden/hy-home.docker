@@ -1,10 +1,10 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.5.7"
+version: "1.5.8"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -70,9 +70,12 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
    set 안의 pgBackRest repository까지 포함해 bucket lock이 걸린 Cloudflare R2
    repository 하나로 복사한다. host의 token은 object를 쓸 수 있지만 bucket을
    관리하거나 지우지 못한다. owner가 RUN-0021의 R2 설정을 마치고 첫 copy가
-   성공하면 원격 사본이 생긴다. 전체 export 성공과 격리 restore를 별도로 확인하기 전 recoverability는 미검증이며 원격 RPO 하루는 계획 목표다. 원격 보존은 owner가
-   매달 실행하는 `forget-prune`(최근 30일 전부와 월 1개씩 12개월)으로 R2 무료
-   한도 초과 위험을 검토한다; 보존/과금 상한을 보장하지 않는다(RUN-0021 8.5, 8.6). 그 전까지는 모든
+   성공하면 원격 사본이 생긴다. 전체 export 성공과 격리 restore를 별도로 확인하기 전 recoverability는 미검증이며 원격 RPO 하루는 계획 목표다. R2
+   repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). 올린 뒤 저장 byte가
+   9 GB를 넘을 수 있으면 업로드를 거부하고 run이 실패한다. 그동안 원격 RPO는 지켜지지
+   않는다. 원격 보존은 owner가 매달 실행하는 `forget-prune`(최근 30일 전부와 월 1개씩
+   12개월)이다. 상한은 이 repository의 파일만 세므로 같은 계정의 다른 R2 사용은 따로
+   확인한다(RUN-0021 8.2, 8.5, 8.6). 그 전까지는 모든
    복사본이 한 host에 있어 **offsite recovery는 제공되지 않는다**.
 2. SSD repository의 크기 예산은 `BACKUP_STATE_MAX_GIB`(8 GiB, owner 2026-10-10; 이전 5 GiB, 2026-09-22)
    이다. pgBackRest와 export 이후 검사에서 초과하면 run이 실패하고 해당 Restic 단계를 건너뛴다. 실행 중 quota는 아니며 후속 쓰기로 초과할 수 있다;
@@ -119,6 +122,25 @@ stanza가 먼저 만들어진 뒤에만 켭니다. stanza가 없거나 `archive_
 2026-09-25에 폐기되었고 이로써 SPEC-0180 S07 rollback path가 종료되었다.
 Restic은 더 이상 `security/vault`를 포함하지 않는다; 이를 담은 기존
 snapshot은 위의 Restic retention에 따라 age out된다.
+
+### Rebuild exception: loopback registry
+
+`${DEFAULT_REGISTRY_DIR}`은 2026-10-20부터 state set에 없다(SPEC-0204 TSK-0009).
+2.9 GiB의 보관 이미지가 SSD repository를 예산 밖으로 밀어냈기 때문이다. 복구는
+Restic이 아니라 다시 pull하거나 다시 빌드하는 것이고, RPO는 "재빌드 또는 재pull"이다.
+19개 repository의 source evidence는 다음과 같다.
+
+| Archive | Source evidence | 복구 |
+| --- | --- | --- |
+| upstream 이미지 11개 | SPEC-0246 TSK-0001 W4 표의 `platform-manifest` 행 | 같은 태그를 다시 pull한다. image ID는 원래와 다르다 |
+| `hy-home/storybook`, `hy-home/storybook-mcp` | 태그가 source commit이다(RUN-0101) | 그 commit에서 다시 빌드한다 |
+| `hy-home/dbt-postgres` | 추적되는 Dockerfile(SPEC-0180 TSK-0007) | 다시 빌드한다 |
+| `hy-home/stalwart-config` | 보관한 태그를 만든 Git 이력의 Compose와 Dockerfile | 이력 commit에서 다시 빌드한다. 현재 pin은 다른 버전이다 |
+| `hy/gatus` 6개 태그, `hy-home-lab-opensearch-*` 3개 | 기록된 source commit이 없다 | 복구하지 않는다. 디스크를 잃으면 사라진다 |
+
+마지막 행은 source evidence가 없어 재빌드 예외가 아니다. owner가 2026-10-20에 그
+손실을 수용했다(SPEC-0204 TSK-0009). 보관 후 로컬 사본은 지워졌으므로 HDD registry가
+host의 유일한 사본이다.
 
 ### Restore acceptance
 

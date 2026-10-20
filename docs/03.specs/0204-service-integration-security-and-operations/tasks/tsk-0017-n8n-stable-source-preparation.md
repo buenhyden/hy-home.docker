@@ -1,6 +1,6 @@
 ---
 title: "n8n Stable Source Preparation Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -381,6 +381,23 @@ restore of this backup into HOME. Migrations are forward-only; going back
 means restoring this backup into an emptied database with the 2.41.6 image,
 not retagging the image.
 
+### HOME recreation after the merge — 2026-10-20
+
+After PR #522 was merged, the HOME checkout was fast-forwarded to `main`
+`532ff831e`, and the four n8n services were recreated at 13:06–13:07 +09:00
+with `docker compose --profile workflow-n8n up -d --no-deps --no-build`. All
+four are healthy. `n8n` and `n8n-worker` mount `custom/` read-only and carry
+`N8N_RUNNERS_BROKER_PORT=5679`. Both runners carry
+`N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT=5680`. `N8N_RUNNERS_ENABLED` is gone.
+The worker registered both launchers.
+
+The runner beside `n8n` still logs `Waiting for task broker to be ready`, and
+nothing listens on 5679 in `n8n`. This is older than the change: since
+2026-10-19, Loki holds only that line for this runner and no `task offer`,
+including under the old configuration. `n8n` runs with `EXECUTIONS_MODE=queue`
+and `OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true`, so executions use the worker
+broker. Whether the runner beside `n8n` is needed is a follow-up.
+
 ### Source binding refresh — 2026-10-20
 
 `test_workflow_version_bundle` binds the n8n Compose, build and custom-node
@@ -391,11 +408,29 @@ the `origin/main` bytes, reproduces the recorded binding
 `03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985`, so the
 algorithm was confirmed before reuse. That binding is now under
 `historical_source_bindings` with its reason, and the new binding is
-`2fee9f27e518389e3fe6dee1f39c36150df1abb552069348f39f1a21ef960e5d`. Only the
-Compose hash differs; every image build input keeps its hash, so the W74 image
+`4730553866b6e24af9fa4f8f6fdfb62d5f53b9021a8d0b5ec4159951a03149b3`. Only the
+Compose and binding-test hashes differ; every image build input keeps its hash, so the W74 image
 reference `hy-home/sec01-n8n:2.43.6-opsflow-03892eb1a9a4` in
 `_opsflow_native_inputs.py` still names the reviewed build and is unchanged.
 Its native, HOME, signature, SBOM and recovery fields stay `NOT_RUN`.
+
+### Independent review — 2026-10-20
+
+A read-only `code-reviewer` subagent reviewed local head `148d324fe`, which has
+the same content as the pushed `d5d337ef0` (`git range-diff` shows every commit
+`=`). It had no shell, so it did not run tests or recompute hashes. Verdict:
+approve with notes.
+
+| Finding | Severity | Resolution |
+| --- | --- | --- |
+| The binding's `source_revision` named a commit that the rebase removed | Medium | It now names main revision `3679fbd41`, which carries the merged Compose change, as the earlier bindings name a main revision |
+| `build-inputs.json` kept the `03892eb1…` binding as current | Medium | The binding and its archived predecessor are mirrored there; the test now requires both files to match |
+| No test recomputed the aggregate `input_sha256` | Low | The test recomputes it with the recorded algorithm. The test is itself a bound input, so the binding is now `47305538…`; `2fee9f27…` was recomputed and matched before the test change, and never reached main |
+| `include_inputs` kept the old n8n Compose hash | Low | Refreshed; it was the only one of 44 rows that was stale |
+| `n8n-worker` exposes `${N8N_PORT:-5678}`, but nothing listens there | Low | Not changed here; this was already the case on main. Recorded as a follow-up |
+
+This was a self-requested subagent review, not owner review. PR #522 was merged
+before these fixes were pushed, so they follow in a separate PR.
 
 ## Evidence
 
