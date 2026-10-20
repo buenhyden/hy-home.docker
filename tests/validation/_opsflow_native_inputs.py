@@ -21,6 +21,10 @@ RUNNER_REF = "n8nio/runners:2.43.6@" + RUNNER_ID
 RUNNER_RUNTIME_CONFIG = (
     "sha256:28c5a510d7624e5ce079d2204e4d8421bc96ced83ebc2e1717d6ee33a0ccc1bb"
 )
+# A container's Image is the config digest with the classic image store and
+# the pinned index digest with the containerd store (HOME since 2026-10-16,
+# SPEC-0246). Both name the same pinned runner.
+RUNNER_RUNTIME_IDS = frozenset({RUNNER_RUNTIME_CONFIG, RUNNER_ID})
 MAILPIT_ID = "sha256:94f6b70c1436defae6799d9ac7ff0eeff9540465b842026d5cdb018f1c0234ea"
 MAILPIT_REF = "axllent/mailpit:v1.31.5@" + MAILPIT_ID
 IMAGE_IDS = {
@@ -64,10 +68,8 @@ TMPFS = {
         "/tmp:rw,nosuid,nodev,noexec,mode=0700,uid=1000,gid=1000,size=128m",
         "/home/runner/.cache:rw,nosuid,nodev,noexec,mode=0700,uid=1000,gid=1000,size=64m",
     ),
-    "mailpit": (
-        "/data:rw,nosuid,nodev,noexec,mode=0700,uid=1000,gid=1000,size=64m",
-        "/tmp:rw,nosuid,nodev,noexec,mode=1777,size=16m",
-    ),
+    # Mailpit's /data is an owned bind so its store survives stop/start.
+    "mailpit": ("/tmp:rw,nosuid,nodev,noexec,mode=1777,size=16m",),
     "capture-probe": (
         "/tmp:rw,nosuid,nodev,noexec,mode=0700,uid=1000,gid=1000,size=32m",
     ),

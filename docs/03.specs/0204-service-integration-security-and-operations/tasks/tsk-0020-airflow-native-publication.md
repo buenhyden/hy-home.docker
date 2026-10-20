@@ -1,10 +1,10 @@
 ---
 title: "Airflow Native Publication Rehearsal Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0020"
 parent_ids:
@@ -342,6 +342,26 @@ PR #509 merged this Task's sources after delivery formatting. The merged fixture
 | SPEC-0204-TSK-0020 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0020 | ready | in-progress | #w75-boundary-and-execution-plan |
 | SPEC-0204-TSK-0020 | in-progress | blocked | #editorial-preservation-and-current-recovery-handoff |
+
+### Retained barrier custody move — 2026-10-20
+
+The native fixture refuses every rehearsal, n8n included, while a
+`/tmp/hyhome-opsflow-airflow-native-attempt-*` directory exists
+(`_opsflow_native_fixture.py`, "stale native rehearsal host attempt
+exists"). The retained 0483 barrier therefore blocked the TSK-0019 rerun. The
+owner chose (AskUserQuestion, 2026-10-20) to keep it permanently and remove
+the `/tmp` copy.
+
+The directory was copied with modes to
+`/home/hyunyoun/storage/ops-snapshots/tsk0020-barrier-0483afaa69fff11247b3daf9/`
+(0700) with `SHA256SUMS`. All four files were `OK`, and mode, size and path
+matched for every entry, including the empty `docker-config`:
+`dev-pg-snapshot` `f707c02c…`, `metadata-pg-snapshot` `9af7f43c…`,
+`synthetic-input.json` `295de344…`, `synthetic-secrets.json` `ab4e4e4a…`.
+After a second hash check, only the `/tmp` original was removed. The content
+is unchanged, so the barrier's evidence value is the same as before: it still
+records no failure metadata and does not recover the masked V11 exception. The
+new location is host-local; it is longer-lived than `/tmp` but not offsite.
 
 ## Evidence
 

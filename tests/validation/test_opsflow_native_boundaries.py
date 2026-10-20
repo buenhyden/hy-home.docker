@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import tempfile
 import time
+import types
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -27,6 +29,9 @@ from tests.validation._opsflow_native_inputs import (
     OWNER_LABEL,
     RESOURCE_CAPS,
     ROLE_LABEL,
+    RUNNER_ID,
+    RUNNER_RUNTIME_CONFIG,
+    RUNNER_RUNTIME_IDS,
     precreate_headroom_failure,
 )
 from tests.validation._opsflow_native_ownership import (
@@ -203,6 +208,81 @@ class NativeGuardTests(unittest.TestCase):
             )
         self.assertEqual([tail], retained)
         self.assertFalse(facts["logs_available"])
+
+    def test_runner_runtime_identity_is_the_pinned_config_or_index(self):
+        # The containerd image store reports the index digest as Image.
+        self.assertEqual({RUNNER_RUNTIME_CONFIG, RUNNER_ID}, set(RUNNER_RUNTIME_IDS))
+
+    def test_n8n_session_relogs_in_only_after_401(self):
+        def failure(status):
+            body = {
+                "failure": {
+                    "kind": "http_status",
+                    "status": status,
+                    "error": {"name": "none", "code_source": "none", "code": "none"},
+                }
+            }
+            return subprocess.CompletedProcess([], 1, json.dumps(body), "")
+
+        def driver(*results):
+            fake = types.SimpleNamespace(
+                email="o@x.invalid", secrets={"owner": ("pw", None)}, _session="c=1"
+            )
+            fake.fixture = mock.Mock(receipt={})
+            fake.fixture.exec_result.side_effect = list(results)
+            fake.api = types.MethodType(
+                native_driver.OpsflowN8nNativeRehearsal.api, fake
+            )
+            return fake
+
+        fresh = subprocess.CompletedProcess([], 0, '{"rows":[],"_session":"c=2"}', "")
+        fake = driver(failure(401), fresh)
+        self.assertEqual({"rows": []}, fake.api("workflows"))
+        self.assertEqual("c=2", fake._session)
+        self.assertEqual(1, fake.fixture.receipt["n8n_session_relogins"])
+        fake = driver(failure(500))
+        with self.assertRaises(RehearsalFailure):
+            fake.api("workflows")
+        self.assertEqual(1, fake.fixture.exec_result.call_count)
+        self.assertNotIn("n8n_session_relogins", fake.fixture.receipt)
+
+    def test_mailpit_store_cleanup_removes_only_owned_store_files(self):
+        def fixture_for(root):
+            directory = root / "attempt"
+            directory.mkdir(mode=0o700)
+            data = directory / "mailpit-data-1"
+            data.mkdir(mode=0o700)
+            fixture = object.__new__(NativeFixture)
+            fixture.directory, fixture.files = directory, {}
+            fixture.host_uid = os.geteuid()
+            meta = directory.stat()
+            fixture.dir_identity = (meta.st_dev, meta.st_ino)
+            created = data.stat()
+            fixture.mailpit_dirs = {data: (created.st_dev, created.st_ino)}
+            return fixture, data
+
+        with tempfile.TemporaryDirectory() as root:
+            fixture, data = fixture_for(Path(root))
+            for name in ("mailpit.db", "mailpit.db-wal"):
+                (data / name).write_text("x")
+            fixture._cleanup_host()
+            self.assertFalse(fixture.directory.exists())
+        with tempfile.TemporaryDirectory() as root:
+            fixture, data = fixture_for(Path(root))
+            (data / "other").write_text("x")
+            with self.assertRaises(RehearsalFailure):
+                fixture._cleanup_host()
+            self.assertTrue((data / "other").exists())
+        with tempfile.TemporaryDirectory() as root:
+            fixture, data = fixture_for(Path(root))
+            elsewhere = Path(root) / "elsewhere"
+            elsewhere.mkdir()
+            (elsewhere / "mailpit.db").write_text("x")
+            data.rmdir()
+            data.symlink_to(elsewhere)
+            with self.assertRaises(RehearsalFailure):
+                fixture._cleanup_host()
+            self.assertTrue((elsewhere / "mailpit.db").exists())
 
     def test_precreate_headroom_records_low_swap_without_using_it_as_admission(self):
         gib = 1024**3
@@ -646,7 +726,8 @@ class NativeGuardTests(unittest.TestCase):
             mock.patch.object(
                 ownership.time,
                 "monotonic",
-                side_effect=[0.0, 0.0, 5.0, 5.0],
+                # The absence wait spans 15 s (wait_container_absent).
+                side_effect=[0.0, 0.0, 15.0, 15.0],
             ),
             mock.patch.object(ownership.time, "sleep"),
             self.assertRaises(RehearsalFailure),

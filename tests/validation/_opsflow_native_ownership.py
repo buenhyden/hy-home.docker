@@ -527,7 +527,8 @@ def wait_container_absent(
     previous = getattr(client, field)
     if type(previous) not in (int, float) or type(deadline) not in (int, float):
         return ContainerAbsenceObservation(False, 0, 0, 0)
-    limit = min(previous, deadline, time.monotonic() + 5.0)
+    # Removal itself can take ~6 s under load (see NativeDockerBoundary).
+    limit = min(previous, deadline, time.monotonic() + 15.0)
     setattr(client, field, limit)
     present = exact_absent = unknown = 0
     try:
