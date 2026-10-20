@@ -1,6 +1,6 @@
 ---
 title: "n8n Native Notification Rehearsal Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -787,6 +787,64 @@ any earlier fixture source hash, changed: the frozen-source review and the
 fresh host readiness check that gate the next W74 run must cover this revision.
 Earlier W74 receipts stay valid for the revision they name.
 
+### V16 readiness predicate review — 2026-10-20
+
+The owner asked for the blocked R15–R17 chain to be reviewed and resolved.
+This section supersedes the V16 conclusion above that the false predicate was
+`UNKNOWN` and that no timeout change was justified; the V16 record itself is
+kept as it was.
+
+Source. The 2.43.6 image (`hy-home/sec01-n8n:2.43.6-opsflow-03892eb1a9a4`,
+config `1fda18a5…`, the V16 runtime) answers `/healthz/readiness` with 200 only
+when `connected && migrated && fullyReady` (`dist/abstract-server.js`); the
+worker's handler adds the Redis client (`dist/scaling/worker-server.js`).
+`fullyReady` is set by `markAsReady()` after `super.start()` returns
+(`dist/server.js`). That start awaits `configure()`, logs `Version: …` once and
+runs the `n8n.ready` hooks; the fixture sets no `EXTERNAL_HOOK_FILES`.
+
+V16 evidence. The retained V16 streams still match their recorded hashes
+(`e8c63016…`, `6549ebf5…`). Their `main_readiness_failure` facts came from
+`docker logs --tail 200`. In 2.43.6, `n8n ready on ::, port 5678` is written
+when the listener starts, before the migration lock, so on a fresh database
+the ~300 migration lines push it out of the last 200 lines. `log_ready=False`
+therefore does not mean the listener was missing (liveness was 200), and
+`log_migration_finished` matches the first finished migration, not the last.
+
+Measurement. `w74ready-deaecfd83f82`, 2026-10-20 17:10–17:16 +09:00, with
+the fixture's images (n8n `1fda18a5…`, PostgreSQL `77f58511…`, Valkey
+`a0dbf4c1…`), caps (`RESOURCE_CAPS`, `TMPFS`), environment, synthetic
+secrets, an internal network and the fixture's `node_status_probe` every
+0.25 s. Host load averaged 5.9–8.3. Logs and the receipt are retained in
+`/home/hyunyoun/storage/ops-snapshots/w74-readiness-20261020/` (0700) with
+`SHA256SUMS` (all four `OK` on re-check); receipt `cf791714…`. 0 containers and 0 networks were left.
+The directory is host-local, like the V16 `/tmp` receipts, and has no durability guarantee.
+
+| Phase | First URL 200 | Ready | Log |
+| --- | --- | --- | --- |
+| Main, fresh database | 36.6 s | 117.9 s | `main-gen1.log` `5a27f9c7…`: 934 lines, 300 finished migrations, listener line 14, `Version:` line 904 |
+| Worker broker `:5679/healthz` | 80.0 s | 80.0 s | `worker.log` `5eee3a07…`, 17 lines |
+| Main, migrated database | 52.6 s | 80.6 s | `main-gen2.log` `9ac43f3a…`, 313 lines, `Version:` line 283 |
+
+An earlier unretained session sample, with a 2 s `wget` probe and a
+concurrent quality run, reached main readiness at 208 s. `Editor is now
+accessible` does not appear in the fixture's logs.
+
+Two samples and one log set are consistent with V16's 503 being a main start
+still running when the 90 s wait expired. They do not prove that this is what
+happened in V16, whose full log was not kept. The worker's 80 s against its
+90 s wait leaves no margin.
+
+Cause fix (source): both the main and the worker broker waits become 300 s,
+about 1.4 times the slowest observed main start. `main_readiness_failure_facts`
+retains its `--tail 200` copy first, in its own `try`, then reads the whole log
+for the facts, and adds `log_version`. The facts therefore come from a log that
+is not retained; the retained tail cannot reproduce them. The fixture's
+13-minute work deadline is unchanged. The scaled worst case for main, worker
+and the second main start is about 500 s of waiting, which leaves under
+5 minutes for the stages before and after them. Those stages are not measured,
+so the deadline is a recorded risk. Docker-free suites
+(`test_opsflow_native_boundaries`, `_evidence`, `_health_probe`, `_rehearsal`): OK, 1 skipped.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -805,6 +863,14 @@ vertical acceptance. W74 adds supporting native evidence only and does not add a
 Runtime work is blocked: V16 proved liveness 200 and readiness 503, while the false connected, migrated or fully-ready predicate or exact startup stage remains `UNKNOWN`. This new artifact must retain its required initial `draft` frontmatter until that baseline lands; the truthful follow-up chain is `draft → ready → in-progress → blocked`. Owner `@buenhyden` and named n8n implementer `native_workflow_rehearsal` may resume only with exact protected startup-stage/predicate evidence and a source-reviewed cause fix under fresh review and an approved slot; blind rerun and guessed timeout, egress or license changes are prohibited, joint same-data execution remains `NOT_RUN`/`BLOCKED`, and manual cleanup does not complete HOME deployment, recovery, real SMTP or exactly-once delivery.
 
 PR #509 landed the draft baseline, so the stated chain now applies and the current status is `blocked`. The blocker, owner and resume condition are the ones stated above.
+
+2026-10-20 update. A source cause fix exists (above), with retained
+reproduction evidence at the fixture caps. That evidence is not V16's own;
+whether it meets "exact protected startup-stage/predicate evidence" is the
+owner's call, and the owner asked for the blocker to be resolved. An
+independent `code-reviewer` first returned REQUEST CHANGES; after the changes,
+its re-review at `6e5c76cdc` returned APPROVE WITH NOTES. Still open: the
+native rerun in an approved slot. Until it passes, the status stays `blocked`.
 
 ## Related Documents
 

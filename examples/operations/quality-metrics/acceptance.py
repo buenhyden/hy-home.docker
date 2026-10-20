@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import tempfile
 import time
+import urllib.parse
 import uuid
 from pathlib import Path
 
@@ -14,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[3]
 SOURCE = ROOT / "infra/06-observability/alloy/config/config.home.alloy"
 COMPOSE = Path(__file__).with_name("docker-compose.yml")
 TAGS = {
-    "alloy": "grafana/alloy:v1.19.2",
+    "alloy": "grafana/alloy:v1.20.1@sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f",
     "prom": "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e",
     "probe": "python:3.13.15-alpine",
 }
@@ -74,8 +75,13 @@ def command(args, **kwargs):
     return result.stdout
 
 
-PROBE = """import json,sys,urllib.request,urllib.parse,urllib.error
+PROBE = """import json,socket,sys,urllib.request,urllib.parse,urllib.error
 op=json.load(sys.stdin)
+if op["kind"]=="ready":
+ for host,port in op["targets"]:
+  socket.create_connection((host,port),timeout=2).close()
+ print(json.dumps({"status":200}))
+ sys.exit()
 if op["kind"]=="send":
  url=op["url"]
  headers={"Content-Type":"application/json"}
@@ -345,7 +351,26 @@ def main():
                 f"Metric delivery mismatch: {name} expected {expected}"
             )
 
-        time.sleep(3)
+        # Connect-only wait: a fixed sleep raced a slow Alloy start (2026-10-20),
+        # and resending a delta payload would double-count it.
+        deadline = time.monotonic() + 60
+        while True:
+            try:
+                receiver = urllib.parse.urlsplit(endpoint)
+                request(
+                    {
+                        "kind": "ready",
+                        "targets": [
+                            [receiver.hostname, receiver.port],
+                            ["prometheus", 9090],
+                        ],
+                    }
+                )
+                break
+            except RuntimeError:
+                if time.monotonic() > deadline:
+                    raise
+                time.sleep(1)
         start = time.time_ns() - 2_000_000_000
         timestamp = start + 1_000_000_000
         cases = [

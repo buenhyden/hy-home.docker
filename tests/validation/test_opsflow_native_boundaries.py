@@ -151,6 +151,7 @@ class NativeGuardTests(unittest.TestCase):
                 "log_ready": False,
                 "log_migration_started": True,
                 "log_migration_finished": False,
+                "log_version": False,
                 "log_db_init_error": True,
                 "log_db_auth_error": True,
                 "log_encryption_error": False,
@@ -159,6 +160,49 @@ class NativeGuardTests(unittest.TestCase):
             facts,
         )
         self.assertTrue(all(isinstance(value, bool) for value in facts.values()))
+
+    def test_readiness_facts_read_the_whole_log_and_retain_the_tail(self):
+        # The listener line comes first; a fresh database then writes hundreds
+        # of migration lines, so it is absent from the last 200.
+        whole = (
+            "n8n ready on ::, port 5678\n"
+            + "Starting migration X\nFinished migration X\n" * 150
+            + "Version: 2.43.6\n"
+        )
+        tail = subprocess.CompletedProcess([], 0, "Finished migration X\n", "")
+        client = mock.Mock()
+        client.run_result.side_effect = [
+            tail,
+            subprocess.CompletedProcess([], 0, whole, ""),
+        ]
+        retained = []
+        with mock.patch.object(
+            ownership,
+            "inspect_container_identity",
+            return_value={"State": {"Status": "running"}},
+        ):
+            facts = ownership.main_readiness_failure_facts(
+                client, mock.Mock(cid="c" * 64), "a", retained.append
+            )
+        self.assertEqual([tail], retained)
+        self.assertEqual("--tail", client.run_result.call_args_list[0].args[1])
+        self.assertNotIn("--tail", client.run_result.call_args_list[1].args)
+        self.assertTrue(facts["log_ready"])
+        self.assertTrue(facts["log_version"])
+
+        # A failed whole-log read still keeps the retained tail.
+        client.run_result.side_effect = [tail, TimeoutError()]
+        retained.clear()
+        with mock.patch.object(
+            ownership,
+            "inspect_container_identity",
+            return_value={"State": {"Status": "running"}},
+        ):
+            facts = ownership.main_readiness_failure_facts(
+                client, mock.Mock(cid="c" * 64), "a", retained.append
+            )
+        self.assertEqual([tail], retained)
+        self.assertFalse(facts["logs_available"])
 
     def test_precreate_headroom_records_low_swap_without_using_it_as_admission(self):
         gib = 1024**3

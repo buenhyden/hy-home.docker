@@ -570,12 +570,20 @@ def main_readiness_failure_facts(
         inspect_available = True
     except (ValueError, TypeError, json.JSONDecodeError):
         inspect_available = False
+    # The retained copy keeps its tail contract and does not depend on the
+    # whole-log read below succeeding.
+    if retain is not None:
+        try:
+            retain(client.run_result("logs", "--tail", "200", record.cid))
+        except Exception:
+            pass
     try:
-        result = client.run_result("logs", "--tail", "200", record.cid)
+        # Facts read the whole log: on a fresh database the ~300 migration
+        # lines at debug level push the early listener line out of the last
+        # 200 (measured 2026-10-20, SPEC-0204 TSK-0019).
+        result = client.run_result("logs", record.cid)
         logs_available = result.returncode == 0
         logs = result.stdout + result.stderr if logs_available else ""
-        if retain is not None:
-            retain(result)
     except Exception:
         logs_available, logs = False, ""
     state = item.get("State") if isinstance(item.get("State"), dict) else {}
@@ -594,6 +602,9 @@ def main_readiness_failure_facts(
         "log_ready": "n8n ready on" in folded_logs,
         "log_migration_started": "starting migration" in folded_logs,
         "log_migration_finished": "finished migration" in folded_logs,
+        # Logged once by AbstractServer.start() after configure(); only the
+        # n8n.ready hooks then run before markAsReady().
+        "log_version": "version: " in folded_logs,
         "log_db_init_error": "there was an error initializing db" in folded_logs,
         "log_db_auth_error": "password authentication failed" in folded_logs,
         "log_encryption_error": any(

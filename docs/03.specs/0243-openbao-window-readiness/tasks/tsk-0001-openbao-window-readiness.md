@@ -714,8 +714,8 @@ limited to it. The window is still scheduled for 2026-10-22 14:00–16:00 KST,
 with the SEC01 lookup on 2026-10-21 and W0 at 13:30. It is BLOCKED until the
 W0 R2 gate passes. At 16:13 a read-only bucket listing showed the bucket
 empty (no `config`, `keys/`, `snapshots/`, `index/` or `data/` object; SPEC-0204
-TSK-0009), so W3b has no repository to store into until the owner decides
-how R2 is restored or reinitialized. While R2 holds about 9.35 GB, a working repository would refuse W3b
+TSK-0009). The owner deleted it to stay under 10 GB, so W3b has no
+repository to store into until a new one is initialized. While R2 holds about 9.35 GB, a working repository would refuse W3b
 under the 9 GB cap, so the window also needs either room in R2 or an owner
 decision on where W3b stores the artifact. No window step was run.
 
