@@ -1,6 +1,6 @@
 ---
 title: "n8n Native Notification Rehearsal Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -799,6 +799,51 @@ Earlier W74 receipts stay valid for the revision they name.
 
 Criterion 19 retains TSK-0013 as its durable acceptance owner. TSK-0016 retains complete
 vertical acceptance. W74 adds supporting native evidence only and does not add an acceptance-criteria row.
+
+### V16 readiness predicate review — 2026-10-20
+
+The owner asked for the blocked R15–R17 chain to be reviewed and continued.
+This is a source and evidence review; no W74 attempt ran.
+
+The 2.43.6 image (`hy-home/sec01-n8n:2.43.6-opsflow-03892eb1a9a4`, config
+`1fda18a5…`, the V16 runtime) answers `/healthz/readiness` with 200 only when
+`connected && migrated && fullyReady` (`dist/abstract-server.js`). The
+worker's handler adds the Redis client (`dist/scaling/worker-server.js`).
+`fullyReady` is set by `markAsReady()` after `super.start()` returns
+(`dist/server.js`). That start awaits `configure()`, logs `Version: …` and runs
+the `n8n.ready` external hooks; the fixture sets no `EXTERNAL_HOOK_FILES`.
+
+The retained V16 streams still match their recorded hashes (`e8c63016…`,
+`6549ebf5…`). The receipt's `main_readiness_failure` facts come from
+`docker logs --tail 200` (`_opsflow_native_ownership.py`), and they cannot
+separate the predicates:
+
+- 2.43.6 prints `n8n ready on ::, port 5678` when the listener starts, before
+  `Acquiring database migration lock` (HOME log, 2026-10-20 13:06). On a fresh
+  database, about 300 migrations, each with start and finish lines, at
+  `N8N_LOG_LEVEL=debug`, push that line out of the last 200 lines. So
+  `log_ready=False` does not show that the listener was missing; liveness 200
+  shows it was there.
+- `log_migration_finished` matches the first `finished migration` line, so it
+  does not show that every migration finished.
+
+The open question was whether a fresh-database start fits the fixture's
+90-second readiness wait. An isolated measurement answered it: the V16 n8n
+image, a fresh `postgres:18.6-alpine` and Valkey, queue mode, debug log,
+synthetic secrets, an internal network, and the fixture's caps (main 0.35 CPU,
+768 MiB, read-only with the `/tmp` tmpfs; metadata PG 0.20 CPU, 384 MiB).
+Liveness answered 200 at 127 s and readiness at 208 s. The log had 990 lines,
+including 300 `finished migration` lines, with `n8n ready on` at line 14 and
+`Version:` at line 905. A synthetic quality-metrics run shared the host. So
+V16's 503 is the main start still running when the 90 s wait expired, not a
+predicate that stayed false.
+
+Cause fix, measured rather than guessed: the main readiness wait becomes
+300 s. `main_readiness_failure_facts` reads the whole log for its facts, keeps
+the `--tail 200` copy for the retained evidence contract, and adds
+`log_startup_finished` (`Editor is now accessible`, printed after
+`configure()`). The worker's 90 s wait is unchanged: it starts after main, on
+an already migrated database. Docker-free suites: 110 tests OK, 3 skipped.
 
 ## Review and Completion
 
