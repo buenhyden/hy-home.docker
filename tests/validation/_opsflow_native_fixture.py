@@ -648,15 +648,16 @@ class NativeFixture:
             ready, facts = n8n_health_probe(lambda *args: self.exec_result("main", *args))
             self.receipt["main_health_probe"] = facts
             return ready
-        # A fresh database took 208 s to readiness 200 at these caps (2026-10-20,
-        # SPEC-0204 TSK-0019); 90 s expired during migrations in V16.
+        # At these caps a fresh database reached readiness 200 in 118 s and
+        # 208 s (2026-10-20, SPEC-0204 TSK-0019); V16's 90 s wait expired first.
         self.wait_until(health, "n8n main readiness expired", 300, lambda: self.receipt.__setitem__("main_readiness_failure", main_readiness_failure_facts(self.client, self.containers["main"], self.attempt, lambda result: native.retain_failure_output(self.directory, self.files, self.receipt, result))))  # fmt: skip
         self.start("worker")
         def worker_broker_health():
             ready, facts = node_status_probe(lambda *args: self.exec_result("worker", *args), "http://127.0.0.1:5679/healthz")
             self.receipt["worker_broker_health_probe"] = facts
             return ready
-        self.wait_until(worker_broker_health, "n8n worker broker readiness expired", 90)
+        # The worker broker answered after 80 s against a 90 s wait (same date).
+        self.wait_until(worker_broker_health, "n8n worker broker readiness expired", 300)
         def mailpit_health():
             ready, facts = node_status_probe(lambda *args: self.exec_result("worker", *args), "http://mailpit:8025/readyz")
             self.receipt["mailpit_health_probe"] = facts
