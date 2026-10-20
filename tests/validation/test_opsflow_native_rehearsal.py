@@ -58,7 +58,7 @@ async function call(path,method='GET',body,headers={}) {
 async function login(){return (await call('/rest/login','POST',{emailOrLdapLoginId:input.email,password:input.password})).cookie;}
 (async()=>{let out;
  if(input.action==='setup'){const r=await call('/rest/owner/setup','POST',{email:input.email,firstName:'Opsflow',lastName:'Fixture',password:input.password});out={id:r.data.id};}
- else {const cookie=await login(); const auth={cookie};
+ else {const fresh=!input.cookie; const cookie=input.cookie||await login(); const auth={cookie};
   if(input.action==='credential'){const r=await call('/rest/credentials','POST',input.credential,auth);out={id:r.data.id};}
   else if(input.action==='workflows'){const r=await call('/rest/workflows?take=100','GET',undefined,auth);const rows=r.data.results||r.data.data||r.data;out={rows:rows.map(x=>({id:x.id,name:x.name,active:x.active,versionId:x.versionId}))};}
   else if(input.action==='run'){const r=await call('/rest/workflows/'+encodeURIComponent(input.workflowId)+'/run','POST',{triggerToStartFrom:{name:'Manual'}},auth);out={executionId:r.data.executionId};}
@@ -67,6 +67,7 @@ async function login(){return (await call('/rest/login','POST',{emailOrLdapLogin
    const ns=n=>{const rows=rd[n]||[];return rows.length?String(rows[rows.length-1].executionStatus||'unknown'):'absent';};
    out={id:String(d.id),status:String(d.status),finished:Boolean(d.finished),terminal:Boolean(d.stoppedAt),acknowledged:ns('Acknowledged'),deliveryRedacted:ns('Redact Delivery Uncertain')};}
   else throw new Error('unknown_action');
+  if(fresh) out._session=cookie;
  }
  process.stdout.write(JSON.stringify(out));
 })().catch(opsflowExit);
@@ -137,24 +138,35 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
             print("OPSFLOW_N8N_NATIVE_RECEIPT " + self.fixture.receipt_json())
 
     def api(self, action: str, **payload):
+        # One login per session: n8n limits /rest/login to 5 per minute per
+        # email, and polling an execution logged in every 0.25 s (429).
+        session = getattr(self, "_session", None)
         body = {
             "action": action,
             "email": self.email,
             "password": self.secrets["owner"][0],
+            **({"cookie": session} if session else {}),
             **payload,
         }
         result = self.fixture.exec_result(
             "main", "node", "-e", API_JS, input_=json.dumps(body, separators=(",", ":"))
         )
+        if result.returncode and session:
+            # The session may have ended (for example a main restart).
+            self._session = None
+            return self.api(action, **payload)
         if result.returncode:
             self.fixture.receipt["last_body_fetch_failure"] = body_fetch_failure_facts(
                 result, "n8n_api"
             )
             raise RehearsalFailure("n8n REST operation failed (payload withheld)")
         try:
-            return json.loads(result.stdout)
+            out = json.loads(result.stdout)
         except (ValueError, TypeError):
             raise RehearsalFailure("n8n REST safe summary rejected") from None
+        if isinstance(out, dict) and "_session" in out:
+            self._session = out.pop("_session")
+        return out
 
     def db_value(self, sql: str, role: str = "p04_audit") -> str:
         return self.fixture.psql(role, "opsflow_dev", sql).stdout.strip()
@@ -200,7 +212,9 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
         if (
             not stat.S_ISREG(metadata.st_mode)
             or metadata.st_uid != 70
-            or stat.S_IMODE(metadata.st_mode) != 0o600
+            # Foreign-owned fixture files are exactly 0640 (create_secrets);
+            # pg_dump writes into the file and keeps that mode.
+            or stat.S_IMODE(metadata.st_mode) != 0o640
             or metadata.st_nlink != 1
             or not 0 < metadata.st_size <= max_bytes
         ):
@@ -470,11 +484,13 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
         self.wait_state(second, "unknown")
         self.fixture.stop("worker")
         self.fixture.stop("runner")
+        # The lease columns exist only on ops_flow.outbox, which
+        # opsflow_reader may not read (it sees delivery_status); audit as the
+        # fixture superuser instead of widening the reader.
         self.assertEqual(
             "unknown|true|true|true|smtp_outcome_unknown",
             self.db_value(
-                f"SELECT state||'|'||(accepted_at IS NULL)::text||'|'||(lease_token IS NULL)::text||'|'||(lease_until IS NULL)::text||'|'||coalesce(last_error_code,'') FROM ops_flow.outbox WHERE run_id='{second}';",
-                "opsflow_reader",
+                f"SELECT state||'|'||(accepted_at IS NULL)::text||'|'||(lease_token IS NULL)::text||'|'||(lease_until IS NULL)::text||'|'||coalesce(last_error_code,'') FROM ops_flow.outbox WHERE run_id='{second}';"
             ),
         )
         self.assertEqual(
@@ -684,6 +700,8 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
         roles_bytes = self.fixture.exec(
             "dev-pg", "cat", "/fixture/dev-roles.sql"
         ).encode()
+        # roles_restore_error_is_expected reads `psql:<stdin>:N:` locations,
+        # which psql prints for `-f -`; the database rehearsal does the same.
         role_restore = self.fixture.exec_result(
             "dev-pg",
             "psql",
@@ -698,7 +716,8 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
             "-d",
             "postgres",
             "-f",
-            "/fixture/dev-roles.sql",
+            "-",
+            input_=roles_bytes.decode(),
         )
         if not roles_restore_error_is_expected(
             roles_bytes, role_restore.stderr.encode(), role_restore.returncode

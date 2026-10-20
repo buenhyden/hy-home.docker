@@ -24,7 +24,7 @@ from tests.validation._opsflow_native_inputs import (
     RESOURCE_CAPS,
     ROLE_LABEL,
     RUNNER_REF,
-    RUNNER_RUNTIME_CONFIG,
+    RUNNER_RUNTIME_IDS,
     TMPFS,
     VALKEY_REF,
     bind_mount,
@@ -58,6 +58,12 @@ from tests.validation._opsflow_native_ownership import (
 from tests.validation._supabase_smtp_fixture_storage import write_exclusive
 from tests.validation.test_datastore_rehearsal_boundary import DockerClientBoundary
 
+# Generation 1 and the restore took about 660 s on 2026-10-20 (SPEC-0204
+# TSK-0019), and a 13-minute limit expired during generation 2's main start.
+# Generation 2 repeats the main, worker and runner starts and the rest of the
+# scenario; its remaining time is not yet measured.
+WORK_SECONDS = 25 * 60
+
 
 class RehearsalFailure(AssertionError):
     pass
@@ -72,8 +78,8 @@ class NativeFixture:
     def __init__(self) -> None:
         self.host_uid, self.host_gid = native.host_identity()
         self.started = time.monotonic()
-        self.work_deadline = self.started + 13 * 60
-        self.final_deadline = self.started + 15 * 60
+        self.work_deadline = self.started + WORK_SECONDS
+        self.final_deadline = self.started + WORK_SECONDS + 2 * 60
         self.attempt = "opsflow-native-" + secrets.token_hex(12)
         self.lock_path = Path("/tmp/hyhome-opsflow-native-rehearsal.lock")
         self.lock_fd = -1
@@ -82,6 +88,7 @@ class NativeFixture:
         )
         self.dir_identity: tuple[int, int] | None = None
         self.files: dict[Path, native.PrivateFile] = {}
+        self.mailpit_dirs: list[Path] = []
         self.dumps: dict[str, Path] = {}
         self.dump_receipts: dict[str, dict[str, object]] = {}
         self.runtime_images: dict[str, str] = {}
@@ -106,7 +113,7 @@ class NativeFixture:
                 binary=Path("/usr/bin/docker"),
                 socket_path=Path("/var/run/docker.sock"),
                 config_dir=config,
-                deadline_seconds=13 * 60,
+                deadline_seconds=WORK_SECONDS,
             )
         except BaseException:
             try:
@@ -524,8 +531,8 @@ class NativeFixture:
         expected_mounts = {(fields.get("src"), fields.get("dst"), "readonly" in specification.split(",")) for specification, fields in parsed_mounts}
         network_ok = network_attachment_matches(item, record, self.networks, ALIASES, self.none_network_id)
         runtime_image = item.get("Image")
-        expected_runtime = RUNNER_RUNTIME_CONFIG if record.image_ref == RUNNER_REF else self.runtime_images.get(record.image_ref, runtime_image)
-        image_ok = isinstance(runtime_image, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", runtime_image) and runtime_image == expected_runtime and config.get("Image") == record.image_id and config.get("User") == record.user
+        expected_runtime = RUNNER_RUNTIME_IDS if record.image_ref == RUNNER_REF else {self.runtime_images.get(record.image_ref, runtime_image)}
+        image_ok = isinstance(runtime_image, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", runtime_image) and runtime_image in expected_runtime and config.get("Image") == record.image_id and config.get("User") == record.user
         resources_ok = host.get("ReadonlyRootfs") and host.get("Memory") == memory_bytes(memory) and host.get("MemorySwap") == memory_bytes(memory) and host.get("NanoCpus") == int(float(cpus) * 1_000_000_000) and host.get("PidsLimit") == pids
         security_ok = security_contract_matches(host, record.cap_add)
         storage_ok = actual_tmpfs == expected_tmpfs and actual_mounts == expected_mounts
@@ -635,7 +642,15 @@ class NativeFixture:
         self.start("valkey")
         self.wait_until(lambda: self.exec_result("valkey", "/bin/sh", "-ec", 'valkey-cli -a "$(cat /run/secrets/valkey-password)" ping').returncode == 0, "Valkey readiness expired")
     def start_mailpit(self) -> None:
-        self.create("mailpit", MAILPIT_REF, "1000:1000", ("capture",), env=("MP_DATABASE=/data/mailpit.db", "MP_UI_BIND_ADDR=0.0.0.0:8025", "MP_SMTP_BIND_ADDR=0.0.0.0:1025", "MP_MAX_MESSAGES=32"))
+        # The scenario stops and restarts Mailpit and expects the earlier
+        # capture, but Docker clears a tmpfs on stop. The store is a bind of an
+        # owned directory, one per generation so each generation starts empty.
+        if self.host_uid != 1000:
+            raise RehearsalFailure("Mailpit store owner must match its container user")
+        data = self.directory / f"mailpit-data-{self.generation}"
+        data.mkdir(mode=0o700)
+        self.mailpit_dirs.append(data)
+        self.create("mailpit", MAILPIT_REF, "1000:1000", ("capture",), env=("MP_DATABASE=/data/mailpit.db", "MP_UI_BIND_ADDR=0.0.0.0:8025", "MP_SMTP_BIND_ADDR=0.0.0.0:1025", "MP_MAX_MESSAGES=32"), mounts=(bind_mount(data, "/data", readonly=False),))
         self.start("mailpit")
     def _n8n_env(self) -> tuple[str, ...]:
         return ("DB_TYPE=postgresdb", "DB_POSTGRESDB_HOST=metadata-pg", "DB_POSTGRESDB_PORT=5432", "DB_POSTGRESDB_DATABASE=n8n", "DB_POSTGRESDB_USER=n8n", "DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/n8n_db_password", "EXECUTIONS_MODE=queue", "N8N_VALKEY_HOST=n8n-valkey", "N8N_VALKEY_SECRET=" + Path("/run/secrets/n8n_valkey_password").name, "QUEUE_BULL_REDIS_HOST=n8n-valkey", "QUEUE_BULL_REDIS_PORT=6379", "QUEUE_BULL_PREFIX=opsflow_native", "QUEUE_BULL_REDIS_PASSWORD_FILE=/run/secrets/n8n_valkey_password", "N8N_RUNNERS_MODE=external", "N8N_RUNNERS_BROKER_LISTEN_ADDRESS=0.0.0.0", "N8N_RUNNERS_AUTH_TOKEN_FILE=/run/secrets/n8n_runner_auth_token", "N8N_RUNNERS_TASK_TIMEOUT=60", "N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key", "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true", "N8N_USER_FOLDER=/tmp", "N8N_PROTOCOL=http", "N8N_HOST=n8n", "N8N_PORT=5678", "N8N_LOG_LEVEL=debug", "N8N_SECURE_COOKIE=false", "N8N_DIAGNOSTICS_ENABLED=false", "N8N_VERSION_NOTIFICATIONS_ENABLED=false", "N8N_TEMPLATES_ENABLED=false", "N8N_PERSONALIZATION_ENABLED=false", "N8N_BLOCK_ENV_ACCESS_IN_NODE=true", "GENERIC_TIMEZONE=Asia/Seoul", "TZ=Asia/Seoul")
@@ -788,6 +803,19 @@ class NativeFixture:
                 raise RehearsalFailure("owned host file metadata changed")
             path.unlink()
             self.files.pop(path, None)
+        for data in tuple(self.mailpit_dirs):
+            if data.exists():
+                for item in data.iterdir():
+                    metadata = item.stat(follow_symlinks=False)
+                    if (
+                        not stat.S_ISREG(metadata.st_mode)
+                        or metadata.st_uid != self.host_uid
+                        or not item.name.startswith("mailpit.db")
+                    ):
+                        raise RehearsalFailure("owned Mailpit store metadata changed")
+                    item.unlink()
+                data.rmdir()
+            self.mailpit_dirs.remove(data)
         config = self.directory / "docker-config"
         if config.exists() and not any(config.iterdir()):
             config.rmdir()
