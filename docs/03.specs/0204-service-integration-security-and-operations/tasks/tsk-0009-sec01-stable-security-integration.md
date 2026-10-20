@@ -2045,6 +2045,98 @@ check predate this change: Prometheus has no scrape job for Pushgateway, and
 the `airflow-`, `n8n-` and `oauth2-proxy-valkey-exporter` targets are down
 because their optional profiles are not running.
 
+### Observability store HOME rollout — 2026-10-20
+
+The owner then chose to roll out the observability stores one at a time. Each
+service was checked against its official release notes, stopped, copied with a
+one-off container that mounts the volume read-only, and started on the declared
+image. Copies are in `/home/hyunyoun/storage/backups/obs-images-20261020/`
+(0700, files 0600, `SHA256SUMS`).
+
+| Service | Change | Pre-check | Stop window (+09:00) | Copy | After |
+| --- | --- | --- | --- | --- | --- |
+| Grafana | 13.2.2 → 13.2.3 | patch release | 10:16:47–about 10:28 | `grafana-data.tar` 542,002,176 bytes, `grafana.db` readable | `/api/health` database ok, 13.2.3; route 200; migrations 0 performed, 4 skipped by config; no error lines |
+| Prometheus | v3.14.0 → v3.15.0 | release notes list no breaking change; XOR2, `st-storage` and `--log.level` are unused here; `promtool check config` and `check rules` pass with the new image | 10:30:29–about 10:42 | `prometheus-data.tar` 6,697,427,456 bytes | 0 error lines; a query 7 days back still returns data; targets 23 up, 12 not yet scraped and 3 down (the absent optional Valkey exporters) right after start |
+| Pyroscope | 2.3.1 → 2.4.0 | no breaking change listed; the bucket-probe change does not apply to the `filesystem` backend | 10:45:26–11:08:42 | `pyroscope-data.tar` 4,127,205,888 bytes | healthy; 228 profiles received in the next 3 minutes |
+| Tempo | 3.0.3 → 3.1.0 (local build) | 3.1.0 breaks vParquet3 writes, Redis cache keys, `query_shards` and span-pruning options; the HOME config already pins `vParquet4` and uses none of the others; the binary has no config-check flag | 11:10:54–11:12:49 | `tempo-data.tar` 8,827,392 bytes (WAL; blocks live in SeaweedFS `tempo-bucket`) | `/ready`; traces from the previous day and from the last 5 minutes are found |
+
+Problems in this rollout:
+
+- **Grafana stayed down about 11 minutes instead of 1–2.** The first copy
+  command ran `sh -c 'tar …'` without `--entrypoint`, so the Grafana image's
+  `/run.sh` started a Grafana server in the helper container instead of the
+  copy. The helper mounted the volume read-only, so the data was not changed.
+  The background task was stopped and the copy ran again with `--entrypoint sh`;
+  the later services all used an explicit entrypoint.
+- **Pyroscope ingestion stopped for about 23 minutes**, because the 4.1 GB copy
+  of many small files on the HDD took 21 minutes. A live copy with a short
+  final stop would be shorter next time.
+- **Pyroscope logs `compaction-worker … no block metadata found; skipping`**
+  about 12 times a minute after the upgrade, and logged `empty ring` errors in
+  its first seconds. Whether 2.3.1 logged the same cannot be checked: Loki holds
+  no `container` label for Pyroscope, so its logs are not collected.
+- **Tempo removed one live-store WAL block on start**
+  (`failed to replay block. removing.`, its WAL meta JSON could not be read).
+  Traces that block held and had not been flushed may be lost; the copy taken
+  before the start still contains it.
+
+Alerting, checked at the same time: `HyhomeBackupStale` was firing 1, 3 and 6
+days before. Alertmanager's Slack integration had 2,988 failed of 2,991
+notifications before its 2026-10-16 restart; since that restart it sent 302
+with 0 failures. Email sent none. The Prometheus restart moved the alert back
+to `pending` for its 15-minute `for` period.
+
+### Pushgateway scrape job review — 2026-10-20
+
+The low-risk rollout above found that Prometheus has no Pushgateway job. On the
+owner's request this records what such a job would give in the current
+configuration; no configuration was changed.
+
+Current state, read-only:
+
+- `pushgateway` runs on HOME (`obs`, `batch-metrics`), `prom/pushgateway:v1.11.4`,
+  on `edge_net` and `obs_net`, no host port, no volume or `--persistence.file`.
+  It held no groups (`push_time_seconds` empty).
+- `prometheus.dev.yml` has 39 jobs and none targets `pushgateway:9091`.
+  GDE-0046 already says to add the job in separate work before any dashboard or
+  alert depends on pushed metrics.
+- Nothing in `infra/`, `scripts/` or `.github/` pushes to Pushgateway.
+- Host batch jobs already have a pull path that does not need it: node-exporter
+  runs `--collector.textfile.directory=/textfile` from
+  `/home/hyunyoun/backups/metrics`. `hyhome-backup.sh` writes
+  `hyhome_backup.prom` there, and `alert_rules.local.infra.yml` alerts on
+  `time() - hyhome_backup_last_success_timestamp_seconds > 26 * 3600` or its
+  absence, and on `hyhome_backup_offsite_repo_bytes > 8e9`.
+
+What a job could add:
+
+| Use | Fit with the current configuration |
+| --- | --- |
+| Short-lived container jobs on `obs_net` (one-off provisioners, rehearsal runners, CI-style checks run on HOME) reporting result, duration and last success | Possible: they can reach `pushgateway:9091` directly. No such producer exists yet |
+| Freshness alerts per batch group via `push_time_seconds` | Possible, but a Pushgateway restart drops every group, so an alert must treat a missing series as unknown rather than healthy, as the backup rule does with `absent()` |
+| Host systemd timers (`hyhome-backup`, `hyhome-renovate`) | Better served by the existing textfile collector: the host cannot reach Pushgateway without a new port, and the backup already uses the textfile path |
+| k6 and Quality runs | Not a fit: k6 metrics go through the per-run OTLP relay (SPEC-0214) |
+
+If a job is added, it needs `honor_labels: true` so pushed `job` and `instance`
+labels are kept, a static `pushgateway:9091` target on `obs_net`, and producers
+that push fixed grouping keys and delete finished groups (RUN-0046), because
+Pushgateway has no TTL. Without a producer, adding the job only creates an
+always-empty target; the decision is deferred to the first producer.
+
+### Backup freshness observed during the review — 2026-10-20
+
+Reading the textfile path showed that the last successful HOME backup ended
+**2026-10-09 04:01:44 +09:00** (`hyhome_backup_last_success_timestamp_seconds`
+1791486104). The 2026-10-14 03:43 run copied its snapshots to R2 and then
+exited 1; its journal shows no error line before the exit. On 2026-10-15
+02:24:39 an interactive session ran `sudo systemctl stop hyhome-backup.timer`
+during OpenBao host preparation, and the timer has stayed inactive since.
+SPEC-0243 TSK-0001 schedules its window for 2026-10-22 14:00–16:00 and says the
+window avoids 03:30, so the timer did not need to stop; RUN-0085 says to start
+it again whatever step the work stops at. Restarting the timer is an owner sudo
+action, and with `Persistent=true` it starts a missed run at once. Neither was
+done here, and the cause of the 2026-10-14 exit 1 is not established.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
