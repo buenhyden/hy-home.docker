@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.32"
+version: "0.12.33"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -746,6 +746,8 @@ systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
 docker info -f '{{.Debug}}'   # false여야 한다. true면 exec 환경의 token이 dockerd 로그에 남는다
 command -v jq                  # 이전 root 정리에 필요하다
 loginctl show-user "$USER" -p Linger   # yes가 아니면 window 동안 다른 로그인 세션을 유지한다
+docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock --compact | tail -4   # W3b가 쓸 R2 저장소
+docker compose --profile backup run --rm --no-deps restic-offsite cmd stats --no-lock --mode debug 2>&1 | grep -A2 '^File Type: data'
 : >"$XDG_RUNTIME_DIR/p01-window.vars"   # 이 window의 경로 변수 기록을 비운다
 ```
 
@@ -763,6 +765,13 @@ window 전체를 `bash --noprofile --norc`로 연 셸 하나에서 `unset HISTFI
 기대: compose 검증 통과, `Sealed false`, compose가 고정한 candidate image가 local에
 있음, 남은 용량 확인, 마지막 backup 결과 확인. 위 SEC01 gate(image 잔여 위험 수용과 7일 안의
 stable 조회)가 기록돼 있고 위 TLS preflight가 PASS여야 한다. 하나라도 아니면 중단한다.
+R2 줄은 exit 0이고 이전과 같은 저장소의 state·host snapshot 이력을 보여야 한다. 저장된 byte에
+W3 snapshot·receipt 크기의 1.05배를 더한 값이 `offsite.sh`의 상한(9,000,000,000 byte, owner의
+10 GB 절대 상한) 안이어야 한다. 둘 중 하나라도 아니면 window를 열지 않는다. W3b는 W1·W1c·W2·W3
+뒤에 있으므로 거기서 멈추면 root 절차와 Agent의 일회용 SecretID를 이미 쓴 뒤다. 저장소가 없다고
+나와도 `restic-offsite init`으로 고치지 않는다. 새 key와 ID가 생기고 기존 data는 lock 아래에 남아
+열 수 없게 된다. owner가 계정·bucket·credential·`config`/`keys` object를 읽기 전용으로 먼저 확인한다
+(2026-10-20 13:12에 R2가 `repository does not exist`를 반환했다. SPEC-0204 TSK-0009).
 image가 없으면 registry에서 받을 수 없으므로, 별도 승인으로 검토된 OCI archive를 다시 import해 같은 digest인지 확인한다(SPEC-0204 TSK-0009).
 
 W0에서는 audit 디렉터리와 rotation 계약도 server 재생성 전에 준비합니다. 실제 audit
@@ -1373,7 +1382,9 @@ test "$P01_W3B_EXIT" = 0 || exit "$P01_W3B_EXIT"
 기대: 마지막 줄이 `{"state":"W3B_STORED","snapshot_id":...,"files":[...]}`이고 두 파일의
 `sha256`이 W3 receipt와 같다. 이 줄이 값 없는 W3b receipt이며 Task에 그대로 남긴다.
 중단: exit64는 입력 누락이나 symlink, exit65는 R2 저장소 문제·snapshot ID 없음·바이트
-불일치다. `restic backup` 자체가 실패하면 restic의 종료 코드(1·3·10-12 등)로 끝난다. 0이
+불일치다. exit66은 R2 상한 거부로 아무것도 올리지 않았다는 뜻이다. 다시 시도하지 않고 W3b와
+이후 단계를 다음 window로 넘긴다. 이때 stdout 마지막 줄은 receipt가 아니라
+`R2 repository size: N bytes`다. `restic backup` 자체가 실패하면 restic의 종료 코드(1·3·10-12 등)로 끝난다. 0이
 아닌 종료는 모두 W4를 막는다. R2에 남은 배타 lock이 있으면 `cmd unlock`은 거부되므로 W3b를
 멈추고 다음 window로 넘긴다. 불일치 뒤 다시 실행하면 새 snapshot이 하나 더
 생길 뿐 이전 것은 지워지지 않는다. 전체 repository copy를 이번 두 산출물의 전달 성공으로

@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.19"
+version: "0.1.20"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0243-TSK-0001"
 parent_ids:
@@ -674,6 +674,48 @@ Policy/ADR references explain the supersession; they do not reactivate it.
 The protected token, issuer, Raft and restore suites have direct gate consumers
 and distinct failure checks, so they remain. Neither a review filename nor
 completion of the change establishes that its regressions are disposable.
+
+### Delta review and owner approval — 2026-10-20
+
+The owner asked for the OpenBao work to be reviewed and then approved it
+("OpenBao 작업 검토후 승인"). The handoff above requires
+`P01_APPROVED_COMMIT` to have no source change since `bf87a9b6a`. That no
+longer holds. Main `532ff831e` carries the PR #520 Traefik rate-limit chain,
+the PR #526 Restic allowlist change and two OpenBao test edits. Open PR #528
+changes `offsite.sh`, which includes the W3b `artifact` action.
+
+Two read-only subagent reviews of that delta were run. They were requested by
+this session and are not owner review.
+
+- `iac-reviewer`: NOT READY as of 2026-10-20. The source and window text
+  hold. The blocker is runtime: at 13:12–13:14 R2 returned `repository does
+  not exist`, so the W3b precheck would fail after W1–W3 had used the root
+  ceremony and the Agent's one-time SecretID. The Traefik limit (100/s, burst
+  200 per router and peer) carries the OIDC login and the host helpers'
+  gateway calls, well under the burst. The Agent, the Prometheus scrape and
+  Gatus bypass the gateway. If #528 merges first, W3b exits 66 while R2 is
+  above the cap.
+- `security-auditor`: APPROVE WITH NOTES, nothing blocking. R2 keys are never
+  printed, and the guard fails closed on every traced path. Notes applied in
+  #528: the size parser requires a total for every file type; each pending
+  size is checked as a number; the size is assigned before it is printed;
+  the guard's `stats` uses `--no-lock`; and the `cmd` allowlist is described
+  as an accident guard, not a boundary.
+
+Changes made from the reviews (PR #528): RUN-0085 W0 now lists R2 snapshots
+and the stored bytes, and does not open the window unless the same
+repository answers and the stored bytes plus 1.05 × the W3 snapshot and
+receipt fit under the cap. It forbids `init` as a repair. W3b's stop list
+adds exit 66.
+
+Status: the approval covers the reviewed delta above, so `P01_APPROVED_COMMIT`
+is the main commit at W0 whose window-relevant change since `bf87a9b6a` is
+limited to it. The window is still scheduled for 2026-10-22 14:00–16:00 KST,
+with the SEC01 lookup on 2026-10-21 and W0 at 13:30. It is BLOCKED until the
+owner finds why the R2 repository config is missing and the W0 R2 gate
+passes. While R2 holds about 9.35 GB, a working repository would refuse W3b
+under the 9 GB cap, so the window also needs either room in R2 or an owner
+decision on where W3b stores the artifact. No window step was run.
 
 ## Evidence
 
