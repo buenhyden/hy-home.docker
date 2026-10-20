@@ -22,7 +22,9 @@ workflow/airflow/plugins
 workflow/n8n
 workflow/n8n-task-runner
 workflow/n8n-task-runner-worker
-registry
+# The loopback registry is left out: it holds images archived on 2026-10-16
+# (SPEC-0246) that can be pulled or rebuilt, and 2.9 GiB of them pushed the
+# state repository over BACKUP_STATE_MAX_GIB.
 # SeaweedFS needle volumes and master state. Filer metadata comes from the
 # fs.meta.save export taken first (RUN-0024), never from the live leveldb store.
 data/seaweedfs/volume
