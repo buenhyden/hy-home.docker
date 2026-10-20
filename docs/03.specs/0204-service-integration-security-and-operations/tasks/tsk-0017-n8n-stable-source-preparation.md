@@ -1,6 +1,6 @@
 ---
 title: "n8n Stable Source Preparation Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -391,11 +391,28 @@ the `origin/main` bytes, reproduces the recorded binding
 `03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985`, so the
 algorithm was confirmed before reuse. That binding is now under
 `historical_source_bindings` with its reason, and the new binding is
-`2fee9f27e518389e3fe6dee1f39c36150df1abb552069348f39f1a21ef960e5d`. Only the
-Compose hash differs; every image build input keeps its hash, so the W74 image
+`4730553866b6e24af9fa4f8f6fdfb62d5f53b9021a8d0b5ec4159951a03149b3`. Only the
+Compose and binding-test hashes differ; every image build input keeps its hash, so the W74 image
 reference `hy-home/sec01-n8n:2.43.6-opsflow-03892eb1a9a4` in
 `_opsflow_native_inputs.py` still names the reviewed build and is unchanged.
 Its native, HOME, signature, SBOM and recovery fields stay `NOT_RUN`.
+
+### Independent review — 2026-10-20
+
+A read-only `code-reviewer` subagent reviewed local head `148d324fe`, which has
+the same content as the pushed `d5d337ef0` (`git range-diff` shows every commit
+`=`). It had no shell, so it did not run tests or recompute hashes. Verdict:
+approve with notes.
+
+| Finding | Severity | Resolution |
+| --- | --- | --- |
+| The binding's `source_revision` named a commit that the rebase removed | Medium | It now names the main revision `c20ccb36e` the change sits on, as the earlier bindings do |
+| `build-inputs.json` kept the `03892eb1…` binding as current | Medium | The binding and its archived predecessor are mirrored there; the test now requires both files to match |
+| No test recomputed the aggregate `input_sha256` | Low | The test recomputes it with the recorded algorithm. The test is itself a bound input, so the binding is now `47305538…`; `2fee9f27…` was recomputed and matched before the test change, and never reached main |
+| `include_inputs` kept the old n8n Compose hash | Low | Refreshed; it was the only one of 44 rows that was stale |
+| `n8n-worker` exposes `${N8N_PORT:-5678}`, but nothing listens there | Low | Not changed here; this was already the case on main. Recorded as a follow-up |
+
+This was a self-requested subagent review, not owner review.
 
 ## Evidence
 
