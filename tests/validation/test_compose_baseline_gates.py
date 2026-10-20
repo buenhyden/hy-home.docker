@@ -2105,6 +2105,13 @@ class BackupContractTests(unittest.TestCase):
             )
         example = (ROOT / ".env.example").read_text(encoding="utf-8")
         self.assertIn("\nBACKUP_STATE_MAX_GIB=8\n", example)
+        # The loopback registry holds archived images that can be pulled or
+        # rebuilt again (SPEC-0246); copying it pushed the repository over budget.
+        include = (ROOT / RESTIC_DIR / "sets/state-include.txt").read_text(
+            encoding="utf-8"
+        )
+        allowed = [line for line in include.splitlines() if not line.startswith("#")]
+        self.assertNotIn("registry", allowed)
 
     def test_destructive_restic_actions_need_explicit_confirmation(self) -> None:
         script = (ROOT / RESTIC_DIR / "backup.sh").read_text(encoding="utf-8")
