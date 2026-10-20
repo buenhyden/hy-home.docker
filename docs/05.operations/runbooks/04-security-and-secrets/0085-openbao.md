@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.33"
+version: "0.12.34"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -765,13 +765,14 @@ window 전체를 `bash --noprofile --norc`로 연 셸 하나에서 `unset HISTFI
 기대: compose 검증 통과, `Sealed false`, compose가 고정한 candidate image가 local에
 있음, 남은 용량 확인, 마지막 backup 결과 확인. 위 SEC01 gate(image 잔여 위험 수용과 7일 안의
 stable 조회)가 기록돼 있고 위 TLS preflight가 PASS여야 한다. 하나라도 아니면 중단한다.
-R2 줄은 exit 0이고 이전과 같은 저장소의 state·host snapshot 이력을 보여야 한다. 저장된 byte에
+R2 줄은 exit 0이고 저장소 `f6973d0274`의 state·host snapshot 이력을 보여야 한다(2026-10-20
+owner 승인으로 비운 bucket에 재초기화하고 첫 copy·check가 통과했다. SPEC-0204 TSK-0009). 저장된 byte에
 W3 snapshot·receipt 크기의 1.05배를 더한 값이 `offsite.sh`의 상한(9,000,000,000 byte, owner의
 10 GB 절대 상한) 안이어야 한다. 둘 중 하나라도 아니면 window를 열지 않는다. W3b는 W1·W1c·W2·W3
 뒤에 있으므로 거기서 멈추면 root 절차와 Agent의 일회용 SecretID를 이미 쓴 뒤다. 저장소가 없다고
 나와도 `restic-offsite init`으로 고치지 않는다. 새 key와 ID가 생기고 기존 data는 lock 아래에 남아
 열 수 없게 된다. owner가 계정·bucket·credential·`config`/`keys` object를 읽기 전용으로 먼저 확인한다
-(2026-10-20 13:12에 R2가 `repository does not exist`를 반환했다. SPEC-0204 TSK-0009).
+(2026-10-20 13:12의 `repository does not exist`는 owner가 bucket을 비운 결과였다. SPEC-0204 TSK-0009).
 image가 없으면 registry에서 받을 수 없으므로, 별도 승인으로 검토된 OCI archive를 다시 import해 같은 digest인지 확인한다(SPEC-0204 TSK-0009).
 
 W0에서는 audit 디렉터리와 rotation 계약도 server 재생성 전에 준비합니다. 실제 audit
