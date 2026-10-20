@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Usage Guide"
-version: "1.2.5"
+version: "1.2.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "operations"
 artifact_id: "GDE-0065"
 parent_ids:
@@ -38,7 +38,9 @@ Registry는 `registry`(HOME)와 `tooling`이 선택하는 `HOME` OCI 이미지 �
 push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. 로컬에서 빌드한
 이미지는 추적되는 Dockerfile로부터 재현할 수 있지만, push된 서드파티나 고유
 아티팩트는 digest/콘텐츠가 백업되어 있거나 신뢰할 수 있는 업스트림에서 여전히
-구할 수 있을 때만 복구할 수 있다.
+구할 수 있을 때만 복구할 수 있다. HOME 야간 Restic 백업(RUN-0021)은 2026-10-20부터 registry를
+복사하지 않는다. 보관한 이미지는 업스트림 pull이나 추적되는 Dockerfile로 다시 만들며, 고유
+아티팩트를 push하기 전에는 정책의 전체 파일시스템 스냅샷을 따로 남긴다.
 
 ## Usage
 
