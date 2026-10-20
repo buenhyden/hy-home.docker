@@ -45,9 +45,9 @@ esac
 # what R2 bills. Fails closed: no listing, no number.
 stored_bytes() {
     # restic prints this listing on stderr.
-    listing="$(restic stats --mode debug 2>&1)" || { echo "R2 size listing failed" >&2; exit 65; }
+    listing="$(restic --no-lock stats --mode debug 2>&1)" || { echo "R2 size listing failed" >&2; exit 65; }
     printf '%s\n' "$listing" | awk '
-        /^File Type:/ { file = 1; seen = 1; next }
+        /^File Type:/ { file = 1; types++; next }
         file && /^Total Size:/ {
             m = 1
             if ($4 == "KiB") m = 1024
@@ -55,9 +55,11 @@ stored_bytes() {
             else if ($4 == "GiB") m = 1073741824
             else if ($4 == "TiB") m = 1099511627776
             total += $3 * m
+            totals++
             file = 0
         }
-        END { if (!seen) exit 1; printf "%.0f\n", total }' || { echo "R2 size listing unreadable" >&2; exit 65; }
+        # Every file type must carry its total, or a format change reads as 0.
+        END { if (!types || types != totals) exit 1; printf "%.0f\n", total }' || { echo "R2 size listing unreadable" >&2; exit 65; }
 }
 
 # "<id> <tree>" for each snapshot of the repository restic is pointed at.
@@ -141,6 +143,8 @@ case "$action" in
         pending=0
         for set in $SETS; do
             bytes="$(pending_bytes "$set")"
+            # Fail closed even in a shell that does not stop on a failed substitution.
+            case "$bytes" in '' | *[!0-9-]*) echo "pending size for $set unreadable" >&2; exit 65 ;; esac
             pending=$((pending + bytes))
         done
         guard "$pending"
@@ -151,7 +155,8 @@ case "$action" in
         restic snapshots --compact --latest 1
         # Stored bytes, which R2 bills; the orchestrator turns this line into
         # hyhome_backup_offsite_repo_bytes.
-        echo "R2 repository size: $(stored_bytes) bytes"
+        size="$(stored_bytes)"
+        echo "R2 repository size: $size bytes"
         ;;
     check)
         # Weekly: structure plus a random tenth of the pack data.
@@ -171,7 +176,8 @@ case "$action" in
         # --max-repack-size 0: prune only deletes whole unused packs and never
         # writes repacked ones, which could outgrow the cap under the lock.
         restic forget --prune --max-repack-size 0 --group-by host,tags --keep-within 30d --keep-monthly 12
-        echo "R2 repository size: $(stored_bytes) bytes"
+        size="$(stored_bytes)"
+        echo "R2 repository size: $size bytes"
         ;;
     artifact)
         # RUN-0085 W3b: store the W3 OpenBao snapshot and its receipt, mounted
@@ -196,7 +202,7 @@ case "$action" in
             exit 64
         fi
         incoming=0
-        for name in $files; do bytes="$(wc -c <"/artifact/$name")"; incoming=$((incoming + bytes)); done
+        for name in $files; do bytes="$(wc -c <"/artifact/$name" | tr -d ' ')"; incoming=$((incoming + bytes)); done
         guard "$incoming"
         set --
         for name in $files; do set -- "$@" "/artifact/$name"; done
@@ -228,7 +234,9 @@ case "$action" in
                 ;;
             snapshots | stats | ls | cat | find | check | diff | dump | list | version) ;;
             *)
-                # Uploads go through copy or artifact, which check the cap.
+                # Uploads go through copy or artifact, which check the cap. This
+                # guards against mistakes; anyone with Docker access can still
+                # run restic directly.
                 echo "'${1:-}' may write to R2; cmd runs read-only commands only" >&2
                 exit 64
                 ;;
