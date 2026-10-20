@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.20"
+version: "0.1.21"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -718,6 +718,14 @@ TSK-0009). The owner deleted it to stay under 10 GB, so W3b has no
 repository to store into until a new one is initialized. While R2 holds about 9.35 GB, a working repository would refuse W3b
 under the 9 GB cap, so the window also needs either room in R2 or an owner
 decision on where W3b stores the artifact. No window step was run.
+
+R2 unblocked — 2026-10-20 20:10: on the owner's "R2 재초기화 진행" the empty
+bucket was initialized as repository `f6973d0274`, the first copy exited 0
+(36 snapshots, `R2 repository size: 5498639079 bytes`) and `check` found no
+errors (SPEC-0204 TSK-0009). The W0 R2 gate now has a repository to read and
+about 3.5 GB of room under the 9 GB cap, so the R2 blocker is cleared. It is
+re-checked at W0 on 2026-10-22, after two more daily copies. The window still
+needs the SEC01 lookup on 2026-10-21 and the remaining W0 checks.
 
 ## Evidence
 

@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.23"
+version: "0.4.24"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2337,6 +2337,36 @@ approval.
 After this rollout, the only drift is `openbao` and `openbao-agent` (2.6.2 →
 the owned 2.7.1 build), which stay for the SPEC-0243 window. Signature, SBOM
 and image scans were not run for these images.
+
+### R2 reinitialization and evidence cleanup — 2026-10-20
+
+The owner approved "R2 재초기화 진행" after emptying the bucket (the read-only
+listing above returned `KeyCount` 0). No backup run was active; the timer's
+next run is 2026-10-21 03:36.
+
+- `restic-offsite init` at about 20:10 created repository `f6973d0274` with
+  the state repository's chunker parameters. The old repository's keys and
+  data no longer exist, so nothing from it can be read.
+- The first `restic-offsite copy` exited 0. The guard passed, and R2 now
+  holds 36 snapshots (20 `hyhome-state`, 16 `hyhome-host`); the latest are
+  state `edc35c17` and host `9fc2bd23` from 2026-10-20 02:42–02:47 UTC.
+  `R2 repository size: 5498639079 bytes`, which leaves about 3.5 GB under
+  the 9 GB cap. That headroom is consumed by daily copies, and the 30-day
+  lock keeps everything written until it expires.
+- `restic-offsite check` (structure plus 10% of packs): `no errors were
+  found`, exit 0.
+
+The owner also approved deleting the retained W74 attempt directories and the
+Open WebUI rehearsal volume ("검토후 삭제"). For the seven failed attempts
+(SPEC-0204 TSK-0019) the synthetic secrets, dumps, Docker config, workflow
+file and Mailpit stores were removed. `run.stdout`, `run.stderr` and the
+original `SHA256SUMS` (now `SHA256SUMS.original`) remain, so the FAIL receipts
+stay; each kept file still matches its original checksum. No secret value
+appeared in the kept output. The two passing attempt directories held only
+receipts and are unchanged. The container `owui-rehearsal` was removed; it
+was the only user of `owui-rehearsal-20261020`, which is separate from the
+live `hy-home-infra_open-webui`. The agent's `docker volume rm` was denied
+by the permission rule, so the owner runs it.
 
 ## Evidence
 
