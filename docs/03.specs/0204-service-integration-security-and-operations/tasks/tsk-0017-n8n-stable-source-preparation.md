@@ -381,6 +381,22 @@ restore of this backup into HOME. Migrations are forward-only; going back
 means restoring this backup into an emptied database with the 2.41.6 image,
 not retagging the image.
 
+### Source binding refresh — 2026-10-20
+
+`test_workflow_version_bundle` binds the n8n Compose, build and custom-node
+inputs to `update-ledger.json#/n8n_source_preparation/source_binding`. The
+Compose change above made the recorded Compose hash stale, and the hosted
+`candidate-quality` run failed on it. The ledger's own algorithm, applied to
+the `origin/main` bytes, reproduces the recorded binding
+`03892eb1a9a485b454e48c8222ecebc116d67a846560bf97fb8a783e5f6d8985`, so the
+algorithm was confirmed before reuse. That binding is now under
+`historical_source_bindings` with its reason, and the new binding is
+`2fee9f27e518389e3fe6dee1f39c36150df1abb552069348f39f1a21ef960e5d`. Only the
+Compose hash differs; every image build input keeps its hash, so the W74 image
+reference `hy-home/sec01-n8n:2.43.6-opsflow-03892eb1a9a4` in
+`_opsflow_native_inputs.py` still names the reviewed build and is unchanged.
+Its native, HOME, signature, SBOM and recovery fields stay `NOT_RUN`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
