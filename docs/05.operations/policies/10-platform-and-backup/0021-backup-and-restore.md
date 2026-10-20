@@ -70,9 +70,12 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
    set 안의 pgBackRest repository까지 포함해 bucket lock이 걸린 Cloudflare R2
    repository 하나로 복사한다. host의 token은 object를 쓸 수 있지만 bucket을
    관리하거나 지우지 못한다. owner가 RUN-0021의 R2 설정을 마치고 첫 copy가
-   성공하면 원격 사본이 생긴다. 전체 export 성공과 격리 restore를 별도로 확인하기 전 recoverability는 미검증이며 원격 RPO 하루는 계획 목표다. 원격 보존은 owner가
-   매달 실행하는 `forget-prune`(최근 30일 전부와 월 1개씩 12개월)으로 R2 무료
-   한도 초과 위험을 검토한다; 보존/과금 상한을 보장하지 않는다(RUN-0021 8.5, 8.6). 그 전까지는 모든
+   성공하면 원격 사본이 생긴다. 전체 export 성공과 격리 restore를 별도로 확인하기 전 recoverability는 미검증이며 원격 RPO 하루는 계획 목표다. R2
+   repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). 올린 뒤 저장 byte가
+   9 GB를 넘을 수 있으면 업로드를 거부하고 run이 실패한다. 그동안 원격 RPO는 지켜지지
+   않는다. 원격 보존은 owner가 매달 실행하는 `forget-prune`(최근 30일 전부와 월 1개씩
+   12개월)이다. 상한은 이 repository의 파일만 세므로 같은 계정의 다른 R2 사용은 따로
+   확인한다(RUN-0021 8.2, 8.5, 8.6). 그 전까지는 모든
    복사본이 한 host에 있어 **offsite recovery는 제공되지 않는다**.
 2. SSD repository의 크기 예산은 `BACKUP_STATE_MAX_GIB`(8 GiB, owner 2026-10-10; 이전 5 GiB, 2026-09-22)
    이다. pgBackRest와 export 이후 검사에서 초과하면 run이 실패하고 해당 Restic 단계를 건너뛴다. 실행 중 quota는 아니며 후속 쓰기로 초과할 수 있다;

@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.25"
+version: "1.4.26"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-20"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -308,13 +308,24 @@ configured (BACKUP_OFFSITE_R2_*); skipped`를 남기고 unit 결과는 바뀌지
 설정되면 로컬 Restic backup과 check가 성공한 뒤(staging을 비우고 SeaweedFS
 vacuum을 재개한 다음) `restic-offsite copy`를 실행한다. 원격에 없는 snapshot만
 올리고 `R2 latest snapshots:` 아래에 set마다 한 줄을, `R2 repository size:`에
-저장된 byte 수를 남긴다. orchestrator는 이 값을 성공 timestamp와 같은 파일에
-`hyhome_backup_offsite_repo_bytes`로 쓴다. 일요일에는 원격에
+저장된 byte 수를 남긴다. orchestrator는 run이 실패해도 이 값을 별도 파일
+`hyhome_backup_offsite.prom`에 `hyhome_backup_offsite_repo_bytes`로 쓴다. 일요일에는 원격에
 `restic check --read-data-subset 10%`도 실행한다. copy나 check가 실패하면
 `offsite copy to R2 failed` 또는 `offsite check of R2 failed`를 남기고 다른 단계의
 실패처럼 unit이 exit 1로 끝난다. 로컬 snapshot의 전체 export 포함 여부는 별도 확인한다. 로컬 Restic backup/check가 실패하면 `offsite copy skipped`다. 그러나 앞선 pgBackRest/globals/Valkey/SQLite/SeaweedFS 실패는 `restic_ok`를 내리지 않아 partial snapshot과 원격 copy가 진행될 수 있다. 이는 전체 복구 세트 성공이 아니며 unit exit1과 성공 timestamp 부재를 유지한다. 원격이
 초기화되지 않았거나 닿지 않으면 exit 65다. 오프사이트까지 성공한 run만
 step 4의 성공 timestamp를 쓴다.
+
+R2 repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). `copy`와 `artifact`는
+올리기 전에 지금 저장된 byte(사용하지 않는 pack 포함)에 이번에 올릴 수 있는 최대량의
+105%를 더해 보고, 9 GB를 넘을 수 있으면 아무것도 올리지 않는다. 그때는
+`refused: up to … bytes after this upload, cap 9000000000`과 exit 66을 남기고 unit이
+실패한다. 남는 1 GB는 pack header, index, 추정 오차 몫이다. 30일 bucket lock 때문에 올린
+것은 그 안에 지울 수 없으므로 미리 막는다. 거부된 동안에는 새 원격 사본이 없다. 8.5로 lock이
+풀린 snapshot을 정리해 9 GB 아래로 내려야 다시 올라간다. 상한을 올리거나 lock을 약화하지
+않는다. `cmd`는 읽기 명령(`snapshots`, `stats`, `ls`, `cat`, `find`, `check`, `diff`,
+`dump`, `list`, `version`)만 넘긴다. 이 상한은 이 repository의 파일만 센다. 같은 계정의
+다른 R2 사용은 8.6에서 따로 확인한다.
 
 #### 8.3 R2에서 복원
 
@@ -352,7 +363,9 @@ docker compose --profile backup run --rm --no-deps \
 ```
 
 최근 30일의 snapshot은 모두 두고, 그보다 오래된 것은 한 달에 하나씩 12개월치만
-남긴다(`--keep-within 30d --keep-monthly 12`, host와 tag별). 이는 snapshot timestamp 기준이며 object 생성 시각·R2 lock 만료와 같지 않다. remote prune/lock 조합은 현재 미검증이다. 삭제/repack이 잠금에 거부되면 중단하고 owner에게 전달하며 다음 달 자동 해소나 index 안전을 가정하지 않는다. 잠금을 약화하거나 object 일부를 직접 삭제하지 않는다. 성공 후에도 `restic-offsite check`로 `no errors were found`를 확인한다.
+남긴다(`--keep-within 30d --keep-monthly 12`, host와 tag별). prune은
+`--max-repack-size 0`으로 일부만 쓰이는 pack을 다시 쓰지 않고, 통째로 쓰이지 않는 pack만
+지운다. lock 아래에서 repack이 저장량을 늘리지 못하게 하려는 것이다. 이는 snapshot timestamp 기준이며 object 생성 시각·R2 lock 만료와 같지 않다. remote prune/lock 조합은 현재 미검증이다. 삭제/repack이 잠금에 거부되면 중단하고 owner에게 전달하며 다음 달 자동 해소나 index 안전을 가정하지 않는다. 잠금을 약화하거나 object 일부를 직접 삭제하지 않는다. 성공 후에도 `restic-offsite check`로 `no errors were found`를 확인한다.
 Evidence에는 실행 시각, 지운 snapshot 수, 전후 `R2 repository size`를 적는다.
 
 #### 8.6 R2 비용과 무료 한도 검토
@@ -365,7 +378,7 @@ Infrequent Access에는 무료 한도가 없다. `DeleteObject`와
 
 | 항목 | 예상 사용량 | 관리 |
 | --- | --- | --- |
-| Storage | 첫 copy 약 1.8 GB, 이후 하루 약 180 MiB | 8.5를 매달 실행; 8 GB에서 `HyhomeOffsiteRepoNearFreeTier` |
+| Storage | 2026-10-20 copy 뒤 9,347,776,895 byte(registry가 든 snapshot 포함) | 9 GB에서 업로드 거부(8.2); 8 GB에서 `HyhomeOffsiteRepoNearFreeTier`; 8.5 |
 | Class A (PutObject, ListObjects 등) | 하루 copy 한 번에 pack, index, snapshot, lock 업로드와 list 수십 건, 한 달 수천 건 | 실측 operation과 계정 전체 사용량 검토 |
 | Class B (GetObject, HeadObject 등) | copy의 index 읽기, 일요일 check의 10% pack 읽기, 한 달 수천 건 | 실측 operation과 계정 전체 사용량 검토 |
 
