@@ -2248,10 +2248,11 @@ self-requested subagent review, not owner review.
 | The test caught only the exact line `registry` | Low | It now also rejects `registry/…`; adding `registry/docker` makes it fail |
 | `backup.sh` | — | No issue: missing allowlist entries are skipped, and comment lines are ignored |
 
-Waiting for the owner: there is no recorded source for the six `hy/gatus` tags
-or the three `hy-home-lab-opensearch-*` `latest` images, so the rebuild
-exception does not cover them. Losing the data disk would lose them. The owner
-decides whether to accept that or keep a separate copy.
+There is no recorded source for the six `hy/gatus` tags or the three
+`hy-home-lab-opensearch-*` `latest` images, so the rebuild exception does not
+cover them, and losing the data disk would lose them. On 2026-10-20 the owner
+accepted that loss ("y/gatus 태그 6개와 LAB OpenSearch latest 이미지 3개 손실
+수용"); no separate copy is kept.
 
 ## Evidence
 

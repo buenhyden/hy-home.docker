@@ -133,11 +133,11 @@ Restic이 아니라 다시 pull하거나 다시 빌드하는 것이고, RPO는 "
 | `hy-home/storybook`, `hy-home/storybook-mcp` | 태그가 source commit이다(RUN-0101) | 그 commit에서 다시 빌드한다 |
 | `hy-home/dbt-postgres` | 추적되는 Dockerfile(SPEC-0180 TSK-0007) | 다시 빌드한다 |
 | `hy-home/stalwart-config` | 보관한 태그를 만든 Git 이력의 Compose와 Dockerfile | 이력 commit에서 다시 빌드한다. 현재 pin은 다른 버전이다 |
-| `hy/gatus` 6개 태그, `hy-home-lab-opensearch-*` 3개 | 기록된 source commit이 없다 | 예외에 포함되지 않는다. 디스크를 잃으면 사라진다 |
+| `hy/gatus` 6개 태그, `hy-home-lab-opensearch-*` 3개 | 기록된 source commit이 없다 | 복구하지 않는다. 디스크를 잃으면 사라진다 |
 
-마지막 행은 source evidence가 없어 이 예외로 승인되지 않는다. owner가 그 손실을
-수용할지, 별도 사본을 남길지는 SPEC-0204 TSK-0009에 대기 항목으로 남는다. 보관 후 로컬
-사본은 지워졌으므로 HDD registry가 host의 유일한 사본이다.
+마지막 행은 source evidence가 없어 재빌드 예외가 아니다. owner가 2026-10-20에 그
+손실을 수용했다(SPEC-0204 TSK-0009). 보관 후 로컬 사본은 지워졌으므로 HDD registry가
+host의 유일한 사본이다.
 
 ### Restore acceptance
 
