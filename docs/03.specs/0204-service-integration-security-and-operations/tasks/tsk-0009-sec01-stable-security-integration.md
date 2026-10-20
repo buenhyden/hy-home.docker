@@ -2272,6 +2272,15 @@ clean runs.
   settings and `offsite.sh` had not changed. The cause is not established;
   the owner was asked. While the config is missing, `copy` stops at
   `require_initialized` with exit 65 and uploads nothing.
+- At 16:13 the same state held. A read-only S3 `ListObjectsV2` with the
+  backup token (values read inside the container, never printed) returned
+  `KeyCount` 0 for the bucket root and for `keys/`, `snapshots/`, `index/`
+  and `data/`. The token authenticates and the bucket `hyhome-restic` is
+  empty, so the 9.35 GB copied at 11:50, including objects meant to sit under
+  the 30-day bucket lock, is gone. There is no offsite copy now. Whether the
+  objects were deleted, a rule removed them or the bucket was recreated is not
+  established; the owner decides between investigating and initializing a new
+  repository (RUN-0021 8.1). Nothing was written to R2.
 
 The change (PR #528):
 
