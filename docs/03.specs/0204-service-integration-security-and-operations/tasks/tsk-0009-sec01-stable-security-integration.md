@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.21"
+version: "0.4.22"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2200,6 +2200,38 @@ Valkey was restarted. A restart clears the state but replays the 328 MB AOF and
 interrupts the n8n and Airflow queues on mng-valkey, so it needs the owner's
 approval. The state repository budget also needs an owner decision (raise the
 budget or prune by RUN-0021 8.5) before the next 03:30 run.
+
+### Valkey restart and state repository cleanup — 2026-10-20
+
+The owner approved restarting both Valkey instances and cleaning old local
+snapshots, then chose to leave the loopback registry out of the backup
+(PR #526) and to rewrite today's snapshot without it.
+
+Valkey. Both data directories were copied first to
+`/home/hyunyoun/storage/backups/valkey-restart-20261020/` (0700;
+`mng-valkey-data.tar` 330,376,192 bytes, `dev-valkey-data.tar` 6,144 bytes,
+`SHA256SUMS`). `docker compose restart mng-valkey` at 12:02:24 and
+`dev-valkey` at 12:04:22 +09:00 came back healthy. mng-valkey finished an AOF
+rewrite at once (AOF 327,825,877 → 1,253,240 bytes); dev-valkey has no zombie
+and no save in progress. Bounded `valkey-cli --rdb -` probes then finished in
+seconds on both (1,110,999 and 172 bytes). n8n and n8n-worker exited on
+`Unable to connect to Redis after trying to connect for 10s` and their restart
+policy brought them back healthy; the Airflow Celery worker reconnected
+(`1 node online`). The cause of the stalled periodic task is not established.
+
+State repository. RUN-0021 step 7 (`forget-prune`, keep 30 daily, 13 weekly,
+12 monthly) removed 3 snapshots and 188.387 KiB. The growth came from today's
+snapshot `67437351`: 4.020 GiB added, of which the five largest new files were
+registry blobs of 1,028, 905, 471, 411 and 106 MiB from the images archived on
+2026-10-16 (SPEC-0246). With the owner's approval,
+`restic rewrite --forget --exclude /src/state/volumes/registry 67437351`
+replaced it with `f59ef5c2` (1.402 GiB). `forget --prune` prunes only when it
+removes a snapshot, so it did nothing after the rewrite; the wrapper's `cmd`
+refuses `prune`, and `restic prune` was run directly on `/repo/state` under the
+same approval. It removed 3,182 blobs / 3.466 GiB; 46,476 blobs / 5.240 GiB
+remain, `restic check` found no errors, and the directory is 5,371 MiB against
+the 8 GiB budget. R2 still holds the original as `152522c1`. The next 03:30 run
+copies the registry again unless PR #526 is merged and pulled first.
 
 ## Evidence
 
