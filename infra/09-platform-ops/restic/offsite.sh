@@ -29,6 +29,84 @@ AWS_ACCESS_KEY_ID="$(secret r2_access_key_id)"
 AWS_SECRET_ACCESS_KEY="$(secret r2_secret_access_key)"
 export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
 
+# The owner forbids the R2 repository from ever passing 10 GB (2026-10-20).
+# Every upload is refused when it could take the stored bytes past 9 GB: the
+# gigabyte left covers pack headers, index files and estimate error, and the
+# 30-day bucket lock means nothing written can be deleted in time. The
+# variable can only lower the cap; tests use it.
+max_bytes=9000000000
+case "${BACKUP_OFFSITE_MAX_BYTES:-}" in
+    '') ;;
+    *[!0-9]*) echo "BACKUP_OFFSITE_MAX_BYTES must be a byte count" >&2; exit 64 ;;
+    *) [ "$BACKUP_OFFSITE_MAX_BYTES" -lt "$max_bytes" ] && max_bytes="$BACKUP_OFFSITE_MAX_BYTES" ;;
+esac
+
+# Bytes of every file in the R2 repository, unused packs included, which is
+# what R2 bills. Fails closed: no listing, no number.
+stored_bytes() {
+    # restic prints this listing on stderr.
+    listing="$(restic stats --mode debug 2>&1)" || { echo "R2 size listing failed" >&2; exit 65; }
+    printf '%s\n' "$listing" | awk '
+        /^File Type:/ { file = 1; seen = 1; next }
+        file && /^Total Size:/ {
+            m = 1
+            if ($4 == "KiB") m = 1024
+            else if ($4 == "MiB") m = 1048576
+            else if ($4 == "GiB") m = 1073741824
+            else if ($4 == "TiB") m = 1099511627776
+            total += $3 * m
+            file = 0
+        }
+        END { if (!seen) exit 1; printf "%.0f\n", total }' || { echo "R2 size listing unreadable" >&2; exit 65; }
+}
+
+# "<id> <tree>" for each snapshot of the repository restic is pointed at.
+snapshot_trees() {
+    json="$(restic snapshots --json "$@")" || { echo "snapshot listing failed" >&2; exit 65; }
+    printf '%s' "$json" | grep -oE '"(tree|id)":"[0-9a-f]{64}"' |
+        awk -F'"' '$2 == "tree" { tree = $4; next } $2 == "id" && tree != "" { print $4, tree; tree = "" }'
+}
+
+# Compressed bytes the given snapshots of a local repository reference.
+raw_bytes() {
+    out="$(RESTIC_REPOSITORY="$repo" RESTIC_PASSWORD_FILE="$RESTIC_FROM_PASSWORD_FILE" \
+        restic --no-lock stats --mode raw-data --json "$@")" || { echo "local size listing failed" >&2; exit 65; }
+    value="$(printf '%s' "$out" | sed -n 's/.*"total_size":\([0-9]*\).*/\1/p')"
+    [ -n "$value" ] || { echo "local size listing unreadable" >&2; exit 65; }
+    echo "$value"
+}
+
+# Most a copy of /repo/$1 can add: the data of all its snapshots minus the
+# data of those R2 already holds (same tree). Shared blobs only lower it.
+pending_bytes() {
+    repo="/repo/$1"
+    pairs="$(RESTIC_REPOSITORY="$repo" RESTIC_PASSWORD_FILE="$RESTIC_FROM_PASSWORD_FILE" snapshot_trees --no-lock)"
+    copied=""
+    while read -r id tree; do
+        [ -n "$id" ] || continue
+        if printf '%s\n' "$remote_trees" | grep -qx "$tree"; then copied="$copied $id"; fi
+    done <<EOF
+$pairs
+EOF
+    all="$(raw_bytes)"
+    base=0
+    # shellcheck disable=SC2086 # one argument per snapshot ID.
+    [ -n "$copied" ] && base="$(raw_bytes $copied)"
+    echo $((all - base))
+}
+
+# Refuse the upload when the stored bytes plus the estimate (+5% for packing)
+# could pass the cap. The size line still feeds the alert metric.
+guard() {
+    stored="$(stored_bytes)"
+    projected=$((stored + $1 * 105 / 100))
+    if [ "$projected" -gt "$max_bytes" ]; then
+        echo "R2 repository size: $stored bytes"
+        echo "refused: up to $projected bytes after this upload, cap $max_bytes (owner limit 10 GB)" >&2
+        exit 66
+    fi
+}
+
 require_initialized() {
     if ! restic cat config >/dev/null; then
         echo "R2 repository is not initialized or not reachable; see RUN-0021 (Offsite copy)" >&2
@@ -57,15 +135,23 @@ case "$action" in
         require_initialized
         # copy skips snapshots the remote already has. --no-lock applies to
         # the read-only source only; the orchestrator's flock excludes writers.
+        # Each step is its own assignment so set -e stops on any failure.
+        remote_pairs="$(snapshot_trees)"
+        remote_trees="$(printf '%s\n' "$remote_pairs" | cut -d' ' -f2)"
+        pending=0
+        for set in $SETS; do
+            bytes="$(pending_bytes "$set")"
+            pending=$((pending + bytes))
+        done
+        guard "$pending"
         for set in $SETS; do
             restic copy --no-lock --from-repo "/repo/$set"
         done
         echo "R2 latest snapshots:"
         restic snapshots --compact --latest 1
-        # Stored (compressed) bytes, which R2 bills; the orchestrator turns
-        # this line into hyhome_backup_offsite_repo_bytes.
-        size="$(restic stats --mode raw-data --json | sed -n 's/.*"total_size":\([0-9]*\).*/\1/p')"
-        echo "R2 repository size: ${size:-unknown} bytes"
+        # Stored bytes, which R2 bills; the orchestrator turns this line into
+        # hyhome_backup_offsite_repo_bytes.
+        echo "R2 repository size: $(stored_bytes) bytes"
         ;;
     check)
         # Weekly: structure plus a random tenth of the pack data.
@@ -82,9 +168,10 @@ case "$action" in
             exit 64
         fi
         require_initialized
-        restic forget --prune --group-by host,tags --keep-within 30d --keep-monthly 12
-        size="$(restic stats --mode raw-data --json | sed -n 's/.*"total_size":\([0-9]*\).*/\1/p')"
-        echo "R2 repository size: ${size:-unknown} bytes"
+        # --max-repack-size 0: prune only deletes whole unused packs and never
+        # writes repacked ones, which could outgrow the cap under the lock.
+        restic forget --prune --max-repack-size 0 --group-by host,tags --keep-within 30d --keep-monthly 12
+        echo "R2 repository size: $(stored_bytes) bytes"
         ;;
     artifact)
         # RUN-0085 W3b: store the W3 OpenBao snapshot and its receipt, mounted
@@ -108,6 +195,9 @@ case "$action" in
             echo "snapshot SHA-256 differs from its W3 receipt" >&2
             exit 64
         fi
+        incoming=0
+        for name in $files; do bytes="$(wc -c <"/artifact/$name")"; incoming=$((incoming + bytes)); done
+        guard "$incoming"
         set --
         for name in $files; do set -- "$@" "/artifact/$name"; done
         id="$(restic backup --json --host hy-home-openbao-window \
@@ -134,6 +224,12 @@ case "$action" in
         case "${1:-}" in
             forget | prune | unlock)
                 echo "'$1' is not run directly; use forget-prune (RUN-0021 8.5)" >&2
+                exit 64
+                ;;
+            snapshots | stats | ls | cat | find | check | diff | dump | list | version) ;;
+            *)
+                # Uploads go through copy or artifact, which check the cap.
+                echo "'${1:-}' may write to R2; cmd runs read-only commands only" >&2
                 exit 64
                 ;;
         esac
