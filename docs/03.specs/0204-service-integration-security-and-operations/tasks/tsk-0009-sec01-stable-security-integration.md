@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.24"
+version: "0.4.25"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -2366,7 +2366,14 @@ appeared in the kept output. The two passing attempt directories held only
 receipts and are unchanged. The container `owui-rehearsal` was removed; it
 was the only user of `owui-rehearsal-20261020`, which is separate from the
 live `hy-home-infra_open-webui`. The agent's `docker volume rm` was denied
-by the permission rule, so the owner runs it.
+by the permission rule, so the owner ran it; the volume is gone.
+
+The 2026-10-21 03:36 run copied the new state and host snapshots
+(`945601a8`, `ec098708`) to R2, which then held 5,552,354,483 bytes; the
+offsite metric file carries the same value. Every export and both local
+checks passed. The unit still exited 1 for one reason, `OpenBao snapshot
+token absent: snapshot failed (recovery gap)`. That gap closes with the
+SPEC-0243 window.
 
 ## Evidence
 
