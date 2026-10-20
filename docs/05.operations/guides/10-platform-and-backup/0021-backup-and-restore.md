@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.1.8"
+version: "1.1.9"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-20"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -75,7 +75,7 @@ Restic은 낮은 block-I/O weight를 받는다. Spark table maintenance(일요�
 | 저장소 | 측정한 입력 | 범위·한계 |
 | --- | --- | --- |
 | pgBackRest (SSD) | 전체 database 96 MB; WAL 약 14 MB/h (압축 전 330 MB/day; `archive_timeout`마다 강제 전환되는 segment는 zstd가 제거하는 0으로 채워짐) | full backup 2개와 그 differential 및 WAL(약 2주); 계획 추정치는 2 GB 미만이며 기록된 크기로 대체될 예정 |
-| Restic state (SSD) | allowlist된 tree 약 0.3 GB (registry 236 MB, Open WebUI upload, Airflow DAG/config/plugin) 및 export 약 10 MB | deduplicated; `forget-prune`까지 일일 변경분만큼 증가하며 2026-09-22 당시 연간 5 GB 미만 추정; 09-30 관측으로 폐기된 예측 |
+| Restic state (SSD) | allowlist된 tree (Open WebUI upload, Airflow DAG/config/plugin 등; loopback registry는 다시 pull·build할 수 있는 archive라 2026-10-20부터 제외) 및 export 약 10 MB | deduplicated; `forget-prune`까지 일일 변경분만큼 증가하며 2026-09-22 당시 연간 5 GB 미만 추정; 09-30 관측으로 폐기된 예측 |
 | Restic host (data disk) | `secrets/`와 `.env`, 수 킬로바이트 | 무시할 수준 |
 | Staging | 실행 중에만 export | 종료마다 비워짐 |
 
