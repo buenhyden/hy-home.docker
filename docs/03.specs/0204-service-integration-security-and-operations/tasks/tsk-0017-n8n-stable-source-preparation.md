@@ -381,6 +381,23 @@ restore of this backup into HOME. Migrations are forward-only; going back
 means restoring this backup into an emptied database with the 2.41.6 image,
 not retagging the image.
 
+### HOME recreation after the merge — 2026-10-20
+
+After PR #522 was merged, the HOME checkout was fast-forwarded to `main`
+`532ff831e`, and the four n8n services were recreated at 13:06–13:07 +09:00
+with `docker compose --profile workflow-n8n up -d --no-deps --no-build`. All
+four are healthy. `n8n` and `n8n-worker` mount `custom/` read-only and carry
+`N8N_RUNNERS_BROKER_PORT=5679`. Both runners carry
+`N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT=5680`. `N8N_RUNNERS_ENABLED` is gone.
+The worker registered both launchers.
+
+The runner beside `n8n` still logs `Waiting for task broker to be ready`, and
+nothing listens on 5679 in `n8n`. This is older than the change: since
+2026-10-19, Loki holds only that line for this runner and no `task offer`,
+including under the old configuration. `n8n` runs with `EXECUTIONS_MODE=queue`
+and `OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true`, so executions use the worker
+broker. Whether the runner beside `n8n` is needed is a follow-up.
+
 ### Source binding refresh — 2026-10-20
 
 `test_workflow_version_bundle` binds the n8n Compose, build and custom-node
