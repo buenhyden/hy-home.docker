@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.22"
+version: "0.4.23"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2232,6 +2232,26 @@ same approval. It removed 3,182 blobs / 3.466 GiB; 46,476 blobs / 5.240 GiB
 remain, `restic check` found no errors, and the directory is 5,371 MiB against
 the 8 GiB budget. R2 still holds the original as `152522c1`. The next 03:30 run
 copies the registry again unless PR #526 is merged and pulled first.
+
+### Registry exclusion review — 2026-10-20
+
+A read-only `code-reviewer` subagent reviewed PR #526 at local head
+`8a6c0616a`; `git range-diff` shows the pushed head has the same content. It
+had no shell and ran nothing. Verdict: approve with notes. This was a
+self-requested subagent review, not owner review.
+
+| Finding | Severity | Resolution |
+| --- | --- | --- |
+| POL-0021 requires recorded source evidence for a rebuild exception, and the registry had none | Medium | POL-0021 now has a registry rebuild exception and records the source of each archive |
+| The allowlist comment said every archive came from 2026-10-16 | Medium | The comment now points to POL-0021. The live catalog lists 19 repositories, including seven from SPEC-0180 TSK-0007 and two Storybook images |
+| Leaving the registry out lowers protection, because the HDD registry is the host's only copy | Low | Recorded in POL-0021 |
+| The test caught only the exact line `registry` | Low | It now also rejects `registry/…`; adding `registry/docker` makes it fail |
+| `backup.sh` | — | No issue: missing allowlist entries are skipped, and comment lines are ignored |
+
+Waiting for the owner: there is no recorded source for the six `hy/gatus` tags
+or the three `hy-home-lab-opensearch-*` `latest` images, so the rebuild
+exception does not cover them. Losing the data disk would lose them. The owner
+decides whether to accept that or keep a separate copy.
 
 ## Evidence
 
