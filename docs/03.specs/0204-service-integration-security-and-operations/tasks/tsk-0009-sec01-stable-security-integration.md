@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.20"
+version: "0.4.21"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-19"
+updated: "2026-10-20"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -2005,6 +2005,45 @@ The running container was still `0.40.0`, so the declared 0.40.3 pin had
 never been deployed. The recreate from main and the model refresh follow the
 merge and are recorded with SPEC-0246 W3. Signature, SBOM and advisory
 applicability stay NOT_RUN.
+
+### Low-risk HOME image rollout — 2026-10-20
+
+A read-only comparison of the running `hy-home-infra` containers with the
+rendered root Compose found 25 containers on images older than their
+declarations. The owner chose to roll out only the low-risk group on
+2026-10-20; the observability stores (Prometheus, Grafana, Pyroscope, Tempo),
+the migrating data and application services (Airflow, Open WebUI, Qdrant,
+SeaweedFS) and OpenBao stay on their running images and need their own
+backup, rehearsal and approval.
+
+Preparation: every declared image was pulled by its pinned digest. Pushgateway
+held no pushed groups (`count by (job) (push_time_seconds)` was empty), so its
+in-memory state lost nothing. `alloy validate --stability.level=experimental`
+with the new Alloy image accepted `config.home.alloy` (exit 0); a deliberately
+broken file exited 1, so the check is not vacuous. The Mailpit data directory
+was copied to `/home/hyunyoun/storage/backups/lowrisk-images-20261020/`
+(0700, `mailpit-data.tar` 130,048 bytes with `SHA256SUMS`).
+
+The HOME checkout ran `docker compose up -d --no-deps --no-build` for the seven
+services at 10:00–10:02 +09:00:
+
+| Container | Before | After | State |
+| --- | --- | --- | --- |
+| `alloy` | `grafana/alloy:v1.19.2` | `v1.20.1` | healthy, 0 restarts, no `level=error` in 3 minutes, scrape `up` |
+| `cadvisor` | `gcr.io/cadvisor/cadvisor:v0.55.1` | `ghcr.io/google/cadvisor:v0.60.6` | healthy, scrape `up`, 216 `container_last_seen` series |
+| `dev-valkey-exporter` | `oliver006/redis_exporter:v1.91.1-alpine` | `v1.93.0-alpine` | healthy, scrape `up` |
+| `mng-valkey-exporter` | `oliver006/redis_exporter:v1.91.1-alpine` | `v1.93.0-alpine` | healthy, scrape `up` |
+| `dozzle` | `amir20/dozzle:v11.1.1` | `v11.3.1` | healthy |
+| `pushgateway` | `prom/pushgateway:v1.11.3` | `v1.11.4` | healthy, `/-/healthy` OK |
+| `mailpit` | `axllent/mailpit:v1.31.2` | `v1.31.5` | healthy; `mailpit.db` kept its 94,208 bytes and 2026-09-19 mtime; 0 messages before and after |
+
+Each new image is the declared digest. Not covered: no isolated restore of the
+Mailpit or Alloy state was rehearsed (TSK-0009 asks for one before per-service
+HOME deployment; both stores were kept in place and Mailpit has a copy), and no
+signature, SBOM or scan of these images was run here. Two gaps seen during the
+check predate this change: Prometheus has no scrape job for Pushgateway, and
+the `airflow-`, `n8n-` and `oauth2-proxy-valkey-exporter` targets are down
+because their optional profiles are not running.
 
 ## Evidence
 
