@@ -2086,6 +2086,27 @@ notifications before its 2026-10-16 restart; since that restart it sent 302
 with 0 failures. Email sent none. The Prometheus restart moved the alert back
 to `pending` for its 15-minute `for` period.
 
+### Exporter coverage for running services — 2026-10-20
+
+The owner asked that every running HOME service with an exporter runs that
+exporter too. Of the 12 declared exporter services, 9 run and each has its
+target running: `airflow-statsd-exporter`, `dcgm-exporter`, `dev-pg-exporter`,
+`dev-valkey-exporter`, `kafka-exporter`, `mng-pg-exporter`,
+`mng-valkey-exporter`, `node-exporter` and `ollama-exporter`. The other 3,
+`airflow-`, `n8n-` and `oauth2-proxy-valkey-exporter`, belong to the
+`dedicated-valkey` profile and monitor dedicated Valkey instances that do not
+run, so leaving them off is correct; their static Prometheus jobs stay `down`.
+`opensearch` is also `down` because the service does not run.
+
+Two running services are not scraped, both because HOME still runs the
+official OpenBao 2.6.2 instead of the declared
+`hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1` build: `openbao` answers the
+HTTPS job over plain HTTP (`server gave HTTP response to HTTPS client`), and
+`openbao-agent` is only on `secrets_net` while the declaration adds `obs_net`,
+so Prometheus cannot resolve it. Both close when the SPEC-0243 OpenBao window
+(scheduled 2026-10-22 14:00–16:00) applies the declared build; no OpenBao
+change was made here.
+
 ### Pushgateway scrape job review — 2026-10-20
 
 The low-risk rollout above found that Prometheus has no Pushgateway job. On the
