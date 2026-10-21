@@ -1,6 +1,6 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -501,6 +501,15 @@ exits 1 because the OpenBao snapshot token does not exist until the SPEC-0243
 window (W3), and that window's first daily run must exit 0. The B choice needs
 no change to the backup schedule and does not affect the R2 cap. S9.1 status:
 PARTIAL, targets chosen, RTO pending measurement.
+
+First measured recovery, T5 observability — 2026-10-21: the isolated Prometheus
+restore of the 2026-10-20 copy (SPEC-0245 TSK-0001) took 814.4 s to extract
+6.7 GB and 55.4 s to `/-/ready`, about 14.5 minutes, while the host load average
+was 9–15 and the archive hash read shared the disk. Gatus's SQLite copy
+(4.5 MB) opened with `integrity_check` ok in under a second; its stop-copy-start
+took 29 s. These are single measurements on a loaded host, not an RTO; T5's
+RTO is set after a measurement on a quieter host or after the owner accepts
+these figures.
 
 ## Evidence
 
