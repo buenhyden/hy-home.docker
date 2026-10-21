@@ -1,6 +1,6 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -196,6 +196,27 @@ Two inconsistencies the drafts surfaced, checked directly:
   container run `prom/prometheus:v3.15.0` since 2026-10-20 01:42 UTC. Its
   backup and restore plan therefore needs the owner to restate the image it
   preserves before W2 runs.
+
+S12c verdicts — 2026-10-21: the owner chose to record the technology choice
+verdicts only ("판정만 기록"); no Compose, profile or runtime change follows
+from them. The draft (`_workspace/v22-drafts/s12c-tech-choice.md`, 55 rows,
+licences checked on 2026-10-21) is based on a static repository survey; "no
+consumer" there means none was found in tracked sources, not measured runtime
+use.
+
+| Verdict | Count | Entries |
+| --- | --- | --- |
+| KEEP | 31 | Services with a found consumer or role, kept as they are |
+| OPTIONAL | 10 | Superset, Cosign, Spark, Crawl4AI, Qdrant, SonarQube, Dozzle, RedisInsight, nginx, Pact Broker/WireMock |
+| DEFER | 10 | Kafka REST Proxy, Terrakube, Flink, Open Notebook with SurrealDB, ComfyUI, OpenSearch with Dashboards, Neo4j, Stalwart, an Apicurio/Karapace Schema Registry replacement, the `labs/*` update load |
+| REJECT | 4 | Redis, Terraform, MinIO and Elasticsearch as replacements for Valkey, OpenTofu, SeaweedFS and OpenSearch |
+
+Each DEFER entry is decided on its own after its runtime use is measured;
+turning a service off by default or retiring it goes through its owning Task
+or CLN01. Licence notes kept with the record: SurrealDB (BUSL-1.1) and
+RedisInsight (SSPL-1.0) are in use and not OSI-approved; n8n's Sustainable Use
+License allows internal use; the Grafana stack, k6, Renovate and Stalwart are
+AGPL, which matters only if repackaged images are published.
 
 ## Evidence
 
