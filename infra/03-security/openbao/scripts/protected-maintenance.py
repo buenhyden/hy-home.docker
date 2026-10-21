@@ -467,6 +467,14 @@ def check_seal(response, cluster):
         raise Blocked()
 
 
+def attempt_data(response):
+    # Authenticated generate-root-token endpoints wrap their fields in "data".
+    data = response.get("data") if isinstance(response, dict) else None
+    if not isinstance(data, dict):
+        raise Blocked()
+    return data
+
+
 def check_progress(response, nonce, count, complete):
     if (
         response.get("started") is not True
@@ -499,22 +507,28 @@ def decode_token(encoded, otp):
 
 def cancel_owned_pending(api, nonce):
     """At most three bounded requests; foreign or completed attempts are untouched."""
-    current = api.request("GET", ATTEMPT)
-    if current.get("started") is False:
-        return False  # Could be a completed attempt; cancellation is not proven.
-    if current.get("nonce") != nonce or current.get("complete") is not False:
-        raise Indeterminate()
-    api.request("DELETE", ATTEMPT)
-    after = api.request("GET", ATTEMPT)
-    if after.get("started") is not False:
-        raise Indeterminate()
-    return True
+    try:
+        current = attempt_data(api.request("GET", ATTEMPT))
+        if current.get("started") is False:
+            return False  # Could be a completed attempt; cancellation is not proven.
+        if current.get("nonce") != nonce or current.get("complete") is not False:
+            raise Indeterminate()
+        api.request("DELETE", ATTEMPT)
+        after = attempt_data(api.request("GET", ATTEMPT))
+        if after.get("started") is not False:
+            raise Indeterminate()
+        return True
+    except Indeterminate:
+        raise
+    except Blocked:
+        # An attempt was already started, so an unprovable cancel is uncertain.
+        raise Indeterminate() from None
 
 
 def ceremony(api, custody, cluster, share_input):
     check_operator(api.request("GET", LOOKUP))
     check_seal(api.request("GET", SEAL), cluster)
-    if api.request("GET", ATTEMPT).get("started") is not False:
+    if attempt_data(api.request("GET", ATTEMPT)).get("started") is not False:
         raise Blocked()
     shares = tuple(validate_secret(share_input(number)) for number in (1, 2))
     if len({api.token, *shares}) != 3:
@@ -525,6 +539,7 @@ def ceremony(api, custody, cluster, share_input):
         custody.mutation_started = True
         initialization = api.request("POST", ATTEMPT, {})
         custody.write(initialization_file, initialization)
+        initialization = attempt_data(initialization)
         nonce = initialization.get("nonce")
         if not isinstance(nonce, str) or not UUID.fullmatch(nonce):
             raise Indeterminate()
@@ -543,6 +558,7 @@ def ceremony(api, custody, cluster, share_input):
             final_submitted = number == 2
             response = api.request("POST", UPDATE, {"key": share, "nonce": nonce})
             custody.write(response_file, response)
+            response = attempt_data(response)
             complete = number == 2 and response.get("complete") is True
             check_progress(response, nonce, number, number == 2)
         root_file = custody.reserve("root.token")
