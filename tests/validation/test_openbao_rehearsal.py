@@ -962,6 +962,17 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
         payload = {"role_id": role_id, "secret_id": secret_id}
         status, login = client.api("POST", "auth/approle/login", payload)
         self.must(status == 200, "synthetic single-use renderer SecretID login failed")
+        # The SecretID cannot log in twice, so the token must renew without a ceiling.
+        token = login["auth"]["client_token"]
+        status, looked_up = client.api("GET", "auth/token/lookup-self", token=token)
+        data = looked_up.get("data", {}) if status == 200 else {}
+        self.must(
+            login["auth"].get("lease_duration") == 86400
+            and login["auth"].get("renewable") is True
+            and data.get("period") == 86400
+            and data.get("explicit_max_ttl") == 0,
+            "renderer token is not a renewable 24h periodic token",
+        )
         self.must(
             client.api("POST", "auth/approle/login", payload)[0] >= 400,
             "used renderer SecretID replay authenticated",
@@ -972,6 +983,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
         role = {
             **json.loads((SOURCE / "config/renderer-role.json").read_text()),
             "secret_id_ttl": "1s",
+            "token_period": 0,
             "token_ttl": "30s",
             "token_max_ttl": "30s",
         }

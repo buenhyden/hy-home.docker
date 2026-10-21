@@ -63,7 +63,7 @@ TOKEN_ROLES = (
 APPROLE = (
     "hy-home-renderer",
     "renderer-role.json",
-    "96f74c4b1908dd2edb3f7bbbf794bdd226b0a66f3133c103f64e1b7790218d79",
+    "e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11",
 )
 UNITS = {"s": 1, "m": 60, "h": 3600}
 # A role update keeps any field it omits, so every other field a role read
