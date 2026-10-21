@@ -1,0 +1,21 @@
+# dynamic/hermes.yml
+# Hermes Agent web dashboard runs as a host-level systemd unit
+# (hyhome-hermes-dashboard.service), not a container, so it is reached
+# through the edge_net bridge gateway IP (10.250.1.128) rather than a
+# Docker-provider label. The dashboard does its own OIDC auth (self-hosted
+# Keycloak provider) so no Traefik-level auth middleware is layered on top.
+http:
+  routers:
+    hermes-dashboard:
+      rule: "Host(`hermes.hy.home.arpa`)"
+      entrypoints: websecure
+      tls: true
+      service: hermes-dashboard
+      middlewares:
+        - gateway-standard-chain@file
+
+  services:
+    hermes-dashboard:
+      loadBalancer:
+        servers:
+          - url: "http://10.250.1.128:9119"
