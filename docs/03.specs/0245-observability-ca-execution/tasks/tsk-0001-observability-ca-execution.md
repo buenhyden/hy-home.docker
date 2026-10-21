@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.19"
+version: "0.1.20"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0245-TSK-0001"
 parent_ids:
@@ -225,6 +225,31 @@ or retry action ran.
 
 The diagnosis remains open. This receipt does not infer archive corruption or
 accept either recovery gate.
+
+### Prometheus image decision and runtime state — 2026-10-21
+
+The owner chose to keep Prometheus on the installed image
+(`prom/prometheus:v3.15.0`, digest `efd719c9`) instead of the 3.14 rollback
+image this package was written for; the Spec and Plan now name v3.15.0.
+
+Read-only observation on 2026-10-21: the SEC01 observability rollout
+(SPEC-0204 TSK-0009, 2026-10-20 10:30–10:42 +09:00) stopped Prometheus, took a
+cold copy `prometheus-data.tar` (6,697,427,456 bytes, under
+`/home/hyunyoun/storage/backups/obs-images-20261020/`) and recreated it on
+v3.15.0. Because Compose declares the bind, the running container now mounts
+`/etc/prometheus/openbao-ca.pem` read-only. That recreation ran under the SEC01
+approval, not under W2: no isolated restore of a Prometheus backup has passed
+(restore-01 to restore-03 failed above and stay preserved). Gatus
+(`hy/gatus:local`, started 2026-10-19) mounts only the home root CA, not the
+OpenBao CA.
+
+Consequences for this Task: criterion 2's order (backup and isolated restore
+before recreation) cannot be met for the recreation that already happened, so
+it is recorded as a deviation, not a PASS. What remains testable is an
+isolated restore of the 10-20 cold copy on v3.15.0, and the Prometheus OpenBao
+scrape over that CA once OpenBao serves TLS after the SPEC-0243 window. Gatus
+still needs its W3 backup, isolated restore and the CA-aware delta image.
+No restore, recreation or CA action ran here.
 
 ### Lifecycle Events
 

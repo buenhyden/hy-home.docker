@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.22"
+version: "0.1.23"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -738,6 +738,27 @@ window-relevant and was not part of the 2026-10-20 approval above, so
 approves this delta too. W0 also re-checks that the HOME tag for the new
 manifest is present. Until both hold the window stays BLOCKED; if they are not
 done before W0 at 13:30 on 2026-10-22, the window moves.
+
+Owner approval — 2026-10-21: PR #540 merged as `main`
+`31633e6b4359f937669d09d44a7450eb0afe49ec`, and the owner approved this delta
+for `P01_APPROVED_COMMIT` before W0 ("W0(10-22 13:30) 전에 이번 변경분을
+P01_APPROVED_COMMIT으로 승인"). As with the 2026-10-20 approval,
+`P01_APPROVED_COMMIT` is the `main` commit at W0 whose window-relevant change
+since `31633e6b4` is none; later documentation-only records (such as this one)
+do not change that. The SEC01 gate for the window now rests on this approval
+and the 2026-10-21 lookup. W0 still runs its own checks, including the R2 gate
+and the HOME tag for manifest `a58fb110`; the window is no longer BLOCKED on the
+image.
+
+Backup state seen on 2026-10-21 (journal, read-only): every daily
+`hyhome-backup` run since 2026-10-12 exits 1 at the OpenBao step because
+`secrets/backup/openbao/snapshot_token.txt` does not exist yet
+(`hyhome-backup.sh:184-187`). The rest of each run still completes; on
+2026-10-21 pgBackRest, two Restic snapshots, `check` and the R2 copy all ran.
+So only the OpenBao Raft snapshot is missing, but the whole-run success time is
+not refreshed and the 26-hour freshness alert stays on. W3 creates the snapshot
+token; the first daily run after the window must exit 0, and that is a window
+acceptance check.
 
 ## Evidence
 
