@@ -176,9 +176,12 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 
 정지 상태 tar 사본의 2–3단계는 저장소 root에서 다음 명령으로 수행한다. 이 명령은 SHA-256을
 대조한 뒤 새 0700 작업 디렉터리에 실행 사용자로 풀고, Compose와 같은 image를 network 없이,
-capability 없이, scrape 대상 없이 띄운다. `/-/ready`까지의 시간(`ready_seconds`, RTO 측정값)과
-가장 새 block 기준 1시간 전·7일 전 `count(up)`을 receipt로 출력한다. 컨테이너는 항상 지우고,
-작업 디렉터리는 `--keep`이 없으면 지운다. 운영 container와 volume에는 닿지 않는다. 작업
+capability 없이, scrape 대상 없이 띄운다. 빈 공간이 archive의 두 배보다 적으면 거부한다.
+receipt에는 압축 해제 시간(`extract_seconds`)과 `/-/ready`까지의 시간(`ready_seconds`)을 RTO의
+일부로, head의 최신 시각과 WAL 손상 수, head 끝·가장 새 block 1시간 전·그 7일 전 `count(up)`을
+남긴다. WAL 손상이 0이 아니거나 조회가 비면 FAIL이다. 컨테이너가 먼저 끝나면 OOM 여부와 log
+끝부분을 남긴다. 컨테이너는 항상 지우고, 작업 디렉터리는 `--keep`이 없고 컨테이너 삭제가
+성공했을 때만 지운다. 운영 container와 volume에는 닿지 않는다. 작업
 디렉터리는 Restic이나 R2가 수집하지 않는 경로에 둔다.
 
 ```bash

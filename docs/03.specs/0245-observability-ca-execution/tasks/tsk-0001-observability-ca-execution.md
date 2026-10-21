@@ -262,18 +262,25 @@ before any Docker call, extracts into a new 0700 directory as the invoking
 user, and runs the Compose-pinned v3.15.0 image with `--network=none`,
 `--pull=never`, `--cap-drop=ALL`, no-new-privileges, 2 GiB and one CPU, a
 configuration with no scrape targets and a retention long enough that no
-restored block is deleted. It records the seconds to `/-/ready` and `count(up)`
-one hour and seven days before the newest block, always removes its container
-and removes the scratch directory unless `--keep`. Six unit tests cover the
-image pin, both refusals, the isolation flags, the query times, an empty query
-and a never-ready server; RUN-0045 names the command and the script is
-registered in the manifest and the CI contract.
+restored block is deleted. It refuses a work directory without twice the
+archive size free, records extraction and ready seconds, the head's newest
+sample and WAL corruption count, and `count(up)` at the head's end, one hour
+before the newest block and seven days before that; a WAL corruption or an
+empty query fails. A container that exits early stops the wait with its OOM
+flag and log tail recorded. It always removes its container and removes the
+scratch directory only without `--keep` and after a successful removal. Eleven
+unit tests cover these paths, a failed `docker run` and a path-traversal
+member; RUN-0045 names the command and the script is registered in the
+manifest and the CI contract. An independent security review returned APPROVE
+WITH NOTES; the notes above are applied, and a series-count baseline check is
+left out until a baseline is recorded.
 
 This replaces the lost packet for W2's restore step; it does not check rule
 health or Alertmanager delivery. The planned input is the 2026-10-20 cold copy
 (SHA-256 `c9cb29e5…`). The run waits for independent review and for the
-SPEC-0243 window to finish, and its `ready_seconds` becomes the first measured
-RTO input for the observability tier (SPEC-0218 TSK-0002). Nothing ran yet.
+SPEC-0243 window to finish; its extraction and ready seconds become the first
+measured parts of the observability tier's RTO (SPEC-0218 TSK-0002). Nothing
+ran yet.
 
 ### Gatus image identity and entrypoint — 2026-10-21
 
