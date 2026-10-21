@@ -16,12 +16,11 @@ BASE = {
         "infra/01-gateway/traefik/docker-compose.yml",
         "/openbao-ca/ca.pem",
     ),
-    "prometheus": (
-        "infra/06-observability/compose.window-ca.override.yml",
-        "infra/06-observability/docker-compose.yml",
-        "/etc/prometheus/openbao-ca.pem",
-    ),
 }
+# Prometheus runs the Compose pin with the CA mount since 2026-10-20; a rollback
+# overlay to the older image would downgrade TSDB data written by the newer one.
+PROMETHEUS_COMPOSE = "infra/06-observability/docker-compose.yml"
+PROMETHEUS_OVERLAY = "infra/06-observability/compose.window-ca.override.yml"
 PINNED = re.compile(r"[a-z0-9./-]+:v[0-9.]+@sha256:[a-f0-9]{64}")
 
 
@@ -49,6 +48,16 @@ class WindowOverrideTests(unittest.TestCase):
                     target,
                     [v.get("target") for v in base["volumes"] if isinstance(v, dict)],
                 )
+
+    def test_prometheus_has_no_downgrade_overlay_and_declares_the_ca_mount(self):
+        self.assertFalse((ROOT / PROMETHEUS_OVERLAY).exists())
+        base = yaml.safe_load((ROOT / PROMETHEUS_COMPOSE).read_text())["services"][
+            "prometheus"
+        ]
+        self.assertIn(
+            "/etc/prometheus/openbao-ca.pem",
+            [v.get("target") for v in base["volumes"] if isinstance(v, dict)],
+        )
 
     def test_drop_in_only_reschedules_the_shared_logrotate_timer(self):
         lines = [
