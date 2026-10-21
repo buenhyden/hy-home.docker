@@ -1,10 +1,10 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0002"
 parent_ids:
@@ -460,6 +460,47 @@ W11–W15 and criteria3 HOME residual/6–10 remain open as recorded; no LAB run
 change occurred. At this historical point, final documentation review and
 local-main source delivery were pending and conferred no operational acceptance
 or lifecycle closure.
+
+### Availability and recovery targets — 2026-10-21
+
+v22 §9.1 asks for per-function allowed outage and loss, RTO and RPO, restart
+order and freshness alerts, without invented numbers. Options were derived
+from the current configuration and presented; the owner chose "B 균형형"
+(balanced): keep the current schedule and alerting, and measure recovery time
+before setting any RTO.
+
+Facts used: REQ-0027 FR-0002 keeps AI/workflow and their required
+dependencies always on, with development and experiments opt-in; AD-0031 notes
+that one host shares the power, storage, daemon and GPU failure domain and that
+backup and restore are unproven. `hyhome-backup.timer` runs daily at 03:30 KST
+with `Persistent=true`; pgBackRest takes a weekly full and daily differential
+backups with WAL `archive_timeout=300`; Restic keeps 30 daily, 13 weekly and 12
+monthly snapshots locally and copies to R2 under the 9 GB cap; the freshness
+alert fires 26 hours after the last whole-run success.
+
+| Tier | Members | Allowed outage while the PC is on | RPO | Restart order | Freshness alert |
+| --- | --- | --- | --- | --- | --- |
+| T1 core | OpenBao, Keycloak, gateway, mng-pg, mng-valkey | Until an operator restores or unseals | 24 h | 1 | 26 h (current) |
+| T2 user apps | Open WebUI, n8n, Grafana, Airflow scheduler | Until T1 is back | 24 h | 2 | 26 h |
+| T3 development data | dev-pg, SeaweedFS, Qdrant | Longer; development is opt-in | 24 h | 2 | 26 h |
+| T4 batch | Airflow DAG runs | Re-run instead of restore | State follows T1 | 3 | Per-DAG SLA, not set |
+| T5 observability | Prometheus, Loki, Tempo | Longest | Loss accepted; Loki and Tempo buckets are not backed up | 4 | None |
+| T6 optional | ComfyUI, Ollama models | Unlimited | Re-download | 5 | None |
+
+RPO 24 h holds only while the PC is on: when it is off, the loss window runs
+back to the last run. After losing the host or its disk, recovery depends on the
+R2 copy, which is not yet proven by a restore. The WAL archive gives a shorter
+window for a logical PostgreSQL failure on a healthy disk, but B does not set
+it as a target.
+
+RTO is not set for any tier. Each is recorded after one measured restore per
+tier into `recovery_seconds` of
+`infra/09-platform-ops/resource-optimization/measurement.schema.json`; until
+then RTO is unknown. Two items come before the measurements: the daily run
+exits 1 because the OpenBao snapshot token does not exist until the SPEC-0243
+window (W3), and that window's first daily run must exit 0. The B choice needs
+no change to the backup schedule and does not affect the R2 cap. S9.1 status:
+PARTIAL, targets chosen, RTO pending measurement.
 
 ## Evidence
 
