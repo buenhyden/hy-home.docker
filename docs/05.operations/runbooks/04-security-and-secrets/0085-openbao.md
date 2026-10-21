@@ -1172,10 +1172,16 @@ OpenBao 로그인(External Secrets 등 Kubernetes auth)이다. 운영자는 W3 �
 때만 읽으므로 그때 유효하면 된다), W5·W7의 새 OIDC credential은 W3a 뒤에 만든다. hy-home.k8s
 쪽 로그인 주체를 멈춘 방법과 확인을 값 없이 Task에 기록하며, 멈출 방법이 없으면 W3를 열지
 않는다. 2026-10-21 관측에서 그 주체는 External Secrets controller 하나다(ClusterSecretStore
-`vault-backend`, ExternalSecret 6개). 멈추기는
-`kubectl -n external-secrets scale deploy external-secrets --replicas=0`과
-`kubectl -n external-secrets rollout status deploy/external-secrets --timeout=60s`이고, 기존 k8s
-Secret은 남고 갱신만 멈춘다. 다시 켜기는 같은 명령의 `--replicas=1`이다.
+`vault-backend`, ExternalSecret 6개; POL-0085의 `eso-read-platform`). 그 Deployment는 Argo CD
+Application `platform-external-secrets-operator`가, 그 Application은 `root-platform`이 관리하며 둘 다
+`selfHeal`이 켜져 있어 scale만 내리면 곧 되돌아간다. 그래서 W3 전에 두 Application의 원래
+`spec.syncPolicy`와 Deployment의 replica 수를 owner 전용 파일에 저장하고, `root-platform`부터 자동
+sync를 끈 뒤(`kubectl -n argocd patch application <이름> --type json -p '[{"op":"remove","path":"/spec/syncPolicy/automated"}]'`)
+`kubectl -n external-secrets scale deploy external-secrets --replicas=0`,
+`kubectl -n external-secrets wait --for=delete pod -l app.kubernetes.io/name=external-secrets,app.kubernetes.io/instance=external-secrets --timeout=60s`로
+멈추고, snapshot 직전에 replica 0을 다시 확인한다. 기존 k8s Secret은 남고 갱신만 멈춘다. 다시 켜기는
+저장한 replica 수로 scale한 뒤 저장한 `syncPolicy`를 child, `root-platform` 순으로 되돌린다. 이 절차는
+hy-home.k8s 관리 대상을 바꾸므로 window마다 owner 승인이 필요하다.
 Agent와 해당 writer가 정지했음을 확인한 뒤 아래
 [보호 snapshot helper](../../../../infra/03-security/openbao/scripts/protected-raft-snapshot.py)를
 사용합니다. helper 자체는 writer를 정지하지 않습니다. 중단 시 writer 재개 여부는

@@ -97,6 +97,7 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(targets[APPROLE]["token_max_ttl"], 0)
         # A periodic token renews without re-login; the SecretID is single use.
         self.assertEqual(targets[APPROLE]["token_period"], 86400)
+        self.assertEqual(targets[APPROLE]["token_explicit_max_ttl"], 0)
         self.assertEqual(targets[APPROLE]["token_policies"], ["renderer"])
 
     def test_changed_source_bytes_block(self):

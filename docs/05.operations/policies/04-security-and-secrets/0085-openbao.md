@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.8.3"
+version: "0.8.4"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -172,7 +172,7 @@ gate가 실패한다. 같은 window가 쓰는 Traefik·Prometheus image의 수�
 
 ### Maintenance window residuals
 
-2026-10-15 owner는 아래 잔여 위험을 **2026-11-15까지** 받아들였다. 그날 다시 결정한다. UID 100과
+2026-10-15 owner는 아래 잔여 위험을 **2026-11-15까지** 받아들였다(마지막 행은 2026-10-21 추가). 그날 다시 결정한다. UID 100과
 swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 편차로 다룬다.
 
 | 잔여 위험 | 범위와 위험 | 종료 조건 |
@@ -181,6 +181,7 @@ swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 
 | 암호화 안 된 swap | host `/swap.img`가 암호화되지 않아 tmpfs의 custody·token page가 disk로 나갈 수 있고 `shred`가 그 사본을 지우지 못한다 | swap 암호화, 또는 window 동안 swap 끄기 |
 | sealed 정리의 관리 접근 상실 | server가 sealed인 채 window가 멈추면 OIDC 확인 없이 root custody를 지운다. 복구는 share 2개로 unseal한 뒤 OIDC operator와 W1 절차 | 정리 전에 unseal할 수 있는 검토된 절차 |
 | 남겨 둔 W2 custody | W2가 INDETERMINATE로 끝나면 snapshot 전용 token(최대 720시간)이 tmpfs에 남고, 다음 window의 W2·W3는 BLOCKED다 | 검토된 W2 복구 절차 |
+| 만료 없는 renderer token | SecretID가 1회용이라 renderer AppRole은 24시간 periodic token을 준다(2026-10-21 owner 수용, 지금 HOME과 같은 방식). Agent가 갱신하는 한 만료가 없어, sink token을 복사한 쪽도 계속 갱신할 수 있다. 권한은 Keycloak·Grafana KV 2개 읽기이고 sink는 0600이며, 갱신이 멈추면 24시간 안에 만료된다. W5 재발급은 이전 Agent token을 폐기하지 않는다 | W5에서 이전 Agent token을 폐기하는 검토된 절차, 또는 재인증 없이 유지되는 유한 수명 |
 
 ### P01 Native Trust and Audit Gate
 
