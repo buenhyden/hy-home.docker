@@ -1,6 +1,6 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -389,7 +389,7 @@ Digests are shown as their first 12 hexadecimal characters.
 | 3 | accepted | Build-cache limit, Build-cache floor decision, Image archive, Volume and container cleanup | Floor accepted, archive digest-verified, and only unowned items removed. | SPEC-0246 TSK-0001 |
 | 4 | accepted | Registry pin | The running image digest equals the Compose pin. | SPEC-0246 TSK-0001 |
 | 5 | pending | Policy promotion | Criteria 1–4 are accepted; waits for criterion 6. | SPEC-0246 TSK-0001 |
-| 6 | pending | Observability store placement | SMART t0 is read and W3 is accepted; waits for the 24-hour t1 sample and a decision per store. | SPEC-0246 TSK-0001 |
+| 6 | pending | Observability store placement | First window: Loki ELIGIBLE with SMART (7.78 years), four stores deferred by restarts; waits for the second window (t1 2026-10-22 05:56:40) and the owner's decision per store. | SPEC-0246 TSK-0001 |
 
 ## Review and Completion
 

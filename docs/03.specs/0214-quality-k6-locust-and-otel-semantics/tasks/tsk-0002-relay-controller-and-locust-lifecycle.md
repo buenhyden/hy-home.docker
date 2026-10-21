@@ -1,10 +1,10 @@
 ---
 title: "Relay Controller and Locust Lifecycle Task"
-version: "0.3.3"
+version: "0.3.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0214-TSK-0002"
 parent_ids:
@@ -321,10 +321,10 @@ Per consumer:
 | --- | --- | --- |
 | k6 executor through the path guard, WireMock load mode | PASS | The run above |
 | Conftest, `scripts/validation/check-conftest-policy.sh` (CI) | PASS | Two runs, exit 0 each, 364/364 and 69/69 tests both times; logs differ only in the `compose run` container name; 0 containers and networks left for `hyhome-conftest-gate` |
-| WireMock function mode (`api-mock`, journal on) | NOT_RUN | The one-off journal-reset probe was refused in this session; the 2026-10-03 isolated check (journal 1, then 0 after `DELETE /__admin/requests`) in the WireMock README is earlier, separate evidence |
-| `quality-metrics/acceptance.py` (OTLP relay) | NOT_RUN | Not rerun in two cycles; its W9 single run stands |
+| WireMock function mode (`api-mock`, journal on) | NOT_RUN here; PASS on 2026-10-20 (Remaining reload consumers, below) | The one-off journal-reset probe was refused in this session; the 2026-10-03 isolated check (journal 1, then 0 after `DELETE /__admin/requests`) in the WireMock README is earlier, separate evidence |
+| `quality-metrics/acceptance.py` (OTLP relay) | NOT_RUN here; PASS on 2026-10-20 (Remaining reload consumers, below) | Not rerun in two cycles; its W9 single run stands |
 | Pact Broker, SonarQube | Not applicable | No script, workflow or project in this repository consumes them; they run only when an operator starts their profiles |
-| Mailpit (HOME, running) | NOT_RUN | Its message store is shared by HOME senders; deleting messages beyond a test's own would reset a shared asset |
+| Mailpit (HOME, running) | NOT_RUN here; PASS on 2026-10-20 on HOME, touching only its own messages (Remaining reload consumers, below) | Its message store is shared by HOME senders; deleting messages beyond a test's own would reset a shared asset |
 | Locust | Not applicable | LAB runtime is excluded |
 
 ### Remaining reload consumers — 2026-10-20

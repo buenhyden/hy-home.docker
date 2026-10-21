@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.26"
+version: "1.4.27"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-21"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -378,7 +378,7 @@ Infrequent Access에는 무료 한도가 없다. `DeleteObject`와
 
 | 항목 | 예상 사용량 | 관리 |
 | --- | --- | --- |
-| Storage | 2026-10-20 copy 뒤 9,347,776,895 byte(registry가 든 snapshot 포함) | 9 GB에서 업로드 거부(8.2); 8 GB에서 `HyhomeOffsiteRepoNearFreeTier`; 8.5 |
+| Storage | 2026-10-20 owner가 bucket을 비우고 재초기화(저장소 `f6973d0274`)한 뒤 2026-10-21 03:36 copy 후 5,552,354,483 byte(registry 제외) | 9 GB에서 업로드 거부(8.2); 8 GB에서 `HyhomeOffsiteRepoNearFreeTier`; 8.5 |
 | Class A (PutObject, ListObjects 등) | 하루 copy 한 번에 pack, index, snapshot, lock 업로드와 list 수십 건, 한 달 수천 건 | 실측 operation과 계정 전체 사용량 검토 |
 | Class B (GetObject, HeadObject 등) | copy의 index 읽기, 일요일 check의 10% pack 읽기, 한 달 수천 건 | 실측 operation과 계정 전체 사용량 검토 |
 

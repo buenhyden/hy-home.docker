@@ -1,10 +1,10 @@
 ---
 title: "n8n Native Notification Rehearsal Task"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0019"
 parent_ids:
@@ -902,6 +902,8 @@ and six executions reached a terminal state. The receipt is in
 | Default boundary guards | 19 | W74 | Fail-closed target, recovery, cleanup and resource contracts | New focused fixture source | PASS | W74 source and execution boundary | required | - |
 | Actual queue/runner/SMTP execution | 19 | W74 | Terminal workflow, external Code node, capture and unknown isolation | Exact reviewed images and independent GO | ERROR | W74 source and execution boundary | required | - |
 | Reconciliation and empty restore | 19 | W74 | Quiesced no-send evidence, one resend and separate DB replacement | Synthetic owned state | NOT_RUN | W74 source and execution boundary | required | - |
+| Native rerun, attempt 10 | 19 | W74 | Full native rehearsal: generations 1 and 2, restore and restart, six terminal executions, cleanup | `w74-attempt-pass-a9076a87295ba1ce557e5898/` | PASS | W74 native rerun — 2026-10-20 | required | - |
+| Native rerun, attempt 11 | 19 | W74 | Same run on the final reviewed source `aaa5f4ff6`, 888.8 s, all owned resources absent | `w74-attempt-pass-d4d77ba49bd1026ff4c1557d/` | PASS | W74 native rerun — 2026-10-20 | required | - |
 
 ## Criterion Acceptance
 
