@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.26"
+version: "0.1.27"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -842,6 +842,69 @@ are attributed to host load, not to this change; that is an inference from the
 identical inputs and the paired passes. Each of the 12 native tests has passed
 on the branch at least once, but no single full run passed. The window remains
 BLOCKED until the owner approves `P01_APPROVED_COMMIT` for the merged change.
+
+### Second window attempt 2026-10-21 — stopped before W1c apply
+
+After #547 the owner approved `P01_APPROVED_COMMIT` =
+`a633d878227093e875e21faa39b291cb3edec616` ("승인 (Recommended)") and asked to
+run the window at once ("지금 진행"). W0 was re-run read-only at 23:07 KST and
+passed as in the first attempt (R2 5.214 GiB stored); the timer was stopped and
+the renderer helper installed for `a633d878`. No values are recorded below.
+
+| Step | Result |
+| --- | --- |
+| W1 | `DELIVERED`; custody `state.json` `{"state":"DELIVERED","operator_healthy":true}` |
+| Old-root sweep, first run | Exit 1 before any revoke: the W1 block leaves `set -C` on, so the sweep could not write its own `2>"$err"` file, and its `exit 1` closed the shell |
+| Old-root sweep, second run | One `lookup-accessor` call returned 403 and the block stopped. A status-only re-read then returned 200 for all 5 accessors (policies `prometheus`, `default k8s-bootstrap`, `root` twice, `default hy-home-operator`); the 403 was not reproduced or explained |
+| Old-root sweep, third run | `revoked=1`, `remaining=0` |
+| Audit, secrets and auth lists (W1 root) | Audit none; secrets `cubbyhole`, `identity`, `secret/` kv, `sys`; auth `approle`, `kubernetes`, `oidc`, `token`. No plugin or audit device that W3a cannot open |
+| W1c plan | `RENDERER_ROLES_PLANNED`; all 7 targets change. `renderer`, `renderer-issuer`, `renderer-cleanup` and both token roles are absent on HOME. `hy-home-operator` loses direct `auth/approle/role/hy-home-renderer/secret-id` and gains the two 5-minute token-create roles, as designed |
+| W1c AppRole difference | HOME: policy `hy-home-renderer`, `token_period` 86400, ttl and max 0. Source: policy `renderer`, ttl 1h, max 24h, no period. With the single-use SecretID removed after reading, the Agent could not log in again about 24 h after W5 |
+
+On that finding the owner stopped before apply ("쓰기 전 중단 (Recommended)"),
+so nothing was written to HOME apart from the one old root the sweep revoked. A
+fresh OIDC login proved operator access (the first paste was not a token and
+was rejected with 403), the root was revoked (`ROOT_REVOKED_OPERATOR_HEALTHY`),
+the w1 and w7 operator tokens were revoked with `revoke-self`, the cleanup block
+ran and the timer was started again. External Secrets and the silence were
+never touched. Credential-free receipts are in the owner's
+`ops-snapshots/openbao-window-20261021b/`. The plan custody directory was left
+behind because the cleanup glob lacked `p01-roles-plan.*`.
+
+The owner chose a 24 h periodic renderer token ("period 24h 유지 (Recommended)").
+`79c93e3d9` sets `token_period` 24h with ttl and max 0. On a throwaway 2.6.2
+server the helper payload read back without a difference; login gave policies
+`default renderer`, period 86400, `explicit_max_ttl` 0, renewable; renew-self
+returned 86400; a SecretID replay was refused with 400. The same commit clears
+noclobber inside the sweep subshell, adds `p01-roles-plan.*` to cleanup and
+names the External Secrets controller as the W3 k8s writer.
+
+An `iac-reviewer` review (requested by this session) returned READY WITH NOTES.
+Applied in `bcdf29200`: the native rehearsal now asserts a renewable 24 h
+periodic token, and the unit readback checks the cleared explicit max. It also
+found that the External Secrets Deployment is managed by Argo CD
+`platform-external-secrets-operator` under `root-platform`, both with
+`selfHeal`, so RUN-0085 W3 now pauses both auto-syncs and saves the replicas and
+sync policy before scaling to 0, and restores them afterwards, with owner
+approval each window. The owner accepted the unbounded renderer token ("수용하고
+POL-0085에 기록 (Recommended)"), and POL-0085 lists it as a residual until
+2026-11-15. W5 still does not revoke the previous Agent token. The review also
+noted that `verification.json` blocks that claim validity for the current
+candidate were already stale before this change; that is not fixed here.
+
+Native rehearsal on `bcdf29200`: two runs failed one or two timing checks
+(`TLS_MATERIAL … native-user-read`, a TLS request timeout), and one run that
+was meant to pause Airflow did not, because the container names reached
+`docker stop` as one word. With the Airflow worker, DAG processor, scheduler and
+triggerer stopped (owner approval "Airflow 일시 중지 후 실행 (Recommended)") the
+suite passed 12 of 12 in 508.2 s; Airflow was started again. The input digest
+`2264174ff7726d68108e7f8e9592c6f9e1db30e0b301e67ead98e0bc493d46f0` was
+recomputed from the 34-file binding at `bcdf29200`; only `renderer-role.json`
+and `test_openbao_rehearsal.py` differ from the previous binding. The candidate
+suite then passed 2 of 2 on the same commit (276.4 s), covering the 14 tests of
+the attempt 8 scope across two runs. The SEC01 ledger now binds that commit and
+both log digests; the attempt 8 receipt and its binding moved to history with
+an invalidation reason. HOME runtime was unchanged.
 
 ## Evidence
 
