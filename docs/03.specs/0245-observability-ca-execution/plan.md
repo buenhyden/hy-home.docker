@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution Plan"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0245-PLAN-0001"
 parent_ids:
@@ -35,7 +35,7 @@ or select services beyond the two named targets.
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
 | W1 | 1, 7 | Record current-host and two-service value-free preflight identities, isolation design, and stop gates | None | TSK-0001 | Operations implementer record; independent review |
-| W2 | 2, 7 | Create and prove a reviewed Prometheus consistent backup through isolated restore; retain 3.14 identity | W1 | TSK-0001 | Operations implementer evidence; QA verification |
+| W2 | 2, 7 | Create and prove a reviewed Prometheus consistent backup through isolated restore; retain the installed v3.15.0 identity | W1 | TSK-0001 | Operations implementer evidence; QA verification |
 | W3 | 3, 4, 7 | Create and prove a reviewed Gatus SQLite backup; create the no-network/no-pull minimal delta image with `FROM` the exact current running immutable base and `COPY` only the tracked CA-aware entrypoint, leaving the binary unchanged | W1 | TSK-0001 | Operations implementer evidence; IaC, security, and QA review |
 | W4 | 5, 6, 7 | Apply the reviewed Prometheus CA selection and recreate only Prometheus after both W2 and W3 PASS | W2, W3 | TSK-0001 | Operations implementer evidence; QA verification |
 | W5 | 5, 6, 7 | Apply the reviewed Gatus CA selection and recreate only Gatus after W4 PASS | W3, W4 | TSK-0001 | Operations implementer evidence; QA verification |
@@ -62,7 +62,7 @@ or select services beyond the two named targets.
 
 ### Risks and Rollback
 
-- **Prometheus data loss or incompatible restore.** Preserve the observed 3.14
+- **Prometheus data loss or incompatible restore.** Preserve the installed v3.15.0
   identity and stop before recreation until the service-specific backup and
   isolated restore pass. Never delete or manually manipulate TSDB/WAL files.
 - **Gatus image trust gap.** A same-image recreation cannot prove CA handling.
