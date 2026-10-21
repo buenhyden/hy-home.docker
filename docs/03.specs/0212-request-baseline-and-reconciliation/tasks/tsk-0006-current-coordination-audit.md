@@ -1,6 +1,6 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -164,6 +164,11 @@ Draft for owner sign-off, not applied to the approved Spec: row 31 becomes
 documentation structure", with the same unit contents as today. Applying it
 edits the approved Spec and TSK-0008 together. R31 status: PARTIAL, owner
 decision.
+
+Owner decision — 2026-10-21: "SPEC-0212 R31 경로 수정 승인". The Spec routing
+table row 31 and both TSK-0008 rows now name the SEC01 image owner (SPEC-0204
+TSK-0009) with P08 structure checks. The routing conflict is closed; R31 stays
+PARTIAL until each later ROOT-image change shows its same-unit updates.
 
 ### v22 NOT_RUN review — 2026-10-21
 

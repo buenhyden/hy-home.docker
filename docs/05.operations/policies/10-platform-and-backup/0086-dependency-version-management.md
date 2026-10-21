@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-21"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
@@ -78,6 +78,13 @@ GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 소스/분류 drift를 거부한다. write 모드는 derived 항목을 원자적으로 재조정한다. Compose,
 수정된 빌드 소스, 문서 계약, 공식 Renovate 설정은 독립적으로 검증한다. registry 출력을
 런타임 health나 backup/restore의 증거로 받아들이지 않는다.
+
+변경 가능한 이미지 예외는 `tests/validation/test_compose_baseline_gates.py`의
+`ImageTagPolicyTests`가 검사한다. ROOT Compose image와 ROOT Dockerfile의 `FROM` 가운데 digest,
+점이 있는 버전, 세 자리 이상 release 번호, commit ID 태그가 없는 참조는 예외 항목이 있어야 한다.
+`v2`처럼 major만 있는 태그는 채널로 본다. 어디에도 쓰이지 않는 항목이나 owner·reason·risk·review
+cadence·exit condition이 빠진 항목은 실패한다. local build 서비스의 Compose `image` 이름은 제외하고
+그 Dockerfile의 `FROM`을 본다.
 
 ## Related Documents
 

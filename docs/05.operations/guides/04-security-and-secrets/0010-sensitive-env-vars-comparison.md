@@ -1,10 +1,10 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "3.3.2"
+version: "3.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-21"
 layer: "operations"
 artifact_id: "GDE-0010"
 created: "2026-06-04"
@@ -26,9 +26,16 @@ created: "2026-06-04"
 
 ## Concepts
 
-`secrets/SENSITIVE_ENV_VARS.md.example`은 공개 ID·env key·파일 경로·용도 계약을
-소유한다. 실제 값은 Git에서 제외된 로컬 registry와 secret 파일에 보관한다.
-공개 예제에는 placeholder만 허용한다. ID는 안정적으로 유지하며 다른 credential
+공개 ID·env key·파일 경로·용도 계약의 단일 원본은
+`infra/03-security/openbao/secret-catalog.json`이다. `secrets/SENSITIVE_ENV_VARS.md.example`은
+이 catalog에서 렌더링한 공개 view이므로 직접 고치지 않고 catalog를 고친 뒤 다시 렌더링한다.
+catalog의 `metadata_source` 필드는 처음 이관한 출처를 기록할 뿐 원본을 뜻하지 않는다. 검증은
+`python3 scripts/operations/secret-catalog.py --root "$PWD" check`(jsonschema가 설치된 Python에서
+절대 경로 root로 실행)와 렌더링한 `.example`이 추적 파일과 같은지 보는
+`tests/validation/test_secret_catalog_contract.py`가 맡는다. Git에서 제외된 로컬 registry
+`secrets/SENSITIVE_ENV_VARS.md`에 쓰는 것은 `scripts/operations/gen-secrets.sh`와
+`scripts/lib/ops/smtp_contract.py`뿐이며, 둘 다 공개 view를 읽는다. 실제 값은 Git에서 제외된
+로컬 registry와 secret 파일에 보관한다. 공개 view에는 placeholder만 허용한다. ID는 안정적으로 유지하며 다른 credential
 의미로 재사용하지 않는다.
 
 문서의 줄 수나 전체 ID 수만 같다는 이유로 메타데이터 일치를 판단하지 않는다.
@@ -90,6 +97,7 @@ profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 
 ## Related Documents
 
 - [Env Key Comparison](../10-platform-and-backup/0003-env-key-comparison.md)
-- [Public secret metadata](../../../../secrets/SENSITIVE_ENV_VARS.md.example)
-- [Metadata synchronization owner](../../../../scripts/operations/gen-secrets.sh)
+- [Public metadata source catalog](../../../../infra/03-security/openbao/secret-catalog.json)
+- [Rendered public view](../../../../secrets/SENSITIVE_ENV_VARS.md.example)
+- [Private registry writer](../../../../scripts/operations/gen-secrets.sh)
 - [Secret management](../../../../secrets/README.md)

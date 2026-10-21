@@ -5328,6 +5328,95 @@ class StalwartRehearsalTests(unittest.TestCase):
 
 # SPEC-0180 S18: every routed service without the SSO ForwardAuth chain must
 # name its own authentication. Keep in step with the route matrix in GDE-0079.
+class ImageTagPolicyTests(unittest.TestCase):
+    """POL-0086: a ROOT image reference whose tag is a mutable channel (no
+    digest, dotted version, release number or commit id) is allowed only
+    through an entry in infra/image-tag-policy.exceptions.json. Compose images
+    and Dockerfile FROM lines are both checked; a major-only tag such as `v2`
+    is a channel."""
+
+    # ponytail: a 1-2 digit tag counts as a channel; a 3+ digit release number
+    # (trino 483) counts as a version. Tighten if a 3-digit channel appears.
+    VERSIONED = re.compile(r"v?\d+\.\d+(\.\d+)*([-._+].*)?|\d{3,}|[0-9a-f]{40}")
+    FROM = re.compile(r"\s*FROM\s+(?:--\S+\s+)*(\S+)(?:\s+AS\s+(\S+))?", re.I)
+    FIELDS = ("owner", "reason", "risk", "review_cadence", "exit_condition")
+
+    @classmethod
+    def floating_images(cls) -> dict[str, list[str]]:
+        import yaml
+
+        found: dict[str, list[str]] = {}
+        infra = ROOT / "infra"
+        paths = {*infra.rglob("docker-compose*.yml"), *infra.rglob("compose*.yml")}
+        for path in sorted(paths):
+            if "labs" in path.relative_to(infra).parts:
+                continue
+            data = (
+                yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
+            )
+            for name, service in (data.get("services") or {}).items():
+                image = (service or {}).get("image")
+                if not isinstance(image, str) or "build" in service:
+                    continue
+                if not cls.pinned(image):
+                    found.setdefault(image, []).append(
+                        f"{path.relative_to(ROOT)}:{name}"
+                    )
+        for path in sorted(infra.rglob("Dockerfile*")):
+            if "labs" in path.relative_to(infra).parts:
+                continue
+            stages: set[str] = set()
+            for line in path.read_text(encoding="utf-8").splitlines():
+                match = cls.FROM.match(line)
+                if not match:
+                    continue
+                reference, alias = match.groups()
+                if alias:
+                    stages.add(alias.lower())
+                if reference.lower() in stages or reference == "scratch":
+                    continue
+                if "$" not in reference and not cls.pinned(reference):
+                    found.setdefault(reference, []).append(
+                        f"{path.relative_to(ROOT)}:FROM"
+                    )
+        return found
+
+    @classmethod
+    def pinned(cls, image: str) -> bool:
+        reference, _, digest = image.partition("@")
+        last = reference.rsplit("/", 1)[-1]
+        tag = last.split(":", 1)[1] if ":" in last else "latest"
+        return bool(digest) or cls.VERSIONED.fullmatch(tag) is not None
+
+    @staticmethod
+    def exceptions() -> list[dict]:
+        path = ROOT / "infra/image-tag-policy.exceptions.json"
+        return json.loads(path.read_text(encoding="utf-8"))["floating_image_exceptions"]
+
+    def test_every_floating_image_has_an_exception_and_no_entry_is_stale(self):
+        floating = self.floating_images()
+        listed = [entry["image"] for entry in self.exceptions()]
+        self.assertEqual(len(listed), len(set(listed)), "duplicate exception")
+        unexplained = {i: s for i, s in floating.items() if i not in listed}
+        self.assertEqual({}, unexplained)
+        self.assertEqual([], sorted(set(listed) - set(floating)), "stale entries")
+
+    def test_each_exception_names_owner_reason_risk_cadence_and_exit(self):
+        for entry in self.exceptions():
+            for field in self.FIELDS:
+                value = entry.get(field)
+                self.assertTrue(
+                    isinstance(value, str) and value.strip(),
+                    f"{entry.get('image')}: {field}",
+                )
+
+    def test_version_rule_separates_channels_from_versions(self):
+        for tag in ("483", "v3.15.0", "18.6-alpine", "1.0.3", "9cd150bf" * 5):
+            self.assertIsNotNone(self.VERSIONED.fullmatch(tag), tag)
+        for tag in ("alpine", "latest", "cu126-slim", "local", "stable", "v2", "18"):
+            self.assertIsNone(self.VERSIONED.fullmatch(tag), tag)
+
+
 ROUTES_WITHOUT_SSO = {
     # Native OIDC (POL-0079 native list)
     "airflow": "native-oidc",
