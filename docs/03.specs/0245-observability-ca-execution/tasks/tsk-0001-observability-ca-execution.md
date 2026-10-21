@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.20"
+version: "0.1.21"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -250,6 +250,30 @@ isolated restore of the 10-20 cold copy on v3.15.0, and the Prometheus OpenBao
 scrape over that CA once OpenBao serves TLS after the SPEC-0243 window. Gatus
 still needs its W3 backup, isolated restore and the CA-aware delta image.
 No restore, recreation or CA action ran here.
+
+### Tracked isolated restore procedure — 2026-10-21
+
+The restore-01 to restore-03 packet (contract, script and test) is not in the
+repository or in the attempt workspace, and restore-03's preflight failure is
+still undiagnosed, so the owner chose a new tracked procedure ("새 절차 작성 후
+실행"). `scripts/operations/prometheus-isolated-restore.py` takes a stopped-volume
+tar and its SHA-256, refuses a hash mismatch or an existing work directory
+before any Docker call, extracts into a new 0700 directory as the invoking
+user, and runs the Compose-pinned v3.15.0 image with `--network=none`,
+`--pull=never`, `--cap-drop=ALL`, no-new-privileges, 2 GiB and one CPU, a
+configuration with no scrape targets and a retention long enough that no
+restored block is deleted. It records the seconds to `/-/ready` and `count(up)`
+one hour and seven days before the newest block, always removes its container
+and removes the scratch directory unless `--keep`. Six unit tests cover the
+image pin, both refusals, the isolation flags, the query times, an empty query
+and a never-ready server; RUN-0045 names the command and the script is
+registered in the manifest and the CI contract.
+
+This replaces the lost packet for W2's restore step; it does not check rule
+health or Alertmanager delivery. The planned input is the 2026-10-20 cold copy
+(SHA-256 `c9cb29e5…`). The run waits for independent review and for the
+SPEC-0243 window to finish, and its `ready_seconds` becomes the first measured
+RTO input for the observability tier (SPEC-0218 TSK-0002). Nothing ran yet.
 
 ### Lifecycle Events
 
