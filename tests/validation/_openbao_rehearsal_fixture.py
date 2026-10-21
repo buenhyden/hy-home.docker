@@ -36,14 +36,14 @@ class RehearsalFailure(RuntimeError):
     """Sanitized failure: never include captured output or credential values."""
 
 
-def captured(argv, *, data=None, allow_failure=False):
+def captured(argv, *, data=None, allow_failure=False, timeout=60):
     """Do not expose output/arguments through CalledProcessError or logging."""
     try:
         result = subprocess.run(
             argv,
             input=data,
             capture_output=True,
-            timeout=60,
+            timeout=timeout,
             check=False,
         )
     except (OSError, subprocess.TimeoutExpired):

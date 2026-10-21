@@ -247,7 +247,9 @@ class OpenBaoClientCases:
                         f"type=bind,src={source},dst={destination},readonly",
                     ]
                 name = fixture.container(tag, args, command, image=image)
-                deadline, observed, status = time.monotonic() + 25, False, None
+                # 25 s missed the first scrape or check on a loaded host
+                # (load 10, 2026-10-21); the expected outcome is unchanged.
+                deadline, observed, status = time.monotonic() + 60, False, None
                 while time.monotonic() < deadline:
                     status, body = self.fixture_http(fixture, name, port, endpoint)
                     if kind == "prom" and status == 200:

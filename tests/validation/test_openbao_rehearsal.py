@@ -574,8 +574,13 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             )
         if reconcile_only:
             return None  # Do not enter the existing unbounded delivery-container path.
+        # Delivery starts the Agent and waits for wrapped delivery; on a loaded
+        # host (load 10, 2026-10-21) it outran the 60 s default.
         result = captured(
-            argv, data=("\n".join(tokens) + "\n").encode(), allow_failure=True
+            argv,
+            data=("\n".join(tokens) + "\n").encode(),
+            allow_failure=True,
+            timeout=180,
         )
         self.must(
             result.returncode == 0,
