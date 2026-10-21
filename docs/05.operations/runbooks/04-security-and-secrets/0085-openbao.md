@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.36"
+version: "0.12.37"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -1428,18 +1428,14 @@ SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 versio
 
 이 재생성으로 SPEC-0239 Agent telemetry도 배포된다(2026-10-14 owner 결정). Compose와
 `agent.hcl`이 이미 `metrics_only` listener(8100)와 `obs_net`을 담고 있으므로 따로 바꿀 것은
-없다. Agent가 `healthy`가 된 뒤 Prometheus를 다시 만든다. `restart`는 Compose 변경을
-적용하지 않아 HTTPS `openbao` job에 필요한 CA mount가 계속 빠지므로 쓰지 않는다.
-2026-10-15 SEC01이 Compose 고정 Prometheus를 만료일과 함께 수용했으므로(SPEC-0204
-TSK-0009), W0에서 image 외의 설정 차이가 없음을 확인한 뒤
-`docker compose --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`로
-Compose 고정 image로 다시 만든다. 단일 파일 bind가 이전 사본으로 남지 않게 항상 다시 만든다. image는 W0에서 local에 있는지 확인한다. 새 image가 뜨지 않거나 rule
-평가가 실패하면 이전 image를 유지하는
-[Prometheus window overlay](../../../../infra/06-observability/compose.window-ca.override.yml)로
-`docker compose -f docker-compose.yml -f infra/06-observability/compose.window-ca.override.yml --profile obs up -d --no-deps --no-build --pull never --force-recreate prometheus`를
-실행해 되돌린다. 다른 설정 차이가 있으면 이 부분은 **BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
+없다. Agent가 `healthy`가 된 뒤 Prometheus의 `openbao-agent` scrape를 확인한다.
+Prometheus는 2026-10-20 SEC01 rollout에서 Compose 고정 image(`v3.15.0`, digest `efd719c9`)로 이미 <!-- runtime-version-exception: history — 2026-10-20 rollout에서 관찰한 Prometheus image 버전이며 Compose가 pin을 소유함 -->
+다시 만들어져 `/etc/prometheus/openbao-ca.pem` mount를 갖고 있다(SPEC-0245 TSK-0001). W0에서
+`docker inspect prometheus`로 image가 Compose pin과 같고 그 mount가 있는지만 확인하며, 이 단계에서
+Prometheus를 다시 만들지 않는다. 이전 image로 되돌리는 overlay는 v3.15.0이 쓴 TSDB를 낮은 버전으로
+여는 다운그레이드가 되므로 두지 않는다. 확인이 어긋나면 이 부분은 **BLOCKED**다. 기대: `up{job="openbao-agent"}`이 1, `OpenBaoAgentMetricsScrapeFailing`과
 `OpenBaoAgentAuthFailure`가 조용하다. 중단: scrape 실패가 이어지면 Agent listener와 `obs_net`
-연결을 먼저 확인한다. Prometheus만 이전 설정으로 되돌리는 것은 Agent 재인증과 무관하다.
+연결을 먼저 확인한다. Prometheus를 다시 만들거나 되돌리는 것은 Agent 재인증과 무관하다.
 
 Gatus도 W4 뒤 OpenBao를 HTTPS로 보고 내부 CA를 요구하므로 CA mount가 없으면 W4 이후에도
 계속 경보를 낸다. Compose는 이미 Gatus의 CA mount를 선언한다. Gatus image는 digest 고정이 아닌
