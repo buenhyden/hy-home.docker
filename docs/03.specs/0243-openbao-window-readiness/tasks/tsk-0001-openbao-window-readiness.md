@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.27"
+version: "0.1.28"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -905,6 +905,57 @@ suite then passed 2 of 2 on the same commit (276.4 s), covering the 14 tests of
 the attempt 8 scope across two runs. The SEC01 ledger now binds that commit and
 both log digests; the attempt 8 receipt and its binding moved to history with
 an invalidation reason. HOME runtime was unchanged.
+
+### Window 2026-10-22 07:00 — W1c and W2 applied, closed at W3
+
+After #548 the owner approved `P01_APPROVED_COMMIT` =
+`ea064f0b754c0845d2a9351ff93dac4aada7fb98` ("승인 (Recommended)") and chose a
+07:00 window. W0 ran from 07:06 KST at that commit (load 6.8, IO pressure 8%).
+The TLS preflight failed once with `TLS_MATERIAL FAIL check=native-user-read`
+and passed on two reruns in 13 s and 11 s; a bare `docker run` of the image took
+10.9 s against the check's 20 s limit, so the failure is read as a timeout. R2
+held 5.251 GiB, the 03:30 backup had exited at 03:40, and the other W0 checks
+held as before. No values are recorded below.
+
+| Step | Result |
+| --- | --- |
+| W1, first try 07:13:57 | Stopped after `initialization.json`, with an empty `update-1.json`; the next pre-check saw `started:false`, so the attempt did not remain. Its status line was not reported |
+| W1, second try 07:16 | `DELIVERED` |
+| Old-root sweep | `revoked=0`, `remaining=0` (the `set +C` fix held) |
+| W1c plan 07:17 | Same priors as the 2026-10-21 plan. AppRole now differs only in policy (`hy-home-renderer` to `renderer`), period 86400 and ttl/max 0 kept. Agent templates read only the Keycloak and Grafana paths that `renderer` allows |
+| W1c apply 07:18 | `RENDERER_ROLES_APPLIED`, priors equal to the plan |
+| W1c apply 07:20 (repeated) | `RENDERER_ROLES_APPLIED` with every target unchanged; a no-op |
+| W2 07:18 | `SNAPSHOT_TOKEN_DELIVERED`; a repeat at 07:22 stopped before any request because the token existed |
+| W3 writers | Silence `bb820476-729a-4c88-886f-684b66108695`; Agent stopped. Patching off auto-sync on `root-platform` and `platform-external-secrets-operator` (owner approval "ESO 정지 승인") was undone by `platform-cluster-config` and ApplicationSet `apps-generator`, and ESO came back at 1. On the owner's choice the Argo CD application and applicationset controllers were scaled to 0 (an unreviewed step), then ESO stayed at 0 |
+| W3 lease | `LEASE_STARTED` |
+| W3 snapshot | `BLOCKED` at the first `check_lookup`, before any renewal or download; the `.partial` files stayed empty |
+
+Cause: `protected-raft-snapshot.py` required `token_policies` and
+`identity_policies` in `lookup-self`, and both 2.6.2 and 2.7.1 omit them.
+`check_renewal` was correct. Because a fix needs review and a new approval, the
+window was closed at 07:35. The Argo CD controllers and ESO were scaled back to
+1, the root was revoked (`ROOT_REVOKED_OPERATOR_HEALTHY`), the w1 and w7 tokens
+were revoked, the cleanup ran and the timer was started. The w3a `revoke-self`
+returned 2; its paste was never size-checked, so it may not have been a token,
+and an OIDC token would expire within 4 h. Receipts are in the owner's
+`ops-snapshots/openbao-window-20261022/`.
+
+HOME now has the W1c policies and roles and the W2 snapshot token. The Agent is
+stopped as RUN-0085 requires after a W3 stop; consumers keep their rendered
+files until W5 of the next window. During the window only the
+pre-existing `OpenBaoMetricsScrapeFailing` and
+`OpenBaoAgentMetricsScrapeFailing` fired. A manual `hyhome-backup` run at 07:49
+exited 0 (`Result=success`): the daily OpenBao Raft snapshot ran through
+`hyhome-backup.sh` with the new token for the first time since 2026-10-12, and
+R2 received the copy (5,661,951,661 bytes stored).
+
+The fix accepts the omitted fields and still rejects a present wrong value. On
+throwaway raft servers (images `11fd73a2` and `a58fb110`), the old helper is
+BLOCKED at the first lookup, and the fixed one passes lookup, renewal, lookup,
+seal, a 200 snapshot download of about 19 KB and archive validation. RUN-0085
+W3 now describes the controller scale-down instead of the Application patch.
+The next window starts at W1; W1c should plan no change and W2 is skipped once
+the installed token is confirmed renewable.
 
 ## Evidence
 
