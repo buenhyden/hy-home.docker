@@ -247,7 +247,7 @@ class OpenBaoClientCases:
                         f"type=bind,src={source},dst={destination},readonly",
                     ]
                 name = fixture.container(tag, args, command, image=image)
-                deadline, observed = time.monotonic() + 25, False
+                deadline, observed, status = time.monotonic() + 25, False, None
                 while time.monotonic() < deadline:
                     status, body = self.fixture_http(fixture, name, port, endpoint)
                     if kind == "prom" and status == 200:
@@ -276,7 +276,8 @@ class OpenBaoClientCases:
                 fixture.stop(name)
                 self.must(
                     observed,
-                    "selected " + kind + " client CA acceptance/rejection unobserved",
+                    f"selected {kind} client CA acceptance/rejection unobserved"
+                    f" ({tag}, last HTTP status {status})",
                 )
                 print("observed native " + tag + ": PASS", flush=True)
 
@@ -310,17 +311,15 @@ class OpenBaoClientCases:
             expired.api("GET", "sys/health")
         fixture.stop(name)
         preflight = ["sh", str(SOURCE / "scripts/check-tls-material.sh")]
+        result = captured(
+            [*preflight, str(fixture.tls), fixture.image_reference],
+            allow_failure=True,
+        )
+        # The script prints only "TLS_MATERIAL FAIL check=<name>", never material.
         self.must(
-            captured(
-                [
-                    *preflight,
-                    str(fixture.tls),
-                    fixture.image_reference,
-                ],
-                allow_failure=True,
-            ).returncode
-            == 0,
-            "native TLS material preflight rejected valid fixture",
+            result.returncode == 0,
+            "native TLS material preflight rejected valid fixture: "
+            + result.stdout.decode(errors="replace").strip()[-120:],
         )
         invalid_dirs = [directory]
         for kind in ("wrong-ca", "wrong-san", "missing-loopback-san", "wrong-key"):
