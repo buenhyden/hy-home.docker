@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0008"
 parent_ids:
@@ -137,7 +137,7 @@ consumer contract; neither is accepted here.
 | 28 | SPEC-0204 P09 TSK-0008 | Offline preparation contract | SOURCE_APPLIED; implementation excluded. |
 | 29 | SMTP01 | SMTP contract/rehearsal | NOT_RUN; consumer verification pending. |
 | 30 | CLN01 | Consumer/backup/retirement contract | NOT_RUN; consumer and recovery evidence absent. |
-| 31 | SPEC-0204 P09 | Changed-image documentation and CI route | NOT_RUN; no image change is accepted. |
+| 31 | SPEC-0204 P09 | Changed-image documentation and CI route | PARTIAL; image changes were accepted from 2026-10-20 (SPEC-0204 TSK-0009), and each PR updated its Guide, Policy or Runbook with the change. The route conflicts with SPEC-0204 `plan.md`, which limits P09 to Wiki preparation; the owner decides the route (2026-10-21). |
 
 `docker-compose.yml`, `.env.example`, catalogs/exceptions, Stage 99 Registry,
 Stage 05 indexes, shared scripts, and CI contracts require one named writer.
