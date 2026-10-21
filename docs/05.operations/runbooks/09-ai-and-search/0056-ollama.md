@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-21"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -111,6 +111,15 @@ curl -f http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/api/tags
 ```
 
 재생성 뒤 version, health, 기존 digest, loopback 포트, GPU 요청, `ai_net`/`edge_net`, exporter와 Open WebUI backend `/api/tags`를 확인한다. decision 확인은 Guide의 synthetic `tev1:0.8b` 요청과 `keep_alive: 0`을 사용한다.
+
+GPU warm-up entrypoint(`cat /usr/lib/ollama/cuda_v12/* > /dev/null; exec /bin/ollama serve`)는 경로가 없어도 조용히 넘어가므로, 재생성 전에 새 image pin에 `cuda_v12` 경로가 있는지, 재생성 뒤 GPU가 실제로 선택됐는지 확인한다. GTX 1060(compute 6.1)은 CUDA 12 runtime을 쓴다. entrypoint 변경은 별도 승인 대상이다.
+
+```bash
+docker run --rm --network none --entrypoint /bin/ls "<새 image pin>" /usr/lib/ollama/cuda_v12
+docker logs ollama 2>&1 | grep 'msg="inference compute"'
+```
+
+로그에 `library=CUDA`, `name=CUDA0`, `cuda_v12`를 포함한 `libdirs`가 없으면 CPU fallback으로 보고 rollback한다.
 
 실패 시 승인된 rollback 계획에 따라 Compose pin을 변경 전에 기록한 image tag/digest로 복원하고 derived version projection을 재생성한 뒤 같은 단일-service 명령을 실행한다. `hy-home-infra_ollama-data`와 기존 모델은 삭제·교체하지 않는다. rollback rehearsal과 인증된 브라우저 UI 검증은 아직 실행되지 않았다.
 
