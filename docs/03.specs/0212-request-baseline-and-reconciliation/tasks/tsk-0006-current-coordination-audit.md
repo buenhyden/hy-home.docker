@@ -1,10 +1,10 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0006"
 parent_ids:
@@ -149,6 +149,21 @@ main is clean at `262dc2dde6eea27195f7d8909e9453f5ccc97f66`, and the repair
 worktree retains the patch. Patch SHA256 is
 `be4501a3c7f290ae4c0c87e7c1852405917e89d30259c5208ff59a97596922e5`.
 No other writer's files, commits, branches, or runtime state were changed.
+
+### R31 routing conflict and draft — 2026-10-21
+
+The approved Spec routes R31 to "SPEC-0204 / P09" (`spec.md` routing table row
+31, repeated in TSK-0008), but SPEC-0204 `plan.md` says "P09 now owns only
+offline Wiki preparation". R31 therefore has no live owner. Practice since
+2026-10-20 matches the R31 intent: the image changes of that day (for example
+the R2 cap in PR #528 and the OpenBao packet in progress) updated their
+configuration, tests and operations documents in the same unit.
+
+Draft for owner sign-off, not applied to the approved Spec: row 31 becomes
+"Image owner (SEC01, SPEC-0204 TSK-0009) for each ROOT-image change; P08 checks
+documentation structure", with the same unit contents as today. Applying it
+edits the approved Spec and TSK-0008 together. R31 status: PARTIAL, owner
+decision.
 
 ## Evidence
 

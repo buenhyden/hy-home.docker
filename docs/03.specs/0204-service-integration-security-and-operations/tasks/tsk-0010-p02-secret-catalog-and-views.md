@@ -1,10 +1,10 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -681,6 +681,43 @@ for the permission fix, and reverts the separate documentation commit for this
 receipt. The code revert restores the known 0600 validation gap; neither action
 rolls back a data format, credential rotation or deployed service. The Task stays in progress while
 its separately owned operational dependencies remain unresolved.
+
+### Single-owner draft for the public contract — 2026-10-21
+
+v22 §10 asks for one owner of generation, reference and validation. Today three
+statements name different owners:
+
+| Statement | Location | Claims |
+| --- | --- | --- |
+| Guide concepts | GDE-0010 `## Concepts` | `SENSITIVE_ENV_VARS.md.example` owns the public ID, env key, path and purpose contract |
+| Guide related link | GDE-0010 `## Related Documents` | `scripts/operations/gen-secrets.sh` is the metadata synchronization owner |
+| Catalog | `infra/03-security/openbao/secret-catalog.json` `metadata_source`; `scripts/lib/ops/secret_catalog.py` `VIEW_NAMES`; `tests/validation/test_secret_catalog_contract.py` | The catalog renders `.example` and the value-free views, and the test pins the rendered `.example` to the tracked file |
+
+The test makes the catalog the effective source: an edit to `.example` alone
+fails it. The only writers of the private `secrets/SENSITIVE_ENV_VARS.md` are
+`gen-secrets.sh` (it reads `.example` as `EXAMPLE_FILE`) and
+`scripts/lib/ops/smtp_contract.py`.
+
+Draft for the owner, not applied: the catalog is the single source;
+`.example` is a rendered public view; `secret_catalog.py check-views` is the
+validation; `gen-secrets.sh` and `smtp_contract.py` are the only writers of the
+private file and consume `.example` as a view. GDE-0010 `## Concepts` and its
+related link would then say so, and `metadata_source` would stop pointing at the
+view.
+
+Retention classes for `secrets/` subtrees, from directory names only (no file
+opened, no value read):
+
+| Class | Subtrees | Disposal |
+| --- | --- | --- |
+| Rendered or generated | private `SENSITIVE_ENV_VARS.md`; generated credentials under `auth/`, `db/`, `data/`, `communication/`, `observability/`, `automation/`, `storage/`, `tools/` | Regenerate from the catalog and the generator; never hand-edit |
+| Bootstrap or independent custody | `security/`, `certs/` | Keep; retire only through the OpenBao/CLN01 retirement records |
+| Recovery | `backup/` | Keep while the backup chain references it |
+| Historical | `.backup-20261002-prompt02`, `.backup-20261003`, `.backup-20261003-layout`, `.retired` | Owner review, then CLN01 disposal; none is read here |
+| Excluded | `labs/` | LAB scope, not assessed |
+
+Which owner to choose, and any move or deletion, is the owner's decision. S10b
+status: PARTIAL, draft recorded.
 
 ## Evidence
 

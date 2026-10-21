@@ -1,10 +1,10 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.9"
+version: "0.2.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0011"
 parent_ids:
@@ -902,6 +902,39 @@ handshakes spread the arrivals over about a second, during which the bucket
 refilled. The over-limit probe used `mailpit-ui`, a low-traffic router,
 because host and LAN clients share one bucket per router through
 docker-proxy. HOME rate-limit status: PASS.
+
+#### Per-route limiter and Hermes direct port — 2026-10-21
+
+Source inventory at `main` `5b9ee9e74`, from `RouteAuthContractTests.routers()`
+(Compose labels plus `traefik/dynamic/*.yml`): 48 HTTP routers, no TCP router.
+Every router except one reaches `req-rate-limit` through
+`gateway-standard-chain@file`; the limiter is shared, so each router and TCP peer
+gets its own 100/s, burst 200 bucket.
+
+| Limiter | Authentication | Routers |
+| --- | --- | --- |
+| standard chain | `sso-auth` | alertmanager, alloy, cadvisor, comfyui, flower, jupyter, kafka-connect, kafka-rest, loki, mailpit-ui, mlflow, n8n, ollama, prometheus, pushgateway, pyroscope, qdrant, redisinsight, redisinsight-static, schema-registry, sonarqube, stalwart-ui, tempo, terrakube-api, terrakube-executor, terrakube-ui |
+| standard chain plus a direct `req-rate-limit` (redundant, same bucket) | `sso-auth` / OAuth bearer | storybook, storybook-mcp |
+| standard chain | native OIDC | airflow, dozzle, gatus, grafana, hermes-dashboard, kafka-ui, open-webui, openbao, superset |
+| standard chain | other named exception | dashboard, prometheus-api (gateway basic auth); keycloak, oauth2-proxy (identity provider); neo4j (app credentials); open-notebook (app password and IP allowlist); opensearch, opensearch-dashboards (security plugin); s3 (SigV4) |
+| none | static only | grafana-static (favicon and `robots.txt`) |
+
+`grafana-static` stays outside the limiter as recorded in the auth integration
+guide; the existing contract test allows a bare chain only for `static-only`.
+
+Hermes: the route (`hermes.yml`, tracked by PR #535) uses the standard chain
+and is listed as native OIDC. The backend, however, runs as
+`hermes dashboard --port 9119 --host 0.0.0.0` (host systemd unit
+`hyhome-hermes-dashboard.service`, outside this repository). `ss -ltn` shows
+`0.0.0.0:9119`, and a plain HTTP request to `192.168.0.13:9119` returns 302
+(the application's own OIDC redirect). A LAN client can therefore reach the
+dashboard without Traefik TLS and without the limiter. The application still
+demands its own login, so this is a bypass of gateway controls, not of
+authentication. Proposal for the owner, not applied: bind with
+`--host 10.250.1.128` (the `edge_net` gateway Traefik uses) and order the unit
+after Docker, then add a HOME probe that expects `192.168.0.13:9119` to refuse
+the connection and `hermes.hy.home.arpa` through `192.168.0.13:443` to return
+302. Source PASS; Hermes direct-port status: open finding, owner decision.
 
 ## Evidence
 

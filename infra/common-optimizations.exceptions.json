@@ -509,8 +509,8 @@
       "reason": "Local LLM inference runs on the single host GPU",
       "impact": "The container reaches the GPU device; concurrent GPU users share 6 GiB of VRAM",
       "mitigation": "One GPU consumer at a time is budgeted by DCGM VRAM headroom (POL-0078); no other service reserves the GPU",
-      "verification": "SPEC-0218: ollama/ollama:0.40.0 with cap_drop ALL, no-new-privileges and init detected CUDA0 and loaded tev1:0.8b onto it",
-      "reviewed": "2026-10-09",
+      "verification": "SPEC-0218: ollama/ollama:0.40.0 with cap_drop ALL, no-new-privileges and init detected CUDA0 and loaded tev1:0.8b onto it; 2026-10-21 HOME ollama/ollama:0.40.6 with the same controls logged inference compute library=CUDA name=CUDA0 libdirs=ollama,cuda_v12",
+      "reviewed": "2026-10-21",
       "review_by": "2027-04-07",
       "release_condition": "Remove if the service no longer needs the GPU"
     },

@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0001"
 parent_ids:
@@ -167,6 +167,31 @@ the Conftest job and three commit subjects over the 75-character limit; the
 mount fix is described in W4, and the subjects were reworded before merge.
 The SPEC-0212 ledger is unchanged; no
 ledger item maps to this package alone.
+
+### v22 R19 exception review — 2026-10-21
+
+`python3 scripts/validation/compose_controls.py` on `main` `5b9ee9e74`:
+scopes=10, services=165, findings=0. `--report` lists 28 deviations on the
+registered controls (cap_add 18, secrets_group 6, gpu 3, privileged 1), one per
+entry, so no entry is stale and no registered deviation lacks an entry. The
+baseline, tier-layout and runtime-compatibility unittest modules ran 150 tests,
+30 skipped, OK.
+
+| Decision | Entries |
+| --- | --- |
+| KEEP | dev-pg, mng-pg, restic, restic-offsite, backup-sqlite-export, stalwart, cadvisor, openbao-agent, pyroscope, dcgm-exporter, comfyui; LAB entries (mongo-key-generator, opensearch-node1–3, etcd-1–3, couchdb-1–3, cassandra-node1, pg-0–2) kept from source only |
+| CHANGE (applied) | ollama `gpu`: `verification` cited 0.40.0 while the pin is 0.40.6; the running HOME container on 0.40.6 with `cap_drop` ALL, no-new-privileges and init logs `library=CUDA name=CUDA0 libdirs=ollama,cuda_v12`, now recorded with `reviewed` 2026-10-21 |
+| DEFER | neo4j `cap_add` (the minimal capability set was never run); openbao `secrets_group` (its own text leaves HOME TLS and audit permissions unverified, tied to the OpenBao window) |
+| REMOVE | none |
+
+Deviations outside the registered controls, so the validator cannot see them:
+`user: 0:0` on airflow-init and the three backup services; node-exporter
+`network_mode: host` and `pid: host`; a read-write `docker.sock` on
+terrakube-executor (read-only on traefik, alloy, dozzle); 96 of 165 services
+without `read_only: true`; comfyui and dcgm-exporter running as the image's
+root user. Whether to register these controls is a separate decision. The file
+header says `review_cadence: monthly` with no next-review field; every entry has
+`review_by` 2027-04-07. R19 status: PARTIAL, review recorded.
 
 ## Evidence
 
