@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.21"
+version: "0.1.22"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -274,6 +274,21 @@ health or Alertmanager delivery. The planned input is the 2026-10-20 cold copy
 (SHA-256 `c9cb29e5…`). The run waits for independent review and for the
 SPEC-0243 window to finish, and its `ready_seconds` becomes the first measured
 RTO input for the observability tier (SPEC-0218 TSK-0002). Nothing ran yet.
+
+### Gatus image identity and entrypoint — 2026-10-21
+
+Read-only observation: the running Gatus container and `hy/gatus:local` are the
+same image, `sha256:c52ad951…` (built 2026-09-19), so RUN-0085's window
+condition for recreating Gatus holds. That image's
+`/usr/local/bin/gatus-oidc-entrypoint.sh` has SHA-256 `dc6b66e2…` and no
+`OPENBAO_CA` handling, while the tracked
+`infra/06-observability/gatus/docker-entrypoint.sh` (last changed 2026-10-10)
+has SHA-256 `4d4264b5…`. A same-image recreation in the window would add the CA
+mount without an entrypoint that reads it, so it would not apply the CA. CA
+application still needs W3 here: a consistent Gatus backup and isolated restore,
+then a no-network delta image `FROM` `c52ad951` that copies only the tracked
+entrypoint, then recreation. The base identity above is now recorded. Nothing
+was built or recreated.
 
 ### Lifecycle Events
 
