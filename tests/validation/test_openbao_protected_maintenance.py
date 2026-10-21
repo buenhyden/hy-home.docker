@@ -69,15 +69,23 @@ def seal():
     }
 
 
-def progress(number=0, complete=False):
+def progress(number=0, complete=False, **fields):
+    # OpenBao 2.6.2 and 2.7.1 return generate-root-token fields under "data".
     return {
-        "started": True,
-        "nonce": NONCE,
-        "progress": number,
-        "required": 2,
-        "complete": complete,
-        **({"encoded_token": ENCODED} if complete else {}),
+        "data": {
+            "started": True,
+            "nonce": NONCE,
+            "progress": number,
+            "required": 2,
+            "complete": complete,
+            **({"encoded_token": ENCODED} if complete else {}),
+            **fields,
+        }
     }
+
+
+def idle():
+    return {"data": {"started": False}}
 
 
 class FakeAPI:
@@ -103,8 +111,8 @@ class FakeAPI:
         self.responses = [
             operator(),
             seal(),
-            {"started": False},
-            {**progress(), "otp": OTP, "otp_length": len(OTP)},
+            idle(),
+            progress(otp=OTP, otp_length=len(OTP)),
             progress(1),
             progress(2, True),
             operator(),
@@ -180,6 +188,19 @@ class CeremonyTests(unittest.TestCase):
                 self.assertFalse(any(call[0] == "POST" for call in self.api.calls))
                 (self.directory / ".lock").unlink()
 
+    def test_unwrapped_attempt_status_is_refused_before_any_mutation(self):
+        # The pre-fix client read "started" at the top level and so was always
+        # BLOCKED against the real data-wrapped response; never accept either.
+        for status in ({"started": False}, {"data": None}, {"data": []}):
+            with self.subTest(status=status):
+                self.api = FakeAPI()
+                self.api.responses[2] = status
+                with M.Custody(self.directory) as custody:
+                    with self.assertRaises(M.Blocked):
+                        M.ceremony(self.api, custody, CLUSTER, lambda _: "a" * 64)
+                self.assertFalse(any(call[0] == "POST" for call in self.api.calls))
+                (self.directory / ".lock").unlink()
+
     def test_existing_attempt_is_never_cancelled(self):
         self.api.responses[2] = progress(1)
         with self.assertRaises(M.Blocked):
@@ -188,7 +209,7 @@ class CeremonyTests(unittest.TestCase):
 
     def test_duplicate_share_cancels_only_matching_pending_attempt(self):
         self.shares = iter(["a" * 64, "a" * 64])
-        self.api.responses[5:] = [progress(1), None, {"started": False}]
+        self.api.responses[5:] = [progress(1), None, idle()]
         with self.assertRaises(M.Blocked):
             self.run_ceremony()
         self.assertFalse(any(call[0] in {"POST", "DELETE"} for call in self.api.calls))
@@ -196,13 +217,13 @@ class CeremonyTests(unittest.TestCase):
 
     def test_other_nonce_is_never_cancelled(self):
         self.shares = iter(["a" * 64, "a" * 64])
-        self.api.responses[5:] = [{**progress(1), "nonce": "another-attempt"}]
+        self.api.responses[5:] = [progress(1, nonce="another-attempt")]
         with self.assertRaises(M.Blocked):
             self.run_ceremony()
         self.assertFalse(any(call[0] == "DELETE" for call in self.api.calls))
 
     def test_final_update_transport_loss_is_indeterminate_and_retained(self):
-        self.api.responses[5:] = [M.Indeterminate(), {"started": False}]
+        self.api.responses[5:] = [M.Indeterminate(), idle()]
         with self.assertRaises(M.Indeterminate):
             self.run_ceremony()
         self.assertTrue((self.directory / "initialization.json").is_file())
@@ -210,11 +231,13 @@ class CeremonyTests(unittest.TestCase):
         self.assertFalse(any(call[0] == "DELETE" for call in self.api.calls))
 
     def test_decode_failure_retains_completed_encoded_response_without_cancel(self):
-        self.api.responses[5]["encoded_token"] = "broken!"
+        self.api.responses[5]["data"]["encoded_token"] = "broken!"
         with self.assertRaises(M.Indeterminate):
             self.run_ceremony()
         self.assertEqual(
-            json.loads((self.directory / "update-2.json").read_text())["encoded_token"],
+            json.loads((self.directory / "update-2.json").read_text())["data"][
+                "encoded_token"
+            ],
             "broken!",
         )
         self.assertFalse(any(call[0] == "DELETE" for call in self.api.calls))
@@ -233,7 +256,7 @@ class CeremonyTests(unittest.TestCase):
                 raise M.Blocked()
             return original(custody, name)
 
-        self.api.responses[5:] = [progress(1), None, {"started": False}]
+        self.api.responses[5:] = [progress(1), None, idle()]
         with (
             mock.patch.object(M.Custody, "reserve", fail),
             self.assertRaises(M.Blocked),
@@ -707,7 +730,7 @@ class CLITests(unittest.TestCase):
         arguments = [*self.arguments, "--custody-directory", str(other)]
         api = FakeAPI()
         api.responses[5] = M.Indeterminate()
-        api.responses[6] = {"started": False}
+        api.responses[6] = idle()
         with mock.patch.object(
             M, "hidden_input", side_effect=[TOKEN, "a" * 64, "b" * 64]
         ):

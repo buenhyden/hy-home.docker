@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.37"
+version: "0.12.38"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -865,7 +865,11 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
 - **HOME audit·mount 목록.** 격리 restore server는 tmpfs의 `p01-file` audit만 만들 수 있다.
   HOME의 `bao audit list -format=json`과 `bao secrets list -format=json`·`bao auth list
   -format=json`의 path·type만 값 없이 Task에 기록한다. restore가 열 수 없는 audit device나
-  plugin mount가 있으면 W3a를 열지 않고 검토로 돌린다.
+  plugin mount가 있으면 W3a를 열지 않고 검토로 돌린다. `hy-home-operator`에는
+  `sys/audit`·`sys/mounts`·`sys/auth` 읽기가 없어 W0에서는 403이다(2026-10-21 관측). 2026-10-21
+  owner 결정대로 이 확인은 W1 직후, W1c 전에 W1 custody의 root로 한다:
+  `BAO_TOKEN="$(cat "$P01_CUSTODY_DIR/root.token")" docker compose exec -T -e BAO_TOKEN openbao bao audit list -format=json | jq -r 'to_entries[] | "\(.key) \(.value.type)"'`
+  (`secrets`·`auth`도 같은 형식). 이 목록은 W3a gate이므로 W1·W1c·W2·W3의 진행 조건이 아니다.
 - **이전 operator token.** host에 남은 `p01-operator.token`은 W7 입력으로 쓰지 않는다.
   2026-10-14 owner 결정대로 owner가 그 token으로 `revoke-self`한 뒤 파일을 지운다. 값은
   변수로만 넘겨 argv에 이름만 남게 하고, 정책이 `hy-home-operator`인지 먼저 보고, 폐기가
@@ -982,15 +986,15 @@ while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
   printf '%s  %s\n' "$P01_SOURCE_HASH" "$P01_CLIENT_DIR/$P01_SOURCE_PATH" | /usr/bin/sha256sum -c - || exit 1
   /usr/bin/chmod 0400 "$P01_CLIENT_DIR/$P01_SOURCE_PATH" || exit 1
 done <<'P01_SOURCE_MANIFEST'
-2914f64616b77da7f9905815f78326bf941c1609ba6d36c3da6123dc6c10a838 infra/03-security/openbao/scripts/protected-maintenance.py
-e459ea9bf80ae04eb16464fd11aa005f22bcdb8c961bf97d8485cf4b0f8b58c0 infra/03-security/openbao/scripts/protected-token-operations.py
-0d2e53dd828dd16eff887bf435da46d9ca469c5780738dc796f9c72868715246 infra/03-security/openbao/scripts/protected-raft-snapshot.py
+2ea15445b5afe2694f02b389a854c9a86b53abd70e9d1261c48c0c9ac19d8fd2 infra/03-security/openbao/scripts/protected-maintenance.py
+69fc8a76e02a13b4ab5fe5b2a193b057c94979d867de6c06b9ee82f1db77daf4 infra/03-security/openbao/scripts/protected-token-operations.py
+205903aee6bda4d62feaa8ea65ff039733e07dca1b336651005ea1d9a8936fc4 infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-a111348650c6174f000bb545e0ceabafde147925abd2852e7bcdde65e2c09c8c infra/03-security/openbao/scripts/protected-semantic-restore.py
+bc9681053b410df75b001f5ec2d0d6c9796636787b5625111d330480fd351072 infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
-3af7d4ab4de37ef7d3f5286db0a06e588a4d56e63e4db1aa993daf4f2168cf18 infra/03-security/openbao/scripts/protected-renderer-roles.py
+0b36756bc36bd8940f82c9cce3888ef3969348f8602e9ca9a306a29662f6a532 infra/03-security/openbao/scripts/protected-renderer-roles.py
 6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1 infra/03-security/openbao/config/policies/renderer.hcl
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl
