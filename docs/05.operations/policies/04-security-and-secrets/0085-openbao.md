@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.8.1"
+version: "0.8.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-21"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -160,9 +160,11 @@ share를 재발급해 이 문서 불일치를 자동 해결하지 않는다.
 
 ### SEC01 image acceptance
 
-owner는 SEC01(SPEC-0204 TSK-0009)에서 자체 빌드 OpenBao image(manifest `46bf9b5c`)의 잔여 위험
-(서명 없음, CVE-2025-60876, GO-2026-5932 처분)을 받아들였다. 만료는 SEC01 기준 15 수용이나 image
-교체 중 이른 때다. 서명 없음은 기준 15 수용 뒤에도 남을 수 있으므로 그때 따로 판단한다. 이와
+owner는 SEC01(SPEC-0204 TSK-0009)에서 자체 빌드 OpenBao image의 잔여 위험(서명 없음,
+CVE-2025-60876, GO-2026-5932 처분)을 받아들였다. 처음 수용한 manifest `46bf9b5c`(Go 1.27.2)는 <!-- runtime-version-exception: history — 교체 전 수용 image의 builder Go 버전이며 build-inputs.json이 현재 pin을 소유함 -->
+2026-10-21 stable 조회에서 Go 1.27.3의 crypto/x509 수정(CVE-2026-111943)이 나와 교체됐고, owner는 같은
+잔여 위험을 가진 교체 image manifest `a58fb110`(Go 1.27.3)을 같은 날 승인했다("이미지 교체 승인"). <!-- runtime-version-exception: history — 승인 시점 교체 image의 builder Go 버전이며 build-inputs.json이 pin을 소유함 -->
+만료는 SEC01 기준 15 수용이나 image 교체 중 이른 때다. 서명 없음은 기준 15 수용 뒤에도 남을 수 있으므로 그때 따로 판단한다. 이와
 별도로, window 시작 7일 안의 stable 조회에서 이 image에 영향을 주는 보안 수정이 나오면 W4·W5
 gate가 실패한다. 같은 window가 쓰는 Traefik·Prometheus image의 수용은 각 서비스 정책
 ([POL-0013](../02-gateway-and-networking/0013-traefik.md#exceptions),
