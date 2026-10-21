@@ -370,12 +370,12 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             self.assertEqual("NOT_RUN", row["deployment"])
             if row["service"] in {"openbao", "openbao-agent"}:
                 self.assertEqual(
-                    "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e",
+                    "sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8",
                     row["target_declared_digest"],
                 )
                 self.assertEqual(
                     "PASS: selected owned artifact scan receipt SHA256 "
-                    "8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9",
+                    "8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b",
                     row["sbom_scan"],
                 )
                 self.assertEqual("NOT_UPSTREAM_SIGNED", row["signature"])

@@ -1490,7 +1490,7 @@
     {
       "service": "openbao",
       "build_input": "infra/03-security/openbao/build/Dockerfile",
-      "input_sha256": "419dc5d8aba3c099187cab6f72027ca37b951ed4c85d90552cf80090030e6804",
+      "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
       "compose_build_args": {},
       "declarations": [
         {
@@ -1543,7 +1543,7 @@
         },
         {
           "line": 14,
-          "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.2.net0.60.0.r1\""
+          "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.3.net0.60.0.r1\""
         },
         {
           "line": 15,
@@ -1553,7 +1553,7 @@
       "package_inputs": [
         {
           "path": "infra/03-security/openbao/build/build-inputs.json",
-          "sha256": "1e8b356a53df47b36d011bc60f8b8cbf22e28de1664117973155cd3718eb6556"
+          "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
         },
         {
           "path": "infra/03-security/openbao/build/go-modules.patch",
@@ -1565,16 +1565,16 @@
         },
         {
           "path": "infra/03-security/openbao/scripts/build-owned-image.py",
-          "sha256": "c4438ce0c18016477262204712c90f8f38b0dd00d0b7d6a51cd940079611cc31"
+          "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
         }
       ],
-      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e; scan receipt SHA256 8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9; 320 packages, 0 Critical/High, 4 unsuppressed matches; synthetic native attempt2 PASS_SYNTHETIC_ONLY (13/13, 4 native cases); HOME compatibility/deployment NOT_RUN",
+      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
       "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00"
     },
     {
       "service": "openbao-agent",
       "build_input": "infra/03-security/openbao/build/Dockerfile",
-      "input_sha256": "419dc5d8aba3c099187cab6f72027ca37b951ed4c85d90552cf80090030e6804",
+      "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
       "compose_build_args": {},
       "declarations": [
         {
@@ -1627,7 +1627,7 @@
         },
         {
           "line": 14,
-          "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.2.net0.60.0.r1\""
+          "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.3.net0.60.0.r1\""
         },
         {
           "line": 15,
@@ -1637,7 +1637,7 @@
       "package_inputs": [
         {
           "path": "infra/03-security/openbao/build/build-inputs.json",
-          "sha256": "1e8b356a53df47b36d011bc60f8b8cbf22e28de1664117973155cd3718eb6556"
+          "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
         },
         {
           "path": "infra/03-security/openbao/build/go-modules.patch",
@@ -1649,10 +1649,10 @@
         },
         {
           "path": "infra/03-security/openbao/scripts/build-owned-image.py",
-          "sha256": "c4438ce0c18016477262204712c90f8f38b0dd00d0b7d6a51cd940079611cc31"
+          "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
         }
       ],
-      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e; scan receipt SHA256 8008dbf39afbc51968fdf9b5fbec32d50fe3ddec2fe22a153ffc10ff6a0566a9; 320 packages, 0 Critical/High, 4 unsuppressed matches; synthetic native attempt2 PASS_SYNTHETIC_ONLY (13/13, 4 native cases); HOME compatibility/deployment NOT_RUN",
+      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
       "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00"
     }
   ],

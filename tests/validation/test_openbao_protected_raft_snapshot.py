@@ -214,9 +214,9 @@ class ContractTests(unittest.TestCase):
                 S.check_seal(seal(**delta), CLUSTER, "2.6.2")
 
     def test_only_current_or_owned_fixed_version_is_admitted(self):
-        for version in ("2.6.2", "2.7.1+hyhome.go1.27.2.net0.60.0.r1"):
+        for version in ("2.6.2", "2.7.1+hyhome.go1.27.3.net0.60.0.r1"):
             S.validate_version(version)
-        for version in ("2.7.1", "latest", ""):
+        for version in ("2.7.1", "latest", "", "2.7.1+hyhome.go1.27.2.net0.60.0.r1"):
             with self.assertRaises(S.Blocked):
                 S.validate_version(version)
 
