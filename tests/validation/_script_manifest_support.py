@@ -68,6 +68,7 @@ MUTATION_OVERRIDES = {
     "scripts/operations/release.py": "runtime",
     "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
     "scripts/operations/check-compose-core-readiness.sh": "runtime",
+    "scripts/operations/prometheus-isolated-restore.py": "runtime",
     "scripts/validation/validate-docker-compose.sh": "runtime",
 }
 
