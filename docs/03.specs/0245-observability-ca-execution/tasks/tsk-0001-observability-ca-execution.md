@@ -1,6 +1,6 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.22"
+version: "0.1.23"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -296,6 +296,47 @@ application still needs W3 here: a consistent Gatus backup and isolated restore,
 then a no-network delta image `FROM` `c52ad951` that copies only the tracked
 entrypoint, then recreation. The base identity above is now recorded. Nothing
 was built or recreated.
+
+### Prometheus isolated restore and Gatus W3 — 2026-10-21
+
+The owner approved both ("Prometheus 격리 복원을 실행, Gatus W3를 진행 승인").
+
+Prometheus (W2 restore step): `prometheus-isolated-restore.py --keep` on the
+2026-10-20 cold copy (SHA-256 `c9cb29e5…`) exited 0 with result PASS: 23 blocks,
+`extract_seconds` 814.4 (with the archive hash read competing for the same disk),
+`ready_seconds` 55.4, head newest sample 2026-10-20 10:30 KST (the stop time),
+WAL corruptions 0, and `count(up)` 64 at the head's end, 64 one hour before the
+newest block and 63 seven days earlier. The container
+`hyhome-prom-restore-83ccd53170a8` was removed; the receipt SHA-256 is
+`58a7abdc…` in `/home/hyunyoun/storage/backups/prom-restore-20261021-190144/`.
+The restored copy is a deviation input (the copy was taken by SEC01, not by W2
+before recreation), and rule health and Alertmanager delivery were not checked.
+
+Gatus (W3): Gatus was stopped at 19:22:44 and started at 19:23:13 KST while a
+read-only, no-network container wrote `gatus-data.tar` (4,545,536 bytes, SHA-256
+`c1e5cdcc…`, mode 0400) under
+`/home/hyunyoun/storage/backups/gatus-w3-20261021-192233/`. An isolated copy
+opened with `integrity_check` ok: 8 endpoints, 835 results, 195 events, newest
+result 19:22:15 KST. The base was tagged `hy/gatus:base-c52ad951a84a`; a
+`--network none`, no-pull build `FROM` it with one `COPY --chmod=0555` of the
+tracked entrypoint produced `hy/gatus:local` = `sha256:503e6af2…` (the four base
+layers unchanged plus one; entrypoint SHA-256 `4d4264b5…` equals the tracked
+file; the Gatus binary `c127f7e9…` is unchanged). A Compose dry run showed only
+Gatus, and `up -d --no-deps --no-build --pull never --force-recreate gatus` at
+`main` `5c77e8681` recreated it at 19:26:11; it was healthy at 19:26:36 with 0
+restarts. The container now mounts `/etc/ssl/certs/openbao-ca.pem`; the CA
+bundle holds 123 certificates (121 public, the home root and the OpenBao CA),
+mode 0600, and the Gatus process carries `SSL_CERT_FILE`. The entrypoint logged
+no error. The OpenBao check still fails, as it did in all 106 results of the
+pre-recreation copy, because OpenBao does not serve TLS until the SPEC-0243
+window; the CA consumer check passes only after that.
+
+Rollback: `docker tag hy/gatus:base-c52ad951a84a hy/gatus:local` and the same
+`up` command; data rollback restores the W3 tar into `gatus-data`. RUN-0085's
+window step for Gatus still holds (running image equals `hy/gatus:local`), and
+recreating it again there is harmless. Criteria 2 and 3: restore steps PASS
+(Prometheus as a deviation), Gatus CA application done, consumer verification
+after the window.
 
 ### Lifecycle Events
 
