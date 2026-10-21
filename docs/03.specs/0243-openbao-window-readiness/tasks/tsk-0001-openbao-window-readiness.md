@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.21"
+version: "0.1.22"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0243-TSK-0001"
 parent_ids:
@@ -726,6 +726,18 @@ errors (SPEC-0204 TSK-0009). The W0 R2 gate now has a repository to read and
 about 3.5 GB of room under the 9 GB cap, so the R2 blocker is cleared. It is
 re-checked at W0 on 2026-10-22, after two more daily copies. The window still
 needs the SEC01 lookup on 2026-10-21 and the remaining W0 checks.
+
+SEC01 lookup — 2026-10-21: the lookup found Go 1.27.3 with a crypto/x509
+fix, and the owner approved replacing the image ("이미지 교체 승인"). Branch
+`fix/openbao-go1273-r2` rebuilds the owned image (manifest `a58fb110…`),
+moves the protected scripts' pinned hashes, RUN-0085's `P01_SOURCE_MANIFEST`
+and the update ledger to it, and fixes the rehearsal fixture's bind modes; the
+isolated native suite then passed 14 of 14 (SPEC-0204 TSK-0009). That delta is
+window-relevant and was not part of the 2026-10-20 approval above, so
+`P01_APPROVED_COMMIT` cannot be set until the branch merges and the owner
+approves this delta too. W0 also re-checks that the HOME tag for the new
+manifest is present. Until both hold the window stays BLOCKED; if they are not
+done before W0 at 13:30 on 2026-10-22, the window moves.
 
 ## Evidence
 

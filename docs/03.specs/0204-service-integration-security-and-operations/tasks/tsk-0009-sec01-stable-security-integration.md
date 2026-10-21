@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.25"
+version: "0.4.26"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2374,6 +2374,72 @@ offsite metric file carries the same value. Every export and both local
 checks passed. The unit still exited 1 for one reason, `OpenBao snapshot
 token absent: snapshot failed (recovery gap)`. That gap closes with the
 SPEC-0243 window.
+
+### OpenBao Go 1.27.3 owned image — 2026-10-21
+
+The 7-day stable lookup on 2026-10-21 found Go 1.27.3 with a crypto/x509
+`Verify` fix (CVE-2026-111943) that the accepted Go 1.27.2 image lacked. The
+owner chose a rebuild. The packet (`build-inputs.json`, Dockerfile label,
+README, contract test) now names
+`hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1` on the Chainguard Go builder
+`sha256:0c664830…`; the old Go 1.27.1 and 1.27.2 tags are in the rejected
+lists.
+
+Build: the first pass failed with `FileNotFoundError` in the scratch-size
+monitor, which listed files with `rglob` and then called `lstat` while Go was
+deleting cache files. `scratch_bytes()` now walks with `os.walk`, skips files
+that vanish and counts regular files only. The second pass and its
+reproducibility pass both produced binary `e1373b93…`, layer `d7440152…`,
+archive `f3efc437…` and manifest `a58fb110…`.
+
+Scan, offline: Syft lists 320 packages with stdlib go1.27.3; Grype (DB built
+2026-10-20) reports CVE-2025-60876 Medium ×3 and GO-2026-5932 Unknown ×1, the
+same IDs as the accepted image; `govulncheck -mode=binary` reports no symbol
+results; `go tool nm` finds 0 `golang.org/x/crypto/openpgp` symbols and 568
+`github.com/ProtonMail/go-crypto` symbols. Evidence receipt
+`/tmp/hyhome-p01-owned-build-r2-20261021/r2-evidence-receipt.json` SHA256
+`8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b`. The owner
+approved the replacement ("이미지 교체 승인"); POL-0085 records the unchanged
+dispositions.
+
+Pin propagation: the protected scripts pin each other's SHA-256, so the new
+manifest went through Compose, `check-tls-material.sh`, `renderer-issuance.py`,
+the protected allowlists, RUN-0085's `P01_SOURCE_MANIFEST`, the
+security-updates build inputs and the update ledger until the chain was
+stable. SPEC-0243 W0 approved the earlier P01 script hashes; the changed hashes
+need its re-approval before the window.
+
+Native rehearsal, isolated (HOME runtime unchanged):
+
+| Attempt | Result | Cause |
+| --- | --- | --- |
+| 1, 2, 3, 5 | FAIL | 25 s observation windows and a 60 s delivery timeout on a loaded host (load 7–13); widened in `bfe13128a` |
+| 4 | FAIL | Run on an uncommitted tree; the rehearsal installs the renderer from `HEAD`, so it used the old image pin |
+| 6, 7 | FAIL | `native limited roles/journal/wrapped delivery failed` with clean HEAD, and again with Airflow paused (load about 4.5), so not load |
+| Control | FAIL | `origin/main` with the Go 1.27.2 image also failed (TLS preflight), so the failure was not image-specific |
+| 8 | PASS | 14 tests, 0 skipped, 889.951 s, input digest `f4cda3f9…`, log SHA256 `b838fadc1c11b3604367c2b03d91c13a85b4d0f4634372fa580e6a55d25b2bb5` |
+
+Diagnosis used a local, never-pushed renderer patch that recorded only
+exception frames and value-free exit codes. The renderer stopped at
+`run_issuance` because `ready()` returned false; inside the running Agent the
+token, `bao status`, token lookup and both KV reads succeeded, but
+`/openbao/out` stayed empty. The fixture created the `auth` and `out` binds
+with `mkdir(mode=0o770)`, which honours the umask; under the host's umask 022
+they became 0750, owned by 1000:1000, so the Agent (100:1000) could not write
+through its group. Fix `63760fdaf` adds `chmod(0o770)` as the server config
+bind already did, with a regression test that failed first (0750) and passes
+now. The ledger now carries attempt 8 as the current
+`candidate_openbao_receipt` and keeps the Go 1.27.2 receipt and source
+binding as history with `valid_for_current_final_candidate: false`.
+
+This Task's Evidence table is a frozen pre-generation-7 table, so these
+results stay here: build first pass FAIL, reproducible build PASS, offline
+scan PASS, owner acceptance PASS, native attempts 1–7 FAIL, native attempt 8
+PASS (ISOLATED).
+
+Still NOT_RUN: HOME deployment and cold boot, production backup, rollback and
+recovery, consumer uptake, and an upstream signature (the image is
+NOT_UPSTREAM_SIGNED).
 
 ## Evidence
 
