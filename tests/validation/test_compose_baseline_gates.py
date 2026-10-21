@@ -5329,12 +5329,16 @@ class StalwartRehearsalTests(unittest.TestCase):
 # SPEC-0180 S18: every routed service without the SSO ForwardAuth chain must
 # name its own authentication. Keep in step with the route matrix in GDE-0079.
 class ImageTagPolicyTests(unittest.TestCase):
-    """POL-0086: a ROOT image whose tag is a mutable channel (no digest, no
-    version number, no commit id) is allowed only through an entry in
-    infra/image-tag-policy.exceptions.json; locally built images are judged by
-    their Dockerfile instead."""
+    """POL-0086: a ROOT image reference whose tag is a mutable channel (no
+    digest, dotted version, release number or commit id) is allowed only
+    through an entry in infra/image-tag-policy.exceptions.json. Compose images
+    and Dockerfile FROM lines are both checked; a major-only tag such as `v2`
+    is a channel."""
 
-    VERSIONED = re.compile(r"v?\d+(\.\d+)*([-._+].*)?|[0-9a-f]{40}")
+    # ponytail: a 1-2 digit tag counts as a channel; a 3+ digit release number
+    # (trino 483) counts as a version. Tighten if a 3-digit channel appears.
+    VERSIONED = re.compile(r"v?\d+\.\d+(\.\d+)*([-._+].*)?|\d{3,}|[0-9a-f]{40}")
+    FROM = re.compile(r"\s*FROM\s+(?:--\S+\s+)*(\S+)(?:\s+AS\s+(\S+))?", re.I)
     FIELDS = ("owner", "reason", "risk", "review_cadence", "exit_condition")
 
     @classmethod
@@ -5354,13 +5358,35 @@ class ImageTagPolicyTests(unittest.TestCase):
                 image = (service or {}).get("image")
                 if not isinstance(image, str) or "build" in service:
                     continue
-                reference, _, digest = image.partition("@")
-                last = reference.rsplit("/", 1)[-1]
-                tag = last.split(":", 1)[1] if ":" in last else "latest"
-                if digest or cls.VERSIONED.fullmatch(tag):
+                if not cls.pinned(image):
+                    found.setdefault(image, []).append(
+                        f"{path.relative_to(ROOT)}:{name}"
+                    )
+        for path in sorted(infra.rglob("Dockerfile*")):
+            if "labs" in path.relative_to(infra).parts:
+                continue
+            stages: set[str] = set()
+            for line in path.read_text(encoding="utf-8").splitlines():
+                match = cls.FROM.match(line)
+                if not match:
                     continue
-                found.setdefault(image, []).append(f"{path.relative_to(ROOT)}:{name}")
+                reference, alias = match.groups()
+                if alias:
+                    stages.add(alias.lower())
+                if reference.lower() in stages or reference == "scratch":
+                    continue
+                if "$" not in reference and not cls.pinned(reference):
+                    found.setdefault(reference, []).append(
+                        f"{path.relative_to(ROOT)}:FROM"
+                    )
         return found
+
+    @classmethod
+    def pinned(cls, image: str) -> bool:
+        reference, _, digest = image.partition("@")
+        last = reference.rsplit("/", 1)[-1]
+        tag = last.split(":", 1)[1] if ":" in last else "latest"
+        return bool(digest) or cls.VERSIONED.fullmatch(tag) is not None
 
     @staticmethod
     def exceptions() -> list[dict]:
@@ -5387,7 +5413,7 @@ class ImageTagPolicyTests(unittest.TestCase):
     def test_version_rule_separates_channels_from_versions(self):
         for tag in ("483", "v3.15.0", "18.6-alpine", "1.0.3", "9cd150bf" * 5):
             self.assertIsNotNone(self.VERSIONED.fullmatch(tag), tag)
-        for tag in ("alpine", "latest", "cu126-slim", "local", "stable"):
+        for tag in ("alpine", "latest", "cu126-slim", "local", "stable", "v2", "18"):
             self.assertIsNone(self.VERSIONED.fullmatch(tag), tag)
 
 
