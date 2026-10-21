@@ -267,20 +267,12 @@
         "prom/prometheus": "external"
       },
       "images": [
-        "prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0",
         "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
       ],
       "compose_files": [
-        "infra/06-observability/compose.window-ca.override.yml",
         "infra/06-observability/docker-compose.yml"
       ],
       "sources": [
-        {
-          "compose_file": "infra/06-observability/compose.window-ca.override.yml",
-          "images": [
-            "prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0"
-          ]
-        },
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [

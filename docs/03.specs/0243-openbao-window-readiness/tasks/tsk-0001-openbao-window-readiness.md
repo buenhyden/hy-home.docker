@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.23"
+version: "0.1.24"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -759,6 +759,18 @@ So only the OpenBao Raft snapshot is missing, but the whole-run success time is
 not refreshed and the 26-hour freshness alert stays on. W3 creates the snapshot
 token; the first daily run after the window must exit 0, and that is a window
 acceptance check.
+
+Prometheus step change — 2026-10-21: the 2026-10-20 SEC01 rollout already
+recreated Prometheus on the Compose pin with the OpenBao CA mount, so the
+window's rollback overlay (`compose.window-ca.override.yml`, the 3.14 image)
+would only downgrade TSDB data written by v3.15.0. On the owner's choice ("W0
+전에 수정") the overlay is removed, RUN-0085 reduces the Prometheus step to a W0
+`docker inspect` check of the image and the mount with no recreation, and
+`test_openbao_window_overrides.py` fails if a Prometheus overlay returns. This
+is window-relevant. The owner approved it for `P01_APPROVED_COMMIT` on
+2026-10-21 ("P01_APPROVED_COMMIT 승인"), so `P01_APPROVED_COMMIT` is the `main`
+commit that merges this change, provided no later window-relevant change lands
+before W0; W0 records that commit.
 
 ## Evidence
 
