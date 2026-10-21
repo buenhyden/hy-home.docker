@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.5.0"
+version: "1.5.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-21"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -142,7 +142,7 @@ Lower-stage PASS never satisfies a higher-stage result.
 | 28 | SPEC-0204 / P09 criterion 13 / TSK-0008 | Offline Wiki preparation only; no Wiki service, database, API, UI, client, collector, or external workspace. |
 | 29 | SMTP01 | Canonical SMTP source and real-consumer verification; retirement remains separate. |
 | 30 | CLN01 | Retirement only after consumer, backup, external dependency, authorization, and recovery evidence. |
-| 31 | SPEC-0204 / P09 | Every actual ROOT-image change carries matching configuration, tests, templates, Guide, Policy, Runbook, and README updates in its logical unit; P08 supports layout work. |
+| 31 | SPEC-0204 / SEC01 (TSK-0009) image owner | Every actual ROOT-image change carries matching configuration, tests, templates, Guide, Policy, Runbook, and README updates in its logical unit; P08 checks documentation structure. Owner rerouted from P09 on 2026-10-21. |
 
 ### Current coordination audit
 
