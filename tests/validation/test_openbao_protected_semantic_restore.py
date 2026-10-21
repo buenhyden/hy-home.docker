@@ -302,7 +302,7 @@ class UtilityTests(unittest.TestCase):
         self.assertTrue(callable(execution.HeldBytes.open))
 
     def test_contract_accepts_only_exact_owned_inputs(self):
-        candidate = "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:" + "a" * 64
+        candidate = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:" + "a" * 64
         value = {
             "schema_version": 1,
             "attempt": self.subject.ATTEMPT,

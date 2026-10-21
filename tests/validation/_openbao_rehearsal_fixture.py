@@ -25,9 +25,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "infra/03-security/openbao"
-IMAGE = "sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
-VERSION = "2.7.1+hyhome.go1.27.2.net0.60.0.r1"
-IMAGE_REFERENCE = "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e"
+IMAGE = "sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
+VERSION = "2.7.1+hyhome.go1.27.3.net0.60.0.r1"
+IMAGE_REFERENCE = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
 PORT = 8240
 CLUSTER_PORT = 8241
 
@@ -36,14 +36,14 @@ class RehearsalFailure(RuntimeError):
     """Sanitized failure: never include captured output or credential values."""
 
 
-def captured(argv, *, data=None, allow_failure=False):
+def captured(argv, *, data=None, allow_failure=False, timeout=60):
     """Do not expose output/arguments through CalledProcessError or logging."""
     try:
         result = subprocess.run(
             argv,
             input=data,
             capture_output=True,
-            timeout=60,
+            timeout=timeout,
             check=False,
         )
     except (OSError, subprocess.TimeoutExpired):
@@ -79,8 +79,10 @@ class OwnedFixture:
         self.tls.mkdir(mode=0o750)
         self.auth = self.directory / "auth"
         self.auth.mkdir(mode=0o770)
+        self.auth.chmod(0o770)  # mkdir honours umask; the Agent writes via group.
         self.out = self.directory / "out"
         self.out.mkdir(mode=0o770)
+        self.out.chmod(0o770)
 
     def docker(self, *args, data=None, allow_failure=False):
         return captured(["docker", *args], data=data, allow_failure=allow_failure)

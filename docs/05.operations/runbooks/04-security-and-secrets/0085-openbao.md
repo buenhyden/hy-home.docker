@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.34"
+version: "0.12.36"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-21"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -217,7 +217,7 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    printf '%s\n%s\n' "$SEC01_ISSUER_TOKEN" "$SEC01_CLEANUP_TOKEN" | \
      /bin/sh "$operator_tools/$issuer_commit/issue-renderer-secret-id.sh" \
        openbao "$agent_volume" \
-       hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e openbao-agent "$issuance_journal" "$issuer_commit" # <!-- runtime-version-exception: compatibility — helper requires the exact owned image; docker-compose.yml owns the pin -->
+       hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8 openbao-agent "$issuance_journal" "$issuer_commit" # <!-- runtime-version-exception: compatibility — helper requires the exact owned image; docker-compose.yml owns the pin -->
    sec01_issue_result=$?
    unset SEC01_ISSUER_TOKEN SEC01_CLEANUP_TOKEN
    test "$sec01_issue_result" -eq 0 || exit 1
@@ -472,7 +472,7 @@ OpenBao 외부 custody에서 `${DEFAULT_SECURITY_DIR}/openbao/tls/{ca.pem,server
 적용한다. 시작 전 아래 read-only preflight를 실행한다. stdout은 check label과 PASS/FAIL만 출력한다.
 
 ```bash
-sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DIR/openbao/tls" hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:46bf9b5c3ae3d26b89f18bb131b8a1ff67c6fedbd25b0cd158b9b1edae891e2e # <!-- runtime-version-exception: compatibility — preflight requires the exact owned image; docker-compose.yml owns the pin -->
+sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DIR/openbao/tls" hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8 # <!-- runtime-version-exception: compatibility — preflight requires the exact owned image; docker-compose.yml owns the pin -->
 ```
 
 명령은 만료·CA chain·정확한 SAN·cert/key 일치와 UID100:GID1000의 읽기를 검증한다.
@@ -723,9 +723,9 @@ done
 W1c, 그다음 W2·W3를 엽니다. 새 snapshot의 semantic restore를 끝낸 다음 W4 cutover를
 엽니다. 중단 조건이 생기면 HOME 변경을 시작하지 않고 남은 단계는 다음 window로 넘깁니다.
 
-Compose는 두 OpenBao service 모두 자체 빌드 image(manifest `46bf9b5c`)를 고정한다.
+Compose는 두 OpenBao service 모두 자체 빌드 image(manifest `a58fb110`, Go 1.27.3)를 고정한다. <!-- runtime-version-exception: history — 현재 고정 image의 builder Go 버전이며 build-inputs.json이 pin을 소유함 -->
 W4/W5의 SEC01 gate는 두 가지다(2026-10-14 owner 결정): owner가 이 image의 잔여 위험(서명 없음,
-CVE-2025-60876, GO-2026-5932 처분)을 수용한 기록과, window 시작 7일 안의 최신 stable
+CVE-2025-60876, GO-2026-5932 처분)을 수용한 기록(2026-10-21 교체 승인, POL-0085)과, window 시작 7일 안의 최신 stable
 조회다. fix-forward라 image는 window 뒤에도 실행되므로 이 수용은 window가 아니라 SEC01 기준
 15가 수용되거나 image가 교체될 때까지 유효하다. 조회에서 현재 image의 OpenBao에 영향을 주는 보안 수정이 든
 새 stable·Go·x/net·x/crypto가 나왔으면 gate는 실패다. SEC01 기준 15 전체는 다른 gate까지
@@ -982,15 +982,15 @@ while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
   printf '%s  %s\n' "$P01_SOURCE_HASH" "$P01_CLIENT_DIR/$P01_SOURCE_PATH" | /usr/bin/sha256sum -c - || exit 1
   /usr/bin/chmod 0400 "$P01_CLIENT_DIR/$P01_SOURCE_PATH" || exit 1
 done <<'P01_SOURCE_MANIFEST'
-2c6101572dca382752cc5cef25f9d5d1ed18804e40c43984f41ea6e5d80734a2 infra/03-security/openbao/scripts/protected-maintenance.py
-eecf50f6d3f3bbe419c6213216d57715f4ae32069dbed4eb08c8780ea2c2e688 infra/03-security/openbao/scripts/protected-token-operations.py
-2779382ff5b79534a7b112ae011a1fe3947ce916054054a375cbb675b7b1345c infra/03-security/openbao/scripts/protected-raft-snapshot.py
+2914f64616b77da7f9905815f78326bf941c1609ba6d36c3da6123dc6c10a838 infra/03-security/openbao/scripts/protected-maintenance.py
+e459ea9bf80ae04eb16464fd11aa005f22bcdb8c961bf97d8485cf4b0f8b58c0 infra/03-security/openbao/scripts/protected-token-operations.py
+0d2e53dd828dd16eff887bf435da46d9ca469c5780738dc796f9c72868715246 infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-5f1ced86319e877611436c3f871874fc1865f36c7305b8b8b1776f6d767a9d7c infra/03-security/openbao/scripts/protected-semantic-restore.py
+a111348650c6174f000bb545e0ceabafde147925abd2852e7bcdde65e2c09c8c infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
-56552244eb748cbe569ad0e63a9d47e70dcd5e3f10a28b730382de3993498d5c infra/03-security/openbao/scripts/protected-renderer-roles.py
+3af7d4ab4de37ef7d3f5286db0a06e588a4d56e63e4db1aa993daf4f2168cf18 infra/03-security/openbao/scripts/protected-renderer-roles.py
 6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1 infra/03-security/openbao/config/policies/renderer.hcl
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl

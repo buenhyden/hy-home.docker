@@ -37,9 +37,9 @@ LEDGER = ".p01-restore-20261014-05.attempt.json"
 CLUSTER = "51fbfa38-a715-7dca-629f-3f07233749f4"
 OLD_IMAGE = "sha256:11fd73a2102cda9c55d5d881a8c3210303146a7ec1e8ac76f526e175c6d24641"
 OLD_VERSION = "2.6.2"
-OWNED_VERSION = "2.7.1+hyhome.go1.27.2.net0.60.0.r1"
+OWNED_VERSION = "2.7.1+hyhome.go1.27.3.net0.60.0.r1"
 PARENT_NAME = "protected-maintenance.py"
-PARENT_SHA256 = "2c6101572dca382752cc5cef25f9d5d1ed18804e40c43984f41ea6e5d80734a2"
+PARENT_SHA256 = "2914f64616b77da7f9905815f78326bf941c1609ba6d36c3da6123dc6c10a838"
 ARCHIVE_NAME = "protected-snapshot-archive.py"
 ARCHIVE_SHA256 = "48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868"
 EXECUTION_NAME = "protected-semantic-execution.py"
@@ -782,7 +782,7 @@ def _contract(path, digest, execution):
     if not isinstance(snapshot, dict) or set(snapshot) != snapshot_keys or snapshot["cluster_id"] != CLUSTER or snapshot["version"] != OLD_VERSION or not HEX64.fullmatch(snapshot["sha256"]) or not HEX64.fullmatch(snapshot["receipt_sha256"]):
         rejected()
     candidate = value["candidate"]
-    if not isinstance(candidate, dict) or set(candidate) != {"reference", "image_id", "version"} or candidate["version"] != OWNED_VERSION or not candidate["reference"].startswith("hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:") or not re.fullmatch(r"sha256:[a-f0-9]{64}", candidate["image_id"]):
+    if not isinstance(candidate, dict) or set(candidate) != {"reference", "image_id", "version"} or candidate["version"] != OWNED_VERSION or not candidate["reference"].startswith("hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:") or not re.fullmatch(r"sha256:[a-f0-9]{64}", candidate["image_id"]):
         rejected()
     quiescence = value["quiescence"]
     if not isinstance(quiescence, dict) or set(quiescence) != {"lease_id", "lease_sha256"} or not re.fullmatch(r"[a-f0-9]{32}", quiescence["lease_id"]) or not HEX64.fullmatch(quiescence["lease_sha256"]):

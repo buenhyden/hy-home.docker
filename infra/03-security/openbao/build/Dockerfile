@@ -11,5 +11,5 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["server", "-dev", "-dev-no-store-token"]
 LABEL org.opencontainers.image.source="https://github.com/openbao/openbao"
 LABEL org.opencontainers.image.revision="a5db72cef75c24b920ade02065b18dd8eb666bac"
-LABEL org.opencontainers.image.version="2.7.1+hyhome.go1.27.2.net0.60.0.r1"
+LABEL org.opencontainers.image.version="2.7.1+hyhome.go1.27.3.net0.60.0.r1"
 LABEL com.hyhome.openbao.upstream_signed="false"

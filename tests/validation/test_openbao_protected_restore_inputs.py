@@ -270,7 +270,7 @@ class ContractTests(unittest.TestCase):
 
     @staticmethod
     def reference(_repository, _revision):
-        return "hy-home/openbao:2.7.1-go1.27.2-net0.60.0-r1@sha256:" + "e" * 64
+        return "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:" + "e" * 64
 
     def make(self, options=None, digest=None, reference=None):
         return M.contract(
