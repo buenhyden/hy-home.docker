@@ -22,7 +22,7 @@ import types
 from pathlib import Path
 
 TOKEN_OPERATIONS_SHA256 = (
-    "69fc8a76e02a13b4ab5fe5b2a193b057c94979d867de6c06b9ee82f1db77daf4"
+    "bca49fe4e162b2ff826ebc288fc7ec46103cf99bdcc27f91a7463a5bc05434b4"
 )
 CONFIG = "infra/03-security/openbao/config/"
 # (name, source file, sha256); order is the write order.

@@ -23,7 +23,7 @@ from pathlib import Path
 
 HOST = "openbao.hy.home.arpa"
 PARENT_NAME = "protected-maintenance.py"
-PARENT_SHA256 = "2ea15445b5afe2694f02b389a854c9a86b53abd70e9d1261c48c0c9ac19d8fd2"
+PARENT_SHA256 = "085132049f60173fc9fde14e20c9f09d0f4e423d35dd3285c1e9c4053e898d04"
 ARCHIVE_NAME = "protected-snapshot-archive.py"
 ARCHIVE_SHA256 = "48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868"
 ARCHIVE_API = ("ArchiveBlocked", "MAX_COMPRESSED", "validate_archive")

@@ -201,6 +201,29 @@ class CeremonyTests(unittest.TestCase):
                 self.assertFalse(any(call[0] == "POST" for call in self.api.calls))
                 (self.directory / ".lock").unlink()
 
+    def test_unwrapped_response_after_attempt_start_is_indeterminate(self):
+        # Once an attempt exists, a malformed response or an unprovable cancel
+        # must exit 2 with custody kept, never 1.
+        cases = {
+            "initialization": {3: {"nonce": NONCE, "started": True}},
+            "update and cancel status": {
+                4: {"started": True, "progress": 1},
+                5: {"started": True, "nonce": NONCE, "complete": False},
+            },
+        }
+        for name, replacements in cases.items():
+            with self.subTest(name=name):
+                self.api = FakeAPI()
+                self.shares = iter(["a" * 64, "b" * 64])
+                for index, value in replacements.items():
+                    self.api.responses[index] = value
+                with self.assertRaises(M.Indeterminate):
+                    self.run_ceremony()
+                self.assertTrue((self.directory / "initialization.json").is_file())
+                self.assertFalse(any(call[0] == "DELETE" for call in self.api.calls))
+                for path in self.directory.iterdir():
+                    path.unlink()
+
     def test_existing_attempt_is_never_cancelled(self):
         self.api.responses[2] = progress(1)
         with self.assertRaises(M.Blocked):

@@ -507,16 +507,22 @@ def decode_token(encoded, otp):
 
 def cancel_owned_pending(api, nonce):
     """At most three bounded requests; foreign or completed attempts are untouched."""
-    current = attempt_data(api.request("GET", ATTEMPT))
-    if current.get("started") is False:
-        return False  # Could be a completed attempt; cancellation is not proven.
-    if current.get("nonce") != nonce or current.get("complete") is not False:
-        raise Indeterminate()
-    api.request("DELETE", ATTEMPT)
-    after = attempt_data(api.request("GET", ATTEMPT))
-    if after.get("started") is not False:
-        raise Indeterminate()
-    return True
+    try:
+        current = attempt_data(api.request("GET", ATTEMPT))
+        if current.get("started") is False:
+            return False  # Could be a completed attempt; cancellation is not proven.
+        if current.get("nonce") != nonce or current.get("complete") is not False:
+            raise Indeterminate()
+        api.request("DELETE", ATTEMPT)
+        after = attempt_data(api.request("GET", ATTEMPT))
+        if after.get("started") is not False:
+            raise Indeterminate()
+        return True
+    except Indeterminate:
+        raise
+    except Blocked:
+        # An attempt was already started, so an unprovable cancel is uncertain.
+        raise Indeterminate() from None
 
 
 def ceremony(api, custody, cluster, share_input):
