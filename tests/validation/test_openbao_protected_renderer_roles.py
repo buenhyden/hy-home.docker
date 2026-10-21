@@ -94,7 +94,9 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(issuer["allowed_policies"], ["renderer-issuer"])
         self.assertIs(issuer["renewable"], False)
         self.assertEqual(targets[APPROLE]["secret_id_ttl"], 600)
-        self.assertEqual(targets[APPROLE]["token_max_ttl"], 86400)
+        self.assertEqual(targets[APPROLE]["token_max_ttl"], 0)
+        # A periodic token renews without re-login; the SecretID is single use.
+        self.assertEqual(targets[APPROLE]["token_period"], 86400)
         self.assertEqual(targets[APPROLE]["token_policies"], ["renderer"])
 
     def test_changed_source_bytes_block(self):
@@ -114,7 +116,7 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(issuer["token_period"], 0)
         self.assertEqual(issuer["token_bound_cidrs"], [])
         self.assertEqual(issuer["disallowed_policies"], [])
-        self.assertEqual(targets[APPROLE]["token_period"], 0)
+        self.assertEqual(targets[APPROLE]["token_period"], "24h")
         self.assertEqual(targets[APPROLE]["secret_id_bound_cidrs"], [])
         self.assertEqual(targets[APPROLE]["token_policies"], ["renderer"])
 

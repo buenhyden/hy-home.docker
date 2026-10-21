@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.38"
+version: "0.12.39"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -703,7 +703,7 @@ custody 디렉터리 전체를 지운다:
 
 ```bash
 for d in "$XDG_RUNTIME_DIR"/p01-custody.* "$XDG_RUNTIME_DIR"/p01-token.* \
-  "$XDG_RUNTIME_DIR"/p01-roles.* "$XDG_RUNTIME_DIR"/p01-revoke.* \
+  "$XDG_RUNTIME_DIR"/p01-roles.* "$XDG_RUNTIME_DIR"/p01-roles-plan.* "$XDG_RUNTIME_DIR"/p01-revoke.* \
   "$XDG_RUNTIME_DIR"/p01-w1.* "$XDG_RUNTIME_DIR"/p01-w3a.*; do
   [ -d "$d" ] || continue
   case "$d" in */p01-token.*) [ "${P01_KEEP_W2:-0}" = 1 ] && continue ;; esac
@@ -995,7 +995,7 @@ fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-securi
 942b8e7405289b64a353a2d94a56cc2bf5bace8ed689692ecffe4ca9782c939d infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
-eda4dd2717961f38a358cc61fbc454cd38e60e09146f59bbb7e4fa6e57647957 infra/03-security/openbao/scripts/protected-renderer-roles.py
+452a83fe8486a7d42886d8f64a40c56e53b21c708b1e1d554bebbf2f1117dca2 infra/03-security/openbao/scripts/protected-renderer-roles.py
 6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1 infra/03-security/openbao/config/policies/renderer.hcl
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl
@@ -1003,7 +1003,7 @@ e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093 infra/03-securi
 f0807d5e1b98ac44083ff0e770a787af456f8bd9da4ec6c394ae9e535b374be0 infra/03-security/openbao/scripts/protected-restore-inputs.py
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
-96f74c4b1908dd2edb3f7bbbf794bdd226b0a66f3133c103f64e1b7790218d79 infra/03-security/openbao/config/renderer-role.json
+e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json
 P01_SOURCE_MANIFEST
 P01_CUSTODY_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-custody.XXXXXX")" || exit 1
 declare -p P01_CUSTODY_DIR >>"$XDG_RUNTIME_DIR/p01-window.vars"
@@ -1171,7 +1171,11 @@ OpenBao 로그인(External Secrets 등 Kubernetes auth)이다. 운영자는 W3 �
 때까지 새로 로그인하지 않는다. W3a의 HOME 읽기 token은 W3 전에 받아 두고(restore는 시작할
 때만 읽으므로 그때 유효하면 된다), W5·W7의 새 OIDC credential은 W3a 뒤에 만든다. hy-home.k8s
 쪽 로그인 주체를 멈춘 방법과 확인을 값 없이 Task에 기록하며, 멈출 방법이 없으면 W3를 열지
-않는다.
+않는다. 2026-10-21 관측에서 그 주체는 External Secrets controller 하나다(ClusterSecretStore
+`vault-backend`, ExternalSecret 6개). 멈추기는
+`kubectl -n external-secrets scale deploy external-secrets --replicas=0`과
+`kubectl -n external-secrets rollout status deploy/external-secrets --timeout=60s`이고, 기존 k8s
+Secret은 남고 갱신만 멈춘다. 다시 켜기는 같은 명령의 `--replicas=1`이다.
 Agent와 해당 writer가 정지했음을 확인한 뒤 아래
 [보호 snapshot helper](../../../../infra/03-security/openbao/scripts/protected-raft-snapshot.py)를
 사용합니다. helper 자체는 writer를 정지하지 않습니다. 중단 시 writer 재개 여부는
@@ -1483,6 +1487,7 @@ CLI에 넘기는 유일한 예외이며, 값은 변수로만 넘겨 argv에는 �
 bao_root() { BAO_TOKEN="$(cat "$P01_CUSTODY_DIR/root.token")" /usr/bin/docker compose exec -T -e BAO_TOKEN openbao bao "$@"; }
 (
   set -o pipefail
+  set +C  # W1 leaves noclobber on; the error file below is reused.
   err="$(/usr/bin/mktemp "$XDG_RUNTIME_DIR/p01-sweep-err.XXXXXX")" || exit 1
   trap 'rm -f "$err"' EXIT
   root_accessors() {

@@ -972,6 +972,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
         role = {
             **json.loads((SOURCE / "config/renderer-role.json").read_text()),
             "secret_id_ttl": "1s",
+            "token_period": 0,
             "token_ttl": "30s",
             "token_max_ttl": "30s",
         }
