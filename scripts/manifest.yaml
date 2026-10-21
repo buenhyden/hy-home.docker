@@ -884,6 +884,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_port_contract.py
+- path: scripts/operations/prometheus-isolated-restore.py
+  kind: operations
+  authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_prometheus_isolated_restore.py
 - path: scripts/operations/provider_surface_renderer.py
   kind: operations
   authority: .agents/governance/providers/registry.yaml
