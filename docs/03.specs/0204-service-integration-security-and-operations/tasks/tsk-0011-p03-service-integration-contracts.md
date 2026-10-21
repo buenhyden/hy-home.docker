@@ -1,6 +1,6 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.10"
+version: "0.2.11"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -935,6 +935,15 @@ authentication. Proposal for the owner, not applied: bind with
 after Docker, then add a HOME probe that expects `192.168.0.13:9119` to refuse
 the connection and `hermes.hy.home.arpa` through `192.168.0.13:443` to return
 302. Source PASS; Hermes direct-port status: open finding, owner decision.
+
+The owner changed the unit the same day (active since 15:24:49 +09:00):
+`ExecStart` now binds `--host 10.250.1.128`. HOME probe afterwards: `ss -ltn`
+shows only `10.250.1.128:9119`; `192.168.0.13:9119` and `127.0.0.1:9119` refuse
+the connection; `10.250.1.128:9119` and `hermes.hy.home.arpa` through
+`192.168.0.13:443` both return 302. The unit keeps `After=network.target` with
+`Restart=always` and `RestartSec=3`, so after a reboot it retries until Docker
+creates the `edge_net` bridge; `After=docker.service` would only shorten that.
+Hermes direct-port status: PASS (HOME).
 
 ## Evidence
 
