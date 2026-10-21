@@ -1,6 +1,6 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -718,6 +718,22 @@ opened, no value read):
 
 Which owner to choose, and any move or deletion, is the owner's decision. S10b
 status: PARTIAL, draft recorded.
+
+Owner decision — 2026-10-21 ("S10b secret 단일 owner 검토후 진행"): the draft's
+single owner is adopted. GDE-0010 now names `secret-catalog.json` as the one
+source, `.example` as its rendered public view, the catalog check plus
+`test_secret_catalog_contract.py` as validation, and `gen-secrets.sh` and
+`smtp_contract.py` as the only writers of the private registry. The catalog's
+`metadata_source` field stays as it is (the code pins it, and renaming it would
+change the schema); GDE-0010 says it records where the catalog was first
+migrated from. Checks on 2026-10-21: the contract module passes in a Python
+with jsonschema (the host `python3` lacks `referencing`, so it errors there);
+`secret-catalog.py --root <absolute path> check` reports 145 entries and 1
+alias, and a relative `--root .` returns `P02_METADATA_BLOCKED`. No other
+operations, requirements, architecture or `.agents` document claims `.example`
+as the owner; `secrets/README.md` was not read. The retention classes stay a
+draft, and no file under `secrets/` was moved or deleted. S10b status: PARTIAL,
+ownership decided; retention classes and P06 consumption remain.
 
 ## Evidence
 
