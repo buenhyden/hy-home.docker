@@ -5334,6 +5334,8 @@ ROUTES_WITHOUT_SSO = {
     "dozzle": "native-oidc",
     "gatus": "native-oidc",
     "grafana": "native-oidc",
+    # Host systemd dashboard, Keycloak OIDC in the app (traefik/dynamic/hermes.yml)
+    "hermes-dashboard": "native-oidc",
     "kafka-ui": "native-oidc",
     "open-webui": "native-oidc",
     "openbao": "native-oidc",

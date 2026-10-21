@@ -1,10 +1,10 @@
 ---
 title: "Traefik Dynamic Configuration"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-21"
 ---
 
 # Traefik Dynamic Configuration
@@ -13,6 +13,9 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 
 - **middleware.yml**: `sso-auth`(ForwardAuth), `dashboard-auth`(BasicAuth) 같은 재사용 가능한 미들웨어를 정의합니다.
 - **tls.yaml**: 기본 TLS store와 인증서 위치를 정의합니다.
+- **hermes.yml**: host systemd unit으로 도는 Hermes Agent dashboard를 `hermes.hy.home.arpa`로
+  노출합니다. container가 아니므로 Docker label 대신 edge_net gateway IP로 연결하며, dashboard가
+  자체 OIDC 인증을 하므로 Traefik 인증 middleware를 겹치지 않습니다.
 
 ---
 
@@ -47,6 +50,7 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 
 ```text
 infra/01-gateway/traefik/dynamic/
+├── hermes.yml  # Hermes dashboard route
 ├── middleware.yml  # 구성 파일
 ├── README.md  # 이 파일
 └── tls.yaml  # 구성 파일
