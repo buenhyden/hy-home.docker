@@ -2413,7 +2413,7 @@ Native rehearsal, isolated (HOME runtime unchanged):
 
 | Attempt | Result | Cause |
 | --- | --- | --- |
-| 1, 2, 3, 5 | FAIL | 25 s observation windows and a 60 s delivery timeout on a loaded host (load 7–13); widened in `bfe13128a` |
+| 1, 2, 3, 5 | FAIL | 25 s observation windows and a 60 s delivery timeout on a loaded host (load 7–13); widened in `21c2bd483` |
 | 4 | FAIL | Run on an uncommitted tree; the rehearsal installs the renderer from `HEAD`, so it used the old image pin |
 | 6, 7 | FAIL | `native limited roles/journal/wrapped delivery failed` with clean HEAD, and again with Airflow paused (load about 4.5), so not load |
 | Control | FAIL | `origin/main` with the Go 1.27.2 image also failed (TLS preflight), so the failure was not image-specific |
@@ -2426,7 +2426,7 @@ token, `bao status`, token lookup and both KV reads succeeded, but
 `/openbao/out` stayed empty. The fixture created the `auth` and `out` binds
 with `mkdir(mode=0o770)`, which honours the umask; under the host's umask 022
 they became 0750, owned by 1000:1000, so the Agent (100:1000) could not write
-through its group. Fix `63760fdaf` adds `chmod(0o770)` as the server config
+through its group. Fix `ba26e2dde` adds `chmod(0o770)` as the server config
 bind already did, with a regression test that failed first (0750) and passes
 now. The ledger now carries attempt 8 as the current
 `candidate_openbao_receipt` and keeps the Go 1.27.2 receipt and source

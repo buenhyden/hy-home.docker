@@ -6637,7 +6637,7 @@
           "-v"
         ],
         "input_sha256": "f4cda3f9383da4915eaaa3a06bf3f21d2d77e77e657614b3f0858d3b51600b6a",
-        "source_binding": "MATCH recomputed 34-file rehearsal input_digest at 63760fdaf9b43aa23d968c6fe4c7183050709574; not the broader ROOT Compose closure.",
+        "source_binding": "MATCH recomputed 34-file rehearsal input_digest at ba26e2ddea5311e0f2723c7c9a0bcbb80845c682; not the broader ROOT Compose closure.",
         "exit_code": 0,
         "passed_tests": 14,
         "duration_seconds": 889.951,
@@ -6972,7 +6972,7 @@
           "-v"
         ],
         "input_sha256": "f4cda3f9383da4915eaaa3a06bf3f21d2d77e77e657614b3f0858d3b51600b6a",
-        "source_binding": "MATCH recomputed 34-file rehearsal input_digest at 63760fdaf9b43aa23d968c6fe4c7183050709574; not the broader ROOT Compose closure.",
+        "source_binding": "MATCH recomputed 34-file rehearsal input_digest at ba26e2ddea5311e0f2723c7c9a0bcbb80845c682; not the broader ROOT Compose closure.",
         "exit_code": 0,
         "passed_tests": 14,
         "duration_seconds": 889.951,
@@ -13736,7 +13736,7 @@
   },
   "openbao_source_binding": {
     "checked_at": "2026-10-21T07:35:53.523020+00:00",
-    "source_revision": "63760fdaf9b43aa23d968c6fe4c7183050709574",
+    "source_revision": "ba26e2ddea5311e0f2723c7c9a0bcbb80845c682",
     "input_sha256": "f4cda3f9383da4915eaaa3a06bf3f21d2d77e77e657614b3f0858d3b51600b6a",
     "algorithm": "SHA256 sorted public relative path + space + file SHA256 + newline",
     "input_files": [
