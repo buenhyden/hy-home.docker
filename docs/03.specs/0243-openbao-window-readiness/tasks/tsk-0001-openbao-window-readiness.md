@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.24"
+version: "0.1.25"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -771,6 +771,52 @@ is window-relevant. The owner approved it for `P01_APPROVED_COMMIT` on
 2026-10-21 ("P01_APPROVED_COMMIT 승인"), so `P01_APPROVED_COMMIT` is the `main`
 commit that merges this change, provided no later window-relevant change lands
 before W0; W0 records that commit.
+
+### Window attempt moved to 2026-10-21 — closed at W1
+
+The owner moved the window forward ("OpenBao window는 지금 진행한다"; W7 stays
+on its plan). W0 ran from 21:07 KST on main
+`7ecf84d47c86a8daf2612202defce40a2528e5e8`, whose only change since
+`5c77e8681` is the Prometheus restore script, its tests and documents (none
+window-relevant). The checks recorded below hold no values.
+
+| W0 check | Result |
+| --- | --- |
+| Checkout, `COMPOSE_FILE`, override file | Clean, `HEAD` = `origin/main`, none, none |
+| Compose validation (security), `bao status` | PASS; Sealed false, 2.6.2, Shamir 2-of-3, raft |
+| Pinned image `a58fb110`, running images | Present; OpenBao and Agent `11fd73a2` healthy; Prometheus `efd719c9` and Traefik `575fa15b` on their pins with the CA mounts; Gatus `503e6af2` |
+| Running versus declared mounts and networks | Same, apart from Compose secrets |
+| TLS preflight | `TLS_MATERIAL PASS` |
+| R2 gate | Repository answers (40 snapshots); 5.214 GiB stored, under the 9 GB cap |
+| Host | Docker debug false, `jq`, Linger yes, tmpfs without `noexec`, audit and data identities unchanged, logrotate rule hash and hourly drop-in present, restore target absent |
+| Backup | Last run 17:30:57 exit 1 at the OpenBao snapshot step only; the owner stopped the timer |
+| Renderer helper | Installed for `7ecf84d47` under the owner's tools directory after one retry (a mistyped repository path failed closed); the receipt matched a scratch install |
+| Audit, secrets and auth lists | 403 for `hy-home-operator`, which has no `sys/audit`, `sys/mounts` or `sys/auth` read. Owner decision: read them with the W1 root before W1c; RUN-0085 now says so |
+
+W1 BLOCKED twice (from about 21:28), each time before any root attempt: the
+custody held only `.lock`, and the server showed no attempt. Cause: OpenBao 2.6.2
+and 2.7.1 return the authenticated `sys/generate-root-token/attempt` and
+`update` fields under `data`, while `protected-maintenance.py` read them at the
+top level, so `started` was never `false` and the client stopped before reading
+the shares. Unit tests used the same unwrapped fake, and the native rehearsal
+never ran this client. The owner closed the window: both operator tokens were
+revoked and removed, the timer was started again (next run 03:30), and no
+OpenBao state changed.
+
+The fix reads those responses through `data` and keeps the full raw responses
+in custody. Against throwaway 2-of-3 servers on localhost (images `11fd73a2`
+2.6.2 and `a58fb110` 2.7.1, in-memory storage, with a stub for the OIDC policy
+check), the old client returns BLOCKED with only `.lock`, and the fix returns
+DELIVERED with a root that passes `check_root`. A bad first share leaves the
+attempt cancelled by the server and reports INDETERMINATE, as designed for a
+submitted final share. The fake API now uses the data-wrapped shape, and a new
+test refuses an unwrapped status before any POST; the old client fails 7 of
+these tests. The hash chain moved through `protected-raft-snapshot.py`,
+`protected-semantic-restore.py`, `protected-token-operations.py`,
+`protected-renderer-roles.py` and the RUN-0085 source manifest. This is
+window-relevant: the window stays BLOCKED until the change merges and the owner
+approves it for `P01_APPROVED_COMMIT`. The helper must then be installed again
+for the new commit.
 
 ## Evidence
 
