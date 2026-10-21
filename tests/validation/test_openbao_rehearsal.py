@@ -106,6 +106,20 @@ class OpenBaoCleanupTests(unittest.TestCase):
             os.umask(previous)
             shutil.rmtree(fixture.directory)
 
+    def test_agent_bind_directories_keep_group_write_under_safe_umask(self):
+        # The Agent (100:1000) writes its sink and rendered files through group
+        # write; under umask 022 mkdir alone left 0750 and nothing rendered.
+        previous = os.umask(0o022)
+        try:
+            fixture = OwnedFixture()
+        finally:
+            os.umask(previous)
+        try:
+            for path in (fixture.auth, fixture.out):
+                self.assertEqual(0o770, path.stat().st_mode & 0o777, path.name)
+        finally:
+            shutil.rmtree(fixture.directory)
+
     def test_version_probe_rejects_similar_and_prefixed_version_tokens(self):
         fixture = object.__new__(OwnedFixture)
         fixture.containers = ["p01-owned-server"]

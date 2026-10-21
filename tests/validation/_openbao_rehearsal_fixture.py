@@ -79,8 +79,10 @@ class OwnedFixture:
         self.tls.mkdir(mode=0o750)
         self.auth = self.directory / "auth"
         self.auth.mkdir(mode=0o770)
+        self.auth.chmod(0o770)  # mkdir honours umask; the Agent writes via group.
         self.out = self.directory / "out"
         self.out.mkdir(mode=0o770)
+        self.out.chmod(0o770)
 
     def docker(self, *args, data=None, allow_failure=False):
         return captured(["docker", *args], data=data, allow_failure=allow_failure)
