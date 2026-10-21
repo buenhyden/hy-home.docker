@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Readiness and Recovery Runbook"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-21"
 layer: "operations"
 artifact_id: "RUN-0045"
 parent_ids:
@@ -173,6 +173,24 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 2. 알림 전송과 remote-write client를 비활성화하거나 test endpoint로 돌린 별도 project/network의 새 path에 복구한다.
 3. Prometheus를 시작하고 WAL replay/readiness, 범위를 제한한 과거·현재 조회, target label, rule health, 통제된 Alertmanager 전송과, 사용 중인 경우 remote-write receiver 동작을 검증한다.
 4. 불일치가 있으면 격리된 service를 중지하고 log/checksum을 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 TSDB 교체는 별도로 승인받는다.
+
+정지 상태 tar 사본의 2–3단계는 저장소 root에서 다음 명령으로 수행한다. 이 명령은 SHA-256을
+대조한 뒤 새 0700 작업 디렉터리에 실행 사용자로 풀고, Compose와 같은 image를 network 없이,
+capability 없이, scrape 대상 없이 띄운다. `/-/ready`까지의 시간(`ready_seconds`, RTO 측정값)과
+가장 새 block 기준 1시간 전·7일 전 `count(up)`을 receipt로 출력한다. 컨테이너는 항상 지우고,
+작업 디렉터리는 `--keep`이 없으면 지운다. 운영 container와 volume에는 닿지 않는다. 작업
+디렉터리는 Restic이나 R2가 수집하지 않는 경로에 둔다.
+
+```bash
+python3 scripts/operations/prometheus-isolated-restore.py \
+  --archive /home/hyunyoun/storage/backups/obs-images-20261020/prometheus-data.tar \
+  --sha256 "$(awk '$2=="prometheus-data.tar"{print $1}' /home/hyunyoun/storage/backups/obs-images-20261020/SHA256SUMS)" \
+  --workdir /home/hyunyoun/storage/backups/prom-restore-$(date +%Y%m%d-%H%M%S) \
+  --keep
+```
+
+종료 코드 0은 PASS, 1은 FAIL, 2는 입력 거부다. 이 명령은 Alertmanager 전송과 rule health를
+확인하지 않으므로 3단계의 그 부분은 별도로 남는다.
 
 ### Escalation
 
