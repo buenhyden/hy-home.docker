@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.39"
+version: "0.12.40"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -989,7 +989,7 @@ while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
 done <<'P01_SOURCE_MANIFEST'
 085132049f60173fc9fde14e20c9f09d0f4e423d35dd3285c1e9c4053e898d04 infra/03-security/openbao/scripts/protected-maintenance.py
 bca49fe4e162b2ff826ebc288fc7ec46103cf99bdcc27f91a7463a5bc05434b4 infra/03-security/openbao/scripts/protected-token-operations.py
-17f66c76abf2f39c60046118f1dc7f274038c825c283d1a0aebb8fa0ccf4be62 infra/03-security/openbao/scripts/protected-raft-snapshot.py
+c46594b5fc3f1d50e9719d5a728e6a5da5c82878d42a4a22756750fa55302cef infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
 942b8e7405289b64a353a2d94a56cc2bf5bace8ed689692ecffe4ca9782c939d infra/03-security/openbao/scripts/protected-semantic-restore.py
@@ -1173,15 +1173,18 @@ OpenBao 로그인(External Secrets 등 Kubernetes auth)이다. 운영자는 W3 �
 쪽 로그인 주체를 멈춘 방법과 확인을 값 없이 Task에 기록하며, 멈출 방법이 없으면 W3를 열지
 않는다. 2026-10-21 관측에서 그 주체는 External Secrets controller 하나다(ClusterSecretStore
 `vault-backend`, ExternalSecret 6개; POL-0085의 `eso-read-platform`). 그 Deployment는 Argo CD
-Application `platform-external-secrets-operator`가, 그 Application은 `root-platform`이 관리하며 둘 다
-`selfHeal`이 켜져 있어 scale만 내리면 곧 되돌아간다. 그래서 W3 전에 두 Application의 원래
-`spec.syncPolicy`와 Deployment의 replica 수를 owner 전용 파일에 저장하고, `root-platform`부터 자동
-sync를 끈 뒤(`kubectl -n argocd patch application <이름> --type json -p '[{"op":"remove","path":"/spec/syncPolicy/automated"}]'`)
-`kubectl -n external-secrets scale deploy external-secrets --replicas=0`,
-`kubectl -n external-secrets wait --for=delete pod -l app.kubernetes.io/name=external-secrets,app.kubernetes.io/instance=external-secrets --timeout=60s`로
-멈추고, snapshot 직전에 replica 0을 다시 확인한다. 기존 k8s Secret은 남고 갱신만 멈춘다. 다시 켜기는
-저장한 replica 수로 scale한 뒤 저장한 `syncPolicy`를 child, `root-platform` 순으로 되돌린다. 이 절차는
-hy-home.k8s 관리 대상을 바꾸므로 window마다 owner 승인이 필요하다.
+Application `platform-external-secrets-operator`가, 그 위를 `root-platform`·`platform-cluster-config`와
+ApplicationSet `apps-generator`가 관리하며 모두 `selfHeal`이 켜져 있다. 2026-10-22 window에서
+Application의 자동 sync를 patch로 끄는 방법은 상위 관리자가 곧 되돌려 실패했다(ESO가 replica 1로
+돌아옴). 그래서 W3 전에 `argocd-application-controller` StatefulSet과
+`argocd-applicationset-controller` Deployment의 replica 수와 ESO replica 수를 owner 전용 파일에
+저장하고, 두 controller를 `kubectl -n argocd scale … --replicas=0`으로 멈춰 pod 삭제를 기다린 뒤
+`kubectl -n external-secrets scale deploy external-secrets --replicas=0`과
+`kubectl -n external-secrets wait --for=delete pod -l app.kubernetes.io/name=external-secrets,app.kubernetes.io/instance=external-secrets --timeout=90s`로
+멈춘다. 30초 뒤와 snapshot 직전에 replica 0을 다시 확인한다. 그동안 모든 GitOps 조정이 멈추고
+기존 k8s Secret은 남고 갱신만 멈춘다. 다시 켜기는 저장한 ESO replica 수로 scale한 뒤
+applicationset controller, application controller 순으로 저장한 replica 수로 되돌리고 rollout을
+확인한다. 이 절차는 hy-home.k8s 관리 대상을 바꾸므로 window마다 owner 승인이 필요하다.
 Agent와 해당 writer가 정지했음을 확인한 뒤 아래
 [보호 snapshot helper](../../../../infra/03-security/openbao/scripts/protected-raft-snapshot.py)를
 사용합니다. helper 자체는 writer를 정지하지 않습니다. 중단 시 writer 재개 여부는

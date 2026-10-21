@@ -180,10 +180,9 @@ def check_lookup(response, minimum_ttl=0):
     exact = (
         type(data.get("policies")) is list
         and data["policies"] == [POLICY]
-        and type(data.get("token_policies")) is list
-        and data["token_policies"] == [POLICY]
-        and type(data.get("identity_policies")) is list
-        and data["identity_policies"] == []
+        # 2.6.2 and 2.7.1 omit both fields from lookup-self; if present they must match.
+        and data.get("token_policies", [POLICY]) == [POLICY]
+        and data.get("identity_policies", []) == []
         and data.get("renewable") is True
         and data.get("orphan") is True
         and data.get("type") == "service"

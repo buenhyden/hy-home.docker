@@ -187,6 +187,15 @@ class ContractTests(unittest.TestCase):
             with self.subTest(delta=delta), self.assertRaises(S.Blocked):
                 S.check_lookup(lookup(**delta))
 
+    def test_lookup_accepts_the_real_shape_without_token_or_identity_policies(self):
+        # 2.6.2 and 2.7.1 lookup-self omit both fields (observed 2026-10-22, W3 BLOCKED).
+        response = lookup()
+        del response["data"]["token_policies"], response["data"]["identity_policies"]
+        S.check_lookup(response)
+        for key, value in (("token_policies", None), ("identity_policies", None)):
+            with self.subTest(key=key), self.assertRaises(S.Blocked):
+                S.check_lookup(lookup(**{key: value}))
+
     def test_renewal_response_binds_same_token_and_identity(self):
         S.check_renewal(renewal(), TOKEN)
         for delta in (
