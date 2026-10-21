@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.25"
+version: "0.1.26"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -817,6 +817,31 @@ these tests. The hash chain moved through `protected-raft-snapshot.py`,
 window-relevant: the window stays BLOCKED until the change merges and the owner
 approves it for `P01_APPROVED_COMMIT`. The helper must then be installed again
 for the new commit.
+
+PR #546 merged as `ed5739e8de93eb490f74fab75a999754f24abc1d`, the same tree as
+the reviewed branch head `75186800a`. A `security-auditor` review (requested by
+this session, not owner review) returned APPROVE WITH NOTES; its three notes
+were applied before the merge: an unprovable cancel after an attempt starts
+exits 2, a test covers malformed responses after the start, and the RUN-0085
+root list check runs under `pipefail`. CI passed. The isolated native rehearsal
+(`HYHOME_OPENBAO_REHEARSAL=1`) was not green in one run on the branch:
+
+| Run | Result |
+| --- | --- |
+| Full suite, uncommitted tree | 11 of 12 PASS; `native limited roles/journal/wrapped delivery failed` |
+| Single trust test, committed | FAIL at `TLS_MATERIAL FAIL check=native-user-read`, a `timeout 20 docker run`; throwaway container starts then took 12–17 s (load about 11, IO pressure about 30%) |
+| Full suite, committed | 11 of 12 PASS; the same delivery step failed |
+| Single trust test, branch `75186800a`, 22:22 | PASS in 483.5 s |
+| Single trust test, main `7ecf84d47`, 22:30 | PASS in 458.3 s |
+
+The files on the delivery path (`issue-renderer-secret-id.sh`,
+`renderer-issuance.py`, `renderer-request.sh`, the installer, OpenBao config
+and the rehearsal fixture and clients) are byte-identical between the two
+commits, and the delivery step waits up to 180 s for the Agent. The failures
+are attributed to host load, not to this change; that is an inference from the
+identical inputs and the paired passes. Each of the 12 native tests has passed
+on the branch at least once, but no single full run passed. The window remains
+BLOCKED until the owner approves `P01_APPROVED_COMMIT` for the merged change.
 
 ## Evidence
 
