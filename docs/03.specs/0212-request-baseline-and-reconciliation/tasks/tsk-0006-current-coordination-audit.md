@@ -1,6 +1,6 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -164,6 +164,33 @@ Draft for owner sign-off, not applied to the approved Spec: row 31 becomes
 documentation structure", with the same unit contents as today. Applying it
 edits the approved Spec and TSK-0008 together. R31 status: PARTIAL, owner
 decision.
+
+### v22 NOT_RUN review — 2026-10-21
+
+The v22 audit's NOT_RUN items, reviewed at `main` `710631e60`:
+
+| Item | Result | Reason or location |
+| --- | --- | --- |
+| S9.1 availability, RTO/RPO (SPEC-0218 TSK-0002) | BLOCKED | v22 §9.1 forbids invented numbers; the per-function loss and recovery targets are the owner's |
+| S12a SPEC-0245 CA and restore | BLOCKED | Isolated restore and Prometheus→Gatus recreation need operating approval |
+| S5/S16a norms and ownership table | Draft, not published | `_workspace/v22-drafts/s5-s16a-norms-ownership.md` (43 norms) |
+| S16b service and configuration ledger | Draft, not published | `_workspace/v22-drafts/s16b-service-config-ledger.md` (111 ROOT services plus the Hermes host unit) |
+| S12c technology choice table | Draft, not published | `_workspace/v22-drafts/s12c-tech-choice.md` (54 rows, owner decides each verdict) |
+| S16d per-unit execution prompts | Draft, not published | `_workspace/v22-drafts/s16d-prompts/` (10 units, each needs owner approval before its main action) |
+| S14.2a/b learning-app planning prompts | DONE outside the repository | `_workspace/learning-app-prompts/` |
+
+The drafts are git-ignored audit material. Publishing any of them as a Stage90
+reference needs a Registry ID, which this Task does not issue.
+
+Two inconsistencies the drafts surfaced, checked directly:
+
+- No script, test or workflow reads `infra/image-tag-policy.exceptions.json`;
+  only policy prose cites it, so its exceptions are not enforced.
+- SPEC-0245 (`spec.md`, `plan.md` W2) keeps Prometheus on the observed 3.14
+  image and excludes a 3.15 upgrade, while the Compose pin and the HOME
+  container run `prom/prometheus:v3.15.0` since 2026-10-20 01:42 UTC. Its
+  backup and restore plan therefore needs the owner to restate the image it
+  preserves before W2 runs.
 
 ## Evidence
 
