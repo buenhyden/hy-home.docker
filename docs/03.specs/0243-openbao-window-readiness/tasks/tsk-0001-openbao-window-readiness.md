@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.28"
+version: "0.1.29"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0243-TSK-0001"
 parent_ids:
@@ -956,6 +956,52 @@ seal, a 200 snapshot download of about 19 KB and archive validation. RUN-0085
 W3 now describes the controller scale-down instead of the Application patch.
 The next window starts at W1; W1c should plan no change and W2 is skipped once
 the installed token is confirmed renewable.
+
+### Window 2026-10-22 11:00 — W3a INDETERMINATE, closed before W4
+
+After #549 the owner approved `P01_APPROVED_COMMIT` =
+`14df75345432c13723206a41feac571762aef578` and started the window at once.
+PRs #550–#554 changed no pinned file; the 15 blocks were re-extracted from that
+commit and the 17 W1 manifest hashes matched. W0 held (TLS preflight PASS twice
+in 13 s, load 6.4, IO pressure 12%, backup 07:49 exit 0, no silences). No values
+are recorded below.
+
+| Step | Result |
+| --- | --- |
+| W1, T=10:59:04 | 17 manifest files OK, `DELIVERED` |
+| Old-root sweep | `revoked=0`, `remaining=0`; `audit` list empty, as expected before W4 |
+| W1c plan | `RENDERER_ROLES_PLANNED`, all 7 targets `changed:false`; apply skipped |
+| W2 | Skipped: the installed token served the 07:49 backup |
+| W3 writers 11:02:44 | Silence `6e867678-3934-47f2-a4ca-b237551de25c`. Argo CD application controller, then applicationset controller, then ESO scaled to 0 (saved 1/1/1, 0 pods); Agent still stopped from the last window. The owner ran the step without a reply to the approval question; recorded as approval by execution |
+| W3 lease and snapshot | `LEASE_STARTED`/`LEASE_BOUND` `a78d820d…`, `SAVED` 59,420 B, sha `36c57d80…`, Raft index 115150, 2.6.2 |
+| W3b | `W3B_STORED`, restic `c07dcd25` tag `hy-home-openbao-w3`; a dump from R2 hashes to the same sha |
+| W3a inputs | `BUNDLE_WRITTEN 3b78e285…`, `SECURITY_RECEIPT 04f2438f…`, contract `8c96c07e…` |
+| W3a review | Agent checks plus an independent security-auditor binding review: GO. Lease and receipt file hashes matched the contract; target absent, parent 2064/115612004 |
+| W3a restore 11:08:55 | `INDETERMINATE: retain target and ledger; do not retry` after about 100 s; the block exited the shell |
+
+The ledger `.p01-restore-20261014-05.attempt.json` reads `indeterminate`, and
+the target `p01-restore-20261014-05` (owned by the container user) is retained;
+the attempt name is spent. No container, volume or network with label
+`hy-home.attempt=p01-restore-20261014-05` and no `/dev/shm` attempt directory
+remained. The client prints only the final line, so the failing step is
+unknown; it is to be reproduced offline, not retried on HOME.
+
+The window closed at 11:17 without W4. Root revoked
+(`ROOT_REVOKED_OPERATOR_HEALTHY`), w1 and w7 `revoke-self=0`, w3a returned 2
+(the restore client holds that token; an OIDC token expires within 4 h),
+cleanup rc=0. ESO, then the applicationset controller, then the application
+controller were scaled back to 1 and rolled out; ClusterSecretStore Ready, all
+6 ExternalSecrets `SecretSynced`, every Application Synced/Healthy; the
+backup timer is active. Receipts, the contract, both lease files, the security
+receipt and the ledger copy are in the owner's
+`ops-snapshots/openbao-window-20261022b/`.
+
+HOME is unchanged: 2.6.2 with the pre-hardening listener (plain HTTP, no audit
+device) and the Agent stopped. Firing during the window, none caused by it:
+`OpenBaoMetricsScrapeFailing` and `GatusEndpointFailing` (security/OpenBao),
+both because the checks expect TLS; `OpenBaoAgentMetricsScrapeFailing`;
+`ContainerHighThrottleRate`; and `ContainerHighMemoryUsage` for the k8s Alloy
+pod.
 
 ## Evidence
 
