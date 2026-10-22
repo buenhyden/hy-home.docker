@@ -1,6 +1,6 @@
 ---
 title: "Security update evidence"
-version: "1.1.5"
+version: "1.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -24,8 +24,10 @@ authority입니다. script manifest는 Task가 아니라 이 README를 authority
 ## Scope
 
 root include closure의 서비스와 선택된 custom build 입력을 조사합니다.
-이 경로의 장부·시험은 source 증거를 보관합니다. 현재 사용자는 SEC01의 전체
-이미지 검증과 HOME 배포 후속 실행을 승인했으며, 실제 대상·백업·복구·실행
+이 경로의 장부·시험은 source 증거를 보관합니다. 2026-10-11의 전체 이미지
+검증·HOME 후속 실행 승인은 SPEC-0204-TSK-0009의 당시 기록으로 보존합니다.
+현재 2026-10-22 요청은 남은 로컬 구현과 QA를 허용하며 운영 변경·토큰 폐기·
+원격 PR은 별도 승인 전까지 실행하지 않습니다. 실제 대상·백업·복구·실행
 증거는 SPEC-0204-TSK-0009가 별도로 기록합니다. 장부가 유효하다는 것만으로
 배포나 복구를 PASS로 처리하지 않습니다. LAB runtime과 학습 앱은 제외합니다.
 공식 안정 채널 조회가 성공하고 새 버전이 없음을 확인하면 최신화 항목은
@@ -53,6 +55,16 @@ NGINX stable/mainline 등 서로 다른 channel은 업그레이드 판단에서 
 Supabase/GoTrue 13개 행은 `labs/supabase.yml`에 속하므로 현재 ROOT 장부에서
 제외하고 원래 행은 `historical_lab_entries`에 보존했습니다. 이 정합화는 실제
 scan·공급자 재조회·HOME 배포 결과를 만들지 않습니다.
+
+2026-10-22의 공개 공급자 재조회는 기존 `root_official_refresh/observations`에
+92건을 추가했습니다(85건 성공, 7건 실패 보존). 이번 해석은 같은 객체의
+`public_metadata_continuations`에 기록합니다. 기존 111개 ROOT 행 전체를 대조했고
+109개 행에는 공급자 release/channel 대응이 있으며 `storybook`·`storybook-mcp`
+두 행은 선택된 내부 이미지의 producer·정확한 빌드 영수증 연결이 미확정입니다.
+32개 기존 Dockerfile 입력 행은 22개 고유 파일이며 OpenTofu inline FROM은 별도로
+확인했습니다. 과거 33개 소비자 행·14개 raw build 객체와 같은 집계가 아닙니다.
+공식 릴리스와 registry 태그 관찰은 이미지 서명·SBOM/취약점·호환·native·복구의
+합격이나 해당 검사 시각 갱신을 뜻하지 않습니다. 과거 관찰·실패·수용 기록을 보존합니다.
 
 ## Structure
 
