@@ -1,10 +1,10 @@
 ---
 title: "Readiness matrix와 인계 경계"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-22"
 ---
 
 # Readiness matrix와 인계 경계
@@ -24,7 +24,7 @@ updated: "2026-10-12"
 | 실제 복원·native E2E·HOME | VERIFY_RUNTIME | 미래 Wiki exact Task의 backup/custody와 실제 대상; P10은 E2E 수용 기준 자산 |
 | 학습 앱/LAB runtime | OUT_OF_SCOPE | 조사·기획·생성·변경하지 않음 |
 
-P02에는 canonical SMTP secret catalog 경계만, P03에는 기존 서비스 endpoint·port 계약 조건만 인계합니다. 미래 Wiki의 namespace/권한, retention/RPO/RTO, delete-priority와 recovery는 별도 exact Task가 소유합니다. P04/P05에는 `fixtures/`의 합성 schema·semantic expectation 연결 자산, P08에는 이 패키지 README·링크와 Stage05 LAB 이동 후보 목록, P10에는 미래 Wiki 구현자가 사용할 E2E 수용 기준과 NOT_RUN 조건을 인계합니다. P10은 실제 Wiki E2E 구현을 소유하지 않습니다. P08 후보는 `docs/05.operations/guides/0074-laboratory-optimization-hardening.md`, `docs/05.operations/policies/0074-laboratory-optimization-hardening.md`, `docs/05.operations/runbooks/0074-laboratory-optimization-hardening.md`이며, 이 P09는 읽기·목록화만 했고 이동·링크 변경은 하지 않습니다. 어떤 영역도 schema PASS를 실제 resource 생성·데이터 이관·복원 성공으로 바꾸어 보고하지 않습니다.
+P02에는 canonical SMTP secret catalog 경계만, P03에는 기존 서비스 endpoint·port 계약 조건만 인계합니다. 미래 Wiki의 namespace/권한, retention/RPO/RTO, delete-priority와 recovery는 별도 exact Task가 소유합니다. P04/P05에는 `fixtures/`의 합성 schema·semantic expectation 연결 자산, P08에는 이 패키지 README·링크와 당시 Stage05 LAB 이동 후보 목록, P10에는 미래 Wiki 구현자가 사용할 E2E 수용 기준과 NOT_RUN 조건을 인계했습니다. P10은 실제 Wiki E2E 구현을 소유하지 않습니다. 당시 목록에 있던 subject 0074의 현재 경로는 `docs/05.operations/guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md`, `docs/05.operations/policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md`, `docs/05.operations/runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md`입니다. P08의 경로 정리는 이미 반영되어 있으며, 이 P09는 당시 읽기·목록화만 수행했습니다. 이번에는 현재 경로 안내만 정정하며 새 이동을 수행하지 않습니다. 어떤 영역도 schema PASS를 실제 resource 생성·데이터 이관·복원 성공으로 바꾸어 보고하지 않습니다.
 
 ## Audience
 
