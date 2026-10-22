@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Collection and Egress Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0220-TSK-0001"
 parent_ids:
@@ -254,6 +254,53 @@ A probe inside the crawler, reading the token from its secret file, saw
 failed with no route. The gateway log showed exactly one allowed `CONNECT` on
 port 443. No consumer is connected and nothing was collected beyond that page.
 
+### Current Contract Approval 2026-10-22
+
+The user's current request on 2026-10-22 explicitly authorizes status and lifecycle
+processing for implemented Specs, Plans and Tasks. The earlier audit was compared
+with the current Spec and Plan, and this package's public implementation at
+`bd4168e20` was confirmed unchanged since the audit input `d7bec9a9a`.
+The current contracts and assignments remain valid, so the Spec and Plan are each
+approved through `draft → approved`, with their first stable version `1.0.0`.
+This present decision neither backdates approval of the original implementation
+nor grants new operational authorization or risk acceptance.
+
+### Current Readiness Review 2026-10-22
+
+The currently approved parent Spec and Plan, assigned Work Units, existing
+implementation, and this Task's Evidence and Criterion Acceptance were secured
+as closure-review inputs. Preparation for the document closure requested today
+is complete, so the Task transitions `draft → ready` today. No execution status
+is inferred for the time of the historical source or runtime work.
+
+### Current Closure Review 2026-10-22
+
+The prepared document closure review was performed, transitioning the Task
+`ready → in-progress`. The canonical package reader and the assignment, evidence
+and acceptance rows confirm PASS for all 12 criterion/Work Unit pairs assigned
+to this Task, accepted decisions for all criteria it owns, and no unresolved FAIL.
+Existing checks and decisions are reused; observation and acceptance rows are unchanged.
+The two current non-learning candidates remain unconnected. Consumer admission, real data collection and host firewall changes remain unexecuted; the historical three-project comparison is not restored as a current implementation requirement.
+
+### Current Completion Decision 2026-10-22
+
+Today's readiness and closure reviews, including assigned-pair PASS and existing
+accepted decisions, are complete, so the Task transitions `in-progress → completed`.
+Completion is limited to this Task's assigned scope. The lifecycle rows below
+record the document transitions actually performed today; they do not replace
+historical execution evidence. Archive readiness is derived by the canonical
+reader, and this change performs no Stage 98 move.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0220 | draft | approved | #current-contract-approval-2026-10-22 |
+| SPEC-0220-PLAN-0001 | draft | approved | #current-contract-approval-2026-10-22 |
+| SPEC-0220-TSK-0001 | draft | ready | #current-readiness-review-2026-10-22 |
+| SPEC-0220-TSK-0001 | ready | in-progress | #current-closure-review-2026-10-22 |
+| SPEC-0220-TSK-0001 | in-progress | completed | #current-completion-decision-2026-10-22 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -278,6 +325,11 @@ port 443. No consumer is connected and nothing was collected beyond that page.
 | 5 | accepted | Baseline and contracts, Operations documents, Validation, HOME activation | Generation 5 row acceptance |
 
 ## Review and Completion
+
+The current status is `completed`. Today's
+[completion decision](#current-completion-decision-2026-10-22) owns the current
+lifecycle; the existing completion, observation and limitation records below
+are preserved as history for their dated inputs.
 
 Source, static, unit, isolated and HOME evidence are complete. Not run:
 admitting a consumer, collecting real data and host firewall rules. No consumer

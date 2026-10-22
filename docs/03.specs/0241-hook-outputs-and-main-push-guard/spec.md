@@ -1,10 +1,10 @@
 ---
 title: "Hook Outputs and Main Push Guard"
-version: "0.1.2"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0241"
 parent_ids:
@@ -104,11 +104,12 @@ reads of secrets (AskUserQuestion).
 
 The Task records the owner's acceptance of criteria 1–6, a merged candidate,
 installed hooks and the protection read-back. Those facts have distinct scope.
-A push blocked by the installed hook remains unobserved. Spec and Plan
-frontmatter still records draft authority; no separate approval record for
-those parents or complete execution-transition receipt has been established
-by this reconciliation. The accepted criteria are preserved, and no parent
-approval, Task completion or archive readiness is inferred from the merge.
+A push blocked by the installed hook remains unobserved. The 2026-10-15 reconciliation left Spec/Plan authority and Task execution
+unresolved. The owner's 2026-10-22 request now authorizes processing implemented
+status and lifecycle; the Task records the current parent-approval decision and
+closure review. The accepted criteria are preserved. Current lifecycle decisions
+come from that request and review, while integration and a live push denial
+remain distinct observations.
 R10 follow-up evidence belongs to SPEC-0212-TSK-0007 rather than reopening
 this package's historical accepted scope.
 

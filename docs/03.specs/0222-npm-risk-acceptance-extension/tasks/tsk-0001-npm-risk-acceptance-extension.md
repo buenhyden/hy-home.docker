@@ -1,10 +1,10 @@
 ---
 title: "npm Risk Acceptance Extension Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0222-TSK-0001"
 parent_ids:
@@ -73,6 +73,53 @@ gate, which includes the candidate preflight, and the staged style check ran on
 the final head. `candidate-quality` and the merge are recorded in the pull
 request.
 
+### Current Contract Approval 2026-10-22
+
+The user's current request on 2026-10-22 explicitly authorizes status and lifecycle
+processing for implemented Specs, Plans and Tasks. The earlier audit was compared
+with the current Spec and Plan, and this package's public implementation at
+`bd4168e20` was confirmed unchanged since the audit input `d7bec9a9a`.
+The current contracts and assignments remain valid, so the Spec and Plan are each
+approved through `draft → approved`, with their first stable version `1.0.0`.
+This present decision neither backdates approval of the original implementation
+nor grants new operational authorization or risk acceptance.
+
+### Current Readiness Review 2026-10-22
+
+The currently approved parent Spec and Plan, assigned Work Units, existing
+implementation, and this Task's Evidence and Criterion Acceptance were secured
+as closure-review inputs. Preparation for the document closure requested today
+is complete, so the Task transitions `draft → ready` today. No execution status
+is inferred for the time of the historical source or runtime work.
+
+### Current Closure Review 2026-10-22
+
+The prepared document closure review was performed, transitioning the Task
+`ready → in-progress`. The canonical package reader and the assignment, evidence
+and acceptance rows confirm PASS for all 3 criterion/Work Unit pairs assigned
+to this Task, accepted decisions for all criteria it owns, and no unresolved FAIL.
+Existing checks and decisions are reused; observation and acceptance rows are unchanged.
+Completion covers delivery of the existing window, parser and rule. It neither changes `expires_at=2026-11-08T07:00:00Z` nor extends risk acceptance. No fresh external advisory patch-status check is claimed.
+
+### Current Completion Decision 2026-10-22
+
+Today's readiness and closure reviews, including assigned-pair PASS and existing
+accepted decisions, are complete, so the Task transitions `in-progress → completed`.
+Completion is limited to this Task's assigned scope. The lifecycle rows below
+record the document transitions actually performed today; they do not replace
+historical execution evidence. Archive readiness is derived by the canonical
+reader, and this change performs no Stage 98 move.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0222 | draft | approved | #current-contract-approval-2026-10-22 |
+| SPEC-0222-PLAN-0001 | draft | approved | #current-contract-approval-2026-10-22 |
+| SPEC-0222-TSK-0001 | draft | ready | #current-readiness-review-2026-10-22 |
+| SPEC-0222-TSK-0001 | ready | in-progress | #current-closure-review-2026-10-22 |
+| SPEC-0222-TSK-0001 | in-progress | completed | #current-completion-decision-2026-10-22 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -91,6 +138,11 @@ request.
 | 3 | accepted | Local validation | Generation 5 row acceptance |
 
 ## Review and Completion
+
+The current status is `completed`. Today's
+[completion decision](#current-completion-decision-2026-10-22) owns the current
+lifecycle; the existing completion, observation and limitation records below
+are preserved as history for their dated inputs.
 
 Complete. `candidate-quality` passed on head `751821989` against base
 `40dcfb349`, and PR #397 merged as `0df98f405` before the earlier acceptance

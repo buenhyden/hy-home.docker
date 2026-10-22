@@ -1,10 +1,10 @@
 ---
 title: "Generation 6 Reader Corrections Task"
-version: "0.4.2"
+version: "0.5.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0233-TSK-0001"
 parent_ids:
@@ -191,6 +191,49 @@ lists the criteria and why the rest stay `pending`.
 | --- | --- | --- | --- |
 | SPEC-0233 | draft | approved | #owner-decisions |
 | SPEC-0233-PLAN-0001 | draft | approved | #owner-decisions |
+| SPEC-0233-TSK-0001 | draft | ready | #current-readiness-review-on-2026-10-22 |
+| SPEC-0233-TSK-0001 | ready | in-progress | #current-lifecycle-reconciliation-on-2026-10-22 |
+| SPEC-0233-TSK-0001 | in-progress | completed | #current-completion-decision-on-2026-10-22 |
+
+### Current readiness review on 2026-10-22
+
+The owner's current request explicitly authorizes status and lifecycle processing
+for implemented work. This is a new reconciliation on 2026-10-22; it does not
+backdate execution or replace the historical acceptance decisions. The review
+used input `bd4168e20861d557c9a4f31025a2a649be3e8066` and the existing public
+Task receipts. Both parents are already `approved`. All 7 assigned
+criterion/Work Unit pairs have this Task's PASS evidence, all 6 owned
+criteria are accepted, and no historical FAIL remains unresolved. The existing
+completed-evidence reader accepted an in-memory completed assessment. The Task
+therefore enters `ready` for the bounded lifecycle reconciliation.
+
+### Current lifecycle reconciliation on 2026-10-22
+
+The Task entered `in-progress` to reconcile its execution metadata with the
+already accepted implementation. The review reused the recorded source,
+tests, independent reviews and integration receipts, preserving their input
+identities and limitations. It checked Plan assignment coverage and the
+historical failure resolutions without changing Evidence, Criterion Acceptance
+or the existing parent authorization events. Later generation and operational
+follow-ups keep their own current owners; this work adds no implementation,
+provider, credential, recovery or HOME observation.
+
+### Current completion decision on 2026-10-22
+
+The current reconciliation finished after the receipt and assignment review.
+The existing Evidence and Criterion Acceptance sections, historical review
+record and parent event prefix were verified unchanged. This Task is now
+`completed` under the owner's current lifecycle instruction, using its existing
+accepted criteria and PASS evidence. This is today's execution-state decision,
+not a replacement or backdating of the earlier owner decisions.
+
+The recorded rules and gate replays resolve the earlier failures; completion
+preserves those failures and their explicit resolving rows.
+
+Spec and Plan remain `approved`. Archive readiness is derived by the existing
+reader after completion; no archive move, withdrawal or operational action is
+part of this Task closure. The final documentation gates are recorded by the
+current coordination Task.
 
 ## Evidence
 

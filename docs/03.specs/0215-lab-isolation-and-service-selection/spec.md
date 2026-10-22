@@ -1,8 +1,8 @@
 ---
 title: "LAB Isolation and Service Selection"
-version: "0.3.2"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-22"
 layer: "specs"

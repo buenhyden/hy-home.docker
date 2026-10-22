@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions Task"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0001"
 parent_ids:
@@ -193,6 +193,52 @@ root user. Whether to register these controls is a separate decision. The file
 header says `review_cadence: monthly` with no next-review field; every entry has
 `review_by` 2027-04-07. R19 status: PARTIAL, review recorded.
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0218 | draft | approved | #current-parent-contract-review-on-2026-10-22 |
+| SPEC-0218-PLAN-0001 | draft | approved | #current-parent-contract-review-on-2026-10-22 |
+| SPEC-0218-TSK-0001 | draft | ready | #current-readiness-review-on-2026-10-22 |
+| SPEC-0218-TSK-0001 | ready | in-progress | #current-execution-review-on-2026-10-22 |
+| SPEC-0218-TSK-0001 | in-progress | completed | #current-completion-decision-on-2026-10-22 |
+
+### Current parent contract review on 2026-10-22
+
+Under the owner's current request, the review of SPEC-0218 and its Plan at
+`bd4168e20861d557c9a4f31025a2a649be3e8066` approves both parents as their first
+stable contracts, version `1.0.0`, status `approved`. This establishes document
+authority for existing W1–W8 and current P07 W9–W16. TSK-0001's accepted criteria
+1–5 and historical evidence are reused; this decision does not accept unmeasured
+budgets, least privilege or HOME rollout/recovery in P07/TSK-0002. No current
+operational execution, token revocation or archive move ran.
+
+### Current readiness review on 2026-10-22
+
+The review checked the owner's current status/lifecycle request, the approved
+parents, this Task's assigned criterion/Work Unit pairs and the existing
+PASS/FAIL/acceptance records. Today's document closure review enters `ready`
+without backdating historical execution.
+
+### Current execution review on 2026-10-22
+
+The document closure review actually compared the assigned criterion/Work Unit
+pairs, existing PASS and FAIL resolution links, acceptance ownership and parent
+approvals. Today's work is this document review; historical test and operational
+dates and inputs remain as recorded in Evidence. No new runtime, cleanup or
+token operation ran.
+
+### Current completion decision on 2026-10-22
+
+Every criterion 1–5 pair assigned to W1–W8 has existing PASS evidence, and this
+Task's acceptance decisions are accepted. This bounded execution record is
+complete. P07 criterion 3's HOME residual and criteria 6–10, measurement, least
+privilege and rollout/recovery acceptance assigned to TSK-0002 by the current
+Spec/Plan remain incomplete.
+Today's closure review marks this Task `completed` while preserving the
+historical evidence and acceptance tables exactly. This status does not claim
+new operational validation or an archive move.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -218,7 +264,9 @@ header says `review_cadence: monthly` with no next-review field; every entry has
 
 ## Review and Completion
 
-Not complete. Open for the owner:
+The historical owner residuals recorded on 2026-10-09 follow. Completion of
+W1–W8 in this Task is distinct from the still-open operational scope in
+P07/TSK-0002:
 
 - Recreate HOME services to apply the definitions; the first Open WebUI
   recreation also re-keys sessions (SPEC-0204).
@@ -227,6 +275,10 @@ Not complete. Open for the owner:
 - Load, backfill, backup, restore and concurrent GPU measurements before any
   limit is called optimal; read-only root filesystems for the 96 writable
   services.
+
+The current closure decision of 2026-10-22 is recorded under Current completion
+decision in the Work Log. Only the existing source/LAB slice is complete; the
+native residuals above have not been accepted.
 
 ## Related Documents
 

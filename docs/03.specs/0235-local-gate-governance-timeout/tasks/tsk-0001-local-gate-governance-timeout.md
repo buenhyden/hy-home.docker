@@ -1,10 +1,10 @@
 ---
 title: "Local Gate Governance Timeout Task"
-version: "0.3.3"
+version: "0.4.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0235-TSK-0001"
 parent_ids:
@@ -130,6 +130,56 @@ commit on `main` and record it here. The later commits on
 first run on the new base (`ci-gate-adapter-pull-request-range`: the checkout
 is not the authenticated pull request merge); #448 was rebased onto
 `4072f8af8`.
+
+### Lifecycle Reconciliation 2026-10-22
+
+#### Parent Approval 2026-10-22
+
+The owner's current request explicitly authorizes status and lifecycle
+processing for implemented Specs, Plans and Tasks. After comparing the current
+contract, implementation, existing acceptance and verification scope, today's
+decision approves this package's Spec and Plan at their first stable version,
+`1.0.0`. This records no parent approval or execution transition retroactively
+at the time of the original implementation.
+
+#### Reconciliation Readiness 2026-10-22
+
+Readiness to start the current document reconciliation was reviewed under
+the approved parents. Every criterion/Work Unit pair in the Plan has existing
+PASS evidence, all acceptance decisions are accepted, and no FAIL is unresolved.
+Historical Evidence and Criterion Acceptance are reused unchanged. This current
+readiness review moves the Task from `draft` to `ready`.
+
+#### Reconciliation Execution Review 2026-10-22
+
+After the readiness review, current document closure work started and the
+following scope and evidence were checked.
+
+The two workflow contract nodes retain their 45- and 30-minute limits, and
+the reachability implementation still resolves class/method selections to their
+module. The existing W5 replay reached and passed both nodes. Initial NOT_RUN,
+failure and direct-push records are preserved. Existing criterion 1–5 acceptance
+and the dated hosted results are reused.
+
+#### Reconciliation Completion Decision 2026-10-22
+
+After the current readiness and execution reviews, today's decision completes
+this Task's document closure for its approved contract. Existing PASS evidence,
+accepted decisions, resolution relationships and unobserved results remain
+unchanged. This decision supplies no new test or operational PASS. The canonical
+reader derives archive readiness; no archive approval or Stage 98 move occurs.
+Before merge, the coordinator combines and records structural and metadata
+validation and independent review of this change.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0235 | draft | approved | #parent-approval-2026-10-22 |
+| SPEC-0235-PLAN-0001 | draft | approved | #parent-approval-2026-10-22 |
+| SPEC-0235-TSK-0001 | draft | ready | #reconciliation-readiness-2026-10-22 |
+| SPEC-0235-TSK-0001 | ready | in-progress | #reconciliation-execution-review-2026-10-22 |
+| SPEC-0235-TSK-0001 | in-progress | completed | #reconciliation-completion-decision-2026-10-22 |
 
 ## Evidence
 

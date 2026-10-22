@@ -1,8 +1,8 @@
 ---
 title: "OpenBao Maintenance Window Readiness"
-version: "0.1.3"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-22"
 layer: "specs"

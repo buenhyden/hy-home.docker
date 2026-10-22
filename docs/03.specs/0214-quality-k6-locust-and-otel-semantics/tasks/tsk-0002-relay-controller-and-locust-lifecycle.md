@@ -1,10 +1,10 @@
 ---
 title: "Relay Controller and Locust Lifecycle Task"
-version: "0.3.4"
+version: "0.4.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0214-TSK-0002"
 parent_ids:
@@ -382,6 +382,40 @@ An independent read-only review of the branch returned ten findings:
 | GDE-0061 said the relay could reach only Alloy 4319 | Fixed: the guide now says the network membership is an operating rule, the executor checks only that the network is internal, and the hashed relay configuration sends only to 4319 |
 | A `docker stop` timeout in `supervise` escaped as a traceback | Fixed: the timeout is absorbed and the project is still stopped |
 
+### Current Readiness Review 2026-10-22
+
+The currently approved parent Spec and Plan, assigned Work Units, existing
+implementation, and this Task's Evidence and Criterion Acceptance were secured
+as closure-review inputs. Preparation for the document closure requested today
+is complete, so the Task transitions `draft → ready` today. No execution status
+is inferred for the time of the historical source or runtime work.
+
+### Current Closure Review 2026-10-22
+
+The prepared document closure review was performed, transitioning the Task
+`ready → in-progress`. The canonical package reader and the assignment, evidence
+and acceptance rows confirm PASS for all 7 criterion/Work Unit pairs assigned
+to this Task, accepted decisions for all criteria it owns, and no unresolved FAIL.
+Existing checks and decisions are reused; observation and acceptance rows are unchanged.
+Real application load and per-project credentials, rotation and quotas remain with their existing integration owner. Existing HOME and isolated results are reused without rerunning them or declaring all v28 work complete.
+
+### Current Completion Decision 2026-10-22
+
+Today's readiness and closure reviews, including assigned-pair PASS and existing
+accepted decisions, are complete, so the Task transitions `in-progress → completed`.
+Completion is limited to this Task's assigned scope. The lifecycle rows below
+record the document transitions actually performed today; they do not replace
+historical execution evidence. Archive readiness is derived by the canonical
+reader, and this change performs no Stage 98 move.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0214-TSK-0002 | draft | ready | #current-readiness-review-2026-10-22 |
+| SPEC-0214-TSK-0002 | ready | in-progress | #current-closure-review-2026-10-22 |
+| SPEC-0214-TSK-0002 | in-progress | completed | #current-completion-decision-2026-10-22 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -405,6 +439,11 @@ An independent read-only review of the branch returned ten findings:
 | 9 | accepted | Egress network, HOME Alloy on `quality_otlp_net` and HOME relay canary | Generation 5 row acceptance |
 
 ## Review and Completion
+
+The current status is `completed`. Today's
+[completion decision](#current-completion-decision-2026-10-22) owns the current
+lifecycle; the existing completion, observation and limitation records below
+are preserved as history for their dated inputs.
 
 Source, static, isolated and HOME work is complete: HOME Alloy joined
 `quality_otlp_net`, and a HOME relay canary reached HOME Prometheus and the

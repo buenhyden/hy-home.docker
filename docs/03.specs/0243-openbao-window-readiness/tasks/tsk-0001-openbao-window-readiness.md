@@ -1,8 +1,8 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.32"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-22"
 layer: "specs"
@@ -1376,6 +1376,62 @@ blocking findings, reviewed diff SHA256
 `c60cb0091ef9f452d069c529fdb6dd0dcf1aaf7ce424f55bfc8fbf4f706e8453`.
 `graphify update .` completed with 28,964 nodes and 50,568 edges; optional
 SQL/HCL parsers remain unavailable. No native acceptance is implied.
+
+### Lifecycle Reconciliation 2026-10-22
+
+#### Parent Approval 2026-10-22
+
+The owner's current request explicitly authorizes status and lifecycle
+processing for implemented Specs, Plans and Tasks. After comparing the current
+contract, implementation, existing acceptance and verification scope, today's
+decision approves this package's Spec and Plan at their first stable version,
+`1.0.0`. This records no parent approval or execution transition retroactively
+at the time of the original implementation.
+
+#### Reconciliation Readiness 2026-10-22
+
+Readiness to start the current document reconciliation was reviewed under
+the approved parents. Every criterion/Work Unit pair in the Plan has existing
+PASS evidence, all acceptance decisions are accepted, and no FAIL is unresolved.
+Historical Evidence and Criterion Acceptance are reused unchanged. This current
+readiness review moves the Task from `draft` to `ready`.
+
+#### Reconciliation Execution Review 2026-10-22
+
+After the readiness review, current document closure work started and the
+following scope and evidence were checked.
+
+The 12 existing criterion/Work Unit pairs in W1–W6 and criterion 1–7
+acceptance were compared again. The v28 snapshot empty-entity and operator
+nonempty-entity source, existing 187-test result, TLS/native default-skip and
+runbook regressions, and independent source review are reused.
+SPEC-0211-TSK-0003 owns the actual QA results; SPEC-0212-TSK-0006 and PR #558
+provide the handoff. This review closes the Spec/Plan's bounded readiness/source
+scope as document work. B1's exact entity/alias/provider binding remains PARTIAL;
+the B4 producer, P06 consumption, A3 cleanup, and the three D1 risks with their
+2026-11-15 deadline retain their existing owners and approval boundaries.
+Current manifest Native validity remains false and Native/HOME remain NOT_RUN.
+This decision does not accept the whole window or complete its operational steps.
+
+#### Reconciliation Completion Decision 2026-10-22
+
+After the current readiness and execution reviews, today's decision completes
+this Task's document closure for its approved contract. Existing PASS evidence,
+accepted decisions, resolution relationships and unobserved results remain
+unchanged. This decision supplies no new test or operational PASS. The canonical
+reader derives archive readiness; no archive approval or Stage 98 move occurs.
+Before merge, the coordinator combines and records structural and metadata
+validation and independent review of this change.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0243 | draft | approved | #parent-approval-2026-10-22 |
+| SPEC-0243-PLAN-0001 | draft | approved | #parent-approval-2026-10-22 |
+| SPEC-0243-TSK-0001 | draft | ready | #reconciliation-readiness-2026-10-22 |
+| SPEC-0243-TSK-0001 | ready | in-progress | #reconciliation-execution-review-2026-10-22 |
+| SPEC-0243-TSK-0001 | in-progress | completed | #reconciliation-completion-decision-2026-10-22 |
 
 ## Evidence
 

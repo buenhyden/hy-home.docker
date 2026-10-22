@@ -1,10 +1,10 @@
 ---
 title: "Subagent Model and Routing Text"
-version: "0.2.1"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0217"
 parent_ids:
