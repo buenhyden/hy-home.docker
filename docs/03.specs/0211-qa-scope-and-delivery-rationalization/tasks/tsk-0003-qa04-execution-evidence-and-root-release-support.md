@@ -369,6 +369,101 @@ with the hosted build (RUNPATH set to `$ORIGIN/../lib` so it runs outside
 2,666 s with a 181 MB peak RSS, including the 774-test suite in 1,156 s and
 the 1,051-test suite with 80 skips.
 
+### v28 local continuation preflight — 2026-10-22
+
+The user expressly requested completion of remaining v28 local implementation,
+Python toolchain recovery and actual full QA, reusing completed work. Operational
+changes, real token revocation and remote PR/push remain outside this execution.
+The existing 2026-11-15 D1 deadline remains unchanged; improvement proposals do
+not constitute a new risk acceptance. W73/W75 provide the existing QA owner;
+this continuation adds no criterion or second orchestration surface.
+
+- Input: branch `codex/v28-local-residuals`, prior implementation through
+  `016c4ac6e`; final clean HEAD will be captured by the existing runner after
+  current B1 and public supplier observations are reviewed and committed.
+  Reuse the six existing logical commits and their valid scoped evidence.
+- Plan: actual `run-ci-gate.py --profile full`, LOCAL trust context, all 33
+  selected registered executable leaves, with the existing per-gate timeouts
+  (300–2700 seconds). `--explain` is selection evidence only. The selected
+  prerequisites are Python, controller lock, Node and Docker. Hosted-only
+  frontend/dependency audit/style/commit leaves remain excluded by the contract;
+  native/HOME opt-in flags remain disabled. `--requirements` requires an
+  authenticated PR context and is NOT_RUN locally; do not forge that context.
+- Tools: official `actions/python-versions` Python 3.14.8 Ubuntu 24.04 x64
+  release `3.14.8-36806082737`, archive SHA256
+  `fa74abc70a55c10f6631967784878704eef81bbde9b8ec27469534f6ba997cb3`;
+  API digest and official checksum file verified. Scratch venv has all 36
+  exact controller-lock packages installed with hashes and binary wheels.
+  Lock SHA256 `d05a5fb50e29e3d44587b34abacf2713eaea83c7c88ff84127d9cbfe96a193e2`.
+  Real memfd `F_ADD_SEALS` self-check returned seals 15; local toolchain
+  mismatch check returned None. The original Python executable SHA256 was
+  `a5230d8adbd26c2185d77fb003597c4ee9c44c2369fc179122ff7c3a3a58ae59`;
+  scratch-only RUNPATH relocation to `$ORIGIN/../lib` produced
+  `62e177f6f9523e24ae0591438b7556e14c58fea1219a5c449615e3ff9d2e12ed`.
+  Sanitized-environment executable capture passed. Verified official uv 0.12.18
+  and Node 24.22.0 archives respectively hash to
+  `89eadd7c76fc063887959510d5ba0ab1264dfd5f1143b925ddb73021a40acf16`
+  and `cc2f601cee82d9a5a233302fe307abc600727035fd7d2c3a3571755989e95008`.
+  Their executable SHA256 values are
+  `b97ae0e1ed3661fcd0c446cc59d81f5720c24d35627b21814a7581fb67eba673`
+  and `67ca5783febb8bf85736c79fcdd92c8d6d465a0eb2a082672bcdfa76a506751c`.
+  Bundled npm is 11.19.1; no project dependency or browser install was selected.
+- Permission: repository and `/tmp` writes only; public official downloads
+  are scoped toolchain/research inputs. No user-global configuration change.
+  Current read-only Docker prerequisite observation returned permission denied
+  at `/var/run/docker.sock`; do not widen daemon permissions. A blocked Docker
+  leaf must retain its failure and remaining leaves their actual states.
+- Budget: UNKNOWN. Failure owner: root QA coordinator; one narrow retry per
+  diagnosed slice, preserve original failure, never weaken assertions or fake
+  interpreter/seal/CI identities. Keep stdout/stderr and existing runner
+  receipts under private `/tmp/hyhome-v28-*` custody; local scratch retention
+  does not establish durable hosted artifact or operational acceptance.
+- Writers: root owns this QA Task and final integration; B1 worker owns the
+  maintenance helper, caller-required source pins, existing tests and RUN-0085/
+  SPEC-0243 evidence; supplier worker gathers public metadata in `/tmp` only.
+  Independent review is read-only. Freeze repository writers before clean-HEAD
+  execution and normal hooked commits.
+
+### v28 local CLI evidence initialization correction — 2026-10-22
+
+Preflight found that `CI_GATE_EVIDENCE_DIR` on an actual LOCAL CLI run built
+an execution request and immediately opened a plan that had never been seeded.
+Only the PR-only `--requirements` route seeded it; manually prepared test plans
+had hidden the missing local route. The user-authorized QA continuation owns
+this small W72/W75 repair in the existing runner and execution-context test.
+The local branch now seeds the verified plan using the same captured request
+before executing it. PR prerequisite/execution behavior, clean-HEAD identity,
+private output custody, existing-path rejection and per-gate terminal states
+retain their existing owners and checks. No second runner or new gate is added.
+Focused RED/GREEN, registered regressions and independent review are recorded
+with the actual results below; this paragraph itself asserts no QA PASS.
+
+The new actual-descriptor CLI test first failed with
+`ci-gate-evidence-invalid: evidence output must be a private regular directory`
+on the unmodified local route, then passed after the two-line seed guard.
+Pinned Ruff 0.15.12 check and format check passed. A worker's wider synthetic
+run reported a sandbox-only hosted-topology error: this sandbox maps system
+Git ownership to UID 65534, while the trusted-host guard requires UID 0.
+The guard was preserved. Root's actual-host rerun of the registered runner
+regression selection (`tests.validation.test_ci_gate_model`,
+`tests.validation.test_ci_gate_plan`,
+`tests.validation.test_ci_gate_execution_context`, `-q`) passed all 82 tests
+in 18.806 seconds, exit 0. No Docker or live provider was used in this rerun.
+The reviewed two-file diff SHA256 is
+`49a194bd642e4f116f1b5a85e0d9cb8a3f075c0007847ec6ea1bff88044c2590`.
+Independent code/security review approved that exact two-file source diff
+with no blocking findings; its scope excludes the later full/Docker result.
+
+Actual-host read-only prerequisite observations supersede only the earlier
+sandbox availability failures: `/usr/bin/git` is UID 0, mode 0755; Docker is
+29.8.2. The exact pinned Conftest image is already local. No container exists
+for project `hyhome-conftest-gate` or fixed name `/conftest`; these observations
+do not themselves authorize another project or operational mutation. Requested
+FULL QA may use the registered network-none, read-only public-source Conftest
+job after independent readiness review. Native/HOME opt-in cases remain off;
+no image pull, HOME service start, token operation or remote action is included.
+The runner receives actual local context and captures its own tool identities.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |

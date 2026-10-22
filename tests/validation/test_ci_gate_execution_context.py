@@ -366,6 +366,45 @@ class DescriptorExecutionTests(unittest.TestCase):
         self.assertEqual("PASS", result["rows"][0]["status"])
         self.assertTrue(result["complete"])
 
+    def test_local_cli_seeds_evidence_and_executes_the_same_request(self) -> None:
+        self.add_entrypoint("scripts/validation/one.py")
+        plan = (_invocation("leaf.one", "scripts/validation/one.py"),)
+        request = self.evidence_request(self.root / "local-evidence", ("leaf.one",))
+        request = dataclasses.replace(
+            request,
+            identity={
+                **request.identity,
+                "event_name": "local",
+                "execution_context": "local",
+                "job": "local",
+            },
+        )
+        document = contract.load_contract_document(ROOT)
+        environment = {"HYHOME_CI_GATE_ROOT": str(self.root), "PATH": os.defpath}
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(runner, "load_contract_document", return_value=document),
+            mock.patch.object(runner, "validate_gate_registry", return_value=()),
+            mock.patch.object(runner, "collect_changed_paths", return_value=()),
+            mock.patch.object(
+                runner, "build_public_validation_plan", return_value=plan
+            ),
+            mock.patch.object(
+                runner, "_selection_reasons", return_value=request.selection_reasons
+            ),
+            mock.patch.object(runner, "local_toolchain_mismatch", return_value=None),
+            mock.patch.object(
+                runner, "_execution_evidence_request", return_value=request
+            ) as capture,
+        ):
+            self.assertEqual(0, runner.main(["--profile", "changed"]))
+        capture.assert_called_once()
+        plan_document = json.loads((request.directory / "plan.json").read_bytes())
+        result = json.loads((request.directory / "result.json").read_bytes())
+        self.assertEqual(request.identity, plan_document["identity"])
+        self.assertEqual("PASS", result["rows"][0]["status"])
+        self.assertTrue(result["complete"])
+
     def test_execution_evidence_preserves_failure_and_blocks_remaining(self) -> None:
         self.add_entrypoint(
             "scripts/validation/fail.py",
