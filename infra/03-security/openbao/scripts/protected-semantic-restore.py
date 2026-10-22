@@ -30,10 +30,10 @@ import time
 import types
 from pathlib import Path
 
-TARGET = Path("/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261014-05")
+TARGET = Path("/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261022-06")
 PARENT_IDENTITY = (2064, 115612004, 1000, 1000)
-ATTEMPT = "p01-restore-20261014-05"
-LEDGER = ".p01-restore-20261014-05.attempt.json"
+ATTEMPT = "p01-restore-20261022-06"
+LEDGER = ".p01-restore-20261022-06.attempt.json"
 CLUSTER = "51fbfa38-a715-7dca-629f-3f07233749f4"
 OLD_IMAGE = "sha256:11fd73a2102cda9c55d5d881a8c3210303146a7ec1e8ac76f526e175c6d24641"
 OLD_VERSION = "2.6.2"
@@ -639,7 +639,9 @@ class RecoveryEffects:
             raise Indeterminate()
         rendered = []
         for value_path, version_path in (("/openbao/out/auth/keycloak_admin_password.txt", "/openbao/out/auth/keycloak_admin_password.version"), ("/openbao/out/observability/grafana_admin_password.txt", "/openbao/out/observability/grafana_admin_password.version")):
-            value = self.runtime.exec(self.agent_id, "/bin/cat", value_path).stdout.decode().rstrip("\n")
+            # The templates trim their own whitespace, so the file is the exact value;
+            # a value may end in a newline (reproduced for the 2026-10-22 W3a result).
+            value = self.runtime.exec(self.agent_id, "/bin/cat", value_path).stdout.decode()
             raw_version = self.runtime.exec(self.agent_id, "/bin/cat", version_path).stdout.decode().strip()
             if not raw_version.isdecimal() or not value:
                 raise Indeterminate()

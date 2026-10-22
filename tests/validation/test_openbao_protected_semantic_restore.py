@@ -534,9 +534,10 @@ class RuntimeUnitTests(unittest.TestCase):
         effect.runtime.docker.return_value = self.result(stdout=b"0 false")
         effect.runtime.remember.side_effect = ["p" * 64, "agent-volume", "q" * 64, "r" * 64]
         effect.runtime.exec.side_effect = [
+            # The templates write the exact value; HOME's canary ended in a newline.
             self.result(stdout=b"alpha\n"),
             self.result(stdout=b"1\n"),
-            self.result(stdout=b"beta\n"),
+            self.result(stdout=b"beta"),
             self.result(stdout=b"2\n"),
             self.result(stdout=b""),
             self.result(stdout=b""),
@@ -558,7 +559,7 @@ class RuntimeUnitTests(unittest.TestCase):
                 (bundle / "config").mkdir(parents=True, mode=0o700)
                 effect.materialized_bundle = bundle
                 effect.materialized_helper = root / "helper"
-                effect._agent("server", root, (("alpha", 1), ("beta", 2)))
+                effect._agent("server", root, (("alpha\n", 1), ("beta", 2)))
                 # RUN-0085 runs the restore under umask 077; root with only CHOWN
                 # must still traverse every input directory as "other".
                 modes = {name: stat.S_IMODE((root / name).stat().st_mode) for name in ("agent", "out", "bundle", "bundle/config")}
@@ -582,6 +583,49 @@ class RuntimeUnitTests(unittest.TestCase):
         self.assertEqual("find /agent /out /bundle -mindepth 1 -delete; chmod 0755 /agent /out /bundle", reclaim[-1])
         self.assertLess(fresh.index(revokes[-1]), stop)
         self.assertEqual((effect.runner.run.call_args.args[0][0], "issuer" in repr(effect.runner.run.call_args.args[0]), "/bundle" in repr(effect.runtime.docker.call_args_list[0])), (str(effect.materialized_helper), False, True))
+
+
+    def test_agent_output_must_match_exactly(self, rendered=b"alpha\n", expected="alpha"):
+        effect = self.effect()
+        effect.runtime = mock.Mock()
+        effect.runtime.containers = []
+        effect.runtime.volumes = []
+        effect.runtime.networks = ["n" * 64]
+        effect.runtime.docker.return_value = self.result(stdout=b"0 false")
+        effect.runtime.remember.side_effect = ["p" * 64, "agent-volume", "q" * 64, "r" * 64]
+        effect.runtime.exec.side_effect = [
+            # The templates write the exact value; HOME's canary ended in a newline.
+            self.result(stdout=rendered),
+            self.result(stdout=b"1\n"),
+            self.result(stdout=b"beta"),
+            self.result(stdout=b"2\n"),
+            self.result(stdout=b""),
+            self.result(stdout=b""),
+        ]
+        effect.runner = mock.Mock()
+        effect.runner.run.return_value = self.result()
+        effect._json_exec = mock.Mock(
+            side_effect=[
+                (self.result(), {"data": {"role_id": "role"}}),
+            ]
+        )
+        effect._create_tokens = mock.Mock(return_value=("issuer", "cleanup"))
+        effect._fresh = mock.Mock(side_effect=self.fresh_stopped)
+        old_umask = os.umask(0o077)
+        try:
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                bundle = root / "bundle"
+                (bundle / "config").mkdir(parents=True, mode=0o700)
+                effect.materialized_bundle = bundle
+                effect.materialized_helper = root / "helper"
+                with self.assertRaises(self.subject.Indeterminate):
+                    effect._agent("server", root, ((expected, 1), ("beta", 2)))
+        finally:
+            os.umask(old_umask)
+
+    def test_agent_output_without_the_value_newline_is_rejected(self):
+        self.test_agent_output_must_match_exactly(rendered=b"alpha", expected="alpha\n")
 
     def agent_effect(self):
         effect = self.effect()

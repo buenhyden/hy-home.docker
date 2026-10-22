@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.40"
+version: "0.12.41"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-22"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -861,7 +861,7 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   `openbao-agent`가 `healthy`이며(W1c health 정지의 기준; 이전 window가 W3 뒤 멈춰 Agent가 그때부터
   정지 상태로 기록돼 있으면 정지를 기준으로 하고, W1c는 health 대신 렌더 파일이 그대로인지만
   본다), `/dev/shm`이 `noexec` 없는
-  tmpfs이고, restore 대상 `p01-restore-20261014-05`가 없고 부모 identity가 그대로인지 본다.
+  tmpfs이고, restore 대상 `p01-restore-20261022-06`이 없고 부모 identity가 그대로인지 본다.
 - **HOME audit·mount 목록.** 격리 restore server는 tmpfs의 `p01-file` audit만 만들 수 있다.
   HOME의 `bao audit list -format=json`과 `bao secrets list -format=json`·`bao auth list
   -format=json`의 path·type만 값 없이 Task에 기록한다. restore가 열 수 없는 audit device나
@@ -992,7 +992,7 @@ bca49fe4e162b2ff826ebc288fc7ec46103cf99bdcc27f91a7463a5bc05434b4 infra/03-securi
 c46594b5fc3f1d50e9719d5a728e6a5da5c82878d42a4a22756750fa55302cef infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-942b8e7405289b64a353a2d94a56cc2bf5bace8ed689692ecffe4ca9782c939d infra/03-security/openbao/scripts/protected-semantic-restore.py
+766bbc66bf9734b64da3ff2f822a2764a16420d4b3d1e5cd8dd79748158fc2da infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 452a83fe8486a7d42886d8f64a40c56e53b21c708b1e1d554bebbf2f1117dca2 infra/03-security/openbao/scripts/protected-renderer-roles.py
@@ -1317,10 +1317,12 @@ declare -p P01_RESTORE_CONTRACT P01_RESTORE_CONTRACT_SHA256 P01_SECURITY_RECEIPT
 `lease.pending.json`·두 receipt는 credential이 없지만 W4 gate와 INDETERMINATE 분석의 증거이므로,
 window를 닫기 전에 owner 전용 영구 저장소(tmpfs 밖, 문서 밖)에 복사한다.
 
-2026-10-14 운영자는 새 경로
-`/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261014-05`를 선택했습니다.
-사전 조사에서 경로는 없었고 부모는 device2064/inode115612004, UID/GID1000이었습니다.
-이번 새 W3 snapshot의 1회 격리 복원 용도이며 실제 생성·복원은 아직 하지 않았습니다.
+2026-10-14에 고른 `p01-restore-20261014-05`는 2026-10-22 W3a에서 `INDETERMINATE`로 끝나
+대상과 ledger를 보존했으므로 다시 쓰지 않는다. 원인은 렌더 값 비교였다. 템플릿은 값을
+그대로 쓰는데 client가 끝의 줄바꿈을 지워, 줄바꿈으로 끝나는 canary가 일치하지 않았다.
+다음 attempt는 같은 부모(device2064/inode115612004, UID/GID1000) 아래의 새 경로
+`/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261022-06`이며, 실제 생성·복원은
+아직 하지 않았다.
 
 검토된 [보호 복구 client](../../../../infra/03-security/openbao/scripts/protected-semantic-restore.py)는
 위 W1 manifest의 두 복구 모듈을 같은 private 경로에 설치해 사용합니다. 공개 contract는
@@ -1370,8 +1372,8 @@ ID만 정리합니다. 이름·label은 ID를 확보하지 못한 create의 운�
 cleanup 선택자가 아닙니다.
 `RESTORE_ACCEPTED`/exit0만 성공이며 `INDETERMINATE`/exit2에서는 대상·ledger를 보존하고
 다시 실행하지 않습니다. exit가 0이 아니거나 실행이 끊기면(kill, 터미널 닫힘, 전원) `RESIDUE` 줄이
-없어도 ledger 상태와 `/dev/shm/p01-restore-20261014-05-*`를 보고,
-`docker ps -a`·`docker volume ls`·`docker network ls`를 `--filter label=hy-home.attempt=p01-restore-20261014-05`로
+없어도 ledger 상태와 `/dev/shm/p01-restore-20261022-06-*`를 보고,
+`docker ps -a`·`docker volume ls`·`docker network ls`를 `--filter label=hy-home.attempt=p01-restore-20261022-06`로
 조회해 남은 container·volume·network를 값 없이 기록합니다. 끊긴 실행은 unseal된
 `-candidate`와 계속 렌더하는 `-agent`를 남길 수 있으므로 기록 뒤 `docker rm -f`로 먼저 지웁니다. stderr에 `RESIDUE: /dev/shm attempt directory retained`가 나오면
 `/dev/shm/<ATTEMPT>-*`에 복원 key·snapshot 사본이나 렌더 값이 남았을 수 있습니다. 지우지

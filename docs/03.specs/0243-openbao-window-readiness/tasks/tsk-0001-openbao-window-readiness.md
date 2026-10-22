@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.29"
+version: "0.1.30"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1002,6 +1002,34 @@ device) and the Agent stopped. Firing during the window, none caused by it:
 both because the checks expect TLS; `OpenBaoAgentMetricsScrapeFailing`;
 `ContainerHighThrottleRate`; and `ContainerHighMemoryUsage` for the k8s Alloy
 pod.
+
+### W3a INDETERMINATE cause and fix — 2026-10-22
+
+The retained target's file times and the Docker daemon log place the failure
+in the Agent step: the old server restored at 11:09:28, the candidate and the
+restore Agent (`2618af73…`) started at 11:10:14, its health check ran at
+11:10:21, and the client's reclaim stopped the Agent at 11:10:25 before the
+ledger turned `indeterminate` at 11:10:36. No token-creation write followed the
+health check, so the helper had succeeded and the rendered-value comparison
+failed.
+
+`protected-semantic-restore.py` had never run against real Docker; its tests
+use fakes. A throwaway rehearsal ran the real `perform()` at `14df75345`
+(constants patched to a scratch attempt and a synthetic cluster) against a
+HOME-shaped 2.6.2 raft source with an HTTP listener, KV v2, the
+renderer/issuer/cleanup/operator policies, the `hy-home-renderer` AppRole and
+the two token roles from the repository. With plain canary values it was
+accepted. With a Grafana value ending in a newline it was `INDETERMINATE` in
+`_agent_run`, the HOME result. The templates trim their own whitespace
+(`{{- … -}}`), so the rendered file is the exact value, and the client's
+`rstrip("\n")` removed the value's own newline.
+
+The fix compares the rendered file exactly and moves the next attempt to
+`p01-restore-20261022-06` (the `-05` target and ledger stay retained). The unit
+fake now renders the exact bytes, one value ending in a newline; it fails on
+the old client and passes on the new one. Both rehearsals, newline and plain,
+are accepted with the fixed client. Whether HOME's canary really ends in a
+newline is the owner's values-free check; the fix holds either way.
 
 ## Evidence
 
