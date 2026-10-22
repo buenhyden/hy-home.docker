@@ -316,6 +316,7 @@ class OpenBaoClientCases:
         result = captured(
             [*preflight, str(fixture.tls), fixture.image_reference],
             allow_failure=True,
+            timeout=190,
         )
         # The script prints only "TLS_MATERIAL FAIL check=<name>", never material.
         self.must(
@@ -372,6 +373,7 @@ class OpenBaoClientCases:
                         fixture.image_reference,
                     ],
                     allow_failure=True,
+                    timeout=190,
                 ).returncode
                 != 0,
                 "TLS material preflight accepted expired/CA/SAN/key mismatch",

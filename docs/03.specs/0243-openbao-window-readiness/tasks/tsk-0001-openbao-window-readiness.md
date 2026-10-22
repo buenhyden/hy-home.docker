@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.31"
+version: "0.1.32"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -31,6 +31,42 @@ Make RUN-0085's maintenance window executable, as SPEC-0243 states.
   commands ran on 2026-10-14 (below).
 
 ## Work Log
+
+### v28 local residual work plan — 2026-10-22
+
+- **Input and authority:** user attachment v28 SHA-256
+  `b497f05146cbd7002262f819bb5a1d9d620d161f3c2a6b0ac4d9827c920c1a89`,
+  baseline `73433adc`, local branch `codex/v28-local-residuals`. The user chose
+  to keep the existing deadline and prepare improvements. This retains D1's
+  2026-11-15 expiry without new acceptance or policy change. Referenced
+  dependencies were not supplied with the attachment.
+- **Ownership and order:** doc-writer owns RUN-0085 and this Spec/Plan/Task,
+  first aligning A1/A2 context, stop/recovery/Finish gates and C2 current state.
+  The code worker owns strict snapshot `entity_id == ""` (B1), TLS native probe
+  timeout 60 seconds (B3) and its existing callers. QA owns the existing opt-in
+  semantic restore harness (B2) and actual runbook-function regression. C1 QA
+  owns SEC01 `update-ledger.json`, `verification.json`, README and
+  `test_update_gates.py`: preserve historical aggregates and distinguish the
+  reported 12+2 cases / 508.185+276.412 seconds by module and aggregation.
+  Unavailable raw argv/exit/start/end/logs stay NOT_VERIFIED. Refresh source
+  census drift through the registered generator only; no native claim transfers
+  to a changed hash. Workers preserve one another's changes.
+- **Execution boundary:** documentation, source, synthetic tests and local
+  review only. Actual scale/force-sync, HOME/native Docker, credentials, root,
+  locks, sudo cleanup and remote writes are NOT_RUN without separate authority.
+  A3/B4/D1 receive concrete handoffs with required inputs and recovery bounds.
+  Preserve POL-0085, previous receipts and historical unreviewed-step records.
+- **Budget:** the user's numeric budget is UNKNOWN. One active command per
+  writer, at most seven workers overall; one minimal syntax/metadata/link and
+  changed-surface regression pass, with one narrower diagnosis/retry on failure.
+  Validate native harness changes with opt-in disabled; do not claim native
+  success or approve installation pins from those checks.
+- **Recovery and completion:** retain original source and operational assets.
+  A reviewed revert of this logical diff is source recovery, not runtime rollback
+  or Raft downgrade. New pinned files require a new approved commit/manifest,
+  installation match and independent review for the next window. Record document
+  checks, code regression, independent review and missing evidence separately;
+  do not aggregate them into full v28 or operational acceptance.
 
 ### W0 Read-only Observation
 
@@ -1059,9 +1095,204 @@ short 403 window is open. Receipts, the contract, both lease files, the security
 receipt and the ledger are in the owner's `ops-snapshots/openbao-window-20261022c/`.
 
 HOME now runs 2.7.1+hyhome.go1.27.3.net0.60.0.r1 with TLS and the config-owned
-audit device, and the Agent renders again. Open: the RUN-0085 W5 block fix
-(this record), the short ESO 403 window, and expiring the silence after the
-alerts are recorded.
+audit device, and the Agent renders again. The W5 typed-JSON runbook fix was subsequently merged (#557) and is reused.
+Open: the short ESO 403 cause and confirming the silence disposition after the
+alerts are recorded. Those original close observations are repository-reported;
+raw operational receipts are unavailable in the current session.
+
+### v28 current execution assessment and remaining handoff — 2026-10-22
+
+The operational results below are **REPOSITORY_REPORTED /
+RAW_EVIDENCE_UNAVAILABLE** from the earlier Work Log. This session did not open
+raw operational receipts and does not claim these as new executions. Keep failed
+`-05` and accepted `-06` as separate attempts. The earlier "never run against real
+Docker" statement describes its investigation baseline; later native and HOME
+records supersede its current applicability. Draft status or earlier accepted
+readiness criteria do not accept all operations.
+
+| Step | Preserved input, execution and later result | Current disposition and residual |
+| --- | --- | --- |
+| W1 / old-root sweep | 11:00 `14df753…`, 12:30 `090352d…`: DELIVERED, remaining=0 | Reuse; new source requires new approved pins |
+| W1c | Both windows all7 changed:false, apply skipped; earlier role apply retained | Do not reapply periodic24h/max0 |
+| W2 | Both skipped; installed token used by 07:49 backup | Preserve INDETERMINATE lock/custody rules |
+| W3 writers | Three controllers0 in both windows, original1/1/1; approval by execution recorded | Preserve unreviewed-step history; no current UID/replica/window authority |
+| W3 snapshot / W3b | 11:00 sha36c57d80…, restic c07dcd25; 12:30 sha63f00be6…, restic8fe28d5c, matching R2 dump reported | Historical artifacts only; do not repeat as a new snapshot |
+| W3a `-05` | 11:08:55 start, indeterminate after about100s, retained ledger/target | Spent; never retry; A3 disposition below |
+| W3a `-06` | contract a07fe0ae…, client766bbc66…, accepted12:40–12:42 | Spent; next attempt needs new name/constants/review |
+| W4 | Recreated12:42:55, same data mount, unsealed2.7.1+hyhome | HOME is no longer the2.6.2 baseline; cold boot separate |
+| W5 | String booleans403, then owner-approved JSON booleans rc0/Agent healthy | Reuse merged#557 fix; old Agent token remains B4 |
+| W6 | audit260752→263517B/20s, OpenBao/Agent up1, Gatus success, versions rendered | Natural rotation/inode/capacity trend unobserved |
+| W7 / Close | ROOT_REVOKED_OPERATOR_HEALTHY, cleanup0, controller1 restored; most ESO recovered, valkey needed forced refresh | Do not turn revoke-self2 into success; ESO cause UNKNOWN |
+| Manual backup | 13:00:31 Result=success reported | Does not accept scheduled backup/off-host restore/cold boot |
+
+**A1/A2 local edits.** RUN-0085's existing W3 now binds context, current UID and
+original replicas; stops the two Argo controllers before ESO; checks
+zero desired/current/ready and no pods after30s and immediately before snapshot;
+and stops on query failure, restoring only attempted changes in ESO→ApplicationSet
+→Application Controller order. Finish checks Store Ready, the approved exact six
+namespace/name/Store bindings, refreshTime after Finish, Ready True/SecretSynced
+and related Applications Synced/Healthy. The six names, installed ESO/Argo
+versions, cache options and policy applicability are missing, so read-only
+metadata discovery and operator approval of the exact set precede writes. With
+cause still unknown, force-sync is limited to one approved request per failed
+expected resource and bounded rechecks. Actual cluster commands and separate
+restart-versus-restore ESO/TokenReview reproduction are NOT_RUN.
+
+**A3 exact disposition handoff.** Preserve accepted `-06` ledger, contract and
+receipts. Before deleting its container-UID-owned target, verify its exact path,
+parent device/inode, mount, symlink/hardlink state, references and absence of
+active processes/containers; resolve recovery dependencies and obtain the owner's
+specific approval and sudo executor. Acceptance does not authorize ledger
+removal. Proposed `-05` disposition is retention until the next window/review;
+owner decision is PENDING. The two p01-client and two p01-inputs directories
+under `/run/user/1000`, and their lack of credentials, are user reports only.
+Deletion is NOT_RUN without current UID, four exact paths, permission/no-secret/
+nonreference/inactive checks and owner authority. Choose approved exact-list
+cleanup or disappearance at a later natural reboot; no glob deletion or reboot
+for cleanup. Root custody and W2 locks are outside this cleanup.
+
+**B4 old Agent token: BLOCKED / SOURCE_NOT_IMPLEMENTED.** Existing issuance
+v1/v2 journal and matching_accessor/lookup/destroy concern SecretID generations
+and SecretID accessors. They do not identify Agent login token generations.
+Do not add token fields to the current secret-free journal contract. Since
+start-agent replaces the old sink, protected exact-generation capture must
+precede stop/new issuance. health-agent/ready proves two KV bytes/versions and
+Agent StartedAt; actual application consumption remains P06 acceptance.
+
+The concrete candidate extends the **same journal with an explicitly private,
+sensitive v3** and durable phases prepared→issuing→delivered→verified→revoking→complete.
+Preserve v1/v2 recovery. Bind old/new generations to cluster/source/image,
+StartedAt, creation time, auth path/role, exact policies and protected custody
+reference. Atomically persist prepared, then capture the old sink token through
+nofollow, bounded, owner0600, stable descriptors into separately authorized
+custody. Verify a distinct new generation/current sink, both KV versions, P06
+consumption and renewal/readback before durable revoke intent and old-token
+revoke-self. Public receipts contain no token/accessor/hash. Alternative:
+capture the exact sensitive accessor and use a short-lived revoker constrained
+by required/allowed_parameters; this adds policy/producer review and allows no
+accessor LIST or wildcard.
+
+Resume inputs: approved capture path/owner/retention/destruction, v3 anchor and
+recovery contract, selected-version revoke-self capability, P06 consumer verifier,
+and child-lease/rollback disposition. Required tests preserve v1/v2 and cover
+interruption at each phase, old=current/wrong generation/multiple targets, sink
+races/restart, missing or unsafe journal/custody, timeout/403/sealed/expired.
+Acceptance requires old renew and both KV reads denied while new read/renew
+remain healthy. Timeout preserves INDETERMINATE intent for bounded reconciliation,
+never blind retry. A403 alone is not expiry proof. Preserve the current healthy
+sink, administrator/backup tokens and unrelated accessors. This proposal links
+to D1-renderer; it neither ends the risk nor authorizes a revoke.
+
+**Local implementation and checks.** B1's snapshot helper now requires an explicit
+empty-string entity_id; missing/null/nonempty/wrong types fail without widening
+operator authorization. Worker evidence: RED7 failing subcases, GREEN31 tests;
+helper SHA-256 `d5dd5086981bf9dfff7977e527ed28cb760194fe32157945e05ef5342633d174`,
+also updated in RUN-0085's active manifest. B3 keeps OpenSSL's existing10-second
+bounds, raises the native user probe to60 seconds with kill grace5, and gives
+its two existing native callers190 seconds for the full bounded path. Failure,
+timeout or signal retains exact unique tracking metadata for later daemon
+reconciliation; an immediate empty list does not prove late creation impossible.
+No broad cleanup is used. Worker evidence: final10 synthetic TLS tests PASS,
+shell syntax and shellcheck warning level PASS; actual wall-clock25/61-second
+or daemon execution NOT_RUN. TLS source SHA-256
+`63d0de9d25be70400f90aa18956c5919fdde86832bad008a8cef533ae4676841`.
+
+B2 reuses the existing full_perform harness for plain and trailing-newline
+values, adds empty-value refusal before restore and proves the opt-in skip
+precedes HOME fixture/subprocess access. Worker run of restore-input and restore
+modules:57 selected,53 PASS,4 native SKIP,1.986 seconds. These are separate from
+historical native successes, and the expanded native paths are NOT_RUN.
+The synthetic RUN command suite executes the actual Bash functions with real
+bash/jq and fake kubectl; it verifies exact-six/freshness/Store/Application
+checks, API failure distinction and changed-only reverse restoration with UID
+refusal. Worker run with existing Agent contract/metrics tests:36 PASS,14.690
+seconds. Mutating freshness or removing UID protection caused expected failures.
+This proves command gates, not cluster recovery or ESO cache behavior. A later
+explicit original-zero-replica case also passed. The final worker run selecting
+window overrides, restore inputs and semantic restore had69 tests:65 PASS,
+4 native SKIP,4.110 seconds; eight of its tests execute the runbook functions.
+That selection is separate from the preceding36-test Agent-inclusive run.
+
+Document validation: five new Bash blocks passed syntax and seven temporary
+synthetic ESO-gate probes passed. Markdownlint on the four owned documents found
+two blank-line issues, then passed after correction. The first metadata/link
+checks found English-document language and historical version-literal deficits;
+only new text was aligned to the documents' language and same-line historical
+exceptions. The repository-wide check also reported unrelated errors whose
+baseline applicability requires separate classification. The single corrected
+metadata retry selected these four paths, reported no violation on any of them,
+and exited1 with146 other/global violations, including SPEC-0212's legacy-table
+contract error. Its public diagnostic log is `/tmp/v28-openbao-doc-metadata.log`,
+SHA-256 `0675bd31f00956c000ca1110f2910bcc5e284607a35aaba9c9c8177b861a5cf7`.
+This is not a metadata PASS or proof that all other findings predate the task.
+The root coordinator owns final links and independent review disposition. Original Task Evidence, Criterion Acceptance and Review
+bodies from the Evidence heading onward remain byte-for-byte equal to HEAD.
+
+**D1 improvement proposals and owner decision.** The user chose to retain the
+existing deadline and prepare improvements. The three risks retain2026-11-15;
+no new expiry or acceptance is recorded.
+
+| Risk | Improvement alternatives before the deadline | Evidence and approval boundary |
+| --- | --- | --- |
+| Renderer | Reconsider periodic24h/max0 exception or choose finite explicit max plus scheduled reauthentication/SecretID issuance; include B4 old-generation cleanup | Role readback, renewal bound/stopped-renewal expiry, new-issuance failure recovery, out-of-scope read denial, cold boot/P06; do not claim retroactive effect on existing tokens |
+| Sealed custody | Reconsider the current exception or use time-bounded custody and verified unseal/OIDC/alternative management before disposition | Preserve last administrator; review quorum/shares/reboot/swap and success/failure/interruption; no deletion/unseal/root issuance before approval |
+| W2 uncertainty | Reconsider lock/custody retention and next-W2/W3 block, or reconcile exact attempt/server accessor/role/partial delivery | Account for possible issuance, token validity and last management access; missing-journal/expiry/partial-failure tests and owner acceptance; no forced unlock/duplicate issuance |
+
+Before2026-11-15, the owner must select each alternative's operational cost,
+compensating controls, new expiry or closure condition, executor and authority.
+Without a decision, hold only new changes relying on that risk; do not stop the
+current service or remove the last access. Other POL-0085 risks, including shared
+UID, swap and single-file custody, remain with their existing owners. No policy
+was modified in this session.
+
+### Final local verification — v28, 2026-10-22
+
+The final source input is based on `73433adc1b685582741604d8acc1f6f70be0adbe`
+on `codex/v28-local-residuals`. Independent `/root/review_changes` approved
+the 20-file source manifest
+`acaded64bf2edccea2973e3084c4f017ead8cac6bd0e3b254f7e99e13edb041c`.
+The separate security/IaC review `v28-security-iac-20261022-01` found no
+remaining blocking source finding; its initial TLS late-create finding was
+resolved by retaining tracking metadata and reporting pending reconciliation.
+The final review also checked the corrected 0245/0246 evidence references.
+These verdicts authorize no runtime operation or criterion acceptance.
+
+Final local checks and their actual boundaries:
+
+- Snapshot regression: 31 PASS; synthetic TLS probe: 10 PASS.
+- Restore-input, semantic-restore and window suites: 69 tests, 65 PASS and
+  4 opt-in Native SKIP. These are one reported invocation, not a sum of
+  overlapping test runs. Eight window cases execute actual fenced runbook
+  functions with fake kubectl and real Bash/jq.
+- Supply-chain regression: 28 PASS; CI contract regression: 28 PASS.
+  These are separate invocations. Current evidence remains source-only.
+- `python3 scripts/validation/check-document-metadata.py --mode check-changed
+  --base-ref 73433adc1b685582741604d8acc1f6f70be0adbe`: exit 0,
+  selected 9, violations 0. The earlier invalid legacy-table append and
+  three invalid Resolves references were corrected without changing their
+  validators or historical rows. The 145 archive type errors were cascades
+  of failed package validation and are absent on this corrected input.
+- `python3 scripts/validation/check-document-links.py --mode all`: exit 0,
+  1,328 documents, 11,789 links, zero failures and one warning about 2,870
+  historical links without capture sources. Historical resolution remains
+  unverified. The final result-only Task notes add no link destinations.
+- The public changed/local-only runner exited 1 at
+  `ci-gate-local-toolchain` before executing a leaf: local Python 3.12.3
+  differs from the hosted 3.14.8 pin. The installed standalone 3.14.8 build
+  also lacks the required memfd seal constants. No gate was bypassed.
+- `graphify update .` completed: 28,958 nodes and 50,556 edges. SQL/HCL
+  extraction reported missing optional parsers; no LLM labeling ran.
+
+The current 42-input assessment has manifest
+`078f9d12c3c73d5cada9deb436cbf09708b9f7e4343628f6d6318226fe5b721f`;
+its Native validity is false and its current Native/HOME results remain
+NOT_RUN. B1 operator binding, B4 implementation, A3 cleanup, P06 consumption,
+the complete ROOT supplier/security audit and owner acceptance remain open.
+The first normal commit attempt stopped at the pinned Ruff format check for
+the new TLS test. Formatting with the registered 0.15.12 binary preserved its
+Python AST; the current input manifest above was refreshed afterward.
+Normal local commits follow installed hooks; main integration, remote CI,
+push, PR, deployment and operational changes remain NOT_RUN.
 
 ## Evidence
 

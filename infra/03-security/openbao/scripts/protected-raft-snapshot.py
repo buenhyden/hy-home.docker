@@ -183,6 +183,7 @@ def check_lookup(response, minimum_ttl=0):
         # 2.6.2 and 2.7.1 omit both fields from lookup-self; if present they must match.
         and data.get("token_policies", [POLICY]) == [POLICY]
         and data.get("identity_policies", []) == []
+        and data.get("entity_id") == ""
         and data.get("renewable") is True
         and data.get("orphan") is True
         and data.get("type") == "service"

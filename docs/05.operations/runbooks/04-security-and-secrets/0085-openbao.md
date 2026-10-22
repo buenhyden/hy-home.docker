@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.42"
+version: "0.12.43"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -111,8 +111,12 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 `hy-home-renderer` AppRole은
 [renderer policy](../../../../infra/03-security/openbao/config/policies/renderer.hcl)를
 사용한다. 구성된 두 KV v2 data 경로와 각각의 metadata 경로만 read하며, write/list/admin 권한은 부여하지 않는다.
-표준 default policy가 token 자체 갱신을 제공한다. Agent token은 갱신되다가 최대 수명에서
-끝나며, SecretID TTL은 10분, 사용 횟수는 1회로 설정한다. 고정 버전의 만료 결함은 아래 Known Runtime Residual을 확인한다. Agent는 SecretID 파일을 읽은 뒤
+표준 default policy가 token 자체 갱신을 제공한다. 현재 역할의 `token_period=24h`,
+`token_ttl=0`, `token_max_ttl=0`과 발급 token의 `explicit_max_ttl=0`에서 24시간은
+갱신 주기다. 갱신이 계속되면 총수명 상한이 없다([공식 token 수명](https://openbao.org/docs/concepts/tokens/)).
+SecretID TTL은 10분, 사용 횟수는 1회다. sink 복사본도 갱신 가능하고 W5는 이전 Agent token을
+폐기하지 않는다. 두 KV 읽기·sink0600과 2026-11-15까지의 기존 예외를 유지한다.
+유한수명이나 이전 세대 폐기는 아래 인계와 POL-0085의 별도 결정이 필요하다. Agent는 SecretID 파일을 읽은 뒤
 삭제하므로, token이 끝나면 새 SecretID를 전달해야 한다(아래 Renderer SecretID Delivery). 기존 Docker Secret 소비자는 현재 파일을 계속 사용하며, 렌더링된 출력이 자동으로
 애플리케이션 mount를 전환하지는 않는다.
 
@@ -477,7 +481,10 @@ sh infra/03-security/openbao/scripts/check-tls-material.sh "$DEFAULT_SECURITY_DI
 
 명령은 만료·CA chain·정확한 SAN·cert/key 일치와 UID100:GID1000의 읽기를 검증한다.
 마지막 읽기 검사는 pull 없는 network-none 임시 컨테이너와 exact-file readonly bind만 사용한다.
-TLS 자료는 HOME source 경로에 준비되었고 공개 인증서 검사는 통과했다(TLS_PREPARED / NOT_DEPLOYED, server 재시작 없음). 다만 이 명령 자체를 HOME에서 실행한 기록은 없다. CLI는 `BAO_CACERT`/`BAO_TLS_SERVER_NAME`, Agent는 `VAULT_CACERT`, metrics는
+TLS_PREPARED / NOT_DEPLOYED는 초기 준비 기록이다. 이후 SPEC-0243의 2026-10-22 12:30
+window에서 TLS·config-owned audit와 Agent가 HOME에 적용되었다(REPOSITORY_REPORTED,
+원시 운영 영수증은 이번 세션에 미제공). 같은 Task는 W0 preflight 12초 PASS를 기록한다.
+이 세션의 새 실행 증거로 해석하지 않는다. CLI는 `BAO_CACERT`/`BAO_TLS_SERVER_NAME`, Agent는 `VAULT_CACERT`, metrics는
 CA/server_name, Traefik은 `openbao-tls@file`로 검증한다. 잘못된 CA/SAN/만료는 차단하며
 `skip_verify`를 정상 경로로 사용하지 않는다. 외부 gateway 인증서와 내부 backend 신뢰는
 별개다. 최초 key/CA를 그 OpenBao Agent가 발급하는 순환은 금지한다.
@@ -493,7 +500,8 @@ file backend에는 자체 rotation이 없다. 운영자는 실제 audit filesyst
 rename/create(0600, UID 100/GID 1000)와 대상 OpenBao `SIGHUP` reopen을 등록한다.
 `copytruncate`로 손실을 감추거나 audit device를 제거하지 않는다. `/` 용량 알림은 실제
 mountpoint가 `/`라는 관찰이 있어야 audit 용량 증거로 인정한다. 2026-10-15 owner가 rotation
-규칙과 시간 단위 drop-in을 설치했다(SPEC-0243). 실제 회전과 HOME 용량 관찰은 아직 없다. 임시 용량 장애 시험은 실제 host 용량 최적값이 아니다.
+규칙과 시간 단위 drop-in을 설치했다(SPEC-0243). 이후 HOME audit 파일 성장과 mount 적용은
+2026-10-22 Task에 기록됐다. 첫 자연 회전·회전 inode와 HOME 용량 추세는 아직 미확보다. 임시 용량 장애 시험은 실제 host 용량 최적값이 아니다.
 
 현재 한 backend의 쓰기가 실패하면 audited 요청은 실패하고 blocking writer라면
 응답이 지연될 수 있다. `/sys/health` 같은 비감사 경로가 200이어도 정상 업무를 뜻하지
@@ -623,6 +631,11 @@ agent가 5단계를 기록한다. Evidence 결과는 `PASS`이고 Check는 "owne
 않는다. owner 진술일 뿐이며 저장소는 보관 사실을 인증하지 못한다.
 
 ### Maintenance Window Plan
+
+현행 상태(2026-10-22): SPEC-0243은 `-06` semantic restore accepted와 W4/W5의 HOME
+2.7.1·TLS·audit·Agent 적용, 수동 backup 성공을 보고한다. 아래의 2.6.2→2.7.1 window <!-- runtime-version-exception: history — SPEC-0243의 2026-10-22 실행 기록과 이전 window 입력 -->
+블록과 승인 commit은 그 실행의 역사적 입력이다. 다음 창에는 새 현재 버전·빈 attempt·
+source pin/검토·창별 승인을 먼저 확정하며, 이미 끝난 업그레이드를 다시 실행하지 않는다.
 
 2026-10-13 owner 결정으로 남은 HOME 단계를 한 번의 maintenance window로 묶는다. 이
 계획은 문서일 뿐 실행 증거가 아니다. 모든 값(share·OTP·token·key)은
@@ -861,7 +874,10 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   `openbao-agent`가 `healthy`이며(W1c health 정지의 기준; 이전 window가 W3 뒤 멈춰 Agent가 그때부터
   정지 상태로 기록돼 있으면 정지를 기준으로 하고, W1c는 health 대신 렌더 파일이 그대로인지만
   본다), `/dev/shm`이 `noexec` 없는
-  tmpfs이고, restore 대상 `p01-restore-20261022-06`이 없고 부모 identity가 그대로인지 본다.
+  tmpfs인지 본다. 이 2.6.2 기준은 2026-10-22 W4 이전의 역사적 입력이다. HOME은 이후 <!-- runtime-version-exception: history — SPEC-0243의 2026-10-22 실행 기록과 이전 window 입력 -->
+  2.7.1+hyhome으로 올라갔고 Agent는 healthy로 보고됐다. `p01-restore-20261022-06`은 <!-- runtime-version-exception: history — SPEC-0243의 2026-10-22 실행 기록과 이전 window 입력 -->
+  accepted된 사용 완료 대상이다. 다음 restore는 새 attempt/빈 대상·부모 identity와 source
+  상수를 먼저 검토해야 하며 이 이전 window 블록을 그대로 실행하지 않는다.
 - **HOME audit·mount 목록.** 격리 restore server는 tmpfs의 `p01-file` audit만 만들 수 있다.
   HOME의 `bao audit list -format=json`과 `bao secrets list -format=json`·`bao auth list
   -format=json`의 path·type만 값 없이 Task에 기록한다. restore가 열 수 없는 audit device나
@@ -989,7 +1005,7 @@ while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
 done <<'P01_SOURCE_MANIFEST'
 085132049f60173fc9fde14e20c9f09d0f4e423d35dd3285c1e9c4053e898d04 infra/03-security/openbao/scripts/protected-maintenance.py
 bca49fe4e162b2ff826ebc288fc7ec46103cf99bdcc27f91a7463a5bc05434b4 infra/03-security/openbao/scripts/protected-token-operations.py
-c46594b5fc3f1d50e9719d5a728e6a5da5c82878d42a4a22756750fa55302cef infra/03-security/openbao/scripts/protected-raft-snapshot.py
+d5dd5086981bf9dfff7977e527ed28cb760194fe32157945e05ef5342633d174 infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
 766bbc66bf9734b64da3ff2f822a2764a16420d4b3d1e5cd8dd79748158fc2da infra/03-security/openbao/scripts/protected-semantic-restore.py
@@ -1176,15 +1192,76 @@ OpenBao 로그인(External Secrets 등 Kubernetes auth)이다. 운영자는 W3 �
 Application `platform-external-secrets-operator`가, 그 위를 `root-platform`·`platform-cluster-config`와
 ApplicationSet `apps-generator`가 관리하며 모두 `selfHeal`이 켜져 있다. 2026-10-22 window에서
 Application의 자동 sync를 patch로 끄는 방법은 상위 관리자가 곧 되돌려 실패했다(ESO가 replica 1로
-돌아옴). 그래서 W3 전에 `argocd-application-controller` StatefulSet과
-`argocd-applicationset-controller` Deployment의 replica 수와 ESO replica 수를 owner 전용 파일에
-저장하고, 두 controller를 `kubectl -n argocd scale … --replicas=0`으로 멈춰 pod 삭제를 기다린 뒤
-`kubectl -n external-secrets scale deploy external-secrets --replicas=0`과
-`kubectl -n external-secrets wait --for=delete pod -l app.kubernetes.io/name=external-secrets,app.kubernetes.io/instance=external-secrets --timeout=90s`로
-멈춘다. 30초 뒤와 snapshot 직전에 replica 0을 다시 확인한다. 그동안 모든 GitOps 조정이 멈추고
-기존 k8s Secret은 남고 갱신만 멈춘다. 다시 켜기는 저장한 ESO replica 수로 scale한 뒤
-applicationset controller, application controller 순으로 저장한 replica 수로 되돌리고 rollout을
-확인한다. 이 절차는 hy-home.k8s 관리 대상을 바꾸므로 window마다 owner 승인이 필요하다.
+돌아옴). 다음 정지는 Docker 에이전트가 실행하지 않는다. 별도 클러스터 운영자가 창별 승인 뒤,
+`k3d-hyhome`의 API endpoint·cluster identity·권한과 위 상위 관리자를 대조한다.
+전체 GitOps 조정이 멈추며 기존 Kubernetes Secret은 남고 갱신만 멈춘다. 과거 축소의
+unreviewed-step/실행으로 승인 기록은 과거 사실이며 다음 창의 검토·권한이 아니다.
+현재 replica를 1/1/1로 가정하지 않는다.
+
+아래 Bash는 실행 권한이 있는 외부 운영자용이다. 새 owner 전용 0700 증거 디렉터리를 사용하고,
+세 대상의 UID·원래 desired/current/ready·selector를 저장한 뒤에만 정지한다. 원래 상태가
+불안정하거나 selector에 matchExpressions가 있으면 임의 변환하지 않고 중단·검토한다.
+`P01_K8S_WINDOW_APPROVED`는 그 창의 승인 참조이며 변수 설정 자체가 승인 증거는 아니다.
+
+```bash
+: "${P01_K8S_WINDOW_APPROVED:?창별 클러스터 운영 승인 참조 필요}"
+: "${P01_EXPECTED_ES:?정지 전 검토된 정확한 여섯 namespace/name/store JSON 파일 필요}"
+: "${P01_ES_SET_APPROVAL:?여섯 대상의 외부 운영자 승인 참조 필요}"
+jq -e 'length == 6 and (map([.namespace,.name]) | unique | length) == 6 and all(.[]; (.namespace | type == "string" and length > 0) and (.name | type == "string" and length > 0) and .store.kind == "ClusterSecretStore" and .store.name == "vault-backend")' "$P01_EXPECTED_ES" >/dev/null || exit 1
+P01_K8S_STATE="$(umask 077; mktemp -d "${XDG_RUNTIME_DIR:?}/p01-k8s.XXXXXX")" || exit 1
+p01_ns=(argocd argocd external-secrets)
+p01_resource=(statefulset/argocd-application-controller deployment/argocd-applicationset-controller deployment/external-secrets)
+p01_changed=()
+p01_restore_writers() {
+  local i uid replicas failed=0
+  for i in 2 1 0; do
+    [[ " ${p01_changed[*]} " == *" $i "* ]] || continue
+    uid="$(kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o jsonpath='{.metadata.uid}')" || { failed=1; continue; }
+    [[ "$uid" == "$(jq -er '.uid' "$P01_K8S_STATE/$i.json")" ]] || { failed=1; continue; }
+    replicas="$(jq -er '.desired' "$P01_K8S_STATE/$i.json")" || { failed=1; continue; }
+    kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" scale "${p01_resource[i]}" --replicas="$replicas" || { failed=1; continue; }
+    kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" rollout status "${p01_resource[i]}" --timeout=90s || { failed=1; continue; }
+    kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o json |
+      jq -e --arg uid "$uid" --argjson n "$replicas" '.metadata.uid == $uid and .spec.replicas == $n and (.status.replicas // 0) == $n and (.status.readyReplicas // 0) == $n' >/dev/null || failed=1
+  done
+  return "$failed"
+}
+p01_writers_zero() {
+  local i selector pods
+  for i in 0 1 2; do
+    kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o json |
+      jq -e --arg uid "$(jq -er '.uid' "$P01_K8S_STATE/$i.json")" '.metadata.uid == $uid and .spec.replicas == 0 and (.status.replicas // 0) == 0 and (.status.readyReplicas // 0) == 0 and .status.observedGeneration >= .metadata.generation' >/dev/null || return 1
+    selector="$(jq -er '.selector' "$P01_K8S_STATE/$i.json")" || return 1
+    pods="$(kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get pods -l "$selector" -o name)" || return 1
+    [[ -z "$pods" ]] || return 1
+  done
+}
+set -o pipefail
+for i in 0 1 2; do
+  kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o json |
+    jq -e 'select(.spec.replicas >= 0 and (.status.replicas // 0) == .spec.replicas and (.status.readyReplicas // 0) == .spec.replicas and ((.spec.selector.matchExpressions // []) | length) == 0) | {uid:.metadata.uid, desired:.spec.replicas, current:(.status.replicas // 0), ready:(.status.readyReplicas // 0), selector:(.spec.selector.matchLabels | to_entries | map("\(.key)=\(.value)") | join(","))} | select(.uid != null and .selector != "")' >"$P01_K8S_STATE/$i.json" || exit 1
+  jq -e . "$P01_K8S_STATE/$i.json" >/dev/null || exit 1
+ done
+for i in 0 1 2; do
+  uid="$(kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o jsonpath='{.metadata.uid}')" || { p01_restore_writers; exit 1; }
+  [[ "$uid" == "$(jq -er '.uid' "$P01_K8S_STATE/$i.json")" ]] || { p01_restore_writers; exit 1; }
+  p01_changed+=("$i") # 요청 결과가 불확실해도 복구 대상에 포함한다.
+  printf '%s\n' "${p01_changed[@]}" >"$P01_K8S_STATE/changed" || { p01_restore_writers; exit 1; }
+  kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" scale "${p01_resource[i]}" --replicas=0 || { p01_restore_writers; exit 1; }
+  selector="$(jq -er '.selector' "$P01_K8S_STATE/$i.json")" || { p01_restore_writers; exit 1; }
+  kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" wait --for=delete pod -l "$selector" --timeout=90s || { p01_restore_writers; exit 1; }
+done
+sleep 30
+p01_writers_zero || { p01_restore_writers; exit 1; }
+```
+
+두 Argo controller → ESO 순서다. snapshot **직전**에도 `p01_writers_zero`를 다시 실행하고
+0일 때만 W3를 계속한다. 조회 오류·nonzero·UID 변경·pod 재등장 시 다음 쓰기를 멈추고
+`p01_restore_writers`로 실제 변경 요청을 보낸 대상만 ESO → ApplicationSet → Application
+Controller 순서로 복구한다. 복구 함수의 nonzero를 별도 실패로 Task에 남기고 원래
+UID/replica·남은 pod·담당자·수동 재개 조건을 기록한다. 자동 재축소·무한 대기는 금지한다.
+셸 단절 때도 보존한 state와 변경 목록으로 같은 복구 순서를 사용한다. state/변경 목록을
+창의 보호 기록에 보존하기 전 셸을 종료하지 않는다. Finish에서도 같은 복구 함수를 사용한다.
 Agent와 해당 writer가 정지했음을 확인한 뒤 아래
 [보호 snapshot helper](../../../../infra/03-security/openbao/scripts/protected-raft-snapshot.py)를
 사용합니다. helper 자체는 writer를 정지하지 않습니다. 중단 시 writer 재개 여부는
@@ -1208,6 +1285,7 @@ declare -p P01_INPUTS >>"$XDG_RUNTIME_DIR/p01-window.vars"
 ```
 
 ```bash
+p01_writers_zero || { p01_restore_writers; exit 1; }
 declare -p P01_SNAPSHOT_DIRECTORY >>"$XDG_RUNTIME_DIR/p01-window.vars"
 (umask 077; /usr/bin/mkdir -- "${P01_SNAPSHOT_DIRECTORY:?}") || exit 1
 exec 3</home/hyunyoun/data/hy-home.docker/secrets/backup/openbao/snapshot_token.txt || exit 1
@@ -1257,7 +1335,9 @@ image에 복원하고, 그 격리 대상만 candidate로 올려 두 share의 수
 실제 artifact identity와 새 attempt·빈 대상 device/inode·소유권·용량·network·담당자·
 시간/공간 한도·보존/정리 경계를 정한 stateful recovery contract가 필요합니다.
 이전 attempt04의 FILE_USABILITY는 이 검사를 통과한 것이 아닙니다. 운영 도구·exact target이
-준비되지 않았던 상태는 보존합니다. 현재 hash의 단위시험·native 시험·독립 검토는 SPEC-0243 W2에 있습니다. 실제 복구는 **NOT_RUN**입니다. 합성 native rehearsal
+준비되지 않았던 상태는 보존합니다. SPEC-0243의 2026-10-22 기록에서 `-05`는
+INDETERMINATE, 후속 `-06`은 실제 semantic restore accepted다. 현재 소스 변경은 그
+영수증을 새 hash에 승계하지 않는다. 다음 attempt의 실제 복구는 **NOT_RUN**이다. 합성 native rehearsal
 또는 Git revert는 이 단계의 대체 증거가 아닙니다.
 
 2026-10-15 독립 검토가 Agent 단계의 입력 chown 결함을 찾았고 native로
@@ -1320,9 +1400,10 @@ window를 닫기 전에 owner 전용 영구 저장소(tmpfs 밖, 문서 밖)에 
 2026-10-14에 고른 `p01-restore-20261014-05`는 2026-10-22 W3a에서 `INDETERMINATE`로 끝나
 대상과 ledger를 보존했으므로 다시 쓰지 않는다. 원인은 렌더 값 비교였다. 템플릿은 값을
 그대로 쓰는데 client가 끝의 줄바꿈을 지워, 줄바꿈으로 끝나는 canary가 일치하지 않았다.
-다음 attempt는 같은 부모(device2064/inode115612004, UID/GID1000) 아래의 새 경로
-`/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261022-06`이며, 실제 생성·복원은
-아직 하지 않았다.
+후속 `/home/hyunyoun/storage/volumes/security/openbao/p01-restore-20261022-06`은
+2026-10-22 12:40–12:42 accepted로 사용 완료됐다. `-05`와 `-06` 모두 재사용하지 않는다.
+다음 실행은 새 attempt·빈 대상·정확한 부모 identity와 도구 상수를 변경·검토하고 새 승인
+commit/manifest를 설치하기 전까지 BLOCKED다. 기존 숫자와 경로는 역사 증거로 남긴다.
 
 검토된 [보호 복구 client](../../../../infra/03-security/openbao/scripts/protected-semantic-restore.py)는
 위 W1 manifest의 두 복구 모듈을 같은 private 경로에 설치해 사용합니다. 공개 contract는
@@ -1478,7 +1559,106 @@ rotation을 성공으로 처리하지 않습니다.
 **W7 사후 점검과 root 폐기.** renderer 재인증, consumer 읽기(Keycloak·Grafana 렌더 결과
 일치), `OpenBaoSealed` 등 기존 경보가 조용한지, `up{job="openbao"}`를 확인합니다. 다음
 backup 단위의 OpenBao snapshot 성공은 window 뒤 관찰입니다. W7 뒤 backup timer와
-hy-home.k8s 로그인 주체를 다시 켜고, 경보를 기록한 뒤 silence를 지웁니다.
+hy-home.k8s 로그인 주체를 아래 Finish대로 복구·검증하고, 경보를 기록한 뒤 silence를 지웁니다.
+
+**Finish — writer 복구와 ESO 수용.** W3의 저장된 UID/replica와 변경 목록으로
+`p01_restore_writers`를 호출하고 nonzero면 Finish FAIL로 남긴다. 원래 0이던 대상은
+0으로 유지한다. Store Ready·실제 refresh·Application 상태까지 통과해야 완료다.
+2026-10-22 12:54–12:56의 ESO lookup/read403 원인은 UNKNOWN이며 cache/token 재사용은
+검증되지 않은 가설이다. W5 typed-JSON403과 별개다. 복원 뒤 대부분 회복했으나
+`argocd-external-valkey`는 13:02:54 force refresh 뒤 회복했다는 Task 기록을 재사용한다.
+
+현재 정확한 여섯 namespace/name은 이 저장소 기록만으로 확정할 수 없다. 외부 운영자는
+읽기 전용 discovery로 Store binding·refreshPolicy/refreshInterval과 설치 ESO/Argo CD
+버전·cache 옵션·auth role/SA/namespace/audience를 확인한다. 아래 출력에는 Secret data가 없다.
+latest 공식 문서는 참고이며 설치 버전의 지원 증거가 아니다.
+cache/auth의 세부 launch 값은 보호된 운영자 preflight에서 확인하고 값 없는 판정만 기록한다.
+
+```bash
+set -o pipefail
+kubectl --context k3d-hyhome --request-timeout=15s get externalsecrets -A -o json |
+  jq '[.items[] | select(.spec.secretStoreRef.kind == "ClusterSecretStore" and .spec.secretStoreRef.name == "vault-backend") | {namespace:.metadata.namespace,name:.metadata.name,store:.spec.secretStoreRef,refreshPolicy:(.spec.refreshPolicy // "Periodic"),refreshInterval:.spec.refreshInterval,refreshTime:.status.refreshTime,conditions:.status.conditions}]' || exit 1
+kubectl --context k3d-hyhome --request-timeout=15s -n external-secrets get deployment external-secrets -o json |
+  jq '{name:.metadata.name,uid:.metadata.uid,containers:[.spec.template.spec.containers[] | {name,image}]}' || exit 1
+```
+
+discovery를 자동 승인 목록으로 사용하지 않는다. 운영자가 의도된 **정확히 여섯**
+namespace/name·`ClusterSecretStore/vault-backend` 연결을 검토해 `P01_EXPECTED_ES`의 보호된
+JSON 배열로 확정하고 창별 승인 참조를 남긴다. 각 행 형식은
+`{"namespace":"확인한 namespace","name":"확인한 name","store":{"kind":"ClusterSecretStore","name":"vault-backend"}}`다.
+누락·중복·집합 변경 또는 여섯 이름 미확보는 W3/Finish만 BLOCKED이며 이름을 만들지 않는다.
+
+아래는 writer 복구 전에 Finish 기준시각을 저장한 같은 Bash에서 실행한다. query 실패는
+즉시 실패이며 stale Ready는 통과시키지 않는다. 원래 0 replica이거나 설치된 정책이 새
+refresh를 허용하지 않으면 그 자원의 복구 판정을 별도로 인계하고 성공으로 표시하지 않는다.
+
+```bash
+: "${P01_EXPECTED_ES:?검토된 정확한 여섯 namespace/name/store JSON 파일 필요}"
+: "${P01_ES_SET_APPROVAL:?여섯 대상과 버전/정책에 대한 외부 운영자 승인 참조 필요}"
+jq -e 'length == 6 and (map([.namespace,.name]) | unique | length) == 6 and all(.[]; (.namespace | type == "string" and length > 0) and (.name | type == "string" and length > 0) and .store.kind == "ClusterSecretStore" and .store.name == "vault-backend")' "$P01_EXPECTED_ES" >/dev/null || exit 1
+P01_FINISH_EPOCH="$(date -u +%s)" || exit 1
+p01_restore_writers || { printf '%s\n' 'Finish FAIL: writer 복구 실패' >&2; exit 1; }
+p01_eso_gate() {
+  local store actual applications
+  store="$(kubectl --context k3d-hyhome --request-timeout=5s get clustersecretstore vault-backend -o json)" || return 2
+  jq -e 'any(.status.conditions[]?; .type == "Ready" and .status == "True")' <<<"$store" >/dev/null || return 1
+  actual="$(kubectl --context k3d-hyhome --request-timeout=5s get externalsecrets -A -o json)" || return 2
+  jq -e --slurpfile expected "$P01_EXPECTED_ES" --argjson since "$P01_FINISH_EPOCH" '
+    [.items[] | select(.spec.secretStoreRef.kind == "ClusterSecretStore" and .spec.secretStoreRef.name == "vault-backend")] as $actual |
+    ($actual | map({namespace:.metadata.namespace,name:.metadata.name,store:{kind:.spec.secretStoreRef.kind,name:.spec.secretStoreRef.name}}) | sort_by(.namespace,.name)) == ($expected[0] | map({namespace,name,store}) | sort_by(.namespace,.name)) and
+    all($actual[]; any(.status.conditions[]?; .type == "Ready" and .status == "True" and .reason == "SecretSynced") and ((.status.refreshTime // "1970-01-01T00:00:00Z" | sub("\\.[0-9]+Z$";"Z") | fromdateiso8601) > $since))' <<<"$actual" >/dev/null || return 1
+  applications="$(kubectl --context k3d-hyhome --request-timeout=5s -n argocd get applications root-platform platform-cluster-config platform-external-secrets-operator -o json)" || return 2
+  jq -e '.items | length == 3 and all(.[]; .status.sync.status == "Synced" and .status.health.status == "Healthy")' <<<"$applications" >/dev/null
+}
+if p01_eso_gate; then P01_FINISH_GATE_EXIT=0; else P01_FINISH_GATE_EXIT=$?; fi
+[[ "$P01_FINISH_GATE_EXIT" != 2 ]] || exit 1
+
+```
+
+첫 gate 실패는 조사 대상이다. API/Store/controller 실패와 ES stale/오류를 구분한다.
+Store와 writer rollout이 정상이고 **설치 버전**의 manual refresh·각 대상 refreshPolicy가
+지원됨을 확인한 경우에만, 외부 운영자의 별도 forced-refresh 승인으로 실패한 기대 대상
+하나씩 다음 명령을 실행한다. `CreatedOnce`, Periodic의 0간격, 미지원 정책/버전은 중단한다.
+권한 확대·Secret 삭제·전체 accessor 폐기는 이 fallback에 포함하지 않는다.
+
+```bash
+: "${P01_FORCE_REFRESH_APPROVAL:?정확한 실패 대상의 강제 갱신 승인 필요}"
+: "${P01_ES_NAMESPACE:?승인된 실패 대상 namespace 필요}"
+: "${P01_ES_NAME:?승인된 실패 대상 name 필요}"
+jq -e --arg ns "$P01_ES_NAMESPACE" --arg name "$P01_ES_NAME" 'any(.[]; .namespace == $ns and .name == $name)' "$P01_EXPECTED_ES" >/dev/null || exit 1
+kubectl --context k3d-hyhome --request-timeout=15s -n "$P01_ES_NAMESPACE" get externalsecret "$P01_ES_NAME" -o json |
+  jq -e '.spec.secretStoreRef.kind == "ClusterSecretStore" and .spec.secretStoreRef.name == "vault-backend" and ((.spec.refreshPolicy // "Periodic") == "OnChange" or ((.spec.refreshPolicy // "Periodic") == "Periodic" and (.spec.refreshInterval // "1h" | test("[1-9]") )))' >/dev/null || exit 1
+kubectl --context k3d-hyhome --request-timeout=15s -n "$P01_ES_NAMESPACE" annotate externalsecret "$P01_ES_NAME" force-sync="$(date -u +%s)" --overwrite || exit 1
+```
+
+강제 갱신은 대상당 최대 1회다. 승인된 실패 대상의 annotation이 끝난 뒤 다음으로
+동일 gate를 최대 6회·10초 간격·180초 deadline 안에서 재확인한다. API 오류(exit2)는
+즉시 중단하고 Ready/시각/집합 불일치(exit1)만 유한 재확인한다.
+
+```bash
+P01_FINISH_DEADLINE=$(( $(date -u +%s) + 180 ))
+P01_FINISH_GATE_EXIT=1
+for attempt in 1 2 3 4 5 6; do
+  [[ $(date -u +%s) -lt "$P01_FINISH_DEADLINE" ]] || break
+  if p01_eso_gate; then P01_FINISH_GATE_EXIT=0; break; else P01_FINISH_GATE_EXIT=$?; fi
+  [[ "$P01_FINISH_GATE_EXIT" != 2 ]] || break
+  [[ "$attempt" == 6 ]] || sleep 10
+done
+[[ "$P01_FINISH_GATE_EXIT" == 0 ]] || { printf '%s\n' 'Finish FAIL: ESO gate 미통과' >&2; exit 1; }
+```
+
+ annotation 성공은 인수가 아니다. timeout·계속된403·
+집합 변경·stale refreshTime은 Finish FAIL로 남기고, 실패한 namespace/name·Store·조건·
+시각·실행자·다음 검토 입력을 Task에 값 없이 기록한다. 새 축소·무한 재시도는 하지 않는다.
+이 runbook의 command syntax/합성 gate 확인은 실제 cluster recovery나 ESO 원인 재현이 아니다.
+독립 throwaway Kubernetes/TokenReview·합성 SA/KV를 갖춘 재시작 대 snapshot restore 비교 환경이
+없으므로 실제 ESO/provider cache 재현은 NOT_RUN이다.
+
+[ESO ExternalSecret/manual refresh](https://external-secrets.io/latest/api/externalsecret/),
+[refreshTime 판정](https://external-secrets.io/latest/introduction/faq/),
+[Argo 자동 sync의 상위 관리자 영향](https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/)와
+[Kubernetes bounded rollout](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_rollout/kubectl_rollout_status/)을
+2026-10-22 확인했다. 실제 설치 버전 일치는 외부 운영자가 창 전에 확인한다.
 
 server가 sealed라 window가 root를 폐기하지 못하고 끝나면 만료 없는 root가 OpenBao에 남는다
 (unsealed인데 OIDC가 안 되면 위 `P01_KEEP_ROOT` 규칙을 따른다). W1 custody는 `$XDG_RUNTIME_DIR`

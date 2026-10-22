@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window Readiness"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0243"
 parent_ids:
@@ -28,6 +28,12 @@ CA mount (D4). W4 also has no reviewed way back. The owner asked to review
 and proceed and chose (AskUserQuestion) a readiness Spec that fixes the text
 first and leaves tool work to later work units.
 
+The 2026-10-22 v28 scope reuses accepted readiness work and the later HOME
+execution record. It fixes the remaining W3/Finish handoff, snapshot identity,
+TLS timeout and existing opt-in native regression gaps. The Task reports HOME
+2.7.1 and accepted attempt `-06`; this session neither repeats those operations
+nor accepts the entire deployment.
+
 ## Scope
 
 In scope: RUN-0085's window text; the restore tool's server start; a reviewed
@@ -35,7 +41,10 @@ apply step for the renderer policies and token roles; the W3a inputs; a W3b
 transfer and receipt; the Traefik, Prometheus and Gatus CA mounts; an hourly
 logrotate unit; and a W4 cut-over procedure or an owner decision to fix
 forward. Out of scope: running any window step, SEC01's image acceptance,
-and P06.
+and P06. Local v28 edits authorize no controller scale/refresh, sudo cleanup,
+credential/lock mutation or new risk acceptance. The user chose to retain the
+existing 2026-11-15 deadline for the three D1 risks and prepare improvements;
+POL-0085 remains their policy owner.
 
 ## Contracts
 
@@ -64,6 +73,13 @@ and P06.
 5. The W3b tool passes review and a read-only R2 rehearsal.
 6. The mount overrides, logrotate unit and W4 rollback decision pass review.
 7. Independent IaC and security reviews of each unit find nothing blocking.
+
+Residual verification under existing criteria 1/2/7 covers context/UID/original
+replicas, stop/recovery and an exact six-resource Store/fresh-refresh/Application
+gate, strict snapshot `entity_id == ""`, a 60-second native TLS probe with error
+propagation, and default opt-in skips. Missing exact resource names, installed
+versions or window-specific operator authority block only their operational
+steps. Earlier criterion acceptance does not review this diff or prove execution.
 
 ## Failure Conditions
 

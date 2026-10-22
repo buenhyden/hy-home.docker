@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window Readiness Plan"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0243-PLAN-0001"
 parent_ids:
@@ -18,6 +18,11 @@ created: "2026-10-14"
 
 Fix the window text first so every gap is visible and blocked, then build
 and review each missing tool or mount in its own pull request.
+
+The 2026-10-22 v28 work compares the existing Task's later observations and
+implements local residuals only. The documentation writer owns RUN-0085 and
+this Spec/Plan/Task; code and QA workers own disjoint paths recorded in the
+Task. Remote PR/CI and operational work retain their separate boundaries.
 
 ## Scope
 
@@ -43,6 +48,15 @@ acceptance and P06 remain separate.
 Document checks for W1; unit tests, synthetic native rehearsals and static
 Compose validation for W2 to W6; independent `iac-reviewer` and
 `security-auditor` reviews of each unit.
+
+Minimum v28 checks cover W3/Finish Bash syntax and synthetic metadata gates,
+snapshot identity negatives, synthetic TLS delay/failure, and the existing
+native harness's default skip. B2 opt-in native execution and A1 real
+ESO/Kubernetes-auth reproduction are separate unexecuted steps. No new remote
+environment or HOME asset is created automatically. Changed pins require a new
+approved commit/manifest, installation match and independent review before a
+later window. A3/B4/D1 recovery, cleanup decisions and missing inputs stay in
+this Task rather than a parallel ledger.
 
 ## Risks and Recovery
 
