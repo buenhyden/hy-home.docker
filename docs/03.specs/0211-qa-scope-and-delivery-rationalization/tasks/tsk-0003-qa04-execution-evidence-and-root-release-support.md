@@ -1,6 +1,6 @@
 ---
 title: "QA04 Execution Evidence and ROOT Release Support"
-version: "0.3.2"
+version: "0.3.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -564,6 +564,62 @@ in `/tmp/hyhome-v28-final-reconciliation-traceability.log`. Other link modes
 reuse their passing results from that same all-link inspection; there was no
 new successful all-mode invocation. These checks precede this result-only note
 and do not accept pending criteria or replace the remaining six-node execution.
+
+### v28 continuation fixture correction — 2026-10-22
+
+The six-node continuation on clean HEAD
+`7424adc6d0d64c02fde3adb8f59f68ca7ddc7f92`, local run
+`1792657929652014405`, stopped at
+`leaf.repo-contracts-control-plane-regressions`: 82 tests in 29.845 seconds,
+45 failures and five later nodes NOT_RUN. Every failure came from the same
+fixture bootstrap: `yaml-parser BLOCKED category=missing-tool child_exit=127`.
+Retain `/tmp/hyhome-v28-full-continuation-20261022.log` SHA256
+`127ed6f3cc5b0ee0ffaed7733b08d6a3ff7e638629c66435d9873b8e2eda1e75`
+and the associated `result.json` SHA256
+`1076fd2da091df28ea4f8701ccc4ee14c931b3d3a16bd004235d52dac0b097d3`.
+
+The test fixture symlinked `tools/python3` into the active venv's `bin`
+directory. CPython followed that external symlink to the base hosted
+interpreter, losing the venv package path although all 36 locked packages
+were installed. A scratch-only reproduction confirmed the changed prefix,
+missing PyYAML and exit 2; an executable wrapper calling the exact unresolved
+`sys.executable` preserved the venv, found PyYAML and returned exit 0. The
+fixture now reuses its existing executable writer for that wrapper. Production
+static checks, isolated Python mode, missing-tool checks, assertions and
+dependencies are unchanged. This repairs test-environment binding, not a
+missing production dependency.
+
+Independent review approved scratch patch SHA256
+`8c1a807dc1861a7977bc6b6fcbe28cd57af739fd7c3b1d7b71138a179243e65d`
+before application. The existing registered `run-unittest` adapter then ran
+`tests.validation.test_agent_governance_ci_routing -v` under the same official
+Python 3.14.8, uv and Node PATH: all 82 tests PASS in 47.617 seconds, exit 0,
+no skips. Pinned Ruff 0.15.12 lint and format check passed. These focused
+results precede a commit; root still owns a subsequent clean-HEAD execution
+of the repaired registered leaf and its receipt. No new full invocation is
+claimed here.
+
+### v28 five-node continuation receipt — 2026-10-22
+
+A separate actual LOCAL invocation on the same clean `7424adc6d` input,
+run `1792658037015260159`, completed the other five nodes, all PASS:
+`leaf.ci-precommit-regressions`, `leaf.workflow-contract`,
+`leaf.storybook-contract`, `leaf.release-regressions` and
+`leaf.repository-integrity-regressions`. The last ran 602 tests in 208.935
+seconds, with no failures or skips. Node was selected and its actual
+`v24.22.0` executable identity was captured; Docker was not selected for
+this slice. Native/HOME opt-ins remained off.
+
+Private receipt directory
+`/tmp/hyhome-v28-full-continuation-five-20261022` has `plan.json` SHA256
+`acc70dad5a0567d4080693008daa91b2fdd5c97c8dffb82bd73895214eca4e0a`
+and `result.json` SHA256
+`121f935fa5f8e7020e1ecd50abe12e57ed158c8d4d1d191e130aaf967fc73a16`.
+The accompanying `.log` SHA256 is
+`34734b4cf1762b7d0490f71875235eaccaff8cee584e3e01341b435409269fb8`.
+These successes are separate from the failed full and six-node attempts;
+they neither rewrite those terminal states nor establish a single successful
+FULL process or pending criterion acceptance.
 
 ### Lifecycle Events
 
