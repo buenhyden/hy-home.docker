@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import hashlib
 import http.server
 import importlib.util
@@ -131,7 +132,11 @@ def raft_archive(
     if names is not None:
         members = {name: members.get(name, b"x") for name in names}
     output = io.BytesIO()
-    with tarfile.open(fileobj=output, mode="w:gz") as archive:
+    # A zero gzip mtime keeps two calls byte-identical across a second boundary.
+    with (
+        gzip.GzipFile(fileobj=output, mode="wb", mtime=0) as compressed,
+        tarfile.open(fileobj=compressed, mode="w") as archive,
+    ):
         for name, body in members.items():
             info = tarfile.TarInfo(name)
             info.size = len(body)
