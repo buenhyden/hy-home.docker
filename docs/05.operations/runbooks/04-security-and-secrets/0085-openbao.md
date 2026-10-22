@@ -956,6 +956,10 @@ lookup만 허용하고 proxy·redirect·환경 token을 사용하지 않습니�
 root credential로 `lookup-self`를 수행해 root-only·orphan·비만료 identity를 확인해야
 `DELIVERED`가 됩니다. 이 client는 snapshot token 발급·root 폐기·upgrade를 실행하지 않습니다.
 
+operator의 `entity_id`는 명시적인 비어 있지 않은 문자열이어야 합니다. 이 형식 검사는 정확한
+entity·alias·provider 또는 identity policy 허용 범위를 확인하지 않으며, 그 소유 계약이 확정될
+때까지 B1의 전체 신원 바인딩은 PARTIAL입니다.
+
 독립 code/security 검토와 합성 TLS·중단 회귀시험은 통과했습니다. 지정 운영자 `buenhyden`은
 2026-10-14 최신 답변에서 unseal share와 보관 준비를 확인했습니다. 이는 5단계 기록이 아닌 운영자 확인이며
 실제 인증·발급·복구가 실행됐다는 증거는 아닙니다. 실제 W1의 현재 OIDC 인증과 서로 다른
@@ -1003,15 +1007,15 @@ while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
   printf '%s  %s\n' "$P01_SOURCE_HASH" "$P01_CLIENT_DIR/$P01_SOURCE_PATH" | /usr/bin/sha256sum -c - || exit 1
   /usr/bin/chmod 0400 "$P01_CLIENT_DIR/$P01_SOURCE_PATH" || exit 1
 done <<'P01_SOURCE_MANIFEST'
-085132049f60173fc9fde14e20c9f09d0f4e423d35dd3285c1e9c4053e898d04 infra/03-security/openbao/scripts/protected-maintenance.py
-bca49fe4e162b2ff826ebc288fc7ec46103cf99bdcc27f91a7463a5bc05434b4 infra/03-security/openbao/scripts/protected-token-operations.py
-d5dd5086981bf9dfff7977e527ed28cb760194fe32157945e05ef5342633d174 infra/03-security/openbao/scripts/protected-raft-snapshot.py
+4553286a0c6f4e45f1901942043762bfe6312d22cad281a3c3ffe15eb232429f infra/03-security/openbao/scripts/protected-maintenance.py
+bd20ab9bf30efb3dca27a1f1553e516a82175535ad6e41e7eb73c60d924d197d infra/03-security/openbao/scripts/protected-token-operations.py
+99c73fb8adfd0c974261aa68014aa4dc6f51550f63182578b68b45a6c0311b8c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-766bbc66bf9734b64da3ff2f822a2764a16420d4b3d1e5cd8dd79748158fc2da infra/03-security/openbao/scripts/protected-semantic-restore.py
+f782e39ab10d01b5104d8306180362f5ab1c06b1fd88ab1adb914fc75ccf6ff4 infra/03-security/openbao/scripts/protected-semantic-restore.py
 137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
-452a83fe8486a7d42886d8f64a40c56e53b21c708b1e1d554bebbf2f1117dca2 infra/03-security/openbao/scripts/protected-renderer-roles.py
+564ce1cf3214a02cb99bf7bc572be2dbbd66bf766b54368635f6b4b248da8052 infra/03-security/openbao/scripts/protected-renderer-roles.py
 6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1 infra/03-security/openbao/config/policies/renderer.hcl
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl

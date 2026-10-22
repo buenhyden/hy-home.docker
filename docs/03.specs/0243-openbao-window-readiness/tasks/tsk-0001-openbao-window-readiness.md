@@ -1294,6 +1294,89 @@ Python AST; the current input manifest above was refreshed afterward.
 Normal local commits follow installed hooks; main integration, remote CI,
 push, PR, deployment and operational changes remain NOT_RUN.
 
+### v28 operator entity shape continuation — 2026-10-22
+
+The user requested remaining local implementation and full QA while reserving
+operational changes, token revocation and remote PRs for separate approval.
+The implementation input is `016c4ac6e` on the existing local branch. The
+assigned writer owns the maintenance helper, its existing test module, required
+dependent hash constants, RUN-0085 pins and this Work Log. The coordinator
+owns the current C1 source assessment and combined QA; other workers' files
+are preserved.
+
+RUN-0085's OIDC contract uses `user_claim=sub`. The official
+[JWT API](https://openbao.org/docs/api/auth/jwt/) says that user claim names
+the entity alias created on successful login. The shared `check_operator`
+now requires an explicit nonempty string `entity_id`, independently of the
+snapshot helper's empty-entity contract. Missing, null, empty, boolean, integer,
+list and object values fail before any ceremony attempt or share input.
+Losing this field during the final operator check leaves root custody and
+returns INDETERMINATE; it does not mark delivery successful or cancel the
+completed ceremony. Existing policy, path and TTL checks remain in force.
+
+B1 remains **PARTIAL**. A nonempty entity is not proof of the expected entity,
+alias or provider. The exact entity/alias/mount-accessor and identity-policy
+allowance require the P01 owner's contract. No service-only token type rule
+was invented: the JWT API supports role/mount-dependent token types. Synthetic
+fixtures use an explicitly synthetic entity, not an operator identity or a
+new allowlist. B4, P06 and the three D1 decisions retain their previous gates
+and the existing 2026-11-15 deadline.
+
+The first test draft exposed shared-custody fixture isolation errors and was
+corrected before changing production code. The corrected RED run selected two
+ceremony regressions and witnessed eight intended assertion failures: seven
+initial entity cases and one final-check case. After the two-line guard,
+the same two tests passed in 0.038 seconds, exit 0. The combined caller command
+then ran 187 tests: 185 PASS and two opt-in Native SKIP, in 9.934 seconds,
+exit 0:
+
+```sh
+rtk python3 -m unittest \
+  tests.validation.test_openbao_protected_maintenance \
+  tests.validation.test_openbao_protected_maintenance_review \
+  tests.validation.test_openbao_protected_token_operations \
+  tests.validation.test_openbao_protected_token_operations_review \
+  tests.validation.test_openbao_protected_renderer_roles \
+  tests.validation.test_openbao_protected_raft_snapshot \
+  tests.validation.test_openbao_protected_semantic_restore -q
+```
+
+Scoped Ruff first found test formatting and an unbound loop-variable lambda.
+The test-only correction bound that iterator; both Ruff check and format check
+then passed for the helper and test module, and the two focused regressions
+passed again in 0.040 seconds. System Python lacks `coverage`; its module
+invocation exited 1 and supplies no coverage result. No fresh coverage percentage
+is claimed; the coordinator owns the combined registered gate.
+
+The parent hash propagates through token operations, snapshot and semantic
+restore, then from token operations to renderer roles. RUN-0085's current
+manifest now binds all five changed source files to these SHA-256 values:
+
+| Source under `infra/03-security/openbao/scripts/` | Current SHA-256 |
+| --- | --- |
+| protected-maintenance.py | `4553286a0c6f4e45f1901942043762bfe6312d22cad281a3c3ffe15eb232429f` |
+| protected-token-operations.py | `bd20ab9bf30efb3dca27a1f1553e516a82175535ad6e41e7eb73c60d924d197d` |
+| protected-raft-snapshot.py | `99c73fb8adfd0c974261aa68014aa4dc6f51550f63182578b68b45a6c0311b8c` |
+| protected-semantic-restore.py | `f782e39ab10d01b5104d8306180362f5ab1c06b1fd88ab1adb914fc75ccf6ff4` |
+| protected-renderer-roles.py | `564ce1cf3214a02cb99bf7bc572be2dbbd66bf766b54368635f6b4b248da8052` |
+
+Earlier hashes and receipts above remain historical evidence. The changed
+helpers require current C1 input refresh, independent review, a new approved
+P01 commit/manifest and matching installation before operational use. This
+source-only change issued no credential and ran no HOME/native Docker step.
+Frozen Evidence and Criterion Acceptance tables below are unchanged.
+
+The coordinator refreshed C1 to 47 explicit source inputs, manifest SHA256
+`77fab1b14dd540f73936418b65ad7ff2269775c2599d4d50cb582a1f4daf2857`. The prior
+42-input assessment is preserved under `prior_source_assessments`; current
+Native/HOME remain NOT_RUN and validity remains false.
+
+Independent code/security review approved the frozen B1/C1 source unit with no
+blocking findings, reviewed diff SHA256
+`c60cb0091ef9f452d069c529fdb6dd0dcf1aaf7ce424f55bfc8fbf4f706e8453`.
+`graphify update .` completed with 28,964 nodes and 50,568 edges; optional
+SQL/HCL parsers remain unavailable. No native acceptance is implied.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |

@@ -412,6 +412,8 @@ def check_operator(response):
     data = response.get("data", {})
     if (
         not isinstance(data, dict)
+        or not isinstance(data.get("entity_id"), str)
+        or not data["entity_id"]
         or data.get("policies")
         not in (["default", "hy-home-operator"], ["hy-home-operator", "default"])
         or type(data.get("ttl")) is not int
