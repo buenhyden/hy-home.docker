@@ -1,6 +1,6 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -288,6 +288,26 @@ for s in prometheus tempo; do sudo rsync -aHAX --numeric-ids --delete --dry-run 
 Acceptance: each volume's device is the SSD path, Prometheus answers a query
 for a time before the move, Tempo is ready, and both services are healthy.
 The HDD copies are removed only after that.
+
+### W7 Tempo and Prometheus move result — 2026-10-22
+
+The owner ran the first copy while both services ran; rsync reported
+`file has vanished` for six Tempo `live-store` files (exit 24), which Tempo
+removes as it flushes. The agent stopped both at 10:33:32: Prometheus exited 0,
+and Tempo was killed after the 60 s timeout (exit 137). The owner ran the final
+copy with an empty dry-run, added `PROMETHEUS_DATA_DIR` and `TEMPO_DATA_DIR` to
+the local `.env`, removed the two containers and volumes, and recreated both.
+
+Both volumes now bind `/home/hyunyoun/fast-volumes/obs/{prometheus,tempo}`,
+and both services are healthy. Prometheus answers `count(up)` for a time three
+days before the move (37) and now (65), its head starts at the 2026-10-22 08:00
+block boundary, and all 20 rule groups are `ok`. Tempo is `ready`; at startup it
+dropped one WAL block without `meta.json`, which on the HDD copy holds a single
+0-byte file created at the kill, so no trace data was lost. The firing
+`OpenBaoMetricsScrapeFailing` and `OpenBaoAgentMetricsScrapeFailing` predate the
+move: the server still runs its pre-TLS listener (RUN-0085 `TLS_PREPARED /
+NOT_DEPLOYED`) and the Agent is stopped until W5. Removing the HDD copies
+under `/home/hyunyoun/storage/volumes/obs/` is the owner's step.
 
 ### Ollama 0.40.6 runtime
 
