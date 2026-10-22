@@ -1,6 +1,6 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -559,6 +559,57 @@ disposal. Remote delivery/settings and protected operational work remain outside
 this local execution and follow their separately scoped approval, exact target
 and recovery boundary; they do not block independent safe source/docs work.
 
+### v28 final local delivery and approval handoff — 2026-10-22
+
+The 39-package audit and all KEEP dispositions above are complete for their
+declared source scope. Current contradictory clauses were corrected at their
+existing owners; no Spec, Plan, Task or criterion was cancelled, deleted or
+automatically accepted. The states and preserved Evidence/Acceptance bodies
+retain their original authority. Task0007's valid multi-item contract resolves
+the raw missing-status question without changing its completed items.
+
+Local delivery reuses the six prior commits through `016c4ac6e` and adds
+independently reviewed logical units:
+
+| Owner | Local commit | Resulting behavior or record |
+| --- | --- | --- |
+| P01/SPEC-0243 | `896acfd9f` | Reject missing/non-string OpenBao operator entity; refresh coupled pins/current assessment. Exact identity/alias/provider binding remains PARTIAL. |
+| SEC01 | `4feedf284` | Append 92 public supplier observations; preserve historical observations and security/native acceptance boundaries. |
+| QA04 | `d7bec9a9a` | Seed verified LOCAL CLI evidence before execution, preserving private custody and authenticated PR behavior. |
+| QA04 | `6091c8c8a` | Correct the explicit required-module expectation without weakening the selector contract; 44 tests PASS. |
+| Current documentation owners | `7424adc6d` | Reconcile implementation/status descriptions and supplier release terminology; no image-pin or operating-policy expansion. |
+| QA04 | `2341e957d` | Preserve virtualenv Python in the static-check fixture; 82-test focused GREEN and subsequent clean-HEAD gate PASS. |
+
+QA04 accounts for all 33 LOCAL FULL executable node IDs: 26 unaffected
+registered successes reused, the repaired 44-test workflow module, five
+subsequent gates PASS and the repaired control-plane gate PASS. The latter
+executed on clean `2341e957d56ea57fef442d467edf86beedc97124`, exit 0 with 82
+tests in 47.674 seconds. Its actual run/plan/result/log identities and all
+earlier failures are recorded in SPEC-0211-TSK-0003. This closes the planned
+six-node local continuation across separate runs, not the original failed
+FULL process or outstanding hosted/owner-acceptance requirements.
+
+Read-only GitHub observation at 2026-10-22T08:49:26Z still found main
+`73433adc1b685582741604d8acc1f6f70be0adbe`, protected with required
+`candidate-quality` check from App15368. No push, PR, remote setting change,
+local-main integration or operational mutation was performed. The retained
+Spec-scoped drafts above remain local handoff descriptions. After the final
+result-only documentation commit, the user may select all reviewed source
+units for remote delivery, select only QA repairs for a separately prepared
+branch/draft PR, or retain local delivery. Each remote write requires that
+selection's explicit approval and fresh target/protection preflight.
+
+B1 exact identity/alias/provider contract, B4/P06 trusted production consumption,
+A3 exact owned disposition, R19 unregistered controls/cadence, ROOT image
+signature/SBOM/scan and native/recovery evidence, and final owner acceptance
+remain open at their named Tasks. Two Storybook internal producer bindings
+still lack exact build receipts. D1 retains 2026-11-15 and its three improvement
+alternatives already prepared in SPEC-0243; no new risk acceptance is issued.
+These operational items need exact target/apply/recovery contracts before an
+executable approval choice. Token revocation is excluded from this request.
+Rollback, if later requested, reverts a complete reviewed logical source unit;
+OpenBao helper/caller pins and assessment must move together. No rollback ran.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -593,12 +644,14 @@ disposal candidates. The earlier four-file validation/commit proposal is a
 historical stage; its later local delivery and this audit define the current
 handoff. Existing Evidence and Criterion Acceptance remain byte-identical.
 
-SPEC-0211-TSK-0003 owns the actual QA continuation: the reviewed FULL recorded
-26 gates PASS, one FAIL and six NOT_RUN; the repaired 44-test module passed
-separately. The six-gate continuation is planned, not a completed result.
-Root will append its actual final-input results and review after the ongoing
-execution. This Task creates no parent approval, criterion acceptance, Task
-completion, aggregate FULL PASS or operational success.
+SPEC-0211-TSK-0003 owns the actual QA results. The original FULL recorded
+26 gates PASS, one FAIL and six NOT_RUN. The repaired 44-test module and the
+six later nodes subsequently passed within their separately recorded inputs;
+the final handoff above records that completed local continuation. This Task
+creates no parent approval, criterion acceptance, Task completion, aggregate
+FULL PASS or operational success. Final result-only document checks and a
+normal local commit complete this delivery; remote and operational execution
+await the user's separately scoped selection.
 
 B1 exact identity/alias/provider binding, B4/P06 production consumption, A3
 disposition, D1’s retained 2026-11-15 boundary and improvement alternatives,

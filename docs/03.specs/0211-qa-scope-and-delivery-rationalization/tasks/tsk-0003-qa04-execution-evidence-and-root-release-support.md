@@ -1,6 +1,6 @@
 ---
 title: "QA04 Execution Evidence and ROOT Release Support"
-version: "0.3.3"
+version: "0.3.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -620,6 +620,64 @@ The accompanying `.log` SHA256 is
 These successes are separate from the failed full and six-node attempts;
 they neither rewrite those terminal states nor establish a single successful
 FULL process or pending criterion acceptance.
+
+### v28 final local coverage and remaining gates — 2026-10-22
+
+Normal hooked commit `2341e957d56ea57fef442d467edf86beedc97124` contains the
+reviewed fixture correction and its supporting record. On that clean HEAD,
+the existing runner's verified-plan/evidence APIs executed only the repaired
+`leaf.repo-contracts-control-plane-regressions`. All 82 tests passed in
+47.674 seconds, no skips; the gate ended exit 0 at 2026-10-22T08:48:20.010566Z.
+This actual LOCAL run is `1792658851687627900`. Node and Docker prerequisites
+were not selected for this one-node slice; the official Python 3.14.8 and
+locked controller dependencies remained unchanged. No CI identity was fabricated.
+
+Private directory `/tmp/hyhome-v28-full-continuation-repaired-one-20261022`
+contains `plan.json` SHA256
+`595a4ed0f3f3fcbdc3741b3c5433b9ae4c9ccd674a558e7b92ff4bba7f70d0b0`
+and `result.json` SHA256
+`a08e0266a62edb3a2f60a5a4bef15e7c4cc10537315a5a11f469b6c5cdc87319`.
+Its accompanying `.log` SHA256 is
+`0791a688c0dc603327e80e47bd6263bd3d821a200ecd2648260c2f9b0212f3c6`.
+The output directory is private, the log is mode 0600, and the existing
+14-day receipt-retention declaration is retained.
+
+Four disjoint sets account for all 33 executable LOCAL FULL node IDs in the
+original plan. Root compared their union with that plan's complete ID set:
+no missing or additional node. This is verification coverage across separate
+inputs and executions, not a single successful FULL run.
+
+| Verification set | Count | Input and actual result |
+| --- | --- | --- |
+| Unaffected original successes | 26 | `d7bec9a9a`: actual registered gates PASS; reuse within their documented source/input limits. |
+| Workflow-selector repair | 1 | `6091c8c8a`: exact registered adapter module, 44 tests PASS in 11.553 seconds; the original gate's FAIL remains in its receipt. |
+| Five remaining nodes | 5 | `7424adc6d`: separate verified runner invocation, five PASS including repository-integrity's 602 tests. |
+| Repaired control-plane node | 1 | `2341e957d`: separate verified runner invocation, one PASS with 82 tests. |
+
+The continuation scripts regenerated the canonical 33-node plan, compared every
+entrypoint/argv and entrypoint hash with the retained original plan, and bound
+selection to hashed prior receipts. This is not a transitive-input proof.
+The delta since `d7bec9a9a` comprises two test fixture/expectation corrections
+and documented prose/public-observation changes. Affected modules, supplier
+evidence tests, metadata, links and style have their separate checks. Service
+configuration, image pins, production helpers and their callers are unchanged
+in that delta. All earlier failed/interrupted receipts remain intact.
+
+Both repairs and their records received independent review. Normal staged
+validation and commit/commit-message hooks passed. An initial local-staged
+attempt ended exit 2 because its PATH omitted the already installed pre-commit
+4.6.2; adding that existing path made the same staged inspection pass. No
+dependency was added. Graphify AST update after the fixture edit completed
+exit 0 with 28,982 nodes and 50,597 edges; optional SQL/HCL parsers remain absent.
+
+Local QA continuation is complete for this declared 33-node scope. The original
+FULL process remains FAIL; there is no aggregate FULL exit-0 receipt. Hosted
+prerequisites/`--requirements`, PR-only frontend/style/security checks, remote
+CI and final owner acceptance remain NOT_RUN or pending under existing owners.
+E05–E10 are not promoted by local coverage accounting. Native/HOME opt-ins,
+operational changes, remote writes and actual token revocation were not executed.
+The final result-only Task commit checks its affected documents and does not
+replay unaffected suites.
 
 ### Lifecycle Events
 
