@@ -1,8 +1,8 @@
 ---
 title: "LAB Isolation and Service Selection Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-22"
 layer: "specs"
@@ -212,6 +212,7 @@ project label exit 0, no container or network left, 6 data directories kept.
 | SPEC-0215-PLAN-0001 | draft | approved | #current-parent-contract-review-on-2026-10-22 |
 | SPEC-0215-TSK-0001 | draft | ready | #current-readiness-review-on-2026-10-22 |
 | SPEC-0215-TSK-0001 | ready | in-progress | #current-execution-review-on-2026-10-22 |
+| SPEC-0215-TSK-0001 | in-progress | completed | #v29-current-document-completion |
 
 ### Current parent contract review on 2026-10-22
 
@@ -266,6 +267,44 @@ leaves an explicit table conversion with current Required/Current Owner decision
 and machine-readable completion linkage outstanding. This Task remains
 `in-progress`; it is not marked complete.
 
+### v29 generation7 document evidence reconciliation
+
+The current v29 request authorizes the remaining local lifecycle reconciliation.
+The parent Spec and Plan are already approved; TSK-0002 is already completed and
+is not changed. This review uses source `49fd95a6ed482d7194c840b43b73a030be6f3d5d` and preserves the
+earlier readiness/execution observations as dated history. It performs no LAB,
+HOME, data, cleanup, remote or token operation.
+
+The current direct text comparison confirms criterion4/W4: REQ-0004 FR-0001
+describes single-node HOME/DEV and backup/restore; REQ-0006 FR-0001 separates the
+HOME single broker from the LAB; ADR-0004's Decision limits the HA topology to
+the LAB; RUN-0036's Preconditions state replication factor1 and no broker fault
+tolerance; POL-0031's Overview excludes host HA; POL-0078's LAB lifecycle and
+budget and Optional service disposition sections define leases, collision and
+budget refusal, bounded shutdown and service decisions. This supplements the
+existing accepted criterion4 with the missing W4 document observation. It is
+not a new runtime, failover or restore result.
+
+The exact six current document inputs are recorded in
+`/tmp/v29-lab-w4-document-inputs.json` SHA256
+`2a8e1a61c942cd4d72d1061d4dc68ccd28c19e1e11d1fee8af1616d0d573c9de`:
+
+| Document | SHA256 |
+| --- | --- |
+| docs/01.requirements/0004-data.md | 824be500fde5af6d7a114a973483d0a56ec22ecdd25b97f6670fa87401c0e985 |
+| docs/01.requirements/0006-messaging.md | eceeb3eaf52a1a824eda0b008f1bec33d9e9334c50fb9a678928d49f9f97ed14 |
+| docs/02.architecture/decisions/0004-postgresql-ha-patroni.md | 0fc52a568163e4f397ed639da734fb71d3092c795ccf42124bf172763c0a7696 |
+| docs/05.operations/runbooks/06-messaging-and-cdc/0036-kafka.md | 0c9b51dcce614286d212aa74a4df7d1518393cdc831b0780150c8d14dc88c31b |
+| docs/05.operations/policies/15-labs/0031-postgresql-cluster.md | 5d88babbbb1132449ba031aa2898e17fac697d0127558d608ee5d59afdf3af3d |
+| docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md | 3e867cc3ce076ddea28f084383786a9638b804bdadae224c209d4b81317e8028 |
+
+The active tables now use the existing generation7 Required and Current Owner
+columns. Every previous acceptance decision and observation is retained;
+criterion4 additionally cites the new document observation. The original tables
+below are verbatim historical records, SHA256
+`6bcfeeda3157647809527d861c1c13d425121b4e38a4eb03a2edf9272df150b2`.
+
+```text
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -285,6 +324,38 @@ and machine-readable completion linkage outstanding. This Task remains
 | 3 | accepted | Controller | Generation 5 row acceptance |
 | 4 | accepted | Selection rules | Generation 5 row acceptance |
 | 5 | accepted | Records | Generation 5 row acceptance |
+
+```
+
+### v29 current document completion
+
+Today's document review supplies the last assigned C4/W4 PASS pair. Existing
+accepted criteria1–5 remain unchanged, and all this Task's assigned pairs now
+have evidence. The direct in-progress to completed transition records only
+this document closure. The final coordinated validation and independent review
+remain separate receipts; this candidate makes no new operational acceptance.
+Archive readiness is derived; no archival move or disposition is performed.
+
+## Evidence
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Root closure | 1 | W1 | Root render test RED then GREEN; clean-worktree gate | Working tree at `a5aecc629` | PASS | W1 Root Closure and `lab_net` Retirement | required | - |
+| LAB boundary | 2 | W2 | Boundary tests RED then GREEN; LAB renders | Working tree | PASS | W2 LAB Boundaries and Lease Controller | required | - |
+| Controller | 3 | W2 | Unit tests, mutations, real Docker run of `valkey-cluster` | Synthetic LAB roots | PASS | W2 LAB Boundaries and Lease Controller | required | - |
+| Selection rules | 4 | W3 | Policy text; catalog and link checks; changed-profile gate | Working tree | PASS | W3 Budget, Selection and Disposition Rules | required | - |
+| Records | 5 | W4 | Clean-worktree changed-profile gate and staged lint per unit; independent review; HOME, data moves and MongoDB runtime stay `NOT_RUN` | Working tree at each unit | PASS | W4 HA Wording, Handoffs and Final Validation | required | - |
+| Current W4 wording verification | 4 | W4 | Direct criterion4/W4 comparison of the six current document bodies | Source 49fd95a6ed482d7194c840b43b73a030be6f3d5d; document manifest SHA256 2a8e1a61c942cd4d72d1061d4dc68ccd28c19e1e11d1fee8af1616d0d573c9de | PASS | #v29-generation7-document-evidence-reconciliation | required | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | accepted | Root closure | Generation 5 row acceptance | @buenhyden / SPEC-0215-TSK-0001 |
+| 2 | accepted | LAB boundary | Generation 5 row acceptance | @buenhyden / SPEC-0215-TSK-0001 |
+| 3 | accepted | Controller | Generation 5 row acceptance | @buenhyden / SPEC-0215-TSK-0001 |
+| 4 | accepted | Selection rules, Current W4 wording verification | Generation 5 row acceptance | @buenhyden / SPEC-0215-TSK-0001 |
+| 5 | accepted | Records | Generation 5 row acceptance | @buenhyden / SPEC-0215-TSK-0001 |
 
 ## Review and Completion
 
