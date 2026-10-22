@@ -1,10 +1,10 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0246-TSK-0001"
 parent_ids:
@@ -240,6 +240,54 @@ Loki `ELIGIBLE`: 2,201,448,448 bytes in the window, about 1.76 GB a day
 (an upper bound), and 7.78 years with Loki on the SSD, inside the five-year
 budget. That is eligibility only; the move itself is a separate owner
 decision. Alloy, Prometheus, Pyroscope and Tempo wait for the second window.
+
+### W7 second window result — 2026-10-22
+
+t1 was taken at 2026-10-22T08:57:16+09:00 (window 97,236 s) under
+`/home/hyunyoun/storage/ops-snapshots/w7-write-rate-20261021/`. Every store
+kept its StartedAt. The owner read SMART after t1:
+`Percent_Lifetime_Remain` 24 used and `Total_LBAs_Written` 81,993,720,429
+(41,980,784,859,648 bytes). sda wrote 60,772,003,840 bytes, about 54.0 GB a
+day, which leaves an SSD baseline of 6.74 years. Each store is `ELIGIBLE`
+alone (bytes a day are upper bounds; years are with that store on the SSD):
+
+| Store | Bytes a day | Years |
+| --- | --- | --- |
+| Tempo | 1.34 GB | 6.58 |
+| Prometheus | 4.84 GB | 6.19 |
+| Loki | 5.58 GB | 6.11 |
+| Alloy | 8.96 GB | 5.78 |
+| Pyroscope | 16.82 GB | 5.14 |
+
+The tool judges each store alone. The five-year budget leaves about
+18.8 GB a day above the baseline, so all five together give 3.98 years and
+are rejected. Loki wrote about 1.76 GB a day in the first window and 5.58 GB
+a day in this one, so a margin is kept. The owner decided on 2026-10-22 to
+move Tempo and Prometheus (6.05 years together) and keep Loki, Alloy and
+Pyroscope on the HDD; `compare-summary.txt` in the window directory holds the
+per-store output.
+
+### W7 Tempo and Prometheus move
+
+`PROMETHEUS_DATA_DIR` and `TEMPO_DATA_DIR` override the two volume devices,
+as `OLLAMA_MODEL_DIR` does for Ollama; empty keeps the HDD path. Prometheus
+holds 7.0 GB and Tempo 39 MB, and the root filesystem has 102 GB free, so the
+`HostSystemDiskLow` threshold of 25 GiB is not reached. The procedure follows
+W3: the owner runs a first copy while both services run, the agent stops
+them, the owner runs a final `rsync --delete` whose dry-run prints nothing,
+adds both keys to the local `.env`, removes the two volumes and recreates the
+services. Alert rules are not evaluated while Prometheus is stopped, so the
+move needs a short window.
+
+```bash
+sudo mkdir -p /home/hyunyoun/fast-volumes/obs/prometheus /home/hyunyoun/fast-volumes/obs/tempo
+for s in prometheus tempo; do sudo rsync -aHAX --numeric-ids --delete /home/hyunyoun/storage/volumes/obs/$s/ /home/hyunyoun/fast-volumes/obs/$s/; done
+for s in prometheus tempo; do sudo rsync -aHAX --numeric-ids --delete --dry-run --itemize-changes /home/hyunyoun/storage/volumes/obs/$s/ /home/hyunyoun/fast-volumes/obs/$s/ | head; done
+```
+
+Acceptance: each volume's device is the SSD path, Prometheus answers a query
+for a time before the move, Tempo is ready, and both services are healthy.
+The HDD copies are removed only after that.
 
 ### Ollama 0.40.6 runtime
 
