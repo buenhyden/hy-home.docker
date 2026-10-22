@@ -111,6 +111,74 @@ class CompareTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             rate.parse_wbytes(f"alloy\t{STARTED}\t1\nalloy\t{STARTED}\t2\n")
 
+    def test_changed_device_numbers_defer_the_stores(self) -> None:
+        later = _snap(T1, GB, _rows(2))
+        later["diskstats"] = later["diskstats"].replace("8 0 sda", "259 7 sda")
+        result = rate.compare(_snap(T0, 0, _rows(1)), later, ssd_device="sda", **SMART)
+        self.assertEqual(result["disks"]["sda"]["status"], "invalid")
+        self.assertIsNone(result["ssd_years_baseline"])
+        self.assertTrue(
+            all(s["disposition"] == "DEFER" for s in result["stores"].values())
+        )
+
+    def test_invalid_smart_values_are_rejected(self) -> None:
+        invalid = [
+            {"smart_used_percent": value, "smart_host_bytes": 50 * 10**12}
+            for value in (-1, 101, float("nan"), float("inf"), True, "50")
+        ] + [
+            {"smart_used_percent": 50, "smart_host_bytes": value}
+            for value in (-1, 0, True, 1.5, float("inf"), 10**400)
+        ]
+        for arguments in invalid:
+            with self.subTest(arguments=arguments), self.assertRaises(ValueError):
+                rate.compare(
+                    _snap(T0, 0, _rows(1)),
+                    _snap(T1, GB, _rows(2)),
+                    ssd_device="sda",
+                    **arguments,
+                )
+
+    def test_zero_missing_and_exhausted_smart_boundaries(self) -> None:
+        for percent, written in ((0, 50 * 10**12), (None, None), (50, None)):
+            with self.subTest(percent=percent, written=written):
+                result = rate.compare(
+                    _snap(T0, 0, _rows(1)),
+                    _snap(T1, GB, _rows(2)),
+                    ssd_device="sda",
+                    smart_used_percent=percent,
+                    smart_host_bytes=written,
+                )
+                self.assertTrue(
+                    all(s["disposition"] == "DEFER" for s in result["stores"].values())
+                )
+        result = rate.compare(
+            _snap(T0, 0, _rows(1)),
+            _snap(T1, GB, _rows(2)),
+            ssd_device="sda",
+            smart_used_percent=100,
+            smart_host_bytes=50 * 10**12,
+        )
+        self.assertEqual(result["ssd_years_baseline"], 0)
+        self.assertTrue(
+            all(s["disposition"] == "KEEP_HDD" for s in result["stores"].values())
+        )
+
+    def test_zero_ssd_delta_remains_deferred(self) -> None:
+        result = rate.compare(
+            _snap(T0, 0, _rows(1)), _snap(T1, 0, _rows(2)), ssd_device="sda", **SMART
+        )
+        self.assertTrue(
+            all(s["disposition"] == "DEFER" for s in result["stores"].values())
+        )
+
+    def test_unrepresentable_rates_and_lifetime_are_rejected(self) -> None:
+        for later, smart in (
+            (_snap(T1, 10**310, _rows(2)), SMART),
+            (_snap(T1, GB, _rows(2)), {**SMART, "smart_used_percent": 1e-320}),
+        ):
+            with self.subTest(smart=smart), self.assertRaises(ValueError):
+                rate.compare(_snap(T0, 0, _rows(1)), later, ssd_device="sda", **smart)
+
 
 class AccountingTests(unittest.TestCase):
     def test_iostat_sum_counts_every_line_like_t0(self) -> None:
@@ -126,6 +194,16 @@ class AccountingTests(unittest.TestCase):
         self.assertEqual(
             rate.parse_diskstats(_disk(1024, 512)), {"sda": 1024, "sdb": 512}
         )
+
+    def test_invalid_disk_and_container_counters_are_rejected(self) -> None:
+        for text in (_disk(-512, 0), _disk(0, 0) + _disk(0, 0), "malformed\n"):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                rate.parse_diskstats(text)
+        for text in (f"alloy\t{STARTED}\t-1\n", f"alloy\t{STARTED}\t{'1' * 400}\n"):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                rate.parse_wbytes(text)
+        with self.assertRaises(ValueError):
+            rate.iostat_wbytes("8:0 wbytes=-1\n")
 
     def test_collect_refuses_to_overwrite(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -165,6 +243,27 @@ class CliTests(unittest.TestCase):
             )
             self.assertEqual(self._run("compare", tmp).returncode, 1)
             self.assertEqual(self._run("compare", tmp, "--t1", "absent").returncode, 2)
+
+    def test_cli_rejects_nonfinite_smart_without_json_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            for label, snap in (
+                ("t0", _snap(T0, 0, _rows(1))),
+                ("t1", _snap(T1, GB, _rows(2))),
+            ):
+                for key, suffix in rate.SUFFIXES.items():
+                    Path(tmp, label + suffix).write_text(snap[key])
+            for value in ("nan", "inf", "-1", "101"):
+                with self.subTest(value=value):
+                    result = self._run(
+                        "compare",
+                        tmp,
+                        "--smart-used-percent",
+                        value,
+                        "--smart-host-bytes",
+                        str(50 * 10**12),
+                    )
+                    self.assertEqual(result.returncode, 2, result.stderr)
+                    self.assertEqual(result.stdout, "")
 
 
 if __name__ == "__main__":

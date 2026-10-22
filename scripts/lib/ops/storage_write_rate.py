@@ -10,6 +10,7 @@ upper bound on its real writes. Collection reads only Docker metadata,
 
 from __future__ import annotations
 
+import math
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -20,6 +21,20 @@ BUDGET_YEARS = 5.0
 SECTOR_BYTES = 512
 CGROUP_ROOT = Path("/sys/fs/cgroup/system.slice")
 SUFFIXES = {"time": ".time", "diskstats": ".diskstats", "wbytes": ".cgroup-wbytes.tsv"}
+
+
+def _finite(value: int | float) -> bool:
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def _counter(text: str) -> int:
+    value = int(text)
+    if value < 0 or not _finite(value):
+        raise ValueError("counter must be nonnegative and finite")
+    return value
 
 
 def parse_time(text: str) -> datetime:
@@ -37,22 +52,34 @@ def parse_wbytes(text: str) -> dict[str, tuple[str, int]]:
         name, started, written = line.split("\t")
         if name in rows:
             raise ValueError(f"duplicate container row: {name}")
-        rows[name] = (started, int(written))
+        rows[name] = (started, _counter(written))
     return rows
 
 
 def parse_diskstats(text: str) -> dict[str, int]:
     """Return bytes written per device (field 10 is sectors written)."""
-    return {
-        fields[2]: int(fields[9]) * SECTOR_BYTES
-        for fields in (line.split() for line in text.splitlines())
-        if len(fields) >= 10
-    }
+    return {name: row[2] for name, row in _diskstats_rows(text).items()}
+
+
+def _diskstats_rows(text: str) -> dict[str, tuple[int, int, int]]:
+    rows = {}
+    for line in text.splitlines():
+        fields = line.split()
+        if not fields:
+            continue
+        if len(fields) < 10 or fields[2] in rows:
+            raise ValueError("malformed or duplicate diskstats device")
+        rows[fields[2]] = (
+            _counter(fields[0]),
+            _counter(fields[1]),
+            _counter(fields[9]) * SECTOR_BYTES,
+        )
+    return rows
 
 
 def iostat_wbytes(text: str) -> int:
     return sum(
-        int(item.split("=", 1)[1])
+        _counter(item.split("=", 1)[1])
         for line in text.splitlines()
         for item in line.split()[1:]
         if item.startswith("wbytes=")
@@ -106,8 +133,25 @@ def collect(directory: Path, label: str, devices: tuple[str, ...]) -> None:
 
 
 def _years(used_percent: float, host_bytes: int, bytes_per_day: float) -> float:
-    percent_per_byte = used_percent / host_bytes
-    return (100.0 - used_percent) / (percent_per_byte * bytes_per_day * 365.25)
+    try:
+        years = (100.0 - used_percent) / (
+            used_percent / host_bytes * bytes_per_day * 365.25
+        )
+    except (OverflowError, ZeroDivisionError) as error:
+        raise ValueError("endurance calculation is outside the finite range") from error
+    if not _finite(years):
+        raise ValueError("endurance calculation is outside the finite range")
+    return years
+
+
+def _daily_bytes(delta: int, days: float) -> float:
+    try:
+        rate = delta / days
+    except OverflowError as error:
+        raise ValueError("write rate is outside the finite range") from error
+    if not _finite(rate):
+        raise ValueError("write rate is outside the finite range")
+    return rate
 
 
 def compare(
@@ -119,6 +163,19 @@ def compare(
     smart_host_bytes: int | None = None,
 ) -> dict[str, object]:
     """Compare two snapshots read by ``read_snapshot``."""
+    if smart_used_percent is not None and (
+        isinstance(smart_used_percent, bool)
+        or not isinstance(smart_used_percent, (int, float))
+        or not _finite(smart_used_percent)
+        or not 0 <= smart_used_percent <= 100
+    ):
+        raise ValueError("SMART used percentage must be finite and between 0 and 100")
+    if smart_host_bytes is not None and (
+        type(smart_host_bytes) is not int
+        or smart_host_bytes <= 0
+        or not _finite(smart_host_bytes)
+    ):
+        raise ValueError("SMART host bytes must be a positive finite integer")
     start, end = parse_time(t0["time"]), parse_time(t1["time"])
     window = (end - start).total_seconds()
     if window <= 0:
@@ -126,16 +183,24 @@ def compare(
     days = window / 86400
     short = window < MIN_WINDOW_SECONDS
     smart = bool(smart_used_percent and smart_host_bytes)
-    disk0, disk1 = parse_diskstats(t0["diskstats"]), parse_diskstats(t1["diskstats"])
+    disk0, disk1 = _diskstats_rows(t0["diskstats"]), _diskstats_rows(t1["diskstats"])
 
     disks: dict[str, dict[str, object]] = {}
     for device in sorted(disk0.keys() & disk1.keys()):
-        delta = disk1[device] - disk0[device]
-        disks[device] = (
-            {"status": "invalid", "reason": "counter decreased (reboot)"}
-            if delta < 0
-            else {"status": "valid", "bytes": delta, "bytes_per_day": delta / days}
-        )
+        delta = disk1[device][2] - disk0[device][2]
+        if disk0[device][:2] != disk1[device][:2]:
+            disks[device] = {"status": "invalid", "reason": "device numbers changed"}
+        elif delta < 0:
+            disks[device] = {
+                "status": "invalid",
+                "reason": "counter decreased (reboot)",
+            }
+        else:
+            disks[device] = {
+                "status": "valid",
+                "bytes": delta,
+                "bytes_per_day": _daily_bytes(delta, days),
+            }
     ssd = disks.get(ssd_device, {"status": "invalid", "reason": "SSD device missing"})
     ssd_rate = ssd["bytes_per_day"] if ssd["status"] == "valid" and not short else None
     baseline = (
@@ -169,7 +234,7 @@ def compare(
             }
             continue
         delta = rows1[store][1] - rows0[store][1]
-        rate = delta / days
+        rate = _daily_bytes(delta, days)
         years = _years(smart_used_percent, smart_host_bytes, ssd_rate + rate)
         stores[store] = {
             "status": "valid",

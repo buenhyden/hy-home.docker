@@ -1,10 +1,10 @@
 ---
 title: "Root resource optimization preparation"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-22"
 created: "2026-10-11"
 ---
 
@@ -85,11 +85,20 @@ python scripts/operations/storage-write-rate.py compare /home/hyunyoun/storage/o
   --smart-used-percent 24 --smart-host-bytes 41863677045248
 ```
 
-24시간 미만 창, 컨테이너 재시작, 카운터 감소, snapshot 누락, SMART 미입력은
+24시간 미만 창, 컨테이너 재시작, 카운터 감소, 같은 장치명의 major:minor 변경,
+snapshot 누락, SMART 미입력이나 사용률 0은
 `DEFER`입니다. cgroup 쓰기량은 t0와 같이 모든 `io.stat` 줄의 합이며 dm-0이 SSD 줄을
 반복하므로 상한값입니다. `ELIGIBLE`은 5년 내구성 예산만 통과했다는 뜻이며, 이동에는
 측정된 지연 문제와 owner 결정이 따로 필요합니다. 종료 코드 `0`은 모든 저장소 표본이
 유효, `1`은 하나 이상 무효, `2`는 입력 오류입니다.
+
+SMART 사용률은 유한한 0–100 숫자이고 누적 host 쓰기는 양의 정수여야 합니다.
+Boolean, 비유한 값, 음수·중복 장치·잘못된 카운터와 유한 범위를 벗어난 계산은
+입력 오류로 거부하며 결과 JSON에는 `NaN`이나 무한대를 기록하지 않습니다.
+기존 세 파일 형식과 과거 표본은 유지합니다. 이 형식에는 boot ID, mount·파일시스템
+결속, 수집기·입력 해시가 없으므로 major:minor와 StartedAt 일치만으로 재부팅이나
+동일 장치 번호의 재할당, 현재 배치·출처를 완전히 입증하지 않습니다. 해당 정보는
+미검증으로 남기며 새 현장 표본이나 담당자 인수를 이 소스 검사로 대신하지 않습니다.
 
 ### Configuration
 
