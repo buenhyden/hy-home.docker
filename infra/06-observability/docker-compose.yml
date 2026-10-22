@@ -8,7 +8,7 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_OBSERVABILITY_DIR}/tempo
+      device: ${TEMPO_DATA_DIR:-${DEFAULT_OBSERVABILITY_DIR}/tempo}
   loki-data:
     driver: local
     driver_opts:
@@ -26,7 +26,7 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_OBSERVABILITY_DIR}/prometheus
+      device: ${PROMETHEUS_DATA_DIR:-${DEFAULT_OBSERVABILITY_DIR}/prometheus}
   grafana-data:
     driver: local
     driver_opts:
