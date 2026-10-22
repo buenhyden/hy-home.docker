@@ -640,7 +640,7 @@ class RecoveryEffects:
         rendered = []
         for value_path, version_path in (("/openbao/out/auth/keycloak_admin_password.txt", "/openbao/out/auth/keycloak_admin_password.version"), ("/openbao/out/observability/grafana_admin_password.txt", "/openbao/out/observability/grafana_admin_password.version")):
             # The templates trim their own whitespace, so the file is the exact value;
-            # a value may end in a newline (HOME, 2026-10-22).
+            # a value may end in a newline (reproduced for the 2026-10-22 W3a result).
             value = self.runtime.exec(self.agent_id, "/bin/cat", value_path).stdout.decode()
             raw_version = self.runtime.exec(self.agent_id, "/bin/cat", version_path).stdout.decode().strip()
             if not raw_version.isdecimal() or not value:
