@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.41"
+version: "0.12.42"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -207,9 +207,9 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    read -rsp 'Enter current OIDC operator credential> ' BAO_TOKEN </dev/tty; printf '\n'
    export BAO_TOKEN
    sec01_mint() {
-     /usr/bin/docker compose exec -T -e BAO_TOKEN openbao bao write -field=token \
-       "auth/token/create/$1" policies="$1" ttl=5m explicit_max_ttl=5m \
-       renewable=false no_default_policy=true
+     # JSON booleans: the operator policy's allowed_parameters reject "false"/"true" strings.
+     printf '{"policies":"%s","ttl":"5m","explicit_max_ttl":"5m","renewable":false,"no_default_policy":true}' "$1" | \
+       /usr/bin/docker compose exec -T -e BAO_TOKEN openbao bao write -field=token "auth/token/create/$1" -
    }
    SEC01_ISSUER_TOKEN="$(sec01_mint renderer-issuer)" || exit 1
    SEC01_CLEANUP_TOKEN="$(sec01_mint renderer-cleanup)" || exit 1

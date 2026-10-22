@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window Readiness Task"
-version: "0.1.30"
+version: "0.1.31"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1028,8 +1028,40 @@ The fix compares the rendered file exactly and moves the next attempt to
 `p01-restore-20261022-06` (the `-05` target and ledger stay retained). The unit
 fake now renders the exact bytes, one value ending in a newline; it fails on
 the old client and passes on the new one. Both rehearsals, newline and plain,
-are accepted with the fixed client. Whether HOME's canary really ends in a
-newline is the owner's values-free check; the fix holds either way.
+are accepted with the fixed client. The owner's values-free check found that both HOME canary files end in a
+newline (no carriage return), which confirms the cause.
+
+### Window 2026-10-22 12:30 — upgraded to 2.7.1
+
+The owner approved `P01_APPROVED_COMMIT` =
+`090352d0583d45b6d0d83470955ac0b4bb6a7b5e` (#556) and started at once. All 17
+W1 manifest pins matched and the 15 blocks were re-extracted; only the client
+pin changed. W0 held (TLS preflight 12 s, load 6.0). No values are recorded.
+
+| Step | Result |
+| --- | --- |
+| W1, sweep, W1c plan | `DELIVERED`; `remaining=0`; all 7 targets `changed:false`, apply and W2 skipped |
+| W3 writers | Silence `baa45277-7fdf-46ee-8c35-7f21d839cb24` (3 h, also `GatusEndpointFailing`); Argo CD controllers and ESO to 0 (saved 1/1/1); recorded as approval by execution, as before |
+| W3 lease, snapshot, W3b | Lease `bc0fb363…`; snapshot sha `63f00be6…` 59,420 B, Raft index 115754; restic `8fe28d5c`, a dump from R2 hashes the same |
+| W3a inputs and review | Contract `a07fe0ae…` for `p01-restore-20261022-06`; installed client `766bbc66…` equals the pin; agent checks plus an independent security-auditor binding review: GO |
+| W3a restore | `accepted` in the `-06` ledger (12:40–12:42). A later re-run in a fresh shell without the variables stopped at the missing lease file before any effect |
+| W4 | Recreated at 12:42:55; same data mount; unsealed; 2.7.1+hyhome, active |
+| W5 | The runbook block failed with 403 at `auth/token/create/renderer-issuer`: its CLI `renewable=false no_default_policy=true` arrive as strings, and the operator policy's `allowed_parameters` accept only the booleans (reproduced on a throwaway 2.7.1 server). With owner approval the same request was sent as JSON booleans; `W5 rc=0`, Agent `healthy` |
+| W6 | HTTPS answers and plain HTTP is refused; `audit.json` grew 260,752→263,517 B in 20 s; `up` 1 for `openbao` and `openbao-agent`; Gatus OpenBao `success=true`; both `.version` files re-rendered, the password files unchanged |
+| W7 | `ROOT_REVOKED_OPERATOR_HEALTHY`; w1 `revoke-self=0`, w3a/w5/w7 returned 2 (spent or expiring OIDC tokens) |
+| Close | cleanup rc=0; ESO and both Argo CD controllers back to 1; timer active; a manual backup at 13:00:31 `Result=success` |
+
+After the restore, ESO saw 403 for about two minutes (12:54–12:56) on
+`lookup-self` and reads, then synced; `argocd-external-valkey` stayed in
+`SecretSyncedError` until a forced refresh at 13:02:54, after which every
+ExternalSecret is synced and every Application Synced/Healthy. The cause of the
+short 403 window is open. Receipts, the contract, both lease files, the security
+receipt and the ledger are in the owner's `ops-snapshots/openbao-window-20261022c/`.
+
+HOME now runs 2.7.1+hyhome.go1.27.3.net0.60.0.r1 with TLS and the config-owned
+audit device, and the Agent renders again. Open: the RUN-0085 W5 block fix
+(this record), the short ESO 403 window, and expiring the silence after the
+alerts are recorded.
 
 ## Evidence
 
