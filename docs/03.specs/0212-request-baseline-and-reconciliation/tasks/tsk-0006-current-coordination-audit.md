@@ -1,6 +1,6 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -610,6 +610,67 @@ executable approval choice. Token revocation is excluded from this request.
 Rollback, if later requested, reverts a complete reviewed logical source unit;
 OpenBao helper/caller pins and assessment must move together. No rollback ran.
 
+### v28 approved merge and source rollout — 2026-10-22
+
+The user first approved push of all 13 existing commits and a main-targeted
+Draft PR, then directly authorized operational changes, merge and deployment.
+This later instruction supersedes the earlier remote/operational hold only
+for the delivered change. The existing prohibition on token revocation remains.
+Target: `buenhyden/hy-home.docker` PR558, reviewed head
+`f22af4dd7eb6df86f2ec03bb8cc10a9f434d8dff`, Docker context `default`, daemon
+`hy-home-server`, project `hy-home-infra`, services `openbao` and `openbao-agent`.
+
+Required `candidate-quality` from App15368 passed on that exact head in
+[CI run39753021308](https://github.com/buenhyden/hy-home.docker/actions/runs/39753021308),
+completed 2026-10-22T09:17:19Z. CodeQL and GitGuardian also passed. Fresh
+protection readback confirmed strict checks, admins enforced, conversation
+resolution, zero required approving reviews and no forced CODEOWNERS review.
+No unresolved review threads existed. The PR was marked ready and merged with
+its expected head pinned, using a merge commit without history rewriting.
+[PR558](https://github.com/buenhyden/hy-home.docker/pull/558) merged as
+`8c605d62592b7ddfa322e0866af931c49bb72a2f`; its parents preserve the previous
+main and all 13 delivered commits. Approved and merged tree IDs both equal
+`460440b5572bc424f52b608e7e4b47c4d0668c03`. No protection was changed.
+
+Independent read-only IaC/security review approved only source reconciliation
+and verification. Image, Compose, policy/config, start and health scripts are
+unchanged by the PR; the six changed maintenance helpers are not automatic
+start/health entrypoints. Both running services RO-mount this checkout's
+`infra/03-security/openbao/scripts` at `/openbao/scripts`. The helpers were
+already visible through that directory bind before merge. The local main ref
+was fast-forwarded before switching the live checkout, avoiding an intermediate
+checkout of older files. Main then matched the exact merge commit and was clean.
+
+Actual before/after observations passed for both containers: six public helper
+SHA256 values per container equal the approved Git blobs, exact image ID
+`sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8`,
+container IDs, StartedAt, RestartCount and all mount records unchanged, both
+healthy. Data/audit volume mount identities were preserved. Post-merge public
+unauthenticated server status was initialized, unsealed, Raft, version
+`2.7.1+hyhome.go1.27.3.net0.60.0.r1`. No secret/auth payload
+was read. This is source visibility and revision verification, not a new server
+upgrade, helper execution, identity/P06 validation or recovery acceptance.
+
+Public-metadata receipts, both mode0600, are
+`/tmp/hyhome-v28-operational-before-558.json` SHA256
+`049d5267ec67bf5a805aaa0d039f3ff11833a45e9948cd51b1dd8c861efb34f1`
+and `/tmp/hyhome-v28-operational-after-558.json` SHA256
+`449fdd9109407b59280e2a18526f122f01652df08d0571391d063d9b5e90cfdd`.
+RUN-0085's 17-file manifest also matched all approved commit blobs; its runtime
+copy block is W1 ceremony staging and was not executed. No restart, recreate,
+build, pull, W0–W7 ceremony, credential/TLS payload processing, Kubernetes write,
+cleanup, data mutation or token operation occurred. On mismatch the plan stops
+helper use for review; only a separately reviewed source revert is recovery,
+with no Raft restore/downgrade or implicit restart. No rollback was needed.
+
+This result-only record is a separate local documentation commit on
+`codex/v28-deployment-evidence`; it does not alter the 13 commits merged in
+PR558 or publish another remote change. Operational helper/config bytes remain
+equal to the approved merge input. Existing failures, lifecycle states,
+Evidence and Criterion Acceptance stay preserved. B1 exact identity, B4/P06,
+A3 disposition, ROOT security/recovery and owner acceptance remain open;
+D1 retains 2026-11-15 without new risk acceptance.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -648,10 +709,11 @@ SPEC-0211-TSK-0003 owns the actual QA results. The original FULL recorded
 26 gates PASS, one FAIL and six NOT_RUN. The repaired 44-test module and the
 six later nodes subsequently passed within their separately recorded inputs;
 the final handoff above records that completed local continuation. This Task
-creates no parent approval, criterion acceptance, Task completion, aggregate
-FULL PASS or operational success. Final result-only document checks and a
-normal local commit complete this delivery; remote and operational execution
-await the user's separately scoped selection.
+creates no parent approval, criterion acceptance, Task completion or aggregate
+FULL PASS. The subsequent authorized merge and source reconciliation above
+complete this delivery's remote and bounded operational scope. They do not
+close broader identity, consumption, recovery or runtime acceptance criteria.
+The final result-only record preserves those boundaries in a local commit.
 
 B1 exact identity/alias/provider binding, B4/P06 production consumption, A3
 disposition, D1’s retained 2026-11-15 boundary and improvement alternatives,
