@@ -1,8 +1,8 @@
 ---
 title: "LAB Isolation and Service Selection Task"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-22"
 layer: "specs"
@@ -203,6 +203,68 @@ and renders.
 The Valkey LAB was run again with the fixed controller: `up` exit 0,
 `cluster_state:ok`, ledger with 6 state paths and 8 containers, `down` by
 project label exit 0, no container or network left, 6 data directories kept.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0215 | draft | approved | #current-parent-contract-review-on-2026-10-22 |
+| SPEC-0215-PLAN-0001 | draft | approved | #current-parent-contract-review-on-2026-10-22 |
+| SPEC-0215-TSK-0001 | draft | ready | #current-readiness-review-on-2026-10-22 |
+| SPEC-0215-TSK-0001 | ready | in-progress | #current-execution-review-on-2026-10-22 |
+
+### Current parent contract review on 2026-10-22
+
+The owner's current request authorizes status and lifecycle processing for
+implemented Specs, Plans and Tasks. The review of SPEC-0215 and Plan W1–W8 at
+`bd4168e20861d557c9a4f31025a2a649be3e8066` approves both parents as their first
+stable contracts, version `1.0.0`, status `approved`. Existing criteria 1–7
+acceptance and LAB execution records are reused. This review neither authorizes
+nor performs operations or cleanup of the 27 remaining volume records today.
+
+### Current W4 document review on 2026-10-22
+
+The review directly compared the existing W4 record with current tracked
+documents. FR-0001 in REQ-0004, `docs/01.requirements/0004-data.md`, states that
+HOME/DEV use single nodes and backup/restore, and that the LAB lacks host HA.
+FR-0001 in REQ-0006, `docs/01.requirements/0006-messaging.md`, distinguishes the
+HOME single broker from the independent three-broker LAB. The Decision in
+ADR-0004, `docs/02.architecture/decisions/0004-postgresql-ha-patroni.md`, limits
+Spilo/Patroni to the LAB and states that HOME/DEV lack failover. Preconditions in
+RUN-0036, `docs/05.operations/runbooks/06-messaging-and-cdc/0036-kafka.md`, state
+replication factor 1 and the absence of broker fault tolerance. Overview in
+POL-0031, `docs/05.operations/policies/15-labs/0031-postgresql-cluster.md`,
+distinguishes the single-host LAB from single-node HOME/DEV. LAB lifecycle and
+budget and Optional service disposition in POL-0078,
+`docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md`,
+record leases, collision/budget checks, project-scoped shutdown and service
+dispositions. This is a document observation at the baseline revision that
+reuses existing W3/W4 validation; it is not new runtime or HA validation.
+
+### Current readiness review on 2026-10-22
+
+The review checked the owner's current status/lifecycle request, the approved
+parents, this Task's assigned criterion/Work Unit pairs and the existing
+PASS/FAIL/acceptance records. Today's document closure review enters `ready`
+without backdating historical execution.
+The current C4/W4 document observation is retained in this Work Log. Legacy
+Evidence did not record that pair, and the generation 7 reader requires the
+original tables to be preserved. Today's observation therefore does not replace
+machine-readable completion evidence.
+
+### Current execution review on 2026-10-22
+
+The document closure review actually compared the assigned criterion/Work Unit
+pairs, existing PASS and FAIL resolution links, acceptance ownership and parent
+approvals. Today's work is this document review; historical test and operational
+dates and inputs remain as recorded in Evidence. No new runtime, cleanup or
+token operation ran.
+
+The current C4/W4 document content matches the direct observation above, but the
+legacy Evidence table lacks that pair. Preserving the generation 7 boundary
+leaves an explicit table conversion with current Required/Current Owner decisions
+and machine-readable completion linkage outstanding. This Task remains
+`in-progress`; it is not marked complete.
 
 ## Evidence
 

@@ -1,10 +1,10 @@
 ---
 title: "Local Gate Governance Timeout"
-version: "0.3.1"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0235"
 parent_ids:

@@ -1,10 +1,10 @@
 ---
 title: "Hook Outputs and Main Push Guard Task"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0241-TSK-0001"
 parent_ids:
@@ -313,6 +313,57 @@ On 2026-10-14 `main` reached Registry high water 239 (SPEC-0239) while this
 package was unmerged, and the changed-metadata check refused issuing 0238
 below it (`identity-reuse-forbidden`). The package was renumbered to
 SPEC-0241; SPEC-0240 is held by PR #464.
+
+### Lifecycle Reconciliation 2026-10-22
+
+#### Parent Approval 2026-10-22
+
+The owner's current request explicitly authorizes status and lifecycle
+processing for implemented Specs, Plans and Tasks. After comparing the current
+contract, implementation, existing acceptance and verification scope, today's
+decision approves this package's Spec and Plan at their first stable version,
+`1.0.0`. This records no parent approval or execution transition retroactively
+at the time of the original implementation.
+
+#### Reconciliation Readiness 2026-10-22
+
+Readiness to start the current document reconciliation was reviewed under
+the approved parents. Every criterion/Work Unit pair in the Plan has existing
+PASS evidence, all acceptance decisions are accepted, and no FAIL is unresolved.
+Historical Evidence and Criterion Acceptance are reused unchanged. This current
+readiness review moves the Task from `draft` to `ready`.
+
+#### Reconciliation Execution Review 2026-10-22
+
+After the readiness review, current document closure work started and the
+following scope and evidence were checked.
+
+The current hooks retain PreCompact universal output, the SessionStart
+context route, and the pre-push guard that checks raw refs. Criterion 1–6
+source/test/review acceptance and the seven resolved review rounds are reused.
+R10's earlier draft decision remains a dated audit record; today's request
+supplies current parent authority and document closure. This supplies no new
+observation of a push denied through the installed hook.
+
+#### Reconciliation Completion Decision 2026-10-22
+
+After the current readiness and execution reviews, today's decision completes
+this Task's document closure for its approved contract. Existing PASS evidence,
+accepted decisions, resolution relationships and unobserved results remain
+unchanged. This decision supplies no new test or operational PASS. The canonical
+reader derives archive readiness; no archive approval or Stage 98 move occurs.
+Before merge, the coordinator combines and records structural and metadata
+validation and independent review of this change.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0241 | draft | approved | #parent-approval-2026-10-22 |
+| SPEC-0241-PLAN-0001 | draft | approved | #parent-approval-2026-10-22 |
+| SPEC-0241-TSK-0001 | draft | ready | #reconciliation-readiness-2026-10-22 |
+| SPEC-0241-TSK-0001 | ready | in-progress | #reconciliation-execution-review-2026-10-22 |
+| SPEC-0241-TSK-0001 | in-progress | completed | #reconciliation-completion-decision-2026-10-22 |
 
 ## Evidence
 

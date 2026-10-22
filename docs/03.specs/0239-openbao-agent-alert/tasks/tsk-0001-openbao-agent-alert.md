@@ -1,8 +1,8 @@
 ---
 title: "OpenBao Agent Telemetry and Alert Task"
-version: "0.1.4"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-22"
 layer: "specs"
@@ -111,6 +111,56 @@ This reconciliation adds no fresh HOME observation or deployment acceptance;
 the earlier source criteria and deployment history below remain unchanged.
 P06 consumption and the window's remaining operational conditions retain their
 existing owners.
+
+### Lifecycle Reconciliation 2026-10-22
+
+#### Parent Approval 2026-10-22
+
+The owner's current request explicitly authorizes status and lifecycle
+processing for implemented Specs, Plans and Tasks. After comparing the current
+contract, implementation, existing acceptance and verification scope, today's
+decision approves this package's Spec and Plan at their first stable version,
+`1.0.0`. This records no parent approval or execution transition retroactively
+at the time of the original implementation.
+
+#### Reconciliation Readiness 2026-10-22
+
+Readiness to start the current document reconciliation was reviewed under
+the approved parents. Every criterion/Work Unit pair in the Plan has existing
+PASS evidence, all acceptance decisions are accepted, and no FAIL is unresolved.
+Historical Evidence and Criterion Acceptance are reused unchanged. This current
+readiness review moves the Task from `draft` to `ready`.
+
+#### Reconciliation Execution Review 2026-10-22
+
+After the readiness review, current document closure work started and the
+following scope and evidence were checked.
+
+The metrics-only:8100 listener and telemetry, both Prometheus jobs, and
+scrape/authentication alert source were compared. The existing IaC fix resolves
+the initial IaC FAIL; criterion 1–5 acceptance is reused. Later deployment stays
+within the reported scope of Current Deployment Reconciliation above. No fresh
+HOME observation or Agent recreate occurs.
+
+#### Reconciliation Completion Decision 2026-10-22
+
+After the current readiness and execution reviews, today's decision completes
+this Task's document closure for its approved contract. Existing PASS evidence,
+accepted decisions, resolution relationships and unobserved results remain
+unchanged. This decision supplies no new test or operational PASS. The canonical
+reader derives archive readiness; no archive approval or Stage 98 move occurs.
+Before merge, the coordinator combines and records structural and metadata
+validation and independent review of this change.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0239 | draft | approved | #parent-approval-2026-10-22 |
+| SPEC-0239-PLAN-0001 | draft | approved | #parent-approval-2026-10-22 |
+| SPEC-0239-TSK-0001 | draft | ready | #reconciliation-readiness-2026-10-22 |
+| SPEC-0239-TSK-0001 | ready | in-progress | #reconciliation-execution-review-2026-10-22 |
+| SPEC-0239-TSK-0001 | in-progress | completed | #reconciliation-completion-decision-2026-10-22 |
 
 ## Evidence
 

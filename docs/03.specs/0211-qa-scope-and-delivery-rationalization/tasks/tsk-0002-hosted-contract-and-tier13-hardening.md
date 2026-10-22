@@ -1,10 +1,10 @@
 ---
 title: "Hosted Contract and Tier 13 Hardening"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0211-TSK-0002"
 parent_ids:
@@ -233,6 +233,48 @@ Frozen implementation SHA-256 values before document-only result updates are:
 | `tests/lib/document_governance/metadata/test_profile.py` | `d8e1d8952548ae41faa7e580dad6f983901f81e1d7c9a68ec3a3c2af2256f0f9` |
 | `tests/lib/document_governance/test_architecture.py` | `1de841e550931828a1a5d7fad73b3e415f2937bbb59de7ad88b5d1fcb35a2665` |
 | `tests/lib/supply_chain/test_grype_db_seed.py` | `1585f6863fa213e00c254d2038aa300819097befe6185503094888514062eafe` |
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0211-TSK-0002 | draft | ready | #current-readiness-review-on-2026-10-22 |
+| SPEC-0211-TSK-0002 | ready | in-progress | #current-execution-review-on-2026-10-22 |
+| SPEC-0211-TSK-0002 | in-progress | completed | #current-completion-decision-on-2026-10-22 |
+
+### Current bounded closure scope on 2026-10-22
+
+Under the already approved SPEC-0211/Plan, the review reuses the W70 support
+Task's criteria 2/3/5 PASS evidence, failure-resolution links, PR 505 candidate
+at its exact head, protected merge and merged-main security records. The baseline
+revision is `bd4168e20861d557c9a4f31025a2a649be3e8066`. This Task owns no criterion
+acceptance decision, so TSK-0001's acceptance and other QA/operational residuals
+remain unchanged.
+
+### Current readiness review on 2026-10-22
+
+The review checked the owner's current status/lifecycle request, the approved
+parents, this Task's assigned criterion/Work Unit pairs and the existing
+PASS/FAIL/acceptance records. Today's document closure review enters `ready`
+without backdating historical execution.
+
+### Current execution review on 2026-10-22
+
+The document closure review actually compared the assigned criterion/Work Unit
+pairs, existing PASS and FAIL resolution links, acceptance ownership and parent
+approvals. Today's work is this document review; historical test and operational
+dates and inputs remain as recorded in Evidence. No new runtime, cleanup or
+token operation ran.
+
+### Current completion decision on 2026-10-22
+
+W70's assigned criteria 2/3/5 pairs, resolved failures, final local changed-profile
+recovery and PR 505 hosted candidate/protected-merge receipts satisfy this
+support Task's closure scope. This Task owns no separate acceptance decision,
+and SPEC-0211 as a whole remains incomplete.
+Today's closure review marks this Task `completed` while preserving the
+historical evidence and acceptance tables exactly. This status does not claim
+new operational validation or an archive move.
 
 ## Evidence
 

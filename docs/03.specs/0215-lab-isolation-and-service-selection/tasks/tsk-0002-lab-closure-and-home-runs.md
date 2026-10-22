@@ -1,10 +1,10 @@
 ---
 title: "LAB Closure and HOME LAB Run Task"
-version: "0.1.6"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0215-TSK-0002"
 parent_ids:
@@ -240,6 +240,48 @@ AskUserQuestion. SPEC-0215 criterion 6 (Spec 0.3.0) now counts a targeted
 mutation that fails a guard as its RED when the 0.1.0 source already met the
 contract. The "Contract 11 and 12 mutation" PASS row therefore resolves the
 "Contract 11 and 12 at 0.1.0" FAIL, and the owner accepted criterion 6.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0215-TSK-0002 | draft | ready | #current-readiness-review-on-2026-10-22 |
+| SPEC-0215-TSK-0002 | ready | in-progress | #current-execution-review-on-2026-10-22 |
+| SPEC-0215-TSK-0002 | in-progress | completed | #current-completion-decision-on-2026-10-22 |
+
+### Current bounded closure scope on 2026-10-22
+
+The review covers only existing W5–W8, criteria 4–7 PASS evidence and criteria
+6/7 acceptance. It reuses the owner's 2026-10-13 criterion 6 mutation RED decision
+and the existing HOME/LAB execution records. Cleanup of the 27 volume records
+under Owner actions remains a separate residual outside the accepted completion
+criteria; no deletion or new observation of those records ran today.
+
+### Current readiness review on 2026-10-22
+
+The review checked the owner's current status/lifecycle request, the approved
+parents, this Task's assigned criterion/Work Unit pairs and the existing
+PASS/FAIL/acceptance records. Today's document closure review enters `ready`
+without backdating historical execution.
+
+### Current execution review on 2026-10-22
+
+The document closure review actually compared the assigned criterion/Work Unit
+pairs, existing PASS and FAIL resolution links, acceptance ownership and parent
+approvals. Today's work is this document review; historical test and operational
+dates and inputs remain as recorded in Evidence. No new runtime, cleanup or
+token operation ran.
+
+### Current completion decision on 2026-10-22
+
+Every assigned W5–W8 pair has existing PASS evidence, and criteria 6/7 are
+accepted. Mutation evidence and the owner's decision resolve criterion 6's
+historical FAIL. Cleanup of the 27 volume records remains with the owner.
+TSK-0001 still lacks the C4/W4 legacy-table linkage, so SPEC-0215 as a whole is
+not ready for archive review.
+Today's closure review marks this Task `completed` while preserving the
+historical evidence and acceptance tables exactly. This status does not claim
+new operational validation or an archive move.
 
 ## Evidence
 
