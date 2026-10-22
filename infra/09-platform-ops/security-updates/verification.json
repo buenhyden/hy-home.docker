@@ -4981,5 +4981,261 @@
     "vendor_channel_interpretations": 13,
     "security_acceptance": "NOT_RUN",
     "meaning": "Metadata-only supplier candidate coverage, not whole ROOT stable/image/security/native completion"
+  },
+  "current_receipt_assessment": {
+    "recorded_at": "2026-10-22T05:40:42.562328+00:00",
+    "source_revision": "73433adc1b685582741604d8acc1f6f70be0adbe",
+    "kind": "source-only-receipt-clarification",
+    "supersedes_current_claims": [
+      "update-ledger.json#/entries/71/candidate_openbao_receipt",
+      "update-ledger.json#/entries/72/candidate_openbao_receipt",
+      "verification.json#/openbao_source_binding"
+    ],
+    "historical_receipts_preserved": true,
+    "valid_for_current_source": false,
+    "current_native_result": "NOT_RUN",
+    "current_home_result": "NOT_RUN",
+    "raw_evidence_status": "RAW_EVIDENCE_UNAVAILABLE",
+    "invalidation_reason": "Historical source-bound synthetic evidence does not certify the current source-only changes; no new Native or HOME invocation was performed.",
+    "reported_aggregate": {
+      "kind": "aggregate",
+      "members": [
+        {
+          "member_id": "tests.validation.test_openbao_rehearsal",
+          "member_id_meaning": "Module label for this summary; not an observed invocation run_id.",
+          "reported_source_revision": "bcdf2920003e421ec6679fe45da25060817ef6b9",
+          "reported_input_sha256": "2264174ff7726d68108e7f8e9592c6f9e1db30e0b301e67ead98e0bc493d46f0",
+          "evidence_status": "REPOSITORY_REPORTED",
+          "raw_evidence_status": "RAW_EVIDENCE_UNAVAILABLE",
+          "reported_passed_tests": 12,
+          "reported_duration_seconds": 508.185,
+          "reported_log_sha256": "768de56df78ecfa354358e59d7c1fc15b62b14cdf7b74d71a9880c14ff2d476a",
+          "log_digest_verified": false,
+          "run_id": null,
+          "argv": null,
+          "exit_code": null,
+          "started_at": null,
+          "ended_at": null,
+          "raw_fields_verification": "NOT_VERIFIED"
+        },
+        {
+          "member_id": "tests.validation.test_openbao_candidate",
+          "member_id_meaning": "Module label for this summary; not an observed invocation run_id.",
+          "reported_source_revision": "bcdf2920003e421ec6679fe45da25060817ef6b9",
+          "reported_input_sha256": "2264174ff7726d68108e7f8e9592c6f9e1db30e0b301e67ead98e0bc493d46f0",
+          "evidence_status": "REPOSITORY_REPORTED",
+          "raw_evidence_status": "RAW_EVIDENCE_UNAVAILABLE",
+          "reported_passed_tests": 2,
+          "reported_duration_seconds": 276.412,
+          "reported_log_sha256": "3d7c4b3afefecb2c16fa75cdcabccc9de60248008b97d218f64e7d23a4da52a8",
+          "log_digest_verified": false,
+          "run_id": null,
+          "argv": null,
+          "exit_code": null,
+          "started_at": null,
+          "ended_at": null,
+          "raw_fields_verification": "NOT_VERIFIED"
+        }
+      ],
+      "reported_passed_tests": 14,
+      "cumulative_reported_duration_seconds": 784.597,
+      "aggregation_rule": "Sum repository-reported counts and durations from two modules on the reported same source; not a single process exit or wall-clock measurement.",
+      "deduplicated_coverage_verified": false,
+      "split_acceptance_verified": false,
+      "meaning": "Historical synthetic successes remain repository-reported. Actual argv, exit codes, start/end times, log bytes and split-acceptance authority were not independently verified."
+    },
+    "consumer_scope": "Existing latest/security gates ignore native receipt fields and retain their stable/security evidence checks; this clarification adds no ingestion validator or deployment acceptance.",
+    "current_source_assessment": {
+      "checked_at": "2026-10-22T06:04:30.106685+00:00",
+      "source_revision": "73433adc1b685582741604d8acc1f6f70be0adbe",
+      "revision_scope": "Uncommitted working tree on the stated base.",
+      "input_scope": "Historical native input set plus changed local OpenBao snapshot/TLS/restore, evidence/registration tests and the RUN0085 functions extracted by window tests; not the entire ROOT service closure.",
+      "input_files": [
+        {
+          "path": ".github/workflow-contract.yml",
+          "sha256": "98c94c6e18f11c3acc445ba71f6dd896f9bdc0a43fb95571285f093937f24d95"
+        },
+        {
+          "path": "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md",
+          "sha256": "ffc670b12518b1bd4ddfce1c04e547fbb2dc26497d67fcee5eba713ee1e87d5c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/dynamic/tls.yaml",
+          "sha256": "79c50d69fb674a8d8afdfee953b099f0bc4ab7f22cf516ff05e1362467f531db"
+        },
+        {
+          "path": "infra/03-security/openbao/config/agent.hcl",
+          "sha256": "d5638223f40bce5776b5802ed8d28f21ddd034ac878ac37af113a8a8b8e7be43"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/backup-snapshot.hcl",
+          "sha256": "1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/operator.hcl",
+          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
+          "sha256": "68c20addfcfab05118c75ff5f0b25330743c82f7f7f1305f26b3f0fe65652d50"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/renderer-cleanup.hcl",
+          "sha256": "a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/renderer-issuer.hcl",
+          "sha256": "0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5"
+        },
+        {
+          "path": "infra/03-security/openbao/config/policies/renderer.hcl",
+          "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+        },
+        {
+          "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
+          "sha256": "bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e"
+        },
+        {
+          "path": "infra/03-security/openbao/config/renderer-issuer-token-role.json",
+          "sha256": "4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f"
+        },
+        {
+          "path": "infra/03-security/openbao/config/renderer-role.json",
+          "sha256": "e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11"
+        },
+        {
+          "path": "infra/03-security/openbao/config/templates/grafana_admin_password.ctmpl",
+          "sha256": "7beb12fafc5c28405fd1fbd3ea1765e346af38554405f64c45ebf1f29d5c9245"
+        },
+        {
+          "path": "infra/03-security/openbao/config/templates/grafana_admin_password_version.ctmpl",
+          "sha256": "2c64e07e5fe4d3fdd1cd8d2d2c75cb48fc38309eda7892474831badb3a697f49"
+        },
+        {
+          "path": "infra/03-security/openbao/config/templates/keycloak_admin_password.ctmpl",
+          "sha256": "578eeae3ebda8fce208c9c2f0d71d06d63255c872c77ca22b27b54315e944ece"
+        },
+        {
+          "path": "infra/03-security/openbao/config/templates/keycloak_admin_password_version.ctmpl",
+          "sha256": "f430b7ab1cd394d9e767ebde92c465850e8ba9e49b6f0861247cb98d0993903f"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "f8eac484b704836fb06ff1b435d405213d0449c311df32863ea53a22ffeed638"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/check-tls-material.sh",
+          "sha256": "63d0de9d25be70400f90aa18956c5919fdde86832bad008a8cef533ae4676841"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/health-agent.sh",
+          "sha256": "61a6f57fcc968384c464bc3218a14530d4686152f837b06dca23dee5f82223a8"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/install-renderer-issuer.sh",
+          "sha256": "27a097f133ced7bc1d3657c401a16fa923d464878a10b38d69d5e0e7033343c9"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/issue-renderer-secret-id.sh",
+          "sha256": "d92ed0353fc6885ec803a223cb1eeb845d78b3f86cde4e2ed700c9a276df1878"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/protected-raft-snapshot.py",
+          "sha256": "d5dd5086981bf9dfff7977e527ed28cb760194fe32157945e05ef5342633d174"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/renderer-issuance.py",
+          "sha256": "ddf50680b04d00f7dc7bee3a93bbaa9e95148e1daacef93db090dab1fc40d2b8"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/renderer-request.sh",
+          "sha256": "be1865325138679ab8cac82e0203cdbe308c2f66651b920c0f2c4cb9ae103014"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/start-agent.sh",
+          "sha256": "2ba722a35ea190c14912b9da7ce923f0b286d47f4650cf091775d5f0cebe151f"
+        },
+        {
+          "path": "infra/03-security/openbao/scripts/start-server.sh",
+          "sha256": "fa6465e70fe6c736710d42cee0525314a80837fbbf5e591c6535ffb4980d4fb3"
+        },
+        {
+          "path": "infra/06-observability/gatus/config/config.yaml",
+          "sha256": "e9779a0a8020ed5438984656e1fc08d4e62ab9801fca353db4f47ca5ecaa839d"
+        },
+        {
+          "path": "infra/06-observability/gatus/docker-entrypoint.sh",
+          "sha256": "4d4264b50f8fd4998bded541461fba7db51a86b34c07a7418ed88c0eff6b6f2f"
+        },
+        {
+          "path": "infra/06-observability/prometheus/config/alert_rules/alert_rules.openbao.yml",
+          "sha256": "571805b5952583dd256c62881ecc1711469110a4bd44fb888e872089dd417d4e"
+        },
+        {
+          "path": "infra/06-observability/prometheus/config/prometheus.yml",
+          "sha256": "75380a3321a30b404e8d0ad49ee9e05cfd3eaa5cc91399555278964b7cc12e96"
+        },
+        {
+          "path": "infra/06-observability/prometheus/scripts/start.sh",
+          "sha256": "cf7e5a219c9742f18ede78d07efdb3d48fb9bef6ffa3b832d11b62aec5184151"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/bin/hyhome-backup.sh",
+          "sha256": "1d04a7aca3822aa5cadd72a24a56f226ba20db51236ce6fa8f6a43dba1f642aa"
+        },
+        {
+          "path": "tests/lib/supply_chain/test_update_gates.py",
+          "sha256": "2a6b43d391d3f64b2e498a3586f993cca198e2cd1681d9ff23ef65a911403fd3"
+        },
+        {
+          "path": "tests/validation/_openbao_rehearsal_clients.py",
+          "sha256": "43a5b227c8e678a6cb87782ca0db267cedfa74f8fb693efcc9e08f229c93fb40"
+        },
+        {
+          "path": "tests/validation/_openbao_rehearsal_fixture.py",
+          "sha256": "6fafd2d4a699f8c99ca94842b8eccc04e020faaa03be00f8efb884fce1bdd2f1"
+        },
+        {
+          "path": "tests/validation/fixtures/openbao-audit-alerts.test.yml",
+          "sha256": "4b555281d2d5b58fe1a14f3f69dce17d4b64397e68522910153e420850cdb7e9"
+        },
+        {
+          "path": "tests/validation/test_openbao_protected_raft_snapshot.py",
+          "sha256": "267fae8ea4d336b062e786fc03a97d65d3f877e6638d84fdcf0d28ab7d054086"
+        },
+        {
+          "path": "tests/validation/test_openbao_protected_restore_inputs.py",
+          "sha256": "8de572918e2eada3697fbbc294c351abc86d6e87e8f1711e86ece4e8d1f8bfc8"
+        },
+        {
+          "path": "tests/validation/test_openbao_rehearsal.py",
+          "sha256": "ea7a89642bcc3c66dcc670ca0c6f53e1f88046fa78045178e096bff46b6e7fae"
+        },
+        {
+          "path": "tests/validation/test_openbao_tls_material.py",
+          "sha256": "fbc09a2984f10392ed004978c53d92380a8fbf880642b4550792eab4e3989c69"
+        },
+        {
+          "path": "tests/validation/test_openbao_window_overrides.py",
+          "sha256": "e9bb974bbf094f68abadc62e6d7d90dac4d503a7d8a7af3e3b78b31d4e6167a7"
+        }
+      ],
+      "input_manifest_sha256": "078f9d12c3c73d5cada9deb436cbf09708b9f7e4343628f6d6318226fe5b721f",
+      "algorithm": "SHA256 of json.dumps(input_files, sort_keys=True) UTF-8 bytes.",
+      "changed_or_added_paths": [
+        ".github/workflow-contract.yml",
+        "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md",
+        "infra/03-security/openbao/scripts/check-tls-material.sh",
+        "infra/03-security/openbao/scripts/protected-raft-snapshot.py",
+        "tests/lib/supply_chain/test_update_gates.py",
+        "tests/validation/_openbao_rehearsal_clients.py",
+        "tests/validation/test_openbao_protected_raft_snapshot.py",
+        "tests/validation/test_openbao_protected_restore_inputs.py",
+        "tests/validation/test_openbao_tls_material.py",
+        "tests/validation/test_openbao_window_overrides.py"
+      ],
+      "native_result": "NOT_RUN",
+      "valid_for_current_source": false
+    }
   }
 }

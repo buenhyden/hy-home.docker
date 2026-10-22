@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.1.4"
+version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-22"
 ---
 
 # 보안 업데이트 조사 증거
@@ -71,6 +71,21 @@ scan·공급자 재조회·HOME 배포 결과를 만들지 않습니다.
 | `service-inventory-integration.patch` | 수신 당시 renderer Airflow Env 셀 갱신 제안; 현재 authoritative diff가 아닌 역사 입력 |
 
 ## Usage
+
+### 현재 실행 근거와 과거 집계의 구분
+
+OpenBao 두 행의 `current_candidate_receipt`는
+`verification.json#/current_receipt_assessment`를 가리킵니다.
+기존 `candidate_openbao_receipt`와 source binding은 당시 기록 그대로 보존합니다.
+그 안의 결합 명령·종료 코드·14건·784.597초는 새 단일 실행 영수증이 아닙니다.
+현재 해석은 두 모듈의 보고된 12건/508.185초와 2건/276.412초를 구분하며,
+합계 시간은 누적 실행 시간입니다. 실제 argv·run ID·종료 코드·시작/종료 시각과
+로그 원문을 확인하지 못해 `NOT_VERIFIED`·`RAW_EVIDENCE_UNAVAILABLE`로 둡니다.
+모듈 이름은 집계 구성원의 표지이며 관측된 run ID가 아닙니다.
+중복 없는 범위와 분할 인수도 미검증입니다. 현재 소스의 Native/HOME 결과는
+`NOT_RUN`이며 과거 `valid_for_current_final_candidate` 값은 당시 후보에만 적용합니다.
+latest/security gate는 이 영수증 필드를 소비하지 않습니다. 이번 자료 정합은
+새 실행 입력 검사기나 운영 인수를 추가하지 않습니다.
 
 ### 현재 후보 release-channel provenance
 

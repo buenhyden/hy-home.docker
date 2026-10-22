@@ -260,6 +260,43 @@ class SecurityUpdateGateTests(unittest.TestCase):
 
 
 class UpdateEvidencePackageTests(unittest.TestCase):
+    def test_current_native_aggregate_cannot_claim_a_single_invocation(self):
+        root = Path(__file__).resolve().parents[3]
+        package = root / "infra/09-platform-ops/security-updates"
+        ledger = json.loads((package / "update-ledger.json").read_text())
+        verification = json.loads((package / "verification.json").read_text())
+        assessment = verification["current_receipt_assessment"]
+        self.assertFalse(assessment["valid_for_current_source"])
+        for row in ledger["entries"]:
+            if "candidate_openbao_receipt" not in row:
+                continue
+            reference = row["current_candidate_receipt"]
+            self.assertEqual("verification.json#/current_receipt_assessment", reference)
+        summary = assessment["reported_aggregate"]
+        self.assertEqual("aggregate", summary["kind"])
+        self.assertFalse(
+            {"command", "argv", "exit_code", "duration_seconds"} & summary.keys()
+        )
+        runs = summary["members"]
+        self.assertGreater(len(runs), 1)
+        self.assertEqual(len(runs), len({run["member_id"] for run in runs}))
+        self.assertEqual(
+            summary["reported_passed_tests"],
+            sum(run["reported_passed_tests"] for run in runs),
+        )
+        self.assertAlmostEqual(
+            summary["cumulative_reported_duration_seconds"],
+            sum(run["reported_duration_seconds"] for run in runs),
+        )
+        for run in runs:
+            self.assertEqual("REPOSITORY_REPORTED", run["evidence_status"])
+            self.assertEqual("RAW_EVIDENCE_UNAVAILABLE", run["raw_evidence_status"])
+            for field in ("run_id", "argv", "exit_code", "started_at", "ended_at"):
+                self.assertIsNone(run[field])
+            self.assertEqual("NOT_VERIFIED", run["raw_fields_verification"])
+        self.assertFalse(summary["deduplicated_coverage_verified"])
+        self.assertFalse(summary["split_acceptance_verified"])
+
     def test_current_rows_match_root_compose_source(self):
         from scripts.lib.document_governance.operations_catalog import (
             _compose_mapping,
