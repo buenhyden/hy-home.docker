@@ -534,9 +534,10 @@ class RuntimeUnitTests(unittest.TestCase):
         effect.runtime.docker.return_value = self.result(stdout=b"0 false")
         effect.runtime.remember.side_effect = ["p" * 64, "agent-volume", "q" * 64, "r" * 64]
         effect.runtime.exec.side_effect = [
+            # The templates write the exact value; HOME's canary ended in a newline.
             self.result(stdout=b"alpha\n"),
             self.result(stdout=b"1\n"),
-            self.result(stdout=b"beta\n"),
+            self.result(stdout=b"beta"),
             self.result(stdout=b"2\n"),
             self.result(stdout=b""),
             self.result(stdout=b""),
@@ -558,7 +559,7 @@ class RuntimeUnitTests(unittest.TestCase):
                 (bundle / "config").mkdir(parents=True, mode=0o700)
                 effect.materialized_bundle = bundle
                 effect.materialized_helper = root / "helper"
-                effect._agent("server", root, (("alpha", 1), ("beta", 2)))
+                effect._agent("server", root, (("alpha\n", 1), ("beta", 2)))
                 # RUN-0085 runs the restore under umask 077; root with only CHOWN
                 # must still traverse every input directory as "other".
                 modes = {name: stat.S_IMODE((root / name).stat().st_mode) for name in ("agent", "out", "bundle", "bundle/config")}
