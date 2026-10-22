@@ -1,8 +1,8 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.9"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-22"
 layer: "specs"
@@ -531,6 +531,102 @@ gate PASS. This bounded registration result adds no criterion acceptance,
 measurement, native proof or permission change. Canonical exception binding,
 service workload and recovery evidence remain open. Historical receipts and
 the acceptance tables below are preserved.
+
+### v29 Source Readiness Review 2026-10-22
+
+The current readiness review on 2026-10-22 confirms that SPEC-0218 and its
+Plan are approved at version 1.0.0 following PR #559. The direct v29 request
+and completed investigation gate bind the existing validator, regression
+fixtures, official Python toolchain and exclusive source-writing scope for
+the exception-date correction. These inputs are sufficient to start this
+bounded public source work, so the Task moves from `draft` to `ready`.
+This is today's readiness decision, not a backdated claim about the earlier
+P07 implementation or its delivery route. Representative workload, exact
+service observation, least privilege and recovery prerequisites remain
+unmet for their dependent operational steps.
+
+### v29 Source Execution Start 2026-10-22
+
+The authorized v29 source work began after the investigation gate established
+those inputs: exception-date regression tests, witnessed RED results and the
+minimal shared validator correction are recorded below. Following the current
+readiness decision, this state reconciliation records `ready` to
+`in-progress` from that observed source execution. It does not claim that the
+tests ran again or start W11–W15 runtime work,
+accept criteria 6–10, complete P07, or authorize any host, native, credential
+or remote action. Historical evidence and acceptance decisions remain intact.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0218-TSK-0002 | draft | ready | #v29-source-readiness-review-2026-10-22 |
+| SPEC-0218-TSK-0002 | ready | in-progress | #v29-source-execution-start-2026-10-22 |
+
+### v29 exception-date boundary correction — 2026-10-22
+
+The direct v29 continuation and the completed investigation gate authorize this
+bounded P07 source correction on baseline
+`49fd95a6ed482d7194c840b43b73a030be6f3d5d`. The shared validator accepted both
+a future `reviewed` date and a `review_by` before `reviewed`. It now rejects
+both, while accepting today's deadline and the existing 366-day maximum.
+No registry entry, service control, deadline, template, or LAB model changed.
+POL-0001 states those exact date boundaries and clarifies that `--report`
+does not inventory rootfs, UID, host namespaces or Docker socket authority.
+The monthly cadence and existing 2027-04-07 deadlines are preserved; their
+owner's scheduling interpretation is not replaced by a new 30-day rule.
+
+TDD used the existing official Python 3.14.8/controller-lock environment at
+`/tmp/hyhome-v28-toolchain-venv`. Before production edits,
+`python -m unittest
+ tests.validation.test_compose_baseline_gates.ComposeControlsTests
+ tests.lib.ops.test_storage_write_rate -v` ran 28 tests and exited 1 with
+22 failing subcases and three errors across the date and W7 regressions.
+The focused corrected run passed all 28 in 0.599 s. A later finite-calculation
+boundary test was included in the full affected-module run:
+
+```sh
+/tmp/hyhome-v28-toolchain-venv/bin/python -m unittest \
+  tests.validation.test_compose_baseline_gates \
+  tests.lib.ops.test_storage_write_rate \
+  tests.lib.ops.test_root_resource_assessment \
+  tests.validation.test_root_resource_contract -v
+```
+
+The run used umask 022, with all seven native-rehearsal opt-ins explicitly
+unset (`HYHOME_PG_REHEARSAL`, `HYHOME_SSO_REHEARSAL`,
+`HYHOME_STORYBOOK_REHEARSAL`, `HYHOME_CDC_REHEARSAL`,
+`HYHOME_BACKUP_REHEARSAL`, `HYHOME_SEAWEEDFS_REHEARSAL`,
+`HYHOME_MAIL_REHEARSAL`). It exited 0: 163 tests counted, 133 PASS and
+30 declared native SKIP, in 31.727 s. This includes the resource evaluator's
+shared-validator callers and synthetic CLI checks; static public Compose
+rendering is not a runtime rollout. Scoped Ruff 0.15.12 check and format
+passed for the five changed Python files.
+
+The pinned environment has no installed `coverage` module; no dependency was
+added. A requirement-scoped rerun of 29 tests under standard-library `trace`
+exited 0 and measured `compose_controls.check` statement-line coverage at
+58/59 (98.31%). This is selected-function statement-line coverage, not branch,
+whole-module, deployed-service or runtime coverage. Its source SHA256 is
+`4abaecd36d1c4ca98b989249e2b153b1b01f371016fcacfcce939b79f7089fc5`.
+
+Mode-0600 retained receipts: `/tmp/hyhome-v29-resources-red.log` SHA256
+`aea436b80bda67f1071266b6d697876dd80474f1b71cc7bffa9a15df24368b48`;
+`/tmp/hyhome-v29-resources-green-focused.log` SHA256
+`64db5032f078c851326737f1aec4766f7d2e795462fae269087d7ae4238c67c3`;
+`/tmp/hyhome-v29-resources-green-full.log` SHA256
+`8554f27583544e24a8fdf717c406b757dd42a7a3c3df3fad66926d3ec4c8a3bf`;
+`/tmp/hyhome-v29-resources-coverage.json` SHA256
+`eb8f1e6d66bcdd350c46a3a16ea0b37ed90985917f67fbfeb948bb40f926278d`.
+The latter binds the exact measured source and names the coverage scope.
+
+This source-only correction changes no Criterion Acceptance. The current
+readiness and source-execution events above establish `in-progress` only.
+Canonical exception binding, representative workloads, measured
+budgets, least privilege, service recovery and HOME acceptance remain with
+W11–W16 and their existing owners. No load, actual W7 collection, secret,
+Docker runtime mutation, token action or remote write ran. Root retains final
+registered gates, independent review and commit ownership.
 
 ## Evidence
 
