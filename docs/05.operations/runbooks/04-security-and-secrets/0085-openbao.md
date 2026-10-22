@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.43"
+version: "0.12.44"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -1620,6 +1620,12 @@ if p01_eso_gate; then P01_FINISH_GATE_EXIT=0; else P01_FINISH_GATE_EXIT=$?; fi
 ```
 
 첫 gate 실패는 조사 대상이다. API/Store/controller 실패와 ES stale/오류를 구분한다.
+원문 요청의 원인 미확정 시 동일 Store의 전체 여섯 대상 강제 갱신과 아래 현행
+실패 대상 한정 절차는 동등한 수용조건으로 입증되지 않았다. 외부 ESO 운영자는
+정확한 여섯 대상, 각 `refreshPolicy`와 설치 CRD·버전의 지원, 현재 갱신 신선도,
+불필요한 재동기화의 영향·비용을 확인한 뒤 전체 여섯 대상 또는 실패 대상 한정 중
+허용할 범위를 결정하고 기록한다. 그 결정 전에는 아래 명령의 기본 대상 집합을
+넓히지 않으며, 대상 집합 결정이 실제 annotation 실행 승인을 대신하지 않는다.
 Store와 writer rollout이 정상이고 **설치 버전**의 manual refresh·각 대상 refreshPolicy가
 지원됨을 확인한 경우에만, 외부 운영자의 별도 forced-refresh 승인으로 실패한 기대 대상
 하나씩 다음 명령을 실행한다. `CreatedOnce`, Periodic의 0간격, 미지원 정책/버전은 중단한다.
