@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.25"
+version: "0.2.26"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -3089,6 +3089,41 @@ account or the owner's separate desktop. Every answer is yes, so step 5 is
 `PASS`, owner-attested. This is the owner's statement; the agent read no
 value, and the repository cannot certify where values are kept.
 
+### v29 current window and residual handoff — 2026-10-22
+
+The v29 local request reuses completed work on main
+`49fd95a6ed482d7194c840b43b73a030be6f3d5d` and reconciles this active P01
+handoff with [SPEC-0243's dated window records](../../0243-openbao-window-readiness/tasks/tsk-0001-openbao-window-readiness.md).
+The 12:30 attempt records W1 delivery, unchanged role targets, W1c/W2 skips,
+protected W3 Snapshot and W3b R2 dump agreement, accepted W3a `-06` restore,
+W4 HOME 2.7.1 transition, W5 typed-JSON issuance and Agent rendering, and W6
+TLS/audit/observation and writer restoration. W2 delivery and the 07:49 and
+13:00:31 manual backup successes retain their original times and scope.
+The failed `-05` attempt remains INDETERMINATE and preserved. No step was
+repeated to produce this document correction.
+
+Reuse the implemented A2 writer handoff, B1 Snapshot empty-entity and operator
+nonempty-entity guards, B2 opt-in restore harness, B3 bounded TLS probe and C1
+receipt/source assessments within their dated inputs. All 47 recorded file
+hashes matched before this edit; the RUN-0085 prose correction changes that
+document's hash, while helper/config bytes remain unchanged. The assessment's
+Native validity remains false, and this review supplies no raw invocation
+evidence or new Native acceptance. SPEC-0243's completed Task closes its approved
+readiness/source-document scope; its terminal record is unchanged and does not
+complete this Task's criterion 11 or P06's criterion 20.
+
+Remaining owners must resolve A1's unknown ESO403 cause and all-six versus
+failed-only refresh decision, B1's exact OIDC entity/alias/provider and identity
+policy contract, A3's exact cleanup/retention inputs, B4's approved sensitive
+old-token generation custody and implementation, and the three D1 owner
+decisions before 2026-11-15. Current-source Native checks, sustained renewal,
+cold boot, actual timer/26-hour freshness and remaining independent recovery
+and P06 consumer acceptance retain their separate evidence gates. No token
+revocation, new issuance, cleanup, cluster write or HOME change is performed.
+Existing Evidence, Criterion Acceptance and lifecycle events remain unchanged;
+combined metadata, links, lifecycle and independent review are recorded by the
+v29 coordinator.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -3181,9 +3216,12 @@ current protected-client/common integration and field-metadata clarification
 were merged in PR472 as5cdf684902. The two reviewed test-fixture TLS minimum
 fixes were not part of that merge and are carried in the follow-up source
 branch recorded above. Hosted clearance is assessed per exact head.
-The current Task remains blocked on the named W23 target/custody and runtime residuals. Source
-and isolated proof do not complete HOME custody/boot/recovery acceptance or
-authorize P06. No secret migration or consumer switch is claimed.
+The current Task remains blocked on the exact identity, custody/cleanup,
+Native, renewal/boot/recovery and consumer residuals recorded in the v29 handoff
+above. Reuse the dated accepted `-06` restore and HOME 2.7.1/Agent window
+outcomes; do not treat the earlier unperformed window steps as current failures
+or repeat issuance to close this document. Those scoped outcomes do not close
+criterion 11, accept all P06 migration/rotation or provide new operating authority.
 
 ## Related Documents
 

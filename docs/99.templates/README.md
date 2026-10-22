@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.3.0"
+version: "2.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "templates"
 ---
 
@@ -119,8 +119,9 @@ fallback과 등록된 frozen archive payload를 포괄하며, 둘 다 현재 작
 Task 상태는 frontmatter 하나에 둡니다. 여러 항목을 따로 추적하는 Task는
 Work Log 아래 `Execution Items` 표의 각 행이 상태를 가지며 frontmatter
 `status`를 쓰지 않습니다. `Evidence`의 각 행은 기존 criterion과 Plan work
-unit, 실제 check와 input, result, location, 그리고 앞선 `FAIL` 행을 해소했는지
-나타내는 `Resolves`를 기록합니다. 수용 판정은 criterion마다 한 번, Task의
+unit, 실제 check와 input, result, location, 그리고 같은 Task에서 criterion을
+공유하고 Check·Work Unit이 같은 앞선 non-PASS 관측을 해소하는 `Resolves`를
+기록합니다. 수용 판정은 criterion마다 한 번, Task의
 `Criterion Acceptance` 표에 둡니다. Plan의 `Work Breakdown`은 여섯 열이고
 새 Task의 `Evidence`는 필수성을 포함한 아홉 열이고 수용 표에는 현재 owner를
 기록합니다. 이전 판본의 보존 기록은 당시 표로 읽습니다. 정확한 열 순서와 vocabulary는 Registry가

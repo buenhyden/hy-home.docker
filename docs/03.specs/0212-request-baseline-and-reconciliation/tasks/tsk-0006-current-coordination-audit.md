@@ -1,8 +1,8 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-22"
 layer: "specs"
@@ -749,13 +749,274 @@ same branch, followed by a main-targeted PR and expected-head merge only after
 required checks pass. No protection changes or history rewrite are authorized;
 recovery is a separately reviewed source revert, not service or data mutation.
 
+### v29 current investigation and execution boundary — 2026-10-22
+
+The user supplied v29 as the current implementation instruction. Its original
+attachment SHA256 is `f564973ffcc408748660505ab4350297c63a5fdc40336edd66798b8452e5e5b8`.
+The declared local package's Docker prompt differs only by CRLF versus LF;
+normalized text SHA256 is `1c30bdb3f6c9fc50606e84fee0df188185f7402171425433ada7de487b70d355`.
+All 88 package checksums and 74 recorded validation input hashes match. The
+existing 214 document checks and 200 regression cases are reused only for that
+unchanged document-package scope, not as new implementation or runtime results.
+The package's current INDEX/matrix v28 self-descriptions and old 73433 final-ref
+receipt remain original source material; the current baseline is recorded here.
+
+The actual root is `/home/hyunyoun/data/hy-home.docker`, common directory `.git`,
+normalized remote `buenhyden/hy-home.docker`. Local HEAD, origin/main and the
+read-only GitHub main observation all equal
+`49fd95a6ed482d7194c840b43b73a030be6f3d5d`; the checkout was clean with only its
+primary worktree. The source tree has 2325 tracked paths and the exact delta
+from the v28 comparison baseline has 98 paths. A local branch
+`codex/v29-local-residuals` now owns this request. The earlier v28 push/merge
+approval is not reused: new push, PR, remote CI/merge, deployment and token
+revocation are NOT_RUN. No local-main integration target is newly authorized.
+
+Five independent investigation shards reviewed the original clauses, supplied
+source material, current canonical contracts, consumers and tests. The source
+investigation inputs were frozen in scratch manifest SHA256
+`2fb7f0460a41a9552dd2f8f61e6acec6df315da7dd227ec38ac8d35128c315e8`.
+Graphify navigation was corroborated against actual files. Existing completed
+source and receipt work was reused instead of reopening terminal Tasks.
+
+The defined populations remain separate: 22 original R items, 68 provided
+summary subconditions, 10 unnamed groups, 87 original compound table rows or
+constraint bullets, 65 historical aliases and 77 follow-up rows. All have a
+source section and routing in the supplied/manual comparison; they are not
+counts of atomic acceptance criteria or completed implementation jobs. Detailed
+manual mapping scratch SHA256: 220336b84ce8f411ff418592e4d8e310840b2d227cc0c0d561890806051d7e97. Composite requirements retain
+their existing consumer-specific acceptance owners and unresolved evidence.
+The original v22-drafts directory is absent; the two legacy learning prompts
+and five supplied v29 standalone prompts exist and are reused as prepared
+instructions, not accepted product plans. No new app, Wiki or Template code is
+created by this Docker request.
+
+| Current source scope | Evidence and bounded disposition |
+| --- | --- |
+| ROOT services | 111 declared services across 13 tiers; existing table 20 columns. Consumer proof remains unverified in 83 rows and backup proof in 77 rows. |
+| Public declaration inventory | All 111 ROOT rows carry key/ID/port/mount/dependency/source projections: 477 unique environment keys (730 uses), 84 consumed service Secret IDs (192 uses), 25 published-port entries, 252 volume entries, 103 dependency edges and 84 declared healthchecks. No environment values were saved. Inventory scratch SHA256 `2f1a1237bf5c68cd21e579167a78841ef745b7af39e3a19fd5620d9d643cf328`; 57 input hashes fixed. ROOT runtime service IDs join 59/59, unexpected=0; the 52 declaration-only services are not inferred failures. |
+| Controls and LAB declarations | 10 public/synthetic scopes, 165 models (111 ROOT, 54 LAB), 28 registered exceptions; existing registered controls had zero findings before the new date guards. No LAB runtime ran. |
+| Secret catalog | 145 public entries: public23, kv_static66, derived3, stable_crypto10, lab34, bootstrap9. Counts do not prove migration or recovery. |
+| Actual Docker identity | Read-only default context: 66 running containers, 59 labeled hy-home-infra and 7 with other/unassigned ownership. Only IDs, image IDs, state and Compose ownership were selected; no env/config/log/credential payload or health assessment. |
+| Supplier and QA provenance | Existing official source observations, 47-file OpenBao source-only assessment, earlier per-input QA continuation and Quality repeat receipts reused within their recorded scopes. RUN-0085 prose now differs from its old source assessment; helper/config bytes remain unchanged and Native validity remains false. |
+
+The initial optional Health-field Docker format failed for containers without
+that field. The corrected minimal identity-only query succeeded; this was a
+collector-format correction, not a service-health failure or operating change.
+Its sanitized scratch receipt SHA256 is
+`47019c1121264c3cb874d9806c4331fb13d9760adacc9400e150e02bd9eaa725`.
+
+### v29 single-writer changes and remaining acceptance
+
+| Requirement / audit scope | Existing primary owner | Current local action / preserved boundary |
+| --- | --- | --- |
+| R11, R18, R19 / registered and unregistered controls | SPEC-0218 P07, TSK-0002 | Correct future/reversed review dates using existing validator and regressions. Keep registered exception values, monthly review meaning, actual uid/rootfs/host/socket controls and workload/recovery acceptance with their owners. |
+| R12, R14, R23 / connectivity and caller identity | SPEC-0204 P03 TSK-0011 | Reuse 48-router source and bounded rate-limit/Hermes receipts. Actual authenticated consumers, trusted subject budgets and direct-port/negative acceptance remain scoped residuals. |
+| R13 / environment and Secret provenance | SPEC-0204 P02 TSK-0010 | Reuse catalog authority and generated-view contracts; private values, delivery, rotation and restore are not accepted here. |
+| R15, R16, R17 / opsflow | SPEC-0204 P10/P04/P05, TSK-0016/0012/0013 | Reuse source, W74 attempt11 and W75 Gen1 receipts. Actual authenticated submit/status/result contract and Gen2 recovery remain incomplete; do not add a guessed service or invent E2E acceptance. |
+| R20, R21, R24 / canonical governance and lifecycle | SPEC-0212 COORD and SPEC-0215 active Task | Reconcile SDLC prose with existing generation7 Registry, preserve old evidence, migrate active tables and add actual C4/W4 document evidence. No new schema, parser exception, duplicate Spec/Task or archive move. |
+| R22 / OpenBao and Secret consumption | SPEC-0204 P01/P06 TSK-0006/0014 | Correct stale active handoff wording and expose all-six versus failed-only refresh decision in RUN-0085. Reuse accepted -06/HOME/Agent/manual-backup records; no new ceremony or token operation. Exact B1 identity, B4 custody/implementation, A3 disposition and actual consumers remain unresolved. |
+| R25, R28 / paths and Wiki preparation | SPEC-0204 P08/P09 TSK-0015/0008 | Correct Wiki readiness references to the existing subject0074 paths. Preserve completed P09, LAB moves and product exclusions. |
+| R26 / external app planning | Existing external planning owners; COORD scope boundary | Reuse the two prepared app prompts and supplied v29 plans-to-execute. Actual external research/product planning is not silently counted as complete. |
+| R27, R31 / images and simultaneous documentation | SPEC-0204 SEC01 TSK-0009 and image owners; P08 structure | Reuse confirmed ownership, supplier updates, exact-input scans/constraints and aggregate receipt semantics. No blanket upgrade, new image pin, security verdict or source-only HOME acceptance. |
+| R29, R30 / SMTP and retirement | SMTP01 TSK-0005, CLN01 TSK-0007; P06 support | Remove the stale instruction to reissue an already delivered Snapshot token. Keep exact SMTP retirement/consumer proof and every delete/cleanup gate separate. |
+| R32 / W7 write-rate evidence | SPEC-0246 TSK-0001 | Reject invalid SMART/counter/device inputs. Preserve old measurements, SSD moves, GC/Ollama and C1–4 acceptance; C5/W6 and C6/W7, boot/mount provenance, hardware endurance interpretation and HDD disposition remain owner-dependent. |
+
+Implementation writers have disjoint file scopes; the coordinator edits this
+Task only after the migration writer freezes it. Existing required correctness,
+governance and security review is independent of implementation. Normal installed
+pre-commit/commit-msg hooks will validate the final owned index without bypass.
+New tests are limited to reproduced input-boundary defects; no mirror tests are
+added for prose. Verification results and local commit identities follow below.
+
+A1 requires the exact six ESO resources, installed CRD/version, refreshPolicy
+and freshness semantics before choosing all-six or failed-only. B1 needs exact
+public entity/alias/provider/identity-policy allowlists. B4 needs approved
+sensitive old-generation custody, child-lease and consumer-verification rules;
+no revocation is performed. A3 requires exact resource identity, retention and
+recovery disposition. D1 keeps 2026-11-15 and the existing three independent
+alternatives; this request grants neither automatic risk renewal nor a new
+expiry. Native memory/hook, CA ordering, W75 recovery, P07 workload, full image
+security, sustained backup/26-hour freshness and P06 acceptance remain with the
+existing active owners. These lanes do not block unrelated local source fixes.
+
+### v29 current criterion and work-unit routing
+
+This current reconciliation supersedes the execution-state descriptions in the
+earlier dated W15 table, while reusing its unchanged criterion/unit/source
+assignments and registered-leaf map. State below is an observation of the
+current source; the final COORD decision is recorded separately. No worktree
+path alone proves another owner's activity. Only the assigned writers held
+leases during this source change; every runtime, migration, rotation, deletion
+or archive operation still requires its existing exact target/recovery gate.
+
+| Requirement | Single primary assignment and observed execution | Source / existing check | Current classification / next input |
+| --- | --- | --- | --- |
+| R11 / R18 / R19 | SPEC-0218 C6/W9, C7/W12, C9/W14; P07 TSK-0002 in-progress | ROOT inventory, common controls, exception registry; compose baseline and resource-assessment regressions | RESIDUAL_ONLY plus date IMPLEMENT_GAP fixed; current workload, unregistered controls and recovery acceptance remain with P07. |
+| R12 / R14 / R23 | SPEC-0204 C17/W33; P03 TSK-0011 in-progress | Connection/port contracts and 48-router source; port inventory/contract and route-auth checks | REUSE_VERIFIED source/bounded receipts; exact authenticated callers, budgets and runtime negative cases remain owner-specific. |
+| R13 | SPEC-0204 C16/W32; P02 TSK-0010 in-progress | Public catalog, generated views and Secret catalog tests | REUSE_VERIFIED authority; private delivery, actual consumption and restore remain NOT_RUN here. |
+| R15 | SPEC-0204 C21/W63–W69; P10 TSK-0016 in-progress | Existing opsflow acceptance fixtures and P04/P05 contracts | PARTIAL: authenticated submit/status/result interface and end-to-end recovery need exact consumer/auth inputs. |
+| R16 | SPEC-0204 C18/W34–W39; P04 TSK-0012 in-progress | Airflow DAG, SQL, S3 adapter; manifest/Airflow/native-boundary modules | RESIDUAL_ONLY: W75 Gen1 reused; Gen2 and empty recovery remain blocked at their recorded custody/evidence gate. |
+| R17 | SPEC-0204 C19/W40–W45; P05 TSK-0013 in-progress | n8n workflow/outbox/custom node; outbox and W74 native-boundary modules | RESIDUAL_ONLY: W74 attempt11 reused; P05/HOME/SMTP/whole P10 acceptance remains separate. |
+| R20 | SPEC-0227 C1/W1; TSK-0001 completed | Current Stage05 templates/schema/reader and profile validation | REUSE_VERIFIED format contract; current subject0074 handoff path correction is bounded documentation, not a new move. |
+| R21 | SPEC-0212 C10/W14; COORD TSK-0006 | Current 39-package inventory, Registry, metadata and lifecycle | Current audit/explicit generation7 adoption; final bounded decision below, not downstream operational acceptance. |
+| R22 | SPEC-0204 C11/W19–W23; P01 TSK-0006 blocked; P06 C20 is support | OpenBao helper/config and RUN-0085; existing P01 modules | RESIDUAL_ONLY: exact B1, A1/A3/B4/D1 and current Native/consumer/recovery conditions remain at P01/P06. |
+| R24 / R26 | SPEC-0212 C9/W15; COORD TSK-0006 | Current routing, exclusions, manual clause/consumer comparison and lifecycle checks | Current contract audit; external app implementation excluded, prepared prompts are not product acceptance. |
+| R25 | SPEC-0204 C8/W56–W62; P08 TSK-0015 in-progress | Existing numbered Stage05 families and README/path checks | REUSE_VERIFIED moves; source references corrected without LAB runtime or archive execution. |
+| R27 / R31 | SPEC-0204 C15/W31; SEC01 TSK-0009 in-progress | Update ledger/verification and latest/security gate checks; P08 supports document structure | REUSE_VERIFIED routing and dated supplier facts; exact image security, build producers, runtime and recovery remain unaccepted. |
+| R28 | SPEC-0204 C13/W25; P09 TSK-0008 completed | Existing Wiki preparation contracts/helpers and preparation tests | REUSE_VERIFIED preparation; product brief, rights, actual consumer and product implementation remain outside this scope. |
+| R29 | SPEC-0204 C14/W26–W30; SMTP01 TSK-0005 in-progress | Canonical COMM-002/COMM-003 alias and SMTP contract tests | REUSE_VERIFIED source; exact retirement/external-consumer proof remains separate from backup success. |
+| R30 | SPEC-0204 C12/W24; CLN01 TSK-0007 draft | Existing five-axis retirement assessment and retirement tests | BLOCKED_FACTS for exact consumer-confirmed disposition; no current delete target or cleanup authority inferred. |
+| R32 | SPEC-0246 C6/W7; TSK-0001 in-progress; C5/W6 follows | W7 collector/comparator/CLI and focused storage tests | IMPLEMENT_GAP fixed for inputs; old moves/measurements reused, actual endurance/HDD disposition and policy acceptance remain pending. |
+
+The unresolved lane and next owner are explicit above; actual 39-package
+statuses and criterion dispositions are bound to the current inventory receipt
+in the verification section below. A source/test PASS never substitutes for
+those owners' acceptance. Original R, unnamed compound rows and historical
+aliases retain their namespaces rather than becoming duplicate implementation
+jobs or new canonical IDs.
+
+### v29 official research applicability
+
+The assigned read-only investigations consulted the following primary sources
+on 2026-10-22. Exact source versions and observed runtime versions remain
+separate; rolling documentation does not prove the installed version.
+
+| Question / existing owner | Official source and applicability |
+| --- | --- |
+| W7 disk identity and cumulative counters / SPEC-0246 | [Linux disk I/O statistics](https://docs.kernel.org/admin-guide/iostats.html): major/minor/name and cumulative/reset semantics support the device-mismatch regression. |
+| W7 cgroup accounting / SPEC-0246 | [cgroup v2](https://docs.kernel.org/admin-guide/cgroup-v2.html): io.stat is per-device; existing physical/virtual double-count upper bounds are retained, not silently changed. |
+| GC floor versus ceiling / SPEC-0246 | [Docker GC](https://docs.docker.com/build/cache/garbage-collection/) and [BuildKit v0.33.1](https://github.com/moby/buildkit/blob/v0.33.1/docs/buildkitd.toml.md): retain the already reconciled driver-specific reserved-space floor; no daemon policy change. |
+| Required definition sets / COORD | [JSON Schema 2020-12 validation](https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-01): length/uniqueness do not prove an independent mandatory-ID set. The existing supplied document helper is unchanged. |
+| Recorded versus aggregated tests / QA04 | [Python unittest](https://docs.python.org/3.14/library/unittest.html): actual run/skip/failure counts stay separate. Project pin 3.14.8 remains the tested interpreter, not a claim of the latest release. |
+| ESO freshness / external cluster owner and P01 | [ExternalSecret refresh policies](https://external-secrets.io/latest/api/externalsecret/): refreshPolicy affects manual refresh applicability; installed CRD/version and all-six versus failed-only equivalence remain unverified. |
+| Periodic token and exact identity / P01/P06 | [OpenBao tokens](https://openbao.org/docs/concepts/tokens/), [JWT API](https://openbao.org/docs/api/auth/jwt/), [identity aliases](https://openbao.org/docs/api/secret/identity/entity-alias/): current 2.7.x documentation supports the remaining lifetime and binding questions; no token/accessor was read or changed. |
+| Subject rate limiting / P03 | [Traefik 3.7 middleware](https://doc.traefik.io/traefik/v3.7/reference/routing-configuration/http/middlewares/ratelimit/): existing peer-based bounds are not user-identity buckets. Current bounded receipts are reused; no guessed request-header identity is introduced. |
+| Existing API reuse / P03/P04/P10 | [Airflow 3.3.2 API security](https://airflow.apache.org/docs/apache-airflow/3.3.2/security/api.html): JWT/auth-manager support is a design input, not proof of the actual consumer/client/realm or business-result contract. |
+
+The exact-model Crucial endurance PDF and SMART FAQ were blocked by the
+supplier's WAF. Search-index excerpts were not treated as a full primary
+source or a new rated-endurance acceptance. SMART extrapolation and a
+manufacturer-rated lifetime budget therefore remain distinct owner decisions.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0006 | draft | ready | #current-coordination-readiness-2026-10-22 |
 | SPEC-0212-TSK-0006 | ready | in-progress | #current-coordination-execution-2026-10-22 |
+| SPEC-0212-TSK-0006 | in-progress | completed | #v29-current-coordination-completion-2026-10-22 |
 
+### v29 final local verification and bounded decision
+
+The five investigations finished before implementation. Their gate manifest
+SHA256 is `2fb7f0460a41a9552dd2f8f61e6acec6df315da7dd227ec38ac8d35128c315e8`.
+The reviewed 17-path implementation manifest is
+`cc758f8bce3bd969cbfb86a8e990a3121f0ae94107070c1be34d6601cd8aa480`,
+patch `330d9c6ecb158474cc8b82223e4db66c4d050b2df63e8ef77e1de80c753bfc5f`.
+Independent correctness, governance and security review approved that patch.
+The user's subsequent English-only correction to SDLC was separately reviewed:
+`.agents/governance/sdlc.md` SHA256
+`5ba2f560707196ac11c90e7477cb2b3c90398c73597877616f76444df0af5f06`,
+with zero Hangul characters. Current routing and inventory were subsequently
+reviewed and approved for this Task's C9/W15 and C10/W14 audit scope.
+
+| Actual check and input | Recorded result and boundary |
+| --- | --- |
+| New date/input regressions before implementation | RED: 28 tests, 22 failures and 3 errors; `/tmp/hyhome-v29-resources-red.log`. |
+| Focused regressions after implementation | GREEN: 28 tests PASS; `/tmp/hyhome-v29-resources-green-focused.log`. |
+| Four affected resource/storage modules, pinned Python3.14.8 | 163 run: 133 PASS, 30 native opt-in SKIP, exit0; `/tmp/hyhome-v29-resources-green-full.log`. No native execution. |
+| Standard-library trace, 29 fast tests | Selected function statement coverage: date check58/59 (98.31%), storage helpers82/86 (95.35%); `/tmp/hyhome-v29-resources-coverage.json`. This is neither branch, whole-module nor project coverage. |
+| Scoped Ruff check/format and `git diff --check` | PASS on the changed code and tests. |
+| Agent governance contract and repository checks | PASS, zero failures; contract14roles/24skills/2providers; `/tmp/hyhome-v29-agent-contract.log` and `/tmp/hyhome-v29-agent-repository.log`. |
+| Changed metadata against49fd95a6e, 17 explicit paths | PASS, selected12 document files, zero violations; `/tmp/hyhome-v29-final-metadata.log`. |
+| Corpus lifecycle and archive recovery against49fd95a6e | PASS, zero violations in both; `/tmp/hyhome-v29-final-lifecycle.log`, SHA256 `535cf5bec50a10b66484a60fe5af408a07c4e3835f39c5ff1131236dfbbc0ce5`. |
+| All-links on the reviewed implementation | PASS,1328 documents/11818 links/zero failures; one existing warning for2870 historical links without capture sources; log SHA256 `bd3180bd8375a5f33a58b3933ab2825cfef0c9a63d6fac165aa7727d74bc3107`. |
+| Operations catalog | PASS; `/tmp/hyhome-v29-final-operations-catalog.log`, SHA256 `29e343ef4a0f24edcd2e693c70d29791be0e67d043bde295645c76f52ff2646b`. |
+| Graph update after code freeze | PASS,29123 nodes/50799 edges/1698 communities; optional SQL/HCL parsers unavailable (16/9 input warnings). Ignored graph output is not a runtime check. |
+| Current canonical package reader and archive-readiness derivation | PASS,39 packages,31 approved/8 draft Specs,42 completed/4 blocked/17 in-progress/13 draft Tasks,22 derived archive-ready packages before the final COORD decision. Receipt `/tmp/hyhome-v29-current-package-inventory.json`, SHA256 `9700edd5b2208526be6c5791d35ebd3981159a442558f3d9721681a413ea0ba7`. |
+| Fresh read-only remote-main check before commits | Remote main remains49fd95a6ed482d7194c840b43b73a030be6f3d5d, matching the local baseline; no remote write. |
+
+The supplied package's unchanged214 document checks and200 regressions, and
+historical v28 QA/hosted receipts, remain reused only for their recorded inputs.
+They are not new service PASS results. The current implementation changes no
+Compose, image, OpenBao helper/config or credential bytes. Completed baseline
+Task bodies and non-migrated acceptance tables were verified unchanged.
+
+The current package inventory is an input observation, not a persistent derived
+status or an instruction to archive. All39 packages remain KEEP; the comparison
+found no current implementation conflict that justifies cancellation. LAB0215's
+bounded C4/W4 evidence migration and document closure are complete; P07 enters
+in-progress for the actual date-validator work. Other accepted historical
+criteria and current operational residuals retain their exact owners.
+
+The SDLC English correction and this result/routing/decision amendment add no
+new Markdown destinations or runtime behavior. Full source checks above are
+reused at their bound inputs; the final amendment receives scoped metadata,
+canonical-reader and independent delta review instead of another aggregate
+profile replay. Normal commit hooks validate each actual staged index.
+
+The first five logical local commits completed with the installed read-only
+pre-commit checks (including Markdown, scoped Ruff where applicable and secret
+detection) and commit-msg Commitizen all PASS: controls `c5790e660`, storage
+`3de8284b1`, English SDLC `5b577d2ba`, OpenBao documentation `3ca53c7ba`,
+Wiki handoff `c735eac55`. This Task/LAB closure is the final separate local
+commit; its eventual hash is reported by the local handoff and final response.
+No aggregate staged controller was replayed before these normal hooks.
+
+Final amendment validation on unchanged Task input `c3373e9ccc061d94ba9b2ab8ce3766b1408eb4c1ac82ab894cff05eeb4f70ea5` actually passed: scoped metadata selected2/violations0, no overrides or legacy exceptions, with identical before/after hashes. Receipt `/tmp/hyhome-v29-final-amendment-metadata.json` SHA256 `b204c502062989f1c9c045ccd4784ccf0fb5257b7a1b1ba0e277971eaffacba9`. The canonical reader also exited0:39 packages,43 completed/4 blocked/16 in-progress/13 draft Tasks,22 derived archive-ready packages; C9/C10 accepted and foreign C19 unresolved, COORD package not archive-ready. Receipt SHA256 `ab70da865b0140715f155955a20e72d2c86fa8e77486216658185e244c567ff0`. Two scratch receipt-collector errors were corrected by using the canonical cached evidence and converting a PurePosixPath for hashing; no repository source was changed to obtain this result.
+
+This final receipt paragraph reports that exact tested input. It adds no new
+Markdown destination, lifecycle row, acceptance decision or executable input;
+its own delta receives independent review and normal staged commit hooks.
+
+The first final-commit attempt was rejected by Markdown MD012 for two extra
+blank separators in the active tables. Those separators were corrected;
+normal hooks must pass on the actual final staged index before delivery.
+
+### v29 current coordination completion 2026-10-22
+
+The current request authorizes this local reconciliation. After the actual
+investigation, source comparison, generation7 adoption, verification and
+independent review, the owner decision accepts C9/W15's current routing audit
+and C10/W14's package/status inventory. This completes only this Task's audit
+scope today, moving it from in-progress to completed. Historical failed rows
+and original tables remain preserved; their explicit same-identity resolutions
+remain visible. No foreign criterion is accepted by this decision.
+
+SPEC-0212 C19/TSK-0008 and its unresolved FAIL remain open, so this package is
+not archive-ready. A1 exact-six ESO refresh/freshness/CRD inputs, B1 exact
+identity/alias/provider policy allowlists, B4 generation custody and consumer
+proof, A3 cleanup/recovery decisions, ROOT native/security/restore acceptance,
+P10 submit/status/result consumers and W7 actual endurance acceptance remain
+with their existing owners. D1 keeps2026-11-15 and its three existing improvement
+alternatives; no new expiry or risk acceptance is created. Public declarations
+and running-container metadata do not prove actual consumption or recovery.
+
+Push, remote PR, merge, release, deployment, runtime change and token operations
+are NOT_RUN in v29. Local Spec-grouped handoff drafts reuse the prepared prompts;
+no external app, new Spec, cleanup target or destructive action is introduced.
+
+### v29 generation7 observation migration
+
+The current v29 request authorizes local document reconciliation at source
+`49fd95a6ed482d7194c840b43b73a030be6f3d5d`. This amendment changes only the current observation-table
+generation and its explicit historical projection. At that migration stage,
+this Task stayed in-progress and both criterion9 and10 decisions stayed pending.
+The separate current completion decision above follows the final audit/review;
+this migration alone accepts no foreign criterion, operations or remote delivery.
+
+The complete original Evidence and Criterion Acceptance tables are preserved
+verbatim below, SHA256
+`e2ff8cbfaef9c68ca9eb0679979089a3b61445787e227c79c687f0b479acd0d0`.
+The current nine-column Evidence retains each original FAIL row's full
+eight-cell projection exactly, with Required set to required. Existing PASS
+observations remain; the two legacy correction PASS rows have Resolves set to
+`-` in the current projection because their old description-shaped Check cells
+do not establish generation7 equivalence. Their original generation6 resolution
+edges and pending decisions remain visible in the historical tables. This is
+an explicit current-graph projection, not a rewrite of those old observations.
+
+```text
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -782,13 +1043,86 @@ recovery is a separately reviewed source revert, not service or data mutation.
 | 9 | pending | Requirement routing audit, Root source inventory observation, Writer and recovery boundary audit | Final Stage99 checks and review remain before this Task can accept its current routing record. |
 | 10 | pending | Current source baseline, Active-package lifecycle inventory, Fresh generation-6 baseline | Final changed-document validation and review remain to be performed. |
 
+```
+
+### v29 legacy Check identities and actual invocations
+
+**The copied Check strings are immutable legacy check identities, including
+their original invalid-message and exit14 wording. They are not the argv or
+exit result of the new successful invocations.** In particular, the old invalid
+commit message is not newly claimed to pass. The new Input and this Location
+record the actual current invocation and replacement input separately.
+
+The pair-validation and acceptance-citation failures were checks of the same
+canonical package reader. A current actual `rtk proxy python3 -` invocation
+loaded `docs/03.specs` through `load_spec_packages` with the current Registry,
+printed `packages=39` and exited0. Its exact stdin source, Python executable and
+version, working directory, input revision and hashes are in
+`/tmp/v29-coord-retained-fail-receipts.json` SHA256
+`f278f48bc77c5a95b94d395a4a3ffb5308466bc49e251a14c7b43668a2dd0043`. This is a current source-table read, not a rerun
+of the historical generation6 inputs or their recorded hashes.
+
+The current actual commit-message check ran:
+
+```text
+rtk proxy /home/hyunyoun/.cache/pre-commit/repoxxe7xpdk/py_env-python3/bin/cz check --message-length-limit 75 --message 'docs(specs): Add current coordination audit'
+```
+
+It printed `Commit validation: successful!` and exited0. The corrected message
+above is a separate input from the invalid historical message retained in the
+Check identity. No commit, history change or remote action ran during this
+message check. The receipt records this exact argv and result. These actual
+reader and message checks support three explicit same-identity resolution rows;
+they do not by themselves accept criterion9 or10.
+
+The in-memory retained-failure trial checked the exact C9/W15 and C10/W14
+contract slice with these observations: original failed-row preservation passed,
+the generation7 evidence contract passed with no unresolved failure, and both
+acceptance decisions stayed pending. Its result is
+`/tmp/v29-coord-retained-fail-result.json`; independent semantic review and full
+repository lifecycle validation remain separate. The earlier history-only
+negative control correctly rejected removal of the three active failed rows;
+this retained-failure migration does not use that rejected path or any parser
+exception.
+
+## Evidence
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Current source baseline | 10 | W14 | `git status --short`; `git rev-parse HEAD`; worktree, log, remote-main and PR #457 metadata reads | `262dc2dde6eea27195f7d8909e9453f5ccc97f66` | PASS | Current COORD worktree | required | - |
+| Requirement routing audit | 9 | W15 | Tracked SPEC-0204, SPEC-0212, SPEC-0218, current Tasks, Compose inventory and update-ledger reads | `262dc2dde6eea27195f7d8909e9453f5ccc97f66` | PASS | W15 requirement routing | required | - |
+| Root source inventory observation | 9 | W15 | Public root-input recomputation and update-ledger comparison | Public manifest `6a88ed4baad99b6623e14843bb2d41e13c80943f5661eaa76135dbd6d311036b` | PASS | W15 requirement routing | required | - |
+| Writer and recovery boundary audit | 9 | W15 | Worktree/path ownership and current owner-Task boundary reads | `262dc2dde6eea27195f7d8909e9453f5ccc97f66` | PASS | W15 writer locks and recovery boundaries | required | - |
+| Active-package lifecycle inventory | 10 | W14 | Current package/frontmatter audit: 32 tracked packages, 12 approved and 20 draft; eight approved parents with nonterminal work listed in W15 | `262dc2dde6eea27195f7d8909e9453f5ccc97f66` | PASS | W14 current input identity | required | - |
+| Fresh generation-6 baseline | 10 | W14 | Registered generation-6 adapter (28 tests); Spec-package, Registry and archive adapter (284 tests); active metadata, all-links and corpus lifecycle/archive selectors | `262dc2dde6eea27195f7d8909e9453f5ccc97f66` | PASS | Current coordination audit input | required | - |
+| Generation-6 pair validation RED | 9 | W15 | `rtk env -i PATH=/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 python3 -c 'import pathlib; from scripts.lib.document_governance.spec_packages import load_spec_packages; from scripts.lib.document_governance.registry import load_registry; root=pathlib.Path.cwd(); packages=load_spec_packages(root / "docs/03.specs", registry=load_registry(root / "docs/99.templates/registry.json")); print(f"packages={len(packages)}")'` | Base/HEAD `262dc2dde6eea27195f7d8909e9453f5ccc97f66`; pre-fix Spec `f5f831adbd1cc33c2fe026c54ff6f2d14452aef7914eb10ee26d31606508394f`, Plan `366e9d76c4772461f2a057358968ff1e2c2f59a20726e50e5cdbfb8c4fc6b48b`, Task `40a6d6fc91c26b1302071c2a68f35d99a317c1bb0ff883d313c1fdb44ebccb74` | FAIL | W15 verification and handoff | required | - |
+| Generation-6 acceptance citation RED | 9 | W15 | Same generation-6 reader | Base/HEAD `262dc2dde6eea27195f7d8909e9453f5ccc97f66`; Spec `f5f831adbd1cc33c2fe026c54ff6f2d14452aef7914eb10ee26d31606508394f`, Plan `366e9d76c4772461f2a057358968ff1e2c2f59a20726e50e5cdbfb8c4fc6b48b`, Task `fd438385eeb06a3ad8bfa9396edb1399d13ed058e276ffc55effe00d09be765b` | FAIL | W15 verification and handoff | required | - |
+| Generation-6 pair and citation correction | 9 | W15 | Same generation-6 reader, exit 0 (`packages=32`) | Base/HEAD `262dc2dde6eea27195f7d8909e9453f5ccc97f66`; Spec `f5f831adbd1cc33c2fe026c54ff6f2d14452aef7914eb10ee26d31606508394f`, Plan `366e9d76c4772461f2a057358968ff1e2c2f59a20726e50e5cdbfb8c4fc6b48b`, Task `5dbb0bd94ed7b5608ffebe81077fe681dff917e662a5adab5692aedb2b53ec10` | PASS | W15 verification and handoff | required | - |
+| Final scoped document validation | 9 | W15 | Generation-6 reader; `check-document-metadata.py --mode check-changed --base-ref 262dc2dde6eea27195f7d8909e9453f5ccc97f66` with the three changed paths; `git diff --check` | Spec `82cfa8f1a13f2adad2acb671b9d4ecee473387d878810328b65e2b08ffccee4a`, Plan `366e9d76c4772461f2a057358968ff1e2c2f59a20726e50e5cdbfb8c4fc6b48b`, Task `b06f5afe3193834553834c6ccb37ccee61b21ca1302d5dbb03a9dc8b1ddda2de` | PASS | W15 verification and handoff | required | - |
+| Independent frozen-diff review | 9 | W15 | Independent COORD review of the three-file frozen manifest | Manifest `124dd2dfe095d023c659fd4eda52d00c2f9ffffbf820f4c3a67101ac92f61ff4` | PASS | W15 verification and handoff | required | - |
+| Published message validation failure | 9 | W15 | Pinned Python Commitizen 4.15.1 check of `docs: add current coordination audit`; exit 14 | Original commit `cdc66cfbbc1943904e4ba6f53114e7f42c12d846` and current `.cz.toml` | FAIL | Delivery correction and worktree recovery | required | - |
+| Corrected message validation | 9 | W15 | Same pinned Commitizen check of `docs(specs): Add current coordination audit`; exit 0 | Replacement message and unchanged `.cz.toml` | PASS | Delivery correction and worktree recovery | required | - |
+| Exact owned-patch recovery | 9 | W15 | Compare staged paths/blobs/patch with original commit; reverse only the matching patch; main status empty; exit 0 | Patch `be4501a3c7f290ae4c0c87e7c1852405917e89d30259c5208ff59a97596922e5` | PASS | Delivery correction and worktree recovery | required | - |
+| Current retained-check resolution 1 | 9 | W15 | `rtk env -i PATH=/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 python3 -c 'import pathlib; from scripts.lib.document_governance.spec_packages import load_spec_packages; from scripts.lib.document_governance.registry import load_registry; root=pathlib.Path.cwd(); packages=load_spec_packages(root / "docs/03.specs", registry=load_registry(root / "docs/99.templates/registry.json")); print(f"packages={len(packages)}")'` | Actual rtk proxy python3 -; current load_spec_packages with Registry; packages=39; exit0; receipt SHA256 f278f48bc77c5a95b94d395a4a3ffb5308466bc49e251a14c7b43668a2dd0043 | PASS | #v29-legacy-check-identities-and-actual-invocations | required | Generation-6 pair validation RED |
+| Current retained-check resolution 2 | 9 | W15 | Same generation-6 reader | Actual rtk proxy python3 -; current load_spec_packages with Registry; packages=39; exit0; receipt SHA256 f278f48bc77c5a95b94d395a4a3ffb5308466bc49e251a14c7b43668a2dd0043 | PASS | #v29-legacy-check-identities-and-actual-invocations | required | Generation-6 acceptance citation RED |
+| Current retained-check resolution 3 | 9 | W15 | Pinned Python Commitizen 4.15.1 check of `docs: add current coordination audit`; exit 14 | Actual cz check --message-length-limit 75 --message 'docs(specs): Add current coordination audit'; exit0; receipt SHA256 f278f48bc77c5a95b94d395a4a3ffb5308466bc49e251a14c7b43668a2dd0043 | PASS | #v29-legacy-check-identities-and-actual-invocations | required | Published message validation failure |
+| v29 current routing audit | 9 | W15 | Current C/W/Task routing, source/check classification, declaration and residual-owner comparison; independent review | Source49fd95a6e plus reviewed patch330d9c6e and current routing amendment | PASS | #v29-final-local-verification-and-bounded-decision | required | - |
+| v29 current package audit | 10 | W14 | Canonical39-package inventory, metadata/lifecycle/link checks and independent bounded-scope review | Current inventory SHA2569700edd5b2208526be6c5791d35ebd3981159a442558f3d9721681a413ea0ba7; reviewed source manifestcc758f8b | PASS | #v29-final-local-verification-and-bounded-decision | required | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 9 | accepted | v29 current routing audit, Current retained-check resolution 1, Current retained-check resolution 2, Current retained-check resolution 3 | Current requirement routing and residual-owner audit completed under the v29 local request; foreign operational acceptance is excluded. | @buenhyden / SPEC-0212-TSK-0006 |
+| 10 | accepted | v29 current package audit | Current39-package status/criterion inventory and lifecycle review completed; no unsupported cancellation or archive move. | @buenhyden / SPEC-0212-TSK-0006 |
+
 ## Review and Completion
 
-The current execution status is `in-progress`; today's
-[reconciliation review](#current-coordination-execution-2026-10-22) owns that
-state. Criteria 9–10 remain pending for the table migration and matching review
-above. The following draft/local-delivery wording is dated history; it does
-not replace today's push and lifecycle decisions.
+The current execution status is `completed`. Today's v29 bounded decision
+above accepts only C9/W15 and C10/W14 after the current audit and independent
+review. Earlier migration-stage pending decisions remain dated history. The
+current request authorizes local delivery only; v28's earlier push and operating
+authority is not reused for v29.
 
 The historical draft below retained criteria 9–10 pending and recorded the status audit
 of 39 packages above with KEEP for every package and zero cancellation or

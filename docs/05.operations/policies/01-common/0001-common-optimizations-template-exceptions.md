@@ -1,6 +1,6 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.4.4"
+version: "1.4.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -30,12 +30,12 @@ created: "2026-06-04"
 - **Required**:
   - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../../infra/common-optimizations.exceptions.json)(schema v2) 단일 파일이다.
   - `scripts/validation/compose_controls.py`는 root를 모든 profile로, `labs/*.yml`을 각각 합성 입력으로 렌더한다. extends·merge 뒤 서비스의 최종 control을 읽는다. gate 진입점은 `scripts/validation/check-template-security-baseline.sh`다.
-  - registry의 `controls`에 등록된 control만 강제한다. 현재 등록된 control은 `no_new_privileges`, `cap_drop_all`, `cap_add`, `privileged`, `init`, `restart`, `healthcheck`, `cpus`, `mem_limit`, `pids_limit`, `secrets_group`, `gpu`이다. 나머지(예: `read_only`)는 `--report`로 보고만 한다.
+  - registry의 `controls`에 등록된 control만 강제한다. 현재 등록된 control은 `no_new_privileges`, `cap_drop_all`, `cap_add`, `privileged`, `init`, `restart`, `healthcheck`, `cpus`, `mem_limit`, `pids_limit`, `secrets_group`, `gpu`이다. `--report`는 검증기가 지원하는 control의 편차를 출력한다. `read_only`, UID, host namespace와 Docker socket 권한은 이 출력에 포함되지 않으므로 별도 서비스 조사로 확인한다.
   - 모든 템플릿은 capability를 전부 버린다(`cap_drop: ALL`). 이미지가 필요로 하는 capability는 leaf가 `cap_add`로 더하고 정확한 예외로 남긴다.
   - `SECRETS_GID`는 secret 또는 secrets 디렉터리 아래 파일을 읽는 leaf만 선언한다. host group 소유 데이터 디렉터리에 쓰는 서비스는 기록된 예외로만 이 group을 유지한다.
   - `pids_limit`은 등급별 초기 예산이다(dev 128, low 256, med 512, high·DB 1024). 부하 측정 전에는 최적값이 아니다.
   - 예외 한 건은 `scope`(`root` 또는 `lab:<이름>`), `compose_file`, `service`, `control`, `allowed_value`를 정확히 지정한다. `kind`(`weakening` 또는 `compatibility`), `owner`, `reason`, `impact`, `mitigation`, `verification`, `reviewed`, `review_by`, `release_condition`도 필수다.
-  - `review_by`는 `reviewed`로부터 1년 이내다. 날짜가 지난 예외는 실패한다.
+  - `reviewed`는 검사일보다 미래일 수 없고, `review_by`는 `reviewed` 이상이며 그로부터 366일 이내다. 검사일과 같은 검토일·마감일은 유효하며, 마감일이 지난 예외는 실패한다. 두 필드는 ISO 날짜로 검사한다.
   - `infra/` Compose의 `container_name`과 `hostname`은 서비스 이름과 같아야 한다.
     SPEC-0225의 host metric 수집을 위해 `network_mode: host`로 실행하는
     `node-exporter`는 현재 구현과 회귀검사에 따라 `hostname`을 선언하지 않는다.

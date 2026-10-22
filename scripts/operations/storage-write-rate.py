@@ -41,10 +41,11 @@ def main(argv: list[str]) -> int:
             smart_used_percent=args.smart_used_percent,
             smart_host_bytes=args.smart_host_bytes,
         )
+        output = json.dumps(result, indent=2, sort_keys=True, allow_nan=False)
     except (OSError, ValueError) as error:
         print(f"ERROR {error}", file=sys.stderr)
         return 2
-    print(json.dumps(result, indent=2, sort_keys=True))
+    print(output)
     return 0 if all(s["status"] == "valid" for s in result["stores"].values()) else 1
 
 

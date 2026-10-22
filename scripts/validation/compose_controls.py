@@ -214,10 +214,17 @@ def check(
         reviewed, review_by = _date(row["reviewed"]), _date(row["review_by"])
         if not reviewed or not review_by:
             findings.append(f"{label}: reviewed and review_by must be ISO dates")
-        elif review_by < today:
-            findings.append(f"{label}: expired on {review_by}")
-        elif (review_by - reviewed).days > MAX_REVIEW_DAYS:
-            findings.append(f"{label}: review_by is more than a year after reviewed")
+        else:
+            if reviewed > today:
+                findings.append(f"{label}: reviewed is in the future")
+            if review_by < reviewed:
+                findings.append(f"{label}: review_by is before reviewed")
+            if review_by < today:
+                findings.append(f"{label}: expired on {review_by}")
+            elif (review_by - reviewed).days > MAX_REVIEW_DAYS:
+                findings.append(
+                    f"{label}: review_by is more than a year after reviewed"
+                )
         service_key = (row["scope"], row["service"])
         if service_key not in actual:
             findings.append(f"{label}: no such service in {row['scope']}")

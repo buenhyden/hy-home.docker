@@ -662,6 +662,14 @@ class ComposeControlsTests(unittest.TestCase):
             "wildcard": (self.entry(service="*"), "wildcards"),
             "unregistered": (self.entry(control="tmpfs"), "unregistered control"),
             "expired": (self.entry(review_by="2026-10-01"), "expired"),
+            "future review": (
+                self.entry(reviewed="2026-10-10"),
+                "reviewed is in the future",
+            ),
+            "reversed review interval": (
+                self.entry(review_by="2026-10-08"),
+                "review_by is before reviewed",
+            ),
             "too long": (self.entry(review_by="2028-01-01"), "more than a year"),
             "orphan": (self.entry(service="gone"), "no such service"),
             "wrong file": (
@@ -677,6 +685,12 @@ class ComposeControlsTests(unittest.TestCase):
                 self.assertTrue(any(expected in f for f in findings), findings)
         duplicate = self.check(models, self.entry(), self.entry())
         self.assertTrue(any("duplicate" in f for f in duplicate), duplicate)
+
+    def test_review_dates_include_today_and_the_maximum_interval(self) -> None:
+        models = self.models(a={**COMPLIANT, "cap_add": ["NET_BIND_SERVICE"]})
+        for deadline in ("2026-10-09", "2027-10-10"):
+            with self.subTest(deadline=deadline):
+                self.assertEqual([], self.check(models, self.entry(review_by=deadline)))
 
     def test_an_exception_for_a_conforming_service_is_stale(self) -> None:
         findings = self.check(self.models(a=dict(COMPLIANT)), self.entry())

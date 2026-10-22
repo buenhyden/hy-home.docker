@@ -1,6 +1,6 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -452,6 +452,78 @@ copies. Their deletion remains the owner's separate exact-path step and is
 not authorized by this reconciliation. W6 and criterion 5 wait for criterion
 6 acceptance; no operations-policy promotion is performed here. Criteria
 1–4 and the accepted GC-floor decision remain unchanged.
+
+### v29 W7 input-boundary correction — 2026-10-22
+
+The direct v29 continuation and completed investigation gate authorize a
+source-only correction on baseline
+`49fd95a6ed482d7194c840b43b73a030be6f3d5d`. The existing comparison accepted
+a changed major:minor under the same device name and accepted negative,
+out-of-range, Boolean or nonfinite SMART inputs. These defects were reproduced
+with synthetic snapshots; no actual sample or migration was repeated.
+
+The existing parser now preserves major:minor internally while keeping
+`parse_diskstats`'s bytes-per-device return contract. A changed identity
+invalidates that disk and defers stores using the SSD rate. Malformed,
+duplicate or negative counters are input errors. SMART used percentage must
+be a finite number in 0–100; supplied host bytes must be a positive finite
+integer, excluding Boolean. Missing SMART or zero used percentage still
+returns DEFER because the wear slope cannot be estimated; 100 percent used
+reports zero projected years and KEEP_HDD. Nonfinite or unrepresentable
+calculations fail, and the CLI emits only finite JSON or exits 2 without a
+result document. The three snapshot files and prior accounting remain intact.
+
+The unchanged-production RED run counted 28 tests and exited 1 with 22 failing
+subcases and three errors across the date and W7 regressions. Focused GREEN
+passed all 28 in 0.599 s. After adding a calculation-range boundary case, the
+full affected run used official Python 3.14.8 with its existing controller
+lock and umask 022:
+
+```sh
+/tmp/hyhome-v28-toolchain-venv/bin/python -m unittest \
+  tests.validation.test_compose_baseline_gates \
+  tests.lib.ops.test_storage_write_rate \
+  tests.lib.ops.test_root_resource_assessment \
+  tests.validation.test_root_resource_contract -v
+```
+
+All seven native-rehearsal opt-ins were explicitly unset as listed in the
+P07 correction record. Result: exit 0, 163 tests counted, 133 PASS and
+30 native SKIP, 31.727 s. Synthetic CLI cases cover invalid SMART exit 2 with
+empty stdout as well as valid/deferred/error results. Scoped Ruff 0.15.12
+check and format passed. No native fixture or daemon-changing command ran.
+
+The pinned environment lacks `coverage`; none was installed. A bounded
+standard-library `trace` rerun passed 29 tests and measured 82/86 (95.35%)
+statement lines across the changed W7 comparison, parser and numeric helpers.
+This excludes the unchanged actual collector and does not claim branch or
+whole-module coverage. The measured library SHA256 is
+`afb7266aecd157af8acf9fa167cd353e42e21eb19e6551a8db6127954ca6bb05`.
+
+Retained mode-0600 receipts are `/tmp/hyhome-v29-resources-red.log` SHA256
+`aea436b80bda67f1071266b6d697876dd80474f1b71cc7bffa9a15df24368b48`,
+`/tmp/hyhome-v29-resources-green-focused.log` SHA256
+`64db5032f078c851326737f1aec4766f7d2e795462fae269087d7ae4238c67c3`,
+`/tmp/hyhome-v29-resources-green-full.log` SHA256
+`8554f27583544e24a8fdf717c406b757dd42a7a3c3df3fad66926d3ec4c8a3bf`,
+and `/tmp/hyhome-v29-resources-coverage.json` SHA256
+`eb8f1e6d66bcdd350c46a3a16ea0b37ed90985917f67fbfeb948bb40f926278d`.
+
+The existing format has no boot ID, mount/filesystem binding, collector
+identity or input hashes. Equal major:minor and StartedAt therefore cannot
+prove complete device/boot/provenance continuity; historical unknowns are
+not filled with invented facts. The SMART-based projection remains distinct
+from manufacturer-rated TBW and any new lifetime acceptance. Those facts,
+current mount/data/query/trace/backup validation, the reported WAL handling,
+remaining HDD-copy disposition and explicit criterion 6 owner acceptance are
+still scoped residuals. They do not block this input-validation correction.
+
+Existing Evidence and Criterion Acceptance rows, the GC-floor decision and
+W7 samples/move receipts are unchanged. Criteria 1–4 stay accepted; criterion
+6 remains pending and W6/criterion 5 still waits for it. No host collection,
+24-hour measurement, SMART read, copy, prune, migration, recreation, token
+operation, remote write or policy promotion ran. Root owns final review,
+registered gates and commits.
 
 ## Evidence
 

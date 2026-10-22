@@ -1,10 +1,10 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.12"
+version: "0.6.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0005"
 parent_ids:
@@ -1612,6 +1612,27 @@ proof. Preserve the canonical file/mapping; never implicitly recreate the old
 plaintext duplicate. Reverting this logical receipt commit restores only text,
 without claiming private data or runtime recovery.
 
+### v29 current OpenBao handoff reconciliation — 2026-10-22
+
+The v29 local request reuses completed verification and corrects the current
+handoff against main `49fd95a6ed482d7194c840b43b73a030be6f3d5d`.
+[SPEC-0243's recorded window outcomes](../../0243-openbao-window-readiness/tasks/tsk-0001-openbao-window-readiness.md)
+include the 07:18 W2 Snapshot-token delivery, the 07:49 manual backup success,
+the later protected Snapshot/R2 dump match, accepted `-06` restore, HOME 2.7.1
+transition, W5 Agent rendering, W6 checks and 13:00:31 manual backup success.
+These are reused dated records, not new observations from this reconciliation.
+The current completion summary therefore no longer requests another Snapshot
+token to remedy the historical token-absence failure.
+
+The actual timer run, 26-hour freshness, sustained backup success and independent
+data recovery remain separately unverified. Accepted SMTP01 source and bounded
+restoreability evidence are unchanged; neither the OpenBao window nor the
+completed SPEC-0243 readiness/source Task accepts all P06 consumers or the
+outstanding exact SMTP retirement evidence. This prose-only correction changes
+no Evidence, Criterion Acceptance, lifecycle event, credential or runtime.
+Current metadata, links and lifecycle checks belong to the combined v29 local
+validation recorded by the coordinator.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -1660,8 +1681,11 @@ GoTrue connection/activation is not an SMTP01 completion condition.
   historical source delivery used local gates/review without PRs. This
   reassessment follows the current owning-Spec PR contract above. External-host
   absence remains unverified; excluded Supabase LAB activation is not required.
-- Create the OpenBao snapshot token (RUN-0021) after unsealing; until then
-  each run reports the recovery gap.
+- Reuse the recorded 2026-10-22 W2 Snapshot-token delivery and subsequent manual
+  backup successes described in the v29 reconciliation above. The historical
+  missing-token failure does not require reissuance. Actual timer execution,
+  26-hour freshness, sustained success and independent recovery remain open;
+  manual backup success does not close those acceptance conditions.
 - Decide whether `home-airflow` needs the password grant and which service
   accounts are used; enforce server-side PKCE `S256` per client after its
   login is checked. Sign in once through a protected route to confirm the
