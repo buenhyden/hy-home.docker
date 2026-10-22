@@ -1,10 +1,10 @@
 ---
 title: "QA04 Execution Evidence and ROOT Release Support"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0211-TSK-0003"
 parent_ids:
@@ -463,6 +463,42 @@ FULL QA may use the registered network-none, read-only public-source Conftest
 job after independent readiness review. Native/HOME opt-in cases remain off;
 no image pull, HOME service start, token operation or remote action is included.
 The runner receives actual local context and captures its own tool identities.
+
+### v28 actual FULL terminal result and bounded continuation — 2026-10-22
+
+The actual LOCAL full-profile invocation on clean implementation HEAD
+`d7bec9a9a4318caa60cc0f5f99a1de6cfa71a580`, official hosted Python 3.14.8,
+controller lock, uv 0.12.18 and Node 24.22.0, ended exit 1 after 2679.66 seconds:
+26 registered gates PASS, workflow-contract regressions FAIL, six later gates
+NOT_RUN. This is a failed full invocation, not aggregate PASS. The retained
+plan/result and log are under `/tmp/hyhome-v28-full-d7bec9a9a-umask022-20261022`.
+LOCAL identity records base_sha NOT_AVAILABLE; candidate preflight separately
+used main `73433adc1b685582741604d8acc1f6f70be0adbe` as its comparison base.
+
+The failing 44-test module had one failure: its explicit required-selector
+expectation omitted the already registered Prometheus isolated-restore and
+OpenBao TLS modules. Both modules remained required, before the opt-in skip
+boundary, and their Compose baseline gate passed. The exact literal expectation
+was extended by two lines; no assertion was weakened and no expected value
+was derived from the actual contract. The failed test then passed, and the
+same registered 44-test module passed in 11.553 seconds, exit 0, no skips.
+Pinned Ruff 0.15.12 lint/format checks passed. Independent source review approved
+diff `cb1e0d13b427895ba2dcd5889772d086b50ad8b56b4275e89ded032bd8bdd1c3`.
+
+The user's latest request explicitly requires reuse of completed verification
+and completion of the remaining QA. Continue the six NOT_RUN registered nodes
+through the existing runner's verified-plan/evidence APIs on a new clean HEAD;
+do not replay the 26 unaffected successes or disguise separate invocations as
+one successful FULL process. Node IDs, argv, cwd, mode, trust, toolchain,
+source/config differences and actual per-slice results must stay explicit.
+Documentation reconciliations receive their affected metadata/link/style checks;
+no implementation, image pin, native opt-in or runtime configuration is changed
+by those documentary corrections. Budget UNKNOWN, original node timeouts apply,
+one narrower retry per diagnosed slice; root owns failures and the final record.
+Conftest completed in its isolated project; post-run container and network
+queries for `hyhome-conftest-gate` returned empty. No HOME change or token
+operation was executed. Operational/remote actions remain separate selections
+for later explicit approval after local delivery; token revocation is excluded.
 
 ### Lifecycle Events
 
