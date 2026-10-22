@@ -1,6 +1,6 @@
 ---
 title: "QA04 Execution Evidence and ROOT Release Support"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -499,6 +499,71 @@ Conftest completed in its isolated project; post-run container and network
 queries for `hyhome-conftest-gate` returned empty. No HOME change or token
 operation was executed. Operational/remote actions remain separate selections
 for later explicit approval after local delivery; token revocation is excluded.
+
+### v28 retained attempts and receipt binding — 2026-10-22
+
+The first actual FULL attempt used umask 077 and ended by controlled cancellation,
+exit 130 after 1695.11 seconds: nine gates PASS, one ERROR and 23 NOT_RUN. Its
+private receipts remain under `/tmp/hyhome-v28-full-d7bec9a9a-20261022`, run
+`1792651120665179713`. The restrictive mask affected a fixture's permission
+assumption; the narrower reproduction passed with umask 022. No custody check,
+permission assertion or operational boundary was weakened. This interrupted
+attempt remains diagnostic evidence, not a successful FULL invocation.
+
+The umask-022 FULL result described above is bound to local run
+`1792652875281036250`. Its `plan.json` SHA256 is
+`a33caa34b12a80d030d0339a29d52635348989d2bd8228630cb86c124293a66a`,
+`result.json` SHA256 is
+`d38a5f7067362a3e8c95cee82647e1dba85fc0cf1dc5ab15d13bdacdcf6d7efe`,
+and `/tmp/hyhome-v28-full-d7bec9a9a-umask022-20261022.log` SHA256 is
+`5e86deebf9aa2600350886a2448e6c8515ba9bc4c142d088de5c0204b7e2345b`.
+These bind the retained 26 PASS, one FAIL and six NOT_RUN states; the later
+selector-expectation correction is local commit `6091c8c8a`. Reuse its already
+recorded 44-test GREEN and review. The six-node continuation remains planned;
+this receipt update does not claim its execution or aggregate success.
+
+### v28 changed-function line coverage — 2026-10-22
+
+The umask-022 measurement ran 269 tests in 160.143 seconds: 267 PASS, two Native
+SKIP, no failures or errors. It measures CPython stdlib trace line events over
+`dis.findlinestarts` for the two changed functions, excluding definition,
+resume and artificial lines. `check_operator` covered 13/13 executable lines
+(100%); runner `main` covered 127/139 (91.37%). This is function-scoped line
+coverage, not branch, whole-file or whole-project coverage. Native opt-ins
+remained disabled.
+
+The receipt itself contains no source identity. This Work Log therefore binds
+the measurement to implementation HEAD
+`d7bec9a9a4318caa60cc0f5f99a1de6cfa71a580` and verifies that both measured source
+files still match that commit byte-for-byte:
+
+- `infra/03-security/openbao/scripts/protected-maintenance.py`: SHA256
+  `4553286a0c6f4e45f1901942043762bfe6312d22cad281a3c3ffe15eb232429f`.
+- `scripts/validation/ci_gate_runner.py`: SHA256
+  `1ede12027e6fc1da2ca56a48ca0a44b7fec418a318e298acd20be74841ca998a`.
+
+`/tmp/hyhome-v28-function-coverage-umask022.json` SHA256 is
+`7ba08529b470376542d99ba699796e7acb52e7577526b9321686fc239e059fc2`;
+the accompanying `.log` SHA256 is
+`3472a43cf4b9007c59f82784697b0ab7a7db9f6af7c2443846c389f620ed69c5`.
+The earlier umask-077 measurement log remains retained at
+`/tmp/hyhome-v28-function-coverage.log`: 269 tests, one custody-fixture failure,
+two skips, followed by a measurement `TypeError` when Python 3.14 returned a
+`None` line entry. That failed diagnostic produces no accepted coverage result;
+the later measurement handles artificial entries and keeps the custody guard.
+
+### v28 document-reconciliation checks — 2026-10-22
+
+The scoped metadata receipt `/tmp/hyhome-v28-spec-reconciliation-metadata.log`
+selected 23 changed documents with zero violations. The first all-link check,
+`/tmp/hyhome-v28-final-reconciliation-links.log`, retained one FAIL: the 0239
+Task linked to a nonexistent 0243 dated anchor. It also retained the historical
+uncaptured-link warning. After correcting that link, the affected traceability
+check passed: 1,328 documents, 11,805 links, zero failures or warnings, recorded
+in `/tmp/hyhome-v28-final-reconciliation-traceability.log`. Other link modes
+reuse their passing results from that same all-link inspection; there was no
+new successful all-mode invocation. These checks precede this result-only note
+and do not accept pending criteria or replace the remaining six-node execution.
 
 ### Lifecycle Events
 

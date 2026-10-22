@@ -1,10 +1,10 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.21"
+version: "0.1.22"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0016"
 parent_ids:
@@ -65,6 +65,24 @@ receipts. Shared registration, README/index, manifest, workflow and CI edits are
 coordinator proposals until one named writer takes a bounded lease.
 
 ## Work Log
+
+### 현재 후속 증거와 완료 경계 — 2026-10-22
+
+후속 [Task0019](tsk-0019-n8n-native-notification.md)의 W74 최종 native/cleanup
+PASS와 [Task0020](tsk-0020-airflow-native-publication.md)의 W75 generation-1
+publication/retry/replay PASS는 각각 독립 isolated fixture의 supporting
+evidence다. W75 generation-2는 UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED다.
+이를 합산해 같은 data의 W65 vertical, W66 HOME, W67 complete restore 또는
+W68 command-directory dry run을 PASS로 만들지 않는다. 현재 acceptance test는
+public API와 synthetic doubles를 잇는 offline seam이며 criterion 10/21은
+pending을 유지한다.
+
+Frozen Evidence의 cross-scope `Resolves`는 현재 완료 근거로 사용하지 않는다.
+Source-contract PASS는 absent-image FAIL을, 단일 expectation correction은
+six-failure/one-error aggregate를, metadata PASS는 link FAIL을 그 자체로
+해소하지 않는다. 실제 link check와 현재 입력의 해당 등록 gate를 각각 평가하며
+과거 실패와 입력을 보존한다. 이번 조정은 새 시험이나 owner 수락 없이 현재
+인계와 증거 해석만 명시한다.
 
 ### Lifecycle Events
 

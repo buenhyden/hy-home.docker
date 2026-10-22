@@ -2470,7 +2470,7 @@ blob 다운로드·pull·build·실행은 하지 않았습니다. 조회별 URL�
 Pyroscope2.4.1, Tempo3.1.1, n8n2.44.5, MLflow3.17.2와 Node24.22.1LTS/
 26.12.1Current가 있습니다. Python3.13.17은 10월21일 특별 보안 릴리스이며
 공식 문서는 embedded pip/certifi의 emSign CA 대응을 설명합니다. 현재 OpenBao
-application2.7.1·Go1.27.3은 해당 공개 stable 조회와 일치합니다. Jupyter
+application2.7.1·Go1.27.3은 해당 공개 release/channel 사실과 일치합니다. Jupyter
 2026-10-19/sourceadb330e3127a는 latest alias와 index가 같지만 Python3.13.16
 태그이므로 더 늦은 Python 보안 release 포함을 주장하지 않습니다. Pact
 wrapper3.0.0-pactbroker2.121.2와 application2.122.0, Neo4j5.26와 calendar,

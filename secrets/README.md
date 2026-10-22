@@ -1,10 +1,10 @@
 ---
 title: "비밀 파일 관리"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-22"
 created: "2026-02-23"
 ---
 
@@ -12,7 +12,7 @@ created: "2026-02-23"
 
 ## Overview
 
-`secrets/`는 HOME 서비스와 독립 LAB의 자격 증명, 인증서, 복구 산출물을 보관한다. 이 문서는 경로와 소유권만 설명하며 값은 기록하지 않는다. 공개 등록표의 ID와 경로는 [SENSITIVE_ENV_VARS.md.example](SENSITIVE_ENV_VARS.md.example)이 소유하고, Git에서 제외된 `SENSITIVE_ENV_VARS.md`는 같은 메타데이터와 개인 값 칸을 가진다.
+`secrets/`는 HOME 서비스와 독립 LAB의 자격 증명, 인증서, 복구 산출물을 보관한다. 이 문서는 경로와 소유권만 설명하며 값은 기록하지 않는다. 공개 메타데이터의 단일 원본은 [secret-catalog.json](../infra/03-security/openbao/secret-catalog.json)이며, [SENSITIVE_ENV_VARS.md.example](SENSITIVE_ENV_VARS.md.example)은 그 생성 뷰다. Git에서 제외된 `SENSITIVE_ENV_VARS.md`는 같은 메타데이터와 개인 값 칸을 가지며, `gen-secrets.sh`와 `smtp_contract.py`가 이 생성 뷰를 소비해 갱신한다.
 
 ## Audience
 
@@ -52,14 +52,14 @@ HOME 전환 전에는 실행 중 소비자가 사용하는 옛 경로에 동일 
 
 ## Getting Started
 
-1. [공개 등록표](SENSITIVE_ENV_VARS.md.example)의 ID·경로·날짜·용도를 확인하고 [루트 Compose](../docker-compose.yml) 또는 해당 `labs/*.yml`의 실제 소비자를 대조한다.
+1. [카탈로그](../infra/03-security/openbao/secret-catalog.json)와 그 [공개 생성 뷰](SENSITIVE_ENV_VARS.md.example)의 ID·경로·날짜·용도를 확인하고 [루트 Compose](../docker-compose.yml) 또는 해당 `labs/*.yml`의 실제 소비자를 대조한다.
 2. 개인 파일을 다루는 작업은 대상·승인·백업·복구 범위를 Task에 기록한다. 값 파일이나 개인 등록표의 원문을 채팅·문서·Git 출력에 넣지 않는다.
 3. 다른 승인된 작업 트리의 공개 예제를 소비해야 하면, 개인 파일이 있는 원본 체크아웃에서 해당 작업 트리의 스크립트를 `--sync-metadata-prune --metadata-source-root <승인된-공개-작업트리>`로 실행한다. 이 옵션은 메타데이터 모드에만 적용되며 개인 값은 원본 체크아웃에 남고 다른 작업 트리에 복제하지 않는다. 먼저 `--sync-metadata-prune-check`로 변경 여부를 확인한다.
 4. 값 없이 공개 계약을 확인할 때 `bash scripts/operations/gen-secrets.sh --dry-run`을 사용한다. 개인 메타데이터 비교는 승인된 범위에서 `--sync-metadata-prune-check`를 사용한다.
 
 ## Usage
 
-- 새 ID는 기존 번호를 재사용하지 않는다. 공개 등록표의 구분·경로·생성/갱신일·용도를 실제 소비자에 맞추고, 개인 등록표는 값 칸만 보존하여 [기존 동기화 스크립트](../scripts/operations/gen-secrets.sh)로 정렬한다.
+- 새 ID는 기존 번호를 재사용하지 않는다. 카탈로그의 구분·경로·생성/갱신일·용도를 실제 소비자에 맞추고 공개 생성 뷰를 검증한다. 개인 등록표는 값 칸만 보존하여 [기존 동기화 스크립트](../scripts/operations/gen-secrets.sh)로 정렬한다.
 - 값 파일은 Git에서 기본 제외한다. 자격 증명 디렉터리는 최대 `0750`(새 경로·호스트 전용은 `0700`도 허용), 보호 백업·퇴역 영역은 `0700`으로 유지한다. 그룹 쓰기 권한을 주지 않는다. 호스트 백업·호환 참조와 새 경로의 접근 권한을 확인하고, 서비스의 UID/GID 읽기 검사는 승인된 격리 환경에서 수행한다.
 - 루트 `.env`에는 현재 공개 키에 대응하는 실제 값을 보존한다. `labs/.env`의 선택형 Locust 시나리오·결과 경로처럼 승인된 대상이 없는 값은 임의 경로로 채우지 않는다.
 - 실제 credential 교체에는 서버 측 값 변경, 소비자 재시작, 검증과 복구 계약이 함께 필요하다. 파일 이동이나 메타데이터 정렬만으로 교체가 완료되지는 않는다.

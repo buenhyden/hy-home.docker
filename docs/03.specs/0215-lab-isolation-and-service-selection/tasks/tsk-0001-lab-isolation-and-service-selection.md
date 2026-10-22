@@ -1,10 +1,10 @@
 ---
 title: "LAB Isolation and Service Selection Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0215-TSK-0001"
 parent_ids:
@@ -226,7 +226,12 @@ project label exit 0, no container or network left, 6 data directories kept.
 
 ## Review and Completion
 
-Not complete.
+Criteria 1–5 retain their accepted decisions above. As read back on
+2026-10-22, the [follow-up Task](tsk-0002-lab-closure-and-home-runs.md#review-and-completion)
+records the closure work and accepted criteria 6 and 7, including the HOME
+residue audit and synthetic LAB runs. Its separately recorded owner cleanup
+item remains historical; this readback does not re-observe those volumes,
+perform cleanup or change criterion acceptance or lifecycle status.
 
 ## Related Documents
 

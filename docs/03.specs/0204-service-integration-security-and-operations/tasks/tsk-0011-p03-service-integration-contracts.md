@@ -1,10 +1,10 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.11"
+version: "0.2.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0011"
 parent_ids:
@@ -145,6 +145,19 @@ credential rotation, live resource creation or private retirement occurs in
 this initial worker slice.
 
 ## Work Log
+
+### 현재 증거 범위 조정 — 2026-10-22
+
+공개 추적 소스 대조에서 네 위치 port projector와 CLI는 구현되어 있으며,
+listener와 running/healthy/used/recovered는 관측 없이 unknown을 유지한다.
+2026-10-20–21 gateway/Hermes 후속 결과는 해당 대상의 보고이며 criterion 17
+전체의 identity, TLS, consumer 및 recovery 수락을 대신하지 않는다.
+
+아래 frozen Evidence의 supply/integrity PASS가 metadata/document-library
+timeout 행을 `Resolves`로 가리키더라도 서로 다른 check의 성공이 그 실패를
+해소한 것으로 해석하지 않는다. 과거 FAIL과 aggregate NOT_RUN은 당시 입력의
+결과로 보존하며, 현재 입력의 해당 등록 gate 결과는 별도로 기록한다. 이번
+조정은 새 실행이나 criterion 수락 없이 현재 증거 해석만 명시한다.
 
 ### Lifecycle Events
 

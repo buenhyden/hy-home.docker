@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Collection and Egress"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0220"
 parent_ids:
@@ -41,10 +41,13 @@ container (DNS forwarder and forward proxy), the source rights registry schema,
 the consumer admission contract, a reference collection adapter with a bounded
 job model and extraction validation under `projects/crawl4ai`, unit tests, the
 isolated rehearsal, the project candidate comparison and the operations
-documents. Out of scope: starting `crawl4ai` on HOME, admitting a consumer,
-collecting real data, load against any external service, host firewall
-changes, and any application, learning database, GPU, ASR or TTS service in
-`infra/`. Application collection workflows belong to their own workspaces.
+documents. The initial source slice excluded starting `crawl4ai` on HOME;
+the Task's later owner-named W8 records the reported HOME activation.
+Admitting a consumer, collecting real data, load against any external service,
+host firewall changes, and any application, learning database, GPU, ASR or TTS
+service in `infra/` remain out of scope. Application collection workflows belong
+to their own workspaces. The current Plan retains two non-learning candidates;
+the earlier three-project comparison remains historical evidence.
 
 ## Contracts
 
@@ -111,10 +114,12 @@ changes, and any application, learning database, GPU, ASR or TTS service in
    cancel, retry, interruption recovery, TTL and deletion.
 4. The candidate comparison names the consumer, data source, complete
    function, existing and needed infrastructure, failure recovery, rights and
-   cost for each of three projects, and states that none is connected.
+   cost for the current Plan's two non-learning candidates, and states that
+   neither is connected. The earlier three-project receipt is preserved.
 5. Operations documents, the service catalog and the gate contract match, and
-   the changed gate passes. HOME activation, consumer admission and host
-   firewall enforcement are recorded as not run.
+   the changed gate passes. The Task distinguishes the initial source slice
+   from the later reported W8 HOME activation; consumer admission and host
+   firewall enforcement remain `NOT_RUN`.
 
 ## Failure Conditions
 

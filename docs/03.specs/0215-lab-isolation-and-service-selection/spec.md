@@ -1,10 +1,10 @@
 ---
 title: "LAB Isolation and Service Selection"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0215"
 parent_ids:
@@ -29,11 +29,12 @@ check, and records why each optional service is or is not resident.
 Included: root closure regression checks, the retired root `lab_net`, LAB
 data, network, port, routing and tier boundaries, a LAB controller with a
 ledger, the HOME plus LAB budget check, the optional service disposition
-ledger, and documents that call a single node HA.
+ledger, documents that call a single node HA, and the follow-up HOME residue
+audit and synthetic LAB readiness runs recorded in TSK-0002.
 
 Excluded: resource template values and common exception files (prompt 05),
 the Locust worker code (prompt 02, merged), moving or deleting existing LAB
-or HOME data, and observing which services run on the HOME host.
+or HOME data.
 
 ## Contracts
 

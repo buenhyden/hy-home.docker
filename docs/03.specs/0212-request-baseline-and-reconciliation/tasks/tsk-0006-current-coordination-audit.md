@@ -1,6 +1,6 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -456,6 +456,109 @@ integration has no confirmed target approval. Remote push, PR, hosted CI,
 deployment and protected operations remain NOT_RUN. The legacy tables below
 are preserved; current progress belongs to this Work Log.
 
+### v28 current status audit of 39 packages and disposition — 2026-10-22
+
+The reviewed source input is clean HEAD
+`d7bec9a9a4318caa60cc0f5f99a1de6cfa71a580`. Five bounded public-source
+inspection reports cover governance, services, runtime/operations and the two
+SPEC-0204 Task shards. Their temporary inspection files and the status census
+are research inputs, not new authority or acceptance evidence. This Work Log
+retains their current conclusions and existing owner routes; the inspection
+performed no new native, HOME, token, private-memory or remote operation.
+Concurrent later corrections are separate inputs and do not silently change
+this input-bound census.
+
+The 39 Specs and 39 Plans each record 16 approved and 23 draft. The 76 Task
+paths comprise 18 explicit completed, four blocked, 15 in-progress, 38 draft
+and one multi-item Task. SPEC-0212-TSK-0007 correctly omits frontmatter
+`status`: its eight Execution Items are completed and its summary is derived
+completed on read. It is not a missing-status defect. This resolves the raw
+status-field question in the earlier census paragraph without rewriting that
+completed Task or issuing a new transition. Spec/Plan states express authority;
+Task/item states express execution. Neither source presence nor a stored
+accepted row supplies missing authority, execution or operational acceptance.
+
+All 39 package dispositions are KEEP. The final column identifies current
+clauses or handoffs needing reconciliation; it does not cancel the package or
+change any recorded criterion decision. Historical Work Logs, failed inputs,
+Evidence/Resolves, accepted/rejected/pending decisions and terminal bodies stay
+preserved. Draft metadata is not treated as proof of absent implementation.
+
+| Package | Spec status | Plan status | Task status counts at reviewed input | Disposition | Current implementation, evidence and remaining owner |
+| --- | --- | --- | --- | --- | --- |
+| SPEC-0182 `home-residual-backlog` | approved | approved | 2 completed, 1 blocked | KEEP | Existing source/runtime receipts remain dated; Task0003 recovery and R2 scratch/custody work remain blocked. |
+| SPEC-0204 `service-integration-security-and-operations` | approved | approved | 3 blocked, 4 completed, 10 in-progress, 3 draft | KEEP | Current P01–P10, SEC01 and workflow owners remain. Reconcile earlier summaries, cross-scope closure and later supporting native receipts; no parent or criterion closure. |
+| SPEC-0207 `common-authorization-and-safe-authoring` | approved | approved | 3 completed | KEEP | Authorization and safe-authoring consumers exist; three terminal Tasks retain their original generation and source-completion scope. |
+| SPEC-0208 `stage99-frontmatter-and-task-lifecycle` | approved | approved | 1 completed | KEEP | The completed generation-4 migration is historical; current generation-7 rules do not invalidate its preserved receipt. |
+| SPEC-0209 `common-document-contract-adoption` | approved | approved | 1 completed | KEEP | Raw-byte and generation-3–5 consumer recovery has final accepted evidence; earlier blocked inputs remain historical. |
+| SPEC-0210 `task-evidence-table-integrity` | approved | approved | 1 completed | KEEP | Strict contiguous-table readers and final accepted recovery exist; earlier failed inputs do not replace the later gate and review. |
+| SPEC-0211 `qa-scope-and-delivery-rationalization` | approved | approved | 2 in-progress, 1 draft | KEEP | Current QA is owned by Task0003; Task0001 retains all five pending criterion decisions. Reconcile the older hosted-failure summary. |
+| SPEC-0212 `request-baseline-and-reconciliation` | approved | approved | 6 completed, 2 draft, 1 multi-item (8 completed items; derived completed) | KEEP | This coordination audit retains criteria 9–10 pending. Task0007 has eight completed Execution Items; current delivery/QA handoff supersedes the old four-file next step. |
+| SPEC-0213 `dev-data-and-influx-retirement` | draft | draft | 2 draft | KEEP | DEV and retirement source exists. Link later activation/restore-canary receipts to the current summary without changing rejected/pending decisions. |
+| SPEC-0214 `quality-k6-locust-and-otel-semantics` | draft | draft | 2 draft | KEEP | Telemetry, relay and Locust supervision exist. Connect Task0001’s earlier incomplete summary to Task0002’s later bounded closure. |
+| SPEC-0215 `lab-isolation-and-service-selection` | draft | draft | 2 draft | KEEP | LAB isolation remains valid. Reconcile the initial HOME exclusion with the later approved residue audit and Task0002 scope. |
+| SPEC-0216 `compose-container-and-host-naming` | draft | draft | 1 draft | KEEP | Naming checks remain valid. Reconcile host-network hostname treatment and the current LAB-owned Supabase exception; retain the recorded rejected criterion. |
+| SPEC-0217 `subagent-model-and-routing-text` | draft | draft | 1 draft | KEEP | Routing descriptions and model selections exist. Source acceptance and draft authority/native entitlement revalidation remain separate. |
+| SPEC-0218 `common-controls-and-exceptions` | draft | draft | 2 draft | KEEP | Common controls and the assessment helper exist. Reconcile the old registration blocker with current manifest/gate registration; measurements remain pending. |
+| SPEC-0219 `storybook-build-and-delivery` | draft | draft | 1 draft | KEEP | Build/delivery source and later HOME login receipts exist. Qualify initial HOME exclusions; remote-device tool call and criterion 2 remain pending. |
+| SPEC-0220 `crawl4ai-collection-and-egress` | draft | draft | 1 draft | KEEP | Collection/egress source and later W8 receipts exist. Align current scope with allowed non-learning candidates; real consumer collection remains separate. |
+| SPEC-0221 `request-precedence-and-enforcers` | draft | draft | 1 draft | KEEP | Request precedence and local preflight consumers exist. Preserve historical memory-exemption work superseded by the later shared-memory contract. |
+| SPEC-0222 `npm-risk-acceptance-extension` | draft | draft | 1 draft | KEEP | The bounded npm-risk window and fail-closed consumers exist; source acceptance does not establish current external advisory state or lifecycle completion. |
+| SPEC-0223 `redisinsight-valkey-inspection` | draft | draft | 1 draft | KEEP | Inspector ACL/listener/encryption and later HOME/CI receipts exist; draft metadata alone is neither cancellation nor completion authority. |
+| SPEC-0224 `datastore-observation-split` | draft | draft | 1 draft | KEEP | Least-privilege monitoring, exporters and scope labels exist; later CONNECT guards are compatible safety increments. |
+| SPEC-0225 `observability-home-coverage` | draft | draft | 1 draft | KEEP | HOME observability and later OpenBao-retention receipts exist; their dated operational scope is preserved. |
+| SPEC-0226 `ai-runtime-pin-verification` | draft | draft | 1 draft | KEEP | Preserve the requested-pin verification history; newer SEC01 pins do not complete pending security/recovery acceptance. |
+| SPEC-0227 `stage05-format-refresh` | draft | draft | 1 draft | KEEP | Stage05 section validation and the historical 230-file migration have accepted evidence; current draft authority is not rewritten. |
+| SPEC-0228 `backup-telemetry-budget` | draft | draft | 1 draft | KEEP | Budget/exclusion source exists; the exact next scheduled-run observation and candidate criterion remain pending. |
+| SPEC-0229 `owner-follow-ups` | draft | draft | 1 draft | KEEP | The diagnostic/cache work remains valid. Route current token issuance to RUN-0085/SPEC-0243; do not replay the retired inline command. |
+| SPEC-0230 `v9-quality-corrections` | approved | approved | 1 draft | KEEP | Mark-only stale handling and newline normalization exist with bounded accepted evidence; no automatic Task transition. |
+| SPEC-0231 `task-lifecycle-generation-6` | approved | approved | 1 draft | KEEP | Generation-6 behavior remains in the current reader; the later accepted replay resolves the historical failure, without inventing Task transitions. |
+| SPEC-0232 `v9-residual-corrections` | approved | approved | 1 draft | KEEP | Reader/hook/precommit corrections and later accepted replay exist; initial FAIL/NOT_RUN records remain preserved. |
+| SPEC-0233 `generation-6-reader-corrections` | approved | approved | 1 draft | KEEP | Missing-acceptance, item-completion and archive-entry guards exist. The later accepted replay qualifies the older pending summary. |
+| SPEC-0235 `local-gate-governance-timeout` | draft | draft | 1 draft | KEEP | The 45/30-minute limits and class-selection reachability exist; the accepted replay follows the initial NOT_RUN record. |
+| SPEC-0236 `shared-agent-memory` | draft | draft | 1 draft | KEEP | Shared memory and schema2 source exist; two-provider/migration observations remain dated and all seven original criteria remain pending. |
+| SPEC-0237 `agent-memory-restic-coverage` | draft | draft | 1 draft | KEEP | Memory staging export and a reported snapshot path exist; the separate OpenBao backup failure does not erase inclusion evidence or grant acceptance. |
+| SPEC-0239 `openbao-agent-alert` | draft | draft | 1 draft | KEEP | Agent telemetry source exists. Qualify the old deployment-not-done summary with later SPEC-0243 reported window outcomes. |
+| SPEC-0241 `hook-outputs-and-main-push-guard` | draft | draft | 1 draft | KEEP | Hook/push guards exist; six accepted criteria, draft parent authority and unobserved live delivery are intentionally separate. |
+| SPEC-0242 `single-admin-openbao-custody` | approved | approved | 1 draft | KEEP | Host-custody policy, runbook and attested decision replace the earlier split-custody proposal; this source package does not require a new ceremony. |
+| SPEC-0243 `openbao-window-readiness` | draft | draft | 1 draft | KEEP | Readiness/source and historical window evidence remain valid within their input scope; B1, B4/P06, A3 and D1 residuals remain open. |
+| SPEC-0244 `native-memory-controlled-verification` | approved | approved | 1 in-progress | KEEP | Normal merged memory-off criterion 3 is accepted; other criteria and event-specific delivery remain pending, with Attempt 06 only planned. |
+| SPEC-0245 `observability-ca-execution` | approved | approved | 1 in-progress | KEEP | Later restore/CA receipts already qualify the earlier deviation and failures; all seven owner-acceptance decisions remain pending. |
+| SPEC-0246 `host-storage-tiering` | approved | approved | 1 in-progress | KEEP | Later W7 samples and reported SSD placement are recorded; criterion 6 acceptance, retained HDD-copy handling and W6 promotion remain pending. |
+
+No package or Task in this audit is a cancellation/disposal candidate. Each
+has a current source consumer, a bounded completed historical scope, or a
+still-valid implementation, verification or owner-acceptance obligation.
+Demonstrated current contradictions are narrow clauses: initial HOME exclusions
+versus later named scopes, host-network/LAB naming ownership, current allowed
+collection candidates, stale deployment/registration summaries and cross-scope
+failure-resolution interpretations. Reconcile those clauses at their existing
+owners; do not delete a package, withdraw a criterion, duplicate acceptance,
+reopen preserved terminal work or infer archive readiness from a merge.
+
+The current QA handoff remains with SPEC-0211-TSK-0003. Its actual LOCAL FULL
+on the reviewed HEAD ended exit 1 after 2679.66 seconds: 26 registered gates
+PASS, one workflow-contract regression gate FAIL and six later gates NOT_RUN.
+The repaired 44-test module subsequently passed in 11.553 seconds, exit 0,
+without skips. That focused repair does not turn the failed FULL invocation
+into aggregate PASS. Root plans to continue the six remaining registered gates
+through the existing verified-plan/evidence route on a new clean input, reusing
+the 26 unaffected successes within their proven identity. Those six results
+are not yet recorded as PASS. Root owns the ongoing execution, affected
+metadata/link/style checks, exact-input review and final outcome record.
+
+The remaining v28 handoff stays with existing owners: B1 needs the exact
+identity/alias/provider contract bound to its current operator target; B4 source
+and production P06 consumer verification remain separate; A3 needs the exact
+asset disposition and recovery basis. D1 retains the existing 2026-11-15 risk
+expiry/decision boundary while improvement alternatives are prepared; this is
+no renewed risk acceptance. The complete ROOT supplier/security and original
+subrequirement audit, native/HOME/recovery proof and outstanding owner
+acceptance remain open. This local audit performs no token revocation or
+disposal. Remote delivery/settings and protected operational work remain outside
+this local execution and follow their separately scoped approval, exact target
+and recovery boundary; they do not block independent safe source/docs work.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -484,12 +587,25 @@ are preserved; current progress belongs to this Work Log.
 
 ## Review and Completion
 
-This draft records new current-source observations only. It does not convert
-PR #457, prior source receipts, accepted fixtures, a source inventory match, or
-an absent target into a new operational success. The current v28 next input is
-the four-file Task diff named above and its exact HEAD for document validation and independent
-review; after review, the coordinator may make a logical documentation commit
-and report PR/delivery status from direct observation.
+This draft retains criteria 9–10 pending and records the current status audit
+of 39 packages above with KEEP for every package and zero cancellation or
+disposal candidates. The earlier four-file validation/commit proposal is a
+historical stage; its later local delivery and this audit define the current
+handoff. Existing Evidence and Criterion Acceptance remain byte-identical.
+
+SPEC-0211-TSK-0003 owns the actual QA continuation: the reviewed FULL recorded
+26 gates PASS, one FAIL and six NOT_RUN; the repaired 44-test module passed
+separately. The six-gate continuation is planned, not a completed result.
+Root will append its actual final-input results and review after the ongoing
+execution. This Task creates no parent approval, criterion acceptance, Task
+completion, aggregate FULL PASS or operational success.
+
+B1 exact identity/alias/provider binding, B4/P06 production consumption, A3
+disposition, D1’s retained 2026-11-15 boundary and improvement alternatives,
+ROOT security/native/recovery proof and owner acceptance remain with their
+existing owners. Remote and operational actions retain their separately scoped
+approval and recovery boundaries. Token revocation/disposal is excluded from
+this local continuation.
 
 ## Related Documents
 

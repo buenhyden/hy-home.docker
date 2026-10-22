@@ -1,10 +1,10 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.23"
+version: "0.1.24"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0012"
 parent_ids:
@@ -205,6 +205,22 @@ One task performs I/O; XCom contains only bounded run/status/count metadata.
 Prove actual Celery worker execution with sanitized metadata, never raw logs.
 
 ## Work Log
+
+### 현재 후속 증거 인계 — 2026-10-22
+
+현재 소스에는 manifest/adapters/TLS, manual paused DAG와 versioned SQL이
+구현되어 있다. 아래 2026-10-13–14 CONNECT FAIL은 당시 입력의 결과로 보존한다.
+후속 [Task0018](tsk-0018-workflow-lease-and-connect-safety.md)은 별도 isolated
+PostgreSQL에서 CONNECT denial과 quarantine/empty restore 성공을 보고한다.
+[Task0020](tsk-0020-airflow-native-publication.md)은 generation-1 실제 Celery
+publication, controlled retry와 replay PASS를 보고하지만 generation-2는
+UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED이다.
+
+이 후속 결과는 각 frozen 입력과 isolated 대상의 supporting evidence다. 실제
+TimescaleDB, HOME, TLS/권한/consumer 및 전체 복구 수락이나 P05와 같은 data를
+통한 W65 vertical PASS로 확대하지 않는다. Criterion 18은 pending을 유지하며,
+과거 Evidence/실패와 source-only delivery 기록은 그대로 보존한다. 이번 공개
+소스 대조는 native 실행이나 새 수락을 수행하지 않았다.
 
 ### Lifecycle Events
 

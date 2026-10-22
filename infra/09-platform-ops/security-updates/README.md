@@ -58,7 +58,9 @@ scan·공급자 재조회·HOME 배포 결과를 만들지 않습니다.
 
 2026-10-22의 공개 공급자 재조회는 기존 `root_official_refresh/observations`에
 92건을 추가했습니다(85건 성공, 7건 실패 보존). 이번 해석은 같은 객체의
-`public_metadata_continuations`에 기록합니다. 기존 111개 ROOT 행 전체를 대조했고
+`public_metadata_continuations`에 기록합니다. GitHub final release 사실은
+`VERIFIED_PUBLISHED_RELEASE`로 표시하며 vendor stable channel은 `NOT_INFERRED`로
+구분합니다. 기존 111개 ROOT 행 전체를 대조했고
 109개 행에는 공급자 release/channel 대응이 있으며 `storybook`·`storybook-mcp`
 두 행은 선택된 내부 이미지의 producer·정확한 빌드 영수증 연결이 미확정입니다.
 32개 기존 Dockerfile 입력 행은 22개 고유 파일이며 OpenTofu inline FROM은 별도로

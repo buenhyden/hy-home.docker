@@ -1,10 +1,10 @@
 ---
 title: "Compose Container and Host Naming Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0216-TSK-0001"
 parent_ids:
@@ -120,7 +120,15 @@ hostname `openbao-agent`.
 
 W1 and W2 are complete in source. W3 recreated HOME under the new names. The
 recreation left OpenBao sealed, which remains a recorded FAIL; the owner then
-unsealed it and `openbao-agent` was recreated, so W3 has no open item.
+unsealed it and `openbao-agent` was recreated, as recorded in the resolving
+PASS row.
+
+The 2026-10-22 readback distinguishes that recovery from acceptance: criterion
+4 remains `rejected` above under its recorded decision. The later recovery
+row resolves the execution failure; this documentation correction does not
+accept criterion 4 or change lifecycle status. Current source also reflects
+SPEC-0225's node-exporter hostname omission and the LAB-owned Supabase naming
+registry, now stated in the [Spec contracts](../spec.md#contracts).
 
 ## Related Documents
 

@@ -7098,544 +7098,604 @@
         "failed_observations_preserved": 7,
         "supplier_release_interpretations": {
           "Comfy-Org/ComfyUI": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.42.1",
             "checked_at": "2026-10-22T06:15:50.007Z",
             "primary_release_url": "https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.42.1",
             "observation_ref": "Comfy-Org/ComfyUI",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "NVIDIA/dcgm-exporter": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "4.8.4",
             "checked_at": "2026-10-22T06:15:50.017Z",
             "primary_release_url": "https://github.com/NVIDIA/dcgm-exporter/releases/tag/4.8.4",
             "observation_ref": "NVIDIA/dcgm-exporter",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "SonarSource/docker-sonarqube": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "2026.5.0",
             "checked_at": "2026-10-22T06:15:50.017Z",
             "primary_release_url": "https://github.com/SonarSource/docker-sonarqube/releases/tag/2026.5.0",
             "observation_ref": "SonarSource/docker-sonarqube",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "TwiN/gatus": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "5.37.0",
             "checked_at": "2026-10-22T06:15:50.017Z",
             "primary_release_url": "https://github.com/TwiN/gatus/releases/tag/v5.37.0",
             "observation_ref": "TwiN/gatus",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "YanWenKun/ComfyUI-Docker": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "6.0",
             "checked_at": "2026-10-22T06:15:50.017Z",
             "primary_release_url": "https://github.com/YanWenKun/ComfyUI-Docker/releases/tag/v6.0",
             "observation_ref": "YanWenKun/ComfyUI-Docker",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "amir20/dozzle": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "11.3.4",
             "checked_at": "2026-10-22T06:15:50.017Z",
             "primary_release_url": "https://github.com/amir20/dozzle/releases/tag/v11.3.4",
             "observation_ref": "amir20/dozzle",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "apache/airflow": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.3.2",
             "checked_at": "2026-10-22T06:16:00.821Z",
             "primary_release_url": "https://github.com/apache/airflow/releases/tag/3.3.2",
             "observation_ref": "apache/airflow",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "apache/iceberg": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.12.0",
             "checked_at": "2026-10-22T06:16:00.822Z",
             "primary_release_url": "https://github.com/apache/iceberg/releases/tag/apache-iceberg-1.12.0",
             "observation_ref": "apache/iceberg",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "apache/superset": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "6.1.0",
             "checked_at": "2026-10-22T06:16:00.822Z",
             "primary_release_url": "https://github.com/apache/superset/releases/tag/6.1.0",
             "observation_ref": "apache/superset",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "axllent/mailpit": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.31.6",
             "checked_at": "2026-10-22T06:16:00.822Z",
             "primary_release_url": "https://github.com/axllent/mailpit/releases/tag/v1.31.6",
             "observation_ref": "axllent/mailpit",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "danielqsj/kafka_exporter": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.10.0",
             "checked_at": "2026-10-22T06:16:00.822Z",
             "primary_release_url": "https://github.com/danielqsj/kafka_exporter/releases/tag/v1.10.0",
             "observation_ref": "danielqsj/kafka_exporter",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "dbt-labs/dbt-adapters": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.10.4",
             "checked_at": "2026-10-22T06:16:00.822Z",
             "primary_release_url": "https://github.com/dbt-labs/dbt-adapters/releases/tag/v1.10.4",
             "observation_ref": "dbt-labs/dbt-adapters",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "distribution/distribution": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.1.2",
             "checked_at": "2026-10-22T06:16:01.803Z",
             "primary_release_url": "https://github.com/distribution/distribution/releases/tag/v3.1.2",
             "observation_ref": "distribution/distribution",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "fivetran/great_expectations": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.24.0",
             "checked_at": "2026-10-22T06:16:01.803Z",
             "primary_release_url": "https://github.com/fivetran/great_expectations/releases/tag/1.24.0",
             "observation_ref": "fivetran/great_expectations",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "google/cadvisor": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.60.6",
             "checked_at": "2026-10-22T06:16:01.803Z",
             "primary_release_url": "https://github.com/google/cadvisor/releases/tag/v0.60.6",
             "observation_ref": "google/cadvisor",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "grafana/alloy": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.21.1",
             "checked_at": "2026-10-22T06:16:01.803Z",
             "primary_release_url": "https://github.com/grafana/alloy/releases/tag/v1.21.1",
             "observation_ref": "grafana/alloy",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "grafana/grafana": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "13.2.4",
             "checked_at": "2026-10-22T06:16:01.803Z",
             "primary_release_url": "https://github.com/grafana/grafana/releases/tag/v13.2.4",
             "observation_ref": "grafana/grafana",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "grafana/k6": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "2.3.0",
             "checked_at": "2026-10-22T06:16:01.803Z",
             "primary_release_url": "https://github.com/grafana/k6/releases/tag/v2.3.0",
             "observation_ref": "grafana/k6",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "grafana/loki": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.7.9",
             "checked_at": "2026-10-22T06:16:02.689Z",
             "primary_release_url": "https://github.com/grafana/loki/releases/tag/v3.7.9",
             "observation_ref": "grafana/loki",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "grafana/pyroscope": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "2.4.1",
             "checked_at": "2026-10-22T06:16:02.689Z",
             "primary_release_url": "https://github.com/grafana/pyroscope/releases/tag/v2.4.1",
             "observation_ref": "grafana/pyroscope",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "grafana/tempo": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.1.1",
             "checked_at": "2026-10-22T06:16:02.689Z",
             "primary_release_url": "https://github.com/grafana/tempo/releases/tag/v3.1.1",
             "observation_ref": "grafana/tempo",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "kafbat/kafka-ui": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.5.0",
             "checked_at": "2026-10-22T06:16:02.689Z",
             "primary_release_url": "https://github.com/kafbat/kafka-ui/releases/tag/v1.5.0",
             "observation_ref": "kafbat/kafka-ui",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "keycloak/keycloak": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "26.8.1",
             "checked_at": "2026-10-22T06:16:02.689Z",
             "primary_release_url": "https://github.com/keycloak/keycloak/releases/tag/26.8.1",
             "observation_ref": "keycloak/keycloak",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "lfnovo/open-notebook": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.15.0",
             "checked_at": "2026-10-22T06:16:02.689Z",
             "primary_release_url": "https://github.com/lfnovo/open-notebook/releases/tag/v1.15.0",
             "observation_ref": "lfnovo/open-notebook",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "mlflow/mlflow": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.17.2",
             "checked_at": "2026-10-22T06:16:03.349Z",
             "primary_release_url": "https://github.com/mlflow/mlflow/releases/tag/v3.17.2",
             "observation_ref": "mlflow/mlflow",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "n8n-io/n8n": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "2.44.5",
             "checked_at": "2026-10-22T06:16:03.350Z",
             "primary_release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.44.5",
             "observation_ref": "n8n-io/n8n",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "oauth2-proxy/oauth2-proxy": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "7.15.5",
             "checked_at": "2026-10-22T06:16:03.350Z",
             "primary_release_url": "https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.5",
             "observation_ref": "oauth2-proxy/oauth2-proxy",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "oliver006/redis_exporter": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.95.0",
             "checked_at": "2026-10-22T06:16:03.350Z",
             "primary_release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.95.0",
             "observation_ref": "oliver006/redis_exporter",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "ollama/ollama": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.40.8",
             "checked_at": "2026-10-22T06:16:03.350Z",
             "primary_release_url": "https://github.com/ollama/ollama/releases/tag/v0.40.8",
             "observation_ref": "ollama/ollama",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "open-policy-agent/conftest": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.71.1",
             "checked_at": "2026-10-22T06:16:03.350Z",
             "primary_release_url": "https://github.com/open-policy-agent/conftest/releases/tag/v0.71.1",
             "observation_ref": "open-policy-agent/conftest",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "open-webui/open-webui": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.12.3",
             "checked_at": "2026-10-22T06:16:03.350Z",
             "primary_release_url": "https://github.com/open-webui/open-webui/releases/tag/v0.12.3",
             "observation_ref": "open-webui/open-webui",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "openbao/openbao": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "2.7.1",
             "checked_at": "2026-10-22T06:16:04.450Z",
             "primary_release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
             "observation_ref": "openbao/openbao",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "opensearch-project/OpenSearch": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.9.0",
             "checked_at": "2026-10-22T06:16:04.450Z",
             "primary_release_url": "https://github.com/opensearch-project/OpenSearch/releases/tag/3.9.0",
             "observation_ref": "opensearch-project/OpenSearch",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "opensearch-project/OpenSearch-Dashboards": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.9.0",
             "checked_at": "2026-10-22T06:16:04.450Z",
             "primary_release_url": "https://github.com/opensearch-project/OpenSearch-Dashboards/releases/tag/3.9.0",
             "observation_ref": "opensearch-project/OpenSearch-Dashboards",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "opentofu/opentofu": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.13.2",
             "checked_at": "2026-10-22T06:16:04.450Z",
             "primary_release_url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.2",
             "observation_ref": "opentofu/opentofu",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "pact-foundation/pact_broker": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "2.122.0",
             "checked_at": "2026-10-22T06:16:04.450Z",
             "primary_release_url": "https://github.com/pact-foundation/pact_broker/releases/tag/v2.122.0",
             "observation_ref": "pact-foundation/pact_broker",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "pgbackrest/pgbackrest": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "2.60.0",
             "checked_at": "2026-10-22T06:16:04.450Z",
             "primary_release_url": "https://github.com/pgbackrest/pgbackrest/releases/tag/release/2.60.0",
             "observation_ref": "pgbackrest/pgbackrest",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "prometheus-community/postgres_exporter": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.20.1",
             "checked_at": "2026-10-22T06:16:04.450Z",
             "primary_release_url": "https://github.com/prometheus-community/postgres_exporter/releases/tag/v0.20.1",
             "observation_ref": "prometheus-community/postgres_exporter",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "prometheus/alertmanager": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.34.1",
             "checked_at": "2026-10-22T06:16:05.429Z",
             "primary_release_url": "https://github.com/prometheus/alertmanager/releases/tag/v0.34.1",
             "observation_ref": "prometheus/alertmanager",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "prometheus/node_exporter": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.12.1",
             "checked_at": "2026-10-22T06:16:05.429Z",
             "primary_release_url": "https://github.com/prometheus/node_exporter/releases/tag/v1.12.1",
             "observation_ref": "prometheus/node_exporter",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "prometheus/prometheus": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.15.1",
             "checked_at": "2026-10-22T06:16:05.429Z",
             "primary_release_url": "https://github.com/prometheus/prometheus/releases/tag/v3.15.1",
             "observation_ref": "prometheus/prometheus",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "prometheus/pushgateway": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.11.4",
             "checked_at": "2026-10-22T06:16:05.429Z",
             "primary_release_url": "https://github.com/prometheus/pushgateway/releases/tag/v1.11.4",
             "observation_ref": "prometheus/pushgateway",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "prometheus/statsd_exporter": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.31.0",
             "checked_at": "2026-10-22T06:16:05.429Z",
             "primary_release_url": "https://github.com/prometheus/statsd_exporter/releases/tag/v0.31.0",
             "observation_ref": "prometheus/statsd_exporter",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "qdrant/qdrant": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.19.2",
             "checked_at": "2026-10-22T06:16:05.429Z",
             "primary_release_url": "https://github.com/qdrant/qdrant/releases/tag/v1.19.2",
             "observation_ref": "qdrant/qdrant",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "renovatebot/renovate": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "44.176.2",
             "checked_at": "2026-10-22T06:16:05.429Z",
             "primary_release_url": "https://github.com/renovatebot/renovate/releases/tag/44.176.2",
             "observation_ref": "renovatebot/renovate",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "restic/restic": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.19.1",
             "checked_at": "2026-10-22T06:16:06.179Z",
             "primary_release_url": "https://github.com/restic/restic/releases/tag/v0.19.1",
             "observation_ref": "restic/restic",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "seaweedfs/seaweedfs": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "4.48",
             "checked_at": "2026-10-22T06:16:06.179Z",
             "primary_release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48",
             "observation_ref": "seaweedfs/seaweedfs",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "stalwartlabs/cli": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.0.13",
             "checked_at": "2026-10-22T06:16:06.179Z",
             "primary_release_url": "https://github.com/stalwartlabs/cli/releases/tag/v1.0.13",
             "observation_ref": "stalwartlabs/cli",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "stalwartlabs/stalwart": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.16.27",
             "checked_at": "2026-10-22T06:16:06.179Z",
             "primary_release_url": "https://github.com/stalwartlabs/stalwart/releases/tag/v0.16.27",
             "observation_ref": "stalwartlabs/stalwart",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "surrealdb/surrealdb": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.3.4",
             "checked_at": "2026-10-22T06:16:06.179Z",
             "primary_release_url": "https://github.com/surrealdb/surrealdb/releases/tag/v3.3.4",
             "observation_ref": "surrealdb/surrealdb",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "terrakube-io/terrakube": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "2.33.3",
             "checked_at": "2026-10-22T06:16:06.179Z",
             "primary_release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
             "observation_ref": "terrakube-io/terrakube",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "timescale/timescaledb": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "2.31.0",
             "checked_at": "2026-10-22T06:16:06.179Z",
             "primary_release_url": "https://github.com/timescale/timescaledb/releases/tag/2.31.0",
             "observation_ref": "timescale/timescaledb",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "traefik/traefik": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.7.16",
             "checked_at": "2026-10-22T06:16:07.162Z",
             "primary_release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.16",
             "observation_ref": "traefik/traefik",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "trinodb/trino": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "484",
             "checked_at": "2026-10-22T06:16:07.163Z",
             "primary_release_url": "https://github.com/trinodb/trino/releases/tag/484",
             "observation_ref": "trinodb/trino",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "unclecode/crawl4ai": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "0.9.5",
             "checked_at": "2026-10-22T06:16:07.163Z",
             "primary_release_url": "https://github.com/unclecode/crawl4ai/releases/tag/v0.9.5",
             "observation_ref": "unclecode/crawl4ai",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "valkey-io/valkey": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "9.1.2",
             "checked_at": "2026-10-22T06:16:07.163Z",
             "primary_release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
             "observation_ref": "valkey-io/valkey",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "wiremock/wiremock": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.13.2",
             "checked_at": "2026-10-22T06:16:07.163Z",
             "primary_release_url": "https://github.com/wiremock/wiremock/releases/tag/3.13.2",
             "observation_ref": "wiremock/wiremock",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "RedisInsight/RedisInsight": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.8.0",
             "checked_at": "2026-10-22T06:16:48.002Z",
             "primary_release_url": "https://github.com/redis/RedisInsight/releases/tag/3.8.0",
             "observation_ref": "RedisInsight/RedisInsight",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "pact-broker-docker-release": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "3.0.0",
             "checked_at": "2026-10-22T06:16:47.991Z",
             "primary_release_url": "https://github.com/pact-foundation/pact-broker-docker/releases/tag/v3.0.0",
             "observation_ref": "pact-broker-docker-release",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "nginx/docker-nginx-unprivileged": {
-            "status": "VERIFIED_STABLE_RELEASE",
+            "status": "VERIFIED_PUBLISHED_RELEASE",
             "version": "1.29.4",
             "checked_at": "2026-10-22T06:18:28.613Z",
             "primary_release_url": "https://github.com/nginx/docker-nginx-unprivileged/releases/tag/1.29.4",
             "observation_ref": "nginx/docker-nginx-unprivileged",
             "basis": "Official mapped repository latest published non-draft/non-prerelease release metadata; product, wrapper and LTS channel mapping remains explicit.",
-            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED"
+            "oci_platform_security_compatibility": "SEPARATE_NOT_INFERRED",
+            "stable_channel": "NOT_INFERRED"
           },
           "postgresql": {
             "status": "VERIFIED_VENDOR_CHANNEL_FACT",

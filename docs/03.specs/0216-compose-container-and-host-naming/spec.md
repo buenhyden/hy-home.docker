@@ -1,10 +1,10 @@
 ---
 title: "Compose Container and Host Naming"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0216"
 parent_ids:
@@ -17,8 +17,10 @@ created: "2026-10-08"
 
 ## Overview
 
-Every service in an `infra/` Compose file declares `container_name` and
-`hostname`, and both equal the service key. Before this package, 111 of 121
+Every service in an `infra/` Compose file declares `container_name` equal to
+the service key unless it has a registered naming exception. `hostname` also
+equals the service key, except for node-exporter's host-network configuration
+introduced by SPEC-0225. Before this package, 111 of 121
 root services had no `hostname`, eight had no `container_name`, and 21 used a
 different container name (`infra-*`, `supabase-*` and one exporter).
 
@@ -34,14 +36,16 @@ service-to-service addresses, which already use service keys.
 
 ## Contracts
 
-1. Each `infra/` Compose service sets `hostname` to its service key.
+1. Each `infra/` Compose service sets `hostname` to its service key, except
+   node-exporter while it uses `network_mode: host` for SPEC-0225 host metrics.
+   That configuration keeps `container_name: node-exporter` and no `hostname`.
 2. Each sets `container_name` to its service key, unless
    `infra/common-optimizations.exceptions.json` `naming_exceptions` lists the
    service with its `container_name` and a `reason`.
-3. Supabase keeps its `supabase-*` container names, because its generic
-   service keys (`db`, `auth`, `rest` and others) would otherwise claim
-   host-wide Docker names; Realtime keeps `realtime-dev.supabase-realtime`,
-   from which it derives its tenant.
+3. Supabase naming exceptions now belong to
+   `labs/supabase/naming-exceptions.json` for `labs/supabase.yml`, outside this
+   package's `infra/` scope. They are not duplicated in the root naming
+   exception registry; the original implementation remains in the Task history.
 4. Documents and commands name the container by its current name.
 
 ## Acceptance Criteria
@@ -55,8 +59,9 @@ service-to-service addresses, which already use service keys.
 
 ## Failure Conditions
 
-A missing service-key hostname or container name fails unless the latter
-has an exact, reasoned naming exception. Retired container references or a
+A missing service-key hostname fails outside contract 1's node-exporter
+configuration. A differing or missing container name fails unless it has an
+exact, reasoned naming exception. Retired container references or a
 HOME recreation that loses volumes, health or scrape targets leave the
 naming change unverified; service keys and inter-service addresses are not
 renamed.
