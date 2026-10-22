@@ -1,10 +1,10 @@
 ---
 title: "n8n Stable Source Preparation Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0017"
 parent_ids:
@@ -39,6 +39,20 @@ production data is changed. Source rollback is an owning logical revert;
 image rollback cannot undo a database migration.
 
 ## Work Log
+
+### 현재 source 진행과 lifecycle 구분 — 2026-10-22
+
+현재 Compose/build 소스의 2.43.6 bundle, broker/launcher listener alias와
+read-only custom bind는 아래 구현 보고와 일치한다. Coupled source commit,
+isolated build/module loading 및 후속 HOME upgrade/recreation 보고는 각각의
+날짜와 입력에 귀속한다. 특정 source binding의 native/HOME/recovery NOT_RUN을
+다른 artifact나 operational 보고의 결과로 덮지 않는다.
+
+현재 frontmatter는 draft이며 아래 실행 진행 보고와 lifecycle 기록의 정합성
+검토가 남아 있다. 초기 draft 요구나 과거 source 진행을 근거로 lifecycle event를
+꾸미거나 완료를 선언하지 않는다. 이번 조정은 status를 전이하지 않으며 criterion
+2의 기존 decision owner, pending exact-head review/gates와 전체 image/security/
+recovery 수락을 보존한다. 새 runtime 실행이나 criterion 수락은 수행하지 않았다.
 
 ### W71 stable source preparation
 

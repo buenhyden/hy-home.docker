@@ -513,9 +513,39 @@ class NativeRehearsalTests(unittest.TestCase):
 
     def test_full_perform_restores_upgrades_and_renders(self):
         """Old-image restore, candidate upgrade, Agent render, accepted ledger."""
+        self.full_perform()
+
+    def test_full_perform_preserves_trailing_newlines(self):
+        self.full_perform((uuid.uuid4().hex + "\n", uuid.uuid4().hex + "\n\n"))
+
+    def test_live_canary_refuses_an_empty_value_before_restore(self):
+        native, fixture, client, _shares = self.home()
+        cluster = client.api("GET", "sys/seal-status")[1]["cluster_id"]
+        self.seed(native, fixture, client, cluster, ("", uuid.uuid4().hex))
+        restore = M.load_restore()
+        reader = self.reader(native, fixture, client, restore, client.token)
+        with self.assertRaises(restore.Blocked):
+            reader.read_all()
+
+    def reader(self, native, fixture, client, restore, token):
+        base = restore.load_dependencies()[0]
+        # HOME's gateway name and port are the only replaced transport facts.
+        gateway = types.SimpleNamespace(**vars(base))
+        gateway.PinnedConnection = lambda _host, _port, **kwargs: base.PinnedConnection(
+            "openbao", native.PORT, **kwargs
+        )
+        ca = fixture.tls / "ca.pem"
+        return restore.LiveCanaries(
+            gateway,
+            token,
+            base.ca_context(str(ca), hashlib.sha256(ca.read_bytes()).hexdigest()),
+            client.target,
+        )
+
+    def full_perform(self, canary_values=None):
         native, fixture, client, shares = self.home()
         cluster = client.api("GET", "sys/seal-status")[1]["cluster_id"]
-        reference = self.seed(native, fixture, client, cluster)
+        reference = self.seed(native, fixture, client, cluster, canary_values)
         restore = M.load_restore()
         attempt = "p01-rehearsal-" + uuid.uuid4().hex[:12]
         # Docker writes the restored Raft data as UID 100; the owner removes it.
@@ -553,19 +583,7 @@ class NativeRehearsalTests(unittest.TestCase):
                 execution,
             )
             self.addCleanup(lambda: [held.close() for held in effects.held_artifacts])
-            base = restore.load_dependencies()[0]
-            # HOME's gateway name and port are the only replaced transport facts.
-            gateway = types.SimpleNamespace(**vars(base))
-            gateway.PinnedConnection = lambda _host, _port, **kwargs: (
-                base.PinnedConnection("openbao", native.PORT, **kwargs)
-            )
-            ca = fixture.tls / "ca.pem"
-            reader = restore.LiveCanaries(
-                gateway,
-                home_token,
-                base.ca_context(str(ca), hashlib.sha256(ca.read_bytes()).hexdigest()),
-                client.target,
-            )
+            reader = self.reader(native, fixture, client, restore, home_token)
             self.assertEqual(reader.read_all(), reference)
             # RUN-0085 runs W3a under umask 077; every container must still read
             # the directories the client creates.
@@ -596,7 +614,7 @@ class NativeRehearsalTests(unittest.TestCase):
         # The rendered values, the Agent token and the keys lived only here.
         self.assertEqual(list(Path("/dev/shm").glob(attempt + "-*")), [])
 
-    def seed(self, native, fixture, client, cluster):
+    def seed(self, native, fixture, client, cluster, canary_values=None):
         """HOME's canaries and renderer roles, applied by the reviewed W1c tool."""
 
         def ok(method, path, payload=None):
@@ -611,9 +629,13 @@ class NativeRehearsalTests(unittest.TestCase):
                 break
             time.sleep(0.25)
         values = {}
-        for route, writes in (("02-auth/keycloak", 2), ("06-observability/grafana", 1)):
+        for index, (route, writes) in enumerate(
+            (("02-auth/keycloak", 2), ("06-observability/grafana", 1))
+        ):
             for _ in range(writes):
-                value = uuid.uuid4().hex
+                value = (
+                    uuid.uuid4().hex if canary_values is None else canary_values[index]
+                )
                 version = ok(
                     "POST",
                     "secret/data/hy-home/" + route,
@@ -672,6 +694,24 @@ class NativeRehearsalTests(unittest.TestCase):
             )
         self.assertEqual((code, output.getvalue()), (0, "RENDERER_ROLES_APPLIED\n"))
         return (values["02-auth/keycloak"], values["06-observability/grafana"])
+
+
+class NativeOptInTests(unittest.TestCase):
+    def test_default_suite_skips_before_creating_native_resources(self):
+        if os.environ.get("HYHOME_OPENBAO_REHEARSAL") == "1":
+            self.skipTest("default opt-in guard applies when the flag is disabled")
+        suite = unittest.defaultTestLoader.loadTestsFromTestCase(NativeRehearsalTests)
+        expected = suite.countTestCases()
+        result = unittest.TestResult()
+        with (
+            mock.patch.object(NativeRehearsalTests, "home") as home,
+            mock.patch("subprocess.run") as run,
+        ):
+            suite.run(result)
+        self.assertEqual(len(result.skipped), expected)
+        self.assertEqual((result.errors, result.failures), ([], []))
+        home.assert_not_called()
+        run.assert_not_called()
 
 
 if __name__ == "__main__":

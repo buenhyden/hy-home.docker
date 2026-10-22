@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.23"
+version: "0.1.24"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0245-TSK-0001"
 parent_ids:
@@ -347,6 +347,25 @@ after the window.
 | SPEC-0245-TSK-0001 | draft | ready | #ready-transition |
 | SPEC-0245-TSK-0001 | ready | in-progress | #in-progress-transition |
 
+### Later-result reconciliation — 2026-10-22
+
+The later Work Log above already records the 2026-10-21 Prometheus restore
+and Gatus W3 outcomes. The appended evidence rows below expose those results
+to table readers without changing any earlier attempt, failure receipt or
+approval. This reconciliation reads tracked prose only; the protected raw
+archives and full receipts were not reopened or independently rehashed in
+this session. Short hashes remain the recorded prefixes, not newly verified
+full identities. No restore, build, recreation or CA check ran again.
+
+The later Prometheus restore addresses the pending restore step for the new
+10-20 input; it does not resolve restore-01 through restore-03 on their older
+inputs, diagnose restore-03, or cure the pre-recreation ordering deviation.
+Gatus's recorded build/recreation proves the stated image and mount work only.
+The OpenBao window's later TLS/consumer results must be bound to these exact
+consumers before this Task can accept them. No criterion is accepted by this
+documentation correction. The later rows use separately recorded inputs and
+checks, so they do not declare `Resolves` against the earlier NOT_RUN rows.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -378,16 +397,20 @@ after the window.
 | Released Gatus isolated restore attempt 03 plan | 3 | W3 | Independent READY reviews and conditional root GO for the new Gatus isolated-clone sibling | Contract `322414d13c3655155b95cd2ad84a25b0307fdf085283e3ee9830d3f90cf213a4`; script `174d5bf307ca944ac5b8ea7ae15c4595dc6edf18b76580e66830963a9662a438`; test `8153f9003713ab9b36db669dc828179c144cbb88961b43a557f2e2486184bf0a`; helpers unchanged; zero attempt-02 labels/nine old names absent; 64-hex/no-LF regression PASS; operator READY/hash and target checks pending | PASS | Isolated Restore Attempt 03 Release | required | - |
 | Isolated restore attempt 03 | 2 | W2 | Released Prometheus isolated restore through offline preflight | Receipt `ee9900e4df12a952ee8956d921c7f3c80ba496e943158823e4720786c65a67aa`; full Prometheus extraction completed; `prometheus-offline-preflight` exit 1; receipt mode 0400/inode `174588497`; cleanup PASS; scratch quarantined; originals healthy/restart 0; diagnosis open | FAIL | Isolated Restore Attempt 03 Failure | required | - |
 | Isolated restore attempt 03 containment | 6 | W6 | Contain the failed Prometheus isolated restore and preserve production boundaries | Cleanup PASS; scratch quarantined; originals healthy/restart 0; no CA, image-build, or retry; no archive-corruption inference | PASS | Isolated Restore Attempt 03 Failure | required | - |
+| Later Prometheus isolated restore | 2 | W2 | Reuse the documented 2026-10-21 isolated restore of the SEC01 10-20 cold copy | Recorded archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`; exit 0, 23 blocks, extraction 814.4 s, readiness 55.4 s, WAL corruptions 0, historical query counts 64/64/63; protected raw receipt not re-read | PASS | Prometheus isolated restore and Gatus W3 — 2026-10-21; Later-result reconciliation — 2026-10-22 | required | - |
+| Later Gatus backup and isolated restore | 3 | W3 | Reuse the documented consistent copy and isolated SQLite validation | Recorded 2026-10-21 archive 4,545,536 bytes, SHA-256 prefix `c1e5cdcc…`, mode 0400; integrity_check ok, 8 endpoints, 835 results, 195 events; protected raw receipt not re-read | PASS | Prometheus isolated restore and Gatus W3 — 2026-10-21; Later-result reconciliation — 2026-10-22 | required | - |
+| Later Gatus delta image | 4 | W3 | Reuse the documented no-network/no-pull delta build | Recorded base `c52ad951…`, result `503e6af2…`, tracked entrypoint `4d4264b5…`, unchanged binary `c127f7e9…`; raw image identities not re-observed | PASS | Prometheus isolated restore and Gatus W3 — 2026-10-21; Later-result reconciliation — 2026-10-22 | required | - |
+| Later Gatus CA application | 5 | W5 | Reuse the documented bounded recreation and CA mount result | Recorded recreation at main `5c77e8681`, healthy, zero restarts, CA mount/bundle and SSL_CERT_FILE present; consumer TLS result not established by this row | PASS | Prometheus isolated restore and Gatus W3 — 2026-10-21; Later-result reconciliation — 2026-10-22 | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 1 | pending | - | Await W1 preflight | @buenhyden |
-| 2 | pending | - | Backup captured; await independent rehash and isolated restore | @buenhyden |
-| 3 | pending | - | Backup captured; await independent rehash and isolated restore | @buenhyden |
-| 4 | pending | - | Await W3 build identity | @buenhyden |
-| 5 | pending | - | Await W4 and W5 service results | @buenhyden |
+| 2 | pending | Later Prometheus isolated restore | Later cold-copy restore is recorded PASS; pre-recreation ordering remains a deviation, with rule/alert and exact TLS consumer acceptance outstanding. | @buenhyden |
+| 3 | pending | Later Gatus backup and isolated restore | Later consistent copy and isolated integrity check are recorded PASS; owner acceptance and exact post-window consumer verification remain outstanding. | @buenhyden |
+| 4 | pending | Later Gatus delta image | Minimal delta build identity is recorded; final owner acceptance remains outstanding. | @buenhyden |
+| 5 | pending | Later Gatus CA application | Gatus CA application is recorded; bind the later OpenBao TLS consumer results and required service checks before acceptance. | @buenhyden |
 | 6 | pending | - | Await W6 outcome if a gate fails | @buenhyden |
 | 7 | pending | - | Await W7 reviews and checks | @buenhyden |
 

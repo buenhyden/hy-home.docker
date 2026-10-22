@@ -1,10 +1,10 @@
 ---
 title: "Workflow Lease and Database Connect Safety Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0018"
 parent_ids:
@@ -37,6 +37,22 @@ No HOME deployment, live ACL change, credential access, external SMTP or
 production restore is authorized by this source unit.
 
 ## Work Log
+
+### 현재 source 진행과 lifecycle 구분 — 2026-10-22
+
+공개 소스 대조에서 아래 frozen project.py, monitor.py, SQL004, builder 및 SMTP
+transport의 다섯 SHA256이 현재 추적 파일과 각각 일치했다. CONNECT guard,
+six-field lease와 unknown quarantine는 구현되어 있으며, isolated PostgreSQL
+denial/quarantine/empty restore 결과는 아래 날짜와 입력의 보고로 보존한다.
+실제 DEV TimescaleDB, n8n/HOME, S3 또는 complete recovery 수락으로 확대하지 않는다.
+
+현재 frontmatter는 draft다. 아래 Review and Completion의 “In progress”는
+기록된 실행 진행을 설명하며 합법적인 lifecycle transition이나 criterion 수락을
+대신하지 않는다. 이번 조정은 status를 전이하지 않고 lifecycle 정합성 검토를
+남긴다. Criterion 18/19의 decision owner는 기존 Task0012/0013이며, 후속
+[Task0019](tsk-0019-n8n-native-notification.md)의 독립 W74 PASS도 두 owner의
+수락이나 W65 전체 vertical 완료를 자동으로 만들지 않는다. 새 native 실행이나
+전체 복구 수락은 수행하지 않았다.
 
 W72 corrects the shared DEV function-only provision boundary before LOGIN.
 A separate administrator-only cluster bootstrap affects PUBLIC CONNECT only on

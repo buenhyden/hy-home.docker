@@ -1,10 +1,10 @@
 ---
 title: "QA Scope and Delivery Rationalization Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0211-TSK-0001"
 parent_ids:
@@ -1867,22 +1867,16 @@ shared pins do not make different local/PR trust identities interchangeable.
 
 ## Review and Completion
 
-Only initial contract issuance W1 is accepted for final promotion. Prior hosted
-inputs failed and remain recorded. The corrected previous local prerequisite
-passed and was submitted as head076b976; that hosted candidate failed the npm
-adapter and is not accepted. The isolated-unit source prerequisite is
-locally validated through recorded focused, selected and bounded continuation
-results; final document/readback checks gate its logical commit. The explicitly
-extended metadata/library retirement prerequisite passed its affected leaves
-and reviewed narrow-case check. The final exact document/readback checks passed and logical commit2cf46fb
-was submitted. Its hosted candidate failed eight stale manifest proof
-associations. The user approved the bounded owner repair and execution resumed,
-then the actual focused manifest check failed two mirror-location rules. The
-followup stopped before submission; overall criteria and integration remain
-pending because the new d46f19685 hosted candidate failed; the bounded batch stopped and the approved diagnostic and one-line followup are recorded below. Previous
-npm findings remain historical evidence.
-Missing operational observations and release publication remain unexecuted;
-source structure and mocked publication are not runtime activation.
+이전 hosted candidate 실패는 각 입력의 Work Log와 Evidence에 보존한다.
+후속 TSK-0002는 소스 교정, 독립 검토, exact-head hosted retry, protected
+merge와 merged-main security 실행의 완료를 기록한다. 따라서 앞선 candidate
+실패를 현재 통합 상태의 최종 결과로 삼지 않는다. 현재 QA 실행과 남은 검사·검토의
+지원 증거는 TSK-0003이 기록하며, 기준 1–5의 유일한 수용 결정 소유자는 이
+Task다. 위 다섯 Criterion Acceptance 행은 모두 pending으로 유지한다.
+
+전체 FULL 성공이나 운영 활성화는 이 요약으로 확정하지 않는다. 미실행 운영
+관측과 release publication은 기존 경계를 유지하며, 소스 구조와 mocked
+publication만으로 그 실행을 입증하지 않는다.
 
 ## Related Documents
 

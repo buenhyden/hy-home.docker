@@ -849,7 +849,6 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
             "dirname",
             "git",
             "mkdir",
-            "python3",
             "rm",
             "sed",
             "sleep",
@@ -860,6 +859,10 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
             target = shutil.which(name)
             if target:
                 (tools / name).symlink_to(target)
+        # An external symlink loses the active Python virtual environment.
+        self._write_executable(
+            tools / "python3", f'exec {shlex.quote(sys.executable)} "$@"\n'
+        )
         trace = tools / "docker.trace"
         environment_trace = tools / "docker.env"
         self._write_executable(

@@ -1,10 +1,10 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.23"
+version: "0.1.24"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0244-TSK-0001"
 parent_ids:
@@ -468,7 +468,11 @@ preserved. Attempt 06 has not run; root may release this exact plan once.
 
 ## Review and Completion
 
-This Task has no accepted criterion. Completion is limited to the source
+Criterion 3 is accepted for the recorded normal-session effective-memory-off
+query and independent security review. Criteria 1, 2 and 4–6 remain pending;
+that bounded result does not prove hook delivery or authorize another native
+attempt. This 2026-10-22 summary correction reuses the existing receipt and
+performs no provider action. Completion is limited to the source
 verification contract in SPEC-0244; it does not accept provider-global state,
 individual hook delivery without a receipt, or shared-memory implementation.
 

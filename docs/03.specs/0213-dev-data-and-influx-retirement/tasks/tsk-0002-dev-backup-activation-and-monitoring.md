@@ -1,10 +1,10 @@
 ---
 title: "DEV Backup Activation and Monitoring Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0213-TSK-0002"
 parent_ids:
@@ -218,6 +218,16 @@ start with the source's `max_connections=100`, `max_wal_senders=4` and
 `max_replication_slots=4`. With the image default of 25 connections, recovery
 aborted with `insufficient parameter settings`. The canary container and volume
 were removed by label with zero remaining.
+
+### Current Evidence Reconciliation — 2026-10-22
+
+The Evidence table preserves the HOME preflight `FAIL` and the later HOME
+resolved-path `PASS`, whose Resolves cell names that failure. Criterion 8's
+recorded `rejected` decision remains unchanged; the replacement check is not a
+new acceptance decision. The W8 HOME activation and isolated restore-canary
+`PASS` are later reported results, so the initial preflight failure does not
+mean activation was never run. This readback adds no operational execution.
+Criterion 10 remains pending, and HOME PITR and R2 restore remain `NOT_RUN`.
 
 ## Evidence
 

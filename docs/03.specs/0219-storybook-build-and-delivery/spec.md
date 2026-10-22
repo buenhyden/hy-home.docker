@@ -1,10 +1,10 @@
 ---
 title: "Storybook Build and Delivery"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0219"
 parent_ids:
@@ -33,11 +33,12 @@ MCP remotely to authenticated clients, and bounds the design export.
 In scope: the Storybook workspace and its UI package, the Dockerfile, the
 image build and verification script, the Compose services and routes, the
 remote docs MCP and its token checks, the design export,
-the rehearsal and unit tests, and the operations documents. Out of scope:
-creating the Keycloak client on HOME, starting the `experience` profile on
-HOME, signing into Claude Design, changing other workspaces' files, and the
-TypeScript 7 upgrade, which waits for `typescript-eslint` support, and a
-`DESIGN.md`, which is separate later work.
+the rehearsal and unit tests, and the operations documents. The initial source
+slice excluded creating the Keycloak client and starting `experience` on HOME;
+the Task's later owner-named W8 records the reported HOME activation and login
+results. Remote-device MCP login and a document tool call remain `NOT_RUN`.
+Signing into Claude Design, changing other workspaces' files, the TypeScript 7
+upgrade pending `typescript-eslint` support, and `DESIGN.md` remain separate work.
 
 ## Contracts
 
@@ -52,7 +53,8 @@ TypeScript 7 upgrade, which waits for `typescript-eslint` support, and a
    to the local registry with SBOM and max provenance attestations. Compose
    pins `hy-home/storybook:<commit>` and `hy-home/storybook-mcp:<commit>` to
    the same commit with `pull_policy: never`, so a missing image fails the
-   start. HOME never selects the `experience` profile.
+   start. The default HOME selection excludes `experience`; the owner-named
+   W8 activation is recorded separately in the Task.
 3. Static origin. The origin stays unprivileged, read-only, on the internal
    `experience_ingress_net`, behind `req-rate-limit`, `gateway-standard-chain`
    and `sso-auth`. Anonymous and non-administrator requests to the index,
@@ -88,8 +90,9 @@ TypeScript 7 upgrade, which waits for `typescript-eslint` support, and a
 3. Story, accessibility, artifact, MCP, lint, type and build checks pass.
 4. The design export contains exactly the allowlist and no secret-shaped data.
 5. Operations documents, the gate contract and the service catalog match, and
-   the changed gate passes. HOME, Keycloak and live client steps are recorded
-   as not run.
+   the changed gate passes. The Task distinguishes the initial source slice
+   from the later reported W8 HOME and Keycloak results; remote-device MCP
+   login and a document tool call remain `NOT_RUN`.
 
 ## Failure Conditions
 

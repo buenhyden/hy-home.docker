@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.26"
+version: "0.4.27"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -2440,6 +2440,46 @@ PASS (ISOLATED).
 Still NOT_RUN: HOME deployment and cold boot, production backup, rollback and
 recovery, consumer uptake, and an upstream signature (the image is
 NOT_UPSTREAM_SIGNED).
+
+### ROOT 공개 공급자 재조회 — 2026-10-22
+
+현재 사용자는 완료된 구현을 재사용하고 Python 도구 체인·전체 QA·가능한 로컬
+구현을 계속하도록 요청했습니다. 운영 변경·토큰 폐기·원격 PR은 별도 승인
+전까지 실행하지 않습니다. 이전 HOME 승인과 수용 기록은 당시 범위의 역사입니다.
+
+기존 ROOT 111행·44개 source 입력의 공급자 참조를 재사용해 공개 공식 release·
+지원 문서·registry 태그 metadata 92건을 추가했습니다. 85건이 성공했고 중간 실패
+7건도 보존합니다. AWS CLI·Debezium·Jupyter의 GitHub latest HTTP404는 각각
+공식 changelog·release 문서·Quay date/SHA channel로 보완했습니다. RedisInsight의
+repository 이동은 canonical redis/RedisInsight 조회로 확인했습니다. GitHub 파일
+크기·endpoint 제한과 Python gzip decode 실패는 보존했고 Python 좁은 재시도는
+성공했습니다. 로컬 DNS와 web 도구의 registry 조회 실패 뒤 공개 metadata만
+대상으로 한 제한 재시도는 Docker Hub/Quay 5건 모두 HTTP200입니다. 인증·이미지
+blob 다운로드·pull·build·실행은 하지 않았습니다. 조회별 URL·UTC 시각·상태·
+해석과 수집 가능한 공개 응답 hash(92건 중 25건)는 [기존 release 조회 자료](../../../../infra/09-platform-ops/security-updates/release-lookups.json)의
+`root_official_refresh/observations`와 `public_metadata_continuations`에 기록합니다.
+
+111개 행 전체를 대조했고 109개는 공식 공급자 release/channel에 대응합니다.
+`storybook`·`storybook-mcp` 두 내부 image revision tag는 선택된 producer·정확한
+이미지 빌드 영수증과 공급자 대응이 미확정입니다. 알려진 로컬 Dockerfile만으로
+선택 이미지와 연결하지 않습니다. 현재 read 대상 32개 Dockerfile 입력 행은
+22개 고유 파일이고 OpenTofu inline FROM은 별도입니다. 과거 33개 소비자 행·
+14개 raw build 객체와 scope가 달라 같은 집계로 제시하지 않습니다.
+
+공식 후보에는 Traefik3.7.16, Prometheus3.15.1, Alloy1.21.1, Loki3.7.9,
+Pyroscope2.4.1, Tempo3.1.1, n8n2.44.5, MLflow3.17.2와 Node24.22.1LTS/
+26.12.1Current가 있습니다. Python3.13.17은 10월21일 특별 보안 릴리스이며
+공식 문서는 embedded pip/certifi의 emSign CA 대응을 설명합니다. 현재 OpenBao
+application2.7.1·Go1.27.3은 해당 공개 release/channel 사실과 일치합니다. Jupyter
+2026-10-19/sourceadb330e3127a는 latest alias와 index가 같지만 Python3.13.16
+태그이므로 더 늦은 Python 보안 release 포함을 주장하지 않습니다. Pact
+wrapper3.0.0-pactbroker2.121.2와 application2.122.0, Neo4j5.26와 calendar,
+NGINX stable/mainline, Debezium3.6/3.7을 구분합니다.
+
+이 결과는 release/channel 사실만 갱신합니다. pin·이미지 scan checked_at·과거
+수용·native 유효성을 바꾸지 않으며 공급자 보안 release note를 현재 이미지의
+취약점 도달성 판정으로 승격하지 않습니다. 서명·full-image SBOM/scan·호환·
+native·HOME·backup/rollback/recovery와 criterion15는 미완료 상태를 유지합니다.
 
 ## Evidence
 

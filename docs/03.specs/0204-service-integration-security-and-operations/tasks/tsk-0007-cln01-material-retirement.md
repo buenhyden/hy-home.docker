@@ -1,10 +1,10 @@
 ---
 title: "CLN01 Material Retirement Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0007"
 parent_ids:
@@ -873,6 +873,24 @@ stay protected. No new deletion target is authorized by this receipt. A Git
 revert of this documentation commit restores only this receipt's text; it neither
 recreates private files nor undoes historical deletion. HOME functional acceptance,
 MIGRATION, ROTATION, RECOVERY and new actual deletion remain `NOT_RUN`.
+
+### Current Source and Private-Deletion Assessment — 2026-10-22
+
+The current documentation audit distinguishes the corrected source validation
+recorded in Fresh deletion reassessment from the initial remote candidate
+failure. That section preserves the failed candidate, the parser RED/GREEN,
+and the successful corrected local gate, staged checks and independent review.
+The frozen Evidence failure and Criterion Acceptance rejection below remain
+unchanged; neither is proof that the corrected helper source is unimplemented.
+The delivered helper and SMTP01/CLN01 source scope retain their recorded user
+acceptance. No new test or remote check was run for this assessment.
+
+Actual private deletion remains deferred as `BLOCKED_FACTS`: the reassessment
+identified no approved new ROOT target with all five consumer and recovery axes
+closed. No private plan, apply, new unlink, HOME validation or recovery receipt
+is added. COMM-003 remains SMTP01-only, and COMM-002, PG-020 and cryptographic
+recovery materials remain protected. This clarification changes no Evidence
+edge, criterion decision or Task lifecycle status and grants no deletion.
 
 ## Evidence
 

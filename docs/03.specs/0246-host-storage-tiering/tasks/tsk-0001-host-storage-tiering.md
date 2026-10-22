@@ -1,6 +1,6 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -433,6 +433,26 @@ share that tag) and was left in place.
 single-platform manifest, so a re-pulled image ID differs from the original.
 Digests are shown as their first 12 hexadecimal characters.
 
+### W7 current-evidence reconciliation — 2026-10-22
+
+The second-window and move-result sections above supersede the initial
+waiting description for current progress. Their recorded SMART inputs,
+97,236 s stable-counter window, individual upper-bound write rates, combined
+6.05-year projection, owner selection and successful move are reused below.
+The initial NOT_RUN evidence row remains an initial-state observation; no
+measurement, migration, historical query or health check was repeated here.
+Protected snapshot/compare files and raw runtime logs were not re-read in this
+documentation session. The separately scoped later observations carry no
+`Resolves` claim against the initial NOT_RUN row; the current Criterion
+Acceptance explanation names the later evidence while remaining pending.
+
+Criterion 6 still needs its owner's explicit acceptance of the complete
+recorded scope, including the reported Tempo WAL handling and remaining HDD
+copies. Their deletion remains the owner's separate exact-path step and is
+not authorized by this reconciliation. W6 and criterion 5 wait for criterion
+6 acceptance; no operations-policy promotion is performed here. Criteria
+1–4 and the accepted GC-floor decision remain unchanged.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -447,6 +467,8 @@ Digests are shown as their first 12 hexadecimal characters.
 | Registry pin | 4 | W5 | Running image digest equals the Compose pin | Running `registry:3` versus pinned `registry:3.1.2@sha256:ddf754342cfc…` | PASS | Work Log: W5 inventory and cleanup | required | - |
 | Observability store placement | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Disk load analysis; first window (t0 2026-10-19T23:51:52, t1 2026-10-21T05:56:08) Loki ELIGIBLE with SMART (7.78 years), four stores DEFER; second window t0 2026-10-21T05:56:40 | NOT_RUN | Work Log: Disk load analysis | required | - |
 | Policy promotion | 5 | W6 | Changed metadata and link checks | Operations owner document | NOT_RUN | Work Log | required | - |
+| W7 second-window placement decision | 6 | W7 | Reuse the documented stable-counter sample, SMART values and owner selection | 2026-10-21 05:56:40 to 2026-10-22 08:57:16 +09:00; 97,236 s; SMART 24 percent used and 81,993,720,429 LBAs; Tempo and Prometheus selected, combined projection 6.05 years; Loki/Alloy/Pyroscope retained on HDD; raw files not re-read | PASS | W7 second window result — 2026-10-22; W7 current-evidence reconciliation — 2026-10-22 | required | - |
+| W7 selected-store SSD move | 6 | W7 | Reuse the documented owner copy, bounded recreation, data query and health results | Recorded 2026-10-22 move; SSD bind devices, both services healthy; Prometheus historical count(up) 37 and current 65, 20 rule groups ok; Tempo ready and one empty WAL block dropped; HDD copies retained for owner handling | PASS | W7 Tempo and Prometheus move result — 2026-10-22; W7 current-evidence reconciliation — 2026-10-22 | required | - |
 
 ## Criterion Acceptance
 
@@ -457,7 +479,7 @@ Digests are shown as their first 12 hexadecimal characters.
 | 3 | accepted | Build-cache limit, Build-cache floor decision, Image archive, Volume and container cleanup | Floor accepted, archive digest-verified, and only unowned items removed. | SPEC-0246 TSK-0001 |
 | 4 | accepted | Registry pin | The running image digest equals the Compose pin. | SPEC-0246 TSK-0001 |
 | 5 | pending | Policy promotion | Criteria 1–4 are accepted; waits for criterion 6. | SPEC-0246 TSK-0001 |
-| 6 | pending | Observability store placement | First window: Loki ELIGIBLE with SMART (7.78 years), four stores deferred by restarts; waits for the second window (t1 2026-10-22 05:56:40) and the owner's decision per store. | SPEC-0246 TSK-0001 |
+| 6 | pending | W7 second-window placement decision, W7 selected-store SSD move | Second sample, per-store owner decision and Tempo/Prometheus move are recorded; awaits explicit owner acceptance of this scope and the separate remaining HDD-copy disposition. W6 remains dependent on acceptance. | SPEC-0246 TSK-0001 |
 
 ## Review and Completion
 

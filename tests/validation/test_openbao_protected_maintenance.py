@@ -53,6 +53,7 @@ def operator():
             "creation_ttl": 3600,
             "renewable": True,
             "path": "auth/oidc/oidc/callback",
+            "entity_id": "synthetic-operator-entity",
         }
     }
 
@@ -170,6 +171,48 @@ class CeremonyTests(unittest.TestCase):
                         M.ceremony(self.api, custody, CLUSTER, lambda _: "a" * 64)
                 self.assertEqual(len(self.api.calls), 1)
                 (self.directory / ".lock").unlink()
+
+    def test_missing_empty_or_wrong_type_operator_entity_never_starts_attempt(self):
+        valid = operator()["data"]
+        cases = {
+            "missing": {
+                key: value for key, value in valid.items() if key != "entity_id"
+            },
+            **{
+                label: {**valid, "entity_id": value}
+                for label, value in (
+                    ("null", None),
+                    ("empty", ""),
+                    ("boolean", False),
+                    ("integer", 7),
+                    ("list", []),
+                    ("object", {}),
+                )
+            },
+        }
+        for label, data in cases.items():
+            with self.subTest(case=label):
+                self.api = FakeAPI()
+                self.api.responses[0] = {"data": data}
+                shares = iter(["a" * 64, "b" * 64])
+                with tempfile.TemporaryDirectory(dir=self.tmp.name) as directory:
+                    with M.Custody(Path(directory)) as custody:
+                        with self.assertRaises(M.Blocked):
+                            M.ceremony(
+                                self.api,
+                                custody,
+                                CLUSTER,
+                                lambda _, shares=shares: next(shares),
+                            )
+                self.assertEqual(self.api.calls, [("GET", M.LOOKUP, None)])
+
+    def test_lost_operator_entity_after_delivery_preserves_root_custody(self):
+        self.api.responses[6] = {"data": {**operator()["data"], "entity_id": ""}}
+        with self.assertRaises(M.Indeterminate):
+            self.run_ceremony()
+        self.assertEqual((self.directory / "root.token").read_text(), ROOT_TOKEN)
+        self.assertFalse((self.directory / "state.json").exists())
+        self.assertFalse(any(call[0] == "DELETE" for call in self.api.calls))
 
     def test_sealed_cluster_version_or_threshold_mismatch_never_initializes(self):
         for key, value in (

@@ -1,10 +1,10 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.4.3"
+version: "1.4.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "operations"
 artifact_id: "POL-0001"
 created: "2026-06-04"
@@ -36,11 +36,18 @@ created: "2026-06-04"
   - `pids_limit`은 등급별 초기 예산이다(dev 128, low 256, med 512, high·DB 1024). 부하 측정 전에는 최적값이 아니다.
   - 예외 한 건은 `scope`(`root` 또는 `lab:<이름>`), `compose_file`, `service`, `control`, `allowed_value`를 정확히 지정한다. `kind`(`weakening` 또는 `compatibility`), `owner`, `reason`, `impact`, `mitigation`, `verification`, `reviewed`, `review_by`, `release_condition`도 필수다.
   - `review_by`는 `reviewed`로부터 1년 이내다. 날짜가 지난 예외는 실패한다.
-  - `infra/` Compose의 모든 서비스는 `container_name`과 `hostname`을 선언하며, 둘 다 서비스 이름과 같아야 한다. Docker container 이름은 호스트 전체에서 유일해야 하므로 다른 `container_name`은 `naming_exceptions`에 `container_name`과 `reason`으로만 등록한다(`tests.validation.test_infra_tier_layout`가 검사).
+  - `infra/` Compose의 `container_name`과 `hostname`은 서비스 이름과 같아야 한다.
+    SPEC-0225의 host metric 수집을 위해 `network_mode: host`로 실행하는
+    `node-exporter`는 현재 구현과 회귀검사에 따라 `hostname`을 선언하지 않는다.
+    Docker container 이름은 호스트 전체에서 유일해야 하므로 다른 `container_name`은
+    root 레지스트리의 `naming_exceptions`에 `container_name`과 `reason`으로 등록한다
+    (`tests.validation.test_infra_tier_layout`가 검사).
 - **약화 예외가 아닌 것**:
   - `restart: "no"`인 job은 healthcheck가 필요 없다. lifecycle 사실이므로 예외로 등록하지 않는다.
   - secret을 읽지 않는 서비스에는 Docker secret이 필요 없다(비적용).
-  - 일반 업스트림 서비스 키(Supabase `db`, `auth` 등)의 `container_name`에 `supabase-` 접두어 유지; `hostname`은 서비스 이름.
+  - Supabase LAB의 업스트림 서비스 키(`db`, `auth` 등)는 이유가 등록된 container
+    이름을 유지하고 `hostname`은 서비스 이름을 쓴다. 현재 예외 소유자는
+    `labs/supabase/naming-exceptions.json`이며 root naming 예외와 중복하지 않는다.
 - **Disallowed**:
   - wildcard 서비스·파일·scope, 미등록 control, 중복 예외
   - 실제 서비스가 없는 예외(고아), 서비스가 이미 기준을 지키는 예외(퇴역 대상), 실제 값과 다른 `allowed_value`

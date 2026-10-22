@@ -1,10 +1,10 @@
 ---
 title: "QA04 Execution Evidence and ROOT Release Support"
-version: "0.3.0"
+version: "0.3.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0211-TSK-0003"
 parent_ids:
@@ -368,6 +368,316 @@ with the hosted build (RUNPATH set to `$ORIGIN/../lib` so it runs outside
 `/opt/hostedtoolcache`) and the controller lock: every suite passed in
 2,666 s with a 181 MB peak RSS, including the 774-test suite in 1,156 s and
 the 1,051-test suite with 80 skips.
+
+### v28 local continuation preflight — 2026-10-22
+
+The user expressly requested completion of remaining v28 local implementation,
+Python toolchain recovery and actual full QA, reusing completed work. Operational
+changes, real token revocation and remote PR/push remain outside this execution.
+The existing 2026-11-15 D1 deadline remains unchanged; improvement proposals do
+not constitute a new risk acceptance. W73/W75 provide the existing QA owner;
+this continuation adds no criterion or second orchestration surface.
+
+- Input: branch `codex/v28-local-residuals`, prior implementation through
+  `016c4ac6e`; final clean HEAD will be captured by the existing runner after
+  current B1 and public supplier observations are reviewed and committed.
+  Reuse the six existing logical commits and their valid scoped evidence.
+- Plan: actual `run-ci-gate.py --profile full`, LOCAL trust context, all 33
+  selected registered executable leaves, with the existing per-gate timeouts
+  (300–2700 seconds). `--explain` is selection evidence only. The selected
+  prerequisites are Python, controller lock, Node and Docker. Hosted-only
+  frontend/dependency audit/style/commit leaves remain excluded by the contract;
+  native/HOME opt-in flags remain disabled. `--requirements` requires an
+  authenticated PR context and is NOT_RUN locally; do not forge that context.
+- Tools: official `actions/python-versions` Python 3.14.8 Ubuntu 24.04 x64
+  release `3.14.8-36806082737`, archive SHA256
+  `fa74abc70a55c10f6631967784878704eef81bbde9b8ec27469534f6ba997cb3`;
+  API digest and official checksum file verified. Scratch venv has all 36
+  exact controller-lock packages installed with hashes and binary wheels.
+  Lock SHA256 `d05a5fb50e29e3d44587b34abacf2713eaea83c7c88ff84127d9cbfe96a193e2`.
+  Real memfd `F_ADD_SEALS` self-check returned seals 15; local toolchain
+  mismatch check returned None. The original Python executable SHA256 was
+  `a5230d8adbd26c2185d77fb003597c4ee9c44c2369fc179122ff7c3a3a58ae59`;
+  scratch-only RUNPATH relocation to `$ORIGIN/../lib` produced
+  `62e177f6f9523e24ae0591438b7556e14c58fea1219a5c449615e3ff9d2e12ed`.
+  Sanitized-environment executable capture passed. Verified official uv 0.12.18
+  and Node 24.22.0 archives respectively hash to
+  `89eadd7c76fc063887959510d5ba0ab1264dfd5f1143b925ddb73021a40acf16`
+  and `cc2f601cee82d9a5a233302fe307abc600727035fd7d2c3a3571755989e95008`.
+  Their executable SHA256 values are
+  `b97ae0e1ed3661fcd0c446cc59d81f5720c24d35627b21814a7581fb67eba673`
+  and `67ca5783febb8bf85736c79fcdd92c8d6d465a0eb2a082672bcdfa76a506751c`.
+  Bundled npm is 11.19.1; no project dependency or browser install was selected.
+- Permission: repository and `/tmp` writes only; public official downloads
+  are scoped toolchain/research inputs. No user-global configuration change.
+  Current read-only Docker prerequisite observation returned permission denied
+  at `/var/run/docker.sock`; do not widen daemon permissions. A blocked Docker
+  leaf must retain its failure and remaining leaves their actual states.
+- Budget: UNKNOWN. Failure owner: root QA coordinator; one narrow retry per
+  diagnosed slice, preserve original failure, never weaken assertions or fake
+  interpreter/seal/CI identities. Keep stdout/stderr and existing runner
+  receipts under private `/tmp/hyhome-v28-*` custody; local scratch retention
+  does not establish durable hosted artifact or operational acceptance.
+- Writers: root owns this QA Task and final integration; B1 worker owns the
+  maintenance helper, caller-required source pins, existing tests and RUN-0085/
+  SPEC-0243 evidence; supplier worker gathers public metadata in `/tmp` only.
+  Independent review is read-only. Freeze repository writers before clean-HEAD
+  execution and normal hooked commits.
+
+### v28 local CLI evidence initialization correction — 2026-10-22
+
+Preflight found that `CI_GATE_EVIDENCE_DIR` on an actual LOCAL CLI run built
+an execution request and immediately opened a plan that had never been seeded.
+Only the PR-only `--requirements` route seeded it; manually prepared test plans
+had hidden the missing local route. The user-authorized QA continuation owns
+this small W72/W75 repair in the existing runner and execution-context test.
+The local branch now seeds the verified plan using the same captured request
+before executing it. PR prerequisite/execution behavior, clean-HEAD identity,
+private output custody, existing-path rejection and per-gate terminal states
+retain their existing owners and checks. No second runner or new gate is added.
+Focused RED/GREEN, registered regressions and independent review are recorded
+with the actual results below; this paragraph itself asserts no QA PASS.
+
+The new actual-descriptor CLI test first failed with
+`ci-gate-evidence-invalid: evidence output must be a private regular directory`
+on the unmodified local route, then passed after the two-line seed guard.
+Pinned Ruff 0.15.12 check and format check passed. A worker's wider synthetic
+run reported a sandbox-only hosted-topology error: this sandbox maps system
+Git ownership to UID 65534, while the trusted-host guard requires UID 0.
+The guard was preserved. Root's actual-host rerun of the registered runner
+regression selection (`tests.validation.test_ci_gate_model`,
+`tests.validation.test_ci_gate_plan`,
+`tests.validation.test_ci_gate_execution_context`, `-q`) passed all 82 tests
+in 18.806 seconds, exit 0. No Docker or live provider was used in this rerun.
+The reviewed two-file diff SHA256 is
+`49a194bd642e4f116f1b5a85e0d9cb8a3f075c0007847ec6ea1bff88044c2590`.
+Independent code/security review approved that exact two-file source diff
+with no blocking findings; its scope excludes the later full/Docker result.
+
+Actual-host read-only prerequisite observations supersede only the earlier
+sandbox availability failures: `/usr/bin/git` is UID 0, mode 0755; Docker is
+29.8.2. The exact pinned Conftest image is already local. No container exists
+for project `hyhome-conftest-gate` or fixed name `/conftest`; these observations
+do not themselves authorize another project or operational mutation. Requested
+FULL QA may use the registered network-none, read-only public-source Conftest
+job after independent readiness review. Native/HOME opt-in cases remain off;
+no image pull, HOME service start, token operation or remote action is included.
+The runner receives actual local context and captures its own tool identities.
+
+### v28 actual FULL terminal result and bounded continuation — 2026-10-22
+
+The actual LOCAL full-profile invocation on clean implementation HEAD
+`d7bec9a9a4318caa60cc0f5f99a1de6cfa71a580`, official hosted Python 3.14.8,
+controller lock, uv 0.12.18 and Node 24.22.0, ended exit 1 after 2679.66 seconds:
+26 registered gates PASS, workflow-contract regressions FAIL, six later gates
+NOT_RUN. This is a failed full invocation, not aggregate PASS. The retained
+plan/result and log are under `/tmp/hyhome-v28-full-d7bec9a9a-umask022-20261022`.
+LOCAL identity records base_sha NOT_AVAILABLE; candidate preflight separately
+used main `73433adc1b685582741604d8acc1f6f70be0adbe` as its comparison base.
+
+The failing 44-test module had one failure: its explicit required-selector
+expectation omitted the already registered Prometheus isolated-restore and
+OpenBao TLS modules. Both modules remained required, before the opt-in skip
+boundary, and their Compose baseline gate passed. The exact literal expectation
+was extended by two lines; no assertion was weakened and no expected value
+was derived from the actual contract. The failed test then passed, and the
+same registered 44-test module passed in 11.553 seconds, exit 0, no skips.
+Pinned Ruff 0.15.12 lint/format checks passed. Independent source review approved
+diff `cb1e0d13b427895ba2dcd5889772d086b50ad8b56b4275e89ded032bd8bdd1c3`.
+
+The user's latest request explicitly requires reuse of completed verification
+and completion of the remaining QA. Continue the six NOT_RUN registered nodes
+through the existing runner's verified-plan/evidence APIs on a new clean HEAD;
+do not replay the 26 unaffected successes or disguise separate invocations as
+one successful FULL process. Node IDs, argv, cwd, mode, trust, toolchain,
+source/config differences and actual per-slice results must stay explicit.
+Documentation reconciliations receive their affected metadata/link/style checks;
+no implementation, image pin, native opt-in or runtime configuration is changed
+by those documentary corrections. Budget UNKNOWN, original node timeouts apply,
+one narrower retry per diagnosed slice; root owns failures and the final record.
+Conftest completed in its isolated project; post-run container and network
+queries for `hyhome-conftest-gate` returned empty. No HOME change or token
+operation was executed. Operational/remote actions remain separate selections
+for later explicit approval after local delivery; token revocation is excluded.
+
+### v28 retained attempts and receipt binding — 2026-10-22
+
+The first actual FULL attempt used umask 077 and ended by controlled cancellation,
+exit 130 after 1695.11 seconds: nine gates PASS, one ERROR and 23 NOT_RUN. Its
+private receipts remain under `/tmp/hyhome-v28-full-d7bec9a9a-20261022`, run
+`1792651120665179713`. The restrictive mask affected a fixture's permission
+assumption; the narrower reproduction passed with umask 022. No custody check,
+permission assertion or operational boundary was weakened. This interrupted
+attempt remains diagnostic evidence, not a successful FULL invocation.
+
+The umask-022 FULL result described above is bound to local run
+`1792652875281036250`. Its `plan.json` SHA256 is
+`a33caa34b12a80d030d0339a29d52635348989d2bd8228630cb86c124293a66a`,
+`result.json` SHA256 is
+`d38a5f7067362a3e8c95cee82647e1dba85fc0cf1dc5ab15d13bdacdcf6d7efe`,
+and `/tmp/hyhome-v28-full-d7bec9a9a-umask022-20261022.log` SHA256 is
+`5e86deebf9aa2600350886a2448e6c8515ba9bc4c142d088de5c0204b7e2345b`.
+These bind the retained 26 PASS, one FAIL and six NOT_RUN states; the later
+selector-expectation correction is local commit `6091c8c8a`. Reuse its already
+recorded 44-test GREEN and review. The six-node continuation remains planned;
+this receipt update does not claim its execution or aggregate success.
+
+### v28 changed-function line coverage — 2026-10-22
+
+The umask-022 measurement ran 269 tests in 160.143 seconds: 267 PASS, two Native
+SKIP, no failures or errors. It measures CPython stdlib trace line events over
+`dis.findlinestarts` for the two changed functions, excluding definition,
+resume and artificial lines. `check_operator` covered 13/13 executable lines
+(100%); runner `main` covered 127/139 (91.37%). This is function-scoped line
+coverage, not branch, whole-file or whole-project coverage. Native opt-ins
+remained disabled.
+
+The receipt itself contains no source identity. This Work Log therefore binds
+the measurement to implementation HEAD
+`d7bec9a9a4318caa60cc0f5f99a1de6cfa71a580` and verifies that both measured source
+files still match that commit byte-for-byte:
+
+- `infra/03-security/openbao/scripts/protected-maintenance.py`: SHA256
+  `4553286a0c6f4e45f1901942043762bfe6312d22cad281a3c3ffe15eb232429f`.
+- `scripts/validation/ci_gate_runner.py`: SHA256
+  `1ede12027e6fc1da2ca56a48ca0a44b7fec418a318e298acd20be74841ca998a`.
+
+`/tmp/hyhome-v28-function-coverage-umask022.json` SHA256 is
+`7ba08529b470376542d99ba699796e7acb52e7577526b9321686fc239e059fc2`;
+the accompanying `.log` SHA256 is
+`3472a43cf4b9007c59f82784697b0ab7a7db9f6af7c2443846c389f620ed69c5`.
+The earlier umask-077 measurement log remains retained at
+`/tmp/hyhome-v28-function-coverage.log`: 269 tests, one custody-fixture failure,
+two skips, followed by a measurement `TypeError` when Python 3.14 returned a
+`None` line entry. That failed diagnostic produces no accepted coverage result;
+the later measurement handles artificial entries and keeps the custody guard.
+
+### v28 document-reconciliation checks — 2026-10-22
+
+The scoped metadata receipt `/tmp/hyhome-v28-spec-reconciliation-metadata.log`
+selected 23 changed documents with zero violations. The first all-link check,
+`/tmp/hyhome-v28-final-reconciliation-links.log`, retained one FAIL: the 0239
+Task linked to a nonexistent 0243 dated anchor. It also retained the historical
+uncaptured-link warning. After correcting that link, the affected traceability
+check passed: 1,328 documents, 11,805 links, zero failures or warnings, recorded
+in `/tmp/hyhome-v28-final-reconciliation-traceability.log`. Other link modes
+reuse their passing results from that same all-link inspection; there was no
+new successful all-mode invocation. These checks precede this result-only note
+and do not accept pending criteria or replace the remaining six-node execution.
+
+### v28 continuation fixture correction — 2026-10-22
+
+The six-node continuation on clean HEAD
+`7424adc6d0d64c02fde3adb8f59f68ca7ddc7f92`, local run
+`1792657929652014405`, stopped at
+`leaf.repo-contracts-control-plane-regressions`: 82 tests in 29.845 seconds,
+45 failures and five later nodes NOT_RUN. Every failure came from the same
+fixture bootstrap: `yaml-parser BLOCKED category=missing-tool child_exit=127`.
+Retain `/tmp/hyhome-v28-full-continuation-20261022.log` SHA256
+`127ed6f3cc5b0ee0ffaed7733b08d6a3ff7e638629c66435d9873b8e2eda1e75`
+and the associated `result.json` SHA256
+`1076fd2da091df28ea4f8701ccc4ee14c931b3d3a16bd004235d52dac0b097d3`.
+
+The test fixture symlinked `tools/python3` into the active venv's `bin`
+directory. CPython followed that external symlink to the base hosted
+interpreter, losing the venv package path although all 36 locked packages
+were installed. A scratch-only reproduction confirmed the changed prefix,
+missing PyYAML and exit 2; an executable wrapper calling the exact unresolved
+`sys.executable` preserved the venv, found PyYAML and returned exit 0. The
+fixture now reuses its existing executable writer for that wrapper. Production
+static checks, isolated Python mode, missing-tool checks, assertions and
+dependencies are unchanged. This repairs test-environment binding, not a
+missing production dependency.
+
+Independent review approved scratch patch SHA256
+`8c1a807dc1861a7977bc6b6fcbe28cd57af739fd7c3b1d7b71138a179243e65d`
+before application. The existing registered `run-unittest` adapter then ran
+`tests.validation.test_agent_governance_ci_routing -v` under the same official
+Python 3.14.8, uv and Node PATH: all 82 tests PASS in 47.617 seconds, exit 0,
+no skips. Pinned Ruff 0.15.12 lint and format check passed. These focused
+results precede a commit; root still owns a subsequent clean-HEAD execution
+of the repaired registered leaf and its receipt. No new full invocation is
+claimed here.
+
+### v28 five-node continuation receipt — 2026-10-22
+
+A separate actual LOCAL invocation on the same clean `7424adc6d` input,
+run `1792658037015260159`, completed the other five nodes, all PASS:
+`leaf.ci-precommit-regressions`, `leaf.workflow-contract`,
+`leaf.storybook-contract`, `leaf.release-regressions` and
+`leaf.repository-integrity-regressions`. The last ran 602 tests in 208.935
+seconds, with no failures or skips. Node was selected and its actual
+`v24.22.0` executable identity was captured; Docker was not selected for
+this slice. Native/HOME opt-ins remained off.
+
+Private receipt directory
+`/tmp/hyhome-v28-full-continuation-five-20261022` has `plan.json` SHA256
+`acc70dad5a0567d4080693008daa91b2fdd5c97c8dffb82bd73895214eca4e0a`
+and `result.json` SHA256
+`121f935fa5f8e7020e1ecd50abe12e57ed158c8d4d1d191e130aaf967fc73a16`.
+The accompanying `.log` SHA256 is
+`34734b4cf1762b7d0490f71875235eaccaff8cee584e3e01341b435409269fb8`.
+These successes are separate from the failed full and six-node attempts;
+they neither rewrite those terminal states nor establish a single successful
+FULL process or pending criterion acceptance.
+
+### v28 final local coverage and remaining gates — 2026-10-22
+
+Normal hooked commit `2341e957d56ea57fef442d467edf86beedc97124` contains the
+reviewed fixture correction and its supporting record. On that clean HEAD,
+the existing runner's verified-plan/evidence APIs executed only the repaired
+`leaf.repo-contracts-control-plane-regressions`. All 82 tests passed in
+47.674 seconds, no skips; the gate ended exit 0 at 2026-10-22T08:48:20.010566Z.
+This actual LOCAL run is `1792658851687627900`. Node and Docker prerequisites
+were not selected for this one-node slice; the official Python 3.14.8 and
+locked controller dependencies remained unchanged. No CI identity was fabricated.
+
+Private directory `/tmp/hyhome-v28-full-continuation-repaired-one-20261022`
+contains `plan.json` SHA256
+`595a4ed0f3f3fcbdc3741b3c5433b9ae4c9ccd674a558e7b92ff4bba7f70d0b0`
+and `result.json` SHA256
+`a08e0266a62edb3a2f60a5a4bef15e7c4cc10537315a5a11f469b6c5cdc87319`.
+Its accompanying `.log` SHA256 is
+`0791a688c0dc603327e80e47bd6263bd3d821a200ecd2648260c2f9b0212f3c6`.
+The output directory is private, the log is mode 0600, and the existing
+14-day receipt-retention declaration is retained.
+
+Four disjoint sets account for all 33 executable LOCAL FULL node IDs in the
+original plan. Root compared their union with that plan's complete ID set:
+no missing or additional node. This is verification coverage across separate
+inputs and executions, not a single successful FULL run.
+
+| Verification set | Count | Input and actual result |
+| --- | --- | --- |
+| Unaffected original successes | 26 | `d7bec9a9a`: actual registered gates PASS; reuse within their documented source/input limits. |
+| Workflow-selector repair | 1 | `6091c8c8a`: exact registered adapter module, 44 tests PASS in 11.553 seconds; the original gate's FAIL remains in its receipt. |
+| Five remaining nodes | 5 | `7424adc6d`: separate verified runner invocation, five PASS including repository-integrity's 602 tests. |
+| Repaired control-plane node | 1 | `2341e957d`: separate verified runner invocation, one PASS with 82 tests. |
+
+The continuation scripts regenerated the canonical 33-node plan, compared every
+entrypoint/argv and entrypoint hash with the retained original plan, and bound
+selection to hashed prior receipts. This is not a transitive-input proof.
+The delta since `d7bec9a9a` comprises two test fixture/expectation corrections
+and documented prose/public-observation changes. Affected modules, supplier
+evidence tests, metadata, links and style have their separate checks. Service
+configuration, image pins, production helpers and their callers are unchanged
+in that delta. All earlier failed/interrupted receipts remain intact.
+
+Both repairs and their records received independent review. Normal staged
+validation and commit/commit-message hooks passed. An initial local-staged
+attempt ended exit 2 because its PATH omitted the already installed pre-commit
+4.6.2; adding that existing path made the same staged inspection pass. No
+dependency was added. Graphify AST update after the fixture edit completed
+exit 0 with 28,982 nodes and 50,597 edges; optional SQL/HCL parsers remain absent.
+
+Local QA continuation is complete for this declared 33-node scope. The original
+FULL process remains FAIL; there is no aggregate FULL exit-0 receipt. Hosted
+prerequisites/`--requirements`, PR-only frontend/style/security checks, remote
+CI and final owner acceptance remain NOT_RUN or pending under existing owners.
+E05–E10 are not promoted by local coverage accounting. Native/HOME opt-ins,
+operational changes, remote writes and actual token revocation were not executed.
+The final result-only Task commit checks its affected documents and does not
+replay unaffected suites.
 
 ### Lifecycle Events
 

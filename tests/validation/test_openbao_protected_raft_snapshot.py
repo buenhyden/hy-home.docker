@@ -45,6 +45,7 @@ def lookup(**delta):
         "policies": ["backup-snapshot"],
         "token_policies": ["backup-snapshot"],
         "identity_policies": [],
+        "entity_id": "",
         "renewable": True,
         "orphan": True,
         "type": "service",
@@ -200,6 +201,15 @@ class ContractTests(unittest.TestCase):
         for key, value in (("token_policies", None), ("identity_policies", None)):
             with self.subTest(key=key), self.assertRaises(S.Blocked):
                 S.check_lookup(lookup(**{key: value}))
+
+    def test_snapshot_lookup_requires_an_explicit_unlinked_entity(self):
+        for value in (None, "foreign-entity", 0, False, [], {}):
+            with self.subTest(value=value), self.assertRaises(S.Blocked):
+                S.check_lookup(lookup(entity_id=value))
+        response = lookup()
+        del response["data"]["entity_id"]
+        with self.assertRaises(S.Blocked):
+            S.check_lookup(response)
 
     def test_renewal_response_binds_same_token_and_identity(self):
         S.check_renewal(renewal(), TOKEN)

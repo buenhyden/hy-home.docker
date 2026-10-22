@@ -1,10 +1,10 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0002"
 parent_ids:
@@ -510,6 +510,27 @@ was 9–15 and the archive hash read shared the disk. Gatus's SQLite copy
 took 29 s. These are single measurements on a loaded host, not an RTO; T5's
 RTO is set after a measurement on a quieter host or after the owner accepts
 these figures.
+
+### Current Registration Reconciliation — 2026-10-22
+
+At `d7bec9a9a4318caa60cc0f5f99a1de6cfa71a580`, `scripts/manifest.yaml`
+registers the assessment library and CLI with both dedicated test modules;
+`.github/workflow-contract.yml` selects those modules and their changed/full
+input paths. The two missing registrations and unselected tests in the W10
+source-preparation receipt below describe its historical input, not the current
+source blocker.
+
+The coordinator's local `full` receipt at that same input records
+`leaf.local-script-manifest` `PASS`, exit 0, from
+`2026-10-22T07:51:36.547454Z` to `2026-10-22T07:51:58.493487Z`.
+The directly read plan/result are under
+`/tmp/hyhome-v28-full-d7bec9a9a-umask022-20261022/`; the result binds plan SHA-256
+`a33caa34b12a80d030d0339a29d52635348989d2bd8228630cb86c124293a66a`.
+The aggregate has 26 `PASS`, one `FAIL` and six `NOT_RUN`; it is not a full
+gate PASS. This bounded registration result adds no criterion acceptance,
+measurement, native proof or permission change. Canonical exception binding,
+service workload and recovery evidence remain open. Historical receipts and
+the acceptance tables below are preserved.
 
 ## Evidence
 

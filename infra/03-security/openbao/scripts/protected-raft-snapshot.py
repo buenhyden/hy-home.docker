@@ -23,7 +23,7 @@ from pathlib import Path
 
 HOST = "openbao.hy.home.arpa"
 PARENT_NAME = "protected-maintenance.py"
-PARENT_SHA256 = "085132049f60173fc9fde14e20c9f09d0f4e423d35dd3285c1e9c4053e898d04"
+PARENT_SHA256 = "4553286a0c6f4e45f1901942043762bfe6312d22cad281a3c3ffe15eb232429f"
 ARCHIVE_NAME = "protected-snapshot-archive.py"
 ARCHIVE_SHA256 = "48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868"
 ARCHIVE_API = ("ArchiveBlocked", "MAX_COMPRESSED", "validate_archive")
@@ -183,6 +183,7 @@ def check_lookup(response, minimum_ttl=0):
         # 2.6.2 and 2.7.1 omit both fields from lookup-self; if present they must match.
         and data.get("token_policies", [POLICY]) == [POLICY]
         and data.get("identity_policies", []) == []
+        and data.get("entity_id") == ""
         and data.get("renewable") is True
         and data.get("orphan") is True
         and data.get("type") == "service"

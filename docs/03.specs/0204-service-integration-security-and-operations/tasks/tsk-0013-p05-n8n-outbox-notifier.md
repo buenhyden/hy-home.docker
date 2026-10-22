@@ -1,10 +1,10 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.3.5"
+version: "0.3.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0013"
 parent_ids:
@@ -246,6 +246,24 @@ metadata/key restoration when required; no full-stack up/down, prune, MNG
 reset, broad chown, encryption-key replacement or private material deletion.
 
 ## Work Log
+
+### 현재 후속 증거 인계 — 2026-10-22
+
+현재 builder/transport는 lease_until을 포함한 six-field claim과 SQL004의
+schema-v3 quarantine 계약을 소비한다. 후속
+[Task0018](tsk-0018-workflow-lease-and-connect-safety.md)은 그 safety correction과
+isolated SQL 증거를, [Task0019](tsk-0019-n8n-native-notification.md)는 최종 검토
+소스의 W74 attempt 11에서 native/cleanup PASS와 여섯 terminal execution을
+보고한다. 아래 2026-10-13 source-binding/preflight의 NOT_RUN은 당시 입력의
+기록이며 이 후속 supporting evidence와 구분한다.
+
+W74는 독립 synthetic fixture다. 같은 data의 Airflow→n8n W65 vertical, HOME,
+실제 provider delivery, credential rotation 또는 criterion 19 owner 수락으로
+승격하지 않는다. Criterion 19는 pending을 유지한다. Frozen Evidence에서
+source review PASS가 document/shared-gate FAIL을 `Resolves`로 가리키더라도
+review만으로 metadata나 registration 실패가 해소되지는 않는다. 실제 integrated
+checks와 현재 입력의 등록 gate 결과를 별도로 평가하며 과거 결과는 보존한다.
+이번 조정은 공개 소스 대조이며 새 native 실행이나 수락을 수행하지 않았다.
 
 ### Lifecycle Events
 

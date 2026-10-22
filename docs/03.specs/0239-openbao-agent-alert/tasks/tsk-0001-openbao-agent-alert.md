@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Agent Telemetry and Alert Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0239-TSK-0001"
 parent_ids:
@@ -99,6 +99,18 @@ PR #463 merged `f0f6b1b2b` alone, and its candidate failed: the
 `candidate-quality` passed on head `fd3fc3d3c` (run `38503721974`), and it
 merged as `b4291bb43`. RUN-0085 and SPEC-0204 TSK-0006 were updated after
 the merge.
+
+### Current Deployment Reconciliation — 2026-10-22
+
+The deployment statement in Review and Completion records the 2026-10-14
+baseline. The later [SPEC-0243 window Task](../../0243-openbao-window-readiness/tasks/tsk-0001-openbao-window-readiness.md#v28-current-execution-assessment-and-remaining-handoff-2026-10-22)
+reports the 2026-10-22 cutover to the owned OpenBao image and Agent on the
+2.7.1 runtime, W5 Agent healthy, and W6 OpenBao and Agent scrape `up=1`.
+That Task labels these results `REPOSITORY_REPORTED / RAW_EVIDENCE_UNAVAILABLE`.
+This reconciliation adds no fresh HOME observation or deployment acceptance;
+the earlier source criteria and deployment history below remain unchanged.
+P06 consumption and the window's remaining operational conditions retain their
+existing owners.
 
 ## Evidence
 

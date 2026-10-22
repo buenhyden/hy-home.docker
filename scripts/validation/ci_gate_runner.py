@@ -1540,6 +1540,8 @@ def main(argv: list[str] | None = None) -> int:
             node_selected=prerequisites.node,
             observe_runtime=True,
         )
+        if context is ExecutionContext.LOCAL and evidence is not None:
+            seed_execution_evidence(root, plan, execution_environment, evidence)
         return execute_execution_plan(
             root,
             plan,

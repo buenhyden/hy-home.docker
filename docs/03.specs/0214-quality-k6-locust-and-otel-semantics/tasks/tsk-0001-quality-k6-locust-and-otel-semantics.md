@@ -1,10 +1,10 @@
 ---
 title: "Quality Load Tools and OTel Metric Semantics Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-22"
 layer: "specs"
 artifact_id: "SPEC-0214-TSK-0001"
 parent_ids:
@@ -233,7 +233,12 @@ were handled as follows:
 
 ## Review and Completion
 
-Not complete.
+Criteria 1–5 retain their accepted decisions above. As read back on
+2026-10-22, the [follow-up Task](tsk-0002-relay-controller-and-locust-lifecycle.md#review-and-completion)
+records completion of the relay, Locust lifecycle and HOME canary work that
+this Task left open. Real application target load and the integration-owned
+credential, rotation and quota work retain that Task's stated boundaries.
+This readback changes neither criterion acceptance nor lifecycle status.
 
 ## Related Documents
 
