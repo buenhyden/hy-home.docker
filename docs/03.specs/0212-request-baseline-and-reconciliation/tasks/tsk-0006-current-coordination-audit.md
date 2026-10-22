@@ -1,8 +1,8 @@
 ---
 title: "Current Coordination Audit Task"
-version: "0.1.9"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-22"
 layer: "specs"
@@ -671,6 +671,91 @@ Evidence and Criterion Acceptance stay preserved. B1 exact identity, B4/P06,
 A3 disposition, ROOT security/recovery and owner acceptance remain open;
 D1 retains 2026-11-15 without new risk acceptance.
 
+### v28 current lifecycle reconciliation — 2026-10-22
+
+The user explicitly authorized pushing operational record `bd4168e20`, creating
+its PR, merging after required checks, and reconciling implemented Spec, Plan
+and Task status and lifecycle. That commit was pushed to
+`codex/v28-deployment-evidence`. This documentation change will use the same PR;
+only its exact head may merge after required checks pass. Token revocation
+remains excluded.
+
+### Current coordination readiness 2026-10-22
+
+The existing 39-package audit, approved parent Spec/Plan, criteria 9–10 assigned
+to W14–W15 and previous verification were available. Today's documentation
+reconciliation was actually ready, so this Task entered `draft → ready`.
+This does not backdate an execution state for earlier implementation.
+
+### Current coordination execution 2026-10-22
+
+Today's lifecycle reconciliation actually started, so the Task entered
+`ready → in-progress`. Parallel writers had separate package ownership and
+compared current implementation, Plan assignments, existing PASS and accepted
+records, and unresolved failures. Unfulfilled operational/native criteria were
+not completed. Historical failures, acceptance decisions and terminal Task
+bodies were preserved.
+
+This Task owns only the criteria 9–10 routing and inventory audit. Other owners'
+operational residuals are not themselves completion prerequisites for this Task.
+However, changing its legacy generation 6 Evidence and Acceptance requires
+adopting generation 7 Required/Current Owner columns, normalizing historical
+RED/GREEN Check identities with original evidence preserved, and independent
+review. This status reconciliation keeps those original tables byte-identical;
+formal acceptance remains pending and this Task remains in-progress. Current
+audit and check results belong in this Work Log, without replacing an acceptance
+decision.
+
+### Current lifecycle verification and handoff 2026-10-22
+
+The reviewed change touches 54 Stage 03 documents in 22 packages. The current
+owner instruction authorizes 15 Spec/Plan pairs to become approved at 1.0.0,
+22 Tasks to complete after today's actual closure reviews, and this Task plus
+SPEC-0215-TSK-0001 to enter in-progress. Existing Evidence and Criterion
+Acceptance sections of all 24 changed Tasks remain byte-identical. All 39
+packages were audited; no implemented-contract conflict justified cancellation.
+
+| Check and bound input | Observed result |
+| --- | --- |
+| `check-document-metadata.py --mode check-changed --base-ref 8c605d62592b7ddfa322e0866af931c49bb72a2f` with 54 explicit paths | PASS, selected=54, violations=0. Log `/tmp/hyhome-v28-lifecycle-metadata.log`. |
+| `check-document-corpus-lifecycle.py --base-ref 8c605d62592b7ddfa322e0866af931c49bb72a2f` | PASS, corpus violations=0; archive recovery violations=0. Log `/tmp/hyhome-v28-lifecycle-corpus.log`. |
+| Canonical `load_spec_packages` and `archive_readiness_findings` | PASS, 39 packages loaded; 21 derived ready for archive review at this input. Scratch report SHA256 `0d61eeee7575632bb3027e58ed56b09b2c3025403e6834c4c6cc0a9a63087617`; no readiness state is stored or archive move performed. |
+| First `check-document-links.py --mode all` | FAIL, 17 new language mismatches; original log `/tmp/hyhome-v28-lifecycle-links.log` retained. |
+| Same all-links command after translating only new prose to English | PASS, 1328 documents, 11816 links, failures=0. One existing warning remains: 2870 historical links lack capture sources. Log SHA256 `6e9258e89bae0176e4a7d9a96efdf951b733e0a07679cd2df729c43792c1d0f0`. |
+| Independent correctness/governance/security review and `git diff --check` | PASS after English and QA-owner corrections; approved patch SHA256 `807213ad6ab0664a13b6a6932d044c8653f82ea299562239ab4333b5fd940cf1`. No remaining material findings. |
+| Normal commit of the 53 package lifecycle documents | `e9d2dfc27`; actual read-only pre-commit checks including Markdown and secret detection, and commit-msg Commitizen all PASS. |
+
+The initial structural checks used patch
+`ae935f98a4c5959f1f60d073c89ed94f101987e206fd27f31c2581cea05c177e`.
+Independent review verified unchanged metadata, headings and lifecycle rows in
+the corrected patch above; only new prose and the QA-owner reference changed.
+The corrected all-links run used that final source input. This result-only
+addition receives scoped metadata/link review instead of another corpus replay.
+The earlier implementation QA and PR558 receipts remain reused at their exact
+inputs; SPEC-0211-TSK-0003 owns actual QA, without an aggregate FULL PASS claim.
+
+Next local inputs are the explicit generation 7 table migration/review for
+criteria 9–10 here and C4/W4 evidence linkage in SPEC-0215-TSK-0001. Native,
+P07, B1/B4/P06, ROOT security/recovery, Storybook producer receipts and final
+owner-acceptance residuals remain with the existing Tasks. D1 stays due
+2026-11-15 with its prepared alternatives. Archive preservation/cutover approval
+is separate from derived readiness. No operating or token action was performed.
+
+Authenticated main protection requires strict `candidate-quality` from App15368,
+admin enforcement and conversation resolution, with zero approving reviews and
+no enforced CODEOWNERS review. This branch was absent before the authorized
+push of `bd4168e20`. The current documentation commits will be pushed to that
+same branch, followed by a main-targeted PR and expected-head merge only after
+required checks pass. No protection changes or history rewrite are authorized;
+recovery is a separately reviewed source revert, not service or data mutation.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0006 | draft | ready | #current-coordination-readiness-2026-10-22 |
+| SPEC-0212-TSK-0006 | ready | in-progress | #current-coordination-execution-2026-10-22 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -699,7 +784,13 @@ D1 retains 2026-11-15 without new risk acceptance.
 
 ## Review and Completion
 
-This draft retains criteria 9–10 pending and records the current status audit
+The current execution status is `in-progress`; today's
+[reconciliation review](#current-coordination-execution-2026-10-22) owns that
+state. Criteria 9–10 remain pending for the table migration and matching review
+above. The following draft/local-delivery wording is dated history; it does
+not replace today's push and lifecycle decisions.
+
+The historical draft below retained criteria 9–10 pending and recorded the status audit
 of 39 packages above with KEEP for every package and zero cancellation or
 disposal candidates. The earlier four-file validation/commit proposal is a
 historical stage; its later local delivery and this audit define the current
@@ -708,9 +799,9 @@ handoff. Existing Evidence and Criterion Acceptance remain byte-identical.
 SPEC-0211-TSK-0003 owns the actual QA results. The original FULL recorded
 26 gates PASS, one FAIL and six NOT_RUN. The repaired 44-test module and the
 six later nodes subsequently passed within their separately recorded inputs;
-the final handoff above records that completed local continuation. This Task
-creates no parent approval, criterion acceptance, Task completion or aggregate
-FULL PASS. The subsequent authorized merge and source reconciliation above
+the final handoff above records that completed local continuation. This earlier delivery record created no parent approval, criterion acceptance, Task
+completion or aggregate FULL PASS; today’s explicitly authorized lifecycle work above
+is a separate current decision. The subsequent authorized merge and source reconciliation above
 complete this delivery's remote and bounded operational scope. They do not
 close broader identity, consumption, recovery or runtime acceptance criteria.
 The final result-only record preserves those boundaries in a local commit.
