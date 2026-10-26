@@ -84,10 +84,12 @@ async function requireWrongPassword(wrong, milliseconds=3000) {
     await bounded((async()=>{
       const connected=wrong.connect().then(()=> 'ready',()=> 'closed');
       const ping=wrong.ping().then(()=>({accepted:true}),error=>({accepted:false,code:authenticationCode(error)}));
-      const code=await denial;
-      assert.deepEqual(await ping,{accepted:false,code});
+      const authCode=await denial;
+      const command=await ping;
+      emit({kind:'auth-probe',authCode,commandCode:command.code??null,commandDenied:command.accepted===false});
+      assert.equal(command.accepted,false);
+      assert.ok(['WRONGPASS','NOAUTH'].includes(command.code));
       await connected;
-      emit({kind:'auth-denial',code,commandDenied:true});
     })(),milliseconds);
   } finally {
     wrong.removeListener('error',listener);
@@ -112,11 +114,11 @@ async function selfCheckWrongPassword() {
       return mode==='close-auth'||mode==='close-only' ? Promise.reject(new Error('Connection is closed.')) : Promise.resolve();
     };
     client.ping=()=>mode==='pong' ? Promise.resolve('PONG') :
-      Promise.reject(mode==='close-only'?new Error('Connection is closed.'):reply(mode==='noauth'?'NOAUTH':'WRONGPASS'));
+      Promise.reject(['close-only','ping-closed'].includes(mode)?new Error('Connection is closed.'):mode==='ping-spoof'?new Error('NOAUTH'):reply(['noauth','auth-ping-noauth'].includes(mode)?'NOAUTH':'WRONGPASS'));
     return client;
   }
-  for(const mode of ['ready-auth','close-auth','noauth']) await requireWrongPassword(fake(mode),20);
-  for(const mode of ['close-only','transport','pong','silent','late','spoof','wrong-command','generic-auth']) {
+  for(const mode of ['auth-ping-noauth','ready-auth','close-auth','noauth']) await requireWrongPassword(fake(mode),20);
+  for(const mode of ['close-only','transport','pong','silent','late','spoof','wrong-command','generic-auth','ping-closed','ping-spoof']) {
     await assert.rejects(requireWrongPassword(fake(mode),20));
   }
 }
