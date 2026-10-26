@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.5.0"
+version: "1.5.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -37,7 +37,7 @@ W24/criterion 19 allocation alongside W25/criterion 20. W26 in TSK-0010
 classifies the links behind the standing `historical-links-unrecorded` warning
 as a read-only, documentation-only follow-up.
 
-W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–31.
+W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
 variable implementation; it does not reopen r10 criteria 11–18.
 
@@ -68,9 +68,42 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W21 | 16 | P06 branch/release/CHANGELOG/rollback producer audit and concrete source corrections | W16 | TSK-0007 | Current producer/config trace and scoped contracts |
 | W22 | 17 | P07 shared-memory/native-off/Restic reuse and justified missing assurance design or implementation | W16 | TSK-0007 | Existing receipts plus synthetic memory/backup regressions |
 | W23 | 18 | P08 OpenBao optional-skip and CA-overlay discrepancies, operations promotion and quality limits | W16 | TSK-0007 | Focused OpenBao synthetic tests and changed document checks |
-| W24 | 19 | INFRA-P0 inventory scope, owner routes, QA/CI mapping, writer leases, evidence ladder, and P1–P9 handoffs for requirements 11–31 | None | TSK-0008 | Value-free source/static evidence; no native/HOME/recovery claim |
+| W24 | 19 | INFRA-P0 inventory scope, owner routes, QA/CI mapping, writer leases, evidence ladder, and P1–P9 handoffs for requirements 11–32 and distinct F01–F29 findings | None | TSK-0008 | Value-free source/static evidence; no native/HOME/recovery claim |
 | W25 | 20 | Classify r13 P01-P08 follow-up findings; remove one reproduced link-graph duplicate, bind repository-file provenance to its declared revision, and retain one shared memory store through sanitized CLI common-directory identity | W16 | TSK-0009 | Focused link and memory regressions, changed-path CI selection, and changed document checks |
 | W26 | 21 | Classify the links counted by `historical-links-unrecorded` against each record's pre-archive Git origin and record the residual set and its proven cause | W25 | TSK-0010 | Read-only Git object resolution; changed document metadata and link checks |
+
+### Current v30 continuation and delivery
+
+The direct 2026-10-26 request extends W24's previous 11–31 routing scope to
+R32 without a new Task, criterion, inventory authority, or duplicate prompt
+package. TSK-0008 records the current source survey, package provenance,
+four-axis owner map and exact writer leases. TSK-0006/0009/0010 and other
+completed records remain historical evidence. Reuse the existing v30 bundle's
+five standalone prompts and its single dependencies folder; preserve missing
+historical references as unavailable rather than recreating their contents.
+
+The survey classifies the whole tracked-path set and the relevant current
+Task/consumer/source scopes; it does not claim semantic review of every byte.
+After the coordinator reconciles the read-only findings, exact safe source
+units proceed through their own prerequisites and independent prechange
+review. A missing runtime/private/owner decision does not block unrelated
+reversible source fixes. TSK-0008 names the current scopes; old writer names
+below are historical assignments and confer no present lease.
+
+The Quality cancellation correction belongs to SPEC-0214's current C10/W11
+continuation, preserving completed criterion 7. Service selection, network and
+optional ACL changes retain SPEC-0204 P02/P03/P05 and SPEC-0218 ownership.
+Root Compose and environment edits require the coordinator's explicit release
+to the single service writer after review; no current parallel writer owns
+those files. The coordinator integrates only reviewed exact inputs.
+
+This execution delivers local logical commits and per-Spec PR drafts only.
+Earlier prospective push/PR/remote-merge directions below are superseded for
+this request until separate direct authorization. No integration target is
+inferred from being on main; an unidentified local target blocks integration
+alone. Runtime, credential, deletion, host and external-cluster actions retain
+their exact target, approval and recovery gates. Independent review and final
+verification precede local delivery; no future result is recorded as PASS.
 
 ### W25 file map and checks
 
