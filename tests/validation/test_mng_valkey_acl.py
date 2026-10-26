@@ -5,7 +5,9 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shutil
 import subprocess
+import sys
 import tempfile
 import time
 import unittest
@@ -16,6 +18,9 @@ SCRIPT = (
     Path(__file__).resolve().parents[2]
     / "infra/04-data/mng-db/valkey/scripts/render-acl.sh"
 )
+
+BULL_CLIENT_PATH = Path(__file__).with_name("_mng_valkey_bull_client.cjs")
+BULL_CLIENT_SCRIPT = BULL_CLIENT_PATH.read_text(encoding="utf-8")
 
 
 class MngValkeyAclTests(unittest.TestCase):
@@ -40,6 +45,63 @@ class MngValkeyAclTests(unittest.TestCase):
         return subprocess.run(
             ["sh", str(SCRIPT)], env=env, capture_output=True, text=True, check=False
         )
+
+    def test_cleanup_absence_refuses_daemon_errors(self):
+        fixture = MngValkeyAclNativeTests()
+        for message in ("No such container: owned", "network owned not found"):
+            fixture.assert_absent(subprocess.CompletedProcess([], 1, "", message))
+        for code, message in (
+            (0, ""),
+            (1, "permission denied"),
+            (1, "Cannot connect to the Docker daemon"),
+        ):
+            with (
+                self.subTest(code=code, message=message),
+                self.assertRaises(AssertionError),
+            ):
+                fixture.assert_absent(
+                    subprocess.CompletedProcess([], code, "", message)
+                )
+
+    def test_default_bull_method_skips_before_any_fixture_or_docker_call(self):
+        probe = """
+import unittest
+from unittest import mock
+from tests.validation.test_mng_valkey_acl import MngValkeyAclNativeTests
+with mock.patch.object(MngValkeyAclNativeTests, 'setUp', side_effect=AssertionError('fixture entered')):
+    result = unittest.TestResult()
+    MngValkeyAclNativeTests('test_pinned_bull_jobs_retry_delay_and_locks').run(result)
+assert len(result.skipped) == 1 and not result.errors and not result.failures
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", probe],
+            cwd=Path(__file__).resolve().parents[2],
+            env={"PATH": os.environ["PATH"]},
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=10,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_bull_identity_guard_rejects_version_path_patch_and_uid_mismatches(self):
+        client = self.root / "bull-client.cjs"
+        client.write_text(BULL_CLIENT_SCRIPT)
+        probe = """
+const assert = require('node:assert/strict');
+const {identityValid} = require(process.argv[1]);
+const good = {uid:1000, gid:1000, n8n:{version:'2.43.6'}, bull:{version:'4.16.4',entry:'/bull',expectedEntry:'/bull',jobGit:'3301e3fbc7296f545b65331dad1f12c820267e0d'}, ioredis:{version:'5.3.2',entry:'/ioredis',expectedEntry:'/ioredis'}};
+assert.equal(identityValid(good), true);
+for (const bad of [{...good,uid:0},{...good,bull:{...good.bull,version:'4.16.3'}},{...good,bull:{...good.bull,entry:'/other'}},{...good,bull:{...good.bull,jobGit:'unpatched'}},{...good,ioredis:{...good.ioredis,version:'5.4.0'}},{...good,n8n:{version:'other'}},{}]) assert.equal(identityValid(bad),false);
+"""
+        result = subprocess.run(
+            [shutil.which("node") or "node", "-e", probe, str(client)],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=10,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
 
     def test_named_queue_user_is_opt_in_and_scoped_to_existing_db_and_prefix(self):
         self.assertEqual(0, self.render().returncode)
@@ -178,29 +240,86 @@ class MngValkeyAclTests(unittest.TestCase):
 )
 class MngValkeyAclNativeTests(unittest.TestCase):
     IMAGE = "sha256:a0dbf4c1d5708782907c10e2c72deff317518518b5288a58416981d9db95d30b"
+    CLIENT_IMAGE = (
+        "sha256:222a7fd94f471b0b464f873e001a2ec00fc589158066209f0ee8028e43e11131"
+    )
+    CONTAINER_FLAGS = tuple(
+        "--pull never --read-only --cap-drop ALL --security-opt no-new-privileges".split()
+    )
 
-    def docker(self, *arguments, password=None):
+    def docker(self, *arguments, password=None, limit=20):
         environment = self.environment | (
             {"REDISCLI_AUTH": password} if password is not None else {}
         )
         remaining = self.deadline - time.monotonic()
-        cleanup = arguments[0] in ("inspect", "rm")
+        cleanup = arguments[0] in ("inspect", "rm") or arguments[:2] in (
+            ("network", "inspect"),
+            ("network", "rm"),
+            ("volume", "inspect"),
+        )
         if not cleanup and remaining <= 0:
             self.fail("isolated ACL rehearsal exceeded its 180 second budget")
-        return subprocess.run(
-            ["docker", "--context", "default", *arguments],
-            env=environment,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=20 if cleanup else min(20, remaining),
+        command = [
+            "docker",
+            "--config",
+            self.environment["DOCKER_CONFIG"],
+            "--context",
+            "default",
+            *arguments,
+        ]
+        try:
+            result = subprocess.run(
+                command,
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=20 if cleanup else min(limit, remaining),
+            )
+        except subprocess.TimeoutExpired as error:
+            self.record_docker(
+                command, None, error.stdout, error.stderr, timed_out=True
+            )
+            raise
+        self.record_docker(command, result.returncode, result.stdout, result.stderr)
+        return result
+
+    def record_docker(self, command, exit_code, stdout, stderr, timed_out=False):
+        if self.evidence is None:
+            return
+        self.retain(
+            f"docker-{self.sequence:03d}.json",
+            {
+                "argv": command,
+                "exit_code": exit_code,
+                "timed_out": timed_out,
+                "stdout": stdout.decode(errors="replace")
+                if isinstance(stdout, bytes)
+                else stdout,
+                "stderr": stderr.decode(errors="replace")
+                if isinstance(stderr, bytes)
+                else stderr,
+            },
         )
+        self.sequence += 1
+
+    def retain(self, name, value):
+        descriptor = os.open(
+            self.evidence / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600
+        )
+        with os.fdopen(descriptor, "w") as stream:
+            json.dump(value, stream, indent=2)
+            stream.write("\n")
 
     def setUp(self):
         fixture = MngValkeyAclTests()
         fixture.setUp()
         self.addCleanup(fixture.doCleanups)
         self.root = fixture.root
+        self.evidence = None
+        self.sequence = 0
+        self.cids = {}
+        (self.root / "docker").mkdir(mode=0o700)
         self.environment = {
             "PATH": os.environ["PATH"],
             "DOCKER_CONFIG": str(self.root / "docker"),
@@ -210,12 +329,23 @@ class MngValkeyAclNativeTests(unittest.TestCase):
         secret.write_text("synthetic-n8n\n")
         secret.chmod(0o600)
         self.assertEqual(0, fixture.render(MNG_VALKEY_N8N_ENABLED="1").returncode)
-        inspected = self.docker("image", "inspect", self.IMAGE, "--format", "{{.Id}}")
-        self.assertEqual(
-            0, inspected.returncode, "required cached Valkey image unavailable"
-        )
-        self.assertEqual(self.IMAGE, inspected.stdout.strip())
         self.name = "hyhome-n8n-acl-" + uuid.uuid4().hex
+
+    def cached_image(self, image):
+        inspected = self.docker(
+            "image",
+            "inspect",
+            image,
+            "--format",
+            '{"Id":{{json .Id}},"Volumes":{{json .Config.Volumes}}}',
+        )
+        self.assertEqual(
+            0, inspected.returncode, "required exact cached fixture image unavailable"
+        )
+        self.assertEqual({"Id": image, "Volumes": None}, json.loads(inspected.stdout))
+
+    def start_broker(self, network="none", port="0"):
+        self.cached_image(self.IMAGE)
         self.addCleanup(self.remove_owned_container)
         created = self.docker(
             "create",
@@ -223,21 +353,11 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             self.name,
             "--label",
             "hyhome.n8n-acl=" + self.name,
-            "--pull",
-            "never",
+            *self.CONTAINER_FLAGS,
             "--network",
-            "none",
-            "--read-only",
-            "--cap-drop",
-            "ALL",
-            "--security-opt",
-            "no-new-privileges",
-            "--memory",
-            "64m",
-            "--cpus",
-            "0.25",
-            "--pids-limit",
-            "32",
+            network,
+            *(("--network-alias", "broker") if network != "none" else ()),
+            *"--memory 64m --memory-swap 64m --cpus 0.25 --pids-limit 32".split(),
             "--user",
             f"{os.getuid()}:{os.getgid()}",
             "--tmpfs",
@@ -249,32 +369,24 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             self.IMAGE,
             "valkey-server",
             "--port",
-            "0",
-            "--unixsocket",
-            "/tmp/valkey.sock",
-            "--unixsocketperm",
-            "700",
-            "--aclfile",
-            "/fixture/users.acl",
+            port,
+            *"--unixsocket /tmp/valkey.sock --unixsocketperm 700 --aclfile /fixture/users.acl".split(),
             "--save",
             "",
-            "--appendonly",
-            "no",
-            "--dir",
-            "/tmp",
-            "--loglevel",
-            "warning",
+            *"--appendonly no --dir /tmp --loglevel warning".split(),
         )
         self.assertEqual(0, created.returncode, "isolated container creation failed")
-        inspected = self.docker("inspect", "--format", "{{json .Mounts}}", self.name)
-        self.assertEqual(0, inspected.returncode)
-        mounts = json.loads(inspected.stdout)
-        self.assertFalse(any(mount["Type"] == "volume" for mount in mounts))
-        bindings = [mount for mount in mounts if mount["Type"] == "bind"]
-        self.assertEqual(1, len(bindings))
-        self.assertEqual(str(self.root / "users.acl"), bindings[0]["Source"])
-        self.assertFalse(bindings[0]["RW"])
-        self.assertEqual(0, self.docker("start", self.name).returncode)
+        self.cids = self.cids | {self.name: created.stdout.strip()}
+        self.verify_container(
+            self.name,
+            self.IMAGE,
+            64,
+            0.25,
+            32,
+            network,
+            {"/fixture/users.acl": str(self.root / "users.acl")},
+        )
+        self.assertEqual(0, self.docker("start", self.cids[self.name]).returncode)
         deadline = time.monotonic() + 15
         while time.monotonic() < deadline:
             if self.query("PING").stdout.strip() == "PONG":
@@ -287,7 +399,7 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             "exec",
             "--env",
             "REDISCLI_AUTH",
-            self.name,
+            self.cids[self.name],
             "valkey-cli",
             "--user",
             user,
@@ -298,25 +410,338 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             password=password,
         )
 
-    def remove_owned_container(self):
+    def verify_container(self, name, image, memory, cpus, pids, network, bindings):
         inspected = self.docker(
             "inspect",
             "--format",
-            '{{index .Config.Labels "hyhome.n8n-acl"}}',
-            self.name,
+            '{"Id":{{json .Id}},"Image":{{json .Image}},"User":{{json .Config.User}},"owner":{{json (index .Config.Labels "hyhome.n8n-acl")}},"Host":{{json .HostConfig}},"Mounts":{{json .Mounts}}}',
+            self.cids[name],
+        )
+        self.assertEqual(0, inspected.returncode)
+        state = json.loads(inspected.stdout)
+        self.assertEqual(
+            (self.cids[name], image, self.name),
+            (state["Id"], state["Image"], state["owner"]),
+        )
+        self.assertEqual(f"{os.getuid()}:{os.getgid()}", state["User"])
+        host = state["Host"]
+        for key, expected in {
+            "ReadonlyRootfs": True,
+            "Privileged": False,
+            "Memory": memory * 1024 * 1024,
+            "MemorySwap": memory * 1024 * 1024,
+            "NanoCpus": int(cpus * 1e9),
+            "PidsLimit": pids,
+            "NetworkMode": network,
+        }.items():
+            self.assertEqual(expected, host[key], key)
+        self.assertEqual(["ALL"], host["CapDrop"])
+        self.assertTrue(
+            any(
+                value in ("no-new-privileges", "no-new-privileges:true")
+                for value in host["SecurityOpt"]
+            )
+        )
+        self.assertFalse(host["PortBindings"])
+        self.verify_fixture_mounts(image, host, state["Mounts"], bindings)
+
+    def verify_fixture_mounts(self, image, host, mounts, bindings):
+        expected_tmpfs = (
+            {"/tmp": 16, "/data": 16}
+            if image == self.IMAGE
+            else {"/tmp": 32, "/run": 16}
+        )
+        self.assertEqual(set(expected_tmpfs), set(host["Tmpfs"]))
+        for destination, size in expected_tmpfs.items():
+            self.assertEqual(
+                {
+                    "rw",
+                    "noexec",
+                    "nosuid",
+                    "nodev",
+                    f"size={size}m",
+                    "mode=0700",
+                    f"uid={os.getuid()}",
+                    f"gid={os.getgid()}",
+                },
+                set(host["Tmpfs"][destination].split(",")),
+            )
+        self.assertFalse(any(mount["Type"] == "volume" for mount in mounts))
+        actual = {
+            mount["Destination"]: mount["Source"]
+            for mount in mounts
+            if mount["Type"] == "bind" and not mount["RW"]
+        }
+        self.assertEqual(bindings, actual)
+        self.assertEqual(
+            len(bindings), sum(mount["Type"] == "bind" for mount in mounts)
+        )
+
+    def network_state(self, absent_ok=False):
+        result = self.docker(
+            "network",
+            "inspect",
+            "--format",
+            '{"Id":{{json .Id}},"Internal":{{json .Internal}},"owner":{{json (index .Labels "hyhome.n8n-acl")}},"Containers":{{json .Containers}}}',
+            self.network_id or self.network_name,
+        )
+        if result.returncode and absent_ok:
+            self.assertTrue(
+                any(
+                    value in result.stderr.lower() for value in ("no such", "not found")
+                )
+            )
+            return None
+        self.assertEqual(0, result.returncode, result.stderr)
+        state = json.loads(result.stdout)
+        self.assertEqual(self.name, state["owner"])
+        self.assertTrue(state["Internal"])
+        if self.network_id:
+            self.assertEqual(self.network_id, state["Id"])
+        return state
+
+    def remove_owned_network(self):
+        state = self.network_state(absent_ok=True)
+        if state is None:
+            return
+        self.assertFalse(state["Containers"], "owned network still has peers")
+        self.assertEqual(0, self.docker("network", "rm", state["Id"]).returncode)
+        self.assert_absent(self.docker("network", "inspect", state["Id"]))
+
+    def acl_log(self, reset=False):
+        result = self.docker(
+            "exec",
+            "--env",
+            "REDISCLI_AUTH",
+            self.cids[self.name],
+            "valkey-cli",
+            "--user",
+            "default",
+            "--json",
+            "-s",
+            "/tmp/valkey.sock",
+            "ACL",
+            "LOG",
+            *(("RESET",) if reset else ()),
+            password="synthetic-default",
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        if reset:
+            return []
+        rows = json.loads(result.stdout)
+        return [
+            {"reason": row["reason"], "count": row["count"]}
+            for row in (
+                record
+                if isinstance(record, dict)
+                else dict(zip(record[::2], record[1::2], strict=True))
+                for record in rows
+            )
+        ]
+
+    def prepare_bull_inputs(self):
+        self.evidence = Path(tempfile.mkdtemp(prefix="hyhome-n8n-bull-evidence-"))
+        print(f"U1_BULL_EVIDENCE={self.evidence}", flush=True)
+        client = self.root / "bull-client.cjs"
+        client.write_text(BULL_CLIENT_SCRIPT)
+        inputs = self.root / "input.json"
+        inputs.write_text(
+            json.dumps(
+                {
+                    "host": "broker",
+                    "port": 6379,
+                    "db": 0,
+                    "username": "n8n",
+                    "password": "synthetic-n8n",
+                }
+            )
+        )
+        inputs.chmod(0o600)
+        self.retain(
+            "inputs.json",
+            {
+                "client_sha256": hashlib.sha256(client.read_bytes()).hexdigest(),
+                "client_source_sha256": hashlib.sha256(
+                    BULL_CLIENT_PATH.read_bytes()
+                ).hexdigest(),
+                "input_sha256": hashlib.sha256(inputs.read_bytes()).hexdigest(),
+                "acl_sha256": hashlib.sha256(
+                    (self.root / "users.acl").read_bytes()
+                ).hexdigest(),
+                "renderer_sha256": hashlib.sha256(SCRIPT.read_bytes()).hexdigest(),
+                "test_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                "images": [self.IMAGE, self.CLIENT_IMAGE],
+            },
+        )
+        return client, inputs
+
+    def test_pinned_bull_jobs_retry_delay_and_locks(self):
+        self.assertEqual(
+            (1000, 1000),
+            (os.getuid(), os.getgid()),
+            "synthetic fixture requires UID/GID 1000",
+        )
+        client, inputs = self.prepare_bull_inputs()
+        self.cached_image(self.CLIENT_IMAGE)
+        self.cached_image(self.IMAGE)
+        self.network_name = self.name + "-net"
+        self.network_id = None
+        self.addCleanup(self.remove_owned_network)
+        created = self.docker(
+            "network",
+            "create",
+            "--internal",
+            "--driver",
+            "bridge",
+            "--label",
+            "hyhome.n8n-acl=" + self.name,
+            self.network_name,
+        )
+        self.assertEqual(0, created.returncode, created.stderr)
+        self.network_id = created.stdout.strip()
+        self.network_state()
+        self.start_broker(self.network_name, "6379")
+        cid = self.start_client(client, inputs)
+        self.await_client_identity(cid)
+        self.execute_bull_phases(cid)
+
+    def start_client(self, client, inputs):
+        client_name = self.name + "-client"
+        self.addCleanup(self.remove_owned_container, client_name, self.CLIENT_IMAGE)
+        created = self.docker(
+            "create",
+            "--name",
+            client_name,
+            "--label",
+            "hyhome.n8n-acl=" + self.name,
+            *self.CONTAINER_FLAGS,
+            "--network",
+            self.network_name,
+            *"--memory 256m --memory-swap 256m --cpus 0.5 --pids-limit 64".split(),
+            "--user",
+            f"{os.getuid()}:{os.getgid()}",
+            "--tmpfs",
+            f"/tmp:rw,noexec,nosuid,nodev,size=32m,mode=0700,uid={os.getuid()},gid={os.getgid()}",
+            "--tmpfs",
+            f"/run:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid={os.getuid()},gid={os.getgid()}",
+            "--mount",
+            f"type=bind,src={client},dst=/fixture/bull-client.cjs,readonly",
+            "--mount",
+            f"type=bind,src={inputs},dst=/fixture/input.json,readonly",
+            "--entrypoint",
+            "/usr/local/bin/node",
+            self.CLIENT_IMAGE,
+            "--max-old-space-size=128",
+            "/fixture/bull-client.cjs",
+            "hold",
+        )
+        self.assertEqual(0, created.returncode, created.stderr)
+        self.cids = self.cids | {client_name: created.stdout.strip()}
+        cid = self.cids[client_name]
+        self.verify_container(
+            client_name,
+            self.CLIENT_IMAGE,
+            256,
+            0.5,
+            64,
+            self.network_name,
+            {
+                "/fixture/bull-client.cjs": str(client),
+                "/fixture/input.json": str(inputs),
+            },
+        )
+        self.assertEqual(0, self.docker("start", cid).returncode)
+        return cid
+
+    def await_client_identity(self, cid):
+        until = time.monotonic() + 10
+        while time.monotonic() < until:
+            logs = self.docker("logs", cid)
+            events = [json.loads(line) for line in logs.stdout.splitlines()]
+            if any(event.get("kind") == "blocked" for event in events):
+                self.fail(
+                    "BLOCKED_CLIENT_VERSION_OR_LAYOUT; probe retained in evidence"
+                )
+            if any(event.get("kind") == "ready" for event in events):
+                break
+            time.sleep(0.2)
+        else:
+            self.fail("synthetic client identity preflight did not become ready")
+        self.assertEqual(
+            set(self.cids.values()), set(self.network_state()["Containers"])
+        )
+
+    def execute_bull_phases(self, cid):
+        self.acl_log(reset=True)
+        for mode, count in (("positive", 5), ("negative", 10)):
+            result = self.docker(
+                "exec",
+                cid,
+                "/usr/local/bin/node",
+                "--max-old-space-size=128",
+                "/fixture/bull-client.cjs",
+                mode,
+                limit=60,
+            )
+            self.assertEqual(
+                0,
+                result.returncode,
+                f"real Bull {mode} phase failed; raw receipt retained",
+            )
+            events = [json.loads(line) for line in result.stdout.splitlines()]
+            completed = [event for event in events if event.get("kind") == "complete"]
+            self.assertEqual(1, len(completed))
+            self.assertEqual(count, len(completed[0]["cases"]))
+            denials = self.acl_log()
+            self.retain(mode + "-acl-counts.json", denials)
+            if mode == "positive":
+                self.assertEqual([], denials, "unexpected positive-phase ACL denial")
+            else:
+                self.assertTrue(
+                    {"key", "channel", "command", "auth"}.issubset(
+                        {row["reason"] for row in denials}
+                    )
+                )
+
+    def remove_owned_container(self, name=None, image=None):
+        name = name or self.name
+        image = image or self.IMAGE
+        inspected = self.docker(
+            "inspect",
+            "--format",
+            '{"Id":{{json .Id}},"Image":{{json .Image}},"owner":{{json (index .Config.Labels "hyhome.n8n-acl")}},"Mounts":{{json .Mounts}}}',
+            name,
         )
         if inspected.returncode != 0:
             self.assertIn("no such", inspected.stderr.lower())
             return
+        found = json.loads(inspected.stdout)
         self.assertEqual(
-            self.name, inspected.stdout.strip(), "container ownership mismatch"
+            (self.name, image),
+            (found["owner"], found["Image"]),
+            "container ownership mismatch",
         )
-        self.assertEqual(0, self.docker("rm", "--force", self.name).returncode)
-        absent = self.docker("inspect", self.name)
-        self.assertNotEqual(0, absent.returncode)
-        self.assertIn("no such", absent.stderr.lower())
+        if name in self.cids:
+            self.assertEqual(self.cids[name], found["Id"])
+        volumes = [
+            mount["Name"] for mount in found["Mounts"] if mount["Type"] == "volume"
+        ]
+        self.assertEqual(
+            0, self.docker("rm", "--force", "--volumes", found["Id"]).returncode
+        )
+        self.assert_absent(self.docker("inspect", found["Id"]))
+        for volume in volumes:
+            self.assert_absent(self.docker("volume", "inspect", volume))
+
+    def assert_absent(self, result):
+        self.assertNotEqual(0, result.returncode)
+        self.assertTrue(
+            any(value in result.stderr.lower() for value in ("no such", "not found")),
+            "absence requires an explicit daemon not-found response",
+        )
 
     def test_named_queue_acl_allows_its_namespace_and_refuses_other_authority(self):
+        self.start_broker()
         for command, expected in (
             (("PING",), "PONG"),
             (("SELECT", "0"), "OK"),
