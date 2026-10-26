@@ -14,7 +14,10 @@ from pathlib import Path
 
 import yaml
 
-from scripts.lib.document_governance.operations_catalog import _ComposeLoader
+from scripts.lib.document_governance.operations_catalog import (
+    _ComposeLoader,
+    conftest_source_context,
+)
 from scripts.lib.ops import secret_catalog
 from tests.lib.ops.test_secret_catalog import model as synthetic_catalog_model
 
@@ -450,7 +453,90 @@ def dockerfile_input_files(root, compose_path, service, tracked):
 SOURCE_ANALYSIS_SERVICES = {"conftest"}
 
 
-def service_secret_contract(root, compose_texts):
+def activation_environment(service):
+    environment = service.get("environment", {})
+    if isinstance(environment, dict):
+        pairs = tuple(environment.items())
+    elif isinstance(environment, list):
+        if any(not isinstance(value, str) or "=" not in value for value in environment):
+            return None
+        pairs = tuple(value.split("=", 1) for value in environment)
+    else:
+        return None
+    if any(
+        not isinstance(key, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key)
+        for key, _ in pairs
+    ):
+        return None
+    if len({key for key, _ in pairs}) != len(pairs):
+        return None
+    return {key: compose_default(str(value)) for key, value in pairs}
+
+
+def overlay_activation(base_path, name, service, base_grants, model):
+    if model.get("x-hyhome-overlay", {}).get("base") != base_path:
+        return None
+    delta = model.get("services", {}).get(name)
+    if not isinstance(delta, dict) or set(delta) - {"profiles"} != {
+        "environment",
+        "secrets",
+    }:
+        return None
+    grants = service_grants(delta)
+    if any(
+        target in base_grants and base_grants[target] != source
+        for target, source in grants.items()
+    ):
+        raise AssertionError("conflicting conditional overlay grant")
+    selectors = activation_environment(delta)
+    base_environment = activation_environment(service)
+    if not selectors or base_environment is None:
+        return None
+    if any(
+        value != "1" or base_environment.get(key, "0") != "0"
+        for key, value in selectors.items()
+    ):
+        return None
+    return tuple(sorted(selectors)), grants
+
+
+def conditional_source_coverage(base_path, name, service, grants, sources, context):
+    # Closed activation provenance; this does not prove arbitrary shell branches.
+    provenance, conditional = (), {}
+    for overlay_path, model in (context or {}).get("overlay_inputs", {}).items():
+        activation = overlay_activation(base_path, name, service, grants, model)
+        if activation is None:
+            continue
+        selectors, added = activation
+        for reference in sorted(
+            set().union(*(source["references"] for source in sources)) - set(grants)
+        ):
+            paths = tuple(
+                sorted(
+                    source["path"]
+                    for source in sources
+                    if reference in source["references"]
+                    and all(
+                        re.search(
+                            r"\$\{" + re.escape(selector) + r":?-0\}", source["text"]
+                        )
+                        for selector in selectors
+                    )
+                )
+            )
+            if not paths or reference not in added:
+                continue
+            if reference in conditional and conditional[reference] != added[reference]:
+                raise AssertionError("conflicting conditional overlay grant")
+            conditional = conditional | {reference: added[reference]}
+            provenance = (
+                *provenance,
+                (base_path, name, reference, str(overlay_path), selectors, paths),
+            )
+    return conditional, tuple(sorted(provenance))
+
+
+def service_secret_contract(root, compose_texts, source_context=None):
     services = {}
     tracked = tracked_files(root)
     for relative, text in compose_texts.items():
@@ -459,24 +545,49 @@ def service_secret_contract(root, compose_texts):
         document = yaml.load(text, Loader=_ComposeLoader) or {}
         for name, service in (document.get("services") or {}).items():
             grants = service_grants(service)
-            references = set()
-            for scalar in walk_scalars(service):
-                references |= literal_secret_names(compose_default(scalar))
+            direct = set().union(
+                *(
+                    literal_secret_names(compose_default(value))
+                    for value in walk_scalars(service)
+                )
+            )
             source_files = (
                 set()
                 if name in SOURCE_ANALYSIS_SERVICES
                 else set(mounted_config_files(root, relative, service, tracked))
                 | set(dockerfile_input_files(root, relative, service, tracked))
             )
-            for path in source_files:
-                references |= literal_secret_names(
-                    compose_default(path.read_bytes().decode("utf-8", errors="ignore"))
-                )
-            services[name] = {"grants": grants, "references": references}
+            sources = tuple(
+                {
+                    "path": str(path.relative_to(root)),
+                    "text": path.read_bytes().decode("utf-8", errors="ignore"),
+                }
+                for path in sorted(source_files)
+            )
+            sources = tuple(
+                source
+                | {"references": literal_secret_names(compose_default(source["text"]))}
+                for source in sources
+            )
+            mounted = set().union(*(source["references"] for source in sources))
+            conditional, provenance = conditional_source_coverage(
+                relative, name, service, grants, sources, source_context
+            )
+            services[name] = {
+                "base_path": relative,
+                "base_grants": grants,
+                "conditional_sources": conditional,
+                "conditional_overlay_grants": provenance,
+                "references": direct | mounted,
+                "unresolved_refs": (direct - set(grants))
+                | (mounted - set(grants) - set(conditional)),
+            }
     return services
 
 
-def secret_contract(root, compose_texts, registry_text, consumed_env):
+def secret_contract(
+    root, compose_texts, registry_text, consumed_env, source_context=None
+):
     declarations = {}
     declaration_paths = {}
     lab_secret_dir = env_assignments((root / "labs/.env.example").read_text())[
@@ -485,6 +596,7 @@ def secret_contract(root, compose_texts, registry_text, consumed_env):
     dangling = set()
     missing_grants = set()
     granted_sources = set()
+    base_grants, conditional_overlay_grants = {}, ()
     root_domain = {
         name: text
         for name, text in compose_texts.items()
@@ -548,17 +660,39 @@ def secret_contract(root, compose_texts, registry_text, consumed_env):
                 else:
                     declarations[name] = value
                     declaration_paths[name] = path
-        for service_name, contract in service_secret_contract(root, domain).items():
-            grants = contract["grants"]
+        for service_name, contract in service_secret_contract(
+            root, domain, source_context
+        ).items():
+            grants = contract["base_grants"]
+            base_grants = base_grants | {(contract["base_path"], service_name): grants}
+            conditional = contract["conditional_sources"]
+            conditional_overlay_grants = (
+                conditional_overlay_grants + contract["conditional_overlay_grants"]
+            )
             granted_sources.update(grants.values())
+            granted_sources.update(conditional.values())
             for reference in contract["references"]:
-                source = grants.get(reference)
-                if source is None:
+                source = grants.get(reference, conditional.get(reference))
+                if reference in contract["unresolved_refs"]:
                     missing_grants.add((service_name, reference))
                     if reference not in domain_declarations:
                         dangling.add((service_name, reference))
                 elif source not in domain_declarations:
                     dangling.add((service_name, reference))
+
+    # A validated POL-0078 overlay may grant a root declaration to an existing
+    # base service; base grants stay unchanged and the overlay stays opt-in.
+    overlay_grants = set()
+    for overlay_path, model in (source_context or {}).get("overlay_inputs", {}).items():
+        base = model["x-hyhome-overlay"]["base"]
+        for name, delta in model["services"].items():
+            if (base, name) not in base_grants:
+                continue
+            for source in service_grants(delta).values():
+                overlay_grants.add((str(overlay_path), name, source))
+                if source not in declarations:
+                    dangling.add((name, source))
+    granted_sources.update(source for *_, source in overlay_grants)
 
     rows = registry_rows(registry_text)
     registered_paths = {
@@ -580,6 +714,10 @@ def secret_contract(root, compose_texts, registry_text, consumed_env):
         "granted_sources": granted_sources,
         "dangling": dangling,
         "missing_grants": missing_grants,
+        "unresolved_refs": missing_grants,
+        "overlay_grants": overlay_grants,
+        "base_grants": base_grants,
+        "conditional_overlay_grants": tuple(sorted(conditional_overlay_grants)),
         "rows": rows,
         "registered_paths": registered_paths,
         "registry_orphans": registry_orphans,
@@ -1272,6 +1410,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
 class PublicSecretSchemaTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        cls.source_context = conftest_source_context(ROOT)
         cls.compose_texts = compose_sources()
         cls.lab_compose_texts = lab_compose_sources()
         cls.env_text = (ROOT / ".env.example").read_text()
@@ -1289,7 +1428,174 @@ class PublicSecretSchemaTests(unittest.TestCase):
             compose_texts | self.lab_compose_texts,
             registry_text,
             self.environment["consumed"] | self.lab_environment["consumed"],
+            source_context=self.source_context,
         )
+
+    def test_optional_activation_keeps_base_grants_and_records_closed_provenance(self):
+        contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
+        self.assertEqual(set(), contract["missing_grants"])
+        base = "infra/04-data/mng-db/docker-compose.yml"
+        self.assertNotIn(
+            "mng_valkey_n8n_password", contract["base_grants"][(base, "mng-valkey")]
+        )
+        self.assertIn(
+            (
+                base,
+                "mng-valkey",
+                "mng_valkey_n8n_password",
+                "infra/04-data/mng-db/docker-compose.n8n-acl.yml",
+                ("MNG_VALKEY_N8N_ENABLED",),
+                ("infra/04-data/mng-db/valkey/scripts/render-acl.sh",),
+            ),
+            contract["conditional_overlay_grants"],
+        )
+
+    def _activation_contract(self, overlays, environment=None):
+        base = "infra/04-data/mng-db/docker-compose.yml"
+        compose_texts = self.compose_texts
+        if environment is not None:
+            document = yaml.load(compose_texts[base], Loader=_ComposeLoader)
+            service = document["services"]["mng-valkey"]
+            service = service | {"environment": service["environment"] | environment}
+            document = document | {
+                "services": document["services"] | {"mng-valkey": service}
+            }
+            compose_texts = compose_texts | {base: yaml.safe_dump(document)}
+        return secret_contract(
+            ROOT,
+            compose_texts | self.lab_compose_texts,
+            self.registry_text,
+            self.environment["consumed"] | self.lab_environment["consumed"],
+            source_context=self.source_context | {"overlay_inputs": overlays},
+        )
+
+    def test_conditional_coverage_rejects_wrong_activation_or_overlay_delta(self):
+        path = Path("infra/04-data/mng-db/docker-compose.n8n-acl.yml")
+        model = self.source_context["overlay_inputs"][path]
+        service = model["services"]["mng-valkey"]
+        variants = [
+            ("absent", {}),
+            (
+                "missing grant",
+                {path: model | {"services": {"mng-valkey": service | {"secrets": []}}}},
+            ),
+            (
+                "wrong base",
+                {
+                    path: model
+                    | {
+                        "x-hyhome-overlay": {
+                            "version": 1,
+                            "base": "infra/other/docker-compose.yml",
+                        }
+                    }
+                },
+            ),
+            (
+                "wrong service",
+                {path: model | {"services": {"different-service": service}}},
+            ),
+            (
+                "unrelated selector",
+                {
+                    path: model
+                    | {
+                        "services": {
+                            "mng-valkey": service
+                            | {"environment": {"UNRELATED_ENABLED": "1"}}
+                        }
+                    }
+                },
+            ),
+            (
+                "other delta",
+                {
+                    path: model
+                    | {
+                        "services": {
+                            "mng-valkey": service | {"command": ["unexpected"]}
+                        }
+                    }
+                },
+            ),
+            (
+                "duplicate selector",
+                {
+                    path: model
+                    | {
+                        "services": {
+                            "mng-valkey": service
+                            | {
+                                "environment": [
+                                    "MNG_VALKEY_N8N_ENABLED=1",
+                                    "MNG_VALKEY_N8N_ENABLED=1",
+                                ]
+                            }
+                        }
+                    }
+                },
+            ),
+        ]
+        for label, overlays in variants:
+            with self.subTest(case=label):
+                contract = self._activation_contract(overlays)
+                self.assertIn(
+                    ("mng-valkey", "mng_valkey_n8n_password"),
+                    contract["unresolved_refs"],
+                )
+
+    def test_conditional_coverage_never_replaces_base_or_direct_grants(self):
+        path = Path("infra/04-data/mng-db/docker-compose.n8n-acl.yml")
+        overlays = {path: self.source_context["overlay_inputs"][path]}
+        for environment in (
+            {"MNG_VALKEY_N8N_ENABLED": "1"},
+            {"DIRECT_REFERENCE": "/run/secrets/mng_valkey_n8n_password"},
+        ):
+            with self.subTest(environment_names=tuple(environment)):
+                contract = self._activation_contract(overlays, environment)
+                self.assertIn(
+                    ("mng-valkey", "mng_valkey_n8n_password"),
+                    contract["missing_grants"],
+                )
+        disabled = self._activation_contract(overlays, {"MNG_VALKEY_N8N_ENABLED": "0"})
+        self.assertEqual(set(), disabled["missing_grants"])
+
+    def test_overlay_grants_cover_only_declared_sources_of_base_services(self):
+        contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
+        self.assertIn(
+            (
+                "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
+                "n8n-valkey-exporter",
+                "n8n_valkey_monitor_password",
+            ),
+            contract["overlay_grants"],
+        )
+        path = Path("infra/07-workflow/n8n/docker-compose.monitor-acl.yml")
+        model = self.source_context["overlay_inputs"][path]
+        service = model["services"]["n8n-valkey-exporter"]
+        undeclared = model | {
+            "services": {"n8n-valkey-exporter": service | {"secrets": ["undeclared"]}}
+        }
+        contract = self._activation_contract({path: undeclared})
+        self.assertIn(("n8n-valkey-exporter", "undeclared"), contract["dangling"])
+        foreign = model | {"services": {"not-in-base": service}}
+        contract = self._activation_contract({path: foreign})
+        self.assertFalse(
+            any(row[1] == "not-in-base" for row in contract["overlay_grants"])
+        )
+
+    def test_conditional_coverage_rejects_conflicting_target_sources(self):
+        path = Path("infra/04-data/mng-db/docker-compose.n8n-acl.yml")
+        model = self.source_context["overlay_inputs"][path]
+        service = model["services"]["mng-valkey"]
+        grants = service["secrets"] + [
+            {"source": "grafana_admin_password", "target": "mng_valkey_password"}
+        ]
+        changed = model | {"services": {"mng-valkey": service | {"secrets": grants}}}
+        with self.assertRaisesRegex(
+            AssertionError, "conflicting conditional overlay grant"
+        ):
+            self._activation_contract({path: changed})
 
     def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
