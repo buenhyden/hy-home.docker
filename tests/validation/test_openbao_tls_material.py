@@ -630,6 +630,53 @@ class TLSNativeDispatchGuardTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             native._native_cid(tracking)
 
+    def test_observer_waits_for_empty_cid_before_inspect_or_kill(self):
+        _root, config = self._dispatch_fixture()
+        config["delay"] = "kill"
+        tracking = Path(native._native_read(Path(config["intent"]))["tracking"])
+        cidfile = tracking / "cid"
+        cidfile.touch(mode=0o600)
+        cid = "a" * 64
+        harness, witness, stop = native.NativeHarness(), {}, mock.Mock()
+        stop.is_set.return_value = False
+        container = {"Id": cid, "State": {"Running": True}}
+
+        def deliver(_timeout):
+            call.assert_not_called()
+            self.assertNotIn("container", witness)
+            cidfile.write_text(cid)
+
+        def docker(_config, argv):
+            self.assertEqual(cid, cidfile.read_text())
+            return subprocess.CompletedProcess(
+                argv, 0, json.dumps([container]).encode(), b""
+            )
+
+        stop.wait.side_effect = deliver
+        with (
+            mock.patch.object(native, "_native_container_identity"),
+            mock.patch.object(harness, "_call", side_effect=docker) as call,
+        ):
+            harness._observe(config, stop, witness)
+        self.assertNotIn("error", witness)
+        self.assertEqual(container, witness["container"])
+        self.assertEqual(0, witness["kill_exit"])
+        stop.wait.assert_called_once_with(0.1)
+        self.assertEqual(
+            [
+                mock.call(config, ["container", "inspect", cid]),
+                mock.call(config, ["container", "kill", "--signal", "KILL", cid]),
+            ],
+            call.call_args_list,
+        )
+
+    def test_empty_cid_cannot_replace_an_already_observed_identity(self):
+        _root, config = self._dispatch_fixture()
+        tracking = Path(native._native_read(Path(config["intent"]))["tracking"])
+        (tracking / "cid").touch(mode=0o600)
+        with self.assertRaises(ValueError):
+            native._native_cid(tracking, "a" * 64)
+
     def test_observer_cid_mismatch_fails_before_witness_or_kill(self):
         _root, config = self._dispatch_fixture()
         config["delay"] = "kill"

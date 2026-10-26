@@ -48,6 +48,8 @@ def _native_cid(tracking, expected=None):
         if os.fstat(stream.fileno()) != info:
             raise ValueError("source CID file changed during read")
         raw = stream.read(66)
+    if not raw and expected is None:
+        return None
     if not re.fullmatch(rb"[a-f0-9]{64}\n?", raw):
         raise ValueError("source CID is malformed")
     cid = raw.decode().rstrip("\n")
