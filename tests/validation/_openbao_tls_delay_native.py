@@ -19,12 +19,10 @@ IMAGE = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de
 
 READ_SCRIPT = 'for f in /tls/ca.pem /tls/server.pem /tls/server-key.pem; do [ -r "$f" ] && [ -s "$f" ] || exit 1; done'
 EVENT_ACTIONS = ("create", "start", "die", "destroy")
-NATIVE_RESOURCES = [
-    "--memory=32m",
-    "--memory-swap=32m",
-    "--cpus=0.25",
-    "--pids-limit=16",
-]
+NATIVE_RESOURCES = "--memory=32m --memory-swap=32m --cpus=0.25 --pids-limit=16".split()
+CONTAINER_LIST = "container ls --all --quiet --no-trunc".split()
+READ_FAIL = b"TLS_MATERIAL FAIL check=native-user-read cleanup=pending-reconciliation\n"
+CLEANUP_FAIL = b"TLS_MATERIAL FAIL check=native-user-cleanup\n"
 
 
 def _native_regular(path, mode, uid):
@@ -394,17 +392,9 @@ def _native_wrapper_cleanup(argv, config):
         if container["Id"] != argv[3]:
             raise ValueError("source cleanup ID differs")
     result = _native_call(config["docker"], argv, config_dir=config["docker_config"])
+    row = {"argv": argv, "exit_code": result.returncode, "observed_at": time.time()}
     with open(config["cleanup_log"], "a", encoding="utf-8") as output:
-        output.write(
-            json.dumps(
-                {
-                    "argv": argv,
-                    "exit_code": result.returncode,
-                    "observed_at": time.time(),
-                }
-            )
-            + "\n"
-        )
+        output.write(json.dumps(row) + "\n")
     sys.stdout.buffer.write(result.stdout)
     sys.stderr.buffer.write(result.stderr)
     raise SystemExit(result.returncode)
@@ -510,16 +500,8 @@ class NativeHarness(unittest.TestCase):
                                 {"container": container, "observed_at": time.time()}
                             )
                             if config["delay"] == "kill":
-                                killed = self._call(
-                                    config,
-                                    [
-                                        "container",
-                                        "kill",
-                                        "--signal",
-                                        "KILL",
-                                        container["Id"],
-                                    ],
-                                )
+                                argv = ["container", "kill", "--signal", "KILL", cid]
+                                killed = self._call(config, argv)
                                 witness["kill_exit"] = killed.returncode
                             return
                 stop.wait(0.1)
@@ -550,8 +532,7 @@ class NativeHarness(unittest.TestCase):
             self.assertEqual(
                 intent["name"], event["Actor"]["Attributes"]["hyhome.openbao.tls-probe"]
             )
-        actions = {event["Action"] for event in events}
-        self.assertTrue(set(required) <= actions)
+        self.assertTrue(set(required) <= {event["Action"] for event in events})
         return events
 
     def _reconcile(self, config, intent, receipt, external=False):
@@ -567,12 +548,9 @@ class NativeHarness(unittest.TestCase):
                 raise RuntimeError("fallback identity is unavailable")
             container = json.loads(inspected.stdout)[0]
             _native_container_identity(container, config, intent)
-            receipt["external_reconciliation" if external else "fallback_cleanup"] = {
-                "cid": ids[0],
-                "exit_code": self._call(
-                    config, ["container", "rm", "--force", ids[0]]
-                ).returncode,
-            }
+            removed = self._call(config, ["container", "rm", "--force", ids[0]])
+            field = "external_reconciliation" if external else "fallback_cleanup"
+            receipt[field] = {"cid": ids[0], "exit_code": removed.returncode}
         remaining = self._call(config, _native_listing(intent["name"]))
         if remaining.returncode or remaining.stdout.strip():
             raise RuntimeError("source-owned container absence is unverified")
@@ -584,6 +562,20 @@ class NativeHarness(unittest.TestCase):
             if result.returncode or result.stdout.strip():
                 raise RuntimeError("exact observed container ID absence is unverified")
             receipt["exact_cid_absent"] = True
+
+    def _wait_absence(self, config, intent, cid):
+        named = _native_listing(intent["name"])
+        queries = (named, [*CONTAINER_LIST, "--filter", "id=" + cid])
+        bounded = {**config, "deadline": config["deadline"] - 20}
+        while time.monotonic() < bounded["deadline"]:
+            results = [self._call(bounded, query) for query in queries]
+            for result in results:
+                self.assertEqual(0, result.returncode, "exact absence query failed")
+                self.assertIn(result.stdout.strip(), (b"", cid.encode()))
+            if all(not result.stdout.strip() for result in results):
+                return time.time()
+            time.sleep(0.1)
+        self.fail("owned absence was not observed before cleanup reserve")
 
     def _checker(self, root, config):
         process = subprocess.Popen(
@@ -683,7 +675,7 @@ class NativeHarness(unittest.TestCase):
         receipt["cleanup_classification"] = (
             "source_explicit_rm"
             if receipt["source_explicit_rm"]
-            else "automatic_destroy_without_source_rm"
+            else "observed_destroy_without_successful_source_rm_receipt"
         )
         times = {
             event["Action"]: event["timeNano"] / 1e9 for event in receipt["events"]
@@ -696,6 +688,7 @@ class NativeHarness(unittest.TestCase):
         receipt.update(
             {
                 "checker_exit": code,
+                "checker_ended": ended,
                 "elapsed_seconds": ended - started,
                 "stdout": stdout.decode(),
                 "stderr": stderr.decode(),
@@ -705,6 +698,16 @@ class NativeHarness(unittest.TestCase):
         intent = _native_read(Path(config["intent"]))
         cid = witness["container"]["Id"]
         receipt["witness"] = witness
+        if config["delay"] == 61:
+            self.assertEqual(1, code)
+            self.assertTrue(witness["container"]["State"]["Running"])
+            self.assertIn(stdout, (READ_FAIL, CLEANUP_FAIL))
+            self.assertGreaterEqual(receipt["elapsed_seconds"], 60)
+            self.assertTrue(Path(intent["tracking"]).is_dir())
+            receipt["source_cleanup"] = stdout.decode().strip()
+            ended = receipt["observed_absence_ended"] = self._wait_absence(
+                config, intent, cid
+            )
         self._delay_events(config, intent, started, ended, cid, receipt)
         if config["delay"] == 25:
             self.assertEqual(0, code, stdout)
@@ -713,11 +716,9 @@ class NativeHarness(unittest.TestCase):
             self.assertFalse(Path(intent["tracking"]).exists())
         else:
             self.assertNotEqual(0, code)
-            self.assertIn(b"cleanup=pending-reconciliation", stdout)
             self.assertTrue(Path(intent["tracking"]).is_dir())
-            if config["delay"] == 61:
-                self.assertGreaterEqual(receipt["elapsed_seconds"], 60)
-            else:
+            if config["delay"] != 61:
+                self.assertIn(b"cleanup=pending-reconciliation", stdout)
                 expected = 17 if config["delay"] == "error" else 137
                 died = [
                     event for event in receipt["events"] if event["Action"] == "die"

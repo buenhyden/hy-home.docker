@@ -646,5 +646,124 @@ class TokenTLSTests(unittest.TestCase):
                 )
 
 
+class NativeTLSCleanupContractTests(unittest.TestCase):
+    def setUp(self):
+        from tests.validation import _openbao_tls_delay_native as native
+
+        self.native, self.harness, self.cid = native, native.NativeHarness(), "a" * 64
+        temporary = tempfile.TemporaryDirectory(prefix="hyhome-b3-cleanup-unit-")
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name)
+        self.intent = {"name": "openbao-tls.1234567890", "tracking": str(root)}
+        self.config = {"delay": 61, "deadline": time.monotonic() + 190}
+        self.config["intent"] = str(root / "intent.json")
+        native._native_write(root / "intent.json", self.intent)
+        self.witness = {
+            "container": {"Id": self.cid, "State": {"Running": True}},
+            "events": [],
+        }
+        self.pending = (
+            b"TLS_MATERIAL FAIL check=native-user-read cleanup=pending-reconciliation\n"
+        )
+        self.cleanup = b"TLS_MATERIAL FAIL check=native-user-cleanup\n"
+
+    def test_delayed_absence_precedes_final_events_without_deleting(self):
+        pending = self.native.subprocess.CompletedProcess([], 0, self.cid.encode(), b"")
+        absent = self.native.subprocess.CompletedProcess([], 0, b"", b"")
+        receipt = {}
+
+        def final_events(*arguments):
+            self.assertEqual(4, call.call_count)
+            self.assertEqual(receipt["observed_absence_ended"], arguments[3])
+
+        with (
+            mock.patch.object(
+                self.harness, "_call", side_effect=[pending] * 2 + [absent] * 2
+            ) as call,
+            mock.patch.object(self.native.time, "sleep"),
+            mock.patch.object(self.harness, "_delay_events", side_effect=final_events),
+        ):
+            self.harness._check_delay(
+                self.config,
+                (1, self.pending, b""),
+                self.witness,
+                receipt,
+                time.time() - 60,
+            )
+        self.assertLessEqual(
+            receipt["checker_ended"], receipt["observed_absence_ended"]
+        )
+        self.assertTrue(
+            all(item.args[1][:2] == ["container", "ls"] for item in call.call_args_list)
+        )
+        self.assertTrue(
+            all(
+                item.args[0]["deadline"] == self.config["deadline"] - 20
+                for item in call.call_args_list
+            )
+        )
+
+    def test_absence_wait_rejects_foreign_identity_failure_and_expired_budget(self):
+        for code, output, remaining in (
+            (0, b"b" * 64, 190),
+            (1, b"", 190),
+            (0, b"", 0),
+        ):
+            with self.subTest(code=code, output=output, remaining=remaining):
+                config = {**self.config, "deadline": time.monotonic() + remaining}
+                answer = self.native.subprocess.CompletedProcess([], code, output, b"")
+                with mock.patch.object(self.harness, "_call", return_value=answer):
+                    with self.assertRaises(AssertionError):
+                        self.harness._wait_absence(config, self.intent, self.cid)
+
+    def test_61_failure_requires_a_running_container_witness(self):
+        witness = {"container": {"Id": self.cid, "State": {"Running": False}}}
+        with mock.patch.object(self.harness, "_wait_absence") as wait:
+            with self.assertRaises(AssertionError):
+                self.harness._check_delay(
+                    self.config, (1, self.cleanup, b""), witness, {}, time.time() - 60
+                )
+            wait.assert_not_called()
+
+    def test_only_exact_61_failure_phases_keep_tracking_and_timeout_proof(self):
+        for code, message, elapsed, tracking, accepted in (
+            (1, self.pending, 60, True, True),
+            (1, self.cleanup, 60, True, True),
+            (0, self.cleanup, 60, True, False),
+            (2, self.cleanup, 60, True, False),
+            (1, b"TLS_MATERIAL FAIL check=unknown\n", 60, True, False),
+            (1, self.cleanup, 59, True, False),
+            (1, self.cleanup, 60, False, False),
+        ):
+            with (
+                self.subTest(
+                    code=code, message=message, elapsed=elapsed, tracking=tracking
+                ),
+                mock.patch.object(self.native.time, "time", return_value=100),
+                mock.patch.object(Path, "is_dir", return_value=tracking),
+                mock.patch.object(
+                    self.harness, "_wait_absence", return_value=101
+                ) as wait,
+                mock.patch.object(self.harness, "_delay_events"),
+            ):
+
+                def operation(code=code, message=message, elapsed=elapsed):
+                    self.harness._check_delay(
+                        self.config,
+                        (code, message, b""),
+                        self.witness,
+                        {},
+                        100 - elapsed,
+                    )
+
+                if accepted:
+                    operation()
+                    wait.assert_called_once()
+                else:
+                    with self.assertRaises(AssertionError):
+                        operation()
+                    wait.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
