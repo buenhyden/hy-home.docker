@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -748,6 +748,15 @@ earlier local GID1000 run reported one unlogged ERROR that did not recur in
 three later runs; it is recorded as unreproduced, not resolved. The B3 Native
 record in `verification.json` stays bound to its observed revision f4698d1e;
 these test-file changes do not inherit or rerun that Native result.
+
+The next hosted run on 2bd02949c passed the test leaves but failed
+`ci-gate-adapter-audit`: the exact-chain npm audit acceptance for
+GHSA-vfj7-8cjw-p6xm still named the 16.4.0 Next parents, while ac134bfb1
+updated the Storybook lock to 16.4.1. With owner approval, 17d707f36 rebinds
+only those two parent versions; braces@3.0.3, the advisory, the dev-only path
+and the 2026-11-08 expiry are unchanged, and a 16.4.0 parent now rejects. The
+adapter runs only in the admitted runner environment, so its real-lock and
+advisory result is the hosted check on the final PR head, not a local claim.
 
 ## Evidence
 
