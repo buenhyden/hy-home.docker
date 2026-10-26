@@ -155,6 +155,10 @@ class OwnedFixture:
                     "1",
                     "-subj",
                     "/CN=" + name,
+                    "-addext",
+                    "basicConstraints=critical,CA:TRUE",
+                    "-addext",
+                    "keyUsage=critical,keyCertSign,cRLSign",
                 ]
             )
             private.chmod(0o600)

@@ -315,6 +315,40 @@ class ContractTests(unittest.TestCase):
         self.assertFalse((self.root / "contract.json").exists())
 
 
+class SyntheticCertificateTests(unittest.TestCase):
+    def test_generated_chain_passes_strict_server_verification(self):
+        from tests.validation import _openbao_rehearsal_fixture as native
+
+        with (
+            tempfile.TemporaryDirectory() as parent,
+            mock.patch.object(tempfile, "tempdir", parent),
+        ):
+            fixture = native.OwnedFixture()
+            fixture.certificates()
+            for label, ca, hostname, accepted in (
+                ("trusted chain", fixture.tls / "ca.pem", "openbao", True),
+                ("wrong CA", fixture.wrong_ca, "openbao", False),
+                ("wrong hostname", fixture.tls / "ca.pem", "wrong.invalid", False),
+            ):
+                with self.subTest(case=label):
+                    result = native.captured(
+                        [
+                            "openssl",
+                            "verify",
+                            "-x509_strict",
+                            "-purpose",
+                            "sslserver",
+                            "-verify_hostname",
+                            hostname,
+                            "-CAfile",
+                            str(ca),
+                            str(fixture.tls / "server.pem"),
+                        ],
+                        allow_failure=True,
+                    )
+                    self.assertEqual(result.returncode == 0, accepted, label)
+
+
 @unittest.skipUnless(
     os.environ.get("HYHOME_OPENBAO_REHEARSAL") == "1",
     "opt-in native rehearsal: real snapshot, producers and restore validators",
