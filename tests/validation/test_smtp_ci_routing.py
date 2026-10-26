@@ -56,7 +56,17 @@ class SmtpRoutingTests(unittest.TestCase):
         ):
             self.assertIn(module, argv[:split])
             self.assertNotIn(module, optional)
-        self.assertEqual(22, len(optional))
+        smtp_optional = {
+            selector
+            for selector in optional
+            if selector.startswith("tests.validation.test_supabase_smtp_rehearsal.")
+        }
+        self.assertEqual(
+            {
+                "tests.validation.test_supabase_smtp_rehearsal.SupabaseSMTPRehearsalTests"
+            },
+            smtp_optional,
+        )
         required_modules = {
             selector for selector in argv[:split] if selector.startswith("tests.")
         }
