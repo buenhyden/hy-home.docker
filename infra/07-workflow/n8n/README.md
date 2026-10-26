@@ -1,6 +1,6 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.13"
+version: "1.2.14"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -117,7 +117,8 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 이 overlay를 전체 API 격리라고 표현하지 않습니다. 저장된 Ollama Credential·Node
 실행과 거부·복구는 별도이며 Cloud 호출·fallback은 추가하지 않습니다.
 정확한 선택과 인수 절차는
-[Runbook](../../../docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md#선택형-공유-valkey-계정과-local-ollama)이 소유합니다.
+[워크플로와 자동화 런북 목록](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의
+n8n Runbook 「선택형 공유 Valkey 계정과 Local Ollama」 절이 소유합니다.
 
 ## Traceability (Golden 5)
 

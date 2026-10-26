@@ -195,6 +195,27 @@ Exporter의 `/`·`/proc`·`/sys` 같은 의도된 host bind에 해당한다. 신
 추가 inventory·결과 영수증과 Native cleanup 문구 수정까지 독립 검토 READY이며
 actionable finding은 없다. criterion 17 전체·실제 관측·Node/HOME 인수는 pending이다.
 
+The first final public changed gate ran against clean HEAD
+`afa343a8aed963dd11ff88fada4826d8877f1dd7`: 400.196 seconds, exit 1,
+5 PASS / 1 FAIL / 27 NOT_RUN. `leaf.docs-traceability` reported two
+`stage-link-outside-docs` findings at MNG README line 75 and n8n README line 120.
+Only the newly added direct RUN-0053 links now route through the existing
+workflow Runbook README, retaining the same n8n section-title guidance. Policy,
+index structure and runtime source stay unchanged. The source 58 PASS and
+isolated Native 1 PASS inputs remain unchanged and were not rerun.
+
+The narrow graph regression reproduced the previous two entrypoint findings
+and confirmed zero for the correction. Traceability also has zero findings for
+six documents including the three mandatory canonical nodes; the existing
+index route and exact Runbook heading were verified. An additional heading
+assertion first failed on lowercase `local`; one narrow retry passed after the
+guidance matched the actual `Local` heading. Independent `ops_survey` review is
+READY with no actionable finding; `git diff --check` passed. The selected
+metadata check first failed with one body-language deficit in this new receipt;
+only this receipt was translated to the existing English Task language.
+Selected metadata retry, staged gate and the public changed gate on the corrected
+clean HEAD remain pending. Preserve the first FAIL separately from later results.
+
 ### 현재 증거 범위 조정 — 2026-10-22
 
 공개 추적 소스 대조에서 네 위치 port projector와 CLI는 구현되어 있으며,

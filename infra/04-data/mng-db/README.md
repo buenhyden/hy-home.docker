@@ -1,6 +1,6 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.1.6"
+version: "1.1.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -72,7 +72,8 @@ provision job은 실행할 때마다 비밀번호를 비밀 파일에 맞추므�
 기존 ACL 교체 전에 거부합니다. `db=0`과 `n8n:*` key/channel에 한정한 명시 command
 목록은 소스 후보이며 실제 Bull queue·Retry·회전·AOF 복원은 아직 인수하지 않았습니다.
 기존 default 계정과 큐 데이터는 보존합니다. 선택·복구 절차는
-[n8n Runbook](../../../docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md#선택형-공유-valkey-계정과-local-ollama)을 따릅니다.
+[워크플로와 자동화 런북 목록](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)에서
+n8n Runbook의 「선택형 공유 Valkey 계정과 Local Ollama」 절을 확인합니다.
 PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포트를
 게시하고, Valkey는 루트 `VALKEY_MNG_HOST_PORT` 키로
 `HOST_LAN_BIND_IP`(기본값 `192.168.0.13`)에 게시합니다. exporter는
