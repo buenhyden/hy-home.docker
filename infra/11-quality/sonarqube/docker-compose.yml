@@ -22,7 +22,7 @@ services:
       - 'tooling'
       - sast
     extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
-    image: sonarqube:26.9.0.129388-community
+    image: sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8
     container_name: sonarqube
     hostname: sonarqube
     group_add:

@@ -12,6 +12,7 @@ content are captured privately and never become assertion messages.
 
 import http.client
 import json
+import re
 import shutil
 import socket
 import ssl
@@ -73,6 +74,9 @@ class OwnedFixture:
         self.directory.chmod(0o750)
         self.network = self.owner + "-net"
         self.containers = []
+        self.container_ids = {}
+        self.mounts_verified = set()
+        self.mounted_volumes = set()
         self.volumes = []
         self.network_created = False
         self.tls = self.directory / "tls"
@@ -151,6 +155,10 @@ class OwnedFixture:
                     "1",
                     "-subj",
                     "/CN=" + name,
+                    "-addext",
+                    "basicConstraints=critical,CA:TRUE",
+                    "-addext",
+                    "keyUsage=critical,keyCertSign,cRLSign",
                 ]
             )
             private.chmod(0o600)
@@ -232,7 +240,8 @@ class OwnedFixture:
 
     def container(self, suffix, args, command, *, image=None, start=True, network=None):
         name = self.owner + "-" + suffix
-        self.docker(
+        self.containers.append(name)
+        created = self.docker(
             "create",
             "--name",
             name,
@@ -258,10 +267,66 @@ class OwnedFixture:
             image or self.image,
             *command,
         )
-        self.containers.append(name)
+        try:
+            identity = created.stdout.strip().decode("ascii")
+        except (AttributeError, UnicodeError):
+            raise RehearsalFailure("created container identity unavailable") from None
+        if not re.fullmatch(r"[a-f0-9]{64}", identity):
+            raise RehearsalFailure("created container identity unavailable")
+        self.container_ids[name] = identity
+        self.mounted_volumes.update(self._capture_mounts(identity))
+        self.mounts_verified.add(identity)
         if start:
-            self.docker("start", name)
+            self.docker("start", identity)
         return name
+
+    def _capture_mounts(self, identity):
+        inspected = self.docker(
+            "inspect", "--type=container", "--format", "{{json .Mounts}}", identity
+        )
+        try:
+            mounts = json.loads(inspected.stdout)
+            if not isinstance(mounts, list):
+                raise ValueError()
+            names = set()
+            for mount in mounts:
+                if not isinstance(mount, dict) or mount.get("Type") not in {
+                    "volume",
+                    "bind",
+                    "tmpfs",
+                }:
+                    raise ValueError()
+                if mount["Type"] == "volume":
+                    name = mount.get("Name")
+                    if not isinstance(name, str) or not re.fullmatch(
+                        r"[a-zA-Z0-9][a-zA-Z0-9_.-]*", name
+                    ):
+                        raise ValueError()
+                    names.add(name)
+        except (ValueError, TypeError):
+            raise RehearsalFailure("created container mounts unavailable") from None
+        return names
+
+    def _volume_absent(self, name):
+        try:
+            result = self.docker("volume", "inspect", name, allow_failure=True)
+        except RehearsalFailure:
+            return False
+        identity = name.encode("ascii")
+        return (
+            result.returncode != 0
+            and result.stdout.strip() in (b"", b"[]")
+            and (
+                result.stderr.strip().lower()
+                in {
+                    b"error response from daemon: get "
+                    + identity
+                    + b": no such volume",
+                    b"error response from daemon: no such volume: " + identity,
+                    b"error: no such volume: " + identity,
+                }
+            )
+        )
 
     def server_version(self, name):
         if name not in self.containers:
@@ -451,9 +516,14 @@ class OwnedFixture:
         )
 
     def cleanup(self):
-        failures = False
+        failures = any(
+            self.container_ids.get(name) not in self.mounts_verified
+            for name in self.containers
+        )
         for name in self.containers:
-            failures |= not self._cleanup_command("stop", "--time", "2", name)
+            identity = self.container_ids.get(name)
+            if identity is not None:
+                failures |= not self._cleanup_command("stop", "--time", "2", identity)
         if self.containers and self.network_created:
             try:
                 cleanup = self.container(
@@ -476,9 +546,15 @@ class OwnedFixture:
             except RehearsalFailure:
                 failures = True
         for name in reversed(self.containers):
-            failures |= not self._cleanup_command("rm", "--force", name)
+            identity = self.container_ids.get(name)
+            if identity is not None:
+                failures |= not self._cleanup_command(
+                    "rm", "--force", "--volumes", identity
+                )
         for name in reversed(self.volumes):
             failures |= not self._cleanup_command("volume", "rm", name)
+        for name in sorted(self.mounted_volumes):
+            failures |= not self._volume_absent(name)
         if self.network_created:
             failures |= not self._cleanup_command("network", "rm", self.network)
         try:

@@ -240,6 +240,117 @@ class K6ResultContractTests(unittest.TestCase):
             with self.subTest(change=change):
                 self.assertTrue(compare([receipt(1), {**receipt(2), **change}]))
 
+    def test_reload_interruption_preserves_evidence_and_original_exception(
+        self,
+    ) -> None:
+        import runpy
+        import subprocess
+
+        module = runpy.run_path(
+            str(ROOT / "examples/operations/quality-path-guard/acceptance.py")
+        )
+        run_cycle = module["run_cycle"]
+        for primary in (KeyboardInterrupt("cancelled"), SystemExit(130)):
+            for cleanup_fails in (False, True):
+                with self.subTest(primary=primary, cleanup_fails=cleanup_fails):
+                    attempts = self.root / "partial-attempts"
+                    attempts.mkdir(exist_ok=True)
+                    raw = attempts / "raw.json"
+                    raw.write_text("partial evidence")
+                    evidence = self.root / "cycle-evidence"
+                    evidence.mkdir(exist_ok=True)
+
+                    def command(
+                        argv, primary=primary, cleanup_fails=cleanup_fails, **kwargs
+                    ):
+                        if "up" in argv:
+                            raise primary
+                        if "down" in argv and cleanup_fails:
+                            raise subprocess.TimeoutExpired(argv, 10)
+                        return subprocess.CompletedProcess(argv, 0, "", "")
+
+                    inputs = ("r", self.scenario, self.root, [], self.root, {})
+                    executor = types.SimpleNamespace(_docker_environment=lambda: {})
+                    with (
+                        mock.patch.dict(
+                            run_cycle.__globals__,
+                            {"_owned": lambda run: {"containers": 0, "networks": 0}},
+                        ),
+                        mock.patch("tempfile.mkdtemp", return_value=str(attempts)),
+                        mock.patch("subprocess.check_output", return_value=""),
+                        mock.patch("subprocess.run", side_effect=command),
+                        self.assertRaises(type(primary)) as raised,
+                    ):
+                        run_cycle(
+                            1,
+                            ROOT,
+                            {"guard": "g", "mock": "m"},
+                            inputs,
+                            (quality_run, executor),
+                            evidence,
+                        )
+                    self.assertIs(raised.exception, primary)
+                    receipt = json.loads((evidence / "cycle-1.json").read_text())
+                    self.assertIn(type(primary).__name__, receipt["error"])
+                    self.assertEqual(str(attempts), receipt["kept_attempts"])
+                    self.assertEqual("partial evidence", raw.read_text())
+                    if cleanup_fails:
+                        self.assertIn("TimeoutExpired", receipt["cleanup_error"])
+                    else:
+                        self.assertEqual(
+                            {"containers": 0, "networks": 0}, receipt["cleanup"]
+                        )
+
+    def test_reload_cleanup_failure_is_recorded_and_preserves_evidence(self) -> None:
+        import runpy
+        import subprocess
+
+        module = runpy.run_path(
+            str(ROOT / "examples/operations/quality-path-guard/acceptance.py")
+        )
+        run_cycle = module["run_cycle"]
+        attempts = self.root / "partial-attempts"
+        attempts.mkdir()
+        raw = attempts / "raw.json"
+        raw.write_text("retained evidence")
+        evidence = self.root / "cycle-evidence"
+        evidence.mkdir()
+
+        def command(argv, **kwargs):
+            if "down" in argv:
+                raise subprocess.TimeoutExpired(argv, 10)
+            return subprocess.CompletedProcess(argv, 0, "", "")
+
+        inputs = ("r", self.scenario, self.root, [], self.root, {})
+        executor = types.SimpleNamespace(_docker_environment=lambda: {})
+        with (
+            mock.patch.dict(
+                run_cycle.__globals__,
+                {
+                    "_owned": lambda run: {"containers": 0, "networks": 0},
+                    "EXPECTED": (),
+                },
+            ),
+            mock.patch("tempfile.mkdtemp", return_value=str(attempts)),
+            mock.patch("subprocess.check_output", return_value=""),
+            mock.patch("subprocess.run", side_effect=command),
+            mock.patch("time.sleep"),
+            self.assertRaises(subprocess.TimeoutExpired),
+        ):
+            run_cycle(
+                1,
+                ROOT,
+                {"guard": "g", "mock": "m"},
+                inputs,
+                (quality_run, executor),
+                evidence,
+            )
+        receipt = json.loads((evidence / "cycle-1.json").read_text())
+        self.assertIn("TimeoutExpired", receipt["cleanup_error"])
+        self.assertEqual(receipt["error"], receipt["cleanup_error"])
+        self.assertEqual(str(attempts), receipt["kept_attempts"])
+        self.assertEqual("retained evidence", raw.read_text())
+
     def test_prepare_binds_scenario_and_refuses_existing_attempt(self) -> None:
         attempt = self.prepare()
         self.assertEqual(

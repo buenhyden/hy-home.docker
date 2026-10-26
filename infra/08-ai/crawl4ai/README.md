@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI 웹 크롤러"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-26"
 created: "2026-09-21"
 ---
 
@@ -15,7 +15,14 @@ created: "2026-09-21"
 ## Overview
 
 Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 위조(SSRF)에
-악용될 수 있습니다. 그래서 `crawl4ai`는 `internal: true` 네트워크에만 참여하고, 밖으로 나가는 유일한 길은 `crawl4ai-egress` gateway입니다. gateway는 DNS를 중계하면서 AAAA 질의에는 빈 응답을 주고, 전역 라우팅되는 IPv4의 80·443 포트만 허용하며, 확인한 주소로만 연결합니다. 이미지 안의 egress broker가 먼저 대상을 확인하고 고정한 뒤 `CRAWL4AI_UPSTREAM_PROXY`로 gateway에 연결합니다. 의도된 소비자는 Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 있어 이를 사용하는 서비스가 없습니다. Lifecycle: **OPTIONAL**, `crawl4ai`에서만 선택됩니다. 정확한 이미지로 격리 리허설을 실행해 허용 목적지 수집과 private·metadata·redirect·subresource·호출자 proxy 거절, 직접 경로 없음을 확인했습니다(SPEC-0220(`docs/03.specs/0220-crawl4ai-collection-and-egress/spec.md`)). HOME 시작과 host 방화벽 적용은 하지 않았습니다.
+악용될 수 있습니다. 그래서 `crawl4ai`는 `internal: true` 네트워크에만 참여하고, 밖으로 나가는 유일한 길은 `crawl4ai-egress` gateway입니다. gateway는 DNS를 중계하면서 AAAA 질의에는 빈 응답을 주고, 전역 라우팅되는 IPv4의 80·443 포트만 허용하며, 확인한 주소로만 연결합니다. 이미지 안의 egress broker가 먼저 대상을 확인하고 고정한 뒤 `CRAWL4AI_UPSTREAM_PROXY`로 gateway에 연결합니다. 의도된 소비자는 Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 있어 이를 사용하는 서비스가 없습니다. Lifecycle: **OPTIONAL**, `crawl4ai`에서만 선택됩니다. 이전 고정 이미지로 격리 리허설을 실행해 허용 목적지 수집과 private·metadata·redirect·subresource·호출자 proxy 거절, 직접 경로 없음을 확인했습니다(SPEC-0220(`docs/03.specs/0220-crawl4ai-collection-and-egress/spec.md`)). HOME 시작과 host 방화벽 적용은 하지 않았습니다.
+
+2026-10-26의 새 패치 후보는 cache freshness 요청의 proxy 경유, Chromium TLS
+검사와 untrusted 요청 본문 제한을 수정한 공식 보안 릴리스를 소스로 선택합니다.
+기존 격리 성공은 이전 이미지 입력의 역사이며 새 후보의 성공이 아닙니다. 새
+후보의 실제 TLS·SSRF·cache·응답 schema 검증과 HOME 실행은 NOT_RUN입니다.
+현재 consumer는 없고, 참조 adapter는 URL·cache mode·page timeout만 전달합니다.
+토큰·internal 망·gateway·읽기 전용 root·tmpfs·사용자·자원 제한은 유지합니다.
 
 ## Audience
 

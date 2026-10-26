@@ -1,10 +1,10 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.9"
+version: "0.1.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-27"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -119,6 +119,108 @@ the exact host/path, output filter and recovery boundary in this Task and pass
 independent review; only names, paths, modes and consumer metadata may leave it.
 
 ## Work Log
+
+### v30 named n8n account source continuation — 2026-10-26
+
+The direct v30 request and the coordinator lease in SPEC-0212-TSK-0008 authorize
+this criterion 16 public-source continuation on `codex/v30-infra-source-completion`,
+from `136b7cac4483d4af8aaa73ca6dc3f9a0da521e10`. Preserve prior receipts.
+CACHE-026 was the current high-water mark; new CACHE-027 owns only
+`secrets/db/mng-valkey/n8n_password.txt` for the optional shared-MNG named account.
+CACHE-009 retains the dedicated instance identity. CACHE-007 retains default
+authentication, with corrected actual consumers and monitor wording.
+
+The one infra writer owns ROOT `docker-compose.yml`, `.env.example`,
+`infra/03-security/openbao/secret-catalog.json`, the generated changed/new rows
+in `secrets/SENSITIVE_ENV_VARS.md.example`, MNG `docker-compose.yml`,
+`docker-compose.n8n-acl.yml`, `valkey/scripts/render-acl.sh`, n8n
+`docker-compose.yml`, `docker-entrypoint.sh` and `docker-entrypoint.dev.sh`.
+Existing validation modules `test_mng_valkey_acl.py`,
+`test_service_runtime_compatibility.py`, `test_secret_catalog_contract.py` and
+`test_service_wiring_contracts.py`, MNG/n8n READMEs and GDE-0053/RUN-0053 accompany
+the change. Existing schema, generator and support metadata suffice; no new tool,
+mandatory CI or private writer is introduced.
+
+Baseline default authentication and DB0 require no new private file. Only the
+explicit MNG ACL overlay mounts the named-account secret. Both app entrypoints
+validate Host/User/Secret/DB, effective Queue variables, fixed prefixes and the
+single-server boundary; explicit invalid inputs never fall back. Before atomic
+ACL replacement, the renderer checks distinct nonempty credentials, a regular
+single-link file, mode and readability for the executing identity/group.
+GDE-0053 records the actual pinned Bull source, commands, key/channel namespace
+and bulk-cleanup exclusions; this is not a BullMQ or minimum-privilege acceptance
+claim. Actual Bull execution, P05, private P06 delivery, shared-MNG rollout,
+rotation and AOF/recovery remain NOT_RUN.
+
+RED reproduced missing named-account support, accepted invalid renderer inputs
+and the profile/overlay defects. The first GREEN selected 34 tests: 33 PASS and
+one opt-in Native SKIP, 14.421 s, exit 0. A separate full RuntimeCompatibilityTests
+run passed 28 tests in 3.552 s, exit 0; these are separate runs, not a combined
+full-suite result. System Python lacked the existing `referencing` dependency;
+the prepared QA environment passed the same catalog roundtrip.
+Ruff and `git diff --check` passed. The infra-validate helper returned exit 2:
+11 PASS, 0 FAIL, 4 BLOCKED; its absolute-host-path input-graph refusal prevented
+its Compose checks. Separate public `.env.example` renders passed. P03 records
+the existing host-bind boundary and canonical inventory refresh.
+
+#### Isolated synthetic ACL execution packet and results
+
+Independent IaC review admitted only
+`test_mng_valkey_acl.MngValkeyAclNativeTests` with
+`HYHOME_N8N_ACL_REHEARSAL=1`, context `default` and cached image ID
+`sha256:a0dbf4c1d5708782907c10e2c72deff317518518b5288a58416981d9db95d30b`.
+No pull occurs. The image had Config.Volumes null; the fixture also checks no
+volume mount after create. One random owner-label container uses network none,
+read-only root, cap drop ALL, no-new-privileges, 64 MiB/0.25 CPU/32 PIDs,
+16 MiB tmpfs each for /tmp and /data under the execution UID/GID, and exactly
+one read-only bind of the generated synthetic ACL. No TCP publication, persistent
+volume, HOME/LAB mount or real secret is used; clients use a Unix socket.
+The overall budget is 180 s, each Docker call at most 20 s, readiness 15 s.
+Cleanup retains its own call budget, validates the exact owner label, removes
+only that container and checks absence. No private logs are collected.
+
+The initial 17 source/test paths are ROOT Compose, public env, catalog/public
+view, MNG base/ACL overlay/renderer, n8n base/both entrypoints/Ollama overlay,
+DEV/Kafka Compose and the four validation modules above. Their sorted
+`path + NUL + sha256 + LF` aggregate was
+`3f199cfe81c7cfa25e154a41a1db2bf44cebd7017298c7a01f765126f093dd8d`;
+the initial Native module hash was
+`16fa268f0807530005047d18a1481339b95cbdcfba57fcf419f2194ba691a6f8`.
+
+Attempt 1 failed after 30.259 s, exit 1. All functional assertions ran, and
+container `hyhome-n8n-acl-4a2b6226ea7e4840ab877dc0b4f04903` was removed, but
+the final absence assertion expected capitalized "No such" while Docker returned
+lowercase "no such object". Preserve this FAIL. Only case-insensitive comparison
+was corrected; ACL production code did not change. The retry module hash is
+`85fa2a8b715c3156e48128c9766796e08fd34854ac47076b32ed2033a6174830`;
+the corresponding 17-path aggregate is
+`96d77614cceabadaa7543fd787b71595edae3f0bed7e284865dbf51224e0ec15`.
+
+Attempt 2:
+`rtk env HYHOME_N8N_ACL_REHEARSAL=1 /tmp/hyhome-coord-qa/bin/python -m unittest tests.validation.test_mng_valkey_acl.MngValkeyAclNativeTests -v`
+passed one test in 20.822 s, exit 0. AUTH/PING/DB0/key/hash/Lua reads/control
+channel passed. Other keys, DBs and channels, FLUSHDB/FLUSHALL/ACL/CONFIG/KEYS/SCAN,
+Lua cross-key/admin calls and wrong credentials were refused. Mount/ownership
+and exact-container cleanup/absence assertions passed. The successful random
+UUID was not retained in stdout; do not invent it. This is isolated Valkey ACL
+evidence, not actual Bull jobs, AOF, rotation, HOME or P06 acceptance.
+
+Final source check:
+`rtk /tmp/hyhome-v30-python-el330y6x/venv/bin/python -m unittest tests.validation.test_mng_valkey_acl.MngValkeyAclTests tests.validation.test_secret_catalog_contract tests.validation.test_service_wiring_contracts tests.validation.test_service_runtime_compatibility.RuntimeCompatibilityTests`
+passed 58 tests in 19.493 s, exit 0. That command excludes the Native class.
+Corpus lifecycle/archive recovery reported zero violations, exit 0.
+Independent final source review found no actionable blockers. Staged admission,
+logical commits and criterion 16 owner acceptance remain pending. Rollback is
+a logical source revert; it does not restore an operational account or queue.
+The first selected metadata check reported two document deficits: this English
+Task had a newly added Korean passage, and the Guide repeated release tags in
+source links. The continuation is now English and those links use exact upstream
+commit identities; the tarball keeps its explicit same-line compatibility reason.
+The initial metadata FAIL is retained separately from subsequent validation.
+After the worktree was fully restored and held stable, the affected Task, Guide
+and refreshed inventory metadata check returned selected=3, violations=0, exit 0.
+An earlier positive run overlapped the normal commit hook temporarily parking
+unstaged changes; its input was unverified and that PASS is not reused.
 
 ### Authorized Source Continuation
 
@@ -735,6 +837,131 @@ as the owner; `secrets/README.md` was not read. The retention classes stay a
 draft, and no file under `secrets/` was moved or deleted. S10b status: PARTIAL,
 ownership decided; retention classes and P06 consumption remain.
 
+### v30 isolated client and monitor evidence reuse — 2026-10-27
+
+P02 owns the C16/W32 value-free catalog and secret-reference boundary. CACHE-027
+and CACHE-028 through CACHE-030 remain declared optional identities. These
+isolated receipts advance selected client/observer verification only; they do
+not change catalog lifecycle delivered/consumed/rotated/recovered fields or
+claim P01/P06 secret delivery and migration acceptance. Public catalog generation
+and unchanged default startup requirements retain their earlier source proof.
+
+This append preserves all earlier source preparation, failed attempts and pending
+criterion acceptance. The actual bounded isolated synthetic runs were captured at
+`0d2392f93b975faa36f03b2361d80f3ddb72e487`. Their original timestamps and outcomes
+remain unchanged. The final source proof permits reuse of the exact selected
+unchanged input sets at `f4698d1e15212117dafb5809fb6c5c7596686be4`; no new Native
+run or whole-revision/application acceptance is asserted.
+
+The complete existing `MngValkeyAclNativeTests` class passed both methods:
+2 tests, zero failures/errors/skips, 82.699 seconds (unittest duration; the outer
+capture took 82.832 seconds), exit 0. The real client identity was n8n 2.43.6,
+Bull 4.16.4 with shipped job Git revision
+`3301e3fbc7296f545b65331dad1f12c820267e0d`, ioredis 5.3.2, Node v26.7.0 and UID/GID
+1000. Exact package paths, patch and byte identities passed. Five positive cases
+covered worker progress/finish, fail-once retry, delayed jobs, lock renewal/token
+isolation/release and named-channel pubsub. Ten negative cases covered foreign
+keys, DB and channels, FLUSHDB, FLUSHALL, ACL, CONFIG, KEYS, SCAN and a wrong
+password. The final authentication check independently required AUTH WRONGPASS,
+unauthenticated PING NOAUTH and denied=true; generic connection readiness or a
+timeout was not accepted as proof of denial.
+
+The result is `/tmp/hyhome-v30-u1-native-ony7_vrt/result.json`, SHA256
+`1dcb8ea43611bb19cc4345787256e06d89f85307afaaaa6e5bd5015ddb6e0d34`.
+Its five-file source footprint is reproduced in the draft companion manifest.
+Both exact owned CIDs and the owned internal network were verified ABSENT.
+The generic ACL method passed its source assertions; the retained per-operation
+JSON trace belongs to the real Bull fixture and is not a complete per-operation
+trace of the generic method. Raw unittest output and the real-client operation
+records remain at their existing paths; this continuation does not infer extra
+raw coverage or rewrite earlier results.
+
+The three earlier U1 attempts remain failures: the first failed both methods
+before create on optional Docker-label map lookup; the second passed the generic
+method and five positive/nine negative real-client cases but failed the final
+connection-based denial assertion; the third again passed the generic and those
+fourteen real-client cases but failed the secondary authentication assertion.
+Its exact unauthenticated PING outcome was not recorded and remains unknown.
+Their result paths, hashes, cleanup supplements and protocol-fix sequence are
+retained in the final execution packet and the draft companion manifest.
+
+The calibrated F23 isolated collector attempt passed all three sequential pairs:
+n8n 35.245 seconds, Airflow 42.098 seconds and OAuth2 Proxy 30.820 seconds. Every
+pair completed two actual HTTP `/metrics` reads with redis_up=1,
+last_scrape_error=0, scrape count 1 to 2 and processed-command count 16 to 23.
+Each independently returned WRONGPASS for the three cross/default/wrong-monitor
+password probes, NOPERM for GET/SCAN/EVAL/ACL/CONFIG/PUBLISH/SELECT, and passed
+default-account SET/GET/DEL. SELECT denial is command-level proof; INFO still
+exposes aggregate DB information. The only tolerated collector denial was
+SLOWLOG GET1, once per pair; no broad grant was added to hide that detail-metric
+limitation. All six exact owned CIDs and three owned internal networks were
+verified ABSENT, with every pending-create list empty. This is scoped absence,
+not a global resource-cleanup claim.
+
+The F23 summary is `/tmp/hyhome-v30-f23-native-run-baq0cyzg/summary.json`, SHA256
+`101145d4d913db740d6ae10b4bb7f69d5fe7678cab639152a8fb244ea2b1db26`;
+the safe execution summary is
+`/tmp/hyhome-v30-f23-native-run-baq0cyzg/execution-safe-summary.json`, SHA256
+`db8ed959d43c8f893bc30db8d9b02825137f3e55b391505bbe01821468defc34`.
+The calibrated temporary runner SHA256 is
+`c110d156c6b4f99b7002eecd9c57bf6630f9fcb9da7b1375a6e410c43c0b5a88`.
+Its per-operation run/remove/other limits are 20/20/10 seconds, cleanup reserve
+60 seconds and case budget 180 seconds. This independently reviewed temporary
+calibration changes no production timeout or registered gate. Both earlier F23
+failures and their exact owned-resource absence reconciliations remain retained;
+the passing attempt does not convert either earlier result to PASS.
+
+The U1 five-file and F23 ten-file input sets are different scopes from the
+22-file source preparation freeze, eleven-file local metadata binding and B3/B2
+fixtures. The final integration proof at
+`/tmp/hyhome-v30-b3-cap-integration-4zq0z7zo/integration-final.json`, SHA256
+`727a95ec1a3ad5f9b3a7b0d3989e8f24655952553dcd2142aac6fe6eb8f08a78`,
+compares every captured U1/F23 input with both working bytes and committed blobs
+at `f4698d1e15212117dafb5809fb6c5c7596686be4`: all fifteen match, with zero
+mismatches. The root coordinator independently confirmed this parity. That proof
+supports reuse of the original isolated results only for those unchanged input
+sets; unrelated B3 changes trigger no new U1/F23 run claim. Any later change to
+one of these captured inputs requires a separate review and evidence decision.
+B3, B2 and the expanded registered changed gate have separate owner records;
+this continuation imports none of their results.
+
+After exact sanitized-content review and explicit root authorization, the three
+fixed reviewed projections were retained locally under the existing ignored
+workspace boundary. The reviewed plan snapshot remains
+`/tmp/hyhome-v30-owner-native-drafts/retention-candidates-plan.json`, SHA256
+`71e7233de2864a2910fee2ada026d6254264c3140540803f6f518486ef5a7443`.
+No Bao-only authority was borrowed. The retained regular files are:
+
+- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/facts/u1-isolated-client-safe.json`
+- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/facts/f23-isolated-collectors-safe.json`
+- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/reproduction/u1-f23-source15-parity.json`
+
+The minimal copy index is
+`_workspace/valkey-native-evidence/2026-10-27-f4698d1e/copy-index.json`, SHA256
+`3348145686719aa8a3404943acd2767546ce20e6c813661764f3ecc8e3a8c21f`.
+It binds all three exact source/destination hashes, byte counts, modes and UID.
+Owned canonical directory handles and no-follow opens were used; only new child
+directories were created0700 and files exclusively created0600, UID1000. No
+existing path was chmodded or overwritten. Hashes were checked before and after
+copy. The original candidate-state labels remain immutable snapshot text; the
+copy index records completed retention, not new test or service acceptance.
+
+The retained payloads derive only from the hash-bound U1 result, F23 safe summary
+and public source-parity proof. Curated root-reviewed case facts remain distinct
+from raw generic-operation evidence. No raw log/inspect body, environment,
+credentials, private keys, original fixture tree, recursive or unlisted content
+was copied. Earlier failures and their original digests remain distinct; raw
+records remain transient. No tracked file, Git action, Docker or Native execution
+was involved. Tracked Task/frontmatter changes still require a future explicit
+leaf-owner lease.
+
+Actual n8n engine/workflow execution, application queue/session integration,
+host secret delivery, operational adoption, credential rotation, AOF durability,
+HOME and stateful recovery remain NOT_RUN or pending under their existing owner
+contracts. The default/base dedicated exporter admin-credential risk is still
+present until explicit overlay adoption; an isolated monitor test does not prove
+adoption. C16/C17 remain pending and no completed Task is reopened.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -791,3 +1018,95 @@ MIGRATION/ROTATION/RECOVERY/DELIVERY separately, with real commands and exits.
 - [OpenBao guide](../../../05.operations/guides/04-security-and-secrets/0085-openbao.md)
 - [OpenBao policy](../../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
 - [OpenBao runbook](../../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+
+### v30 F23 bounded source authorization — 2026-10-26
+
+The current v30 request and root source GO admit optional dedicated Valkey
+observer accounts under C16/W32 catalog and generated public views. The existing
+C16/C17 owners remain unchanged and acceptance remains pending. The reviewed
+plan is `/tmp/hyhome-v30-f23-source-plan.md`, SHA256
+`813cfc4e152d943e31271e3c2b9a9df57c07ec7aa639879b81bcb44c8412c4e3`.
+
+The source writer exclusively owns the new typed root-base monitor overlay and
+fixed ACL renderer, root optional declarations, CACHE-028 through CACHE-030,
+canonical public example, the three dedicated-service READMEs, POL-0078, existing
+wiring/catalog tests and final SEC01 local source bindings. Existing Spec C17 and
+W33 are clarified before production edits. No new criterion, inventory or registry
+is introduced. The base application/default account, profiles, networks, AOF and
+secret requirements are preserved; exporters replace admin mounts only when the
+explicit overlay is selected. Each broker validates its own default/monitor pair.
+
+RED/GREEN synthetic input, ACL, merge and catalog checks precede independent exact
+diff review. Source rollback is a local logical revert. The base legacy exporter
+credential risk persists until opt-in adoption; actual collector, application
+queue/session, rotation, AOF, HOME and recovery evidence remain separate. No
+private file, image pull, runtime or operational rollback is authorized by this
+source receipt. Existing histories and completed Tasks are preserved.
+
+The root-approved leaf supplement replaces the proposed single ROOT overlay with
+three adjacent `docker-compose.monitor-acl.yml` overlays, each naming its tracked
+leaf base (Airflow, n8n, OAuth2 Proxy). This preserves the existing ROOT network-only
+restriction and uses established leaf replacement semantics. Catalog consumers and
+tests follow each exact leaf. The supplement is
+`/tmp/hyhome-v30-f23-source-plan-leaf-v2.md`, SHA256
+`19dbae7a969f63435b678b85091eeb2042accf00bffa40bd85a25c5baeec91d4`. Only the author's new untracked ROOT overlay is removed. No existing
+validator, schema, registry or gate changes. This scope is recorded before editing
+the overlays; the explicit render command uses root followed by all three leaves.
+
+### v30 F23 current source results — 2026-10-26
+
+Current input before this source slice is clean local
+`8fc4620da970c5a8382edc9ebed72ed82d29891d`. The initial four-test RED run
+failed with one failure and five errors because the new renderer, overlays and
+catalog IDs were absent. After the bounded implementation and ordinary author
+corrections, the two existing wiring/catalog modules ran together: 30 tests,
+zero failures/errors/skips, 21.044 seconds, exit 0. This includes actual shell
+renderer success and thirteen malformed/unsafe input subcases, matching-group
+readability, canonical leaf membership and public root-first four-file merge.
+The merge preserves all six service controls and resolves the readonly renderer
+bind to the real repository path; exporter mounts contain only their own monitor
+secret. The fixed default/app authority and AOF command remain unchanged.
+
+The canonical current catalog check passes with 149 entries and one alias. All
+146 previous records and their ordering/serialization are preserved. The first preservation check removed the three added public rows and reproduced
+the prior public template byte-for-byte. A subsequent root review also corrected
+one pre-existing stale hardcoded coverage sentence to reference the canonical
+table/catalog instead of treating every unique path as a Docker Secret. All
+thirteen sections, previous rows and backup/rotation/LAB history remain intact. A temporary
+minimal Git fixture copied only the four actual fixed public metadata inputs;
+canonical write_views/check_views produced four safe 0600 outputs and passed,
+then the context manager removed the fixture. No repository operator staging
+family was fabricated and no private view, .env or credential value was read.
+
+ShellCheck, Ruff lint/format and diff checks pass. The existing tech-stack check
+passes with no projection change; its known required OPSFLOW image remains
+unresolved. The canonical m0021 renderer is byte-identical and needs no change.
+Entrypoint and traceability checks on the three changed READMEs plus the three
+mandatory canonical nodes report zero findings. The first eight-document metadata
+check failed on three new level-two README headings; only those headings were
+moved under the existing Troubleshooting section, and the narrower three-README
+retry passed: selected three, zero violations, exit 0. No validator rule was weakened.
+
+Independent infrastructure/security review of the actual source, preserved
+public template and four JSON local bindings is READY with no blocking findings.
+The old eight-unit checkpoint remains historical. The current ROOT source
+manifest is `e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94`: 111
+services, 44 inputs and eleven explicitly bound F23 public production files. All
+111 prior service/runtime ledger rows, 33 build inputs and 399 total official
+observations (including the 202 current additions) are unchanged. No new remote
+lookup, image build, pull, runtime, signature, scan or Native result is asserted.
+
+The base dedicated exporters still share application/admin authority. The three
+leaf overlays prepare an opt-in monitor identity only; actual host-file delivery
+and adoption are not proved. Real isolated collector proof uses a separately
+reviewed fixed-image fixture after code commit. Application queue/session,
+credential rotation, AOF, HOME and stateful recovery remain separate NOT_RUN
+lanes here. Source rollback is a logical revert only. C16/C17 acceptance stays
+pending and no completed Task or existing historical evidence is reopened.
+
+The first current-Task metadata check passed: three selected Tasks, zero
+violations. The final count-sentence correction updates only this preservation
+receipt and the public example/source binding hashes; the final affected two
+Tasks are checked separately. The canonical current registration is 149 rows,
+116 unique nonnull source paths and 33 environment IDs; these are different
+metadata dimensions and not a count of delivered Docker Secret files.

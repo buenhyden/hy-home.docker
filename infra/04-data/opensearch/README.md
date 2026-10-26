@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch"
-version: "1.0.8"
+version: "1.0.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-26"
 created: "2025-11-12"
 ---
 
@@ -36,10 +36,16 @@ Docker secret 이름을 사용합니다. `${DEFAULT_CERT_DIR}`의 인증서와 �
 기존 gateway route를 유지합니다. 인증서와 실제 접근 권한은 소스 선언만으로
 확인되지 않습니다.
 
-Dockerfile은 OpenSearch를 기반으로 하지만 prometheus-exporter plugin의 선언 버전과
-호환되는지 확인되지 않았습니다.
-이미지 빌드, plugin 로드, 실제 readiness와 백업·복구는 확인 전이며 이
-소스 변경으로 통과했다고 보지 않습니다.
+ROOT Compose의 명시적 빌드 인수와 ROOT Dashboard가 같은 엔진 후보를 선택합니다.
+공유 Dockerfile의 기본 인수는 제외 대상인 LAB의 기존 엔진·exporter 조합을 유지합니다.
+2026-10-26 범위 정정으로 LAB Dashboard도 원래 선언으로 복구했습니다.
+LAB 업그레이드·빌드·실행은 이번 ROOT 소스 준비에 포함하지 않습니다.
+공식 exporter archive의 SHA256과 descriptor의 엔진 버전 일치를 확인했고,
+기존 다섯 builtin plugin, UID와 secret hash 입력 계약을 유지합니다.
+이 근거는 실제 이미지 빌드, plugin 로드, TLS·인증·readiness·인덱스 이전이나
+snapshot 복원 성공을 뜻하지 않습니다. 업그레이드한 노드는 이전 이미지로
+내릴 수 없으며, 운영 복구에는 새 설치와 이전 snapshot의 복원이 필요합니다.
+현재 변경은 소스 준비이고 실행·서명·전체 이미지 scan 수용은 `NOT_RUN`입니다.
 
 ## Structure
 

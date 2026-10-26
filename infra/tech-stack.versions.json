@@ -289,7 +289,7 @@
         "grafana/grafana": "external"
       },
       "images": [
-        "grafana/grafana:13.2.3@sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572"
+        "grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -298,7 +298,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "grafana/grafana:13.2.3@sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572"
+            "grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f"
           ]
         }
       ]
@@ -1242,7 +1242,8 @@
         "opensearchproject/opensearch-dashboards": "external"
       },
       "images": [
-        "opensearchproject/opensearch-dashboards:3.8.0"
+        "opensearchproject/opensearch-dashboards:3.8.0",
+        "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8"
       ],
       "compose_files": [
         "infra/04-data/opensearch/docker-compose.yml",
@@ -1252,7 +1253,7 @@
         {
           "compose_file": "infra/04-data/opensearch/docker-compose.yml",
           "images": [
-            "opensearchproject/opensearch-dashboards:3.8.0"
+            "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8"
           ]
         },
         {
@@ -1395,7 +1396,7 @@
         "sonarqube": "external"
       },
       "images": [
-        "sonarqube:26.9.0.129388-community"
+        "sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8"
       ],
       "compose_files": [
         "infra/11-quality/sonarqube/docker-compose.yml"
@@ -1404,7 +1405,7 @@
         {
           "compose_file": "infra/11-quality/sonarqube/docker-compose.yml",
           "images": [
-            "sonarqube:26.9.0.129388-community"
+            "sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8"
           ]
         }
       ]
@@ -1417,7 +1418,7 @@
         "stalwartlabs/stalwart": "external"
       },
       "images": [
-        "stalwartlabs/stalwart:v0.16.26@sha256:254ce5d7f3dbe4bb628ce2c7912e664ecb1c3466db79907f4a44d9a00117776b"
+        "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c"
       ],
       "compose_files": [
         "infra/10-communication/stalwart/docker-compose.yml"
@@ -1426,7 +1427,7 @@
         {
           "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
           "images": [
-            "stalwartlabs/stalwart:v0.16.26@sha256:254ce5d7f3dbe4bb628ce2c7912e664ecb1c3466db79907f4a44d9a00117776b"
+            "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c"
           ]
         }
       ]
@@ -1747,7 +1748,7 @@
         "unclecode/crawl4ai": "external"
       },
       "images": [
-        "unclecode/crawl4ai:0.9.4@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b"
+        "unclecode/crawl4ai:0.9.5@sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9"
       ],
       "compose_files": [
         "infra/08-ai/crawl4ai/docker-compose.yml"
@@ -1756,7 +1757,7 @@
         {
           "compose_file": "infra/08-ai/crawl4ai/docker-compose.yml",
           "images": [
-            "unclecode/crawl4ai:0.9.4@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b"
+            "unclecode/crawl4ai:0.9.5@sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9"
           ]
         }
       ]
@@ -1953,7 +1954,7 @@
         "trinodb/trino": "external"
       },
       "images": [
-        "trinodb/trino:483"
+        "trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f"
       ],
       "compose_files": [
         "infra/12-analytics/trino/docker-compose.yml"
@@ -1962,7 +1963,7 @@
         {
           "compose_file": "infra/12-analytics/trino/docker-compose.yml",
           "images": [
-            "trinodb/trino:483"
+            "trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f"
           ]
         }
       ]
@@ -2041,7 +2042,7 @@
         "hy-home/stalwart-config": "local-custom"
       },
       "images": [
-        "hy-home/stalwart-config:0.16.26-cli1.0.13-local"
+        "hy-home/stalwart-config:0.16.27-cli1.0.13-local"
       ],
       "compose_files": [
         "infra/10-communication/stalwart/docker-compose.yml"
@@ -2050,7 +2051,7 @@
         {
           "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
           "images": [
-            "hy-home/stalwart-config:0.16.26-cli1.0.13-local"
+            "hy-home/stalwart-config:0.16.27-cli1.0.13-local"
           ]
         }
       ]

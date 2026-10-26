@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-26"
 layer: "operations"
 artifact_id: "GDE-0091"
 parent_ids:
@@ -54,6 +54,20 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
 크롤러는 호출자 URL을 가져오므로 SSRF 방어가 두 겹이다. 이미지 안의 broker는 전역이 아닌 주소를 거절하고, Chromium을 고정 proxy로 보내며, 호출자의 proxy·`extra_args`·script를 막고, redirect와 robots·link preview 요청을 다시 확인한다. 그다음 컨테이너 밖의 `crawl4ai-egress`가 같은 규칙을 다시 적용한다. 크롤러에는 기본 라우트가 없으므로 broker를 우회한 연결은 갈 곳이 없다. gateway는 DNS 중계에서 AAAA에 빈 응답을 주고, proxy에서 이름을 직접 해석해 확인한 주소로만 연결하므로 DNS 응답이 바뀌어도 목적지가 바뀌지 않는다.
 
 남는 위험은 세 가지다. 같은 `crawl4ai_net`의 consumer는 네트워크 계층에서 크롤러에 노출된다. DNS 질의는 relay를 거쳐 밖으로 나간다. 공인 주소가 router NAT로 LAN에 되돌아오는 host는 주소만으로 알 수 없다. 그래서 consumer는 자기 서비스를 인증하고, 등록된 출처만 수집한다.
+
+### 새 보안 후보와 요청 본문 호환성
+
+2026-10-26 source 후보의 공식 보안 변경은 cache freshness HTTP 요청도 pinning
+proxy를 사용하고 Chromium의 기본 certificate-ignore flag를 제거합니다. Docker
+server의 untrusted 본문은 `CosineStrategy.model_name`, caller regex, JavaScript
+`wait_for`를 거부하며 delay 상한을 적용합니다. 이 필드의 HTTP 400을 없애려고
+인증·TLS·egress 검증을 완화하지 않습니다.
+
+현재 ROOT consumer는 연결되지 않았습니다. 참조 adapter의 `POST /crawl`은
+`urls`와 typed `CrawlerRunConfig`의 `cache_mode`·`page_timeout`만 전송하므로
+위의 새 거부 필드와 정적 충돌이 없습니다. 이는 새 이미지의 실제 API 호환 성공이
+아닙니다. 기존 격리 영수증은 이전 이미지에만 적용하며 새 후보의 인증·허용 수집·
+cache·TLS·거절·응답 schema와 자원 경계는 별도 격리 실행 전까지 NOT_RUN입니다.
 
 ### 소비자 승인과 출처 권리
 

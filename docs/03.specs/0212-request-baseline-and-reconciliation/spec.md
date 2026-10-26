@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.5.1"
+version: "1.5.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -111,7 +111,7 @@ barrier, mitigation, review date, exit condition, and rollback boundary.
 Latest-stable lookup does not itself prove a deployed, native, HOME, or
 recovery result.
 
-### Current infrastructure-audit routing (requirements 11–31)
+### Current infrastructure-audit routing (requirements 11–32)
 
 `INFRA-P0` fixes common source boundaries before any variable source change;
 `INFRA-P1` then protects data, secrets, backups, and recovery prerequisites.
@@ -143,6 +143,24 @@ Lower-stage PASS never satisfies a higher-stage result.
 | 29 | SMTP01 | Canonical SMTP source and real-consumer verification; retirement remains separate. |
 | 30 | CLN01 | Retirement only after consumer, backup, external dependency, authorization, and recovery evidence. |
 | 31 | SPEC-0204 / SEC01 (TSK-0009) image owner | Every actual ROOT-image change carries matching configuration, tests, templates, Guide, Policy, Runbook, and README updates in its logical unit; P08 checks documentation structure. Owner rerouted from P09 on 2026-10-21. |
+| 32 | SPEC-0246 / TSK-0001 | Reuse accepted storage moves and measurements; criterion 6 owner acceptance, retained HDD-copy disposition, and dependent W6 policy promotion remain separate. |
+
+The direct v30 request of 2026-10-26 extends existing criterion 19/W24 in
+TSK-0008 to requirement 32 and the F01–F29 audit namespace. Completed
+TSK-0006 criteria 9–10 and all other completed Task bodies remain unchanged.
+The existing packaged requirements/crosswalk are source inputs; this Task
+records current execution and hands each residual to its existing owner.
+Prompt coverage, source implementation, actual verification and acceptance
+remain four independent observations. A classified source survey may admit
+an exact reversible source/test unit after its required review; missing
+Native/HOME, private facts or operational authority block only dependent work.
+
+For this v30 execution, delivery is local logical commits and per-Spec review
+drafts. Remote push, PR mutation, merge, release and deployment require separate
+direct authorization. Earlier remote-delivery instructions below retain their
+historical scope and grant no current remote action. The two external app
+planning instructions are reused outside tracked implementation; neither they
+nor Template readiness authorizes application or sibling-repository changes.
 
 ### Current coordination audit
 
@@ -292,10 +310,11 @@ hold, authorization and recovery requirements have been established.
 18. P08 corrects demonstrated OpenBao/operations source discrepancies while
     retaining service-specific security and recovery checks; purpose quality
     measures and durable owner promotion trace actual evidence and limits.
-19. TSK-0008 records an `INFRA-P0` source snapshot for requirements 11–31:
+19. TSK-0008 records an `INFRA-P0` source snapshot for requirements 11–32:
     root/inventory scope, one current owner route per requirement, changed-file
     to test/gate/rollback mapping, shared-writer leases, evidence ladder, and
-    explicit pending native, HOME, recovery, and delivery boundaries. It does
+    the distinct F01–F29 audit routes, and explicit pending native, HOME,
+    recovery, and delivery boundaries. It does
     not alter historical r10 criteria 11–18 or claim downstream execution.
 20. TSK-0009 classifies current P01-P08 follow-up findings, removes a
     demonstrated same-input link-graph duplicate, and corrects memory-source

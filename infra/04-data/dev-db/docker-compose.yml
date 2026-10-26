@@ -161,7 +161,7 @@ services:
       dev_data_net: {}
 
   dev-pg-monitor-provision:
-    profiles: [dev-data]
+    profiles: [dev-data, analytics-engineering, cdc, quality-results]
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -193,7 +193,7 @@ services:
   # Metrics read through dev_pg_monitor (statistics and settings only) on the
   # fixed internal port; the admin secret is never mounted here.
   dev-pg-exporter:
-    profiles: [dev-data]
+    profiles: [dev-data, analytics-engineering, cdc, quality-results]
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low

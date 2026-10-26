@@ -797,6 +797,7 @@ class RuntimeUnitTests(unittest.TestCase):
         self.assertLess(execs.index(("bao", "lease", "revoke", "-prefix", "auth/approle/login")), execs.index(("bao", "token", "revoke", "-self")))
         calls = effect.runtime.docker.call_args_list
         self.assertEqual(calls[0].args[:3], ("stop", "--time", "10"))
+        self.assertEqual(calls[1].args, ("rm", "--volumes", "a" * 64))
         effect.runtime.cleanup.assert_called_once()
         self.assertEqual(ledger.write.call_args_list[-1].args[0], "accepted")
 

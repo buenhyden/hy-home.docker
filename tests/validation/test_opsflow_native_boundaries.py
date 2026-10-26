@@ -52,7 +52,12 @@ class NativeGuardTests(unittest.TestCase):
         self.assertIn("require_secret /run/secrets/n8n_db_password", entrypoint)
         self.assertIn("require_secret /run/secrets/n8n_encryption_key", entrypoint)
         self.assertIn("require_secret /run/secrets/n8n_runner_auth_token", entrypoint)
-        self.assertIn("n8n-valkey:n8n_valkey_password", entrypoint)
+        self.assertIn(
+            'case "$broker_host:$broker_user:$broker_secret:$broker_db" in\n  '
+            "mng-valkey::mng_valkey_password:0|n8n-valkey::n8n_valkey_password:0|"
+            "mng-valkey:n8n:mng_valkey_n8n_password:0) ;;",
+            entrypoint,
+        )
 
         fixture = object.__new__(NativeFixture)
         calls = []
@@ -83,6 +88,8 @@ class NativeGuardTests(unittest.TestCase):
             )
             self.assertEqual(env["N8N_VALKEY_HOST"], "n8n-valkey")
             self.assertEqual(env["N8N_VALKEY_SECRET"], "n8n_valkey_password")
+            self.assertNotIn("N8N_VALKEY_USERNAME", env)
+            self.assertNotIn("N8N_VALKEY_DB", env)
             self.assertEqual(env["QUEUE_BULL_REDIS_HOST"], "n8n-valkey")
             self.assertNotIn("N8N_CUSTOM_EXTENSIONS", env)
             self.assertNotIn("N8N_RUNNERS_ENABLED", env)

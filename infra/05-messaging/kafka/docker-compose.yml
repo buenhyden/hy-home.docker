@@ -459,6 +459,11 @@ services:
     profiles:
       - messaging
       - messaging-broker
+      - messaging-schema
+      - messaging-connect
+      - messaging-rest
+      - messaging-admin
+      - cdc
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

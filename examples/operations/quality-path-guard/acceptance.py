@@ -324,7 +324,7 @@ def run_cycle(cycle, repo, images, inputs, modules, evidence):
                 raise RuntimeError("native distribution acceptance failed")
         print(f"CYCLE{cycle}_EXACT_ALLOWED200_UNAPPROVED404_ADMIN404_PASS")
         print(f"CYCLE{cycle}_MANIFEST_THRESHOLD_OVERRIDE_FAILURE_PASS")
-    except Exception as error:
+    except BaseException as error:
         receipt["error"] = f"{type(error).__name__}: {error}"
         raise
     finally:
@@ -342,6 +342,12 @@ def run_cycle(cycle, repo, images, inputs, modules, evidence):
                 receipt["kept_attempts"] = str(attempts_root)
             else:
                 shutil.rmtree(attempts_root)
+        except BaseException as error:
+            receipt["cleanup_error"] = f"{type(error).__name__}: {error}"
+            receipt["kept_attempts"] = str(attempts_root)
+            if receipt["error"] is None:
+                receipt["error"] = receipt["cleanup_error"]
+                raise
         finally:
             receipt["finished_at"] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
             path = evidence / f"cycle-{cycle}.json"

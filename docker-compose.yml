@@ -203,10 +203,19 @@ secrets:
   neo4j_password:
     file: ./secrets/db/neo4j/neo4j_password.txt
   # ── Valkey / Redis ─────────────────────────────────────
+  # Optional dedicated monitor overlay only; unused in default startup.
+  airflow_valkey_monitor_password:
+    file: ./secrets/db/airflow-valkey/monitor_password.txt
+  n8n_valkey_monitor_password:
+    file: ./secrets/db/n8n-valkey/monitor_password.txt
+  oauth2_valkey_monitor_password:
+    file: ./secrets/db/oauth2-valkey/monitor_password.txt
   n8n_valkey_password:
     file: ./secrets/db/n8n-valkey/n8n_password.txt
   mng_valkey_password:
     file: ./secrets/db/mng-valkey/mng_password.txt
+  mng_valkey_n8n_password:
+    file: ./secrets/db/mng-valkey/n8n_password.txt
   mng_valkey_inspector_password:
     file: ./secrets/db/mng-valkey/inspector_password.txt
   mng_valkey_monitor_password:

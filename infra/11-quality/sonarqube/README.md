@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Code Quality"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-26"
 created: "2025-11-12"
 ---
 
@@ -57,6 +57,13 @@ sonarqube/
 | **Database** | PostgreSQL | 관리용 클러스터 |
 | **Network** | Traefik | SSL 종료 |
 | **Storage** | Bind Mount | `${DEFAULT_TOOLING_DIR}/sonarqube` |
+
+현재 Community Build 후보는 공식 공급자의 같은 연도 직접 업그레이드 경로,
+PostgreSQL 지원 범위와 producer entrypoint를 대조해 소스로 준비합니다. JDBC
+password를 secret에서 내보내는 wrapper·기존 DB/volume·network·Java 옵션을
+유지합니다. 새 후보의 DB migration·plugin·OIDC·health 실행과 backup·복원은
+아직 인수하지 않았습니다. 이미 DB/schema가 바뀐 경우에는 image tag 하향만으로
+복구하지 않으며 소유자의 검증된 backup·복원 절차가 필요합니다.
 
 ## Configuration
 

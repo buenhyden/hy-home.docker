@@ -2,9 +2,10 @@
 # - https://docs.opensearch.org/latest/install-and-configure/plugins/
 # - https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/
 
-FROM opensearchproject/opensearch:3.8.0
+ARG OPENSEARCH_BASE_IMAGE=opensearchproject/opensearch:3.8.0
+FROM ${OPENSEARCH_BASE_IMAGE}
 
-LABEL version="0.1" description="OpenSearch 3.8 with custom plugins and secret-based internal users injection"
+LABEL version="0.1" description="OpenSearch with custom plugins and secret-based internal users injection"
 
 SHELL ["/bin/bash", "-c"]
 
@@ -23,8 +24,9 @@ RUN /usr/share/opensearch/bin/opensearch-plugin install --batch \
 
 # The exporter release must equal the OpenSearch base version, or the
 # install fails; update both together.
+ARG OPENSEARCH_EXPORTER_VERSION=3.8.0.0
 RUN /usr/share/opensearch/bin/opensearch-plugin install \
-  https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/3.8.0.0/prometheus-exporter-3.8.0.0.zip
+  "https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/${OPENSEARCH_EXPORTER_VERSION}/prometheus-exporter-${OPENSEARCH_EXPORTER_VERSION}.zip"
 
 
 COPY ./opensearch/opensearch-entrypoint.sh /usr/local/bin/opensearch-entrypoint.sh

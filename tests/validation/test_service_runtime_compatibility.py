@@ -522,6 +522,51 @@ class RuntimeCompatibilityTests(unittest.TestCase):
                     )
                     self.assertNotIn("synthetic", result.stdout + result.stderr)
 
+    def test_n8n_named_broker_guard_rejects_mixed_and_shadowed_settings(self):
+        for entrypoint in ("docker-entrypoint.sh", "docker-entrypoint.dev.sh"):
+            source = (N8N / entrypoint).read_text()
+            guard = source[: source.index("# OPSFLOW PACKAGE BRIDGE")]
+            with tempfile.TemporaryDirectory() as directory:
+                mount = Path(directory)
+                for name in (
+                    "n8n_db_password",
+                    "n8n_encryption_key",
+                    "n8n_runner_auth_token",
+                    "mng_valkey_n8n_password",
+                ):
+                    (mount / name).write_text("synthetic-not-a-real-secret")
+                guard = guard.replace("/run/secrets", str(mount))
+                selected = {
+                    "PATH": os.environ["PATH"],
+                    "N8N_VALKEY_HOST": "mng-valkey",
+                    "N8N_VALKEY_USERNAME": "n8n",
+                    "N8N_VALKEY_SECRET": "mng_valkey_n8n_password",
+                    "N8N_VALKEY_DB": "0",
+                }
+                for override, success in (
+                    ({}, True),
+                    ({"N8N_VALKEY_USERNAME": ""}, False),
+                    ({"N8N_VALKEY_HOST": "n8n-valkey"}, False),
+                    ({"N8N_VALKEY_DB": "1"}, False),
+                    ({"QUEUE_BULL_REDIS_USERNAME": "default"}, False),
+                    ({"QUEUE_BULL_REDIS_DB": "1"}, False),
+                    ({"QUEUE_BULL_REDIS_HOST": "other"}, False),
+                    ({"QUEUE_BULL_REDIS_PASSWORD_FILE": "/wrong"}, False),
+                    ({"QUEUE_BULL_PREFIX": "other"}, False),
+                    ({"N8N_REDIS_KEY_PREFIX": "other"}, False),
+                    ({"QUEUE_BULL_REDIS_CLUSTER_NODES": "other:6379"}, False),
+                ):
+                    with self.subTest(entrypoint=entrypoint, override=override):
+                        result = subprocess.run(
+                            ["sh", "-c", guard],
+                            env=selected | override,
+                            capture_output=True,
+                            text=True,
+                            check=False,
+                        )
+                        self.assertEqual(success, result.returncode == 0, result.stderr)
+                        self.assertNotIn("synthetic-", result.stdout + result.stderr)
+
     def test_openbao_sealed_status_is_not_ready(self):
         openbao = compose("infra/03-security/openbao/docker-compose.yml")["services"][
             "openbao"

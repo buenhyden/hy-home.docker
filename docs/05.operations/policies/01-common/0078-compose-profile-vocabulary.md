@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.13.7"
+version: "1.13.9"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-26"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -41,20 +41,20 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `ai-image` | capability | GPU 이미지 생성 | `comfyui` | No | normal service startup | current |
 | `ai-llm` | capability | 언어 모델 추론·채팅·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
 | `alerting` | capability | 메트릭 경보 전달 | `prometheus`, `grafana`, `alertmanager` | No | normal service startup | current |
-| `analytics-engineering` | capability | dbt 업무 원천은 dev-pg; 다른 관리 도구 metadata는 mng-pg에 유지 | `dev-pg`, `dev-platform-provision`, `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기 | current |
+| `analytics-engineering` | capability | dbt 업무 원천은 dev-pg; 다른 관리 도구 metadata는 mng-pg에 유지 | `dev-pg`, `dev-platform-provision`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기; monitoring initialization: dev-pg-monitor-provision | current |
 | `api-mock` | capability | 개발·기능 테스트용 HTTP stub 서버; bounded journal과 tracked mapping 제공 | `wiremock` | No | normal service startup; host 게시만 loopback 전용이며 project default network peer는 인증 없는 admin API에 접근 가능 | current |
 | `auth` | domain | 접근 인증과 SSO | `keycloak`, `oauth2-proxy` | No | normal service startup | current |
 | `availability` | capability | HTTP 가용성 점검 | `gatus` | No | normal service startup | current |
 | `backup` | automation | Restic 백업·SQLite export·R2 offsite copy 작업; host timer와 명시적 명령만 실행 | `restic`, `restic-offsite`, `backup-sqlite-export` | No | backup repository and export staging writes when run; `restic-offsite`는 R2 원격 저장소에 추가만 함 | current |
-| `bi` | capability | Superset BI 웹과 feature 소유 metadata DB; Keycloak native OIDC | `mng-pg`, `mng-pg-init`, `superset-db-provision`, `superset-init`, `superset` | No | initialization: superset-db-provision (role·database), superset-init (migration·role 동기화·`lakehouse` DB 등록); Trino는 `lakehouse` profile로 함께 선택 | current |
+| `bi` | capability | Superset BI 웹과 feature 소유 metadata DB; Keycloak native OIDC | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `superset-db-provision`, `superset-init`, `superset` | No | initialization: superset-db-provision (role·database), superset-init (migration·role 동기화·`lakehouse` DB 등록); Trino는 `lakehouse` profile로 함께 선택; monitoring initialization: mng-pg-monitor-provision | current |
 | `batch-metrics` | capability | 배치 작업 메트릭 수집 | `prometheus`, `grafana`, `pushgateway` | No | normal service startup | current |
 | `cassandra` | topology | 독립 LAB 단일 Cassandra 노드; 내부망 무인증 | `cassandra-node1` | No | normal service startup; 실제 기동은 별도 승인 | current |
-| `cdc` | capability | Debezium 원천은 dev-pg; 다른 관리 도구 metadata는 mng-pg에 유지 | `dev-pg`, `dev-platform-provision`, `kafka-1`, `schema-registry`, `kafka-connect`, `debezium-db-provision` | No | initialization: debezium-db-provision (복제 role·grant·publication); connector 등록·snapshot은 별도 승인 | current |
-| `contract-testing` | capability | Pact Broker 계약 저장·검증 결과와 feature 소유 DB 준비 | `mng-pg`, `mng-pg-init`, `pact-broker-db-provision`, `pact-broker` | No | initialization: pact-broker-db-provision (role·database); pact 게시·검증 결과 쓰기 | current |
-| `core` | baseline | 접근·인증·secret 기반과 관리 DB; HOME 앱 전체는 아님 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init` | No | initialization: mng-pg-init | current |
+| `cdc` | capability | Debezium 원천은 dev-pg; 다른 관리 도구 metadata는 mng-pg에 유지 | `dev-pg`, `dev-platform-provision`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `kafka-1`, `schema-registry`, `kafka-connect`, `debezium-db-provision`, `kafka-exporter` | No | initialization: debezium-db-provision (복제 role·grant·publication); connector 등록·snapshot은 별도 승인; monitoring initialization: dev-pg-monitor-provision | current |
+| `contract-testing` | capability | Pact Broker 계약 저장·검증 결과와 feature 소유 DB 준비 | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `pact-broker-db-provision`, `pact-broker` | No | initialization: pact-broker-db-provision (role·database); pact 게시·검증 결과 쓰기; monitoring initialization: mng-pg-monitor-provision | current |
+| `core` | baseline | 접근·인증·secret 기반과 관리 DB; HOME 앱 전체는 아님 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init; monitoring initialization: mng-pg-monitor-provision | current |
 | `couchdb` | topology | 독립 LAB CouchDB 복제 구성과 초기화 | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` | No | initialization: couchdb-cluster-init | current |
 | `crawl4ai` | capability | 격리 network의 token 보호 웹 crawler와 `crawl4ai-egress` 출구 gateway; 현재 소비자 없음 | `crawl4ai`, `crawl4ai-egress` | No | normal service startup | current |
-| `data-science` | capability | JupyterLab 단일 사용자 notebook과 MLflow 추적 | `mng-pg`, `mng-pg-init`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow`, `jupyterlab` | No | initialization: mlflow-db-provision, seaweedfs-buckets | current |
+| `data-science` | capability | JupyterLab 단일 사용자 notebook과 MLflow 추적 | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow`, `jupyterlab` | No | initialization: mlflow-db-provision, seaweedfs-buckets; monitoring initialization: mng-pg-monitor-provision | current |
 | `dedicated-valkey` | topology | 앱별 broker 대안; HOST와 SECRET 매핑도 전환해야 함 | `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`, `airflow-valkey`, `airflow-valkey-exporter`, `n8n-valkey`, `n8n-valkey-exporter` | No | normal service startup | current |
 | `dependency-update` | automation | Renovate 갱신 제안 작업; 명시적 실행만 허용 | `renovate` | No | remote dependency proposals when configured | current |
 | `dev` | baseline | 개발 접근·관측·메일 캡처; HOME 최소 선택과 다름 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `prometheus`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `mailpit` | No | initialization: mng-pg-init, mng-pg-monitor-provision, grafana-db-provision | current |
@@ -65,17 +65,17 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `lab-kafka` | topology | 독립 LAB Kafka 3-broker KRaft 구성·exporter·초기화 | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init` | No | initialization: lab-kafka-init | current |
 | `lab-locust` | topology | root에서 분리된 Locust master/worker headless 부하 LAB | `lab-locust-master`, `lab-locust-worker` | No | `labs/locust.yml`의 별도 project/network/volume; target 승인 후에만 트래픽 생성 | current |
 | `lakehouse` | capability | Iceberg 테이블 batch·유지보수 작업, SQL 조회, streaming 적재, 데이터 품질 검사와 SeaweedFS REST catalog 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `seaweedfs-table-bucket`, `spark`, `trino`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations` | No | initialization: seaweedfs-buckets, seaweedfs-table-bucket (table bucket·policy·namespace); 기본 `spark` 명령은 namespace 조회만, 쓰기는 명시적 `run` | current |
-| `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init`, `mailpit` | No | initialization: mng-pg-init | current |
+| `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `mailpit` | No | initialization: mng-pg-init; monitoring initialization: mng-pg-monitor-provision | current |
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `mail-dev` | capability | 개발 SMTP 캡처 | `mailpit` | No | normal service startup | current |
 | `mail-server` | capability | 내부 전용 메일 서버; host port·relay 없음, `mail_net` 제출 | `stalwart`, `stalwart-config` | No | initialization: stalwart-config (도메인·listener·relay 금지 plan 적용; listener 변경은 재시작 후) | current |
 | `messaging` | domain | Kafka broker·schema·connect·REST·관리 UI | `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
-| `messaging-admin` | role | Kafka 관리 UI와 직접 종속 서비스 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafbat-ui` | No | normal service startup | current |
+| `messaging-admin` | role | Kafka 관리 UI와 직접 종속 서비스 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafbat-ui`, `kafka-exporter` | No | normal service startup | current |
 | `messaging-broker` | role | Kafka 단일 broker·초기화·exporter | `kafka-1`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
-| `messaging-connect` | role | Kafka Connect와 broker·schema 종속성 | `kafka-1`, `schema-registry`, `kafka-connect` | No | normal service startup | current |
-| `messaging-rest` | role | Kafka REST 접근 | `kafka-1`, `schema-registry`, `kafka-rest-proxy` | No | normal service startup | current |
-| `messaging-schema` | role | Kafka schema registry | `kafka-1`, `schema-registry` | No | normal service startup | current |
-| `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets | current |
+| `messaging-connect` | role | Kafka Connect와 broker·schema 종속성 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-exporter` | No | normal service startup | current |
+| `messaging-rest` | role | Kafka REST 접근 | `kafka-1`, `schema-registry`, `kafka-rest-proxy`, `kafka-exporter` | No | normal service startup | current |
+| `messaging-schema` | role | Kafka schema registry | `kafka-1`, `schema-registry`, `kafka-exporter` | No | normal service startup | current |
+| `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets; monitoring initialization: mng-pg-monitor-provision | current |
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init, mng-pg-monitor-provision | current |
 | `mongodb` | topology | 독립 LAB MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` | No | initialization: mongo-key-generator, mongo-init | current |
 | `nginx` | topology | Traefik 대체 gateway; 기본 ingress port 중복 금지 | `nginx`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
@@ -90,7 +90,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `postgres-ha` | topology | 독립 LAB Patroni·etcd PostgreSQL 실험 구성 | `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-cluster-init`, `pg-0`, `pg-1`, `pg-2`, `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter` | No | initialization: pg-cluster-init | current |
 | `policy-check` | capability | Conftest Rego 정책 테스트; `infra/` read-only, network 없음 | `conftest` | No | 읽기 전용 검사; 쓰기 없음 | current |
 | `profiling` | capability | 연속 프로파일 수집·조회 | `alloy`, `grafana`, `pyroscope` | No | normal service startup | current |
-| `quality-results` | capability | 공용 시험 결과 `perf_db`와 명시적 one-shot provision | `dev-pg`, `dev-perf-provision` | No | initialization: dev-perf-provision; HOME 실행·프로젝트 로그인 발급은 별도 승인 | current |
+| `quality-results` | capability | 공용 시험 결과 `perf_db`와 명시적 one-shot provision | `dev-pg`, `dev-perf-provision`, `dev-pg-monitor-provision`, `dev-pg-exporter` | No | initialization: dev-perf-provision; HOME 실행·프로젝트 로그인 발급은 별도 승인; monitoring initialization: dev-pg-monitor-provision | current |
 | `qdrant` | capability | vector 검색 저장소 | `qdrant` | No | normal service startup | current |
 | `registry` | role | 개발 컨테이너 registry | `registry` | No | normal service startup | current |
 | `sast` | role | 소스 정적 분석 | `sonarqube` | No | normal service startup | current |
@@ -195,6 +195,36 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 무인 재기동이나 live readiness를 증명하지 않는다.
 
 ### Companion, exclusion and side effects
+
+Producer의 모든 profile은 기존 Exporter와 필요한 monitor provision job을 함께
+선택한다. 선택 범위가 늘어난 `core`·`local`·기능 profile도 monitor Secret과
+provisioning 권한을 먼저 준비한다. 아래 직접 Target 목록은 같은 profile의 다른
+서비스가 자동 시작된다고 가정하지 않는다. 실제 기동은 해당 Runbook의 승인·
+readiness·백업 조건을 확인한 뒤에만 `up -d <목록>`으로 수행한다. Producer에서
+Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `depends_on`으로
+암묵적으로 기동하는 Producer에도 적용한다. 예를 들어 `mng-pg-init`이나
+`kafka-connect`만 Target한 의존성 closure에는 Exporter가 빠지므로 해당 Producer의
+아래 companion 목록을 target 합집합에 포함한다. 이 계약은 임의 Docker CLI 명령을
+가로채는 장치가 아니며 bare Producer 기동 자체를 Compose 오류라고 주장하지 않는다.
+
+| Producer | Explicit targets |
+| --- | --- |
+| `mng-pg` | `mng-pg mng-pg-monitor-provision mng-pg-exporter` |
+| `mng-valkey` | `mng-valkey mng-valkey-exporter` |
+| `dev-pg` | `dev-pg dev-pg-monitor-provision dev-pg-exporter` |
+| `dev-valkey` | `dev-valkey dev-valkey-exporter` |
+| `kafka-1` | `kafka-1 kafka-exporter` |
+| `ollama` | `ollama ollama-exporter` |
+| `airflow-apiserver` | `airflow-apiserver airflow-scheduler airflow-dag-processor airflow-triggerer airflow-worker airflow-statsd-exporter` |
+| `n8n-valkey` | `n8n-valkey n8n-valkey-exporter` |
+| `airflow-valkey` | `airflow-valkey airflow-valkey-exporter` |
+| `oauth2-proxy-valkey` | `oauth2-proxy-valkey oauth2-proxy-valkey-exporter` |
+
+`dedicated-valkey`는 세 Broker·Exporter 쌍을 모두 선택한다. 앱 HOST/Secret 선택은
+별개이며 n8n 내장 metrics와 Kafka JMX Agent는 별도 Exporter를 중복 생성할 이유가
+아니다. `up=1`은 scrape 성공만 뜻하고 `redis_up`/`pg_up`·업무 실행·Grafana query와
+선택 profile의 예상 상태는 별도로 확인한다. OAuth2 전용 Exporter는 이미
+`mng_data_net`과 `obs_net` 양쪽을 사용한다.
 
 | Selection | Constraint |
 | --- | --- |
@@ -338,6 +368,42 @@ category와 필수 dependency 폐포를 검사한다.
 선택 closure 성공은 optional dependency의 앱 endpoint나 provisioning 완료를
 보장하지 않는다. 예를 들어 Grafana DB provisioning 선택과 실제 앱 사용 준비는
 [Grafana Guide](../../guides/07-observability/0041-grafana.md)에서 확인한다.
+
+### Optional dedicated Valkey observer identity
+
+Airflow, n8n, OAuth2 Proxy의 `docker-compose.monitor-acl.yml`은 각 기존 leaf를
+base로 지정하며 기본 include나 profile을 추가하지 않는다. 기존 ROOT-base의
+network-only 제한은 바꾸지 않는다. 선택하지 않은 기본 dedicated exporter의
+기본 앱 비밀번호·관리 권한 공유 위험은 남는다. 다음 공개 렌더링은 준비된 source만
+검사하며 실제 시작·private 파일 확인을 수행하지 않는다.
+
+```sh
+docker compose --env-file .env.example -f docker-compose.yml -f infra/07-workflow/airflow/docker-compose.monitor-acl.yml -f infra/07-workflow/n8n/docker-compose.monitor-acl.yml -f infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml --profile dedicated-valkey config --no-env-resolution --no-path-resolution --quiet
+```
+
+실제 선택 시 root Secret 선언의 세 관측 파일을 각 소비자 UID/보조 GID 계약에 맞춰
+별도 준비한다. broker마다 자신의 앱/관측 비밀번호 불일치만 검사하며, 다른 broker
+파일을 교차 마운트하지 않는다. 세 서비스 간 별도 발급·회전은 운영자 인수 대상이다.
+기본 앱 계정/권한·AOF·데이터·네트워크는 유지하고 exporter의 admin secret 목록은
+`!override`로 관측 파일 하나로 교체한다. monitor는 고정된 PING/INFO/COMMAND INFO/
+SLOWLOG LEN/COMMANDLOG LEN만 허용한다. INFO 전체 DB 집계와 선택적 SLOWLOG GET
+거부에 따른 상세 지표 부재를 기록하고, key/channel/Lua/admin 권한을 추가하지 않는다.
+`/scrape`는 끄고 기존 `/metrics` 소비자를 보존한다.
+
+직접 실행 대상은 broker와 companion exporter를 함께 명시한다. profile 전체 선택은
+기존 세 쌍을 선택한다. overlay는 앱 endpoint 선택을 바꾸지 않으며 shared Valkey에
+간접 연결된 앱을 dedicated로 이전하지 않는다.
+
+| Broker | Explicit broker + companion targets |
+| --- | --- |
+| `airflow-valkey` | `airflow-valkey airflow-valkey-exporter` |
+| `n8n-valkey` | `n8n-valkey n8n-valkey-exporter` |
+| `oauth2-proxy-valkey` | `oauth2-proxy-valkey oauth2-proxy-valkey-exporter` |
+
+SOURCE/UNIT/STATIC/ISOLATED/HOME/ROTATION/RECOVERY는 별개 상태다. 실제 수집과
+앱 queue/session, AOF, credential 회전 및 복구는 해당 고정 이미지와 정확한
+소유 대상/정리 경계의 실행 영수증이 있어야 수용한다. source rollback은 선택형
+변경의 논리적 revert이며 운영 데이터 복구를 증명하지 않는다.
 
 ## Related Documents
 

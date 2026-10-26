@@ -61,7 +61,9 @@ services:
   mng-valkey-exporter:
     profiles:
       - mng
+      - core
       - dev
+      - local
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
@@ -264,7 +266,13 @@ services:
   mng-pg-monitor-provision:
     profiles:
       - mng
+      - core
       - dev
+      - local
+      - mlops
+      - data-science
+      - contract-testing
+      - bi
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -302,7 +310,13 @@ services:
   mng-pg-exporter:
     profiles:
       - mng
+      - core
       - dev
+      - local
+      - mlops
+      - data-science
+      - contract-testing
+      - bi
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low

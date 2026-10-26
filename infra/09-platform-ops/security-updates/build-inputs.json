@@ -56,7 +56,7 @@
         },
         {
           "line": 27,
-          "public_dependency_declaration": "pip install --no-cache-dir \\"
+          "declaration": "    pip install --no-cache-dir \\"
         }
       ],
       "package_inputs": [
@@ -66,7 +66,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "airflow-dag-processor",
@@ -122,7 +122,7 @@
         },
         {
           "line": 27,
-          "public_dependency_declaration": "pip install --no-cache-dir \\"
+          "declaration": "    pip install --no-cache-dir \\"
         }
       ],
       "package_inputs": [
@@ -132,7 +132,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "airflow-init",
@@ -188,7 +188,7 @@
         },
         {
           "line": 27,
-          "public_dependency_declaration": "pip install --no-cache-dir \\"
+          "declaration": "    pip install --no-cache-dir \\"
         }
       ],
       "package_inputs": [
@@ -198,7 +198,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "airflow-scheduler",
@@ -254,7 +254,7 @@
         },
         {
           "line": 27,
-          "public_dependency_declaration": "pip install --no-cache-dir \\"
+          "declaration": "    pip install --no-cache-dir \\"
         }
       ],
       "package_inputs": [
@@ -264,7 +264,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "airflow-triggerer",
@@ -320,7 +320,7 @@
         },
         {
           "line": 27,
-          "public_dependency_declaration": "pip install --no-cache-dir \\"
+          "declaration": "    pip install --no-cache-dir \\"
         }
       ],
       "package_inputs": [
@@ -330,7 +330,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "airflow-worker",
@@ -386,7 +386,7 @@
         },
         {
           "line": 27,
-          "public_dependency_declaration": "pip install --no-cache-dir \\"
+          "declaration": "    pip install --no-cache-dir \\"
         }
       ],
       "package_inputs": [
@@ -396,7 +396,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "dbt",
@@ -409,12 +409,8 @@
           "declaration": "FROM python:3.12-slim-bookworm"
         },
         {
-          "line": 4,
-          "public_dependency_declaration": "RUN apt-get update \\"
-        },
-        {
           "line": 5,
-          "public_dependency_declaration": "&& apt-get install -y --no-install-recommends git \\"
+          "declaration": "    && apt-get install -y --no-install-recommends git \\"
         },
         {
           "line": 9,
@@ -422,7 +418,7 @@
         },
         {
           "line": 11,
-          "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+          "declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
         },
         {
           "line": 15,
@@ -436,7 +432,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "dev-pg",
@@ -449,8 +445,8 @@
           "declaration": "FROM timescale/timescaledb:2.30.2-pg18@sha256:cdf97a4b5be91038b5c1be0ad304c5d5746132992e54f7dd26ec467a6d005755"
         },
         {
-          "line": 7,
-          "public_dependency_declaration": "RUN apk add --no-cache pgbackrest=2.57.0-r0 python3 \\"
+          "line": 8,
+          "declaration": "    && install -d -o postgres -g postgres -m 0750 /var/lib/pgbackrest /var/spool/pgbackrest"
         },
         {
           "line": 10,
@@ -463,7 +459,7 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "flink-jobmanager",
@@ -474,31 +470,11 @@
         {
           "line": 1,
           "declaration": "FROM flink:2.1.3-scala_2.12-java21"
-        },
-        {
-          "line": 9,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-2.1/1.11.0/iceberg-flink-runtime-2.1-1.11.0.jar \\"
-        },
-        {
-          "line": 12,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
-        },
-        {
-          "line": 15,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.1/flink-sql-connector-kafka-5.0.0-2.1.jar \\"
-        },
-        {
-          "line": 18,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.5.0/hadoop-client-api-3.5.0.jar \\"
-        },
-        {
-          "line": 21,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.5.0/hadoop-client-runtime-3.5.0.jar \\"
         }
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "flink-taskmanager",
@@ -509,31 +485,11 @@
         {
           "line": 1,
           "declaration": "FROM flink:2.1.3-scala_2.12-java21"
-        },
-        {
-          "line": 9,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-2.1/1.11.0/iceberg-flink-runtime-2.1-1.11.0.jar \\"
-        },
-        {
-          "line": 12,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
-        },
-        {
-          "line": 15,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.1/flink-sql-connector-kafka-5.0.0-2.1.jar \\"
-        },
-        {
-          "line": 18,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.5.0/hadoop-client-api-3.5.0.jar \\"
-        },
-        {
-          "line": 21,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.5.0/hadoop-client-runtime-3.5.0.jar \\"
         }
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "flower",
@@ -589,7 +545,7 @@
         },
         {
           "line": 27,
-          "public_dependency_declaration": "pip install --no-cache-dir \\"
+          "declaration": "    pip install --no-cache-dir \\"
         }
       ],
       "package_inputs": [
@@ -599,12 +555,12 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "gatus",
       "build_input": "infra/06-observability/gatus/Dockerfile",
-      "input_sha256": "501055e636ef95d6eb3659e7d873a1f7d766219e2c516c061952feec264441cb",
+      "input_sha256": "919fb26f4d4f811de9e9fabc31ce4832d8aef62a7aeb8b679a8732ffaeaa3e6b",
       "compose_build_args": {},
       "declarations": [
         {
@@ -612,36 +568,16 @@
           "declaration": "FROM golang:1.26.4-alpine3.22 AS builder"
         },
         {
-          "line": 5,
-          "public_dependency_declaration": "RUN apk add --no-cache \\"
-        },
-        {
           "line": 10,
           "declaration": "SHELL [\"/bin/ash\", \"-eo\", \"pipefail\", \"-c\"]"
-        },
-        {
-          "line": 12,
-          "public_dependency_declaration": "RUN wget -q \\"
-        },
-        {
-          "line": 14,
-          "public_dependency_declaration": "https://github.com/TwiN/gatus/archive/ed1107b41a30e22047eecfb6dbc3be5e39829d5a.tar.gz \\"
         },
         {
           "line": 20,
           "declaration": "COPY patches/oidc-hardening.patch /tmp/oidc-hardening.patch"
         },
         {
-          "line": 26,
-          "public_dependency_declaration": "RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /gatus ."
-        },
-        {
           "line": 28,
           "declaration": "FROM alpine:3.24"
-        },
-        {
-          "line": 30,
-          "public_dependency_declaration": "RUN apk add --no-cache \\"
         },
         {
           "line": 34,
@@ -654,7 +590,306 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+      "verified_source_archive": {
+        "target_release": "v5.37.0",
+        "target_commit": "ae605f291928ed9b3bdbe60ae5528cc57631433b",
+        "archive_url": "https://codeload.github.com/TwiN/gatus/tar.gz/ae605f291928ed9b3bdbe60ae5528cc57631433b",
+        "archive_sha256": "79145709c1f5328fa01ff472d6c1d083cc8eb1bba90ea2dc6def628e88e3c406",
+        "archive_bytes": 2977356,
+        "patch_check": {
+          "mode": "--dry-run --batch --forward --fuzz=0 -p1",
+          "files": 7,
+          "exit": 0,
+          "errors": [],
+          "go_tests": "NOT_RUN",
+          "build": "NOT_RUN",
+          "runtime": "NOT_RUN"
+        },
+        "dependency_changes": {
+          "sqlite": "1.50.1 -> 1.59.0",
+          "x_crypto": "0.51.0 -> 0.55.0",
+          "target_x_net": "0.58.0",
+          "target_go_min": "1.26.3"
+        },
+        "source_path": "infra/06-observability/gatus/Dockerfile",
+        "source_sha256": "919fb26f4d4f811de9e9fabc31ce4832d8aef62a7aeb8b679a8732ffaeaa3e6b"
+      },
+      "build_component_dispositions": [
+        {
+          "component": "Gatus builder SDK/base",
+          "current_source": "golang:1.26.4-alpine3.22",
+          "maintained_candidate": "golang:1.26.10-alpine3.24",
+          "latest_candidate": "golang:1.27.3-alpine3.24",
+          "retained_base_exact_candidate": "1.26.10-alpine3.22 HTTP404",
+          "artifact_pushed_at": "2026-10-22T16:23:32.63146Z",
+          "eligible_after_7_days": "2026-10-29T16:23:32.631460+00:00",
+          "decision": "DEFER_ARTIFACT_SOAK_AND_PAIRED_BUILDER_BASE_REVIEW",
+          "reason": "Both exact available candidate builder artifacts are younger than configured ordinary7daysoak; the same old Alpine branch tag is absent. Current SDK satisfies app floor; this does not prove current compiler/base security. No manager-alert age exemption verified.",
+          "owner": "SEC01 and Gatus build owner",
+          "review_at": "2026-10-27",
+          "exit_condition": "At or after exact artifact eligibility recheck publisher refs, source/checksum/module and Alpine package/SDK compatibility, then independently review paired SDK/base source unit before adoption.",
+          "mitigation": "Retain currently declared SDK/base and OIDC controls, no image rebuild/deployment or compiler security acceptance claim.",
+          "rollback": "Logical source revert; deployment state recovery requires exact SQLite owner backup/restore contract.",
+          "evidence": [
+            {
+              "name": "go-history",
+              "request_url": "https://go.dev/doc/devel/release",
+              "checked_at": "2026-10-26T10:51:41.559576+00:00",
+              "status": 200,
+              "response_url": "https://go.dev/doc/devel/release",
+              "response_sha256": "a9b1368e8a56b49bbabe190f7c36813645ddfbc8d1469f739de9d231b0f3e168",
+              "response_bytes": 150508,
+              "supplier": "go-history",
+              "research_receipt": "/tmp/hyhome-v30-r27-gatus-builder/observations.json"
+            },
+            {
+              "name": "go-supported",
+              "request_url": "https://go.dev/doc/devel/release#policy",
+              "checked_at": "2026-10-26T10:51:42.360319+00:00",
+              "status": 200,
+              "response_url": "https://go.dev/doc/devel/release#policy",
+              "response_sha256": "a9b1368e8a56b49bbabe190f7c36813645ddfbc8d1469f739de9d231b0f3e168",
+              "response_bytes": 150508,
+              "supplier": "go-supported",
+              "research_receipt": "/tmp/hyhome-v30-r27-gatus-builder/observations.json"
+            },
+            {
+              "name": "go12610-alpine322",
+              "request_url": "https://hub.docker.com/v2/repositories/library/golang/tags/1.26.10-alpine3.22",
+              "checked_at": "2026-10-26T10:51:43.037140+00:00",
+              "status": "FAILED",
+              "error": "HTTPError: HTTP Error 404: Not Found",
+              "supplier": "go12610-alpine322",
+              "research_receipt": "/tmp/hyhome-v30-r27-gatus-builder/observations.json"
+            },
+            {
+              "name": "go12610-alpine324",
+              "request_url": "https://hub.docker.com/v2/repositories/library/golang/tags/1.26.10-alpine3.24",
+              "checked_at": "2026-10-26T10:51:43.306133+00:00",
+              "status": 200,
+              "response_url": "https://hub.docker.com/v2/repositories/library/golang/tags/1.26.10-alpine3.24",
+              "response_sha256": "9e6ed54c999b21a8c6ba3ba869446b13597cbcc7e591a79e8dea5195abc61e0d",
+              "response_bytes": 5526,
+              "tag": "1.26.10-alpine3.24",
+              "digest": "sha256:27f2d3b83cfc5803c8078f8e730af0f7c431bf067afaec8f60a36fb763187cba",
+              "last_updated": "2026-10-22T16:23:03.046888Z",
+              "images": [
+                {
+                  "architecture": "amd64",
+                  "os": "linux",
+                  "digest": "sha256:d1f3216ef30257c850cc136ba42a359ccd9d3e75f19b2c276e520c0b4ef327ce",
+                  "last_pushed": "2026-10-22T01:22:53.23092777Z"
+                },
+                {
+                  "architecture": "ppc64le",
+                  "os": "linux",
+                  "digest": "sha256:ece42a110e12ba4a7c051673a54ab81e9d504c5f3ad002b34723854af9a47d48",
+                  "last_pushed": "2026-10-22T16:22:36.841424914Z"
+                },
+                {
+                  "architecture": "386",
+                  "os": "linux",
+                  "digest": "sha256:a6ffd2ef0d1bbfe1e5141618a881e41c5ddaf577cf4e6ab090df968ec3d7cd39",
+                  "last_pushed": "2026-10-22T01:22:56.01000432Z"
+                },
+                {
+                  "architecture": "s390x",
+                  "os": "linux",
+                  "digest": "sha256:3e1b994e47f551a3af6b926cebd5c54f9322b567272ecceddf707d3a64fc68b4",
+                  "last_pushed": "2026-10-22T01:22:56.67544542Z"
+                },
+                {
+                  "architecture": "arm",
+                  "os": "linux",
+                  "digest": "sha256:0719f11844958b0e7a09ad16752f3173cdf05a4fae51a3cc9a8d318caa360c76",
+                  "last_pushed": "2026-10-22T01:22:54.598225796Z"
+                },
+                {
+                  "architecture": "arm64",
+                  "os": "linux",
+                  "digest": "sha256:3b17138bbc034a2e062a50681b449fc154a1df88ccad6a7bab9bb4861864ee5b",
+                  "last_pushed": "2026-10-22T01:22:55.295358542Z"
+                },
+                {
+                  "architecture": "arm",
+                  "os": "linux",
+                  "digest": "sha256:1d84906f320ed36d4f3d1ef8550758cd382388afed7590ed94dbcf42e7501917",
+                  "last_pushed": "2026-10-22T01:22:53.917926354Z"
+                },
+                {
+                  "architecture": "riscv64",
+                  "os": "linux",
+                  "digest": "sha256:013408be7f19f95ea9e365e19fd11c1e331b5ab430674bc3cbd48a85d695ecf0",
+                  "last_pushed": "2026-10-20T04:24:53.860009962Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:067ae1aaca876643c2db3e90b142e542f47aa60bdb59ee3312b438ea3d547c27",
+                  "last_pushed": "2026-10-22T16:22:37.306997595Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:3c8ec0bfbd9da4af7059715da3c9fe61caa4c1eb2a952087d731ed6fbb39754b",
+                  "last_pushed": "2026-10-20T04:24:54.254175443Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:d1ec8a528798cf5ef8aa60fc8243bf1cfa7904ed6d8573035d3c2b3507aa4b7a",
+                  "last_pushed": "2026-10-22T01:22:54.282125866Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:93590cf04ab622926f6bd726683f6ace53e2f1b835959f81e5d0e44287b6efb6",
+                  "last_pushed": "2026-10-22T01:22:57.014422674Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:e9d816f45b753095ac82a05cf25d53473bf8349f5978c7db181207c49a84ff16",
+                  "last_pushed": "2026-10-22T01:22:54.955695531Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:25b474f137317b48c23182896592526f60908a808132335c66d187e3ab77cd42",
+                  "last_pushed": "2026-10-22T01:22:55.648408891Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:d9911b73d26408695d89d6b4722e618fac24f281bde3380b595ee223ff94cc7d",
+                  "last_pushed": "2026-10-22T01:22:56.356884249Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:6f1a1b0bb040aec41b97ef901d98b2aa654ee32efd7c26c2759091667497737f",
+                  "last_pushed": "2026-10-22T01:22:53.578228454Z"
+                }
+              ],
+              "supplier": "go12610-alpine324",
+              "research_receipt": "/tmp/hyhome-v30-r27-gatus-builder/observations.json"
+            },
+            {
+              "name": "go1273-alpine324",
+              "request_url": "https://hub.docker.com/v2/repositories/library/golang/tags/1.27.3-alpine3.24",
+              "checked_at": "2026-10-26T10:51:43.585586+00:00",
+              "status": 200,
+              "response_url": "https://hub.docker.com/v2/repositories/library/golang/tags/1.27.3-alpine3.24",
+              "response_sha256": "fecc63fe1bc6f53d2812075094614eb3741ccc5cbdf7a28a7b52ecf9a15925c4",
+              "response_bytes": 5521,
+              "tag": "1.27.3-alpine3.24",
+              "digest": "sha256:b8c9b82affbbb82a020bbcf998dad2ba9516944ac7e883524642a481a9505e9c",
+              "last_updated": "2026-10-22T16:23:32.63146Z",
+              "images": [
+                {
+                  "architecture": "amd64",
+                  "os": "linux",
+                  "digest": "sha256:bff16a94c0b4b6d9642581e2a3aa81beb3edb940b2f5a3aac1d22c6a68cb7747",
+                  "last_pushed": "2026-10-22T01:22:25.115912373Z"
+                },
+                {
+                  "architecture": "ppc64le",
+                  "os": "linux",
+                  "digest": "sha256:18b7e8d84b36bcd5ebb804451004011e3c749b0e22894f3dd2033f9862a861c6",
+                  "last_pushed": "2026-10-22T16:22:15.093374093Z"
+                },
+                {
+                  "architecture": "386",
+                  "os": "linux",
+                  "digest": "sha256:7eadb9cbb0aab2649418025b8472a770195e9a94921309519896514de85bba7f",
+                  "last_pushed": "2026-10-22T01:22:28.052348183Z"
+                },
+                {
+                  "architecture": "s390x",
+                  "os": "linux",
+                  "digest": "sha256:4b9fd87ec6c3fb9a4175aa000f26c409b794e564fc7e04082a91dab866ab93df",
+                  "last_pushed": "2026-10-22T01:22:28.804595521Z"
+                },
+                {
+                  "architecture": "arm",
+                  "os": "linux",
+                  "digest": "sha256:9958accf016d93be918d548fe603bafec3d2359870cdf7402940c4e1727cffad",
+                  "last_pushed": "2026-10-22T01:22:26.528063897Z"
+                },
+                {
+                  "architecture": "arm64",
+                  "os": "linux",
+                  "digest": "sha256:ee0dcdc452cb73890363fbef65fc333aeb0da7c24ba52f2c6428a37b0e7f4f1c",
+                  "last_pushed": "2026-10-22T01:22:27.3876888Z"
+                },
+                {
+                  "architecture": "arm",
+                  "os": "linux",
+                  "digest": "sha256:52efed73b4accb3fe90c2d53e297c917c578f80c995da88a4f0770d65cf49de1",
+                  "last_pushed": "2026-10-22T01:22:25.930631057Z"
+                },
+                {
+                  "architecture": "riscv64",
+                  "os": "linux",
+                  "digest": "sha256:4ba4943d0a1847ca7b5b7c26c66dc0688ed8beb93a2bf86a9717a4d54380bd70",
+                  "last_pushed": "2026-10-20T04:22:59.299738864Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:7ae18abeb90b53c09d2fe6ea343dad7260472152507eed3a8635b4530f164350",
+                  "last_pushed": "2026-10-22T16:22:15.424282342Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:efadc30f209182ff9ae4c3cd94ef12c275f64fdefed02f27f15970d9bc50b563",
+                  "last_pushed": "2026-10-20T04:22:59.674794138Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:e7b0e6ad45dea1e65956da2b070fdc5ed16de5b0ad85ae83ee7a9449e6be7ed3",
+                  "last_pushed": "2026-10-22T01:22:26.252351229Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:abda44d6559ffc98edd674dda5fd3be13ce375be7d20cc10da1c40ee8b6423bc",
+                  "last_pushed": "2026-10-22T01:22:29.124146455Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:1ba3a7129e8fd3873d4c0072c2156e64fc1035a04e88e7a2ab466c0bbd4fb7c0",
+                  "last_pushed": "2026-10-22T01:22:27.030841125Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:626e41b9325b0a17d226965abe746986ee901c75ccacb062d6f0c48688c4a9c9",
+                  "last_pushed": "2026-10-22T01:22:27.725343916Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:d6d582ba04ef2f05f353d417dedcdcc3edfc6a7c2f3af80e85447778a39c0898",
+                  "last_pushed": "2026-10-22T01:22:28.448467611Z"
+                },
+                {
+                  "architecture": "unknown",
+                  "os": "unknown",
+                  "digest": "sha256:5ca474ee48e64316d5fd243c8887571466ebf7a9691d479914f769fe4baa87fe",
+                  "last_pushed": "2026-10-22T01:22:25.567610488Z"
+                }
+              ],
+              "supplier": "go1273-alpine324",
+              "research_receipt": "/tmp/hyhome-v30-r27-gatus-builder/observations.json"
+            }
+          ]
+        }
+      ]
     },
     {
       "service": "great-expectations",
@@ -672,7 +907,7 @@
         },
         {
           "line": 6,
-          "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+          "declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
         },
         {
           "line": 8,
@@ -682,11 +917,11 @@
       "package_inputs": [
         {
           "path": "infra/12-analytics/great-expectations/requirements.txt",
-          "sha256": "860c980f62076084fd1618de7279ef34cb24eb70b74b9dea5c29393238801913"
+          "sha256": "a465ff5c52737c32cd9c62d3fc8239775bdea47e9851f23cb6e98e9beabb058b"
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "jupyterlab",
@@ -708,7 +943,7 @@
         },
         {
           "line": 9,
-          "public_dependency_declaration": "RUN pip install \\"
+          "declaration": "RUN pip install \\"
         }
       ],
       "package_inputs": [
@@ -718,22 +953,22 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "k6",
       "build_input": "infra/11-quality/k6/Dockerfile",
-      "input_sha256": "be4867d00fb3fc4d172fd12f7740b201ab35d05a2bcbb45b144c07dc72399576",
+      "input_sha256": "9ce867dd9674494172f31e90ccf7719fda9393e2125f6f7b7e0a24ac48fd5476",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 2,
-          "declaration": "FROM grafana/k6:2.2.0"
+          "declaration": "FROM grafana/k6:2.3.0@sha256:9c2dee7f8ed74d317e4027c06a10f169b625638189de8d4555d0b3486a5aeb34"
         }
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "kafka-connect",
@@ -756,7 +991,7 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "loki",
@@ -773,10 +1008,6 @@
           "declaration": "FROM alpine:3.24.2"
         },
         {
-          "line": 5,
-          "public_dependency_declaration": "RUN apk add --no-cache busybox wget ca-certificates \\"
-        },
-        {
           "line": 9,
           "declaration": "COPY --from=upstream /usr/bin/loki /usr/bin/loki"
         },
@@ -787,7 +1018,7 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "mlflow",
@@ -805,7 +1036,7 @@
         },
         {
           "line": 5,
-          "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+          "declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
         }
       ],
       "package_inputs": [
@@ -815,7 +1046,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "mng-pg",
@@ -828,8 +1059,8 @@
           "declaration": "FROM postgres:18.6-alpine"
         },
         {
-          "line": 7,
-          "public_dependency_declaration": "RUN apk add --no-cache pgbackrest=2.58.0-r0 \\"
+          "line": 8,
+          "declaration": "    && install -d -o postgres -g postgres -m 0750 /var/lib/pgbackrest /var/spool/pgbackrest"
         },
         {
           "line": 10,
@@ -842,7 +1073,7 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "n8n",
@@ -861,10 +1092,6 @@
           "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
         },
         {
-          "line": 4,
-          "declaration": "RUN apk add --no-cache \\"
-        },
-        {
           "line": 16,
           "declaration": "FROM node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS opsflow-builder"
         },
@@ -873,20 +1100,8 @@
           "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json ./"
         },
         {
-          "line": 19,
-          "declaration": "RUN npm ci --ignore-scripts --no-audit --no-fund --bin-links=false"
-        },
-        {
           "line": 20,
           "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/*.ts ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json ./"
-        },
-        {
-          "line": 21,
-          "declaration": "RUN node node_modules/typescript/bin/tsc -p tsconfig.json && \\"
-        },
-        {
-          "line": 28,
-          "declaration": "RUN find package.json dist node_modules -type f -exec sha256sum '{}' ';' > /tmp/opsflow-hashes && \\"
         },
         {
           "line": 31,
@@ -917,40 +1132,12 @@
           "declaration": "COPY --from=font-builder /font-builder-packages.txt /usr/share/hy-home-font-builder-packages.txt"
         },
         {
-          "line": 43,
-          "declaration": "RUN mkdir -p /var/cache/fontconfig && \\"
-        },
-        {
-          "line": 48,
-          "declaration": "ENV NODE_ENV=production"
-        },
-        {
-          "line": 50,
-          "declaration": "ENV NODE_PATH=/usr/local/lib/node_modules/n8n/node_modules"
-        },
-        {
-          "line": 51,
-          "declaration": "ENV GENERIC_TIMEZONE=Asia/Seoul"
-        },
-        {
-          "line": 55,
-          "declaration": "RUN test \"$(n8n --version)\" = \"${N8N_VERSION}\" && \\"
-        },
-        {
-          "line": 58,
-          "declaration": "RUN mkdir -p /home/node/.n8n/custom && \\"
-        },
-        {
           "line": 61,
           "declaration": "COPY --chown=node:node ./custom /home/node/.n8n/custom"
         },
         {
           "line": 62,
           "declaration": "COPY --chown=node:node ./docker-entrypoint.dev.sh /home/node/docker-entrypoint.sh"
-        },
-        {
-          "line": 63,
-          "declaration": "RUN chmod 0755 /home/node/docker-entrypoint.sh"
         }
       ],
       "package_inputs": [
@@ -960,11 +1147,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
-          "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+          "sha256": "3f9ca8952964b5e63af3a85a7ecc8fb6b417c940e914c5042239647043c53eb1"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
-          "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+          "sha256": "ddfa26a5890a8fa5af87304920f24d1c8bd87be475a8b1c4650c9c9d4d7d06a5"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
@@ -976,7 +1163,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-15T16:35:15.922344+00:00",
+      "source_refreshed_at": "2026-10-26T14:53:34.818326+00:00",
       "alternate_build_inputs": [
         {
           "build_input": "infra/07-workflow/n8n/Dockerfile",
@@ -1002,10 +1189,6 @@
           "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
         },
         {
-          "line": 4,
-          "declaration": "RUN apk add --no-cache \\"
-        },
-        {
           "line": 16,
           "declaration": "FROM node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS opsflow-builder"
         },
@@ -1014,20 +1197,8 @@
           "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json ./"
         },
         {
-          "line": 19,
-          "declaration": "RUN npm ci --ignore-scripts --no-audit --no-fund --bin-links=false"
-        },
-        {
           "line": 20,
           "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/*.ts ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json ./"
-        },
-        {
-          "line": 21,
-          "declaration": "RUN node node_modules/typescript/bin/tsc -p tsconfig.json && \\"
-        },
-        {
-          "line": 28,
-          "declaration": "RUN find package.json dist node_modules -type f -exec sha256sum '{}' ';' > /tmp/opsflow-hashes && \\"
         },
         {
           "line": 31,
@@ -1058,40 +1229,12 @@
           "declaration": "COPY --from=font-builder /font-builder-packages.txt /usr/share/hy-home-font-builder-packages.txt"
         },
         {
-          "line": 43,
-          "declaration": "RUN mkdir -p /var/cache/fontconfig && \\"
-        },
-        {
-          "line": 48,
-          "declaration": "ENV NODE_ENV=production"
-        },
-        {
-          "line": 50,
-          "declaration": "ENV NODE_PATH=/usr/local/lib/node_modules/n8n/node_modules"
-        },
-        {
-          "line": 51,
-          "declaration": "ENV GENERIC_TIMEZONE=Asia/Seoul"
-        },
-        {
-          "line": 55,
-          "declaration": "RUN test \"$(n8n --version)\" = \"${N8N_VERSION}\" && \\"
-        },
-        {
-          "line": 58,
-          "declaration": "RUN mkdir -p /home/node/.n8n/custom && \\"
-        },
-        {
           "line": 61,
           "declaration": "COPY --chown=node:node ./custom /home/node/.n8n/custom"
         },
         {
           "line": 62,
           "declaration": "COPY --chown=node:node ./docker-entrypoint.dev.sh /home/node/docker-entrypoint.sh"
-        },
-        {
-          "line": 63,
-          "declaration": "RUN chmod 0755 /home/node/docker-entrypoint.sh"
         }
       ],
       "package_inputs": [
@@ -1101,11 +1244,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
-          "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+          "sha256": "3f9ca8952964b5e63af3a85a7ecc8fb6b417c940e914c5042239647043c53eb1"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
-          "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+          "sha256": "ddfa26a5890a8fa5af87304920f24d1c8bd87be475a8b1c4650c9c9d4d7d06a5"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
@@ -1117,7 +1260,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-15T16:35:15.922344+00:00",
+      "source_refreshed_at": "2026-10-26T14:53:34.818326+00:00",
       "alternate_build_inputs": [
         {
           "build_input": "infra/07-workflow/n8n/Dockerfile",
@@ -1129,12 +1272,12 @@
     {
       "service": "oauth2-proxy",
       "build_input": "infra/02-auth/oauth2-proxy/dev.Dockerfile",
-      "input_sha256": "5757751105e9e7455c57f5fb8ba24b9a4ffbce7bc5111c36103db8bef14d87cd",
+      "input_sha256": "4ee6c6bd419c90911012a8b883770543675455988cc88a86c6b8442589d041b5",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 1,
-          "declaration": "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src"
+          "declaration": "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.5@sha256:8498b0d0ef0a7b29686414000a08aee467f02d0299c9ed1e006a8f33fc017916 AS src"
         },
         {
           "line": 3,
@@ -1151,73 +1294,82 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "opensearch",
       "build_input": "infra/04-data/opensearch/Dockerfile",
-      "input_sha256": "aee6e4515241935729dace7b9ed473cfc72ae53e89abd844b69d64429856afc8",
-      "compose_build_args": {},
+      "input_sha256": "6ea197cccc0f735199efc82469431790fbf70762a7f4733c249f49364ed408d4",
+      "compose_build_args": {
+        "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+        "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0"
+      },
       "declarations": [
         {
-          "line": 2,
-          "public_dependency_declaration": "# - https://docs.opensearch.org/latest/install-and-configure/plugins/"
-        },
-        {
-          "line": 3,
-          "public_dependency_declaration": "# - https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/"
-        },
-        {
           "line": 5,
-          "declaration": "FROM opensearchproject/opensearch:3.8.0"
+          "declaration": "ARG OPENSEARCH_BASE_IMAGE=opensearchproject/opensearch:3.8.0"
         },
         {
-          "line": 9,
+          "line": 6,
+          "declaration": "FROM ${OPENSEARCH_BASE_IMAGE}"
+        },
+        {
+          "line": 10,
           "declaration": "SHELL [\"/bin/bash\", \"-c\"]"
         },
         {
-          "line": 27,
-          "public_dependency_declaration": "https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/3.8.0.0/prometheus-exporter-3.8.0.0.zip"
+          "line": 18,
+          "declaration": "RUN /usr/share/opensearch/bin/opensearch-plugin install --batch \\"
         },
         {
-          "line": 30,
+          "line": 27,
+          "declaration": "ARG OPENSEARCH_EXPORTER_VERSION=3.8.0.0"
+        },
+        {
+          "line": 28,
+          "declaration": "RUN /usr/share/opensearch/bin/opensearch-plugin install \\"
+        },
+        {
+          "line": 32,
           "declaration": "COPY ./opensearch/opensearch-entrypoint.sh /usr/local/bin/opensearch-entrypoint.sh"
         }
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T14:31:47.914916+00:00",
+      "selection_scope": {
+        "root_compose": "infra/04-data/opensearch/docker-compose.yml",
+        "root_compose_sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f",
+        "selected_args": {
+          "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+          "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0"
+        },
+        "shared_defaults": {
+          "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.8.0",
+          "OPENSEARCH_EXPORTER_VERSION": "3.8.0.0"
+        },
+        "excluded_lab_baseline_sha256": "8624025272a7c053b039c9f13bdccaa0aca62e5529d3b026d0570cafbf26fa21",
+        "custom_image_build": "NOT_RUN"
+      }
     },
     {
       "service": "opentofu",
       "build_input": "infra/09-platform-ops/opentofu/docker-compose.yml#dockerfile_inline",
-      "input_sha256": "e36c0597c96fd8b24be81e7d2e2147b04db86b472ce92e858d2a35157d824cd2",
+      "input_sha256": "082b1767cd56e3fc988a30f90f0a4eb3e91c25b8d68552880ca7b44988208f6a",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 1,
-          "declaration": "FROM ghcr.io/opentofu/opentofu:1.12.6-minimal AS tofu"
+          "declaration": "FROM ghcr.io/opentofu/opentofu:1.13.1-minimal@sha256:dfbc3f0a8bed0adfa2cf49ff418f158afe24080eea6d6e748db8799fc4553db6 AS tofu"
         },
         {
           "line": 2,
           "declaration": "FROM alpine:3.24"
-        },
-        {
-          "line": 3,
-          "public_dependency_declaration": "RUN apk add --no-cache \\"
-        },
-        {
-          "line": 6,
-          "public_dependency_declaration": "curl \\"
-        },
-        {
-          "line": 9,
-          "declaration": "COPY --from=tofu /usr/local/bin/tofu /usr/local/bin/tofu"
         }
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "spark",
@@ -1228,24 +1380,16 @@
         {
           "line": 1,
           "declaration": "FROM apache/spark:4.1.3-scala2.13-java21-python3-ubuntu"
-        },
-        {
-          "line": 8,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.1_2.13/1.11.0/iceberg-spark-runtime-4.1_2.13-1.11.0.jar \\"
-        },
-        {
-          "line": 11,
-          "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
         }
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "stalwart-config",
       "build_input": "infra/10-communication/stalwart/config/Dockerfile",
-      "input_sha256": "85e31f204b5c525b47ccd5277ced2441b86158530651d5e61abeb0bdedab42ce",
+      "input_sha256": "230d2f5b931ffcf45a8ec970c9a753345175964188da0d0a2c485f8e39840f32",
       "compose_build_args": {},
       "declarations": [
         {
@@ -1254,7 +1398,7 @@
         },
         {
           "line": 5,
-          "declaration": "FROM stalwartlabs/stalwart:v0.16.25@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3"
+          "declaration": "FROM stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c"
         },
         {
           "line": 6,
@@ -1263,7 +1407,7 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T16:12:44Z"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "superset",
@@ -1281,7 +1425,7 @@
         },
         {
           "line": 7,
-          "public_dependency_declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
+          "declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
         }
       ],
       "package_inputs": [
@@ -1291,7 +1435,7 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "superset-init",
@@ -1309,7 +1453,7 @@
         },
         {
           "line": 7,
-          "public_dependency_declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
+          "declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
         }
       ],
       "package_inputs": [
@@ -1319,29 +1463,25 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "surrealdb",
       "build_input": "infra/08-ai/open-notebook/surrealdb/Dockerfile",
-      "input_sha256": "bae1163b69d3334734fe7ab7a4de4e8951582c3237a6154b2a59b30fa7fc1a9e",
+      "input_sha256": "43feae74f9a6ca215d963f4c4387d3e0b06759bb164f53bc394d9d4521ae70a0",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 1,
-          "declaration": "FROM surrealdb/surrealdb:v2 AS surreal"
+          "declaration": "FROM surrealdb/surrealdb:v2.7.0@sha256:e5d7387e3727bbe2f7cd6d869e48cd34777272258572ead37c9656b25f745723 AS surreal"
         },
         {
           "line": 3,
           "declaration": "FROM debian:bookworm-slim"
         },
         {
-          "line": 5,
-          "public_dependency_declaration": "RUN apt-get update \\"
-        },
-        {
           "line": 6,
-          "public_dependency_declaration": "&& apt-get install -y --no-install-recommends ca-certificates bash \\"
+          "declaration": "  && apt-get install -y --no-install-recommends ca-certificates bash \\"
         },
         {
           "line": 9,
@@ -1354,25 +1494,21 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "tempo",
       "build_input": "infra/06-observability/tempo/Dockerfile",
-      "input_sha256": "74e1041aa1ca173e1e56132e3d24d3c5b9bb871829294594ff68fcef77b33d6d",
+      "input_sha256": "0c407a091a3155d82c5ba42a5fed96c9f82e105c3bb3a2e928e0fc8729418532",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 1,
-          "declaration": "FROM grafana/tempo:3.0.3 AS upstream"
+          "declaration": "FROM grafana/tempo:3.1.0@sha256:3076b8dcdfb32fd6bc5ccef85e7b7313e6199b9cb84366257fc17ecb696db5fd AS upstream"
         },
         {
           "line": 3,
           "declaration": "FROM alpine:3.24.2"
-        },
-        {
-          "line": 5,
-          "public_dependency_declaration": "RUN apk add --no-cache busybox wget ca-certificates \\"
         },
         {
           "line": 9,
@@ -1385,7 +1521,7 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "storybook",
@@ -1417,20 +1553,12 @@
           "declaration": "COPY packages/ui/package.json packages/ui/package.json"
         },
         {
-          "line": 10,
-          "public_dependency_declaration": "RUN npm ci --ignore-scripts"
-        },
-        {
           "line": 11,
           "declaration": "COPY . ."
         },
         {
           "line": 12,
           "declaration": "ARG STORYBOOK_SOURCE_REVISION"
-        },
-        {
-          "line": 18,
-          "public_dependency_declaration": "RUN npm run build-storybook && npm run build:mcp"
         },
         {
           "line": 22,
@@ -1467,25 +1595,22 @@
         {
           "line": 37,
           "declaration": "COPY nginx.conf /etc/nginx/conf.d/default.conf"
-        },
-        {
-          "line": 41,
-          "public_dependency_declaration": "CMD wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1"
         }
       ],
       "package_inputs": [
         {
           "path": "projects/storybook/nextjs/package.json",
-          "sha256": "12ebf4b0992b169de22789a97e22a0737d201f6ba21ed56efbad403185c3a769"
+          "sha256": "8d44f4733bd92af0131d2129eceaee915f2f010a18bd3d3798c8e4166c6b367e"
         },
         {
           "path": "projects/storybook/nextjs/package-lock.json",
-          "sha256": "2b91d0ba661ac7b182231c569efe302a7be71412f5b92993ca1be3f1a1a6f9bb"
+          "sha256": "be7ab2eed3ea0d315023cd16aae4f9dc20d51e69e1477d51d412c24a7a4018c6"
         }
       ],
       "installed_sbom": "NOT_RUN",
       "source_binding": "infra/13-experience/storybook/README.md links this Dockerfile; mcp image has separately unresolved build source.",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-26T14:53:34.818326+00:00",
+      "compose_build_args": {}
     },
     {
       "service": "openbao",
@@ -1508,46 +1633,6 @@
         {
           "line": 5,
           "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
-        },
-        {
-          "line": 6,
-          "declaration": "RUN --mount=type=bind,source=apks,target=/public/apks,readonly apk --no-logfile --keys-dir /public/keys verify /public/apks/*.apk && apk --no-logfile --keys-dir /public/keys add --no-cache --no-network /public/apks/*.apk && addgroup -g 1000 openbao && adduser -S -u 100 -G openbao openbao && awk -F: -v OFS=: -v epoch=\"$SOURCE_DATE_EPOCH\" 'BEGIN {if(epoch !~ /^[0-9]+$/) exit 1; day=int(epoch/86400)} $1==\"openbao\" {if(NF!=9 || $2 !~ /^[!*]/) exit 1; $3=day; count++} {print} END {if(count!=1) exit 1}' /etc/shadow > /etc/shadow.hyhome && cat /etc/shadow.hyhome > /etc/shadow && rm /etc/shadow.hyhome && ln -s /usr/bin/bao /usr/bin/vault && mkdir -p /openbao/logs /openbao/file /openbao/config && chown -R 100:1000 /openbao"
-        },
-        {
-          "line": 7,
-          "declaration": "ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-        },
-        {
-          "line": 8,
-          "declaration": "EXPOSE 8200"
-        },
-        {
-          "line": 9,
-          "declaration": "USER openbao"
-        },
-        {
-          "line": 10,
-          "declaration": "ENTRYPOINT [\"docker-entrypoint.sh\"]"
-        },
-        {
-          "line": 11,
-          "declaration": "CMD [\"server\", \"-dev\", \"-dev-no-store-token\"]"
-        },
-        {
-          "line": 12,
-          "declaration": "LABEL org.opencontainers.image.source=\"https://github.com/openbao/openbao\""
-        },
-        {
-          "line": 13,
-          "declaration": "LABEL org.opencontainers.image.revision=\"a5db72cef75c24b920ade02065b18dd8eb666bac\""
-        },
-        {
-          "line": 14,
-          "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.3.net0.60.0.r1\""
-        },
-        {
-          "line": 15,
-          "declaration": "LABEL com.hyhome.openbao.upstream_signed=\"false\""
         }
       ],
       "package_inputs": [
@@ -1569,7 +1654,7 @@
         }
       ],
       "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
-      "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     },
     {
       "service": "openbao-agent",
@@ -1592,46 +1677,6 @@
         {
           "line": 5,
           "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
-        },
-        {
-          "line": 6,
-          "declaration": "RUN --mount=type=bind,source=apks,target=/public/apks,readonly apk --no-logfile --keys-dir /public/keys verify /public/apks/*.apk && apk --no-logfile --keys-dir /public/keys add --no-cache --no-network /public/apks/*.apk && addgroup -g 1000 openbao && adduser -S -u 100 -G openbao openbao && awk -F: -v OFS=: -v epoch=\"$SOURCE_DATE_EPOCH\" 'BEGIN {if(epoch !~ /^[0-9]+$/) exit 1; day=int(epoch/86400)} $1==\"openbao\" {if(NF!=9 || $2 !~ /^[!*]/) exit 1; $3=day; count++} {print} END {if(count!=1) exit 1}' /etc/shadow > /etc/shadow.hyhome && cat /etc/shadow.hyhome > /etc/shadow && rm /etc/shadow.hyhome && ln -s /usr/bin/bao /usr/bin/vault && mkdir -p /openbao/logs /openbao/file /openbao/config && chown -R 100:1000 /openbao"
-        },
-        {
-          "line": 7,
-          "declaration": "ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-        },
-        {
-          "line": 8,
-          "declaration": "EXPOSE 8200"
-        },
-        {
-          "line": 9,
-          "declaration": "USER openbao"
-        },
-        {
-          "line": 10,
-          "declaration": "ENTRYPOINT [\"docker-entrypoint.sh\"]"
-        },
-        {
-          "line": 11,
-          "declaration": "CMD [\"server\", \"-dev\", \"-dev-no-store-token\"]"
-        },
-        {
-          "line": 12,
-          "declaration": "LABEL org.opencontainers.image.source=\"https://github.com/openbao/openbao\""
-        },
-        {
-          "line": 13,
-          "declaration": "LABEL org.opencontainers.image.revision=\"a5db72cef75c24b920ade02065b18dd8eb666bac\""
-        },
-        {
-          "line": 14,
-          "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.3.net0.60.0.r1\""
-        },
-        {
-          "line": 15,
-          "declaration": "LABEL com.hyhome.openbao.upstream_signed=\"false\""
         }
       ],
       "package_inputs": [
@@ -1653,10 +1698,10 @@
         }
       ],
       "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
-      "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00"
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
     }
   ],
-  "meaning": "Current public build declarations and per-input hashes; initial snapshot retained. OpenBao/Agent use an already-built HYHOME owned image; their Dockerfile is the fixed recipe consumed by the bounded build wrapper, not a Compose build declaration. Authenticated material inputs, reproducible OCI runtime lineage and selected-artifact SBOM/CVE receipt are recorded separately from production compatibility/deployment. Exact synthetic native attempt2 passed 13/13 tests (4 native cases) with fixture digest 2fa9f8b2439d9970ced72cc968567a6066620564c2869709a44b7b15f0f67b73; this does not cover the whole ROOT source inventory or production backup/rollback/adoption. No registered aggregate generator exists: input_manifest_sha256 remains UNKNOWN; no whole-package final freeze is asserted.",
+  "meaning": "Current selected33 consumer source rows (22Dockerfiles+1inline source); declarations and public package-input hashes only. No build, installed SBOM, scan or Native receipt generated. Historical final_candidate_source_freeze remains historical and is not promoted.",
   "unresolved_local_image_sources": [
     {
       "service": "storybook-mcp",
@@ -2597,8 +2642,8 @@
       }
     ]
   },
-  "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00",
-  "input_manifest_sha256": "UNKNOWN",
+  "source_refreshed_at": "2026-10-26T14:53:34.818326+00:00",
+  "input_manifest_sha256": "1b75c3e9d1abdc7c57dfba6c836d6b35326839ee3a00b0844f6c976b458fc28b",
   "final_candidate_source_freeze": {
     "valid": false,
     "frozen_at": "2026-10-10T11:44:22.903026+00:00",
@@ -2735,10 +2780,10 @@
     "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
     "checked_at": "2026-10-15T16:35:15.922344+00:00",
     "source_binding": {
-      "checked_at": "2026-10-20T13:10:00+00:00",
-      "source_revision": "3679fbd41720f2d13ab8682ceeac96d8d602a16a",
-      "source_state": "binding-test change on fix/review-followups-522-526 on top of this main revision, which carries the PR #522 Compose change; image build inputs equal the previous binding",
-      "input_sha256": "4730553866b6e24af9fa4f8f6fdfb62d5f53b9021a8d0b5ec4159951a03149b3",
+      "checked_at": "2026-10-26T23:17:52.757023+00:00",
+      "source_revision": "68be46058096ab8443079ad683aaa9003167a34a",
+      "source_state": "Uncommitted OpsflowSmtp dev-tree override zod 4.6.6 for GHSA-mrhx-c7xc-m3w5 on top of this revision; not a current image/build/module/Native acceptance receipt",
+      "input_sha256": "477ff00530270fb171758d75f3406aeda82a93c4e78e21b47a664a4215eb9ff8",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -2755,15 +2800,15 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "b4ebb85352e9321917f4f50d8d9f777365f9812b685478ce18fcec255e094dac"
+          "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
-          "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+          "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
-          "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+          "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
@@ -2771,11 +2816,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
-          "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+          "sha256": "b6bc5cb8dad469f46aaf6f137643acc2b6e8cb13655b6e6b6723468734a72f82"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
-          "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+          "sha256": "146d22dde82f3d5aab2f3018650c2e8eced9c8559049bffce09aa7fe325b2421"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
@@ -2806,7 +2851,7 @@
           "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
-      "meaning": "n8n Compose/build/COPY inputs and custom-node/version unit tests only. Does not bind P05 SQL/provisioning/full native acceptance.",
+      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the OpsflowSmtp package.json/package-lock.json zod override. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -2980,6 +3025,171 @@
           "recovery": "NOT_RUN"
         },
         "reason": "Superseded by the n8n Compose runner-listener aliases, the removed N8N_RUNNERS_ENABLED and the read-only custom bind (SPEC-0204-TSK-0017, 2026-10-20). Image build inputs are unchanged; no new native acceptance inferred."
+      },
+      {
+        "archived_at": "2026-10-26T14:53:34.818326+00:00",
+        "source_binding": {
+          "checked_at": "2026-10-20T13:10:00+00:00",
+          "source_revision": "3679fbd41720f2d13ab8682ceeac96d8d602a16a",
+          "source_state": "binding-test change on fix/review-followups-522-526 on top of this main revision, which carries the PR #522 Compose change; image build inputs equal the previous binding",
+          "input_sha256": "4730553866b6e24af9fa4f8f6fdfb62d5f53b9021a8d0b5ec4159951a03149b3",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "b4ebb85352e9321917f4f50d8d9f777365f9812b685478ce18fcec255e094dac"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+            }
+          ],
+          "meaning": "n8n Compose/build/COPY inputs and custom-node/version unit tests only. Does not bind P05 SQL/provisioning/full native acceptance.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        },
+        "meaning": "Prior binding preserved before package and U1 source continuation; old image/module receipt is not rebound"
+      },
+      {
+        "archived_at": "2026-10-26T23:17:52.757023+00:00",
+        "source_binding": {
+          "checked_at": "2026-10-26T14:53:34.818326+00:00",
+          "source_revision": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+          "source_state": "Uncommitted source-provenance continuation after approved Storybook/SMTP package freezes and prior U1 source changes; not a current image/build/module/Native acceptance receipt",
+          "input_sha256": "cf4004d7ee1e7e689cf93ef1c6d03d87e24b0031eefee063553e2b9cda0915a2",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "3f9ca8952964b5e63af3a85a7ecc8fb6b417c940e914c5042239647043c53eb1"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "ddfa26a5890a8fa5af87304920f24d1c8bd87be475a8b1c4650c9c9d4d7d06a5"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+            }
+          ],
+          "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
       }
     ],
     "isolated_candidate_build_and_module_smoke": {
@@ -3042,6 +3252,2088 @@
       "migration": "NOT_RUN",
       "recovery": "NOT_RUN",
       "prior_harness_attempt": "Owning workflow writer reports a temporary harness newline syntax failure before corrected same-image PASS; not a source acceptance failure and not silently erased."
+    },
+    "current_source_acceptance_limit": {
+      "recorded_at": "2026-10-26T14:53:34.818326+00:00",
+      "continuation_owner": "SPEC0204 Task0009 source provenance with Task0013 SMTP dependency owner",
+      "new_image_build": "NOT_RUN",
+      "new_module_smoke": "NOT_RUN",
+      "old_isolated_smoke_current_binding": "NO; original digest/date retained",
+      "smtp_production_audit": "PASS zero on writer-frozen lock",
+      "smtp_full_audit": "FAIL three High fanout entries; n8n-workflow also host peer, actual host exposure UNKNOWN; no downgrade or blanket dev-only waiver"
     }
-  }
+  },
+  "historical_source_refreshes": [
+    {
+      "preserved_at": "2026-10-26T10:32:14.784990+00:00",
+      "source_revision": "4c33d6cecc3087b1c5b0d8ef79b7d25e7e52e0a6",
+      "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00",
+      "inputs": [
+        {
+          "service": "airflow-apiserver",
+          "build_input": "infra/07-workflow/airflow/Dockerfile",
+          "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+          "compose_build_args": {
+            "AIRFLOW_VERSION": "3.3.2",
+            "PYTHON_VERSION": "3.13",
+            "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+            "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+            "CELERY_PROVIDER_VERSION": "3.24.1"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 2,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+            },
+            {
+              "line": 5,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 6,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 7,
+              "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+            },
+            {
+              "line": 8,
+              "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+            },
+            {
+              "line": 9,
+              "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+            },
+            {
+              "line": 14,
+              "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+            },
+            {
+              "line": 19,
+              "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+            },
+            {
+              "line": 27,
+              "public_dependency_declaration": "pip install --no-cache-dir \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+              "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "airflow-dag-processor",
+          "build_input": "infra/07-workflow/airflow/Dockerfile",
+          "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+          "compose_build_args": {
+            "AIRFLOW_VERSION": "3.3.2",
+            "PYTHON_VERSION": "3.13",
+            "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+            "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+            "CELERY_PROVIDER_VERSION": "3.24.1"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 2,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+            },
+            {
+              "line": 5,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 6,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 7,
+              "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+            },
+            {
+              "line": 8,
+              "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+            },
+            {
+              "line": 9,
+              "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+            },
+            {
+              "line": 14,
+              "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+            },
+            {
+              "line": 19,
+              "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+            },
+            {
+              "line": 27,
+              "public_dependency_declaration": "pip install --no-cache-dir \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+              "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "airflow-init",
+          "build_input": "infra/07-workflow/airflow/Dockerfile",
+          "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+          "compose_build_args": {
+            "AIRFLOW_VERSION": "3.3.2",
+            "PYTHON_VERSION": "3.13",
+            "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+            "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+            "CELERY_PROVIDER_VERSION": "3.24.1"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 2,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+            },
+            {
+              "line": 5,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 6,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 7,
+              "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+            },
+            {
+              "line": 8,
+              "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+            },
+            {
+              "line": 9,
+              "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+            },
+            {
+              "line": 14,
+              "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+            },
+            {
+              "line": 19,
+              "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+            },
+            {
+              "line": 27,
+              "public_dependency_declaration": "pip install --no-cache-dir \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+              "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "airflow-scheduler",
+          "build_input": "infra/07-workflow/airflow/Dockerfile",
+          "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+          "compose_build_args": {
+            "AIRFLOW_VERSION": "3.3.2",
+            "PYTHON_VERSION": "3.13",
+            "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+            "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+            "CELERY_PROVIDER_VERSION": "3.24.1"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 2,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+            },
+            {
+              "line": 5,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 6,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 7,
+              "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+            },
+            {
+              "line": 8,
+              "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+            },
+            {
+              "line": 9,
+              "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+            },
+            {
+              "line": 14,
+              "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+            },
+            {
+              "line": 19,
+              "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+            },
+            {
+              "line": 27,
+              "public_dependency_declaration": "pip install --no-cache-dir \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+              "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "airflow-triggerer",
+          "build_input": "infra/07-workflow/airflow/Dockerfile",
+          "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+          "compose_build_args": {
+            "AIRFLOW_VERSION": "3.3.2",
+            "PYTHON_VERSION": "3.13",
+            "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+            "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+            "CELERY_PROVIDER_VERSION": "3.24.1"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 2,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+            },
+            {
+              "line": 5,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 6,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 7,
+              "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+            },
+            {
+              "line": 8,
+              "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+            },
+            {
+              "line": 9,
+              "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+            },
+            {
+              "line": 14,
+              "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+            },
+            {
+              "line": 19,
+              "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+            },
+            {
+              "line": 27,
+              "public_dependency_declaration": "pip install --no-cache-dir \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+              "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "airflow-worker",
+          "build_input": "infra/07-workflow/airflow/Dockerfile",
+          "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+          "compose_build_args": {
+            "AIRFLOW_VERSION": "3.3.2",
+            "PYTHON_VERSION": "3.13",
+            "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+            "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+            "CELERY_PROVIDER_VERSION": "3.24.1"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 2,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+            },
+            {
+              "line": 5,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 6,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 7,
+              "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+            },
+            {
+              "line": 8,
+              "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+            },
+            {
+              "line": 9,
+              "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+            },
+            {
+              "line": 14,
+              "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+            },
+            {
+              "line": 19,
+              "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+            },
+            {
+              "line": 27,
+              "public_dependency_declaration": "pip install --no-cache-dir \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+              "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "dbt",
+          "build_input": "infra/12-analytics/dbt/Dockerfile",
+          "input_sha256": "9642ae6d76e38c2e4b9014e7f0e17fcbd989d477a8ce1374cc0f84bc9590f963",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM python:3.12-slim-bookworm"
+            },
+            {
+              "line": 4,
+              "public_dependency_declaration": "RUN apt-get update \\"
+            },
+            {
+              "line": 5,
+              "public_dependency_declaration": "&& apt-get install -y --no-install-recommends git \\"
+            },
+            {
+              "line": 9,
+              "declaration": "COPY requirements.txt /tmp/requirements.txt"
+            },
+            {
+              "line": 11,
+              "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+            },
+            {
+              "line": 15,
+              "declaration": "COPY docker-entrypoint.sh /usr/local/bin/dbt-entrypoint"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/12-analytics/dbt/requirements.txt",
+              "sha256": "9fae44a7fc26ccc870acf47ffb111ea5c8e8196147ac16fda9068f978214d006"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "dev-pg",
+          "build_input": "infra/04-data/dev-db/pg/Dockerfile",
+          "input_sha256": "60fdf63970f1b483f78d0f4e5fb8bcad3e39fbbe36bfabdaa36f644ce8391e12",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 4,
+              "declaration": "FROM timescale/timescaledb:2.30.2-pg18@sha256:cdf97a4b5be91038b5c1be0ad304c5d5746132992e54f7dd26ec467a6d005755"
+            },
+            {
+              "line": 7,
+              "public_dependency_declaration": "RUN apk add --no-cache pgbackrest=2.57.0-r0 python3 \\"
+            },
+            {
+              "line": 10,
+              "declaration": "COPY --chmod=0644 backup/pgbackrest.conf /etc/pgbackrest/pgbackrest.conf"
+            },
+            {
+              "line": 11,
+              "declaration": "COPY --chmod=0755 backup/entrypoint.sh /usr/local/bin/hyhome-dev-pg-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "flink-jobmanager",
+          "build_input": "infra/12-analytics/flink/Dockerfile",
+          "input_sha256": "60e4c4f771f46a14fbbafd86c36947fb13347e3c6bb60ea252320815e4723ff7",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM flink:2.1.3-scala_2.12-java21"
+            },
+            {
+              "line": 9,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-2.1/1.11.0/iceberg-flink-runtime-2.1-1.11.0.jar \\"
+            },
+            {
+              "line": 12,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
+            },
+            {
+              "line": 15,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.1/flink-sql-connector-kafka-5.0.0-2.1.jar \\"
+            },
+            {
+              "line": 18,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.5.0/hadoop-client-api-3.5.0.jar \\"
+            },
+            {
+              "line": 21,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.5.0/hadoop-client-runtime-3.5.0.jar \\"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "flink-taskmanager",
+          "build_input": "infra/12-analytics/flink/Dockerfile",
+          "input_sha256": "60e4c4f771f46a14fbbafd86c36947fb13347e3c6bb60ea252320815e4723ff7",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM flink:2.1.3-scala_2.12-java21"
+            },
+            {
+              "line": 9,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-2.1/1.11.0/iceberg-flink-runtime-2.1-1.11.0.jar \\"
+            },
+            {
+              "line": 12,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
+            },
+            {
+              "line": 15,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.1/flink-sql-connector-kafka-5.0.0-2.1.jar \\"
+            },
+            {
+              "line": 18,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.5.0/hadoop-client-api-3.5.0.jar \\"
+            },
+            {
+              "line": 21,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.5.0/hadoop-client-runtime-3.5.0.jar \\"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "flower",
+          "build_input": "infra/07-workflow/airflow/Dockerfile",
+          "input_sha256": "afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1",
+          "compose_build_args": {
+            "AIRFLOW_VERSION": "3.3.2",
+            "PYTHON_VERSION": "3.13",
+            "KEYCLOAK_PROVIDER_VERSION": "0.11.0",
+            "COMMON_COMPAT_PROVIDER_VERSION": "1.20.0",
+            "CELERY_PROVIDER_VERSION": "3.24.1"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 2,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}@sha256:e9982ad3f49a60418622e1baf80c34b0daf3fa5091a336cb5ee61f0cdd189371"
+            },
+            {
+              "line": 5,
+              "declaration": "ARG AIRFLOW_VERSION=3.3.2"
+            },
+            {
+              "line": 6,
+              "declaration": "ARG PYTHON_VERSION=3.13"
+            },
+            {
+              "line": 7,
+              "declaration": "ARG KEYCLOAK_PROVIDER_VERSION=0.11.0"
+            },
+            {
+              "line": 8,
+              "declaration": "ARG COMMON_COMPAT_PROVIDER_VERSION=1.20.0"
+            },
+            {
+              "line": 9,
+              "declaration": "ARG CELERY_PROVIDER_VERSION=3.24.1"
+            },
+            {
+              "line": 14,
+              "declaration": "SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-o\", \"errexit\", \"-o\", \"nounset\", \"-o\", \"nolog\", \"-c\"]"
+            },
+            {
+              "line": 19,
+              "declaration": "COPY --chown=airflow:root infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt /tmp/constraints-upstream.txt"
+            },
+            {
+              "line": 27,
+              "public_dependency_declaration": "pip install --no-cache-dir \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt",
+              "sha256": "afc652180b9f1b94c22fe843cd0ca193ed4993585f3d8d84be1ea564536900b5"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "gatus",
+          "build_input": "infra/06-observability/gatus/Dockerfile",
+          "input_sha256": "501055e636ef95d6eb3659e7d873a1f7d766219e2c516c061952feec264441cb",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM golang:1.26.4-alpine3.22 AS builder"
+            },
+            {
+              "line": 5,
+              "public_dependency_declaration": "RUN apk add --no-cache \\"
+            },
+            {
+              "line": 10,
+              "declaration": "SHELL [\"/bin/ash\", \"-eo\", \"pipefail\", \"-c\"]"
+            },
+            {
+              "line": 12,
+              "public_dependency_declaration": "RUN wget -q \\"
+            },
+            {
+              "line": 14,
+              "public_dependency_declaration": "https://github.com/TwiN/gatus/archive/ed1107b41a30e22047eecfb6dbc3be5e39829d5a.tar.gz \\"
+            },
+            {
+              "line": 20,
+              "declaration": "COPY patches/oidc-hardening.patch /tmp/oidc-hardening.patch"
+            },
+            {
+              "line": 26,
+              "public_dependency_declaration": "RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /gatus ."
+            },
+            {
+              "line": 28,
+              "declaration": "FROM alpine:3.24"
+            },
+            {
+              "line": 30,
+              "public_dependency_declaration": "RUN apk add --no-cache \\"
+            },
+            {
+              "line": 34,
+              "declaration": "COPY --from=builder /gatus /usr/local/bin/gatus"
+            },
+            {
+              "line": 35,
+              "declaration": "COPY --chmod=0555 docker-entrypoint.sh /usr/local/bin/gatus-oidc-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "great-expectations",
+          "build_input": "infra/12-analytics/great-expectations/Dockerfile",
+          "input_sha256": "35edad0b4147f63d0b3fe15f7f6985647125111c95846e22536f6401b0c00c8a",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM python:3.12-slim-bookworm"
+            },
+            {
+              "line": 4,
+              "declaration": "COPY requirements.txt /tmp/requirements.txt"
+            },
+            {
+              "line": 6,
+              "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+            },
+            {
+              "line": 8,
+              "declaration": "COPY hyhome-gx.py /usr/local/bin/hyhome-gx"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/12-analytics/great-expectations/requirements.txt",
+              "sha256": "860c980f62076084fd1618de7279ef34cb24eb70b74b9dea5c29393238801913"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "jupyterlab",
+          "build_input": "infra/12-analytics/jupyterlab/Dockerfile",
+          "input_sha256": "c9685595c1bc6206b8ed4faf4a58ca01e19d736847e6be831ace564ccfe8f9b2",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG JUPYTER_BASE_TAG=2026-07-28"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM quay.io/jupyter/scipy-notebook:${JUPYTER_BASE_TAG}"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --chown=${NB_UID}:${NB_GID} \\"
+            },
+            {
+              "line": 9,
+              "public_dependency_declaration": "RUN pip install \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/12-analytics/jupyterlab/requirements.txt",
+              "sha256": "b9004422f1b19300de37fe3b0c635a171fd5d1db9dc4c0afc7f3fa93e4387d10"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "k6",
+          "build_input": "infra/11-quality/k6/Dockerfile",
+          "input_sha256": "be4867d00fb3fc4d172fd12f7740b201ab35d05a2bcbb45b144c07dc72399576",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "declaration": "FROM grafana/k6:2.2.0"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "kafka-connect",
+          "build_input": "infra/05-messaging/kafka/Dockerfile.connect",
+          "input_sha256": "e945300b042a80dc9dc7cc8397fbee205a551dbdf82b16547cb9fa0970f8f401",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM quay.io/debezium/connect:3.6.3.Final AS debezium"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM confluentinc/cp-kafka-connect:8.3.2"
+            },
+            {
+              "line": 7,
+              "declaration": "COPY --from=debezium \\"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "loki",
+          "build_input": "infra/06-observability/loki/Dockerfile",
+          "input_sha256": "6e8297622fb0f0eb676e79089bd7aeb07bfd2d44fe79459fea3aa5981463d772",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM grafana/loki:3.7.8 AS upstream"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM alpine:3.24.2"
+            },
+            {
+              "line": 5,
+              "public_dependency_declaration": "RUN apk add --no-cache busybox wget ca-certificates \\"
+            },
+            {
+              "line": 9,
+              "declaration": "COPY --from=upstream /usr/bin/loki /usr/bin/loki"
+            },
+            {
+              "line": 10,
+              "declaration": "COPY --chmod=0755 docker-entrypoint.sh /docker-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "mlflow",
+          "build_input": "infra/08-ai/mlflow/Dockerfile",
+          "input_sha256": "4ec1d7eefc2b030b39e687d96131709c40d5c963c8fb0b5f0783e2ea46555f00",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM ghcr.io/mlflow/mlflow:v3.16.1"
+            },
+            {
+              "line": 3,
+              "declaration": "COPY requirements.txt /tmp/requirements.txt"
+            },
+            {
+              "line": 5,
+              "public_dependency_declaration": "RUN pip install --no-cache-dir -r /tmp/requirements.txt"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/08-ai/mlflow/requirements.txt",
+              "sha256": "d4e4df9717611b50d78c233ac890584d98f6ff12002dc69cb752cd62acdffd81"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "mng-pg",
+          "build_input": "infra/04-data/mng-db/pg/backup/Dockerfile",
+          "input_sha256": "724564b992b4e499f3d488a315feff8f5ab536b02656b4ab9afad3e91a2394ee",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 4,
+              "declaration": "FROM postgres:18.6-alpine"
+            },
+            {
+              "line": 7,
+              "public_dependency_declaration": "RUN apk add --no-cache pgbackrest=2.58.0-r0 \\"
+            },
+            {
+              "line": 10,
+              "declaration": "COPY --chmod=0644 pgbackrest.conf /etc/pgbackrest/pgbackrest.conf"
+            },
+            {
+              "line": 11,
+              "declaration": "COPY --chmod=0755 entrypoint.sh /usr/local/bin/hyhome-pg-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "n8n",
+          "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
+          "input_sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b",
+          "compose_build_args": {
+            "N8N_VERSION": "2.43.6"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG N8N_VERSION=2.43.6"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
+            },
+            {
+              "line": 4,
+              "declaration": "RUN apk add --no-cache \\"
+            },
+            {
+              "line": 16,
+              "declaration": "FROM node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS opsflow-builder"
+            },
+            {
+              "line": 18,
+              "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json ./"
+            },
+            {
+              "line": 19,
+              "declaration": "RUN npm ci --ignore-scripts --no-audit --no-fund --bin-links=false"
+            },
+            {
+              "line": 20,
+              "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/*.ts ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json ./"
+            },
+            {
+              "line": 21,
+              "declaration": "RUN node node_modules/typescript/bin/tsc -p tsconfig.json && \\"
+            },
+            {
+              "line": 28,
+              "declaration": "RUN find package.json dist node_modules -type f -exec sha256sum '{}' ';' > /tmp/opsflow-hashes && \\"
+            },
+            {
+              "line": 31,
+              "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833"
+            },
+            {
+              "line": 32,
+              "declaration": "ARG N8N_VERSION=2.43.6"
+            },
+            {
+              "line": 36,
+              "declaration": "COPY --from=opsflow-builder /artifact/opsflow /opt/hyhome/n8n-custom/opsflow"
+            },
+            {
+              "line": 38,
+              "declaration": "COPY --from=font-builder /usr/share/fonts /usr/share/fonts"
+            },
+            {
+              "line": 39,
+              "declaration": "COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig"
+            },
+            {
+              "line": 40,
+              "declaration": "COPY --from=font-builder /etc/fonts /etc/fonts"
+            },
+            {
+              "line": 41,
+              "declaration": "COPY --from=font-builder /font-builder-packages.txt /usr/share/hy-home-font-builder-packages.txt"
+            },
+            {
+              "line": 43,
+              "declaration": "RUN mkdir -p /var/cache/fontconfig && \\"
+            },
+            {
+              "line": 48,
+              "declaration": "ENV NODE_ENV=production"
+            },
+            {
+              "line": 50,
+              "declaration": "ENV NODE_PATH=/usr/local/lib/node_modules/n8n/node_modules"
+            },
+            {
+              "line": 51,
+              "declaration": "ENV GENERIC_TIMEZONE=Asia/Seoul"
+            },
+            {
+              "line": 55,
+              "declaration": "RUN test \"$(n8n --version)\" = \"${N8N_VERSION}\" && \\"
+            },
+            {
+              "line": 58,
+              "declaration": "RUN mkdir -p /home/node/.n8n/custom && \\"
+            },
+            {
+              "line": 61,
+              "declaration": "COPY --chown=node:node ./custom /home/node/.n8n/custom"
+            },
+            {
+              "line": 62,
+              "declaration": "COPY --chown=node:node ./docker-entrypoint.dev.sh /home/node/docker-entrypoint.sh"
+            },
+            {
+              "line": 63,
+              "declaration": "RUN chmod 0755 /home/node/docker-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-15T16:35:15.922344+00:00",
+          "alternate_build_inputs": [
+            {
+              "build_input": "infra/07-workflow/n8n/Dockerfile",
+              "input_sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad",
+              "meaning": "Production selector alternative; native build NOT_RUN"
+            }
+          ]
+        },
+        {
+          "service": "n8n-worker",
+          "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
+          "input_sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b",
+          "compose_build_args": {
+            "N8N_VERSION": "2.43.6"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG N8N_VERSION=2.43.6"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
+            },
+            {
+              "line": 4,
+              "declaration": "RUN apk add --no-cache \\"
+            },
+            {
+              "line": 16,
+              "declaration": "FROM node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS opsflow-builder"
+            },
+            {
+              "line": 18,
+              "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json ./"
+            },
+            {
+              "line": 19,
+              "declaration": "RUN npm ci --ignore-scripts --no-audit --no-fund --bin-links=false"
+            },
+            {
+              "line": 20,
+              "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/*.ts ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json ./"
+            },
+            {
+              "line": 21,
+              "declaration": "RUN node node_modules/typescript/bin/tsc -p tsconfig.json && \\"
+            },
+            {
+              "line": 28,
+              "declaration": "RUN find package.json dist node_modules -type f -exec sha256sum '{}' ';' > /tmp/opsflow-hashes && \\"
+            },
+            {
+              "line": 31,
+              "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833"
+            },
+            {
+              "line": 32,
+              "declaration": "ARG N8N_VERSION=2.43.6"
+            },
+            {
+              "line": 36,
+              "declaration": "COPY --from=opsflow-builder /artifact/opsflow /opt/hyhome/n8n-custom/opsflow"
+            },
+            {
+              "line": 38,
+              "declaration": "COPY --from=font-builder /usr/share/fonts /usr/share/fonts"
+            },
+            {
+              "line": 39,
+              "declaration": "COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig"
+            },
+            {
+              "line": 40,
+              "declaration": "COPY --from=font-builder /etc/fonts /etc/fonts"
+            },
+            {
+              "line": 41,
+              "declaration": "COPY --from=font-builder /font-builder-packages.txt /usr/share/hy-home-font-builder-packages.txt"
+            },
+            {
+              "line": 43,
+              "declaration": "RUN mkdir -p /var/cache/fontconfig && \\"
+            },
+            {
+              "line": 48,
+              "declaration": "ENV NODE_ENV=production"
+            },
+            {
+              "line": 50,
+              "declaration": "ENV NODE_PATH=/usr/local/lib/node_modules/n8n/node_modules"
+            },
+            {
+              "line": 51,
+              "declaration": "ENV GENERIC_TIMEZONE=Asia/Seoul"
+            },
+            {
+              "line": 55,
+              "declaration": "RUN test \"$(n8n --version)\" = \"${N8N_VERSION}\" && \\"
+            },
+            {
+              "line": 58,
+              "declaration": "RUN mkdir -p /home/node/.n8n/custom && \\"
+            },
+            {
+              "line": 61,
+              "declaration": "COPY --chown=node:node ./custom /home/node/.n8n/custom"
+            },
+            {
+              "line": 62,
+              "declaration": "COPY --chown=node:node ./docker-entrypoint.dev.sh /home/node/docker-entrypoint.sh"
+            },
+            {
+              "line": 63,
+              "declaration": "RUN chmod 0755 /home/node/docker-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-15T16:35:15.922344+00:00",
+          "alternate_build_inputs": [
+            {
+              "build_input": "infra/07-workflow/n8n/Dockerfile",
+              "input_sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad",
+              "meaning": "Production selector alternative; native build NOT_RUN"
+            }
+          ]
+        },
+        {
+          "service": "oauth2-proxy",
+          "build_input": "infra/02-auth/oauth2-proxy/dev.Dockerfile",
+          "input_sha256": "5757751105e9e7455c57f5fb8ba24b9a4ffbce7bc5111c36103db8bef14d87cd",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM alpine:3.24.2"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --from=src /bin/oauth2-proxy /bin/oauth2-proxy"
+            },
+            {
+              "line": 6,
+              "declaration": "COPY --chmod=0555 docker-entrypoint.dev.sh /docker-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "opensearch",
+          "build_input": "infra/04-data/opensearch/Dockerfile",
+          "input_sha256": "aee6e4515241935729dace7b9ed473cfc72ae53e89abd844b69d64429856afc8",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "public_dependency_declaration": "# - https://docs.opensearch.org/latest/install-and-configure/plugins/"
+            },
+            {
+              "line": 3,
+              "public_dependency_declaration": "# - https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/"
+            },
+            {
+              "line": 5,
+              "declaration": "FROM opensearchproject/opensearch:3.8.0"
+            },
+            {
+              "line": 9,
+              "declaration": "SHELL [\"/bin/bash\", \"-c\"]"
+            },
+            {
+              "line": 27,
+              "public_dependency_declaration": "https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/3.8.0.0/prometheus-exporter-3.8.0.0.zip"
+            },
+            {
+              "line": 30,
+              "declaration": "COPY ./opensearch/opensearch-entrypoint.sh /usr/local/bin/opensearch-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "opentofu",
+          "build_input": "infra/09-platform-ops/opentofu/docker-compose.yml#dockerfile_inline",
+          "input_sha256": "e36c0597c96fd8b24be81e7d2e2147b04db86b472ce92e858d2a35157d824cd2",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM ghcr.io/opentofu/opentofu:1.12.6-minimal AS tofu"
+            },
+            {
+              "line": 2,
+              "declaration": "FROM alpine:3.24"
+            },
+            {
+              "line": 3,
+              "public_dependency_declaration": "RUN apk add --no-cache \\"
+            },
+            {
+              "line": 6,
+              "public_dependency_declaration": "curl \\"
+            },
+            {
+              "line": 9,
+              "declaration": "COPY --from=tofu /usr/local/bin/tofu /usr/local/bin/tofu"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "spark",
+          "build_input": "infra/12-analytics/spark/Dockerfile",
+          "input_sha256": "e5d71d411ba653d2c1d8da090b1c55594e7d71d0990ac5354351b933c40e509a",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM apache/spark:4.1.3-scala2.13-java21-python3-ubuntu"
+            },
+            {
+              "line": 8,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-4.1_2.13/1.11.0/iceberg-spark-runtime-4.1_2.13-1.11.0.jar \\"
+            },
+            {
+              "line": 11,
+              "public_dependency_declaration": "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/1.11.0/iceberg-aws-bundle-1.11.0.jar \\"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "stalwart-config",
+          "build_input": "infra/10-communication/stalwart/config/Dockerfile",
+          "input_sha256": "85e31f204b5c525b47ccd5277ced2441b86158530651d5e61abeb0bdedab42ce",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 4,
+              "declaration": "FROM ghcr.io/stalwartlabs/cli:1.0.13@sha256:9a1e07307d6f890a193322c4b737fc0868405f0f8486a19922cbf362f43884fd AS cli"
+            },
+            {
+              "line": 5,
+              "declaration": "FROM stalwartlabs/stalwart:v0.16.25@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3"
+            },
+            {
+              "line": 6,
+              "declaration": "COPY --from=cli /usr/local/bin/stalwart-cli /usr/local/bin/stalwart-cli"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T16:12:44Z"
+        },
+        {
+          "service": "superset",
+          "build_input": "infra/12-analytics/superset/Dockerfile",
+          "input_sha256": "a98cd78e992a4da5580bd00f141d07270b8d9a600fc6a1b5725eaf7166c66d00",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM apache/superset:6.1.0"
+            },
+            {
+              "line": 6,
+              "declaration": "COPY requirements.txt /tmp/requirements.txt"
+            },
+            {
+              "line": 7,
+              "public_dependency_declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/12-analytics/superset/requirements.txt",
+              "sha256": "3cecd9dbdbd48e9c3e0eddd0abc87bd57995decc72012086ceaf499daf73bc1d"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "superset-init",
+          "build_input": "infra/12-analytics/superset/Dockerfile",
+          "input_sha256": "a98cd78e992a4da5580bd00f141d07270b8d9a600fc6a1b5725eaf7166c66d00",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM apache/superset:6.1.0"
+            },
+            {
+              "line": 6,
+              "declaration": "COPY requirements.txt /tmp/requirements.txt"
+            },
+            {
+              "line": 7,
+              "public_dependency_declaration": "RUN uv pip install --no-cache --python /app/.venv/bin/python -r /tmp/requirements.txt \\"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/12-analytics/superset/requirements.txt",
+              "sha256": "3cecd9dbdbd48e9c3e0eddd0abc87bd57995decc72012086ceaf499daf73bc1d"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "surrealdb",
+          "build_input": "infra/08-ai/open-notebook/surrealdb/Dockerfile",
+          "input_sha256": "bae1163b69d3334734fe7ab7a4de4e8951582c3237a6154b2a59b30fa7fc1a9e",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM surrealdb/surrealdb:v2 AS surreal"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM debian:bookworm-slim"
+            },
+            {
+              "line": 5,
+              "public_dependency_declaration": "RUN apt-get update \\"
+            },
+            {
+              "line": 6,
+              "public_dependency_declaration": "&& apt-get install -y --no-install-recommends ca-certificates bash \\"
+            },
+            {
+              "line": 9,
+              "declaration": "COPY --from=surreal /surreal /usr/local/bin/surreal"
+            },
+            {
+              "line": 10,
+              "declaration": "COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "tempo",
+          "build_input": "infra/06-observability/tempo/Dockerfile",
+          "input_sha256": "74e1041aa1ca173e1e56132e3d24d3c5b9bb871829294594ff68fcef77b33d6d",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "FROM grafana/tempo:3.0.3 AS upstream"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM alpine:3.24.2"
+            },
+            {
+              "line": 5,
+              "public_dependency_declaration": "RUN apk add --no-cache busybox wget ca-certificates \\"
+            },
+            {
+              "line": 9,
+              "declaration": "COPY --from=upstream /tempo /usr/bin/tempo"
+            },
+            {
+              "line": 10,
+              "declaration": "COPY --chmod=0755 docker-entrypoint.sh /docker-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "storybook",
+          "build_input": "projects/storybook/nextjs/Dockerfile",
+          "input_sha256": "4ea1a9ddf938cb163af2dc0010bdbedabd10880e05171949232208a3b7b8c2ce",
+          "declarations": [
+            {
+              "line": 3,
+              "declaration": "ARG NODE_IMAGE=node:24.21.0-alpine3.24@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1"
+            },
+            {
+              "line": 4,
+              "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+            },
+            {
+              "line": 5,
+              "declaration": "ARG NGINX_IMAGE=nginxinc/nginx-unprivileged:1.31.6-alpine3.24@sha256:26b0bf6fbf07297983cb341998d79c831508787de26627dd2a112321b9c3a4af"
+            },
+            {
+              "line": 6,
+              "declaration": "FROM ${NODE_IMAGE} AS build"
+            },
+            {
+              "line": 8,
+              "declaration": "COPY package.json package-lock.json ./"
+            },
+            {
+              "line": 9,
+              "declaration": "COPY packages/ui/package.json packages/ui/package.json"
+            },
+            {
+              "line": 10,
+              "public_dependency_declaration": "RUN npm ci --ignore-scripts"
+            },
+            {
+              "line": 11,
+              "declaration": "COPY . ."
+            },
+            {
+              "line": 12,
+              "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+            },
+            {
+              "line": 18,
+              "public_dependency_declaration": "RUN npm run build-storybook && npm run build:mcp"
+            },
+            {
+              "line": 22,
+              "declaration": "FROM ${NODE_IMAGE} AS mcp"
+            },
+            {
+              "line": 23,
+              "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+            },
+            {
+              "line": 26,
+              "declaration": "COPY --from=build /work/mcp-dist/server.mjs mcp/server.mjs"
+            },
+            {
+              "line": 27,
+              "declaration": "COPY --from=build /work/storybook-static/manifests/ storybook-static/manifests/"
+            },
+            {
+              "line": 28,
+              "declaration": "COPY --from=build /work/storybook-static/revision.json storybook-static/revision.json"
+            },
+            {
+              "line": 33,
+              "declaration": "FROM ${NGINX_IMAGE}"
+            },
+            {
+              "line": 34,
+              "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+            },
+            {
+              "line": 36,
+              "declaration": "COPY --from=build /work/storybook-static/ /usr/share/nginx/html/"
+            },
+            {
+              "line": 37,
+              "declaration": "COPY nginx.conf /etc/nginx/conf.d/default.conf"
+            },
+            {
+              "line": 41,
+              "public_dependency_declaration": "CMD wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "projects/storybook/nextjs/package.json",
+              "sha256": "12ebf4b0992b169de22789a97e22a0737d201f6ba21ed56efbad403185c3a769"
+            },
+            {
+              "path": "projects/storybook/nextjs/package-lock.json",
+              "sha256": "2b91d0ba661ac7b182231c569efe302a7be71412f5b92993ca1be3f1a1a6f9bb"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_binding": "infra/13-experience/storybook/README.md links this Dockerfile; mcp image has separately unresolved build source.",
+          "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+        },
+        {
+          "service": "openbao",
+          "build_input": "infra/03-security/openbao/build/Dockerfile",
+          "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+            },
+            {
+              "line": 3,
+              "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+            },
+            {
+              "line": 4,
+              "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+            },
+            {
+              "line": 6,
+              "declaration": "RUN --mount=type=bind,source=apks,target=/public/apks,readonly apk --no-logfile --keys-dir /public/keys verify /public/apks/*.apk && apk --no-logfile --keys-dir /public/keys add --no-cache --no-network /public/apks/*.apk && addgroup -g 1000 openbao && adduser -S -u 100 -G openbao openbao && awk -F: -v OFS=: -v epoch=\"$SOURCE_DATE_EPOCH\" 'BEGIN {if(epoch !~ /^[0-9]+$/) exit 1; day=int(epoch/86400)} $1==\"openbao\" {if(NF!=9 || $2 !~ /^[!*]/) exit 1; $3=day; count++} {print} END {if(count!=1) exit 1}' /etc/shadow > /etc/shadow.hyhome && cat /etc/shadow.hyhome > /etc/shadow && rm /etc/shadow.hyhome && ln -s /usr/bin/bao /usr/bin/vault && mkdir -p /openbao/logs /openbao/file /openbao/config && chown -R 100:1000 /openbao"
+            },
+            {
+              "line": 7,
+              "declaration": "ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+            },
+            {
+              "line": 8,
+              "declaration": "EXPOSE 8200"
+            },
+            {
+              "line": 9,
+              "declaration": "USER openbao"
+            },
+            {
+              "line": 10,
+              "declaration": "ENTRYPOINT [\"docker-entrypoint.sh\"]"
+            },
+            {
+              "line": 11,
+              "declaration": "CMD [\"server\", \"-dev\", \"-dev-no-store-token\"]"
+            },
+            {
+              "line": 12,
+              "declaration": "LABEL org.opencontainers.image.source=\"https://github.com/openbao/openbao\""
+            },
+            {
+              "line": 13,
+              "declaration": "LABEL org.opencontainers.image.revision=\"a5db72cef75c24b920ade02065b18dd8eb666bac\""
+            },
+            {
+              "line": 14,
+              "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.3.net0.60.0.r1\""
+            },
+            {
+              "line": 15,
+              "declaration": "LABEL com.hyhome.openbao.upstream_signed=\"false\""
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/03-security/openbao/build/build-inputs.json",
+              "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+            },
+            {
+              "path": "infra/03-security/openbao/build/go-modules.patch",
+              "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+            },
+            {
+              "path": "infra/03-security/openbao/build/owned_image_oci.py",
+              "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+            },
+            {
+              "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+              "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+            }
+          ],
+          "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
+          "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00"
+        },
+        {
+          "service": "openbao-agent",
+          "build_input": "infra/03-security/openbao/build/Dockerfile",
+          "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+            },
+            {
+              "line": 3,
+              "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+            },
+            {
+              "line": 4,
+              "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+            },
+            {
+              "line": 6,
+              "declaration": "RUN --mount=type=bind,source=apks,target=/public/apks,readonly apk --no-logfile --keys-dir /public/keys verify /public/apks/*.apk && apk --no-logfile --keys-dir /public/keys add --no-cache --no-network /public/apks/*.apk && addgroup -g 1000 openbao && adduser -S -u 100 -G openbao openbao && awk -F: -v OFS=: -v epoch=\"$SOURCE_DATE_EPOCH\" 'BEGIN {if(epoch !~ /^[0-9]+$/) exit 1; day=int(epoch/86400)} $1==\"openbao\" {if(NF!=9 || $2 !~ /^[!*]/) exit 1; $3=day; count++} {print} END {if(count!=1) exit 1}' /etc/shadow > /etc/shadow.hyhome && cat /etc/shadow.hyhome > /etc/shadow && rm /etc/shadow.hyhome && ln -s /usr/bin/bao /usr/bin/vault && mkdir -p /openbao/logs /openbao/file /openbao/config && chown -R 100:1000 /openbao"
+            },
+            {
+              "line": 7,
+              "declaration": "ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+            },
+            {
+              "line": 8,
+              "declaration": "EXPOSE 8200"
+            },
+            {
+              "line": 9,
+              "declaration": "USER openbao"
+            },
+            {
+              "line": 10,
+              "declaration": "ENTRYPOINT [\"docker-entrypoint.sh\"]"
+            },
+            {
+              "line": 11,
+              "declaration": "CMD [\"server\", \"-dev\", \"-dev-no-store-token\"]"
+            },
+            {
+              "line": 12,
+              "declaration": "LABEL org.opencontainers.image.source=\"https://github.com/openbao/openbao\""
+            },
+            {
+              "line": 13,
+              "declaration": "LABEL org.opencontainers.image.revision=\"a5db72cef75c24b920ade02065b18dd8eb666bac\""
+            },
+            {
+              "line": 14,
+              "declaration": "LABEL org.opencontainers.image.version=\"2.7.1+hyhome.go1.27.3.net0.60.0.r1\""
+            },
+            {
+              "line": 15,
+              "declaration": "LABEL com.hyhome.openbao.upstream_signed=\"false\""
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/03-security/openbao/build/build-inputs.json",
+              "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+            },
+            {
+              "path": "infra/03-security/openbao/build/go-modules.patch",
+              "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+            },
+            {
+              "path": "infra/03-security/openbao/build/owned_image_oci.py",
+              "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+            },
+            {
+              "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+              "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+            }
+          ],
+          "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
+          "source_refreshed_at": "2026-10-14T06:16:08.390654+00:00"
+        }
+      ],
+      "meaning": "Prior source snapshot preserved; no current build/installed SBOM inferred."
+    },
+    {
+      "preserved_at": "2026-10-26T14:31:47.914916+00:00",
+      "source_revision": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+      "meaning": "Prior shared-default source interpretation before ROOT-only scope correction",
+      "inputs": [
+        {
+          "service": "opensearch",
+          "build_input": "infra/04-data/opensearch/Dockerfile",
+          "input_sha256": "505ecc93e0a02c56a3fafd47eaea43b14d6aa2daf8e7f7353175a912b6a991a0",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 5,
+              "declaration": "FROM opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c"
+            },
+            {
+              "line": 9,
+              "declaration": "SHELL [\"/bin/bash\", \"-c\"]"
+            },
+            {
+              "line": 17,
+              "declaration": "RUN /usr/share/opensearch/bin/opensearch-plugin install --batch \\"
+            },
+            {
+              "line": 26,
+              "declaration": "RUN /usr/share/opensearch/bin/opensearch-plugin install \\"
+            },
+            {
+              "line": 30,
+              "declaration": "COPY ./opensearch/opensearch-entrypoint.sh /usr/local/bin/opensearch-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        }
+      ]
+    },
+    {
+      "preserved_at": "2026-10-26T14:53:34.818326+00:00",
+      "source_revision": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+      "meaning": "Prior package-source records before separately reviewed Storybook and SMTP security continuation; no new image receipt",
+      "input_manifest_sha256": "971c0fefa785f4f0c6d28d5081e6d0f8a864af04f07268ff95a75ade20b44759",
+      "inputs": [
+        {
+          "service": "n8n",
+          "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
+          "input_sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b",
+          "compose_build_args": {
+            "N8N_VERSION": "2.43.6"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG N8N_VERSION=2.43.6"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
+            },
+            {
+              "line": 16,
+              "declaration": "FROM node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS opsflow-builder"
+            },
+            {
+              "line": 18,
+              "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json ./"
+            },
+            {
+              "line": 20,
+              "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/*.ts ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json ./"
+            },
+            {
+              "line": 31,
+              "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833"
+            },
+            {
+              "line": 32,
+              "declaration": "ARG N8N_VERSION=2.43.6"
+            },
+            {
+              "line": 36,
+              "declaration": "COPY --from=opsflow-builder /artifact/opsflow /opt/hyhome/n8n-custom/opsflow"
+            },
+            {
+              "line": 38,
+              "declaration": "COPY --from=font-builder /usr/share/fonts /usr/share/fonts"
+            },
+            {
+              "line": 39,
+              "declaration": "COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig"
+            },
+            {
+              "line": 40,
+              "declaration": "COPY --from=font-builder /etc/fonts /etc/fonts"
+            },
+            {
+              "line": 41,
+              "declaration": "COPY --from=font-builder /font-builder-packages.txt /usr/share/hy-home-font-builder-packages.txt"
+            },
+            {
+              "line": 61,
+              "declaration": "COPY --chown=node:node ./custom /home/node/.n8n/custom"
+            },
+            {
+              "line": 62,
+              "declaration": "COPY --chown=node:node ./docker-entrypoint.dev.sh /home/node/docker-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+          "alternate_build_inputs": [
+            {
+              "build_input": "infra/07-workflow/n8n/Dockerfile",
+              "input_sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad",
+              "meaning": "Production selector alternative; native build NOT_RUN"
+            }
+          ]
+        },
+        {
+          "service": "n8n-worker",
+          "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
+          "input_sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b",
+          "compose_build_args": {
+            "N8N_VERSION": "2.43.6"
+          },
+          "declarations": [
+            {
+              "line": 1,
+              "declaration": "ARG N8N_VERSION=2.43.6"
+            },
+            {
+              "line": 3,
+              "declaration": "FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder"
+            },
+            {
+              "line": 16,
+              "declaration": "FROM node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS opsflow-builder"
+            },
+            {
+              "line": 18,
+              "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json ./"
+            },
+            {
+              "line": 20,
+              "declaration": "COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/*.ts ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json ./"
+            },
+            {
+              "line": 31,
+              "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833"
+            },
+            {
+              "line": 32,
+              "declaration": "ARG N8N_VERSION=2.43.6"
+            },
+            {
+              "line": 36,
+              "declaration": "COPY --from=opsflow-builder /artifact/opsflow /opt/hyhome/n8n-custom/opsflow"
+            },
+            {
+              "line": 38,
+              "declaration": "COPY --from=font-builder /usr/share/fonts /usr/share/fonts"
+            },
+            {
+              "line": 39,
+              "declaration": "COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig"
+            },
+            {
+              "line": 40,
+              "declaration": "COPY --from=font-builder /etc/fonts /etc/fonts"
+            },
+            {
+              "line": 41,
+              "declaration": "COPY --from=font-builder /font-builder-packages.txt /usr/share/hy-home-font-builder-packages.txt"
+            },
+            {
+              "line": 61,
+              "declaration": "COPY --chown=node:node ./custom /home/node/.n8n/custom"
+            },
+            {
+              "line": 62,
+              "declaration": "COPY --chown=node:node ./docker-entrypoint.dev.sh /home/node/docker-entrypoint.sh"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+          "alternate_build_inputs": [
+            {
+              "build_input": "infra/07-workflow/n8n/Dockerfile",
+              "input_sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad",
+              "meaning": "Production selector alternative; native build NOT_RUN"
+            }
+          ]
+        },
+        {
+          "service": "storybook",
+          "build_input": "projects/storybook/nextjs/Dockerfile",
+          "input_sha256": "4ea1a9ddf938cb163af2dc0010bdbedabd10880e05171949232208a3b7b8c2ce",
+          "declarations": [
+            {
+              "line": 3,
+              "declaration": "ARG NODE_IMAGE=node:24.21.0-alpine3.24@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1"
+            },
+            {
+              "line": 4,
+              "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+            },
+            {
+              "line": 5,
+              "declaration": "ARG NGINX_IMAGE=nginxinc/nginx-unprivileged:1.31.6-alpine3.24@sha256:26b0bf6fbf07297983cb341998d79c831508787de26627dd2a112321b9c3a4af"
+            },
+            {
+              "line": 6,
+              "declaration": "FROM ${NODE_IMAGE} AS build"
+            },
+            {
+              "line": 8,
+              "declaration": "COPY package.json package-lock.json ./"
+            },
+            {
+              "line": 9,
+              "declaration": "COPY packages/ui/package.json packages/ui/package.json"
+            },
+            {
+              "line": 11,
+              "declaration": "COPY . ."
+            },
+            {
+              "line": 12,
+              "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+            },
+            {
+              "line": 22,
+              "declaration": "FROM ${NODE_IMAGE} AS mcp"
+            },
+            {
+              "line": 23,
+              "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+            },
+            {
+              "line": 26,
+              "declaration": "COPY --from=build /work/mcp-dist/server.mjs mcp/server.mjs"
+            },
+            {
+              "line": 27,
+              "declaration": "COPY --from=build /work/storybook-static/manifests/ storybook-static/manifests/"
+            },
+            {
+              "line": 28,
+              "declaration": "COPY --from=build /work/storybook-static/revision.json storybook-static/revision.json"
+            },
+            {
+              "line": 33,
+              "declaration": "FROM ${NGINX_IMAGE}"
+            },
+            {
+              "line": 34,
+              "declaration": "ARG STORYBOOK_SOURCE_REVISION"
+            },
+            {
+              "line": 36,
+              "declaration": "COPY --from=build /work/storybook-static/ /usr/share/nginx/html/"
+            },
+            {
+              "line": 37,
+              "declaration": "COPY nginx.conf /etc/nginx/conf.d/default.conf"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "projects/storybook/nextjs/package.json",
+              "sha256": "4ba2517319fc2614a533ee9678b46e7c9c515c6a01eca4ebe3edfd642a374cb0"
+            },
+            {
+              "path": "projects/storybook/nextjs/package-lock.json",
+              "sha256": "9bdb91d2198b1d050c2b7dcbefc441e0afa10f5ed68b3200c0d1825fe1d0e070"
+            }
+          ],
+          "installed_sbom": "NOT_RUN",
+          "source_binding": "infra/13-experience/storybook/README.md links this Dockerfile; mcp image has separately unresolved build source.",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+          "compose_build_args": {}
+        }
+      ]
+    }
+  ],
+  "local_source_rebindings": [
+    {
+      "observed_at": "2026-10-26T11:42:17.315903+00:00",
+      "input_head": "8fc4620da970c5a8382edc9ebed72ed82d29891d",
+      "revision_scope": "Current local source including opt-in F23 leaf overlays; not a committed/build/native acceptance receipt",
+      "source_input_manifest_sha256": "e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94",
+      "inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "20b72108463e4883b4bed328507021a152436fd4a04fe163fe2bf26f9f18f411"
+        },
+        {
+          "path": "infra/common-optimizations.yml",
+          "sha256": "77abe65cbc29b29f2dd85d5fb3c594b2140c0f0ff85a895bb978d488477eced1"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
+          "sha256": "a940e0064c8996281f16fcada4b7119d17b477a7b03530539b84c594959b05ca"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
+          "sha256": "775cc3146e479aebdb6bcf9a710997fc7196b3805de507a4ed8962ac5cc80751"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml",
+          "sha256": "f66375f5d77a82cc8ac9a79e6dcd611b481d70b034f6bd6ff55d02252c33a520"
+        },
+        {
+          "path": "infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh",
+          "sha256": "7f97aa5ddf16a93059307b5fe2ae9858c2be9b8b874c097e0eba076a769ffad2"
+        },
+        {
+          "path": "infra/03-security/openbao/secret-catalog.json",
+          "sha256": "e52aba6e12cb9984a09fc74b463bb4da395b9cc7c54fdd2aeecbacbe50553011"
+        },
+        {
+          "path": "secrets/SENSITIVE_ENV_VARS.md.example",
+          "sha256": "f3ee29ec45f0bbdf6a0db47d0de3264f555318b3bd8da50f16acdb1669509169"
+        }
+      ],
+      "service_count": 111,
+      "include_count": 44,
+      "meaning": "Three existing broker/exporter pairs only; base controls and legacy risk unchanged. Public source and synthetic checks; adoption/rotation/AOF/HOME/recovery NOT_RUN.",
+      "public_template_count_correction": "Replace stale pre-existing hardcoded Docker Secret count with canonical table/catalog coverage reference; no scope/classification inference from unique path count."
+    },
+    {
+      "observed_at": "2026-10-26T14:31:47.914916+00:00",
+      "input_head": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+      "revision_scope": "Uncommitted ROOT-only OpenSearch scope correction; not a committed/build/native acceptance receipt",
+      "source_input_manifest_sha256": "1d2edfeed54e001ac749e9fd549cf1b13d1d5532070209e72a45b0c6866a4366",
+      "inputs": [
+        {
+          "path": "infra/04-data/opensearch/Dockerfile",
+          "sha256": "6ea197cccc0f735199efc82469431790fbf70762a7f4733c249f49364ed408d4"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
+        },
+        {
+          "path": "labs/opensearch-cluster.yml",
+          "sha256": "8624025272a7c053b039c9f13bdccaa0aca62e5529d3b026d0570cafbf26fa21"
+        }
+      ],
+      "service_count": 111,
+      "include_count": 44,
+      "meaning": "ROOT explicitly selects engine/exporter3.9; shared Dockerfile defaults and LAB Dashboard restored to baseline3.8. LAB excluded by v30 section14.3; no LAB render/build/run. Supplier/runtime/security facts unchanged."
+    }
+  ]
 }

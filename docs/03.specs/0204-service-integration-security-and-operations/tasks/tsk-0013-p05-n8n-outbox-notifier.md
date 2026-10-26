@@ -1,10 +1,10 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.3.6"
+version: "0.3.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0013"
 parent_ids:
@@ -1255,3 +1255,77 @@ and latest main. No local aggregate rerun, shared-source correction, image
 change, scanner change or native operation is included in this refresh.
 Post-refresh head/run/merge identities are observable in this same PR; they
 cannot be inferred from the first run's PASS.
+
+#### Bounded Nodemailer security source correction — 2026-10-26
+
+The v30 local-source request authorizes this four-path P05 correction from
+HEAD `0d2392f93b975faa36f03b2361d80f3ddb72e487`: the OpsflowSmtp package,
+lock, README and this Task. Existing workflow, SQL, node/transport code,
+credentials, services and image inputs are unchanged. This is dependency source
+preparation; it installs no package into a service and sends no mail.
+
+The preserved pre-change audit at
+`/tmp/hyhome-v30-opensearch-root-only-checks/npm-audit-1.json`, SHA256
+`c93519e6032f02784bcf5c63cd6e26ace9e6da8736331b097adc54155b8009a1`,
+reported Nodemailer 10.1.0 as a direct Moderate finding containing three
+address-parser advisories:
+[GHSA-8c8m-p3m8-cjg8](https://github.com/advisories/GHSA-8c8m-p3m8-cjg8),
+[GHSA-m943-m63m-w62w](https://github.com/advisories/GHSA-m943-m63m-w62w)
+and [GHSA-85x2-q946-cp5h](https://github.com/advisories/GHSA-85x2-q946-cp5h).
+All affected ranges end before 10.1.4. The existing fixed from/to/envelope
+accept no user-supplied address; exploitability in this bounded caller is not
+proven. Removing the affected dependency still avoids carrying the parser defect.
+
+The exact 10.1.4 pin uses the
+[official 2026-10-18 release](https://github.com/nodemailer/nodemailer/releases/tag/v10.1.4),
+which exceeds the seven-day stability window. Latest 10.2.1 was released on
+October 22, reaches that window on October 29 and includes broader SMTP changes;
+no claim of latest-version completion follows from this security correction.
+`npm install --package-lock-only --ignore-scripts --no-audit --no-fund` changed
+only the root dependency pin and Nodemailer version/resolved URL/integrity;
+all other locked package entries compare equal. Existing createTransport,
+sendMail, close, owned-socket, nonpool, envelope and timeout contracts remain.
+
+The exact package and lock SHA256 are respectively
+`ddfa26a5890a8fa5af87304920f24d1c8bd87be475a8b1c4650c9c9d4d7d06a5` and
+`3f9ca8952964b5e63af3a85a7ecc8fb6b417c940e914c5042239647043c53eb1`.
+Checks used Node 24.22.0, the existing Python 3.14.8 environment and private
+0600 logs with an empty temporary npm user/global configuration and owned cache.
+No dependency lifecycle script, force/fix action, new dependency or override was
+introduced. Evidence lives at `/tmp/hyhome-v30-smtp-security-aax_21mz`;
+`checks.json`, `registered-checks.json` and `contracts.json` retain actual argv,
+UTC start/end, exit and raw-output SHA256 for each command.
+
+| Actual command / check | Exit / result | Bound scope |
+| --- | --- | --- |
+| `npm ci --ignore-scripts --no-audit --no-fund` | 0 / PASS | Exact lock installation into local ignored node_modules only |
+| `npm run test:coverage` | 0 / PASS, 27 tests, zero skipped | Existing offline node/transport and in-memory SMTP tests; production lines 97.38%, branches 95.12%, functions 88.24% |
+| `npm audit` and JSON observation | 1 / FAIL | Zero Moderate, three High dependency entries; Nodemailer absent |
+| `npm audit --omit=dev` and JSON observation | 0 / PASS, zero findings | Production dependency audit only |
+| `npm pack --dry-run --ignore-scripts --json` after README correction | 0 / PASS, eight entries | Compiled artifacts present; no archive publication |
+| Existing P05 workflow, source contract and rehearsal-preflight modules plus two fixed-operation adapter tests | 0 / PASS, 22 tests | Source registration and fail-closed native prerequisite contracts |
+| Existing `tests.validation.test_smtp_lock_inheritance` whole module | 0 / PASS, ten tests | Synthetic lock inheritance and identity denials |
+
+Full audit remains FAIL through the existing locally development-installed
+`n8n-workflow` 2.43.4 → `@n8n/expression-runtime` 0.34.2 → exact Zod 3.25.76
+chain for [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5).
+The three High entries are dependency fanout, not three independent advisories.
+That installation classification is specific to this package lock; the packed
+artifact excludes node_modules. However, n8n-workflow is also an exact peer
+supplied by the n8n host. Host-peer/runtime applicability and exploitability
+remain UNKNOWN; the local production audit does not clear the host or runtime.
+The npm suggestion to downgrade n8n-workflow to 1.75.1 is incompatible with the
+selected native peer contract and is not applied. A Zod major override is also
+not applied. An upstream compatible API fix and independent caller/runtime
+assessment remain required; the existing security disposition is not extended.
+
+The post-change full-audit JSON SHA256 is
+`074e82195fac4d123a56ae84bb6448280c96469d5b9ea1fdd3d1f853b036788e`;
+production-audit JSON is
+`90c5406b46cbaa8d9447baa7686b930a0dbdd46081460f33682bfc75d9dd4fef`.
+Source/unit correction is verified within these inputs. Independent source and
+security review, staged admission and the registered final aggregate remain
+pending this candidate's coordinator handoff. Native loader discovery, service
+installation, actual SMTP/DB execution, HOME, migration, rotation and recovery
+remain NOT_RUN for this increment. Earlier failures and historical receipts
+above remain unchanged; no source result accepts those lanes.

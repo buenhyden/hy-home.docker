@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.27"
+version: "0.4.30"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -2481,6 +2481,252 @@ NGINX stable/mainline, Debezium3.6/3.7을 구분합니다.
 취약점 도달성 판정으로 승격하지 않습니다. 서명·full-image SBOM/scan·호환·
 native·HOME·backup/rollback/recovery와 criterion15는 미완료 상태를 유지합니다.
 
+### v30 bounded source preparation — 2026-10-26
+
+The current direct v30 request and coordinator dispatch authorize criterion 15
+source preparation on branch `codex/v30-infra-source-completion`, input HEAD
+`c05a59007aa16e8874b05805f41e7aed606260fe`. Requirements REQ-0027,
+architecture AD-0031/ADR-0046, this approved Spec and current Plan retain their
+existing ownership. The current request supersedes the historical security-only
+version restriction; ordinary seven-day soak and independent review still apply.
+No completed Task or criterion decision is reopened.
+
+Four mature source candidates have independent prechange READY: Grafana,
+Stalwart server with its paired config-builder server base, Crawl4AI and
+SonarQube Community Build. Official release/channel, exact index bytes and the
+unique linux/amd64 manifest bytes were checked; SHA256 and registry digest
+headers agreed. Config descriptors are recorded separately: config contents,
+layers, signatures, full-image SBOM/scans and runtime were not fetched or run.
+The Stalwart CLI remains independently pinned while its newer release soaks.
+Existing image controls, credentials, networks, listeners and stored data stay
+within their current contracts. Source rollback is a logical revert; it does
+not reverse database, mailstore or other runtime state migrations.
+
+The single infra writer owns exactly these paths for this continuation:
+
+```text
+infra/06-observability/docker-compose.yml
+infra/08-ai/crawl4ai/docker-compose.yml
+infra/10-communication/stalwart/docker-compose.yml
+infra/10-communication/stalwart/config/Dockerfile
+infra/11-quality/sonarqube/docker-compose.yml
+infra/tech-stack.versions.json
+tests/validation/test_sec01_version_contract.py
+tests/validation/test_crawl4ai_egress.py
+infra/09-platform-ops/security-updates/release-lookups.json
+infra/09-platform-ops/security-updates/image-source-lookups.json
+infra/09-platform-ops/security-updates/update-ledger.json
+infra/09-platform-ops/security-updates/build-inputs.json
+infra/09-platform-ops/security-updates/README.md
+docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0009-sec01-stable-security-integration.md
+infra/06-observability/grafana/README.md
+infra/08-ai/crawl4ai/README.md
+infra/10-communication/stalwart/README.md
+infra/11-quality/sonarqube/README.md
+docs/05.operations/guides/09-ai-and-search/0091-crawl4ai.md
+docs/05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md
+docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
+```
+
+Use the existing projection and bounded service-inventory renderers only.
+Preserve all historical observations, failed lookups, accepted-image decisions
+and runtime/scan timestamps. The existing supplier grouping is reused for fresh
+facts and individual dispositions for the observed ROOT source set; it is not a
+new registry or a claim that every service received full semantic review.
+The selected Storybook image producer/build receipts remain external inputs.
+Other candidates keep exact soak dates, compatibility/artifact blockers,
+mitigations, next review and exit conditions instead of being silently skipped.
+
+Before mutation, the real old source failed all six candidate pin/pair checks
+(testsRun 6, failures 6, errors 0, skipped 0, exit 1). The actual output is
+`/tmp/hyhome-v30-r27-candidate-red.txt`. The 13-path authored draft passed
+read-only `git apply --check`; its SHA256 is
+`bcad7405eadca30aad723b96830151f373711955b24fbbca238086130759fcc0`.
+Derived data and final source bindings are computed only after actual apply.
+The parallel QA writer owns its separate B3 harness file; neither writer stages,
+commits or invokes parking hooks until both source units freeze.
+
+The earlier full public changed runs remain FAIL: the first on `afa343a8`
+reported 5 PASS / 1 FAIL / 27 NOT_RUN in 400.196 seconds for two README entry
+links; the corrected input `c05a59007` reported 9 PASS / 1 FAIL / 23 NOT_RUN in
+2020.524 seconds, with two filesystem-boundary errors in a 774-test leaf.
+Its focused two-test retry under the approved writable Git boundary passed
+in 51.365 seconds with matching cleanup inventory. That focused result does
+not turn either aggregate into PASS. New source requires its own final
+registered changed run after reviewed commits.
+
+New-image compatibility, Native, HOME, migration, backup/restore, rotation,
+consumer uptake and delivery are NOT_RUN for this source-preparation unit.
+Criterion 15 and this Task remain pending/in-progress. Source/fixture checks,
+derived parity, selected metadata, independent final review, staged admission
+and normal commits are recorded below when actually executed.
+
+### v30 Gatus source extension — 2026-10-26
+
+The coordinator granted three additional files after independent infrastructure
+prereview READY: `infra/06-observability/gatus/Dockerfile`, its README, and
+`tests/validation/test_gatus_oidc.py`. The existing SEC01 source/binding files
+remain the evidence owner. The mature v5.37.0 source resolves to commit
+`ae605f291928ed9b3bdbe60ae5528cc57631433b`, archive SHA256
+`79145709c1f5328fa01ff472d6c1d083cc8eb1bba90ea2dc6def628e88e3c406`.
+The source regression first failed once against the unchanged archive pin.
+Only archive ref/hash and its two expected constants may change. Preserve
+Go 1.26.4, both Alpine selections, the exact owned OIDC patch, entrypoint,
+configuration, zero-fuzz application, tidy-diff and upstream security tests.
+The existing SDK satisfies upstream go1.26.3 and dependency go1.25 floors;
+this does not resolve compiler/base security debt. SQLite1.50.1 to1.59.0,
+crypto dependencies, actual Go/module execution, image build, native OIDC,
+state restoration and HOME remain separately unverified. No new runtime or
+image pull is authorized by this source extension. Source recovery is a
+logical revert; state recovery requires the existing owner contract.
+
+### v30 source and public-fact checks — 2026-10-26
+
+The four image candidates and the additional Gatus archive candidate were applied
+within the reviewed leases. The existing tech-stack generator wrote five image
+cells and its check passed; the existing bounded m0021 renderer produced no cell
+difference, so that document remains byte-identical. Public root Compose config
+passed with `.env.example`, `--no-env-resolution`, `--no-path-resolution` and
+`--quiet`; this neither read private environment files nor started services.
+
+The existing SEC01 evidence files now retain 111 current rows, 68 supplier groups,
+44 Compose input hashes, 33 selected build-consumer rows (22 unique Dockerfiles
+and one inline source), and 166 additional public observations. Historical DNS
+failures, HTTP errors and earlier interpretations remain recorded. Four image
+index/platform manifest bodies matched their declared SHA256 and response digest;
+config descriptors are recorded without fetching their bodies. Signature,
+installed-image SBOM/scan, new image builds and Native/restore/HOME remain NOT_RUN.
+The Gatus archive, existing patch applicability and declared SDK floor are source
+facts only. No running-state timestamp, previous scan or native result was
+refreshed. Previous interpretation snapshots preserve all111 rows.
+
+Temporary buffered normalization first exposed scalar Compose build and singleton
+OCI receipt shape errors before any repository write. The validate-only buffered
+pass then succeeded. The existing supply-chain tests later found five failures
+and one error caused by missing supplier keys, null instead of the existing
+UNKNOWN sentinel, and the exact SEC01 blocker owner contract. Data was corrected
+without changing tests; 28 tests passed in5.160seconds, and the final source-fact
+binding pass again passed28 in5.221seconds. Known official product/channel and
+primary URL facts were filled independently of artifact or runtime readiness.
+
+The actual submitted latest gate remains FAIL, with overlapping categories:
+47 latest mismatches,4 unresolved exact targets,8 non-stable/unproven channels,
+2 stale/missing producer facts and2 missing primary references. The latter two
+categories are the two selected internal Storybook images. The other unresolved
+targets are ComfyUI's image/bundle/existing checkout identity and SurrealDB's
+mutablev2 artifact. The eight channel rows are ComfyUI, dbt, Jupyter, NGINX
+(explicit mainline), Ollama exporter, Pact and both Storybook services. These
+published-final/tag/date observations are not silently promoted to a vendor
+stable-channel assertion. Every candidate retains a specific owner, reason,
+review date, exit condition and state-recovery boundary.
+
+The initial combined source/adapter/SMTP run stalled at an existing resolver
+fixture and was interrupted(exit130). A narrowed restricted run also stalled
+there and was interrupted; the precise local resolver/socket boundary passed13
+existing egress tests in1.550seconds without weakening assertions. The separate
+source/adapter/SMTP invocation ran64 tests in2.141seconds with one class-setup
+ERROR because synthetic localhost HTTP socket creation was denied. It had no
+assertion failures. The one affected adapter class then passed19 tests in
+1.089seconds under the permitted synthetic socket boundary. These separate runs
+do not constitute one aggregate PASS. Gatus RED failed1 against the old archive;
+GREEN passed the full existing11-test module in0.268seconds. Actual upstream Go,
+new-image SMTP/Crawl4AI/OpenSearch/DB migration and full application behavior were
+not exercised by these source and synthetic fixtures.
+
+Selected metadata initially found two README runtime-version-copy findings among
+nine documents; only new prose was changed to reference canonical source and
+ledger ownership. The narrow metadata retry is pending below. Six changed
+service/evidence README entrypoints had0 findings. The changed Task/Guide/Runbook
+plus the three mandatory canonical routing documents had0 traceability findings.
+The earlier complete changed-gate failures and focused Git-boundary retry remain
+separate history; final registered aggregate validation belongs to the coordinator
+after all concurrent writers freeze and logical source commits complete.
+
+### v30 final mature-source extensions — 2026-10-26
+
+The coordinator authorized the independently reviewed OpenSearch and Trino source
+plans and the security-reviewed same-public-artifact SurrealDB pin. Exact added
+leases are `infra/04-data/opensearch/Dockerfile`, its root Compose and README,
+`labs/opensearch-cluster.yml`, `infra/12-analytics/trino/docker-compose.yml` and its
+README, plus `infra/08-ai/open-notebook/surrealdb/Dockerfile` and its README.
+Existing CandidateContract regressions, projections, SEC01 evidence and this Task
+remain the only additional consumers. No P01 Task, private inputs or runtime is
+owned by this source extension. Eight source units replace the earlier five-unit
+checkpoint; there is no arbitrary candidate-count completion boundary.
+
+OpenSearch keeps five builtin plugins, UID1000, environment-based password hash,
+existing entrypoint/TLS/secrets/network/storage, and pairs the LAB Dashboard with
+its shared engine Dockerfile. The exact exporter ZIP SHA and engine-version
+descriptor were verified without executing it. Both image index/platform records
+passed raw integrity checks after preserving an initial temporary HTTP-header
+normalization failure. Source rollback is a logical revert; an upgraded node
+cannot be downgraded and requires a fresh installation plus snapshot restoration.
+
+Trino replaces the removed run-trino command with the exact official launcher
+argv and preserves the secret wrapper/catalog, read-only template, capabilities,
+loopback exposure and scoped identity. The official source/config record proves
+its startup command, supported environment interpolation and retained legacy S3
+property alias. SQL/query/Iceberg/SigV4/native semantics remain NOT_RUN.
+
+SurrealDB replaces only the mutablev2 FROM with the exactv2.7.0 index that the
+public registry already serves forv2. Debian stage and copied binary path,
+entrypoint, current OpenNotebook version, secrets and storage remain unchanged.
+This improves source reproducibility and does not remediate the recorded Critical
+advisories, prove authenticated tenant/permission exposure, or identify the
+running binary/database format. Actual old-state compatibility, one-way format
+migration, whole-backup recovery and a future client/major upgrade require their
+existing independent plan and acceptance. No database operation is authorized.
+
+### v30 R31 document impact dispositions — 2026-10-26
+
+This is a bounded consumer-impact check for the eight reviewed source units, not
+a full semantic acceptance audit of every Operations document. Existing source
+and derived owners were reused; no new document family or registry was created.
+
+| Source unit | Existing Guide / Policy / Runbook owners | Disposition |
+| --- | --- | --- |
+| Grafana | [G](../../../05.operations/guides/07-observability/0041-grafana.md) / [P](../../../05.operations/policies/07-observability/0041-grafana.md) / [R](../../../05.operations/runbooks/07-observability/0041-grafana.md) | NO_CHANGE: datasource/provisioning, OIDC and existing state-recovery procedures retain the same inputs. |
+| Stalwart server/config | [G](../../../05.operations/guides/11-mail-and-notifications/0070-mail.md) / [P](../../../05.operations/policies/11-mail-and-notifications/0070-mail.md) / [R](../../../05.operations/runbooks/11-mail-and-notifications/0070-mail.md) | NO_CHANGE: CLI, mailstore, SMTP/DNS/TLS/identity and backup contracts are preserved; delivery remains untested. |
+| Crawl4AI | [G](../../../05.operations/guides/09-ai-and-search/0091-crawl4ai.md) / [P](../../../05.operations/policies/09-ai-and-search/0091-crawl4ai.md) / [R](../../../05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md) | Guide and Runbook CHANGED to separate the previous image rehearsal from the new source candidate; Policy NO_CHANGE: token/egress/consumer authorization boundaries are preserved. |
+| SonarQube Community | [G](../../../05.operations/guides/12-testing-and-quality/0066-sonarqube.md) / [P](../../../05.operations/policies/12-testing-and-quality/0066-sonarqube.md) / [R](../../../05.operations/runbooks/12-testing-and-quality/0066-sonarqube.md) | NO_CHANGE: secret-export handoff, OIDC, health and database/plugin upgrade/restore gates remain; no migration executed. |
+| Gatus archive | [G](../../../05.operations/guides/07-observability/0087-gatus.md) / [P](../../../05.operations/policies/07-observability/0087-gatus.md) / [R](../../../05.operations/runbooks/07-observability/0087-gatus.md) | NO_CHANGE: owned OIDC controls, probe/storage contracts and recovery procedure remain; new SQLite/crypto acceptance is pending. |
+| OpenSearch engine/exporter/ROOT+LAB Dashboard | [G](../../../05.operations/guides/05-databases-and-storage/0019-opensearch.md) / [P](../../../05.operations/policies/05-databases-and-storage/0019-opensearch.md) / [R](../../../05.operations/runbooks/05-databases-and-storage/0019-opensearch.md) | NO_CHANGE: matching plugins, TLS/secrets, index and fresh-install/snapshot recovery procedure remain; paired LAB source changes no running LAB state. |
+| Trino | [G](../../../05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md) / [P](../../../05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md) / [R](../../../05.operations/runbooks/13-analytics-and-data-quality/0094-lakehouse.md) | NO_CHANGE: secret wrapper, scoped SeaweedFS identity, catalog, loopback and query/recovery gates remain; only the official engine command changes. |
+| SurrealDB exact same-artifact pin | [G](../../../05.operations/guides/05-databases-and-storage/0080-surrealdb.md) / [P](../../../05.operations/policies/05-databases-and-storage/0080-surrealdb.md) / [R](../../../05.operations/runbooks/05-databases-and-storage/0080-surrealdb.md) | NO_CHANGE: client-major, tenant/permissions, whole-store backup and one-way migration gates remain; reproducibility is not security remediation. |
+
+For every row above, [REQ-0027](../../../01.requirements/0027-home-development-host.md) and
+[AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) are NO_CHANGE: capability tiers,
+host/network/storage/identity boundaries and required acceptance gates are not
+redefined. [Existing template contracts](../../../99.templates/README.md) are
+NO_CHANGE: document roles, frontmatter schema, lifecycle and authority routing
+are unchanged. Runtime versions remain in Compose/Dockerfile source and the
+existing derived registry; the Task/ledger retain dated evidence. The existing
+eight subject policies remain the procedure/authority owners, with pending
+native/stateful acceptance explicitly preserved.
+
+The three extension source regressions first failed3 against unchanged sources,
+then passed3 in0.043seconds after minimal implementation. The final existing
+SEC01 source and supply-chain suites passed40 tests in6.038seconds,0 failures,
+0 errors and0 skips. Public ROOT config passed with only the example environment
+and disabled environment-file/path resolution. LAB config first rejected the
+missing LAB_SECRET_DIR synthetic input; one narrower retry supplied only a
+nonexistent public temporary path and passed. It read no private secret values
+and started no containers. The existing projection generator/check passed with
+91 repositories and no repository addition/removal.
+
+The final eight-unit evidence checkpoint has111 rows/68 supplier groups,44 ROOT
+Compose inputs,33 existing build consumers and202 additional observations. Current
+ROOT source manifest SHA256 is
+`8287ee14113593fa36cb7f86a66f50fa28613c5919c01bbc730c3317cbfa4a6d`.
+The earlier five-unit counts and failed checks remain checkpoints above. Go
+builder candidates have explicit artifact-age exits on2026-10-29; same old
+Alpine-branch SDK tag lookup404 is preserved. ComfyUI actual metadata observes
+a writable/root volume, while checkout provenance/custody/backup remain unknown.
+SurrealDB publicv2 resolution identifies the current source artifact asv2.7.0,
+without identifying the installed binary or changing historical running facts.
+Three Critical official advisories and actual tenant/permission exposureUNKNOWN
+remain recorded. No new image build/Native/scan/restore/HOME PASS is asserted.
+
 ## Evidence
 
 The following table preserves the as-received source-only slice and earlier
@@ -2544,3 +2790,171 @@ accepted by this Task's received evidence.
 - [SPEC-0204 Plan](../plan.md)
 - [Security updates ledger](../../../../infra/09-platform-ops/security-updates/README.md)
 - [Platform Operations](../../../../infra/09-platform-ops/README.md)
+
+### v30 F23 local source rebinding — 2026-10-26
+
+After the eight reviewed mature source units were committed in
+`8797022281fdafa22885542fee13cc569319f875`, the directly authorized optional
+dedicated Valkey monitor source changes add three unused root Secret declarations
+and three existing leaf-base overlays. This is an observer-identity preparation
+slice under existing C16/P02 and C17/P03, not a ninth version update or an image
+build/deployment receipt. Their Tasks own the exact files, input checks and
+pending collector/adoption/rotation/recovery lanes.
+
+Only local source bindings change in the four existing SEC01 JSON files. The
+current root include manifest is
+`e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94`, with 111 services,
+44 inputs and eleven explicitly bound public F23 production files. All prior
+111 service/runtime rows, 33 build inputs and 399 official observations, including
+the 202 latest added observations, are preserved. The prior eight-unit source
+checkpoint is retained as history rather than relabeled globally current.
+Current local hash copies match the actual source bytes. No new remote query,
+image build, pull, runtime, scan/signature or Native acceptance is introduced.
+
+The existing wiring and catalog modules passed together: 30 tests, no failures,
+errors or skips, 21.044 seconds. Public Compose merge, canonical leaf membership,
+renderer rejection cases, current catalog check and canonical four-output
+check-views in a temporary fixed-public-input fixture pass. The existing image
+projection check and m0021 renderer require no changes. Initial metadata failed
+on three new README level-two headings; the narrowly corrected three READMEs
+pass with zero violations. Entrypoint/traceability reports zero findings.
+Independent actual production and local-binding review is READY; final exact
+Task/manifest review remains required before a logical local commit.
+
+The base dedicated exporter application/admin credential risk is retained and
+explicitly documented until optional adoption. Actual collector, queue/session,
+AOF, rotation, HOME and recovery are not accepted by source tests. The remaining
+latest/stable/provenance/soak dispositions from the eight-unit assessment and all
+old failed aggregate/native attempts remain unchanged. C15/C16/C17 acceptance
+remains pending; no full local aggregate PASS or operational rollback is claimed.
+
+### v30 ROOT-only OpenSearch scope correction — 2026-10-26
+
+The v30 section14.3 request excludes LAB service, Compose and image upgrades.
+Our earlier source commit `8797022281fdafa22885542fee13cc569319f875` nevertheless
+changed the LAB Dashboard image and shared Dockerfile defaults. That was a source
+scope error in this task. The earlier review and supplier observations remain
+historical facts; they do not expand the user's boundary.
+
+The root-authorized correction uses the independently reviewed twelve-path plan
+`/tmp/hyhome-v30-opensearch-root-only-scope-plan.md`, SHA256
+`8352ac9f542392a9af91006d56707517d54516b4565db846cca6e82d3e8d66c0`.
+Before production edits, this current Task records the exact narrow contract:
+restore only the LAB Dashboard line to baseline
+`136b7cac4483d4af8aaa73ca6dc3f9a0da521e10`; retain shared default engine/exporter
+3.8.0/3.8.0.0 for its unchanged caller; explicitly select the verified ROOT
+3.9.0 digest and matching exporter3.9.0.0 through existing Compose build args.
+ROOT Dashboard retains its verified3.9.0 digest. Five builtin plugins, UID/GID,
+secret-hash entrypoint, TLS/network/storage and all other controls remain.
+
+The exclusive source lease is the shared Dockerfile, ROOT Compose, one-line LAB
+restoration, existing SEC01 version contract, OpenSearch README, existing derived
+tech-stack projection, four existing SEC01 JSON records, security-updates README
+and this Task. No other LAB/source file, scanner/parser/schema/gate, package or
+framework is changed. The concurrent B3 helper and protected-token tests remain
+with their existing writer and are preserved. Meaningful RED/GREEN precedes
+public ROOT-only config and current local provenance refresh; existing publisher,
+prior failure and Native evidence is retained. No LAB render, image build/pull,
+Docker execution, private LAB input or operational rollback is authorized here.
+The final exact diff requires independent review and separate commit integration.
+C15 stays pending; a ROOT source correction does not prove image build, plugin
+load, TLS/auth/query, migration or fresh-install snapshot restoration.
+
+The actual correction passes the focused RED1FAIL to GREEN1PASS sequence; the
+final existing SEC01 module runs13tests, all PASS (0.886s), after splitting the
+new checks into functions below50lines. Existing update-gate tests run28tests,
+all PASS (4.952s). Canonical tech-stack check first detected the intended LAB
+projection drift, then its existing write/check path passes. Ruff, formatting
+and diff hygiene pass. Public ROOT-only Compose config with the example env and
+no env-file/path resolution selects the exact engine/exporter args and ROOT
+Dashboard; existing profiles, capabilities, no-new-privileges and networks remain.
+The LAB file is byte-identical to the declared baseline. No LAB configuration or
+runtime was rendered or executed. Canonical m0021 projection is NO_CHANGE.
+
+The local provenance parity check covers111row source hashes,44ROOT includes,
+33build records (32regular inputs plus one unchanged inline declaration), and
+preserves all399official observations, other32build rows and every runtime,
+signature, SBOM, Native and recovery field. Its initial temporary checker failed
+by treating the inline input identifier as a file; the narrower checker handles
+that existing distinction and passes without changing production code. The
+latest gate remains FAIL with overlapping categories45mismatch/3unresolved/
+7stable-channel/2freshness/2primary-reference, exactly unchanged from input HEAD.
+Historical ROOT/LAB scope interpretations remain recorded separately from the
+current ROOT-only selections; the custom image remains unbuilt and unaccepted.
+
+Selected three-document metadata first passes with zero violations, and the
+entrypoint/traceability check reports zero findings including mandatory canonical
+nodes. The final result-only Task append requires its own metadata check before
+freeze. Public check receipts are under
+`/tmp/hyhome-v30-opensearch-root-only-checks`; no aggregate or Native rerun is
+claimed by these source checks.
+
+The required dependency-audit attempts do not imply a clean dependency result.
+No npm/pip manifest or lock changes in this correction. Existing Storybook and
+OpsflowSmtp package/lock identities were hashed before and after read-only
+`npm audit --package-lock-only --ignore-scripts --json` with temporary configs,
+caches and logs; no install, fix, scripts or global configuration change occurred.
+An initial temporary-config collision and later restricted-DNS failure are
+preserved. The standard approved network-boundary attempt returns real findings:
+Storybook1Critical(next)/1High(zod); SMTP3High dependency entries/1Moderate
+(nodemailer). Exact raw reports and four unchanged package/lock hashes are in
+`npm-audit-0.json`, `npm-audit-1.json` and `audit-results.json` in the receipt
+directory. Critical Next advisories include GHSA-2464-fhr4-w9xw and
+GHSA-673q-mjm6-r5xr; the independent security reviewer and coordinator own the
+separate applicability/repair decision. No audit PASS or baseline-risk waiver is
+claimed. pip-audit is NOT_AVAILABLE: no executable or module in the prepared
+Python environment, and no dependency is installed for this task. Existing
+Surreal Critical advisory exposure remains unresolved, with no remediation claim.
+No commit proceeds before the separate security triage and current diff review.
+
+### v30 package-source provenance continuation — 2026-10-26
+
+After the independent security-reviewed Storybook and SMTP package writers freeze,
+the coordinator authorizes only this Task, build-inputs.json and update-ledger.json
+for a bounded source-provenance continuation. Existing build-input rows for
+Storybook, n8n and n8n-worker must bind the final package/lock bytes, retaining the
+prior three records and aggregate as history. The existing same16file n8n source
+set must be rehashed in both duplicated bindings, with the prior binding retained.
+No image, producer receipt, package-manager framework, gate or acceptance field
+is added or promoted. The prior isolated image/module smoke keeps its original
+source digest and date, and cannot establish acceptance for the new binding.
+
+The existing workflow binding regression first fails against the real stale
+Compose hash (1test/1FAIL/0.026s), before the metadata refresh. Package and lock
+inputs are verified against both frozen writer receipts before any JSON update.
+The original twelve-file OpenSearch freeze remains a valid earlier checkpoint;
+only these three explicitly leased consumers receive the dated continuation.
+
+The same existing workflow-version-bundle module now runs10tests in0.102s:
+8PASS,0FAIL,0ERROR and2default isolated-candidate SKIP. The previously failing
+binding regression passes without changing its assertions. Six package-hash
+cells across three build rows now match the exact frozen package/lock bytes;
+the other30build rows are unchanged from the reviewed OpenSearch checkpoint.
+The same16file source set has matching current hashes and aggregate
+`cf4004d7ee1e7e689cf93ef1c6d03d87e24b0031eefee063553e2b9cda0915a2`
+in both existing bindings. Every ledger entry and ROOT include record is
+unchanged by this package continuation. The prior image/module smoke object is
+preserved exactly, including its old digest, date and limits; new image build,
+module smoke, host installation and service acceptance remain NOT_RUN.
+
+Storybook owner evidence is
+`/tmp/hyhome-v30-storybook-mature-iqf6ljqo/source-validation.json`, SHA256
+`9b739ee1cdca7a911c5352daf6e39b6406749cef009fb485d2763b1491e87cc2`.
+The mature Next/eslint16.4.1 and zod4.6.7 source pair supersedes the ineligible
+16.4.3 trial; sharp remains unchanged. The writer's final full audit reports
+zero findings, while the original Critical audit and the too-young trial remain
+historical evidence. This package-source result does not rebuild or accept either
+Storybook image and does not provide either missing producer receipt.
+
+SMTP owner evidence is
+`/tmp/hyhome-v30-smtp-security-aax_21mz/handoff.json`, SHA256
+`62d5694ed323fbabbd167a27427360926306da7d56e0f25ac8834463febb7dcd`.
+The mature nodemailer10.1.4 correction retains the current adapter/framework
+contract. The frozen-lock production audit is zero; the full audit still FAILs
+with three High dependency-fanout entries. Although this custom-node lock lists
+n8n-workflow as a development dependency, the same framework is also a required
+host peer: actual host-path exposure is UNKNOWN. No blanket development-only
+exemption, unsafe framework downgrade, new risk acceptance or aggregate PASS is
+claimed. Actual n8n installation, SMTP mail send, workflow/session/HOME and
+recovery remain separate. Final Task metadata, exact supplemental source review
+and the coordinator's explicit integration authority remain required.

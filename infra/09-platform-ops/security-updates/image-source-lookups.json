@@ -1521,5 +1521,359 @@
       }
     ],
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt."
-  }
+  },
+  "public_metadata_continuations": [
+    {
+      "assessed_at": "2026-10-26T10:32:14.784990+00:00",
+      "input_head": "c05a59007aa16e8874b05805f41e7aed606260fe",
+      "source_input_manifest_sha256": "17467c92d0225391496fd9c4f27c6eda2e74678b14821c46b57d9cbcb64e6d11",
+      "records": [
+        {
+          "repository": "grafana/grafana",
+          "tag": "13.2.4",
+          "checked_at": "2026-10-26T10:01:33.945789+00:00",
+          "expected_index_digest": "sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f",
+          "scope": "Public OCI index/platform manifest JSON only; no config/layer downloads, private credentials, Docker calls or signatures",
+          "result": "PASS",
+          "index_url": "https://registry-1.docker.io/v2/grafana/grafana/manifests/13.2.4",
+          "index_digest": "sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f",
+          "index_bytes": 1079,
+          "platform": "linux/amd64",
+          "platform_manifest_url": "https://registry-1.docker.io/v2/grafana/grafana/manifests/sha256:7b22f3edf947329d75eba7a62d9f6ea1ac1e786736813ef7a98cfb275a52e49b",
+          "platform_manifest_digest": "sha256:7b22f3edf947329d75eba7a62d9f6ea1ac1e786736813ef7a98cfb275a52e49b",
+          "manifest_bytes": 2622,
+          "config_digest": "sha256:45900b2eda7da0cbda80b9025e446147d9085fee71675ba86a48a1cad34e4c8a",
+          "config_content": "NOT_FETCHED",
+          "metadata": {
+            "response_url": "https://registry-1.docker.io/v2/grafana/grafana/manifests/13.2.4",
+            "status": 200,
+            "content_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+            "docker_content_digest": "sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f"
+          },
+          "platform_metadata": {
+            "response_url": "https://registry-1.docker.io/v2/grafana/grafana/manifests/sha256:7b22f3edf947329d75eba7a62d9f6ea1ac1e786736813ef7a98cfb275a52e49b",
+            "status": 200,
+            "content_type": "application/vnd.docker.distribution.manifest.v2+json",
+            "docker_content_digest": "sha256:7b22f3edf947329d75eba7a62d9f6ea1ac1e786736813ef7a98cfb275a52e49b"
+          }
+        },
+        {
+          "repository": "stalwartlabs/stalwart",
+          "tag": "v0.16.27",
+          "checked_at": "2026-10-26T10:01:33.947545+00:00",
+          "expected_index_digest": "sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c",
+          "scope": "Public OCI index/platform manifest JSON only; no config/layer downloads, private credentials, Docker calls or signatures",
+          "result": "PASS",
+          "index_url": "https://registry-1.docker.io/v2/stalwartlabs/stalwart/manifests/v0.16.27",
+          "index_digest": "sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c",
+          "index_bytes": 3161,
+          "platform": "linux/amd64",
+          "platform_manifest_url": "https://registry-1.docker.io/v2/stalwartlabs/stalwart/manifests/sha256:2c9af6bfccb361b9f286d6cd0bb50acb2aaeffc06f5257354c0ce4dff9f02b58",
+          "platform_manifest_digest": "sha256:2c9af6bfccb361b9f286d6cd0bb50acb2aaeffc06f5257354c0ce4dff9f02b58",
+          "manifest_bytes": 1247,
+          "config_digest": "sha256:9499bed40e5bbe5f05257b92ec73762b4e1378cddff8ea8e90c9612436fc3e4a",
+          "config_content": "NOT_FETCHED",
+          "metadata": {
+            "response_url": "https://registry-1.docker.io/v2/stalwartlabs/stalwart/manifests/v0.16.27",
+            "status": 200,
+            "content_type": "application/vnd.oci.image.index.v1+json",
+            "docker_content_digest": "sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c"
+          },
+          "platform_metadata": {
+            "response_url": "https://registry-1.docker.io/v2/stalwartlabs/stalwart/manifests/sha256:2c9af6bfccb361b9f286d6cd0bb50acb2aaeffc06f5257354c0ce4dff9f02b58",
+            "status": 200,
+            "content_type": "application/vnd.oci.image.manifest.v1+json",
+            "docker_content_digest": "sha256:2c9af6bfccb361b9f286d6cd0bb50acb2aaeffc06f5257354c0ce4dff9f02b58"
+          }
+        },
+        {
+          "repository": "unclecode/crawl4ai",
+          "tag": "0.9.5",
+          "checked_at": "2026-10-26T10:01:35.577071+00:00",
+          "expected_index_digest": "sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9",
+          "scope": "Public OCI index/platform manifest JSON only; no config/layer downloads, private credentials, Docker calls or signatures",
+          "result": "PASS",
+          "index_url": "https://registry-1.docker.io/v2/unclecode/crawl4ai/manifests/0.9.5",
+          "index_digest": "sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9",
+          "index_bytes": 1609,
+          "platform": "linux/amd64",
+          "platform_manifest_url": "https://registry-1.docker.io/v2/unclecode/crawl4ai/manifests/sha256:636a6f9e5127f54771f14f709bf1b95693aacc30512426b26d09768b0269f1f4",
+          "platform_manifest_digest": "sha256:636a6f9e5127f54771f14f709bf1b95693aacc30512426b26d09768b0269f1f4",
+          "manifest_bytes": 6392,
+          "config_digest": "sha256:065f475c90ac75fe388141597b0cdba118ebf7e03f59e2a37456c89e6b864c59",
+          "config_content": "NOT_FETCHED",
+          "metadata": {
+            "response_url": "https://registry-1.docker.io/v2/unclecode/crawl4ai/manifests/0.9.5",
+            "status": 200,
+            "content_type": "application/vnd.oci.image.index.v1+json",
+            "docker_content_digest": "sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9"
+          },
+          "platform_metadata": {
+            "response_url": "https://registry-1.docker.io/v2/unclecode/crawl4ai/manifests/sha256:636a6f9e5127f54771f14f709bf1b95693aacc30512426b26d09768b0269f1f4",
+            "status": 200,
+            "content_type": "application/vnd.oci.image.manifest.v1+json",
+            "docker_content_digest": "sha256:636a6f9e5127f54771f14f709bf1b95693aacc30512426b26d09768b0269f1f4"
+          }
+        },
+        {
+          "repository": "library/sonarqube",
+          "tag": "26.10.0.133078-community",
+          "checked_at": "2026-10-26T10:04:08.741963+00:00",
+          "result": "PASS",
+          "index_url": "https://registry-1.docker.io/v2/library/sonarqube/manifests/26.10.0.133078-community",
+          "index_digest": "sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8",
+          "index_bytes": 2709,
+          "platform": "linux/amd64",
+          "platform_manifest_url": "https://registry-1.docker.io/v2/library/sonarqube/manifests/sha256:4f3ff53a16b25e1707dada7204eb9f00145e3aed829fdcef42aad954a12941ea",
+          "platform_manifest_digest": "sha256:4f3ff53a16b25e1707dada7204eb9f00145e3aed829fdcef42aad954a12941ea",
+          "manifest_bytes": 2529,
+          "config_digest": "sha256:3e12909c111125d76968a5de3444d8d8169be42e3592870c978c7fd642f269ba",
+          "config_content": "NOT_FETCHED",
+          "index_metadata": {
+            "status": 200,
+            "docker_content_digest": "sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8",
+            "content_type": "application/vnd.oci.image.index.v1+json"
+          },
+          "platform_metadata": {
+            "status": 200,
+            "docker_content_digest": "sha256:4f3ff53a16b25e1707dada7204eb9f00145e3aed829fdcef42aad954a12941ea",
+            "content_type": "application/vnd.oci.image.manifest.v1+json"
+          },
+          "scope": "Public OCI index/platform manifest JSON only; no config/layer download,pull,runtime or signatures"
+        }
+      ],
+      "meaning": "Raw public index/platform manifest SHA and response digest equality verified. Config descriptors only, config bodies NOT_FETCHED; layers/signatures/SBOM/scans/build/native/restore/HOME NOT_RUN."
+    },
+    {
+      "assessed_at": "2026-10-26T11:02:25.455867+00:00",
+      "input_head": "c05a59007aa16e8874b05805f41e7aed606260fe",
+      "source_input_manifest_sha256": "8287ee14113593fa36cb7f86a66f50fa28613c5919c01bbc730c3317cbfa4a6d",
+      "records": [
+        {
+          "repository": "opensearchproject/opensearch",
+          "tag": "3.9.0",
+          "checked_at": "2026-10-26T10:47:40.789412+00:00",
+          "scope": "Public index and platform manifest JSON only; no config/layers, signatures, imagepull, Docker or runtime",
+          "result": "PASS",
+          "index_digest": "sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+          "platform": "linux/amd64",
+          "platform_manifest_digest": "sha256:13487e0953520edf6cc866dfc672fd67a70ab122aa7d84d4a6c97106f84d3f84",
+          "config_digest": "sha256:903c4fa852a67838269696e031077c6d726ca0a369f8b709a311083e514f1dad",
+          "config_content": "NOT_FETCHED",
+          "index_bytes": 647,
+          "manifest_bytes": 1622,
+          "index_url": "https://registry-1.docker.io/v2/opensearchproject/opensearch/manifests/3.9.0"
+        },
+        {
+          "repository": "opensearchproject/opensearch-dashboards",
+          "tag": "3.9.0",
+          "checked_at": "2026-10-26T10:47:42.428273+00:00",
+          "scope": "Public index and platform manifest JSON only; no config/layers, signatures, imagepull, Docker or runtime",
+          "result": "PASS",
+          "index_digest": "sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8",
+          "platform": "linux/amd64",
+          "platform_manifest_digest": "sha256:cc6aa4c817393117236584d4a52c0edf5d473a4dd0c40a783d5f7fa6b282734d",
+          "config_digest": "sha256:aebcbbe205ed49507c839abe3e255eaf55b8230aaaf3737fc3d0418afb20757a",
+          "config_content": "NOT_FETCHED",
+          "index_bytes": 647,
+          "manifest_bytes": 1437,
+          "index_url": "https://registry-1.docker.io/v2/opensearchproject/opensearch-dashboards/manifests/3.9.0"
+        }
+      ],
+      "trino_source_and_public_config": {
+        "observed_at": "2026-10-26T10:52:59.372904+00:00",
+        "official_commit": "e2d50bb733e193607c44be84ad80ce2430ba1d01",
+        "release_published_at": "2026-10-16T00:08:12Z",
+        "artifact_last_pushed": "2026-10-16T00:28:13.908349Z",
+        "artifact_eligible_at": "2026-10-23T00:28:13.908349+00:00",
+        "index_digest": "sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f",
+        "amd64_manifest_digest": "sha256:274b321a02292ade8fe3995aacfe107a72f06ebe4e7f603f87f08b9edff06316",
+        "amd64_config_digest": "sha256:e54a8dff51aee21059b8b905f634b9550032baf0dd3653f333339f811454f367",
+        "hub_url": "https://hub.docker.com/v2/repositories/trinodb/trino/tags/484",
+        "files": [
+          {
+            "path": "Dockerfile.484",
+            "sha256": "9bf84ba17d3bc4d8977dfce8944f313d76583d45b0a38ad9d39e476d46950dcc"
+          },
+          {
+            "path": "FileSystemConfig.java.484",
+            "sha256": "b9bac476b4ea231b3dfc387b2b5a6aa84d94ae6ea9bc089f161cff343a088f77"
+          },
+          {
+            "path": "health-check.484",
+            "sha256": "537918f6a5e7cee2d37feb707d67bde83a8467b5058a13e16de4de65d27b9e1e"
+          },
+          {
+            "path": "hub-tag-484.json",
+            "sha256": "c428a63f801c7527323998da2fd1f6ca28fc84f606b2c825fefc661079456dcf"
+          },
+          {
+            "path": "jvm.config.484",
+            "sha256": "57713277a8854974171ef987df1448389d45993154b222302f974ea44a1933a5"
+          },
+          {
+            "path": "node.properties.484",
+            "sha256": "179f44b22fa1f418861b3fc46b2e679bb921664942743142eb693cb54cac8724"
+          },
+          {
+            "path": "registry-amd64-config.json",
+            "sha256": "e54a8dff51aee21059b8b905f634b9550032baf0dd3653f333339f811454f367"
+          },
+          {
+            "path": "registry-amd64-manifest.json",
+            "sha256": "274b321a02292ade8fe3995aacfe107a72f06ebe4e7f603f87f08b9edff06316"
+          },
+          {
+            "path": "registry-index-484.json",
+            "sha256": "2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f"
+          },
+          {
+            "path": "release-484.md",
+            "sha256": "8d901fb06ffcd8cb92d88dade6a292701fc5fd011b534903546cdbac6b046825"
+          },
+          {
+            "path": "run-trino.483",
+            "sha256": "fe59c9e6a2e28f67d227c2d4893d3770429bed136c766df1d17625df80f19f9f"
+          },
+          {
+            "path": "secrets.md.484",
+            "sha256": "2c7e84f86dd678c3a5643ccb853b262ff49b21bffdbe2317d155498b5538142a"
+          },
+          {
+            "path": "trino-core.xml.484",
+            "sha256": "be279b8c87ba90ad1bd527f0d8a6a40d3d3a14b19778419fd27af56890e55943"
+          }
+        ],
+        "dockerfile_verified_upstream_blob_sha": "23285679610643fcf20f7b597a39241a68bd14fb"
+      },
+      "surreal_same_base_public_resolution": {
+        "checked_at": "2026-10-26T10:52:19.460201+00:00",
+        "repository": "surrealdb/surrealdb",
+        "scope": "Public metadata only; registry bearer held in memory, no layers/pull/build/run/authfile/private input",
+        "rows": [
+          {
+            "tag": "v2",
+            "index_digest": "sha256:e5d7387e3727bbe2f7cd6d869e48cd34777272258572ead37c9656b25f745723",
+            "registry_index_digest": "sha256:e5d7387e3727bbe2f7cd6d869e48cd34777272258572ead37c9656b25f745723",
+            "media_type": "application/vnd.oci.image.index.v1+json",
+            "platform": {
+              "architecture": "amd64",
+              "os": "linux"
+            },
+            "platform_manifest_digest": "sha256:8d8dabb47b5ab8a6c7f5969003b84a961483205189e72d4ee0af416ac991fd82",
+            "config_digest": "sha256:4b76d06f7bcdd0b11a8aec07f315554b59553d531a963e5daf26f17d4e670b15",
+            "config_created": "2026-09-23T16:27:21.195420688Z",
+            "public_labels": {
+              "org.opencontainers.image.source": "https://github.com/chainguard-images/images/tree/main/images/glibc-dynamic",
+              "org.opencontainers.image.created": "2026-05-28T07:37:08Z",
+              "org.opencontainers.image.title": "glibc-dynamic"
+            },
+            "upstream_manifest_annotations": {}
+          },
+          {
+            "tag": "v2.7.0",
+            "index_digest": "sha256:e5d7387e3727bbe2f7cd6d869e48cd34777272258572ead37c9656b25f745723",
+            "registry_index_digest": "sha256:e5d7387e3727bbe2f7cd6d869e48cd34777272258572ead37c9656b25f745723",
+            "media_type": "application/vnd.oci.image.index.v1+json",
+            "platform": {
+              "architecture": "amd64",
+              "os": "linux"
+            },
+            "platform_manifest_digest": "sha256:8d8dabb47b5ab8a6c7f5969003b84a961483205189e72d4ee0af416ac991fd82",
+            "config_digest": "sha256:4b76d06f7bcdd0b11a8aec07f315554b59553d531a963e5daf26f17d4e670b15",
+            "config_created": "2026-09-23T16:27:21.195420688Z",
+            "public_labels": {
+              "org.opencontainers.image.source": "https://github.com/chainguard-images/images/tree/main/images/glibc-dynamic",
+              "org.opencontainers.image.created": "2026-05-28T07:37:08Z",
+              "org.opencontainers.image.title": "glibc-dynamic"
+            },
+            "upstream_manifest_annotations": {}
+          }
+        ],
+        "same_index": true
+      },
+      "meaning": "OpenSearch config descriptors only, no bodies; Trino public config body verified by separate read-only researcher. Surreal publicconfig labels identify only inherited base. No runtime/imagebuild/signature/scan/restore acceptance."
+    }
+  ],
+  "local_source_rebindings": [
+    {
+      "observed_at": "2026-10-26T11:42:17.315903+00:00",
+      "input_head": "8fc4620da970c5a8382edc9ebed72ed82d29891d",
+      "revision_scope": "Current local source including opt-in F23 leaf overlays; not a committed/build/native acceptance receipt",
+      "source_input_manifest_sha256": "e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94",
+      "inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "20b72108463e4883b4bed328507021a152436fd4a04fe163fe2bf26f9f18f411"
+        },
+        {
+          "path": "infra/common-optimizations.yml",
+          "sha256": "77abe65cbc29b29f2dd85d5fb3c594b2140c0f0ff85a895bb978d488477eced1"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
+          "sha256": "a940e0064c8996281f16fcada4b7119d17b477a7b03530539b84c594959b05ca"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
+          "sha256": "775cc3146e479aebdb6bcf9a710997fc7196b3805de507a4ed8962ac5cc80751"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml",
+          "sha256": "f66375f5d77a82cc8ac9a79e6dcd611b481d70b034f6bd6ff55d02252c33a520"
+        },
+        {
+          "path": "infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh",
+          "sha256": "7f97aa5ddf16a93059307b5fe2ae9858c2be9b8b874c097e0eba076a769ffad2"
+        },
+        {
+          "path": "infra/03-security/openbao/secret-catalog.json",
+          "sha256": "e52aba6e12cb9984a09fc74b463bb4da395b9cc7c54fdd2aeecbacbe50553011"
+        },
+        {
+          "path": "secrets/SENSITIVE_ENV_VARS.md.example",
+          "sha256": "f3ee29ec45f0bbdf6a0db47d0de3264f555318b3bd8da50f16acdb1669509169"
+        }
+      ],
+      "service_count": 111,
+      "include_count": 44,
+      "meaning": "Three existing broker/exporter pairs only; base controls and legacy risk unchanged. Public source and synthetic checks; adoption/rotation/AOF/HOME/recovery NOT_RUN.",
+      "public_template_count_correction": "Replace stale pre-existing hardcoded Docker Secret count with canonical table/catalog coverage reference; no scope/classification inference from unique path count."
+    },
+    {
+      "observed_at": "2026-10-26T14:31:47.914916+00:00",
+      "input_head": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+      "revision_scope": "Uncommitted ROOT-only OpenSearch scope correction; not a committed/build/native acceptance receipt",
+      "source_input_manifest_sha256": "1d2edfeed54e001ac749e9fd549cf1b13d1d5532070209e72a45b0c6866a4366",
+      "inputs": [
+        {
+          "path": "infra/04-data/opensearch/Dockerfile",
+          "sha256": "6ea197cccc0f735199efc82469431790fbf70762a7f4733c249f49364ed408d4"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
+        },
+        {
+          "path": "labs/opensearch-cluster.yml",
+          "sha256": "8624025272a7c053b039c9f13bdccaa0aca62e5529d3b026d0570cafbf26fa21"
+        }
+      ],
+      "service_count": 111,
+      "include_count": 44,
+      "meaning": "ROOT explicitly selects engine/exporter3.9; shared Dockerfile defaults and LAB Dashboard restored to baseline3.8. LAB excluded by v30 section14.3; no LAB render/build/run. Supplier/runtime/security facts unchanged."
+    }
+  ]
 }

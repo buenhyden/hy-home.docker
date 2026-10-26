@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.9"
+version: "1.1.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-26"
 created: "2026-01-12"
 ---
 
@@ -81,6 +81,13 @@ grafana/
 ## Tech Stack
 
 Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와 이 패키지의 provisioning 설정이 소유합니다.
+
+선택된 패치 이미지의 tag·index·amd64 manifest와 config descriptor는 SEC01 증거에
+연결합니다. 이번 소스 준비는 OAuth strict role·CA 검증·anonymous 비활성화와
+datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAuth·datasource
+기능, backup·복원과 HOME 적용은 아직 검증하지 않았으며, 기존 이미지의 관측을
+새 후보의 성공으로 사용하지 않습니다. 실제 적용은 소유 Runbook의 대상·backup·
+재생성·복구 계약을 따릅니다.
 
 ## Configuration
 

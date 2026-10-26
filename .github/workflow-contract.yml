@@ -369,7 +369,11 @@
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
-        "run-approved-npm-audit"
+        "run-npm",
+        "audit",
+        "--audit-level=high",
+        "--prefix",
+        "projects/storybook/nextjs"
       ],
       "cwd": ".",
       "allowed_env_keys": [],
@@ -756,6 +760,7 @@
         "tests.validation.test_compose_baseline_gates.SsoRehearsalTests",
         "tests.validation.test_compose_baseline_gates.StorybookIngressRehearsalTests",
         "tests.validation.test_crawl4ai_egress.Crawl4AIEgressRehearsalTests",
+        "tests.validation.test_mng_valkey_acl.MngValkeyAclNativeTests",
         "tests.validation.test_compose_baseline_gates.CdcStreamRehearsalTests",
         "tests.validation.test_mng_pg_init_sql.MngPgInitSqlTests",
         "tests.validation.test_redisinsight_rehearsal.RedisInsightRehearsalTests",
@@ -766,6 +771,7 @@
         "tests.validation.test_supabase_smtp_rehearsal.SupabaseSMTPRehearsalTests",
         "tests.validation.test_openbao_candidate.CandidateNative",
         "tests.validation.test_openbao_agent_contract.AgentMetricsNativeTests",
+        "tests.validation.test_openbao_tls_material.TLSMaterialNativeDelayTests",
         "tests.validation.test_openbao_protected_renderer_roles.NativeRehearsalTests",
         "tests.validation.test_openbao_protected_restore_inputs.NativeRehearsalTests",
         "tests.validation.test_workflow_version_bundle.WorkflowCandidateRehearsalTests",
@@ -2282,20 +2288,5 @@
       ],
       "security_disposition": "approved-node24"
     }
-  },
-  "npm_audit_acceptance": {
-    "id": "GHSA-vfj7-8cjw-p6xm",
-    "owner": "@buenhyden",
-    "approved_at": "2026-10-09T07:00:00Z",
-    "expires_at": "2026-11-08T07:00:00Z",
-    "project": "projects/storybook/nextjs",
-    "dependency_chain": [
-      "eslint-config-next@16.4.0",
-      "@next/eslint-plugin-next@16.4.0",
-      "fast-glob@3.3.1",
-      "micromatch@4.0.8",
-      "braces@3.0.3"
-    ],
-    "advisory_url": "https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm"
   }
 }

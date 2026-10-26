@@ -1,10 +1,10 @@
 ---
 title: "Conftest"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-27"
 created: "2026-09-23"
 ---
 
@@ -16,9 +16,11 @@ created: "2026-09-23"
 ## Overview
 
 Conftest는 `policy-check` profile로 선택되는 **OPTIONAL** one-shot 작업입니다.
-`infra/`만 read-only로 mount하고 network 없이 실행하며 먼저 정책 자체의
-단위 테스트(`conftest verify`)를 돌린 뒤 모든 `docker-compose*.yml`과
-`Dockerfile*`을 검사합니다. `deny`는 실패, `warn`은 출력만 합니다.
+공개 `infra/`와 `labs/`를 읽기 전용으로 마운트하고 network 없이 실행합니다.
+호스트 wrapper가 Git 추적 소스 목록과 POL-0078에서 검증한 overlay의 상속
+profile만 준비한 뒤, 정책 단위 테스트와 해당 Compose·Dockerfile 소스를 검사합니다.
+`deny`는 실패, `warn`은 출력만 합니다. 무시된 설치 산출물은 읽지 않으며,
+무시되지 않은 미추적 소스 후보는 Docker 호출 전에 실패합니다.
 
 ## Audience
 
@@ -46,7 +48,7 @@ Conftest는 `policy-check` profile로 선택되는 **OPTIONAL** one-shot 작업�
 conftest/
 ├── README.md            # This file
 ├── docker-compose.yml   # One-shot job
-├── run.sh               # verify, then test Compose files and Dockerfiles
+├── run.sh               # verify, then test the required prepared source lists
 └── policy/
     ├── compose.rego         # namespace compose
     ├── compose_test.rego
@@ -59,7 +61,7 @@ conftest/
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
 | **Tool** | Conftest (`openpolicyagent/conftest`) | Rego v1 정책 |
-| **Access** | `infra/` 읽기 전용 | 네트워크 없음, UID 1000, 읽기 전용 root |
+| **Access** | 공개 `infra/`, `labs/`, 임시 파생 입력 읽기 전용 | 네트워크 없음, UID 1000, 읽기 전용 root |
 
 ## Configuration
 
@@ -69,13 +71,23 @@ conftest/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile policy-check run --rm conftest` | 정책을 검증하고 모든 Compose 파일과 Dockerfile을 테스트합니다. |
+| `bash scripts/validation/check-conftest-policy.sh` | 준비된 버전 관리 소스에 대해 정책 단위 테스트와 corpus 검사를 실행합니다. |
+| `bash scripts/validation/check-conftest-policy.sh --mode corpus` | 준비된 Compose·Dockerfile corpus만 검사합니다. |
+| `bash scripts/validation/check-conftest-policy.sh --mode verify` | 정책 단위 테스트만 실행합니다. |
 
 ## Validation
 
 - CI: `leaf.conftest-policy`가 `scripts/validation/check-conftest-policy.sh`를 실행합니다.
 - `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
+
+`corpus`와 기본 `all`은 wrapper가 만든 두 NUL 경로 목록·digest와 검증된
+부분 overlay 입력을 요구합니다. 파생 입력은 서비스의 상속 `profiles`만 추가하며
+다른 Rego 입력은 유지합니다. 실행용 Compose 원본을 고치거나 profile 권한을
+새로 만들지 않습니다. wrapper는 읽기 전용 임시 입력만 job에 추가하고 종료 후
+정리합니다. 준비 실패에는 raw 입력으로 되돌아가는 경로가 없습니다.
+직접 선언된 job의 `verify`는 사용할 수 있으나, 준비되지 않은 `corpus`·기본 실행은
+wrapper가 필요하다는 오류로 종료합니다.
 
 ## Troubleshooting
 
@@ -84,9 +96,9 @@ conftest/
 
 ## Related Documents
 
-- **Guide**: Conftest Usage Guide (`docs/05.operations/guides/0095-conftest.md`)
-- **Policy**: Conftest Operations Policy (`docs/05.operations/policies/0095-conftest.md`)
-- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/0095-conftest.md`)
+- **Guide**: Conftest Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`)
+- **Policy**: Conftest Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`)
+- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`)
 - [Documentation index](../../../docs/README.md)
 
 ---
@@ -105,7 +117,7 @@ conftest/
 | Labels | `hy-home.tier` |
 | Secret refs | 선언되지 않음 |
 | Healthcheck | 선언되지 않음 (1회성 작업) |
-| Operations | Guide (`docs/05.operations/guides/0095-conftest.md`), Policy (`docs/05.operations/policies/0095-conftest.md`), Runbook (`docs/05.operations/runbooks/0095-conftest.md`) |
+| Operations | Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`), Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`), Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 작업을 실행하고 처음 실패한 선언을 수정합니다. 런북을 참고합니다. |
 

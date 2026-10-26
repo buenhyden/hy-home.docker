@@ -1,10 +1,10 @@
 ---
 title: "Quality Load Tools and OTel Metric Semantics Plan"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0214-PLAN-0001"
 parent_ids:
@@ -41,6 +41,7 @@ real application load and per-project credential design are excluded.
 | W8 | 8 | `lab.py run` supervisor and Locust lifecycle | W3 | TSK-0002 | Task evidence |
 | W9 | 7 | Isolated end-to-end relay run | W5, W6 | TSK-0002 | Task evidence |
 | W10 | 5, 9 | Documents, HOME Alloy recreation, HOME relay run | W5–W9 | TSK-0002 | Task evidence |
+| W11 | 10 | Preserve interrupted reload evidence and separate cleanup failures | W9 | TSK-0003 | Mocked RED/GREEN and affected k6 suite; no Docker runtime |
 
 ## Verification Plan
 
@@ -68,3 +69,4 @@ previous networks. A relay is removed with its run; `quality_run.py cleanup
 - [Spec](spec.md)
 - [Task](tasks/tsk-0001-quality-k6-locust-and-otel-semantics.md)
 - [Relay and Locust lifecycle Task](tasks/tsk-0002-relay-controller-and-locust-lifecycle.md)
+- [Reload interruption evidence Task](tasks/tsk-0003-quality-reload-interruption-evidence.md)

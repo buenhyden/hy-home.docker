@@ -13,7 +13,10 @@ from pathlib import Path
 
 import yaml
 
-from scripts.lib.document_governance.operations_catalog import _ComposeLoader
+from scripts.lib.document_governance.operations_catalog import (
+    _ComposeLoader,
+    conftest_source_context,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = (
@@ -40,7 +43,9 @@ class TierLayoutTests(unittest.TestCase):
             if row.get("reason")
         }
         seen = set()
-        for path in sorted((ROOT / "infra").rglob("docker-compose*.yml")):
+        context = conftest_source_context(ROOT)
+        for relative in context["regular"]:
+            path = ROOT / relative
             text = path.read_text(encoding="utf-8")
             services = (yaml.load(text, Loader=_ComposeLoader) or {}).get(
                 "services"

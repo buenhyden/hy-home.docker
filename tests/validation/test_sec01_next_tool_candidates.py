@@ -69,6 +69,10 @@ class NextToolCandidates(unittest.TestCase):
         self.assertEqual(releases["source_revision"], refresh["source_revision"])
         self.assertIn("signatures not verified", images["trust"])
 
+        current_inputs = {
+            row["path"]: row["sha256"] for row in updates["include_inputs"]
+        }
+        self.assertEqual(len(current_inputs), len(updates["include_inputs"]))
         selected = set(refresh["updated_services"])
         selected_rows = [
             row for row in updates["entries"] if row["service"] in selected
@@ -78,7 +82,10 @@ class NextToolCandidates(unittest.TestCase):
         self.assertEqual(set(rows), selected)
         for service, row in rows.items():
             with self.subTest(service=service, field="pending_evidence"):
-                self.assertEqual(row["source_refreshed_at"], refresh["refreshed_at"])
+                self.assertIn(row["compose_file"], current_inputs)
+                self.assertEqual(
+                    row["source_input_sha256"], current_inputs[row["compose_file"]]
+                )
                 self.assertEqual(row["signature"], "NOT_RUN")
                 self.assertEqual(row["sbom_scan"], "NOT_RUN")
                 self.assertEqual(row["deployment"], "NOT_RUN")

@@ -157,7 +157,7 @@ class CleanupTests(unittest.TestCase):
         with mock.patch.object(self.subject, "BoundedRunner", return_value=runner):
             failed = self.subject.cleanup_exact(["container-id"], ["volume-id"], ["network-id"], seconds=10)
         self.assertTrue(failed)
-        self.assertEqual(calls, [["docker", "rm", "--force", "container-id"], ["docker", "volume", "rm", "volume-id"], ["docker", "network", "rm", "network-id"]])
+        self.assertEqual(calls, [["docker", "rm", "--force", "--volumes", "container-id"], ["docker", "volume", "rm", "volume-id"], ["docker", "network", "rm", "network-id"]])
 
     def test_runtime_records_created_ids_and_keeps_secret_on_stdin(self):
         runner = mock.Mock(engine=SimpleNamespace(probe=None))

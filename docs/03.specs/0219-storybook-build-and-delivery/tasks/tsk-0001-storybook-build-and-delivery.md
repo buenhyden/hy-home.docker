@@ -1,10 +1,10 @@
 ---
 title: "Storybook Build and Delivery Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0219-TSK-0001"
 parent_ids:
@@ -90,6 +90,66 @@ pass with `experimental.useTypeScriptCli: true`, but `typescript-eslint` 8.71.1
 (latest and canary, range below 6.1.0) stops with "does not support TS 7.0",
 and without the Next setting the build fails for the missing compiler API.
 TypeScript stays 6.0.3. With it all checks pass. Commit `943108232`.
+
+### W4 Security Patch Source Validation — 2026-10-26
+
+The v30 local source request permits this bounded dependency correction.
+The full Storybook workspace audit before the change reported one Critical
+`next` entry covering GHSA-2464-fhr4-w9xw, GHSA-673q-mjm6-r5xr and
+GHSA-p3m5-59mp-jv5r, and one High transitive `zod` entry covering
+GHSA-mrhx-c7xc-m3w5. The original audit remains at
+`/tmp/hyhome-v30-opensearch-root-only-checks/npm-audit-0.json`, SHA-256
+`fbb4cf9e4bbc0714c8dcf5fef0d30b7391c654d8d3aef0fb9fbf6fa34f535023`.
+
+An initial 16.4.3 Next/eslint candidate passed all source checks, retained at
+`/tmp/hyhome-v30-storybook-security-gcksvue9/source-validation.json`, SHA-256
+`b903cfe2a51324559b030b11102ec717b3128a42696aac7d198a76122d857cc8`.
+Independent review rejected its maturity: the official October 23 release
+is less than seven days old on October 26. The earlier owner-approved
+Vitest exception does not authorize this later update. These passing trial
+results are preserved, and 16.4.3 is not the selected source version.
+
+The selected direct `next` and `eslint-config-next` pins move from 16.4.0 to
+16.4.1, with matching `@next/env`, eslint plugin and all eight SWC platform
+entries. The [official Next 16.4.1 security release](https://github.com/vercel/next.js/releases/tag/v16.4.1)
+was published `2026-10-14T17:47:59Z` and fixes these two Critical and one High
+advisories. A compatible lockfile update moves Storybook's transitive `zod`
+from 4.6.5 to [4.6.7](https://github.com/colinhacks/zod/releases/tag/v4.6.7),
+published `2026-10-12T16:30:32Z`; both selected releases exceed seven days.
+`sharp` remains 0.35.5. The lock retains 748 package entries, with only its
+root descriptor and thirteen intended package entries changed. Unrelated
+npm dedupe changes were restored from the baseline before final `npm ci`;
+no new direct dependency or override was added. The historical W7 GHSA-vfj7
+acceptance and SPEC-0222 expiry remain historical evidence; this patch does
+not extend that approval to a new version.
+
+On Node 24.22.0, the following existing source checks passed against the
+final 16.4.1 working-tree package and lockfile on base HEAD
+`0d2392f93b975faa36f03b2361d80f3ddb72e487`:
+
+- `npm audit --json --prefix projects/storybook/nextjs`: all dependencies,
+  including development dependencies, report zero findings and exit 0.
+- `npm ci --no-audit --no-fund --prefix projects/storybook/nextjs`: PASS.
+- `npm run lint`, `npm run typecheck`, `npm run build-storybook`,
+  `npm run build:mcp`, `npm run coverage` and `npm run build`, each with
+  `--prefix projects/storybook/nextjs`: PASS. Storybook build includes nine
+  passing artifact and MCP tests. Chromium runs all fourteen story tests;
+  statement, branch, function and line coverage are each 100%, exceeding
+  the existing 90% thresholds.
+- `bash scripts/validation/check-storybook-contract.sh`: PASS;
+  `python -m unittest tests.validation.test_storybook_image`: seven PASS.
+
+The exact command timestamps, exits, log hashes and final source hashes are
+in `/tmp/hyhome-v30-storybook-mature-iqf6ljqo/source-validation.json`, SHA-256
+`9b739ee1cdca7a911c5352daf6e39b6406749cef009fb485d2763b1491e87cc2`. The checked lockfile SHA-256 is `be7ab2eed3ea0d315023cd16aae4f9dc20d51e69e1477d51d412c24a7a4018c6`.
+The original failing audit and all prior candidate checks are preserved.
+
+The delivered static NGINX image and docs MCP do not run a Next server;
+`next dev` and a separately started Next server use the affected dependency
+before this patch. These checks validate patched source and local generated
+artifacts. New commit-derived Docker images, registry publication, Compose
+pin adoption, HOME changes and remote-device login remain `NOT_RUN` for
+this source correction. No previous image or runtime result is promoted.
 
 ### W5 Remote MCP, Design Export and Documents
 

@@ -24,6 +24,49 @@ class SecretCatalogContractTests(unittest.TestCase):
         self.catalog = json.loads(CATALOG.read_text())
         self.schema = json.loads(SCHEMA.read_text())
 
+    def test_shared_n8n_account_keeps_its_own_identity_and_optional_consumers(self):
+        entries = {row["id"]: row for row in self.catalog["entries"]}
+        named = entries["CACHE-027"]
+        self.assertEqual("secrets/db/mng-valkey/n8n_password.txt", named["source_path"])
+        self.assertEqual("ACTIVE_KEEP", named["disposition"])
+        self.assertIn(
+            "infra/04-data/mng-db/docker-compose.n8n-acl.yml", named["consumers"]
+        )
+        self.assertIn("infra/07-workflow/n8n/docker-compose.yml", named["consumers"])
+        self.assertEqual(
+            "secrets/db/n8n-valkey/n8n_password.txt",
+            entries["CACHE-009"]["source_path"],
+        )
+        self.assertNotEqual(entries["CACHE-007"]["source_path"], named["source_path"])
+        self.assertIn(
+            "infra/07-workflow/n8n/docker-compose.yml",
+            entries["CACHE-007"]["consumers"],
+        )
+
+    def test_dedicated_monitors_have_three_distinct_optional_declared_identities(self):
+        entries = {row["id"]: row for row in self.catalog["entries"]}
+        for identifier, directory, leaf in (
+            ("CACHE-028", "airflow-valkey", "07-workflow/airflow"),
+            ("CACHE-029", "n8n-valkey", "07-workflow/n8n"),
+            ("CACHE-030", "oauth2-valkey", "02-auth/oauth2-proxy"),
+        ):
+            with self.subTest(identifier=identifier):
+                row = entries[identifier]
+                self.assertEqual(
+                    f"secrets/db/{directory}/monitor_password.txt", row["source_path"]
+                )
+                self.assertEqual(
+                    [f"infra/{leaf}/docker-compose.monitor-acl.yml"],
+                    row["consumers"],
+                )
+                self.assertEqual("DECLARED", row["consumer_status"])
+                self.assertEqual("CONFIRMED", row["lifecycle"]["declared"])
+                self.assertEqual("UNKNOWN", row["lifecycle"]["consumed"])
+                self.assertEqual("BLOCKED_P01", row["destination_plan"]["delivery"])
+        self.assertEqual(
+            3, len({entries[f"CACHE-{n:03}"]["source_path"] for n in range(28, 31)})
+        )
+
     def test_catalog_covers_issued_ids_without_renumbering_or_an_alias_value(self):
         issued = registry_rows(
             (ROOT / "secrets/SENSITIVE_ENV_VARS.md.example").read_text()

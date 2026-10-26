@@ -47,6 +47,119 @@ else:
 
 
 class OpenBaoCleanupTests(unittest.TestCase):
+    def test_container_retains_created_id_before_mount_inspection_failure(self):
+        fixture = OwnedFixture()
+        self.addCleanup(shutil.rmtree, fixture.directory)
+        identity = "a" * 64
+        with mock.patch.object(
+            fixture,
+            "docker",
+            side_effect=[
+                SimpleNamespace(returncode=0, stdout=(identity + "\n").encode()),
+                RehearsalFailure("synthetic metadata failure"),
+            ],
+        ):
+            with self.assertRaises(RehearsalFailure):
+                fixture.container("server", [], [], start=False)
+        self.assertEqual(fixture.container_ids, {fixture.owner + "-server": identity})
+        self.assertNotIn(identity, fixture.mounts_verified)
+
+    def test_container_captures_actual_volume_names_and_preserves_name_api(self):
+        fixture = OwnedFixture()
+        self.addCleanup(shutil.rmtree, fixture.directory)
+        identity, anonymous, named = "a" * 64, "b" * 64, fixture.owner + "-data"
+        mounts = [
+            {"Type": "volume", "Name": anonymous},
+            {"Type": "volume", "Name": named},
+            {"Type": "bind", "Source": "/synthetic/retained-data"},
+            {"Type": "tmpfs", "Destination": "/openbao/audit"},
+        ]
+        with mock.patch.object(
+            fixture,
+            "docker",
+            side_effect=[
+                SimpleNamespace(returncode=0, stdout=(identity + "\n").encode()),
+                SimpleNamespace(returncode=0, stdout=json.dumps(mounts).encode()),
+            ],
+        ) as docker:
+            name = fixture.container("server", [], [], start=False)
+        self.assertEqual(name, fixture.owner + "-server")
+        self.assertIn(name, fixture.containers)
+        self.assertEqual(fixture.mounted_volumes, {anonymous, named})
+        self.assertEqual(docker.call_args.args[-1], identity)
+        self.assertIn(identity, fixture.mounts_verified)
+
+    def test_container_refuses_invalid_created_id_and_mount_metadata(self):
+        for identity, mounts in (
+            ("unverified-name", []),
+            ("a" * 64, {}),
+            ("a" * 64, [{"Type": "volume"}]),
+            ("a" * 64, [{"Type": "volume", "Name": "../foreign"}]),
+            ("a" * 64, [{"Type": "unknown"}]),
+        ):
+            with self.subTest(identity=identity, mounts=mounts):
+                fixture = OwnedFixture()
+                self.addCleanup(shutil.rmtree, fixture.directory)
+                with mock.patch.object(
+                    fixture,
+                    "docker",
+                    side_effect=[
+                        SimpleNamespace(returncode=0, stdout=identity.encode()),
+                        SimpleNamespace(
+                            returncode=0, stdout=json.dumps(mounts).encode()
+                        ),
+                    ],
+                ):
+                    with self.assertRaises(RehearsalFailure):
+                        fixture.container("server", [], [], start=False)
+                self.assertEqual(fixture.mounted_volumes, set())
+                self.assertEqual(fixture.mounts_verified, set())
+                self.assertEqual(bool(fixture.container_ids), identity == "a" * 64)
+
+    def test_cleanup_removes_exact_id_and_requires_unambiguous_volume_absence(self):
+        identity, anonymous = "a" * 64, "b" * 64
+        for state in ("absent", "present", "daemon-error"):
+            with self.subTest(state=state):
+                fixture = OwnedFixture()
+                fixture.containers = [fixture.owner + "-server"]
+                fixture.container_ids = {fixture.containers[0]: identity}
+                fixture.mounts_verified = {identity}
+                fixture.mounted_volumes = {anonymous}
+                calls = []
+
+                def docker(*args, state=state, calls=calls, **_kwargs):
+                    calls.append(args)
+                    if args[:2] == ("volume", "inspect"):
+                        return SimpleNamespace(
+                            returncode=0 if state == "present" else 1,
+                            stdout=b"[]",
+                            stderr=(
+                                "Error response from daemon: get "
+                                + anonymous
+                                + ": no such volume\n"
+                            ).encode()
+                            if state == "absent"
+                            else b"daemon unavailable",
+                        )
+                    return SimpleNamespace(returncode=0, stdout=b"", stderr=b"")
+
+                with mock.patch.object(fixture, "docker", side_effect=docker):
+                    if state == "absent":
+                        fixture.cleanup()
+                    else:
+                        with self.assertRaises(RehearsalFailure):
+                            fixture.cleanup()
+                self.assertIn(("rm", "--force", "--volumes", identity), calls)
+                self.assertFalse(any(call[:2] == ("volume", "rm") for call in calls))
+
+    def test_cleanup_never_removes_an_unverified_created_name(self):
+        fixture = OwnedFixture()
+        fixture.containers = [fixture.owner + "-server"]
+        with mock.patch.object(fixture, "docker") as docker:
+            with self.assertRaises(RehearsalFailure):
+                fixture.cleanup()
+        docker.assert_not_called()
+
     def test_agent_mounts_only_public_ca_from_tls_material(self):
         fixture = object.__new__(OwnedFixture)
         fixture.tls = Path("/synthetic/tls")
@@ -56,15 +169,21 @@ class OpenBaoCleanupTests(unittest.TestCase):
         fixture.network = "p01-owned-net"
         fixture.image = "sha256:synthetic"
         fixture.containers = []
+        fixture.container_ids = {}
+        fixture.mounts_verified = set()
+        fixture.mounted_volumes = set()
 
         with mock.patch.object(
             fixture,
             "docker",
-            return_value=SimpleNamespace(returncode=0, stdout=b""),
+            side_effect=[
+                SimpleNamespace(returncode=0, stdout=("a" * 64).encode()),
+                SimpleNamespace(returncode=0, stdout=b"[]"),
+            ],
         ) as docker:
             fixture.agent("agent", start=False)
 
-        create = docker.call_args.args
+        create = docker.call_args_list[0].args
         self.assertIn(
             "type=bind,src=/synthetic/tls/ca.pem,dst=/openbao/tls/ca.pem,readonly",
             create,
@@ -263,10 +382,14 @@ class OpenBaoCleanupTests(unittest.TestCase):
             "helper-wait",
             "stop",
             "remove",
+            "volume-inspect",
         ):
             with self.subTest(failure=failure):
                 fixture = object.__new__(OwnedFixture)
                 fixture.containers = ["p01-owned-server"]
+                fixture.container_ids = {"p01-owned-server": "a" * 64}
+                fixture.mounts_verified = {"a" * 64}
+                fixture.mounted_volumes = {"p01-owned-volume", "b" * 64}
                 fixture.volumes = ["p01-owned-volume"]
                 fixture.network = "p01-owned-network"
                 fixture.network_created = True
@@ -280,8 +403,22 @@ class OpenBaoCleanupTests(unittest.TestCase):
                         (failure == "helper-wait" and stage == "wait")
                         or (failure == "stop" and stage == "stop")
                         or (failure == "remove" and stage == "rm")
+                        or (
+                            failure == "volume-inspect"
+                            and args[:2] == ("volume", "inspect")
+                        )
                     ):
                         raise RehearsalFailure("synthetic cleanup failure")
+                    if args[:2] == ("volume", "inspect"):
+                        return SimpleNamespace(
+                            returncode=1,
+                            stdout=b"[]",
+                            stderr=(
+                                "Error response from daemon: get "
+                                + args[-1]
+                                + ": no such volume"
+                            ).encode(),
+                        )
                     return SimpleNamespace(
                         returncode=0,
                         stdout=b"1"
@@ -293,6 +430,8 @@ class OpenBaoCleanupTests(unittest.TestCase):
                     if failure == "helper-create":
                         raise RehearsalFailure("synthetic helper creation failure")
                     fixture.containers.append("p01-owned-cleanup")
+                    fixture.container_ids["p01-owned-cleanup"] = "c" * 64
+                    fixture.mounts_verified.add("c" * 64)
                     return "p01-owned-cleanup"
 
                 with (
@@ -305,8 +444,16 @@ class OpenBaoCleanupTests(unittest.TestCase):
                 ):
                     with self.assertRaises(RehearsalFailure):
                         fixture.cleanup()
-                    self.assertIn(("rm", "--force", "p01-owned-server"), calls)
+                    self.assertIn(("rm", "--force", "--volumes", "a" * 64), calls)
                     self.assertIn(("volume", "rm", "p01-owned-volume"), calls)
+                    self.assertIn(("volume", "inspect", "b" * 64), calls)
+                    self.assertEqual(
+                        calls.count(("volume", "inspect", "p01-owned-volume")), 1
+                    )
+                    self.assertLess(
+                        calls.index(("volume", "rm", "p01-owned-volume")),
+                        calls.index(("volume", "inspect", "p01-owned-volume")),
+                    )
                     self.assertIn(("network", "rm", "p01-owned-network"), calls)
                     remove_directory.assert_called_once_with(fixture.directory)
 

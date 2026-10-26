@@ -1,10 +1,10 @@
 ---
 title: "Opsflow SMTP 개발 캡처 노드"
-version: "0.1.1"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-27"
 ---
 
 # Opsflow SMTP 개발 캡처 노드
@@ -45,6 +45,20 @@ package/lock에만 선언합니다. `npm ci --ignore-scripts`는 dependency life
 package-scoped override로 수정합니다. API package 자체를 downgrade하지 않습니다.
 이 수정은 설치된 n8n 이미지의 dependency를 바꾸지 않으며 그 수용은 SEC01 담당입니다.
 
+Nodemailer의 주소 parser 보안 수정은 검토된
+[공식 수정 release](https://github.com/nodemailer/nodemailer/releases/tag/v10.1.4)의 <!-- runtime-version-exception: advisory — immutable upstream remediation evidence; package and lock own the dependency pin -->
+정확한 package/lock pin으로 반영합니다. 고정 발신·수신·envelope와 기존 socket 수명은
+유지합니다. 공개 dependency 감사에서 Nodemailer 항목은 제거됐습니다.
+
+개발용으로 설치된 `n8n-workflow` → expression runtime → Zod 경로의
+[Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)에는 Zod 3 수정판이
+없습니다. 소유자 승인에 따라 이 dev 트리에만 Zod major package-scoped override를 적용하며,
+build·coverage 시험과 전체·production 감사 0건을 확인했습니다. API package는 downgrade하지
+않습니다. 배포 패키지는 `node_modules`를 포함하지 않고, `n8n-workflow`는 n8n 호스트가
+제공하는 정확한 peer 의존성입니다. 설치된 n8n 이미지의 Zod와 실제 실행 환경의 영향은
+이 override가 바꾸지 않으며 SEC01 담당으로 미확인입니다. 이 결과는 설치 이미지·실제 송신·
+전체 보안 수용의 PASS가 아닙니다.
+
 ## Configuration
 
 draft P03 대상은 `mailpit:1025`와 합성
@@ -79,7 +93,7 @@ send 시작 전 실행 취소만 `cancelled`입니다. send 시작 후 취소는
 전체 workflow·DB budget와 lease는 P04·총괄 binding에서 별도 확인합니다.
 Nodemailer nonpool `close()`에 socket 취소를 맡기지 않고 `getSocket`에서 생성한
 socket을 소유하여 취소·deadline·최종 정리 시 직접 destroy합니다.
-[공식 transport 소스](https://github.com/nodemailer/nodemailer/blob/v10.1.0/src/smtp-transport/index.ts)를 <!-- runtime-version-exception: compatibility — immutable upstream protocol evidence; package and lock own the dependency pin -->
+[공식 transport 소스](https://github.com/nodemailer/nodemailer/blob/v10.1.4/src/smtp-transport/index.ts)를 <!-- runtime-version-exception: compatibility — immutable upstream protocol evidence; package and lock own the dependency pin -->
 기준으로 실제 라이브러리와 in-memory SMTP byte 시험을 수행합니다.
 
 ## Validation

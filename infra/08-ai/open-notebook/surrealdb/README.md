@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Implementation"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-26"
 ---
 
 # SurrealDB Implementation
@@ -15,9 +15,17 @@ updated: "2026-10-05"
 
 이 디렉터리에는 SurrealDB의 커스텀 컨테이너 빌드 컨텍스트와 런타임 엔트리포인트가 있습니다. SurrealDB는 Open Notebook의 전용 영속화 데이터베이스 역할을 합니다.
 
-이 저장소의 승인된 호환성 경계는 SurrealDB v2입니다. Dockerfile은 `v2` 태그를
-사용하지만 이 태그는 변경될 수 있으므로 정확한 패치 버전이나 digest 고정을
-의미하지 않습니다. v3 호환성을 검증하기 전에는 버전 경계를 변경하지 않습니다.
+이 저장소의 승인된 호환성 경계는 SurrealDB v2입니다. Dockerfile은 기존 공개
+`v2` 태그가 가리킨 것과 동일한 artifact를 정확한 patch tag와 index digest로
+고정합니다. 이는 소스 재현성을 위한 변경이며 실제 실행 중인 binary·데이터
+형식을 확인하거나 보안 문제를 해결한 근거가 아닙니다. v3 호환성을 검증하기
+전에는 버전 경계를 변경하지 않습니다.
+
+선택한 v2 artifact에 남은 Critical 권고의 실제 authenticated tenant·권한 노출은
+`UNKNOWN`입니다. 현재 pin을 보안 remediation이나 `PASS`로 표시하지 않습니다.
+기존 데이터에서 새 형식으로 이동하면 이전 형식으로 되돌릴 수 없을 수 있으므로,
+향후 운영 이전은 전체 사전 백업과 복원 계약을 따릅니다. 단일 DB export만으로
+충분한 복구를 증명하지 않습니다. 이번 변경은 빌드·실행·이전·복원을 하지 않습니다.
 
 ## Audience
 
@@ -29,7 +37,7 @@ updated: "2026-10-05"
 
 ### In Scope
 
-- `surrealdb/surrealdb:v2` 기준 이미지를 고정하는 다단계 이미지 빌드 컨텍스트(`Dockerfile`).
+- Dockerfile의 정확한 upstream artifact를 고정하는 다단계 이미지 빌드 컨텍스트(`Dockerfile`).
 - Docker Secret에서 `surreal_db_password`를 읽는 시크릿 인식 컨테이너 엔트리포인트(`docker-entrypoint.sh`).
 - Open Notebook 저장소 호환성을 위한 버전 경계 강제.
 
@@ -42,7 +50,7 @@ updated: "2026-10-05"
 
 ```text
 surrealdb/
-├── Dockerfile            # Multi-stage build pinning surrealdb:v2
+├── Dockerfile            # Multi-stage build with exact upstream artifact
 ├── docker-entrypoint.sh  # Secret-aware entrypoint script
 └── README.md             # This file
 ```
@@ -57,7 +65,7 @@ surrealdb/
 
 | Component | Source | Target Version | Notes |
 | --- | --- | --- | --- |
-| `surrealdb` | [Dockerfile](Dockerfile) | SurrealDB v2 | Open Notebook 호환을 위해 기준 이미지를 `surrealdb/surrealdb:v2`에 고정 |
+| `surrealdb` | [Dockerfile](Dockerfile) | SurrealDB v2 | Open Notebook 호환을 위해 Dockerfile의 정확한 v2 artifact 사용 |
 
 ## Configuration
 

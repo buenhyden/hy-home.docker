@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.13"
+version: "1.7.14"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -451,6 +451,9 @@ inferred from document relocation.
     common settings remain single-writer integration proposals. Applied source
     and historical Task acceptance are preserved; learning apps, LAB runtime
     and Wiki implementation are excluded.
+    Opt-in dedicated broker observer identities use explicit minimal ACL commands,
+    with source, synthetic, isolated, HOME, rotation and recovery evidence separate;
+    criterion 16 retains catalog ownership and default application authority remains.
 18. P04 implements the independent `opsflow_dev` manifest validation and
     publication batch, with one canonical Airflow workload, versioned
     `ops_flow` SQL and a frozen outbox interface for P05. Strict synthetic

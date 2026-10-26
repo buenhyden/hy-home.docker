@@ -160,7 +160,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             arguments[1:boundary],
         )
         optional = arguments[boundary + 1 : -1]
-        self.assertEqual(22, len(optional))
+        self.assertEqual(24, len(optional))
         self.assertEqual(len(optional), len(set(optional)))
         self.assertTrue(
             all(scope.rsplit(".", 1)[0] in arguments[1:boundary] for scope in optional)
@@ -191,25 +191,30 @@ class GithubWorkflowContractTests(unittest.TestCase):
         boundary = arguments.index("--optional-runtime-skips")
         scopes = tuple(arguments[boundary + 1 : -1])
         optional = {
+            "tests.validation.test_mng_valkey_acl.MngValkeyAclNativeTests",
             "tests.validation.test_openbao_agent_contract.AgentMetricsNativeTests",
+            "tests.validation.test_openbao_tls_material.TLSMaterialNativeDelayTests",
             "tests.validation.test_openbao_protected_renderer_roles.NativeRehearsalTests",
             "tests.validation.test_openbao_protected_restore_inputs.NativeRehearsalTests",
         }
         self.assertTrue(optional.issubset(scopes))
         required = "tests.validation.test_openbao_agent_contract.AgentMetricsTests"
         self.assertNotIn(required, scopes)
+        self.assertNotIn(
+            "tests.validation.test_openbao_tls_material.TLSMaterialTests", scopes
+        )
         receipts = b"".join(
             f"test_case ({scope}.test_case) ... ".encode()
             + (b"skipped 'opt-in'\n" if scope in optional else b"ok\n")
             for scope in scopes
         )
-        summary = b"OK (skipped=3)\n"
+        summary = b"OK (skipped=5)\n"
         ci_gate_adapters._validate_unittest_skips(receipts + summary, scopes)
         with self.assertRaises(ci_gate_adapters.AdapterError):
             ci_gate_adapters._validate_unittest_skips(
                 receipts
                 + f"test_static ({required}.test_static) ... skipped 'missing'\n".encode()
-                + b"OK (skipped=4)\n",
+                + b"OK (skipped=6)\n",
                 scopes,
             )
 
@@ -296,7 +301,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         boundary = compose_arguments.index("--optional-runtime-skips")
         optional = compose_arguments[boundary + 1 : -1]
         self.assertNotIn(module, optional)
-        self.assertEqual(22, len(optional))
+        self.assertEqual(24, len(optional))
 
     def setUp(self) -> None:
         self.module = load_contract_module()

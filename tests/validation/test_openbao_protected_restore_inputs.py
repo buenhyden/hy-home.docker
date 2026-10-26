@@ -315,6 +315,40 @@ class ContractTests(unittest.TestCase):
         self.assertFalse((self.root / "contract.json").exists())
 
 
+class SyntheticCertificateTests(unittest.TestCase):
+    def test_generated_chain_passes_strict_server_verification(self):
+        from tests.validation import _openbao_rehearsal_fixture as native
+
+        with (
+            tempfile.TemporaryDirectory() as parent,
+            mock.patch.object(tempfile, "tempdir", parent),
+        ):
+            fixture = native.OwnedFixture()
+            fixture.certificates()
+            for label, ca, hostname, accepted in (
+                ("trusted chain", fixture.tls / "ca.pem", "openbao", True),
+                ("wrong CA", fixture.wrong_ca, "openbao", False),
+                ("wrong hostname", fixture.tls / "ca.pem", "wrong.invalid", False),
+            ):
+                with self.subTest(case=label):
+                    result = native.captured(
+                        [
+                            "openssl",
+                            "verify",
+                            "-x509_strict",
+                            "-purpose",
+                            "sslserver",
+                            "-verify_hostname",
+                            hostname,
+                            "-CAfile",
+                            str(ca),
+                            str(fixture.tls / "server.pem"),
+                        ],
+                        allow_failure=True,
+                    )
+                    self.assertEqual(result.returncode == 0, accepted, label)
+
+
 @unittest.skipUnless(
     os.environ.get("HYHOME_OPENBAO_REHEARSAL") == "1",
     "opt-in native rehearsal: real snapshot, producers and restore validators",
@@ -588,8 +622,20 @@ class NativeRehearsalTests(unittest.TestCase):
             # RUN-0085 runs W3a under umask 077; every container must still read
             # the directories the client creates.
             previous = os.umask(0o077)
+            mounted_volumes = set()
+            remember = effects.runtime.remember
+
+            def remember_mounts(kind, result):
+                identity = remember(kind, result)
+                if kind == "container":
+                    mounted_volumes.update(fixture._capture_mounts(identity))
+                return identity
+
             try:
-                receipt = restore.orchestrate(admission, reader, effects)
+                with mock.patch.object(
+                    effects.runtime, "remember", side_effect=remember_mounts
+                ):
+                    receipt = restore.orchestrate(admission, reader, effects)
             finally:
                 os.umask(previous)
         self.assertEqual(
@@ -604,6 +650,13 @@ class NativeRehearsalTests(unittest.TestCase):
         )
         ledger = json.loads((parent / ("." + attempt + ".attempt.json")).read_text())
         self.assertEqual(ledger["state"], "accepted")
+        # The old image's inherited VOLUME mounts have no attempt label.
+        self.assertTrue(mounted_volumes, "old-image mount identities were not captured")
+        for name in sorted(mounted_volumes):
+            self.assertTrue(
+                fixture._volume_absent(name),
+                "owned mounted volume remains or absence is unverified",
+            )
         for kind in (["ps", "-aq"], ["volume", "ls", "-q"], ["network", "ls", "-q"]):
             leftovers = subprocess.run(
                 ["docker", *kind, "--filter", "label=hy-home.attempt=" + attempt],
@@ -712,6 +765,34 @@ class NativeOptInTests(unittest.TestCase):
         self.assertEqual((result.errors, result.failures), ([], []))
         home.assert_not_called()
         run.assert_not_called()
+
+    def test_dispatch_wait_preserves_cleanup_reserve_and_reaps_after_timeout(self):
+        from tests.validation import _openbao_tls_delay_native as native
+
+        helper = object.__new__(native.OwnedDispatch)
+        helper.write_fd, helper.process = None, mock.Mock(pid=999)
+        helper.process.poll.return_value = 0
+        with (
+            mock.patch.object(native.time, "monotonic", return_value=100),
+            mock.patch.object(native.os, "getpgid", return_value=999),
+            mock.patch.object(native.os, "killpg") as kill,
+        ):
+            for budget, cancel, expected in (
+                (100, False, 22),
+                (28, False, 3),
+                (0, False, 0),
+                (0, True, 10),
+            ):
+                helper.deadline = 100 + budget
+                self.assertRaises(RuntimeError, helper.finish, cancel=cancel)
+                helper.process.wait.assert_called_with(timeout=expected)
+            helper.deadline = 200
+            failure = subprocess.TimeoutExpired("helper", 22)
+            helper.process.wait.side_effect = [failure, 0]
+            kill.reset_mock()
+            self.assertRaises(subprocess.TimeoutExpired, helper.finish)
+            helper.process.wait.assert_called_with(timeout=5)
+            kill.assert_called_once_with(999, native.signal.SIGKILL)
 
 
 if __name__ == "__main__":

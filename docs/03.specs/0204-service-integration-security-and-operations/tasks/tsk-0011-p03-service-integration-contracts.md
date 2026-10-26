@@ -1,10 +1,10 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.12"
+version: "0.2.15"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-27"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0011"
 parent_ids:
@@ -145,6 +145,76 @@ credential rotation, live resource creation or private retirement occurs in
 this initial worker slice.
 
 ## Work Log
+
+### v30 exporter selection and optional Ollama source — 2026-10-26
+
+현 직접 요청·`SPEC-0212-TSK-0008`의 coordinator lease와 독립 IaC 사전 검토로
+기준 `136b7cac4483d4af8aaa73ca6dc3f9a0da521e10`, branch
+`codex/v30-infra-source-completion`의 criterion 17 source 잔여만 수정한다.
+P02·P05·SPEC-0224의 실제 credential·workflow·관측 인수는 이 Task가 대신하지 않는다.
+
+같은 단일 infra writer가 MNG/DEV `docker-compose.yml`, Kafka `docker-compose.yml`의
+기존 Exporter·monitor provisioner profile을 Producer와 맞춘다. 새 서비스·이미지·
+monitor 계정을 만들지 않으며 역방향 depends_on도 추가하지 않는다. POL-0078 기존
+profile 표와 companion 표가 직접 Target의 정확한 목록을 소유한다. 암묵 dependency로
+Producer만 기동할 때도 companion 합집합이 필요하며 임의 Docker CLI를 차단하는 도구는 아니다.
+oauth2-proxy-valkey-exporter는 현재 이미 obs_net에 있으므로 NO_CHANGE다.
+
+새 `infra/07-workflow/n8n/docker-compose.ollama-local.yml`은 기존 typed root-base
+계약으로 Worker와 Ollama만 새 internal bridge에 추가한다. 기본 root include·profile·
+Main/Runner·기존 AI/edge network는 유지한다. 따라서 다른 기존 AI/edge peer를 차단했다고
+주장하지 않는다. Cloud 호출·키 발급·private Credential 저장·custom node는 추가하지 않는다.
+POL-0078, n8n/MNG README, GDE-0053·RUN-0053과 기존
+`tests/validation/test_service_wiring_contracts.py`가 source/선택/경계를 설명·검사한다.
+U1의 shared ROOT/env·Catalog·entrypoint는 P02 Task0010의 동일 writer 단위다.
+
+source RED는 core/local·CDC·analytics feature의 Exporter/provisioner 결손과 optional
+overlay 부재를 재현했다. GREEN 34건(33 PASS/Native 1 SKIP), 별도 RuntimeCompatibility
+28 PASS, Ruff와 diff check PASS는 Task0010과 같은 실행 범위다. direct-target 검사는
+POL-0078 실제 표와 Compose depends_on closure를 대조하여 bare mng-pg/ollama 등과
+mng-pg-init·kafka-connect의 암묵 Producer에서 companion 누락을 검출하고 정식 목록을
+수용한다. 공개 render는 `.env.example`과 격리된 CLI 환경만 사용하고 실제 dotenv·Secret을
+읽지 않았다. infra-validate의 별도 graph/Compose BLOCKED는 그대로 보존한다.
+
+실제 Worker→Ollama Credential·목록·생성·embedding·거부·복구, Prometheus scrape와
+redis_up/pg_up·Grafana query·HOME rollout은 NOT_RUN이다. `OLLAMA_NO_CLOUD=1`은 유지하며
+Cloud 승인 없이는 BLOCKED_CLOUD_APPROVAL이다. Source rollback은 이 변경 unit만 revert하고,
+운영 적용 후에는 승인된 drain·원래 exact service/network 재생성·독립 backup/복구가 필요하다.
+최종 source 검토·staged gate·commit·criterion 17의 owner acceptance는 pending이다.
+
+최종 통합 source 회귀는 준비된 Python에서 기존 네 모듈의 source class를 선택하여
+58 PASS, 19.493초, exit 0이었다. 실제 명령은 Task0010의 후속 source 영수증을 따른다.
+operations catalog의 최초 exit 1은 6개 Profile·2개 n8n Env의 기존 inventory projection
+drift였다. 추가 exact lease로 RES-0002-m0021의 기존
+`operations_catalog.render_service_inventory`를 사용해 bounded table과 metadata만
+갱신했다. 역사적 문장·consumer·backup·처분은 보존했고 새 inventory는 만들지 않았다.
+동일 `check-operations-catalog.py` 재검증은 PASS, exit 0이다. infra-validate helper의
+absolute path 차단은 기존 Terrakube/Dozzle Docker socket, Alloy Docker 경로와 host
+Exporter의 `/`·`/proc`·`/sys` 같은 의도된 host bind에 해당한다. 신규 private 입력 부재가
+원인이라는 증거는 없으며, 이 경계를 완화하거나 host 경로를 복제하지 않았다.
+추가 inventory·결과 영수증과 Native cleanup 문구 수정까지 독립 검토 READY이며
+actionable finding은 없다. criterion 17 전체·실제 관측·Node/HOME 인수는 pending이다.
+
+The first final public changed gate ran against clean HEAD
+`afa343a8aed963dd11ff88fada4826d8877f1dd7`: 400.196 seconds, exit 1,
+5 PASS / 1 FAIL / 27 NOT_RUN. `leaf.docs-traceability` reported two
+`stage-link-outside-docs` findings at MNG README line 75 and n8n README line 120.
+Only the newly added direct RUN-0053 links now route through the existing
+workflow Runbook README, retaining the same n8n section-title guidance. Policy,
+index structure and runtime source stay unchanged. The source 58 PASS and
+isolated Native 1 PASS inputs remain unchanged and were not rerun.
+
+The narrow graph regression reproduced the previous two entrypoint findings
+and confirmed zero for the correction. Traceability also has zero findings for
+six documents including the three mandatory canonical nodes; the existing
+index route and exact Runbook heading were verified. An additional heading
+assertion first failed on lowercase `local`; one narrow retry passed after the
+guidance matched the actual `Local` heading. Independent `ops_survey` review is
+READY with no actionable finding; `git diff --check` passed. The selected
+metadata check first failed with one body-language deficit in this new receipt;
+only this receipt was translated to the existing English Task language.
+Selected metadata retry, staged gate and the public changed gate on the corrected
+clean HEAD remain pending. Preserve the first FAIL separately from later results.
 
 ### 현재 증거 범위 조정 — 2026-10-22
 
@@ -958,6 +1028,131 @@ the connection; `10.250.1.128:9119` and `hermes.hy.home.arpa` through
 creates the `edge_net` bridge; `After=docker.service` would only shorten that.
 Hermes direct-port status: PASS (HOME).
 
+### v30 isolated client and monitor evidence reuse — 2026-10-27
+
+P03 owns C17/W33 service/observer identity and connection controls. This receipt
+advances the optional named queue account's pinned-client proof and all three
+optional dedicated monitor collector pairs. The shared/dedicated application
+endpoint choice, full workflow/session behavior and host adoption retain their
+existing owners and pending evidence. Source preparation and isolated execution
+remain separate from HOME, rotation and recovery acceptance.
+
+This append preserves all earlier source preparation, failed attempts and pending
+criterion acceptance. The actual bounded isolated synthetic runs were captured at
+`0d2392f93b975faa36f03b2361d80f3ddb72e487`. Their original timestamps and outcomes
+remain unchanged. The final source proof permits reuse of the exact selected
+unchanged input sets at `f4698d1e15212117dafb5809fb6c5c7596686be4`; no new Native
+run or whole-revision/application acceptance is asserted.
+
+The complete existing `MngValkeyAclNativeTests` class passed both methods:
+2 tests, zero failures/errors/skips, 82.699 seconds (unittest duration; the outer
+capture took 82.832 seconds), exit 0. The real client identity was n8n 2.43.6,
+Bull 4.16.4 with shipped job Git revision
+`3301e3fbc7296f545b65331dad1f12c820267e0d`, ioredis 5.3.2, Node v26.7.0 and UID/GID
+1000. Exact package paths, patch and byte identities passed. Five positive cases
+covered worker progress/finish, fail-once retry, delayed jobs, lock renewal/token
+isolation/release and named-channel pubsub. Ten negative cases covered foreign
+keys, DB and channels, FLUSHDB, FLUSHALL, ACL, CONFIG, KEYS, SCAN and a wrong
+password. The final authentication check independently required AUTH WRONGPASS,
+unauthenticated PING NOAUTH and denied=true; generic connection readiness or a
+timeout was not accepted as proof of denial.
+
+The result is `/tmp/hyhome-v30-u1-native-ony7_vrt/result.json`, SHA256
+`1dcb8ea43611bb19cc4345787256e06d89f85307afaaaa6e5bd5015ddb6e0d34`.
+Its five-file source footprint is reproduced in the draft companion manifest.
+Both exact owned CIDs and the owned internal network were verified ABSENT.
+The generic ACL method passed its source assertions; the retained per-operation
+JSON trace belongs to the real Bull fixture and is not a complete per-operation
+trace of the generic method. Raw unittest output and the real-client operation
+records remain at their existing paths; this continuation does not infer extra
+raw coverage or rewrite earlier results.
+
+The three earlier U1 attempts remain failures: the first failed both methods
+before create on optional Docker-label map lookup; the second passed the generic
+method and five positive/nine negative real-client cases but failed the final
+connection-based denial assertion; the third again passed the generic and those
+fourteen real-client cases but failed the secondary authentication assertion.
+Its exact unauthenticated PING outcome was not recorded and remains unknown.
+Their result paths, hashes, cleanup supplements and protocol-fix sequence are
+retained in the final execution packet and the draft companion manifest.
+
+The calibrated F23 isolated collector attempt passed all three sequential pairs:
+n8n 35.245 seconds, Airflow 42.098 seconds and OAuth2 Proxy 30.820 seconds. Every
+pair completed two actual HTTP `/metrics` reads with redis_up=1,
+last_scrape_error=0, scrape count 1 to 2 and processed-command count 16 to 23.
+Each independently returned WRONGPASS for the three cross/default/wrong-monitor
+password probes, NOPERM for GET/SCAN/EVAL/ACL/CONFIG/PUBLISH/SELECT, and passed
+default-account SET/GET/DEL. SELECT denial is command-level proof; INFO still
+exposes aggregate DB information. The only tolerated collector denial was
+SLOWLOG GET1, once per pair; no broad grant was added to hide that detail-metric
+limitation. All six exact owned CIDs and three owned internal networks were
+verified ABSENT, with every pending-create list empty. This is scoped absence,
+not a global resource-cleanup claim.
+
+The F23 summary is `/tmp/hyhome-v30-f23-native-run-baq0cyzg/summary.json`, SHA256
+`101145d4d913db740d6ae10b4bb7f69d5fe7678cab639152a8fb244ea2b1db26`;
+the safe execution summary is
+`/tmp/hyhome-v30-f23-native-run-baq0cyzg/execution-safe-summary.json`, SHA256
+`db8ed959d43c8f893bc30db8d9b02825137f3e55b391505bbe01821468defc34`.
+The calibrated temporary runner SHA256 is
+`c110d156c6b4f99b7002eecd9c57bf6630f9fcb9da7b1375a6e410c43c0b5a88`.
+Its per-operation run/remove/other limits are 20/20/10 seconds, cleanup reserve
+60 seconds and case budget 180 seconds. This independently reviewed temporary
+calibration changes no production timeout or registered gate. Both earlier F23
+failures and their exact owned-resource absence reconciliations remain retained;
+the passing attempt does not convert either earlier result to PASS.
+
+The U1 five-file and F23 ten-file input sets are different scopes from the
+22-file source preparation freeze, eleven-file local metadata binding and B3/B2
+fixtures. The final integration proof at
+`/tmp/hyhome-v30-b3-cap-integration-4zq0z7zo/integration-final.json`, SHA256
+`727a95ec1a3ad5f9b3a7b0d3989e8f24655952553dcd2142aac6fe6eb8f08a78`,
+compares every captured U1/F23 input with both working bytes and committed blobs
+at `f4698d1e15212117dafb5809fb6c5c7596686be4`: all fifteen match, with zero
+mismatches. The root coordinator independently confirmed this parity. That proof
+supports reuse of the original isolated results only for those unchanged input
+sets; unrelated B3 changes trigger no new U1/F23 run claim. Any later change to
+one of these captured inputs requires a separate review and evidence decision.
+B3, B2 and the expanded registered changed gate have separate owner records;
+this continuation imports none of their results.
+
+After exact sanitized-content review and explicit root authorization, the three
+fixed reviewed projections were retained locally under the existing ignored
+workspace boundary. The reviewed plan snapshot remains
+`/tmp/hyhome-v30-owner-native-drafts/retention-candidates-plan.json`, SHA256
+`71e7233de2864a2910fee2ada026d6254264c3140540803f6f518486ef5a7443`.
+No Bao-only authority was borrowed. The retained regular files are:
+
+- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/facts/u1-isolated-client-safe.json`
+- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/facts/f23-isolated-collectors-safe.json`
+- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/reproduction/u1-f23-source15-parity.json`
+
+The minimal copy index is
+`_workspace/valkey-native-evidence/2026-10-27-f4698d1e/copy-index.json`, SHA256
+`3348145686719aa8a3404943acd2767546ce20e6c813661764f3ecc8e3a8c21f`.
+It binds all three exact source/destination hashes, byte counts, modes and UID.
+Owned canonical directory handles and no-follow opens were used; only new child
+directories were created0700 and files exclusively created0600, UID1000. No
+existing path was chmodded or overwritten. Hashes were checked before and after
+copy. The original candidate-state labels remain immutable snapshot text; the
+copy index records completed retention, not new test or service acceptance.
+
+The retained payloads derive only from the hash-bound U1 result, F23 safe summary
+and public source-parity proof. Curated root-reviewed case facts remain distinct
+from raw generic-operation evidence. No raw log/inspect body, environment,
+credentials, private keys, original fixture tree, recursive or unlisted content
+was copied. Earlier failures and their original digests remain distinct; raw
+records remain transient. No tracked file, Git action, Docker or Native execution
+was involved. Tracked Task/frontmatter changes still require a future explicit
+leaf-owner lease.
+
+Actual n8n engine/workflow execution, application queue/session integration,
+host secret delivery, operational adoption, credential rotation, AOF durability,
+HOME and stateful recovery remain NOT_RUN or pending under their existing owner
+contracts. The default/base dedicated exporter admin-credential risk is still
+present until explicit overlay adoption; an isolated monitor test does not prove
+adoption. C16/C17 remain pending and no completed Task is reopened.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -1047,3 +1242,95 @@ command. Unsupported budgets are unknown; do not invent token/time/retry grants.
 - [P02 catalog](tsk-0010-p02-secret-catalog-and-views.md)
 - [Traefik guide](../../../05.operations/guides/02-gateway-and-networking/0013-traefik.md)
 - [Service onboarding](../../../05.operations/guides/10-platform-and-backup/0008-new-service-onboarding.md)
+
+### v30 F23 bounded source authorization — 2026-10-26
+
+The current v30 request and root source GO admit optional dedicated Valkey
+observer accounts under C17/W33 observer identity and connection controls. The existing
+C16/C17 owners remain unchanged and acceptance remains pending. The reviewed
+plan is `/tmp/hyhome-v30-f23-source-plan.md`, SHA256
+`813cfc4e152d943e31271e3c2b9a9df57c07ec7aa639879b81bcb44c8412c4e3`.
+
+The source writer exclusively owns the new typed root-base monitor overlay and
+fixed ACL renderer, root optional declarations, CACHE-028 through CACHE-030,
+canonical public example, the three dedicated-service READMEs, POL-0078, existing
+wiring/catalog tests and final SEC01 local source bindings. Existing Spec C17 and
+W33 are clarified before production edits. No new criterion, inventory or registry
+is introduced. The base application/default account, profiles, networks, AOF and
+secret requirements are preserved; exporters replace admin mounts only when the
+explicit overlay is selected. Each broker validates its own default/monitor pair.
+
+RED/GREEN synthetic input, ACL, merge and catalog checks precede independent exact
+diff review. Source rollback is a local logical revert. The base legacy exporter
+credential risk persists until opt-in adoption; actual collector, application
+queue/session, rotation, AOF, HOME and recovery evidence remain separate. No
+private file, image pull, runtime or operational rollback is authorized by this
+source receipt. Existing histories and completed Tasks are preserved.
+
+The root-approved leaf supplement replaces the proposed single ROOT overlay with
+three adjacent `docker-compose.monitor-acl.yml` overlays, each naming its tracked
+leaf base (Airflow, n8n, OAuth2 Proxy). This preserves the existing ROOT network-only
+restriction and uses established leaf replacement semantics. Catalog consumers and
+tests follow each exact leaf. The supplement is
+`/tmp/hyhome-v30-f23-source-plan-leaf-v2.md`, SHA256
+`19dbae7a969f63435b678b85091eeb2042accf00bffa40bd85a25c5baeec91d4`. Only the author's new untracked ROOT overlay is removed. No existing
+validator, schema, registry or gate changes. This scope is recorded before editing
+the overlays; the explicit render command uses root followed by all three leaves.
+
+### v30 F23 current source results — 2026-10-26
+
+Current input before this source slice is clean local
+`8fc4620da970c5a8382edc9ebed72ed82d29891d`. The initial four-test RED run
+failed with one failure and five errors because the new renderer, overlays and
+catalog IDs were absent. After the bounded implementation and ordinary author
+corrections, the two existing wiring/catalog modules ran together: 30 tests,
+zero failures/errors/skips, 21.044 seconds, exit 0. This includes actual shell
+renderer success and thirteen malformed/unsafe input subcases, matching-group
+readability, canonical leaf membership and public root-first four-file merge.
+The merge preserves all six service controls and resolves the readonly renderer
+bind to the real repository path; exporter mounts contain only their own monitor
+secret. The fixed default/app authority and AOF command remain unchanged.
+
+The canonical current catalog check passes with 149 entries and one alias. All
+146 previous records and their ordering/serialization are preserved. The first preservation check removed the three added public rows and reproduced
+the prior public template byte-for-byte. A subsequent root review also corrected
+one pre-existing stale hardcoded coverage sentence to reference the canonical
+table/catalog instead of treating every unique path as a Docker Secret. All
+thirteen sections, previous rows and backup/rotation/LAB history remain intact. A temporary
+minimal Git fixture copied only the four actual fixed public metadata inputs;
+canonical write_views/check_views produced four safe 0600 outputs and passed,
+then the context manager removed the fixture. No repository operator staging
+family was fabricated and no private view, .env or credential value was read.
+
+ShellCheck, Ruff lint/format and diff checks pass. The existing tech-stack check
+passes with no projection change; its known required OPSFLOW image remains
+unresolved. The canonical m0021 renderer is byte-identical and needs no change.
+Entrypoint and traceability checks on the three changed READMEs plus the three
+mandatory canonical nodes report zero findings. The first eight-document metadata
+check failed on three new level-two README headings; only those headings were
+moved under the existing Troubleshooting section, and the narrower three-README
+retry passed: selected three, zero violations, exit 0. No validator rule was weakened.
+
+Independent infrastructure/security review of the actual source, preserved
+public template and four JSON local bindings is READY with no blocking findings.
+The old eight-unit checkpoint remains historical. The current ROOT source
+manifest is `e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94`: 111
+services, 44 inputs and eleven explicitly bound F23 public production files. All
+111 prior service/runtime ledger rows, 33 build inputs and 399 total official
+observations (including the 202 current additions) are unchanged. No new remote
+lookup, image build, pull, runtime, signature, scan or Native result is asserted.
+
+The base dedicated exporters still share application/admin authority. The three
+leaf overlays prepare an opt-in monitor identity only; actual host-file delivery
+and adoption are not proved. Real isolated collector proof uses a separately
+reviewed fixed-image fixture after code commit. Application queue/session,
+credential rotation, AOF, HOME and stateful recovery remain separate NOT_RUN
+lanes here. Source rollback is a logical revert only. C16/C17 acceptance stays
+pending and no completed Task or existing historical evidence is reopened.
+
+The first current-Task metadata check passed: three selected Tasks, zero
+violations. The final count-sentence correction updates only this preservation
+receipt and the public example/source binding hashes; the final affected two
+Tasks are checked separately. The canonical current registration is 149 rows,
+116 unique nonnull source paths and 33 environment IDs; these are different
+metadata dimensions and not a count of delivered Docker Secret files.
