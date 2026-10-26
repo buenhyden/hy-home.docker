@@ -21,6 +21,8 @@ EVENT_ACTIONS = ("create", "start", "die", "destroy")
 NATIVE_RESOURCES = "--memory=32m --memory-swap=32m --cpus=0.25 --pids-limit=16".split()
 CONTAINER_LIST = "container ls --all --quiet --no-trunc".split()
 READ_FAIL = b"TLS_MATERIAL FAIL check=native-user-read cleanup=pending-reconciliation\n"
+# The Native read runs as 100:1000; synthetic guard tests may rebind this.
+FIXTURE_GID = 1000
 CLEANUP_FAIL = b"TLS_MATERIAL FAIL check=native-user-cleanup\n"
 
 
@@ -228,7 +230,7 @@ def _native_private_config(path, config):
         or not stat.S_ISDIR(info.st_mode)
         or stat.S_IMODE(info.st_mode) != 0o750
         or info.st_uid != os.getuid()
-        or info.st_gid != 1000
+        or info.st_gid != FIXTURE_GID
     ):
         raise ValueError("Native material directory identity differs")
     for key, name in (

@@ -484,6 +484,10 @@ class TLSNativeDispatchGuardTests(unittest.TestCase):
         material = root / "tls"
         material.mkdir(mode=0o750)
         material.chmod(0o750)
+        # Synthetic guards run on any host GID; Native setup still requires 1000.
+        gid_patch = mock.patch.object(native, "FIXTURE_GID", material.stat().st_gid)
+        gid_patch.start()
+        self.addCleanup(gid_patch.stop)
         (root / "docker-config").mkdir(mode=0o700)
         for name in ("ca.pem", "server.pem", "server-key.pem"):
             path = material / name
