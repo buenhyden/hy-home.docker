@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -757,6 +757,17 @@ only those two parent versions; braces@3.0.3, the advisory, the dev-only path
 and the 2026-11-08 expiry are unchanged, and a 16.4.0 parent now rejects. The
 adapter runs only in the admitted runner environment, so its real-lock and
 advisory result is the hosted check on the final PR head, not a local claim.
+
+The hosted run on db93a096f still failed `ci-gate-adapter-audit`: GitHub
+withdrew GHSA-vfj7-8cjw-p6xm on 2026-10-23T12:53:02Z, and the adapter fails
+closed on a withdrawn advisory. A live `npm audit --audit-level=high` on
+`projects/storybook/nextjs` reported zero findings for the full and
+`--omit=dev` audits. With owner approval, d9cc02568 retires the acceptance as
+quality standards require: the leaf is the strict `run-npm audit` again, the
+contract record, parser, adapter and its tests are removed, a reintroduced
+record is rejected, and 17d707f36 is superseded. The seven registered ci-gate
+modules passed208 tests; governance contract, provider projection, metadata and
+link checks passed. The completed SPEC-0222 Task is preserved unchanged.
 
 ## Evidence
 
