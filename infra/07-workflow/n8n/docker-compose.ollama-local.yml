@@ -1,0 +1,16 @@
+x-hyhome-overlay:
+  version: 1
+  base: docker-compose.yml
+
+# Adds the queue worker path; existing Ollama edge/AI peers retain their access.
+services:
+  n8n-worker:
+    networks:
+      n8n_ollama_net: {}
+  ollama:
+    networks:
+      n8n_ollama_net: {}
+
+networks:
+  n8n_ollama_net:
+    internal: true

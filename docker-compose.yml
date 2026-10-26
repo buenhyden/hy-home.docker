@@ -207,6 +207,8 @@ secrets:
     file: ./secrets/db/n8n-valkey/n8n_password.txt
   mng_valkey_password:
     file: ./secrets/db/mng-valkey/mng_password.txt
+  mng_valkey_n8n_password:
+    file: ./secrets/db/mng-valkey/n8n_password.txt
   mng_valkey_inspector_password:
     file: ./secrets/db/mng-valkey/inspector_password.txt
   mng_valkey_monitor_password:

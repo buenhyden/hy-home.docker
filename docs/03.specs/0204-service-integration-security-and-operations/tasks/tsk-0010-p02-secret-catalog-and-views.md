@@ -1,10 +1,10 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -119,6 +119,108 @@ the exact host/path, output filter and recovery boundary in this Task and pass
 independent review; only names, paths, modes and consumer metadata may leave it.
 
 ## Work Log
+
+### v30 named n8n account source continuation — 2026-10-26
+
+The direct v30 request and the coordinator lease in SPEC-0212-TSK-0008 authorize
+this criterion 16 public-source continuation on `codex/v30-infra-source-completion`,
+from `136b7cac4483d4af8aaa73ca6dc3f9a0da521e10`. Preserve prior receipts.
+CACHE-026 was the current high-water mark; new CACHE-027 owns only
+`secrets/db/mng-valkey/n8n_password.txt` for the optional shared-MNG named account.
+CACHE-009 retains the dedicated instance identity. CACHE-007 retains default
+authentication, with corrected actual consumers and monitor wording.
+
+The one infra writer owns ROOT `docker-compose.yml`, `.env.example`,
+`infra/03-security/openbao/secret-catalog.json`, the generated changed/new rows
+in `secrets/SENSITIVE_ENV_VARS.md.example`, MNG `docker-compose.yml`,
+`docker-compose.n8n-acl.yml`, `valkey/scripts/render-acl.sh`, n8n
+`docker-compose.yml`, `docker-entrypoint.sh` and `docker-entrypoint.dev.sh`.
+Existing validation modules `test_mng_valkey_acl.py`,
+`test_service_runtime_compatibility.py`, `test_secret_catalog_contract.py` and
+`test_service_wiring_contracts.py`, MNG/n8n READMEs and GDE-0053/RUN-0053 accompany
+the change. Existing schema, generator and support metadata suffice; no new tool,
+mandatory CI or private writer is introduced.
+
+Baseline default authentication and DB0 require no new private file. Only the
+explicit MNG ACL overlay mounts the named-account secret. Both app entrypoints
+validate Host/User/Secret/DB, effective Queue variables, fixed prefixes and the
+single-server boundary; explicit invalid inputs never fall back. Before atomic
+ACL replacement, the renderer checks distinct nonempty credentials, a regular
+single-link file, mode and readability for the executing identity/group.
+GDE-0053 records the actual pinned Bull source, commands, key/channel namespace
+and bulk-cleanup exclusions; this is not a BullMQ or minimum-privilege acceptance
+claim. Actual Bull execution, P05, private P06 delivery, shared-MNG rollout,
+rotation and AOF/recovery remain NOT_RUN.
+
+RED reproduced missing named-account support, accepted invalid renderer inputs
+and the profile/overlay defects. The first GREEN selected 34 tests: 33 PASS and
+one opt-in Native SKIP, 14.421 s, exit 0. A separate full RuntimeCompatibilityTests
+run passed 28 tests in 3.552 s, exit 0; these are separate runs, not a combined
+full-suite result. System Python lacked the existing `referencing` dependency;
+the prepared QA environment passed the same catalog roundtrip.
+Ruff and `git diff --check` passed. The infra-validate helper returned exit 2:
+11 PASS, 0 FAIL, 4 BLOCKED; its absolute-host-path input-graph refusal prevented
+its Compose checks. Separate public `.env.example` renders passed. P03 records
+the existing host-bind boundary and canonical inventory refresh.
+
+#### Isolated synthetic ACL execution packet and results
+
+Independent IaC review admitted only
+`test_mng_valkey_acl.MngValkeyAclNativeTests` with
+`HYHOME_N8N_ACL_REHEARSAL=1`, context `default` and cached image ID
+`sha256:a0dbf4c1d5708782907c10e2c72deff317518518b5288a58416981d9db95d30b`.
+No pull occurs. The image had Config.Volumes null; the fixture also checks no
+volume mount after create. One random owner-label container uses network none,
+read-only root, cap drop ALL, no-new-privileges, 64 MiB/0.25 CPU/32 PIDs,
+16 MiB tmpfs each for /tmp and /data under the execution UID/GID, and exactly
+one read-only bind of the generated synthetic ACL. No TCP publication, persistent
+volume, HOME/LAB mount or real secret is used; clients use a Unix socket.
+The overall budget is 180 s, each Docker call at most 20 s, readiness 15 s.
+Cleanup retains its own call budget, validates the exact owner label, removes
+only that container and checks absence. No private logs are collected.
+
+The initial 17 source/test paths are ROOT Compose, public env, catalog/public
+view, MNG base/ACL overlay/renderer, n8n base/both entrypoints/Ollama overlay,
+DEV/Kafka Compose and the four validation modules above. Their sorted
+`path + NUL + sha256 + LF` aggregate was
+`3f199cfe81c7cfa25e154a41a1db2bf44cebd7017298c7a01f765126f093dd8d`;
+the initial Native module hash was
+`16fa268f0807530005047d18a1481339b95cbdcfba57fcf419f2194ba691a6f8`.
+
+Attempt 1 failed after 30.259 s, exit 1. All functional assertions ran, and
+container `hyhome-n8n-acl-4a2b6226ea7e4840ab877dc0b4f04903` was removed, but
+the final absence assertion expected capitalized "No such" while Docker returned
+lowercase "no such object". Preserve this FAIL. Only case-insensitive comparison
+was corrected; ACL production code did not change. The retry module hash is
+`85fa2a8b715c3156e48128c9766796e08fd34854ac47076b32ed2033a6174830`;
+the corresponding 17-path aggregate is
+`96d77614cceabadaa7543fd787b71595edae3f0bed7e284865dbf51224e0ec15`.
+
+Attempt 2:
+`rtk env HYHOME_N8N_ACL_REHEARSAL=1 /tmp/hyhome-coord-qa/bin/python -m unittest tests.validation.test_mng_valkey_acl.MngValkeyAclNativeTests -v`
+passed one test in 20.822 s, exit 0. AUTH/PING/DB0/key/hash/Lua reads/control
+channel passed. Other keys, DBs and channels, FLUSHDB/FLUSHALL/ACL/CONFIG/KEYS/SCAN,
+Lua cross-key/admin calls and wrong credentials were refused. Mount/ownership
+and exact-container cleanup/absence assertions passed. The successful random
+UUID was not retained in stdout; do not invent it. This is isolated Valkey ACL
+evidence, not actual Bull jobs, AOF, rotation, HOME or P06 acceptance.
+
+Final source check:
+`rtk /tmp/hyhome-v30-python-el330y6x/venv/bin/python -m unittest tests.validation.test_mng_valkey_acl.MngValkeyAclTests tests.validation.test_secret_catalog_contract tests.validation.test_service_wiring_contracts tests.validation.test_service_runtime_compatibility.RuntimeCompatibilityTests`
+passed 58 tests in 19.493 s, exit 0. That command excludes the Native class.
+Corpus lifecycle/archive recovery reported zero violations, exit 0.
+Independent final source review found no actionable blockers. Staged admission,
+logical commits and criterion 16 owner acceptance remain pending. Rollback is
+a logical source revert; it does not restore an operational account or queue.
+The first selected metadata check reported two document deficits: this English
+Task had a newly added Korean passage, and the Guide repeated release tags in
+source links. The continuation is now English and those links use exact upstream
+commit identities; the tarball keeps its explicit same-line compatibility reason.
+The initial metadata FAIL is retained separately from subsequent validation.
+After the worktree was fully restored and held stable, the affected Task, Guide
+and refreshed inventory metadata check returned selected=3, violations=0, exit 0.
+An earlier positive run overlapped the normal commit hook temporarily parking
+unstaged changes; its input was unverified and that PASS is not reused.
 
 ### Authorized Source Continuation
 

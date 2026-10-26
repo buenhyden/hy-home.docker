@@ -9,11 +9,27 @@ require_secret() {
 }
 
 require_secret /run/secrets/n8n_db_password
-case "${N8N_VALKEY_HOST:-mng-valkey}:${N8N_VALKEY_SECRET:-mng_valkey_password}" in
-  mng-valkey:mng_valkey_password|n8n-valkey:n8n_valkey_password) ;;
-  *) echo "unsupported n8n broker/secret selection" >&2; exit 1 ;;
+broker_host=${N8N_VALKEY_HOST:-mng-valkey}
+broker_user=${N8N_VALKEY_USERNAME-}
+broker_secret=${N8N_VALKEY_SECRET:-mng_valkey_password}
+broker_db=${N8N_VALKEY_DB-0}
+case "$broker_host:$broker_user:$broker_secret:$broker_db" in
+  mng-valkey::mng_valkey_password:0|n8n-valkey::n8n_valkey_password:0|mng-valkey:n8n:mng_valkey_n8n_password:0) ;;
+  *) echo "unsupported n8n broker selection" >&2; exit 1 ;;
 esac
-require_secret "/run/secrets/${N8N_VALKEY_SECRET:-mng_valkey_password}"
+if [ "${QUEUE_BULL_REDIS_HOST-$broker_host}" != "$broker_host" ] ||
+   [ "${QUEUE_BULL_REDIS_USERNAME-$broker_user}" != "$broker_user" ] ||
+   [ "${QUEUE_BULL_REDIS_DB-$broker_db}" != "$broker_db" ] ||
+   [ "${QUEUE_BULL_REDIS_PASSWORD_FILE-/run/secrets/$broker_secret}" != "/run/secrets/$broker_secret" ] ||
+   [ "${QUEUE_BULL_PREFIX-n8n}" != n8n ] ||
+   [ "${N8N_REDIS_KEY_PREFIX-n8n}" != n8n ] ||
+   [ -n "${QUEUE_BULL_REDIS_CLUSTER_NODES-}" ]; then
+  echo "inconsistent n8n queue settings" >&2
+  exit 1
+fi
+export QUEUE_BULL_REDIS_HOST="$broker_host" QUEUE_BULL_REDIS_USERNAME="$broker_user"
+export QUEUE_BULL_REDIS_DB="$broker_db" QUEUE_BULL_REDIS_PASSWORD_FILE="/run/secrets/$broker_secret"
+require_secret "$QUEUE_BULL_REDIS_PASSWORD_FILE"
 require_secret /run/secrets/n8n_encryption_key
 require_secret /run/secrets/n8n_runner_auth_token
 

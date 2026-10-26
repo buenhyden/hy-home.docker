@@ -1,10 +1,10 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.12"
+version: "0.2.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0011"
 parent_ids:
@@ -145,6 +145,55 @@ credential rotation, live resource creation or private retirement occurs in
 this initial worker slice.
 
 ## Work Log
+
+### v30 exporter selection and optional Ollama source — 2026-10-26
+
+현 직접 요청·`SPEC-0212-TSK-0008`의 coordinator lease와 독립 IaC 사전 검토로
+기준 `136b7cac4483d4af8aaa73ca6dc3f9a0da521e10`, branch
+`codex/v30-infra-source-completion`의 criterion 17 source 잔여만 수정한다.
+P02·P05·SPEC-0224의 실제 credential·workflow·관측 인수는 이 Task가 대신하지 않는다.
+
+같은 단일 infra writer가 MNG/DEV `docker-compose.yml`, Kafka `docker-compose.yml`의
+기존 Exporter·monitor provisioner profile을 Producer와 맞춘다. 새 서비스·이미지·
+monitor 계정을 만들지 않으며 역방향 depends_on도 추가하지 않는다. POL-0078 기존
+profile 표와 companion 표가 직접 Target의 정확한 목록을 소유한다. 암묵 dependency로
+Producer만 기동할 때도 companion 합집합이 필요하며 임의 Docker CLI를 차단하는 도구는 아니다.
+oauth2-proxy-valkey-exporter는 현재 이미 obs_net에 있으므로 NO_CHANGE다.
+
+새 `infra/07-workflow/n8n/docker-compose.ollama-local.yml`은 기존 typed root-base
+계약으로 Worker와 Ollama만 새 internal bridge에 추가한다. 기본 root include·profile·
+Main/Runner·기존 AI/edge network는 유지한다. 따라서 다른 기존 AI/edge peer를 차단했다고
+주장하지 않는다. Cloud 호출·키 발급·private Credential 저장·custom node는 추가하지 않는다.
+POL-0078, n8n/MNG README, GDE-0053·RUN-0053과 기존
+`tests/validation/test_service_wiring_contracts.py`가 source/선택/경계를 설명·검사한다.
+U1의 shared ROOT/env·Catalog·entrypoint는 P02 Task0010의 동일 writer 단위다.
+
+source RED는 core/local·CDC·analytics feature의 Exporter/provisioner 결손과 optional
+overlay 부재를 재현했다. GREEN 34건(33 PASS/Native 1 SKIP), 별도 RuntimeCompatibility
+28 PASS, Ruff와 diff check PASS는 Task0010과 같은 실행 범위다. direct-target 검사는
+POL-0078 실제 표와 Compose depends_on closure를 대조하여 bare mng-pg/ollama 등과
+mng-pg-init·kafka-connect의 암묵 Producer에서 companion 누락을 검출하고 정식 목록을
+수용한다. 공개 render는 `.env.example`과 격리된 CLI 환경만 사용하고 실제 dotenv·Secret을
+읽지 않았다. infra-validate의 별도 graph/Compose BLOCKED는 그대로 보존한다.
+
+실제 Worker→Ollama Credential·목록·생성·embedding·거부·복구, Prometheus scrape와
+redis_up/pg_up·Grafana query·HOME rollout은 NOT_RUN이다. `OLLAMA_NO_CLOUD=1`은 유지하며
+Cloud 승인 없이는 BLOCKED_CLOUD_APPROVAL이다. Source rollback은 이 변경 unit만 revert하고,
+운영 적용 후에는 승인된 drain·원래 exact service/network 재생성·독립 backup/복구가 필요하다.
+최종 source 검토·staged gate·commit·criterion 17의 owner acceptance는 pending이다.
+
+최종 통합 source 회귀는 준비된 Python에서 기존 네 모듈의 source class를 선택하여
+58 PASS, 19.493초, exit 0이었다. 실제 명령은 Task0010의 후속 source 영수증을 따른다.
+operations catalog의 최초 exit 1은 6개 Profile·2개 n8n Env의 기존 inventory projection
+drift였다. 추가 exact lease로 RES-0002-m0021의 기존
+`operations_catalog.render_service_inventory`를 사용해 bounded table과 metadata만
+갱신했다. 역사적 문장·consumer·backup·처분은 보존했고 새 inventory는 만들지 않았다.
+동일 `check-operations-catalog.py` 재검증은 PASS, exit 0이다. infra-validate helper의
+absolute path 차단은 기존 Terrakube/Dozzle Docker socket, Alloy Docker 경로와 host
+Exporter의 `/`·`/proc`·`/sys` 같은 의도된 host bind에 해당한다. 신규 private 입력 부재가
+원인이라는 증거는 없으며, 이 경계를 완화하거나 host 경로를 복제하지 않았다.
+추가 inventory·결과 영수증과 Native cleanup 문구 수정까지 독립 검토 READY이며
+actionable finding은 없다. criterion 17 전체·실제 관측·Node/HOME 인수는 pending이다.
 
 ### 현재 증거 범위 조정 — 2026-10-22
 

@@ -1,10 +1,10 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.1.5"
+version: "1.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-26"
 created: "2025-12-03"
 ---
 
@@ -22,9 +22,9 @@ created: "2025-12-03"
 
 [`docker-compose.yml`](docker-compose.yml)이 HOME `mng-pg`, `mng-pg-init`,
 `mng-pg-exporter`, `mng-valkey`, `mng-valkey-exporter`를 정의합니다. `mng`,
-`core`, `dev`, `local` profile이 두 엔진/init을 선택하고, exporter는 `mng`와
-`dev`를 사용합니다. `mlops`, `data-science`, `analytics-engineering`, `cdc`도
-의존성 closure만을 위해 `mng-pg`와 `mng-pg-init`을 선택합니다. 선언된 `mng-pg`
+`core`, `dev`, `local` profile이 두 엔진/init과 기존 monitor provisioner·exporter를
+함께 선택합니다. `mlops`, `data-science`, `contract-testing`, `bi`도
+`mng-pg`·`mng-pg-init`과 monitor provisioner·exporter를 선택합니다. 선언된 `mng-pg`
 명령은 CDC와 pgBackRest로의 연속 WAL 아카이빙을 위해 logical WAL
 (`wal_level=logical`과 slot, sender, retention cap)을 활성화합니다. 실행 중인
 인스턴스는 승인된 재생성 전까지 이전 설정을 유지합니다.
@@ -62,6 +62,17 @@ LAN 포트의 외부 클라이언트는 이전과 같이 인증하고(Gatus는 �
 provision job은 실행할 때마다 비밀번호를 비밀 파일에 맞추므로, 회전은 비밀 파일을
 바꾸고 job을 다시 실행한 뒤 exporter를 재생성하는 순서입니다. 두 엔진 모두
 `mng_data_net`을 사용합니다.
+
+선택형 [`docker-compose.n8n-acl.yml`](docker-compose.n8n-acl.yml)은 공유 Valkey에
+별도 `n8n` 계정을 선언합니다. 기본 stack은 새 비밀 파일을 마운트하거나 요구하지
+않습니다. 선택 시 `mng_valkey_n8n_password`의 원본은
+`secrets/db/mng-valkey/n8n_password.txt` (`CACHE-027`) 하나이며, 실제 UID999와
+추가 secrets group에서 읽을 수 있는 단일 링크 일반 파일(0400/0600 소유자 읽기
+또는 0440/0640 group 읽기)만 허용합니다. 비어 있거나 중복·symlink·잘못된 mode는
+기존 ACL 교체 전에 거부합니다. `db=0`과 `n8n:*` key/channel에 한정한 명시 command
+목록은 소스 후보이며 실제 Bull queue·Retry·회전·AOF 복원은 아직 인수하지 않았습니다.
+기존 default 계정과 큐 데이터는 보존합니다. 선택·복구 절차는
+[n8n Runbook](../../../docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md#선택형-공유-valkey-계정과-local-ollama)을 따릅니다.
 PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포트를
 게시하고, Valkey는 루트 `VALKEY_MNG_HOST_PORT` 키로
 `HOST_LAN_BIND_IP`(기본값 `192.168.0.13`)에 게시합니다. exporter는

@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.12"
+version: "1.2.13"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-10-26"
 created: "2025-11-12"
 ---
 
@@ -47,6 +47,7 @@ n8n/
 ├── Dockerfile
 ├── dev.Dockerfile
 ├── docker-compose.yml  # n8n, worker, task runner, and queue wiring
+├── docker-compose.ollama-local.yml # 선택형 Worker/Ollama internal 망
 ├── docker-entrypoint*.sh
 ├── custom/
 └── README.md           # This file
@@ -56,15 +57,15 @@ n8n/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | n8n Low-code Automation 서비스 leaf. [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 루트 include가 활성화됨. 이 파일 하나가 이 디렉터리의 유일한 Compose 파일임 |
-| Config files | `docker-compose.yml` |
+| Purpose | n8n Low-code Automation 서비스 leaf. [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 루트 include가 활성화됨. 선택형 Ollama overlay는 root include 밖에서 명시적으로 결합함 |
+| Config files | `docker-compose.yml`, `docker-compose.ollama-local.yml` |
 | Config values | env 키: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE` 외 다수; 프로필: `workflow`, `workflow-n8n` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 무조건 루트 include되며 프로필(`workflow`, `workflow-n8n`)로 선택됨 |
 | Networks | `edge_net`, `mng_data_net`, `n8n_net`, `obs_net` |
 | Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:ro`, `n8n-task-runner-worker-data:/home/node/.n8n:rw`, `n8n-data`, `n8n-task-runner-data`, `n8n-task-runner-worker-data`, `n8n-valkey-data:/data:rw`, `n8n-valkey-data` |
 | Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}`. `N8N_BROKER_PORT`는 main·worker의 `N8N_RUNNERS_BROKER_PORT`로, `N8N_TASK_RUNNER_PORT`는 두 runner의 `N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT`로 전달되어 URI·expose·healthcheck와 실제 listener가 같은 값을 씁니다 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
-| Secret refs | main/worker는 선택된 `mng_valkey_password` 또는 `n8n_valkey_password` 하나와 `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`을 마운트함. runner 둘은 `n8n_runner_auth_token`만 마운트함 |
+| Secret refs | main/worker는 선택된 `mng_valkey_password`, `mng_valkey_n8n_password` 또는 `n8n_valkey_password` 하나와 `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`을 마운트함. runner 둘은 `n8n_runner_auth_token`만 마운트함 |
 | Healthcheck | `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, `dedicated-valkey` 프로필의 `n8n-valkey`에 Compose 헬스체크가 선언되어 있음. exporter는 의존성 기반으로 게이트됨. main은 `/healthz/readiness`, worker·runner는 각 선언된 `/healthz`를 사용하며 같은 신호가 아님; probe 통과가 작업 실행 성공이나 runner 호환성을 입증하지 않음 |
 | Operations | 아래 Related Documents의 Guide·Policy·Runbook 탐색점에서 `GDE-0053`·`POL-0053`·`RUN-0053`을 선택합니다. |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -100,6 +101,23 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 - **Worker**: 실제 태스크 실행 담당 (Valkey 큐 기반).
 - **Task Runner**: 특정 복잡한 태스크를 격리된 환경에서 안전하게 처리.
 - **Valkey**: 워커 간 작업 분배를 위한 메시지 브로커.
+
+### 선택형 공유 계정과 Ollama 실행 경로
+
+기본 broker는 기존 default 계정·DB0이며 신규 비밀 파일을 요구하지 않습니다.
+`SHARE_NAMED_USER`는 MNG의 typed ACL overlay와 `N8N_VALKEY_USERNAME=n8n`,
+`N8N_VALKEY_SECRET=mng_valkey_n8n_password`, 기존 host·DB0를 함께 선택합니다.
+두 entrypoint는 Host/User/Secret/DB와 실제 Queue 변수가 같은지 검사하고 혼합 입력을
+거부합니다. 전용 Valkey의 username 없는 기존 pair도 유지합니다. 설정이 준비됐다는
+사실은 실제 Bull queue의 인증·Retry·복원 인수가 아닙니다.
+
+[`docker-compose.ollama-local.yml`](docker-compose.ollama-local.yml)은 실제 실행자인
+`n8n-worker`와 `ollama`만 새 `internal:true` 망에 추가합니다. Main/Code Runner에는
+추가 망을 주지 않습니다. 기존 Ollama `edge_net`/`ai_net` peer 접근은 유지되므로
+이 overlay를 전체 API 격리라고 표현하지 않습니다. 저장된 Ollama Credential·Node
+실행과 거부·복구는 별도이며 Cloud 호출·fallback은 추가하지 않습니다.
+정확한 선택과 인수 절차는
+[Runbook](../../../docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md#선택형-공유-valkey-계정과-local-ollama)이 소유합니다.
 
 ## Traceability (Golden 5)
 

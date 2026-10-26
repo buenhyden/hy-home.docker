@@ -1,0 +1,11 @@
+x-hyhome-overlay:
+  version: 1
+  base: infra/04-data/mng-db/docker-compose.yml
+
+# Explicit opt-in: the base stack never requires this private file.
+services:
+  mng-valkey:
+    environment:
+      MNG_VALKEY_N8N_ENABLED: '1'
+    secrets:
+      - mng_valkey_n8n_password
