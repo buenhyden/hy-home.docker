@@ -1,10 +1,10 @@
 ---
 title: "Conftest Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-27"
 layer: "operations"
 artifact_id: "GDE-0095"
 parent_ids:
@@ -35,11 +35,15 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 
 - [Conftest Compose](../../../../infra/11-quality/conftest/docker-compose.yml)는
   고정된 `openpolicyagent/conftest` 이미지를 UID 1000, 읽기 전용 루트,
-  네트워크 없음, `infra/`만 읽기 전용으로 마운트해 실행한다. `secrets/`나
-  `.env`는 전혀 보지 않는다.
-- `run.sh`는 먼저 정책 자체 테스트에 대해 `conftest verify`를 실행한 다음
-  `infra/` 아래의 모든 `docker-compose*.yml`과 `Dockerfile*`을 테스트한다.
-  `deny`는 job을 실패시키고 `warn`은 출력만 한다.
+  네트워크 없음, 공개 `infra/`·`labs/` 읽기 전용 mount로 실행한다.
+  `secrets/`, `.env`, Docker socket은 마운트하지 않는다.
+- 호스트 wrapper는 기존 canonical Git 추적 목록과 POL-0078 overlay 검증을
+  사용한다. 무시된 설치 산출물은 읽지 않고, 무시되지 않은 미추적 소스 후보는
+  Docker 호출 전에 실패시킨다. 검증된 overlay의 서비스에 원본 base의 profile만
+  넣은 정책 입력과 두 NUL 경로 목록·digest를 임시로 준비한다.
+- `run.sh`는 준비된 목록의 Compose·Dockerfile을 검사한다. `verify`, `corpus`,
+  기본 `all`은 분리된 실행 범위이며 `deny`는 실패, `warn`은 출력만 한다.
+  임시 공개 파생 입력은 읽기 전용이며 종료 시 정리된다.
 
 ## Usage
 
@@ -59,7 +63,9 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 
 | Command | Effect |
 | --- | --- |
-| `docker compose --profile policy-check run --rm conftest` | 정책을 검증한 다음 run.sh가 선택한 raw Compose 파일과 Dockerfile을 테스트 |
+| `bash scripts/validation/check-conftest-policy.sh` | 정책 단위 테스트 후 준비된 버전 관리 소스 corpus 검사 |
+| `bash scripts/validation/check-conftest-policy.sh --mode corpus` | 준비된 Compose·Dockerfile corpus 검사만 실행 |
+| `bash scripts/validation/check-conftest-policy.sh --mode verify` | 정책 단위 테스트만 실행 |
 
 ### Runbook Handoff
 
@@ -67,8 +73,13 @@ job이 실패하면 [runbook](../../runbooks/12-testing-and-quality/0095-conftes
 
 ### 검사 범위와 실패 신호
 
-실행 script는 `infra/`의 파일을 직접 읽는다. include·override를 합친 최종 Compose,
-루트 파일, inline Dockerfile 및 실행 중 상태는 이 파일 탐색 검사의 범위가 아니다.
+wrapper는 root include·base 관계를 상속 profile 검증에만 사용한다. Rego에는
+Git으로 추적하는 공개 Compose·LAB·Dockerfile 입력이 전달된다. 부분 overlay는
+상속 profile만 보충되며 권한·포트·비밀 참조 등 다른 정책 필드는 유지된다.
+일반 서비스의 누락 profile은 면제되지 않으며 overlay에 profile을 중복 선언하지 않는다.
+include·override를 합친 최종 Compose, inline Dockerfile 및 실행 중 상태는 이
+소스 corpus 정책 검사의 범위가 아니다. 준비되지 않은 직접 job `corpus`·기본 실행은
+wrapper 필요 오류로 종료하고 raw fallback은 없다. 직접 job `verify`는 별도 가능하다.
 별도 의존성·HTTP health·애플리케이션 데이터는 없으며 exit와 단계별 결과가 신호다.
 앞 단계가 실패하면 뒤 단계는 실행되지 않으므로 세 요약을 항상 기대하지 않는다.
 네트워크 없음·읽기 전용·사용자 제한을 갖춘 선언된 Compose 작업만 사용한다.

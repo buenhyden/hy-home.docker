@@ -1,5 +1,5 @@
 #!/bin/sh
-# Verify the policies, scan the tracked corpus, or preserve the combined default.
+# Verify policies or evaluate the exact prepared versioned source corpus.
 set -eu
 script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 cd "$script_dir/../../.."
@@ -11,17 +11,35 @@ mode=${1-all}
 }
 case "$mode" in
   verify|corpus|all) ;;
-  *)
-    echo "usage: $0 [verify|corpus|all]" >&2
-    exit 2
-    ;;
+  *) echo "usage: $0 [verify|corpus|all]" >&2; exit 2 ;;
 esac
+
+check_manifest() {
+  kind=$1
+  expected=$2
+  path=.conftest-source-inputs/$kind.paths0
+  case "$expected" in
+    ''|*[!0-9a-f]*) echo "ERROR: prepared Conftest context requires the host wrapper." >&2; exit 2 ;;
+  esac
+  if [ "${#expected}" -ne 64 ] || [ ! -f "$path" ] || [ -L "$path" ] || [ ! -s "$path" ]; then
+    echo "ERROR: prepared Conftest context requires the host wrapper." >&2
+    exit 2
+  fi
+  actual=$(sha256sum "$path")
+  if [ "${actual%% *}" != "$expected" ]; then
+    echo "ERROR: prepared Conftest manifest digest mismatch." >&2
+    exit 2
+  fi
+}
+
+if [ "$mode" != verify ]; then
+  check_manifest compose "${HYHOME_CONFTEST_COMPOSE_SHA256-}"
+  check_manifest dockerfile "${HYHOME_CONFTEST_DOCKERFILE_SHA256-}"
+fi
 if [ "$mode" != corpus ]; then
   conftest verify --policy "$policy"
 fi
 if [ "$mode" != verify ]; then
-  # An assignment keeps find's status, so a missing labs/ mount fails here.
-  compose_files=$(find infra -name 'docker-compose*.yml' -type f && find labs -maxdepth 1 -name '*.yml' -type f)
-  printf '%s\n' "$compose_files" | sort | xargs conftest test --policy "$policy" --namespace compose
-  find infra -name 'Dockerfile*' -type f | sort | xargs conftest test --parser dockerfile --policy "$policy" --namespace dockerfile
+  xargs -0 conftest test --policy "$policy" --namespace compose -- <.conftest-source-inputs/compose.paths0
+  xargs -0 conftest test --parser dockerfile --policy "$policy" --namespace dockerfile -- <.conftest-source-inputs/dockerfile.paths0
 fi

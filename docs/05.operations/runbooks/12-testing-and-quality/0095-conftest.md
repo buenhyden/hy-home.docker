@@ -1,10 +1,10 @@
 ---
 title: "Conftest Recovery Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-27"
 layer: "operations"
 artifact_id: "RUN-0095"
 parent_ids:
@@ -34,15 +34,20 @@ created: "2026-09-23"
    원본 읽기 전용 작업이어도 컨테이너 생성은 정적 문서 검사와 구분한다.
 
    ```bash
-   docker compose --profile policy-check run --rm conftest
+   bash scripts/validation/check-conftest-policy.sh
    ```
 
-2. `verify` 요약의 실패는 `infra/11-quality/conftest/policy/`의 깨진 규칙이나
+2. Docker 호출 전 준비 실패는 추적 여부·canonical overlay/base/profile 관계와
+   입력 경로·한계를 확인한다. 무시된 설치 산출물은 읽지 않는다. `corpus`·기본
+   실행을 직접 job으로 호출해 준비 입력이 없다면 위 wrapper를 사용한다.
+   raw fallback이나 무시 목록으로 통과시키지 않는다. `--mode verify`와
+   `--mode corpus`로 실패 lane을 분리할 수 있다. `verify` 요약의 실패는 `infra/11-quality/conftest/policy/`의 깨진 규칙이나
    테스트다. 무엇보다 Rego부터 수정한다.
 3. `FAIL - <file> - compose - service <name>: …` 또는 `… - dockerfile - …`는
-   선언과 규칙을 명시한다. 선언을 수정한다. 프로파일을 추가하거나, 이미지를
-   고정하거나, 리터럴을 Docker secret으로 옮기거나, `--checksum`을
-   추가한다.
+   선언과 규칙을 명시한다. 일반 서비스의 누락 profile은 원본에서 수정한다.
+   검증된 부분 overlay는 base profile을 상속하므로 profile을 중복·재정의하지
+   않는다. 이미지를 고정하거나 리터럴을 Docker secret으로 옮기거나
+   `--checksum`을 추가하는 등 해당 선언 위반을 수정한다.
 4. 선언이 의도한 것이면(예: 새 권한 필요), 정책 파일의 allowlist를
    사유와 함께 검토받은 변경으로 바꾼다.
 5. 종료 코드만으로 파싱 실패를 단정하지 않는다. CI wrapper의 `2`는 Docker
@@ -66,7 +71,7 @@ created: "2026-09-23"
 
 ### Rollback or Recovery
 
-이 작업은 아무것도 바꾸지 않으며 상태도 갖지 않는다.
+검사 원본과 운영 데이터는 변경하지 않는다. wrapper가 만든 임시 공개 입력과 일회성 job은 종료 시 정리하며 작업 데이터 복원은 적용되지 않는다.
 
 ### Escalation
 

@@ -1136,6 +1136,186 @@ def _compose_sources(
     return _ComposeSources(regular=regular, overlays=overlays)
 
 
+def _conftest_source_kind(path: pathlib.PurePosixPath) -> str | None:
+    if _is_infra_compose_file(path):
+        return "compose"
+    if len(path.parts) == 2 and path.parts[0] == "labs" and path.suffix == ".yml":
+        return "compose"
+    if path.parts[0] == "infra" and path.name.startswith("Dockerfile"):
+        return "dockerfile"
+    return None
+
+
+def _conftest_untracked_candidates(root: pathlib.Path) -> None:
+    result = _run_git_bounded(
+        root,
+        ["ls-files", "--others", "--exclude-standard", "-z", "--", "infra", "labs"],
+    )
+    if result.returncode:
+        raise OperationsAuthorityError(
+            "conftest-inventory-invalid", "untracked scan failed"
+        )
+    entries = result.stdout.split(b"\0")
+    if len(entries) > MAX_TRACKED_FILES + 1:
+        raise OperationsAuthorityError(
+            "conftest-inventory-invalid", "untracked bound exceeded"
+        )
+    for item in entries:
+        if not item:
+            continue
+        try:
+            path = _safe_relative(item.decode("utf-8"), "untracked source")
+        except UnicodeDecodeError as error:
+            raise OperationsAuthorityError(
+                "conftest-inventory-invalid", "invalid UTF-8"
+            ) from error
+        if _conftest_source_kind(path):
+            raise OperationsAuthorityError(
+                "conftest-untracked-source",
+                f"source must be tracked before policy checks: {path}",
+            )
+
+
+def _conftest_profile_names(root: pathlib.Path) -> frozenset[str]:
+    names = frozenset[str]()
+    profile_table = False
+    for line in _read_text(root, PROFILE_VOCABULARY_POLICY).splitlines():
+        if not line.strip().startswith("|"):
+            profile_table = False
+            continue
+        first = line.strip().strip("|").split("|", 1)[0].strip()
+        if first.lower() == "profile":
+            profile_table = True
+            continue
+        if not profile_table or first.startswith("---"):
+            continue
+        parsed, error = _parse_backticked_names(first)
+        if error or len(parsed) != 1:
+            raise OperationsAuthorityError(
+                "conftest-input-invalid", "invalid canonical profile row"
+            )
+        names = names | frozenset(parsed)
+    return names
+
+
+def _conftest_inherited_profiles(
+    path: pathlib.PurePosixPath,
+    name: str,
+    base: pathlib.PurePosixPath,
+    models: Mapping[pathlib.PurePosixPath, Mapping[str, object]],
+    included: frozenset[pathlib.PurePosixPath],
+    allowed: frozenset[str],
+) -> list[str]:
+    candidates = (
+        (base,)
+        if base != COMPOSE_ROOT
+        else tuple(
+            source
+            for source in included
+            if source in models and name in (models[source].get("services") or {})
+        )
+    )
+    if len(candidates) != 1:
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid", f"{path}: ambiguous base for {name}"
+        )
+    service = models[candidates[0]]["services"][name]
+    profiles = service.get("profiles") if isinstance(service, Mapping) else None
+    if (
+        not isinstance(profiles, list)
+        or not profiles
+        or any(
+            not isinstance(item, str) or not item or item not in allowed
+            for item in profiles
+        )
+    ):
+        raise OperationsAuthorityError(
+            "compose-overlay-invalid", f"{path}: invalid base profiles for {name}"
+        )
+    return list(profiles)
+
+
+def _conftest_overlay_inputs(
+    root: pathlib.Path, sources: _ComposeSources
+) -> dict[pathlib.PurePosixPath, dict[str, object]]:
+    if not sources.overlays:
+        return {}
+    models = {path: _compose_mapping(root, path) for path in sources.regular}
+    included = frozenset(
+        pathlib.PurePosixPath(value)
+        for value in _include_paths(_compose_mapping(root, COMPOSE_ROOT).get("include"))
+    )
+    allowed = _conftest_profile_names(root)
+    projected: dict[pathlib.PurePosixPath, dict[str, object]] = {}
+    for path in sources.overlays:
+        model = _compose_mapping(root, path)
+        base = _overlay_annotation(path, model)
+        services = {
+            name: {
+                **service,
+                "profiles": _conftest_inherited_profiles(
+                    path, name, base, models, included, allowed
+                ),
+            }
+            for name, service in model["services"].items()
+        }
+        document = {**model, "services": services}
+        try:
+            size = 0
+            for chunk in json.JSONEncoder(allow_nan=False).iterencode(document):
+                size += len(chunk.encode("utf-8"))
+                if size > MAX_FILE_BYTES:
+                    raise ValueError("projection exceeds its bound")
+        except (TypeError, ValueError, RecursionError) as error:
+            raise OperationsAuthorityError(
+                "conftest-input-invalid", f"{path}: not strict JSON"
+            ) from error
+        projected = {**projected, path: document}
+    return projected
+
+
+def conftest_source_context(root: pathlib.Path) -> dict[str, object]:
+    """Derive the bounded versioned public corpus and profile-only policy inputs.
+
+    Ignored files are never walked or read. The returned projections are policy
+    inputs, not executable Compose overrides or new profile authority.
+    """
+    tracked = tracked_paths(root)
+    if len(set(tracked)) != len(tracked):
+        raise OperationsAuthorityError(
+            "conftest-inventory-invalid", "duplicate tracked source"
+        )
+    _conftest_untracked_candidates(root)
+    sources = _compose_sources(root, tracked)
+    compose = tuple(
+        sorted(path for path in tracked if _conftest_source_kind(path) == "compose")
+    )
+    dockerfiles = tuple(
+        sorted(path for path in tracked if _conftest_source_kind(path) == "dockerfile")
+    )
+    if not compose or not dockerfiles:
+        raise OperationsAuthorityError(
+            "conftest-inventory-invalid", "empty Compose or Dockerfile corpus"
+        )
+    for path in (*compose, *dockerfiles):
+        # The same anchored reader rejects symlinks, races and oversized sources.
+        read_bounded_regular(root, path)
+        if path.parts[0] == "labs" and "x-hyhome-overlay" in _compose_mapping(
+            root, path
+        ):
+            raise OperationsAuthorityError(
+                "compose-overlay-invalid", f"{path}: LAB overlay is unsupported"
+            )
+    return {
+        "tracked": tracked,
+        "regular": sources.regular,
+        "overlays": sources.overlays,
+        "compose": compose,
+        "dockerfiles": dockerfiles,
+        "overlay_inputs": _conftest_overlay_inputs(root, sources),
+    }
+
+
 def _include_paths(include: object) -> set[str]:
     """Read string and `path:` mapping include entries as normalized paths."""
 

@@ -1402,6 +1402,151 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
                     any(message in finding[2] for finding in self._findings(root))
                 )
 
+    def _conftest_repo(self) -> pathlib.Path:
+        root = self._repo()
+        dockerfile = root / "infra/a/Dockerfile"
+        dockerfile.write_text("FROM busybox:1.37\n", encoding="utf-8")
+        subprocess.run(["git", "add", str(dockerfile)], cwd=root, check=True)
+        return root
+
+    def test_conftest_context_inherits_profiles_without_changing_other_fields(self):
+        root = self._conftest_repo()
+        overlay = self._add_overlay_text(
+            root,
+            "x-hyhome-overlay: {version: 1, base: infra/a/docker-compose.yml}\n"
+            "services:\n  x:\n    secrets: !override [monitor]\n"
+            "    privileged: true\n    ports: ['8080:80']\n"
+            "    environment: {DB_PASSWORD: literal-fixture}\n",
+        )
+        before = overlay.read_bytes()
+        relative = pathlib.PurePosixPath(overlay.relative_to(root).as_posix())
+        context = operations_catalog.conftest_source_context(root)
+        original = operations_catalog._compose_mapping(root, relative)
+        projected = context["overlay_inputs"][relative]
+        self.assertEqual(["alpha", "dev"], projected["services"]["x"]["profiles"])
+        restored = {
+            **projected,
+            "services": {
+                name: {
+                    key: value for key, value in service.items() if key != "profiles"
+                }
+                for name, service in projected["services"].items()
+            },
+        }
+        self.assertEqual(dict(original), restored)
+        self.assertEqual(before, overlay.read_bytes())
+        self.assertIn(relative, context["compose"])
+        self.assertIn(relative, context["overlays"])
+        self.assertNotIn(relative, context["regular"])
+        self.assertEqual(
+            (pathlib.PurePosixPath("infra/a/Dockerfile"),), context["dockerfiles"]
+        )
+
+    def test_conftest_context_resolves_root_overlay_service_origin(self):
+        root = self._conftest_repo()
+        overlay = self._add_overlay(
+            root,
+            {
+                "x-hyhome-overlay": {"version": 1, "base": "docker-compose.yml"},
+                "services": {"x": {"networks": {"private": {}}}},
+                "networks": {"private": {"internal": True}},
+            },
+        )
+        relative = pathlib.PurePosixPath(overlay.relative_to(root).as_posix())
+        context = operations_catalog.conftest_source_context(root)
+        self.assertEqual(
+            ["alpha", "dev"],
+            context["overlay_inputs"][relative]["services"]["x"]["profiles"],
+        )
+
+    def test_conftest_context_does_not_read_ignored_install_artifacts(self):
+        root = self._conftest_repo()
+        (root / ".gitignore").write_text("/infra/cache/\n", encoding="utf-8")
+        ignored = root / "infra/cache"
+        ignored.mkdir()
+        (ignored / "Dockerfile").write_text("FROM alpine:edge\n", encoding="utf-8")
+        (ignored / "compose.yml").write_text(
+            "x-hyhome-overlay: malformed\n", encoding="utf-8"
+        )
+        read = operations_catalog.read_bounded_regular
+
+        def checked_read(source_root, relative, **kwargs):
+            self.assertFalse(relative.as_posix().startswith("infra/cache/"))
+            return read(source_root, relative, **kwargs)
+
+        with mock.patch.object(
+            operations_catalog, "read_bounded_regular", checked_read
+        ):
+            context = operations_catalog.conftest_source_context(root)
+        self.assertFalse(any("cache" in path.parts for path in context["compose"]))
+        self.assertFalse(any("cache" in path.parts for path in context["dockerfiles"]))
+
+    def test_conftest_context_rejects_nonignored_untracked_candidates(self):
+        for relative in (
+            "infra/new/Dockerfile",
+            "infra/new/compose.yml",
+            "labs/new.yml",
+        ):
+            with self.subTest(path=relative):
+                root = self._conftest_repo()
+                candidate = root / relative
+                candidate.parent.mkdir(parents=True, exist_ok=True)
+                candidate.write_text("services: {}\n", encoding="utf-8")
+                with self.assertRaises(OperationsAuthorityError):
+                    operations_catalog.conftest_source_context(root)
+
+    def test_conftest_context_rejects_invalid_profiles_and_ambiguous_root(self):
+        for mutation in ("empty", "string", "non-string", "ambiguous"):
+            with self.subTest(mutation=mutation):
+                root = self._conftest_repo()
+                self._add_overlay(
+                    root,
+                    {
+                        "x-hyhome-overlay": {
+                            "version": 1,
+                            "base": "docker-compose.yml",
+                        },
+                        "services": {"x": {"networks": {"private": {}}}},
+                        "networks": {"private": {"internal": True}},
+                    },
+                )
+                path = root / "infra/a/docker-compose.yml"
+                if mutation == "ambiguous":
+                    path = root / "infra/b/docker-compose.cluster.yaml"
+                    path.write_text(path.read_text() + "  x: {profiles: [alpha]}\n")
+                else:
+                    value = {"empty": "[]", "string": "alpha", "non-string": "[1]"}[
+                        mutation
+                    ]
+                    path.write_text(path.read_text().replace("[alpha, dev]", value, 1))
+                with self.assertRaises(OperationsAuthorityError):
+                    operations_catalog.conftest_source_context(root)
+
+    def test_conftest_context_keeps_ordinary_missing_profile_unpromoted(self):
+        root = self._conftest_repo()
+        path = root / "infra/a/docker-compose.yml"
+        path.write_text(path.read_text() + "  missing: {image: 'busybox:1.37'}\n")
+        context = operations_catalog.conftest_source_context(root)
+        self.assertIn(
+            pathlib.PurePosixPath("infra/a/docker-compose.yml"), context["compose"]
+        )
+        self.assertFalse(context["overlay_inputs"])
+        self.assertNotIn(
+            "profiles",
+            operations_catalog._compose_mapping(
+                root, pathlib.PurePosixPath("infra/a/docker-compose.yml")
+            )["services"]["missing"],
+        )
+
+    def test_conftest_context_rejects_tracked_symlink_dockerfiles(self):
+        root = self._conftest_repo()
+        path = root / "infra/a/Dockerfile"
+        path.unlink()
+        path.symlink_to(root / "docker-compose.yml")
+        subprocess.run(["git", "add", str(path)], cwd=root, check=True)
+        with self.assertRaises(OperationsAuthorityError):
+            operations_catalog.conftest_source_context(root)
+
     def test_matching_fixture_has_no_findings(self) -> None:
         self.assertEqual([], self._findings(self._repo()))
 

@@ -23,7 +23,10 @@ import uuid
 from pathlib import Path
 from typing import ClassVar
 
-from scripts.lib.document_governance.operations_catalog import _ComposeLoader
+from scripts.lib.document_governance.operations_catalog import (
+    _ComposeLoader,
+    conftest_source_context,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_SECURITY = ROOT / "scripts/validation/check-template-security-baseline.sh"
@@ -4710,6 +4713,23 @@ def _labels(service: dict) -> set[str]:
     return {label.lower() for label in labels}
 
 
+def _canonical_corpus_fixture(root: Path) -> None:
+    files = {
+        "docker-compose.yml": "include: [infra/app/docker-compose.yml]\n",
+        "infra/app/docker-compose.yml": "services:\n  app: {profiles: [dev]}\n",
+        "infra/app/Dockerfile": "FROM busybox:1.37\n",
+        "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md": "| Profile | Category | Purpose | Selected services |\n"
+        "| --- | --- | --- | --- |\n| `dev` | baseline | fixture | `app` |\n",
+        ".gitignore": "/infra/cache/\n",
+    }
+    for relative, text in files.items():
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+    subprocess.run(["git", "add", "."], cwd=root, check=True)
+
+
 class NetworkSegmentationContractTests(unittest.TestCase):
     """Fixed flows of the segmented networks (SPEC-0180 S05, AD-0026)."""
 
@@ -4718,7 +4738,8 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         import yaml
 
         services: dict[str, dict] = {}
-        for path in sorted((ROOT / "infra").rglob("docker-compose*.y*ml")):
+        for relative in conftest_source_context(ROOT)["regular"]:
+            path = ROOT / relative
             document = (
                 yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
             )
@@ -4727,6 +4748,29 @@ class NetworkSegmentationContractTests(unittest.TestCase):
                     raise AssertionError(f"service {name} is declared twice")
                 services[name] = service
         return services
+
+    def test_regular_inventory_validates_overlays_without_duplicate_services(self):
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _canonical_corpus_fixture(root)
+            overlay = root / "infra/app/docker-compose.optional.yml"
+            overlay.write_text(
+                "x-hyhome-overlay: {version: 1, base: infra/app/docker-compose.yml}\n"
+                "services:\n  app: {environment: {OPTIONAL: '1'}}\n"
+            )
+            subprocess.run(["git", "add", str(overlay)], cwd=root, check=True)
+            with mock.patch(__name__ + ".ROOT", root):
+                self.assertEqual({"app"}, set(self._services()))
+            ordinary = root / "infra/app/docker-compose.duplicate.yml"
+            ordinary.write_text("services:\n  app: {profiles: [dev]}\n")
+            subprocess.run(["git", "add", str(ordinary)], cwd=root, check=True)
+            with (
+                mock.patch(__name__ + ".ROOT", root),
+                self.assertRaises(AssertionError),
+            ):
+                self._services()
 
     def test_routed_services_join_edge_net(self) -> None:
         missing = [
@@ -5058,101 +5102,210 @@ class ConftestPolicyGateTests(unittest.TestCase):
         self.assertFalse(docker_called)
 
     def test_container_modes_execute_only_their_owned_checks(self) -> None:
+        for mode in ("verify", "corpus", "all", None):
+            with self.subTest(mode=mode):
+                result, calls = self._run_prepared_conftest(mode=mode)
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertNotIn("/find ", calls)
+                self.assertEqual(0 if mode == "verify" else 2, calls.count(" test "))
+                self.assertEqual(mode != "corpus", "verify --policy" in calls)
+        for mode in ("", "unknown", ("verify", "extra")):
+            with self.subTest(mode=mode):
+                result, calls = self._run_prepared_conftest(mode=mode)
+                self.assertEqual(2, result.returncode)
+                self.assertEqual("", calls)
+
+    def test_unprepared_corpus_is_rejected_before_conftest_or_find(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            command_log = root / "conftest.log"
-            find_log = root / "find.log"
-            conftest = root / "conftest"
-            conftest.write_text(
-                '#!/bin/sh\nprintf "%s|%s\\n" "$PWD" "$*" >>"$CONFTEST_LOG"\n',
-                encoding="utf-8",
+            marker = root / "called"
+            for tool in ("conftest", "find"):
+                script = root / tool
+                script.write_text('#!/bin/sh\n: >"$CALL_MARKER"\nexit 0\n')
+                script.chmod(0o755)
+            result = subprocess.run(
+                ["/bin/sh", str(ROOT / "infra/11-quality/conftest/run.sh"), "corpus"],
+                env={"PATH": f"{root}:{os.defpath}", "CALL_MARKER": str(marker)},
+                capture_output=True,
+                text=True,
+                check=False,
             )
-            find = root / "find"
-            find.write_text(
-                '#!/bin/sh\nprintf "%s\\n" "$*" >>"$FIND_LOG"\n',
-                encoding="utf-8",
-            )
-            conftest.chmod(0o755)
-            find.chmod(0o755)
-            environment = {
-                "CONFTEST_LOG": str(command_log),
-                "FIND_LOG": str(find_log),
-                "PATH": f"{root}:{os.defpath}",
+            self.assertEqual(2, result.returncode, result.stderr)
+            self.assertIn("prepared", result.stderr.lower())
+            self.assertFalse(marker.exists())
+
+    def _run_prepared_conftest(self, mutation="", mode="corpus"):
+        import hashlib
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            script = root / "infra/11-quality/conftest/run.sh"
+            script.parent.mkdir(parents=True)
+            shutil.copyfile(ROOT / "infra/11-quality/conftest/run.sh", script)
+            context = root / ".conftest-source-inputs"
+            context.mkdir()
+            inputs = {
+                "compose": b"infra/app/docker-compose.yml\0",
+                "dockerfile": b"infra/app/Dockerfile\0",
             }
-            script = ROOT / "infra/11-quality/conftest/run.sh"
-
-            verify = subprocess.run(
-                ["/bin/sh", str(script), "verify"],
-                cwd=ROOT,
+            environment = {
+                "PATH": f"{root}:{os.defpath}",
+                "CALL_LOG": str(root / "calls"),
+            }
+            for kind, data in inputs.items():
+                path = context / f"{kind}.paths0"
+                path.write_bytes(data)
+                environment[f"HYHOME_CONFTEST_{kind.upper()}_SHA256"] = hashlib.sha256(
+                    data
+                ).hexdigest()
+            if mutation == "missing":
+                (context / "dockerfile.paths0").unlink()
+            elif mutation == "empty":
+                (context / "compose.paths0").write_bytes(b"")
+            elif mutation == "truncated":
+                (context / "compose.paths0").write_bytes(inputs["compose"][:-1])
+            elif mutation == "digest":
+                environment["HYHOME_CONFTEST_COMPOSE_SHA256"] = "0" * 64
+            for tool in ("conftest", "find"):
+                fake = root / tool
+                fake.write_text('#!/bin/sh\nprintf "%s\\n" "$0 $*" >>"$CALL_LOG"\n')
+                fake.chmod(0o755)
+            arguments = (
+                () if mode is None else ((mode,) if isinstance(mode, str) else mode)
+            )
+            result = subprocess.run(
+                ["/bin/sh", str(script), *arguments],
                 env=environment,
                 capture_output=True,
                 text=True,
                 check=False,
             )
-            self.assertEqual(0, verify.returncode, verify.stderr)
+            calls = (root / "calls").read_text() if (root / "calls").exists() else ""
+            return result, calls
+
+    def test_prepared_runner_checks_exact_context_and_scans_all_paths(self):
+        result, calls = self._run_prepared_conftest()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("--namespace compose -- infra/app/docker-compose.yml", calls)
+        self.assertIn("--namespace dockerfile -- infra/app/Dockerfile", calls)
+        self.assertNotIn("/find ", calls)
+
+    def test_prepared_runner_rejects_incomplete_or_changed_manifests(self):
+        for mutation in ("missing", "empty", "truncated", "digest"):
+            with self.subTest(mutation=mutation):
+                result, calls = self._run_prepared_conftest(mutation)
+                self.assertNotEqual(0, result.returncode)
+                self.assertEqual("", calls)
+
+    def test_prepared_verify_needs_no_context(self):
+        result, calls = self._run_prepared_conftest("missing", "verify")
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("verify --policy", calls)
+        self.assertNotIn(" test ", calls)
+
+    def _write_conftest_docker(self, path):
+        path.write_text("""#!/usr/bin/env python3
+import json, os, pathlib, sys
+args = sys.argv[1:]
+record = {"args": args}
+if "-f" in args:
+    files = [args[i + 1] for i, arg in enumerate(args) if arg == "-f"]
+    if len(files) > 1:
+        override = pathlib.Path(files[-1])
+        job = json.loads(override.read_text())["services"]["conftest"]
+        record["temporary"] = str(override.parent)
+        record["override_mode"] = override.stat().st_mode & 0o777
+        record["parent_mode"] = override.parent.stat().st_mode & 0o777
+        record["volumes"] = job["volumes"]
+        record["environment"] = job["environment"]
+        record["modes"] = {v["target"]: pathlib.Path(v["source"]).stat().st_mode & 0o777
+                           for v in job["volumes"]}
+        record["inputs_present"] = all(pathlib.Path(v["source"]).exists()
+                                       for v in job["volumes"])
+with open(os.environ["DOCKER_LOG"], "a") as stream:
+    stream.write(json.dumps(record) + "\\n")
+sys.exit(37 if "run" in args else 0)
+""")
+        path.chmod(0o755)
+
+    def _run_conftest_wrapper(self, *, reject_preparation=False):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self._write_conftest_docker(root / "docker")
+            environment = {
+                **os.environ,
+                "DOCKER_LOG": str(root / "docker.log"),
+                "PATH": f"{root}:{os.environ['PATH']}",
+            }
+            if reject_preparation:
+                shim = root / "python3"
+                shim.write_text(
+                    '#!/bin/sh\nprintf "%s" "$3" >"$TEMP_CAPTURE"\nexit 2\n'
+                )
+                shim.chmod(0o755)
+                environment["TEMP_CAPTURE"] = str(root / "temporary")
+            result = subprocess.run(
+                [
+                    "bash",
+                    str(ROOT / "scripts/validation/check-conftest-policy.sh"),
+                    "--mode",
+                    "corpus",
+                ],
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            log = root / "docker.log"
+            records = (
+                [json.loads(row) for row in log.read_text().splitlines()]
+                if log.exists()
+                else []
+            )
+            if reject_preparation:
+                temporary = (root / "temporary").read_text()
+                self.assertFalse(Path(temporary).exists())
+            for record in records:
+                if "temporary" in record:
+                    self.assertFalse(Path(record["temporary"]).exists())
+            return result, records
+
+    def test_wrapper_preparation_failure_stops_before_any_docker(self):
+        result, records = self._run_conftest_wrapper(reject_preparation=True)
+        self.assertEqual(2, result.returncode, result.stderr)
+        self.assertEqual([], records)
+
+    def test_wrapper_binds_canonical_inputs_and_cleans_after_down(self):
+        import hashlib
+
+        from scripts.lib.document_governance.operations_catalog import (
+            conftest_source_context,
+        )
+
+        result, records = self._run_conftest_wrapper()
+        self.assertEqual(37, result.returncode, result.stderr)
+        run = next(record for record in records if "run" in record["args"])
+        down = next(record for record in records if "down" in record["args"])
+        self.assertEqual(run["temporary"], down["temporary"])
+        self.assertTrue(down["inputs_present"])
+        self.assertEqual(0o700, run["parent_mode"])
+        self.assertEqual(0o600, run["override_mode"])
+        context = conftest_source_context(ROOT)
+        expected = {"/project/" + path.as_posix() for path in context["overlays"]}
+        expected.add("/project/.conftest-source-inputs")
+        self.assertEqual(expected, {volume["target"] for volume in run["volumes"]})
+        self.assertEqual(len(expected), len(run["volumes"]))
+        for volume in run["volumes"]:
+            self.assertTrue(volume["read_only"])
+            self.assertFalse(volume["bind"]["create_host_path"])
+            self.assertTrue(Path(volume["source"]).is_absolute())
+            self.assertIn(run["modes"][volume["target"]], (0o444, 0o555))
+        for kind, key in (("compose", "compose"), ("dockerfile", "dockerfiles")):
+            data = b"".join(path.as_posix().encode() + b"\0" for path in context[key])
             self.assertEqual(
-                f"{ROOT}|verify --policy infra/11-quality/conftest/policy\n",
-                command_log.read_text(encoding="utf-8"),
+                hashlib.sha256(data).hexdigest(),
+                run["environment"][f"HYHOME_CONFTEST_{kind.upper()}_SHA256"],
             )
-            self.assertFalse(find_log.exists())
-
-            command_log.unlink()
-            corpus = subprocess.run(
-                ["/bin/sh", str(script), "corpus"],
-                cwd=ROOT,
-                env=environment,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            self.assertEqual(0, corpus.returncode, corpus.stderr)
-            commands = command_log.read_text(encoding="utf-8").splitlines()
-            self.assertEqual(2, len(commands))
-            self.assertTrue(
-                all(command.startswith(f"{ROOT}|test ") for command in commands)
-            )
-            self.assertNotIn("verify", "\n".join(commands))
-            # infra Compose files, LAB entrypoints (SPEC-0218) and Dockerfiles.
-            finds = find_log.read_text(encoding="utf-8").splitlines()
-            self.assertEqual(3, len(finds))
-            self.assertTrue(any(line.startswith("labs ") for line in finds), finds)
-
-            command_log.unlink()
-            find_log.unlink()
-            for arguments in (("all",), ()):
-                combined = subprocess.run(
-                    ["/bin/sh", str(script), *arguments],
-                    cwd=ROOT,
-                    env=environment,
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                self.assertEqual(0, combined.returncode, combined.stderr)
-                commands = command_log.read_text(encoding="utf-8").splitlines()
-                self.assertEqual(3, len(commands))
-                self.assertTrue(commands[0].startswith(f"{ROOT}|verify "))
-                self.assertTrue(
-                    all(command.startswith(f"{ROOT}|test ") for command in commands[1:])
-                )
-                self.assertEqual(
-                    3, len(find_log.read_text(encoding="utf-8").splitlines())
-                )
-                command_log.unlink()
-                find_log.unlink()
-
-            for arguments in (("",), ("unknown",), ("verify", "extra")):
-                rejected = subprocess.run(
-                    ["/bin/sh", str(script), *arguments],
-                    cwd=ROOT,
-                    env=environment,
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                self.assertEqual(2, rejected.returncode)
-                self.assertFalse(command_log.exists())
-                self.assertFalse(find_log.exists())
 
     def test_every_policy_has_unit_tests(self) -> None:
         policy = ROOT / "infra/11-quality/conftest/policy"
@@ -5355,16 +5508,37 @@ class ImageTagPolicyTests(unittest.TestCase):
     FROM = re.compile(r"\s*FROM\s+(?:--\S+\s+)*(\S+)(?:\s+AS\s+(\S+))?", re.I)
     FIELDS = ("owner", "reason", "risk", "review_cadence", "exit_condition")
 
+    def test_floating_images_read_tracked_corpus_including_overlay_images(self):
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _canonical_corpus_fixture(root)
+            overlay = root / "infra/app/docker-compose.optional.yml"
+            overlay.write_text(
+                "x-hyhome-overlay: {version: 1, base: infra/app/docker-compose.yml}\n"
+                "services:\n  app: {image: 'alpine:edge'}\n"
+            )
+            subprocess.run(["git", "add", str(overlay)], cwd=root, check=True)
+            artifact = root / "infra/cache/Dockerfile"
+            artifact.parent.mkdir()
+            artifact.write_text("FROM ubuntu:latest\n")
+            with mock.patch(__name__ + ".ROOT", root):
+                images = self.floating_images()
+            self.assertEqual(
+                {"alpine:edge": ["infra/app/docker-compose.optional.yml:app"]}, images
+            )
+
     @classmethod
     def floating_images(cls) -> dict[str, list[str]]:
         import yaml
 
         found: dict[str, list[str]] = {}
-        infra = ROOT / "infra"
-        paths = {*infra.rglob("docker-compose*.yml"), *infra.rglob("compose*.yml")}
-        for path in sorted(paths):
-            if "labs" in path.relative_to(infra).parts:
+        context = conftest_source_context(ROOT)
+        for relative in context["compose"]:
+            if relative.parts[0] != "infra" or "labs" in relative.parts[1:]:
                 continue
+            path = ROOT / relative
             data = (
                 yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
             )
@@ -5376,9 +5550,10 @@ class ImageTagPolicyTests(unittest.TestCase):
                     found.setdefault(image, []).append(
                         f"{path.relative_to(ROOT)}:{name}"
                     )
-        for path in sorted(infra.rglob("Dockerfile*")):
-            if "labs" in path.relative_to(infra).parts:
+        for relative in context["dockerfiles"]:
+            if "labs" in relative.parts[1:]:
                 continue
+            path = ROOT / relative
             stages: set[str] = set()
             for line in path.read_text(encoding="utf-8").splitlines():
                 match = cls.FROM.match(line)
