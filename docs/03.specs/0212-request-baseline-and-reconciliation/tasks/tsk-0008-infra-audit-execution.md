@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -709,6 +709,36 @@ The staged public-SHA false-positive FAIL was corrected to structured fields;
 fresh staged checks PASSed before ordinary commit452. The next complete
 registered attempt remains NOT_RUN; focused GREEN cannot promote aggregateFAIL.
 
+### v30 corrective commits and complete registered changed rerun (2026-10-27)
+
+The061ec87a aggregate failed only `leaf.conftest-policy` with16NOT_RUN; a
+separate15-leaf diagnostic found compose-baseline and repository-integrity
+FAILs. Four ordinary commits fix the source roots without suppressing a leaf:
+`3f1c45e9d` prepares the Git-tracked Conftest corpus and inherited overlay
+profiles, so ignored `node_modules` Dockerfiles are never read and POL-0078
+partial overlays keep their base profiles; `77bd8010d` counts validated overlay
+grants for opt-in secrets and keeps undeclared overlay sources dangling;
+`aa5ca15b0` retires the satisfied SurrealDB floating-tag exception;
+`b3445c567` aligns stale n8n, SEC01 and SMTP assertions. Fourteen local
+secret-generator failures came from a host interpreter without `jsonschema`;
+they passed with the prepared controller interpreter on `PATH`.
+
+Focused results: Conftest wrapper real Docker run PASS in all, corpus and
+verify modes (18 policy, 420 Compose, 69 Dockerfile tests) with no retained
+temporary input or container; an unprepared direct corpus job exits2. Secret,
+Compose-baseline and catalog-contract suites:188 tests OK; the rest of the
+repository-integrity leaf:374 tests OK; changed-document metadata0 violations.
+
+The complete registered `run-ci-gate.py --profile changed` then ran once on
+clean HEAD `b3445c56702d3dae09feab21e7a0714e61bf905d` with the prepared
+controller interpreter and the GitHub token removed from the child environment,
+from20:03:40.190152 to20:53:42.734607UTC: exit0; tested and ending revisions
+matched and the tree stayed clean. The runner printed no per-leaf projection,
+so no leaf count is claimed beyond exit0 for the full selection. Public log
+SHA256 `462c45b478446bb25bb035cc5c392dcc26e2b4029cdc1804aeaf260aae6c36ee`
+is kept in the session scratch only. This is local registered evidence, not
+hosted CI, Native, HOME or owner acceptance.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -732,6 +762,7 @@ registered attempt remains NOT_RUN; focused GREEN cannot promote aggregateFAIL.
 | v30-prepared-document-metadata | 19 | W24 | `check-document-metadata.py --mode check-changed --base-ref 136b7cac4483d4af8aaa73ca6dc3f9a0da521e10` with the three explicit owned changed paths | Prepared coordinator draft before final lease/result additions | PASS | #v30-coordinator-document-checks; selected3, violations0, no lifecycle override; final integrated checks separate | optional | - |
 | v30-implemented-source-results | 19 | W24 | Read current owner-reported source, unit, isolated ACL and independent review results without promoting them to leaf acceptance | Frozen17-source/test manifest96d77614; exact ACL module85fa2a8b; P02/P03 and Quality current continuations | PASS | #v30-implemented-source-and-bounded-verification; separate invocations and retained first-attempt failure | optional | - |
 | v30-final-public-changed-gate | 19 | W24 | Registered public changed gate on final logical commits with the prepared exact controller toolchain | Final committed input not yet executed by delivery owner | NOT_RUN | #v30-implemented-source-and-bounded-verification; #v30-local-per-spec-pr-drafts | optional | - |
+| v30-final-public-changed-gate-b3445 | 19 | W24 | Registered public changed gate on final logical commits with the prepared exact controller toolchain | Clean HEAD b3445c56702d3dae09feab21e7a0714e61bf905d | PASS | #v30-corrective-commits-and-complete-registered-changed-rerun-2026-10-27; exit0, no per-leaf count claimed; local only | optional | v30-final-public-changed-gate |
 
 ## Criterion Acceptance
 
