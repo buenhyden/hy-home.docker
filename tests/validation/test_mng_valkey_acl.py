@@ -13,6 +13,7 @@ import time
 import unittest
 import uuid
 from pathlib import Path
+from unittest import mock
 
 SCRIPT = (
     Path(__file__).resolve().parents[2]
@@ -62,6 +63,20 @@ class MngValkeyAclTests(unittest.TestCase):
                 fixture.assert_absent(
                     subprocess.CompletedProcess([], code, "", message)
                 )
+
+    def test_cached_images_require_null_volume_metadata(self):
+        fixture = MngValkeyAclNativeTests()
+        template = '{"Id":{{json .Id}},"Volumes":{{json (index .Config "Volumes")}}}'
+        for config in ({}, {"Volumes": None}, {"Volumes": {"/data": {}}}):
+            metadata = {"Id": fixture.IMAGE, "Volumes": config.get("Volumes")}
+            result = subprocess.CompletedProcess([], 0, json.dumps(metadata))
+            with mock.patch.object(fixture, "docker", return_value=result) as invoke:
+                if config.get("Volumes") is None:
+                    fixture.cached_image(fixture.IMAGE)
+                else:
+                    with self.assertRaises(AssertionError):
+                        fixture.cached_image(fixture.IMAGE)
+                self.assertEqual(template, invoke.call_args.args[-1])
 
     def test_default_bull_method_skips_before_any_fixture_or_docker_call(self):
         probe = """
@@ -337,7 +352,7 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             "inspect",
             image,
             "--format",
-            '{"Id":{{json .Id}},"Volumes":{{json .Config.Volumes}}}',
+            '{"Id":{{json .Id}},"Volumes":{{json (index .Config "Volumes")}}}',
         )
         self.assertEqual(
             0, inspected.returncode, "required exact cached fixture image unavailable"
@@ -486,11 +501,7 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             self.network_id or self.network_name,
         )
         if result.returncode and absent_ok:
-            self.assertTrue(
-                any(
-                    value in result.stderr.lower() for value in ("no such", "not found")
-                )
-            )
+            self.assert_absent(result)
             return None
         self.assertEqual(0, result.returncode, result.stderr)
         state = json.loads(result.stdout)
