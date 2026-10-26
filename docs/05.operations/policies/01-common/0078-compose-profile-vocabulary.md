@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.13.8"
+version: "1.13.9"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -368,6 +368,42 @@ category와 필수 dependency 폐포를 검사한다.
 선택 closure 성공은 optional dependency의 앱 endpoint나 provisioning 완료를
 보장하지 않는다. 예를 들어 Grafana DB provisioning 선택과 실제 앱 사용 준비는
 [Grafana Guide](../../guides/07-observability/0041-grafana.md)에서 확인한다.
+
+### Optional dedicated Valkey observer identity
+
+Airflow, n8n, OAuth2 Proxy의 `docker-compose.monitor-acl.yml`은 각 기존 leaf를
+base로 지정하며 기본 include나 profile을 추가하지 않는다. 기존 ROOT-base의
+network-only 제한은 바꾸지 않는다. 선택하지 않은 기본 dedicated exporter의
+기본 앱 비밀번호·관리 권한 공유 위험은 남는다. 다음 공개 렌더링은 준비된 source만
+검사하며 실제 시작·private 파일 확인을 수행하지 않는다.
+
+```sh
+docker compose --env-file .env.example -f docker-compose.yml -f infra/07-workflow/airflow/docker-compose.monitor-acl.yml -f infra/07-workflow/n8n/docker-compose.monitor-acl.yml -f infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml --profile dedicated-valkey config --no-env-resolution --no-path-resolution --quiet
+```
+
+실제 선택 시 root Secret 선언의 세 관측 파일을 각 소비자 UID/보조 GID 계약에 맞춰
+별도 준비한다. broker마다 자신의 앱/관측 비밀번호 불일치만 검사하며, 다른 broker
+파일을 교차 마운트하지 않는다. 세 서비스 간 별도 발급·회전은 운영자 인수 대상이다.
+기본 앱 계정/권한·AOF·데이터·네트워크는 유지하고 exporter의 admin secret 목록은
+`!override`로 관측 파일 하나로 교체한다. monitor는 고정된 PING/INFO/COMMAND INFO/
+SLOWLOG LEN/COMMANDLOG LEN만 허용한다. INFO 전체 DB 집계와 선택적 SLOWLOG GET
+거부에 따른 상세 지표 부재를 기록하고, key/channel/Lua/admin 권한을 추가하지 않는다.
+`/scrape`는 끄고 기존 `/metrics` 소비자를 보존한다.
+
+직접 실행 대상은 broker와 companion exporter를 함께 명시한다. profile 전체 선택은
+기존 세 쌍을 선택한다. overlay는 앱 endpoint 선택을 바꾸지 않으며 shared Valkey에
+간접 연결된 앱을 dedicated로 이전하지 않는다.
+
+| Broker | Explicit broker + companion targets |
+| --- | --- |
+| `airflow-valkey` | `airflow-valkey airflow-valkey-exporter` |
+| `n8n-valkey` | `n8n-valkey n8n-valkey-exporter` |
+| `oauth2-proxy-valkey` | `oauth2-proxy-valkey oauth2-proxy-valkey-exporter` |
+
+SOURCE/UNIT/STATIC/ISOLATED/HOME/ROTATION/RECOVERY는 별개 상태다. 실제 수집과
+앱 queue/session, AOF, credential 회전 및 복구는 해당 고정 이미지와 정확한
+소유 대상/정리 경계의 실행 영수증이 있어야 수용한다. source rollback은 선택형
+변경의 논리적 revert이며 운영 데이터 복구를 증명하지 않는다.
 
 ## Related Documents
 

@@ -1,0 +1,36 @@
+x-hyhome-overlay:
+  version: 1
+  base: infra/07-workflow/n8n/docker-compose.yml
+
+# Explicit leaf overlay; application/default authority stays unchanged.
+services:
+  n8n-valkey:
+    secrets:
+      - n8n_valkey_monitor_password
+    volumes:
+      - ./infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh:/usr/local/bin/render-monitor-acl.sh:ro
+    tmpfs:
+      - /run/valkey:rw,noexec,nosuid,nodev,mode=0700,uid=999,gid=999
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        /bin/sh /usr/local/bin/render-monitor-acl.sh /run/secrets/n8n_valkey_password /run/secrets/n8n_valkey_monitor_password /run/valkey/users.acl
+        exec valkey-server --aclfile /run/valkey/users.acl --appendonly yes --port 6379
+  n8n-valkey-exporter:
+    secrets: !override
+      - n8n_valkey_monitor_password
+    command:
+      - |
+        set -eu
+        REDIS_PASSWORD=$$(cat /run/secrets/n8n_valkey_monitor_password)
+        [ -n "$$REDIS_PASSWORD" ] || exit 1
+        export REDIS_PASSWORD
+        exec /redis_exporter \
+          -redis.addr=redis://n8n-valkey:6379 \
+          -redis.user=monitor \
+          -config-command=- \
+          -set-client-name=false \
+          -exclude-latency-histogram-metrics \
+          -disable-scrape-endpoint \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}

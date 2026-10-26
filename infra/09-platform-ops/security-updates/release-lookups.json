@@ -11031,7 +11031,7 @@
           "input_files": [
             {
               "path": "docker-compose.yml",
-              "sha256": "b516e8b32bd27036456689313fd828ffe3dc92f48f02c51f1c1000dfc10a8bb4"
+              "sha256": "20b72108463e4883b4bed328507021a152436fd4a04fe163fe2bf26f9f18f411"
             },
             {
               "path": "infra/01-gateway/nginx/docker-compose.yml",
@@ -11206,7 +11206,7 @@
               "sha256": "48abf33e7d9e3222f722107b28adcc258f10d87dc15023babe9ea815243d5262"
             }
           ],
-          "input_manifest_sha256": "8287ee14113593fa36cb7f86a66f50fa28613c5919c01bbc730c3317cbfa4a6d",
+          "input_manifest_sha256": "e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94",
           "meaning": "Public root Compose source set only; runtime set and active profiles require independent observation."
         },
         "supplier_group_dispositions": [
@@ -17492,7 +17492,252 @@
           "source_scope": "Uncommitted working tree after exact leases and independent prereview",
           "runtime_build_security_restore": "NOT_RUN",
           "current_public_observations": 202
-        }
+        },
+        "historical_source_input_manifests": [
+          {
+            "meaning": "Eight-unit reviewed source checkpoint preserved before optional F23 root declarations",
+            "source_input_manifest": {
+              "input_files": [
+                {
+                  "path": "docker-compose.yml",
+                  "sha256": "b516e8b32bd27036456689313fd828ffe3dc92f48f02c51f1c1000dfc10a8bb4"
+                },
+                {
+                  "path": "infra/01-gateway/nginx/docker-compose.yml",
+                  "sha256": "d719e16568e1d898bfc0978c405910e118b3bb58cf7f09dfe6615610546624bb"
+                },
+                {
+                  "path": "infra/01-gateway/traefik/docker-compose.yml",
+                  "sha256": "ad9f88fd18c43746e049988a6f4b32475086bfac7d162d9b3ab6a2dd80f13acc"
+                },
+                {
+                  "path": "infra/02-auth/keycloak/docker-compose.yml",
+                  "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+                },
+                {
+                  "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+                  "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+                },
+                {
+                  "path": "infra/03-security/openbao/docker-compose.yml",
+                  "sha256": "f8eac484b704836fb06ff1b435d405213d0449c311df32863ea53a22ffeed638"
+                },
+                {
+                  "path": "infra/04-data/dev-db/docker-compose.yml",
+                  "sha256": "95415facc07ab7aa4798c570871c61fa3adcead9de566a3345c313af6a7253fc"
+                },
+                {
+                  "path": "infra/04-data/mng-db/docker-compose.yml",
+                  "sha256": "c840fc410ae8728f833db68802264b551d998b487cb3098bf9ffeb273c8bdee7"
+                },
+                {
+                  "path": "infra/04-data/neo4j/docker-compose.yml",
+                  "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+                },
+                {
+                  "path": "infra/04-data/opensearch/docker-compose.yml",
+                  "sha256": "e8579c6d8ae94bbca1df53cd4110d6762eb74ca5168bb02f60880c8ba00a6ac7"
+                },
+                {
+                  "path": "infra/04-data/qdrant/docker-compose.yml",
+                  "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+                },
+                {
+                  "path": "infra/04-data/redisinsight/docker-compose.yml",
+                  "sha256": "1e2aae21929c1ba22fd3a18856d99ff9dcbef93bb500ade703505659867fd961"
+                },
+                {
+                  "path": "infra/04-data/seaweedfs/docker-compose.yml",
+                  "sha256": "c70174e82d61607f7562e52e0a73a423e41ddc79f5f52f6ef598c69483346f53"
+                },
+                {
+                  "path": "infra/05-messaging/kafka/docker-compose.yml",
+                  "sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8"
+                },
+                {
+                  "path": "infra/06-observability/docker-compose.yml",
+                  "sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb"
+                },
+                {
+                  "path": "infra/06-observability/dozzle/docker-compose.yml",
+                  "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+                },
+                {
+                  "path": "infra/07-workflow/airflow/docker-compose.yml",
+                  "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+                },
+                {
+                  "path": "infra/07-workflow/n8n/docker-compose.yml",
+                  "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
+                },
+                {
+                  "path": "infra/08-ai/comfyui/docker-compose.yml",
+                  "sha256": "f603ed35a889029a1eee9071d26c0de3e650e7fe8c4e18226e0778998a81827e"
+                },
+                {
+                  "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+                  "sha256": "4501b298103e367d907fcee57f24ad2e1d7c6acfa5cb13134a8c74b05717dc5b"
+                },
+                {
+                  "path": "infra/08-ai/mlflow/docker-compose.yml",
+                  "sha256": "f12df92d55c6ed8cb1c4b85f768e3fdc21cf146233495c51ce3299394ab123e0"
+                },
+                {
+                  "path": "infra/08-ai/ollama/docker-compose.yml",
+                  "sha256": "5cff149ef82fb45b18163f4328795256233a230c0be33db2c086c245781bde19"
+                },
+                {
+                  "path": "infra/08-ai/open-notebook/docker-compose.yml",
+                  "sha256": "780ebabe132c9c3c82041c2ce91fa11d78463e2c4abb6c8b9cc4a1c72f6998e4"
+                },
+                {
+                  "path": "infra/08-ai/open-webui/docker-compose.yml",
+                  "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+                },
+                {
+                  "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+                  "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+                },
+                {
+                  "path": "infra/09-platform-ops/registry/docker-compose.yml",
+                  "sha256": "ee186d89e880c81fc93346c70771f59898f76d1b85fa4fd86353e1d834a89a3c"
+                },
+                {
+                  "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+                  "sha256": "e51da00556f4daa005f9cf96c2febc18c67e78a1a1ccbdb687139f726684aa2f"
+                },
+                {
+                  "path": "infra/09-platform-ops/restic/docker-compose.yml",
+                  "sha256": "ad3975ee1f8a839b53025bc1f7010e5462229e563ae7b599d013492d2e0c8563"
+                },
+                {
+                  "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+                  "sha256": "49b086010504cc2f4a62983e658f5df3313019d47ae888e3381cbcc3c9037e81"
+                },
+                {
+                  "path": "infra/10-communication/stalwart/docker-compose.yml",
+                  "sha256": "3b781b282bcb7cd2c43852dd77f4ef457de1b71cd4a0eb8a11ce49dbdc0ec3fa"
+                },
+                {
+                  "path": "infra/11-quality/conftest/docker-compose.yml",
+                  "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+                },
+                {
+                  "path": "infra/11-quality/k6/docker-compose.yml",
+                  "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+                },
+                {
+                  "path": "infra/11-quality/mailpit/docker-compose.yml",
+                  "sha256": "b5c0110557e5e8c82e12224cbfd9152b6a6186ba431fcd930f8a1774b6c41b76"
+                },
+                {
+                  "path": "infra/11-quality/pact-broker/docker-compose.yml",
+                  "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+                },
+                {
+                  "path": "infra/11-quality/sonarqube/docker-compose.yml",
+                  "sha256": "b126d7aefbe4846ee6b5f883f64582ce5c8561684370671805cf5ea7d1467b3c"
+                },
+                {
+                  "path": "infra/11-quality/wiremock/docker-compose.yml",
+                  "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+                },
+                {
+                  "path": "infra/12-analytics/dbt/docker-compose.yml",
+                  "sha256": "7e8148601f9e60410c40e39cb19e431ad8ceabd7a0075ed1ac0aa7cde05de13b"
+                },
+                {
+                  "path": "infra/12-analytics/flink/docker-compose.yml",
+                  "sha256": "1392ea2fd3940c84578adeb2443f3af9d45f2296b5a29fb1610707101b99a88f"
+                },
+                {
+                  "path": "infra/12-analytics/great-expectations/docker-compose.yml",
+                  "sha256": "57895faf9051375ae61956ce9be3ed294b436556bbeb5badf8bf69e77a7b70d5"
+                },
+                {
+                  "path": "infra/12-analytics/jupyterlab/docker-compose.yml",
+                  "sha256": "fa6b255010f7eb4012677c00ea31c549aef40bb3dba8aa563b3411547749751a"
+                },
+                {
+                  "path": "infra/12-analytics/spark/docker-compose.yml",
+                  "sha256": "eeb983b22d99fde28ac4bd134926bdea9d334abffdc55ff6b9d6f514670b76cf"
+                },
+                {
+                  "path": "infra/12-analytics/superset/docker-compose.yml",
+                  "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+                },
+                {
+                  "path": "infra/12-analytics/trino/docker-compose.yml",
+                  "sha256": "400d4ad8784ee51cd9559f746418e520579ca0b508485c6119ad7939ea3ca7b4"
+                },
+                {
+                  "path": "infra/13-experience/storybook/docker-compose.yml",
+                  "sha256": "48abf33e7d9e3222f722107b28adcc258f10d87dc15023babe9ea815243d5262"
+                }
+              ],
+              "input_manifest_sha256": "8287ee14113593fa36cb7f86a66f50fa28613c5919c01bbc730c3317cbfa4a6d",
+              "meaning": "Public root Compose source set only; runtime set and active profiles require independent observation."
+            }
+          }
+        ],
+        "local_source_rebindings": [
+          {
+            "observed_at": "2026-10-26T11:42:17.315903+00:00",
+            "input_head": "8fc4620da970c5a8382edc9ebed72ed82d29891d",
+            "revision_scope": "Current local source including opt-in F23 leaf overlays; not a committed/build/native acceptance receipt",
+            "source_input_manifest_sha256": "e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94",
+            "inputs": [
+              {
+                "path": "docker-compose.yml",
+                "sha256": "20b72108463e4883b4bed328507021a152436fd4a04fe163fe2bf26f9f18f411"
+              },
+              {
+                "path": "infra/common-optimizations.yml",
+                "sha256": "77abe65cbc29b29f2dd85d5fb3c594b2140c0f0ff85a895bb978d488477eced1"
+              },
+              {
+                "path": "infra/07-workflow/airflow/docker-compose.yml",
+                "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+              },
+              {
+                "path": "infra/07-workflow/n8n/docker-compose.yml",
+                "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
+              },
+              {
+                "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+                "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+              },
+              {
+                "path": "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
+                "sha256": "a940e0064c8996281f16fcada4b7119d17b477a7b03530539b84c594959b05ca"
+              },
+              {
+                "path": "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
+                "sha256": "775cc3146e479aebdb6bcf9a710997fc7196b3805de507a4ed8962ac5cc80751"
+              },
+              {
+                "path": "infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml",
+                "sha256": "f66375f5d77a82cc8ac9a79e6dcd611b481d70b034f6bd6ff55d02252c33a520"
+              },
+              {
+                "path": "infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh",
+                "sha256": "7f97aa5ddf16a93059307b5fe2ae9858c2be9b8b874c097e0eba076a769ffad2"
+              },
+              {
+                "path": "infra/03-security/openbao/secret-catalog.json",
+                "sha256": "e52aba6e12cb9984a09fc74b463bb4da395b9cc7c54fdd2aeecbacbe50553011"
+              },
+              {
+                "path": "secrets/SENSITIVE_ENV_VARS.md.example",
+                "sha256": "f3ee29ec45f0bbdf6a0db47d0de3264f555318b3bd8da50f16acdb1669509169"
+              }
+            ],
+            "service_count": 111,
+            "include_count": 44,
+            "meaning": "Three existing broker/exporter pairs only; base controls and legacy risk unchanged. Public source and synthetic checks; adoption/rotation/AOF/HOME/recovery NOT_RUN.",
+            "public_template_count_correction": "Replace stale pre-existing hardcoded Docker Secret count with canonical table/catalog coverage reference; no scope/classification inference from unique path count."
+          }
+        ]
       }
     ]
   }

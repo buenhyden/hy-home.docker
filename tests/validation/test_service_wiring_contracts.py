@@ -259,6 +259,279 @@ class OptionalIntegrationContractTests(unittest.TestCase):
         self.assertTrue(optional["networks"]["n8n_ollama_net"]["internal"])
 
 
+class DedicatedValkeyMonitorTests(unittest.TestCase):
+    overlays = (
+        "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
+        "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
+        "infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml",
+    )
+    renderer = ROOT / "infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh"
+    pairs = (
+        (
+            "airflow-valkey",
+            "airflow_valkey_password",
+            "airflow_valkey_monitor_password",
+        ),
+        ("n8n-valkey", "n8n_valkey_password", "n8n_valkey_monitor_password"),
+        (
+            "oauth2-proxy-valkey",
+            "oauth2_valkey_password",
+            "oauth2_valkey_monitor_password",
+        ),
+    )
+
+    def test_leaf_annotations_use_existing_membership_and_replacement_contract(self):
+        from scripts.lib.document_governance.operations_catalog import _compose_sources
+
+        root = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
+        included = [PurePosixPath(p) for p in root["include"]]
+        overlays = [PurePosixPath(p) for p in self.overlays]
+        classified = _compose_sources(ROOT, [*included, *overlays])
+        self.assertEqual(set(overlays), set(classified.overlays))
+        for path in overlays:
+            base = path.parent / "docker-compose.yml"
+            self.assertIn(base, classified.regular)
+        self.assertFalse(
+            (ROOT / "infra/docker-compose.dedicated-valkey-monitor.yml").exists()
+        )
+
+    def test_renderer_generates_only_fixed_monitor_grants_and_preserves_default(self):
+        import hashlib
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            default, monitor, output = (
+                root / "default",
+                root / "monitor",
+                root / "users.acl",
+            )
+            default.write_bytes(b"synthetic-app\n")
+            monitor.write_bytes(b"synthetic-observer")
+            default.chmod(0o600)
+            monitor.chmod(0o600)
+            result = subprocess.run(
+                ["sh", str(self.renderer), str(default), str(monitor), str(output)],
+                capture_output=True,
+                check=False,
+                timeout=10,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(b"", result.stdout)
+            lines = output.read_text().splitlines()
+            app_hash = hashlib.sha256(b"synthetic-app").hexdigest()
+            monitor_hash = hashlib.sha256(b"synthetic-observer").hexdigest()
+            self.assertEqual(
+                [
+                    f"user default reset on #{app_hash} ~* &* +@all",
+                    f"user monitor reset on #{monitor_hash} resetkeys resetchannels -@all "
+                    "+ping +info +command|info +slowlog|len +commandlog|len",
+                ],
+                lines,
+            )
+            self.assertEqual(0o600, output.stat().st_mode & 0o777)
+            self.assertEqual(
+                {"default", "monitor", "users.acl"}, {p.name for p in root.iterdir()}
+            )
+
+    def test_renderer_accepts_the_declared_readable_group_secret_contract(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            default, monitor = root / "default", root / "monitor"
+            default.write_bytes(b"synthetic-app")
+            monitor.write_bytes(b"synthetic-observer")
+            default.chmod(0o440)
+            monitor.chmod(0o640)
+            result = subprocess.run(
+                [
+                    "sh",
+                    str(self.renderer),
+                    str(default),
+                    str(monitor),
+                    str(root / "users.acl"),
+                ],
+                capture_output=True,
+                check=False,
+                timeout=10,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(b"", result.stdout)
+
+    def test_renderer_rejects_unsafe_inputs_before_atomic_replacement(self):
+        for case in (
+            "missing",
+            "empty",
+            "duplicate",
+            "multiline",
+            "control",
+            "mode",
+            "symlink",
+            "hardlink",
+            "parent-mode",
+            "parent-symlink",
+            "output-symlink",
+            "output-hardlink",
+            "output-mode",
+        ):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                parent = root / "acl"
+                parent.mkdir(mode=0o700)
+                default, monitor, output = (
+                    root / "default",
+                    root / "monitor",
+                    parent / "users.acl",
+                )
+                default.write_bytes(b"synthetic-app")
+                monitor.write_bytes(b"synthetic-observer\n")
+                default.chmod(0o600)
+                monitor.chmod(0o600)
+                output.write_bytes(b"previous-safe-acl")
+                output.chmod(0o600)
+                if case == "missing":
+                    monitor.unlink()
+                elif case == "empty":
+                    monitor.write_bytes(b"")
+                elif case == "duplicate":
+                    monitor.write_bytes(default.read_bytes())
+                elif case == "multiline":
+                    monitor.write_bytes(b"first\nsecond\n")
+                elif case == "control":
+                    monitor.write_bytes(b"bad\r\n")
+                elif case == "mode":
+                    monitor.chmod(0o644)
+                elif case == "symlink":
+                    monitor.unlink()
+                    monitor.symlink_to(default)
+                elif case == "hardlink":
+                    os.link(monitor, root / "other-secret")
+                elif case == "parent-mode":
+                    parent.chmod(0o755)
+                elif case == "parent-symlink":
+                    alias = root / "alias"
+                    alias.symlink_to(parent, target_is_directory=True)
+                    output = alias / "users.acl"
+                elif case == "output-symlink":
+                    output.rename(parent / "original")
+                    output.symlink_to(parent / "original")
+                elif case == "output-hardlink":
+                    os.link(output, parent / "original")
+                elif case == "output-mode":
+                    output.chmod(0o644)
+                before = output.read_bytes()
+                result = subprocess.run(
+                    ["sh", str(self.renderer), str(default), str(monitor), str(output)],
+                    capture_output=True,
+                    check=False,
+                    timeout=10,
+                )
+                self.assertNotEqual(0, result.returncode)
+                self.assertEqual(before, output.read_bytes())
+                self.assertEqual(b"", result.stdout)
+                self.assertNotIn(b"synthetic-", result.stderr)
+                self.assertFalse(list(parent.glob("users.acl.*")))
+
+    @unittest.skipUnless(shutil.which("docker"), "docker CLI not available")
+    def test_merged_overlay_replaces_only_exporter_credentials_and_preserves_controls(
+        self,
+    ):
+        def render(optional=False):
+            args = [
+                "docker",
+                "compose",
+                "--env-file",
+                ".env.example",
+                "-f",
+                "docker-compose.yml",
+            ]
+            if optional:
+                for overlay in self.overlays:
+                    args += ["-f", overlay]
+            args += [
+                "--profile",
+                "dedicated-valkey",
+                "config",
+                "--format",
+                "json",
+                "--no-env-resolution",
+            ]
+            result = subprocess.run(
+                args,
+                cwd=ROOT,
+                env={"PATH": os.environ["PATH"], "COMPOSE_DISABLE_ENV_FILE": "1"},
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=60,
+            )
+            return json.loads(result.stdout)
+
+        base, selected = render(), render(True)
+        self.assertEqual(set(base["services"]), set(selected["services"]))
+        for broker, app, monitor in self.pairs:
+            old, new = base["services"][broker], selected["services"][broker]
+            self.assertNotIn(monitor, {s["source"] for s in old["secrets"]})
+            self.assertEqual({app, monitor}, {s["source"] for s in new["secrets"]})
+            for key in (
+                "image",
+                "user",
+                "group_add",
+                "networks",
+                "profiles",
+                "healthcheck",
+                "expose",
+                "restart",
+                "cap_drop",
+                "security_opt",
+                "deploy",
+            ):
+                self.assertEqual(old.get(key), new.get(key), (broker, key))
+            self.assertTrue(all(v in new["volumes"] for v in old["volumes"]))
+            renderer_mount = next(
+                v
+                for v in new["volumes"]
+                if v["target"] == "/usr/local/bin/render-monitor-acl.sh"
+            )
+            self.assertEqual(str(self.renderer), renderer_mount["source"])
+            self.assertTrue(renderer_mount["read_only"])
+            self.assertIn(
+                "--aclfile /run/valkey/users.acl --appendonly yes --port 6379",
+                " ".join(new["command"]),
+            )
+            exporter = broker + "-exporter"
+            old, new = base["services"][exporter], selected["services"][exporter]
+            self.assertEqual([monitor], [s["source"] for s in new["secrets"]])
+            command = " ".join(new["command"])
+            self.assertNotIn("-redis.password", command)
+            self.assertNotIn("/run/secrets/" + app, command)
+            for flag in (
+                "REDIS_PASSWORD",
+                "-redis.user=monitor",
+                "-config-command=-",
+                "-set-client-name=false",
+                "-exclude-latency-histogram-metrics",
+                "-disable-scrape-endpoint",
+            ):
+                self.assertIn(flag, command)
+            self.assertIn("set -eu", command)
+            self.assertIn('[ -n "$$REDIS_PASSWORD" ] || exit 1', command)
+            for key in (
+                "image",
+                "user",
+                "group_add",
+                "networks",
+                "profiles",
+                "healthcheck",
+                "expose",
+                "restart",
+                "cap_drop",
+                "security_opt",
+                "deploy",
+                "read_only",
+                "tmpfs",
+            ):
+                self.assertEqual(old.get(key), new.get(key), (exporter, key))
+
+
 class OpenWebUiVectorStoreTests(unittest.TestCase):
     def test_no_vector_db_url_without_a_selected_vector_db(self) -> None:
         env = _service("infra/08-ai/open-webui/docker-compose.yml", "open-webui")[

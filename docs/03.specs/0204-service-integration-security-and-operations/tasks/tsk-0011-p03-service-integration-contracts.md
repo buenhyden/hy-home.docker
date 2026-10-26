@@ -1,6 +1,6 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.13"
+version: "0.2.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1117,3 +1117,95 @@ command. Unsupported budgets are unknown; do not invent token/time/retry grants.
 - [P02 catalog](tsk-0010-p02-secret-catalog-and-views.md)
 - [Traefik guide](../../../05.operations/guides/02-gateway-and-networking/0013-traefik.md)
 - [Service onboarding](../../../05.operations/guides/10-platform-and-backup/0008-new-service-onboarding.md)
+
+### v30 F23 bounded source authorization — 2026-10-26
+
+The current v30 request and root source GO admit optional dedicated Valkey
+observer accounts under C17/W33 observer identity and connection controls. The existing
+C16/C17 owners remain unchanged and acceptance remains pending. The reviewed
+plan is `/tmp/hyhome-v30-f23-source-plan.md`, SHA256
+`813cfc4e152d943e31271e3c2b9a9df57c07ec7aa639879b81bcb44c8412c4e3`.
+
+The source writer exclusively owns the new typed root-base monitor overlay and
+fixed ACL renderer, root optional declarations, CACHE-028 through CACHE-030,
+canonical public example, the three dedicated-service READMEs, POL-0078, existing
+wiring/catalog tests and final SEC01 local source bindings. Existing Spec C17 and
+W33 are clarified before production edits. No new criterion, inventory or registry
+is introduced. The base application/default account, profiles, networks, AOF and
+secret requirements are preserved; exporters replace admin mounts only when the
+explicit overlay is selected. Each broker validates its own default/monitor pair.
+
+RED/GREEN synthetic input, ACL, merge and catalog checks precede independent exact
+diff review. Source rollback is a local logical revert. The base legacy exporter
+credential risk persists until opt-in adoption; actual collector, application
+queue/session, rotation, AOF, HOME and recovery evidence remain separate. No
+private file, image pull, runtime or operational rollback is authorized by this
+source receipt. Existing histories and completed Tasks are preserved.
+
+The root-approved leaf supplement replaces the proposed single ROOT overlay with
+three adjacent `docker-compose.monitor-acl.yml` overlays, each naming its tracked
+leaf base (Airflow, n8n, OAuth2 Proxy). This preserves the existing ROOT network-only
+restriction and uses established leaf replacement semantics. Catalog consumers and
+tests follow each exact leaf. The supplement is
+`/tmp/hyhome-v30-f23-source-plan-leaf-v2.md`, SHA256
+`19dbae7a969f63435b678b85091eeb2042accf00bffa40bd85a25c5baeec91d4`. Only the author's new untracked ROOT overlay is removed. No existing
+validator, schema, registry or gate changes. This scope is recorded before editing
+the overlays; the explicit render command uses root followed by all three leaves.
+
+### v30 F23 current source results — 2026-10-26
+
+Current input before this source slice is clean local
+`8fc4620da970c5a8382edc9ebed72ed82d29891d`. The initial four-test RED run
+failed with one failure and five errors because the new renderer, overlays and
+catalog IDs were absent. After the bounded implementation and ordinary author
+corrections, the two existing wiring/catalog modules ran together: 30 tests,
+zero failures/errors/skips, 21.044 seconds, exit 0. This includes actual shell
+renderer success and thirteen malformed/unsafe input subcases, matching-group
+readability, canonical leaf membership and public root-first four-file merge.
+The merge preserves all six service controls and resolves the readonly renderer
+bind to the real repository path; exporter mounts contain only their own monitor
+secret. The fixed default/app authority and AOF command remain unchanged.
+
+The canonical current catalog check passes with 149 entries and one alias. All
+146 previous records and their ordering/serialization are preserved. The first preservation check removed the three added public rows and reproduced
+the prior public template byte-for-byte. A subsequent root review also corrected
+one pre-existing stale hardcoded coverage sentence to reference the canonical
+table/catalog instead of treating every unique path as a Docker Secret. All
+thirteen sections, previous rows and backup/rotation/LAB history remain intact. A temporary
+minimal Git fixture copied only the four actual fixed public metadata inputs;
+canonical write_views/check_views produced four safe 0600 outputs and passed,
+then the context manager removed the fixture. No repository operator staging
+family was fabricated and no private view, .env or credential value was read.
+
+ShellCheck, Ruff lint/format and diff checks pass. The existing tech-stack check
+passes with no projection change; its known required OPSFLOW image remains
+unresolved. The canonical m0021 renderer is byte-identical and needs no change.
+Entrypoint and traceability checks on the three changed READMEs plus the three
+mandatory canonical nodes report zero findings. The first eight-document metadata
+check failed on three new level-two README headings; only those headings were
+moved under the existing Troubleshooting section, and the narrower three-README
+retry passed: selected three, zero violations, exit 0. No validator rule was weakened.
+
+Independent infrastructure/security review of the actual source, preserved
+public template and four JSON local bindings is READY with no blocking findings.
+The old eight-unit checkpoint remains historical. The current ROOT source
+manifest is `e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94`: 111
+services, 44 inputs and eleven explicitly bound F23 public production files. All
+111 prior service/runtime ledger rows, 33 build inputs and 399 total official
+observations (including the 202 current additions) are unchanged. No new remote
+lookup, image build, pull, runtime, signature, scan or Native result is asserted.
+
+The base dedicated exporters still share application/admin authority. The three
+leaf overlays prepare an opt-in monitor identity only; actual host-file delivery
+and adoption are not proved. Real isolated collector proof uses a separately
+reviewed fixed-image fixture after code commit. Application queue/session,
+credential rotation, AOF, HOME and stateful recovery remain separate NOT_RUN
+lanes here. Source rollback is a logical revert only. C16/C17 acceptance stays
+pending and no completed Task or existing historical evidence is reopened.
+
+The first current-Task metadata check passed: three selected Tasks, zero
+violations. The final count-sentence correction updates only this preservation
+receipt and the public example/source binding hashes; the final affected two
+Tasks are checked separately. The canonical current registration is 149 rows,
+116 unique nonnull source paths and 33 environment IDs; these are different
+metadata dimensions and not a count of delivered Docker Secret files.

@@ -1794,5 +1794,63 @@
       },
       "meaning": "OpenSearch config descriptors only, no bodies; Trino public config body verified by separate read-only researcher. Surreal publicconfig labels identify only inherited base. No runtime/imagebuild/signature/scan/restore acceptance."
     }
+  ],
+  "local_source_rebindings": [
+    {
+      "observed_at": "2026-10-26T11:42:17.315903+00:00",
+      "input_head": "8fc4620da970c5a8382edc9ebed72ed82d29891d",
+      "revision_scope": "Current local source including opt-in F23 leaf overlays; not a committed/build/native acceptance receipt",
+      "source_input_manifest_sha256": "e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94",
+      "inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "20b72108463e4883b4bed328507021a152436fd4a04fe163fe2bf26f9f18f411"
+        },
+        {
+          "path": "infra/common-optimizations.yml",
+          "sha256": "77abe65cbc29b29f2dd85d5fb3c594b2140c0f0ff85a895bb978d488477eced1"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
+          "sha256": "a940e0064c8996281f16fcada4b7119d17b477a7b03530539b84c594959b05ca"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
+          "sha256": "775cc3146e479aebdb6bcf9a710997fc7196b3805de507a4ed8962ac5cc80751"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml",
+          "sha256": "f66375f5d77a82cc8ac9a79e6dcd611b481d70b034f6bd6ff55d02252c33a520"
+        },
+        {
+          "path": "infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh",
+          "sha256": "7f97aa5ddf16a93059307b5fe2ae9858c2be9b8b874c097e0eba076a769ffad2"
+        },
+        {
+          "path": "infra/03-security/openbao/secret-catalog.json",
+          "sha256": "e52aba6e12cb9984a09fc74b463bb4da395b9cc7c54fdd2aeecbacbe50553011"
+        },
+        {
+          "path": "secrets/SENSITIVE_ENV_VARS.md.example",
+          "sha256": "f3ee29ec45f0bbdf6a0db47d0de3264f555318b3bd8da50f16acdb1669509169"
+        }
+      ],
+      "service_count": 111,
+      "include_count": 44,
+      "meaning": "Three existing broker/exporter pairs only; base controls and legacy risk unchanged. Public source and synthetic checks; adoption/rotation/AOF/HOME/recovery NOT_RUN.",
+      "public_template_count_correction": "Replace stale pre-existing hardcoded Docker Secret count with canonical table/catalog coverage reference; no scope/classification inference from unique path count."
+    }
   ]
 }

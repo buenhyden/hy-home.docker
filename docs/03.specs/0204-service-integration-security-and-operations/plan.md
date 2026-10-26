@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.13"
+version: "1.8.14"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -140,7 +140,7 @@ provisioning, LAB runtime or learning-application work.
 | W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Preserve logical commits; reviewed local-main delivery under the superseding user instruction; user-accepted delivered SMTP01/CLN01 scope; LAB GoTrue connection/activation excluded; any separately scoped ROOT/P05 operational receipt remains distinct |
 | W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Source/common repairs, isolated datastore and current local leaf receipts integrated. Current ROOT stable-version and reviewed security evidence; successful no-newer lookup needs no bump; HOME/recovery retain exact owner prerequisites; unknown evidence is not a clean PASS |
 | W32 | 16, 8 | P02 single value-free catalog, classification, generated views and reissuance guards | W27, W28 | TSK-0010 | Existing source/schema reuse, alias and privacy RED/GREEN, scoped changed/staged checks and independent review; real migration/recovery are separate lanes |
-| W33 | 1, 4, 6, 8, 17 | P03 current service/endpoint/environment and four-location port contracts; independent source preparation before consumer-specific runtime acceptance | W27, W28 | TSK-0011 | Existing inventory/tool reuse, synthetic RED/GREEN, privacy and DEV/MNG independence; final mappings and native/HOME checks follow their exact owning prerequisites |
+| W33 | 1, 4, 6, 8, 17 | P03 current service/endpoint/environment, opt-in dedicated broker observer identities with minimal ACLs, and four-location port contracts; independent source preparation before consumer-specific runtime acceptance | W27, W28 | TSK-0011 | Existing inventory/tool reuse, synthetic RED/GREEN, privacy and DEV/MNG independence; final mappings and native/HOME checks follow their exact owning prerequisites |
 | W34 | 1, 8, 18 | P04 baseline, source reuse, exclusive ownership and RED cases | None | TSK-0012 | Current SHA/consumer ledger; reference audit is not native acceptance |
 | W35 | 18 | Strict manifest/parser/adapters, immutable inputs and byte-derived idempotency | W34 | TSK-0012 | RED/GREEN validation, privacy, replay and object/DB failure tests |
 | W36 | 18 | Versioned DEV role/schema/publication/outbox contract; freeze the P05 interface | W35 | TSK-0012 | Reuse provisioning guards; migration/SQL security review and executable denial cases |

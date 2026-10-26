@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.28"
+version: "0.4.29"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2790,3 +2790,40 @@ accepted by this Task's received evidence.
 - [SPEC-0204 Plan](../plan.md)
 - [Security updates ledger](../../../../infra/09-platform-ops/security-updates/README.md)
 - [Platform Operations](../../../../infra/09-platform-ops/README.md)
+
+### v30 F23 local source rebinding — 2026-10-26
+
+After the eight reviewed mature source units were committed in
+`8797022281fdafa22885542fee13cc569319f875`, the directly authorized optional
+dedicated Valkey monitor source changes add three unused root Secret declarations
+and three existing leaf-base overlays. This is an observer-identity preparation
+slice under existing C16/P02 and C17/P03, not a ninth version update or an image
+build/deployment receipt. Their Tasks own the exact files, input checks and
+pending collector/adoption/rotation/recovery lanes.
+
+Only local source bindings change in the four existing SEC01 JSON files. The
+current root include manifest is
+`e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94`, with 111 services,
+44 inputs and eleven explicitly bound public F23 production files. All prior
+111 service/runtime rows, 33 build inputs and 399 official observations, including
+the 202 latest added observations, are preserved. The prior eight-unit source
+checkpoint is retained as history rather than relabeled globally current.
+Current local hash copies match the actual source bytes. No new remote query,
+image build, pull, runtime, scan/signature or Native acceptance is introduced.
+
+The existing wiring and catalog modules passed together: 30 tests, no failures,
+errors or skips, 21.044 seconds. Public Compose merge, canonical leaf membership,
+renderer rejection cases, current catalog check and canonical four-output
+check-views in a temporary fixed-public-input fixture pass. The existing image
+projection check and m0021 renderer require no changes. Initial metadata failed
+on three new README level-two headings; the narrowly corrected three READMEs
+pass with zero violations. Entrypoint/traceability reports zero findings.
+Independent actual production and local-binding review is READY; final exact
+Task/manifest review remains required before a logical local commit.
+
+The base dedicated exporter application/admin credential risk is retained and
+explicitly documented until optional adoption. Actual collector, queue/session,
+AOF, rotation, HOME and recovery are not accepted by source tests. The remaining
+latest/stable/provenance/soak dispositions from the eight-unit assessment and all
+old failed aggregate/native attempts remain unchanged. C15/C16/C17 acceptance
+remains pending; no full local aggregate PASS or operational rollback is claimed.

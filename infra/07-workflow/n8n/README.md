@@ -1,6 +1,6 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.14"
+version: "1.2.15"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -205,6 +205,29 @@ Airflow 게시 데이터의 실제 n8n 인계·combined E2E·HOME 복구는 미�
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d n8n n8n-worker n8n-task-runner n8n-task-runner-worker`.
 - `dedicated-valkey`는 해당 쌍만 시작합니다. 실제 선택은 `N8N_VALKEY_HOST`와 `N8N_VALKEY_SECRET`을 함께 일치시켜야 합니다. 두 entrypoint는 선택된 파일의 존재를 확인하고, 두 runner는 마운트된 `n8n_runner_auth_token`을 launcher에 전달합니다. 선언 버전은 모두 일치하지만 Code 노드와 DB upgrade의 격리 실행은 별도로 검증해야 합니다.
 - 운영 문서는 아래 탐색점의 `GDE-0053`, `POL-0053`, `RUN-0053`을 사용합니다. HOME 격리 복구는 미실행입니다.
+
+### 선택형 전용 Valkey 관측 계정
+
+기본 `dedicated-valkey` 설정의 exporter는 여전히 기본 애플리케이션 비밀번호와
+관리 권한을 공유합니다. 별도 계정을 준비한 뒤 루트에서
+루트 파일 뒤에 Airflow, n8n, OAuth2 Proxy의 `docker-compose.monitor-acl.yml`을
+각각 `-f`로 명시하면 세 전용 broker/exporter 쌍에만 최소 관측 ACL을 적용합니다.
+서비스별 `monitor_password.txt` 파일 경로는 루트 Secret 선언과 공개 카탈로그가
+소유합니다. 기존 기본 계정·앱 비밀번호·네트워크·AOF는 유지하며, 선택형 경로에서는
+exporter가 자기 관측 파일만 마운트하고 비밀번호를 명령 인자로 넘기지 않습니다.
+이 overlay 조합만으로 앱의 shared/dedicated endpoint 선택이 바뀌지는 않습니다.
+
+관측 계정은 PING, INFO, COMMAND INFO, SLOWLOG LEN, COMMANDLOG LEN만 허용합니다.
+키·채널·Lua·관리 명령은 허용하지 않으며 INFO의 전체 DB 집계 노출은 남습니다.
+exporter의 선택적 SLOWLOG GET 거부는 상세 지표 부재로 기록하고 권한을 넓혀
+없애지 않습니다. `/scrape`는 비활성화하고 기존 Prometheus `/metrics`를 유지합니다.
+관측 파일은 의도한 UID/보조 GID가 읽을 수 있는 안전한 단일 파일이어야 하고,
+broker는 자신의 기본/관측 비밀번호가 같은 경우 시작을 거부합니다. 서로 다른
+서비스 간 비밀번호 분리·회전은 별도 운영 인수입니다.
+
+공개 합성 렌더링과 ACL 파일 검사는 실제 채택·수집·앱 queue/session·AOF·회전·복구를
+대신하지 않습니다. 실제 실행은 고정 이미지·정확한 대상·정리/복구 경계 검토 후
+분리 검증합니다. 직접 대상과 companion 선택은 POL-0078이 소유합니다.
 
 ## Related Documents
 
