@@ -26641,10 +26641,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-10-26T14:53:34.818326+00:00",
-      "source_revision": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
-      "source_state": "Uncommitted source-provenance continuation after approved Storybook/SMTP package freezes and prior U1 source changes; not a current image/build/module/Native acceptance receipt",
-      "input_sha256": "cf4004d7ee1e7e689cf93ef1c6d03d87e24b0031eefee063553e2b9cda0915a2",
+      "checked_at": "2026-10-26T23:17:52.757023+00:00",
+      "source_revision": "68be46058096ab8443079ad683aaa9003167a34a",
+      "source_state": "Uncommitted OpsflowSmtp dev-tree override zod 4.6.6 for GHSA-mrhx-c7xc-m3w5 on top of this revision; not a current image/build/module/Native acceptance receipt",
+      "input_sha256": "477ff00530270fb171758d75f3406aeda82a93c4e78e21b47a664a4215eb9ff8",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -26677,11 +26677,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
-          "sha256": "3f9ca8952964b5e63af3a85a7ecc8fb6b417c940e914c5042239647043c53eb1"
+          "sha256": "b6bc5cb8dad469f46aaf6f137643acc2b6e8cb13655b6e6b6723468734a72f82"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
-          "sha256": "ddfa26a5890a8fa5af87304920f24d1c8bd87be475a8b1c4650c9c9d4d7d06a5"
+          "sha256": "146d22dde82f3d5aab2f3018650c2e8eced9c8559049bffce09aa7fe325b2421"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
@@ -26712,7 +26712,7 @@
           "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
-      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
+      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the OpsflowSmtp package.json/package-lock.json zod override. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -26968,6 +26968,88 @@
           "recovery": "NOT_RUN"
         },
         "meaning": "Prior binding preserved before package and U1 source continuation; old image/module receipt is not rebound"
+      },
+      {
+        "archived_at": "2026-10-26T23:17:52.757023+00:00",
+        "source_binding": {
+          "checked_at": "2026-10-26T14:53:34.818326+00:00",
+          "source_revision": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+          "source_state": "Uncommitted source-provenance continuation after approved Storybook/SMTP package freezes and prior U1 source changes; not a current image/build/module/Native acceptance receipt",
+          "input_sha256": "cf4004d7ee1e7e689cf93ef1c6d03d87e24b0031eefee063553e2b9cda0915a2",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "3f9ca8952964b5e63af3a85a7ecc8fb6b417c940e914c5042239647043c53eb1"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "ddfa26a5890a8fa5af87304920f24d1c8bd87be475a8b1c4650c9c9d4d7d06a5"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+            }
+          ],
+          "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
       }
     ],
     "current_source_acceptance_limit": {

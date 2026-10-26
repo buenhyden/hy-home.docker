@@ -14,7 +14,7 @@
   },
   "peerDependencies": { "n8n-workflow": "2.43.4" },
   "dependencies": { "nodemailer": "10.1.4" },
-  "overrides": { "n8n-workflow": { "axios": "1.20.0" } },
+  "overrides": { "n8n-workflow": { "axios": "1.20.0", "zod": "4.6.6" } },
   "devDependencies": {
     "n8n-workflow": "2.43.4",
     "typescript": "7.0.2",
