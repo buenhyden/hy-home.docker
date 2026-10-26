@@ -2,9 +2,9 @@
 title: "Quality Reload Interruption Evidence"
 version: "0.1.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-27"
 layer: "specs"
 artifact_id: "SPEC-0214-TSK-0003"
 parent_ids:
@@ -109,12 +109,13 @@ places `KeyboardInterrupt` directly under `BaseException`, so an `Exception`
 handler does not capture cancellation. This language rule supports the reproduced
 source defect; it is not new Native/HOME evidence.
 
-### Lifecycle Events
+### Initial Task Contract Correction — 2026-10-27 (Asia/Seoul)
 
-| Artifact | From | To | Evidence |
-| --- | --- | --- | --- |
-| SPEC-0214-TSK-0003 | draft | ready | #preparation-and-failure-reproduction |
-| SPEC-0214-TSK-0003 | ready | in-progress | #planned-checks-and-recovery |
+The initial `in-progress` status and two lifecycle rows were inferred from direct
+authorization to perform source work. They did not record approved formal Task
+transitions and are withdrawn. This new Task is `draft`; its source/test progress,
+independent review, retained RED/GREEN evidence and pending criterion 10 remain
+unchanged. The earlier local commit preserves the superseded claims.
 
 ## Evidence
 
