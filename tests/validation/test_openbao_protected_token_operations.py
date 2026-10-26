@@ -764,6 +764,24 @@ class NativeTLSCleanupContractTests(unittest.TestCase):
                         operation()
                     wait.assert_not_called()
 
+    def test_late_client_and_helper_caps_preserve_case_budget(self):
+        with (
+            mock.patch.object(self.native.time, "monotonic", return_value=100),
+            mock.patch.object(self.native, "_native_environment", return_value={}),
+            mock.patch.object(self.native.subprocess, "run") as run,
+        ):
+            for argv, budget, expected in (
+                (["run", "--detach"], 100, 20),
+                (["run"], 100, 8),
+                (["container", "ls", "--detach"], 100, 8),
+                (["run", "--detach"], 3, 3),
+            ):
+                self.native._native_call("/usr/bin/docker", argv, 100 + budget, ".")
+                self.assertEqual(expected, run.call_args.kwargs["timeout"])
+            with self.assertRaises(TimeoutError):
+                self.native._native_call("/usr/bin/docker", ["run", "--detach"], 100)
+            self.assertEqual(4, run.call_count)
+
 
 if __name__ == "__main__":
     unittest.main()

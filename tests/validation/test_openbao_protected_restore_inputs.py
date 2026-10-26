@@ -766,6 +766,34 @@ class NativeOptInTests(unittest.TestCase):
         home.assert_not_called()
         run.assert_not_called()
 
+    def test_dispatch_wait_preserves_cleanup_reserve_and_reaps_after_timeout(self):
+        from tests.validation import _openbao_tls_delay_native as native
+
+        helper = object.__new__(native.OwnedDispatch)
+        helper.write_fd, helper.process = None, mock.Mock(pid=999)
+        helper.process.poll.return_value = 0
+        with (
+            mock.patch.object(native.time, "monotonic", return_value=100),
+            mock.patch.object(native.os, "getpgid", return_value=999),
+            mock.patch.object(native.os, "killpg") as kill,
+        ):
+            for budget, cancel, expected in (
+                (100, False, 22),
+                (28, False, 3),
+                (0, False, 0),
+                (0, True, 10),
+            ):
+                helper.deadline = 100 + budget
+                self.assertRaises(RuntimeError, helper.finish, cancel=cancel)
+                helper.process.wait.assert_called_with(timeout=expected)
+            helper.deadline = 200
+            failure = subprocess.TimeoutExpired("helper", 22)
+            helper.process.wait.side_effect = [failure, 0]
+            kill.reset_mock()
+            self.assertRaises(subprocess.TimeoutExpired, helper.finish)
+            helper.process.wait.assert_called_with(timeout=5)
+            kill.assert_called_once_with(999, native.signal.SIGKILL)
+
 
 if __name__ == "__main__":
     unittest.main()

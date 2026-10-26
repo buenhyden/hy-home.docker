@@ -16,7 +16,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "infra/03-security/openbao/scripts/check-tls-material.sh"
 IMAGE = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
-
 READ_SCRIPT = 'for f in /tls/ca.pem /tls/server.pem /tls/server-key.pem; do [ -r "$f" ] && [ -s "$f" ] || exit 1; done'
 EVENT_ACTIONS = ("create", "start", "die", "destroy")
 NATIVE_RESOURCES = "--memory=32m --memory-swap=32m --cpus=0.25 --pids-limit=16".split()
@@ -143,7 +142,8 @@ def _native_environment(directory):
 def _native_call(docker, argv, deadline=None, config_dir=None):
     if docker != "/usr/bin/docker" or Path(docker).resolve() != Path(docker):
         raise ValueError("only the verified /usr/bin/docker executable is admitted")
-    remaining = 8 if deadline is None else min(8, deadline - time.monotonic())
+    cap = 20 if argv[:1] == ["run"] and "--detach" in argv else 8
+    remaining = cap if deadline is None else min(cap, deadline - time.monotonic())
     if remaining <= 0:
         raise TimeoutError("Native case deadline exhausted")
     return subprocess.run(
@@ -404,7 +404,7 @@ class OwnedDispatch:
     """One parent-owned session, one pipe release and one registered dispatch."""
 
     def __init__(self, root):
-        self.write_fd = None
+        self.deadline = _native_read(root / "config.json")["deadline"]
         read_fd, write_fd = os.pipe()
         self.write_fd = write_fd
         output_fd = os.open(
@@ -449,7 +449,8 @@ class OwnedDispatch:
                 raise RuntimeError("owned helper process group differs") from None
             os.killpg(self.process.pid, signal.SIGTERM)
         try:
-            code = self.process.wait(timeout=10)
+            limit = max(0, min(22, self.deadline - 25 - time.monotonic()))
+            code = self.process.wait(timeout=10 if cancel else limit)
         except subprocess.TimeoutExpired:
             if os.getpgid(self.process.pid) != self.process.pid:
                 raise RuntimeError("owned helper process group differs") from None
