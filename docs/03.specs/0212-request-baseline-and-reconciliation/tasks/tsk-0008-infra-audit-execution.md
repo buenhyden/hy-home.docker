@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -738,6 +738,16 @@ so no leaf count is claimed beyond exit0 for the full selection. Public log
 SHA256 `462c45b478446bb25bb035cc5c392dcc26e2b4029cdc1804aeaf260aae6c36ee`
 is kept in the session scratch only. This is local registered evidence, not
 hosted CI, Native, HOME or owner acceptance.
+
+Hosted `candidate-quality` on PR #561 head dbf443017 then FAILed: two synthetic
+`TLSNativeDispatchGuardTests` raised the Native-only material GID check because
+the runner's primary GID is not1000. Running HEAD under GID4 reproduced the
+same two errors; the fixture-only GID rebinding passed12/12 under GID4 and the
+three helper consumer modules passed95 tests under both GID1000 and GID4. One
+earlier local GID1000 run reported one unlogged ERROR that did not recur in
+three later runs; it is recorded as unreproduced, not resolved. The B3 Native
+record in `verification.json` stays bound to its observed revision f4698d1e;
+these test-file changes do not inherit or rerun that Native result.
 
 ## Evidence
 
