@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.6.4"
+version: "1.6.5"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-27"
 ---
 
 # Agent Quality and Security Standards
@@ -55,28 +55,17 @@ Quality dimensions:
 
 #### Bounded npm risk acceptance
 
-An owner-approved risk acceptance is not a vulnerability fix or a branch
-protection bypass. `.github/workflow-contract.yml` owns its typed record: the
-advisory, owner, project, locked dependency chain, `approved_at` and
-`expires_at`. The CI contract pins the advisory, owner, project and chain; a new
-advisory or chain needs a reviewed policy amendment with negative fixtures. The
-Spec Task that changes the record holds the owner's approval. Keep Next lint
-coverage.
+No npm risk acceptance is active. The single bounded acceptance for
+GHSA-vfj7-8cjw-p6xm was retired after GitHub withdrew the advisory on
+2026-10-23; `leaf.dependency-vulnerability-audit` is again the strict
+`npm audit --audit-level=high` run, and the CI contract rejects an
+`npm_audit_acceptance` record. A new acceptance needs a reviewed policy
+amendment that names the advisory, locked chain, owner approval and an expiry
+no more than 30 days after approval, with negative fixtures. An acceptance is
+never a vulnerability fix or a branch protection bypass. Never use a skipped
+audit, lower threshold, continue-on-error, blanket package exception or
+omitted development audit.
 
-The owner may extend an acceptance while the official advisory still lists no
-patched version. The approval names the advisory and the new expiry; the change
-sets `approved_at` to the approval time and `expires_at` no more than 30 days
-after it, and changes no other field. No governance amendment is needed for
-an extension, and an extension never widens the advisory or chain.
-
-The full npm audit retains its raw FAIL receipt. A separate ACCEPTED_RISK
-receipt may satisfy this leaf only for that exact advisory and locked chain,
-with a clean production audit and an official advisory still lacking a patch.
-Unknown or malformed inputs, command/network/lookup errors, path/version drift,
-other high/critical or production findings, expiry and patch availability fail
-closed. Never use a skipped audit, lower threshold, continue-on-error, blanket
-package exception or omitted development audit. Expiry never extends without that approval.
-Revert the bounded policy/adapter to strict failure when removing acceptance;
 Remote PR candidate validation and independent review own candidate acceptance, while
 main-push security remains a post-merge observation.
 

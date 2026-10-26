@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import dataclasses
-import datetime
 import enum
 import errno
 import json
@@ -12,7 +11,6 @@ import stat
 import subprocess
 import sys
 from collections.abc import Mapping
-from types import MappingProxyType
 
 import yaml
 
@@ -75,7 +73,6 @@ _REQUIRED_PUBLIC_VALIDATOR_BINDINGS = {
 _TOP_LEVEL_FIELDS = frozenset(
     {
         "schema_version",
-        "npm_audit_acceptance",
         "workflows",
         "gate_nodes",
         "public_gate",
@@ -606,68 +603,6 @@ def load_contract_document(root: pathlib.Path) -> dict[str, object]:
     return document
 
 
-def _parse_npm_audit_acceptance(document: Mapping[str, object]) -> Mapping[str, object]:
-    # One approved incident, not a general package allowlist. A new risk requires
-    # another reviewed policy amendment and accompanying negative fixtures. Only
-    # the owner-approved window may change, by at most 30 days per approval.
-    pinned = {
-        "id": "GHSA-vfj7-8cjw-p6xm",
-        "owner": "@buenhyden",
-        "project": "projects/storybook/nextjs",
-        "dependency_chain": [
-            "eslint-config-next@16.4.1",
-            "@next/eslint-plugin-next@16.4.1",
-            "fast-glob@3.3.1",
-            "micromatch@4.0.8",
-            "braces@3.0.3",
-        ],
-        "advisory_url": "https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm",
-    }
-    record = document.get("npm_audit_acceptance")
-    window = ("approved_at", "expires_at")
-    if (
-        not isinstance(record, dict)
-        or set(record) != {*pinned, *window}
-        or {key: record[key] for key in pinned} != pinned
-        or not all(
-            isinstance(record[key], str)
-            and re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", record[key])
-            for key in window
-        )
-    ):
-        raise GateContractError(
-            "ci-gate-npm-audit-acceptance",
-            _CONTRACT_PATH.as_posix(),
-            "the single approved npm risk contract is missing or changed",
-        )
-    try:
-        approved, expires = (
-            datetime.datetime.fromisoformat(record[key].replace("Z", "+00:00"))
-            for key in window
-        )
-    except ValueError:
-        approved = expires = None
-    if approved is None or not approved < expires <= approved + datetime.timedelta(
-        days=30
-    ):
-        raise GateContractError(
-            "ci-gate-npm-audit-acceptance",
-            _CONTRACT_PATH.as_posix(),
-            "the npm risk acceptance window must end within 30 days of approval",
-        )
-    return MappingProxyType(
-        {
-            **pinned,
-            **{key: record[key] for key in window},
-            "dependency_chain": tuple(pinned["dependency_chain"]),
-        }
-    )
-
-
-def load_npm_audit_acceptance(root: pathlib.Path) -> Mapping[str, object]:
-    return _parse_npm_audit_acceptance(load_contract_document(root))
-
-
 def parse_gate_registry(
     document: Mapping[str, object],
     path: str,
@@ -692,8 +627,6 @@ def parse_gate_registry(
                 path,
                 "registry sections must be JSON objects",
             )
-    if "npm_audit_acceptance" in document:
-        _parse_npm_audit_acceptance(document)
     raw_nodes = _require_records(document["gate_nodes"], "ci-gate-nodes-type", path)
     if len(raw_nodes) > _MAX_GATE_NODES:
         raise GateContractError(
