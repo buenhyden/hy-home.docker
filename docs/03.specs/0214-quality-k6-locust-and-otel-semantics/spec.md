@@ -1,10 +1,10 @@
 ---
 title: "Quality Load Tools and OTel Metric Semantics"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0214"
 parent_ids:
@@ -124,6 +124,10 @@ consumer, and Locust OpenTelemetry, which the pinned image cannot export.
     of 5 minutes, the delta-to-cumulative `max_stale` of 5 minutes and
     `max_streams` of 10000, Prometheus' default 15-day retention, and a
     per-attempt series count measured on a real run.
+16. The path-guard reload rehearsal preserves partial attempt evidence on
+    interruption and records the terminal cause in its cycle receipt. Cleanup
+    failure is recorded separately and cannot replace the original terminal
+    exception. Cleanup failure alone fails the cycle and retains its evidence.
 
 ## Acceptance Criteria
 
@@ -153,6 +157,9 @@ consumer, and Locust OpenTelemetry, which the pinned image cannot export.
    loss, with the resulting CSV state and exact cleanup.
 9. HOME Alloy joins `quality_otlp_net`, and a HOME relay run reaches the HOME
    Prometheus, or the step is recorded as `NOT_RUN` with its reason.
+10. Deterministic tests prove that path-guard reload interruption preserves
+    partial evidence and its original exception, including when cleanup also
+    fails, and that cleanup failure alone cannot become a successful cycle.
 
 ## Failure Conditions
 
@@ -167,6 +174,7 @@ not be displayed as a successful zero result.
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-quality-k6-locust-and-otel-semantics.md)
 - [Relay and Locust lifecycle Task](tasks/tsk-0002-relay-controller-and-locust-lifecycle.md)
+- [Reload interruption evidence Task](tasks/tsk-0003-quality-reload-interruption-evidence.md)
 - [ADR-0047](../../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
 - [Observability requirement](../../01.requirements/0007-observability.md)
 - [Tooling requirement](../../01.requirements/0010-tooling.md)
