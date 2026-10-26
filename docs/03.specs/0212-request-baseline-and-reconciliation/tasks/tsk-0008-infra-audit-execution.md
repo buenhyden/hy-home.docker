@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -768,6 +768,17 @@ contract record, parser, adapter and its tests are removed, a reintroduced
 record is rejected, and 17d707f36 is superseded. The seven registered ci-gate
 modules passed208 tests; governance contract, provider projection, metadata and
 link checks passed. The completed SPEC-0222 Task is preserved unchanged.
+
+The hosted run on 68be46058 then passed the Storybook audit (0 findings) and
+the616 unittest leaf, but the OpsflowSmtp full `npm audit` failed on
+GHSA-mrhx-c7xc-m3w5: dev-only `n8n-workflow` → expression runtime → zod
+3.25.76, with no Zod 3 fix. With owner approval, dea0e247e adds a
+package-scoped zod 4.6.6 override that supersedes the earlier README decision.
+A scratch trial and the committed lock were byte-identical; build, 27 coverage
+tests and full plus production audits passed with0 findings. The n8n source
+binding was rehashed in both SEC01 ledgers with the prior binding archived;
+218 related tests and the supply-chain policy check passed. The installed n8n
+image's Zod, Native and HOME acceptance remain SEC01 NOT_RUN.
 
 ## Evidence
 
