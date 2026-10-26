@@ -1983,8 +1983,8 @@ class CiGateAdapterTests(unittest.TestCase):
 
 class ApprovedNpmAuditTests(unittest.TestCase):
     chain = (
-        "eslint-config-next@16.4.0",
-        "@next/eslint-plugin-next@16.4.0",
+        "eslint-config-next@16.4.1",
+        "@next/eslint-plugin-next@16.4.1",
         "fast-glob@3.3.1",
         "micromatch@4.0.8",
         "braces@3.0.3",
@@ -2158,6 +2158,12 @@ class ApprovedNpmAuditTests(unittest.TestCase):
             target.write_text(json.dumps(lock))
             with self.subTest(field=field), self.assertRaises(adapters.AdapterError):
                 self.run_audit()
+        # The pinned parent chain is exact; the superseded 16.4.0 parent rejects.
+        lock = json.loads(json.dumps(self.lock))
+        lock["packages"]["node_modules/eslint-config-next"]["version"] = "16.4.0"
+        target.write_text(json.dumps(lock))
+        with self.subTest(field="parent"), self.assertRaises(adapters.AdapterError):
+            self.run_audit()
 
     def test_expired_and_patch_available_reject(self):
         self.policy["expires_at"] = "2026-10-04T00:00:00Z"
