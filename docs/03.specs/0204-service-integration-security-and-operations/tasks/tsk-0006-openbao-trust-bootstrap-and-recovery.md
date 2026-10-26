@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.27"
+version: "0.2.28"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-27"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -3204,6 +3204,102 @@ The next operational window still needs its new exact approved commit,
 manifest, source review and installation. Native execution remains NOT_RUN
 until frozen source, independent actual-diff review and the controller's
 separate bounded execution admission. Criterion 11 and lifecycle stay pending.
+
+### v30 selected isolated Native observations — 2026-10-27
+
+The final code revision is
+`f4698d1e15212117dafb5809fb6c5c7596686be4`. All 55 declared source
+inputs matched both the working files and committed blobs at execution. Their
+manifest SHA256 is
+`ed54fd86023f171515860c6e532356c1441e6a904f6427c16ee92cb1df929f6a`.
+The observed revision and last verified source revision describe these actual
+inputs; later result-only document commits require a source-manifest comparison.
+
+B2 ran the following existing methods as three separate actual processes,
+each once with one PASS, exit 0, zero errors/failures/skips and stable source
+inputs. These are selected-method observations, not a whole-module run.
+
+| Existing NativeRehearsalTests method | Actual process elapsed seconds | Recorded known absence counts: exact containers / generated names / volumes / networks |
+| --- | ---: | --- |
+| `test_full_perform_restores_upgrades_and_renders` | 282.877849 | 10 / 1 / 19 / 2 |
+| `test_full_perform_preserves_trailing_newlines` | 316.400139 | 10 / 1 / 19 / 2 |
+| `test_live_canary_refuses_an_empty_value_before_restore` | 78.428028 | 4 / 0 / 10 / 1 |
+
+Every recorded identity in those counts was confirmed absent. Each of the first
+two processes intentionally retains one UID 100 Raft directory and one UID 1000,
+mode 0600 operator ledger. The third retains neither. These retained data were
+not read, deleted or included in evidence copies. Issuer helper container identity
+was not retained and its kernel resource clamps were not set. Reclaim helper
+container and inherited volume identities were not retained; only its generated
+name absence was observed. These gaps prevent an overall cleanup or
+all-containers-bounded claim.
+
+B3 ran all five existing TLS delay methods in one actual process: five PASS,
+zero failures/errors/skips/not-run, exit 0. Each method confirmed both recorded
+container identity absence and exact name/label absence, with no fallback cleanup.
+The first-to-last case observation spans 226.326122 seconds; outer process
+start/end timestamps were not recorded. The 61-second timeout and controlled
+late-dispatch scenarios retain their expected nonzero checker outcomes. The
+late scenario passes its controlled reconciliation assertions after its helper
+is closed, reaped, absent and unable to dispatch again; this does not turn the
+source failure into production cleanup acceptance. Other destroy observations
+without a successful source removal receipt remain explicitly unattributed.
+
+The B2 runner SHA256 is
+`399b2376fe472deb7aba889c7c2bb411de1b8a18b0252b88d60557c4e1db149d`;
+its nine-input admission manifest SHA256 is
+`71a525644ff916a8ac8177c8760387cb7adebc4aea91975566ef9f9164faf79c`.
+The B3 capture runner SHA256 is
+`a25670486cfe2947a017c41c78109cf0c026c551c9a219bcebd90115bb49ff8e`.
+The reviewed environment substitution provides a fresh empty Docker client
+configuration only to approved Docker and the exact verified issuer invocation;
+actual arguments, standard input and results remain real. This is synthetic
+isolation evidence, not unmodified production-environment acceptance.
+
+Historical observations remain separate. The original B2 attempt on revision
+`31a4b0710eebbb97615dee0f1f8515dcb5284f4f` failed during initial health/setup
+before restore; its precise cause was not recorded by that run. Its first diagnostic observed an immediate connection refusal;
+that alone did not establish a persistent routing failure. The second preserved
+the original readiness loop and identified strict X509 verification code 92:
+the synthetic CA lacked its key-usage extension. Commit
+`59ee7e0cb6b2da4e2fb667161866545c139fd037` adds explicit critical CA
+basic constraints and certificate/CRL signing key usage to both synthetic CAs.
+The strict-chain regression was RED then GREEN; wrong CA and wrong hostname
+remain rejected. No TLS verification flag or production trust rule was weakened.
+The three subsequent B2 passes on that revision and their historical source
+manifest remain historical, rather than being stitched into the final result.
+
+The five earlier B3 attempts retain their original counts: 0/1/4, 0/1/4,
+0/1/4, 1/1/3 and 4/1/0 PASS/FAIL/NOT_RUN. Their observer, event-evidence,
+cleanup and bounded late-client failures remain failures. Separate read-only
+absence supplements resolve only the recorded resource uncertainty; they do
+not rewrite an earlier process exit or promote an indeterminate request.
+Prepared but unexecuted B2 source candidates remain NOT_RUN.
+
+The existing [verification receipt](../../../../infra/09-platform-ops/security-updates/verification.json)
+adds only a separate `observed_native_executions` member with minimized current
+and historical facts. Every prior top-level value and original byte prefix is
+preserved, including the old aggregate false/null assessments. Public minimized
+B2 and B3 projection SHA256 values are respectively
+`20887c32f6dfad0c6fcff0bb156b1354cbb9b01dec6a013d329959a90cfb8726`
+and `89f2e72e8dba09019420922484795e02c759564b7775d74f045a99704a15ea96`.
+The separately reviewed fixed local retention allowlist copied seven public
+source/hash artifacts and minimized projections to the ignored
+`_workspace/openbao-native-evidence/2026-10-27-f4698d1e` evidence area.
+Every source and destination hash matched; new directories use mode 0700 and
+files mode 0600, with no overwrite or unlisted copy. The local index SHA256 is
+`c74af01811bcf2df74d6aca18915c431967e849926d056969a677a405daa99d5`.
+The allowlist excludes all raw receipts/logs, actual
+resource identities, environment values, private paths, fixture credentials,
+keys, Docker configuration and retained Raft/ledger data. Originals remain
+private temporary evidence, so the minimized artifacts are not lossless copies.
+
+No HOME-input method, installed service, credential custody or approved owner
+window was executed or changed. The literal HOME-input method remains excluded.
+The old twelve/fourteen-case aggregate is not promoted. A future HOME window
+still needs an owner decision, its exact newly approved commit and manifest,
+installation and separate operational acceptance. Existing Evidence, Criterion
+Acceptance, review status and blocked lifecycle remain unchanged.
 
 ## Evidence
 

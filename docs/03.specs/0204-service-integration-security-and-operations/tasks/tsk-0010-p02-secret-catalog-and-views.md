@@ -1,10 +1,10 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.11"
+version: "0.1.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-27"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -836,6 +836,131 @@ operations, requirements, architecture or `.agents` document claims `.example`
 as the owner; `secrets/README.md` was not read. The retention classes stay a
 draft, and no file under `secrets/` was moved or deleted. S10b status: PARTIAL,
 ownership decided; retention classes and P06 consumption remain.
+
+### v30 isolated client and monitor evidence reuse — 2026-10-27
+
+P02 owns the C16/W32 value-free catalog and secret-reference boundary. CACHE-027
+and CACHE-028 through CACHE-030 remain declared optional identities. These
+isolated receipts advance selected client/observer verification only; they do
+not change catalog lifecycle delivered/consumed/rotated/recovered fields or
+claim P01/P06 secret delivery and migration acceptance. Public catalog generation
+and unchanged default startup requirements retain their earlier source proof.
+
+This append preserves all earlier source preparation, failed attempts and pending
+criterion acceptance. The actual bounded isolated synthetic runs were captured at
+`0d2392f93b975faa36f03b2361d80f3ddb72e487`. Their original timestamps and outcomes
+remain unchanged. The final source proof permits reuse of the exact selected
+unchanged input sets at `f4698d1e15212117dafb5809fb6c5c7596686be4`; no new Native
+run or whole-revision/application acceptance is asserted.
+
+The complete existing `MngValkeyAclNativeTests` class passed both methods:
+2 tests, zero failures/errors/skips, 82.699 seconds (unittest duration; the outer
+capture took 82.832 seconds), exit 0. The real client identity was n8n 2.43.6,
+Bull 4.16.4 with shipped job Git revision
+`3301e3fbc7296f545b65331dad1f12c820267e0d`, ioredis 5.3.2, Node v26.7.0 and UID/GID
+1000. Exact package paths, patch and byte identities passed. Five positive cases
+covered worker progress/finish, fail-once retry, delayed jobs, lock renewal/token
+isolation/release and named-channel pubsub. Ten negative cases covered foreign
+keys, DB and channels, FLUSHDB, FLUSHALL, ACL, CONFIG, KEYS, SCAN and a wrong
+password. The final authentication check independently required AUTH WRONGPASS,
+unauthenticated PING NOAUTH and denied=true; generic connection readiness or a
+timeout was not accepted as proof of denial.
+
+The result is `/tmp/hyhome-v30-u1-native-ony7_vrt/result.json`, SHA256
+`1dcb8ea43611bb19cc4345787256e06d89f85307afaaaa6e5bd5015ddb6e0d34`.
+Its five-file source footprint is reproduced in the draft companion manifest.
+Both exact owned CIDs and the owned internal network were verified ABSENT.
+The generic ACL method passed its source assertions; the retained per-operation
+JSON trace belongs to the real Bull fixture and is not a complete per-operation
+trace of the generic method. Raw unittest output and the real-client operation
+records remain at their existing paths; this continuation does not infer extra
+raw coverage or rewrite earlier results.
+
+The three earlier U1 attempts remain failures: the first failed both methods
+before create on optional Docker-label map lookup; the second passed the generic
+method and five positive/nine negative real-client cases but failed the final
+connection-based denial assertion; the third again passed the generic and those
+fourteen real-client cases but failed the secondary authentication assertion.
+Its exact unauthenticated PING outcome was not recorded and remains unknown.
+Their result paths, hashes, cleanup supplements and protocol-fix sequence are
+retained in the final execution packet and the draft companion manifest.
+
+The calibrated F23 isolated collector attempt passed all three sequential pairs:
+n8n 35.245 seconds, Airflow 42.098 seconds and OAuth2 Proxy 30.820 seconds. Every
+pair completed two actual HTTP `/metrics` reads with redis_up=1,
+last_scrape_error=0, scrape count 1 to 2 and processed-command count 16 to 23.
+Each independently returned WRONGPASS for the three cross/default/wrong-monitor
+password probes, NOPERM for GET/SCAN/EVAL/ACL/CONFIG/PUBLISH/SELECT, and passed
+default-account SET/GET/DEL. SELECT denial is command-level proof; INFO still
+exposes aggregate DB information. The only tolerated collector denial was
+SLOWLOG GET1, once per pair; no broad grant was added to hide that detail-metric
+limitation. All six exact owned CIDs and three owned internal networks were
+verified ABSENT, with every pending-create list empty. This is scoped absence,
+not a global resource-cleanup claim.
+
+The F23 summary is `/tmp/hyhome-v30-f23-native-run-baq0cyzg/summary.json`, SHA256
+`101145d4d913db740d6ae10b4bb7f69d5fe7678cab639152a8fb244ea2b1db26`;
+the safe execution summary is
+`/tmp/hyhome-v30-f23-native-run-baq0cyzg/execution-safe-summary.json`, SHA256
+`db8ed959d43c8f893bc30db8d9b02825137f3e55b391505bbe01821468defc34`.
+The calibrated temporary runner SHA256 is
+`c110d156c6b4f99b7002eecd9c57bf6630f9fcb9da7b1375a6e410c43c0b5a88`.
+Its per-operation run/remove/other limits are 20/20/10 seconds, cleanup reserve
+60 seconds and case budget 180 seconds. This independently reviewed temporary
+calibration changes no production timeout or registered gate. Both earlier F23
+failures and their exact owned-resource absence reconciliations remain retained;
+the passing attempt does not convert either earlier result to PASS.
+
+The U1 five-file and F23 ten-file input sets are different scopes from the
+22-file source preparation freeze, eleven-file local metadata binding and B3/B2
+fixtures. The final integration proof at
+`/tmp/hyhome-v30-b3-cap-integration-4zq0z7zo/integration-final.json`, SHA256
+`727a95ec1a3ad5f9b3a7b0d3989e8f24655952553dcd2142aac6fe6eb8f08a78`,
+compares every captured U1/F23 input with both working bytes and committed blobs
+at `f4698d1e15212117dafb5809fb6c5c7596686be4`: all fifteen match, with zero
+mismatches. The root coordinator independently confirmed this parity. That proof
+supports reuse of the original isolated results only for those unchanged input
+sets; unrelated B3 changes trigger no new U1/F23 run claim. Any later change to
+one of these captured inputs requires a separate review and evidence decision.
+B3, B2 and the expanded registered changed gate have separate owner records;
+this continuation imports none of their results.
+
+After exact sanitized-content review and explicit root authorization, the three
+fixed reviewed projections were retained locally under the existing ignored
+workspace boundary. The reviewed plan snapshot remains
+`/tmp/hyhome-v30-owner-native-drafts/retention-candidates-plan.json`, SHA256
+`71e7233de2864a2910fee2ada026d6254264c3140540803f6f518486ef5a7443`.
+No Bao-only authority was borrowed. The retained regular files are:
+
+- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/facts/u1-isolated-client-safe.json`
+- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/facts/f23-isolated-collectors-safe.json`
+- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/reproduction/u1-f23-source15-parity.json`
+
+The minimal copy index is
+`_workspace/valkey-native-evidence/2026-10-27-f4698d1e/copy-index.json`, SHA256
+`3348145686719aa8a3404943acd2767546ce20e6c813661764f3ecc8e3a8c21f`.
+It binds all three exact source/destination hashes, byte counts, modes and UID.
+Owned canonical directory handles and no-follow opens were used; only new child
+directories were created0700 and files exclusively created0600, UID1000. No
+existing path was chmodded or overwritten. Hashes were checked before and after
+copy. The original candidate-state labels remain immutable snapshot text; the
+copy index records completed retention, not new test or service acceptance.
+
+The retained payloads derive only from the hash-bound U1 result, F23 safe summary
+and public source-parity proof. Curated root-reviewed case facts remain distinct
+from raw generic-operation evidence. No raw log/inspect body, environment,
+credentials, private keys, original fixture tree, recursive or unlisted content
+was copied. Earlier failures and their original digests remain distinct; raw
+records remain transient. No tracked file, Git action, Docker or Native execution
+was involved. Tracked Task/frontmatter changes still require a future explicit
+leaf-owner lease.
+
+Actual n8n engine/workflow execution, application queue/session integration,
+host secret delivery, operational adoption, credential rotation, AOF durability,
+HOME and stateful recovery remain NOT_RUN or pending under their existing owner
+contracts. The default/base dedicated exporter admin-credential risk is still
+present until explicit overlay adoption; an isolated monitor test does not prove
+adoption. C16/C17 remain pending and no completed Task is reopened.
 
 ## Evidence
 
