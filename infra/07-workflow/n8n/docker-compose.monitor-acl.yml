@@ -1,3 +1,4 @@
+# 이 오버레이는 선언된 base의 common-optimizations.yml 설정을 상속합니다.
 x-hyhome-overlay:
   version: 1
   base: infra/07-workflow/n8n/docker-compose.yml

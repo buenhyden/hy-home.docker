@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -507,7 +507,7 @@ its prior frozen input, not this later Task-only delta or a future aggregate.
 | B2trailing-newline preservation atf469 | Separate1-test processPASS/exit0,316.400139seconds | Same fixed runner/input; not combined with another process exit |
 | B2empty-canary refusal atf469 | Separate1-test processPASS/exit0,78.428028seconds | Same fixed runner/input; no retained target/ledger |
 | Supplied standalone document helper |281checks/140clauses and274regressionsPASS/0skip35.121seconds | Packaging only; no runtime acceptance |
-| Final registered changed aggregate after current facts | NOT_RUN | Actual selection/count may exceed33 after package changes; no forced33, suppressed valid leaf or futurePASS |
+| Final registered changed aggregate on 452 | FAIL2329.616646seconds;15PASS/1FAIL/17NOT_RUN | Tested and ending source clean; five template-security-baseline literal-inheritance header findings. Comment-only correction and focused checker result recorded below; next complete registered round pending, with no stitched aggregatePASS |
 
 The U1receipt SHA256 is
 `1dcb8ea43611bb19cc4345787256e06d89f85307afaaaa6e5bd5015ddb6e0d34`;
@@ -686,6 +686,28 @@ aggregate input/results must be bound separately without inventing a future SHA.
 | SPEC-0219 | Patch Storybook development-server security with mature releases | Select exact mature Next/eslint16.4.1 and zod4.6.7; keep sharp0.35.5 and static NGINX/MCP runtime boundary, with no new image pin. | Full npm auditZERO;14browser/9MCP/7image checks; independent review and normal commit; prior invalid legacy-row failure/correction preserved. | Local ac134bf draft; runtime image/producers and final registered aggregate remain separate, no risk exception transfer. |
 | SPEC-0214 | Preserve interrupted Quality reload evidence | Retain cancellation outcome/artifacts and original failure across cleanup; reuse the runner and preserve completed criterion7. |31unitPASS/0skip;7of7changed-line trace; independent review; normal logical commit. | Local cf5ac41 draft; new Task staysdraft with dated withdrawal note, criterion pending; no new whole-Quality/runtime acceptance. |
 | SPEC-0212 | Reconcile exact v30 source routes and local evidence | Keep22R/68sub/10U/29F under existing owners, preserve65historical aliases and record scoped actual results without a parallel ledger. | Prior281/274packaging checks, exact-ID assertions and scoped metadata/links; current Task-only delta requires its own final checks. | Local draft/C19pending; no foreign acceptance, remote write or inferred local integration; future aggregate remainsNOT_RUN. |
+
+### v30 registered delivery attempt and comment-only correction (2026-10-27)
+
+The actual aggregate tested clean HEAD452115b8d5370981752bfc3bdac91e7e621e60b6
+from16:52:47.909563 to17:31:37.714833UTC: FAIL2329.616646seconds,
+15PASS/1FAIL/17NOT_RUN; tested and ending revisions matched. The sole failed
+leaf reported five missing literal common-optimizations.yml inheritance headers,
+with no control/expiry/render findings. Five Korean comments correct the headers;
+all nine base-inheritance closures and YAML/tag semantic equality were reviewed.
+The unchanged check-template-security-baseline.sh then PASSed: exit0,
+10scopes/165services/0findings; public log SHA256
+`c59e5b8af073ed5c3a94dd770fe58074f1b45068cb655e84834deaff4477f549`.
+F23 reuses actual0d2392 Native results semantically after three comment changes,
+with seven inputs identical; no new run or byte-parity claim. U1five/B2/B3source55
+remain unchanged. The failed-attempt projection is retained at
+`_workspace/v30-local-gate-evidence/2026-10-27-452115b8/projection.json`, SHA256
+`2f4701b7b36d359bf0f224f4db28a956de0246edf7ea011b93e41c17b5cbf5d5`;
+its index.json SHA256 is268e6f56d5a5ef00658e841bdb22274cfa8acd7adff2da2c297c17d06a76fe63.
+Only two fixed sanitized files were copied with0700/0600modes; no raw/private data.
+The staged public-SHA false-positive FAIL was corrected to structured fields;
+fresh staged checks PASSed before ordinary commit452. The next complete
+registered attempt remains NOT_RUN; focused GREEN cannot promote aggregateFAIL.
 
 ## Evidence
 
