@@ -13,7 +13,7 @@
     "test:coverage": "npm run build && node --test --experimental-test-coverage --test-coverage-include='dist/*.js' --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80 tests/*.test.cjs"
   },
   "peerDependencies": { "n8n-workflow": "2.43.4" },
-  "dependencies": { "nodemailer": "10.1.0" },
+  "dependencies": { "nodemailer": "10.1.4" },
   "overrides": { "n8n-workflow": { "axios": "1.20.0" } },
   "devDependencies": {
     "n8n-workflow": "2.43.4",
