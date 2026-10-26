@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Recovery Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-26"
 layer: "operations"
 artifact_id: "RUN-0091"
 parent_ids:
@@ -59,6 +59,19 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    ```
 
 6. 제거 승인을 받으면 호출자와 작업을 중지하고 필요한 산출물을 소비자 소유자에게 넘긴다. 승인 범위에서 include/package와 secret metadata를 정리하되 private secret 폐기는 별도 disposition/revocation 결정에 따른다. Tmpfs cache/output은 재시작으로 사라지며 durable service volume은 없다.
+
+### 보안 패치 뒤 요청 거부와 인수
+
+Untrusted 요청에 model 선택·caller regex·JavaScript `wait_for`가 있으면 새
+후보는 HTTP 400으로 거부합니다. 호출자와 요청 필드만 확인하고 본문·토큰을
+로그에 복사하지 않습니다. 인증·TLS·internal 망이나 gateway를 약화해 재시도하지
+않으며, 승인된 consumer 소유자가 허용된 요청 형태로 수정합니다.
+
+이미지 pin과 리허설의 `IMAGE`는 동일 digest여야 합니다. 이전 이미지의 격리
+성공을 새 후보에 재사용하지 않습니다. 새 후보의 실제 TLS·cache freshness
+proxy 경유·SSRF·허용 요청/거부·응답 schema와 정리는 NOT_RUN이며, 실행 전
+정확한 fixture·대상·자원·정리 경계를 검토합니다. 자체 durable volume은 없지만
+재생성 전에 미완료 요청과 필요한 tmpfs 산출물을 consumer와 조정합니다.
 
 ## Verification
 

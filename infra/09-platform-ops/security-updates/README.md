@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.1.6"
+version: "1.1.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-26"
 ---
 
 # 보안 업데이트 조사 증거
@@ -67,6 +67,38 @@ scan·공급자 재조회·HOME 배포 결과를 만들지 않습니다.
 확인했습니다. 과거 33개 소비자 행·14개 raw build 객체와 같은 집계가 아닙니다.
 공식 릴리스와 registry 태그 관찰은 이미지 서명·SBOM/취약점·호환·native·복구의
 합격이나 해당 검사 시각 갱신을 뜻하지 않습니다. 과거 관찰·실패·수용 기록을 보존합니다.
+
+2026-10-26의 공개 재조사는 기존 공급자 68개 묶음과 ROOT 111행을 다시 연결했습니다.
+44개 Compose 입력과 기존 custom build 소비자 33행(고유 Dockerfile 22개와
+inline 입력 1개)을 현재 소스에 맞췄습니다. 초기 공개 응답 166건과 후속 조사까지 총 202건을 추가하면서 최초
+DNS 실패와 HTTP 오류도 보존했습니다. 현재 행별 후보·유예 이유·소유자·2026-10-27
+재검토일·종료 조건·복구 경계는 기존 `root_official_refresh/public_metadata_continuations`에
+기록합니다. GitHub final 표시는 별도 stable 지원 근거로 승격하지 않습니다.
+`storybook`·`storybook-mcp`의 선택 이미지 producer/build 영수증 두 건은 여전히
+미확정이며 경로 조사만으로 서비스 전체 의미 검토를 통과했다고 표시하지 않습니다.
+
+일반 변경의 7일 대기 기간과 공개 artifact 시각을 확인한 Grafana,
+Stalwart(server/config builder 동일 FROM), Crawl4AI,
+SonarQube Community의 장부상 후보는 소스만 준비했습니다. Gatus의 장부상 후보도
+정확한 archive ref/hash를 갱신하고 기존 OIDC 패치를 유지했습니다. Gatus의 실제
+Go/module 시험·이미지 빌드·SQLite 이전 및 복원은 미실행입니다. 네 후보의 OCI index와
+linux/amd64 manifest는 원문 SHA256과 registry 응답 digest를 대조했습니다.
+config digest는 descriptor이며 config 본문·layer·서명·SBOM/scan을 확인한 것으로
+표시하지 않습니다. Stalwart CLI의 기존 선택은 유지합니다. 새 이미지 실행, Bull queue,
+메일 저장소, Crawl4AI TLS/SSRF/cache 응답, Sonar DB/plugin/OIDC 이전·복원과 HOME
+배포는 `NOT_RUN`입니다. 이미지 tag 되돌리기만으로 DB나 저장소를 복구할 수 있다는
+주장을 하지 않습니다. 아직 7일이 지나지 않은 후보, ABI·시작 명령·선택 artifact가
+일치하지 않는 후보는 각 행의 구체적인 재개 조건을 따릅니다.
+
+후속으로 OpenSearch의 엔진·exporter·ROOT/LAB Dashboard, Trino의 공식 launcher
+명령, SurrealDB의 동일 공개 artifact 고정도 소스로 준비했습니다. OpenSearch의
+실제 plugin 로드·TLS·인덱스 복원, Trino SQL/Iceberg/SigV4, SurrealDB의 실제
+client·tenant 권한·데이터 형식과 전체 저장소 복원은 확인하지 않았습니다.
+SurrealDB 고정은 알려진 Critical 권고를 해결한 보안 변경이 아니며 실제 노출은
+`UNKNOWN`입니다. 기존 source·native·scan 역사와 현재 artifact binding을 분리하고,
+custom 이미지가 새로 빌드되지 않은 경우 upstream base 증거를 custom image
+합격으로 사용하지 않습니다. 변경된 여덟 source unit의 기존 Guide/Policy/Runbook,
+요구사항·아키텍처·template 영향 판정은 소유 Task에 기록합니다.
 
 ## Structure
 

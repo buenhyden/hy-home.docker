@@ -1,10 +1,10 @@
 ---
 title: "Stalwart Mail Server"
-version: "2.0.1"
+version: "2.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-26"
 created: "2025-12-03"
 ---
 
@@ -61,6 +61,12 @@ stalwart/
 ## Service Readiness
 
 서비스와 healthcheck는 [Compose](docker-compose.yml)에 선언되어 있다. `/healthz/live` healthcheck는 배달·TLS·인증 검증을 대신하지 않는다. 실제 메일함 데이터, 백업 및 복원 성공 여부는 별도 운영 증거가 필요하다. 개발 테스트는 [Mailpit 가이드 — 문서 인덱스](../../../docs/README.md) (`GDE-0084`)를 따른다.
+
+서버 패치의 Compose 이미지와 config builder의 서버 `FROM`은 같은 tag/index로
+변경합니다. CLI는 독립 공급자 버전과 soak 조건을 따르며, 이번 서버 후보 준비에서
+기존 CLI pin·listener·인증·relay·network 선언은 유지합니다. 소스와 공개 artifact
+식별 대조는 실제 config job, SMTP/JMAP 배달, mailstore·backup·복원 인수가 아닙니다.
+운영 상태가 바뀐 뒤에는 소스 revert나 이전 tag만으로 데이터를 되돌리지 않습니다.
 
 ## Validation
 

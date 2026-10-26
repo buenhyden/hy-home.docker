@@ -1,10 +1,10 @@
 ---
 title: "Trino (Iceberg)"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-26"
 created: "2026-09-23"
 ---
 
@@ -79,6 +79,13 @@ Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
 | :--- | :--- |
 | `docker compose --profile lakehouse up -d trino` | 엔진 시작(아무것도 쓰지 않음). |
 | `docker compose exec trino trino --execute "SHOW SCHEMAS FROM lakehouse"` | catalog 접근 증명. |
+
+2026-10-26에는 장부의 공식 후보 이미지와 공식 launcher 명령으로 소스를
+준비했습니다. 기존 secret wrapper, catalog, 환경 변수 참조와 S3 속성 alias를
+유지하며 read-only template·loopback·identity 경계도 바꾸지 않습니다.
+새 이미지 실행, SQL/JSON 의미, Iceberg/SigV4 질의, 인증과 상태 복구는
+`NOT_RUN`입니다. 소스 복구는 이전 pin과 명령을 함께 되돌리는 변경이며,
+운영 데이터 복구나 실제 질의 호환성까지 검증한 것으로 해석하지 않습니다.
 
 ## Validation
 

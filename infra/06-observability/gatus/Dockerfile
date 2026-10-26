@@ -11,8 +11,8 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 RUN wget -q \
       -O /tmp/gatus-source.tar.gz \
-      https://github.com/TwiN/gatus/archive/ed1107b41a30e22047eecfb6dbc3be5e39829d5a.tar.gz \
-    && echo "5638de42703fc6a936b9820920c3e07d1b1e017f1aabea94808155ed9953433a  /tmp/gatus-source.tar.gz" \
+      https://github.com/TwiN/gatus/archive/ae605f291928ed9b3bdbe60ae5528cc57631433b.tar.gz \
+    && echo "79145709c1f5328fa01ff472d6c1d083cc8eb1bba90ea2dc6def628e88e3c406  /tmp/gatus-source.tar.gz" \
       | sha256sum -c - \
     && tar -xzf /tmp/gatus-source.tar.gz --strip-components=1 \
     && rm /tmp/gatus-source.tar.gz

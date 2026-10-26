@@ -30,9 +30,13 @@ PATCH_STABLE_IMAGES = {
         "renovate",
     ): "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1",
     (
+        "infra/11-quality/sonarqube/docker-compose.yml",
+        "sonarqube",
+    ): "sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8",
+    (
         "infra/10-communication/stalwart/docker-compose.yml",
         "stalwart",
-    ): "stalwartlabs/stalwart:v0.16.26@sha256:254ce5d7f3dbe4bb628ce2c7912e664ecb1c3466db79907f4a44d9a00117776b",
+    ): "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c",
     (
         "labs/supabase.yml",
         "imgproxy",
@@ -78,7 +82,7 @@ class CandidateContract(unittest.TestCase):
         )
         self.assertEqual(
             stalwart_compose["services"]["stalwart-config"]["image"],
-            "hy-home/stalwart-config:0.16.26-cli1.0.13-local",
+            "hy-home/stalwart-config:0.16.27-cli1.0.13-local",
         )
         dockerfile = (
             ROOT / "infra/10-communication/stalwart/config/Dockerfile"
@@ -95,6 +99,70 @@ class CandidateContract(unittest.TestCase):
             )
         )
         self.assertEqual(compose["services"]["open-webui"]["image"], OPEN_WEBUI)
+
+    def test_opensearch_engine_exporter_and_root_lab_dashboards_are_paired(self):
+        package = ROOT / "infra/04-data/opensearch"
+        dockerfile = (package / "Dockerfile").read_text()
+        self.assertIn(
+            "FROM opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+            dockerfile,
+        )
+        self.assertIn("/3.9.0.0/prometheus-exporter-3.9.0.0.zip", dockerfile)
+        for plugin in (
+            "ingest-attachment",
+            "analysis-nori",
+            "mapper-annotated-text",
+            "mapper-murmur3",
+            "mapper-size",
+        ):
+            self.assertIn(plugin, dockerfile)
+        self.assertIn("USER 1000", dockerfile)
+        self.assertIn('test "$(id -u opensearch)" = "1000"', dockerfile)
+        dashboards = "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8"
+        root = yaml.safe_load((package / "docker-compose.yml").read_text())
+        lab = yaml.safe_load((ROOT / "labs/opensearch-cluster.yml").read_text())
+        self.assertEqual(dashboards, root["services"]["opensearch-dashboards"]["image"])
+        self.assertEqual(
+            dashboards, lab["services"]["lab-opensearch-dashboards"]["image"]
+        )
+        entrypoint = (package / "opensearch/opensearch-entrypoint.sh").read_text()
+        self.assertIn("-env OPENSEARCH_HASH_PASSWORD", entrypoint)
+        self.assertIn(
+            "exec /usr/share/opensearch/opensearch-docker-entrypoint.sh", entrypoint
+        )
+
+    def test_trino_candidate_uses_official_launcher_and_keeps_secret_boundary(self):
+        service = yaml.safe_load(
+            (ROOT / "infra/12-analytics/trino/docker-compose.yml").read_text()
+        )["services"]["trino"]
+        self.assertEqual(
+            "trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f",
+            service["image"],
+        )
+        self.assertEqual(
+            ["/usr/lib/trino/bin/launcher", "run", "--etc-dir", "/etc/trino"],
+            service["command"],
+        )
+        self.assertEqual(
+            ["/bin/bash", "/opt/hyhome/hyhome-trino.sh"], service["entrypoint"]
+        )
+        self.assertEqual(["seaweedfs_s3_lakehouse_secret_key"], service["secrets"])
+        self.assertIn(
+            "./hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro", service["volumes"]
+        )
+        self.assertTrue(all(port.startswith("127.0.0.1:") for port in service["ports"]))
+        self.assertEqual("template-infra-readonly-high", service["extends"]["service"])
+
+    def test_surrealdb_pins_the_same_v2_artifact_without_changing_wrapper(self):
+        package = ROOT / "infra/08-ai/open-notebook/surrealdb"
+        dockerfile = (package / "Dockerfile").read_text()
+        self.assertIn(
+            "FROM surrealdb/surrealdb:v2.7.0@sha256:e5d7387e3727bbe2f7cd6d869e48cd34777272258572ead37c9656b25f745723 AS surreal",
+            dockerfile,
+        )
+        self.assertIn("FROM debian:bookworm-slim", dockerfile)
+        self.assertIn("COPY --from=surreal /surreal /usr/local/bin/surreal", dockerfile)
+        self.assertIn('ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]', dockerfile)
 
     def registry_component_result(self, registry, *arguments):
         checker = (ROOT / "scripts/hardening/check-all-hardening.sh").read_text()
@@ -360,7 +428,7 @@ class CandidateContract(unittest.TestCase):
         )
         self.assertEqual(
             compose["services"]["grafana"]["image"],
-            "grafana/grafana:13.2.3@sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572",
+            "grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f",
         )
         compose = yaml.safe_load(
             (ROOT / "infra/08-ai/ollama/docker-compose.yml").read_text()

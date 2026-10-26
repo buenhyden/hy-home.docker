@@ -1,10 +1,10 @@
 ---
 title: "Gatus Implementation"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-26"
 ---
 
 # Gatus
@@ -65,6 +65,15 @@ Lifecycle: **HOME**. 운영 통제와 복구는 [documentation index](../../../d
 | `/metrics` | Internal network only | Prometheus가 컨테이너를 직접 스크레이프합니다. Traefik 라우터는 이 경로를 제외하므로 공개 호스트명으로는 일치하는 Gatus 라우트가 없습니다. |
 | 엔드포인트/suite 상태, 헬스 배지, 가동 시간, 응답 시간 배지/차트/이력 | Native OIDC session | 이 모니터링 데이터 라우트들은 동일한 세션 미들웨어를 사용합니다. |
 | `POST /api/v1/endpoints/:key/external` | Per-endpoint bearer token | 머신 수집은 독립된 토큰 경계를 유지합니다. |
+
+2026-10-26에는 SEC01 장부의 후보에 해당하는 정확한 commit과 아카이브 SHA256으로 소스만
+준비했습니다. 기존 OIDC 패치 일곱 파일은 fuzz 없이 적용되는 것을 확인했고,
+현재 Go builder는 후보 upstream의 최소 SDK 요구사항을 충족합니다. builder/runtime의 기존
+Alpine 선택과 Go 버전은 유지했으므로 compiler·base 이미지 보안 검증을 완료한
+것으로 해석하지 않습니다. 장부에 기록한 SQLite와 crypto 의존성 변화에 대한
+실제 Go/module 시험, 이미지 빌드, OIDC 실행 및 `/data/gatus.db` 복원은
+`NOT_RUN`입니다. 기존 custom image tag가 같아도 새 이미지가 빌드되거나
+수용된 증거는 아니며, 상태가 바뀐 뒤 tag만 되돌려 복구할 수 있다고 가정하지 않습니다.
 
 ## Validation
 

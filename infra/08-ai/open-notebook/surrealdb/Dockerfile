@@ -1,4 +1,4 @@
-FROM surrealdb/surrealdb:v2 AS surreal
+FROM surrealdb/surrealdb:v2.7.0@sha256:e5d7387e3727bbe2f7cd6d869e48cd34777272258572ead37c9656b25f745723 AS surreal
 
 FROM debian:bookworm-slim
 
