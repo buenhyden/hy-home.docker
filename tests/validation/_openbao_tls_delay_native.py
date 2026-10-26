@@ -18,6 +18,7 @@ SCRIPT = ROOT / "infra/03-security/openbao/scripts/check-tls-material.sh"
 IMAGE = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
 
 READ_SCRIPT = 'for f in /tls/ca.pem /tls/server.pem /tls/server-key.pem; do [ -r "$f" ] && [ -s "$f" ] || exit 1; done'
+EVENT_ACTIONS = ("create", "start", "die", "destroy")
 NATIVE_RESOURCES = [
     "--memory=32m",
     "--memory-swap=32m",
@@ -500,6 +501,11 @@ class NativeHarness(unittest.TestCase):
                         _native_container_identity(container, config, intent)
                         _native_cid(Path(intent["tracking"]), container["Id"])
                         if container["State"]["Running"]:
+                            if config["delay"] != "late":
+                                since, required = witness["started"], EVENT_ACTIONS[:2]
+                                witness["events"] = self._events(
+                                    config, intent, since, time.time(), cid, required
+                                )
                             witness.update(
                                 {"container": container, "observed_at": time.time()}
                             )
@@ -520,7 +526,8 @@ class NativeHarness(unittest.TestCase):
         except Exception as error:
             witness["error"] = f"{type(error).__name__}: {error}"
 
-    def _events(self, config, intent, started, ended, cid):
+    def _events(self, config, intent, started, ended, cid, required=EVENT_ACTIONS):
+        self.assertTrue(required, "required daemon actions must not be empty")
         stamps = [f"{value:.9f}" for value in (started, ended)]
         result = self._call(
             config,
@@ -530,6 +537,7 @@ class NativeHarness(unittest.TestCase):
                 "--until=" + stamps[1],
                 "--filter=type=container",
                 "--filter=label=hyhome.openbao.tls-probe=" + intent["name"],
+                *("--filter=event=" + action for action in required),
                 "--format={{json .}}",
             ],
         )
@@ -543,7 +551,7 @@ class NativeHarness(unittest.TestCase):
                 intent["name"], event["Actor"]["Attributes"]["hyhome.openbao.tls-probe"]
             )
         actions = {event["Action"] for event in events}
-        self.assertTrue({"create", "start", "die", "destroy"} <= actions)
+        self.assertTrue(set(required) <= actions)
         return events
 
     def _reconcile(self, config, intent, receipt, external=False):
@@ -661,7 +669,9 @@ class NativeHarness(unittest.TestCase):
         receipt["result"] = "PASS controlled dispatch; source FAIL retained"
 
     def _delay_events(self, config, intent, started, ended, cid, receipt):
-        receipt["events"] = self._events(config, intent, started, ended, cid)
+        receipt["events"] = receipt["witness"]["events"] + self._events(
+            config, intent, started, ended, cid, ("die", "destroy")
+        )
         receipt["cleanup_commands"] = [
             json.loads(line)
             for line in Path(config["cleanup_log"]).read_text().splitlines()
@@ -735,9 +745,9 @@ class NativeHarness(unittest.TestCase):
         receipt = self._receipt(delay)
         receipt["docker_config"] = config["docker_config"]
         receipt["client_environment"] = "all inherited DOCKER_* cleared"
-        stop, witness = threading.Event(), {}
+        stop, witness = threading.Event(), {"started": time.time()}
         observer = threading.Thread(target=self._observe, args=(config, stop, witness))
-        started = time.time()
+        started = witness["started"]
         helper = OwnedDispatch(root) if delay == "late" else None
         if not helper:
             observer.start()

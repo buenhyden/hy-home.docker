@@ -502,16 +502,11 @@ class TLSNativeDispatchGuardTests(unittest.TestCase):
             "material": str(material),
             "deadline": native.time.monotonic() + 190,
             "docker": "/usr/bin/docker",
-            **{
-                key: str(root / name)
-                for key, name in (
-                    ("intent", "intent.json"),
-                    ("cleanup_log", "cleanup.jsonl"),
-                    ("registration", "registration.json"),
-                    ("dispatch_result", "dispatch-result.json"),
-                    ("docker_config", "docker-config"),
-                )
-            },
+            "intent": str(root / "intent.json"),
+            "cleanup_log": str(root / "cleanup.jsonl"),
+            "registration": str(root / "registration.json"),
+            "dispatch_result": str(root / "dispatch-result.json"),
+            "docker_config": str(root / "docker-config"),
         }
         native._native_write(root / "config.json", config)
         native._native_write(
@@ -636,8 +631,10 @@ class TLSNativeDispatchGuardTests(unittest.TestCase):
         tracking = Path(native._native_read(Path(config["intent"]))["tracking"])
         cidfile = tracking / "cid"
         cidfile.touch(mode=0o600)
+        with self.assertRaises(ValueError):
+            native._native_cid(tracking, "a" * 64)
         cid = "a" * 64
-        harness, witness, stop = native.NativeHarness(), {}, mock.Mock()
+        harness, witness, stop = native.NativeHarness(), {"started": 0}, mock.Mock()
         stop.is_set.return_value = False
         container = {"Id": cid, "State": {"Running": True}}
 
@@ -648,6 +645,7 @@ class TLSNativeDispatchGuardTests(unittest.TestCase):
 
         def docker(_config, argv):
             self.assertEqual(cid, cidfile.read_text())
+            self.assertTrue(argv[1] != "kill" or events.called)
             return subprocess.CompletedProcess(
                 argv, 0, json.dumps([container]).encode(), b""
             )
@@ -655,6 +653,9 @@ class TLSNativeDispatchGuardTests(unittest.TestCase):
         stop.wait.side_effect = deliver
         with (
             mock.patch.object(native, "_native_container_identity"),
+            mock.patch.object(
+                harness, "_events", return_value=["early proof"]
+            ) as events,
             mock.patch.object(harness, "_call", side_effect=docker) as call,
         ):
             harness._observe(config, stop, witness)
@@ -670,12 +671,37 @@ class TLSNativeDispatchGuardTests(unittest.TestCase):
             call.call_args_list,
         )
 
-    def test_empty_cid_cannot_replace_an_already_observed_identity(self):
+    def test_early_events_survive_later_history_loss_and_reject_incomplete_proof(self):
         _root, config = self._dispatch_fixture()
-        tracking = Path(native._native_read(Path(config["intent"]))["tracking"])
-        (tracking / "cid").touch(mode=0o600)
-        with self.assertRaises(ValueError):
-            native._native_cid(tracking, "a" * 64)
+        intent = native._native_read(Path(config["intent"]))
+        cid, name = "a" * 64, intent["name"]
+        attributes = dict.fromkeys(("name", "hyhome.openbao.tls-probe"), name)
+        actor = {"ID": cid, "Attributes": attributes}
+        rows = [
+            {"Action": action, "timeNano": index * 10**9, "Actor": actor}
+            for index, action in enumerate(("create", "start", "die", "destroy"))
+        ]
+        receipt = {"witness": {"events": rows[:2]}}
+        Path(config["cleanup_log"]).write_text("")
+        output = subprocess.CompletedProcess(
+            [], 0, "\n".join(map(json.dumps, rows[2:])).encode(), b""
+        )
+        harness = TLSMaterialNativeDelayTests()
+        with mock.patch.object(harness, "_call", return_value=output):
+            harness._delay_events(config, intent, 0, 4, cid, receipt)
+            self.assertEqual(rows, receipt["events"])
+            self.assertEqual(1, receipt["native_seconds"])
+            wrong = [{**row, "Actor": {**actor, "ID": "b" * 64}} for row in rows[2:]]
+            for required, subset in (
+                ((), rows[2:]),
+                (("create", "start"), rows[2:]),
+                (("die", "destroy"), rows[-1:]),
+                (("die", "destroy"), wrong),
+            ):
+                output.stdout = "\n".join(map(json.dumps, subset)).encode()
+                with self.subTest(required=required, subset=subset):
+                    with self.assertRaises(AssertionError):
+                        harness._events(config, intent, 0, 4, cid, required)
 
     def test_observer_cid_mismatch_fails_before_witness_or_kill(self):
         _root, config = self._dispatch_fixture()
