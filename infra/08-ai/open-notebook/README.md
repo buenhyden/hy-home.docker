@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-27"
 created: "2026-05-09"
 ---
 
@@ -121,8 +121,7 @@ Open Notebook은 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`,
 ### Database Compatibility
 
 이 저장소의 승인된 호환성 경계는 SurrealDB v2입니다. [Dockerfile](surrealdb/Dockerfile)은
-변경 가능한 `surrealdb/surrealdb:v2` 태그를 사용하므로 정확한 패치 버전이나 digest를
-보장하지 않습니다. 선택된 Open Notebook 이미지와의 호환성·데이터 이전을 검증하고
+정확한 v2 patch 태그와 digest로 고정한 artifact에서 바이너리를 복사합니다. 선택된 Open Notebook 이미지와의 호환성·데이터 이전을 검증하고
 별도 변경 승인을 받기 전에는 v3 이상으로 업그레이드하지 않습니다.
 
 ### Secret Management
