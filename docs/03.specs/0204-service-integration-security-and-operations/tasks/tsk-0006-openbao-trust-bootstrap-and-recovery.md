@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.26"
+version: "0.2.27"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-26"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -3123,6 +3123,87 @@ revocation, new issuance, cleanup, cluster write or HOME change is performed.
 Existing Evidence, Criterion Acceptance and lifecycle events remain unchanged;
 combined metadata, links, lifecycle and independent review are recorded by the
 v29 coordinator.
+
+### v30 B2 anonymous-volume cleanup source continuation — 2026-10-26
+
+The current v30 sections 10.3.4–5 authorize bounded local source, regression
+and separately admitted isolated Native work. Independent read-only preflight
+of cached old-image metadata confirmed inherited `/openbao/file` and
+`/openbao/logs` volume declarations. Label-filtered discovery cannot prove
+those unlabelled anonymous volumes absent. This is a newly confirmed cleanup
+defect, not a reason to repeat the completed restore or upgrade window.
+
+The exclusive writer lease is the existing rehearsal fixture, the protected
+semantic execution and restore modules, their four existing regression modules
+(`test_openbao_rehearsal`, `test_openbao_protected_semantic_execution`,
+`test_openbao_protected_semantic_restore`, `test_openbao_protected_restore_inputs`),
+RUN-0085 and this Task. Other concurrent writers retain their own files and the
+integration writer alone owns the Git index. The independent IaC prereview
+admitted this exact nine-path boundary before implementation.
+
+All three exact owned-container removal paths now include `--volumes`.
+Explicitly named volumes and bind data remain preserved by Docker's container
+removal semantics; the fixture's existing explicit owned named-volume cleanup
+remains separate. The fixture keeps its name-return and membership API but
+registers each create-returned immutable ID before inspecting actual mounts.
+Cleanup never falls back to an unverified name. Only actual volume `Name`
+fields enter mount tracking; bind/tmpfs paths do not become volume deletion
+targets. Every captured mount name is checked once after all container and
+explicit owned-volume removals. An unknown ID, incomplete mount capture,
+remaining volume or ambiguous/daemon/permission failure prevents cleanup PASS
+while remaining owned cleanup is attempted. Existing Native full-perform tests
+capture actual restore mount names through the existing creation registration,
+including the old server removed before candidate start, and verify absence
+individually before accepting label-filtered discovery as supplementary evidence.
+
+RED selected six regression methods: seven expected assertions failed and one
+missing new tracking attribute errored. The first combined run then exposed
+five errors in an old synthetic cleanup setup without the new tracking maps;
+that setup was corrected without changing the tested cleanup requirements.
+The following combined run passed 85 tests with seven default Native opt-in
+skips. Further metadata-shape and cleanup-continuation cases are part of the
+final scoped regression recorded below. None of these default runs invoked
+Docker or supplies Native/HOME acceptance.
+
+Final scoped validation of the four modules ran 86 tests in 2.662 seconds:
+79 PASS, zero failures/errors and seven default opt-in Native SKIPs, exit 0.
+The standard-library trace run covered 58/64 changed executable fixture lines
+(90.62 percent), 2/2 execution-module lines and 2/2 restore-module lines. This
+is changed-line coverage only, not branch, whole-file or repository coverage.
+Ruff check, Ruff format check of all seven Python inputs and diff whitespace
+checks passed. Registered document metadata and normal staged hooks remain
+pending the integration writer's combined freeze; no interim metadata result
+is substituted for those final checks.
+
+Frozen source SHA256 values are fixture
+`6f01d52858be61d086713472473e86d9181dbba045d40ef7b29b797445351f9e`,
+execution
+`b5aa92bdf528eb92993fc46061ead65b72bf71efe30182cca7cc5b5706ab396e`
+and restore
+`4c2d0732efb2c63fd991499419d830d70159672dafcb54385ef948ae7b37681d`.
+
+The separate CI caller companion preserves the existing required full TLS
+module and adds only the new `TLSMaterialNativeDelayTests` class to the
+existing optional-runtime skip list. Its writer reported RED two failures,
+then GREEN 2/2 PASS without skips in 0.030 seconds; the actual workflow
+validator passed five workflows, seven jobs and nine action pins. Frozen
+workflow-contract SHA256 is
+`0ff07f00d051607330f9b7415aaaa2081b1a2294cf27b5e36e5ba5ddf2c8c374`;
+its existing regression module SHA256 is
+`0d581ffc20323f8eba6dd6b34e86244091eac5ed3bd802437128d6c4a13045d4`.
+This is source-routing evidence only. The CI writer changed no allowed
+environment key, adapter, route or gate; B3 actual Native results remain with
+the independent QA execution. Actual-diff review and combined gates remain
+pending and this companion grants no runtime authorization.
+
+The execution module's pinned hash in the restore module and both current
+RUN-0085 manifest rows are synchronized. Historical hashes and accepted window
+receipts remain unchanged. No actual `P01_APPROVED_COMMIT`, installed client,
+credential, HOME service, retained target, old residue or remote state changed.
+The next operational window still needs its new exact approved commit,
+manifest, source review and installation. Native execution remains NOT_RUN
+until frozen source, independent actual-diff review and the controller's
+separate bounded execution admission. Criterion 11 and lifecycle stay pending.
 
 ## Evidence
 

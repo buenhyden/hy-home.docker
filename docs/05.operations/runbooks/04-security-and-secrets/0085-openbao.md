@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.44"
+version: "0.12.45"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-26"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -1012,8 +1012,8 @@ bd20ab9bf30efb3dca27a1f1553e516a82175535ad6e41e7eb73c60d924d197d infra/03-securi
 99c73fb8adfd0c974261aa68014aa4dc6f51550f63182578b68b45a6c0311b8c infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-f782e39ab10d01b5104d8306180362f5ab1c06b1fd88ab1adb914fc75ccf6ff4 infra/03-security/openbao/scripts/protected-semantic-restore.py
-137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b infra/03-security/openbao/scripts/protected-semantic-execution.py
+4c2d0732efb2c63fd991499419d830d70159672dafcb54385ef948ae7b37681d infra/03-security/openbao/scripts/protected-semantic-restore.py
+b5aa92bdf528eb92993fc46061ead65b72bf71efe30182cca7cc5b5706ab396e infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 564ce1cf3214a02cb99bf7bc572be2dbbd66bf766b54368635f6b4b248da8052 infra/03-security/openbao/scripts/protected-renderer-roles.py
 6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1 infra/03-security/openbao/config/policies/renderer.hcl
@@ -1455,12 +1455,25 @@ runner가 중단시키지 않지만 경과 시간은 같은 예산을 소비하�
 filesystem quota가 아닙니다. cleanup·token 폐기·Agent 파일 회수는 단계마다 별도 60초 안에서 돌며, cleanup은 성공적으로 확보한 정확한 생성
 ID만 정리합니다. 이름·label은 ID를 확보하지 못한 create의 운영자 대조 자료이며 자동
 cleanup 선택자가 아닙니다.
+2026-10-26 source는 정확한 생성 ID를 제거할 때 `--volumes`로 이미지가 자동 생성한
+익명 volume도 함께 제거합니다. 이 옵션은 명시적으로 연결한 named volume과 bind를
+삭제하지 않으므로 복원된 Raft 대상·audit·Agent 경로의 기존 보존 계약은 유지됩니다.
+격리 시험은 생성 직후 실제 `.Mounts`의 `Type=volume`인 `Name`을 기록하고, 모든
+container와 시험이 직접 만든 named volume을 정리한 뒤 각 이름을 한 번씩 조회해
+부재를 확인합니다. daemon·권한·불명확한 조회 오류는 부재로 인정하지 않습니다.
+이 source 변경은 기존 승인 commit이나 설치된 도구를 바꾸지 않으며, 다음 운영 창은
+새 해시 manifest와 정확한 `P01_APPROVED_COMMIT` 검토·승인·설치가 필요합니다.
 `RESTORE_ACCEPTED`/exit0만 성공이며 `INDETERMINATE`/exit2에서는 대상·ledger를 보존하고
 다시 실행하지 않습니다. exit가 0이 아니거나 실행이 끊기면(kill, 터미널 닫힘, 전원) `RESIDUE` 줄이
 없어도 ledger 상태와 `/dev/shm/p01-restore-20261022-06-*`를 보고,
 `docker ps -a`·`docker volume ls`·`docker network ls`를 `--filter label=hy-home.attempt=p01-restore-20261022-06`로
-조회해 남은 container·volume·network를 값 없이 기록합니다. 끊긴 실행은 unseal된
-`-candidate`와 계속 렌더하는 `-agent`를 남길 수 있으므로 기록 뒤 `docker rm -f`로 먼저 지웁니다. stderr에 `RESIDUE: /dev/shm attempt directory retained`가 나오면
+조회해 남은 container·volume·network를 값 없이 기록합니다. 익명 volume에는 이 label이
+없으므로 label 조회만으로 정리 완료를 판단하지 않습니다. 끊긴 실행은 unseal된
+`-candidate`와 계속 렌더하는 `-agent`를 남길 수 있습니다. 소유권을 확인한 정확한 생성
+ID와 그 container의 실제 volume mount 이름을 보존한 뒤, 그 ID만
+`docker rm --force --volumes`로 먼저 지우고 기록한 volume 이름마다 부재를 확인합니다.
+생성 ID나 mount 기록이 없으면 이름을 추정해 지우지 않고 owner가 정합화합니다.
+stderr에 `RESIDUE: /dev/shm attempt directory retained`가 나오면
 `/dev/shm/<ATTEMPT>-*`에 복원 key·snapshot 사본이나 렌더 값이 남았을 수 있습니다. 지우지
 말고 그대로 두며, owner가 `sudo ls -laR`로 이름·소유자·크기만(내용은 보지 않음) 값 없이
 Task에 기록한 뒤 `sudo rm -r`로 지웁니다. 재부팅해도 `/dev/shm`은 비워집니다. 이전 버전 복원 후 candidate와 Agent를 같은 격리 data에 연결하며

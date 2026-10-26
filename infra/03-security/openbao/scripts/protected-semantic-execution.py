@@ -284,7 +284,8 @@ class BoundedRunner:
 def cleanup_exact(containers, volumes, networks, *, seconds=60):
     failed = False
     commands = [
-        ["docker", "rm", "--force", item] for item in reversed(tuple(containers))
+        ["docker", "rm", "--force", "--volumes", item]
+        for item in reversed(tuple(containers))
     ]
     commands += [["docker", "volume", "rm", item] for item in reversed(tuple(volumes))]
     commands += [

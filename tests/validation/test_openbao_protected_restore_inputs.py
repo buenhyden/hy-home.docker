@@ -588,8 +588,20 @@ class NativeRehearsalTests(unittest.TestCase):
             # RUN-0085 runs W3a under umask 077; every container must still read
             # the directories the client creates.
             previous = os.umask(0o077)
+            mounted_volumes = set()
+            remember = effects.runtime.remember
+
+            def remember_mounts(kind, result):
+                identity = remember(kind, result)
+                if kind == "container":
+                    mounted_volumes.update(fixture._capture_mounts(identity))
+                return identity
+
             try:
-                receipt = restore.orchestrate(admission, reader, effects)
+                with mock.patch.object(
+                    effects.runtime, "remember", side_effect=remember_mounts
+                ):
+                    receipt = restore.orchestrate(admission, reader, effects)
             finally:
                 os.umask(previous)
         self.assertEqual(
@@ -604,6 +616,13 @@ class NativeRehearsalTests(unittest.TestCase):
         )
         ledger = json.loads((parent / ("." + attempt + ".attempt.json")).read_text())
         self.assertEqual(ledger["state"], "accepted")
+        # The old image's inherited VOLUME mounts have no attempt label.
+        self.assertTrue(mounted_volumes, "old-image mount identities were not captured")
+        for name in sorted(mounted_volumes):
+            self.assertTrue(
+                fixture._volume_absent(name),
+                "owned mounted volume remains or absence is unverified",
+            )
         for kind in (["ps", "-aq"], ["volume", "ls", "-q"], ["network", "ls", "-q"]):
             leftovers = subprocess.run(
                 ["docker", *kind, "--filter", "label=hy-home.attempt=" + attempt],

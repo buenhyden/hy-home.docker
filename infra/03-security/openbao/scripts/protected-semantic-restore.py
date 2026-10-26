@@ -43,7 +43,7 @@ PARENT_SHA256 = "4553286a0c6f4e45f1901942043762bfe6312d22cad281a3c3ffe15eb232429
 ARCHIVE_NAME = "protected-snapshot-archive.py"
 ARCHIVE_SHA256 = "48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868"
 EXECUTION_NAME = "protected-semantic-execution.py"
-EXECUTION_SHA256 = "137a8509f7e5180afad16008ca4c4903cc1386cdc3635e94d620d782dfd1d39b"
+EXECUTION_SHA256 = "b5aa92bdf528eb92993fc46061ead65b72bf71efe30182cca7cc5b5706ab396e"
 CANARY_FIELD_NAME = "admin_password"
 CANARIES = (("secret/data/hy-home/02-auth/keycloak", CANARY_FIELD_NAME), ("secret/data/hy-home/06-observability/grafana", CANARY_FIELD_NAME))
 SERVER_LIMITS = ("--memory", "512m", "--memory-swap", "512m", "--cpus", "1", "--pids-limit", "512")
@@ -709,7 +709,7 @@ class RecoveryEffects:
             if self._canaries(old) != reference:
                 raise Indeterminate()
             self.runtime.docker("stop", "--time", "10", old)
-            self.runtime.docker("rm", old)
+            self.runtime.docker("rm", "--volumes", old)
             self.runtime.containers.remove(old)
             result = self.runtime.docker("network", "create", "--internal", "--label", "hy-home.attempt=" + ATTEMPT, ATTEMPT + "-net")
             network = self.runtime.remember("network", result)
