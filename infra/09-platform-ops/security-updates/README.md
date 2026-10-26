@@ -1,6 +1,6 @@
 ---
 title: "Security update evidence"
-version: "1.1.7"
+version: "1.1.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -90,8 +90,11 @@ config digest는 descriptor이며 config 본문·layer·서명·SBOM/scan을 확
 주장을 하지 않습니다. 아직 7일이 지나지 않은 후보, ABI·시작 명령·선택 artifact가
 일치하지 않는 후보는 각 행의 구체적인 재개 조건을 따릅니다.
 
-후속으로 OpenSearch의 엔진·exporter·ROOT/LAB Dashboard, Trino의 공식 launcher
-명령, SurrealDB의 동일 공개 artifact 고정도 소스로 준비했습니다. OpenSearch의
+후속으로 OpenSearch의 ROOT 엔진·exporter·Dashboard, Trino의 공식 launcher
+명령, SurrealDB의 동일 공개 artifact 고정도 소스로 준비했습니다.
+2026-10-26 범위 정정: LAB 이미지 업그레이드는 요청에서 제외했으므로 해당
+Dashboard 선언과 공유 빌드의 기본 조합을 기존 상태로 복구했습니다. ROOT는
+명시적 Compose 빌드 인수로만 새 후보를 선택하며 이전 검토·조회 이력은 보존합니다. OpenSearch의
 실제 plugin 로드·TLS·인덱스 복원, Trino SQL/Iceberg/SigV4, SurrealDB의 실제
 client·tenant 권한·데이터 형식과 전체 저장소 복원은 확인하지 않았습니다.
 SurrealDB 고정은 알려진 Critical 권고를 해결한 보안 변경이 아니며 실제 노출은

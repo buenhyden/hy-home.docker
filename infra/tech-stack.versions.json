@@ -1242,6 +1242,7 @@
         "opensearchproject/opensearch-dashboards": "external"
       },
       "images": [
+        "opensearchproject/opensearch-dashboards:3.8.0",
         "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8"
       ],
       "compose_files": [
@@ -1258,7 +1259,7 @@
         {
           "compose_file": "labs/opensearch-cluster.yml",
           "images": [
-            "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8"
+            "opensearchproject/opensearch-dashboards:3.8.0"
           ]
         }
       ]

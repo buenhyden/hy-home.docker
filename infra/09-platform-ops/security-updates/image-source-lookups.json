@@ -1851,6 +1851,29 @@
       "include_count": 44,
       "meaning": "Three existing broker/exporter pairs only; base controls and legacy risk unchanged. Public source and synthetic checks; adoption/rotation/AOF/HOME/recovery NOT_RUN.",
       "public_template_count_correction": "Replace stale pre-existing hardcoded Docker Secret count with canonical table/catalog coverage reference; no scope/classification inference from unique path count."
+    },
+    {
+      "observed_at": "2026-10-26T14:31:47.914916+00:00",
+      "input_head": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+      "revision_scope": "Uncommitted ROOT-only OpenSearch scope correction; not a committed/build/native acceptance receipt",
+      "source_input_manifest_sha256": "1d2edfeed54e001ac749e9fd549cf1b13d1d5532070209e72a45b0c6866a4366",
+      "inputs": [
+        {
+          "path": "infra/04-data/opensearch/Dockerfile",
+          "sha256": "6ea197cccc0f735199efc82469431790fbf70762a7f4733c249f49364ed408d4"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
+        },
+        {
+          "path": "labs/opensearch-cluster.yml",
+          "sha256": "8624025272a7c053b039c9f13bdccaa0aca62e5529d3b026d0570cafbf26fa21"
+        }
+      ],
+      "service_count": 111,
+      "include_count": 44,
+      "meaning": "ROOT explicitly selects engine/exporter3.9; shared Dockerfile defaults and LAB Dashboard restored to baseline3.8. LAB excluded by v30 section14.3; no LAB render/build/run. Supplier/runtime/security facts unchanged."
     }
   ]
 }

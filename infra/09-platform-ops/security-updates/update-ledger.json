@@ -155,7 +155,7 @@
     },
     {
       "path": "infra/04-data/opensearch/docker-compose.yml",
-      "sha256": "e8579c6d8ae94bbca1df53cd4110d6762eb74ca5168bb02f60880c8ba00a6ac7"
+      "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
     },
     {
       "path": "infra/04-data/qdrant/docker-compose.yml",
@@ -11350,7 +11350,11 @@
       ],
       "build_source": {
         "context": ".",
-        "dockerfile": "Dockerfile"
+        "dockerfile": "Dockerfile",
+        "args": {
+          "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+          "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0"
+        }
       },
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
@@ -11379,7 +11383,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-26T10:32:14.784990+00:00",
         "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Exact mature engine/exporter and ROOT plus LAB Dashboard source pair prepared; five builtin plugin endpoints are available and exporter ZIP SHA/engine descriptor verified. UID1000, secret hashing/TLS/network/storage preserved. Build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
+        "reason": "Mature engine/exporter and Dashboard source preparation applies to ROOT only via explicit Compose build arguments. Shared Dockerfile defaults and excluded LAB Dashboard retain the exact baseline pair. Five plugins, UID1000 and secret hashing/TLS/network/storage controls preserved. Custom image build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
         "exit_condition": "Execute reviewed isolated image build/plugin/TLS/auth/query and fresh-install snapshot restore checks before service acceptance; never downgrade an upgraded node.",
         "rollback_boundary": "Logical source revert before runtime only; an upgraded OpenSearch node cannot downgrade and requires fresh installation plus pre-upgrade snapshot restore.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
@@ -11390,8 +11394,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "3.9.0",
       "next_fact_command": "gh release view --repo opensearch-project/OpenSearch --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "e8579c6d8ae94bbca1df53cd4110d6762eb74ca5168bb02f60880c8ba00a6ac7",
+      "source_refreshed_at": "2026-10-26T14:31:47.914916+00:00",
+      "source_input_sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11418,7 +11422,7 @@
         "rollback": "Logical source revert before runtime only; an upgraded OpenSearch node cannot downgrade and requires fresh installation plus pre-upgrade snapshot restore.",
         "candidate": "3.9.0",
         "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
-        "reason": "Exact mature engine/exporter and ROOT plus LAB Dashboard source pair prepared; five builtin plugin endpoints are available and exporter ZIP SHA/engine descriptor verified. UID1000, secret hashing/TLS/network/storage preserved. Build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
+        "reason": "Mature engine/exporter and Dashboard source preparation applies to ROOT only via explicit Compose build arguments. Shared Dockerfile defaults and excluded LAB Dashboard retain the exact baseline pair. Five plugins, UID1000 and secret hashing/TLS/network/storage controls preserved. Custom image build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
         "exit_condition": "Execute reviewed isolated image build/plugin/TLS/auth/query and fresh-install snapshot restore checks before service acceptance; never downgrade an upgraded node.",
         "evidence_refs": [
           "/tmp/hyhome-v30-r27-public/github-observations-retry.json",
@@ -11433,7 +11437,11 @@
           "image": null,
           "build": {
             "context": ".",
-            "dockerfile": "Dockerfile"
+            "dockerfile": "Dockerfile",
+            "args": {
+              "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+              "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0"
+            }
           },
           "chain": [
             "infra/04-data/opensearch/docker-compose.yml#opensearch",
@@ -11442,7 +11450,8 @@
         },
         "existing_target_version": "3.9.0",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00",
-        "eligible_after_7_days": "2026-10-12T18:20:23+00:00"
+        "eligible_after_7_days": "2026-10-12T18:20:23+00:00",
+        "scope_corrected_at": "2026-10-26T14:31:47.914916+00:00"
       },
       "historical_target_artifact_binding": {
         "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
@@ -11461,7 +11470,7 @@
           "role": "official upstream base",
           "image": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
           "source_path": "infra/04-data/opensearch/Dockerfile",
-          "source_sha256": "505ecc93e0a02c56a3fafd47eaea43b14d6aa2daf8e7f7353175a912b6a991a0",
+          "source_sha256": "6ea197cccc0f735199efc82469431790fbf70762a7f4733c249f49364ed408d4",
           "public_metadata": {
             "repository": "opensearchproject/opensearch",
             "tag": "3.9.0",
@@ -11477,7 +11486,15 @@
             "manifest_bytes": 1622,
             "index_url": "https://registry-1.docker.io/v2/opensearchproject/opensearch/manifests/3.9.0"
           },
-          "meaning": "Upstream base only; custom image not built or accepted"
+          "meaning": "ROOT-selected upstream base only; raw shared Dockerfile default remains baseline3.8 for excluded LAB. Custom image not built or accepted.",
+          "selected_by": {
+            "path": "infra/04-data/opensearch/docker-compose.yml",
+            "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f",
+            "args": {
+              "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+              "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0"
+            }
+          }
         }
       ],
       "target_declared_digest": "UNKNOWN",
@@ -11526,6 +11543,76 @@
           "target_config_digest": "UNKNOWN",
           "target_build_materials": []
         }
+      ],
+      "historical_scope_interpretations": [
+        {
+          "preserved_at": "2026-10-26T14:31:47.914916+00:00",
+          "input_head": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+          "current_public_assessment": {
+            "supplier_group": "opensearch-project/OpenSearch",
+            "owner": "SEC01 and existing service owner",
+            "review_at": "2026-10-27",
+            "source_implementation": "SOURCE_APPLIED; reviewed source preparation only",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+            "rollback": "Logical source revert before runtime only; an upgraded OpenSearch node cannot downgrade and requires fresh installation plus pre-upgrade snapshot restore.",
+            "candidate": "3.9.0",
+            "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+            "reason": "Exact mature engine/exporter and ROOT plus LAB Dashboard source pair prepared; five builtin plugin endpoints are available and exporter ZIP SHA/engine descriptor verified. UID1000, secret hashing/TLS/network/storage preserved. Build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
+            "exit_condition": "Execute reviewed isolated image build/plugin/TLS/auth/query and fresh-install snapshot restore checks before service acceptance; never downgrade an upgraded node.",
+            "evidence_refs": [
+              "/tmp/hyhome-v30-r27-public/github-observations-retry.json",
+              "current selected source files",
+              "https://github.com/opensearch-project/OpenSearch/releases/tag/3.9.0"
+            ],
+            "fact_checked_at": "2026-10-26T09:43:13.400683+00:00",
+            "service": "opensearch",
+            "compose_file": "infra/04-data/opensearch/docker-compose.yml",
+            "current_declared": "UNKNOWN",
+            "resolved_source": {
+              "image": null,
+              "build": {
+                "context": ".",
+                "dockerfile": "Dockerfile"
+              },
+              "chain": [
+                "infra/04-data/opensearch/docker-compose.yml#opensearch",
+                "infra/common-optimizations.yml#template-infra-high"
+              ]
+            },
+            "existing_target_version": "3.9.0",
+            "assessed_at": "2026-10-26T10:32:14.784990+00:00",
+            "eligible_after_7_days": "2026-10-12T18:20:23+00:00"
+          },
+          "build_source": {
+            "context": ".",
+            "dockerfile": "Dockerfile"
+          },
+          "target_build_materials": [
+            {
+              "role": "official upstream base",
+              "image": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+              "source_path": "infra/04-data/opensearch/Dockerfile",
+              "source_sha256": "505ecc93e0a02c56a3fafd47eaea43b14d6aa2daf8e7f7353175a912b6a991a0",
+              "public_metadata": {
+                "repository": "opensearchproject/opensearch",
+                "tag": "3.9.0",
+                "checked_at": "2026-10-26T10:47:40.789412+00:00",
+                "scope": "Public index and platform manifest JSON only; no config/layers, signatures, imagepull, Docker or runtime",
+                "result": "PASS",
+                "index_digest": "sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+                "platform": "linux/amd64",
+                "platform_manifest_digest": "sha256:13487e0953520edf6cc866dfc672fd67a70ab122aa7d84d4a6c97106f84d3f84",
+                "config_digest": "sha256:903c4fa852a67838269696e031077c6d726ca0a369f8b709a311083e514f1dad",
+                "config_content": "NOT_FETCHED",
+                "index_bytes": 647,
+                "manifest_bytes": 1622,
+                "index_url": "https://registry-1.docker.io/v2/opensearchproject/opensearch/manifests/3.9.0"
+              },
+              "meaning": "Upstream base only; custom image not built or accepted"
+            }
+          ],
+          "meaning": "Prior ROOT/LAB scope interpretation superseded; old observations retained."
+        }
       ]
     },
     {
@@ -11564,7 +11651,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-26T10:32:14.784990+00:00",
         "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Exact mature engine/exporter and ROOT plus LAB Dashboard source pair prepared; five builtin plugin endpoints are available and exporter ZIP SHA/engine descriptor verified. UID1000, secret hashing/TLS/network/storage preserved. Build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
+        "reason": "Mature engine/exporter and Dashboard source preparation applies to ROOT only via explicit Compose build arguments. Shared Dockerfile defaults and excluded LAB Dashboard retain the exact baseline pair. Five plugins, UID1000 and secret hashing/TLS/network/storage controls preserved. Custom image build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
         "exit_condition": "Execute reviewed isolated image build/plugin/TLS/auth/query and fresh-install snapshot restore checks before service acceptance; never downgrade an upgraded node.",
         "rollback_boundary": "Logical source revert before runtime only; an upgraded OpenSearch node cannot downgrade and requires fresh installation plus pre-upgrade snapshot restore.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
@@ -11575,8 +11662,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "3.9.0",
       "next_fact_command": "gh release view --repo opensearch-project/OpenSearch-Dashboards --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "e8579c6d8ae94bbca1df53cd4110d6762eb74ca5168bb02f60880c8ba00a6ac7",
+      "source_refreshed_at": "2026-10-26T14:31:47.914916+00:00",
+      "source_input_sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11603,7 +11690,7 @@
         "rollback": "Logical source revert before runtime only; an upgraded OpenSearch node cannot downgrade and requires fresh installation plus pre-upgrade snapshot restore.",
         "candidate": "3.9.0",
         "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
-        "reason": "Exact mature engine/exporter and ROOT plus LAB Dashboard source pair prepared; five builtin plugin endpoints are available and exporter ZIP SHA/engine descriptor verified. UID1000, secret hashing/TLS/network/storage preserved. Build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
+        "reason": "Mature engine/exporter and Dashboard source preparation applies to ROOT only via explicit Compose build arguments. Shared Dockerfile defaults and excluded LAB Dashboard retain the exact baseline pair. Five plugins, UID1000 and secret hashing/TLS/network/storage controls preserved. Custom image build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
         "exit_condition": "Execute reviewed isolated image build/plugin/TLS/auth/query and fresh-install snapshot restore checks before service acceptance; never downgrade an upgraded node.",
         "evidence_refs": [
           "/tmp/hyhome-v30-r27-public/github-observations-retry.json",
@@ -11624,7 +11711,8 @@
         },
         "existing_target_version": "3.9.0",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00",
-        "eligible_after_7_days": "2026-10-12T18:20:23+00:00"
+        "eligible_after_7_days": "2026-10-12T18:20:23+00:00",
+        "scope_corrected_at": "2026-10-26T14:31:47.914916+00:00"
       },
       "historical_target_artifact_binding": {
         "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
@@ -11686,6 +11774,47 @@
           "target_manifest_digest": "UNKNOWN",
           "target_config_digest": "UNKNOWN",
           "target_build_materials": []
+        }
+      ],
+      "historical_scope_interpretations": [
+        {
+          "preserved_at": "2026-10-26T14:31:47.914916+00:00",
+          "input_head": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+          "current_public_assessment": {
+            "supplier_group": "opensearch-project/OpenSearch-Dashboards",
+            "owner": "SEC01 and existing service owner",
+            "review_at": "2026-10-27",
+            "source_implementation": "SOURCE_APPLIED; reviewed source preparation only",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+            "rollback": "Logical source revert before runtime only; an upgraded OpenSearch node cannot downgrade and requires fresh installation plus pre-upgrade snapshot restore.",
+            "candidate": "3.9.0",
+            "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+            "reason": "Exact mature engine/exporter and ROOT plus LAB Dashboard source pair prepared; five builtin plugin endpoints are available and exporter ZIP SHA/engine descriptor verified. UID1000, secret hashing/TLS/network/storage preserved. Build/plugin load/index migration/Native/snapshot restore remain NOT_RUN.",
+            "exit_condition": "Execute reviewed isolated image build/plugin/TLS/auth/query and fresh-install snapshot restore checks before service acceptance; never downgrade an upgraded node.",
+            "evidence_refs": [
+              "/tmp/hyhome-v30-r27-public/github-observations-retry.json",
+              "current selected source files",
+              "https://github.com/opensearch-project/OpenSearch-Dashboards/releases/tag/3.9.0"
+            ],
+            "fact_checked_at": "2026-10-26T09:43:13.711215+00:00",
+            "service": "opensearch-dashboards",
+            "compose_file": "infra/04-data/opensearch/docker-compose.yml",
+            "current_declared": "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8",
+            "resolved_source": {
+              "image": "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8",
+              "build": null,
+              "chain": [
+                "infra/04-data/opensearch/docker-compose.yml#opensearch-dashboards",
+                "infra/common-optimizations.yml#template-infra-med"
+              ]
+            },
+            "existing_target_version": "3.9.0",
+            "assessed_at": "2026-10-26T10:32:14.784990+00:00",
+            "eligible_after_7_days": "2026-10-12T18:20:23+00:00"
+          },
+          "build_source": null,
+          "target_build_materials": [],
+          "meaning": "Prior ROOT/LAB scope interpretation superseded; old observations retained."
         }
       ]
     },
@@ -23863,6 +23992,213 @@
         "meaning": "Three existing broker/exporter pairs only; base controls and legacy risk unchanged. Public source and synthetic checks; adoption/rotation/AOF/HOME/recovery NOT_RUN.",
         "public_template_count_correction": "Replace stale pre-existing hardcoded Docker Secret count with canonical table/catalog coverage reference; no scope/classification inference from unique path count."
       }
+    },
+    {
+      "source_revision": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+      "refreshed_at": "2026-10-26T14:31:47.914916+00:00",
+      "revision_scope": "Uncommitted ROOT-only OpenSearch scope correction; not a committed/build/native acceptance receipt",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "20b72108463e4883b4bed328507021a152436fd4a04fe163fe2bf26f9f18f411"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "d719e16568e1d898bfc0978c405910e118b3bb58cf7f09dfe6615610546624bb"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "ad9f88fd18c43746e049988a6f4b32475086bfac7d162d9b3ab6a2dd80f13acc"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "f8eac484b704836fb06ff1b435d405213d0449c311df32863ea53a22ffeed638"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "95415facc07ab7aa4798c570871c61fa3adcead9de566a3345c313af6a7253fc"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "c840fc410ae8728f833db68802264b551d998b487cb3098bf9ffeb273c8bdee7"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "e8579c6d8ae94bbca1df53cd4110d6762eb74ca5168bb02f60880c8ba00a6ac7"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "1e2aae21929c1ba22fd3a18856d99ff9dcbef93bb500ade703505659867fd961"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "c70174e82d61607f7562e52e0a73a423e41ddc79f5f52f6ef598c69483346f53"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "f603ed35a889029a1eee9071d26c0de3e650e7fe8c4e18226e0778998a81827e"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "4501b298103e367d907fcee57f24ad2e1d7c6acfa5cb13134a8c74b05717dc5b"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "f12df92d55c6ed8cb1c4b85f768e3fdc21cf146233495c51ce3299394ab123e0"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "5cff149ef82fb45b18163f4328795256233a230c0be33db2c086c245781bde19"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "780ebabe132c9c3c82041c2ce91fa11d78463e2c4abb6c8b9cc4a1c72f6998e4"
+        },
+        {
+          "path": "infra/08-ai/open-webui/docker-compose.yml",
+          "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "ee186d89e880c81fc93346c70771f59898f76d1b85fa4fd86353e1d834a89a3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "e51da00556f4daa005f9cf96c2febc18c67e78a1a1ccbdb687139f726684aa2f"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "ad3975ee1f8a839b53025bc1f7010e5462229e563ae7b599d013492d2e0c8563"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "49b086010504cc2f4a62983e658f5df3313019d47ae888e3381cbcc3c9037e81"
+        },
+        {
+          "path": "infra/10-communication/stalwart/docker-compose.yml",
+          "sha256": "3b781b282bcb7cd2c43852dd77f4ef457de1b71cd4a0eb8a11ce49dbdc0ec3fa"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "b5c0110557e5e8c82e12224cbfd9152b6a6186ba431fcd930f8a1774b6c41b76"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/sonarqube/docker-compose.yml",
+          "sha256": "b126d7aefbe4846ee6b5f883f64582ce5c8561684370671805cf5ea7d1467b3c"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/12-analytics/dbt/docker-compose.yml",
+          "sha256": "7e8148601f9e60410c40e39cb19e431ad8ceabd7a0075ed1ac0aa7cde05de13b"
+        },
+        {
+          "path": "infra/12-analytics/flink/docker-compose.yml",
+          "sha256": "1392ea2fd3940c84578adeb2443f3af9d45f2296b5a29fb1610707101b99a88f"
+        },
+        {
+          "path": "infra/12-analytics/great-expectations/docker-compose.yml",
+          "sha256": "57895faf9051375ae61956ce9be3ed294b436556bbeb5badf8bf69e77a7b70d5"
+        },
+        {
+          "path": "infra/12-analytics/jupyterlab/docker-compose.yml",
+          "sha256": "fa6b255010f7eb4012677c00ea31c549aef40bb3dba8aa563b3411547749751a"
+        },
+        {
+          "path": "infra/12-analytics/spark/docker-compose.yml",
+          "sha256": "eeb983b22d99fde28ac4bd134926bdea9d334abffdc55ff6b9d6f514670b76cf"
+        },
+        {
+          "path": "infra/12-analytics/superset/docker-compose.yml",
+          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+        },
+        {
+          "path": "infra/12-analytics/trino/docker-compose.yml",
+          "sha256": "400d4ad8784ee51cd9559f746418e520579ca0b508485c6119ad7939ea3ca7b4"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "48abf33e7d9e3222f722107b28adcc258f10d87dc15023babe9ea815243d5262"
+        }
+      ],
+      "input_manifest_sha256": "1d2edfeed54e001ac749e9fd549cf1b13d1d5532070209e72a45b0c6866a4366",
+      "opensearch_root_only_source_binding": {
+        "observed_at": "2026-10-26T14:31:47.914916+00:00",
+        "input_head": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+        "revision_scope": "Uncommitted ROOT-only OpenSearch scope correction; not a committed/build/native acceptance receipt",
+        "source_input_manifest_sha256": "1d2edfeed54e001ac749e9fd549cf1b13d1d5532070209e72a45b0c6866a4366",
+        "inputs": [
+          {
+            "path": "infra/04-data/opensearch/Dockerfile",
+            "sha256": "6ea197cccc0f735199efc82469431790fbf70762a7f4733c249f49364ed408d4"
+          },
+          {
+            "path": "infra/04-data/opensearch/docker-compose.yml",
+            "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
+          },
+          {
+            "path": "labs/opensearch-cluster.yml",
+            "sha256": "8624025272a7c053b039c9f13bdccaa0aca62e5529d3b026d0570cafbf26fa21"
+          }
+        ],
+        "service_count": 111,
+        "include_count": 44,
+        "meaning": "ROOT explicitly selects engine/exporter3.9; shared Dockerfile defaults and LAB Dashboard restored to baseline3.8. LAB excluded by v30 section14.3; no LAB render/build/run. Supplier/runtime/security facts unchanged."
+      }
     }
   ],
   "delivery_preconditions": {
@@ -26305,10 +26641,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-10-20T13:10:00+00:00",
-      "source_revision": "3679fbd41720f2d13ab8682ceeac96d8d602a16a",
-      "source_state": "binding-test change on fix/review-followups-522-526 on top of this main revision, which carries the PR #522 Compose change; image build inputs equal the previous binding",
-      "input_sha256": "4730553866b6e24af9fa4f8f6fdfb62d5f53b9021a8d0b5ec4159951a03149b3",
+      "checked_at": "2026-10-26T14:53:34.818326+00:00",
+      "source_revision": "0d2392f93b975faa36f03b2361d80f3ddb72e487",
+      "source_state": "Uncommitted source-provenance continuation after approved Storybook/SMTP package freezes and prior U1 source changes; not a current image/build/module/Native acceptance receipt",
+      "input_sha256": "cf4004d7ee1e7e689cf93ef1c6d03d87e24b0031eefee063553e2b9cda0915a2",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -26325,15 +26661,15 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "b4ebb85352e9321917f4f50d8d9f777365f9812b685478ce18fcec255e094dac"
+          "sha256": "b46dd13e5116d595f91575f6a2223525c2a7a4faef0dc8c7726e26cb4be21010"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
-          "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+          "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
-          "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+          "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
@@ -26341,11 +26677,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
-          "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+          "sha256": "3f9ca8952964b5e63af3a85a7ecc8fb6b417c940e914c5042239647043c53eb1"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
-          "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+          "sha256": "ddfa26a5890a8fa5af87304920f24d1c8bd87be475a8b1c4650c9c9d4d7d06a5"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
@@ -26376,7 +26712,7 @@
           "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
-      "meaning": "n8n Compose/build/COPY inputs and custom-node/version unit tests only. Does not bind P05 SQL/provisioning/full native acceptance.",
+      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -26549,8 +26885,100 @@
           "recovery": "NOT_RUN"
         },
         "reason": "Superseded by the n8n Compose runner-listener aliases, the removed N8N_RUNNERS_ENABLED and the read-only custom bind (SPEC-0204-TSK-0017, 2026-10-20). Image build inputs are unchanged; no new native acceptance inferred."
+      },
+      {
+        "archived_at": "2026-10-26T14:53:34.818326+00:00",
+        "source_binding": {
+          "checked_at": "2026-10-20T13:10:00+00:00",
+          "source_revision": "3679fbd41720f2d13ab8682ceeac96d8d602a16a",
+          "source_state": "binding-test change on fix/review-followups-522-526 on top of this main revision, which carries the PR #522 Compose change; image build inputs equal the previous binding",
+          "input_sha256": "4730553866b6e24af9fa4f8f6fdfb62d5f53b9021a8d0b5ec4159951a03149b3",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "b4ebb85352e9321917f4f50d8d9f777365f9812b685478ce18fcec255e094dac"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "5f02a3a63cb57aefcf6214334129621801bd686dfcf646c04e5b828dbd20d544"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "e0afe42e203f65dd0d50b350de184be85a8809e88f032900f95b59a57e1fd0a8"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "10a0e33d827eabc7800ee240d2c48bf348fb92d914e70fc224a50c4bd0c246b1"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+            }
+          ],
+          "meaning": "n8n Compose/build/COPY inputs and custom-node/version unit tests only. Does not bind P05 SQL/provisioning/full native acceptance.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        },
+        "meaning": "Prior binding preserved before package and U1 source continuation; old image/module receipt is not rebound"
       }
-    ]
+    ],
+    "current_source_acceptance_limit": {
+      "recorded_at": "2026-10-26T14:53:34.818326+00:00",
+      "continuation_owner": "SPEC0204 Task0009 source provenance with Task0013 SMTP dependency owner",
+      "new_image_build": "NOT_RUN",
+      "new_module_smoke": "NOT_RUN",
+      "old_isolated_smoke_current_binding": "NO; original digest/date retained",
+      "smtp_production_audit": "PASS zero on writer-frozen lock",
+      "smtp_full_audit": "FAIL three High fanout entries; n8n-workflow also host peer, actual host exposure UNKNOWN; no downgrade or blanket dev-only waiver"
+    }
   },
   "historical_modernization_policies": [
     {

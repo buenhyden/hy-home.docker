@@ -100,14 +100,24 @@ class CandidateContract(unittest.TestCase):
         )
         self.assertEqual(compose["services"]["open-webui"]["image"], OPEN_WEBUI)
 
-    def test_opensearch_engine_exporter_and_root_lab_dashboards_are_paired(self):
+    def test_opensearch_root_args_keep_lab_default_pair_unchanged(self):
         package = ROOT / "infra/04-data/opensearch"
         dockerfile = (package / "Dockerfile").read_text()
         self.assertIn(
-            "FROM opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+            "ARG OPENSEARCH_BASE_IMAGE=opensearchproject/opensearch:3.8.0\n"
+            "FROM ${OPENSEARCH_BASE_IMAGE}",
             dockerfile,
         )
-        self.assertIn("/3.9.0.0/prometheus-exporter-3.9.0.0.zip", dockerfile)
+        self.assertIn("ARG OPENSEARCH_EXPORTER_VERSION=3.8.0.0", dockerfile)
+        exporter_arg = dockerfile.index("ARG OPENSEARCH_EXPORTER_VERSION=")
+        exporter_url = dockerfile.index(
+            "/releases/download/${OPENSEARCH_EXPORTER_VERSION}/"
+        )
+        self.assertLess(dockerfile.index("FROM "), exporter_arg)
+        self.assertLess(exporter_arg, exporter_url)
+        self.assertIn(
+            "prometheus-exporter-${OPENSEARCH_EXPORTER_VERSION}.zip", dockerfile
+        )
         for plugin in (
             "ingest-attachment",
             "analysis-nori",
@@ -118,13 +128,33 @@ class CandidateContract(unittest.TestCase):
             self.assertIn(plugin, dockerfile)
         self.assertIn("USER 1000", dockerfile)
         self.assertIn('test "$(id -u opensearch)" = "1000"', dockerfile)
+
+    def test_opensearch_root_selection_does_not_override_lab_builds(self):
+        package = ROOT / "infra/04-data/opensearch"
         dashboards = "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8"
         root = yaml.safe_load((package / "docker-compose.yml").read_text())
         lab = yaml.safe_load((ROOT / "labs/opensearch-cluster.yml").read_text())
         self.assertEqual(dashboards, root["services"]["opensearch-dashboards"]["image"])
         self.assertEqual(
-            dashboards, lab["services"]["lab-opensearch-dashboards"]["image"]
+            {
+                "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
+                "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0",
+            },
+            root["services"]["opensearch"]["build"]["args"],
         )
+        self.assertEqual(
+            "opensearchproject/opensearch-dashboards:3.8.0",
+            lab["services"]["lab-opensearch-dashboards"]["image"],
+        )
+        lab_builds = [
+            service["build"]
+            for service in lab["services"].values()
+            if "build" in service
+        ]
+        self.assertEqual(3, len(lab_builds))
+        for build in lab_builds:
+            self.assertNotIn("args", build)
+            self.assertEqual("Dockerfile", build["dockerfile"])
         entrypoint = (package / "opensearch/opensearch-entrypoint.sh").read_text()
         self.assertIn("-env OPENSEARCH_HASH_PASSWORD", entrypoint)
         self.assertIn(

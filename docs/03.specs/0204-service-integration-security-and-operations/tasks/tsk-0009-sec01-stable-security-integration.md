@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.29"
+version: "0.4.30"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2827,3 +2827,134 @@ AOF, rotation, HOME and recovery are not accepted by source tests. The remaining
 latest/stable/provenance/soak dispositions from the eight-unit assessment and all
 old failed aggregate/native attempts remain unchanged. C15/C16/C17 acceptance
 remains pending; no full local aggregate PASS or operational rollback is claimed.
+
+### v30 ROOT-only OpenSearch scope correction — 2026-10-26
+
+The v30 section14.3 request excludes LAB service, Compose and image upgrades.
+Our earlier source commit `8797022281fdafa22885542fee13cc569319f875` nevertheless
+changed the LAB Dashboard image and shared Dockerfile defaults. That was a source
+scope error in this task. The earlier review and supplier observations remain
+historical facts; they do not expand the user's boundary.
+
+The root-authorized correction uses the independently reviewed twelve-path plan
+`/tmp/hyhome-v30-opensearch-root-only-scope-plan.md`, SHA256
+`8352ac9f542392a9af91006d56707517d54516b4565db846cca6e82d3e8d66c0`.
+Before production edits, this current Task records the exact narrow contract:
+restore only the LAB Dashboard line to baseline
+`136b7cac4483d4af8aaa73ca6dc3f9a0da521e10`; retain shared default engine/exporter
+3.8.0/3.8.0.0 for its unchanged caller; explicitly select the verified ROOT
+3.9.0 digest and matching exporter3.9.0.0 through existing Compose build args.
+ROOT Dashboard retains its verified3.9.0 digest. Five builtin plugins, UID/GID,
+secret-hash entrypoint, TLS/network/storage and all other controls remain.
+
+The exclusive source lease is the shared Dockerfile, ROOT Compose, one-line LAB
+restoration, existing SEC01 version contract, OpenSearch README, existing derived
+tech-stack projection, four existing SEC01 JSON records, security-updates README
+and this Task. No other LAB/source file, scanner/parser/schema/gate, package or
+framework is changed. The concurrent B3 helper and protected-token tests remain
+with their existing writer and are preserved. Meaningful RED/GREEN precedes
+public ROOT-only config and current local provenance refresh; existing publisher,
+prior failure and Native evidence is retained. No LAB render, image build/pull,
+Docker execution, private LAB input or operational rollback is authorized here.
+The final exact diff requires independent review and separate commit integration.
+C15 stays pending; a ROOT source correction does not prove image build, plugin
+load, TLS/auth/query, migration or fresh-install snapshot restoration.
+
+The actual correction passes the focused RED1FAIL to GREEN1PASS sequence; the
+final existing SEC01 module runs13tests, all PASS (0.886s), after splitting the
+new checks into functions below50lines. Existing update-gate tests run28tests,
+all PASS (4.952s). Canonical tech-stack check first detected the intended LAB
+projection drift, then its existing write/check path passes. Ruff, formatting
+and diff hygiene pass. Public ROOT-only Compose config with the example env and
+no env-file/path resolution selects the exact engine/exporter args and ROOT
+Dashboard; existing profiles, capabilities, no-new-privileges and networks remain.
+The LAB file is byte-identical to the declared baseline. No LAB configuration or
+runtime was rendered or executed. Canonical m0021 projection is NO_CHANGE.
+
+The local provenance parity check covers111row source hashes,44ROOT includes,
+33build records (32regular inputs plus one unchanged inline declaration), and
+preserves all399official observations, other32build rows and every runtime,
+signature, SBOM, Native and recovery field. Its initial temporary checker failed
+by treating the inline input identifier as a file; the narrower checker handles
+that existing distinction and passes without changing production code. The
+latest gate remains FAIL with overlapping categories45mismatch/3unresolved/
+7stable-channel/2freshness/2primary-reference, exactly unchanged from input HEAD.
+Historical ROOT/LAB scope interpretations remain recorded separately from the
+current ROOT-only selections; the custom image remains unbuilt and unaccepted.
+
+Selected three-document metadata first passes with zero violations, and the
+entrypoint/traceability check reports zero findings including mandatory canonical
+nodes. The final result-only Task append requires its own metadata check before
+freeze. Public check receipts are under
+`/tmp/hyhome-v30-opensearch-root-only-checks`; no aggregate or Native rerun is
+claimed by these source checks.
+
+The required dependency-audit attempts do not imply a clean dependency result.
+No npm/pip manifest or lock changes in this correction. Existing Storybook and
+OpsflowSmtp package/lock identities were hashed before and after read-only
+`npm audit --package-lock-only --ignore-scripts --json` with temporary configs,
+caches and logs; no install, fix, scripts or global configuration change occurred.
+An initial temporary-config collision and later restricted-DNS failure are
+preserved. The standard approved network-boundary attempt returns real findings:
+Storybook1Critical(next)/1High(zod); SMTP3High dependency entries/1Moderate
+(nodemailer). Exact raw reports and four unchanged package/lock hashes are in
+`npm-audit-0.json`, `npm-audit-1.json` and `audit-results.json` in the receipt
+directory. Critical Next advisories include GHSA-2464-fhr4-w9xw and
+GHSA-673q-mjm6-r5xr; the independent security reviewer and coordinator own the
+separate applicability/repair decision. No audit PASS or baseline-risk waiver is
+claimed. pip-audit is NOT_AVAILABLE: no executable or module in the prepared
+Python environment, and no dependency is installed for this task. Existing
+Surreal Critical advisory exposure remains unresolved, with no remediation claim.
+No commit proceeds before the separate security triage and current diff review.
+
+### v30 package-source provenance continuation — 2026-10-26
+
+After the independent security-reviewed Storybook and SMTP package writers freeze,
+the coordinator authorizes only this Task, build-inputs.json and update-ledger.json
+for a bounded source-provenance continuation. Existing build-input rows for
+Storybook, n8n and n8n-worker must bind the final package/lock bytes, retaining the
+prior three records and aggregate as history. The existing same16file n8n source
+set must be rehashed in both duplicated bindings, with the prior binding retained.
+No image, producer receipt, package-manager framework, gate or acceptance field
+is added or promoted. The prior isolated image/module smoke keeps its original
+source digest and date, and cannot establish acceptance for the new binding.
+
+The existing workflow binding regression first fails against the real stale
+Compose hash (1test/1FAIL/0.026s), before the metadata refresh. Package and lock
+inputs are verified against both frozen writer receipts before any JSON update.
+The original twelve-file OpenSearch freeze remains a valid earlier checkpoint;
+only these three explicitly leased consumers receive the dated continuation.
+
+The same existing workflow-version-bundle module now runs10tests in0.102s:
+8PASS,0FAIL,0ERROR and2default isolated-candidate SKIP. The previously failing
+binding regression passes without changing its assertions. Six package-hash
+cells across three build rows now match the exact frozen package/lock bytes;
+the other30build rows are unchanged from the reviewed OpenSearch checkpoint.
+The same16file source set has matching current hashes and aggregate
+`cf4004d7ee1e7e689cf93ef1c6d03d87e24b0031eefee063553e2b9cda0915a2`
+in both existing bindings. Every ledger entry and ROOT include record is
+unchanged by this package continuation. The prior image/module smoke object is
+preserved exactly, including its old digest, date and limits; new image build,
+module smoke, host installation and service acceptance remain NOT_RUN.
+
+Storybook owner evidence is
+`/tmp/hyhome-v30-storybook-mature-iqf6ljqo/source-validation.json`, SHA256
+`9b739ee1cdca7a911c5352daf6e39b6406749cef009fb485d2763b1491e87cc2`.
+The mature Next/eslint16.4.1 and zod4.6.7 source pair supersedes the ineligible
+16.4.3 trial; sharp remains unchanged. The writer's final full audit reports
+zero findings, while the original Critical audit and the too-young trial remain
+historical evidence. This package-source result does not rebuild or accept either
+Storybook image and does not provide either missing producer receipt.
+
+SMTP owner evidence is
+`/tmp/hyhome-v30-smtp-security-aax_21mz/handoff.json`, SHA256
+`62d5694ed323fbabbd167a27427360926306da7d56e0f25ac8834463febb7dcd`.
+The mature nodemailer10.1.4 correction retains the current adapter/framework
+contract. The frozen-lock production audit is zero; the full audit still FAILs
+with three High dependency-fanout entries. Although this custom-node lock lists
+n8n-workflow as a development dependency, the same framework is also a required
+host peer: actual host-path exposure is UNKNOWN. No blanket development-only
+exemption, unsafe framework downgrade, new risk acceptance or aggregate PASS is
+claimed. Actual n8n installation, SMTP mail send, workflow/session/HOME and
+recovery remain separate. Final Task metadata, exact supplemental source review
+and the coordinator's explicit integration authority remain required.
