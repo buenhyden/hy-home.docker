@@ -66,6 +66,60 @@ async function runPositive(queue, connect, passed, recordError) {
   await bounded(subscriber.subscribe('n8n:n8n.commands')); await producer.client.publish('n8n:n8n.commands','synthetic');
   assert.deepEqual(await bounded(message),['n8n:n8n.commands','synthetic']); passed('named-channel-pubsub');
 }
+function authenticationCode(error) {
+  if(error?.name !== 'ReplyError') return null;
+  return /^(WRONGPASS|NOAUTH)\b/.exec(error.message||'')?.[1]||null;
+}
+async function requireWrongPassword(wrong, milliseconds=3000) {
+  let listener;
+  const denial=new Promise((resolve,reject)=>{
+    listener=error=>{
+      const code=authenticationCode(error);
+      if(code && error.command?.name==='auth') resolve(code);
+      else reject(new Error('AUTH_PROBE_UNEXPECTED_ERROR'));
+    };
+    wrong.once('error',listener);
+  });
+  try {
+    await bounded((async()=>{
+      const connected=wrong.connect().then(()=> 'ready',()=> 'closed');
+      const ping=wrong.ping().then(()=>({accepted:true}),error=>({accepted:false,code:authenticationCode(error)}));
+      const code=await denial;
+      assert.deepEqual(await ping,{accepted:false,code});
+      await connected;
+      emit({kind:'auth-denial',code,commandDenied:true});
+    })(),milliseconds);
+  } finally {
+    wrong.removeListener('error',listener);
+    wrong.disconnect();
+  }
+}
+async function selfCheckWrongPassword() {
+  const {EventEmitter}=require('node:events');
+  const reply=(code='WRONGPASS',command='auth',name='ReplyError')=>
+    Object.assign(new Error(code),{name,command:{name:command}});
+  function fake(mode) {
+    const client=new EventEmitter();
+    client.on('error',()=>{});
+    const auth=()=>mode==='spoof' ? new Error('WRONGPASS') :
+      reply(mode==='noauth'?'NOAUTH':'WRONGPASS',mode==='wrong-command'?'get':'auth',mode==='generic-auth'?'Error':'ReplyError');
+    let timer;
+    client.disconnect=()=>clearTimeout(timer);
+    client.connect=()=>{
+      if(!['close-only','silent'].includes(mode)) {
+        timer=setTimeout(()=>client.emit('error',mode==='transport'?new Error('ECONNRESET'):auth()),mode==='late'?100:0);
+      }
+      return mode==='close-auth'||mode==='close-only' ? Promise.reject(new Error('Connection is closed.')) : Promise.resolve();
+    };
+    client.ping=()=>mode==='pong' ? Promise.resolve('PONG') :
+      Promise.reject(mode==='close-only'?new Error('Connection is closed.'):reply(mode==='noauth'?'NOAUTH':'WRONGPASS'));
+    return client;
+  }
+  for(const mode of ['ready-auth','close-auth','noauth']) await requireWrongPassword(fake(mode),20);
+  for(const mode of ['close-only','transport','pong','silent','late','spoof','wrong-command','generic-auth']) {
+    await assert.rejects(requireWrongPassword(fake(mode),20));
+  }
+}
 async function runNegative(connect, passed) {
   const client=connect(); await bounded(client.ping());
   for (const [name,command] of [
@@ -73,7 +127,7 @@ async function runNegative(connect, passed) {
     ['flushdb',['FLUSHDB']],['flushall',['FLUSHALL']],['acl',['ACL','LIST']],['config',['CONFIG','GET','*']],['keys',['KEYS','*']],['scan',['SCAN','0']]
   ]) { await assert.rejects(bounded(client.call(...command)),/NOPERM|ACL/); passed(name); }
   const wrong=connect({password:'synthetic-wrong',lazyConnect:true,retryStrategy:()=>null,maxRetriesPerRequest:0});
-  await assert.rejects(bounded(wrong.connect(),3000),/WRONGPASS|NOAUTH/); passed('wrong-password');
+  await requireWrongPassword(wrong); passed('wrong-password');
 }
 async function runMain() {
   const identity=probeIdentity();
@@ -113,5 +167,5 @@ async function runMain() {
     clearTimeout(timer);
   }
 }
-module.exports={identityValid};
+module.exports={identityValid,requireWrongPassword,selfCheckWrongPassword};
 if(require.main===module) runMain().catch(error=>{emit({kind:'failure',code:error.code||error.name});process.exitCode=1;});
