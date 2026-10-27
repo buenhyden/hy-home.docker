@@ -1,10 +1,10 @@
 ---
 title: "플랫폼과 백업 정책"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-27"
 layer: "operations"
 ---
 
@@ -35,6 +35,7 @@ layer: "operations"
 | [Renovate Policy](0083-renovate.md) | `POL-0083` | Renovate는 원격 저장소 쓰기 권한을 가지며 명시적으로 선택하는 `dependency-update` job이다. HOME이나 일반 도구 기동에는 절대 포함되지 않는다. |
 | [Dependency Version Management Policy](0086-dependency-version-management.md) | `POL-0086` | 인프라 버전 변경은 하나의 HOME/DEV 호스트에서 검토 가능하고 재현 가능해야 한다. 버전 업데이트가 배포나 데이터 마이그레이션을 승인하지는 않는다. |
 | [hy-home.k8s Integration Operations Policy](0096-k8s-integration.md) | `POL-0096` | hy-home.k8s 클러스터는 host 주소상의 고정된 엔드포인트 집합과 두 개의 OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식, 두 저장소 사이를 오가는 자격 증명의 처리 방식을 고정한다. |
+| [Host Storage Placement Policy](0102-host-storage-placement.md) | `POL-0102` | 이 정책은 개인 PC 호스트에서 Docker·containerd 저장소와 서비스 데이터를 SSD와 HDD 중 어디에 둘지, 그리고 저장소를 SSD로 옮기는 조건을 정한다. |
 
 ## Usage
 
