@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.31"
+version: "0.4.32"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2746,6 +2746,31 @@ webhook exposure or a public exploit forces an early re-decision. POL-0053
 records the acceptance. The n8n source binding and ROOT include inputs were
 rehashed. The HOME recreate that applies the limit, image signatures, full scan
 and Native/HOME acceptance remain NOT_RUN.
+
+### n8n HOME recreate with payload limit and Ollama overlay — 2026-10-27
+
+With owner approval after PR #562 merged as 602a25ecc, the n8n queue was idle
+(active 0, waiting 0) and a value-free comparison showed the recreate adds only
+`N8N_PAYLOAD_SIZE_MAX` plus default-equal Valkey/queue keys, with images
+unchanged. The running worker had a manual `ai_net` attachment without Compose
+aliases; the owner chose the reviewed `docker-compose.ollama-local.yml` overlay
+instead. `docker compose -p hy-home-infra -f docker-compose.yml -f
+infra/07-workflow/n8n/docker-compose.ollama-local.yml up -d --no-deps
+--no-build --pull never --wait` recreated n8n, n8n-worker and ollama from
+02:16:37Z. Under load average about 14, n8n needed about 5.5 minutes to become
+ready while its healthcheck start period is 15 seconds, so the first `--wait`
+returned rc1 with the worker only created; the same command then returned rc0
+with all three healthy.
+
+Verified: both n8n services carry the 4 MiB limit and a body-parsing route
+returns 401 at 3.5 MiB and 413 at 4.5 MiB; the worker reaches Ollama 0.40.6
+over the internal `n8n_ollama_net` with only worker and Ollama as members and
+no longer joins `ai_net`; Open WebUI still reaches Ollama; the worker is ready
+on the `jobs` queue with zero active, waiting or failed jobs; n8n-monitor,
+ollama-exporter and mng-valkey-exporter scrape up=1. n8n reported no published
+workflows, so dropping `ai_net` from the worker has no current workflow impact.
+The short healthcheck start period is a follow-up; signatures, full scan and
+owner acceptance remain NOT_RUN.
 
 ## Evidence
 

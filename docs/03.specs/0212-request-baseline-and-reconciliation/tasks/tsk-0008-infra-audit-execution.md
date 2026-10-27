@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.12"
+version: "0.1.13"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -809,6 +809,25 @@ negative cases; entity alias/accessor checks are not added because they would
 widen the helper API allowlist. Dependent pins and RUN-0085 hashes were
 updated; 436 OpenBao and runbook-consumer tests passed. The next window needs a
 new P01 approval and install check before this helper is used.
+
+### OpenBao native reruns and HOME n8n recreate (2026-10-27)
+
+Separate opt-in native invocations on the B1 helper source: B3
+`HYHOME_OPENBAO_TLS_DELAY_NATIVE=1` test_openbao_tls_material 29 tests OK in
+237.992s; `HYHOME_OPENBAO_REHEARSAL=1` test_openbao_rehearsal 17 tests OK in
+726.325s. The first B2 restore-inputs run failed 2 of 23: one synthetic TLS
+TimeoutError under load average about 13, and the read-only admission test
+reading HOME's real attempt and the still-present accepted
+`p01-restore-20261022-06` target (A3 cleanup NOT_RUN). 448ed3f82 and
+8a5734832 give both native restore tests an isolated attempt, ledger, target
+and producer binding. The final B2 run on clean 8a5734832 passed 23 tests with
+one intended opt-in skip in 691.611s, ending HEAD unchanged and zero labelled
+leftovers. These are synthetic native results, not HOME restore acceptance.
+
+PR #562 merged as 602a25ecc after one hosted failure (missing inventory env
+key, fixed by 617ad4339). The owner then approved the n8n HOME recreate; its
+result and the healthcheck start-period follow-up are in SEC01 Task 0009.
+B4, P06, A3 cleanup and owner acceptance remain open.
 
 ## Evidence
 
