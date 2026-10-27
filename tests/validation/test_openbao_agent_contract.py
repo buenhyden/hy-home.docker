@@ -32,7 +32,7 @@ class AgentContractTests(unittest.TestCase):
         self.cleanup_token = secrets.token_hex(24)
         self.token = secrets.token_hex(24)
         self.values = [secrets.token_hex(24), secrets.token_hex(24)]
-        self.client_secret = secrets.token_hex(24)
+        self.client_value = secrets.token_hex(24)
         (self.agent / "token").write_text(self.token)
         (self.agent / "token").chmod(0o600)
         self.rendered = [
@@ -47,7 +47,7 @@ class AgentContractTests(unittest.TestCase):
             path.write_text(value)
             path.chmod(mode)
         self.client = self.out / "observability/grafana_client_secret.txt"
-        self.client.write_text(self.client_secret)
+        self.client.write_text(self.client_value)
         self.client.chmod(0o640)
         self.versions = [path.with_suffix(".version") for path in self.rendered]
         for path, version in zip(self.versions, ("7", "11"), strict=True):
@@ -76,7 +76,7 @@ class AgentContractTests(unittest.TestCase):
             "STUB_MANIFEST": MANIFEST,
             "STUB_VALUE_1": self.values[0],
             "STUB_VALUE_2": self.values[1],
-            "STUB_VALUE_3": self.client_secret,
+            "STUB_VALUE_3": self.client_value,
         }
         for name in (
             "BAO_SKIP_VERIFY",
@@ -318,7 +318,7 @@ sys.exit(result.returncode)
                     for value in [
                         self.token,
                         self.cleanup_token,
-                        self.client_secret,
+                        self.client_value,
                         *self.values,
                     ]
                 ),
@@ -415,7 +415,7 @@ sys.exit(result.returncode)
     def test_client_secret_is_checked_like_the_passwords(self):
         self.client.write_text(secrets.token_hex(24))
         self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
-        self.client.write_text(self.client_secret)
+        self.client.write_text(self.client_value)
         for mode in (0o600, 0o644):
             self.client.chmod(mode)
             self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)

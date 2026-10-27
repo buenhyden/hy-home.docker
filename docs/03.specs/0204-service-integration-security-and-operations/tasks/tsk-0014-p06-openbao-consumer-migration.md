@@ -1163,6 +1163,14 @@ SecretID reissue. The patch-only rule and the pre-recreate checks cover that
 risk instead. Accepted: the verifier reads Keycloak's copy as the master admin.
 This is not least privilege, but no value leaves the container.
 
+KV import, owner-run, 2026-10-27 ~13:34Z: the owner ran `kv patch -method=rw`
+from stdin with the operator credential, and `current_version` went from 1 to 2.
+The Agent then saw the field exist (exit code only, rc 0). It re-rendered
+`grafana_admin_password.version` to 2 within seconds, and the current
+`health-agent.sh` returned 0. CodeQL flagged two High "clear-text storage"
+alerts on the synthetic test value's variable name; the variable is renamed, as
+the existing synthetic values are.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
