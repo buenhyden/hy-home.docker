@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.45"
+version: "0.12.46"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-27"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -115,7 +115,7 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 `token_ttl=0`, `token_max_ttl=0`과 발급 token의 `explicit_max_ttl=0`에서 24시간은
 갱신 주기다. 갱신이 계속되면 총수명 상한이 없다([공식 token 수명](https://openbao.org/docs/concepts/tokens/)).
 SecretID TTL은 10분, 사용 횟수는 1회다. sink 복사본도 갱신 가능하고 W5는 이전 Agent token을
-폐기하지 않는다. 두 KV 읽기·sink0600과 2026-11-15까지의 기존 예외를 유지한다.
+폐기하지 않는다. 두 KV 읽기·sink0600과 2026-12-15까지의 기존 예외를 유지한다.
 유한수명이나 이전 세대 폐기는 아래 인계와 POL-0085의 별도 결정이 필요하다. Agent는 SecretID 파일을 읽은 뒤
 삭제하므로, token이 끝나면 새 SecretID를 전달해야 한다(아래 Renderer SecretID Delivery). 기존 Docker Secret 소비자는 현재 파일을 계속 사용하며, 렌더링된 출력이 자동으로
 애플리케이션 mount를 전환하지는 않는다.
@@ -704,7 +704,7 @@ custody 파일을 열지 않고, window 안이든 다음 window의 W1 전이든 
 절차가 생길 때까지 **BLOCKED**다([POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가
 받아들인 잔여 위험). kept W2 custody가 있는 동안은 이후 모든 정리에서도
 `P01_KEEP_W2=1`을 둔다. sealed server에서 root custody를 지우면 OIDC 확인 없이 관리 접근을 모두
-버리는 것이며, 이는 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 2026-11-15까지 받아들인 잔여 위험이다(복구는 share 2개로 unseal한 뒤
+버리는 것이며, 이는 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 2026-12-15까지 받아들인 잔여 위험이다(복구는 share 2개로 unseal한 뒤
 OIDC operator와 W1 절차).
 
 지우기 전에 credential이 없는 증거, 곧 W1c의 `prior-state.json`·`state.json`(`p01-roles.*`,
