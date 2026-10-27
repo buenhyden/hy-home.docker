@@ -126,13 +126,20 @@ elif args[:2] == ["test", "-s"]:
     sys.exit(0 if os.path.getsize(local(args[2])) else 1)
 elif args[:2] == ["sh", "-c"]:
     env.update(PATH=os.environ["FAKE_BIN"] + ":/usr/bin:/bin", GF_SECURITY_ADMIN_USER="admin",
-               MOUNTED=local(env["MOUNTED"]), FAKE_ROOT=os.environ["FAKE_ROOT"])
+               MOUNTED=local(env["MOUNTED"]), FAKE_ROOT=os.environ["FAKE_ROOT"],
+               FAKE_CURL_NO_RESPONSE=os.environ.get("FAKE_CURL_NO_RESPONSE", "0"))
     sys.exit(subprocess.run(["sh", "-c", args[2]], env=env).returncode)
 """
 FAKE_CURL = r"""#!/usr/bin/env python3
 import os, sys
 open(os.path.join(os.environ["FAKE_ROOT"], "curl-argv"), "a").write(" ".join(sys.argv) + "\n")
 config = sys.stdin.read()
+counter = os.path.join(os.environ["FAKE_ROOT"], "curl-calls")
+calls = int(open(counter).read()) + 1 if os.path.exists(counter) else 1
+open(counter, "w").write(str(calls))
+if calls <= int(os.environ.get("FAKE_CURL_NO_RESPONSE", "0")):
+    sys.stdout.write("000")
+    sys.exit(28)
 expected = open(os.path.join(os.environ["FAKE_ROOT"], "expected-config")).read()
 sys.stdout.write("200" if config == expected else "401")
 """
@@ -140,7 +147,14 @@ sys.stdout.write("200" if config == expected else "401")
 
 class GrafanaConsumptionVerifierTests(unittest.TestCase):
     def run_verifier(
-        self, rendered, mounted, version=b"3", login=None, port=None, gf_file=None
+        self,
+        rendered,
+        mounted,
+        version=b"3",
+        login=None,
+        port=None,
+        gf_file=None,
+        misses=0,
     ):
         import os
         import tempfile
@@ -174,6 +188,8 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
                     "FAKE_BIN": str(bin_dir),
                     **({"GRAFANA_PORT": port} if port else {}),
                     **({"FAKE_GF_FILE": gf_file} if gf_file else {}),
+                    "VERIFY_RETRY_SLEEP": "0",
+                    **({"FAKE_CURL_NO_RESPONSE": str(misses)} if misses else {}),
                 },
                 timeout=30,
                 check=False,
@@ -182,6 +198,11 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
                 (root / "curl-argv").read_bytes()
                 if (root / "curl-argv").exists()
                 else b""
+            )
+            self.calls = (
+                int((root / "curl-calls").read_text())
+                if (root / "curl-calls").exists()
+                else 0
             )
         return result, argv
 
@@ -252,3 +273,15 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
             "${GRAFANA_ADMIN_PASSWORD_FILE:-/run/secrets/grafana_admin_password}",
             grafana["environment"]["GF_SECURITY_ADMIN_PASSWORD__FILE"],
         )
+
+    def test_login_retries_only_when_no_http_status_came_back(self):
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", misses=1)
+        self.assertIn(b"PASS admin_login http=200\n", result.stdout)
+        self.assertEqual(2, self.calls)
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", misses=3)
+        self.assertIn(b"FAIL admin_login http=000\n", result.stdout)
+        self.assertEqual(3, self.calls)
+        # A real HTTP status is final: a wrong password is tried exactly once.
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", login=b"other")
+        self.assertIn(b"FAIL admin_login http=401\n", result.stdout)
+        self.assertEqual(1, self.calls)
