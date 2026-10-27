@@ -953,6 +953,14 @@ before any check: `WAIT`, then `PASS` or `FAIL grafana_healthy`, with no login
 on failure. `alerting/` now holds a valid empty `empty.yaml` (`apiVersion: 1`)
 in place of `.gitkeep`. The verifier tests pass, 13 OK.
 
+HOME restart after PR #576 (`d07e5ac03`), 2026-10-27T09:34:02Z: the verifier,
+run at once, printed `WAIT grafana_healthy`, then `PASS grafana_healthy`,
+`consumed_file` (OpenBao path), `rendered_version` 1, `mounted_equals_rendered`
+and `admin_login` 200, rc 0 in 16 s. Grafana logged no provisioning warn or
+error; `provisioning.alerting` started and finished cleanly. The one
+`level=error` line, `job cleanup controller failed: context canceled`, came
+from the old process shutting down. Both follow-ups are closed on HOME.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
