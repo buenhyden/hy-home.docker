@@ -40,6 +40,8 @@ created: "2026-10-11"
 - [verify-grafana-consumption.sh](verify-grafana-consumption.sh): 첫 소비자 Grafana의
   관리자 비밀번호 소비 검사입니다. Agent가 렌더링한 값과 Grafana에 mount된 값의 일치,
   렌더링 version, 관리자 로그인 HTTP 상태만 출력하고 값·hash·길이는 출력하지 않습니다.
+- [verify-oidc-client-secret.sh](verify-oidc-client-secret.sh): OIDC client secret 소비자 하나의
+  검사입니다. 렌더링 파일, 서비스 파일, Keycloak client secret의 일치를 container 안에서 비교합니다.
 
 ## Tech Stack
 
@@ -332,24 +334,51 @@ Agent와 소비자에 영향이 없습니다.
    bao kv put -cas=0 secret/hy-home/12-analytics/superset client_secret=- < secrets/auth/superset/superset_oidc_client_secret.txt
    ```
 
-3. 병합 → main fast-forward → Agent 재시작(RUN-0085 SecretID 전달). fast-forward 순간 실행 중인 Agent의
-   health가 19개 template을 요구하므로 재시작해 렌더링될 때까지 unhealthy입니다. 재시작 후 healthy와
-   `out` 아래 7개 디렉터리를 확인합니다.
+   병합 전 종료 조건: 7개 경로 모두 `bao kv metadata get`이 성공해야 합니다. 하나라도 빠지면 그
+   template이 렌더링되지 않아 3단계 Agent 재시작이 90초 health 조건에서 `BLOCKED`로 끝납니다.
+3. 병합 → 출력 디렉터리 생성 → main fast-forward → Agent 재시작(RUN-0085 SecretID 전달).
+   - 병합하면 8개 소비자 정의에 새 bind가 생겨 다음 `docker compose up -d`가 변수와 상관없이 모두
+     다시 만듭니다. bind는 `create_host_path: false`이므로 디렉터리가 없으면 container를 만들지
+     못하고, 기존 container는 이미 지워진 뒤라 그 서비스가 멈춥니다(`oauth2-proxy`면 SSO 전체).
+     fast-forward 전에 Agent 사용자로 디렉터리를 만듭니다. health는 디렉터리를 보지 않습니다.
+
+     ```sh
+     docker exec -u 100 openbao-agent mkdir -m 0755 /openbao/out/oauth2-proxy /openbao/out/kafbat \
+       /openbao/out/dozzle /openbao/out/gatus /openbao/out/airflow /openbao/out/open-webui /openbao/out/superset
+     ```
+
+   - fast-forward하면 `scripts/`의 새 health가 바로 적용되지만 `agent.hcl`은 단일 파일 bind라 실행 중인
+     Agent는 재시작 전까지 예전 5개 template만 검사합니다. 새 health는 `out` 전체에서 목록에 없는
+     group/other-readable 파일을 찾으므로, fast-forward 직전
+     `docker exec openbao-agent find /openbao/out -mindepth 1 ! -type d \( -perm -040 -o -perm -004 \)`가
+     현재 `.txt` 3개만 출력하는지 확인합니다.
+   - 재시작 후 healthy와 7개 디렉터리의 `.txt`·`.version`을 확인합니다.
 4. 서비스마다 전환 전 검사:
    `bash infra/03-security/openbao/consumer-migration/verify-oidc-client-secret.sh <서비스>`.
    `healthy`, `consumed_file`, `rendered_version`, `mounted_equals_rendered`,
    `keycloak_client_matches`가 모두 `PASS`여야 합니다. 서비스 파일은 `docker cp`로 읽으므로
-   shell이 없는 image도 검사합니다.
+   shell이 없는 image도 검사합니다. `docker cp`는 daemon 권한으로 읽으므로 `PASS`는 서비스 사용자가
+   파일을 읽을 수 있다는 증거가 아닙니다. 전환 뒤 실제 OIDC 로그인으로 확인합니다.
 5. 전환: 로컬 `.env`에 표의 경로 변수를 `/run/openbao/<출력 파일>`로 넣고 그 서비스만 다시 만든 뒤
    같은 검사를 실행합니다. `consumed_file`이 Agent 경로여야 합니다. `oauth2-proxy`와
    `opensearch-dashboards`는 같은 파일을 읽지만 변수가 따로이므로 하나씩 전환합니다.
+   `opensearch-dashboards`가 `out/oauth2-proxy` 전체를 bind하므로 그 디렉터리와 KV 경로에는
+   `client_secret`만 둡니다. cookie secret 등을 더하려면 먼저 디렉터리를 나눕니다.
 6. 되돌리기: 변수를 비우고 그 서비스만 다시 만든 뒤 검사합니다.
 
 실행 중이 아닌 서비스(`kafbat-ui`, `opensearch-dashboards`, `superset`, `airflow-apiserver`)는
 다음에 기동할 때 4~5단계를 합니다. 변수를 비워도 bind는 남으므로 Agent 출력 디렉터리가 없으면
 그 서비스는 만들어지지 않습니다. Grafana client secret과 같이 KV 값과 Keycloak client를 함께
 바꾸지 않으면 OIDC 로그인이 실패하므로 회전은 별도 단계입니다. 코드 되돌리기는 모든 서비스를
-`/run/secrets`로 되돌림 → 병합 revert → 남은 `out` 디렉터리 7개 삭제 → Agent 재시작 순서입니다.
+`/run/secrets`로 되돌림 → 병합 revert → 멈춘 것을 포함해 8개 서비스를 되돌린 정의로 다시 만듦 →
+남은 `out` 디렉터리 7개 삭제 → Agent 재시작 순서입니다. 다시 만들지 않은 container는 예전 bind를
+그대로 가지므로 디렉터리를 지운 뒤에는 `docker start`나 재부팅에서 실패합니다.
+
+출력 파일 group은 Agent image의 group(1000)이고 소비자는 `group_add: ${SECRETS_GID:-1000}`으로 읽습니다.
+`SECRETS_GID`가 1000이 아니면 8개 소비자 모두 읽지 못합니다. `opensearch-dashboards`와 `kafbat-ui`는
+경로를 잘못 주면 빈 값으로 시작하므로 검사의 `mounted_equals_rendered`로 확인합니다.
+보호 복구 bundle은 21개 파일을 요구하므로 이 revision의 bundle 영수증과 반입 이후 off-host snapshot이
+생기기 전까지 복구 계약은 `BLOCKED`입니다. 복구 값 비교는 아직 두 관리자 비밀번호만 대상입니다.
 
 ### `./secrets` 사본 제거 계획
 
@@ -369,6 +398,7 @@ catalog에서 확정 lane이 있는 항목은 `gen-secrets`가 `keep-catalog-pro
 
 1. 소스 PR: 경로 변수 기본값을 Agent 경로로 바꾸고, 서비스의 `secrets:` 항목과 root
    `docker-compose.yml`의 선언을 지웁니다. 선언이 남아 있으면 파일이 없을 때 Compose가 실패합니다.
+   Airflow는 공유 `x-airflow-common`의 `secrets:` 목록에서 지웁니다.
    `secret-file-support.json`, Compose secret 계약 시험, `.env.example`, catalog의 목적지 기록을
    함께 고칩니다. `examples/`의 readiness override는 별도 합성 경로이므로 영향이 없는지만 확인합니다.
 2. 병합 후 그 서비스만 다시 만들고 검사합니다. 이때부터 rollback은 소스 revert입니다.

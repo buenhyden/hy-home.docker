@@ -788,24 +788,35 @@ if args[:2] == ["get", "clients/0f1e2d3c-aaaa-bbbb-cccc-000000000001/client-secr
 sys.exit(1)
 """
 OIDC_SERVICES = {
-    # service: (Agent dir, stem, Compose secret, path variable, client ID)
+    # service: (Agent dir, stem, Compose secret, path variable)
     "oauth2-proxy": ("oauth2-proxy", "oauth2_proxy_client_secret", "oauth2_proxy_client_secret",
-                     "OAUTH2_PROXY_CLIENT_SECRET_FILE", "home-proxy-client"),
+                     "OAUTH2_PROXY_CLIENT_SECRET_FILE"),
     "opensearch-dashboards": ("oauth2-proxy", "oauth2_proxy_client_secret", "oauth2_proxy_client_secret",
-                              "OPENSEARCH_OIDC_CLIENT_SECRET_FILE", "realm-home-client"),
+                              "OPENSEARCH_OIDC_CLIENT_SECRET_FILE"),
     "kafbat-ui": ("kafbat", "kafbat_client_secret", "kafbat_client_secret",
-                  "KAFBAT_CLIENT_SECRET_FILE", "home-kafbat"),
+                  "KAFBAT_CLIENT_SECRET_FILE"),
     "dozzle": ("dozzle", "dozzle_client_secret", "dozzle_client_secret",
-               "DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE", "home-dozzle"),
+               "DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE"),
     "gatus": ("gatus", "gatus_oidc_client_secret", "gatus_oidc_client_secret",
-              "GATUS_OIDC_CLIENT_SECRET_FILE", "home-gatus"),
+              "GATUS_OIDC_CLIENT_SECRET_FILE"),
     "airflow-apiserver": ("airflow", "airflow_client_secret", "airflow_keycloak_client_secret",
-                          "AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD", "home-airflow"),
+                          "AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD"),
     "open-webui": ("open-webui", "openwebui_oidc_client_secret", "openwebui_oidc_client_secret",
-                   "OPENWEBUI_OIDC_CLIENT_SECRET_FILE", "home-openwebui"),
+                   "OPENWEBUI_OIDC_CLIENT_SECRET_FILE"),
     "superset": ("superset", "superset_oidc_client_secret", "superset_oidc_client_secret",
-                 "SUPERSET_OIDC_CLIENT_SECRET_FILE", "home-superset"),
+                 "SUPERSET_OIDC_CLIENT_SECRET_FILE"),
 }  # fmt: skip
+# Kept apart from the secret names so the client IDs carry no secret taint.
+OIDC_CLIENT_IDS = {
+    "oauth2-proxy": "home-proxy-client",
+    "opensearch-dashboards": "realm-home-client",
+    "kafbat-ui": "home-kafbat",
+    "dozzle": "home-dozzle",
+    "gatus": "home-gatus",
+    "airflow-apiserver": "home-airflow",
+    "open-webui": "home-openwebui",
+    "superset": "home-superset",
+}
 OIDC_CLIENT_ENV = {
     "oauth2-proxy": "OAUTH2_PROXY_CLIENT_ID",
     "kafbat-ui": "KAFBAT_OAUTH_CLIENT_ID",
@@ -823,9 +834,9 @@ class OidcClientSecretVerifierTests(unittest.TestCase):
         import os
         import tempfile
 
-        directory, stem, secret, path_env, client = OIDC_SERVICES.get(
-            service, OIDC_SERVICES["oauth2-proxy"]
-        )
+        known = service if service in OIDC_SERVICES else "oauth2-proxy"
+        directory, stem, secret, path_env = OIDC_SERVICES[known]
+        client = OIDC_CLIENT_IDS[known]
         mounted = rendered if mounted is None else mounted
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -881,7 +892,8 @@ class OidcClientSecretVerifierTests(unittest.TestCase):
         return result, traces
 
     def test_every_service_passes_on_both_paths_without_printing_values(self):
-        for service, (directory, stem, secret, _, client) in OIDC_SERVICES.items():
+        for service, (directory, stem, secret, _) in OIDC_SERVICES.items():
+            client = OIDC_CLIENT_IDS[service]
             for agent_path in (False, True):
                 with self.subTest(service=service, agent_path=agent_path):
                     marker = b"Synth-oidc-marker"
@@ -957,7 +969,7 @@ class OidcClientSecretVerifierTests(unittest.TestCase):
         example = (ROOT / ".env.example").read_text()
         for service, path in files.items():
             with self.subTest(service=service):
-                directory, _, secret, _, _ = OIDC_SERVICES[service]
+                directory, _, secret, _ = OIDC_SERVICES[service]
                 spec = yaml.safe_load((ROOT / path).read_text())["services"][service]
                 binds = [
                     v for v in spec["volumes"]

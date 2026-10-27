@@ -1280,6 +1280,27 @@ NOT_RUN: root ceremony, policy apply, KV import, Agent restart, every cutover.
 kafbat-ui, opensearch-dashboards, superset and airflow-apiserver are not
 running, so their cutover waits for their next start.
 
+Review of `1fd1fa4e6`: security-auditor found nothing above Low; iac-reviewer
+found no source defect but one High procedure gap. The merge adds a bind to all
+eight consumers, so the next `compose up` recreates them and fails while an
+output directory is missing. The README now has the owner create the seven
+directories as the Agent user before fast-forward, check before merging that
+all seven KV paths exist, check the readable-file sweep before fast-forward,
+recreate all eight services before deleting directories on a code revert, and
+notes the GID 1000 dependency, the shared `out/oauth2-proxy` directory, and
+that a verifier PASS reads through `docker cp`, not as the service user. The
+0085 guide no longer says every output is 0600. CodeQL flagged a test that
+unpacked client IDs from the same tuple as secret names; the IDs now have
+their own map.
+
+Open after review: the restore value comparison covers only the two admin
+passwords, and the restore contract stays BLOCKED until a bundle receipt for
+this revision and a post-import off-host snapshot exist. The catalog
+`destination_plan` still reads `BLOCKED_P01` for these entries, as for the
+earlier three; recording deployed paths is the separate P02 schema change.
+Health now makes 21 `bao` calls each run; the worst case exceeds the 30 s
+healthcheck timeout only when the server is already degraded.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
