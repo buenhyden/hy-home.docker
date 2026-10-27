@@ -763,7 +763,8 @@ if args[0] == "cat":
     sys.exit(0)
 assert name == "keycloak" and args[:2] == ["sh", "-c"]
 env.update(PATH=os.environ["FAKE_BIN"] + ":/usr/bin:/bin", KC_BOOTSTRAP_ADMIN_USERNAME="admin",
-           KEYCLOAK_ADMIN_PASSWORD_FILE=os.path.join(root, "admin-password"), FAKE_ROOT=root)
+           KEYCLOAK_ADMIN_PASSWORD_FILE=os.path.join(root, "admin-password"), FAKE_ROOT=root,
+           FAKE_CLIENT=os.environ["FAKE_CLIENT"])
 script = args[2].replace("/opt/keycloak/bin/", os.environ["FAKE_BIN"] + "/")
 sys.exit(subprocess.run(["sh", "-c", script], env=env).returncode)
 """
@@ -778,7 +779,7 @@ if args[:2] == ["config", "credentials"]:
     sys.stderr.write("Invalid user credentials [invalid_grant]\n")
     sys.exit(1)
 if args[:2] == ["get", "clients"]:
-    if "clientId=" + open(os.path.join(root, "expected-client")).read() not in args:
+    if "clientId=" + os.environ["FAKE_CLIENT"] not in args:
         sys.exit(0)
     print("0f1e2d3c-aaaa-bbbb-cccc-000000000001")
     sys.exit(0)
@@ -853,7 +854,6 @@ class OidcClientSecretVerifierTests(unittest.TestCase):
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(mounted)
             (root / "admin-password").write_bytes(b"synthetic-admin\n")
-            (root / "expected-client").write_text(client)
             (root / "keycloak-secret").write_bytes(
                 mounted.rstrip(b"\n") if keycloak is None else keycloak
             )
@@ -877,6 +877,7 @@ class OidcClientSecretVerifierTests(unittest.TestCase):
                     "FAKE_ROOT": str(root),
                     "FAKE_BIN": str(bin_dir),
                     "FAKE_ENV": json.dumps(settings),
+                    "FAKE_CLIENT": client,
                     "VERIFY_HEALTH_SLEEP": "0",
                     "VERIFY_HEALTH_TRIES": "2",
                     **({"FAKE_HEALTH": health} if health else {}),
