@@ -516,14 +516,16 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
         )
 
     def insecure_render_mode(self, fixture, agent):
+        # Each path goes back to its own mode; consumed files are 640.
         paths = (
-            "/openbao/agent/token",
-            "/openbao/out/auth/keycloak_admin_password.txt",
-            "/openbao/out/observability/grafana_admin_password.txt",
-            "/openbao/out/auth/keycloak_admin_password.version",
-            "/openbao/out/observability/grafana_admin_password.version",
+            ("/openbao/agent/token", "600"),
+            ("/openbao/out/auth/keycloak_admin_password.txt", "640"),
+            ("/openbao/out/observability/grafana_admin_password.txt", "640"),
+            ("/openbao/out/observability/grafana_client_secret.txt", "640"),
+            ("/openbao/out/auth/keycloak_admin_password.version", "600"),
+            ("/openbao/out/observability/grafana_admin_password.version", "600"),
         )
-        for path in paths:
+        for path, mode in paths:
             fixture.docker("exec", agent, "chmod", "644", path)
             self.must(
                 fixture.docker(
@@ -536,7 +538,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 != 0,
                 "Agent readiness accepted insecure render permissions",
             )
-            fixture.docker("exec", agent, "chmod", "600", path)
+            fixture.docker("exec", agent, "chmod", mode, path)
         print(
             "observed Agent insecure token/value/version modes rejected: PASS",
             flush=True,
@@ -839,6 +841,7 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             for name in (
                 "keycloak_admin_password.ctmpl",
                 "grafana_admin_password.ctmpl",
+                "grafana_client_secret.ctmpl",
                 "keycloak_admin_password_version.ctmpl",
                 "grafana_admin_password_version.ctmpl",
             )
@@ -894,11 +897,10 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
             self.configure(client)
             marker = secrets.token_urlsafe(36)
             for target in ("02-auth/keycloak", "06-observability/grafana"):
-                self.put(
-                    client,
-                    "secret/data/hy-home/" + target,
-                    {"data": {"admin_password": marker}},
-                )
+                data = {"admin_password": marker}
+                if target.endswith("grafana"):
+                    data["grafana_client_secret"] = marker
+                self.put(client, "secret/data/hy-home/" + target, {"data": data})
             self.one_use_secret_id(client)
             self.roles(client, marker)
             self.expired_secret_id(client)

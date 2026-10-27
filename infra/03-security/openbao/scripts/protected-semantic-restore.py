@@ -417,7 +417,7 @@ class RecoveryEffects:
         self._verify_bundle(Path(renderer["bundle"]), renderer["bundle_receipt_sha256"])
 
     def _verify_bundle(self, bundle, digest):
-        required = {"scripts/start-agent.sh", "scripts/health-agent.sh", "config/agent.hcl", "config/templates/keycloak_admin_password.ctmpl", "config/templates/grafana_admin_password.ctmpl", "config/templates/keycloak_admin_password_version.ctmpl", "config/templates/grafana_admin_password_version.ctmpl"}
+        required = {"scripts/start-agent.sh", "scripts/health-agent.sh", "config/agent.hcl", "config/templates/keycloak_admin_password.ctmpl", "config/templates/grafana_admin_password.ctmpl", "config/templates/grafana_client_secret.ctmpl", "config/templates/keycloak_admin_password_version.ctmpl", "config/templates/grafana_admin_password_version.ctmpl"}
         receipt = self._held_json(bundle / "source-receipt.json", digest)
         if not isinstance(receipt, dict) or set(receipt) != {"source_revision", "sha256"} or receipt["source_revision"] != self.contract["renderer"]["revision"] or set(receipt["sha256"]) != required:
             raise Blocked()

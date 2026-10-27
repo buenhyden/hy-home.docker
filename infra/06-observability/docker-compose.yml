@@ -345,7 +345,9 @@ services:
       GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH: 'email'
       GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: 'name'
       GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${GRAFANA_OIDC_CLIENT_ID}
-      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE: /run/secrets/grafana_client_secret
+      # P06: set GRAFANA_CLIENT_SECRET_FILE to the Agent-rendered file under
+      # /run/openbao/observability to consume OpenBao; unset rolls back.
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE: ${GRAFANA_CLIENT_SECRET_FILE:-/run/secrets/grafana_client_secret}
       GF_AUTH_GENERIC_OAUTH_SCOPES: 'openid profile email offline_access groups'
       # Verify Keycloak with the local root CA (same trust as OAuth2 Proxy).
       GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: 'false'

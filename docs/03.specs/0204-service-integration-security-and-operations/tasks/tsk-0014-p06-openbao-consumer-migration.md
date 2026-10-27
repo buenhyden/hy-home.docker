@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.16"
+version: "0.1.17"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1089,6 +1089,96 @@ Remaining NOT_RUN or open:
 Owner decision: the Keycloak verifier's default health wait is now 360 s
 (`VERIFY_HEALTH_TRIES` 72), and the README matches. The Grafana verifier keeps
 180 s.
+
+### Third consumer: Grafana OIDC client secret — 2026-10-27
+
+The owner chose to inventory the remaining consumers, and then to make
+`grafana_client_secret` the third. The secret catalog lists 65 `IMPLEMENT`
+kv_static entries; the Grafana and Keycloak admin passwords are the only ones
+done. They group as:
+
+- Grafana's client secret, which already has a template and a bound directory;
+- other OIDC client secrets;
+- per-service DB passwords;
+- the shared `mng_password`, with 8 or more consumers, which goes last;
+- the SeaweedFS S3 keys;
+- tokens.
+
+The renderer policy already allows the Grafana path. A value-free probe from the
+Agent, reading exit codes only, found that the field is not in KV yet
+(`grafana_client_secret` rc 1, `admin_password` control rc 0), so an owner-run
+KV import comes first. The owner chose a single Agent restart: import, merge,
+fast-forward, then one restart. That restart also loads the Keycloak `0640` from
+`agent.hcl`, which replaces the earlier plan for a separate restart.
+
+Source changes:
+
+- `agent.hcl` renders `grafana_client_secret.txt` at `0640`.
+- `health-agent.sh` fetches and compares the new field, requires `640`, and
+  admits the file in the observability directory. The Grafana `.version`
+  covers the shared path.
+- Grafana selects the file through `GRAFANA_CLIENT_SECRET_FILE`, which defaults
+  to `/run/secrets`.
+- `verify-grafana-client-secret.sh` also compares the mounted file with the
+  secret Keycloak holds for the client, read once by `kcadm.sh` and compared
+  inside pipes.
+
+The live Keycloak and Grafana comparison was denied to the agent by the
+permission classifier, so its first run is the owner's. The `kcadm` CSV output
+form is unverified on HOME until then.
+
+Checks: Agent contract 32 OK, consumer-migration 25 OK, operations catalog PASS,
+update-gates and runtime compatibility OK after the observability Compose
+rehash (14 occurrences), shellcheck clean. The catalog `IAM-007` lifecycle stays
+unreconciled, like the two admin passwords. The KV import, Agent restart,
+cutover and rollback are NOT_RUN.
+
+The independent reviews found:
+
+- **Security audit:** 4 Low and 3 Informational issues.
+- **IaC review:** 1 High, 3 Medium and 4 Low issues.
+
+Fixed:
+
+- High: the protected restore bundle now includes the new template
+  (`protected-restore-inputs.py`, `protected-semantic-restore.py` and their
+  tests). Without it, a restore contract cut after this change could not start
+  its Agent.
+- The native rehearsal seeds the new field. Its insecure-mode probe now
+  restores each file's own mode; it had reset the `640` files to `600`, a gap
+  left over from W49.
+- The Keycloak comparison runs inside Keycloak. Grafana's file goes in on
+  stdin, Keycloak's copy never leaves its container, and the verifier prints
+  `kcadm=match|mismatch|empty|invalid|error`. An empty Grafana file is never
+  compared. A rejected admin login is reported and not retried. `set +x` is
+  added.
+- The README now says this KV path takes `kv patch` only. Agent health and
+  `keycloak_client_matches` must pass before any Grafana recreate. It also
+  gives the code-rollback order, the possible 5-minute unhealthy flap after the
+  import, and the need for a post-import snapshot.
+
+Not taken: `error_on_missing_key`. The reviews disagreed on it. It would stop
+`<no value>` renders, but the Agent would then exit, and recovering needs a
+SecretID reissue. The patch-only rule and the pre-recreate checks cover that
+risk instead. Accepted: the verifier reads Keycloak's copy as the master admin.
+This is not least privilege, but no value leaves the container.
+
+KV import, owner-run, 2026-10-27 ~13:34Z: the owner ran `kv patch -method=rw`
+from stdin with the operator credential, and `current_version` went from 1 to 2.
+The Agent then saw the field exist (exit code only, rc 0). It re-rendered
+`grafana_admin_password.version` to 2 within seconds, and the current
+`health-agent.sh` returned 0. CodeQL flagged two High "clear-text storage"
+alerts on the synthetic test value's variable name; the variable is renamed, as
+the existing synthetic values are.
+
+Agent restart, owner-run RUN-0085 step 3, at 13:48:20Z: `issue rc=0`. The
+Agent is healthy and the journal is back to `complete`. The run happened before
+this PR merged, while the main checkout was at `1fb71114a`. It therefore loaded
+the Keycloak `0640` into the Agent's memory, which lifts the "no Keycloak KV
+write" rule, but not the new template. A second restart after the merge and
+fast-forward loads it. GitHub "Update branch" added a merge commit that
+commitizen rejects, so PR #582 was replaced by a cherry-picked branch on
+`1fb71114a`.
 
 ## Evidence
 
