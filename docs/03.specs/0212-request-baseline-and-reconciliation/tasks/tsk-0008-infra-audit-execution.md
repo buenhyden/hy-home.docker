@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -829,6 +829,24 @@ key, fixed by 617ad4339). The owner then approved the n8n HOME recreate; its
 result and the healthcheck start-period follow-up are in SEC01 Task 0009.
 B4, P06, A3 cleanup and owner acceptance remain open.
 
+### C19 reruns and owner disposition (2026-10-27)
+
+Three required C19 failures were rerun with their recorded checks on main
+`7ba82fcf3` and now pass:
+
+- the six registered routing suites: 172 tests OK;
+- the hardening script: its tier list now includes `13-experience`, and that
+  tier alone and all tiers pass;
+- the native opsflow workflow rehearsal: 6 tests OK, including cross-database
+  connect denial, with no owned container left.
+
+`ci-local-context` still exits 1, because the local `--requirements` check needs
+a pull-request context and the row forbids inventing one. The owner disposed
+it as expected-by-design, covered by hosted candidate-quality PASS on real PRs.
+`secret-catalog-views` still returns `P02_METADATA_BLOCKED` without the
+operator `.agent-work` staging, and `native-home-recovery` stays with the
+P1–P10 owners. The owner kept C19 pending on those two rows.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -853,12 +871,15 @@ B4, P06, A3 cleanup and owner acceptance remain open.
 | v30-implemented-source-results | 19 | W24 | Read current owner-reported source, unit, isolated ACL and independent review results without promoting them to leaf acceptance | Frozen17-source/test manifest96d77614; exact ACL module85fa2a8b; P02/P03 and Quality current continuations | PASS | #v30-implemented-source-and-bounded-verification; separate invocations and retained first-attempt failure | optional | - |
 | v30-final-public-changed-gate | 19 | W24 | Registered public changed gate on final logical commits with the prepared exact controller toolchain | Final committed input not yet executed by delivery owner | NOT_RUN | #v30-implemented-source-and-bounded-verification; #v30-local-per-spec-pr-drafts | optional | - |
 | v30-final-public-changed-gate-b3445 | 19 | W24 | Registered public changed gate on final logical commits with the prepared exact controller toolchain | Clean HEAD b3445c56702d3dae09feab21e7a0714e61bf905d | PASS | #v30-corrective-commits-and-complete-registered-changed-rerun-2026-10-27; exit0, no per-leaf count claimed; local only | optional | v30-final-public-changed-gate |
+| ci-routing-regressions-main-7ba82fcf3 | 19 | W24 | Registered CI gate and SMTP routing unit suites | main `7ba82fcf3` | PASS | 6 registered routing suites (agent-governance, CI gate context/model/plan, SEC01, SMTP): 172 tests OK; #c19-reruns-and-owner-disposition-2026-10-27 | required | ci-routing-regressions |
+| root-hardening-coverage-main-7ba82fcf3 | 19 | W24 | Existing hardening script tier coverage | main `7ba82fcf3` | PASS | Tier list now includes `13-experience`; `13-experience` alone and all tiers: ALL checks passed; #c19-reruns-and-owner-disposition-2026-10-27 | required | root-hardening-coverage |
+| workflow-isolated-denial-main-7ba82fcf3 | 19 | W24 | `env OPSFLOW_PG_REHEARSAL_IMAGE=sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873 OPSFLOW_PG_REHEARSAL_CONTEXT=default python3 -m unittest tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseNativeRehearsal -v` | main `7ba82fcf3` | PASS | 6 tests OK in 171.9 s including cross-database connect denial; no owned container left; #c19-reruns-and-owner-disposition-2026-10-27 | required | workflow-isolated-denial |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 19 | pending | main-baseline, document-baseline, current-service-inventory, secret-catalog-views, ci-local-context, remote-protection, root-hardening-coverage, ci-routing-regressions, workflow-source-suite, workflow-isolated-denial, native-home-recovery | P0 routing is in progress; required failures and unrun higher evidence domains remain open. | SPEC-0212 coordinator for routing; named primary owners for execution. |
+| 19 | pending | main-baseline, document-baseline, current-service-inventory, secret-catalog-views, ci-local-context, remote-protection, root-hardening-coverage, ci-routing-regressions, workflow-source-suite, workflow-isolated-denial, native-home-recovery, ci-routing-regressions-main-7ba82fcf3, root-hardening-coverage-main-7ba82fcf3, workflow-isolated-denial-main-7ba82fcf3 | Routing, hardening and workflow denial now pass on main 7ba82fcf3. Owner disposition 2026-10-27: the ci-local-context FAIL is expected by design (the local requirements check needs a PR context) and is covered by hosted candidate-quality PASS on PRs #566–#570. Pending on secret-catalog-views (P02 staging) and native-home-recovery (P1–P10 owners). | SPEC-0212 coordinator for routing; named primary owners for execution. |
 
 ## Review and Completion
 

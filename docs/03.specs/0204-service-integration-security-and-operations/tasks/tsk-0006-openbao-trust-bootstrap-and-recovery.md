@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.29"
+version: "0.2.30"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3352,6 +3352,17 @@ under `$XDG_RUNTIME_DIR`. Still open before the v3 journal: the custody
 retention/destruction point, child-lease/rollback disposition, the
 selected-version revoke-self check, and a new P01 approval for the changed
 helper hash.
+
+**B4 owner inputs — 2026-10-27.** The owner settled two of the open inputs. The
+captured old token is destroyed at phase `complete`: the owner-only 0600 tmpfs
+custody file is unlinked right after a confirmed revoke-self. Any interruption
+keeps it for bounded reconciliation, and a reboot destroys it with the tmpfs.
+On rollback (the new token fails verification), the old generation stays live
+with its child leases untouched, the new token is revoked with revoke-self, and
+the journal records `rolled_back`. A pre-flight confirms that the selected
+OpenBao version supports token revoke-self. A new P01 approval for the changed
+helper hash is still required before any window. Implementation remains in a
+new session.
 
 ## Evidence
 

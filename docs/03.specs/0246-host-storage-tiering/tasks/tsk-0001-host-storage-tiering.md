@@ -1,6 +1,6 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -541,6 +541,13 @@ criterion 6. W6 created POL-0102 Host Storage Placement Policy under
 operations-subject high-water raised to 102. Activating it and owner
 acceptance of criterion 5 remain.
 
+### Criterion 5 acceptance and POL-0102 activation (2026-10-27)
+
+The owner chose "Accept and activate". POL-0102 moved from draft to active at
+version 0.2.0, and its overview now states the current standard. An
+independent rules review checked the activation before delivery. Criteria 1–6
+are all accepted; the Task's completion transition is left to the owner.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -560,6 +567,8 @@ acceptance of criterion 5 remain.
 | Observability store placement second window | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Second stable window 2026-10-21T05:56:40 to 2026-10-22T08:57:16 +09:00 with SMART counters; owner kept Loki, Alloy and Pyroscope on HDD and moved Tempo and Prometheus | PASS | W7 second-window placement decision; #criterion-6-acceptance-and-w6-policy-draft-2026-10-27 | required | Observability store placement |
 | C6 owner acceptance | 6 | W7 | Read-only `docker volume inspect` and health check, HDD observability path listing, then explicit owner acceptance | 2026-10-27 main d6164df8e | PASS | #criterion-6-acceptance-and-w6-policy-draft-2026-10-27; SSD devices, healthy services, former HDD copies absent | required | - |
 | W6 policy draft | 5 | W6 | Changed-document metadata, operations catalog and all-link checks | POL-0102 draft and operations-subject high-water 102; independent review findings applied | PASS | `run-ci-gate.py --profile changed` exit 0 on base d6164df8e: metadata changed 3/0 violations, links 11,861/0 failures, operations-catalog PASS; activation and criterion 5 acceptance remain | required | - |
+| Policy promotion activation | 5 | W6 | Changed metadata and link checks | POL-0102 status draft to active with owner approval and independent rules review | PASS | #criterion-5-acceptance-and-pol-0102-activation-2026-10-27 | required | Policy promotion |
+| C5 owner acceptance | 5 | W6 | Explicit owner acceptance after the active policy review | Owner decision 2026-10-27 | PASS | #criterion-5-acceptance-and-pol-0102-activation-2026-10-27 | required | - |
 
 ## Criterion Acceptance
 
@@ -569,7 +578,7 @@ acceptance of criterion 5 remain.
 | 2 | accepted | Ollama SSD move | Same model list from the SSD path; first load 318.4 s before and 55.9 s after. | SPEC-0246 TSK-0001 |
 | 3 | accepted | Build-cache limit, Build-cache floor decision, Image archive, Volume and container cleanup | Floor accepted, archive digest-verified, and only unowned items removed. | SPEC-0246 TSK-0001 |
 | 4 | accepted | Registry pin | The running image digest equals the Compose pin. | SPEC-0246 TSK-0001 |
-| 5 | pending | W6 policy draft | Criteria 1–4 and 6 are accepted. POL-0102 records the placement policy as a draft; activation and owner acceptance remain. | SPEC-0246 TSK-0001 |
+| 5 | accepted | W6 policy draft, Policy promotion activation, C5 owner acceptance | Owner accepted on 2026-10-27; POL-0102 is active after an independent rules review. | SPEC-0246 TSK-0001 |
 | 6 | accepted | W7 second-window placement decision, W7 selected-store SSD move, C6 owner acceptance | Owner accepted on 2026-10-27 after read-only verification: Prometheus and Tempo volumes bind SSD `fast-volumes/obs/*`, both healthy, former HDD copies absent; Loki, Alloy and Pyroscope stay on HDD. | SPEC-0246 TSK-0001 |
 
 ## Review and Completion
