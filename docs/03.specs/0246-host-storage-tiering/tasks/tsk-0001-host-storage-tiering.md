@@ -531,7 +531,11 @@ A read-only check showed `hy-home-infra_prometheus-data` and
 `hy-home-infra_tempo-data` binding `/home/hyunyoun/fast-volumes/obs/prometheus`
 and `/home/hyunyoun/fast-volumes/obs/tempo`, both services healthy, and no
 Prometheus or Tempo directory left under the HDD observability path; Loki,
-Alloy and Pyroscope remain there. The owner then explicitly accepted
+Alloy and Pyroscope remain there. Removing the HDD copies was the owner's
+step; this session observed only their absence and holds no record of who
+removed them or when. `systemctl show -p RequiresMountsFor,DropInPaths` read
+`/home/hyunyoun/storage` for both `docker` (drop-in `10-data-disk.conf`) and
+`containerd` (drop-in `storage-mount.conf`). The owner then explicitly accepted
 criterion 6. W6 created POL-0102 Host Storage Placement Policy under
 `docs/05.operations/policies/10-platform-and-backup/` as a draft, with the
 operations-subject high-water raised to 102. Activating it and owner
@@ -555,7 +559,7 @@ acceptance of criterion 5 remain.
 | W7 selected-store SSD move | 6 | W7 | Reuse the documented owner copy, bounded recreation, data query and health results | Recorded 2026-10-22 move; SSD bind devices, both services healthy; Prometheus historical count(up) 37 and current 65, 20 rule groups ok; Tempo ready and one empty WAL block dropped; HDD copies retained for owner handling | PASS | W7 Tempo and Prometheus move result — 2026-10-22; W7 current-evidence reconciliation — 2026-10-22 | required | - |
 | Observability store placement second window | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Second stable window 2026-10-21T05:56:40 to 2026-10-22T08:57:16 +09:00 with SMART counters; owner kept Loki, Alloy and Pyroscope on HDD and moved Tempo and Prometheus | PASS | W7 second-window placement decision; #criterion-6-acceptance-and-w6-policy-draft-2026-10-27 | required | Observability store placement |
 | C6 owner acceptance | 6 | W7 | Read-only `docker volume inspect` and health check, HDD observability path listing, then explicit owner acceptance | 2026-10-27 main d6164df8e | PASS | #criterion-6-acceptance-and-w6-policy-draft-2026-10-27; SSD devices, healthy services, former HDD copies absent | required | - |
-| W6 policy draft | 5 | W6 | Changed-document metadata, operations catalog and all-link checks | POL-0102 draft and operations-subject high-water 102 | PASS | #criterion-6-acceptance-and-w6-policy-draft-2026-10-27; activation and criterion 5 acceptance remain | required | - |
+| W6 policy draft | 5 | W6 | Changed-document metadata, operations catalog and all-link checks | POL-0102 draft and operations-subject high-water 102; independent review findings applied | PASS | `run-ci-gate.py --profile changed` exit 0 on base d6164df8e: metadata changed 3/0 violations, links 11,861/0 failures, operations-catalog PASS; activation and criterion 5 acceptance remain | required | - |
 
 ## Criterion Acceptance
 
