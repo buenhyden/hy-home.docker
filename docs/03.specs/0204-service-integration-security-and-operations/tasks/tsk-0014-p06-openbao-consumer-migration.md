@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.17"
+version: "0.1.18"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1179,6 +1179,53 @@ write" rule, but not the new template. A second restart after the merge and
 fast-forward loads it. GitHub "Update branch" added a merge commit that
 commitizen rejects, so PR #582 was replaced by a cherry-picked branch on
 `1fb71114a`.
+
+### Grafana client secret: second Agent restart and HOME cutover — 2026-10-27
+
+The owner merged PR #583 (`9335b4dc1`) at 14:48:24Z. The main checkout
+fast-forwarded at 14:49:05Z, and the owner ran RUN-0085 step 3 again: `issue
+rc=0`. The Agent started at 14:51:43Z, healthy, with the journal at `complete`.
+The rendered files are:
+
+- `grafana_client_secret.txt` and both admin `.txt` files at 640;
+- both `.version` files at 600.
+
+`health-agent.sh`, including the new KV comparison, returned 0. The Grafana
+admin verifier passed with version 2, and the Keycloak verifier passed with
+version 1.
+
+The owner ran the new verifier before the cutover, with Grafana on
+`/run/secrets`. All five checks passed, ending with `keycloak_client_matches
+client=home-grafana kcadm=match`. That is the first HOME run of the in-Keycloak
+`kcadm` comparison. Keycloak's client secret, Grafana's file and the
+OpenBao-rendered value are therefore equal, so the cutover changes the value's
+source only.
+
+The cutover then ran. Every recreate used `--no-deps grafana`, after a dry run
+that targeted `grafana` alone. The owner added the `.env` line and ran the
+client-secret verifier; the agent ran the admin verifier.
+
+- **Cutover (14:54:21Z):** the client secret came from
+  `/run/openbao/observability/grafana_client_secret.txt`. The client-secret
+  verifier passed all checks, `kcadm=match`, and the admin verifier passed
+  with login 200.
+- **Rollback (14:57:01Z):** with the variable blank for one command,
+  `/run/secrets/grafana_client_secret` returned, and both verifiers passed all
+  checks.
+- **Re-cutover (14:58:24Z):** the OpenBao path returned, and both verifiers
+  passed all checks.
+
+The Agent, Keycloak and Grafana were all healthy at the end. Grafana's OIDC
+client secret is the third live OpenBao consumer, and the first one read at
+every start. The registered changed gate on PR #583 failed only on the known
+`test_fixture_preflight` port-forward case.
+
+Remaining NOT_RUN:
+
+- rotation of the three values;
+- removal of their `./secrets` copies;
+- the catalog lifecycle reconciliation (IAM-002, IAM-007, OBS-002);
+- an interactive browser SSO login.
 
 ## Evidence
 
