@@ -806,8 +806,8 @@ OIDC_SERVICES = {
     "superset": ("superset", "superset_oidc_client_secret", "superset_oidc_client_secret",
                  "SUPERSET_OIDC_CLIENT_SECRET_FILE"),
 }  # fmt: skip
-# Kept apart from the secret names so the client IDs carry no secret taint.
-OIDC_CLIENT_IDS = {
+# Keycloak clientId per service, kept apart from the secret names.
+KEYCLOAK_CLIENTS = {
     "oauth2-proxy": "home-proxy-client",
     "opensearch-dashboards": "realm-home-client",
     "kafbat-ui": "home-kafbat",
@@ -836,7 +836,7 @@ class OidcClientSecretVerifierTests(unittest.TestCase):
 
         known = service if service in OIDC_SERVICES else "oauth2-proxy"
         directory, stem, secret, path_env = OIDC_SERVICES[known]
-        client = OIDC_CLIENT_IDS[known]
+        client = KEYCLOAK_CLIENTS[known]
         mounted = rendered if mounted is None else mounted
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -893,7 +893,7 @@ class OidcClientSecretVerifierTests(unittest.TestCase):
 
     def test_every_service_passes_on_both_paths_without_printing_values(self):
         for service, (directory, stem, secret, _) in OIDC_SERVICES.items():
-            client = OIDC_CLIENT_IDS[service]
+            client = KEYCLOAK_CLIENTS[service]
             for agent_path in (False, True):
                 with self.subTest(service=service, agent_path=agent_path):
                     marker = b"Synth-oidc-marker"
