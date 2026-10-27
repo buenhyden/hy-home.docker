@@ -1,10 +1,10 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-27"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -82,11 +82,101 @@ MLflow tracking server의 프로비저닝 실패, 크리덴셜 회전, 복원, �
    백업·복원 증거, DB writer 정지와 secret 비노출 실행 방식을 확인하고 별도 승인된
    `mlflow db upgrade` 계획을 검토한다. 현재 Compose에는 migration 작업이 없으므로
    단순히 새 서버를 시작하는 절차로 대체하지 않는다. 근거가 없으면 진행을 중단한다.
+   실행 절차는 아래 `Tracking DB schema upgrade`를 따른다.
 
-리허설도 DB와 artifact의 일관된 캡처 경계를 요구한다. 모든 작성자를 정지하거나
-검증된 공동 복구 시점을 확보하지 않았다면 두 사본의 일관성을 주장하지 않는다.
-복원은 격리된 환경에서만 수행한다. 공유 `mng-pg` 전체 복원은 다른 서비스를
-덮어쓸 수 있으므로 MLflow 장애의 일반 해결책으로 사용하지 않는다.
+### Tracking DB schema upgrade
+
+[Dockerfile](../../../../infra/08-ai/mlflow/Dockerfile)의 MLflow 버전을 올린 뒤 기존
+tracking DB로 서버를 처음 시작하기 전에 소유자가 실행한다. 저장소 루트의 같은 shell에서
+순서대로 실행하며, 명령은 비밀번호를 출력하거나 argv에 넣지 않는다. 각 단계의 출력은
+작업 기록에 남긴다.
+
+1. **준비.** Compose 함수 `c`와 새 이미지 `I`를 정하고, `mng-pg`가 healthy이고
+   `mlflow`가 정지 상태인지 확인한 뒤 새 이미지를 빌드한다. `mlflow`가 실행 중이면
+   `c stop mlflow`로 먼저 멈춘다.
+
+   ```bash
+   c() { docker compose --profile core --profile mlops "$@"; }
+   I=$(c config --images | grep '^hy-home/mlflow:')
+   c ps -a mng-pg mlflow
+   c build mlflow
+   ```
+
+2. **현재 상태 기록.** DB revision과 행 개수, 새 이미지가 요구하는 revision을 기록한다.
+   두 revision이 같으면 upgrade가 필요 없으므로 6단계로 간다.
+
+   ```bash
+   docker exec mng-pg sh -c 'for q in "select version_num from alembic_version" "select count(*) from experiments" "select count(*) from runs"; do psql -U "$POSTGRES_USER" -d mlflow -Atc "$q"; done'
+   docker run --rm --entrypoint python "$I" -c 'import os, mlflow.store.db_migrations as m; from alembic.config import Config; from alembic.script import ScriptDirectory; c = Config(); c.set_main_option("script_location", os.path.dirname(m.__file__)); print(ScriptDirectory.from_config(c).get_current_head())'
+   ```
+
+3. **백업.** 소유자 전용 경로에 custom-format dump를 만들고 목록과 checksum을 확인한다.
+   migration은 되돌릴 수 없으므로 이 dump가 유일한 rollback 원본이다. schema upgrade는
+   artifact를 바꾸지 않으므로 이 단계에서 bucket은 복사하지 않는다.
+
+   ```bash
+   B=/home/hyunyoun/storage/ops-snapshots/mlflow-$(date +%Y%m%d-%H%M%S)
+   install -d -m 0700 "$B"
+   docker exec mng-pg sh -c 'pg_dump -U "$POSTGRES_USER" -Fc mlflow' >"$B/mlflow.dump"
+   chmod 0600 "$B/mlflow.dump"
+   docker exec -i mng-pg pg_restore --list <"$B/mlflow.dump" | grep -c 'TABLE DATA'
+   sha256sum "$B/mlflow.dump" | tee "$B/mlflow.dump.sha256"
+   ```
+
+4. **격리 리허설.** 공개 port 없는 internal network에 임시 PostgreSQL을 만들고 HOME과
+   같은 owner role(`mlflow`)로 dump를 복원한 뒤, 그 role로 새 이미지 upgrade와 아래
+   rollback을 차례로 시험한다. 같은 PostgreSQL 이미지를 쓰되 pgBackRest secret을 요구하는
+   HOME entrypoint 대신 기본 entrypoint로 시작하고, 초기화 중 임시 서버와 구분하려고
+   TCP로 준비 상태를 확인한다. 출력은 upgrade 뒤 새 revision과 2단계와 같은 행 개수,
+   rollback 뒤 이전 revision과 같은 행 개수여야 한다. 마지막 줄은 이 단계가 만든 자원만 지운다.
+
+   ```bash
+   N=mlflow-upgrade-rehearsal
+   docker network create --internal "$N"
+   docker run -d --name "$N" --network "$N" -e POSTGRES_HOST_AUTH_METHOD=trust --entrypoint docker-entrypoint.sh "$(docker inspect -f '{{.Config.Image}}' mng-pg)" postgres
+   for i in {1..60}; do docker exec "$N" pg_isready -q -h 127.0.0.1 -U postgres && break; sleep 1; done
+   docker exec "$N" psql -q -U postgres -c 'create role mlflow login'
+   docker exec -i "$N" pg_restore -U postgres -d postgres --create --exit-on-error <"$B/mlflow.dump"
+   docker run --rm --network "$N" --entrypoint mlflow "$I" db upgrade "postgresql+psycopg2://mlflow@$N:5432/mlflow"
+   for q in "select version_num from alembic_version" "select count(*) from experiments" "select count(*) from runs"; do docker exec "$N" psql -U postgres -d mlflow -Atc "$q"; done
+   docker exec "$N" dropdb -U postgres mlflow
+   docker exec -i "$N" pg_restore -U postgres -d postgres --create --exit-on-error <"$B/mlflow.dump"
+   for q in "select version_num from alembic_version" "select count(*) from experiments" "select count(*) from runs"; do docker exec "$N" psql -U postgres -d mlflow -Atc "$q"; done
+   docker rm -f "$N" && docker network rm "$N"
+   ```
+
+5. **HOME upgrade.** 리허설이 성공했을 때만 실행한다. 비밀번호는 container 안에서 secret
+   파일로만 읽는다. 끝나면 2단계의 첫 명령을 다시 실행해 revision이 새 revision이고
+   행 개수가 같은지 확인한다.
+
+   ```bash
+   c run --rm --no-deps --entrypoint sh mlflow -ec 'PGPASSWORD="$(tr -d "\r\n" </run/secrets/mlflow_db_password)"; export PGPASSWORD; exec mlflow db upgrade "postgresql+psycopg2://${MLFLOW_DB_USER}@${MLFLOW_DB_HOST}:${MLFLOW_DB_PORT}/${MLFLOW_DB_NAME}"'
+   ```
+
+6. **시작과 확인.** 서버를 시작하고 healthy, `/health`, experiment 수를 확인한다.
+   experiment 수는 2단계와 같아야 한다.
+
+   ```bash
+   c up -d mlflow
+   c ps mlflow
+   docker exec mlflow python -c 'import json, os, urllib.request as u; p = os.environ["MLFLOW_PORT"]; print(u.urlopen(f"http://127.0.0.1:{p}/health", timeout=5).read().decode()); r = u.Request(f"http://127.0.0.1:{p}/api/2.0/mlflow/experiments/search", data=b"{\"max_results\": 1000}", headers={"Content-Type": "application/json"}); print(len(json.load(u.urlopen(r, timeout=5)).get("experiments", [])))'
+   ```
+
+**중단 조건.** 백업 목록이 비었거나, 리허설 revision·개수가 다르거나, HOME upgrade가
+0이 아닌 코드로 끝나면 서버를 시작하지 않고 멈춘다. upgrade 도중 실패하면 DB가
+중간 상태일 수 있으므로 아래 rollback으로 백업을 복원한다.
+
+**Rollback.** `mlflow`를 멈추고 `mlflow` database만 지운 뒤 백업으로 다시 만든다.
+`pg_restore --clean`은 upgrade가 추가한 테이블의 외래 키 때문에 실패하므로 쓰지 않는다.
+`--create`는 dump에 기록된 owner와 database 설정으로 다시 만든다. 공유 `mng-pg`의 다른
+database는 건드리지 않으며, 다른 연결 때문에 `dropdb`가 실패하면 강제로 끊지 말고 멈춘다.
+그 다음 Git에서 이전 Dockerfile과 Compose 태그로 되돌리고 이전 이미지로 시작한다.
+
+```bash
+c stop mlflow
+docker exec mng-pg sh -c 'dropdb -U "$POSTGRES_USER" mlflow'
+docker exec -i mng-pg sh -c 'pg_restore -U "$POSTGRES_USER" -d postgres --create --exit-on-error' <"$B/mlflow.dump"
+```
 
 ### Tracking 데이터와 변경 전 검토
 
@@ -98,8 +188,9 @@ experiment와 artifact URI는 `MLFLOW_ARTIFACT_BUCKET`과 database 이름이
 artifact path를 참조하므로 bucket도 SeaweedFS backup set으로 함께
 가져간다. 먼저 격리된 `mng-pg`와 SeaweedFS로 restore해 run과 artifact
 수를 비교한다. upgrade 전에는 release note를 읽는다. 현재 선언 버전은 기존 DB의 schema revision이 다르면 시작을 거부한다. 신규 테이블
-초기화와 기존 DB 업그레이드는 다르며 자동 migration을 가정하지 않는다. 이 service에서는
-backup도 restore도 아직 실행하지 않았다.
+초기화와 기존 DB 업그레이드는 다르며 자동 migration을 가정하지 않는다. HOME DB의
+backup·restore·upgrade는 아직 실행하지 않았다. HOME DB dump를 격리된 임시 PostgreSQL에서
+upgrade하고 새 서버로 조회한 리허설은 SEC01 Task에 기록되어 있다.
 
 ### 선언 버전의 동작 근거
 
@@ -120,8 +211,8 @@ secret 파일 교체·서비스 재생성은 [공통 수명주기 정책](../../
 ### Rollback or Recovery
 
 설정 롤백은 Git에서 Compose 파일을 복원한다. 업그레이드가 실행한 데이터베이스
-마이그레이션은 업그레이드 이전 백업으로만 되돌릴 수 있다. 복원과 업그레이드
-리허설은 **계획됨, 미실행**이다.
+마이그레이션은 업그레이드 이전 백업으로만 되돌릴 수 있으며 절차는 `Tracking DB schema
+upgrade`의 Rollback이다. HOME 복원과 업그레이드는 **미실행**이다.
 
 ### Escalation
 
