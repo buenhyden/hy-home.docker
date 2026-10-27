@@ -1,10 +1,10 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-27"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0014"
 parent_ids:
@@ -815,6 +815,36 @@ production P02 selection/adapter and P01 limited token/ACL/TTL/custody binding,
 controller authorization, renderer delivery, native pilot, authority change,
 rotation and recovery remain NOT_RUN. Callback input is not a JSON approval.
 Criterion20 remains pending; code or unit approval is not HOME acceptance.
+
+### W49 First-consumer plan and verifier — 2026-10-27
+
+The owner chose "Plan + first consumer": inventory the Agent-rendered
+consumers, write a value-free cutover/rollback plan and a consumption verifier
+for one of them, and stop before any HOME cutover.
+
+The Agent renders only the Keycloak and Grafana admin passwords. Both services
+still read the repository-local `./secrets/` files through Compose file
+secrets; nothing consumes the Agent output yet, and both values only seed the
+first boot. Grafana is the pilot: OIDC with the login form disabled leaves the
+admin password as a break-glass path, while Keycloak serves sign-in for every
+other service. Metadata-only reads found the blocker: the Agent (UID 100)
+renders `0600` files, which Grafana (UID 472, group 1000) cannot read, and
+`health-agent.sh` requires `600`. Cutover therefore waits for a P01 change to
+`0640` for the Grafana template and its health check, with an Agent recreate.
+
+`consumer-migration/verify-grafana-consumption.sh` prints only check names,
+PASS/FAIL, the rendered KV version and the login HTTP status. Bytes compare
+inside two pipes; the login probe quotes the value inside Grafana and feeds
+curl from stdin. The plan, rollback and the single-file bind-mount caveat are in
+the consumer-migration README. The first synthetic run caught a real gap: a
+mounted file holding only a newline passed `test -s`; the guard now applies to
+the rendered file, whose template emits no newline. Final run: 8 tests OK and
+shellcheck clean. An agent-side comparison of the live files was denied by the
+session's permission classifier, so the pre-cutover run is the owner's:
+`bash infra/03-security/openbao/consumer-migration/verify-grafana-consumption.sh`.
+The Evidence table below is a frozen pre-generation-7 table that admits no new
+rows, so this section is the W49 record: synthetic verifier PASS; the HOME
+pre-cutover run, the P01 `0640` change, cutover and rollback remain NOT_RUN.
 
 ## Evidence
 
