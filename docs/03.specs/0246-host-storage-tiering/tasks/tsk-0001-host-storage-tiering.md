@@ -544,9 +544,26 @@ acceptance of criterion 5 remain.
 ### Criterion 5 acceptance and POL-0102 activation (2026-10-27)
 
 The owner chose "Accept and activate". POL-0102 moved from draft to active at
-version 0.2.0, and its overview now states the current standard. An
-independent rules review checked the activation before delivery. Criteria 1–6
-are all accepted; the Task's completion transition is left to the owner.
+version 0.2.0, and its overview now states the current standard. Checks on
+commit 146d0dac1: changed-document metadata 6 selected/0 violations, all-mode
+document links PASS, operations catalog PASS. An independent rules review then
+found the draft-to-active transition permitted, with no required paired document
+or index change, and the Resolves and acceptance rows well-formed. It raised four
+findings, all addressed here:
+
+- The check output is now recorded in the activation row and in this section.
+- This record no longer claims the review before it returned.
+- The policy's move condition is a SMART-based remaining-life projection. The
+  Spec text says "rated endurance", but the Task never read rated endurance
+  (see the Disk load analysis residual), so the owner's acceptance adopts the
+  measured projection as the policy rule instead of amending the Spec.
+- The policy's rule that each step's executor is recorded post-dates the
+  Prometheus/Tempo HDD-copy removal, whose executor and time are unrecorded
+  (Criterion 6 section). That removal is acknowledged as an exception that
+  predates the policy. Later moves follow the rule.
+
+Criteria 1–6 are all accepted; the Task's completion transition is left to the
+owner.
 
 ## Evidence
 
@@ -567,7 +584,7 @@ are all accepted; the Task's completion transition is left to the owner.
 | Observability store placement second window | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Second stable window 2026-10-21T05:56:40 to 2026-10-22T08:57:16 +09:00 with SMART counters; owner kept Loki, Alloy and Pyroscope on HDD and moved Tempo and Prometheus | PASS | W7 second-window placement decision; #criterion-6-acceptance-and-w6-policy-draft-2026-10-27 | required | Observability store placement |
 | C6 owner acceptance | 6 | W7 | Read-only `docker volume inspect` and health check, HDD observability path listing, then explicit owner acceptance | 2026-10-27 main d6164df8e | PASS | #criterion-6-acceptance-and-w6-policy-draft-2026-10-27; SSD devices, healthy services, former HDD copies absent | required | - |
 | W6 policy draft | 5 | W6 | Changed-document metadata, operations catalog and all-link checks | POL-0102 draft and operations-subject high-water 102; independent review findings applied | PASS | `run-ci-gate.py --profile changed` exit 0 on base d6164df8e: metadata changed 3/0 violations, links 11,861/0 failures, operations-catalog PASS; activation and criterion 5 acceptance remain | required | - |
-| Policy promotion activation | 5 | W6 | Changed metadata and link checks | POL-0102 status draft to active with owner approval and independent rules review | PASS | #criterion-5-acceptance-and-pol-0102-activation-2026-10-27 | required | Policy promotion |
+| Policy promotion activation | 5 | W6 | Changed metadata and link checks | POL-0102 status draft to active at commit 146d0dac1 with owner approval | PASS | `check-document-metadata --mode check-changed` 6 selected/0 violations; `check-document-links --mode all` PASS; operations-catalog PASS; #criterion-5-acceptance-and-pol-0102-activation-2026-10-27 | required | Policy promotion |
 | C5 owner acceptance | 5 | W6 | Explicit owner acceptance after the active policy review | Owner decision 2026-10-27 | PASS | #criterion-5-acceptance-and-pol-0102-activation-2026-10-27 | required | - |
 
 ## Criterion Acceptance
@@ -578,7 +595,7 @@ are all accepted; the Task's completion transition is left to the owner.
 | 2 | accepted | Ollama SSD move | Same model list from the SSD path; first load 318.4 s before and 55.9 s after. | SPEC-0246 TSK-0001 |
 | 3 | accepted | Build-cache limit, Build-cache floor decision, Image archive, Volume and container cleanup | Floor accepted, archive digest-verified, and only unowned items removed. | SPEC-0246 TSK-0001 |
 | 4 | accepted | Registry pin | The running image digest equals the Compose pin. | SPEC-0246 TSK-0001 |
-| 5 | accepted | W6 policy draft, Policy promotion activation, C5 owner acceptance | Owner accepted on 2026-10-27; POL-0102 is active after an independent rules review. | SPEC-0246 TSK-0001 |
+| 5 | accepted | W6 policy draft, Policy promotion activation, C5 owner acceptance | Owner accepted on 2026-10-27; POL-0102 is active after an independent rules review, and its SMART-based move condition replaces the Spec's unmeasured rated-endurance wording. | SPEC-0246 TSK-0001 |
 | 6 | accepted | W7 second-window placement decision, W7 selected-store SSD move, C6 owner acceptance | Owner accepted on 2026-10-27 after read-only verification: Prometheus and Tempo volumes bind SSD `fast-volumes/obs/*`, both healthy, former HDD copies absent; Loki, Alloy and Pyroscope stay on HDD. | SPEC-0246 TSK-0001 |
 
 ## Review and Completion
