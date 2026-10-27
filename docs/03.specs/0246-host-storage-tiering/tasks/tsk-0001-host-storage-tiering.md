@@ -1,10 +1,10 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-27"
 layer: "specs"
 artifact_id: "SPEC-0246-TSK-0001"
 parent_ids:
@@ -525,6 +525,18 @@ W7 samples/move receipts are unchanged. Criteria 1–4 stay accepted; criterion
 operation, remote write or policy promotion ran. Root owns final review,
 registered gates and commits.
 
+### Criterion 6 acceptance and W6 policy draft (2026-10-27)
+
+A read-only check showed `hy-home-infra_prometheus-data` and
+`hy-home-infra_tempo-data` binding `/home/hyunyoun/fast-volumes/obs/prometheus`
+and `/home/hyunyoun/fast-volumes/obs/tempo`, both services healthy, and no
+Prometheus or Tempo directory left under the HDD observability path; Loki,
+Alloy and Pyroscope remain there. The owner then explicitly accepted
+criterion 6. W6 created POL-0102 Host Storage Placement Policy under
+`docs/05.operations/policies/10-platform-and-backup/` as a draft, with the
+operations-subject high-water raised to 102. Activating it and owner
+acceptance of criterion 5 remain.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -541,6 +553,9 @@ registered gates and commits.
 | Policy promotion | 5 | W6 | Changed metadata and link checks | Operations owner document | NOT_RUN | Work Log | required | - |
 | W7 second-window placement decision | 6 | W7 | Reuse the documented stable-counter sample, SMART values and owner selection | 2026-10-21 05:56:40 to 2026-10-22 08:57:16 +09:00; 97,236 s; SMART 24 percent used and 81,993,720,429 LBAs; Tempo and Prometheus selected, combined projection 6.05 years; Loki/Alloy/Pyroscope retained on HDD; raw files not re-read | PASS | W7 second window result — 2026-10-22; W7 current-evidence reconciliation — 2026-10-22 | required | - |
 | W7 selected-store SSD move | 6 | W7 | Reuse the documented owner copy, bounded recreation, data query and health results | Recorded 2026-10-22 move; SSD bind devices, both services healthy; Prometheus historical count(up) 37 and current 65, 20 rule groups ok; Tempo ready and one empty WAL block dropped; HDD copies retained for owner handling | PASS | W7 Tempo and Prometheus move result — 2026-10-22; W7 current-evidence reconciliation — 2026-10-22 | required | - |
+| Observability store placement second window | 6 | W7 | SMART counters, per-store write rate, keep-or-move decision | Second stable window 2026-10-21T05:56:40 to 2026-10-22T08:57:16 +09:00 with SMART counters; owner kept Loki, Alloy and Pyroscope on HDD and moved Tempo and Prometheus | PASS | W7 second-window placement decision; #criterion-6-acceptance-and-w6-policy-draft-2026-10-27 | required | Observability store placement |
+| C6 owner acceptance | 6 | W7 | Read-only `docker volume inspect` and health check, HDD observability path listing, then explicit owner acceptance | 2026-10-27 main d6164df8e | PASS | #criterion-6-acceptance-and-w6-policy-draft-2026-10-27; SSD devices, healthy services, former HDD copies absent | required | - |
+| W6 policy draft | 5 | W6 | Changed-document metadata, operations catalog and all-link checks | POL-0102 draft and operations-subject high-water 102 | PASS | #criterion-6-acceptance-and-w6-policy-draft-2026-10-27; activation and criterion 5 acceptance remain | required | - |
 
 ## Criterion Acceptance
 
@@ -550,8 +565,8 @@ registered gates and commits.
 | 2 | accepted | Ollama SSD move | Same model list from the SSD path; first load 318.4 s before and 55.9 s after. | SPEC-0246 TSK-0001 |
 | 3 | accepted | Build-cache limit, Build-cache floor decision, Image archive, Volume and container cleanup | Floor accepted, archive digest-verified, and only unowned items removed. | SPEC-0246 TSK-0001 |
 | 4 | accepted | Registry pin | The running image digest equals the Compose pin. | SPEC-0246 TSK-0001 |
-| 5 | pending | Policy promotion | Criteria 1–4 are accepted; waits for criterion 6. | SPEC-0246 TSK-0001 |
-| 6 | pending | W7 second-window placement decision, W7 selected-store SSD move | Second sample, per-store owner decision and Tempo/Prometheus move are recorded; awaits explicit owner acceptance of this scope and the separate remaining HDD-copy disposition. W6 remains dependent on acceptance. | SPEC-0246 TSK-0001 |
+| 5 | pending | W6 policy draft | Criteria 1–4 and 6 are accepted. POL-0102 records the placement policy as a draft; activation and owner acceptance remain. | SPEC-0246 TSK-0001 |
+| 6 | accepted | W7 second-window placement decision, W7 selected-store SSD move, C6 owner acceptance | Owner accepted on 2026-10-27 after read-only verification: Prometheus and Tempo volumes bind SSD `fast-volumes/obs/*`, both healthy, former HDD copies absent; Loki, Alloy and Pyroscope stay on HDD. | SPEC-0246 TSK-0001 |
 
 ## Review and Completion
 
