@@ -4,6 +4,7 @@
 # holds for the client. Prints check names, PASS/FAIL, the KV version and the
 # file path only: no value, hash or length leaves the containers or reaches the
 # terminal.
+set +x
 set -uo pipefail
 
 agent=${OPENBAO_AGENT_CONTAINER:-openbao-agent}
@@ -63,27 +64,39 @@ size=$(timeout 10 docker exec "$agent" cat "$rendered" 2>/dev/null | strip | wc 
 [ "$size" -gt 0 ] || status=1
 result mounted_equals_rendered "$status"
 
-# Keycloak's copy of the client secret, read with kcadm.sh as the admin. The
-# admin password goes through KC_CLI_PASSWORD inside the container, never argv;
-# the token file is removed on exit. One admin login per run.
-keycloak_secret() {
+# Grafana's file goes to Keycloak on stdin and is compared there with the secret
+# Keycloak holds for the client, so Keycloak's copy never leaves its container.
+# kcadm.sh logs in once as the admin through KC_CLI_PASSWORD, never argv; its
+# token file is removed on exit. Prints one word: match, mismatch, empty,
+# invalid (admin login rejected; do not re-run before finding why) or error.
+keycloak_compare() {
   # shellcheck disable=SC2016 # expands inside the container, not here
-  timeout 120 docker exec -e KEYCLOAK_PORT="$port" -e REALM="$realm" -e CLIENT="$client" "$keycloak" sh -c '
-    config=$(mktemp) || exit 1
-    trap "rm -f \"\$config\"" EXIT
-    KC_CLI_PASSWORD=$(tr -d "\r\n" <"$KEYCLOAK_ADMIN_PASSWORD_FILE") || exit 1
-    export KC_CLI_PASSWORD
-    kcadm() { timeout 50 /opt/keycloak/bin/kcadm.sh "$@" --config "$config"; }
-    kcadm config credentials --server "http://127.0.0.1:$KEYCLOAK_PORT" --realm master \
-      --user "$KC_BOOTSTRAP_ADMIN_USERNAME" >/dev/null 2>&1 || exit 1
-    id=$(kcadm get clients -r "$REALM" -q clientId="$CLIENT" --fields id --format csv --noquotes 2>/dev/null)
-    case "$id" in ""|*[!a-zA-Z0-9-]*) exit 1 ;; esac
-    kcadm get "clients/$id/client-secret" -r "$REALM" --fields value --format csv --noquotes 2>/dev/null
-  ' 2>/dev/null
+  timeout 10 docker exec "$grafana" cat "$mounted" 2>/dev/null |
+    timeout 180 docker exec -i -e KEYCLOAK_PORT="$port" -e REALM="$realm" -e CLIENT="$client" "$keycloak" sh -c '
+      mounted=$(cat)
+      [ -n "$mounted" ] || { echo empty; exit 0; }
+      config=$(mktemp) || { echo error; exit 0; }
+      trap "rm -f \"\$config\"" EXIT
+      KC_CLI_PASSWORD=$(tr -d "\r\n" <"$KEYCLOAK_ADMIN_PASSWORD_FILE") || { echo error; exit 0; }
+      export KC_CLI_PASSWORD
+      kcadm() { timeout 50 /opt/keycloak/bin/kcadm.sh "$@" --config "$config"; }
+      if ! out=$(kcadm config credentials --server "http://127.0.0.1:$KEYCLOAK_PORT" --realm master \
+          --user "$KC_BOOTSTRAP_ADMIN_USERNAME" 2>&1); then
+        case "$out" in *invalid_grant*) echo invalid ;; *) echo error ;; esac
+        exit 0
+      fi
+      id=$(kcadm get clients -r "$REALM" -q clientId="$CLIENT" --fields id --format csv --noquotes 2>/dev/null)
+      case "$id" in ""|*[!a-zA-Z0-9-]*) echo error; exit 0 ;; esac
+      secret=$(kcadm get "clients/$id/client-secret" -r "$REALM" --fields value --format csv --noquotes 2>/dev/null) ||
+        { echo error; exit 0; }
+      [ -n "$secret" ] || { echo empty; exit 0; }
+      # Command substitution drops trailing newlines on both sides, as Grafana does.
+      if [ "$secret" = "$mounted" ]; then echo match; else echo mismatch; fi
+    ' 2>/dev/null
 }
-cmp -s <(keycloak_secret | strip) <(timeout 10 docker exec "$grafana" cat "$mounted" 2>/dev/null | strip)
-status=$?
-[ "$size" -gt 0 ] || status=1
-result keycloak_client_matches "$status" "client=$client"
+word=$(keycloak_compare)
+case "$word" in match|mismatch|empty|invalid|error) ;; *) word=none ;; esac
+[ "$word" = match ]
+result keycloak_client_matches $? "client=$client kcadm=$word"
 
 exit "$failed"

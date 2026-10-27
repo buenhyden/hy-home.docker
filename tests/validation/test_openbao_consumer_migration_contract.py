@@ -550,7 +550,10 @@ if args[0] == "inspect":
     print(os.environ.get("FAKE_HEALTH", "healthy"))
     sys.exit(0)
 assert args.pop(0) == "exec"
-while args[0] == "-e":
+while args[0] in ("-e", "-i"):
+    if args[0] == "-i":
+        args = args[1:]
+        continue
     key, _, value = args[1].partition("=")
     env[key] = value
     args = args[2:]
@@ -575,7 +578,10 @@ root = os.environ["FAKE_ROOT"]
 open(os.path.join(root, "kcadm-argv"), "a").write(" ".join(sys.argv) + "\n")
 args = sys.argv[1:]
 if args[:2] == ["config", "credentials"]:
-    sys.exit(0 if os.environ.get("KC_CLI_PASSWORD") == "synthetic-admin" else 1)
+    if os.environ.get("KC_CLI_PASSWORD") == "synthetic-admin":
+        sys.exit(0)
+    sys.stderr.write("Invalid user credentials [invalid_grant]\n")
+    sys.exit(1)
 if args[:2] == ["get", "clients"]:
     assert "clientId=home-grafana" in args and "hy-home.realm" in args
     print("0f1e2d3c-aaaa-bbbb-cccc-000000000001")
@@ -644,7 +650,7 @@ class GrafanaClientSecretVerifierTests(unittest.TestCase):
             b"PASS grafana_healthy\n"
             b"PASS consumed_file path=/run/secrets/grafana_client_secret\n"
             b"PASS rendered_version version=2\nPASS mounted_equals_rendered\n"
-            b"PASS keycloak_client_matches client=home-grafana\n",
+            b"PASS keycloak_client_matches client=home-grafana kcadm=match\n",
             result.stdout,
         )
         for stream in (result.stdout, result.stderr, argv):
@@ -661,13 +667,24 @@ class GrafanaClientSecretVerifierTests(unittest.TestCase):
             b"synthetic-a", b"synthetic-a", keycloak=b"synthetic-k"
         )
         self.assertIn(b"PASS mounted_equals_rendered\n", result.stdout)
-        self.assertIn(b"FAIL keycloak_client_matches", result.stdout)
+        self.assertIn(b"kcadm=mismatch\n", result.stdout)
         self.assertEqual(1, result.returncode)
-        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", admin=b"wrong")
-        self.assertIn(b"FAIL keycloak_client_matches", result.stdout)
-        result, _ = self.run_verifier(b"", b"", keycloak=b"")
+        result, argv = self.run_verifier(b"synthetic-a", b"synthetic-a", admin=b"wrong")
+        self.assertIn(
+            b"FAIL keycloak_client_matches client=home-grafana kcadm=invalid\n",
+            result.stdout,
+        )
+        self.assertEqual(1, argv.count(b"\n"))  # one login, no retry
+        # An empty Grafana file is never compared, even when Keycloak is empty too.
+        result, argv = self.run_verifier(b"synthetic-a", b"", keycloak=b"")
         self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
-        self.assertIn(b"FAIL keycloak_client_matches", result.stdout)
+        self.assertIn(b"kcadm=empty\n", result.stdout)
+        self.assertEqual(b"", argv)
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", keycloak=b"")
+        self.assertIn(
+            b"FAIL keycloak_client_matches client=home-grafana kcadm=empty\n",
+            result.stdout,
+        )
         result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", version=b"0")
         self.assertIn(b"FAIL rendered_version\n", result.stdout)
 
