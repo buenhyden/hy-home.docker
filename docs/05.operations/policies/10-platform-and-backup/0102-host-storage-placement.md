@@ -1,8 +1,8 @@
 ---
 title: "Host Storage Placement Policy"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/policy"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-27"
 layer: "operations"
@@ -14,7 +14,7 @@ created: "2026-10-27"
 
 ## Overview
 
-이 정책은 개인 PC 호스트에서 Docker·containerd 저장소와 서비스 데이터를 SSD와 HDD 중 어디에 둘지, 그리고 저장소를 SSD로 옮기는 조건을 정한다. [SPEC-0246](../../../03.specs/0246-host-storage-tiering/spec.md)에서 측정·이전·수용한 배치를 운영 기준으로 정리한 초안이며, 활성화 전까지는 현재 기준이 아니다.
+이 정책은 개인 PC 호스트에서 Docker·containerd 저장소와 서비스 데이터를 SSD와 HDD 중 어디에 둘지, 그리고 저장소를 SSD로 옮기는 조건을 정한다. [SPEC-0246](../../../03.specs/0246-host-storage-tiering/spec.md)에서 측정·이전·수용한 배치를 현재 운영 기준으로 정한 문서다.
 
 ## Scope
 

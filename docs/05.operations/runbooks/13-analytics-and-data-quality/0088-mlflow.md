@@ -1,6 +1,6 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -153,11 +153,14 @@ tracking DB로 서버를 처음 시작하기 전에 소유자가 실행한다. �
    c run --rm --no-deps --entrypoint sh mlflow -ec 'PGPASSWORD="$(tr -d "\r\n" </run/secrets/mlflow_db_password)"; export PGPASSWORD; exec mlflow db upgrade "postgresql+psycopg2://${MLFLOW_DB_USER}@${MLFLOW_DB_HOST}:${MLFLOW_DB_PORT}/${MLFLOW_DB_NAME}"'
    ```
 
-6. **시작과 확인.** 서버를 시작하고 healthy, `/health`, experiment 수를 확인한다.
-   experiment 수는 2단계와 같아야 한다.
+6. **시작과 확인.** `--no-deps`로 `mlflow`만 시작하고 healthy, `/health`, experiment 수를
+   확인한다. experiment 수는 2단계와 같아야 한다. 의존성까지 올리면 설정이 바뀐 공유
+   `mng-pg`가 재생성될 수 있으므로, 먼저 `c up -d --no-deps --dry-run mlflow`의 대상이
+   `mlflow`뿐인지 확인한다.
 
    ```bash
-   c up -d mlflow
+   c up -d --no-deps --dry-run mlflow
+   c up -d --no-deps mlflow
    c ps mlflow
    docker exec mlflow python -c 'import json, os, urllib.request as u; p = os.environ["MLFLOW_PORT"]; print(u.urlopen(f"http://127.0.0.1:{p}/health", timeout=5).read().decode()); r = u.Request(f"http://127.0.0.1:{p}/api/2.0/mlflow/experiments/search", data=b"{\"max_results\": 1000}", headers={"Content-Type": "application/json"}); print(len(json.load(u.urlopen(r, timeout=5)).get("experiments", [])))'
    ```

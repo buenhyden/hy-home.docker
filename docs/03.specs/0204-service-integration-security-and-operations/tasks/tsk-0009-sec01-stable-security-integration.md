@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.34"
+version: "0.4.35"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2825,6 +2825,22 @@ and kept `mlflow` ownership. Step 5's wiring was probed without upgrading: the
 secret is read inside the container, and the probe connected as `mlflow` and saw
 `b7e2c1a4d9f3`. The test dump was deleted. The HOME backup, upgrade and start
 remain owner steps.
+
+**HOME upgrade and start — 2026-10-27.** On the owner's approval, RUN-0088
+steps 1–5 ran verbatim on HOME:
+
+- the database went from `b7e2c1a4d9f3` to `dc11669786a5` with 2 experiments and
+  2 runs kept;
+- the backup is `/home/hyunyoun/storage/ops-snapshots/mlflow-20261027-153404/`,
+  with 59 table-data entries and a SHA-256 file;
+- the in-rehearsal upgrade and rollback both passed first.
+
+Step 6 as written (`up -d mlflow`) failed a dry run: it would have recreated the
+shared `mng-pg` and `mng-pg-init`, whose Compose config has drifted since
+`mng-pg` started. The start therefore used `up -d --no-deps mlflow`, which
+touches only `mlflow`; the runbook now says so. MLflow then reported `healthy`,
+`/health` OK, 2 experiments, `mlflow, version 3.17.2`, and no error in its log.
+`mng-pg` was not restarted.
 
 ## Evidence
 
