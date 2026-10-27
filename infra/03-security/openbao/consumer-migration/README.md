@@ -184,11 +184,13 @@ Agent가 렌더링하는 소비자는 Keycloak과 Grafana 관리자 비밀번호
 최초 기동 때만 적용되는 bootstrap 값입니다. 첫 소비자는 영향 범위가 작은 Grafana입니다.
 Grafana는 로그인 화면을 끄고 OIDC를 쓰므로 관리자 비밀번호는 비상 경로에만 쓰입니다.
 
-1. 선행 조건: Agent는 UID 100으로 `0600` 파일을 렌더링하므로 Grafana(UID 472, group
-   1000)가 읽을 수 없습니다. P01 소유자가 Grafana template의 `perms`를 `0640`으로 바꾸고
-   `health-agent.sh`의 mode 검사를 맞춘 뒤 Agent를 다시 만들어야 합니다.
-2. 전환 전 검사: `bash infra/03-security/openbao/consumer-migration/verify-grafana-consumption.sh`
-   결과 세 줄이 모두 `PASS`여야 현재 파일 값과 KV 값이 같습니다.
+1. 선행 조건: Agent는 `100:1000` 소유의 `0600` 파일을 렌더링하므로 group 1000을 추가로
+   가진 Grafana(UID 472)도 읽을 수 없습니다. P01 소유자가 Grafana 비밀번호 template의
+   `perms`만 `0640`으로 바꾸고, `health-agent.sh`에서도 Grafana `.txt` mode 검사만
+   `640`으로 맞춘 뒤 Agent를 다시 만듭니다. Keycloak 파일과 `.version` 파일은 `600`으로 둡니다.
+2. 전환 전 검사: Agent가 healthy여야 렌더링 값이 KV 값과 같습니다. 그 상태에서
+   `bash infra/03-security/openbao/consumer-migration/verify-grafana-consumption.sh`
+   결과 세 줄이 모두 `PASS`여야 현재 파일 값이 렌더링 값과 같고 로그인됩니다.
 3. 전환: 루트 Compose의 `grafana_admin_password` 파일 경로를 Agent 출력으로 바꾸고
    `grafana`만 다시 만든 뒤 같은 검사를 다시 실행합니다.
 4. 되돌리기: 파일 경로를 원래 `./secrets/` 경로로 돌리고 `grafana`만 다시 만든 뒤 같은
@@ -197,7 +199,9 @@ Grafana는 로그인 화면을 끄고 OIDC를 쓰므로 관리자 비밀번호�
 Compose 파일 secret은 파일 하나를 bind mount합니다. Agent가 파일을 교체해 다시
 렌더링하면 실행 중인 container는 이전 파일을 계속 봅니다. KV 값이 바뀌면 container를
 다시 만들 때까지 `mounted_equals_rendered`가 `FAIL`입니다. bootstrap 값이므로 KV 변경만으로
-Grafana에 저장된 비밀번호가 바뀌지 않으며, 실제 회전은 별도 단계입니다.
+Grafana에 저장된 비밀번호가 바뀌지 않으며, 실제 회전은 별도 단계입니다. 로그인 검사는
+시도마다 비상 관리자 계정에 한 번 로그인하므로, `FAIL`이 반복되면 원인을 찾기 전에
+반복 실행하지 않습니다.
 
 ## Related Documents
 

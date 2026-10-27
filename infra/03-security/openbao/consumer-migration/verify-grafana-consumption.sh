@@ -16,6 +16,14 @@ result() {
 }
 
 [ "$#" -eq 0 ] || { echo "usage: $0 (no arguments)" >&2; exit 2; }
+port=${GRAFANA_PORT:-3000}
+# A port such as "3000@host" would send the password elsewhere.
+case "$port" in ''|*[!0-9]*) echo "GRAFANA_PORT must be digits" >&2; exit 2 ;; esac
+for name in "$agent" "$grafana"; do
+  case "$name" in [a-zA-Z0-9]*) ;; *) echo "invalid container name" >&2; exit 2 ;; esac
+done
+# Grafana's __FILE read drops trailing newlines only; CR and inner bytes count.
+strip() { sed -z 's/\n*$//'; }
 
 version=$(timeout 10 docker exec "$agent" cat "$rendered.version" 2>/dev/null)
 case "$version" in
@@ -23,21 +31,23 @@ case "$version" in
   *) result rendered_version 0 "version=$version" ;;
 esac
 
-# Bytes stay in the two pipes; Grafana and Keycloak both strip CR/LF on read.
+# Bytes stay in the pipes; only a byte count reaches this shell, never printed.
 cmp -s \
-  <(timeout 10 docker exec "$agent" cat "$rendered.txt" 2>/dev/null | tr -d '\r\n') \
-  <(timeout 10 docker exec "$grafana" cat "$mounted" 2>/dev/null | tr -d '\r\n')
+  <(timeout 10 docker exec "$agent" cat "$rendered.txt" 2>/dev/null | strip) \
+  <(timeout 10 docker exec "$grafana" cat "$mounted" 2>/dev/null | strip)
 status=$?
-# Two empty values would compare equal. The template emits no newline, so a
-# non-empty rendered file plus equality proves a non-empty mounted value.
-timeout 10 docker exec "$agent" test -s "$rendered.txt" 2>/dev/null || status=1
+# Two empty values would compare equal, so require a non-empty rendered value.
+size=$(timeout 10 docker exec "$agent" cat "$rendered.txt" 2>/dev/null | strip | wc -c)
+[ "$size" -gt 0 ] || status=1
 result mounted_equals_rendered "$status"
 
 # The value is read and quoted inside Grafana; curl takes it from stdin, not argv.
 # shellcheck disable=SC2016 # expands inside the container, not here
-code=$(timeout 15 docker exec -e GRAFANA_PORT="${GRAFANA_PORT:-3000}" -e MOUNTED="$mounted" "$grafana" sh -c '
-  p=$(tr -d "\r\n" <"$MOUNTED" | sed "s/[\\\\\"]/\\\\&/g")
-  printf "user = \"%s:%s\"\n" "$GF_SECURITY_ADMIN_USER" "$p" |
+code=$(timeout 15 docker exec -e GRAFANA_PORT="$port" -e MOUNTED="$mounted" "$grafana" sh -c '
+  q() { sed "s/[\\\\\"]/\\\\&/g"; }
+  p=$(q <"$MOUNTED")
+  u=$(printf "%s" "$GF_SECURITY_ADMIN_USER" | q)
+  printf "user = \"%s:%s\"\n" "$u" "$p" |
     curl -sS -o /dev/null -w "%{http_code}" --max-time 5 -K - "http://127.0.0.1:$GRAFANA_PORT/api/user"
 ' 2>/dev/null)
 [ "$code" = 200 ]
