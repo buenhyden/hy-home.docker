@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.15"
+version: "0.1.16"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1085,6 +1085,10 @@ Remaining NOT_RUN or open:
   KV write is allowed;
 - a decision on raising the verifier's default health wait, since Keycloak can
   exceed 180 s.
+
+Owner decision: the Keycloak verifier's default health wait is now 360 s
+(`VERIFY_HEALTH_TRIES` 72), and the README matches. The Grafana verifier keeps
+180 s.
 
 ## Evidence
 

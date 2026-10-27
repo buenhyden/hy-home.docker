@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.10"
+version: "0.1.11"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -233,7 +233,7 @@ group-readable 파일이 있으면 실패합니다.
    fast-forward를 연달아 실행한 뒤 Agent가 healthy인지 확인합니다. 되돌릴 때는 main의 병합을
    revert해 health 기준을 되돌린 뒤 `0600`으로 바꿉니다. `0600`만 되돌리면 새 health가 실패합니다.
 2. 전환 전 검사: `bash infra/03-security/openbao/consumer-migration/verify-keycloak-consumption.sh`.
-   Keycloak healthy를 최대 180초 기다린 뒤 `consumed_file`, `rendered_version`,
+   Keycloak healthy를 최대 360초 기다린 뒤 `consumed_file`, `rendered_version`,
    `mounted_equals_rendered`, `admin_login`을 확인합니다. 로그인은 container 안의 `kcadm.sh config credentials`가
    `KC_CLI_PASSWORD` 환경 변수로 받으며 argv에는 비밀번호가 없습니다.
 3. 전환: 로컬 `.env`에 `KEYCLOAK_ADMIN_PASSWORD_FILE=/run/openbao/auth/keycloak_admin_password.txt`를 넣고
