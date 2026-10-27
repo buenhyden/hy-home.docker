@@ -49,14 +49,24 @@ size=$(timeout 10 docker exec "$agent" cat "$rendered.txt" 2>/dev/null | strip |
 result mounted_equals_rendered "$status"
 
 # The value is read and quoted inside Grafana; curl takes it from stdin, not argv.
-# shellcheck disable=SC2016 # expands inside the container, not here
-code=$(timeout 15 docker exec -e GRAFANA_PORT="$port" -e MOUNTED="$mounted" "$grafana" sh -c '
-  q() { sed "s/[\\\\\"]/\\\\&/g"; }
-  p=$(q <"$MOUNTED")
-  u=$(printf "%s" "$GF_SECURITY_ADMIN_USER" | q)
-  printf "user = \"%s:%s\"\n" "$u" "$p" |
-    curl -sS -o /dev/null -w "%{http_code}" --max-time 5 -K - "http://127.0.0.1:$GRAFANA_PORT/api/user"
-' 2>/dev/null)
+login() {
+  # shellcheck disable=SC2016 # expands inside the container, not here
+  timeout 20 docker exec -e GRAFANA_PORT="$port" -e MOUNTED="$mounted" "$grafana" sh -c '
+    q() { sed "s/[\\\\\"]/\\\\&/g"; }
+    p=$(q <"$MOUNTED")
+    u=$(printf "%s" "$GF_SECURITY_ADMIN_USER" | q)
+    printf "user = \"%s:%s\"\n" "$u" "$p" |
+      curl -sS -o /dev/null -w "%{http_code}" --max-time 10 -K - "http://127.0.0.1:$GRAFANA_PORT/api/user"
+  ' 2>/dev/null
+}
+# A cold-started Grafana can miss the first authenticated request (000 seen on
+# 2026-10-27). Retry only when no HTTP status came back; any status, 401
+# included, is final so a wrong password never counts against the lockout twice.
+for attempt in 1 2 3; do
+  code=$(login)
+  case "$code" in [1-5][0-9][0-9]) break ;; esac
+  [ "$attempt" = 3 ] || sleep "${VERIFY_RETRY_SLEEP:-10}"
+done
 [ "$code" = 200 ]
 result admin_login $? "http=${code:-none}"
 
