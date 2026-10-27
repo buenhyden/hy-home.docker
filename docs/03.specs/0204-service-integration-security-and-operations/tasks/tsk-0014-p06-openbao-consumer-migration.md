@@ -1133,6 +1133,36 @@ rehash (14 occurrences), shellcheck clean. The catalog `IAM-007` lifecycle stays
 unreconciled, like the two admin passwords. The KV import, Agent restart,
 cutover and rollback are NOT_RUN.
 
+The independent reviews found:
+
+- **Security audit:** 4 Low and 3 Informational issues.
+- **IaC review:** 1 High, 3 Medium and 4 Low issues.
+
+Fixed:
+
+- High: the protected restore bundle now includes the new template
+  (`protected-restore-inputs.py`, `protected-semantic-restore.py` and their
+  tests). Without it, a restore contract cut after this change could not start
+  its Agent.
+- The native rehearsal seeds the new field. Its insecure-mode probe now
+  restores each file's own mode; it had reset the `640` files to `600`, a gap
+  left over from W49.
+- The Keycloak comparison runs inside Keycloak. Grafana's file goes in on
+  stdin, Keycloak's copy never leaves its container, and the verifier prints
+  `kcadm=match|mismatch|empty|invalid|error`. An empty Grafana file is never
+  compared. A rejected admin login is reported and not retried. `set +x` is
+  added.
+- The README now says this KV path takes `kv patch` only. Agent health and
+  `keycloak_client_matches` must pass before any Grafana recreate. It also
+  gives the code-rollback order, the possible 5-minute unhealthy flap after the
+  import, and the need for a post-import snapshot.
+
+Not taken: `error_on_missing_key`. The reviews disagreed on it. It would stop
+`<no value>` renders, but the Agent would then exit, and recovering needs a
+SecretID reissue. The patch-only rule and the pre-recreate checks cover that
+risk instead. Accepted: the verifier reads Keycloak's copy as the master admin.
+This is not least privilege, but no value leaves the container.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |

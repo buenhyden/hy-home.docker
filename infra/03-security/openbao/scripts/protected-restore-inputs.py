@@ -36,6 +36,7 @@ BUNDLE = (
     "config/agent.hcl",
     "config/templates/keycloak_admin_password.ctmpl",
     "config/templates/grafana_admin_password.ctmpl",
+    "config/templates/grafana_client_secret.ctmpl",
     "config/templates/keycloak_admin_password_version.ctmpl",
     "config/templates/grafana_admin_password_version.ctmpl",
 )

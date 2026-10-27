@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.46"
+version: "0.12.47"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -1014,7 +1014,7 @@ b6b820b6561558020842376a06729f7663de3410188a544a6662024c4575568c infra/03-securi
 05be43d5e2b9e8f067c2b81d4872666e89a1300fd2d21ecfee12db13e8aa5853 infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-1ff39dd355f0d1fd5f61570d388e872d4e03016562c5b2cd36c4748f8efad410 infra/03-security/openbao/scripts/protected-semantic-restore.py
+792c10eec8ff39201bbc6990fea5d3764fd88a6b5b89ee64c37c585017a348a1 infra/03-security/openbao/scripts/protected-semantic-restore.py
 b5aa92bdf528eb92993fc46061ead65b72bf71efe30182cca7cc5b5706ab396e infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
 db0d6a94638013294eae18b7d20e0da274b499844a7fe9ef848aad3cbd278b3a infra/03-security/openbao/scripts/protected-renderer-roles.py
@@ -1022,7 +1022,7 @@ db0d6a94638013294eae18b7d20e0da274b499844a7fe9ef848aad3cbd278b3a infra/03-securi
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl
 e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093 infra/03-security/openbao/config/policies/operator.hcl
-f0807d5e1b98ac44083ff0e770a787af456f8bd9da4ec6c394ae9e535b374be0 infra/03-security/openbao/scripts/protected-restore-inputs.py
+0488ebc7c94deb1f2d76ddd62707c9bcf6b822e3f0f18aa1f2c4a7541eb93629 infra/03-security/openbao/scripts/protected-restore-inputs.py
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
 e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json

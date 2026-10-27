@@ -276,6 +276,18 @@ Entrypoint는 파일의 CR·LF를 모두 지우므로 검사도 같은 방식으
 bootstrap 값과 달리 KV를 바꾸면 다음 Grafana 기동부터 새 값이 쓰입니다. Keycloak의 client secret과
 함께 바꾸지 않으면 OIDC 로그인이 실패하므로 회전은 두 쪽을 함께 바꾸는 별도 단계입니다.
 
+- 이 KV 경로에는 `kv patch`만 씁니다. `kv put`은 다른 field를 지우고, 빠진 field는 `<no value>`로
+  렌더링됩니다. Agent health는 실패하지만 Grafana는 다음 기동에서 그 값을 읽어 OIDC 로그인 전체가
+  막힙니다. 그래서 Grafana를 다시 만들기 전마다 Agent healthy와 `keycloak_client_matches`
+  PASS를 확인합니다.
+- KV 반입 직후 Agent는 다음 렌더링(최대 5분)까지 `.version` 불일치로 unhealthy일 수 있습니다.
+  반입은 병합보다 5분 이상 먼저 합니다.
+- 코드 되돌리기 순서: Grafana를 `/run/secrets`로 되돌림 → 병합 revert → 남은
+  `out/observability/grafana_client_secret.txt` 삭제 → Agent 재시작(SecretID 전달). Agent는 렌더링한
+  파일을 지우지 않으므로 삭제 전에는 이전 health가 group-readable 파일 때문에 실패합니다.
+- 보호 복구 bundle은 새 template을 포함합니다. 반입 이전 snapshot으로 복구하면 field가 없어 health가
+  실패하므로, 이 revision 이후의 복구 계약에는 반입 이후 snapshot이 필요합니다.
+
 ## Related Documents
 
 - [OpenBao 구현 안내](../README.md)

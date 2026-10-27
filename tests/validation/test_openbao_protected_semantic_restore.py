@@ -906,7 +906,7 @@ class IntegrationBoundaryTests(unittest.TestCase):
 
     def test_preflight_verifies_exact_images_receipts_and_bundle(self):
         bundle = self.root / "bundle"
-        names = {"scripts/start-agent.sh", "scripts/health-agent.sh", "config/agent.hcl", "config/templates/keycloak_admin_password.ctmpl", "config/templates/grafana_admin_password.ctmpl", "config/templates/keycloak_admin_password_version.ctmpl", "config/templates/grafana_admin_password_version.ctmpl"}
+        names = {"scripts/start-agent.sh", "scripts/health-agent.sh", "config/agent.hcl", "config/templates/keycloak_admin_password.ctmpl", "config/templates/grafana_admin_password.ctmpl", "config/templates/grafana_client_secret.ctmpl", "config/templates/keycloak_admin_password_version.ctmpl", "config/templates/grafana_admin_password_version.ctmpl"}
         digests = {}
         for name in names:
             path = bundle / name
