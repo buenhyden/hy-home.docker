@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.33"
+version: "0.4.34"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2802,6 +2802,29 @@ dry-run of the notebook requirements resolved 113 packages with every other pin
 unchanged. The MLflow README now carries the owner backup-then-upgrade step.
 The HOME backup, schema upgrade, image start and notebook image build are
 NOT_RUN; the profile stays stopped until the owner starts it.
+
+**Owner upgrade procedure (RUN-0088), 2026-10-27.** The README step now points to
+RUN-0088 `Tracking DB schema upgrade`. That section has six steps: prepare, record the
+revision and counts, back up a custom-format dump, rehearse in isolation (upgrade
+and rollback), upgrade HOME, then start and check. It also gives stop conditions and
+a rollback. Its commands were run verbatim in zsh against HOME for steps 1–4,
+with the backup path moved to the session scratchpad. Output: revision
+`b7e2c1a4d9f3` with 2/2 rows, new head `dc11669786a5`, 59 table-data entries
+in the dump; the rehearsal upgraded as the `mlflow` role to `dc11669786a5`
+(2/2) and rolled back to `b7e2c1a4d9f3` (2/2), leaving no container or network.
+Testing found and fixed four faults in the first draft:
+
+- a `$C` variable that zsh does not word-split, now a function;
+- the `mng-pg` wrapper entrypoint, which exits 64 without the pgBackRest secret;
+- socket readiness that matched the initdb temporary server, now a bounded TCP check;
+- a `pg_restore --clean` rollback that fails on the new foreign keys, plus a
+  `--no-owner` restore that would hand the tables to the superuser.
+
+Rollback is now drop-and-`--create`. On a copy it removed the six 3.17 tables
+and kept `mlflow` ownership. Step 5's wiring was probed without upgrading: the
+secret is read inside the container, and the probe connected as `mlflow` and saw
+`b7e2c1a4d9f3`. The test dump was deleted. The HOME backup, upgrade and start
+remain owner steps.
 
 ## Evidence
 
