@@ -1171,6 +1171,15 @@ The Agent then saw the field exist (exit code only, rc 0). It re-rendered
 alerts on the synthetic test value's variable name; the variable is renamed, as
 the existing synthetic values are.
 
+Agent restart, owner-run RUN-0085 step 3, at 13:48:20Z: `issue rc=0`. The
+Agent is healthy and the journal is back to `complete`. The run happened before
+this PR merged, while the main checkout was at `1fb71114a`. It therefore loaded
+the Keycloak `0640` into the Agent's memory, which lifts the "no Keycloak KV
+write" rule, but not the new template. A second restart after the merge and
+fast-forward loads it. GitHub "Update branch" added a merge commit that
+commitizen rejects, so PR #582 was replaced by a cherry-picked branch on
+`1fb71114a`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
