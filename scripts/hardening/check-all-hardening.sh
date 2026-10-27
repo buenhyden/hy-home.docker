@@ -582,7 +582,7 @@ check_06_observability() {
   check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
   check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker" "dozzle gateway/IP boundary missing"
   check_contains "$dozzle_compose" "DOZZLE_AUTH_PROVIDER: oidc" "dozzle native authentication missing"
-  check_contains "$dozzle_compose" "DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE: /run/secrets/dozzle_client_secret" "dozzle OIDC secret grant missing"
+  check_contains "$dozzle_compose" 'DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE: ${DOZZLE_CLIENT_SECRET_FILE:-/run/secrets/dozzle_client_secret}' "dozzle OIDC secret grant missing"
   if [[ "$dozzle_compose_image" != "$dozzle_image" ]]; then
     fail "dozzle image tag mismatch"
   fi
