@@ -851,6 +851,13 @@ The Evidence table below is a frozen pre-generation-7 table that admits no new
 rows, so this section is the W49 record: synthetic verifier PASS; the HOME
 pre-cutover run, the P01 `0640` change, cutover and rollback remain NOT_RUN.
 
+Owner pre-cutover run, 2026-10-27, on HOME with Grafana still reading the
+`./secrets/` file: `rendered_version version=1`, `mounted_equals_rendered` and
+`admin_login http=200`, all PASS, exit 0. The current file value therefore
+equals the Agent-rendered KV value and is Grafana's effective admin password,
+so the cutover changes the file's source, not the value. The P01 `0640`
+change, cutover, post-cutover run and rollback remain NOT_RUN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
