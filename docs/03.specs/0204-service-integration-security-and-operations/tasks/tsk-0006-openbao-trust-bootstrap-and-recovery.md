@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.32"
+version: "0.2.33"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3409,6 +3409,46 @@ A fake-clock test covers the shared budget, the post-delivery reserve and the
 exhausted-budget block. Issuance, custody, trust, Agent, semantic restore and
 rehearsal suites: 137 OK, 3 skipped. A new issuer commit
 needs owner approval and installation before the re-run.
+
+### W5 re-run, journal recovery and Agent restart — 2026-10-27
+
+The owner approved `422b4adfd` (PR #573) as the issuer commit, and it was
+installed with the 10-22 bootstrap. The three installed files are
+byte-identical to that commit.
+
+**Second run — rc=1.** The run issued, delivered and started the Agent at
+08:14:02Z. The Agent unwrapped the SecretID at 08:14:07Z (`secret_id_num_uses`
+1, so it was consumed) and wrote a new sink. Readiness still failed, and the
+helper stopped the Agent at 08:15:26Z. Cause: the Agent does not rewrite an
+unchanged destination, so the Grafana `.txt` kept mode `600` from 2026-09-19
+and the new `640` health requirement could not pass. The journal stayed at
+`delivered` for a start that no longer existed. With the SecretID consumed, the
+helper's reconcile could only block, as designed.
+
+**Owner recovery.** On the owner's choice, an owner-run script checked the
+state and changed only the journal:
+
+- It confirmed the Agent was stopped and the journal matched `delivered` with
+  an `active` anchor.
+- With a 5-minute `renderer-cleanup` token, it listed the `hy-home-renderer`
+  accessors. Accessor values went in on stdin only. Result: total 0 and 0
+  matching.
+- It archived `issuance.json` as `issuance.json.recovered-20261027T172054` and
+  wrote the `complete` anchor atomically, as the helper's `clear()` does.
+
+Deleting the stale rendered file was refused as irreversible. Instead, the file
+was set to `0640` in place by its owner (UID 100, no network, read-only root);
+its content is the Agent's own render.
+
+**Third run — rc=0.** The Agent started at 08:21:50Z and is healthy. The journal
+anchor is `complete`.
+
+Residuals:
+
+- Two unused renderer-generation tokens remain valid, the one from the 08:14
+  start and the one from 10-22 (B4).
+- Changing a template's `perms` takes effect only on a re-render. The
+  consumer-migration README now says so, and a source-level fix is not decided.
 
 ## Evidence
 

@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.10"
+version: "0.1.11"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -902,6 +902,31 @@ New tests cover the stray file and the bind's form. Agent, consumer-migration,
 Compose baseline and secret metadata suites: 215 tests OK, 30 skipped.
 The Agent and Grafana recreates on HOME, the cutover run, and the rollback run
 follow after merge.
+
+### W49 HOME cutover and rollback — 2026-10-27
+
+After PR #572 merged and the Agent was re-issued (P01 TSK-0006), the owner set
+`GRAFANA_ADMIN_PASSWORD_FILE` in the local `.env`. Grafana was recreated with
+`--no-deps` only, after a dry run that targeted `grafana` alone, in two steps
+chosen by the owner:
+
+- **A, variable blank for one command.** This also moved HOME Grafana from
+  13.2.3 to the declared 13.2.4. `consumed_file` showed `/run/secrets`; the
+  first login probe right after `healthy` returned `000`, and a rerun returned
+  200 with all PASS.
+- **B, `.env` value.** `consumed_file` showed
+  `/run/openbao/observability/grafana_admin_password.txt`; version 1,
+  `mounted_equals_rendered` and login 200 all PASS.
+
+Rollback test: blanking the variable for one recreate gave `/run/secrets` with
+all PASS, and recreating with the `.env` value returned to the OpenBao path with
+all PASS. The Agent stayed healthy. Two `level=error` provisioning lines for
+missing `plugins` and `alerting` directories appear at every Grafana start and
+are unrelated.
+
+Grafana is the first live consumer of OpenBao-rendered material. Keycloak still
+reads `./secrets`. Rotation, removal of the `./secrets` copy, and further
+consumers remain NOT_RUN.
 
 ## Evidence
 

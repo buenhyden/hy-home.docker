@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.7"
+version: "0.1.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -207,6 +207,10 @@ volume이라면 기본 관리자 비밀번호로 계정을 만들 수 있습니�
 Grafana에 저장된 비밀번호가 바뀌지 않으며, 실제 회전은 별도 단계입니다. 로그인 검사는
 시도마다 비상 관리자 계정에 한 번 로그인하므로, `FAIL`이 반복되면 원인을 찾기 전에
 반복 실행하지 않습니다.
+
+Agent는 내용이 같은 출력 파일을 다시 쓰지 않으므로 template의 `perms` 변경은 다시 렌더링될 때만
+적용됩니다. 값이 바뀌지 않는다면 Agent를 다시 만들기 전에 그 파일의 mode를 Agent 사용자(UID 100)로
+맞춰야 health가 새 mode를 확인할 수 있습니다.
 
 ## Related Documents
 
