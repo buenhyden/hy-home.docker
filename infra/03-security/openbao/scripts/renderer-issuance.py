@@ -359,6 +359,7 @@ class DockerAPI:
         self.request_script = request_script
         self.started_at = None
         self.deadline = time.monotonic() + 240
+        self.wrap_deadline = self.deadline  # set by issue()
 
     @staticmethod
     def command(argv, *, payload=None, seconds=20, empty_list_path=None):
@@ -383,6 +384,19 @@ class DockerAPI:
                 return b'{"data":{"keys":[]}}'
             raise Blocked()
         return done.stdout
+
+    # The 60 s wrap TTL covers deliver, start and the Agent's own unwrap
+    # together. Spend at most 45 s of it on deliver plus start, counted from
+    # before the issue request, and leave the rest for the unwrap.
+    WRAP_BUDGET = 45
+    UNWRAP_RESERVE = 8
+
+    def _container_seconds(self):
+        # docker run --rm/start took 11-19 s under host load on 2026-10-27.
+        seconds = min(self.wrap_deadline, self.deadline) - time.monotonic()
+        if seconds < 4:
+            raise Blocked()
+        return seconds
 
     def request(self, operation, path, payload=None, *, issuer=False):
         # Leave renewal-free token lifetime margin; never turn a large LIST into an unbounded run.
@@ -439,6 +453,7 @@ class DockerAPI:
                 raise Blocked()
 
     def issue(self, metadata):
+        self.wrap_deadline = time.monotonic() + self.WRAP_BUDGET
         response = self.request(
             "write -wrap-ttl=60s",
             PREFIX + "/secret-id",
@@ -514,7 +529,12 @@ class DockerAPI:
                 script,
             ],
             payload=(wrapped + "\n").encode(),
+            seconds=self._container_seconds(),
         )
+        # Still journaled as issuing: a raise here destroys the exact SecretID
+        # instead of recording a delivery the Agent can no longer unwrap.
+        if self.wrap_deadline - time.monotonic() < self.UNWRAP_RESERVE:
+            raise Blocked()
 
     def stopped(self):
         return (
@@ -545,7 +565,7 @@ class DockerAPI:
         return generation
 
     def start(self):
-        self.command(["docker", "start", self.agent])
+        self.command(["docker", "start", self.agent], seconds=self._container_seconds())
         # Start script removes the old sink; Docker StartedAt identifies this start.
         self.started_at = self._started_at()
         return self.started_at

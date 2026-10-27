@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.31"
+version: "0.2.32"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3363,6 +3363,52 @@ the journal records `rolled_back`. A pre-flight confirms that the selected
 OpenBao version supports token revoke-self. A new P01 approval for the changed
 helper hash is still required before any window. Implementation remains in a
 new session.
+
+### W5 Agent re-issue for the Grafana delivery — 2026-10-27
+
+After PR #572 merged at `2289dcff8`, the owner ran the RUN-0085 SecretID
+Delivery block from a guarded script. It had the 10-22 inputs: issuer
+`090352d05` installed under the operator tools root, the journal directory and
+`hy-home-infra_openbao-agent-data`. Preflight passed, the Agent stopped at
+07:45:17Z, both 5-minute tokens were minted, and the helper returned 1:
+`W5 issuance FAILED rc=1`.
+
+Read-only reconstruction:
+
+- The journal was written at 16:45:56. By 16:46:20 KST the anchor read
+  `state: complete` and the active journal was gone, so the helper had rolled
+  back from `issuing`.
+- The server revoked the `hy-home-renderer` SecretID wrapping lease at
+  07:47:01Z, when the 60-second wrap expired unused.
+- The Agent volume held a fresh `secret_id` file written at 07:46. The
+  delivery container had written it, but the helper never recorded
+  `delivered`.
+
+Root cause: `deliver()` and `start()` used `command()`'s default 20-second
+timeout. A probe of the same `docker run --rm` invocation, writing and
+removing only a temp file, took 18.9, 11.2 and 16.9 s at load average about
+12 with 66 containers. On this run the container wrote the file but did not
+exit within 20 s, so the helper correctly treated delivery as uncertain and
+destroyed that exact SecretID. No credential is left valid. The stale wrapped
+file is overwritten by the next delivery. The Agent stays stopped until a
+successful issuance.
+
+Fix (owner choice "Fix timeout, then re-run"). The first cut gave `deliver()`
+and `start()` 55 s each. An independent review rated that High: the 60 s wrap
+TTL covers delivery, start and the Agent's unwrap together, so both could
+succeed after expiry and leave a `delivered` journal with an unrevoked SecretID.
+The final design:
+
+- `issue()` records one wrap deadline 45 s from just before its request.
+- `deliver()` and `start()` share what remains of it, never beyond the
+  240-second operation deadline.
+- `deliver()` raises while still journaled as `issuing` if less than 8 s would
+  remain for the unwrap, so the exact-ID reconcile destroys the SecretID.
+
+A fake-clock test covers the shared budget, the post-delivery reserve and the
+exhausted-budget block. Issuance, custody, trust, Agent, semantic restore and
+rehearsal suites: 137 OK, 3 skipped. A new issuer commit
+needs owner approval and installation before the re-run.
 
 ## Evidence
 
