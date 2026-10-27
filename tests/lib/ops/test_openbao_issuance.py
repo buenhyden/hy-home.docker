@@ -458,8 +458,20 @@ class DockerBindingTests(unittest.TestCase):
             self.assertIn("--read-only", argv)
             self.assertIn("--cap-drop=ALL", argv)
             self.assertNotIn("synthetic-wrapped", " ".join(argv))
-        with patch.object(api, "command", side_effect=[b"", b"2026-10-10T07:00:01Z"]):
+            # Container round trips measured 11-19 s under host load (2026-10-27).
+            self.assertGreater(call.call_args.kwargs["seconds"], 20)
+            self.assertLessEqual(call.call_args.kwargs["seconds"], 55)
+        with patch.object(
+            api, "command", side_effect=[b"", b"2026-10-10T07:00:01Z"]
+        ) as call:
             self.assertEqual("2026-10-10T07:00:01Z", api.start())
+            self.assertGreater(call.call_args_list[0].kwargs["seconds"], 20)
+        api.deadline = M.time.monotonic() + 3
+        with patch.object(api, "command") as call:
+            with self.assertRaises(M.Blocked):
+                api.deliver("synthetic-wrapped")
+            call.assert_not_called()
+        api.deadline = M.time.monotonic() + 240
         with patch.object(api, "command", side_effect=[b"", b"2026-10-10T07:00:01Z"]):
             self.assertTrue(api.ready("2026-10-10T07:00:01Z"))
         with patch.object(api, "command", side_effect=[b"", b"different-generation"]):

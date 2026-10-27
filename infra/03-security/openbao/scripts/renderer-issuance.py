@@ -384,6 +384,14 @@ class DockerAPI:
             raise Blocked()
         return done.stdout
 
+    def _container_seconds(self):
+        # docker run --rm/start took 11-19 s under host load on 2026-10-27; keep
+        # inside the whole-operation deadline and before the 60 s wrap TTL.
+        seconds = min(55, self.deadline - time.monotonic())
+        if seconds < 4:
+            raise Blocked()
+        return seconds
+
     def request(self, operation, path, payload=None, *, issuer=False):
         # Leave renewal-free token lifetime margin; never turn a large LIST into an unbounded run.
         seconds = min(20, self.deadline - time.monotonic())
@@ -514,6 +522,7 @@ class DockerAPI:
                 script,
             ],
             payload=(wrapped + "\n").encode(),
+            seconds=self._container_seconds(),
         )
 
     def stopped(self):
@@ -545,7 +554,7 @@ class DockerAPI:
         return generation
 
     def start(self):
-        self.command(["docker", "start", self.agent])
+        self.command(["docker", "start", self.agent], seconds=self._container_seconds())
         # Start script removes the old sink; Docker StartedAt identifies this start.
         self.started_at = self._started_at()
         return self.started_at
