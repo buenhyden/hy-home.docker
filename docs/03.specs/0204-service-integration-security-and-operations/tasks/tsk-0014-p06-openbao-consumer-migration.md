@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.11"
+version: "0.1.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -927,6 +927,18 @@ are unrelated.
 Grafana is the first live consumer of OpenBao-rendered material. Keycloak still
 reads `./secrets`. Rotation, removal of the `./secrets` copy, and further
 consumers remain NOT_RUN.
+
+Follow-up (owner choices). The cold-start `000` came from the first
+authenticated request exceeding the probe's 5 s limit: a fresh container listens
+about 20 s after start, and the warm probe answered in 0.7–2.3 s. The verifier
+now allows 10 s per try and retries only when no HTTP status came back, up to
+three tries; any real status, 401 included, is final. A synthetic test covers
+one miss then 200 (2 calls), three misses then FAIL (3 calls), and 401 (1 call).
+
+Empty `provisioning/plugins/` and `provisioning/alerting/` placeholders stop the
+two errors Grafana logged at every start. A throwaway Grafana did not reach
+provisioning within 240 s on a fresh database under load, so the HOME check
+waits for Grafana's next start.
 
 ## Evidence
 
