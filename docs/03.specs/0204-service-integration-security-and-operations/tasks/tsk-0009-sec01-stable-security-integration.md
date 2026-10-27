@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.32"
+version: "0.4.33"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2771,6 +2771,37 @@ ollama-exporter and mng-valkey-exporter scrape up=1. n8n reported no published
 workflows, so dropping `ai_net` from the worker has no current workflow impact.
 The short healthcheck start period is a follow-up; signatures, full scan and
 owner acceptance remain NOT_RUN.
+
+### MLflow advisories — 2026-10-27
+
+Dependabot opened two alerts on main for the JupyterLab client pin `mlflow==3.16.1`:
+GHSA-wqmh-qccw-pqwf (high, FileStore trace-ID path traversal, fixed in 3.17.2)
+and GHSA-2wqp-q3c6-ccj5 (medium, SSRF through scorer kwargs on unauthenticated
+servers, fixed in 3.17.0). The MLflow server image `FROM ghcr.io/mlflow/mlflow:v3.16.1`
+is equally affected but invisible to Dependabot. Neither container ran on HOME;
+the server uses the PostgreSQL tracking store and its gateway route sits behind
+SSO, so exposure was latent. The owner chose to move both to 3.17.2, released
+2026-10-21; no repository minimum-age rule applies.
+
+Source: the Dockerfile base, the Compose tag `hy-home/mlflow:3.17.2-local`,
+the client pin, `sync-tech-stack-versions.sh --write`, and the update ledger's
+`include_inputs` hash plus the MLflow row's `current_declared` and source hash,
+following the Ollama pin precedent. Dated lookup observations that name 3.16.1
+in build-inputs, package, image-source and release lookups stay as history.
+Supply-chain/version/wiring tests: 77 OK, 2 skipped.
+
+Checks: the local build reports `mlflow, version 3.17.2` with the unchanged
+psycopg2/boto3 pins. Alembic heads differ (`b7e2c1a4d9f3` → `dc11669786a5`),
+and HOME's `mlflow` database is at `b7e2c1a4d9f3` with 2 experiments and 2
+runs, so a 3.17.2 server would refuse to start until `mlflow db upgrade` runs. A
+dump of it was loaded into a throwaway PostgreSQL on an internal network with
+no published port, upgraded to `dc11669786a5` with both counts intact, and a
+3.17.2 server on that copy answered `/health` OK and listed both experiments;
+all temporary containers and the network were removed. A manylinux/Python 3.13
+dry-run of the notebook requirements resolved 113 packages with every other pin
+unchanged. The MLflow README now carries the owner backup-then-upgrade step.
+The HOME backup, schema upgrade, image start and notebook image build are
+NOT_RUN; the profile stays stopped until the owner starts it.
 
 ## Evidence
 
