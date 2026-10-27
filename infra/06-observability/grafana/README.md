@@ -1,6 +1,6 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.11"
+version: "1.1.12"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -44,7 +44,7 @@ created: "2026-01-12"
 grafana/
 ├── dashboards/       # Provisioned dashboard JSON tree
 ├── provisioning/
-│   ├── alerting/     # Empty on purpose: alert routing is Alertmanager's
+│   ├── alerting/     # empty.yaml only: alert routing is Alertmanager's
 │   ├── dashboards/   # Dashboard provider YAML
 │   ├── datasources/  # Datasource provisioning YAML
 │   └── plugins/      # Empty on purpose: no provisioned plugin apps

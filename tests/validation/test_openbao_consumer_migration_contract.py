@@ -111,6 +111,13 @@ VERIFIER = PACKAGE / "verify-grafana-consumption.sh"
 FAKE_DOCKER = r"""#!/usr/bin/env python3
 import os, subprocess, sys
 args, env = sys.argv[1:], {}
+if args[0] == "inspect":
+    states = os.environ.get("FAKE_HEALTH", "healthy").split(",")
+    counter = os.path.join(os.environ["FAKE_ROOT"], "inspect-calls")
+    n = int(open(counter).read()) if os.path.exists(counter) else 0
+    open(counter, "w").write(str(n + 1))
+    print(states[min(n, len(states) - 1)])
+    sys.exit(0)
 assert args.pop(0) == "exec"
 while args[0] == "-e":
     key, _, value = args[1].partition("=")
@@ -155,6 +162,7 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
         port=None,
         gf_file=None,
         misses=0,
+        health=None,
     ):
         import os
         import tempfile
@@ -189,6 +197,9 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
                     **({"GRAFANA_PORT": port} if port else {}),
                     **({"FAKE_GF_FILE": gf_file} if gf_file else {}),
                     "VERIFY_RETRY_SLEEP": "0",
+                    "VERIFY_HEALTH_SLEEP": "0",
+                    "VERIFY_HEALTH_TRIES": "3",
+                    **({"FAKE_HEALTH": health} if health else {}),
                     **({"FAKE_CURL_NO_RESPONSE": str(misses)} if misses else {}),
                 },
                 timeout=30,
@@ -211,6 +222,7 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
         result, argv = self.run_verifier(marker, marker + b"\n")
         self.assertEqual(0, result.returncode, result.stdout)
         self.assertEqual(
+            b"PASS grafana_healthy\n"
             b"PASS consumed_file path=/run/secrets/grafana_admin_password\n"
             b"PASS rendered_version version=3\nPASS mounted_equals_rendered\n"
             b"PASS admin_login http=200\n",
@@ -252,7 +264,7 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
             b"synthetic-a", b"synthetic-a", gf_file="/etc/passwd"
         )
         self.assertEqual(1, result.returncode)
-        self.assertEqual(b"FAIL consumed_file\n", result.stdout)
+        self.assertEqual(b"PASS grafana_healthy\nFAIL consumed_file\n", result.stdout)
 
     def test_grafana_binds_the_agent_directory_read_only_without_creating_it(self):
         import yaml
@@ -285,3 +297,19 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
         result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", login=b"other")
         self.assertIn(b"FAIL admin_login http=401\n", result.stdout)
         self.assertEqual(1, self.calls)
+
+    def test_waits_for_grafana_health_before_any_check(self):
+        result, _ = self.run_verifier(
+            b"synthetic-a", b"synthetic-a", health="starting,starting,healthy"
+        )
+        self.assertEqual(0, result.returncode, result.stdout)
+        self.assertTrue(
+            result.stdout.startswith(b"WAIT grafana_healthy\nPASS grafana_healthy\n")
+        )
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", health="starting")
+        self.assertEqual(1, result.returncode)
+        self.assertEqual(
+            b"WAIT grafana_healthy\nFAIL grafana_healthy state=starting\n",
+            result.stdout,
+        )
+        self.assertEqual(0, self.calls)
