@@ -178,8 +178,8 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
         return result, argv
 
     def test_equal_bytes_and_login_pass_without_printing_the_value(self):
-        secret = b'Synth"etic\\marker-1'
-        result, argv = self.run_verifier(secret, secret + b"\n")
+        marker = b'Synth"etic\\marker-1'
+        result, argv = self.run_verifier(marker, marker + b"\n")
         self.assertEqual(0, result.returncode, result.stdout)
         self.assertEqual(
             b"PASS rendered_version version=3\nPASS mounted_equals_rendered\n"
