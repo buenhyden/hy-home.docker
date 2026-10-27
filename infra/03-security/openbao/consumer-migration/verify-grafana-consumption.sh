@@ -24,6 +24,18 @@ done
 # Grafana's __FILE read drops trailing newlines only; CR and inner bytes count.
 strip() { sed -z 's/\n*$//'; }
 
+# Checks right after a recreate would race the container start (61 s to
+# healthy under load on 2026-10-27), so wait for Docker health first.
+tries=${VERIFY_HEALTH_TRIES:-36}
+for i in $(seq 1 "$tries"); do
+  health=$(timeout 10 docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{end}}' "$grafana" 2>/dev/null)
+  [ "$health" = healthy ] && break
+  [ "$i" = 1 ] && echo "WAIT grafana_healthy"
+  [ "$i" = "$tries" ] || sleep "${VERIFY_HEALTH_SLEEP:-5}"
+done
+[ "$health" = healthy ] || { result grafana_healthy 1 "state=${health:-none}"; exit 1; }
+result grafana_healthy 0
+
 # The file Grafana actually reads: its Compose secret or the Agent directory bind.
 mounted=$(timeout 10 docker exec "$grafana" printenv GF_SECURITY_ADMIN_PASSWORD__FILE 2>/dev/null)
 case "$mounted" in

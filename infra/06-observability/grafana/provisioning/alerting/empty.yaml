@@ -1,0 +1,3 @@
+# Intentionally empty: alert routing is Alertmanager's. A valid file keeps
+# Grafana from logging a missing-directory error or an invalid-suffix warning.
+apiVersion: 1

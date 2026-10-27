@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.12"
+version: "0.1.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -939,6 +939,19 @@ Empty `provisioning/plugins/` and `provisioning/alerting/` placeholders stop the
 two errors Grafana logged at every start. A throwaway Grafana did not reach
 provisioning within 240 s on a fresh database under load, so the HOME check
 waits for Grafana's next start.
+
+HOME restart after PR #575 (`c38a87543`):
+
+- Both missing-directory errors were gone, but `alerting/` logged a WARN
+  that `.gitkeep` has an invalid suffix.
+- The verifier, run at once, returned `000` because Grafana took 61 s to become
+  healthy and refused connections until then.
+- Run right after healthy, the cold first login passed (200, 3 s).
+
+Owner choices followed. The verifier now waits up to 180 s for Docker health
+before any check: `WAIT`, then `PASS` or `FAIL grafana_healthy`, with no login
+on failure. `alerting/` now holds a valid empty `empty.yaml` (`apiVersion: 1`)
+in place of `.gitkeep`. The verifier tests pass, 13 OK.
 
 ## Evidence
 

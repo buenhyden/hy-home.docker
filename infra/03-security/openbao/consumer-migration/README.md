@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.8"
+version: "0.1.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -193,7 +193,8 @@ bind하고 `GF_SECURITY_ADMIN_PASSWORD__FILE`을 `GRAFANA_ADMIN_PASSWORD_FILE`�
    `health-agent.sh`도 그 파일에만 `640`을 요구합니다. 이 소스를 반영한 뒤 `openbao-agent`를
    다시 만들고 healthy를 확인합니다.
 2. 전환 전 검사: `bash infra/03-security/openbao/consumer-migration/verify-grafana-consumption.sh`
-   결과가 모두 `PASS`여야 합니다. 첫 줄 `consumed_file`은 Grafana가 실제로 읽는 파일입니다.
+   결과가 모두 `PASS`여야 합니다. 검사는 먼저 Grafana가 healthy가 될 때까지 최대 180초 기다리고(`grafana_healthy`),
+   `consumed_file`은 Grafana가 실제로 읽는 파일입니다.
 3. 전환: 로컬 `.env`에 `GRAFANA_ADMIN_PASSWORD_FILE=/run/openbao/observability/grafana_admin_password.txt`를
    넣고 `grafana`만 다시 만든 뒤 같은 검사를 실행합니다. `consumed_file`이 Agent 경로여야 합니다.
 4. 되돌리기: 그 줄을 지우거나 비우고 `grafana`만 다시 만든 뒤 같은 검사를 실행합니다.
