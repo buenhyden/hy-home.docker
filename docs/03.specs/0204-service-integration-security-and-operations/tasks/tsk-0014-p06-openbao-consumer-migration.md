@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.14"
+version: "0.1.15"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1048,6 +1048,43 @@ fast-forwarded from `68a4b4753` to `94729ada1` in the same command.
 `health-agent.sh` then returned 0, with the `.txt` file at 640 and `.version` at
 600. The registered changed gate on the final head failed only on the known
 `test_fixture_preflight` port-forward case.
+
+### Keycloak HOME cutover and rollback — 2026-10-27
+
+The owner chose to run the cutover at once. Before it, the running Keycloak
+predated the change, so the verifier reported `FAIL consumed_file`. That is
+expected: the container had no `KEYCLOAK_ADMIN_PASSWORD_FILE`. Every recreate
+used `--no-deps keycloak`, after a dry run that targeted `keycloak` alone.
+
+- **A, variable absent (12:36:54Z).** The first verifier run failed only
+  `keycloak_healthy`, as `unhealthy`. Keycloak ran an automatic build at start
+  and became healthy about 4 minutes after the recreate, beyond the verifier's
+  default 180 s wait. Run again after `healthy`: `consumed_file`
+  `/run/secrets/keycloak_admin_password`, version 1, `mounted_equals_rendered`
+  and `admin_login kcadm=ok`, all PASS. The `./secrets` file therefore equals
+  the KV value and is Keycloak's effective admin password.
+- **B, `.env` value (12:47:43Z).** The owner added the single `.env` line,
+  because the agent's edit of `.env` was denied by the permission classifier.
+  With `VERIFY_HEALTH_TRIES=72`: `consumed_file`
+  `/run/openbao/auth/keycloak_admin_password.txt`, version 1, equality and
+  `kcadm=ok`, all PASS in 2 m 21 s.
+- **Rollback (12:50:36Z).** With the variable blank for one command,
+  `/run/secrets` returned, and all checks passed in 2 m 05 s.
+- **Re-cutover (12:53:08Z).** With the `.env` value, the OpenBao path returned,
+  and all checks passed in 2 m 32 s.
+
+Keycloak and the Agent were both healthy at the end. Keycloak is the second
+live consumer of OpenBao-rendered material. Its DB password still reads
+`./secrets`.
+
+Remaining NOT_RUN or open:
+
+- rotation;
+- removal of the `./secrets` admin copy;
+- the Agent restart that loads `0640` from `agent.hcl`; until then, no Keycloak
+  KV write is allowed;
+- a decision on raising the verifier's default health wait, since Keycloak can
+  exceed 180 s.
 
 ## Evidence
 
