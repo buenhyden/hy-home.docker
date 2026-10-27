@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.7.1"
+version: "0.7.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-28"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -62,10 +62,11 @@ host port는 열지 않는다. Prometheus `openbao-agent` job이 `bao_agent_auth
 | 서비스 | mount·인증·정상 신호와 한계 |
 | --- | --- |
 | `openbao` | `openbao-data`는 host의 `${DEFAULT_SECURITY_DIR}/openbao/data`를 Raft 상태로 사용한다. OIDC·AppRole·Kubernetes auth/policy는 승인된 bootstrap으로 설치하며 Compose가 자동 생성하지 않는다. `/sys/metrics`는 전용 token을 요구한다. |
-| `openbao-agent` | `agent.hcl`과 templates는 읽기 전용, `openbao-agent-data`와 `openbao-agent-out`은 각각 host의 agent/out 경로다. AppRole RoleID/SecretID로 로그인하고 token sink와 두 출력 및 version 파일을0600으로 쓴다. secret rotation이나 소비자 mount 전환을 자동 수행하지 않는다. |
+| `openbao-agent` | `agent.hcl`과 templates는 읽기 전용, `openbao-agent-data`와 `openbao-agent-out`은 각각 host의 agent/out 경로다. AppRole RoleID/SecretID로 로그인하고 token sink와 version 파일은 0600, 소비자가 읽는 `.txt` 출력은 0640(group 1000)으로 쓴다. secret rotation이나 소비자 mount 전환을 자동 수행하지 않는다. |
 
-실제로 선택된 template은 `keycloak_admin_password.ctmpl`,
-`grafana_admin_password.ctmpl`과 두 `*_admin_password_version.ctmpl`이다. 같은 디렉터리의 나머지 template는
+실제로 선택된 template은 `agent.hcl`의 19개다. Keycloak·Grafana 관리자 비밀번호와 8개 OIDC client
+secret의 `.txt` 10개, KV 경로마다 하나인 `*_version.ctmpl` 9개(Grafana 두 값은 한 경로)이며 소비자마다
+`out` 아래 디렉터리 하나를 쓴다. 같은 디렉터리의 나머지 template는
 mount되어 있어도 `agent.hcl`에서 선택하지 않으며 renderer ACL을 확장하지 않는다.
 서버 health는 `bao status`의 0(unsealed)만 허용한다. sealed(2) 상태에서는
 새 Compose 기동에서 `openbao-agent`의 `service_healthy` 의존성이 대기한다. Docker daemon의 기존 컨테이너 자동 재시작은 이를 재평가하지 않는다. Agent는 새 프로세스에서 옛 sink를 제거하고 token validity·두 제한 fetch·정확한

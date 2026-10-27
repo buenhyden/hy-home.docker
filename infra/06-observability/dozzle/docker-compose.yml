@@ -28,13 +28,21 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - dozzle-data:/data
       - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+      # P06: the OpenBao Agent's dozzle output, read when the client secret file
+      # variable points under /run/openbao/dozzle. A missing directory stops it.
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/out/dozzle
+        target: /run/openbao/dozzle
+        read_only: true
+        bind: {create_host_path: false}
     expose:
       - ${DOZZLE_PORT:-8080}
     environment:
       DOZZLE_AUTH_PROVIDER: oidc
       DOZZLE_AUTH_OIDC_ISSUER: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
       DOZZLE_AUTH_OIDC_CLIENT_ID: ${DOZZLE_OIDC_CLIENT_ID}
-      DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE: /run/secrets/dozzle_client_secret
+      # P06: set DOZZLE_CLIENT_SECRET_FILE under /run/openbao/dozzle; unset rolls back.
+      DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE: ${DOZZLE_CLIENT_SECRET_FILE:-/run/secrets/dozzle_client_secret}
       DOZZLE_ENABLE_ACTIONS: 'false'
       DOZZLE_ENABLE_SHELL: 'false'
       DOZZLE_ENABLE_MCP: 'false'

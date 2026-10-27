@@ -842,6 +842,20 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 "keycloak_admin_password.ctmpl",
                 "grafana_admin_password.ctmpl",
                 "grafana_client_secret.ctmpl",
+                "oauth2_proxy_client_secret.ctmpl",
+                "oauth2_proxy_client_secret_version.ctmpl",
+                "kafbat_client_secret.ctmpl",
+                "kafbat_client_secret_version.ctmpl",
+                "dozzle_client_secret.ctmpl",
+                "dozzle_client_secret_version.ctmpl",
+                "gatus_oidc_client_secret.ctmpl",
+                "gatus_oidc_client_secret_version.ctmpl",
+                "airflow_client_secret.ctmpl",
+                "airflow_client_secret_version.ctmpl",
+                "openwebui_oidc_client_secret.ctmpl",
+                "openwebui_oidc_client_secret_version.ctmpl",
+                "superset_oidc_client_secret.ctmpl",
+                "superset_oidc_client_secret_version.ctmpl",
                 "keycloak_admin_password_version.ctmpl",
                 "grafana_admin_password_version.ctmpl",
             )
@@ -901,6 +915,21 @@ class OpenBaoRehearsalTests(OpenBaoClientCases, unittest.TestCase):
                 if target.endswith("grafana"):
                     data["grafana_client_secret"] = marker
                 self.put(client, "secret/data/hy-home/" + target, {"data": data})
+            # P06 OIDC client secrets, one KV path each.
+            for target in (
+                "02-auth/oauth2-proxy",
+                "05-messaging/kafbat",
+                "06-observability/dozzle",
+                "06-observability/gatus",
+                "07-workflow/airflow",
+                "08-ai/open-webui",
+                "12-analytics/superset",
+            ):
+                self.put(
+                    client,
+                    "secret/data/hy-home/" + target,
+                    {"data": {"client_secret": marker}},
+                )
             self.one_use_secret_id(client)
             self.roles(client, marker)
             self.expired_secret_id(client)

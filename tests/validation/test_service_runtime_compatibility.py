@@ -725,7 +725,12 @@ class RuntimeCompatibilityTests(unittest.TestCase):
                     "SSL_CERT_FILE",
                     "RENOVATE_CONFIG_FILE",
                 ):
-                    image = spec["image"].split(":", 1)[0]
+                    # A build-only service has no image name; key it by service.
+                    image = (
+                        spec["image"].split(":", 1)[0]
+                        if "image" in spec
+                        else "build:" + name.rsplit(":", 1)[1]
+                    )
                     used.setdefault((image, key), set()).add(name)
         matrix = json.loads((ROOT / "infra/secret-file-support.json").read_text())
         rows = {(row["image"], row["key"]): row for row in matrix["rows"]}

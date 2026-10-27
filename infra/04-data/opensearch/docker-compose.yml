@@ -136,8 +136,17 @@ services:
         bind: {create_host_path: false}
       - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
       - opensearch-dashboards-data:/usr/share/opensearch-dashboards/data
+      # P06: the OpenBao Agent's oauth2-proxy output, read when the client secret file
+      # variable points under /run/openbao/oauth2-proxy. A missing directory stops it.
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/out/oauth2-proxy
+        target: /run/openbao/oauth2-proxy
+        read_only: true
+        bind: {create_host_path: false}
     environment:
       - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME:-kibanaserver}
+      # P06: the OIDC client secret file; unset keeps /run/secrets.
+      - OPENSEARCH_OIDC_CLIENT_SECRET_FILE=${OPENSEARCH_OIDC_CLIENT_SECRET_FILE:-/run/secrets/oauth2_proxy_client_secret}
       - OPENSEARCH_HOSTS=${OPENSEARCH_HOSTS:-["https://opensearch:9200"]}
     command:
       - bash
@@ -145,7 +154,7 @@ services:
       - |
         export OPENSEARCH_PASSWORD="$(cat /run/secrets/opensearch_dashboard_password)"
         export OPENSEARCH_SECURITY_COOKIE="$(tr -d '\r\n' < /run/secrets/opensearch_security_cookie)"
-        export OPENSEARCH_CLIENT_SECRET="$(tr -d '\r\n' < /run/secrets/oauth2_proxy_client_secret)"
+        export OPENSEARCH_CLIENT_SECRET="$(tr -d '\r\n' < "$${OPENSEARCH_OIDC_CLIENT_SECRET_FILE}")"
 
         exec /usr/share/opensearch-dashboards/bin/opensearch-dashboards
     labels:

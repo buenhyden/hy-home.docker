@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.12"
+version: "0.1.13"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-28"
 created: "2026-10-11"
 ---
 
@@ -40,6 +40,8 @@ created: "2026-10-11"
 - [verify-grafana-consumption.sh](verify-grafana-consumption.sh): 첫 소비자 Grafana의
   관리자 비밀번호 소비 검사입니다. Agent가 렌더링한 값과 Grafana에 mount된 값의 일치,
   렌더링 version, 관리자 로그인 HTTP 상태만 출력하고 값·hash·길이는 출력하지 않습니다.
+- [verify-oidc-client-secret.sh](verify-oidc-client-secret.sh): OIDC client secret 소비자 하나의
+  검사입니다. 렌더링 파일, 서비스 파일, Keycloak client secret의 일치를 container 안에서 비교합니다.
 
 ## Tech Stack
 
@@ -287,6 +289,132 @@ bootstrap 값과 달리 KV를 바꾸면 다음 Grafana 기동부터 새 값이 �
   파일을 지우지 않으므로 삭제 전에는 이전 health가 group-readable 파일 때문에 실패합니다.
 - 보호 복구 bundle은 새 template을 포함합니다. 반입 이전 snapshot으로 복구하면 field가 없어 health가
   실패하므로, 이 revision 이후의 복구 계약에는 반입 이후 snapshot이 필요합니다.
+
+### OIDC client secret 일괄 전환(7개)
+
+남은 OIDC client secret 7개를 한 번에 Agent 출력으로 옮깁니다. 소비자마다 KV 경로와 출력
+디렉터리가 하나씩이고, Compose 파일은 그 디렉터리만 `/run/openbao/<디렉터리>`에 읽기 전용으로
+bind합니다(`create_host_path: false`). 각 `<stem>.txt`는 `0640`, `<stem>.version`은 `0600`입니다.
+변수가 비어 있으면 기존 `/run/secrets/<secret>`을 씁니다.
+
+| 서비스 | KV 경로(`secret/hy-home/…`) | 출력 파일 | 경로 변수 |
+| --- | --- | --- | --- |
+| `oauth2-proxy` | `02-auth/oauth2-proxy` | `oauth2-proxy/oauth2_proxy_client_secret.txt` | `OAUTH2_PROXY_CLIENT_SECRET_FILE` |
+| `opensearch-dashboards` | 위와 같음 | 위와 같음 | `OPENSEARCH_OIDC_CLIENT_SECRET_FILE` |
+| `kafbat-ui` | `05-messaging/kafbat` | `kafbat/kafbat_client_secret.txt` | `KAFBAT_CLIENT_SECRET_FILE` |
+| `dozzle` | `06-observability/dozzle` | `dozzle/dozzle_client_secret.txt` | `DOZZLE_CLIENT_SECRET_FILE` |
+| `gatus` | `06-observability/gatus` | `gatus/gatus_oidc_client_secret.txt` | `GATUS_CLIENT_SECRET_FILE` |
+| `airflow-apiserver` | `07-workflow/airflow` | `airflow/airflow_client_secret.txt` | `AIRFLOW_CLIENT_SECRET_FILE` |
+| `open-webui` | `08-ai/open-webui` | `open-webui/openwebui_oidc_client_secret.txt` | `OPENWEBUI_OIDC_CLIENT_SECRET_FILE` |
+| `superset` | `12-analytics/superset` | `superset/superset_oidc_client_secret.txt` | `SUPERSET_OIDC_CLIENT_SECRET_FILE` |
+
+모든 KV field 이름은 `client_secret`입니다. `health-agent.sh`는 이제 `agent.hcl`에서 template
+목록을 읽어 각 `.txt`의 bytes와 mode, 각 `.version`과 KV `current_version`을 비교하고, `out` 아래에
+목록에 없는 group/other-readable 파일이 있으면 실패합니다.
+
+`renderer`와 `hy-home-operator` 정책이 새 경로를 읽고 쓰려면 root가 필요합니다. 순서는 다음과
+같고 1~3단계는 owner가 실행합니다. 정책은 권한을 더하기만 하므로 병합 전에 적용해도 실행 중인
+Agent와 소비자에 영향이 없습니다.
+
+1. 정책 적용(RUN-0085 W1 → W1c → W7): W1 root ceremony, W1c
+   `protected-renderer-roles.py plan` 결과에서 `renderer`·`hy-home-operator`의 차이가 새 7개 경로뿐인지
+   확인하고 Task에 기록한 뒤 `apply`, W7 root 폐기. helper와 정책은 이 PR head에서 manifest로
+   받습니다(manifest hash가 이 revision에 고정됨).
+2. KV 반입(operator 인증): 경로마다 `secrets/auth/<서비스>/<파일>`을 stdin으로 넣습니다.
+   `-cas=0`은 경로가 이미 있으면 거부하므로 다른 field를 지우지 않습니다. 거부되면 멈추고
+   `kv patch -method=rw`로 바꿉니다. 값을 출력하지 않습니다.
+
+   ```sh
+   bao kv put -cas=0 secret/hy-home/02-auth/oauth2-proxy client_secret=- < secrets/auth/oauth2-proxy/oauth2_proxy_client_secret.txt
+   bao kv put -cas=0 secret/hy-home/05-messaging/kafbat client_secret=- < secrets/auth/kafbat/kafbat_client_secret.txt
+   bao kv put -cas=0 secret/hy-home/06-observability/dozzle client_secret=- < secrets/auth/dozzle/dozzle_client_secret.txt
+   bao kv put -cas=0 secret/hy-home/06-observability/gatus client_secret=- < secrets/auth/gatus/gatus_oidc_client_secret.txt
+   bao kv put -cas=0 secret/hy-home/07-workflow/airflow client_secret=- < secrets/auth/airflow/airflow_client_secret.txt
+   bao kv put -cas=0 secret/hy-home/08-ai/open-webui client_secret=- < secrets/auth/open-webui/openwebui_oidc_client_secret.txt
+   bao kv put -cas=0 secret/hy-home/12-analytics/superset client_secret=- < secrets/auth/superset/superset_oidc_client_secret.txt
+   ```
+
+   병합 전 종료 조건: 7개 경로 모두 `bao kv metadata get`이 성공해야 합니다. 하나라도 빠지면 그
+   template이 렌더링되지 않아 3단계 Agent 재시작이 90초 health 조건에서 `BLOCKED`로 끝납니다.
+3. 병합 → 출력 디렉터리 생성 → main fast-forward → Agent 재시작(RUN-0085 SecretID 전달).
+   - 병합하면 8개 소비자 정의에 새 bind가 생겨 다음 `docker compose up -d`가 변수와 상관없이 모두
+     다시 만듭니다. bind는 `create_host_path: false`이므로 디렉터리가 없으면 container를 만들지
+     못하고, 기존 container는 이미 지워진 뒤라 그 서비스가 멈춥니다(`oauth2-proxy`면 SSO 전체).
+     fast-forward 전에 Agent 사용자로 디렉터리를 만듭니다. health는 디렉터리를 보지 않습니다.
+
+     ```sh
+     docker exec -u 100 openbao-agent mkdir -m 0755 /openbao/out/oauth2-proxy /openbao/out/kafbat \
+       /openbao/out/dozzle /openbao/out/gatus /openbao/out/airflow /openbao/out/open-webui /openbao/out/superset
+     ```
+
+   - fast-forward하면 `scripts/`의 새 health가 바로 적용되지만 `agent.hcl`은 단일 파일 bind라 실행 중인
+     Agent는 재시작 전까지 예전 5개 template만 검사합니다. 새 health는 `out` 전체에서 목록에 없는
+     group/other-readable 파일을 찾으므로, fast-forward 직전
+     `docker exec openbao-agent find /openbao/out -mindepth 1 ! -type d \( -perm -040 -o -perm -004 \)`가
+     현재 `.txt` 3개만 출력하는지 확인합니다.
+   - 재시작 후 healthy와 7개 디렉터리의 `.txt`·`.version`을 확인합니다.
+4. 서비스마다 전환 전 검사:
+   `bash infra/03-security/openbao/consumer-migration/verify-oidc-client-secret.sh <서비스>`.
+   `healthy`, `consumed_file`, `rendered_version`, `mounted_equals_rendered`,
+   `keycloak_client_matches`가 모두 `PASS`여야 합니다. 서비스 파일은 `docker cp`로 읽으므로
+   shell이 없는 image도 검사합니다. `docker cp`는 daemon 권한으로 읽으므로 `PASS`는 서비스 사용자가
+   파일을 읽을 수 있다는 증거가 아닙니다. 전환 뒤 실제 OIDC 로그인으로 확인합니다.
+5. 전환: 로컬 `.env`에 표의 경로 변수를 `/run/openbao/<출력 파일>`로 넣고 그 서비스만 다시 만든 뒤
+   같은 검사를 실행합니다. `consumed_file`이 Agent 경로여야 합니다. `oauth2-proxy`와
+   `opensearch-dashboards`는 같은 파일을 읽지만 변수가 따로이므로 하나씩 전환합니다.
+   `opensearch-dashboards`가 `out/oauth2-proxy` 전체를 bind하므로 그 디렉터리와 KV 경로에는
+   `client_secret`만 둡니다. cookie secret 등을 더하려면 먼저 디렉터리를 나눕니다.
+6. 되돌리기: 변수를 비우고 그 서비스만 다시 만든 뒤 검사합니다.
+
+실행 중이 아닌 서비스(`kafbat-ui`, `opensearch-dashboards`, `superset`, `airflow-apiserver`)는
+다음에 기동할 때 4~5단계를 합니다. 변수를 비워도 bind는 남으므로 Agent 출력 디렉터리가 없으면
+그 서비스는 만들어지지 않습니다. Grafana client secret과 같이 KV 값과 Keycloak client를 함께
+바꾸지 않으면 OIDC 로그인이 실패하므로 회전은 별도 단계입니다. 코드 되돌리기는 모든 서비스를
+`/run/secrets`로 되돌림 → 병합 revert → 멈춘 것을 포함해 8개 서비스를 되돌린 정의로 다시 만듦 →
+남은 `out` 디렉터리 7개 삭제 → Agent 재시작 순서입니다. 다시 만들지 않은 container는 예전 bind를
+그대로 가지므로 디렉터리를 지운 뒤에는 `docker start`나 재부팅에서 실패합니다.
+
+출력 파일 group은 Agent image의 group(1000)이고 소비자는 `group_add: ${SECRETS_GID:-1000}`으로 읽습니다.
+`SECRETS_GID`가 1000이 아니면 8개 소비자 모두 읽지 못합니다. `opensearch-dashboards`와 `kafbat-ui`는
+경로를 잘못 주면 빈 값으로 시작하므로 검사의 `mounted_equals_rendered`로 확인합니다.
+보호 복구 bundle은 21개 파일을 요구하므로 이 revision의 bundle 영수증과 반입 이후 off-host snapshot이
+생기기 전까지 복구 계약은 `BLOCKED`입니다. 복구 값 비교는 아직 두 관리자 비밀번호만 대상입니다.
+
+### `./secrets` 사본 제거 계획
+
+계획만 있고 실행하지 않았습니다. 전환한 소비자도 아직 `./secrets` 파일을 rollback 기본값
+(`${변수:-/run/secrets/…}`)과 root `docker-compose.yml`의 `secrets:` 선언으로 참조합니다. P02
+catalog에서 확정 lane이 있는 항목은 `gen-secrets`가 `keep-catalog-protected`로 두므로 다시 만들지
+않습니다.
+
+선행 조건(값마다):
+
+- 소비자가 Agent 경로로 전환됐고 검사가 `PASS`인 상태가 owner가 정한 관찰 기간 동안 유지됨.
+- KV 반입 이후의 snapshot이 off-host에 있고 그 snapshot의 격리 복구가 검증됨. 사본을 지운 뒤에는
+  KV snapshot이 유일한 복구 경로입니다.
+- 같은 파일을 읽는 다른 소비자가 없음(`oauth2-proxy`·`opensearch-dashboards`는 함께 처리).
+
+값마다의 순서:
+
+1. 소스 PR: 경로 변수 기본값을 Agent 경로로 바꾸고, 서비스의 `secrets:` 항목과 root
+   `docker-compose.yml`의 선언을 지웁니다. 선언이 남아 있으면 파일이 없을 때 Compose가 실패합니다.
+   Airflow는 공유 `x-airflow-common`의 `secrets:` 목록에서 지웁니다.
+   `secret-file-support.json`, Compose secret 계약 시험, `.env.example`, catalog의 목적지 기록을
+   함께 고칩니다. `examples/`의 readiness override는 별도 합성 경로이므로 영향이 없는지만 확인합니다.
+2. 병합 후 그 서비스만 다시 만들고 검사합니다. 이때부터 rollback은 소스 revert입니다.
+3. owner가 파일을 삭제합니다. 되돌릴 수 없는 단계이므로 2단계 검사 결과를 확인한 뒤에만 합니다.
+
+순서: 영향이 작은 `dozzle`·`gatus` → `open-webui`·`kafbat-ui`·`superset`·`airflow-apiserver` →
+`oauth2-proxy`(모든 SSO 앞단) → Grafana 두 값 → Keycloak 관리자 비밀번호.
+
+위험:
+
+- 사본이 없으면 Agent가 멈춘 동안 소비자를 다시 만들 수 없습니다. cold boot는 OpenBao 수동 unseal →
+  Agent → 소비자 순서가 됩니다.
+- Keycloak entrypoint는 파일을 읽지 못하면 시작하지 않고, 사람의 OpenBao 로그인은 Keycloak OIDC를
+  거칩니다. Agent 장애와 Keycloak 재생성이 겹치면 break-glass root 절차로만 복구할 수 있으므로,
+  Keycloak 관리자 비밀번호 사본은 마지막에 지우거나 off-host custody로 옮기는 별도 결정이 필요합니다.
+- DB 비밀번호 등 Agent가 렌더링하지 않는 `./secrets` 파일은 이 계획의 대상이 아닙니다.
 
 ## Related Documents
 
