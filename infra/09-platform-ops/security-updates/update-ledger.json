@@ -199,7 +199,7 @@
     },
     {
       "path": "infra/08-ai/mlflow/docker-compose.yml",
-      "sha256": "f12df92d55c6ed8cb1c4b85f768e3fdc21cf146233495c51ce3299394ab123e0"
+      "sha256": "b376aa8baa055254f9fc6038a6fc36f7a8a7a2eab3e4f8bcd017170181b27540"
     },
     {
       "path": "infra/08-ai/ollama/docker-compose.yml",
@@ -7345,7 +7345,7 @@
       "service": "mlflow",
       "scope": "root",
       "compose_file": "infra/08-ai/mlflow/docker-compose.yml",
-      "current_declared": "hy-home/mlflow:3.16.1-local",
+      "current_declared": "hy-home/mlflow:3.17.2-local",
       "profiles_declared": [
         "mlops",
         "data-science"
@@ -7393,7 +7393,7 @@
       "upstream_reported_tag": "v3.17.0",
       "next_fact_command": "gh release view --repo mlflow/mlflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "f12df92d55c6ed8cb1c4b85f768e3fdc21cf146233495c51ce3299394ab123e0",
+      "source_input_sha256": "b376aa8baa055254f9fc6038a6fc36f7a8a7a2eab3e4f8bcd017170181b27540",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
