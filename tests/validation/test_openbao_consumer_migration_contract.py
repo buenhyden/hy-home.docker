@@ -137,7 +137,7 @@ sys.stdout.write("200" if config == expected else "401")
 
 
 class GrafanaConsumptionVerifierTests(unittest.TestCase):
-    def run_verifier(self, rendered, mounted, version=b"3", login=None):
+    def run_verifier(self, rendered, mounted, version=b"3", login=None, port=None):
         import os
         import tempfile
 
@@ -150,7 +150,7 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
             (out / "grafana_admin_password.txt").write_bytes(rendered)
             (out / "grafana_admin_password.version").write_bytes(version)
             (run / "grafana_admin_password").write_bytes(mounted)
-            login = mounted.strip() if login is None else login
+            login = mounted.rstrip(b"\n") if login is None else login
             quoted = login.replace(b"\\", b"\\\\").replace(b'"', b'\\"')
             (root / "expected-config").write_bytes(b'user = "admin:' + quoted + b'"\n')
             bin_dir = root / "bin"
@@ -165,6 +165,7 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
                     "PATH": f"{bin_dir}:{os.environ['PATH']}",
                     "FAKE_ROOT": str(root),
                     "FAKE_BIN": str(bin_dir),
+                    **({"GRAFANA_PORT": port} if port else {}),
                 },
                 timeout=30,
                 check=False,
@@ -199,3 +200,15 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
         result, _ = self.run_verifier(b"", b"\n")
         self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
         self.assertEqual(1, result.returncode)
+
+    def test_cr_newline_only_and_port_injection_fail(self):
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a\r\n")
+        self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
+        result, _ = self.run_verifier(b"\n", b"")
+        self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
+        result, argv = self.run_verifier(
+            b"synthetic-a", b"synthetic-a", port="3000@evil.example"
+        )
+        self.assertEqual(2, result.returncode)
+        self.assertEqual(b"", result.stdout)
+        self.assertEqual(b"", argv)

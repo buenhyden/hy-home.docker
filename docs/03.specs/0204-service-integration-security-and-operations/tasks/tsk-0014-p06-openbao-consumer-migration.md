@@ -837,9 +837,14 @@ PASS/FAIL, the rendered KV version and the login HTTP status. Bytes compare
 inside two pipes; the login probe quotes the value inside Grafana and feeds
 curl from stdin. The plan, rollback and the single-file bind-mount caveat are in
 the consumer-migration README. The first synthetic run caught a real gap: a
-mounted file holding only a newline passed `test -s`; the guard now applies to
-the rendered file, whose template emits no newline. Final run: 8 tests OK and
-shellcheck clean. An agent-side comparison of the live files was denied by the
+mounted file holding only a newline passed `test -s`. An independent security
+review then found no Critical/High issues and one Medium: an unvalidated
+`GRAFANA_PORT` such as `3000@host` would send the password to another host. The
+fixes validate the port and container names, compare after removing trailing
+newlines only (as Grafana's `__FILE` read does, so CR counts), require a
+non-empty rendered value, escape the user name, and scope the README's `0640`
+step to the Grafana `.txt` file with a healthy Agent first. Final run: 9 tests
+OK and shellcheck clean. An agent-side comparison of the live files was denied by the
 session's permission classifier, so the pre-cutover run is the owner's:
 `bash infra/03-security/openbao/consumer-migration/verify-grafana-consumption.sh`.
 The Evidence table below is a frozen pre-generation-7 table that admits no new
