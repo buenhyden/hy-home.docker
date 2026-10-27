@@ -24,8 +24,9 @@ done
 # The entrypoint reads the file through tr -d '\r\n': every CR and LF is dropped.
 strip() { tr -d '\r\n'; }
 
-# Keycloak takes a minute or more to become healthy after a recreate.
-tries=${VERIFY_HEALTH_TRIES:-36}
+# Keycloak can take about 4 minutes to become healthy after a recreate that
+# rebuilds (HOME, 2026-10-27), so wait up to 360 s.
+tries=${VERIFY_HEALTH_TRIES:-72}
 for i in $(seq 1 "$tries"); do
   health=$(timeout 10 docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{end}}' "$keycloak" 2>/dev/null)
   [ "$health" = healthy ] && break
