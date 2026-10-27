@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.9"
+version: "0.1.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -210,8 +210,47 @@ Grafana에 저장된 비밀번호가 바뀌지 않으며, 실제 회전은 별�
 반복 실행하지 않습니다.
 
 Agent는 내용이 같은 출력 파일을 다시 쓰지 않으므로 template의 `perms` 변경은 다시 렌더링될 때만
-적용됩니다. 값이 바뀌지 않는다면 Agent를 다시 만들기 전에 그 파일의 mode를 Agent 사용자(UID 100)로
-맞춰야 health가 새 mode를 확인할 수 있습니다.
+적용됐습니다. 이제 `start-agent.sh`가 시작할 때 `agent.hcl`의 `perms`를 이미 있는 파일에 적용하므로
+Agent를 다시 시작하면 반영됩니다. 실행 중인 Agent의 health script는 main checkout에서 바로 읽히므로,
+재시작 없이 병합하는 경우에는 병합 직전에 그 파일의 mode를 Agent 사용자(UID 100)로 맞춥니다.
+
+### 두 번째 소비자 Keycloak 전환
+
+Keycloak(UID 1000, group 1000)은 Agent의 `out/auth` 디렉터리를 `/run/openbao/auth`에 읽기 전용으로
+bind하고(`create_host_path: false`), entrypoint가 `KEYCLOAK_ADMIN_PASSWORD_FILE`이 가리키는 파일을
+읽습니다. 비어 있으면 기존 `/run/secrets/keycloak_admin_password`를 씁니다. DB 비밀번호는 그대로
+`./secrets`의 Compose secret입니다. Agent는 `keycloak_admin_password.txt`를 `0640`으로 렌더링하고
+`health-agent.sh`는 두 `.txt`에 `640`, `.version`에 `600`을 요구하며 `out/auth`에 그 파일 외의
+group-readable 파일이 있으면 실패합니다.
+
+`KC_BOOTSTRAP_ADMIN_PASSWORD`는 master realm에 관리자가 없을 때만 적용됩니다. 파일 경로를
+바꿔도 Keycloak에 저장된 실제 관리자 비밀번호는 바뀌지 않습니다. 전환은 값의 출처만 바꾸며,
+`admin_login`은 두 값이 같을 때만 통과합니다. 실제 회전은 별도 단계입니다.
+
+1. GitHub 병합 뒤 main checkout을 fast-forward하는 순간 실행 중인 Agent의 health 기준이 바뀝니다.
+   먼저 `docker exec openbao-agent find /openbao/out/auth -mindepth 1 -perm -040`이 아무것도
+   출력하지 않는지 확인하고, `docker exec -u 100 openbao-agent chmod 0640 /openbao/out/auth/keycloak_admin_password.txt`와
+   fast-forward를 연달아 실행한 뒤 Agent가 healthy인지 확인합니다. 되돌릴 때는 main의 병합을
+   revert해 health 기준을 되돌린 뒤 `0600`으로 바꿉니다. `0600`만 되돌리면 새 health가 실패합니다.
+2. 전환 전 검사: `bash infra/03-security/openbao/consumer-migration/verify-keycloak-consumption.sh`.
+   Keycloak healthy를 최대 180초 기다린 뒤 `consumed_file`, `rendered_version`,
+   `mounted_equals_rendered`, `admin_login`을 확인합니다. 로그인은 container 안의 `kcadm.sh config credentials`가
+   `KC_CLI_PASSWORD` 환경 변수로 받으며 argv에는 비밀번호가 없습니다.
+3. 전환: 로컬 `.env`에 `KEYCLOAK_ADMIN_PASSWORD_FILE=/run/openbao/auth/keycloak_admin_password.txt`를 넣고
+   `docker compose up -d --no-deps keycloak --dry-run`으로 대상이 `keycloak` 하나인지 확인한 뒤
+   다시 만듭니다. 재생성 동안 SSO가 잠시 끊깁니다. 같은 검사에서 `consumed_file`이 Agent 경로여야 합니다.
+4. 되돌리기: 변수를 비우고 `keycloak`만 다시 만든 뒤 같은 검사를 실행합니다.
+
+실행 중인 Agent는 다음 재시작 전까지 예전 설정(`0600`)을 메모리에 들고 있습니다. 그동안 Keycloak
+KV 값이 바뀌면 파일이 `0600`으로 다시 렌더링되어 Agent health가 실패하고 Keycloak은 읽지 못합니다.
+따라서 다음 Agent 재시작 전에는 Keycloak KV를 쓰지 않고, Keycloak을 다시 만들기 전마다 Agent
+healthy를 확인합니다. 재시작하면 `start-agent.sh`가 `agent.hcl`의 `0640`을 적용합니다.
+변수를 비워도 bind는 남으므로 `out/auth` 디렉터리가 없으면 Keycloak은 만들어지지 않습니다.
+파일 group은 Agent의 기본 group(1000)이므로 `SECRETS_GID`가 1000이 아니면 읽을 수 없습니다.
+
+Entrypoint는 파일의 CR·LF를 모두 지우므로 검사도 같은 방식으로 비교합니다. 읽을 수 없거나
+빈 파일이면 Keycloak은 시작하지 않습니다. 로그인 거부(`kcadm=invalid`)는 재시도하지 않으므로
+반복되면 원인을 찾기 전에 다시 실행하지 않습니다.
 
 ## Related Documents
 

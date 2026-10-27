@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -960,6 +960,75 @@ and `admin_login` 200, rc 0 in 16 s. Grafana logged no provisioning warn or
 error; `provisioning.alerting` started and finished cleanly. The one
 `level=error` line, `job cleanup controller failed: context canceled`, came
 from the old process shutting down. Both follow-ups are closed on HOME.
+
+### Keycloak delivery source and Agent perms — 2026-10-27
+
+The owner approved two changes as one PR. The first fixes the gap that blocked
+the Grafana `0640` step. The Agent does not rewrite a destination whose content
+is unchanged, so a changed template `perms` never reached the existing file; on
+2026-10-27 that took an in-place `chmod` as UID 100 (P01 TSK-0006).
+`start-agent.sh` now reads each template's `destination` and `perms` from
+`agent.hcl`, which stays their only owner. Before `exec` it applies them to
+destinations that already exist as regular files. A symlink, a mode that is not
+`0NNN`, a path outside `/openbao/out/*/` or containing `..`, or an unreadable
+`agent.hcl` stops the start before the Agent runs. BusyBox awk in the pinned
+image parsed the four pairs exactly.
+
+The second makes Keycloak the second consumer, after the Grafana pattern.
+`keycloak_admin_password.txt` renders at `0640` for Keycloak (UID 1000, group
+1000). `health-agent.sh` requires `640` for both consumed `.txt` files and
+`600` elsewhere, and rejects any other group-readable file in `out/auth`.
+Keycloak binds `${DEFAULT_SECURITY_DIR}/openbao/out/auth` read-only at
+`/run/openbao/auth` with `create_host_path: false`. Its entrypoint reads
+`${KEYCLOAK_ADMIN_PASSWORD_FILE:-/run/secrets/keycloak_admin_password}`, and
+`.env.example` carries the empty variable. The DB password stays a `./secrets`
+Compose secret.
+
+`KC_BOOTSTRAP_ADMIN_PASSWORD` applies only while no admin exists. Changing the
+file path therefore never changes Keycloak's stored admin password: the cutover
+changes the value's source, and `admin_login` passes only when the two agree.
+
+`verify-keycloak-consumption.sh` mirrors the Grafana verifier: a health wait,
+the two allowed paths, the rendered version, mounted equals rendered after the
+entrypoint's CR/LF removal, and a login. Keycloak has no curl. The login runs
+`kcadm.sh config credentials` with the password in `KC_CLI_PASSWORD`, set inside
+the container, and a temporary config file removed on exit. A live probe with a
+nonexistent user showed that kcadm refuses stdin without a console but reaches
+the grant with `KC_CLI_PASSWORD`. Only a no-answer result is retried; a
+rejection (`kcadm=invalid`) is final.
+
+Checks: Agent contract 31 OK, consumer-migration 21 OK (8 new Keycloak verifier
+cases with FAKE_DOCKER), shellcheck clean.
+
+Independent reviews before merge: the security audit found 4 Low and 1
+Informational issue, and the IaC review found 2 Medium and 4 Low; neither found
+Critical or High. Fixed:
+
+- the verifier also times out `kcadm.sh` inside the container, so a timed-out
+  attempt cannot overlap its retry;
+- the parser strips quotes from `perms` and fails closed when it cannot read
+  every template;
+- the README now ties the health switch to the main checkout fast-forward, not
+  to the GitHub merge, and gives the real rollback (revert the merge, then
+  `0600`) with a stray-file pre-check.
+
+Accepted residuals:
+
+- The running Agent keeps `0600` in memory until its next restart. A Keycloak
+  KV write before then re-renders the file at `0600`, which breaks Agent health
+  and Keycloak's read. No Keycloak KV write is allowed until that restart, and
+  Agent health is checked before every Keycloak recreate.
+- The bind stays when the variable is empty, so Keycloak needs `out/auth` to
+  exist.
+- The file's group couples to `SECRETS_GID` 1000.
+- Keycloak's stored password does not follow an OpenBao rotation.
+- Hardening left for later: a component-wise symlink check, and `-perm /044`
+  with a group check in health.
+
+The live-mount order follows. Run the UID 100 `chmod 0640` and the main
+checkout fast-forward back to back after the GitHub merge, then check Agent
+health. The HOME cutover, rollback and re-cutover are owner-windowed and NOT_RUN
+at this point.
 
 ## Evidence
 

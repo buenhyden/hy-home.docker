@@ -38,8 +38,8 @@ class AgentContractTests(unittest.TestCase):
             self.out / "auth/keycloak_admin_password.txt",
             self.out / "observability/grafana_admin_password.txt",
         ]
-        # Keycloak stays owner-only; Grafana is group-readable for P06 W49.
-        self.rendered_modes = (0o600, 0o640)
+        # Both consumed passwords are group-readable (P06 W49 Grafana, Keycloak).
+        self.rendered_modes = (0o640, 0o640)
         for path, value, mode in zip(
             self.rendered, self.values, self.rendered_modes, strict=True
         ):
@@ -49,6 +49,13 @@ class AgentContractTests(unittest.TestCase):
         for path, version in zip(self.versions, ("7", "11"), strict=True):
             path.write_text(version)
             path.chmod(0o600)
+        config = self.root / "openbao/config"
+        config.mkdir()
+        (config / "agent.hcl").write_text(
+            (SCRIPTS.parent / "config/agent.hcl")
+            .read_text()
+            .replace("/openbao/", str(self.root / "openbao") + "/")
+        )
         self.ca = self.root / "ca.pem"
         self.ca.write_text("synthetic CA stub\n")
         self.log = self.root / "arguments.jsonl"
@@ -398,32 +405,41 @@ sys.exit(result.returncode)
         self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
 
     def test_rendered_passwords_require_their_exact_mode(self):
-        # World-readable, and each file at the other file's mode, must fail.
-        for index, wrong in ((0, 0o644), (1, 0o644), (0, 0o640), (1, 0o600)):
+        # World-readable and owner-only must both fail.
+        for index, wrong in ((0, 0o644), (1, 0o644), (0, 0o600), (1, 0o600)):
             self.rendered[index].chmod(wrong)
             self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
             self.rendered[index].chmod(self.rendered_modes[index])
 
-    def test_no_other_group_readable_file_beside_grafana(self):
-        stray = self.out / "observability/other.txt"
+    def test_no_other_group_readable_file_beside_consumed_passwords(self):
+        for directory in ("observability", "auth"):
+            with self.subTest(directory=directory):
+                stray = self.out / directory / "other.txt"
+                stray.write_text("synthetic")
+                stray.chmod(0o640)
+                self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+                stray.chmod(0o600)
+                self.assertEqual(self.run_script("health-agent.sh").returncode, 0)
+        # Each directory admits only its own consumer's file.
+        stray = self.out / "auth/grafana_admin_password.txt"
         stray.write_text("synthetic")
         stray.chmod(0o640)
         self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
-        stray.chmod(0o600)
-        self.assertEqual(self.run_script("health-agent.sh").returncode, 0)
 
-    def test_only_the_grafana_template_is_group_readable(self):
+    def test_only_the_consumed_password_templates_are_group_readable(self):
         import re
 
         hcl = (SCRIPTS.parent / "config/agent.hcl").read_text()
         modes = dict(
             re.findall(r'destination = "([^"]+)"\n(?:.*\n)??\s*perms\s*= (\d+)', hcl)
         )
-        self.assertEqual(
-            "0640", modes.pop("/openbao/out/observability/grafana_admin_password.txt")
-        )
+        for consumed in (
+            "/openbao/out/observability/grafana_admin_password.txt",
+            "/openbao/out/auth/keycloak_admin_password.txt",
+        ):
+            self.assertEqual("0640", modes.pop(consumed))
         self.assertEqual({"0600"}, set(modes.values()))
-        self.assertEqual(3, len(modes))
+        self.assertEqual(2, len(modes))
 
     def test_version_sentinels_require_private_mode(self):
         for index in (0, 1):
@@ -436,6 +452,47 @@ sys.exit(result.returncode)
         self.assertEqual(result.returncode, 0)
         self.assertTrue(result.stderr == "agent: authentication pending\n")
         self.assertFalse((self.agent / "token").exists())
+
+    def test_start_applies_template_perms_to_existing_files(self):
+        # An unchanged render keeps its old mode; start must fix it from agent.hcl.
+        self.rendered[0].chmod(0o600)
+        self.versions[1].chmod(0o640)
+        self.versions[0].unlink()
+        self.assertEqual(self.run_script("start-agent.sh").returncode, 0)
+        self.assertEqual(0o640, self.rendered[0].stat().st_mode & 0o777)
+        self.assertEqual(0o640, self.rendered[1].stat().st_mode & 0o777)
+        self.assertEqual(0o600, self.versions[1].stat().st_mode & 0o777)
+        # A missing destination is left for the Agent to render.
+        self.assertFalse(self.versions[0].exists())
+
+    def test_start_refuses_symlinked_destination_before_the_agent(self):
+        target = self.root / "elsewhere"
+        target.write_text("synthetic")
+        target.chmod(0o600)
+        self.rendered[0].unlink()
+        self.rendered[0].symlink_to(target)
+        self.assertNotEqual(self.run_script("start-agent.sh").returncode, 0)
+        self.assertEqual(0o600, target.stat().st_mode & 0o777)
+        self.assertFalse(self.log.exists())
+
+    def test_start_rejects_unsafe_template_perms_or_destination(self):
+        hcl = self.root / "openbao/config/agent.hcl"
+        original = hcl.read_text()
+        prefix = str(self.root / "openbao") + "/"
+        for old, new in (
+            ("perms       = 0640", "perms       = 640"),
+            ("perms       = 0640", "perms       = 06400"),
+            (prefix + "out/auth/", prefix + "agent/"),
+            (prefix + "out/auth/", prefix + "out/auth/../../agent/"),
+            # A template whose perms the parser cannot read must not pass silently.
+            ("perms       = 0640", "perms=0640"),
+        ):
+            with self.subTest(new=new):
+                hcl.write_text(original.replace(old, new, 1))
+                self.assertNotEqual(self.run_script("start-agent.sh").returncode, 0)
+                self.assertFalse(self.log.exists())
+        hcl.unlink()
+        self.assertNotEqual(self.run_script("start-agent.sh").returncode, 0)
 
     def test_http_missing_ca_and_skip_verify_are_rejected(self):
         for name in ("health-agent.sh", "start-agent.sh"):

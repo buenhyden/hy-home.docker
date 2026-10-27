@@ -29,7 +29,8 @@ auto_auth {
 template {
   source      = "/openbao/config/templates/keycloak_admin_password.ctmpl"
   destination = "/openbao/out/auth/keycloak_admin_password.txt"
-  perms       = 0600
+  # Group 1000 read lets Keycloak (UID 1000, group 1000) consume it (P06).
+  perms       = 0640
 }
 
 template {

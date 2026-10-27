@@ -42,11 +42,18 @@ services:
       - keycloak-themes:/opt/keycloak/themes:ro
       - keycloak-config:/opt/keycloak/conf:ro
       - keycloak-providers:/opt/keycloak/providers:ro
+      # P06: the OpenBao Agent's auth output, read when KEYCLOAK_ADMIN_PASSWORD_FILE
+      # points under /run/openbao/auth. A missing directory stops Keycloak.
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/out/auth
+        target: /run/openbao/auth
+        read_only: true
+        bind: {create_host_path: false}
     entrypoint:
       - /bin/sh
       - -ec
       - |
-        KC_BOOTSTRAP_ADMIN_PASSWORD="$$(tr -d '\r\n' </run/secrets/keycloak_admin_password)"
+        KC_BOOTSTRAP_ADMIN_PASSWORD="$$(tr -d '\r\n' <"$$KEYCLOAK_ADMIN_PASSWORD_FILE")"
         KC_DB_PASSWORD="$$(tr -d '\r\n' </run/secrets/keycloak_db_password)"
         [ -n "$$KC_BOOTSTRAP_ADMIN_PASSWORD" ] || { echo 'keycloak_admin_password is empty' >&2; exit 1; }
         [ -n "$$KC_DB_PASSWORD" ] || { echo 'keycloak_db_password is empty' >&2; exit 1; }
@@ -59,6 +66,10 @@ services:
       KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
       KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
+      # P06: set KEYCLOAK_ADMIN_PASSWORD_FILE to the Agent-rendered file under
+      # /run/openbao/auth to consume OpenBao; unset rolls back. Bootstrap only:
+      # Keycloak applies it only while no admin exists.
+      KEYCLOAK_ADMIN_PASSWORD_FILE: ${KEYCLOAK_ADMIN_PASSWORD_FILE:-/run/secrets/keycloak_admin_password}
       KC_HOSTNAME: keycloak.${DEFAULT_URL}
       KC_HTTP_ENABLED: 'true'
       KC_PROXY_HEADERS: xforwarded
