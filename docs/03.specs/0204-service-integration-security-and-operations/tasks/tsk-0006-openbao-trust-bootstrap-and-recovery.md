@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.28"
+version: "0.2.29"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3300,6 +3300,58 @@ The old twelve/fourteen-case aggregate is not promoted. A future HOME window
 still needs an owner decision, its exact newly approved commit and manifest,
 installation and separate operational acceptance. Existing Evidence, Criterion
 Acceptance, review status and blocked lifecycle remain unchanged.
+
+### v30 A3 runtime cleanup and B4 scheduling — 2026-10-27
+
+SPEC-0243 TSK-0001 is terminal, so its A3/B4 handoffs are continued here. The
+owner chose "preserve then delete" for the runtime copies, a prepared sudo
+command for the accepted `-06` target, retention for `-05`, and B4 in a later
+session.
+
+**Runtime copies — DONE.** Under `/run/user/1000` the four directories
+`p01-client.F2pewN`, `p01-client.UPX6k2`, `p01-inputs.Nr6uDg` and
+`p01-inputs.p0Dj20`, plus 16 `p01-blk-*.sh` window scripts, were user-owned.
+A pattern scan found no credential (the only hit was a `-----BEGIN
+CERTIFICATE` source literal); JSON receipts were read by key name only.
+`p01-inputs.p0Dj20` held the only copy of the accepted `-06` restore contract
+(`a07fe0ae…`) and its security receipt, and `p01-inputs.Nr6uDg` held `-05`'s.
+Both input directories and the 16 scripts were copied to the owner-only
+`/home/hyunyoun/storage/ops-snapshots/openbao-p01-20261022/` (mode 0700) with a
+40-row `MANIFEST.sha256`; source and copy both verified against it, and each
+script compared equal. The exact list was then deleted; no `p01-*` entry
+remains under `/run/user/1000`. The two `p01-client` directories held only
+repository script/policy copies and were not preserved.
+
+**`-06` target — REMOVED by the owner.** Read-only metadata:
+`p01-restore-20261022-06` is a directory on device 2064 (inode 115608705),
+UID 100, mode 0700, unreadable to the agent; no Compose container mounts it
+and its ledger `.p01-restore-20261022-06.attempt.json` is present and kept. The
+owner script re-checks parent identity, target identity, ledger presence, no
+mount, no container mount, no symlink or hard link inside and no process
+cwd/root/fd under it, then runs one `sudo rm -r --one-file-system` on that
+exact path and confirms the ledger remains. The first owner attempt ran through
+the session's `!` prefix, which has no terminal: every sudo call failed, the
+original script treated those failures as "nothing found", printed `checks
+PASS` and its `sudo rm` also failed, so nothing changed (target inode
+115608705 and ledger confirmed afterwards). The corrected script refuses to run
+without a terminal, authenticates sudo first, and stops when any check command
+fails or the sudo count is empty. The owner then ran it in a terminal:
+`checks PASS; entries: 5` and `REMOVED …p01-restore-20261022-06; ledger kept`.
+A listing afterwards shows `p01-restore-20261014-05` and both attempt ledgers
+only.
+
+**`-05` target — RETAINED.** The owner kept `p01-restore-20261014-05` until the
+next window or review. Root custody, W2 locks and both ledgers are outside this
+cleanup.
+
+**B4 — deferred to a new session.** Review confirmed the SPEC-0243 handoff. The
+P06 Grafana consumption verifier now exists as synthetic-tested source
+(TSK-0014 W49); Keycloak has no consumer verifier, and the cutover it would
+verify has not run. The approved custody location is owner-only 0600 tmpfs
+under `$XDG_RUNTIME_DIR`. Still open before the v3 journal: the custody
+retention/destruction point, child-lease/rollback disposition, the
+selected-version revoke-self check, and a new P01 approval for the changed
+helper hash.
 
 ## Evidence
 
