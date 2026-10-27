@@ -54,6 +54,7 @@ def operator():
             "renewable": True,
             "path": "auth/oidc/oidc/callback",
             "entity_id": "synthetic-operator-entity",
+            "meta": {"role": "home-admin"},
         }
     }
 
@@ -205,6 +206,27 @@ class CeremonyTests(unittest.TestCase):
                                 lambda _, shares=shares: next(shares),
                             )
                 self.assertEqual(self.api.calls, [("GET", M.LOOKUP, None)])
+
+    def test_operator_outside_home_admin_role_or_with_identity_policy_is_blocked(self):
+        valid = operator()["data"]
+        cases = {
+            "missing meta": {k: v for k, v in valid.items() if k != "meta"},
+            "other role": {**valid, "meta": {"role": "reader"}},
+            "extra meta": {**valid, "meta": {"role": "home-admin", "x": "1"}},
+            "identity policy": {**valid, "identity_policies": ["extra"]},
+            "malformed identity policies": {**valid, "identity_policies": "extra"},
+        }
+        for label, data in cases.items():
+            with self.subTest(case=label):
+                self.api = FakeAPI()
+                self.api.responses[0] = {"data": data}
+                with tempfile.TemporaryDirectory(dir=self.tmp.name) as directory:
+                    with M.Custody(Path(directory)) as custody:
+                        with self.assertRaises(M.Blocked):
+                            M.ceremony(self.api, custody, CLUSTER, lambda _: "a" * 64)
+                self.assertEqual(self.api.calls, [("GET", M.LOOKUP, None)])
+        for empty in (None, []):
+            M.check_operator({"data": {**valid, "identity_policies": empty}})
 
     def test_lost_operator_entity_after_delivery_preserves_root_custody(self):
         self.api.responses[6] = {"data": {**operator()["data"], "entity_id": ""}}

@@ -11,6 +11,8 @@ x-n8n-common-env: &n8n-common-env
   DB_POSTGRESDB_USER: ${N8N_DB_USER}
   DB_POSTGRESDB_PASSWORD_FILE: /run/secrets/n8n_db_password
   EXECUTIONS_MODE: queue
+  # Smaller than n8n's 16 MiB default; bounds Zod array parsing (GHSA-mrhx-c7xc-m3w5).
+  N8N_PAYLOAD_SIZE_MAX: ${N8N_PAYLOAD_SIZE_MAX:-4}
   N8N_VALKEY_HOST: ${N8N_VALKEY_HOST:-mng-valkey}
   N8N_VALKEY_USERNAME: ${N8N_VALKEY_USERNAME:-}
   N8N_VALKEY_SECRET: ${N8N_VALKEY_SECRET:-mng_valkey_password}

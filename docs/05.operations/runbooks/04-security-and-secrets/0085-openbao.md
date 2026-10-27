@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.45"
+version: "0.12.46"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-27"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -115,7 +115,7 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 `token_ttl=0`, `token_max_ttl=0`과 발급 token의 `explicit_max_ttl=0`에서 24시간은
 갱신 주기다. 갱신이 계속되면 총수명 상한이 없다([공식 token 수명](https://openbao.org/docs/concepts/tokens/)).
 SecretID TTL은 10분, 사용 횟수는 1회다. sink 복사본도 갱신 가능하고 W5는 이전 Agent token을
-폐기하지 않는다. 두 KV 읽기·sink0600과 2026-11-15까지의 기존 예외를 유지한다.
+폐기하지 않는다. 두 KV 읽기·sink0600과 2026-12-15까지의 기존 예외를 유지한다.
 유한수명이나 이전 세대 폐기는 아래 인계와 POL-0085의 별도 결정이 필요하다. Agent는 SecretID 파일을 읽은 뒤
 삭제하므로, token이 끝나면 새 SecretID를 전달해야 한다(아래 Renderer SecretID Delivery). 기존 Docker Secret 소비자는 현재 파일을 계속 사용하며, 렌더링된 출력이 자동으로
 애플리케이션 mount를 전환하지는 않는다.
@@ -704,7 +704,7 @@ custody 파일을 열지 않고, window 안이든 다음 window의 W1 전이든 
 절차가 생길 때까지 **BLOCKED**다([POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가
 받아들인 잔여 위험). kept W2 custody가 있는 동안은 이후 모든 정리에서도
 `P01_KEEP_W2=1`을 둔다. sealed server에서 root custody를 지우면 OIDC 확인 없이 관리 접근을 모두
-버리는 것이며, 이는 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 2026-11-15까지 받아들인 잔여 위험이다(복구는 share 2개로 unseal한 뒤
+버리는 것이며, 이는 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 2026-12-15까지 받아들인 잔여 위험이다(복구는 share 2개로 unseal한 뒤
 OIDC operator와 W1 절차).
 
 지우기 전에 credential이 없는 증거, 곧 W1c의 `prior-state.json`·`state.json`(`p01-roles.*`,
@@ -804,7 +804,7 @@ OpenBao와 같은 UID라 `audit.json`, TLS server key, Raft data, Agent token si
 렌더된 Keycloak·Grafana admin password, SecretID 파일, 그리고 `docker compose exec` 동안 container
 안 `bao` process의 환경에 있는 root·operator token을 읽을 수 있습니다(`${DEFAULT_SECURITY_DIR}/openbao` 아래 UID 100
 소유 경로). dhcpcd의 권한 분리
-process는 chroot되어 위험이 작으며 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 2026-11-15까지 받아들인 잔여 위험입니다. host swap(`/swap.img`)은 암호화되지
+process는 chroot되어 위험이 작으며 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 2026-12-15까지 받아들인 잔여 위험입니다. host swap(`/swap.img`)은 암호화되지
 않아 tmpfs의 custody·token 파일 page가 disk로 나갈 수 있고, `shred`는 그 사본을 지우지 못합니다.
 이것도 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 받아들인 잔여 위험입니다. 최초 숫자 group
 표기는 실제 격리 parser에서 거부돼 이름으로 수정했습니다. rename/create0600,
@@ -956,9 +956,11 @@ lookup만 허용하고 proxy·redirect·환경 token을 사용하지 않습니�
 root credential로 `lookup-self`를 수행해 root-only·orphan·비만료 identity를 확인해야
 `DELIVERED`가 됩니다. 이 client는 snapshot token 발급·root 폐기·upgrade를 실행하지 않습니다.
 
-operator의 `entity_id`는 명시적인 비어 있지 않은 문자열이어야 합니다. 이 형식 검사는 정확한
-entity·alias·provider 또는 identity policy 허용 범위를 확인하지 않으며, 그 소유 계약이 확정될
-때까지 B1의 전체 신원 바인딩은 PARTIAL입니다.
+operator의 `entity_id`는 명시적인 비어 있지 않은 문자열이어야 합니다. 또한 token `meta`는 정확히
+OIDC role `home-admin` 하나이고 `identity_policies`는 없거나 비어 있어야 합니다. 2026-10-27 owner가 직접
+실행한 읽기 전용 lookup은 이 모양과 entity의 단일 `oidc`(`auth/oidc/`) alias를 보였습니다. entity alias와
+mount accessor 대조는 이 도구의 API 허용 목록을 넓혀야 하고 operator는 auth mount 목록을 읽을 수 없으므로
+검사하지 않습니다. 변경된 helper는 다음 window에서 새 `P01_APPROVED_COMMIT` 승인과 설치 검증이 필요합니다.
 
 독립 code/security 검토와 합성 TLS·중단 회귀시험은 통과했습니다. 지정 운영자 `buenhyden`은
 2026-10-14 최신 답변에서 unseal share와 보관 준비를 확인했습니다. 이는 5단계 기록이 아닌 운영자 확인이며
@@ -1007,15 +1009,15 @@ while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
   printf '%s  %s\n' "$P01_SOURCE_HASH" "$P01_CLIENT_DIR/$P01_SOURCE_PATH" | /usr/bin/sha256sum -c - || exit 1
   /usr/bin/chmod 0400 "$P01_CLIENT_DIR/$P01_SOURCE_PATH" || exit 1
 done <<'P01_SOURCE_MANIFEST'
-4553286a0c6f4e45f1901942043762bfe6312d22cad281a3c3ffe15eb232429f infra/03-security/openbao/scripts/protected-maintenance.py
-bd20ab9bf30efb3dca27a1f1553e516a82175535ad6e41e7eb73c60d924d197d infra/03-security/openbao/scripts/protected-token-operations.py
-99c73fb8adfd0c974261aa68014aa4dc6f51550f63182578b68b45a6c0311b8c infra/03-security/openbao/scripts/protected-raft-snapshot.py
+b6b820b6561558020842376a06729f7663de3410188a544a6662024c4575568c infra/03-security/openbao/scripts/protected-maintenance.py
+1ffe30c089361c7a7129bcce2407d08418222722aad2cba6e90804213b7c433b infra/03-security/openbao/scripts/protected-token-operations.py
+05be43d5e2b9e8f067c2b81d4872666e89a1300fd2d21ecfee12db13e8aa5853 infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-4c2d0732efb2c63fd991499419d830d70159672dafcb54385ef948ae7b37681d infra/03-security/openbao/scripts/protected-semantic-restore.py
+1ff39dd355f0d1fd5f61570d388e872d4e03016562c5b2cd36c4748f8efad410 infra/03-security/openbao/scripts/protected-semantic-restore.py
 b5aa92bdf528eb92993fc46061ead65b72bf71efe30182cca7cc5b5706ab396e infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
-564ce1cf3214a02cb99bf7bc572be2dbbd66bf766b54368635f6b4b248da8052 infra/03-security/openbao/scripts/protected-renderer-roles.py
+db0d6a94638013294eae18b7d20e0da274b499844a7fe9ef848aad3cbd278b3a infra/03-security/openbao/scripts/protected-renderer-roles.py
 6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1 infra/03-security/openbao/config/policies/renderer.hcl
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl

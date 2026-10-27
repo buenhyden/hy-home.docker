@@ -536,7 +536,13 @@ class NativeRehearsalTests(unittest.TestCase):
             "repository",
         ):
             arguments += ["--" + name, getattr(options, name.replace("-", "_"))]
-        _written, digest = self.produce(*arguments)
+        identity = self.isolate_target(restore)
+        # The producer CLI must bind the same isolated attempt and target.
+        with mock.patch.object(M, "load_restore", return_value=restore):
+            _written, digest = self.produce(*arguments)
+        patcher = mock.patch.object(restore, "PARENT_IDENTITY", identity)
+        patcher.start()
+        self.addCleanup(patcher.stop)
         execution, contract, admission = self.admit(restore, options, digest)
         admission.pre_read()
         effects = restore.RecoveryEffects(
@@ -576,34 +582,38 @@ class NativeRehearsalTests(unittest.TestCase):
             client.target,
         )
 
+    def isolate_target(self, restore, cluster=None):
+        """Never reuse HOME's attempt, ledger or accepted restore target."""
+        attempt = "p01-rehearsal-" + uuid.uuid4().hex[:12]
+        # Docker writes the restored Raft data as UID 100; the owner removes it.
+        parent = Path(tempfile.mkdtemp(prefix=attempt + "-", dir=REHEARSAL_PARENT))
+        parent.chmod(0o700)
+        values = [
+            ("ATTEMPT", attempt),
+            ("LEDGER", "." + attempt + ".attempt.json"),
+            ("TARGET", parent / attempt),
+        ]
+        if cluster is not None:
+            values.append(("CLUSTER", cluster))
+        for name, value in values:
+            patcher = mock.patch.object(restore, name, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        info = parent.stat()
+        return (info.st_dev, info.st_ino, info.st_uid, info.st_gid)
+
     def full_perform(self, canary_values=None):
         native, fixture, client, shares = self.home()
         cluster = client.api("GET", "sys/seal-status")[1]["cluster_id"]
         reference = self.seed(native, fixture, client, cluster, canary_values)
         restore = M.load_restore()
-        attempt = "p01-rehearsal-" + uuid.uuid4().hex[:12]
-        # Docker writes the restored Raft data as UID 100; the owner removes it.
-        parent = Path(tempfile.mkdtemp(prefix=attempt + "-", dir=REHEARSAL_PARENT))
-        parent.chmod(0o700)
-        for name, value in (
-            ("ATTEMPT", attempt),
-            ("LEDGER", "." + attempt + ".attempt.json"),
-            ("TARGET", parent / attempt),
-            ("CLUSTER", cluster),
-        ):
-            patcher = mock.patch.object(restore, name, value)
-            patcher.start()
-            self.addCleanup(patcher.stop)
+        identity = self.isolate_target(restore, cluster)
+        attempt, parent = restore.ATTEMPT, restore.TARGET.parent
         options = self.inputs(client, cluster, restore)
         digest = M.contract(options, restore=restore)
         # _contract pins HOME's parent literally; the target's real parent
         # replaces it only after the contract is admitted.
-        info = parent.stat()
-        with mock.patch.object(
-            restore,
-            "PARENT_IDENTITY",
-            (info.st_dev, info.st_ino, info.st_uid, info.st_gid),
-        ):
+        with mock.patch.object(restore, "PARENT_IDENTITY", identity):
             execution, contract, admission = self.admit(restore, options, digest)
             home_token = client.api("POST", "auth/token/create", {"ttl": "30m"})[1][
                 "auth"

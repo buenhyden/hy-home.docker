@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.30"
+version: "0.4.31"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-27"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -2726,6 +2726,26 @@ SurrealDB publicv2 resolution identifies the current source artifact asv2.7.0,
 without identifying the installed binary or changing historical running facts.
 Three Critical official advisories and actual tenant/permission exposureUNKNOWN
 remain recorded. No new image build/Native/scan/restore/HOME PASS is asserted.
+
+### n8n runtime Zod advisory acceptance — 2026-10-27
+
+A read-only, network-disabled scan of `hyhome/n8n:2.43.6-local` and the pinned
+`n8nio/runners:2.43.6` digest found one `zod` package each, version 3.25.76,
+inside the GHSA-mrhx-c7xc-m3w5 range (<4.6.6; memory exhaustion from large
+arrays, availability only). npm metadata shows n8n 2.43.6, 2.44.2 stable and
+2.45.1 beta all still depend on zod 3.25.76, so no upstream release fixes it;
+forcing Zod 4 into n8n core is an unsupported major change and was not done.
+The OpsflowSmtp dev-tree override does not change these images.
+
+The owner accepted the runtime residual until 2026-11-26. The installed config
+source sets `payloadSizeMax = 16` and applies it as the post-decompression body
+limit; the n8n Compose now sets `N8N_PAYLOAD_SIZE_MAX` to 4 by default as a
+partial compensating control, beside the existing Traefik `sso-auth` on every
+n8n route. Exit is adopting an n8n release built on a fixed Zod; WAN or SSO-less
+webhook exposure or a public exploit forces an early re-decision. POL-0053
+records the acceptance. The n8n source binding and ROOT include inputs were
+rehashed. The HOME recreate that applies the limit, image signatures, full scan
+and Native/HOME acceptance remain NOT_RUN.
 
 ## Evidence
 

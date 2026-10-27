@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.8.4"
+version: "0.8.5"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-27"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -172,7 +172,7 @@ gate가 실패한다. 같은 window가 쓰는 Traefik·Prometheus image의 수�
 
 ### Maintenance window residuals
 
-2026-10-15 owner는 아래 잔여 위험을 **2026-11-15까지** 받아들였다(마지막 행은 2026-10-21 추가). 그날 다시 결정한다. UID 100과
+2026-10-15 owner는 아래 잔여 위험을 **2026-11-15까지** 받아들였다(마지막 행은 2026-10-21 추가). 2026-10-27 owner는 sealed 정리·남겨 둔 W2 custody·만료 없는 renderer token 세 행을 같은 범위·보완 통제·종료 조건으로 **2026-12-15까지** 다시 받아들였다. token·root·lock은 바꾸지 않았다. 같은 날 owner는 UID 100 공유와 암호화 안 된 swap 두 행도 같은 범위·종료 조건으로 **2026-12-15까지** 다시 받아들였다. 다섯 행 모두 그날 다시 결정한다. UID 100과
 swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 편차로 다룬다.
 
 | 잔여 위험 | 범위와 위험 | 종료 조건 |

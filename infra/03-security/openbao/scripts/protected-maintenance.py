@@ -422,6 +422,10 @@ def check_operator(response):
         or not 1 <= data["creation_ttl"] <= 3600
         or type(data.get("renewable")) is not bool
         or data.get("path") != "auth/oidc/oidc/callback"
+        # RUN-0085 binds the operator to OIDC role home-admin; identity
+        # policies would grant beyond hy-home-operator.
+        or data.get("meta") != {"role": "home-admin"}
+        or data.get("identity_policies") not in (None, [])
     ):
         raise Blocked()
 
