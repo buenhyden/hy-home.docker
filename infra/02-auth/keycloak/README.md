@@ -1,10 +1,10 @@
 ---
 title: "Keycloak IAM"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-27"
 created: "2025-11-12"
 ---
 
@@ -65,7 +65,7 @@ keycloak/
 | Network | `edge_net`, `mng_data_net`, `obs_net` |
 | Public Host | `keycloak.${DEFAULT_URL}` |
 | Health | management 포트 `/health/ready` |
-| Secrets | `keycloak_db_password`, `keycloak_admin_password` |
+| Secrets | `keycloak_db_password`, `keycloak_admin_password` 또는 OpenBao Agent 출력(`KEYCLOAK_ADMIN_PASSWORD_FILE`) |
 
 ## Application Client Matrix
 
@@ -127,6 +127,11 @@ Kafbat은 Keycloak `groups` claim을 사용합니다.
 - `KC_PROXY_HEADERS=xforwarded`
 - PostgreSQL backend
 - Traefik TLS 뒤의 공개 HTTP
+- `KEYCLOAK_ADMIN_PASSWORD_FILE`: 비어 있으면 `/run/secrets/keycloak_admin_password`, OpenBao 소비 시
+  `/run/openbao/auth/keycloak_admin_password.txt`. Agent의 `out/auth`가 읽기 전용으로 bind됩니다.
+- `KC_BOOTSTRAP_ADMIN_PASSWORD`는 관리자가 없을 때만 적용됩니다. 파일 경로를 바꿔도 실제 관리자
+  비밀번호는 바뀌지 않으며, 전환·되돌리기 절차는
+  [OpenBao 소비자 이관 안내](../../03-security/openbao/consumer-migration/README.md)를 따릅니다.
 
 ## Validation
 

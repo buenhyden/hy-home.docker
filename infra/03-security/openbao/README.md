@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.10"
+version: "0.1.11"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-27"
 ---
 
 # OpenBao
@@ -73,6 +73,9 @@ Persistence:
 [start-server](./scripts/start-server.sh), [start-agent](./scripts/start-agent.sh),
 [health-agent](./scripts/health-agent.sh), [wrapped reissue](./scripts/issue-renderer-secret-id.sh)가
 port/trust·새 인증·제한 fetch/render 경계를 구현합니다.
+Agent는 내용이 같은 출력 파일을 다시 쓰지 않으므로 `start-agent.sh`가 시작 때
+[agent.hcl](./config/agent.hcl)의 template별 `destination`·`perms`를 읽어 이미 있는 일반 파일에만
+`chmod`를 적용합니다. symlink나 `/openbao/out/` 밖 경로가 있으면 Agent를 시작하지 않습니다.
 SEC01 candidate는 server·Agent·snapshot CLI를 2.7.1로 정렬합니다. operator의 직접 SecretID
 발급을 제거하고 5분 비갱신 issuer/cleanup role로 분리합니다. host helper는 Agent volume 밖의
 영속 journal을 API 호출 전에 기록하며 새 process 기능 readiness와 accessor 정합화 후에만

@@ -313,3 +313,230 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
             result.stdout,
         )
         self.assertEqual(0, self.calls)
+
+
+KC_VERIFIER = PACKAGE / "verify-keycloak-consumption.sh"
+FAKE_KC_DOCKER = r"""#!/usr/bin/env python3
+import os, subprocess, sys
+args, env = sys.argv[1:], {}
+if args[0] == "inspect":
+    states = os.environ.get("FAKE_HEALTH", "healthy").split(",")
+    counter = os.path.join(os.environ["FAKE_ROOT"], "inspect-calls")
+    n = int(open(counter).read()) if os.path.exists(counter) else 0
+    open(counter, "w").write(str(n + 1))
+    print(states[min(n, len(states) - 1)])
+    sys.exit(0)
+assert args.pop(0) == "exec"
+while args[0] == "-e":
+    key, _, value = args[1].partition("=")
+    env[key] = value
+    args = args[2:]
+root = os.path.join(os.environ["FAKE_ROOT"], args.pop(0))
+local = lambda path: root + path
+if args[0] == "printenv":
+    print(os.environ.get("FAKE_KC_FILE", "/run/secrets/keycloak_admin_password"))
+elif args[0] == "cat":
+    sys.stdout.buffer.write(open(local(args[1]), "rb").read())
+elif args[:2] == ["sh", "-c"]:
+    env.update(PATH="/usr/bin:/bin", KC_BOOTSTRAP_ADMIN_USERNAME="admin",
+               MOUNTED=local(env["MOUNTED"]), FAKE_ROOT=os.environ["FAKE_ROOT"],
+               FAKE_KC_NO_RESPONSE=os.environ.get("FAKE_KC_NO_RESPONSE", "0"))
+    script = args[2].replace("/opt/keycloak/bin/", os.environ["FAKE_BIN"] + "/")
+    sys.exit(subprocess.run(["sh", "-c", script], env=env).returncode)
+"""
+FAKE_KCADM = r"""#!/usr/bin/env python3
+import os, sys
+root = os.environ["FAKE_ROOT"]
+open(os.path.join(root, "kcadm-argv"), "a").write(" ".join(sys.argv) + "\n")
+config = sys.argv[sys.argv.index("--config") + 1]
+open(os.path.join(root, "kcadm-config"), "a").write(config + "\n")
+counter = os.path.join(root, "kcadm-calls")
+calls = int(open(counter).read()) + 1 if os.path.exists(counter) else 1
+open(counter, "w").write(str(calls))
+if calls <= int(os.environ["FAKE_KC_NO_RESPONSE"]):
+    sys.stderr.write("Failed to send request - Connection refused\n")
+    sys.exit(1)
+expected = open(os.path.join(root, "expected-password")).read()
+if os.environ.get("KC_CLI_PASSWORD") != expected or sys.argv[-1] != "admin":
+    sys.stderr.write("Invalid user credentials [invalid_grant]\n")
+    sys.exit(1)
+"""
+
+
+class KeycloakConsumptionVerifierTests(unittest.TestCase):
+    def run_verifier(
+        self,
+        rendered,
+        mounted,
+        version=b"2",
+        login=None,
+        port=None,
+        kc_file=None,
+        misses=0,
+        health=None,
+    ):
+        import os
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root / "openbao-agent/openbao/out/auth"
+            out.mkdir(parents=True)
+            (out / "keycloak_admin_password.txt").write_bytes(rendered)
+            (out / "keycloak_admin_password.version").write_bytes(version)
+            for path in (
+                "keycloak/run/secrets/keycloak_admin_password",
+                "keycloak/run/openbao/auth/keycloak_admin_password.txt",
+            ):
+                (root / path).parent.mkdir(parents=True, exist_ok=True)
+                (root / path).write_bytes(mounted)
+            login = (
+                mounted.replace(b"\r", b"").replace(b"\n", b"")
+                if login is None
+                else login
+            )
+            (root / "expected-password").write_bytes(login)
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            for name, body in (("docker", FAKE_KC_DOCKER), ("kcadm.sh", FAKE_KCADM)):
+                (bin_dir / name).write_text(body)
+                (bin_dir / name).chmod(0o755)
+            result = subprocess.run(
+                ["bash", str(KC_VERIFIER)],
+                capture_output=True,
+                env={
+                    "PATH": f"{bin_dir}:{os.environ['PATH']}",
+                    "FAKE_ROOT": str(root),
+                    "FAKE_BIN": str(bin_dir),
+                    **({"KEYCLOAK_PORT": port} if port else {}),
+                    **({"FAKE_KC_FILE": kc_file} if kc_file else {}),
+                    "VERIFY_RETRY_SLEEP": "0",
+                    "VERIFY_HEALTH_SLEEP": "0",
+                    "VERIFY_HEALTH_TRIES": "3",
+                    **({"FAKE_HEALTH": health} if health else {}),
+                    **({"FAKE_KC_NO_RESPONSE": str(misses)} if misses else {}),
+                },
+                timeout=30,
+                check=False,
+            )
+
+            def read(name):
+                path = root / name
+                return path.read_bytes() if path.exists() else b""
+
+            argv = read("kcadm-argv")
+            self.calls = int(read("kcadm-calls") or 0)
+            # kcadm's token file must be gone once the verifier returns.
+            self.leftover = [
+                p for p in read("kcadm-config").decode().split() if Path(p).exists()
+            ]
+        return result, argv
+
+    def test_equal_bytes_and_login_pass_without_printing_the_value(self):
+        marker = b"Synth'etic\"marker-1"
+        result, argv = self.run_verifier(marker, marker + b"\n")
+        self.assertEqual(0, result.returncode, result.stdout)
+        self.assertEqual(
+            b"PASS keycloak_healthy\n"
+            b"PASS consumed_file path=/run/secrets/keycloak_admin_password\n"
+            b"PASS rendered_version version=2\nPASS mounted_equals_rendered\n"
+            b"PASS admin_login kcadm=ok\n",
+            result.stdout,
+        )
+        for stream in (result.stdout, result.stderr, argv):
+            self.assertNotIn(b"Synth", stream)
+        self.assertIn(b"--realm master --user admin", argv)
+        self.assertEqual([], self.leftover)
+
+    def test_mismatch_wrong_login_bad_version_and_empty_fail(self):
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-b")
+        self.assertEqual(1, result.returncode)
+        self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", login=b"other")
+        self.assertIn(b"FAIL admin_login kcadm=invalid\n", result.stdout)
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", version=b"x1")
+        self.assertIn(b"FAIL rendered_version\n", result.stdout)
+        result, _ = self.run_verifier(b"\r\n", b"")
+        self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
+        self.assertEqual(1, result.returncode)
+
+    def test_cr_and_newlines_are_dropped_as_the_entrypoint_does(self):
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a\r\n")
+        self.assertEqual(0, result.returncode, result.stdout)
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-b\n")
+        self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
+
+    def test_port_injection_is_rejected_before_any_docker_call(self):
+        result, argv = self.run_verifier(
+            b"synthetic-a", b"synthetic-a", port="8080@evil.example"
+        )
+        self.assertEqual(2, result.returncode)
+        self.assertEqual(b"", result.stdout)
+        self.assertEqual(b"", argv)
+
+    def test_follows_the_agent_directory_file_and_rejects_other_paths(self):
+        path = "/run/openbao/auth/keycloak_admin_password.txt"
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", kc_file=path)
+        self.assertEqual(0, result.returncode, result.stdout)
+        self.assertIn(f"PASS consumed_file path={path}\n".encode(), result.stdout)
+        result, _ = self.run_verifier(
+            b"synthetic-a", b"synthetic-a", kc_file="/etc/passwd"
+        )
+        self.assertEqual(1, result.returncode)
+        self.assertEqual(b"PASS keycloak_healthy\nFAIL consumed_file\n", result.stdout)
+        self.assertEqual(0, self.calls)
+
+    def test_login_retries_only_when_the_server_gave_no_answer(self):
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", misses=1)
+        self.assertIn(b"PASS admin_login kcadm=ok\n", result.stdout)
+        self.assertEqual(2, self.calls)
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", misses=3)
+        self.assertIn(b"FAIL admin_login kcadm=error\n", result.stdout)
+        self.assertEqual(3, self.calls)
+        # A rejection is final: a wrong password is tried exactly once.
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", login=b"other")
+        self.assertEqual(1, self.calls)
+        self.assertEqual([], self.leftover)
+
+    def test_waits_for_keycloak_health_before_any_check(self):
+        result, _ = self.run_verifier(
+            b"synthetic-a", b"synthetic-a", health="starting,starting,healthy"
+        )
+        self.assertEqual(0, result.returncode, result.stdout)
+        self.assertTrue(
+            result.stdout.startswith(b"WAIT keycloak_healthy\nPASS keycloak_healthy\n")
+        )
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", health="starting")
+        self.assertEqual(1, result.returncode)
+        self.assertEqual(
+            b"WAIT keycloak_healthy\nFAIL keycloak_healthy state=starting\n",
+            result.stdout,
+        )
+        self.assertEqual(0, self.calls)
+
+    def test_keycloak_binds_the_agent_directory_and_keeps_the_db_secret(self):
+        import yaml
+
+        compose = yaml.safe_load(
+            (ROOT / "infra/02-auth/keycloak/docker-compose.yml").read_text()
+        )
+        keycloak = compose["services"]["keycloak"]
+        binds = [
+            v
+            for v in keycloak["volumes"]
+            if isinstance(v, dict) and v["target"] == "/run/openbao/auth"
+        ]
+        self.assertEqual(1, len(binds))
+        self.assertEqual("${DEFAULT_SECURITY_DIR}/openbao/out/auth", binds[0]["source"])
+        self.assertIs(True, binds[0]["read_only"])
+        self.assertIs(False, binds[0]["bind"]["create_host_path"])
+        self.assertEqual(
+            "${KEYCLOAK_ADMIN_PASSWORD_FILE:-/run/secrets/keycloak_admin_password}",
+            keycloak["environment"]["KEYCLOAK_ADMIN_PASSWORD_FILE"],
+        )
+        script = keycloak["entrypoint"][-1]
+        self.assertIn('<"$$KEYCLOAK_ADMIN_PASSWORD_FILE"', script)
+        self.assertIn("</run/secrets/keycloak_db_password", script)
+        self.assertIn("keycloak_db_password", keycloak["secrets"])
+        example = (ROOT / ".env.example").read_text()
+        self.assertIn('\nKEYCLOAK_ADMIN_PASSWORD_FILE=""\n', example)
