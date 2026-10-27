@@ -3393,12 +3393,21 @@ destroyed that exact SecretID. No credential is left valid. The stale wrapped
 file is overwritten by the next delivery. The Agent stays stopped until a
 successful issuance.
 
-Fix (owner choice "Fix timeout, then re-run"): `deliver()` and `start()` now
-take up to 55 s each, within the existing 240-second deadline and before the
-60-second wrap TTL, and block before any call when under 4 s remain. Tests
-assert the bound and the near-deadline block. Issuance, custody, trust and
-Agent suites: 83 OK. Update-gates, workflow bundle, semantic restore,
-rehearsal and renderer-roles suites: 108 OK, 7 skipped. A new issuer commit
+Fix (owner choice "Fix timeout, then re-run"). The first cut gave `deliver()`
+and `start()` 55 s each. An independent review rated that High: the 60 s wrap
+TTL covers delivery, start and the Agent's unwrap together, so both could
+succeed after expiry and leave a `delivered` journal with an unrevoked SecretID.
+The final design:
+
+- `issue()` records one wrap deadline 45 s from just before its request.
+- `deliver()` and `start()` share what remains of it, never beyond the
+  240-second operation deadline.
+- `deliver()` raises while still journaled as `issuing` if less than 8 s would
+  remain for the unwrap, so the exact-ID reconcile destroys the SecretID.
+
+A fake-clock test covers the shared budget, the post-delivery reserve and the
+exhausted-budget block. Issuance, custody, trust, Agent, semantic restore and
+rehearsal suites: 137 OK, 3 skipped. A new issuer commit
 needs owner approval and installation before the re-run.
 
 ## Evidence

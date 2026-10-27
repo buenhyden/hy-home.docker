@@ -458,20 +458,8 @@ class DockerBindingTests(unittest.TestCase):
             self.assertIn("--read-only", argv)
             self.assertIn("--cap-drop=ALL", argv)
             self.assertNotIn("synthetic-wrapped", " ".join(argv))
-            # Container round trips measured 11-19 s under host load (2026-10-27).
-            self.assertGreater(call.call_args.kwargs["seconds"], 20)
-            self.assertLessEqual(call.call_args.kwargs["seconds"], 55)
-        with patch.object(
-            api, "command", side_effect=[b"", b"2026-10-10T07:00:01Z"]
-        ) as call:
+        with patch.object(api, "command", side_effect=[b"", b"2026-10-10T07:00:01Z"]):
             self.assertEqual("2026-10-10T07:00:01Z", api.start())
-            self.assertGreater(call.call_args_list[0].kwargs["seconds"], 20)
-        api.deadline = M.time.monotonic() + 3
-        with patch.object(api, "command") as call:
-            with self.assertRaises(M.Blocked):
-                api.deliver("synthetic-wrapped")
-            call.assert_not_called()
-        api.deadline = M.time.monotonic() + 240
         with patch.object(api, "command", side_effect=[b"", b"2026-10-10T07:00:01Z"]):
             self.assertTrue(api.ready("2026-10-10T07:00:01Z"))
         with patch.object(api, "command", side_effect=[b"", b"different-generation"]):
@@ -481,6 +469,55 @@ class DockerBindingTests(unittest.TestCase):
             patch.object(M.time, "sleep"),
         ):
             self.assertFalse(api.ready("2026-10-10T07:00:01Z"))
+
+    def test_deliver_and_start_share_one_wrap_budget(self):
+        api = M.DockerAPI(
+            "server",
+            "volume",
+            "agent",
+            "synthetic-issuer",
+            "synthetic-cleanup",
+            request_script=":",
+        )
+        clock = [1000.0]
+        wrapped = {"wrap_info": {"token": "synthetic.wrapped"}}
+        with (
+            patch.object(M.time, "monotonic", side_effect=lambda: clock[0]),
+            patch.object(api, "request", return_value=wrapped),
+        ):
+            api.deadline = 1240.0
+            api.issue({})
+            self.assertEqual(1045.0, api.wrap_deadline)
+
+            def slow(argv, *, payload=None, seconds=20, empty_list_path=None):
+                # Measured 11-19 s on 2026-10-27; above the old 20 s default.
+                self.assertGreater(seconds, 20)
+                self.assertLessEqual(seconds, 45)
+                clock[0] += 21
+                return b"2026-10-10T07:00:01Z"
+
+            with patch.object(api, "command", side_effect=slow):
+                api.deliver("synthetic-wrapped")
+            # Start gets only what deliver left of the shared budget.
+            with patch.object(api, "command") as call:
+                call.return_value = b"2026-10-10T07:00:01Z"
+                api.start()
+                self.assertLessEqual(call.call_args_list[0].kwargs["seconds"], 24)
+            # Too little wrap left after delivery: still issuing, so it raises.
+            api.wrap_deadline = clock[0] + 30
+            with patch.object(
+                api,
+                "command",
+                side_effect=lambda *a, **k: clock.__setitem__(0, clock[0] + 25) or b"",
+            ):
+                with self.assertRaises(M.Blocked):
+                    api.deliver("synthetic-wrapped")
+            # Exhausted budget blocks before any container call.
+            api.wrap_deadline = clock[0] + 3
+            with patch.object(api, "command") as call:
+                with self.assertRaises(M.Blocked):
+                    api.deliver("synthetic-wrapped")
+                call.assert_not_called()
 
     def test_main_rejects_invalid_public_arguments_before_docker(self):
         valid = ["server", "volume", M.IMAGE, "agent", "/tmp/journal", REV]
