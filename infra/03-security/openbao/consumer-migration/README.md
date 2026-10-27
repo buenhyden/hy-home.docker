@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.5"
+version: "0.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-27"
 created: "2026-10-11"
 ---
 
@@ -37,6 +37,9 @@ created: "2026-10-11"
 - [receipt.schema.json](receipt.schema.json): 합성 준비 결과만 선언합니다. 상태는
   `inventoried`와 `classified`, KV version은 `null`입니다. native 표시나 실제 복사
   이후 상태는 거부하며, 후속 단계는 소유자가 검토한 별도 계약 확장이 필요합니다.
+- [verify-grafana-consumption.sh](verify-grafana-consumption.sh): 첫 소비자 Grafana의
+  관리자 비밀번호 소비 검사입니다. Agent가 렌더링한 값과 Grafana에 mount된 값의 일치,
+  렌더링 version, 관리자 로그인 HTTP 상태만 출력하고 값·hash·길이는 출력하지 않습니다.
 
 ## Tech Stack
 
@@ -173,6 +176,28 @@ Manifest·QA 등록은 현재 통합 소스를 재사용합니다. 공통 등록
 비밀번호 변경 실행 옵션은 없습니다. 별도 Python API의 실제 사용은 controller의
 현재 승인과 정확한 선행 입력을 필요로 합니다. 실제 단계의 계약과 영수증이 없으면 대기하며,
 이 합성 결과를 HOME·이관·복구·배포 성공으로 사용하지 않습니다.
+
+### 첫 소비자 Grafana 전환 계획
+
+Agent가 렌더링하는 소비자는 Keycloak과 Grafana 관리자 비밀번호 두 개입니다. 둘 다
+아직 저장소 로컬 `./secrets/` 파일을 읽으며 Agent 출력은 소비되지 않습니다. 두 값 모두
+최초 기동 때만 적용되는 bootstrap 값입니다. 첫 소비자는 영향 범위가 작은 Grafana입니다.
+Grafana는 로그인 화면을 끄고 OIDC를 쓰므로 관리자 비밀번호는 비상 경로에만 쓰입니다.
+
+1. 선행 조건: Agent는 UID 100으로 `0600` 파일을 렌더링하므로 Grafana(UID 472, group
+   1000)가 읽을 수 없습니다. P01 소유자가 Grafana template의 `perms`를 `0640`으로 바꾸고
+   `health-agent.sh`의 mode 검사를 맞춘 뒤 Agent를 다시 만들어야 합니다.
+2. 전환 전 검사: `bash infra/03-security/openbao/consumer-migration/verify-grafana-consumption.sh`
+   결과 세 줄이 모두 `PASS`여야 현재 파일 값과 KV 값이 같습니다.
+3. 전환: 루트 Compose의 `grafana_admin_password` 파일 경로를 Agent 출력으로 바꾸고
+   `grafana`만 다시 만든 뒤 같은 검사를 다시 실행합니다.
+4. 되돌리기: 파일 경로를 원래 `./secrets/` 경로로 돌리고 `grafana`만 다시 만든 뒤 같은
+   검사를 실행합니다.
+
+Compose 파일 secret은 파일 하나를 bind mount합니다. Agent가 파일을 교체해 다시
+렌더링하면 실행 중인 container는 이전 파일을 계속 봅니다. KV 값이 바뀌면 container를
+다시 만들 때까지 `mounted_equals_rendered`가 `FAIL`입니다. bootstrap 값이므로 KV 변경만으로
+Grafana에 저장된 비밀번호가 바뀌지 않으며, 실제 회전은 별도 단계입니다.
 
 ## Related Documents
 
