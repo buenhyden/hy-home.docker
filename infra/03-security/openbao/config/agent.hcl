@@ -41,6 +41,13 @@ template {
 }
 
 template {
+  source      = "/openbao/config/templates/grafana_client_secret.ctmpl"
+  destination = "/openbao/out/observability/grafana_client_secret.txt"
+  # Grafana reads it at every start as its Keycloak OIDC client secret (P06).
+  perms       = 0640
+}
+
+template {
   source      = "/openbao/config/templates/keycloak_admin_password_version.ctmpl"
   destination = "/openbao/out/auth/keycloak_admin_password.version"
   perms       = 0600

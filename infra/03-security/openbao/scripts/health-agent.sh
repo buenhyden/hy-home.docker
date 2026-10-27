@@ -26,6 +26,7 @@ timeout 3 bao status || exit 1
 timeout 3 bao token lookup -format=json || exit 1
 timeout 3 bao kv get -field=admin_password secret/hy-home/02-auth/keycloak || exit 1
 timeout 3 bao kv get -field=admin_password secret/hy-home/06-observability/grafana || exit 1
+timeout 3 bao kv get -field=grafana_client_secret secret/hy-home/06-observability/grafana || exit 1
 for rendered in /openbao/out/auth/keycloak_admin_password /openbao/out/observability/grafana_admin_password; do
   [ -f "$rendered.txt" ] && [ ! -L "$rendered.txt" ] && [ -s "$rendered.txt" ] || exit 1
   [ -f "$rendered.version" ] && [ ! -L "$rendered.version" ] && [ -s "$rendered.version" ] || exit 1
@@ -33,11 +34,16 @@ for rendered in /openbao/out/auth/keycloak_admin_password /openbao/out/observabi
   [ "$(stat -c %a "$rendered.txt")" = 640 ] || exit 1
   [ "$(stat -c %a "$rendered.version")" = 600 ] || exit 1
 done
+# The client secret shares the Grafana path, so its .version covers it too.
+client=/openbao/out/observability/grafana_client_secret.txt
+[ -f "$client" ] && [ ! -L "$client" ] && [ -s "$client" ] || exit 1
+[ "$(stat -c %a "$client")" = 640 ] || exit 1
 # Consumers bind these whole directories; nothing else may be group-readable.
-[ -z "$(find /openbao/out/observability -mindepth 1 ! -name grafana_admin_password.txt -perm -040 -print)" ] || exit 1
+[ -z "$(find /openbao/out/observability -mindepth 1 ! -name grafana_admin_password.txt ! -name grafana_client_secret.txt -perm -040 -print)" ] || exit 1
 [ -z "$(find /openbao/out/auth -mindepth 1 ! -name keycloak_admin_password.txt -perm -040 -print)" ] || exit 1
 timeout 3 bao kv get -field=admin_password secret/hy-home/02-auth/keycloak | cmp -s - /openbao/out/auth/keycloak_admin_password.txt || exit 1
 timeout 3 bao kv get -field=admin_password secret/hy-home/06-observability/grafana | cmp -s - /openbao/out/observability/grafana_admin_password.txt || exit 1
+timeout 3 bao kv get -field=grafana_client_secret secret/hy-home/06-observability/grafana | cmp -s - "$client" || exit 1
 keycloak_version=$(timeout 3 bao read -field=current_version secret/metadata/hy-home/02-auth/keycloak) || exit 1
 grafana_version=$(timeout 3 bao read -field=current_version secret/metadata/hy-home/06-observability/grafana) || exit 1
 for version in "$keycloak_version" "$grafana_version"; do
