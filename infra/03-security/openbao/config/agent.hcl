@@ -47,6 +47,97 @@ template {
   perms       = 0640
 }
 
+# P06 OIDC client secret; only the oauth2-proxy consumer binds this directory.
+template {
+  source      = "/openbao/config/templates/oauth2_proxy_client_secret.ctmpl"
+  destination = "/openbao/out/oauth2-proxy/oauth2_proxy_client_secret.txt"
+  perms       = 0640
+}
+
+template {
+  source      = "/openbao/config/templates/oauth2_proxy_client_secret_version.ctmpl"
+  destination = "/openbao/out/oauth2-proxy/oauth2_proxy_client_secret.version"
+  perms       = 0600
+}
+
+# P06 OIDC client secret; only the kafbat consumer binds this directory.
+template {
+  source      = "/openbao/config/templates/kafbat_client_secret.ctmpl"
+  destination = "/openbao/out/kafbat/kafbat_client_secret.txt"
+  perms       = 0640
+}
+
+template {
+  source      = "/openbao/config/templates/kafbat_client_secret_version.ctmpl"
+  destination = "/openbao/out/kafbat/kafbat_client_secret.version"
+  perms       = 0600
+}
+
+# P06 OIDC client secret; only the dozzle consumer binds this directory.
+template {
+  source      = "/openbao/config/templates/dozzle_client_secret.ctmpl"
+  destination = "/openbao/out/dozzle/dozzle_client_secret.txt"
+  perms       = 0640
+}
+
+template {
+  source      = "/openbao/config/templates/dozzle_client_secret_version.ctmpl"
+  destination = "/openbao/out/dozzle/dozzle_client_secret.version"
+  perms       = 0600
+}
+
+# P06 OIDC client secret; only the gatus consumer binds this directory.
+template {
+  source      = "/openbao/config/templates/gatus_oidc_client_secret.ctmpl"
+  destination = "/openbao/out/gatus/gatus_oidc_client_secret.txt"
+  perms       = 0640
+}
+
+template {
+  source      = "/openbao/config/templates/gatus_oidc_client_secret_version.ctmpl"
+  destination = "/openbao/out/gatus/gatus_oidc_client_secret.version"
+  perms       = 0600
+}
+
+# P06 OIDC client secret; only the airflow consumer binds this directory.
+template {
+  source      = "/openbao/config/templates/airflow_client_secret.ctmpl"
+  destination = "/openbao/out/airflow/airflow_client_secret.txt"
+  perms       = 0640
+}
+
+template {
+  source      = "/openbao/config/templates/airflow_client_secret_version.ctmpl"
+  destination = "/openbao/out/airflow/airflow_client_secret.version"
+  perms       = 0600
+}
+
+# P06 OIDC client secret; only the open-webui consumer binds this directory.
+template {
+  source      = "/openbao/config/templates/openwebui_oidc_client_secret.ctmpl"
+  destination = "/openbao/out/open-webui/openwebui_oidc_client_secret.txt"
+  perms       = 0640
+}
+
+template {
+  source      = "/openbao/config/templates/openwebui_oidc_client_secret_version.ctmpl"
+  destination = "/openbao/out/open-webui/openwebui_oidc_client_secret.version"
+  perms       = 0600
+}
+
+# P06 OIDC client secret; only the superset consumer binds this directory.
+template {
+  source      = "/openbao/config/templates/superset_oidc_client_secret.ctmpl"
+  destination = "/openbao/out/superset/superset_oidc_client_secret.txt"
+  perms       = 0640
+}
+
+template {
+  source      = "/openbao/config/templates/superset_oidc_client_secret_version.ctmpl"
+  destination = "/openbao/out/superset/superset_oidc_client_secret.version"
+  perms       = 0600
+}
+
 template {
   source      = "/openbao/config/templates/keycloak_admin_password_version.ctmpl"
   destination = "/openbao/out/auth/keycloak_admin_password.version"

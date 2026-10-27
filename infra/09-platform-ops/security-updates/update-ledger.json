@@ -135,7 +135,7 @@
     },
     {
       "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-      "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+      "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
     },
     {
       "path": "infra/03-security/openbao/docker-compose.yml",
@@ -155,7 +155,7 @@
     },
     {
       "path": "infra/04-data/opensearch/docker-compose.yml",
-      "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
+      "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
     },
     {
       "path": "infra/04-data/qdrant/docker-compose.yml",
@@ -171,19 +171,19 @@
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
-      "sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8"
+      "sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984"
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
-      "sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50"
+      "sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2"
     },
     {
       "path": "infra/06-observability/dozzle/docker-compose.yml",
-      "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+      "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
     },
     {
       "path": "infra/07-workflow/airflow/docker-compose.yml",
-      "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+      "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -211,7 +211,7 @@
     },
     {
       "path": "infra/08-ai/open-webui/docker-compose.yml",
-      "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+      "sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53"
     },
     {
       "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -283,7 +283,7 @@
     },
     {
       "path": "infra/12-analytics/superset/docker-compose.yml",
-      "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+      "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
     },
     {
       "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -439,7 +439,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -604,7 +604,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -751,7 +751,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -916,7 +916,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1078,7 +1078,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1227,7 +1227,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1363,7 +1363,7 @@
       "upstream_reported_tag": "9.1.2",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1484,7 +1484,7 @@
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
@@ -1617,7 +1617,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1772,7 +1772,7 @@
       "upstream_reported_tag": "v0.34.1",
       "next_fact_command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1914,7 +1914,7 @@
       "upstream_reported_tag": "v1.20.1",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/alloy:v1.20.1",
@@ -2177,7 +2177,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "ghcr.io/google/cadvisor:v0.60.6",
@@ -3127,7 +3127,7 @@
       "upstream_reported_tag": "4.8.4",
       "next_fact_command": "gh release view --repo NVIDIA/dcgm-exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3255,7 +3255,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8",
+      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4371,7 +4371,7 @@
       "upstream_reported_tag": "v11.3.0",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294",
+      "source_input_sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "amir20/dozzle:v11.3.1@sha256:ba65da5af3d2147cfc2ee68ea5a6e35b75d2dff7eeff226151a65c9d77831c02",
@@ -4809,7 +4809,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+      "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -4968,7 +4968,7 @@
       "upstream_reported_tag": "v5.37.0",
       "next_fact_command": "gh release view --repo TwiN/gatus --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5446,7 +5446,7 @@
       "upstream_reported_tag": "v13.2.4",
       "next_fact_command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f",
@@ -5628,7 +5628,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6131,7 +6131,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8",
+      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6282,7 +6282,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8",
+      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6417,7 +6417,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8",
+      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6578,7 +6578,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8",
+      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6706,7 +6706,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8",
+      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6836,7 +6836,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8",
+      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7120,7 +7120,7 @@
       "upstream_reported_tag": "v3.7.8",
       "next_fact_command": "gh release view --repo grafana/loki --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -9562,7 +9562,7 @@
       "upstream_reported_tag": "v1.12.1",
       "next_fact_command": "gh release view --repo prometheus/node_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -9707,7 +9707,7 @@
       "upstream_reported_tag": "v7.15.5",
       "next_fact_command": "gh release view --repo oauth2-proxy/oauth2-proxy --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52",
+      "source_input_sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "UNKNOWN",
@@ -9813,7 +9813,7 @@
       "upstream_reported_tag": "9.1.2",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52",
+      "source_input_sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -9934,7 +9934,7 @@
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52",
+      "source_input_sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
@@ -10348,7 +10348,7 @@
       "upstream_reported_tag": "v0.11.4",
       "next_fact_command": "gh release view --repo open-webui/open-webui --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59",
+      "source_input_sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11395,7 +11395,7 @@
       "upstream_reported_tag": "3.9.0",
       "next_fact_command": "gh release view --repo opensearch-project/OpenSearch --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T14:31:47.914916+00:00",
-      "source_input_sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f",
+      "source_input_sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11489,7 +11489,7 @@
           "meaning": "ROOT-selected upstream base only; raw shared Dockerfile default remains baseline3.8 for excluded LAB. Custom image not built or accepted.",
           "selected_by": {
             "path": "infra/04-data/opensearch/docker-compose.yml",
-            "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f",
+            "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068",
             "args": {
               "OPENSEARCH_BASE_IMAGE": "opensearchproject/opensearch:3.9.0@sha256:adfa61f85025d06b4aeb562e7e74fde7e31c437039c93c3862c17e9acebd6c7c",
               "OPENSEARCH_EXPORTER_VERSION": "3.9.0.0"
@@ -11663,7 +11663,7 @@
       "upstream_reported_tag": "3.9.0",
       "next_fact_command": "gh release view --repo opensearch-project/OpenSearch-Dashboards --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T14:31:47.914916+00:00",
-      "source_input_sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f",
+      "source_input_sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12266,7 +12266,7 @@
       "upstream_reported_tag": "v3.15.0",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/prometheus:v3.15.0",
@@ -12386,7 +12386,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/pushgateway:v1.11.4",
@@ -12507,7 +12507,7 @@
       "upstream_reported_tag": "v2.4.0",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/pyroscope:2.4.0",
@@ -13403,7 +13403,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8",
+      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -15131,7 +15131,7 @@
       "upstream_reported_tag": "6.1.0",
       "next_fact_command": "gh release view --repo apache/superset --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7",
+      "source_input_sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -15262,7 +15262,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7",
+      "source_input_sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -15373,7 +15373,7 @@
       "upstream_reported_tag": "6.1.0",
       "next_fact_command": "gh release view --repo apache/superset --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7",
+      "source_input_sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -15838,7 +15838,7 @@
       "upstream_reported_tag": "v3.1.0",
       "next_fact_command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "80099fcdbf8bdf4c28135dd87a34ab1c1dbc0594e32bf69855267f607714ea50",
+      "source_input_sha256": "7e55ab7544ce95ebee508170a210f1f09f72a92c14bbdd86a0f9fff25a6fb3f2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "hy/tempo:3.1.0-seaweedfs",
@@ -16922,7 +16922,7 @@
       },
       {
         "path": "infra/12-analytics/superset/docker-compose.yml",
-        "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+        "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
       },
       {
         "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -18538,7 +18538,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -18750,7 +18750,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -18803,7 +18803,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/operator.hcl",
-          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+          "sha256": "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b"
         },
         {
           "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
@@ -18819,7 +18819,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/renderer.hcl",
-          "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+          "sha256": "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e"
         },
         {
           "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
@@ -19067,7 +19067,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -19153,7 +19153,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/operator.hcl",
-          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+          "sha256": "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b"
         },
         {
           "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
@@ -19169,7 +19169,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/renderer.hcl",
-          "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+          "sha256": "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e"
         },
         {
           "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
@@ -19417,7 +19417,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -19513,7 +19513,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/operator.hcl",
-          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+          "sha256": "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b"
         },
         {
           "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
@@ -19529,7 +19529,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/renderer.hcl",
-          "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+          "sha256": "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e"
         },
         {
           "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
@@ -19777,7 +19777,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -19902,7 +19902,7 @@
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+          "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
         },
         {
           "path": "infra/04-data/dev-db/docker-compose.yml",
@@ -19930,7 +19930,7 @@
         },
         {
           "path": "infra/07-workflow/airflow/docker-compose.yml",
-          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+          "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -20060,7 +20060,7 @@
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+          "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
         },
         {
           "path": "infra/03-security/openbao/docker-compose.yml",
@@ -20104,11 +20104,11 @@
         },
         {
           "path": "infra/06-observability/dozzle/docker-compose.yml",
-          "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+          "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
         },
         {
           "path": "infra/07-workflow/airflow/docker-compose.yml",
-          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+          "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -20136,7 +20136,7 @@
         },
         {
           "path": "infra/08-ai/open-webui/docker-compose.yml",
-          "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+          "sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53"
         },
         {
           "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -20208,7 +20208,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -20245,7 +20245,7 @@
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+          "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
         },
         {
           "path": "infra/03-security/openbao/docker-compose.yml",
@@ -20289,11 +20289,11 @@
         },
         {
           "path": "infra/06-observability/dozzle/docker-compose.yml",
-          "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+          "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
         },
         {
           "path": "infra/07-workflow/airflow/docker-compose.yml",
-          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+          "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -20321,7 +20321,7 @@
         },
         {
           "path": "infra/08-ai/open-webui/docker-compose.yml",
-          "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+          "sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53"
         },
         {
           "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -20393,7 +20393,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -20438,7 +20438,7 @@
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+          "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
         },
         {
           "path": "infra/03-security/openbao/docker-compose.yml",
@@ -20482,11 +20482,11 @@
         },
         {
           "path": "infra/06-observability/dozzle/docker-compose.yml",
-          "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+          "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
         },
         {
           "path": "infra/07-workflow/airflow/docker-compose.yml",
-          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+          "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -20514,7 +20514,7 @@
         },
         {
           "path": "infra/08-ai/open-webui/docker-compose.yml",
-          "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+          "sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53"
         },
         {
           "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -20586,7 +20586,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -20822,7 +20822,7 @@
           "profiles_declared": [
             "dedicated-valkey"
           ],
-          "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
+          "source_input_sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835",
           "latest_version": "1.94.0",
           "target_version": "1.93.0",
           "channel": "stable",
@@ -22333,7 +22333,7 @@
             "dev",
             "local"
           ],
-          "source_input_sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52",
+          "source_input_sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3",
           "latest_version": "7.15.5",
           "target_version": "7.15.5",
           "channel": "stable",
@@ -22381,7 +22381,7 @@
           "profiles_declared": [
             "dedicated-valkey"
           ],
-          "source_input_sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52",
+          "source_input_sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3",
           "latest_version": "1.94.0",
           "target_version": "1.93.0",
           "channel": "stable",
@@ -23287,7 +23287,7 @@
           "profiles_declared": [
             "bi"
           ],
-          "source_input_sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7",
+          "source_input_sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb",
           "latest_version": "6.1.0",
           "target_version": "UNKNOWN",
           "channel": "stable",
@@ -23313,7 +23313,7 @@
           "profiles_declared": [
             "bi"
           ],
-          "source_input_sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7",
+          "source_input_sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb",
           "latest_version": "18.6",
           "target_version": "18.6",
           "channel": "stable",
@@ -23338,7 +23338,7 @@
           "profiles_declared": [
             "bi"
           ],
-          "source_input_sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7",
+          "source_input_sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb",
           "latest_version": "6.1.0",
           "target_version": "UNKNOWN",
           "channel": "stable",
@@ -23590,7 +23590,7 @@
             },
             {
               "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-              "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+              "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
             },
             {
               "path": "infra/03-security/openbao/docker-compose.yml",
@@ -23626,7 +23626,7 @@
             },
             {
               "path": "infra/05-messaging/kafka/docker-compose.yml",
-              "sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8"
+              "sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984"
             },
             {
               "path": "infra/06-observability/docker-compose.yml",
@@ -23634,11 +23634,11 @@
             },
             {
               "path": "infra/06-observability/dozzle/docker-compose.yml",
-              "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+              "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
             },
             {
               "path": "infra/07-workflow/airflow/docker-compose.yml",
-              "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+              "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
             },
             {
               "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -23666,7 +23666,7 @@
             },
             {
               "path": "infra/08-ai/open-webui/docker-compose.yml",
-              "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+              "sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53"
             },
             {
               "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -23738,7 +23738,7 @@
             },
             {
               "path": "infra/12-analytics/superset/docker-compose.yml",
-              "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+              "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
             },
             {
               "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -23776,7 +23776,7 @@
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+          "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
         },
         {
           "path": "infra/03-security/openbao/docker-compose.yml",
@@ -23812,7 +23812,7 @@
         },
         {
           "path": "infra/05-messaging/kafka/docker-compose.yml",
-          "sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8"
+          "sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984"
         },
         {
           "path": "infra/06-observability/docker-compose.yml",
@@ -23820,11 +23820,11 @@
         },
         {
           "path": "infra/06-observability/dozzle/docker-compose.yml",
-          "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+          "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
         },
         {
           "path": "infra/07-workflow/airflow/docker-compose.yml",
-          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+          "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -23852,7 +23852,7 @@
         },
         {
           "path": "infra/08-ai/open-webui/docker-compose.yml",
-          "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+          "sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53"
         },
         {
           "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -23924,7 +23924,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -23952,7 +23952,7 @@
           },
           {
             "path": "infra/07-workflow/airflow/docker-compose.yml",
-            "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+            "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
           },
           {
             "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -23960,7 +23960,7 @@
           },
           {
             "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-            "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+            "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
           },
           {
             "path": "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
@@ -24016,7 +24016,7 @@
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+          "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
         },
         {
           "path": "infra/03-security/openbao/docker-compose.yml",
@@ -24052,7 +24052,7 @@
         },
         {
           "path": "infra/05-messaging/kafka/docker-compose.yml",
-          "sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8"
+          "sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984"
         },
         {
           "path": "infra/06-observability/docker-compose.yml",
@@ -24060,11 +24060,11 @@
         },
         {
           "path": "infra/06-observability/dozzle/docker-compose.yml",
-          "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+          "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
         },
         {
           "path": "infra/07-workflow/airflow/docker-compose.yml",
-          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+          "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -24092,7 +24092,7 @@
         },
         {
           "path": "infra/08-ai/open-webui/docker-compose.yml",
-          "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+          "sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53"
         },
         {
           "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -24164,7 +24164,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -24188,7 +24188,7 @@
           },
           {
             "path": "infra/04-data/opensearch/docker-compose.yml",
-            "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
+            "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
           },
           {
             "path": "labs/opensearch-cluster.yml",
@@ -24224,7 +24224,7 @@
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+          "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
         },
         {
           "path": "infra/03-security/openbao/docker-compose.yml",
@@ -24244,7 +24244,7 @@
         },
         {
           "path": "infra/04-data/opensearch/docker-compose.yml",
-          "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
         },
         {
           "path": "infra/04-data/qdrant/docker-compose.yml",
@@ -24260,7 +24260,7 @@
         },
         {
           "path": "infra/05-messaging/kafka/docker-compose.yml",
-          "sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8"
+          "sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984"
         },
         {
           "path": "infra/06-observability/docker-compose.yml",
@@ -24268,11 +24268,11 @@
         },
         {
           "path": "infra/06-observability/dozzle/docker-compose.yml",
-          "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+          "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
         },
         {
           "path": "infra/07-workflow/airflow/docker-compose.yml",
-          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+          "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -24300,7 +24300,7 @@
         },
         {
           "path": "infra/08-ai/open-webui/docker-compose.yml",
-          "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+          "sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53"
         },
         {
           "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -24372,7 +24372,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -24412,7 +24412,7 @@
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+          "sha256": "b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3"
         },
         {
           "path": "infra/03-security/openbao/docker-compose.yml",
@@ -24432,7 +24432,7 @@
         },
         {
           "path": "infra/04-data/opensearch/docker-compose.yml",
-          "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
         },
         {
           "path": "infra/04-data/qdrant/docker-compose.yml",
@@ -24448,7 +24448,7 @@
         },
         {
           "path": "infra/05-messaging/kafka/docker-compose.yml",
-          "sha256": "81353eb6e32042ed622e108d96e807a8ac3373da2789f32c71a518433fb3c0c8"
+          "sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984"
         },
         {
           "path": "infra/06-observability/docker-compose.yml",
@@ -24456,11 +24456,11 @@
         },
         {
           "path": "infra/06-observability/dozzle/docker-compose.yml",
-          "sha256": "6995a17cf4aafc7dcb88a5220739bed72c8041057048b2416375bd85a9b76294"
+          "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
         },
         {
           "path": "infra/07-workflow/airflow/docker-compose.yml",
-          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+          "sha256": "bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -24488,7 +24488,7 @@
         },
         {
           "path": "infra/08-ai/open-webui/docker-compose.yml",
-          "sha256": "e1a482ca1dc6f11fb22c4e0206eee84b9ed8af2552e8c38bd30a2c54c5c90a59"
+          "sha256": "831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53"
         },
         {
           "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -24560,7 +24560,7 @@
         },
         {
           "path": "infra/12-analytics/superset/docker-compose.yml",
-          "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+          "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
         },
         {
           "path": "infra/12-analytics/trino/docker-compose.yml",
@@ -24642,7 +24642,7 @@
       },
       {
         "path": "infra/03-security/openbao/config/policies/operator.hcl",
-        "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+        "sha256": "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b"
       },
       {
         "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
@@ -24658,7 +24658,7 @@
       },
       {
         "path": "infra/03-security/openbao/config/policies/renderer.hcl",
-        "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+        "sha256": "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e"
       },
       {
         "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
@@ -24806,7 +24806,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/operator.hcl",
-          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+          "sha256": "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b"
         },
         {
           "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
@@ -24822,7 +24822,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/renderer.hcl",
-          "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+          "sha256": "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e"
         },
         {
           "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
@@ -24951,7 +24951,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/operator.hcl",
-          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+          "sha256": "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b"
         },
         {
           "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
@@ -24967,7 +24967,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/renderer.hcl",
-          "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+          "sha256": "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e"
         },
         {
           "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
@@ -25091,7 +25091,7 @@
       "owned_source_unit_input_files": [
         {
           "path": "infra/03-security/openbao/config/policies/operator.hcl",
-          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+          "sha256": "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b"
         },
         {
           "path": "infra/03-security/openbao/config/policies/renderer-issuer.hcl",
@@ -25169,7 +25169,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/operator.hcl",
-          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+          "sha256": "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b"
         },
         {
           "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
@@ -25185,7 +25185,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/renderer.hcl",
-          "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+          "sha256": "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e"
         },
         {
           "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
@@ -25316,7 +25316,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/operator.hcl",
-          "sha256": "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093"
+          "sha256": "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b"
         },
         {
           "path": "infra/03-security/openbao/config/policies/prometheus.hcl",
@@ -25332,7 +25332,7 @@
         },
         {
           "path": "infra/03-security/openbao/config/policies/renderer.hcl",
-          "sha256": "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1"
+          "sha256": "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e"
         },
         {
           "path": "infra/03-security/openbao/config/renderer-cleanup-token-role.json",
@@ -25765,7 +25765,7 @@
       },
       {
         "path": "infra/12-analytics/superset/docker-compose.yml",
-        "sha256": "3cfc56fe5560f1e50c571724110802d7b56362773b98be3dc44c87bc1d90b5a7"
+        "sha256": "36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb"
       },
       {
         "path": "infra/12-analytics/trino/docker-compose.yml",

@@ -1,5 +1,6 @@
 #!/bin/sh
-# Fetch, exact rendered bytes and KV version; application consumption is separate.
+# Every agent.hcl template: fetch, exact rendered bytes, KV version and mode.
+# Application consumption is separate.
 set +x
 set -eu
 exec >/dev/null 2>&1
@@ -24,30 +25,50 @@ export BAO_TOKEN BAO_ADDR="$VAULT_ADDR" BAO_CACERT="$VAULT_CACERT"
 unset VAULT_TOKEN
 timeout 3 bao status || exit 1
 timeout 3 bao token lookup -format=json || exit 1
-timeout 3 bao kv get -field=admin_password secret/hy-home/02-auth/keycloak || exit 1
-timeout 3 bao kv get -field=admin_password secret/hy-home/06-observability/grafana || exit 1
-timeout 3 bao kv get -field=grafana_client_secret secret/hy-home/06-observability/grafana || exit 1
-for rendered in /openbao/out/auth/keycloak_admin_password /openbao/out/observability/grafana_admin_password; do
-  [ -f "$rendered.txt" ] && [ ! -L "$rendered.txt" ] && [ -s "$rendered.txt" ] || exit 1
-  [ -f "$rendered.version" ] && [ ! -L "$rendered.version" ] && [ -s "$rendered.version" ] || exit 1
-  # Consumed passwords are group-readable (P06 W49 Grafana, Keycloak).
-  [ "$(stat -c %a "$rendered.txt")" = 640 ] || exit 1
-  [ "$(stat -c %a "$rendered.version")" = 600 ] || exit 1
-done
-# The client secret shares the Grafana path, so its .version covers it too.
-client=/openbao/out/observability/grafana_client_secret.txt
-[ -f "$client" ] && [ ! -L "$client" ] && [ -s "$client" ] || exit 1
-[ "$(stat -c %a "$client")" = 640 ] || exit 1
-# Consumers bind these whole directories; nothing else may be group-readable.
-[ -z "$(find /openbao/out/observability -mindepth 1 ! -name grafana_admin_password.txt ! -name grafana_client_secret.txt -perm -040 -print)" ] || exit 1
-[ -z "$(find /openbao/out/auth -mindepth 1 ! -name keycloak_admin_password.txt -perm -040 -print)" ] || exit 1
-timeout 3 bao kv get -field=admin_password secret/hy-home/02-auth/keycloak | cmp -s - /openbao/out/auth/keycloak_admin_password.txt || exit 1
-timeout 3 bao kv get -field=admin_password secret/hy-home/06-observability/grafana | cmp -s - /openbao/out/observability/grafana_admin_password.txt || exit 1
-timeout 3 bao kv get -field=grafana_client_secret secret/hy-home/06-observability/grafana | cmp -s - "$client" || exit 1
-keycloak_version=$(timeout 3 bao read -field=current_version secret/metadata/hy-home/02-auth/keycloak) || exit 1
-grafana_version=$(timeout 3 bao read -field=current_version secret/metadata/hy-home/06-observability/grafana) || exit 1
-for version in "$keycloak_version" "$grafana_version"; do
-  case "$version" in ''|0|*[!0-9]*) exit 1 ;; esac
-done
-[ "$keycloak_version" = "$(cat /openbao/out/auth/keycloak_admin_password.version)" ] || exit 1
-[ "$grafana_version" = "$(cat /openbao/out/observability/grafana_admin_password.version)" ]
+# agent.hcl owns the template list; each template names its KV path and field.
+templates=$(awk '
+  /^template[[:space:]]*\{/ { inside = 1; seen++; source = ""; destination = ""; perms = ""; next }
+  inside && $1 == "source" { source = $3; gsub(/"/, "", source) }
+  inside && $1 == "destination" { destination = $3; gsub(/"/, "", destination) }
+  inside && $1 == "perms" { perms = $3; gsub(/"/, "", perms) }
+  inside && /^\}/ { if (source != "" && destination != "" && perms != "") { print perms, destination, source; printed++ } inside = 0 }
+  END { if (seen == 0 || seen != printed) exit 1 }
+' /openbao/config/agent.hcl)
+consumed=" "
+while read -r perms destination source; do
+  case "$destination$source" in *..*) exit 1 ;; esac
+  case "$destination" in /openbao/out/*/*) ;; *) exit 1 ;; esac
+  case "$source" in /openbao/config/templates/*.ctmpl) ;; *) exit 1 ;; esac
+  [ -f "$destination" ] && [ ! -L "$destination" ] && [ -s "$destination" ] || exit 1
+  [ -f "$source" ] && [ ! -L "$source" ] || exit 1
+  path=$(sed -n 's|^{{- with secret "secret/data/\(hy-home/[a-z0-9/_-]*\)" -}}$|\1|p' "$source")
+  case "$path" in hy-home/?*) ;; *) exit 1 ;; esac
+  case "$destination" in
+    *.txt)
+      # A consumed value is group-readable for its one consumer (P06).
+      [ "$perms" = 0640 ] && [ "$(stat -c %a "$destination")" = 640 ] || exit 1
+      field=$(sed -n 's/^{{ \.Data\.data\.\([a-z0-9_]*\) }}$/\1/p' "$source")
+      [ -n "$field" ] || exit 1
+      timeout 3 bao kv get -field="$field" "secret/$path" | cmp -s - "$destination" || exit 1
+      consumed="$consumed$destination "
+      ;;
+    *.version)
+      [ "$perms" = 0600 ] && [ "$(stat -c %a "$destination")" = 600 ] || exit 1
+      grep -qxF '{{ .Data.metadata.version }}' "$source" || exit 1
+      version=$(timeout 3 bao read -field=current_version "secret/metadata/$path") || exit 1
+      case "$version" in ''|0|*[!0-9]*) exit 1 ;; esac
+      [ "$version" = "$(cat "$destination")" ] || exit 1
+      ;;
+    *) exit 1 ;;
+  esac
+done <<EOF_TEMPLATES
+$templates
+EOF_TEMPLATES
+# Consumers bind whole directories: only a listed .txt may be readable by others.
+readable=$(find /openbao/out -mindepth 1 ! -type d \( -perm -040 -o -perm -004 \))
+while read -r file; do
+  [ -z "$file" ] && continue
+  case "$consumed" in *" $file "*) ;; *) exit 1 ;; esac
+done <<EOF_READABLE
+$readable
+EOF_READABLE

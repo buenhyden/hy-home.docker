@@ -621,7 +621,8 @@ services:
       GATUS_LOG_LEVEL: INFO
       DEFAULT_URL: '${DEFAULT_URL}'
       GATUS_OIDC_ALLOWED_SUBJECT: '${GATUS_OIDC_ALLOWED_SUBJECT}'
-      GATUS_OIDC_CLIENT_SECRET_FILE: /run/secrets/gatus_oidc_client_secret
+      # P06: set GATUS_CLIENT_SECRET_FILE under /run/openbao/gatus; unset rolls back.
+      GATUS_OIDC_CLIENT_SECRET_FILE: ${GATUS_CLIENT_SECRET_FILE:-/run/secrets/gatus_oidc_client_secret}
       PORT: '${GATUS_PORT}'
     volumes:
       - ./gatus/config/config.oidc.yaml:/config/config.yaml:ro
@@ -632,6 +633,13 @@ services:
         bind: {create_host_path: false}
       - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
       - gatus-data:/data:rw
+      # P06: the OpenBao Agent's gatus output, read when the client secret file
+      # variable points under /run/openbao/gatus. A missing directory stops it.
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/out/gatus
+        target: /run/openbao/gatus
+        read_only: true
+        bind: {create_host_path: false}
     secrets:
       - gatus_oidc_client_secret
     expose:

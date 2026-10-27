@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import re
 import secrets
 import subprocess
 import tempfile
@@ -12,6 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "infra/03-security/openbao/scripts"
 IMAGE = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
+TEMPLATE_STANZA = re.compile(
+    r'source\s*= "([^"]+)"\n\s*destination = "([^"]+)"\n(?:.*\n)??\s*perms\s*= (\d+)'
+)
 MANIFEST = "sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
 
 
@@ -60,6 +64,31 @@ class AgentContractTests(unittest.TestCase):
             .read_text()
             .replace("/openbao/", str(self.root / "openbao") + "/")
         )
+        templates = config / "templates"
+        templates.mkdir()
+        for template in (SCRIPTS.parent / "config/templates").glob("*.ctmpl"):
+            (templates / template.name).write_bytes(template.read_bytes())
+        # Every other template gets its own synthetic value and version "3".
+        self.kv = {}
+        self.extra = []
+        for source, destination, perms in TEMPLATE_STANZA.findall(
+            (config / "agent.hcl").read_text()
+        ):
+            target = Path(destination)
+            if target.exists():
+                continue
+            text = Path(source).read_text()
+            path = "secret/" + re.search(r'secret/data/([^"]+)"', text).group(1)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if destination.endswith(".txt"):
+                field = re.search(r"\.Data\.data\.(\w+)", text).group(1)
+                self.kv[path + "|" + field] = secrets.token_hex(24)
+                target.write_text(self.kv[path + "|" + field])
+                self.extra.append(target)
+            else:
+                target.write_text("3")
+            target.chmod(int(perms, 8))
+        (self.root / "kv.json").write_text(json.dumps(self.kv))
         self.ca = self.root / "ca.pem"
         self.ca.write_text("synthetic CA stub\n")
         self.log = self.root / "arguments.jsonl"
@@ -144,6 +173,11 @@ if args[:2] == ["kv", "get"]:
     if mode == "fetch":
         sys.stderr.write(os.environ["STUB_VALUE_1"])
         sys.exit(1)
+    extra = json.loads((root / "kv.json").read_text())
+    key = args[-1] + "|" + args[2].split("=", 1)[1]
+    if key in extra:
+        sys.stdout.write(extra[key])
+        sys.exit(0)
     index = "1" if args[-1].endswith("keycloak") else "2"
     if "-field=grafana_client_secret" in args:
         index = "3"
@@ -152,7 +186,10 @@ if args[:2] == ["kv", "get"]:
 if args[:2] == ["read", "-field=current_version"]:
     if mode == "metadata":
         sys.exit(1)
-    sys.stdout.write("7" if args[-1].endswith("keycloak") else "11")
+    if args[-1].endswith(("keycloak", "grafana")):
+        sys.stdout.write("7" if args[-1].endswith("keycloak") else "11")
+    else:
+        sys.stdout.write("3")
     sys.exit(0)
 sys.exit(1)
 """,
@@ -320,68 +357,32 @@ sys.exit(result.returncode)
                         self.cleanup_token,
                         self.client_value,
                         *self.values,
+                        *self.kv.values(),
                     ]
                 ),
                 "Secret-bearing argv",
             )
         return result
 
-    def test_readiness_fetches_two_restricted_paths_and_version_sentinels(self):
+    def test_readiness_checks_every_template_once_in_agent_hcl_order(self):
         self.assertEqual(self.run_script("health-agent.sh").returncode, 0)
         calls = [json.loads(line) for line in self.log.read_text().splitlines()]
         self.assertEqual(calls[0], ["status"])
         self.assertEqual(calls[1], ["token", "lookup", "-format=json"])
-        self.assertEqual(
-            calls[2:],
-            [
-                [
-                    "kv",
-                    "get",
-                    "-field=admin_password",
-                    "secret/hy-home/02-auth/keycloak",
-                ],
-                [
-                    "kv",
-                    "get",
-                    "-field=admin_password",
-                    "secret/hy-home/06-observability/grafana",
-                ],
-                [
-                    "kv",
-                    "get",
-                    "-field=grafana_client_secret",
-                    "secret/hy-home/06-observability/grafana",
-                ],
-                [
-                    "kv",
-                    "get",
-                    "-field=admin_password",
-                    "secret/hy-home/02-auth/keycloak",
-                ],
-                [
-                    "kv",
-                    "get",
-                    "-field=admin_password",
-                    "secret/hy-home/06-observability/grafana",
-                ],
-                [
-                    "kv",
-                    "get",
-                    "-field=grafana_client_secret",
-                    "secret/hy-home/06-observability/grafana",
-                ],
-                [
-                    "read",
-                    "-field=current_version",
-                    "secret/metadata/hy-home/02-auth/keycloak",
-                ],
-                [
-                    "read",
-                    "-field=current_version",
-                    "secret/metadata/hy-home/06-observability/grafana",
-                ],
-            ],
-        )
+        expected = []
+        hcl = (self.root / "openbao/config/agent.hcl").read_text()
+        for source, destination, _ in TEMPLATE_STANZA.findall(hcl):
+            text = Path(source).read_text()
+            path = re.search(r'secret/data/([^"]+)"', text).group(1)
+            if destination.endswith(".txt"):
+                field = re.search(r"\.Data\.data\.(\w+)", text).group(1)
+                expected.append(["kv", "get", "-field=" + field, "secret/" + path])
+            else:
+                expected.append(
+                    ["read", "-field=current_version", "secret/metadata/" + path]
+                )
+        self.assertEqual(calls[2:], expected)
+        self.assertEqual(19, len(expected))
 
     def test_sink_presence_does_not_accept_sealed_expired_or_forbidden(self):
         for failure in (
@@ -424,6 +425,43 @@ sys.exit(result.returncode)
         self.client.unlink()
         self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
 
+    def test_every_oidc_client_secret_is_checked_generically(self):
+        for target in self.extra:
+            with self.subTest(target=target.parent.name):
+                value = target.read_text()
+                target.write_text(secrets.token_hex(24))
+                self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+                target.write_text(value)
+                target.chmod(0o644)
+                self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+                target.chmod(0o640)
+        self.assertEqual(self.run_script("health-agent.sh").returncode, 0)
+        stray = self.out / "dozzle/other.txt"
+        stray.write_text("synthetic")
+        stray.chmod(0o604)
+        self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+        stray.unlink()
+        self.extra[0].unlink()
+        self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+
+    def test_agent_hcl_and_templates_cannot_widen_what_health_accepts(self):
+        hcl = self.root / "openbao/config/agent.hcl"
+        original = hcl.read_text()
+        template = self.root / "openbao/config/templates/dozzle_client_secret.ctmpl"
+        source = template.read_text()
+        for change in (
+            lambda: hcl.write_text(original.replace("perms       = 0640", "perms       = 0644", 1)),
+            lambda: hcl.write_text(original.replace("perms       = 0600", "perms       = 0640", 1)),
+            lambda: hcl.write_text(original.replace("/templates/", "/../templates/", 1)),
+            lambda: template.write_text(source.replace("hy-home/", "other/")),
+            lambda: template.write_text(source.replace("data.client_secret", "data.Client-Secret")),
+        ):  # fmt: skip
+            change()
+            self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+            hcl.write_text(original)
+            template.write_text(source)
+        self.assertEqual(self.run_script("health-agent.sh").returncode, 0)
+
     def test_grafana_payload_mismatch_fails_even_with_current_version(self):
         self.rendered[1].write_text(secrets.token_hex(24))
         self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
@@ -462,21 +500,29 @@ sys.exit(result.returncode)
         stray.chmod(0o640)
         self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
 
-    def test_only_the_consumed_password_templates_are_group_readable(self):
-        import re
-
+    def test_only_consumed_values_are_group_readable_one_directory_each(self):
         hcl = (SCRIPTS.parent / "config/agent.hcl").read_text()
-        modes = dict(
-            re.findall(r'destination = "([^"]+)"\n(?:.*\n)??\s*perms\s*= (\d+)', hcl)
-        )
-        for consumed in (
-            "/openbao/out/observability/grafana_admin_password.txt",
-            "/openbao/out/observability/grafana_client_secret.txt",
-            "/openbao/out/auth/keycloak_admin_password.txt",
-        ):
-            self.assertEqual("0640", modes.pop(consumed))
-        self.assertEqual({"0600"}, set(modes.values()))
-        self.assertEqual(2, len(modes))
+        stanzas = TEMPLATE_STANZA.findall(hcl)
+        self.assertEqual(19, len(stanzas))
+        directories = {}
+        for source, destination, perms in stanzas:
+            self.assertEqual("0640" if destination.endswith(".txt") else "0600", perms)
+            self.assertTrue(destination.endswith((".txt", ".version")), destination)
+            self.assertTrue(
+                (SCRIPTS.parent / source.removeprefix("/openbao/")).exists()
+            )
+            directory = destination.split("/")[3]
+            text = (SCRIPTS.parent / source.removeprefix("/openbao/")).read_text()
+            directories.setdefault(directory, set()).add(text.splitlines()[0])
+        # Keycloak and Grafana keep their tier directories; every OIDC client
+        # secret has a directory of its own that only its consumer binds.
+        self.assertEqual(
+            {"auth", "observability", "oauth2-proxy", "kafbat", "dozzle",
+             "gatus", "airflow", "open-webui", "superset"},
+            set(directories),
+        )  # fmt: skip
+        for directory, paths in directories.items():
+            self.assertEqual(1, len(paths), directory)
 
     def test_version_sentinels_require_private_mode(self):
         for index in (0, 1):

@@ -1,10 +1,10 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.19"
+version: "0.1.20"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-28"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0014"
 parent_ids:
@@ -1250,6 +1250,35 @@ Keycloak client, so this protects the rollback copies.
 Checks: the catalog, metadata, generation, gen-secrets and SMTP suites, 232
 tests OK. The catalog CLI `check` reports `P02_METADATA_BLOCKED` in the
 worktree, as it does on main, because the private metadata is not present.
+
+### OIDC client secret batch source — 2026-10-28
+
+The owner chose to move the remaining seven OIDC client secrets as one batch,
+one Agent output directory per consumer, and to prepare source and procedure
+before the root session. Consumers: oauth2-proxy and opensearch-dashboards
+(one secret), kafbat-ui, dozzle, gatus, airflow-apiserver, open-webui and
+superset. Each KV path holds one `client_secret` field.
+
+Source: 14 templates and `agent.hcl` stanzas (`.txt` 0640, `.version` 0600);
+`renderer.hcl` read and `operator.hcl` create/read/update on the seven paths;
+`health-agent.sh` now reads the template list from `agent.hcl` instead of a
+fixed list; each consumer binds only its own directory read-only and selects
+the file with a variable that falls back to `/run/secrets`; a value-free
+verifier `verify-oidc-client-secret.sh <service>` compares the rendered file,
+the mounted file and the Keycloak client secret. The restore bundle, the
+rehearsal seed, the policy pins in `protected-renderer-roles.py`, the RUN-0085
+manifest, the update ledger and the service inventory follow the new inputs.
+
+The consumer-migration README holds the owner procedure: RUN-0085 W1, W1c plan
+and apply, W7; seven `kv put -cas=0` imports from the `./secrets` copies; merge,
+fast-forward and one Agent restart; then per-service verifier, cutover and
+rollback. It also holds the plan for removing the `./secrets` copies, which is
+a plan only. The Keycloak admin password copy goes last because a Keycloak
+that cannot start blocks human OIDC login to OpenBao.
+
+NOT_RUN: root ceremony, policy apply, KV import, Agent restart, every cutover.
+kafbat-ui, opensearch-dashboards, superset and airflow-apiserver are not
+running, so their cutover waits for their next start.
 
 ## Evidence
 
