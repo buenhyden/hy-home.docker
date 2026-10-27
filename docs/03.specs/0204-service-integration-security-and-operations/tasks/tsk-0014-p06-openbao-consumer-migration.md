@@ -1025,10 +1025,29 @@ Accepted residuals:
 - Hardening left for later: a component-wise symlink check, and `-perm /044`
   with a group check in health.
 
+Hosted and registered checks found three projections the change had to carry.
+The first two are fixed in PR #578; the third is fixed in the follow-up PR,
+because #578 merged before it was pushed:
+
+- the Keycloak service inventory row (bind and variable), re-projected with
+  `render_service_inventory`;
+- a `wrapper` row for `KEYCLOAK_ADMIN_PASSWORD_FILE` in
+  `infra/secret-file-support.json`;
+- the Keycloak Compose `include_inputs` hash in the update ledger, 18
+  occurrences. Preserved verification evidence is unchanged.
+
 The live-mount order follows. Run the UID 100 `chmod 0640` and the main
 checkout fast-forward back to back after the GitHub merge, then check Agent
 health. The HOME cutover, rollback and re-cutover are owner-windowed and NOT_RUN
 at this point.
+
+The owner merged PR #578 at 11:32Z, as merge commit `94729ada1`. The pre-check
+found no group-readable file in `out/auth`. As UID 100, the
+`keycloak_admin_password.txt` mode then changed to `0640`, and the main checkout
+fast-forwarded from `68a4b4753` to `94729ada1` in the same command.
+`health-agent.sh` then returned 0, with the `.txt` file at 640 and `.version` at
+600. The registered changed gate on the final head failed only on the known
+`test_fixture_preflight` port-forward case.
 
 ## Evidence
 
