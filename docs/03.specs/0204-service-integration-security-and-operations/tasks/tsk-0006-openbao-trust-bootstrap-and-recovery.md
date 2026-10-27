@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.30"
+version: "0.2.31"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3340,7 +3340,7 @@ fails or the sudo count is empty. The owner then ran it in a terminal:
 A listing afterwards shows `p01-restore-20261014-05` and both attempt ledgers
 only.
 
-**`-05` target — RETAINED.** The owner kept `p01-restore-20261014-05` until the
+**`-05` target — REMOVED by the owner (2026-10-27).** The owner later chose deletion. The same guarded script, with only the path and identity (inode 115608830) changed, printed `checks PASS; entries: 5` and `REMOVED …p01-restore-20261014-05; ledger kept` in a terminal. A listing afterwards shows only the two attempt ledgers. Earlier record: The owner kept `p01-restore-20261014-05` until the
 next window or review. Root custody, W2 locks and both ledgers are outside this
 cleanup.
 

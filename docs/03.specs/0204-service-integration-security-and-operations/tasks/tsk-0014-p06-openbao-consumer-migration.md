@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -857,6 +857,51 @@ Owner pre-cutover run, 2026-10-27, on HOME with Grafana still reading the
 equals the Agent-rendered KV value and is Grafana's effective admin password,
 so the cutover changes the file's source, not the value. The P01 `0640`
 change, cutover, post-cutover run and rollback remain NOT_RUN.
+
+### W49 Grafana delivery source — 2026-10-27
+
+Review before cutover found that the README plan's step 3 conflicted with
+existing contracts. It said to repoint the root Compose `grafana_admin_password`
+file at the Agent output. But `test_secret_metadata_sync` rejects `${…}` and
+absolute secret paths, and `gen-secrets.sh` rejects symlinked or escaping
+ones, so every Compose secret stays a real file under `./secrets/`. The owner
+chose a directory mount instead. Grafana gets a read-only bind of
+`${DEFAULT_SECURITY_DIR}/openbao/out/observability` at
+`/run/openbao/observability`, and `GF_SECURITY_ADMIN_PASSWORD__FILE` becomes
+`${GRAFANA_ADMIN_PASSWORD_FILE:-/run/secrets/grafana_admin_password}`. That
+leaves today's behaviour unchanged when the variable is empty. Being a
+directory bind, it also follows Agent re-renders, which removes the
+stale-inode caveat. The Agent renders only the Grafana `.txt` at `0640`, and
+`health-agent.sh` requires `640` for that file and `600` for the Keycloak file
+and both `.version` files.
+
+The verifier now reads Grafana's `GF_SECURITY_ADMIN_PASSWORD__FILE`, accepts
+only those two paths, and prints it as `consumed_file`. Checks:
+
+- consumer-migration and Agent contract suites, 37 OK, including new exact-mode
+  and template-perms cases;
+- update-gates and workflow bundle OK after the observability Compose
+  `include_inputs` rehash, with 13 row source hashes updated;
+- secret metadata, service wiring, Compose baseline and SEC01 version suites
+  all pass;
+- hardening for `03-security` and `06-observability` PASS; shellcheck clean.
+
+An independent security/IaC review found two Medium and two Low issues, all
+fixed:
+
+- The bind now uses the long form with `create_host_path: false`, so a missing
+  Agent directory stops Grafana visibly instead of being created root-owned.
+- The README requires the Agent recreate before the variable is set. Grafana
+  passes an unreadable `__FILE` as an empty value, which on a fresh volume would
+  seed the default admin password; the verifier reports that case as FAIL.
+- The README wording on re-renders is corrected.
+- `health-agent.sh` fails if any other group-readable file appears in the
+  bound directory.
+
+New tests cover the stray file and the bind's form. Agent, consumer-migration,
+Compose baseline and secret metadata suites: 215 tests OK, 30 skipped.
+The Agent and Grafana recreates on HOME, the cutover run, and the rollback run
+follow after merge.
 
 ## Evidence
 

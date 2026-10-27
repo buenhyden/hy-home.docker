@@ -175,7 +175,7 @@
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
-      "sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb"
+      "sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934"
     },
     {
       "path": "infra/06-observability/dozzle/docker-compose.yml",
@@ -1772,7 +1772,7 @@
       "upstream_reported_tag": "v0.34.1",
       "next_fact_command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1914,7 +1914,7 @@
       "upstream_reported_tag": "v1.20.1",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/alloy:v1.20.1",
@@ -2177,7 +2177,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "ghcr.io/google/cadvisor:v0.60.6",
@@ -3127,7 +3127,7 @@
       "upstream_reported_tag": "4.8.4",
       "next_fact_command": "gh release view --repo NVIDIA/dcgm-exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4968,7 +4968,7 @@
       "upstream_reported_tag": "v5.37.0",
       "next_fact_command": "gh release view --repo TwiN/gatus --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5446,7 +5446,7 @@
       "upstream_reported_tag": "v13.2.4",
       "next_fact_command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f",
@@ -5628,7 +5628,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7120,7 +7120,7 @@
       "upstream_reported_tag": "v3.7.8",
       "next_fact_command": "gh release view --repo grafana/loki --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -9562,7 +9562,7 @@
       "upstream_reported_tag": "v1.12.1",
       "next_fact_command": "gh release view --repo prometheus/node_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12266,7 +12266,7 @@
       "upstream_reported_tag": "v3.15.0",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/prometheus:v3.15.0",
@@ -12386,7 +12386,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/pushgateway:v1.11.4",
@@ -12507,7 +12507,7 @@
       "upstream_reported_tag": "v2.4.0",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/pyroscope:2.4.0",
@@ -15838,7 +15838,7 @@
       "upstream_reported_tag": "v3.1.0",
       "next_fact_command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "39315c2d86ea2eb278a703a19851e4d4d970024d90c73775098a50b0fdc02bcb",
+      "source_input_sha256": "41d7cb5a2e500d24029181307eba6fb5e16a0d208d66ca8782720a649d17a934",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "hy/tempo:3.1.0-seaweedfs",

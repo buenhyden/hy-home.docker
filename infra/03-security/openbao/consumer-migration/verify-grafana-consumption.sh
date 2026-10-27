@@ -8,7 +8,6 @@ set -uo pipefail
 agent=${OPENBAO_AGENT_CONTAINER:-openbao-agent}
 grafana=${GRAFANA_CONTAINER:-grafana}
 rendered=/openbao/out/observability/grafana_admin_password
-mounted=/run/secrets/grafana_admin_password
 failed=0
 
 result() {
@@ -24,6 +23,14 @@ for name in "$agent" "$grafana"; do
 done
 # Grafana's __FILE read drops trailing newlines only; CR and inner bytes count.
 strip() { sed -z 's/\n*$//'; }
+
+# The file Grafana actually reads: its Compose secret or the Agent directory bind.
+mounted=$(timeout 10 docker exec "$grafana" printenv GF_SECURITY_ADMIN_PASSWORD__FILE 2>/dev/null)
+case "$mounted" in
+  /run/secrets/grafana_admin_password|/run/openbao/observability/grafana_admin_password.txt)
+    result consumed_file 0 "path=$mounted" ;;
+  *) result consumed_file 1; exit 1 ;;
+esac
 
 version=$(timeout 10 docker exec "$agent" cat "$rendered.version" 2>/dev/null)
 case "$version" in

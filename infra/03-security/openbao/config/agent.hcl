@@ -35,7 +35,8 @@ template {
 template {
   source      = "/openbao/config/templates/grafana_admin_password.ctmpl"
   destination = "/openbao/out/observability/grafana_admin_password.txt"
-  perms       = 0600
+  # Group 1000 read lets Grafana (UID 472, group 1000) consume it (P06 W49).
+  perms       = 0640
 }
 
 template {
