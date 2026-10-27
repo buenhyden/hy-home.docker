@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.11"
+version: "0.1.12"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -798,6 +798,17 @@ ExternalSecret refresh, which closes the all-six wording difference without a
 Runbook change. B1 exact operator binding waits for the owner-run read-only
 lookup that prints only hashed entity/alias identifiers; B4, P06, Native, HOME
 and owner acceptance remain NOT_RUN.
+
+The owner then ran the read-only lookup: token path `auth/oidc/oidc/callback`,
+policies `default`+`hy-home-operator`, `identity_policies` null, meta key
+`role`=`home-admin`; one active entity with no direct policy or group and a
+single `oidc` alias on `auth/oidc/`; the auth mount list was denied to the
+operator. Only hashed entity/alias identifiers were printed. edd1693a4 binds
+`check_operator` to that role and to empty identity policies with five
+negative cases; entity alias/accessor checks are not added because they would
+widen the helper API allowlist. Dependent pins and RUN-0085 hashes were
+updated; 436 OpenBao and runbook-consumer tests passed. The next window needs a
+new P01 approval and install check before this helper is used.
 
 ## Evidence
 
