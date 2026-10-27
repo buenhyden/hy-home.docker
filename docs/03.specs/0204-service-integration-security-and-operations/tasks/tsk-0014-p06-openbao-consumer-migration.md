@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.16"
+version: "0.1.17"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1089,6 +1089,49 @@ Remaining NOT_RUN or open:
 Owner decision: the Keycloak verifier's default health wait is now 360 s
 (`VERIFY_HEALTH_TRIES` 72), and the README matches. The Grafana verifier keeps
 180 s.
+
+### Third consumer: Grafana OIDC client secret — 2026-10-27
+
+The owner chose to inventory the remaining consumers, and then to make
+`grafana_client_secret` the third. The secret catalog lists 65 `IMPLEMENT`
+kv_static entries; the Grafana and Keycloak admin passwords are the only ones
+done. They group as:
+
+- Grafana's client secret, which already has a template and a bound directory;
+- other OIDC client secrets;
+- per-service DB passwords;
+- the shared `mng_password`, with 8 or more consumers, which goes last;
+- the SeaweedFS S3 keys;
+- tokens.
+
+The renderer policy already allows the Grafana path. A value-free probe from the
+Agent, reading exit codes only, found that the field is not in KV yet
+(`grafana_client_secret` rc 1, `admin_password` control rc 0), so an owner-run
+KV import comes first. The owner chose a single Agent restart: import, merge,
+fast-forward, then one restart. That restart also loads the Keycloak `0640` from
+`agent.hcl`, which replaces the earlier plan for a separate restart.
+
+Source changes:
+
+- `agent.hcl` renders `grafana_client_secret.txt` at `0640`.
+- `health-agent.sh` fetches and compares the new field, requires `640`, and
+  admits the file in the observability directory. The Grafana `.version`
+  covers the shared path.
+- Grafana selects the file through `GRAFANA_CLIENT_SECRET_FILE`, which defaults
+  to `/run/secrets`.
+- `verify-grafana-client-secret.sh` also compares the mounted file with the
+  secret Keycloak holds for the client, read once by `kcadm.sh` and compared
+  inside pipes.
+
+The live Keycloak and Grafana comparison was denied to the agent by the
+permission classifier, so its first run is the owner's. The `kcadm` CSV output
+form is unverified on HOME until then.
+
+Checks: Agent contract 32 OK, consumer-migration 25 OK, operations catalog PASS,
+update-gates and runtime compatibility OK after the observability Compose
+rehash (14 occurrences), shellcheck clean. The catalog `IAM-007` lifecycle stays
+unreconciled, like the two admin passwords. The KV import, Agent restart,
+cutover and rollback are NOT_RUN.
 
 ## Evidence
 

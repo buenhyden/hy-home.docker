@@ -32,6 +32,7 @@ class AgentContractTests(unittest.TestCase):
         self.cleanup_token = secrets.token_hex(24)
         self.token = secrets.token_hex(24)
         self.values = [secrets.token_hex(24), secrets.token_hex(24)]
+        self.client_secret = secrets.token_hex(24)
         (self.agent / "token").write_text(self.token)
         (self.agent / "token").chmod(0o600)
         self.rendered = [
@@ -45,6 +46,9 @@ class AgentContractTests(unittest.TestCase):
         ):
             path.write_text(value)
             path.chmod(mode)
+        self.client = self.out / "observability/grafana_client_secret.txt"
+        self.client.write_text(self.client_secret)
+        self.client.chmod(0o640)
         self.versions = [path.with_suffix(".version") for path in self.rendered]
         for path, version in zip(self.versions, ("7", "11"), strict=True):
             path.write_text(version)
@@ -72,6 +76,7 @@ class AgentContractTests(unittest.TestCase):
             "STUB_MANIFEST": MANIFEST,
             "STUB_VALUE_1": self.values[0],
             "STUB_VALUE_2": self.values[1],
+            "STUB_VALUE_3": self.client_secret,
         }
         for name in (
             "BAO_SKIP_VERIFY",
@@ -140,6 +145,8 @@ if args[:2] == ["kv", "get"]:
         sys.stderr.write(os.environ["STUB_VALUE_1"])
         sys.exit(1)
     index = "1" if args[-1].endswith("keycloak") else "2"
+    if "-field=grafana_client_secret" in args:
+        index = "3"
     sys.stdout.write(os.environ["STUB_VALUE_" + index])
     sys.exit(0)
 if args[:2] == ["read", "-field=current_version"]:
@@ -308,7 +315,12 @@ sys.exit(result.returncode)
             self.assertTrue(
                 all(
                     value not in public
-                    for value in [self.token, self.cleanup_token, *self.values]
+                    for value in [
+                        self.token,
+                        self.cleanup_token,
+                        self.client_secret,
+                        *self.values,
+                    ]
                 ),
                 "Secret-bearing argv",
             )
@@ -337,6 +349,12 @@ sys.exit(result.returncode)
                 [
                     "kv",
                     "get",
+                    "-field=grafana_client_secret",
+                    "secret/hy-home/06-observability/grafana",
+                ],
+                [
+                    "kv",
+                    "get",
                     "-field=admin_password",
                     "secret/hy-home/02-auth/keycloak",
                 ],
@@ -344,6 +362,12 @@ sys.exit(result.returncode)
                     "kv",
                     "get",
                     "-field=admin_password",
+                    "secret/hy-home/06-observability/grafana",
+                ],
+                [
+                    "kv",
+                    "get",
+                    "-field=grafana_client_secret",
                     "secret/hy-home/06-observability/grafana",
                 ],
                 [
@@ -386,6 +410,18 @@ sys.exit(result.returncode)
 
     def test_keycloak_payload_mismatch_fails_even_with_current_version(self):
         self.rendered[0].write_text(secrets.token_hex(24))
+        self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+
+    def test_client_secret_is_checked_like_the_passwords(self):
+        self.client.write_text(secrets.token_hex(24))
+        self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+        self.client.write_text(self.client_secret)
+        for mode in (0o600, 0o644):
+            self.client.chmod(mode)
+            self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+        self.client.chmod(0o640)
+        self.assertEqual(self.run_script("health-agent.sh").returncode, 0)
+        self.client.unlink()
         self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
 
     def test_grafana_payload_mismatch_fails_even_with_current_version(self):
@@ -435,6 +471,7 @@ sys.exit(result.returncode)
         )
         for consumed in (
             "/openbao/out/observability/grafana_admin_password.txt",
+            "/openbao/out/observability/grafana_client_secret.txt",
             "/openbao/out/auth/keycloak_admin_password.txt",
         ):
             self.assertEqual("0640", modes.pop(consumed))

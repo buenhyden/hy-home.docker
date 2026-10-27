@@ -540,3 +540,168 @@ class KeycloakConsumptionVerifierTests(unittest.TestCase):
         self.assertIn("keycloak_db_password", keycloak["secrets"])
         example = (ROOT / ".env.example").read_text()
         self.assertIn('\nKEYCLOAK_ADMIN_PASSWORD_FILE=""\n', example)
+
+
+CS_VERIFIER = PACKAGE / "verify-grafana-client-secret.sh"
+FAKE_CS_DOCKER = r"""#!/usr/bin/env python3
+import os, subprocess, sys
+args, env = sys.argv[1:], {}
+if args[0] == "inspect":
+    print(os.environ.get("FAKE_HEALTH", "healthy"))
+    sys.exit(0)
+assert args.pop(0) == "exec"
+while args[0] == "-e":
+    key, _, value = args[1].partition("=")
+    env[key] = value
+    args = args[2:]
+name = args.pop(0)
+root = os.path.join(os.environ["FAKE_ROOT"], name)
+if args[0] == "printenv":
+    print({"GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE": os.environ.get(
+               "FAKE_CS_FILE", "/run/secrets/grafana_client_secret"),
+           "GF_AUTH_GENERIC_OAUTH_CLIENT_ID": os.environ.get("FAKE_CLIENT", "home-grafana")}[args[1]])
+elif args[0] == "cat":
+    sys.stdout.buffer.write(open(root + args[1], "rb").read())
+elif args[:2] == ["sh", "-c"]:
+    env.update(PATH=os.environ["FAKE_BIN"] + ":/usr/bin:/bin", KC_BOOTSTRAP_ADMIN_USERNAME="admin",
+               KEYCLOAK_ADMIN_PASSWORD_FILE=root + "/run/secrets/keycloak_admin_password",
+               FAKE_ROOT=os.environ["FAKE_ROOT"])
+    script = args[2].replace("/opt/keycloak/bin/", os.environ["FAKE_BIN"] + "/")
+    sys.exit(subprocess.run(["sh", "-c", script], env=env).returncode)
+"""
+FAKE_CS_KCADM = r"""#!/usr/bin/env python3
+import os, sys
+root = os.environ["FAKE_ROOT"]
+open(os.path.join(root, "kcadm-argv"), "a").write(" ".join(sys.argv) + "\n")
+args = sys.argv[1:]
+if args[:2] == ["config", "credentials"]:
+    sys.exit(0 if os.environ.get("KC_CLI_PASSWORD") == "synthetic-admin" else 1)
+if args[:2] == ["get", "clients"]:
+    assert "clientId=home-grafana" in args and "hy-home.realm" in args
+    print("0f1e2d3c-aaaa-bbbb-cccc-000000000001")
+    sys.exit(0)
+if args[:2] == ["get", "clients/0f1e2d3c-aaaa-bbbb-cccc-000000000001/client-secret"]:
+    sys.stdout.buffer.write(open(os.path.join(root, "keycloak-secret"), "rb").read() + b"\n")
+    sys.exit(0)
+sys.exit(1)
+"""
+
+
+class GrafanaClientSecretVerifierTests(unittest.TestCase):
+    def run_verifier(self, rendered, mounted, keycloak=None, version=b"2",
+                     cs_file=None, admin=b"synthetic-admin", client=None, health=None):  # fmt: skip
+        import os
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root / "openbao-agent/openbao/out/observability"
+            out.mkdir(parents=True)
+            (out / "grafana_client_secret.txt").write_bytes(rendered)
+            (out / "grafana_admin_password.version").write_bytes(version)
+            for path in (
+                "grafana/run/secrets/grafana_client_secret",
+                "grafana/run/openbao/observability/grafana_client_secret.txt",
+            ):
+                (root / path).parent.mkdir(parents=True, exist_ok=True)
+                (root / path).write_bytes(mounted)
+            admin_file = root / "keycloak/run/secrets/keycloak_admin_password"
+            admin_file.parent.mkdir(parents=True)
+            admin_file.write_bytes(admin)
+            (root / "keycloak-secret").write_bytes(
+                mounted.rstrip(b"\n") if keycloak is None else keycloak
+            )
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            for name, body in (("docker", FAKE_CS_DOCKER), ("kcadm.sh", FAKE_CS_KCADM)):
+                (bin_dir / name).write_text(body)
+                (bin_dir / name).chmod(0o755)
+            result = subprocess.run(
+                ["bash", str(CS_VERIFIER)],
+                capture_output=True,
+                env={
+                    "PATH": f"{bin_dir}:{os.environ['PATH']}",
+                    "FAKE_ROOT": str(root),
+                    "FAKE_BIN": str(bin_dir),
+                    "VERIFY_HEALTH_SLEEP": "0",
+                    "VERIFY_HEALTH_TRIES": "2",
+                    **({"FAKE_CS_FILE": cs_file} if cs_file else {}),
+                    **({"FAKE_CLIENT": client} if client else {}),
+                    **({"FAKE_HEALTH": health} if health else {}),
+                },
+                timeout=30,
+                check=False,
+            )
+            path = root / "kcadm-argv"
+            argv = path.read_bytes() if path.exists() else b""
+        return result, argv
+
+    def test_all_three_copies_equal_pass_without_printing_values(self):
+        marker = b"Synth-client-marker"
+        result, argv = self.run_verifier(marker, marker + b"\n")
+        self.assertEqual(0, result.returncode, result.stdout)
+        self.assertEqual(
+            b"PASS grafana_healthy\n"
+            b"PASS consumed_file path=/run/secrets/grafana_client_secret\n"
+            b"PASS rendered_version version=2\nPASS mounted_equals_rendered\n"
+            b"PASS keycloak_client_matches client=home-grafana\n",
+            result.stdout,
+        )
+        for stream in (result.stdout, result.stderr, argv):
+            self.assertNotIn(b"Synth", stream)
+            self.assertNotIn(b"synthetic-admin", stream)
+
+    def test_each_mismatch_fails_its_own_check(self):
+        result, _ = self.run_verifier(
+            b"synthetic-a", b"synthetic-b", keycloak=b"synthetic-b"
+        )
+        self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
+        self.assertIn(b"PASS keycloak_client_matches", result.stdout)
+        result, _ = self.run_verifier(
+            b"synthetic-a", b"synthetic-a", keycloak=b"synthetic-k"
+        )
+        self.assertIn(b"PASS mounted_equals_rendered\n", result.stdout)
+        self.assertIn(b"FAIL keycloak_client_matches", result.stdout)
+        self.assertEqual(1, result.returncode)
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", admin=b"wrong")
+        self.assertIn(b"FAIL keycloak_client_matches", result.stdout)
+        result, _ = self.run_verifier(b"", b"", keycloak=b"")
+        self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
+        self.assertIn(b"FAIL keycloak_client_matches", result.stdout)
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", version=b"0")
+        self.assertIn(b"FAIL rendered_version\n", result.stdout)
+
+    def test_follows_the_agent_file_and_rejects_other_paths_or_ids(self):
+        path = "/run/openbao/observability/grafana_client_secret.txt"
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", cs_file=path)
+        self.assertEqual(0, result.returncode, result.stdout)
+        self.assertIn(f"PASS consumed_file path={path}\n".encode(), result.stdout)
+        result, argv = self.run_verifier(
+            b"synthetic-a", b"synthetic-a", cs_file="/etc/passwd"
+        )
+        self.assertEqual(b"PASS grafana_healthy\nFAIL consumed_file\n", result.stdout)
+        self.assertEqual(b"", argv)
+        result, argv = self.run_verifier(b"synthetic-a", b"synthetic-a", client="x;id")
+        self.assertIn(b"FAIL client_id\n", result.stdout)
+        self.assertEqual(b"", argv)
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", health="starting")
+        self.assertEqual(
+            b"WAIT grafana_healthy\nFAIL grafana_healthy state=starting\n",
+            result.stdout,
+        )
+
+    def test_grafana_selects_the_client_secret_file_by_variable(self):
+        import yaml
+
+        compose = yaml.safe_load(
+            (ROOT / "infra/06-observability/docker-compose.yml").read_text()
+        )
+        self.assertEqual(
+            "${GRAFANA_CLIENT_SECRET_FILE:-/run/secrets/grafana_client_secret}",
+            compose["services"]["grafana"]["environment"][
+                "GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE"
+            ],
+        )
+        self.assertIn(
+            '\nGRAFANA_CLIENT_SECRET_FILE=""\n', (ROOT / ".env.example").read_text()
+        )
