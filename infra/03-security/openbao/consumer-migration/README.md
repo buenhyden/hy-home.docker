@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.6"
+version: "0.1.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -184,21 +184,21 @@ Agent가 렌더링하는 소비자는 Keycloak과 Grafana 관리자 비밀번호
 최초 기동 때만 적용되는 bootstrap 값입니다. 첫 소비자는 영향 범위가 작은 Grafana입니다.
 Grafana는 로그인 화면을 끄고 OIDC를 쓰므로 관리자 비밀번호는 비상 경로에만 쓰입니다.
 
-1. 선행 조건: Agent는 `100:1000` 소유의 `0600` 파일을 렌더링하므로 group 1000을 추가로
-   가진 Grafana(UID 472)도 읽을 수 없습니다. P01 소유자가 Grafana 비밀번호 template의
-   `perms`만 `0640`으로 바꾸고, `health-agent.sh`에서도 Grafana `.txt` mode 검사만
-   `640`으로 맞춘 뒤 Agent를 다시 만듭니다. Keycloak 파일과 `.version` 파일은 `600`으로 둡니다.
-2. 전환 전 검사: Agent가 healthy여야 렌더링 값이 KV 값과 같습니다. 그 상태에서
-   `bash infra/03-security/openbao/consumer-migration/verify-grafana-consumption.sh`
-   결과 세 줄이 모두 `PASS`여야 현재 파일 값이 렌더링 값과 같고 로그인됩니다.
-3. 전환: 루트 Compose의 `grafana_admin_password` 파일 경로를 Agent 출력으로 바꾸고
-   `grafana`만 다시 만든 뒤 같은 검사를 다시 실행합니다.
-4. 되돌리기: 파일 경로를 원래 `./secrets/` 경로로 돌리고 `grafana`만 다시 만든 뒤 같은
-   검사를 실행합니다.
+Compose secret은 저장소 `./secrets/` 아래 실제 파일이어야 하므로(변수·절대·symlink 경로 거부)
+Grafana는 Compose secret 대신 Agent 출력 디렉터리를 `/run/openbao/observability`에 읽기 전용으로
+bind하고 `GF_SECURITY_ADMIN_PASSWORD__FILE`을 `GRAFANA_ADMIN_PASSWORD_FILE`로 고릅니다.
+비어 있으면 기존 `/run/secrets/grafana_admin_password`를 씁니다.
 
-Compose 파일 secret은 파일 하나를 bind mount합니다. Agent가 파일을 교체해 다시
-렌더링하면 실행 중인 container는 이전 파일을 계속 봅니다. KV 값이 바뀌면 container를
-다시 만들 때까지 `mounted_equals_rendered`가 `FAIL`입니다. bootstrap 값이므로 KV 변경만으로
+1. 선행 조건: Agent는 Grafana 비밀번호 파일만 `0640`(group 1000 읽기)으로 렌더링하고
+   `health-agent.sh`도 그 파일에만 `640`을 요구합니다. 이 소스를 반영한 뒤 `openbao-agent`를
+   다시 만들고 healthy를 확인합니다.
+2. 전환 전 검사: `bash infra/03-security/openbao/consumer-migration/verify-grafana-consumption.sh`
+   결과가 모두 `PASS`여야 합니다. 첫 줄 `consumed_file`은 Grafana가 실제로 읽는 파일입니다.
+3. 전환: 로컬 `.env`에 `GRAFANA_ADMIN_PASSWORD_FILE=/run/openbao/observability/grafana_admin_password.txt`를
+   넣고 `grafana`만 다시 만든 뒤 같은 검사를 실행합니다. `consumed_file`이 Agent 경로여야 합니다.
+4. 되돌리기: 그 줄을 지우거나 비우고 `grafana`만 다시 만든 뒤 같은 검사를 실행합니다.
+
+디렉터리 bind이므로 Agent가 파일을 교체해 다시 렌더링해도 Grafana는 새 파일을 봅니다. bootstrap 값이므로 KV 변경만으로
 Grafana에 저장된 비밀번호가 바뀌지 않으며, 실제 회전은 별도 단계입니다. 로그인 검사는
 시도마다 비상 관리자 계정에 한 번 로그인하므로, `FAIL`이 반복되면 원인을 찾기 전에
 반복 실행하지 않습니다.

@@ -118,7 +118,9 @@ while args[0] == "-e":
     args = args[2:]
 root = os.path.join(os.environ["FAKE_ROOT"], args.pop(0))
 local = lambda path: root + path
-if args[0] == "cat":
+if args[0] == "printenv":
+    print(os.environ.get("FAKE_GF_FILE", "/run/secrets/grafana_admin_password"))
+elif args[0] == "cat":
     sys.stdout.buffer.write(open(local(args[1]), "rb").read())
 elif args[:2] == ["test", "-s"]:
     sys.exit(0 if os.path.getsize(local(args[2])) else 1)
@@ -137,7 +139,9 @@ sys.stdout.write("200" if config == expected else "401")
 
 
 class GrafanaConsumptionVerifierTests(unittest.TestCase):
-    def run_verifier(self, rendered, mounted, version=b"3", login=None, port=None):
+    def run_verifier(
+        self, rendered, mounted, version=b"3", login=None, port=None, gf_file=None
+    ):
         import os
         import tempfile
 
@@ -150,6 +154,9 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
             (out / "grafana_admin_password.txt").write_bytes(rendered)
             (out / "grafana_admin_password.version").write_bytes(version)
             (run / "grafana_admin_password").write_bytes(mounted)
+            agent_dir = root / "grafana/run/openbao/observability"
+            agent_dir.mkdir(parents=True)
+            (agent_dir / "grafana_admin_password.txt").write_bytes(mounted)
             login = mounted.rstrip(b"\n") if login is None else login
             quoted = login.replace(b"\\", b"\\\\").replace(b'"', b'\\"')
             (root / "expected-config").write_bytes(b'user = "admin:' + quoted + b'"\n')
@@ -166,6 +173,7 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
                     "FAKE_ROOT": str(root),
                     "FAKE_BIN": str(bin_dir),
                     **({"GRAFANA_PORT": port} if port else {}),
+                    **({"FAKE_GF_FILE": gf_file} if gf_file else {}),
                 },
                 timeout=30,
                 check=False,
@@ -182,6 +190,7 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
         result, argv = self.run_verifier(marker, marker + b"\n")
         self.assertEqual(0, result.returncode, result.stdout)
         self.assertEqual(
+            b"PASS consumed_file path=/run/secrets/grafana_admin_password\n"
             b"PASS rendered_version version=3\nPASS mounted_equals_rendered\n"
             b"PASS admin_login http=200\n",
             result.stdout,
@@ -212,3 +221,14 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
         self.assertEqual(2, result.returncode)
         self.assertEqual(b"", result.stdout)
         self.assertEqual(b"", argv)
+
+    def test_follows_the_agent_directory_file_and_rejects_other_paths(self):
+        path = "/run/openbao/observability/grafana_admin_password.txt"
+        result, _ = self.run_verifier(b"synthetic-a", b"synthetic-a", gf_file=path)
+        self.assertEqual(0, result.returncode, result.stdout)
+        self.assertIn(f"PASS consumed_file path={path}\n".encode(), result.stdout)
+        result, _ = self.run_verifier(
+            b"synthetic-a", b"synthetic-a", gf_file="/etc/passwd"
+        )
+        self.assertEqual(1, result.returncode)
+        self.assertEqual(b"FAIL consumed_file\n", result.stdout)

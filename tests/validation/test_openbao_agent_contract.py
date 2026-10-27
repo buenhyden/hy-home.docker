@@ -38,9 +38,13 @@ class AgentContractTests(unittest.TestCase):
             self.out / "auth/keycloak_admin_password.txt",
             self.out / "observability/grafana_admin_password.txt",
         ]
-        for path, value in zip(self.rendered, self.values, strict=True):
+        # Keycloak stays owner-only; Grafana is group-readable for P06 W49.
+        self.rendered_modes = (0o600, 0o640)
+        for path, value, mode in zip(
+            self.rendered, self.values, self.rendered_modes, strict=True
+        ):
             path.write_text(value)
-            path.chmod(0o600)
+            path.chmod(mode)
         self.versions = [path.with_suffix(".version") for path in self.rendered]
         for path, version in zip(self.versions, ("7", "11"), strict=True):
             path.write_text(version)
@@ -393,11 +397,25 @@ sys.exit(result.returncode)
         (self.agent / "token").chmod(0o644)
         self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
 
-    def test_rendered_passwords_require_private_mode(self):
-        for index in (0, 1):
-            self.rendered[index].chmod(0o644)
+    def test_rendered_passwords_require_their_exact_mode(self):
+        # World-readable, and each file at the other file's mode, must fail.
+        for index, wrong in ((0, 0o644), (1, 0o644), (0, 0o640), (1, 0o600)):
+            self.rendered[index].chmod(wrong)
             self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
-            self.rendered[index].chmod(0o600)
+            self.rendered[index].chmod(self.rendered_modes[index])
+
+    def test_only_the_grafana_template_is_group_readable(self):
+        import re
+
+        hcl = (SCRIPTS.parent / "config/agent.hcl").read_text()
+        modes = dict(
+            re.findall(r'destination = "([^"]+)"\n(?:.*\n)??\s*perms\s*= (\d+)', hcl)
+        )
+        self.assertEqual(
+            "0640", modes.pop("/openbao/out/observability/grafana_admin_password.txt")
+        )
+        self.assertEqual({"0600"}, set(modes.values()))
+        self.assertEqual(3, len(modes))
 
     def test_version_sentinels_require_private_mode(self):
         for index in (0, 1):

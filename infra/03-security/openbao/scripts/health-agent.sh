@@ -29,7 +29,9 @@ timeout 3 bao kv get -field=admin_password secret/hy-home/06-observability/grafa
 for rendered in /openbao/out/auth/keycloak_admin_password /openbao/out/observability/grafana_admin_password; do
   [ -f "$rendered.txt" ] && [ ! -L "$rendered.txt" ] && [ -s "$rendered.txt" ] || exit 1
   [ -f "$rendered.version" ] && [ ! -L "$rendered.version" ] && [ -s "$rendered.version" ] || exit 1
-  [ "$(stat -c %a "$rendered.txt")" = 600 ] || exit 1
+  # Only Grafana's consumed password is group-readable (P06 W49).
+  case "$rendered" in */grafana_admin_password) mode=640 ;; *) mode=600 ;; esac
+  [ "$(stat -c %a "$rendered.txt")" = "$mode" ] || exit 1
   [ "$(stat -c %a "$rendered.version")" = 600 ] || exit 1
 done
 timeout 3 bao kv get -field=admin_password secret/hy-home/02-auth/keycloak | cmp -s - /openbao/out/auth/keycloak_admin_password.txt || exit 1
