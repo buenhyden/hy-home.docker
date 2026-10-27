@@ -131,7 +131,7 @@
     },
     {
       "path": "infra/02-auth/keycloak/docker-compose.yml",
-      "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+      "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
     },
     {
       "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -6968,7 +6968,7 @@
         "--raw"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974",
+      "source_input_sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "vendor_channel_evidence": {
@@ -16766,7 +16766,7 @@
       },
       {
         "path": "infra/02-auth/keycloak/docker-compose.yml",
-        "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+        "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
       },
       {
         "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -18358,7 +18358,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -18570,7 +18570,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -18787,7 +18787,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -19137,7 +19137,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -19497,7 +19497,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -20056,7 +20056,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -20241,7 +20241,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -20434,7 +20434,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -21795,7 +21795,7 @@
             "dev",
             "local"
           ],
-          "source_input_sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974",
+          "source_input_sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547",
           "latest_version": "26.8.1",
           "target_version": "26.8.0",
           "channel": "stable",
@@ -23586,7 +23586,7 @@
             },
             {
               "path": "infra/02-auth/keycloak/docker-compose.yml",
-              "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+              "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
             },
             {
               "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -23772,7 +23772,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -24012,7 +24012,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -24220,7 +24220,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -24408,7 +24408,7 @@
         },
         {
           "path": "infra/02-auth/keycloak/docker-compose.yml",
-          "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+          "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
         },
         {
           "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -25609,7 +25609,7 @@
       },
       {
         "path": "infra/02-auth/keycloak/docker-compose.yml",
-        "sha256": "0b89e5ff1cb5f638bedb386d139d738c4ba5c3d27d7145e56a74a2c02f1fd974"
+        "sha256": "4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547"
       },
       {
         "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
