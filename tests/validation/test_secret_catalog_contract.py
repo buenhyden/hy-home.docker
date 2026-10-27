@@ -211,6 +211,14 @@ class SecretCatalogContractTests(unittest.TestCase):
                 item["value"] = "synthetic-forbidden"
                 self.assertTrue(list(validator.iter_errors(candidate)))
 
+    # P06 consumers proven on HOME; every other entry makes no runtime claim.
+    MIGRATED = frozenset({"IAM-002", "IAM-007", "OBS-002"})
+    MIGRATED_LANES = ("observed", "imported", "delivered", "consumed")
+    P06_TASK = (
+        "docs/03.specs/0204-service-integration-security-and-operations/tasks/"
+        "tsk-0014-p06-openbao-consumer-migration.md"
+    )
+
     def test_full_reference_metadata_is_present_without_runtime_authority(self):
         for row in self.catalog["entries"]:
             self.assertEqual(row["owner"], "@buenhyden")
@@ -230,9 +238,15 @@ class SecretCatalogContractTests(unittest.TestCase):
                 self.assertIsNone(row["destination_plan"][field])
             for field in ("restart", "rotation"):
                 self.assertEqual(row["destination_plan"][field], "BLOCKED_P01")
-            self.assertTrue(
-                all(value is None for value in row["runtime_evidence"].values())
-            )
+            expected = {
+                lane: (
+                    self.P06_TASK
+                    if row["id"] in self.MIGRATED and lane in self.MIGRATED_LANES
+                    else None
+                )
+                for lane in row["runtime_evidence"]
+            }
+            self.assertEqual(expected, row["runtime_evidence"])
 
     def test_schema_refuses_crypto_delete_and_nonstatic_or_recovery_kv_plans(self):
         validator = Draft202012Validator(self.schema)
@@ -264,8 +278,16 @@ class SecretCatalogContractTests(unittest.TestCase):
             self.assertEqual(entry["destination_plan"]["status"], "BLOCKED_P01")
             self.assertEqual(entry["destination_plan"]["acl"], "BLOCKED_P01")
             for lane in ("observed", "consumed"):
-                self.assertEqual(entry["lifecycle"][lane], "UNKNOWN")
-            for lane in ("imported", "delivered", "rotated", "recovered", "retired"):
+                self.assertEqual(
+                    entry["lifecycle"][lane],
+                    "CONFIRMED" if entry["id"] in self.MIGRATED else "UNKNOWN",
+                )
+            for lane in ("imported", "delivered"):
+                self.assertEqual(
+                    entry["lifecycle"][lane],
+                    "CONFIRMED" if entry["id"] in self.MIGRATED else "NOT_RUN",
+                )
+            for lane in ("rotated", "recovered", "retired"):
                 self.assertEqual(entry["lifecycle"][lane], "NOT_RUN")
             if entry["id"].startswith("LAB-"):
                 self.assertEqual(entry["classification"], "lab_excluded")

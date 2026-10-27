@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.18"
+version: "0.1.19"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1226,6 +1226,30 @@ Remaining NOT_RUN:
 - removal of their `./secrets` copies;
 - the catalog lifecycle reconciliation (IAM-002, IAM-007, OBS-002);
 - an interactive browser SSO login.
+
+### Catalog lifecycle for the three consumers — 2026-10-28
+
+The owner chose to reconcile the secret catalog with the three live consumers:
+IAM-002 (Keycloak admin password), OBS-002 (Grafana admin password) and IAM-007
+(Grafana OIDC client secret). Their `observed`, `imported`, `delivered` and
+`consumed` lanes are now `CONFIRMED`, each with this Task as `runtime_evidence`.
+`rotated`, `recovered` and `retired` stay `NOT_RUN`.
+
+The schema only admits the `BLOCKED_P01` constant in `destination_plan`, so the
+plan fields stay as they were. Recording the real mount, field and mode there is
+a separate P02 schema change.
+
+Two P02 contract tests pinned every entry to "no runtime claim". On the owner's
+choice they now allow these three IDs, on these four lanes, with this Task as
+evidence, and pin every other entry as before. A side effect follows from
+`generation_allowed`: an entry with any confirmed lane is no longer generated,
+so `gen-secrets` reports the three `./secrets` files as
+`keep-catalog-protected`. A regenerated copy would no longer match KV and the
+Keycloak client, so this protects the rollback copies.
+
+Checks: the catalog, metadata, generation, gen-secrets and SMTP suites, 232
+tests OK. The catalog CLI `check` reports `P02_METADATA_BLOCKED` in the
+worktree, as it does on main, because the private metadata is not present.
 
 ## Evidence
 
