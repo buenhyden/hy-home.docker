@@ -397,8 +397,13 @@ services:
       - ./grafana/dashboards:/etc/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana:rw
       - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/grafana/rootCA.pem:ro
-      # Directory, not file, bind so Agent re-renders stay visible.
-      - ${DEFAULT_SECURITY_DIR}/openbao/out/observability:/run/openbao/observability:ro
+      # Directory, not file, bind so Agent re-renders stay visible; never
+      # auto-created, so a missing Agent directory stops Grafana visibly.
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/out/observability
+        target: /run/openbao/observability
+        read_only: true
+        bind: {create_host_path: false}
     secrets:
       - grafana_admin_password
       - grafana_client_secret

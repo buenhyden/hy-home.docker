@@ -404,6 +404,14 @@ sys.exit(result.returncode)
             self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
             self.rendered[index].chmod(self.rendered_modes[index])
 
+    def test_no_other_group_readable_file_beside_grafana(self):
+        stray = self.out / "observability/other.txt"
+        stray.write_text("synthetic")
+        stray.chmod(0o640)
+        self.assertNotEqual(self.run_script("health-agent.sh").returncode, 0)
+        stray.chmod(0o600)
+        self.assertEqual(self.run_script("health-agent.sh").returncode, 0)
+
     def test_only_the_grafana_template_is_group_readable(self):
         import re
 

@@ -232,3 +232,23 @@ class GrafanaConsumptionVerifierTests(unittest.TestCase):
         )
         self.assertEqual(1, result.returncode)
         self.assertEqual(b"FAIL consumed_file\n", result.stdout)
+
+    def test_grafana_binds_the_agent_directory_read_only_without_creating_it(self):
+        import yaml
+
+        compose = yaml.safe_load(
+            (ROOT / "infra/06-observability/docker-compose.yml").read_text()
+        )
+        grafana = compose["services"]["grafana"]
+        binds = [
+            v
+            for v in grafana["volumes"]
+            if isinstance(v, dict) and v["target"] == "/run/openbao/observability"
+        ]
+        self.assertEqual(1, len(binds))
+        self.assertIs(True, binds[0]["read_only"])
+        self.assertIs(False, binds[0]["bind"]["create_host_path"])
+        self.assertEqual(
+            "${GRAFANA_ADMIN_PASSWORD_FILE:-/run/secrets/grafana_admin_password}",
+            grafana["environment"]["GF_SECURITY_ADMIN_PASSWORD__FILE"],
+        )

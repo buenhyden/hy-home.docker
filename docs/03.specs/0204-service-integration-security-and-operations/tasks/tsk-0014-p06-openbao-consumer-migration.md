@@ -886,6 +886,20 @@ only those two paths, and prints it as `consumed_file`. Checks:
   all pass;
 - hardening for `03-security` and `06-observability` PASS; shellcheck clean.
 
+An independent security/IaC review found two Medium and two Low issues, all
+fixed:
+
+- The bind now uses the long form with `create_host_path: false`, so a missing
+  Agent directory stops Grafana visibly instead of being created root-owned.
+- The README requires the Agent recreate before the variable is set. Grafana
+  passes an unreadable `__FILE` as an empty value, which on a fresh volume would
+  seed the default admin password; the verifier reports that case as FAIL.
+- The README wording on re-renders is corrected.
+- `health-agent.sh` fails if any other group-readable file appears in the
+  bound directory.
+
+New tests cover the stray file and the bind's form. Agent, consumer-migration,
+Compose baseline and secret metadata suites: 215 tests OK, 30 skipped.
 The Agent and Grafana recreates on HOME, the cutover run, and the rollback run
 follow after merge.
 

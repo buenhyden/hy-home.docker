@@ -198,7 +198,12 @@ bind하고 `GF_SECURITY_ADMIN_PASSWORD__FILE`을 `GRAFANA_ADMIN_PASSWORD_FILE`�
    넣고 `grafana`만 다시 만든 뒤 같은 검사를 실행합니다. `consumed_file`이 Agent 경로여야 합니다.
 4. 되돌리기: 그 줄을 지우거나 비우고 `grafana`만 다시 만든 뒤 같은 검사를 실행합니다.
 
-디렉터리 bind이므로 Agent가 파일을 교체해 다시 렌더링해도 Grafana는 새 파일을 봅니다. bootstrap 값이므로 KV 변경만으로
+디렉터리 bind이므로 다시 렌더링된 파일도 container 안에 보이지만, Grafana는
+`__FILE`을 시작할 때 한 번 읽고 관리자 비밀번호는 DB를 처음 만들 때만 적용합니다.
+순서를 지켜야 합니다. `0640` 소스로 Agent를 다시 만들고 healthy를 확인한 뒤에만
+변수를 설정합니다. Grafana는 읽지 못한 `__FILE`을 빈 값으로 넘기므로, 새 `grafana-data`
+volume이라면 기본 관리자 비밀번호로 계정을 만들 수 있습니다. 검사는 이 경우
+`mounted_equals_rendered` 또는 `admin_login`을 `FAIL`로 보고합니다. bootstrap 값이므로 KV 변경만으로
 Grafana에 저장된 비밀번호가 바뀌지 않으며, 실제 회전은 별도 단계입니다. 로그인 검사는
 시도마다 비상 관리자 계정에 한 번 로그인하므로, `FAIL`이 반복되면 원인을 찾기 전에
 반복 실행하지 않습니다.
