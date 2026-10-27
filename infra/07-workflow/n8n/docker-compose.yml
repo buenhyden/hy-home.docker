@@ -132,7 +132,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      # Startup took about 5.5 minutes under host load on 2026-10-27.
+      start_period: 300s
 
   n8n-worker:
     profiles:
@@ -177,7 +178,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 10
-      start_period: 60s
+      start_period: 300s
     labels:
       <<: *tier-label
 
