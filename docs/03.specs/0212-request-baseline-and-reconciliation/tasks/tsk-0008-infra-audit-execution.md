@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.10"
+version: "0.1.11"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -779,6 +779,25 @@ tests and full plus production audits passed with0 findings. The n8n source
 binding was rehashed in both SEC01 ledgers with the prior binding archived;
 218 related tests and the supply-chain policy check passed. The installed n8n
 image's Zod, Native and HOME acceptance remain SEC01 NOT_RUN.
+
+### v30 residual review and owner decisions (2026-10-27)
+
+After PR #561 merged as ec3b6df6c, the earlier unlogged local GID1000 ERROR in
+the OpenBao TLS/restore/token modules was investigated: 12 serial runs, 12 runs
+in three parallel copies and 3 runs under 24 busy CPU loops on 12 cores all
+passed (95 tests each). Without a failure log no code change is justified; it
+stays unreproduced, with a concurrent Codex session in the same checkout as
+the most plausible external cause.
+
+Owner decisions: the n8n runtime Zod residual is accepted until 2026-11-26
+with `N8N_PAYLOAD_SIZE_MAX` defaulting to 4 MiB (0bb108924, SEC01 Task and
+POL-0053); POL-0085 sealed cleanup, retained W2 custody and the renderer token
+are re-accepted unchanged until 2026-12-15 while UID 100 and swap keep the
+2026-11-15 decision (deaef7225); A1 keeps the merged failed-only single
+ExternalSecret refresh, which closes the all-six wording difference without a
+Runbook change. B1 exact operator binding waits for the owner-run read-only
+lookup that prints only hashed entity/alias identifiers; B4, P06, Native, HOME
+and owner acceptance remain NOT_RUN.
 
 ## Evidence
 
