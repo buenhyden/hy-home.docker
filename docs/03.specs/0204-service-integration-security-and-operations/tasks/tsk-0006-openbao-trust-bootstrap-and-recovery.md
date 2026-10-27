@@ -3322,14 +3322,23 @@ script compared equal. The exact list was then deleted; no `p01-*` entry
 remains under `/run/user/1000`. The two `p01-client` directories held only
 repository script/policy copies and were not preserved.
 
-**`-06` target — owner step prepared, NOT_RUN.** Read-only metadata:
+**`-06` target — REMOVED by the owner.** Read-only metadata:
 `p01-restore-20261022-06` is a directory on device 2064 (inode 115608705),
 UID 100, mode 0700, unreadable to the agent; no Compose container mounts it
 and its ledger `.p01-restore-20261022-06.attempt.json` is present and kept. The
 owner script re-checks parent identity, target identity, ledger presence, no
 mount, no container mount, no symlink or hard link inside and no process
 cwd/root/fd under it, then runs one `sudo rm -r --one-file-system` on that
-exact path and confirms the ledger remains.
+exact path and confirms the ledger remains. The first owner attempt ran through
+the session's `!` prefix, which has no terminal: every sudo call failed, the
+original script treated those failures as "nothing found", printed `checks
+PASS` and its `sudo rm` also failed, so nothing changed (target inode
+115608705 and ledger confirmed afterwards). The corrected script refuses to run
+without a terminal, authenticates sudo first, and stops when any check command
+fails or the sudo count is empty. The owner then ran it in a terminal:
+`checks PASS; entries: 5` and `REMOVED …p01-restore-20261022-06; ledger kept`.
+A listing afterwards shows `p01-restore-20261014-05` and both attempt ledgers
+only.
 
 **`-05` target — RETAINED.** The owner kept `p01-restore-20261014-05` until the
 next window or review. Root custody, W2 locks and both ledgers are outside this
