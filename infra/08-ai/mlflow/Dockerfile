@@ -1,4 +1,4 @@
-FROM ghcr.io/mlflow/mlflow:v3.16.1
+FROM ghcr.io/mlflow/mlflow:v3.17.2
 
 COPY requirements.txt /tmp/requirements.txt
 

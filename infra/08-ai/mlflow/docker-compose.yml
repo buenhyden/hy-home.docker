@@ -60,7 +60,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: hy-home/mlflow:3.16.1-local
+    image: hy-home/mlflow:3.17.2-local
     container_name: mlflow
     hostname: mlflow
     group_add:

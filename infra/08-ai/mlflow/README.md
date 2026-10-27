@@ -1,10 +1,10 @@
 ---
 title: "MLflow Tracking Server"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-27"
 created: "2026-09-21"
 ---
 
@@ -91,6 +91,19 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
    `docker compose --profile core --profile mlops up -d mlflow`.
 3. SDK 클라이언트는 `MLFLOW_TRACKING_URI`를 가리키게 하고 브라우저 사용자는 게이트웨이 라우트를 사용합니다.
 4. 기능별 SQL은 `provisioning/`에 유지하며 공유 `mng-pg-init` SQL에 MLflow 구문을 추가하지 않습니다.
+5. 이미지의 MLflow minor 버전을 올리면 추적 DB schema migration이 생길 수 있습니다. 서버는
+   오래된 schema로는 시작하지 않으므로 새 이미지를 처음 시작하기 전에 소유자가 DB를 백업한 뒤
+   새 이미지로 schema를 올립니다. 비밀번호는 container 안에서 secret 파일로만 읽습니다.
+
+   ```sh
+   docker exec mng-pg sh -c 'pg_dump -U "$POSTGRES_USER" -Fc mlflow' >"<백업 경로>/mlflow.dump"
+   docker compose --profile core --profile mlops run --rm --no-deps --entrypoint sh mlflow -ec \
+     'PGPASSWORD="$(tr -d "\r\n" </run/secrets/mlflow_db_password)"; export PGPASSWORD
+      exec mlflow db upgrade "postgresql+psycopg2://${MLFLOW_DB_USER}@${MLFLOW_DB_HOST}:${MLFLOW_DB_PORT}/${MLFLOW_DB_NAME}"'
+   ```
+
+   migration은 되돌릴 수 없으므로 이전 이미지로 되돌릴 때는 백업을 복원합니다. 노트북 클라이언트
+   고정 값은 서버와 같은 버전으로 맞춥니다.
 
 ## Related Documents
 

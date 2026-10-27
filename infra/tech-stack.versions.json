@@ -1704,7 +1704,7 @@
         "hy-home/mlflow": "local-custom"
       },
       "images": [
-        "hy-home/mlflow:3.16.1-local"
+        "hy-home/mlflow:3.17.2-local"
       ],
       "compose_files": [
         "infra/08-ai/mlflow/docker-compose.yml"
@@ -1713,7 +1713,7 @@
         {
           "compose_file": "infra/08-ai/mlflow/docker-compose.yml",
           "images": [
-            "hy-home/mlflow:3.16.1-local"
+            "hy-home/mlflow:3.17.2-local"
           ]
         }
       ]
