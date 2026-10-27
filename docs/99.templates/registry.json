@@ -5188,8 +5188,8 @@
     "operations-subject": {
       "prefix": "OPS-",
       "width": 4,
-      "high_water": 101,
-      "next_number": 102,
+      "high_water": 102,
+      "next_number": 103,
       "child_spaces": {}
     },
     "incident": {
