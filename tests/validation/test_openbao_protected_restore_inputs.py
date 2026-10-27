@@ -536,10 +536,14 @@ class NativeRehearsalTests(unittest.TestCase):
             "repository",
         ):
             arguments += ["--" + name, getattr(options, name.replace("-", "_"))]
-        _written, digest = self.produce(*arguments)
         identity = self.isolate_target(restore)
-        with mock.patch.object(restore, "PARENT_IDENTITY", identity):
-            execution, contract, admission = self.admit(restore, options, digest)
+        # The producer CLI must bind the same isolated attempt and target.
+        with mock.patch.object(M, "load_restore", return_value=restore):
+            _written, digest = self.produce(*arguments)
+        patcher = mock.patch.object(restore, "PARENT_IDENTITY", identity)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        execution, contract, admission = self.admit(restore, options, digest)
         admission.pre_read()
         effects = restore.RecoveryEffects(
             None, contract, admission, ("a", "b", ("c", "d")), digest, execution
