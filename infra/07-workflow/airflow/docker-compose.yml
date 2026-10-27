@@ -101,13 +101,29 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     read_only: false
+    # Only the API server reads the Keycloak client secret, so only it binds the
+    # OpenBao Agent copy; the other services keep the common volumes.
+    volumes:
+      - airflow-dags:/opt/airflow/dags
+      - airflow-plugins:/opt/airflow/plugins
+      - airflow-logs:/opt/airflow/logs
+      - airflow-config:/opt/airflow/config
+      - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+      # P06: the OpenBao Agent's airflow output, read when the client secret file
+      # variable points under /run/openbao/airflow. A missing directory stops it.
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/out/airflow
+        target: /run/openbao/airflow
+        read_only: true
+        bind: {create_host_path: false}
     environment:
       <<: *airflow-common-env
 
       AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID: ${AIRFLOW_KEYCLOAK_CLIENT_ID:-home-airflow}
 
+      # P06: set AIRFLOW_CLIENT_SECRET_FILE under /run/openbao/airflow; unset rolls back.
       AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD: >-
-        cat /run/secrets/airflow_keycloak_client_secret
+        cat ${AIRFLOW_CLIENT_SECRET_FILE:-/run/secrets/airflow_keycloak_client_secret}
 
       AIRFLOW__KEYCLOAK_AUTH_MANAGER__REALM: ${KEYCLOAK_REALM:-hy-home.realm}
 

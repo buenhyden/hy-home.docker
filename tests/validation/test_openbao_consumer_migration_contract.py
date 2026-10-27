@@ -1,6 +1,7 @@
 """Public schema and offline CLI contracts, with synthetic stdin only."""
 
 import json
+import re
 import subprocess
 import sys
 import unittest
@@ -722,3 +723,269 @@ class GrafanaClientSecretVerifierTests(unittest.TestCase):
         self.assertIn(
             '\nGRAFANA_CLIENT_SECRET_FILE=""\n', (ROOT / ".env.example").read_text()
         )
+
+
+OIDC_VERIFIER = PACKAGE / "verify-oidc-client-secret.sh"
+FAKE_OIDC_DOCKER = r"""#!/usr/bin/env python3
+import io, json, os, subprocess, sys, tarfile
+root = os.environ["FAKE_ROOT"]
+args = sys.argv[1:]
+open(os.path.join(root, "docker-argv"), "a").write(" ".join(args) + "\n")
+if args[0] == "inspect":
+    if "Config.Env" in args[2]:
+        for key, value in json.loads(os.environ["FAKE_ENV"]).items():
+            print(key + "=" + value)
+    else:
+        print(os.environ.get("FAKE_HEALTH", "healthy"))
+    sys.exit(0)
+if args[0] == "cp":
+    name, _, path = args[1].partition(":")
+    data = open(os.path.join(root, name) + path, "rb").read()
+    buffer = io.BytesIO()
+    with tarfile.open(fileobj=buffer, mode="w") as archive:
+        info = tarfile.TarInfo(os.path.basename(path))
+        info.size = len(data)
+        archive.addfile(info, io.BytesIO(data))
+    sys.stdout.buffer.write(buffer.getvalue())
+    sys.exit(0)
+assert args.pop(0) == "exec"
+env = {}
+while args[0] in ("-e", "-i"):
+    if args[0] == "-i":
+        args = args[1:]
+        continue
+    key, _, value = args[1].partition("=")
+    env[key] = value
+    args = args[2:]
+name = args.pop(0)
+if args[0] == "cat":
+    sys.stdout.buffer.write(open(os.path.join(root, name) + args[1], "rb").read())
+    sys.exit(0)
+assert name == "keycloak" and args[:2] == ["sh", "-c"]
+env.update(PATH=os.environ["FAKE_BIN"] + ":/usr/bin:/bin", KC_BOOTSTRAP_ADMIN_USERNAME="admin",
+           KEYCLOAK_ADMIN_PASSWORD_FILE=os.path.join(root, "admin-password"), FAKE_ROOT=root,
+           FAKE_CLIENT=os.environ["FAKE_CLIENT"])
+script = args[2].replace("/opt/keycloak/bin/", os.environ["FAKE_BIN"] + "/")
+sys.exit(subprocess.run(["sh", "-c", script], env=env).returncode)
+"""
+FAKE_OIDC_KCADM = r"""#!/usr/bin/env python3
+import os, sys
+root = os.environ["FAKE_ROOT"]
+open(os.path.join(root, "kcadm-argv"), "a").write(" ".join(sys.argv) + "\n")
+args = sys.argv[1:]
+if args[:2] == ["config", "credentials"]:
+    if os.environ.get("KC_CLI_PASSWORD") == "synthetic-admin":
+        sys.exit(0)
+    sys.stderr.write("Invalid user credentials [invalid_grant]\n")
+    sys.exit(1)
+if args[:2] == ["get", "clients"]:
+    if "clientId=" + os.environ["FAKE_CLIENT"] not in args:
+        sys.exit(0)
+    print("0f1e2d3c-aaaa-bbbb-cccc-000000000001")
+    sys.exit(0)
+if args[:2] == ["get", "clients/0f1e2d3c-aaaa-bbbb-cccc-000000000001/client-secret"]:
+    sys.stdout.buffer.write(open(os.path.join(root, "keycloak-secret"), "rb").read() + b"\n")
+    sys.exit(0)
+sys.exit(1)
+"""
+OIDC_SERVICES = {
+    # service: (Agent dir, stem, Compose secret, path variable)
+    "oauth2-proxy": ("oauth2-proxy", "oauth2_proxy_client_secret", "oauth2_proxy_client_secret",
+                     "OAUTH2_PROXY_CLIENT_SECRET_FILE"),
+    "opensearch-dashboards": ("oauth2-proxy", "oauth2_proxy_client_secret", "oauth2_proxy_client_secret",
+                              "OPENSEARCH_OIDC_CLIENT_SECRET_FILE"),
+    "kafbat-ui": ("kafbat", "kafbat_client_secret", "kafbat_client_secret",
+                  "KAFBAT_CLIENT_SECRET_FILE"),
+    "dozzle": ("dozzle", "dozzle_client_secret", "dozzle_client_secret",
+               "DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE"),
+    "gatus": ("gatus", "gatus_oidc_client_secret", "gatus_oidc_client_secret",
+              "GATUS_OIDC_CLIENT_SECRET_FILE"),
+    "airflow-apiserver": ("airflow", "airflow_client_secret", "airflow_keycloak_client_secret",
+                          "AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD"),
+    "open-webui": ("open-webui", "openwebui_oidc_client_secret", "openwebui_oidc_client_secret",
+                   "OPENWEBUI_OIDC_CLIENT_SECRET_FILE"),
+    "superset": ("superset", "superset_oidc_client_secret", "superset_oidc_client_secret",
+                 "SUPERSET_OIDC_CLIENT_SECRET_FILE"),
+}  # fmt: skip
+# Keycloak clientId per service, kept apart from the secret names.
+KEYCLOAK_CLIENTS = {
+    "oauth2-proxy": "home-proxy-client",
+    "opensearch-dashboards": "realm-home-client",
+    "kafbat-ui": "home-kafbat",
+    "dozzle": "home-dozzle",
+    "gatus": "home-gatus",
+    "airflow-apiserver": "home-airflow",
+    "open-webui": "home-openwebui",
+    "superset": "home-superset",
+}
+OIDC_CLIENT_ENV = {
+    "oauth2-proxy": "OAUTH2_PROXY_CLIENT_ID",
+    "kafbat-ui": "KAFBAT_OAUTH_CLIENT_ID",
+    "dozzle": "DOZZLE_AUTH_OIDC_CLIENT_ID",
+    "airflow-apiserver": "AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID",
+    "open-webui": "OAUTH_CLIENT_ID",
+    "superset": "SUPERSET_OIDC_CLIENT_ID",
+}
+
+
+class OidcClientSecretVerifierTests(unittest.TestCase):
+    def run_verifier(self, service, rendered=b"synthetic-a", mounted=None,
+                     keycloak=None, agent_path=False, path=None, env=None,
+                     health=None, args=None):  # fmt: skip
+        import os
+        import tempfile
+
+        known = service if service in OIDC_SERVICES else "oauth2-proxy"
+        directory, stem, secret, path_env = OIDC_SERVICES[known]
+        client = KEYCLOAK_CLIENTS[known]
+        mounted = rendered if mounted is None else mounted
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root / f"openbao-agent/openbao/out/{directory}"
+            out.mkdir(parents=True)
+            (out / f"{stem}.txt").write_bytes(rendered)
+            (out / f"{stem}.version").write_bytes(b"1")
+            chosen = path or (
+                f"/run/openbao/{directory}/{stem}.txt"
+                if agent_path
+                else f"/run/secrets/{secret}"
+            )
+            target = root / service / chosen.lstrip("/")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(mounted)
+            (root / "admin-password").write_bytes(b"synthetic-admin\n")
+            (root / "keycloak-secret").write_bytes(
+                mounted.rstrip(b"\n") if keycloak is None else keycloak
+            )
+            settings = {path_env: ("cat " if "_CMD" in path_env else "") + chosen}
+            if service in OIDC_CLIENT_ENV:
+                settings[OIDC_CLIENT_ENV[service]] = client
+            settings.update(env or {})
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            for name, body in (
+                ("docker", FAKE_OIDC_DOCKER),
+                ("kcadm.sh", FAKE_OIDC_KCADM),
+            ):
+                (bin_dir / name).write_text(body)
+                (bin_dir / name).chmod(0o755)
+            result = subprocess.run(
+                ["bash", str(OIDC_VERIFIER), *([service] if args is None else args)],
+                capture_output=True,
+                env={
+                    "PATH": f"{bin_dir}:{os.environ['PATH']}",
+                    "FAKE_ROOT": str(root),
+                    "FAKE_BIN": str(bin_dir),
+                    "FAKE_ENV": json.dumps(settings),
+                    "FAKE_CLIENT": client,
+                    "VERIFY_HEALTH_SLEEP": "0",
+                    "VERIFY_HEALTH_TRIES": "2",
+                    **({"FAKE_HEALTH": health} if health else {}),
+                },
+                timeout=30,
+                check=False,
+            )
+            traces = b"".join(
+                (root / name).read_bytes()
+                for name in ("docker-argv", "kcadm-argv")
+                if (root / name).exists()
+            )
+        return result, traces
+
+    def test_every_service_passes_on_both_paths_without_printing_values(self):
+        for service, (directory, stem, secret, _) in OIDC_SERVICES.items():
+            client = KEYCLOAK_CLIENTS[service]
+            for agent_path in (False, True):
+                with self.subTest(service=service, agent_path=agent_path):
+                    marker = b"Synth-oidc-marker"
+                    result, traces = self.run_verifier(
+                        service, marker, marker + b"\n", agent_path=agent_path
+                    )
+                    self.assertEqual(0, result.returncode, result.stdout)
+                    path = (
+                        f"/run/openbao/{directory}/{stem}.txt"
+                        if agent_path
+                        else f"/run/secrets/{secret}"
+                    )
+                    self.assertEqual(
+                        f"PASS healthy service={service}\n"
+                        f"PASS consumed_file path={path}\n"
+                        "PASS rendered_version version=1\n"
+                        "PASS mounted_equals_rendered\n"
+                        f"PASS keycloak_client_matches client={client} kcadm=match\n".encode(),
+                        result.stdout,
+                    )
+                    for stream in (result.stdout, result.stderr, traces):
+                        self.assertNotIn(b"Synth", stream)
+                        self.assertNotIn(b"synthetic-admin", stream)
+
+    def test_mismatches_paths_ids_and_usage_fail(self):
+        result, _ = self.run_verifier("dozzle", b"synthetic-a", b"synthetic-b")
+        self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
+        result, _ = self.run_verifier("dozzle", keycloak=b"synthetic-k")
+        self.assertIn(b"kcadm=mismatch\n", result.stdout)
+        self.assertEqual(1, result.returncode)
+        result, traces = self.run_verifier("gatus", path="/etc/passwd")
+        self.assertEqual(
+            b"PASS healthy service=gatus\nFAIL consumed_file\n", result.stdout
+        )
+        self.assertNotIn(b"kcadm", traces)
+        # Another service's Agent file is not this service's path.
+        result, _ = self.run_verifier(
+            "dozzle", path="/run/openbao/gatus/gatus_oidc_client_secret.txt"
+        )
+        self.assertIn(b"FAIL consumed_file\n", result.stdout)
+        result, _ = self.run_verifier(
+            "kafbat-ui", env={"KAFBAT_OAUTH_CLIENT_ID": "x;id"}
+        )
+        self.assertIn(b"FAIL client_id\n", result.stdout)
+        result, _ = self.run_verifier(
+            "superset", rendered=b"", mounted=b"", keycloak=b""
+        )
+        self.assertIn(b"FAIL mounted_equals_rendered\n", result.stdout)
+        self.assertIn(b"kcadm=empty\n", result.stdout)
+        result, _ = self.run_verifier("open-webui", health="unhealthy")
+        self.assertEqual(b"WAIT healthy\nFAIL healthy state=unhealthy\n", result.stdout)
+        result, _ = self.run_verifier("superset", health="running")
+        self.assertEqual(0, result.returncode, result.stdout)
+        for args in ([], ["grafana"], ["oauth2-proxy", "extra"]):
+            result, traces = self.run_verifier("oauth2-proxy", args=args)
+            self.assertEqual(2, result.returncode)
+            self.assertEqual(b"", result.stdout)
+            self.assertEqual(b"", traces)
+
+    def test_each_consumer_binds_only_its_agent_directory_and_defaults_to_secrets(self):
+        import yaml
+
+        files = {
+            "oauth2-proxy": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+            "opensearch-dashboards": "infra/04-data/opensearch/docker-compose.yml",
+            "kafbat-ui": "infra/05-messaging/kafka/docker-compose.yml",
+            "dozzle": "infra/06-observability/dozzle/docker-compose.yml",
+            "gatus": "infra/06-observability/docker-compose.yml",
+            "airflow-apiserver": "infra/07-workflow/airflow/docker-compose.yml",
+            "open-webui": "infra/08-ai/open-webui/docker-compose.yml",
+            "superset": "infra/12-analytics/superset/docker-compose.yml",
+        }
+        example = (ROOT / ".env.example").read_text()
+        for service, path in files.items():
+            with self.subTest(service=service):
+                directory, _, secret, _ = OIDC_SERVICES[service]
+                spec = yaml.safe_load((ROOT / path).read_text())["services"][service]
+                binds = [
+                    v for v in spec["volumes"]
+                    if isinstance(v, dict) and v["target"].startswith("/run/openbao/")
+                ]  # fmt: skip
+                self.assertEqual(1, len(binds))
+                self.assertEqual(f"/run/openbao/{directory}", binds[0]["target"])
+                self.assertEqual(
+                    "${DEFAULT_SECURITY_DIR}/openbao/out/" + directory,
+                    binds[0]["source"],
+                )
+                self.assertIs(True, binds[0]["read_only"])
+                self.assertIs(False, binds[0]["bind"]["create_host_path"])
+                text = (ROOT / path).read_text()
+                self.assertIn(f":-/run/secrets/{secret}}}", text)
+                variable = re.search(r"\$\{(\w+):-/run/secrets/" + secret + r"\}", text)
+                self.assertIsNotNone(variable)
+                self.assertIn(f'\n{variable.group(1)}=""\n', example)

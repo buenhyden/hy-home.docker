@@ -32,6 +32,8 @@ services:
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
       - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:6379
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
+      # P06: overrides client_secret_file in oauth2-proxy.cfg; unset rolls back.
+      - OAUTH2_PROXY_CLIENT_SECRET_FILE=${OAUTH2_PROXY_CLIENT_SECRET_FILE:-/run/secrets/oauth2_proxy_client_secret}
       - OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
       - OAUTH2_PROXY_REDIRECT_URL=https://auth.${DEFAULT_URL}/oauth2/callback
       - OAUTH2_PROXY_COOKIE_DOMAINS=.${DEFAULT_URL}
@@ -41,6 +43,13 @@ services:
     volumes:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
+      # P06: the OpenBao Agent's oauth2-proxy output, read when the client secret file
+      # variable points under /run/openbao/oauth2-proxy. A missing directory stops it.
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/out/oauth2-proxy
+        target: /run/openbao/oauth2-proxy
+        read_only: true
+        bind: {create_host_path: false}
     secrets:
       - mng_valkey_password
       - oauth2_valkey_password

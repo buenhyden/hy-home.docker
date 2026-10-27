@@ -19,6 +19,63 @@ path "secret/metadata/hy-home/06-observability/grafana" {
   capabilities = ["read"]
 }
 
+# P06 OIDC client secrets: first import and later rotation, no deletion.
+path "secret/data/hy-home/02-auth/oauth2-proxy" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/hy-home/02-auth/oauth2-proxy" {
+  capabilities = ["read"]
+}
+
+path "secret/data/hy-home/05-messaging/kafbat" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/hy-home/05-messaging/kafbat" {
+  capabilities = ["read"]
+}
+
+path "secret/data/hy-home/06-observability/dozzle" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/hy-home/06-observability/dozzle" {
+  capabilities = ["read"]
+}
+
+path "secret/data/hy-home/06-observability/gatus" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/hy-home/06-observability/gatus" {
+  capabilities = ["read"]
+}
+
+path "secret/data/hy-home/07-workflow/airflow" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/hy-home/07-workflow/airflow" {
+  capabilities = ["read"]
+}
+
+path "secret/data/hy-home/08-ai/open-webui" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/hy-home/08-ai/open-webui" {
+  capabilities = ["read"]
+}
+
+path "secret/data/hy-home/12-analytics/superset" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/hy-home/12-analytics/superset" {
+  capabilities = ["read"]
+}
+
 # Separate short nonrenewable roles; no direct SecretID wrapping bypass.
 path "auth/token/create/renderer-issuer" {
   capabilities = ["update"]

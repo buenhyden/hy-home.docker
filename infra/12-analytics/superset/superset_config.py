@@ -22,8 +22,14 @@ def _file(path: pathlib.Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _secret(name: str) -> str:
-    value = _file(SECRETS / name).strip()
+def _secret(name: str, override: str = "") -> str:
+    # P06: an override variable may point at the OpenBao Agent copy instead.
+    path = (
+        pathlib.Path(os.environ.get(override) or SECRETS / name)
+        if override
+        else SECRETS / name
+    )
+    value = _file(path).strip()
     if not value or "\n" in value:
         raise RuntimeError(f"superset: secret {name} must be one non-empty line")
     return value
@@ -73,7 +79,9 @@ OAUTH_PROVIDERS = [
         "token_key": "access_token",
         "remote_app": {
             "client_id": _env("SUPERSET_OIDC_CLIENT_ID"),
-            "client_secret": _secret("superset_oidc_client_secret"),
+            "client_secret": _secret(
+                "superset_oidc_client_secret", "SUPERSET_OIDC_CLIENT_SECRET_FILE"
+            ),
             "server_metadata_url": f"{_realm}/.well-known/openid-configuration",
             "api_base_url": f"{_realm}/protocol/",
             "client_kwargs": {

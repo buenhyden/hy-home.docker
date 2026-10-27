@@ -35,6 +35,8 @@ services:
       RAG_EMBEDDING_MODEL: qwen3-embedding:4b
       WEBUI_URL: https://chat.${DEFAULT_URL}
       OAUTH_CLIENT_ID: home-openwebui
+      # P06: read by the entrypoint; unset keeps /run/secrets.
+      OPENWEBUI_OIDC_CLIENT_SECRET_FILE: ${OPENWEBUI_OIDC_CLIENT_SECRET_FILE:-/run/secrets/openwebui_oidc_client_secret}
       OAUTH_PROVIDER_NAME: Keycloak
       OAUTH_SCOPES: openid profile email
       OPENID_PROVIDER_URL: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm/.well-known/openid-configuration
@@ -55,6 +57,13 @@ services:
       - open-webui:/app/backend/data:rw
       - ./docker-entrypoint.sh:/usr/local/bin/open-webui-oidc-entrypoint.sh:ro
       - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+      # P06: the OpenBao Agent's open-webui output, read when the client secret file
+      # variable points under /run/openbao/open-webui. A missing directory stops it.
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/out/open-webui
+        target: /run/openbao/open-webui
+        read_only: true
+        bind: {create_host_path: false}
     secrets:
       - openwebui_oidc_client_secret
     networks:

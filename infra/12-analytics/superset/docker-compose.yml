@@ -15,6 +15,8 @@ x-superset-common: &superset-common
     SUPERSET_DB_USER: '${SUPERSET_DB_USER:-superset}'
     SUPERSET_DB_NAME: '${SUPERSET_DB_NAME:-superset}'
     SUPERSET_OIDC_CLIENT_ID: '${SUPERSET_OIDC_CLIENT_ID:-home-superset}'
+    # P06: the OIDC client secret file; unset keeps /run/secrets.
+    SUPERSET_OIDC_CLIENT_SECRET_FILE: '${SUPERSET_OIDC_CLIENT_SECRET_FILE:-/run/secrets/superset_oidc_client_secret}'
   # SUPERSET_HOME holds logs and uploads only; the metadata lives in mng-pg.
   # /tmp (CA bundle) and /run come from the read-only templates.
   tmpfs:
@@ -22,6 +24,13 @@ x-superset-common: &superset-common
   volumes:
     - ./superset_config.py:/app/pythonpath/superset_config.py:ro
     - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+    # P06: the OpenBao Agent's superset output, read when the client secret file
+    # variable points under /run/openbao/superset. A missing directory stops it.
+    - type: bind
+      source: ${DEFAULT_SECURITY_DIR}/openbao/out/superset
+      target: /run/openbao/superset
+      read_only: true
+      bind: {create_host_path: false}
   secrets:
     - superset_secret_key
     - superset_db_password

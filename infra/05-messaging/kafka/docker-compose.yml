@@ -377,9 +377,18 @@ services:
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:${KAFKA_CONNECT_PORT:-8083}
       DYNAMIC_CONFIG_ENABLED: 'true'
       KAFBAT_OAUTH_CLIENT_ID: ${KAFBAT_OAUTH_CLIENT_ID}
+      # P06: the OIDC client secret file; unset keeps /run/secrets.
+      KAFBAT_CLIENT_SECRET_FILE: ${KAFBAT_CLIENT_SECRET_FILE:-/run/secrets/kafbat_client_secret}
     volumes:
       - ./kafbat-ui/dynamic_config.template.yaml:/tmp/dynamic_config.template.yaml:ro
       - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+      # P06: the OpenBao Agent's kafbat output, read when the client secret file
+      # variable points under /run/openbao/kafbat. A missing directory stops it.
+      - type: bind
+        source: ${DEFAULT_SECURITY_DIR}/openbao/out/kafbat
+        target: /run/openbao/kafbat
+        read_only: true
+        bind: {create_host_path: false}
     entrypoint:
       - /bin/sh
       - -ec
@@ -419,7 +428,7 @@ services:
           /etc/kafkaui/dynamic_config.yaml
 
         sed -i \
-          "s|PLACEHOLDER_CLIENT_SECRET|$$(tr -d '\r\n' </run/secrets/kafbat_client_secret)|g" \
+          "s|PLACEHOLDER_CLIENT_SECRET|$$(tr -d '\r\n' <"$${KAFBAT_CLIENT_SECRET_FILE}")|g" \
           /etc/kafkaui/dynamic_config.yaml
 
         exec java \

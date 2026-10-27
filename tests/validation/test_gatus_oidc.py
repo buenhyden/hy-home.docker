@@ -33,7 +33,7 @@ class GatusOidcComposeTests(unittest.TestCase):
             environment["GATUS_OIDC_ALLOWED_SUBJECT"],
         )
         self.assertEqual(
-            "/run/secrets/gatus_oidc_client_secret",
+            "${GATUS_CLIENT_SECRET_FILE:-/run/secrets/gatus_oidc_client_secret}",
             environment["GATUS_OIDC_CLIENT_SECRET_FILE"],
         )
         self.assertNotIn("GATUS_OIDC_CLIENT_SECRET", environment)

@@ -30,7 +30,7 @@ POLICIES = (
     (
         "renderer",
         "policies/renderer.hcl",
-        "6dc424661967d7c50faf881f61ec258478b8a43be7b6cbde2cdbf71cff032cc1",
+        "3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e",
     ),
     (
         "renderer-issuer",
@@ -45,7 +45,7 @@ POLICIES = (
     (
         "hy-home-operator",
         "policies/operator.hcl",
-        "e6d00966dda769cfed3af829c4a7606978cd79ee3437b3393fa54ca450b33093",
+        "fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b",
     ),
 )
 TOKEN_ROLES = (
