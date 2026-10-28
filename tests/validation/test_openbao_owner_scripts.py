@@ -80,6 +80,95 @@ class OwnerWindowScriptTests(unittest.TestCase):
             self.assertFalse(custody.exists())
 
 
+class WindowGateTests(unittest.TestCase):
+    """Fail-closed gates that need no OpenBao, Docker or cluster."""
+
+    def runtime(self, directory, **values):
+        runtime = Path(directory)
+        lines = [f"declare -- {k}={v}" for k, v in values.items()]
+        (runtime / "p01-window.vars").write_text("\n".join(lines) + "\n")
+        return runtime
+
+    def run_window(self, runtime, *args):
+        return subprocess.run(
+            ["bash", str(WINDOW), *args],
+            env={"PATH": "/usr/bin:/bin", "XDG_RUNTIME_DIR": str(runtime)},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    def test_w3_hands_the_saved_k8s_state_to_the_writer_check(self):
+        with tempfile.TemporaryDirectory() as directory:
+            scripts = Path(directory) / "scripts"
+            scripts.mkdir()
+            seen = Path(directory) / "seen"
+            (scripts / "k8s-writers.sh").write_text(
+                f'printf "%s %s" "$1" "${{P01_K8S_STATE:-}}" >{seen}\nexit 1\n'
+            )
+            runtime = self.runtime(
+                directory,
+                P01_SCRIPT_DIR=scripts,
+                P01_INPUTS=Path(directory) / "inputs",
+                P01_K8S_STATE=Path(directory) / "k8s",
+            )
+            target = Path(directory) / "snapshot"
+            result = self.run_window(runtime, "w3", str(target), "2.6.2")
+            self.assertEqual(1, result.returncode)
+            self.assertEqual(f"check {Path(directory) / 'k8s'}", seen.read_text())
+            self.assertFalse(target.exists())
+
+    def test_w3_without_state_needs_the_attestation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runtime = self.runtime(directory, P01_INPUTS=Path(directory) / "inputs")
+            target = Path(directory) / "snapshot"
+            result = self.run_window(runtime, "w3", str(target), "2.6.2")
+            self.assertEqual(1, result.returncode)
+            self.assertFalse(target.exists())
+
+    def test_w4_needs_w3a_acceptance_and_w3b_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            inputs = Path(directory) / "inputs"
+            inputs.mkdir()
+            runtime = self.runtime(directory, P01_INPUTS=inputs)
+            result = self.run_window(runtime, "w4", "2064/115612005")
+            self.assertIn("W3a not accepted", result.stderr)
+            (inputs / "w3a-accepted").touch()
+            result = self.run_window(runtime, "w4", "2064/115612005")
+            self.assertIn("no W3b receipt", result.stderr)
+            self.assertEqual(1, result.returncode)
+
+    def test_retire_token_refuses_a_shared_file_and_keeps_it(self):
+        with tempfile.TemporaryDirectory() as directory:
+            token = Path(directory) / "p01-operator.token"
+            token.write_text("synthetic")
+            token.chmod(0o644)
+            result = self.run_window(Path(directory), "retire-token", str(token))
+            self.assertEqual(1, result.returncode)
+            self.assertTrue(token.exists())
+
+    def test_finish_wait_and_refresh_need_a_restored_finish(self):
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory) / "k8s"
+            state.mkdir()
+            env = {
+                "PATH": "/usr/bin:/bin",
+                "P01_K8S_STATE": str(state),
+                "P01_FORCE_REFRESH_APPROVAL": "synthetic",
+            }
+            for args in (["finish-wait"], ["force-refresh", "ns", "name"]):
+                with self.subTest(args=args):
+                    result = subprocess.run(
+                        ["bash", str(K8S), *args],
+                        env=env,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    self.assertEqual(1, result.returncode)
+                    self.assertIn("run finish first", result.stderr)
+
+
 class OidcClientSecretScriptTests(unittest.TestCase):
     def run_script(self, home, *args):
         bin_dir = home / "bin"

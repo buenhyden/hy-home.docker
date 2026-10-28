@@ -9,7 +9,7 @@ set -uo pipefail
 umask 077
 
 usage() {
-  echo "usage: $0 token <stage>|check-token <stage>|retire-token <file>|w1|audit-list|root-sweep|roles-plan|roles-diff|roles-apply|w2|lease-start|w3 <new dir> <expected version> [--writers-checked]|lease-bind|w3a-inputs|w3a|w3b|w4|w5-create|agent-restart|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root]" >&2
+  echo "usage: $0 token <stage>|check-token <stage>|retire-token <file>|w1|audit-list|root-sweep|roles-plan|roles-diff|roles-apply|w2|lease-start|w3 <new dir> <expected version> [--writers-checked]|lease-bind|w3a-inputs|w3a|w3b|w4 <recorded device/inode>|w5-create|agent-restart|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root]" >&2
   exit 2
 }
 [ "$#" -ge 1 ] || usage
@@ -34,7 +34,7 @@ token_file() {
 }
 private() { [ "$(stat -c '%a %h' "$1" 2>/dev/null)" = "600 1" ]; }
 # The OpenBao CLI inside the server container, authenticated from a token file.
-bao_as() { (cd "$HOME_ROOT" && BAO_TOKEN="$(cat "$1")" /usr/bin/docker compose exec -T -e BAO_TOKEN openbao bao "${@:2}"); }
+bao_as() { (unset DOCKER_HOST DOCKER_CONTEXT DOCKER_CONFIG COMPOSE_FILE; cd "$HOME_ROOT" && BAO_TOKEN="$(cat "$1")" /usr/bin/docker compose exec -T -e BAO_TOKEN openbao bao "${@:2}"); }
 # A fresh custody directory per attempt, recorded for later steps and cleanup.
 new_dir() {
   local dir
@@ -85,7 +85,7 @@ w1)
   secrets="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-w1.XXXXXX")" || exit 1
   # Shares never outlive this step, even on Ctrl-C.
   trap 'find "$secrets" -type f -exec shred -u {} + 2>/dev/null; rmdir "$secrets" 2>/dev/null' EXIT
-  trap 'exit 130' INT TERM
+  trap 'exit 130' INT TERM HUP QUIT
   for n in share-1 share-2; do
     IFS= read -rsp "W1 $n> " v </dev/tty
     printf '\n'
@@ -100,7 +100,7 @@ w1)
   exit "$status"
   ;;
 root-sweep)
-  # After W1 and before W1c, every window. The only place a new root reaches the CLI.
+  # After W1 and before W1c, every window. With audit-list, the only places a new root reaches the CLI.
   root="${P01_CUSTODY_DIR:?run w1 first}/root.token"
   err="$(/usr/bin/mktemp "$XDG_RUNTIME_DIR/p01-sweep-err.XXXXXX")" || exit 1
   trap 'rm -f "$err"' EXIT
@@ -188,8 +188,9 @@ evidence)
   set -- "$target"
   cd "$XDG_RUNTIME_DIR" || exit 1
   n=0
-  for d in p01-custody.* p01-roles-plan.* p01-roles.* p01-revoke.* p01-token.*; do
-    for f in state.json prior-state.json operation-intent.json; do
+  for d in p01-custody.* p01-roles-plan.* p01-roles.* p01-revoke.* p01-token.* p01-k8s.*; do
+    # p01-k8s.*: original UID/replicas/selector, changed list and Finish time; no Secret data.
+    for f in state.json prior-state.json operation-intent.json 0.json 1.json 2.json changed finish-epoch restored; do
       [ -f "$d/$f" ] || continue
       cp --preserve=mode --parents "$d/$f" "$1"/ || exit 1
       n=$((n + 1))
@@ -237,16 +238,25 @@ cleanup)
   [ "${P01_KEEP_ROOT:-0}" = 1 ] ||
     for f in "$XDG_RUNTIME_DIR"/p01-op-*.token; do [ -f "$f" ] && shred -u "$f"; done
   [ "${P01_KEEP_ROOT:-0}" = 1 ] || rm -f "$vars"
-  # What is left: the p01-client.* helper copies (no secret) and, if any, p01-inputs.*.
+  # What is left: the p01-client.* helper copies (no secret) and, if any, p01-inputs.* and p01-k8s.*.
   find "$XDG_RUNTIME_DIR" -maxdepth 1 -name 'p01-*' -printf '%f\n'
   ;;
 retire-token)
   # A leftover operator token from an earlier window: revoke it, prove it is gone, delete it.
-  if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then usage; fi
-  policies="$(bao_as "$1" read -field=policies auth/token/lookup-self </dev/null 2>/dev/null)"
-  if [ -z "$policies" ]; then
-    shred -u "$1" && echo "already expired; file removed"
-    exit 0
+  [ "$#" -eq 1 ] || usage
+  t="$(realpath -e -- "$1")" || exit 1
+  if [ -L "$1" ] || ! private "$t"; then echo "token file must be a 0600 single-link regular file" >&2; exit 1; fi
+  set -- "$t"
+  err="$(/usr/bin/mktemp "$XDG_RUNTIME_DIR/p01-retire-err.XXXXXX")" || exit 1
+  trap 'rm -f "$err"' EXIT
+  if ! policies="$(bao_as "$1" read -field=policies auth/token/lookup-self </dev/null 2>"$err")"; then
+    # Only a token the server refuses is gone; any other failure keeps the file.
+    if grep -qiE 'permission denied|bad token|invalid token|Code: 403' "$err"; then
+      shred -u "$1" && echo "already expired; file removed"
+      exit 0
+    fi
+    echo "lookup failed for another reason; file kept" >&2
+    exit 1
   fi
   [ "$policies" = "[hy-home-operator]" ] || { echo "not an operator token: $policies" >&2; exit 1; }
   bao_as "$1" token revoke -self </dev/null >/dev/null || exit 1
@@ -259,7 +269,7 @@ audit-list)
   for kind in audit secrets auth; do
     out="$(bao_as "$root" "$kind" list -format=json </dev/null)" || { echo "$kind: rc=1" >&2; exit 1; }
     echo "== $kind"
-    jq -r 'to_entries[] | "\(.key) \(.value.type)"' <<<"$out"
+    jq -r 'to_entries[] | "\(.key) \(.value.type)"' <<<"$out" || { echo "$kind: rc=1" >&2; exit 1; }
   done
   ;;
 w2)
@@ -286,7 +296,7 @@ w3)
   : "${P01_INPUTS:?run lease-start first}"
   case "$1" in /*) ;; *) usage ;; esac
   if [ -n "${P01_K8S_STATE:-}" ]; then
-    bash "$P01_SCRIPT_DIR/k8s-writers.sh" check || exit 1
+    P01_K8S_STATE="$P01_K8S_STATE" bash "$P01_SCRIPT_DIR/k8s-writers.sh" check || exit 1
   else
     [ "${3:-}" = --writers-checked ] || { echo "run k8s-writers.sh check, then pass --writers-checked" >&2; exit 1; }
   fi
@@ -309,9 +319,11 @@ w3a-inputs)
   # Bundle, security receipt and contract from the same approved commit as the issuer helper.
   : "${issuer_commit:?}" "${operator_tools:?}" "${P01_INPUTS:?}" "${P01_SNAPSHOT_DIRECTORY:?}"
   [ "$issuer_commit" = "${P01_COMMIT:?}" ] || { echo "issuer_commit must equal P01_COMMIT" >&2; exit 1; }
-  helper protected-restore-inputs.py bundle --repository "$HOME_ROOT" \
+  # A rerun keeps a bundle and receipt that were already written and retries the contract;
+  # a failed bundle or receipt leaves nothing behind (the producer never overwrites).
+  [ -e "$P01_INPUTS/bundle" ] || helper protected-restore-inputs.py bundle --repository "$HOME_ROOT" \
     --revision "$P01_COMMIT" --target "$P01_INPUTS/bundle" || exit 1
-  helper protected-restore-inputs.py security-receipt --repository "$HOME_ROOT" \
+  [ -e "$P01_INPUTS/security-receipt.json" ] || helper protected-restore-inputs.py security-receipt --repository "$HOME_ROOT" \
     --revision "$P01_COMMIT" --output "$P01_INPUTS/security-receipt.json" || exit 1
   line="$(helper protected-restore-inputs.py contract --output "$P01_INPUTS/restore-contract.json" \
     --snapshot "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap" \
@@ -333,7 +345,7 @@ w3a)
   exec 4<"${P01_INPUTS:?}/quiescence-lease.json" || exit 1
   secrets="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-w3a.XXXXXX")" || exit 1
   trap 'find "$secrets" -type f -exec shred -u {} + 2>/dev/null; rmdir "$secrets" 2>/dev/null' EXIT
-  trap 'exit 130' INT TERM
+  trap 'exit 130' INT TERM HUP QUIT
   for n in share-1 share-2; do
     IFS= read -rsp "W3a $n> " v </dev/tty
     printf '\n'
@@ -350,17 +362,29 @@ w3a)
     --home-read-fd 5 --root-fd 6 --share-1-fd 7 --share-2-fd 8
   status=$?
   exec 4<&- 5<&- 6<&- 7<&- 8<&-
+  # w4 requires this marker; only RESTORE_ACCEPTED (exit 0) writes it.
+  [ "$status" != 0 ] || : >"$P01_INPUTS/w3a-accepted"
   exit "$status"
   ;;
 w3b)
   # The W3 snapshot and receipt to the R2 Restic repository, read back and compared.
   (cd "$HOME_ROOT" && /usr/bin/docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock >/dev/null) || exit 1
-  (cd "$HOME_ROOT" && /usr/bin/docker compose --profile backup run --rm --no-deps \
-    -v "${P01_SNAPSHOT_DIRECTORY:?run w3 first}:/artifact:ro" restic-offsite artifact)
+  out="$(cd "$HOME_ROOT" && /usr/bin/docker compose --profile backup run --rm --no-deps \
+    -v "${P01_SNAPSHOT_DIRECTORY:?run w3 first}:/artifact:ro" restic-offsite artifact)"
+  status=$?
+  printf '%s\n' "$out"
+  [ "$status" = 0 ] || exit "$status"
+  # The value-free last line is the W3b receipt; w4 requires it.
+  printf '%s\n' "$out" | tail -n 1 | jq -e '.state == "W3B_STORED"' >/dev/null || exit 1
+  printf '%s\n' "$out" | tail -n 1 >"${P01_INPUTS:?}/w3b-receipt.json"
   ;;
 w4)
   # Server upgrade: the Raft mount must keep its identity. Never accept a Compose
   # prompt to recreate a volume; answer no and stop.
+  # Gate: W3a accepted and the W3b receipt for this attempt; the recorded Raft identity.
+  [ "$#" -eq 1 ] || usage
+  [ -e "${P01_INPUTS:?}/w3a-accepted" ] || { echo "W3a not accepted: no w4" >&2; exit 1; }
+  [ -s "$P01_INPUTS/w3b-receipt.json" ] || { echo "no W3b receipt: no w4" >&2; exit 1; }
   mount_id() {
     # Name, source and the device/inode the server sees at the mount (the same as the host's).
     local src
@@ -369,6 +393,7 @@ w4)
   }
   before="$(mount_id)" || exit 1
   echo "before: $before"
+  [ "${before##* }" = "$1" ] || { echo "Raft mount is not the recorded $1: stop" >&2; exit 1; }
   (cd "$HOME_ROOT" && /usr/bin/docker compose --profile security up -d --no-deps --no-build --pull never openbao) || exit 1
   after="$(mount_id)" || exit 1
   echo "after:  $after"

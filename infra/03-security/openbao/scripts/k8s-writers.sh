@@ -70,6 +70,7 @@ load_state() {
   [ -d "$P01_K8S_STATE" ] || exit 1
   if [ -f "$P01_K8S_STATE/changed" ]; then mapfile -t p01_changed <"$P01_K8S_STATE/changed"; fi
 }
+restored() { [ -e "$P01_K8S_STATE/restored" ] || { echo "writers not restored: run finish first" >&2; exit 1; }; }
 
 case "$step" in
 discover)
@@ -119,6 +120,8 @@ finish)
   P01_FINISH_EPOCH="$(date -u +%s)" || exit 1
   echo "$P01_FINISH_EPOCH" >"$P01_K8S_STATE/finish-epoch" || exit 1
   p01_restore_writers || { printf '%s\n' 'Finish FAIL: writer 복구 실패' >&2; exit 1; }
+  # force-refresh and finish-wait require a successful restore.
+  : >"$P01_K8S_STATE/restored"
   if p01_eso_gate; then echo "ESO_GATE_PASS"; exit 0; else gate=$?; fi
   [ "$gate" != 2 ] || { echo "Finish FAIL: API error" >&2; exit 1; }
   echo "ESO gate not yet passed: investigate, then force-refresh if approved, then finish-wait" >&2
@@ -129,6 +132,7 @@ force-refresh)
   [ "$#" -eq 2 ] || usage
   : "${P01_FORCE_REFRESH_APPROVAL:?정확한 실패 대상의 강제 갱신 승인 필요}"
   load_state
+  restored
   expected_six
   jq -e --arg ns "$1" --arg name "$2" 'any(.[]; .namespace == $ns and .name == $name)' "$P01_EXPECTED_ES" >/dev/null || exit 1
   kubectl --context k3d-hyhome --request-timeout=15s -n "$1" get externalsecret "$2" -o json |
@@ -140,6 +144,7 @@ force-refresh)
 finish-wait)
   # At most six checks, 10 s apart, within 180 s; an API error stops at once.
   load_state
+  restored
   expected_six
   P01_FINISH_EPOCH="$(cat "$P01_K8S_STATE/finish-epoch")" || exit 1
   deadline=$(( $(date -u +%s) + 180 ))

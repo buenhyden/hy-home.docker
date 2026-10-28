@@ -735,9 +735,10 @@ bootstrap 셸이 아니면 먼저 `. "$XDG_RUNTIME_DIR/p01-window.vars"`로 `P01
 규칙대로 해당 custody를 남긴다(환경변수는 읽지 않는다). W1 custody에 `root.token`이 있는데 W7의
 `ROOT_REVOKED_OPERATOR_HEALTHY` receipt가 없으면 아무것도 지우지 않고 멈춘다. W7을 하지 않고
 root custody를 버리는 경우(W1 exit2, sealed server)에만 `--discard-root`를 붙인다. `evidence`는
-`$P01_INPUTS`의 contract·lease·receipt를 복사하지 않으므로 W3a를 연 window면 그것은 따로 복사한다.
+K8s writer state(`p01-k8s.*`의 원래 UID·replica·selector, 변경 목록, Finish 시각)도 복사하지만
+`$P01_INPUTS`의 contract·lease·receipt는 복사하지 않으므로 W3a를 연 window면 그것은 따로 복사한다.
 끝에 남은 `p01-*` 항목을 출력하며 `p01-client.*`(secret 없는 helper 사본)와, W3a를 연 window면
-`p01-inputs.*`만 남아야 한다.
+`p01-inputs.*`, K8s writer를 멈춘 window면 `p01-k8s.*`만 남아야 한다.
 
 변수가 아닌 고정 glob이라 셸을 다시 열어 변수가 비어도 `/` 아래를 지우지 않는다. 멈춘 시각,
 남은 단계와 폐기하지 못한 token을 값 없이 Task에 기록한다. W3a는 attempt와 대상이 고정된
@@ -911,9 +912,11 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   p01_run "$P01_APPROVED_COMMIT" infra/03-security/openbao/scripts/owner-window.sh retire-token <path>/p01-operator.token
   ```
 
-  `p01_run`은 아래 [Renderer SecretID Delivery](#renderer-secretid-delivery) 3단계에 있다. 정책이
-  `[hy-home-operator]`가 아니면 멈춘다. 첫 조회가 거부되면 token은 이미 만료됐으므로 폐기 없이 지우고
-  `already expired; file removed`를 출력한다. 그렇게 기록한다.
+  `p01_run`은 아래 [Renderer SecretID Delivery](#renderer-secretid-delivery) 3단계에 있다. 인자는 0600
+  single-link 일반 파일이어야 하고, 정책이 `[hy-home-operator]`가 아니면 멈춘다. 첫 조회를 server가
+  거부하면(403·`permission denied`) token은 이미 만료됐으므로 폐기 없이 지우고 `already expired; file
+  removed`를 출력한다. 그 밖의 실패(sealed, container 정지, 연결 오류)는 파일을 남기고 exit1로
+  멈춘다. 결과를 그대로 기록한다.
 
 - **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
   쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 없으면 W4 뒤 gateway를 거치는
@@ -1038,8 +1041,8 @@ fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b infra/03-securi
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
 e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json
-e94696df7b4631be87b957f096ab90495b947a3b94626ea13c118737ce62772f infra/03-security/openbao/scripts/owner-window.sh
-6849fffb2952c6f2d225f659c13661a7e009179f229fe1e23f339136270aca0d infra/03-security/openbao/scripts/k8s-writers.sh
+ac23a2fa7dc72552d08f9232035f851b739a749745786046598b16475303b228 infra/03-security/openbao/scripts/owner-window.sh
+152754095d8051fd6018ddb352b83ebb8d15ad2eb1599788ea6da28f2bf6dfaf infra/03-security/openbao/scripts/k8s-writers.sh
 P01_SOURCE_MANIFEST
 ```
 
@@ -1157,7 +1160,7 @@ Agent·관리 writer의 정지 범위, 정확한 container ID와 정지 전 상�
 writer는 `openbao-agent`(`docker stop openbao-agent`), OIDC 운영자 로그인, hy-home.k8s의
 OpenBao 로그인(External Secrets 등 Kubernetes auth)이다. 운영자는 W3 시작부터 W3a가 끝날
 때까지 새로 로그인하지 않는다. W3a의 HOME 읽기 token은 W3 전에 받아 두고(restore는 시작할
-때만 읽으므로 그때 유효하면 된다), W5·W7의 새 OIDC credential은 W3a 뒤에 만든다. hy-home.k8s
+때만 읽으므로 그때 유효하면 된다. `owner-window.sh token w3a`), W5·W7의 새 OIDC credential은 W3a 뒤에 만든다. hy-home.k8s
 쪽 로그인 주체를 멈춘 방법과 확인을 값 없이 Task에 기록하며, 멈출 방법이 없으면 W3를 열지
 않는다. 2026-10-21 관측에서 그 주체는 External Secrets controller 하나다(ClusterSecretStore
 `vault-backend`, ExternalSecret 6개; POL-0085의 `eso-read-platform`). 그 Deployment는 Argo CD
@@ -1198,8 +1201,9 @@ Agent와 해당 writer가 정지했음을 확인한 뒤 아래
 디렉터리, HOME data 또는 source 디렉터리를 재사용하지 않습니다. 생성 명령은 기존 경로에서
 실패해야 하며 helper가 canonical 경로·UID·0700·alias와 모든 산출물 이름을 다시 검사합니다.
 아래 expected-version은 W0에 기록한 업그레이드 전 HOME 검사값이며 새 image pin이 아닙니다.
-`w3`는 이 셸에 `P01_K8S_STATE`가 있으면 `k8s-writers.sh check`를 먼저 실행하고, 없으면 외부 운영자가
-방금 `check`한 것을 확인한 뒤 셋째 인자 `--writers-checked`를 붙여야 실행한다.
+`w3`는 환경이나 `p01-window.vars`에 `P01_K8S_STATE`가 있으면 `k8s-writers.sh check`를 먼저
+실행하고, 없으면 외부 운영자가 방금 `check`한 것을 확인한 뒤 셋째 인자 `--writers-checked`를
+붙여야 실행한다. 이때 확인한 사람과 시각을 Task에 기록한다.
 
 writer가 멈춘 것을 확인한 즉시, snapshot 전에
 [restore input producer](../../../../infra/03-security/openbao/scripts/protected-restore-inputs.py)로
@@ -1278,9 +1282,9 @@ issuer_commit=… operator_tools=… bash "$P01_SCRIPT_DIR/owner-window.sh" w3a-
 ```
 
 기대: `BUNDLE_WRITTEN`·`SECURITY_RECEIPT`·`CONTRACT_WRITTEN <sha256>`. exit1/`BLOCKED`는 기존
-파일을 덮지 않는다. 거부된 contract는 producer가 지우므로 같은 경로로 다시 만든다. bundle이나
-보안 receipt가 중간에 실패했으면 그 단계만 새 경로로 다시 만들고, `contract`의 `--bundle` 또는
-`--security-receipt`와 `P01_SECURITY_RECEIPT`를 그 새 경로로 바꾼다.
+파일을 덮지 않는다. `w3a-inputs`를 다시 실행하면 이미 있는 bundle과 보안 receipt는 그대로 두고
+contract만 다시 만든다(거부된 contract는 producer가 지운다). bundle이나 보안 receipt가 중간에
+실패해 일부가 남았으면 그 경로를 지우지 말고 새 `lease-start`부터 새 attempt로 간다.
 `$P01_INPUTS/quiescence-lease.json`은 그대로 둔다. lease가 만료됐거나 lease가 더는 이 snapshot을 덮지 못하면 새 W3 attempt(새 snapshot
 디렉터리·새 W3b)로 간다. restore는 lease 만료보다 최소 17분 전에 시작한다(900초 실행과
 60초 정리, 입력 시간). 그보다 늦으면 시작하지 않는다. 실패한 restore는 token 폐기·Agent
@@ -1306,9 +1310,10 @@ commit/manifest를 설치하기 전까지 BLOCKED다. 기존 숫자와 경로는
 writer 정지 확인은 W3 저장 전부터 W3a 종료까지 별도로 유지해야 합니다.
 
 ```bash
-bash "$P01_SCRIPT_DIR/owner-window.sh" token w3a   # W3 전에 받는다
-bash "$P01_SCRIPT_DIR/owner-window.sh" w3a
+bash "$P01_SCRIPT_DIR/owner-window.sh" w3a   # 성공(RESTORE_ACCEPTED)이면 w4 gate 표시를 남긴다
 ```
+
+HOME 읽기 token은 W3 시작 전에 `bash "$P01_SCRIPT_DIR/owner-window.sh" token w3a`로 받아 둔다.
 
 HOME 읽기용 현재 관리자 token·임시 root·서로 다른 원본 share 둘은 네 개의 서로 다른
 보호 FD로 넘긴다. 임시 root는 W1 custody 파일에만 있어 숨김 prompt로 입력하려면 먼저 화면에
@@ -1378,13 +1383,18 @@ W4는 W3a semantic restore와 이 W3b receipt가 모두 수용된 뒤에만 실�
 
 중단 gate: 이번 W3 snapshot/receipt identity에 결속된 독립 off-host 보관 receipt와 W3a
 semantic restore 중 하나라도 없으면 아래 server 재생성 명령을 실행하지 않습니다. 재생성
-전후에 `docker inspect openbao`의 `/openbao/data` mount 이름·source와 그 source의
+전후에 `docker inspect openbao`의 `/openbao/data` mount 이름·source와 server 안에서 본 그 mount의
 `stat -c '%d/%i'`(기록값 device2064/inode115612005)로 실제 Raft mount identity를 기록하고, Compose가 volume 설정이 달라 다시 만들지 묻는 prompt에는 절대 동의하지
 않고 중단합니다.
 
 ```bash
-bash "$P01_SCRIPT_DIR/owner-window.sh" w4   # 전후 mount identity 출력·비교, share 두 번 숨김 입력, 마지막에 bao status
+bash "$P01_SCRIPT_DIR/owner-window.sh" w4 2064/115612005   # 기록값과 전후 identity 비교, share 두 번 숨김 입력, bao status
 ```
+
+`w4`는 `w3a`의 수용 표시와 `w3b`가 남긴 W3b receipt(`$P01_INPUTS/w3b-receipt.json`)가 없으면
+시작하지 않는다. 재생성 전 identity가 인자와 다르거나 재생성 전후가 다르면 멈춘다. 인자는 W0에
+`docker exec openbao /bin/stat -c '%d/%i' /openbao/data`로 server 안에서 다시 확인한 값이며,
+host source의 기록값과 다르면 W4를 열지 않고 검토한다.
 
 기대: 새 image로 재생성, Raft mount identity 불변, threshold 뒤 `Sealed false`.
 중단: mount identity 변경, unseal 실패, cluster ID 변경, audit backend 실패.
@@ -1482,7 +1492,7 @@ Store와 writer rollout이 정상이고 **설치 버전**의 manual refresh·각
 
 ```bash
 P01_FORCE_REFRESH_APPROVAL=<승인 참조> P01_K8S_STATE=… P01_EXPECTED_ES=… P01_ES_SET_APPROVAL=… \
-  bash "$P01_SCRIPT_DIR/k8s-writers.sh" force-refresh <namespace> <name>   # 대상당 한 번만
+  bash "$P01_SCRIPT_DIR/k8s-writers.sh" force-refresh <namespace> <name>   # 대상당 한 번만, finish의 writer 복구 성공 뒤에만
 ```
 
 강제 갱신은 대상당 최대 1회다. 승인된 실패 대상의 annotation이 끝난 뒤 다음으로

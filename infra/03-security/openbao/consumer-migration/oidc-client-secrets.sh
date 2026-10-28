@@ -95,7 +95,10 @@ cutover | rollback)
   if [ "$1" = cutover ]; then echo "$2: $var=/run/openbao/$file"; else echo "$2: $var unset"; fi
   # An exported value would override .env during interpolation.
   (cd "$HOME_ROOT" && env -u "$var" docker compose up -d --no-deps "$2") || exit 1
-  bash "$here/verify-oidc-client-secret.sh" "$2"
+  # Run from a git object (p01_run) there is no sibling file; use the checkout's verifier.
+  verify="$here/verify-oidc-client-secret.sh"
+  [ -f "$verify" ] || verify="$HOME_ROOT/infra/03-security/openbao/consumer-migration/verify-oidc-client-secret.sh"
+  bash "$verify" "$2"
   ;;
 *) usage ;;
 esac

@@ -1468,6 +1468,37 @@ These blocks stay in the runbook:
   throwaway client of the hy-home.k8s integration runbook.
 - The single-command lifecycle checks stay.
 
+Review of `3e20d342e`, before the PR:
+
+- iac-reviewer found one High issue: `w3` did not pass a `P01_K8S_STATE`
+  read from `p01-window.vars` to the child writer check. That made W3 fail
+  after the writers had stopped. The value is now passed explicitly.
+- iac-reviewer and security-auditor both raised the same Medium issue:
+  `retire-token` deleted the token file on any lookup failure without revoking
+  the token. It now deletes only when the server refuses the lookup, and
+  requires a 0600 single-link regular file.
+- iac-reviewer's other Mediums:
+  - `w4` now takes the recorded Raft identity and checks it before recreating.
+    It also requires a W3a acceptance marker and the W3b receipt that `w3b`
+    now saves.
+  - Rerunning `w3a-inputs` keeps an existing bundle and receipt and retries
+    the contract.
+- The Lows:
+  - The K8s `finish` writes a `restored` marker that `force-refresh` and
+    `finish-wait` require. This prevents accepting the window with Argo CD
+    still stopped.
+  - `audit-list` checks jq.
+  - Shares are also removed on HUP and QUIT.
+  - `bao_as` drops `DOCKER_HOST`, `DOCKER_CONTEXT`, `DOCKER_CONFIG` and
+    `COMPOSE_FILE`.
+  - `evidence` copies the K8s state.
+  - The `token w3a` step moved into the W3 preconditions.
+- `oidc-client-secrets.sh cutover`, run through `p01_run`, could not find its
+  verifier next to the temporary file. It now falls back to the checkout's
+  verifier.
+- New tests cover the state handoff, the `w4` and `w3` gates, the
+  `retire-token` file check, and the restored-Finish requirement.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
