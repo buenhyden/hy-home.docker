@@ -3776,6 +3776,13 @@ explicit TTL of up to one year. Today the renderer roles pin 5 minutes and
 `auth/token/create/k8s-bootstrap` path, however, has no parameter limit, so
 that role's explicit maximum becomes the only bound.
 
+**Owner decision (2026-10-28): keep the tune.** The `token/` mount maximum
+stays at `8760h`. Only root can create a token without a role, and the root
+used for this is temporary and revoked after each window. The role maximums
+still bound the operator (`k8s-bootstrap`, 2 hours) and the renderer roles
+(5 minutes). OIDC tokens come from the `oidc/` mount (1 hour, 4 hours at
+most) and are not affected. The next 1-year rotation needs the same maximum.
+
 ### Owner steps as scripts (2026-10-28)
 
 The owner asked for each follow-up as a working script. Three steps join
@@ -3962,6 +3969,99 @@ for an honest object store and a clean environment. Each finding was fixed:
     a copy that failed a pin;
   - the `p01_run` text now claims only blob re-hashing. Tree substitution is
     named as the accepted residual risk.
+
+### Metrics token rotation: owner run (2026-10-28)
+
+The owner ran the scripted RUN-0104 rotation in a clean `env -i` bash, using
+`P01_APPROVED_COMMIT` `67357246f1afae063878cc757aaa466a8747e75f` (PR #607).
+This was the first live run of `preflight`, `p01-bootstrap.sh`,
+`metrics-rotate` and the new `p01_run`. The output below is value-free.
+
+| Step | Result |
+| --- | --- |
+| `preflight` (run twice) | `problems: 0`; `Sealed false`, image `a58fb110…`, dockerd debug false, Linger yes, R2 60 snapshots |
+| `p01_run` with `p01-bootstrap.sh` | 20 × `OK`, `bootstrap ok` |
+| `token w1` and `check-token w1` | policies `default` and `hy-home-operator`, path `auth/oidc/oidc/callback`, `started:false` |
+| `w1` | `DELIVERED` |
+| `root-sweep` | `revoked=0`, `remaining=0` |
+| `metrics-rotate` | `metrics: allowed`, `policy list: denied`, `old token: expired`, `target: openbao up` |
+| New token | `new: expires 2027-10-28T14:31:33Z` |
+| Old token | `old: expired (2026-10-24T10:04:32Z)` |
+| `status` | `problems: 0`; metrics token 364 days; targets `openbao` and `openbao-agent` up |
+| `revoke-root` | `ROOT_REVOKED_OPERATOR_HEALTHY` |
+| `cleanup` | `revoked p01-op-w1.token`; `revoke failed p01-op-w7.token` |
+
+Notes:
+
+- **Prometheus restored.** OpenBao server metrics are back, so the 2026-10-24
+  outage is closed. An agent read-only check afterwards showed `up` = 1 for
+  both jobs and no OpenBao alert active.
+- **Pending alert.** `OpenBaoTooManyPendingTokens` was pending at 14:32:53Z,
+  when metrics first returned after the outage. It cleared within its
+  5-minute `for` window. Its expression read -1 afterwards.
+- **`jq` noise.** `metrics-rotate` printed two `null cannot be parsed as a
+  number` lines. They came from the wait loop, while Prometheus had no
+  post-recreate `up == 1` sample yet. The wait still worked. The empty result
+  now counts as "not up" without an error.
+- **w7 revoke.** `revoke-root` confirmed the w7 operator healthy right after
+  root was revoked. The w7 token therefore became invalid only between that
+  check and `cleanup`. The likely cause is that it came from the same UI
+  login as w1, so revoking w1 already revoked it. If it was a separate login,
+  it expires within its 1-hour TTL (4-hour maximum). The value was shredded
+  with the file.
+- **Leftover client copies.** `cleanup` left four `p01-client.*` directories.
+  They hold only reviewed source copies and no secret.
+- **Garbled paste.** In the owner's paste, the last lines of `p01_run` were
+  redrawn out of place by the terminal. The function still ran, as the
+  bootstrap's `OK` lines show.
+
+### 10-27 Agent run tokens: attribution (2026-10-28)
+
+The owner ran `renderer-expiry 2026-10-28T07:35:00Z` at about 14:40Z. It
+showed three revocations: 09:32:41.749Z, 09:32:41.847Z and 13:48:31.447Z. The
+log starts at 09:31:51Z, because the server was down from 07:33Z. The
+13:48:31Z line came before the expected end of the 08:21 run, so the agent
+read the Agent log and printed timestamps only.
+
+The 10-27 Agent run did not hold one token. It logged in four times, and each
+login created a token that was renewed only until the next one replaced it:
+
+| Login | Last renewal | Expiry (24-hour period) | Revocation |
+| --- | --- | --- | --- |
+| 10-27 08:21:57Z | 08:21:57Z | 10-28 08:21:57Z, server down | 10-28 09:32:41Z at startup |
+| 10-27 13:48:29Z | 13:48:30Z | 10-28 13:48:30Z | 10-28 13:48:31.447Z |
+| 10-27 14:51:48Z | 14:51:49Z | 10-28 14:51:49Z | not yet at 14:43Z (expected) |
+| 10-28 01:05:46Z | 01:05:47Z | 10-29 01:05:47Z | not yet |
+
+Corrections and findings:
+
+- **Startup revocations.** The 08:14 token, the 08:21:57Z login and the
+  outage all line up, so the two startup revocations at 09:32:41Z are the
+  08:14 token and the 08:21:57Z login token. This replaces "the second
+  startup revocation is not attributed".
+- **When the run ends.** The 10-27 run's last token expires about 10-29
+  01:05:47Z, not 07:35Z as estimated before. The closing check is
+  `renderer-expiry 2026-10-28T14:00:00Z` after that time. Two new lines, near
+  14:51:49Z and 01:05:47Z, close the 10-27 run as natural expiry.
+- **The current Agent.** It started at 09:34:17Z, authenticated at 09:34:20Z
+  and renewed at 09:34:21Z. It has logged no auth error, and no OpenBao alert
+  is active.
+- **Open question.** Why the Agent re-authenticated three times while the
+  previous token was still valid is UNKNOWN. A single-use SecretID would
+  normally block a second AppRole login. This needs the Agent auth
+  configuration and the role's SecretID settings, read without values.
+- **Package hold.** The owner first ran `apt-mark unhold`, which reported
+  that no package was held. The owner then ran `host-hold`, which printed
+  `needrestart: containerd and docker excluded` and the three held packages:
+  `containerd.io`, `docker-ce` and `docker-ce-cli`. unattended-upgrades and
+  the daily upgrade timer stay enabled. They skip held packages, and
+  needrestart no longer restarts the container runtime.
+- **Template lines run as typed.** The owner also pasted the RUN-0103
+  installer and `agent-restart` lines. The installer call had an empty
+  `issuer_commit`, so `p01_run` returned 1 before reading Git. The
+  `agent-restart` line still had its `<…>` placeholder, which bash read as an
+  input redirection, so nothing ran. Neither changed anything. The Agent was
+  healthy and needed no restart.
 
 ## Evidence
 
