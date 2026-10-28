@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from .test_openbao_issuance import BASE, REV, WHEN, FakeAPI, M
+from .test_openbao_issuance import BASE, REV, WHEN, FakeAPI, M, custody_dir
 
 
 class TrustedInstallTests(unittest.TestCase):
@@ -149,7 +149,7 @@ class InterruptedAtomicUpdateTests(unittest.TestCase):
             (Path(directory) / "issuance.json.pending").write_text("{")
             api = FakeAPI()
             with self.assertRaises(M.Blocked):
-                M.run_issuance(api, journal, revision=REV)
+                M.run_issuance(api, journal, revision=REV, custody=custody_dir(self))
             self.assertNotIn("issue", api.calls)
             self.assertTrue((Path(directory) / "issuance.json").exists())
             self.assertTrue((Path(directory) / "issuance.json.pending").exists())
@@ -258,7 +258,10 @@ class JournalVersionCompatibilityTests(unittest.TestCase):
                 api.journal = journal
                 api.data["legacy"] = self.accessor(legacy.metadata())
                 self.assertEqual(
-                    "reconciled", M.run_issuance(api, journal, revision=REV)
+                    "reconciled",
+                    M.run_issuance(
+                        api, journal, revision=REV, custody=custody_dir(self)
+                    ),
                 )
                 self.assertEqual(["legacy"], api.destroyed)
                 self.assertNotIn("issue", api.calls)
@@ -302,13 +305,16 @@ class JournalVersionCompatibilityTests(unittest.TestCase):
             api = FakeAPI()
             api.journal = journal
             api.running = True
-            self.assertEqual("reconciled", M.run_issuance(api, journal, revision=REV))
+            self.assertEqual(
+                "reconciled",
+                M.run_issuance(api, journal, revision=REV, custody=custody_dir(self)),
+            )
             self.assertEqual(2, len(journal.saved))
             self.assertNotIn("schema_version", journal.saved[-1])
             self.assertNotIn("issuance_id", journal.saved[-1])
             self.assertEqual(api.generation, journal.saved[-1]["agent_started_at"])
 
-    def test_version_two_response_loss_restarts_without_second_issue(self):
+    def test_versioned_response_loss_restarts_without_second_issue(self):
         with tempfile.TemporaryDirectory() as path, M.Journal(path) as journal:
             api = FakeAPI("kill")
             api.journal = journal
@@ -317,17 +323,21 @@ class JournalVersionCompatibilityTests(unittest.TestCase):
                     api,
                     journal,
                     revision=REV,
+                    custody=custody_dir(self),
                     clock=lambda: WHEN,
                     nonce=lambda _: "1" * 32,
                 )
             active = journal.load()
-            self.assertEqual(2, active.schema_version)
+            self.assertEqual(3, active.schema_version)
             self.assertEqual(active.issuance_id, active.nonce)
             self.assertEqual(
                 active.metadata(), api.data["synthetic-accessor"]["metadata"]
             )
             api.failure = None
-            self.assertEqual("reconciled", M.run_issuance(api, journal, revision=REV))
+            self.assertEqual(
+                "reconciled",
+                M.run_issuance(api, journal, revision=REV, custody=custody_dir(self)),
+            )
             self.assertEqual(1, api.calls.count("issue"))
             self.assertEqual(["synthetic-accessor"], api.destroyed)
 

@@ -37,8 +37,13 @@ class AgentContractTests(unittest.TestCase):
         self.token = secrets.token_hex(24)
         self.values = [secrets.token_hex(24), secrets.token_hex(24)]
         self.client_value = secrets.token_hex(24)
-        (self.agent / "token").write_text(self.token)
+        # Distinct renderer generations: the stopped Agent's sink holds the old one.
+        self.old_agent = secrets.token_hex(24)
+        self.new_agent = secrets.token_hex(24)
+        (self.agent / "token").write_text(self.old_agent)
         (self.agent / "token").chmod(0o600)
+        self.custody = self.root / "custody"
+        self.custody.mkdir(mode=0o700)
         self.rendered = [
             self.out / "auth/keycloak_admin_password.txt",
             self.out / "observability/grafana_admin_password.txt",
@@ -102,6 +107,8 @@ class AgentContractTests(unittest.TestCase):
             "STUB_ROOT": str(self.root),
             "STUB_TOKEN": self.token,
             "STUB_CLEANUP_TOKEN": self.cleanup_token,
+            "STUB_OLD_AGENT": self.old_agent,
+            "STUB_NEW_AGENT": self.new_agent,
             "STUB_MANIFEST": MANIFEST,
             "STUB_VALUE_1": self.values[0],
             "STUB_VALUE_2": self.values[1],
@@ -131,8 +138,25 @@ if os.environ.get("BAO_TOKEN_PATH"):
     if source.stat().st_mode & 0o777 != 0o600 or source.stat().st_nlink != 1:
         sys.exit(1)
     token = source.read_text().removesuffix("\\n")
-if token not in (os.environ["STUB_TOKEN"], os.environ["STUB_CLEANUP_TOKEN"]):
+revoked_file = root / "revoked.json"
+revoked = json.loads(revoked_file.read_text()) if revoked_file.exists() else []
+agents = (os.environ["STUB_OLD_AGENT"], os.environ["STUB_NEW_AGENT"])
+if token in revoked:
+    sys.stderr.write("Error: Code: 403. Errors:\\n* permission denied\\n")
+    sys.exit(2)
+if token not in (os.environ["STUB_TOKEN"], os.environ["STUB_CLEANUP_TOKEN"], *agents):
     sys.exit(1)
+if token in agents and args[-1] == "auth/token/lookup-self":
+    created = 1000 if token == agents[0] else int((root / "new_created").read_text())
+    print(json.dumps({"data":{"policies":["default","renderer"],"path":"auth/approle/login",
+                             "meta":{"role_name":"hy-home-renderer"},"creation_time":created}}))
+    sys.exit(0)
+if token in agents and args[-2:] == ["sys/capabilities-self", "-"]:
+    print(json.dumps({"data":{"auth/token/revoke-self":["update"]}}))
+    sys.exit(0)
+if token in agents and args[-1] == "auth/token/revoke-self":
+    revoked_file.write_text(json.dumps([*revoked, token]))
+    sys.exit(0)
 if args[:2] == ["read", "-format=json"]:
     role = "renderer-issuer" if token == os.environ["STUB_TOKEN"] else "renderer-cleanup"
     print(json.dumps({"data":{"policies":[role],"renewable":False,"ttl":299,
@@ -236,10 +260,15 @@ if args[0] == "inspect":
         sys.stdout.write(image_id + " " + mount)
     sys.exit(0)
 if args[0] == "start":
+    import time
     (root / "started").touch()
     (root / "accessors.json").write_text("{}")
-    (root / "openbao/agent/token").write_text(os.environ["STUB_TOKEN"])
+    (root / "new_created").write_text(str(int(time.time()) + 1))
+    (root / "openbao/agent/token").write_text(os.environ["STUB_NEW_AGENT"])
     (root / "openbao/agent/token").chmod(0o600)
+    sys.exit(0)
+if args[0] == "stop":
+    (root / "started").unlink(missing_ok=True)
     sys.exit(0)
 payload = sys.stdin.read()
 if args[0] == "exec":
@@ -247,7 +276,8 @@ if args[0] == "exec":
         result = subprocess.run(["sh", args[-1]], check=False)
         sys.exit(result.returncode)
     token, body = payload.split("\\n", 1)
-    if token not in (os.environ["STUB_TOKEN"],os.environ["STUB_CLEANUP_TOKEN"]):
+    if token not in (os.environ["STUB_TOKEN"],os.environ["STUB_CLEANUP_TOKEN"],
+                     os.environ["STUB_OLD_AGENT"],os.environ["STUB_NEW_AGENT"]):
         sys.exit(1)
     script_index = args.index("-c") + 1
     if args[script_index + 1] != "renderer-request" or not 0 < int(args[script_index + 2]) < 20:
@@ -263,6 +293,8 @@ if args[0] == "exec":
         result = subprocess.run(["bao", *args[script_index + 3:]], input=body,
                                 text=True, env=environment, check=False)
         sys.exit(result.returncode)
+elif args[0] == "run" and any(a.endswith(",readonly") for a in args):
+    pass  # Sink read: no stdin, read-only volume.
 elif args[0] == "run":
     if mode == "deliver":
         sys.stderr.write(payload)
@@ -288,6 +320,13 @@ sys.exit(result.returncode)
                 (SCRIPTS / "renderer-issuance.py")
                 .read_text()
                 .replace("/openbao/", str(self.root / "openbao") + "/")
+                # A private 0700 directory stands in for the tmpfs custody.
+                .replace(
+                    "def custody_directory():",
+                    "def custody_directory():\n    return "
+                    + repr(str(self.custody))
+                    + "\n\n\ndef _host_custody_directory():",
+                )
             )
             helper.chmod(0o600)
             request = self.root / "renderer-request.sh"
@@ -631,6 +670,15 @@ sys.exit(result.returncode)
         self.assertEqual(
             "complete",
             json.loads((self.journal / "issuance.anchor").read_text())["state"],
+        )
+        # v3: the old generation is revoked, the new one kept, custody destroyed.
+        revoked = json.loads((self.root / "revoked.json").read_text())
+        self.assertTrue(revoked == [self.old_agent], "Unexpected revoke target")
+        self.assertEqual([], list(self.custody.iterdir()))
+        sink_read = next(call for call in calls if "--log-driver=none" in call)
+        self.assertIn(
+            "type=volume,source=p01-agent,target=" + str(self.agent) + ",readonly",
+            sink_read,
         )
 
     def test_issue_failure_is_redacted(self):

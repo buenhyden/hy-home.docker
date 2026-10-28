@@ -1,6 +1,7 @@
 """Offline regression tests; never authenticate against HOME OpenBao."""
 
 import importlib.util
+import json
 import os
 import signal
 import subprocess
@@ -30,6 +31,8 @@ sys.modules[SPEC.name] = M
 SPEC.loader.exec_module(M)
 REV = "a" * 40
 WHEN = 1791615600
+OLD = "synthetic-old-token"
+NEW = "synthetic-new-token"
 
 
 class FakeAPI:
@@ -42,6 +45,10 @@ class FakeAPI:
         self.functional = True
         self.running = False
         self.journal = None
+        # Live renderer tokens -> creation time; the stopped Agent's sink is OLD.
+        self.tokens = {OLD: WHEN - 100}
+        self.sink_token = OLD
+        self.revoked = []
 
     def issue(self, metadata):
         assert self.journal.load().state == "issuing"
@@ -67,10 +74,47 @@ class FakeAPI:
             raise M.Blocked()
         self.running = True
         self.data.clear()  # One-use SecretID consumed by synthetic current process.
+        if self.failure != "old-current":
+            self.tokens[NEW] = WHEN + 2
+            self.sink_token = NEW
+        else:
+            # Even a creation time that looks new cannot pass as the old token.
+            self.tokens[OLD] = WHEN + 5
         return self.generation
 
     def stopped(self):
         return not self.running
+
+    def stop(self):
+        self.calls.append("stop")
+        self.running = False
+
+    def sink(self):
+        return self.sink_token
+
+    def lookup_self(self, token):
+        if self.failure == "lookup-sealed":
+            raise M.Uncertain()
+        if token not in self.tokens:
+            return None
+        return {
+            "policies": ["default", "renderer"],
+            "path": "auth/approle/login",
+            "meta": {"role_name": M.ROLE},
+            "creation_time": self.tokens[token],
+        }
+
+    def revoke_self_allowed(self, token):
+        return self.failure != "no-revoke-self"
+
+    def revoke_self(self, token):
+        self.calls.append("revoke")
+        if self.failure == "revoke-lost":
+            raise M.Uncertain()  # Request never reached the server.
+        self.revoked.append(token)
+        self.tokens.pop(token, None)
+        if self.failure == "revoke-timeout":
+            raise M.Uncertain()  # Revoked, but the reply was lost.
 
     def recovery_generation(self, issued_at):
         return self.generation if self.running else None
@@ -147,11 +191,27 @@ class JournalTests(unittest.TestCase):
                 M.Journal(link)
 
 
+def anchor(directory):
+    return json.loads((Path(directory) / "issuance.anchor").read_text())
+
+
+def custody_dir(case):
+    directory = tempfile.TemporaryDirectory()
+    case.addCleanup(directory.cleanup)
+    return M.Custody(directory.name, ("server", "volume", "1:2"))
+
+
 class IssuanceRecoveryTests(unittest.TestCase):
-    def run_case(self, api, journal):
+    def run_case(self, api, journal, custody=None):
         api.journal = journal
+        self.custody = custody or getattr(self, "custody", None) or custody_dir(self)
         return M.run_issuance(
-            api, journal, revision=REV, clock=lambda: WHEN, nonce=lambda _: "1" * 32
+            api,
+            journal,
+            revision=REV,
+            custody=self.custody,
+            clock=lambda: WHEN,
+            nonce=lambda _: "1" * 32,
         )
 
     def test_success_requires_authentication_then_accessor_absence(self):
@@ -161,8 +221,13 @@ class IssuanceRecoveryTests(unittest.TestCase):
         ):
             api = FakeAPI()
             self.assertEqual("authenticated", self.run_case(api, journal))
-            self.assertEqual(["issue", "deliver", "start", "ready"], api.calls)
+            self.assertEqual(
+                ["issue", "deliver", "start", "ready", "revoke"], api.calls
+            )
             self.assertIsNone(journal.load())
+            self.assertEqual([OLD], api.revoked)
+            self.assertIn(NEW, api.tokens)
+            self.assertIsNone(self.custody.read())
 
     def test_new_issuance_binds_versioned_id_to_legacy_metadata_alias(self):
         with (
@@ -178,7 +243,7 @@ class IssuanceRecoveryTests(unittest.TestCase):
                 metadata.get("issuance_id"),
                 "new issuance must expose the version-bound identity",
             )
-            self.assertEqual("2", metadata.get("issuance_schema"))
+            self.assertEqual("3", metadata.get("issuance_schema"))
             self.assertEqual(metadata["issuance_id"], metadata["sec01_nonce"])
             self.assertEqual("issuing", journal.load().state)
 
@@ -195,7 +260,7 @@ class IssuanceRecoveryTests(unittest.TestCase):
                     self.assertEqual(["synthetic-accessor"], api.destroyed)
                     self.assertIsNone(journal.load())
 
-    def test_delivery_without_new_process_generation_retains_journal(self):
+    def test_start_failure_rolls_back_and_keeps_the_old_token(self):
         with (
             tempfile.TemporaryDirectory() as directory,
             M.Journal(directory) as journal,
@@ -203,13 +268,15 @@ class IssuanceRecoveryTests(unittest.TestCase):
             api = FakeAPI("start")
             with self.assertRaises(M.Blocked):
                 self.run_case(api, journal)
-            self.assertEqual("delivered", journal.load().state)
-            self.assertIsNone(journal.load().agent_started_at)
-            self.assertEqual("reconciled", self.run_case(api, journal))
-            self.assertEqual(["issue", "deliver", "start"], api.calls)
+            self.assertIsNone(journal.load())
+            self.assertEqual("rolled_back", anchor(directory)["state"])
+            self.assertEqual(["issue", "deliver", "start", "stop"], api.calls)
             self.assertEqual(["synthetic-accessor"], api.destroyed)
+            # The sink still held the old token: it is never revoked on rollback.
+            self.assertEqual([], api.revoked)
+            self.assertEqual(OLD, self.custody.read())
 
-    def test_health_failure_retains_until_matching_generation_is_ready(self):
+    def test_health_failure_revokes_only_the_new_token(self):
         with (
             tempfile.TemporaryDirectory() as directory,
             M.Journal(directory) as journal,
@@ -218,10 +285,17 @@ class IssuanceRecoveryTests(unittest.TestCase):
             api.functional = False
             with self.assertRaises(M.Blocked):
                 self.run_case(api, journal)
-            self.assertEqual("delivered", journal.load().state)
+            self.assertEqual([NEW], api.revoked)
+            self.assertIn(OLD, api.tokens)
+            self.assertEqual(OLD, self.custody.read())
+            self.assertEqual("rolled_back", anchor(directory)["state"])
+            # The next run takes the held old token as the one live generation.
             api.functional = True
-            self.assertEqual("reconciled", self.run_case(api, journal))
-            self.assertEqual(1, api.calls.count("issue"))
+            api.running = False
+            self.assertEqual("authenticated", self.run_case(api, journal))
+            self.assertEqual([NEW, OLD], api.revoked)
+            self.assertIsNone(self.custody.read())
+            self.assertEqual(2, api.calls.count("issue"))
 
     def test_sigkill_then_restart_cleans_before_any_new_issue(self):
         with (
@@ -342,7 +416,10 @@ with m.Journal(sys.argv[2]) as j:
                         "creation_time": M.utc(WHEN + 1),
                     }
                     self.assertEqual(
-                        "reconciled", M.run_issuance(api, journal, revision=REV)
+                        "reconciled",
+                        M.run_issuance(
+                            api, journal, revision=REV, custody=custody_dir(self)
+                        ),
                     )
                     self.assertNotIn("issue", api.calls)
                     self.assertIsNone(journal.load())
@@ -365,8 +442,10 @@ class API:
  def accessors(self):return list(self.data)
  def lookup(self,a):return self.data[a]
  def destroy(self,a):self.data.pop(a)
+ def sink(self):return None
 with m.Journal(sys.argv[2]) as j:
- try:m.run_issuance(API(),j,revision="a"*40,clock=lambda:1791615600,nonce=lambda _:"1"*32)
+ c=m.Custody(sys.argv[2],("s","v","j"))
+ try:m.run_issuance(API(),j,revision="a"*40,custody=c,clock=lambda:1791615600,nonce=lambda _:"1"*32)
  except m.Blocked:sys.exit(0 if j.load() is None else 2)
  sys.exit(3)
 """
@@ -546,6 +625,7 @@ class DockerBindingTests(unittest.TestCase):
                 patch.object(M, "validate_binding"),
                 patch.object(M, "validate_receipt"),
                 patch.object(M.DockerAPI, "validate_tokens"),
+                patch.object(M, "custody_directory", return_value=directory),
                 patch.object(M.DockerAPI, "command", return_value=b"false"),
                 patch.object(M, "run_issuance", return_value="authenticated") as run,
             ):
@@ -634,7 +714,7 @@ class LostJournalTests(unittest.TestCase):
             (Path(directory) / "issuance.json").unlink()
             api = FakeAPI()
             with self.assertRaises(M.Blocked):
-                M.run_issuance(api, journal, revision=REV)
+                M.run_issuance(api, journal, revision=REV, custody=custody_dir(self))
             self.assertNotIn("issue", api.calls)
 
     def test_lost_anchor_or_duplicated_field_prevents_new_issuance(self):
@@ -667,6 +747,7 @@ class BoundaryRecoveryTests(unittest.TestCase):
                 with M.Journal(directory) as journal:
                     api = FakeAPI()
                     api.journal = journal
+                    custody = custody_dir(self)
                     normal_start = api.start
 
                     def interrupted_start(boundary=boundary, normal_start=normal_start):
@@ -680,12 +761,14 @@ class BoundaryRecoveryTests(unittest.TestCase):
                                 api,
                                 journal,
                                 revision=REV,
+                                custody=custody,
                                 clock=lambda: WHEN,
                                 nonce=lambda _: "1" * 32,
                             )
                     self.assertIsNone(journal.load().agent_started_at)
                     self.assertEqual(
-                        "reconciled", M.run_issuance(api, journal, revision=REV)
+                        "reconciled",
+                        M.run_issuance(api, journal, revision=REV, custody=custody),
                     )
                     self.assertEqual(1, api.calls.count("issue"))
                     self.assertIsNone(journal.load())
@@ -767,6 +850,387 @@ class BoundaryRecoveryTests(unittest.TestCase):
             )
             self.assertNotEqual(0, done.returncode)
             self.assertFalse(marker.exists())
+
+
+def v2_record(state="delivered", started_at=None):
+    return M.Record(
+        "1" * 32,
+        M.utc(WHEN),
+        M.ROLE,
+        REV,
+        M.MANIFEST,
+        state=state,
+        agent_started_at=started_at,
+        schema_version=2,
+    )
+
+
+class JournalV3Tests(IssuanceRecoveryTests.__base__):
+    """Each v3 transition and its recovery, on a fake clock and fake bao."""
+
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.directory = directory.name
+        self.journal = M.Journal(self.directory).__enter__()
+        self.addCleanup(self.journal.__exit__)
+        self.custody = custody_dir(self)
+
+    def run_case(self, api):
+        api.journal = self.journal
+        return M.run_issuance(
+            api,
+            self.journal,
+            revision=REV,
+            custody=self.custody,
+            clock=lambda: WHEN,
+            nonce=lambda _: "1" * 32,
+        )
+
+    def test_current_v2_complete_anchor_reads_as_idle_and_moves_to_v3(self):
+        # Shape of the HOME journal after the 2026-10-27 owner recovery.
+        nonce = "f" * 32
+        (Path(self.directory) / "issuance.anchor").write_text(
+            json.dumps(
+                {
+                    "issuance_id": nonce,
+                    "nonce": nonce,
+                    "schema_version": 2,
+                    "state": "complete",
+                }
+            )
+        )
+        (Path(self.directory) / "issuance.anchor").chmod(0o600)
+        archived = Path(self.directory) / "issuance.json.recovered-20261027T172054"
+        archived.write_text("{}")
+        archived.chmod(0o600)
+        self.assertIsNone(self.journal.load())
+        api = FakeAPI()
+        self.assertEqual("authenticated", self.run_case(api))
+        self.assertEqual(3, anchor(self.directory)["schema_version"])
+        self.assertEqual("complete", anchor(self.directory)["state"])
+        self.assertTrue(archived.exists())
+
+    def test_v2_delivered_stopped_and_consumed_self_reconciles(self):
+        # 2026-10-27 second run: SecretID consumed, Agent stopped, journal delivered.
+        self.journal.save(v2_record(started_at="2026-10-27T08:14:02Z"))
+        api = FakeAPI()
+        api.tokens[NEW] = WHEN + 7
+        api.sink_token = NEW
+        self.assertEqual("reconciled", self.run_case(api))
+        self.assertEqual([NEW], api.revoked)
+        self.assertIn(OLD, api.tokens)
+        self.assertEqual(
+            {"issuance_id": "1" * 32, "nonce": "1" * 32}
+            | {"schema_version": 2, "state": "complete"},
+            anchor(self.directory),
+        )
+        self.assertNotIn("issue", api.calls)
+
+    def test_rollback_leaves_an_older_sink_token_alone(self):
+        # v2 has no custody; the stopped sink still holds the pre-issuance token.
+        self.journal.save(v2_record())
+        api = FakeAPI()
+        api.data["synthetic-accessor"] = {
+            "metadata": v2_record().metadata(),
+            "creation_time": M.utc(WHEN + 1),
+        }
+        self.assertEqual("reconciled", self.run_case(api))
+        self.assertEqual(["synthetic-accessor"], api.destroyed)
+        self.assertEqual([], api.revoked)
+        self.assertIn(OLD, api.tokens)
+
+    def test_v2_delivered_ready_keeps_legacy_completion(self):
+        self.journal.save(v2_record(started_at=FakeAPI().generation))
+        api = FakeAPI()
+        api.running = True
+        self.assertEqual("reconciled", self.run_case(api))
+        self.assertEqual([], api.revoked)
+        self.assertEqual("complete", anchor(self.directory)["state"])
+
+    def test_v3_delivered_stopped_rolls_back_on_resume(self):
+        api = FakeAPI()
+        normal_ready = api.ready
+        with patch.object(api, "ready", side_effect=SystemExit(137)):
+            with self.assertRaises(SystemExit):
+                self.run_case(api)
+        self.assertEqual("delivered", self.journal.load().state)
+        api.running = False  # Someone stopped the Agent, as on 2026-10-27.
+        api.ready = normal_ready
+        self.assertEqual("reconciled", self.run_case(api))
+        self.assertEqual([NEW], api.revoked)
+        self.assertEqual(OLD, self.custody.read())
+        self.assertEqual("rolled_back", anchor(self.directory)["state"])
+
+    def test_foreign_running_generation_is_never_rolled_back(self):
+        self.journal.save(v2_record(started_at="2026-10-27T08:14:02Z"))
+        api = FakeAPI()
+        api.running = True
+        api.generation = "2026-10-27T08:21:50Z"
+        api.recovery_generation = lambda issued_at: api.generation
+        with self.assertRaises(M.Blocked):
+            self.run_case(api)
+        self.assertNotIn("stop", api.calls)
+        self.assertEqual([], api.revoked)
+
+    def test_kill_in_prepared_closes_rolled_back_without_issue(self):
+        api = FakeAPI()
+        with patch.object(api, "sink", side_effect=SystemExit(137)):
+            with self.assertRaises(SystemExit):
+                self.run_case(api)
+        self.assertEqual("prepared", self.journal.load().state)
+        self.assertEqual("reconciled", self.run_case(api))
+        self.assertEqual("rolled_back", anchor(self.directory)["state"])
+        self.assertNotIn("issue", api.calls)
+
+    def test_prepare_failures_block_before_any_secret_id(self):
+        for case in ("multiple", "no-revoke-self", "lookup-sealed", "unsafe"):
+            with self.subTest(case=case):
+                self.setUp()
+                api = FakeAPI(None if case in {"multiple", "unsafe"} else case)
+                if case == "multiple":
+                    self.custody.write("synthetic-other-token")
+                    api.tokens["synthetic-other-token"] = WHEN - 50
+                if case == "unsafe":
+                    self.custody.write(OLD)
+                    (Path(self.custody.directory) / self.custody.name).chmod(0o644)
+                with self.assertRaises(M.Blocked):
+                    self.run_case(api)
+                self.assertNotIn("issue", api.calls)
+                self.assertEqual([], api.revoked)
+                self.assertEqual("rolled_back", anchor(self.directory)["state"])
+
+    def test_no_live_old_generation_completes_without_revoke(self):
+        for sink in (None, "synthetic-expired-token"):
+            with self.subTest(sink=sink):
+                self.setUp()
+                api = FakeAPI()
+                api.tokens.pop(OLD)
+                api.sink_token = sink
+                self.assertEqual("authenticated", self.run_case(api))
+                self.assertEqual([], api.revoked)
+                self.assertEqual("complete", anchor(self.directory)["state"])
+
+    def test_old_equals_current_sink_rolls_back_without_revoking_old(self):
+        api = FakeAPI("old-current")
+        with self.assertRaises(M.Blocked):
+            self.run_case(api)
+        self.assertEqual([], api.revoked)
+        self.assertIn(OLD, api.tokens)
+        self.assertEqual(OLD, self.custody.read())
+        self.assertEqual("rolled_back", anchor(self.directory)["state"])
+
+    def test_kill_after_verified_resumes_revoke(self):
+        api = FakeAPI()
+        with patch.object(M, "revoke_old", side_effect=SystemExit(137)):
+            with self.assertRaises(SystemExit):
+                self.run_case(api)
+        self.assertEqual("verified", self.journal.load().state)
+        self.assertEqual("reconciled", self.run_case(api))
+        self.assertEqual([OLD], api.revoked)
+        self.assertIsNone(self.custody.read())
+        self.assertEqual("complete", anchor(self.directory)["state"])
+
+    def test_revoke_timeout_stays_revoking_then_reconciles(self):
+        for failure, revokes in (("revoke-timeout", 1), ("revoke-lost", 2)):
+            with self.subTest(failure=failure):
+                self.setUp()
+                api = FakeAPI(failure)
+                with self.assertRaises(M.Uncertain):
+                    self.run_case(api)
+                self.assertEqual("revoking", self.journal.load().state)
+                self.assertEqual(OLD, self.custody.read())
+                api.failure = None
+                self.assertEqual("reconciled", self.run_case(api))
+                self.assertEqual(revokes, api.calls.count("revoke"))
+                self.assertNotIn(OLD, api.tokens)
+                self.assertIsNone(self.custody.read())
+                self.assertEqual("complete", anchor(self.directory)["state"])
+
+    def test_revoking_with_lost_or_changed_custody_blocks(self):
+        for case in ("lost", "changed"):
+            with self.subTest(case=case):
+                self.setUp()
+                api = FakeAPI("revoke-lost")
+                with self.assertRaises(M.Uncertain):
+                    self.run_case(api)
+                api.failure = None
+                if case == "lost":
+                    self.custody.destroy()  # tmpfs gone after a reboot.
+                else:
+                    api.tokens[OLD] = WHEN - 1
+                with self.assertRaises(M.Blocked):
+                    self.run_case(api)
+                self.assertEqual("revoking", self.journal.load().state)
+                self.assertIn(OLD, api.tokens)
+
+    def test_denied_before_revoke_intent_never_completes(self):
+        api = FakeAPI()
+        normal_finish = M.finish
+
+        def deny_old_then_finish(*args):
+            api.tokens.pop(OLD)  # 403 for a reason other than this revoke.
+            return normal_finish(*args)
+
+        with patch.object(M, "finish", side_effect=deny_old_then_finish):
+            with self.assertRaises(M.Blocked):
+                self.run_case(api)
+        self.assertEqual("verified", self.journal.load().state)
+        self.assertEqual(OLD, self.custody.read())
+        self.assertNotIn("revoke", api.calls)
+
+    def test_custody_is_bound_to_server_volume_and_journal(self):
+        other = M.Custody(self.custody.directory, ("restore", "volume", "9:9"))
+        self.custody.write(OLD)
+        self.assertIsNone(other.read())
+        other.destroy()
+        self.assertEqual(OLD, self.custody.read())
+
+    def test_stale_custody_pending_is_replaced_and_destroyed(self):
+        pending = Path(self.custody.directory) / (self.custody.name + ".pending")
+        pending.write_text(OLD)
+        pending.chmod(0o600)
+        self.assertEqual("authenticated", self.run_case(FakeAPI()))
+        self.assertFalse(pending.exists())
+        self.assertIsNone(self.custody.read())
+
+    def test_rolling_back_resume_never_stops_a_foreign_generation(self):
+        api = FakeAPI()
+        api.functional = False
+        api.revoke_self_allowed = lambda token: token == OLD
+        with self.assertRaises(M.Blocked):
+            self.run_case(api)
+        self.assertEqual("rolling_back", self.journal.load().state)
+        api.running = True
+        api.generation = "2026-10-27T08:21:50Z"  # Owner's manual restart.
+        api.recovery_generation = lambda issued_at: api.generation
+        api.calls.clear()
+        with self.assertRaises(M.Blocked):
+            self.run_case(api)
+        self.assertNotIn("stop", api.calls)
+
+    def test_rollback_preflight_failure_keeps_rolling_back(self):
+        api = FakeAPI()
+        api.functional = False
+        api.revoke_self_allowed = lambda token: token == OLD
+        with self.assertRaises(M.Blocked):
+            self.run_case(api)
+        self.assertEqual("rolling_back", self.journal.load().state)
+        self.assertIn(NEW, api.tokens)
+        api.revoke_self_allowed = lambda token: True
+        self.assertEqual("reconciled", self.run_case(api))
+        self.assertEqual([NEW], api.revoked)
+        self.assertEqual("rolled_back", anchor(self.directory)["state"])
+
+    def test_v3_document_roundtrip_has_no_token_or_accessor(self):
+        record = M.Record(
+            "1" * 32,
+            M.utc(WHEN),
+            M.ROLE,
+            REV,
+            M.MANIFEST,
+            state="revoking",
+            agent_started_at="2026-10-10T07:00:01Z",
+            schema_version=3,
+            old_created=WHEN - 100,
+        )
+        self.journal.save(record)
+        self.assertEqual(record, self.journal.load())
+        text = (Path(self.directory) / "issuance.json").read_text()
+        self.assertNotIn("token", text)
+        self.assertNotIn("accessor", text)
+        for bad in (
+            {"old_created": WHEN + 1},
+            {"old_created": True},
+            {"schema_version": 2},
+            {"state": "complete"},
+        ):
+            with self.subTest(bad=bad), self.assertRaises(M.Blocked):
+                M.Record.from_document({**record.document(), **bad})
+        with self.assertRaises(M.Blocked):
+            M.Record.from_document({**record.document(), "secret": "x"})
+
+
+class SelfTokenAdapterTests(unittest.TestCase):
+    def api(self):
+        return M.DockerAPI(
+            "server",
+            "volume",
+            "agent",
+            "synthetic-issuer",
+            "synthetic-cleanup",
+            request_script=":",
+        )
+
+    def test_only_self_token_403_is_denied(self):
+        denied = subprocess.CompletedProcess(
+            [], 2, b"", b"Error: Code: 403. Errors:\n* permission denied"
+        )
+        with patch.object(M.subprocess, "run", return_value=denied):
+            with self.assertRaises(M.Denied):
+                M.DockerAPI.command(["x"], denied=True)
+            with self.assertRaises(M.Blocked) as caught:
+                M.DockerAPI.command(["x"])
+            self.assertNotIsInstance(caught.exception, M.Denied)
+            api = self.api()
+            self.assertIsNone(api.lookup_self("synthetic-old"))
+            # A short-token 403 stays Uncertain, as before v3.
+            with self.assertRaises(M.Uncertain):
+                api.request("read", "auth/token/lookup-self")
+        sealed = subprocess.CompletedProcess([], 2, b"", b"Code: 503.")
+        with patch.object(M.subprocess, "run", return_value=sealed):
+            with self.assertRaises(M.Uncertain):
+                self.api().lookup_self("synthetic-old")
+
+    def test_self_token_rides_stdin_and_revoke_self_is_silent(self):
+        api = self.api()
+        with patch.object(api, "command", return_value=b"") as call:
+            self.assertEqual(
+                {},
+                api.request(
+                    "write -force", "auth/token/revoke-self", token="synthetic-old"
+                ),
+            )
+            self.assertNotIn("synthetic-old", " ".join(call.call_args.args[0]))
+            self.assertTrue(
+                call.call_args.kwargs["payload"].startswith(b"synthetic-old\n")
+            )
+            self.assertTrue(call.call_args.kwargs["denied"])
+        allowed = {"data": {"auth/token/revoke-self": ["update"]}}
+        for response, result in (
+            (allowed, True),
+            ({"data": {"auth/token/revoke-self": "update"}}, False),
+            ({"data": {"auth/token/revoke-self": ["deny"]}}, False),
+            ({}, False),
+        ):
+            with patch.object(api, "request", return_value=response):
+                self.assertIs(result, api.revoke_self_allowed("synthetic-old"))
+
+    def test_sink_read_is_read_only_offline_and_bounded(self):
+        api = self.api()
+        with patch.object(api, "command", return_value=b"synthetic.token") as call:
+            self.assertEqual("synthetic.token", api.sink())
+            argv = call.call_args.args[0]
+            self.assertIn("--network=none", argv)
+            self.assertIn("--read-only", argv)
+            self.assertIn("--log-driver=none", argv)
+            self.assertIn(
+                "type=volume,source=volume,target=/openbao/agent,readonly", argv
+            )
+        with patch.object(api, "command", return_value=b""):
+            self.assertIsNone(api.sink())
+        for raw in (b"bad token", b"x" * 1025):
+            with patch.object(api, "command", return_value=raw):
+                with self.assertRaises(M.Blocked):
+                    api.sink()
+
+    def test_custody_directory_must_be_owner_tmpfs(self):
+        with patch(
+            "builtins.open",
+            unittest.mock.mock_open(read_data="x /run/user/1 ext4 rw 0 0\n"),
+        ):
+            with self.assertRaises(M.Blocked):
+                M.custody_directory()
 
 
 if __name__ == "__main__":
