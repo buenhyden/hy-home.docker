@@ -20,15 +20,41 @@ created: "{{CREATED}}"
 
 ## Overview
 
-{{OVERVIEW}}
+### Intent
+
+{{INTENT_AND_PROBLEM}}
+
+### Background
+
+{{BACKGROUND_AND_REQUIREMENT_LINKS}}
 
 ## Scope
 
-{{SCOPE}}
+### In Scope
+
+{{IN_SCOPE}}
+
+### Out of Scope
+
+{{OUT_OF_SCOPE}}
 
 ## Contracts
 
-{{CONTRACTS}}
+### Normal Behavior
+
+{{NORMAL_BEHAVIOR}}
+
+### Error Behavior
+
+{{ERROR_BEHAVIOR}}
+
+### Boundary Behavior
+
+{{BOUNDARY_BEHAVIOR}}
+
+### Constraints
+
+{{CONSTRAINTS}}
 
 ## Acceptance Criteria
 
@@ -39,7 +65,13 @@ created: "{{CREATED}}"
 
 ## Failure Conditions
 
-{{OBSERVABLE_FAILURE_CONDITIONS_AND_STOP_BOUNDARIES}}
+### Observable Failures
+
+{{OBSERVABLE_FAILURE_CONDITIONS}}
+
+### Stop Boundaries
+
+{{STOP_BOUNDARIES}}
 
 ## Related Documents
 

@@ -18,7 +18,13 @@ updated: "{{UPDATED}}"
 
 ## Scope
 
-{{EVENT_AND_PATTERN_EXPLANATION}}
+### Event
+
+{{EVENT_EXPLANATION}}
+
+### Pattern
+
+{{PATTERN_EXPLANATION}}
 
 ## Rules
 
@@ -30,7 +36,17 @@ updated: "{{UPDATED}}"
 
 ## Verification
 
-{{SCOPED_CHECKS_EXPECTED_SIGNALS_AND_EVIDENCE_LIMITS}}
+### Checks
+
+{{SCOPED_CHECKS}}
+
+### Expected Signals
+
+{{EXPECTED_SIGNALS}}
+
+### Evidence Limits
+
+{{EVIDENCE_LIMITS}}
 
 ## Related Documents
 
