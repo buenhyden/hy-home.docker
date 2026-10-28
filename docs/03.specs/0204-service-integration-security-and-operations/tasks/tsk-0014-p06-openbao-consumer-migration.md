@@ -1410,6 +1410,23 @@ Its Lows were also fixed:
 - the unresolved-W1 rerun guard;
 - the import-before-cleanup note.
 
+Delivery of the scripts: PR #589 CI was all PASS on `9995777f0`. The first run
+failed one test only, because the new test module was missing from the full
+profile, and that commit fixes it. The local `changed` gate on `9995777f0`
+failed one test only, the known
+`test_fixture_preflight_is_contract_only_and_never_calls_docker` with
+`loopback-port-unavailable` (port-forward on 127.0.0.1:18080). Branch
+protection requires an up-to-date branch, and #590/#591 moved main, so the two
+commits were cherry-picked onto the latest main as a replacement PR. The diff
+is byte-identical.
+
+Output directories: the main checkout had already fast-forwarded to
+`c673ccba7` (#586) at 07:36 KST by a `pull --tags origin main`, before the
+seven directories existed. No consumer had been recreated, and all were still
+healthy. The owner then created the seven directories as the Agent user. All
+nine `out` directories are `drwxr-xr-x openbao`. The readable-file sweep lists
+only the three current `.txt` files. NOT_RUN: Agent restart, every cutover.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
