@@ -4050,8 +4050,18 @@ Corrections and findings:
   previous token was still valid is UNKNOWN. A single-use SecretID would
   normally block a second AppRole login. This needs the Agent auth
   configuration and the role's SecretID settings, read without values.
-- **Package hold.** The owner ran `apt-mark unhold`, which reported that no
-  package was held. The hold itself (`host-hold`) is still NOT_RUN.
+- **Package hold.** The owner first ran `apt-mark unhold`, which reported
+  that no package was held. The owner then ran `host-hold`, which printed
+  `needrestart: containerd and docker excluded` and the three held packages:
+  `containerd.io`, `docker-ce` and `docker-ce-cli`. unattended-upgrades and
+  the daily upgrade timer stay enabled. They skip held packages, and
+  needrestart no longer restarts the container runtime.
+- **Template lines run as typed.** The owner also pasted the RUN-0103
+  installer and `agent-restart` lines. The installer call had an empty
+  `issuer_commit`, so `p01_run` returned 1 before reading Git. The
+  `agent-restart` line still had its `<…>` placeholder, which bash read as an
+  input redirection, so nothing ran. Neither changed anything. The Agent was
+  healthy and needed no restart.
 
 ## Evidence
 
