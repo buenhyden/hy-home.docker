@@ -134,6 +134,98 @@ class WindowGateTests(unittest.TestCase):
             self.assertEqual(1, result.returncode)
             self.assertFalse(target.exists())
 
+    def status(self, directory, *, sealed, expires, alert_state, stopped=True):
+        bin_dir = Path(directory) / "bin"
+        bin_dir.mkdir()
+        docker = bin_dir / "docker"
+        docker.write_text(
+            "#!/bin/sh\n"
+            'case "$*" in\n'
+            "  'ps -a --filter name=^openbao$ --filter name=^openbao-agent$'*)"
+            " echo 'openbao: Up 1 hour (healthy)'; echo 'openbao-agent: Up 1 hour (healthy)' ;;\n"
+            "  'compose exec -T openbao bao status -format=json')"
+            f' echo \'{{"sealed":{sealed},"ha_enabled":true,"is_self":true,"version":"2.7.1"}}\' ;;\n'
+            "  *api/v1/alerts*)"
+            f' echo \'{{"data":{{"alerts":[{{"labels":{{"alertname":"OpenBaoMetricsScrapeFailing"}},'
+            f'"state":"{alert_state}","activeAt":"2026-10-24T10:04:53Z"}}]}}}}\' ;;\n'
+            "  *api/v1/targets*)"
+            ' echo \'{"data":{"activeTargets":[{"labels":{"job":"openbao"},'
+            '"health":"up","lastError":""}]}}\' ;;\n'
+            "  'ps -a --filter label=com.docker.compose.project=hy-home-infra'*)"
+            + (
+                " echo 'airflow-dag-processor Exited (1) 2 hours ago'"
+                if stopped
+                else " echo 'seaweedfs-buckets Exited (0) 6 days ago'"
+            )
+            + " ;;\n"
+            "esac\n"
+        )
+        docker.chmod(0o755)
+        journal = Path(directory) / "journal"
+        journal.mkdir(mode=0o700)
+        (journal / "issuance.anchor").write_text(
+            '{"nonce":"synthetic-nonce-value","issuance_id":"synthetic-nonce-value",'
+            '"schema_version":2,"state":"complete"}'
+        )
+        custody = Path(directory) / "metrics.custody"
+        custody.write_text(
+            f"accessor=synthetic-accessor-value\nexpires={expires}\npolicy=prometheus\n"
+        )
+        return subprocess.run(
+            ["bash", str(WINDOW), "status"],
+            env={
+                "PATH": f"{bin_dir}:/usr/bin:/bin",
+                "XDG_RUNTIME_DIR": directory,
+                "issuance_journal": str(journal),
+                "metrics_custody": str(custody),
+            },
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    def test_status_reports_health_without_values(self):
+        import datetime
+
+        far = (
+            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=300)
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+        near = (
+            datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=10)
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+        with tempfile.TemporaryDirectory() as directory:
+            ok = self.status(
+                directory, sealed="false", expires=far, alert_state="inactive"
+            )
+            self.assertIn("server: sealed=false ha=active", ok.stdout)
+            self.assertIn("journal: complete schema=2", ok.stdout)
+            self.assertIn("metrics token: expires " + far, ok.stdout)
+            self.assertIn("stopped: airflow-dag-processor Exited (1)", ok.stdout)
+            self.assertNotIn("synthetic-accessor-value", ok.stdout + ok.stderr)
+            # A non-zero exit only for problems; the stopped container is one.
+            self.assertEqual(1, ok.returncode)
+        with tempfile.TemporaryDirectory() as directory:
+            clean = self.status(
+                directory,
+                sealed="false",
+                expires=far,
+                alert_state="inactive",
+                stopped=False,
+            )
+            self.assertIn("problems: 0", clean.stdout)
+            self.assertNotIn("WARN:", clean.stdout)
+            self.assertNotIn("synthetic-nonce-value", clean.stdout + clean.stderr)
+            self.assertEqual(0, clean.returncode)
+        with tempfile.TemporaryDirectory() as directory:
+            bad = self.status(
+                directory, sealed="true", expires=near, alert_state="firing"
+            )
+            self.assertIn("WARN: server sealed", bad.stdout)
+            self.assertIn("WARN: metrics token expires in", bad.stdout)
+            self.assertIn("alert: OpenBaoMetricsScrapeFailing firing", bad.stdout)
+            self.assertNotIn("synthetic-accessor-value", bad.stdout + bad.stderr)
+            self.assertEqual(1, bad.returncode)
+
     def test_w4_needs_w3a_acceptance_and_w3b_receipt(self):
         with tempfile.TemporaryDirectory() as directory:
             inputs = Path(directory) / "inputs"

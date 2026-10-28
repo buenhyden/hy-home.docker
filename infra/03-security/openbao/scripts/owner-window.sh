@@ -9,7 +9,7 @@ set -uo pipefail
 umask 077
 
 usage() {
-  echo "usage: $0 token <stage>|check-token <stage>|retire-token <file>|w1|audit-list|root-sweep|roles-plan|roles-diff|roles-apply|w2|lease-start|w3 <new dir> <expected version> [--writers-checked]|lease-bind|w3a-inputs|w3a|w3b|w4 <recorded device/inode>|w5-create|agent-restart|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root]" >&2
+  echo "usage: $0 token <stage>|check-token <stage>|retire-token <file>|w1|audit-list|root-sweep|roles-plan|roles-diff|roles-apply|w2|lease-start|w3 <new dir> <expected version> [--writers-checked]|lease-bind|w3a-inputs|w3a|w3b|w4 <recorded device/inode>|status|w5-create|agent-restart|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root]" >&2
   exit 2
 }
 [ "$#" -ge 1 ] || usage
@@ -403,6 +403,116 @@ w4)
     (cd "$HOME_ROOT" && /usr/bin/docker compose exec openbao bao operator unseal) || exit 1
   done
   (cd "$HOME_ROOT" && /usr/bin/docker compose exec -T openbao bao status)
+  # Read-only, value-free health summary. It prints states and dates only, never a
+  # token, accessor or secret value, and handles no secret, so the checkout copy may
+  # run it. Every problem prints a WARN line; exit 1 when there is any.
+  # Inputs: issuance_journal (the Task's journal directory); metrics_custody overrides
+  # the custody file for tests.
+  unset DOCKER_HOST DOCKER_CONTEXT DOCKER_CONFIG
+  problems=0
+  warn() { echo "WARN: $*"; problems=$((problems + 1)); }
+  seen=0
+  while read -r line; do
+    seen=$((seen + 1))
+    echo "$line"
+    case "$line" in *"(healthy)"*) ;; *) warn "not healthy: $line" ;; esac
+  done < <(docker ps -a --filter name='^openbao$' --filter name='^openbao-agent$' --format '{{.Names}}: {{.Status}}')
+  [ "$seen" = 2 ] || warn "expected openbao and openbao-agent, found $seen"
+  seal="$( (cd "$HOME_ROOT" && docker compose exec -T openbao bao status -format=json) 2>/dev/null)"
+  if sealed="$(printf '%s' "$seal" | jq -r '.sealed' 2>/dev/null)" && [ -n "$sealed" ] && [ "$sealed" != null ]; then
+    echo "server: sealed=$sealed $(printf '%s' "$seal" | jq -r '"ha=\(if .sealed then "-" elif .is_self then "active" elif .ha_enabled then "standby" else "-" end) version=\(.version)"')"
+    [ "$sealed" = false ] || warn "server sealed: unseal (RUN-0085), then agent-restart"
+  else
+    warn "server unreachable"
+  fi
+  if [ -z "${issuance_journal:-}" ]; then
+    warn "issuance_journal not set: give the Task's journal directory"
+  elif [ -r "$issuance_journal/issuance.anchor" ]; then
+    jq -r '"journal: \(.state) schema=\(.schema_version // 1)"' "$issuance_journal/issuance.anchor"
+    [ ! -e "$issuance_journal/issuance.json" ] || warn "active issuance journal: reconcile before a new W5"
+    for pending in "$issuance_journal"/*.pending; do
+      [ ! -e "$pending" ] || warn "interrupted journal write: ${pending##*/}"
+    done
+  else
+    warn "no journal anchor in $issuance_journal"
+  fi
+  custody="${metrics_custody:-$HOME_ROOT/secrets/security/openbao/openbao_metrics_token.custody}"
+  expires="$(sed -n 's/^expires=//p' "$custody" 2>/dev/null)"
+  if [ "$(printf '%s\n' "$expires" | grep -c .)" = 1 ] && end="$(date -d "$expires" +%s 2>/dev/null)"; then
+    days=$(( (end - $(date +%s)) / 86400 ))
+    echo "metrics token: expires $expires ($days days)"
+    [ "$days" -ge 30 ] || warn "metrics token expires in $days days: rotate (RUN-0104)"
+  else
+    warn "metrics token expiry unknown"
+  fi
+  prom() { docker exec prometheus wget -qO- "http://127.0.0.1:9090/api/v1/$1" 2>/dev/null; }
+  if ! alerts="$(prom alerts | jq -r '.data.alerts[] | select(.labels.alertname | startswith("OpenBao")) | "\(.labels.alertname) \(.state) since \(.activeAt)"' 2>/dev/null)"; then
+    warn "Prometheus alerts unreadable"
+  fi
+  while read -r line; do
+    [ -n "$line" ] || continue
+    case "$line" in *" firing "*) warn "alert: $line" ;; *) echo "alert: $line" ;; esac
+  done <<<"$alerts"
+  targets="$(prom 'targets?state=active' | jq -r '.data.activeTargets[] | select(.labels.job | startswith("openbao")) | "\(.labels.job) \(.health) \(.lastError)"' 2>/dev/null)"
+  [ -n "$targets" ] || warn "Prometheus targets unreadable"
+  while read -r line; do
+    [ -n "$line" ] || continue
+    case "$line" in "openbao up "*|"openbao-agent up "*) echo "target: $line" ;; *) warn "target: $line" ;; esac
+  done <<<"$targets"
+  # Exit 0 is done, and 137/143 is a deliberate docker stop; anything else stopped the hard way.
+  while read -r line; do
+    [ -n "$line" ] || continue
+    case "$line" in *" Exited (0) "*|*" Exited (137) "*|*" Exited (143) "*) ;; *) warn "stopped: $line" ;; esac
+  done < <(docker ps -a --filter label=com.docker.compose.project=hy-home-infra --filter status=exited --format '{{.Names}} {{.Status}}')
+  echo "problems: $problems"
+  [ "$problems" = 0 ]
+  ;;
+status)
+  # Read-only, value-free health summary. It prints states and dates only, never a
+  # token, accessor or secret value. Exit 1 when anything needs attention.
+  problems=0
+  warn() { echo "WARN: $*"; problems=$((problems + 1)); }
+  while read -r line; do
+    echo "$line"
+    case "$line" in *"(healthy)"*) ;; *) warn "not healthy: $line" ;; esac
+  done < <(docker ps -a --filter name='^openbao$' --filter name='^openbao-agent$' --format '{{.Names}}: {{.Status}}')
+  seal="$( (cd "$HOME_ROOT" && docker compose exec -T openbao bao status -format=json) 2>/dev/null)"
+  if sealed="$(printf '%s' "$seal" | jq -r '.sealed' 2>/dev/null)" && [ -n "$sealed" ] && [ "$sealed" != null ]; then
+    echo "server: sealed=$sealed $(printf '%s' "$seal" | jq -r '"ha=\(if .is_self then "active" elif .ha_enabled then "standby" else "-" end) version=\(.version)"')"
+    [ "$sealed" = false ] || warn "server sealed: unseal (RUN-0085), then agent-restart"
+  else
+    warn "server unreachable"
+  fi
+  journal="${issuance_journal:-$HOME/.local/share/hy-home-openbao-journal}"
+  if [ -r "$journal/issuance.anchor" ]; then
+    jq -r '"journal: \(.state) schema=\(.schema_version // 1)"' "$journal/issuance.anchor"
+  else
+    echo "journal: no anchor"
+  fi
+  [ ! -e "$journal/issuance.json" ] || warn "active issuance journal: reconcile before a new W5"
+  custody="${metrics_custody:-$HOME_ROOT/secrets/security/openbao/openbao_metrics_token.custody}"
+  expires="$(sed -n 's/^expires=//p' "$custody" 2>/dev/null)"
+  if [ -n "$expires" ] && end="$(date -d "$expires" +%s 2>/dev/null)"; then
+    days=$(( (end - $(date +%s)) / 86400 ))
+    echo "metrics token: expires $expires ($days days)"
+    [ "$days" -ge 30 ] || warn "metrics token expires in $days days: rotate (RUN-0104)"
+  else
+    warn "metrics token expiry unknown"
+  fi
+  prom() { docker exec prometheus wget -qO- "http://127.0.0.1:9090/api/v1/$1" 2>/dev/null; }
+  alerts="$(prom alerts | jq -r '.data.alerts[] | select(.labels.alertname | startswith("OpenBao")) | "alert: \(.labels.alertname) \(.state) since \(.activeAt)"' 2>/dev/null)"
+  [ -z "$alerts" ] || printf '%s\n' "$alerts"
+  ! printf '%s\n' "$alerts" | grep -q ' firing ' || problems=$((problems + 1))
+  targets="$(prom 'targets?state=active' | jq -r '.data.activeTargets[] | select(.labels.job | startswith("openbao")) | "target: \(.labels.job) \(.health) \(.lastError)"' 2>/dev/null)"
+  [ -z "$targets" ] || printf '%s\n' "$targets"
+  ! printf '%s\n' "$targets" | grep -qv '^target: [^ ]* up ' || problems=$((problems + 1))
+  stopped="$(docker ps -a --filter label=com.docker.compose.project=hy-home-infra --filter status=exited --format '{{.Names}} {{.Status}}' | grep -v ' Exited (0)')"
+  if [ -n "$stopped" ]; then
+    printf '%s\n' "$stopped" | sed 's/^/stopped: /'
+    problems=$((problems + 1))
+  fi
+  echo "problems: $problems"
+  [ "$problems" = 0 ]
   ;;
 w5-create)
   # Agent container only; the issuer helper requires it stopped. Then agent-restart.

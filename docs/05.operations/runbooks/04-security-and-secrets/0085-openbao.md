@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.14.1"
+version: "0.14.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -89,20 +89,24 @@ OpenBao maintenance window로 다룬다. containerd가 재시작되면 모든 co
 - Agent는 다시 시작됐지만 sink가 지워졌고 SecretID는 이미 소비되어 인증을 반복했다.
 - 공유 DB를 기다리던 consumer와, 고정 주소를 쓰는 egress gateway도 멈췄다.
 
-1. **준비.** 먼저 대상 package가 있는지 확인한다.
+1. **준비.** 목록을 갱신한 뒤 대상 package가 있는지 확인한다.
 
    ```bash
+   sudo apt-get update
    apt list --upgradable 2>/dev/null | grep -E '^(containerd\.io|docker-ce|docker-ce-cli)/'
    ```
 
    있으면 unseal share 보유자와 현재 OIDC operator credential을 준비한 window에서
-   upgrade한다. 일상 upgrade에서 제외하려면 owner가 `sudo apt-mark hold`로 해당 package를
-   보류하고 window에서 해제한다.
-2. **upgrade 뒤 server.** `openbao`를 다시 시작하고(`docker start openbao` 또는 위 `up -d`)
-   위 unseal 절차로 `Sealed false`를 확인한다.
+   upgrade한다. 기본으로 owner가 `sudo apt-mark hold containerd.io docker-ce docker-ce-cli`로
+   보류해 두고 window에서만 `apt-mark unhold`한다. unattended-upgrades나 needrestart가 켜져
+   있으면 window 밖에서도 같은 장애가 생기므로, 이 package를 자동 대상에서 빼거나 hold를
+   유지한다. host reboot와 kernel update도 같은 복구가 필요하다.
+2. **upgrade 뒤 server.** `docker start openbao`로 같은 container를 다시 시작하고 위 unseal
+   절차로 `Sealed false`를 확인한다. Compose drift 때문에 container가 재생성되면 위의 Raft
+   mount identity 확인이 필요하므로 `up -d`는 쓰지 않는다.
 3. **Agent.** 설치된 issuer로 [RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery)
    `agent-restart`를 실행한다. Agent 재시작은 새 SecretID가 있어야 인증된다.
-4. **나머지 container.** `docker ps -a --filter status=exited`로 멈춘 container를 확인하고
+4. **나머지 container.** `owner-window.sh status`로 멈춘 container와 경고를 확인하고
    의존 순서대로 시작한다. 공유 DB가 healthy가 된 뒤 consumer를 시작하고, Crawl4AI는 egress
    gateway를 먼저 시작한다.
 
@@ -232,6 +236,30 @@ Kubernetes auth 방식, `eso-read-platform`과 `k8s-bootstrap` policy/role,
 계속 비활성 상태로 유지해야 한다.
 
 ## Verification
+
+### Value-free status check
+
+값을 출력하지 않는 상태 점검은 저장소 루트에서 다음 한 명령으로 한다. 읽기 전용이며 상태와
+날짜만 출력한다.
+
+```bash
+issuance_journal=<Task의 journal 디렉터리> bash infra/03-security/openbao/scripts/owner-window.sh status
+```
+
+`issuance_journal`은 [RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery)
+`agent-restart`에 쓰는 값과 같다. 지정하지 않으면 경고로 표시한다.
+
+출력 항목은 다음과 같다.
+
+- 두 container의 health
+- seal 상태와 HA mode
+- issuance journal anchor, 진행 중 journal과 중단된 쓰기(`*.pending`) 여부
+- metrics token 만료일과 남은 일수(custody의 `expires=` 줄만 읽는다)
+- OpenBao alert와 scrape target
+- `hy-home-infra`에서 비정상 종료한 container(0, 그리고 `docker stop`의 137·143은 제외)
+
+문제가 하나라도 있으면 `WARN:` 줄을 출력하고 1로 끝난다. metrics token은 만료 30일 전부터
+경고하며 회전은 [RUN-0104](0104-openbao-metrics-credential.md)를 따른다.
 
 ### Exact policy validation
 
