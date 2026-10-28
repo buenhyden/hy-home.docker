@@ -325,7 +325,7 @@ Agent와 소비자에 영향이 없습니다.
    경로뿐인지 확인하고 Task에 기록)·`roles-apply`, W7 `revoke-root`를 실행합니다. helper·정책과
    script는 이 PR head에서 manifest로 받습니다(manifest hash가 이 revision에 고정됨).
 2. KV 반입(operator 인증): W7 token처럼 W1c 뒤에 받은 operator token 파일로, window의 승인 commit
-   (`$P01_COMMIT`) 객체에서 RUN-0103 Renderer SecretID Delivery 3단계의 `p01_run`으로 실행합니다. window의
+   (`$P01_COMMIT`) 객체에서 RUN-0085 Reviewed Script Runner의 `p01_run`으로 실행합니다. window의
    `cleanup`은 이 token을 폐기하므로 반입 뒤에 합니다. 경로마다
    `secrets/auth/<서비스>/<파일>`을 stdin으로 넣고 7개 경로의 metadata를 확인합니다. `-cas=0`은
    경로가 이미 있으면 거부하므로 다른 field를 지우지 않습니다. `put FAIL`이면 멈추고

@@ -55,55 +55,16 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    기존 목적지와 symlink를 덮어쓰지 않는다. 부모 디렉터리는 운영자가 소유한 0700이어야 한다.
 
    ```bash
-   # 아래 경로와 commit은 owning Task에서 확정한 운영자 입력이다.
-   unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH
-   test -n "$issuer_repository" && test -n "$issuer_commit" && test -n "$operator_tools" || exit 1
-   /usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S - \
-     "$issuer_repository" "$issuer_commit" "$operator_tools/$issuer_commit" <<'P01_ISSUER_BOOTSTRAP'
-   import hashlib, os, re, stat, subprocess, sys
-   from pathlib import Path
-
-   def bootstrap():
-       repository, revision, target = sys.argv[1:]
-       repo = Path(repository)
-       git = repo / ".git"
-       def binding():
-           if str(repo) != "/home/hyunyoun/data/hy-home.docker" or repo.resolve() != repo or git.is_symlink():
-               raise ValueError()
-           root_info, git_info = repo.stat(), git.stat()
-           if ((root_info.st_dev, root_info.st_ino, root_info.st_uid) != (64512, 4338469, 1000)
-                   or (git_info.st_dev, git_info.st_ino, git_info.st_uid) != (64512, 4338470, 1000)
-                   or not stat.S_ISDIR(root_info.st_mode) or not stat.S_ISDIR(git_info.st_mode)):
-               raise ValueError()
-       binding()
-       if re.fullmatch(r"[a-f0-9]{40}", revision) is None:
-           raise ValueError()
-       environment = {"PATH": "/usr/bin:/bin", "GIT_CONFIG_NOSYSTEM": "1",
-                      "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_NO_REPLACE_OBJECTS": "1"}
-       def read(*arguments):
-           result = subprocess.run(["/usr/bin/git", "--no-pager", "--git-dir=" + str(git), *arguments],
-                                   env=environment, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                                   stderr=subprocess.DEVNULL, check=True, timeout=10)
-           return result.stdout
-       if read("rev-parse", "--verify", revision + "^{commit}").strip().decode("ascii") != revision:
-           raise ValueError()
-       source = read("show", "--no-textconv", revision + ":infra/03-security/openbao/scripts/install-renderer-issuer.sh")
-       binding()
-       if len(source) > 100000 or hashlib.sha256(source).hexdigest() != "27a097f133ced7bc1d3657c401a16fa923d464878a10b38d69d5e0e7033343c9":
-           raise ValueError()
-       subprocess.run(["/bin/sh", "-s", "--", repository, revision, target], input=source,
-                      env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                      check=True, timeout=60)
-   try:
-       bootstrap()
-   except Exception:
-       raise SystemExit(1)
-   P01_ISSUER_BOOTSTRAP
-   test "$?" = 0 || exit 1
+   # issuer_commit과 operator_tools는 owning Task에서 확정한 운영자 입력이다.
+   p01_run "$issuer_commit" infra/03-security/openbao/scripts/install-renderer-issuer.sh \
+     /home/hyunyoun/data/hy-home.docker "$issuer_commit" "$operator_tools/$issuer_commit"
    ```
 
    승인 SHA는 checkout의 현재 HEAD와 별개로 owning Task에서 검토한 full commit이다.
-   installer 자체도 환경·replacement를 차단한 full commit에서 읽고 고정 공개 hash와 대조한 메모리 bytes로 실행한다. installer가 검증한 request shell도 token 입력 전에 같은 bytes로 고정한다. 쓰기 가능한 checkout 경로를 다시 열어 실행하지 않는다.
+   [`p01_run`](0085-openbao.md#reviewed-script-runner)이 저장소 identity와 그 commit을 확인하고
+   installer blob을 그 commit에서 꺼내 실행하므로, installer는 승인 commit으로 고정된다. installer가
+   검증한 request shell도 token 입력 전에 같은 bytes로 고정한다. 쓰기 가능한 checkout 경로를 다시 열어
+   실행하지 않는다.
 
 3. 새 발급 전에 Agent를 중지한다. 현재 operator 인증을 통해
    `auth/token/create/renderer-issuer`와 `auth/token/create/renderer-cleanup`에서
@@ -124,22 +85,10 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    health, `out` 아래 파일의 mode와 이름만 출력한다. 중간에 실패하면 Agent가 멈춰 있을 수 있다고
    알리며, 원인을 고친 뒤 다시 실행한다.
 
-   script는 mutable checkout이 아니라 검토한 commit 객체에서 읽는다. 아래 `p01_run`은 W1
-   bootstrap과 같은 Git 격리로 전체 40자리 SHA를 확인하고 blob을 tmpfs 파일로 꺼내 실행한다.
-   그 commit에 script가 없으면(이 script를 담은 PR이 병합되기 전) 실행하지 않고 실패한다.
+   script는 mutable checkout이 아니라 검토한 commit 객체에서
+   [`p01_run`](0085-openbao.md#reviewed-script-runner)으로 실행한다.
 
    ```bash
-   p01_run() {  # p01_run <40자리 commit> <저장소 경로> <인자…>
-     local c f r
-     case "$1" in *[!0-9a-f]*) return 1 ;; esac; [ "${#1}" = 40 ] || return 1
-     c="$(/usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 \
-       /usr/bin/git --git-dir=/home/hyunyoun/data/hy-home.docker/.git rev-parse --verify "$1^{commit}")" && [ "$c" = "$1" ] || return 1
-     f="$(umask 077; /usr/bin/mktemp "${XDG_RUNTIME_DIR:?}/p01-run.XXXXXX")" || return 1
-     /usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 \
-       /usr/bin/git --git-dir=/home/hyunyoun/data/hy-home.docker/.git show --no-textconv "$1:$2" >"$f" && [ -s "$f" ] &&
-       bash "$f" "${@:3}"; r=$?
-     rm -f "$f"; return "$r"
-   }
    issuer_commit=… operator_tools=… agent_volume=… issuance_journal=… \
      p01_run <검토한 40자리 commit> infra/03-security/openbao/scripts/owner-window.sh agent-restart
    ```
@@ -180,7 +129,7 @@ v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 �
 journal v3는 commit `4f2e7f9badf2db592de91d20146d68f87a228213`(B4)부터 source에 있다. 실제로
 쓰이는 것은 설치된 issuer commit이며 owning Task가 그 값을 기록한다. 2026-10-28 현재 설치된 것은
 v2 `422b4adfd`이므로 위 v2 계약이 현재 동작이다. v3를 쓰려면 새 commit의 P01 승인과 2단계 설치가
-먼저 필요하다. installer 자체는 바뀌지 않았으므로 2단계 bootstrap의 고정 hash를 그대로 쓴다.
+먼저 필요하다.
 
 v3 helper는 새 journal을 `schema_version: 3`으로 쓰고 metadata `issuance_schema`도 `"3"`이다.
 단계는 `prepared → issuing → delivered → verified → revoking → complete`이고, 실패하면

@@ -347,20 +347,17 @@ W3a 복구 gate도 계속 필요합니다.
 
 #### W0 Preflight
 
+window를 열기 전에 저장소 루트에서 읽기 전용 점검을 실행한다. secret을 다루지 않으므로 checkout의
+script를 그대로 쓴다. 마지막에 이 window의 경로 변수 기록(`$XDG_RUNTIME_DIR/p01-window.vars`)을 비운다.
+
 ```bash
-HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
-docker compose exec -T openbao bao status
-docker compose --profile security config --images | grep '^hy-home/openbao' | sort -u |
-  xargs docker image inspect --format '{{.Id}}'   # 없으면 오류로 끝난다
-df -h /home
-systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
-docker info -f '{{.Debug}}'   # false여야 한다. true면 exec 환경의 token이 dockerd 로그에 남는다
-command -v jq                  # 이전 root 정리에 필요하다
-loginctl show-user "$USER" -p Linger   # yes가 아니면 window 동안 다른 로그인 세션을 유지한다
-docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock --compact | tail -4   # W3b가 쓸 R2 저장소
-docker compose --profile backup run --rm --no-deps restic-offsite cmd stats --no-lock --mode debug 2>&1 | grep -A2 '^File Type: data'
-: >"$XDG_RUNTIME_DIR/p01-window.vars"   # 이 window의 경로 변수 기록을 비운다
+bash infra/03-security/openbao/scripts/owner-window.sh preflight
 ```
+
+출력은 순서대로 Compose 검증, `bao status`, 고정 image ID, `/home` 용량, 마지막 backup 결과,
+`dockerd debug:`(false여야 한다. true면 exec 환경의 token이 dockerd 로그에 남는다), `jq` 경로,
+Linger(yes가 아니면 window 동안 다른 로그인 세션을 유지한다), W3b가 쓸 R2 저장소의 snapshot과
+저장 byte다.
 
 ##### Window Shell and Path Variables
 
@@ -369,8 +366,8 @@ window 전체를 `bash --noprofile --norc`로 연 셸 하나에서 `unset HISTFI
 가리킨다). 기본 셸 zsh의 `read -p`는 coprocess 읽기라 숨김 입력이 되지 않는다. 블록의
 `|| exit 1`은 그 셸을 닫으므로, 값이 아닌 경로 변수(`P01_RUNTIME_DIR`·`P01_SCRIPT_DIR`·
 `P01_CUSTODY_DIR`·`P01_TOKEN_CUSTODY_DIR`·`P01_INPUTS`·`P01_SNAPSHOT_DIRECTORY` 등)는 만들 때마다
-`declare -p <이름> >>"$XDG_RUNTIME_DIR/p01-window.vars"`로 남기고(W0 시작에
-`: >"$XDG_RUNTIME_DIR/p01-window.vars"`로 비운다. 정리는 이 파일 없이 고정 glob으로 한다), 셸이 닫히면 같은 규칙의 새
+`declare -p <이름> >>"$XDG_RUNTIME_DIR/p01-window.vars"`로 남기고(W0의 `preflight`가 끝에
+비운다. 정리는 이 파일 없이 고정 glob으로 한다), 셸이 닫히면 같은 규칙의 새
 셸에서 `. "$XDG_RUNTIME_DIR/p01-window.vars"`로 되살린 뒤 정리나 재시도를 한다. 값·token은 이
 파일에 넣지 않는다. 마지막 로그인 세션이 끝나면 logind가 W1 custody가 있는
 `$XDG_RUNTIME_DIR`를 지우므로 Linger나 별도 세션으로 막는다.
@@ -479,7 +476,7 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   token을 복사한다. token helper 파일(홈 디렉터리, 영구 disk)에는 저장하지 않는다. 쓰는 단계마다
   새로 로그인해 `umask 077`에서
   `IFS= read -rsp 'operator token> ' v </dev/tty; printf '\n'; printf '%s' "$v" >"$XDG_RUNTIME_DIR/p01-op-<단계>.token"; unset v`로
-  tmpfs 0600 파일에 받는다(W1 블록의 `set -C` 뒤라 다시 받을 때는 먼저 `shred -u`로 지운다.
+  tmpfs 0600 파일에 받는다(다시 받을 때는 먼저 `shred -u`로 지운다.
 `<단계>`는 `w0`·`w1`·`w3a`·`w5`·`w7`). W1 source bootstrap 뒤에는
   `bash "$P01_SCRIPT_DIR/owner-window.sh" token <단계>`가 같은 일을 하고(기존 파일은 먼저 지운다)
   0600·single-link를 확인한다. UI에서 로그아웃하면 그 token이 폐기되므로 단계가 끝날 때까지
@@ -514,7 +511,7 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   p01_run "$P01_APPROVED_COMMIT" infra/03-security/openbao/scripts/owner-window.sh retire-token <path>/p01-operator.token
   ```
 
-  `p01_run`은 [Renderer SecretID Delivery](0103-openbao-renderer-delivery.md#renderer-secretid-delivery) 3단계에 있다. 인자는 0600
+  `p01_run`은 [RUN-0085 Reviewed Script Runner](0085-openbao.md#reviewed-script-runner)에 있다. 인자는 0600
   single-link 일반 파일이어야 하고, 정책이 `[hy-home-operator]`가 아니면 멈춘다. 첫 조회를 server가
   거부하면(403·`permission denied`) token은 이미 만료됐으므로 폐기 없이 지우고 `already expired; file
   removed`를 출력한다. 그 밖의 실패(sealed, container 정지, 연결 오류)는 파일을 남기고 exit1로
@@ -590,72 +587,27 @@ share 2개는 보호 client로 입력합니다. 보관 위치 참조와 복구 �
 ##### W1 Source Bootstrap
 
 운영자는 CI와 독립 검토를 통과한 정확한 commit을 `P01_APPROVED_COMMIT`에 지정합니다.
-아래 명령은 고정 HOME 저장소 identity와 전체 commit OID를 확인한 뒤 해당 blob을 운영자
-전용 runtime 디렉터리에 복사하고 source hash를 검사합니다. Git 환경과 replacement object를
+[`p01_run`](0085-openbao.md#reviewed-script-runner)이 고정 HOME 저장소 identity와 전체 commit
+OID를 확인한 뒤 그 commit의
+[bootstrap script](../../../../infra/03-security/openbao/scripts/p01-bootstrap.sh)를 실행합니다.
+script는 같은 commit의 helper blob을 운영자 전용 runtime 디렉터리에 복사하고, script 안의
+manifest에 고정한 source hash를 검사합니다. Git 환경과 replacement object를
 차단하고 stdlib-only helper는 시스템 Python의 isolated/no-site 모드로 실행합니다.
 mutable checkout의 helper를 그대로 실행하지 않습니다. `XDG_RUNTIME_DIR`은
 현재 운영자의 0700 runtime 디렉터리여야 하며, 해당 mount가 tmpfs인지 먼저 확인합니다.
 매번 새 custody를 만들고 이전 attempt를 덮어쓰거나 재사용하지 않습니다.
 
 ```bash
-unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH
-readonly P01_HOME_ROOT=/home/hyunyoun/data/hy-home.docker
-test "$P01_HOME_ROOT" = "$(/usr/bin/realpath -e -- "$P01_HOME_ROOT")" || exit 1
-test "$(/usr/bin/stat -c '%d:%i:%u' -- "$P01_HOME_ROOT")" = 64512:4338469:1000 || exit 1
-test ! -L "$P01_HOME_ROOT/.git" || exit 1
-test "$(/usr/bin/stat -c '%d:%i:%u' -- "$P01_HOME_ROOT/.git")" = 64512:4338470:1000 || exit 1
-case "${P01_APPROVED_COMMIT:?}" in *[!0-9a-f]*) exit 1 ;; esac
-test "${#P01_APPROVED_COMMIT}" = 40 || exit 1
-P01_COMMIT="$(/usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 \
-  GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 /usr/bin/git \
-  --git-dir="$P01_HOME_ROOT/.git" rev-parse --verify "$P01_APPROVED_COMMIT^{commit}")" || exit 1
-test "$P01_COMMIT" = "$P01_APPROVED_COMMIT" || exit 1
-readonly P01_COMMIT
-readonly P01_RUNTIME_DIR="${XDG_RUNTIME_DIR:?}"
-test -d "$P01_RUNTIME_DIR" || exit 1
-test ! -L "$P01_RUNTIME_DIR" || exit 1
-test "$P01_RUNTIME_DIR" = "$(/usr/bin/realpath -e -- "$P01_RUNTIME_DIR")" || exit 1
-test "$(/usr/bin/stat -c '%u:%a' -- "$P01_RUNTIME_DIR")" = "$(/usr/bin/id -u):700" || exit 1
-test "$(/usr/bin/findmnt -n -T "$P01_RUNTIME_DIR" -o FSTYPE)" = tmpfs || exit 1
-P01_CLIENT_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-client.XXXXXX")" || exit 1
-declare -p P01_CLIENT_DIR >>"$XDG_RUNTIME_DIR/p01-window.vars"
-P01_SCRIPT_DIR="$P01_CLIENT_DIR/infra/03-security/openbao/scripts"
-declare -p P01_RUNTIME_DIR P01_COMMIT P01_SCRIPT_DIR >>"$XDG_RUNTIME_DIR/p01-window.vars"
-/usr/bin/install -d -m 0700 "$P01_SCRIPT_DIR" "$P01_CLIENT_DIR/infra/03-security/openbao/config/policies" || exit 1
-set -C  # 기존 source 파일을 덮어쓰지 않습니다.
-while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
-  /usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null \
-    GIT_NO_REPLACE_OBJECTS=1 /usr/bin/git --git-dir="$P01_HOME_ROOT/.git" \
-    show --no-textconv "$P01_COMMIT:$P01_SOURCE_PATH" > "$P01_CLIENT_DIR/$P01_SOURCE_PATH" || exit 1
-  printf '%s  %s\n' "$P01_SOURCE_HASH" "$P01_CLIENT_DIR/$P01_SOURCE_PATH" | /usr/bin/sha256sum -c - || exit 1
-  /usr/bin/chmod 0400 "$P01_CLIENT_DIR/$P01_SOURCE_PATH" || exit 1
-done <<'P01_SOURCE_MANIFEST'
-b6b820b6561558020842376a06729f7663de3410188a544a6662024c4575568c infra/03-security/openbao/scripts/protected-maintenance.py
-1ffe30c089361c7a7129bcce2407d08418222722aad2cba6e90804213b7c433b infra/03-security/openbao/scripts/protected-token-operations.py
-05be43d5e2b9e8f067c2b81d4872666e89a1300fd2d21ecfee12db13e8aa5853 infra/03-security/openbao/scripts/protected-raft-snapshot.py
-48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
-fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-32412b2a6f4d28f6e6105066dafd61d876443cd3160bb4feb120d7e175e3c6ef infra/03-security/openbao/scripts/protected-semantic-restore.py
-b5aa92bdf528eb92993fc46061ead65b72bf71efe30182cca7cc5b5706ab396e infra/03-security/openbao/scripts/protected-semantic-execution.py
-1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
-d2bfabe2b12271d5fdb3785c32f41c2a534fafed4126712e710c3ad0a3be2ec3 infra/03-security/openbao/scripts/protected-renderer-roles.py
-3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e infra/03-security/openbao/config/policies/renderer.hcl
-0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
-a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl
-fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b infra/03-security/openbao/config/policies/operator.hcl
-1693e2326f4aa74f5134490e6a1af8d2ed4727e11fb9d6167fec2634d4a493d4 infra/03-security/openbao/scripts/protected-restore-inputs.py
-4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
-bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
-e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json
-241db9cd8a6d4b8bfa4a36178d25b057260e5fcbddf14e43cf9e93a112de79d0 infra/03-security/openbao/scripts/owner-window.sh
-68c20addfcfab05118c75ff5f0b25330743c82f7f7f1305f26b3f0fe65652d50 infra/03-security/openbao/config/policies/prometheus.hcl
-6e99a1fa6ba153642b66be1fd353e237cc25640e81386de203d2b232a6c00eed infra/03-security/openbao/scripts/k8s-writers.sh
-P01_SOURCE_MANIFEST
+p01_run "$P01_APPROVED_COMMIT" infra/03-security/openbao/scripts/p01-bootstrap.sh "$P01_APPROVED_COMMIT"
+. "$XDG_RUNTIME_DIR/p01-window.vars"   # P01_SCRIPT_DIR 등 경로 변수를 이 셸로 가져온다
 ```
+
+기대: 복사한 파일마다 `OK` 한 줄과 마지막 `bootstrap ok: <경로>`. hash가 하나라도 다르면 멈추고
+경로 변수를 남기지 않는다.
 
 ##### W1 Execution
 
-같은 셸에서 W1을 실행한다. 아래 단계는 모두 위 manifest로 복사·검증한
+같은 셸에서 W1을 실행한다. 아래 단계는 모두 위 bootstrap이 manifest로 복사·검증한
 [window script](../../../../infra/03-security/openbao/scripts/owner-window.sh)를 쓰며, 실패하면
 script만 끝나고 셸은 남는다. 단계 사이의 경로는 `$XDG_RUNTIME_DIR/p01-window.vars`에서 읽는다.
 
@@ -665,7 +617,7 @@ bash "$P01_SCRIPT_DIR/owner-window.sh" check-token w1  # policy·TTL·path·meta
 bash "$P01_SCRIPT_DIR/owner-window.sh" w1              # share 2개 숨김 입력, 끝나면 share 파일 삭제
 ```
 
-W1이 끝나면 W1c 전에 아래 W7 절의 이전 root 정리 블록을 실행한다(매 window).
+W1이 끝나면 W1c 전에 바로 아래의 이전 root 정리를 실행한다(매 window).
 
 각 setup 명령이 exit0인지 확인한 뒤 다음 명령으로 진행합니다. source hash 실패, CA 변경,
 cluster 변경 또는 기존 attempt가 있으면 중단합니다. gateway 공개 CA hash와 IP는 이 HOME
@@ -685,6 +637,29 @@ operator token과 share 둘은 세 개의 보호된 0600 regular file FD로 넘�
 실행하지 않아야 합니다. 메모리 소거, prompt 대기나 fsync 시간 상한은 보장하지 않습니다.
 root를 읽어 채팅에 보내지 말고 W1c·W2·W7의 보호된 관리 입력으로만 전달합니다.
 
+#### Previous Root Sweep
+
+server가 sealed라 window가 root를 폐기하지 못하고 끝나면 만료 없는 root가 OpenBao에 남는다
+(unsealed인데 OIDC가 안 되면 위 `cleanup --keep-root` 규칙을 따른다). W1 custody는 `$XDG_RUNTIME_DIR`
+tmpfs에 있고 Linger나 남은 로그인 세션 때문에 재부팅 전까지 남으며, 저장소 UID로 도는 모든 process가 읽을 수 있다. 값은 영구 저장소로
+옮기지 않는다(backup 대상인 `secrets/` 포함). 위 정리 명령으로 모든 custody·secret 파일을
+`shred -u`해 값을 아무도 갖지 않게 하고, 폐기하지 못한 사실만 값 없이 Task에 남긴다. accessor도
+기록하지 않는다. 모든 window는 W1 직후, W1c·W3 전에 아래로 이전 root를 찾아 폐기한다(W1 exit2로
+누구도 갖지 않은 root가 생겼을 수도 있으므로 기록과 상관없이 매번 한다. W1의 10분 안에 들어가며,
+W3 뒤에는 쓰기라 하지 않는다). accessor 하나마다 `docker compose exec`가 한 번 돌아 시간은
+accessor 수에 비례하며 아직 측정하지 않았으므로, T+15 멈춤 기준은 그대로 적용한다. W0에서
+`command -v jq`를 확인한다. 이 정리 블록이 실패하면 오류를 보고 T+15 전까지 한 번 다시 실행해도
+된다(이미 폐기한 accessor는 없는 것으로 넘어가며, 두 실행의 `revoked` 수를 더해 기록한다). 폐기한 개수와 다시 센 나머지
+root 수(0이어야 한다)를 값 없이 Task에 기록한다. 새 root를 helper가 아닌
+CLI에 넘기는 유일한 예외이며, 값은 변수로만 넘겨 argv에는 이름만 남고 출력은 화면에만 둔다:
+
+```bash
+bash "$P01_SCRIPT_DIR/owner-window.sh" root-sweep   # revoked=<n>, remaining=0
+```
+
+server가 sealed면 이전 root는 unseal 전까지 쓸 수 없다. 임시 root는 이 예외 외에는 W1c·W2·W7의
+보호된 관리 입력으로만 사용합니다. W4 수동 unseal에는 지정된 두 share가 필요합니다.
+
 #### W1c Renderer Policy and Token Role
 
 W1 root로 W3 전에 수행해 W3 snapshot이 이 설정을 담게
@@ -692,7 +667,7 @@ W1 root로 W3 전에 수행해 W3 snapshot이 이 설정을 담게
 token role이 있다고 가정한다. `operator.hcl`에는 `sys/policies/acl` 쓰기가 없어 root가
 필요하고, W7이 root를 폐기하기 전에 끝나야 한다.
 [renderer role helper](../../../../infra/03-security/openbao/scripts/protected-renderer-roles.py)는
-위 manifest로 받은 고정 파일만 쓴다. 대상은 정책 `renderer`·`renderer-issuer`·
+위 bootstrap이 manifest로 받은 고정 파일만 쓴다. 대상은 정책 `renderer`·`renderer-issuer`·
 `renderer-cleanup`·`hy-home-operator`, token role `renderer-issuer`·`renderer-cleanup`,
 AppRole `hy-home-renderer`이며 이 순서로 한 번씩 쓴다. role 읽기가 돌려주는 나머지
 필드도 모두 기본값으로 함께 써서 남은 설정이 살아남지 않게 한다. 예외는 role 생성 때
@@ -1092,6 +1067,31 @@ renderer 재인증, consumer 읽기(Keycloak·Grafana 렌더 결과
 backup 단위의 OpenBao snapshot 성공은 window 뒤 관찰입니다. W7 뒤 backup timer와
 hy-home.k8s 로그인 주체를 아래 Finish대로 복구·검증하고, 경보를 기록한 뒤 silence를 지웁니다.
 
+#### W7 Root Revocation
+
+window 안에서 W1c rollback 판단이 열려 있는 동안은 root를 폐기하지 않습니다(W1c 참조). window가
+멈추면 위 정리 규칙이 우선합니다.
+W7의 `revoke-root`는 root FD와 별도의 현재 OIDC operator FD를 요구합니다. 운영자는
+승인된 로그인 절차로 새 OIDC credential을 받아 `owner-window.sh token w7`로
+`$XDG_RUNTIME_DIR/p01-op-w7.token`(0600·single-link)에 둡니다(정리 glob에 들어간다). 이 파일은
+tmpfs 안에 있고, W7이 끝나거나 중단되면 window 정리의 `cleanup`이 그 token을 `revoke -self`로
+폐기한 뒤 `shred -u`로 지웁니다. 결과는 값 없이 Task에 기록합니다.
+이전 W1의 성공 기록을 현재 관리자 접근 확인으로
+대체하지 않으며, auth 파일을 자동 검색하거나 값을 출력하지 않습니다.
+
+```bash
+bash "$P01_SCRIPT_DIR/owner-window.sh" token w7
+bash "$P01_SCRIPT_DIR/owner-window.sh" check-token w7   # renewable, ttl 600초 이상
+bash "$P01_SCRIPT_DIR/owner-window.sh" revoke-root
+```
+
+기대: exit0/`ROOT_REVOKED_OPERATOR_HEALTHY`만 완료입니다. helper가 서로 다른 실제
+FD inode와 token bytes, 정확한 renewable service OIDC 정책과 600초 이상 TTL을 폐기
+직전과 직후에 확인하고 root lookup403을 확인합니다. 관리자 접근이 준비되지 않으면
+POST 전에 중단합니다. 폐기 후 확인이 불확실하면 exit2이며 custody를 보존하고 같은
+mutation을 재시도하지 않습니다. 더 이른 단계에서 window를 접을 때도 먼저 현재 복구
+접근을 확인한 뒤 이 절차로 폐기합니다.
+
 #### Finish
 
 W3의 저장된 UID/replica와 변경 목록으로
@@ -1168,54 +1168,6 @@ P01_K8S_STATE=… P01_EXPECTED_ES=… P01_ES_SET_APPROVAL=… bash "$P01_SCRIPT_
 [Argo 자동 sync의 상위 관리자 영향](https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/)와
 [Kubernetes bounded rollout](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_rollout/kubectl_rollout_status/)을
 2026-10-22 확인했다. 실제 설치 버전 일치는 외부 운영자가 창 전에 확인한다.
-
-#### Previous Root Sweep
-
-server가 sealed라 window가 root를 폐기하지 못하고 끝나면 만료 없는 root가 OpenBao에 남는다
-(unsealed인데 OIDC가 안 되면 위 `cleanup --keep-root` 규칙을 따른다). W1 custody는 `$XDG_RUNTIME_DIR`
-tmpfs에 있고 Linger나 남은 로그인 세션 때문에 재부팅 전까지 남으며, 저장소 UID로 도는 모든 process가 읽을 수 있다. 값은 영구 저장소로
-옮기지 않는다(backup 대상인 `secrets/` 포함). 위 정리 명령으로 모든 custody·secret 파일을
-`shred -u`해 값을 아무도 갖지 않게 하고, 폐기하지 못한 사실만 값 없이 Task에 남긴다. accessor도
-기록하지 않는다. 모든 window는 W1 직후, W1c·W3 전에 아래로 이전 root를 찾아 폐기한다(W1 exit2로
-누구도 갖지 않은 root가 생겼을 수도 있으므로 기록과 상관없이 매번 한다. W1의 10분 안에 들어가며,
-W3 뒤에는 쓰기라 하지 않는다). accessor 하나마다 `docker compose exec`가 한 번 돌아 시간은
-accessor 수에 비례하며 아직 측정하지 않았으므로, T+15 멈춤 기준은 그대로 적용한다. W0에서
-`command -v jq`를 확인한다. 이 정리 블록이 실패하면 오류를 보고 T+15 전까지 한 번 다시 실행해도
-된다(이미 폐기한 accessor는 없는 것으로 넘어가며, 두 실행의 `revoked` 수를 더해 기록한다). 폐기한 개수와 다시 센 나머지
-root 수(0이어야 한다)를 값 없이 Task에 기록한다. 새 root를 helper가 아닌
-CLI에 넘기는 유일한 예외이며, 값은 변수로만 넘겨 argv에는 이름만 남고 출력은 화면에만 둔다:
-
-```bash
-bash "$P01_SCRIPT_DIR/owner-window.sh" root-sweep   # revoked=<n>, remaining=0
-```
-
-server가 sealed면 이전 root는 unseal 전까지 쓸 수 없다. 임시 root는 이 예외 외에는 W1c·W2·W7의
-보호된 관리 입력으로만 사용합니다. W4 수동 unseal에는 지정된 두 share가 필요합니다.
-
-#### W7 Root Revocation
-
-window 안에서 W1c rollback 판단이 열려 있는 동안은 root를 폐기하지 않습니다(W1c 참조). window가
-멈추면 위 정리 규칙이 우선합니다.
-W7의 `revoke-root`는 root FD와 별도의 현재 OIDC operator FD를 요구합니다. 운영자는
-승인된 로그인 절차로 새 OIDC credential을 받아 `owner-window.sh token w7`로
-`$XDG_RUNTIME_DIR/p01-op-w7.token`(0600·single-link)에 둡니다(정리 glob에 들어간다). 이 파일은
-tmpfs 안에 있고, W7이 끝나거나 중단되면 window 정리의 `cleanup`이 그 token을 `revoke -self`로
-폐기한 뒤 `shred -u`로 지웁니다. 결과는 값 없이 Task에 기록합니다.
-이전 W1의 성공 기록을 현재 관리자 접근 확인으로
-대체하지 않으며, auth 파일을 자동 검색하거나 값을 출력하지 않습니다.
-
-```bash
-bash "$P01_SCRIPT_DIR/owner-window.sh" token w7
-bash "$P01_SCRIPT_DIR/owner-window.sh" check-token w7   # renewable, ttl 600초 이상
-bash "$P01_SCRIPT_DIR/owner-window.sh" revoke-root
-```
-
-기대: exit0/`ROOT_REVOKED_OPERATOR_HEALTHY`만 완료입니다. helper가 서로 다른 실제
-FD inode와 token bytes, 정확한 renewable service OIDC 정책과 600초 이상 TTL을 폐기
-직전과 직후에 확인하고 root lookup403을 확인합니다. 관리자 접근이 준비되지 않으면
-POST 전에 중단합니다. 폐기 후 확인이 불확실하면 exit2이며 custody를 보존하고 같은
-mutation을 재시도하지 않습니다. 더 이른 단계에서 window를 접을 때도 먼저 현재 복구
-접근을 확인한 뒤 이 절차로 폐기합니다.
 
 #### W8 Cold Boot
 

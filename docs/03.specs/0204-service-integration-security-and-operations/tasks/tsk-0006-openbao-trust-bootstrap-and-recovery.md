@@ -3892,6 +3892,40 @@ was. If it was the 08:21 generation's token, the check after 07:35Z on 10-29
 shows no new line, and that token is then recorded from this line, not as
 UNKNOWN.
 
+### OpenBao runbooks: headings and script files (2026-10-28)
+
+The owner asked to give each OpenBao runbook proper headings, and to move the
+scripts written in them into script files.
+
+**Headings.** RUN-0085, 0103, 0104, 0105 and 0106 gained H3 to H5 headings for
+each step and rule. Bold run-in labels became headings. Body text and every
+linked anchor stayed the same; a line-by-line comparison showed only the
+removed labels. RUN-0106's P02 catalog checks moved under Procedure, and its
+Verification now names the expected results. In RUN-0105, two sections moved
+to the place the text already gave them: the previous-root sweep now follows
+W1, and W7 root revocation now precedes Finish.
+
+**Scripts (owner decisions).** Only `p01_run` stays as pasted code:
+
+- **`p01_run`.** It now lives in RUN-0085 "Reviewed Script Runner" and gained
+  the checks the removed inline blocks had: the repository path is not a
+  symlink, the repository and `.git` match their recorded device, inode and
+  owner, and the `LD_*` and `PYTHON*` variables are unset.
+- **`p01-bootstrap.sh`.** The RUN-0105 W1 source bootstrap block became this
+  script, with the hash manifest inside it. `p01_run` runs it from the
+  approved commit, never from the checkout. The tests now read the manifest
+  from the script.
+- **Issuer installer.** RUN-0103 step 2 now runs
+  `install-renderer-issuer.sh` through `p01_run`. The approved commit pins
+  the installer instead of the separate hash `27a097f1…`, and the installer
+  still runs itself under `env -i`.
+- **`preflight`.** The RUN-0105 W0 checks became an `owner-window.sh` step.
+  It ends by clearing the window's path variables, as the block did.
+- **RUN-0104.** The manual commands were removed. The rules stay, and
+  `metrics-rotate` and `metrics-revoke` are the only executable path. The
+  steps now start with `preflight` and the bootstrap, and include
+  `root-sweep`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |

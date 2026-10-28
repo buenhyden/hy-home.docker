@@ -9,7 +9,7 @@ set -uo pipefail
 umask 077
 
 usage() {
-  echo "usage: $0 token <stage>|check-token <stage>|retire-token <file>|w1|audit-list|root-sweep|roles-plan|roles-diff|roles-apply|w2|lease-start|w3 <new dir> <expected version> [--writers-checked]|lease-bind|w3a-inputs|w3a|w3b|w4 <recorded device/inode>|metrics-rotate|metrics-revoke|renderer-expiry <since>|host-hold|status|w5-create|agent-restart|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root] [--discard-metrics]" >&2
+  echo "usage: $0 token <stage>|check-token <stage>|retire-token <file>|w1|audit-list|root-sweep|roles-plan|roles-diff|roles-apply|w2|lease-start|w3 <new dir> <expected version> [--writers-checked]|lease-bind|w3a-inputs|w3a|w3b|w4 <recorded device/inode>|preflight|metrics-rotate|metrics-revoke|renderer-expiry <since>|host-hold|status|w5-create|agent-restart|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root] [--discard-metrics]" >&2
   exit 2
 }
 [ "$#" -ge 1 ] || usage
@@ -591,6 +591,25 @@ host-hold)
     echo "needrestart: containerd and docker excluded"
   fi
   apt-mark showhold | grep -E '^(containerd\.io|docker-ce|docker-ce-cli)$'
+  ;;
+preflight)
+  # RUN-0105 W0: read-only checks before the bootstrap. It handles no secret, so the checkout
+  # copy may run it. It ends by clearing this window's path-variable record.
+  cd "$HOME_ROOT" || exit 1
+  HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
+  docker compose exec -T openbao bao status
+  docker compose --profile security config --images | grep '^hy-home/openbao' | sort -u |
+    xargs docker image inspect --format '{{.Id}}'   # fails when the image is missing
+  df -h /home
+  systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
+  echo "dockerd debug: $(docker info -f '{{.Debug}}')"   # must be false: true logs the exec environment
+  command -v jq                                          # root-sweep needs it
+  loginctl show-user "$USER" -p Linger                   # not yes: keep another login session open
+  docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock --compact | tail -4
+  docker compose --profile backup run --rm --no-deps restic-offsite cmd stats --no-lock --mode debug 2>&1 |
+    grep -A2 '^File Type: data'
+  : >"$vars"
+  echo "window path variables cleared"
   ;;
 status)
   # Read-only, value-free health summary. It prints states and dates only, never a

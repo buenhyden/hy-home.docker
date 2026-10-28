@@ -27,7 +27,11 @@ class OwnerWindowScriptTests(unittest.TestCase):
                 "0105-openbao-maintenance-window.md",
             )
         )
-        manifest = runbook.split("<<'P01_SOURCE_MANIFEST'\n", 1)[1]
+        bootstrap = (WINDOW.parent / "p01-bootstrap.sh").read_text()
+        manifest = bootstrap.split("<<'P01_SOURCE_MANIFEST'\n", 1)[1]
+        # The runbook runs the bootstrap through p01_run, never a pasted copy.
+        self.assertNotIn("P01_SOURCE_MANIFEST", runbook)
+        self.assertIn("p01-bootstrap.sh", runbook)
         self.assertIn(" infra/03-security/openbao/scripts/owner-window.sh\n", manifest)
         self.assertIn(" infra/03-security/openbao/scripts/k8s-writers.sh\n", manifest)
         for script, minimum in ((WINDOW, 20), (K8S, 7)):

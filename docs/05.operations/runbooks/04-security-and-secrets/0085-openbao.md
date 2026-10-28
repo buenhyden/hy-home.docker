@@ -51,6 +51,38 @@ created: "2026-09-19"
 
 [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
 
+### Reviewed Script Runner
+
+host에서 secret을 다루는 script는 mutable checkout이 아니라 owner가 검토·승인한 commit의 Git
+객체에서 실행한다. 그 진입점은 아래 함수 하나뿐이며, 이 절의 코드만 셸에 붙여 넣는다. 나머지
+절차는 모두 이 함수로 저장소의 script 파일을 실행한다.
+
+```bash
+p01_run() {  # p01_run <40자리 commit> <저장소 경로> <인자…>
+  local h=/home/hyunyoun/data/hy-home.docker c f r
+  unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH
+  case "$1" in *[!0-9a-f]*) return 1 ;; esac; [ "${#1}" = 40 ] || return 1
+  [ "$h" = "$(/usr/bin/realpath -e -- "$h")" ] && [ ! -L "$h/.git" ] &&
+    [ "$(/usr/bin/stat -c '%d:%i:%u' -- "$h" "$h/.git" | /usr/bin/paste -sd ' ')" = '64512:4338469:1000 64512:4338470:1000' ] || return 1
+  c="$(/usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 \
+    /usr/bin/git --git-dir="$h/.git" rev-parse --verify "$1^{commit}")" && [ "$c" = "$1" ] || return 1
+  f="$(umask 077; /usr/bin/mktemp "${XDG_RUNTIME_DIR:?}/p01-run.XXXXXX")" || return 1
+  /usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 \
+    /usr/bin/git --git-dir="$h/.git" show --no-textconv "$1:$2" >"$f" && [ -s "$f" ] &&
+    bash "$f" "${@:3}"; r=$?
+  rm -f "$f"; return "$r"
+}
+```
+
+함수는 다음을 확인한 뒤에만 실행한다.
+
+- 고정 HOME 저장소 경로가 symlink가 아니고, 저장소와 `.git`의 device·inode·소유자가 기록값과 같다.
+- 인자가 전체 40자리 commit이고, Git 환경·replacement object를 막은 상태에서 그 commit이 존재한다.
+- 그 commit의 blob을 owner 전용 tmpfs 파일로 꺼내 실행하고 끝나면 지운다. checkout의 파일은 열지 않는다.
+
+그 commit에 script가 없으면(그 script를 담은 PR이 병합되기 전) 실행하지 않고 실패한다. 값·token은
+인자로 넘기지 않는다. 저장소 inode가 바뀌면(다시 clone 등) 기록값을 검토해 이 절에서 고친다.
+
 ### Start and Stop
 
 `openbao`와 `openbao-agent`만 대상으로 하며 기본 `security` 선택을 사용한다.
