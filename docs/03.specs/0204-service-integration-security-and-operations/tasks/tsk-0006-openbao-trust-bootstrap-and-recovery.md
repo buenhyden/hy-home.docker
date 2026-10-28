@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.34"
+version: "0.2.35"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3543,6 +3543,36 @@ the 08:14 one; the 10-22 generation is left alone.
 - The helper hash changes, so a new P01 approval of the merged issuer commit,
   and its installation, are required before any W5.
 - The owner runs W5 in a terminal.
+
+### Unused renderer tokens: expiry observation — 2026-10-28
+
+The 2026-10-27 residuals left two unused renderer-generation tokens valid. One
+came from the 08:14 start and one from 10-22. Neither is renewed: their Agent
+generations stopped, and the period is 24 hours. Each should therefore expire
+within 24 hours of its last renewal. The 08:14 token is expected near 08:14Z on
+2026-10-28. The 10-22 token's last renewal came before the Agent stopped at
+07:45:17Z on 2026-10-27, so it expires earlier.
+
+The owner ran this value-free count on HOME on 2026-10-28:
+
+```text
+docker logs openbao --since 2026-10-27T07:45:00Z 2>&1 | grep -c 'revoked lease: lease_id=auth/approle/login/'
+1
+```
+
+One renderer-login lease revocation is in the retained server log since the
+first W5 stop. The count alone does not show which token it was. It also does
+not show whether the other one expired outside the retained log (Docker log
+rotation can drop older lines) or is still valid. The recording rule set two
+outcomes: natural expiry of both at 2 or more, and report-only at 0. This
+result is 1, so it is recorded as an observation, not as natural expiry of both
+tokens, and reported to the owner.
+
+The current healthy generation, started 08:21:50Z on 2026-10-27, is renewed
+and is not expected in this count. Attribution needs the event timestamps and
+the log retention start only, never the lease ID. Root and the other
+residuals stay out of scope. Source journal v3 (B4) will revoke the old
+generation at a future W5 instead of waiting for expiry.
 
 ## Evidence
 
