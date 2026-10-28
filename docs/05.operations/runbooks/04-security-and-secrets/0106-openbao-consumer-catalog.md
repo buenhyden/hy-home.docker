@@ -110,6 +110,7 @@ credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재�
 ### Traceability
 
 - 공통 OpenBao 운영: [RUN-0085](0085-openbao.md)
+- [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
 - [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Policy](../../policies/04-security-and-secrets/0085-openbao.md)
 - 관장 architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
 
