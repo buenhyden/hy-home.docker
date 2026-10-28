@@ -1,8 +1,8 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.39"
+version: "0.5.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-28"
 layer: "specs"
@@ -85,6 +85,7 @@ supersedes that statement for the Cosign release bootstrap alone.
 | SPEC-0204-TSK-0009 | ready | in-progress | #sec01-received-handoff |
 | SPEC-0204 | blocked | in-progress | #sec01-received-handoff |
 | SPEC-0204-PLAN-0001 | blocked | in-progress | #sec01-received-handoff |
+| SPEC-0204-TSK-0009 | in-progress | completed | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28 |
 
 ### SEC01 Received Handoff
 
@@ -2936,7 +2937,7 @@ resolver with the identical Check and W31:
   `4f2e7f9ba` (run `40647813280`). `candidate-quality` uses the changed profile,
   so on #602 it covered that PR's own paths, not the SEC01 source that failed on
   #416. The substantive current receipt is `main-security` on the merged head.
-- **OpenBao applicability.** See the next paragraph.
+- **OpenBao applicability.** See the OpenBao paragraph below.
 
 **Fresh gates at `4f2e7f9ba`.** Both read root input manifest
 `fc7b0ea0c3fda9680e25b76f77a24f49b96fea690a69fab560edb14448175661` and reported
@@ -2950,8 +2951,15 @@ no missing or unexpected service.
   across 111 rows. No reviewed security ledger exists, so security evidence
   stays UNKNOWN.
 
-Both are recorded as FAIL. On the owner's choice they are optional, as criterion
-15 allows: local delivery keeps a blocked latest/security result as pending
+**Final-head re-run.** Both gates ran again on the final source tree at
+`f1ef6f780`. That commit differs from `4f2e7f9ba` only in this Task and SPEC-0212
+TSK-0008, so no gate input changed. The results were the same: exit 2, root
+input manifest `fc7b0ea0…`, 111 rows and no missing or unexpected service. The
+latest gate reported `ready=false` and `deployed=false`; the security gate
+reported `ledger_complete=false` and `coverage_checked=true`.
+
+All four gate runs are recorded as FAIL. On the owner's choice they are
+optional, as criterion 15 allows: local delivery keeps a blocked latest/security result as pending
 operational acceptance and does not claim full SEC01 completion.
 
 **OpenBao applicability on the deployed image.** The running `openbao` uses
@@ -2960,7 +2968,8 @@ image `sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8`.
 and never started; it was not executed. `go version -m` reports `go1.27.3` and
 `golang.org/x/net v0.60.0`. The official record for GO-2026-6612
 (CVE-2026-78663, HTTP/2 flow-control refund) lists fixes in Go 1.27.2 for the
-1.27 line and in x/net 0.60.0. GO-2026-6604 remains Windows-only. The image
+1.27 line and in x/net 0.60.0. GO-2026-6604 remains Windows-only. The binary's
+build info records `GOOS=linux`, `GOARCH=amd64` and `CGO_ENABLED=0`. The image
 metadata reports `linux/amd64`, and the running container reports platform
 `linux`. This Task did not deploy that image; the earlier Task records do.
 SPEC-0243 TSK-0001 records that HOME runs
@@ -2972,6 +2981,32 @@ The resolver row keeps the original Check text, which names its old
 conclusion. Its subject is the deployed replacement image, and its PASS means
 GO-2026-6612 does not apply there. The original FAIL stays true for its own
 subject, the never-deployed upstream child `a36ea8` (Go 1.27.1, x/net 0.58.0).
+
+**Independent review and acceptance.** A read-only security-auditor reviewed
+the C15 evidence twice.
+
+- **At `aa5a43b1c`: REJECT.** The OpenBao FAIL row had no resolver, although
+  this Work Log claimed one. The review was not recorded and the final-head
+  gate was missing. Lower findings covered the CI subject, the rule wording,
+  the gate row count and the deployment citation.
+- **At `f1ef6f780`: APPROVE_WITH_FINDINGS.** Every required non-PASS row has a
+  same-Check resolver, and GO-2026-6612 is not applicable to `a58fb110`. Its
+  remaining findings were to record the final-head gate run and this review,
+  and to bound the acceptance Decision. This record and the acceptance below
+  do that.
+
+The owner accepted criterion 15 on 2026-10-28, after review, with these
+limits:
+
+- The latest and security gates are blocked and kept as pending operational
+  acceptance. This is not full SEC01 completion.
+- Security evidence stays UNKNOWN.
+- HOME, migration, rotation and recovery stay `NOT_RUN`.
+- Signature, SBOM and scan acceptance remain separate.
+
+Criterion 15 is this Task's only criterion, so the Task moves to `completed`.
+The commit that records this acceptance changes only these two documents
+after the reviewed `f1ef6f780`.
 
 The complete original generation-6 Evidence and Criterion Acceptance text
 follows. SHA-256 of the fenced content (UTF-8, ending with one newline):
@@ -3050,17 +3085,21 @@ are preserved verbatim in [the C15 migration record](#v30-criterion-15-generatio
 | Traefik and Prometheus SEC01 acceptance | 15 | W31 | Owner accepted the residuals with an expiry; interim HTTP/2 change declined; signature NOT_RUN | Reviewed applicability above | PASS | Traefik and Prometheus upstream candidates — 2026-10-15 | required | - |
 | OpenBao acceptance period | 15 | W31 | Owner extended the owned image acceptance from the window to criterion 15 or image replacement; 7-day stable lookup gate unchanged | Owner answer 2026-10-15 | PASS | OpenBao acceptance period and Traefik recreate — 2026-10-15 | required | - |
 | Traefik HOME recreate | 15 | W31 | Owner recreate on the Compose pin; read-only postcheck: image `575fa15b`, healthy, 0 restarts, CA file present, no log error; drift comparison not observed | Host 2026-10-15 | PASS | OpenBao acceptance period and Traefik recreate — 2026-10-15 | required | - |
-| Common validator and manifest state main-4f2e7f9ba | 15 | W31 | Current shared suite and manifest registration | main `4f2e7f9ba` | PASS | #v30-criterion-15-generation-7-migration-and-acceptance--2026-10-28; runtime compatibility, wiring contracts, ServiceInventoryTests and script manifest: 121 tests OK; manifest `--check-generated` and operations catalog exit 0 | required | Common validator and manifest state |
-| Candidate CI PR #602 and main 4f2e7f9ba | 15 | W31 | candidate-quality, CodeQL, GitGuardian and main-security | PR #602 run `40646915873`; main push run `40647813280` at `4f2e7f9ba` | PASS | #v30-criterion-15-generation-7-migration-and-acceptance--2026-10-28; candidate-quality, CodeQL and GitGuardian pass on #602 for that PR's changed paths only; main-security success on the merged head | required | PR #416 candidate CI |
-| Deployed OpenBao security applicability a58fb110 | 15 | W31 | Independent official advisory/tagged server-path review: applicable GO-2026-6612; Windows-only GO-2026-6604 excluded | Deployed image `a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8` (linux/amd64); `go version -m`: go1.27.3, x/net v0.60.0 | PASS | #v30-criterion-15-generation-7-migration-and-acceptance--2026-10-28; GO-2026-6612 not applicable (fixed Go 1.27.2, x/net 0.60.0); GO-2026-6604 Windows-only, excluded; independent security review 2026-10-28; the original FAIL stays true for upstream child a36ea8 | required | Selected OpenBao security applicability |
-| Fresh latest gate main-4f2e7f9ba | 15 | W31 | Registered latest-version gate at the final delivery head | main `4f2e7f9ba`; root input manifest `fc7b0ea0c3fda9680e25b76f77a24f49b96fea690a69fab560edb14448175661` | FAIL | #v30-criterion-15-generation-7-migration-and-acceptance--2026-10-28; exit 2, `ready=false`, `deployed=false`, 111 rows, no missing or unexpected service; kept as pending operational acceptance | optional | - |
-| Fresh security gate main-4f2e7f9ba | 15 | W31 | Registered security-update gate at the final delivery head | main `4f2e7f9ba`; `update-ledger.json` | FAIL | #v30-criterion-15-generation-7-migration-and-acceptance--2026-10-28; exit 2, `ledger_complete=false`, `coverage_checked=true`, 111 rows, no missing or unexpected service; no reviewed security ledger, so security evidence stays UNKNOWN | optional | - |
+| Common validator and manifest state main-4f2e7f9ba | 15 | W31 | Current shared suite and manifest registration | main `4f2e7f9ba` | PASS | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28; runtime compatibility, wiring contracts, ServiceInventoryTests and script manifest: 121 tests OK; manifest `--check-generated` and operations catalog exit 0 | required | Common validator and manifest state |
+| Candidate CI PR #602 and main 4f2e7f9ba | 15 | W31 | candidate-quality, CodeQL, GitGuardian and main-security | PR #602 run `40646915873`; main push run `40647813280` at `4f2e7f9ba` | PASS | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28; candidate-quality, CodeQL and GitGuardian pass on #602 for that PR's changed paths only; main-security success on the merged head | required | PR #416 candidate CI |
+| Deployed OpenBao security applicability a58fb110 | 15 | W31 | Independent official advisory/tagged server-path review: applicable GO-2026-6612; Windows-only GO-2026-6604 excluded | Deployed image `a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8` (linux/amd64); `go version -m`: go1.27.3, x/net v0.60.0 | PASS | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28; GO-2026-6612 not applicable (fixed Go 1.27.2, x/net 0.60.0); GO-2026-6604 Windows-only, excluded; independent security review 2026-10-28; the original FAIL stays true for upstream child a36ea8 | required | Selected OpenBao security applicability |
+| Fresh latest gate main-4f2e7f9ba | 15 | W31 | Registered latest-version gate at the final delivery head | main `4f2e7f9ba`; root input manifest `fc7b0ea0c3fda9680e25b76f77a24f49b96fea690a69fab560edb14448175661` | FAIL | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28; exit 2, `ready=false`, `deployed=false`, 111 rows, no missing or unexpected service; kept as pending operational acceptance | optional | - |
+| Fresh security gate main-4f2e7f9ba | 15 | W31 | Registered security-update gate at the final delivery head | main `4f2e7f9ba`; `update-ledger.json` | FAIL | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28; exit 2, `ledger_complete=false`, `coverage_checked=true`, 111 rows, no missing or unexpected service; no reviewed security ledger, so security evidence stays UNKNOWN | optional | - |
+| Fresh latest gate f1ef6f780 | 15 | W31 | Registered latest-version gate at the final delivery head | final source tree `f1ef6f780` (Task documents only since `4f2e7f9ba`); manifest `fc7b0ea0c3fda9680e25b76f77a24f49b96fea690a69fab560edb14448175661` | FAIL | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28; exit 2, `ready=false`, `deployed=false`, 111 rows, no missing or unexpected service; pending operational acceptance | optional | - |
+| Fresh security gate f1ef6f780 | 15 | W31 | Registered security-update gate at the final delivery head | final source tree `f1ef6f780`; `update-ledger.json` | FAIL | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28; exit 2, `ledger_complete=false`, `coverage_checked=true`, 111 rows, no missing or unexpected service; security evidence UNKNOWN | optional | - |
+| C15 independent review aa5a43b1c | 15 | W31 | Independent security review of criterion 15 evidence at the delivery head | head `aa5a43b1c` | FAIL | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28; REJECT: OpenBao FAIL unresolved, review and final-head gate unrecorded | required | - |
+| C15 independent review f1ef6f780 | 15 | W31 | Independent security review of criterion 15 evidence at the delivery head | head `f1ef6f780` | PASS | #v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28; APPROVE_WITH_FINDINGS; GO-2026-6612 not applicable to `a58fb110`; remaining findings recorded and addressed | required | C15 independent review aa5a43b1c |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 15 | pending | - | - | @buenhyden / SPEC-0204-TSK-0009 |
+| 15 | accepted | Common validator and manifest state, PR #416 candidate CI, Coordinator shared repair, Public Cosign release bootstrap, Public tool publisher checks, Authenticated scanner versions, Selected OpenBao subject and SBOM, Selected scanner DB and execution, Selected OpenBao security applicability, Owned OpenBao packaging reproducibility, Owned OpenBao local identity and recorded version, Owned OpenBao applicability dispositions, Owned OpenBao SEC01 image acceptance, Fresh OpenBao stable lookup, Traefik and Prometheus offline scan, Traefik and Prometheus applicability and compatibility, Traefik and Prometheus SEC01 acceptance, OpenBao acceptance period, Traefik HOME recreate, Common validator and manifest state main-4f2e7f9ba, Candidate CI PR #602 and main 4f2e7f9ba, Deployed OpenBao security applicability a58fb110, Fresh latest gate f1ef6f780, Fresh security gate f1ef6f780, C15 independent review aa5a43b1c, C15 independent review f1ef6f780, Reviewed ROOT stable/security evidence | Owner accepted 2026-10-28 after independent review (APPROVE_WITH_FINDINGS at f1ef6f780). Every required non-PASS row has a same-Check resolver. Latest and security gates are blocked (exit 2) and kept as pending operational acceptance; this is not full SEC01 completion. Security evidence stays UNKNOWN; HOME, migration, rotation and recovery stay NOT_RUN; signature, SBOM and scan acceptance remain separate. | @buenhyden / SPEC-0204-TSK-0009 |
 
 ## Review and Completion
 
