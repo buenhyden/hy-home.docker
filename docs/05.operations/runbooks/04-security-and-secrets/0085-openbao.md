@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.14.2"
+version: "0.15.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -100,7 +100,16 @@ OpenBao maintenance window로 다룬다. containerd가 재시작되면 모든 co
    upgrade한다. 기본으로 owner가 `sudo apt-mark hold containerd.io docker-ce docker-ce-cli`로
    보류해 두고 window에서만 `apt-mark unhold`한다. unattended-upgrades나 needrestart가 켜져
    있으면 window 밖에서도 같은 장애가 생기므로, 이 package를 자동 대상에서 빼거나 hold를
-   유지한다. host reboot와 kernel update도 같은 복구가 필요하다.
+   유지한다. host reboot와 kernel update도 같은 복구가 필요하다. hold와 needrestart 제외는
+   다음 한 명령으로 적용한다(sudo 필요, secret 없음). needrestart가 설치되어 있으면
+   `/etc/needrestart/conf.d/hy-home.conf`에 containerd와 docker 제외를 쓴다.
+
+   ```bash
+   bash infra/03-security/openbao/scripts/owner-window.sh host-hold
+   ```
+
+   기대 출력은 hold된 세 package 이름이다. window에서는 `sudo apt-mark unhold containerd.io
+   docker-ce docker-ce-cli`로 풀고 upgrade·복구 뒤 `host-hold`를 다시 실행한다.
 2. **upgrade 뒤 server.** `docker start openbao`로 같은 container를 다시 시작하고 위 unseal
    절차로 `Sealed false`를 확인한다. Compose drift 때문에 container가 재생성되면 위의 Raft
    mount identity 확인이 필요하므로 `up -d`는 쓰지 않는다.
@@ -260,6 +269,18 @@ issuance_journal=<Task의 journal 디렉터리> bash infra/03-security/openbao/s
 
 문제가 하나라도 있으면 `WARN:` 줄을 출력하고 1로 끝난다. metrics token은 만료 30일 전부터
 경고하며 회전은 [RUN-0104](0104-openbao-metrics-credential.md)를 따른다.
+
+**Renderer token 만료 확인.** 갱신이 멈춘 renderer token(이전 Agent 세대)이 만료됐는지는 server
+로그의 lease 폐기 시각으로 확인한다. lease ID는 출력하지 않고 시각만 출력한다.
+
+```bash
+bash infra/03-security/openbao/scripts/owner-window.sh renderer-expiry <since, 예: 2026-10-28T07:35:00Z>
+```
+
+출력은 `auth/approle/login/` lease가 폐기된 시각들과 `server active since:` 시각이다. 갱신이 멈춘
+token은 마지막 갱신 뒤 24시간(period) 안에 폐기 줄이 생긴다. server가 그 시각에 멈춰 있었다면
+다음 기동 때 폐기되므로 `server active since:` 직후 시각으로 나온다. container log의 보존 시작이
+`<since>`보다 늦으면 빈 결과는 증거가 아니다.
 
 ### Exact policy validation
 

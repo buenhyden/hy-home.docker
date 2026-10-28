@@ -23,6 +23,7 @@ class OwnerWindowScriptTests(unittest.TestCase):
             for name in (
                 "0085-openbao.md",
                 "0103-openbao-renderer-delivery.md",
+                "0104-openbao-metrics-credential.md",
                 "0105-openbao-maintenance-window.md",
             )
         )
@@ -225,6 +226,128 @@ class WindowGateTests(unittest.TestCase):
             self.assertIn("alert: OpenBaoMetricsScrapeFailing firing", bad.stdout)
             self.assertNotIn("synthetic-accessor-value", bad.stdout + bad.stderr)
             self.assertEqual(1, bad.returncode)
+
+    def test_metrics_rotate_needs_w1_root_and_the_reviewed_policy(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runtime = self.runtime(directory)
+            result = self.run_window(runtime, "metrics-rotate")
+            self.assertIn("run w1 first", result.stderr)
+            self.assertEqual(1, result.returncode)
+            custody = Path(directory) / "p01-custody.synthetic"
+            custody.mkdir()
+            root = custody / "root.token"
+            root.write_text("synthetic-root-value")
+            root.chmod(0o600)
+            runtime = self.runtime(
+                directory,
+                P01_CUSTODY_DIR=custody,
+                P01_CLIENT_DIR=Path(directory) / "client",
+            )
+            result = self.run_window(runtime, "metrics-rotate")
+            self.assertIn("reviewed prometheus.hcl missing", result.stderr)
+            self.assertEqual(1, result.returncode)
+            self.assertNotIn("synthetic-root-value", result.stdout + result.stderr)
+            self.assertEqual(
+                [], [p for p in os.listdir(directory) if p.startswith("p01-metrics")]
+            )
+
+    def test_cleanup_keeps_an_unrevoked_metrics_token(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory) / "p01-metrics.synthetic"
+            work.mkdir()
+            (work / "new.token").write_text("synthetic-metrics-value")
+            (work / "new.unrevoked").touch()
+            runtime = self.runtime(directory)
+            result = self.run_window(runtime, "cleanup", "--keep-root")
+            self.assertIn("run metrics-revoke", result.stderr)
+            self.assertEqual(1, result.returncode)
+            self.assertTrue((work / "new.token").exists())
+            self.assertNotIn("synthetic-metrics-value", result.stdout + result.stderr)
+            result = self.run_window(
+                runtime, "cleanup", "--keep-root", "--discard-metrics"
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertFalse(work.exists())
+
+    def test_metrics_revoke_without_leftovers_does_nothing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            custody = Path(directory) / "p01-custody.synthetic"
+            custody.mkdir()
+            root = custody / "root.token"
+            root.write_text("synthetic-root-value")
+            root.chmod(0o600)
+            runtime = self.runtime(
+                directory,
+                P01_CUSTODY_DIR=custody,
+                P01_METRICS_DIR=Path(directory) / "p01-metrics.gone",
+            )
+            result = self.run_window(runtime, "metrics-revoke")
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertIn("nothing to resolve", result.stdout)
+            self.assertNotIn("synthetic-root-value", result.stdout + result.stderr)
+
+    def stub(self, bin_dir, name, body):
+        path = bin_dir / name
+        path.write_text("#!/bin/sh\n" + body)
+        path.chmod(0o755)
+
+    def test_renderer_expiry_prints_timestamps_only(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bin_dir = Path(directory) / "bin"
+            bin_dir.mkdir()
+            self.stub(
+                bin_dir,
+                "docker",
+                'case "$1" in\n'
+                "  logs) echo '2026-10-28T09:32:40.100Z [INFO]  expiration: revoked lease:"
+                " lease_id=auth/approle/login/synthetic-lease-value'\n"
+                "        echo '2026-10-28T09:33:00.000Z [INFO]  core: other line' ;;\n"
+                '  exec) echo \'{"active_time":"2026-10-28T09:32:39Z"}\' ;;\n'
+                "esac\n",
+            )
+            result = subprocess.run(
+                ["bash", str(WINDOW), "renderer-expiry", "2026-10-27T07:45:00Z"],
+                env={"PATH": f"{bin_dir}:/usr/bin:/bin", "XDG_RUNTIME_DIR": directory},
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(
+                "2026-10-28T09:32:40.100Z\n"
+                "revocations: 1\n"
+                "log starts: 2026-10-28T09:32:40.100Z\n"
+                "server active since: 2026-10-28T09:32:39Z\n",
+                result.stdout,
+            )
+            self.assertNotIn("synthetic-lease-value", result.stdout + result.stderr)
+
+    def test_host_hold_holds_the_runtime_packages(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bin_dir = Path(directory) / "bin"
+            bin_dir.mkdir()
+            log = Path(directory) / "sudo.log"
+            self.stub(bin_dir, "sudo", f'echo "$*" >>{log}; cat >/dev/null\n')
+            self.stub(bin_dir, "dpkg-query", "echo 'install ok installed'\n")
+            self.stub(
+                bin_dir,
+                "apt-mark",
+                "printf '%s\\n' containerd.io docker-ce docker-ce-cli vim\n",
+            )
+            result = subprocess.run(
+                ["bash", str(WINDOW), "host-hold"],
+                env={"PATH": f"{bin_dir}:/usr/bin:/bin", "XDG_RUNTIME_DIR": directory},
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(
+                "apt-mark hold containerd.io docker-ce docker-ce-cli\n"
+                "tee /etc/needrestart/conf.d/hy-home.conf\n",
+                log.read_text(),
+            )
+            self.assertIn("needrestart: containerd and docker excluded", result.stdout)
+            self.assertNotIn("vim", result.stdout)
 
     def test_w4_needs_w3a_acceptance_and_w3b_receipt(self):
         with tempfile.TemporaryDirectory() as directory:
