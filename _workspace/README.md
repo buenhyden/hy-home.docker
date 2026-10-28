@@ -1,10 +1,10 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.3.0"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-29"
 created: "2026-03-05"
 ---
 
@@ -28,8 +28,8 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 
 ## Scope
 
-- 소유 대상: 아래 두 개의 tracked 계약 문서, 그리고 스크립트가 쓰는
-  ignore 대상 `repo-support/` staging 트리
+- 소유 대상: 아래 일곱 개의 tracked 계약 README, 그리고 스크립트가 쓰는
+  ignore 대상 `diagnostics/`, `repo-support/` staging 트리
 - 비소유 대상: 영속적인 evidence(co-located Stage 03 Task에 속함), operator
   절차(`docs/05.operations/`에 속함), 그리고 secret 값(항상 `secrets/`에
   속하며 이곳에는 절대 두지 않음)
@@ -39,8 +39,13 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 | Path | Tracked | Role |
 | :--- | :--- | :--- |
 | `README.md` | yes | 이 계약 문서 |
+| `diagnostics/README.md` | yes | 정제된 진단 결과 계약 |
+| `diagnostics/ci/README.md` | yes | 원격 CI 진단 |
+| `diagnostics/validation/README.md` | yes | 로컬 검사 진단 |
 | `repo-support/README.md` | yes | staging 트리 계약 |
-| `repo-support/**` | no | task 도중 기록되는 ignore 대상 런타임 산출물 |
+| `repo-support/analysis/README.md` | yes | 분석 요약 |
+| `repo-support/previews/README.md` | yes | dry-run 미리보기 |
+| 그 밖의 `diagnostics/**`, `repo-support/**` | no | task 도중 기록되는 ignore 대상 런타임 산출물 |
 
 여기에 쓰는 스크립트는 `repo-support/` 아래 하위 디렉터리 이름을
 각자 정해 씁니다. 예를 들어 `scripts/security/verify-sample-service-supply-chain.sh`와
@@ -48,7 +53,8 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 
 ## Allowed Surface
 
-런타임 산출물은 `repo-support/` 아래에 두며 기본적으로 ignore됩니다. 생성된
+런타임 산출물은 `diagnostics/`와 `repo-support/` 아래에 두며 기본적으로 ignore됩니다.
+`diagnostics/`에는 secret과 raw log를 뺀 정제 결과만 둡니다. 생성된
 분석 요약, dry-run 미리보기, migration ledger, secret이나 raw 로그를 담지 않는
 subagent 인계 파일이 그 예입니다.
 
@@ -56,7 +62,7 @@ subagent 인계 파일이 그 예입니다.
 
 다음 중 어느 것도 `_workspace` 아래에 두지 않습니다:
 
-- 진단 덤프
+- 진단 덤프 원문
 - 로컬 로그나 raw 로그
 - 인증 파일
 - 토큰
@@ -70,7 +76,8 @@ subagent 인계 파일이 그 예입니다.
 ## Tracking Contract
 
 루트 `.gitignore`는 `_workspace/` 아래 모든 것을 ignore하고, Structure에 명시된
-두 개의 tracked 계약 문서만 다시 포함합니다. Git은 제외된 디렉터리 안으로
+일곱 개의 tracked 계약 README만 다시 포함합니다. 각 README마다
+다시 포함·다시 제외·다시 포함의 사다리가 필요합니다. Git은 제외된 디렉터리 안으로
 내려가지 않으므로, `repo-support/`는 다시 포함되고 그 내용물은 다시 제외된
 뒤에야 `repo-support/README.md`가 복원됩니다. 바깥쪽 패턴을 이 사다리 구조를
 다시 쓰지 않고 바꾸면 두 번째 문서가 조용히 빠집니다. 이 문장을 믿지 말고
@@ -92,8 +99,8 @@ exit status 대신 규칙을 읽어 판정합니다. `-v`는 매칭된 패턴이
 포함하든 exit 0을 반환하므로 출력된 규칙으로만 둘을 구분할 수 있습니다: 정상적인
 사다리는 negation `!/_workspace/repo-support/README.md`로 답하고 깨진
 사다리는 바깥쪽 `/_workspace/*`로 답합니다. 두 번째 명령은 scratch 경로를
-제외하는 규칙의 이름을 정확히 대야 하고, 세 번째 명령은 정확히 두 개의
-tracked README 파일만 나열해야 합니다. 세 번째 tracked 경로가 나오면 산출물이
+제외하는 규칙의 이름을 정확히 대야 하고, 세 번째 명령은 정확히 일곱 개의
+tracked README 파일만 나열해야 합니다. 그 밖의 tracked 경로가 나오면 산출물이
 staging 계약을 벗어난 것입니다.
 
 [tests/lib/test_surface_ownership.py](../tests/lib/test_surface_ownership.py)의
@@ -107,13 +114,14 @@ staging 계약을 벗어난 것입니다.
    ignore 대상이므로 `git status`가 깨끗하게 유지됩니다.
 2. secret이 아닌 결과를 co-located Stage 03 Task로 요약합니다 → 영속적인
    claim은 evidence와 함께 있어야지 staging에 남으면 안 됩니다.
-3. 완료 전에 `git ls-files _workspace/`를 실행합니다 → 출력은 정확히 두 개의
-   tracked 계약 문서여야 합니다.
+3. 완료 전에 `git ls-files _workspace/`를 실행합니다 → 출력은 정확히 일곱 개의
+   tracked 계약 README여야 합니다.
 4. 산출물을 그대로 두거나 삭제합니다 → 둘 다 괜찮습니다. 이곳에는
    복구해야 할 authority가 하나도 없습니다.
 
 ## Related Documents
 
+- [Diagnostics contract](./diagnostics/README.md)
 - [Staging tree contract](./repo-support/README.md)
 - [Subagent protocol](../.agents/governance/agentic.md)
 - [Environment constraints](../.agents/governance/environment-constraints.md)

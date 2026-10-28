@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "2.5.1"
+version: "2.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-29"
 layer: "archive"
 ---
 
@@ -105,6 +105,11 @@ frozen 기록은 식별자로 부르고 이 index를 통해 찾습니다.
 복구 가능성, 현재 소비자 정리와 전체 단위 부재가 모두 필요합니다. 결정은 당시
 Task revision의 승인 상태·범위·본문 증거로 검증합니다. 포착 행과 평가 행은
 제거 후에도 남으며, 본문 대신 카탈로그를 안내합니다. `purged`는 지원하지 않습니다.
+카탈로그 이전에 보존된 단위는 포착 행이 없으며, 승인된 이력 전용 제거를 기록하는
+같은 변경에서만 원래 경로가 마지막으로 존재한 base commit을 `Source`로 하는 포착
+행을 얻습니다. 본문이 함께 사라지므로 바이트 비교는 적용되지 않고, 제거된 본문은
+그것을 담았던 마지막 revision에서 복구합니다. 보존 중인 단위에는 이 포착을
+추가하지 않습니다.
 이 README와 일반 표준 채택은 어떤 실제 제거도 승인하지 않습니다.
 
 새 기록은 등록된 template과 check를 만족합니다. 이미 봉인된 Tombstone과 Migration은

@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "2.1.3"
+version: "2.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -124,6 +124,8 @@ and whole-unit absence are all required. The capture envelope remains available
 for discovery. An approver name or proposed ADR alone grants nothing. Past
 valid approval is not invalidated merely because its authoring Task later
 leaves the active stage. Destructive test fixtures never authorize real removal.
+A pre-catalog unit gains its capture row only in the change that records its
+authorized history-only removal and removes its whole payload.
 
 Citation resolution proceeds through path/profile/unit, assessment and
 availability restrictions, route blocking, source-profile/class permissions,

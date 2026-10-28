@@ -1734,6 +1734,31 @@ class WithdrawalRecordTests(unittest.TestCase):
         self.index("retired/01.requirements/0001-example.md")
         self.assertIn("more than one withdrawal record", " ".join(self.boundary()))
 
+    def test_a_sealed_tombstone_pairs_with_git_history_after_removal(self) -> None:
+        record = "retired/01.requirements/0001-example.md"
+        self.write(self._TOMBSTONE, _SEALED_SHAPE_TOMBSTONE)
+        self.write(
+            "docs/98.archive/retention-catalog.md",
+            "# Archive\n\n## Retention Catalog\n\n"
+            "| Record | Class | Names | Source |\n| --- | --- | --- | --- |\n"
+            f"| `{record}` | retired | Withdrawn."
+            f" | `{'0' * 40}:{_RETIRED_REQUIREMENT}` |\n",
+        )
+        self.assertIn("has no preserved record", " ".join(self.boundary()))
+        catalog = self.root / "docs/98.archive/retention-catalog.md"
+        catalog.write_text(
+            catalog.read_text(encoding="utf-8") + "\n## Current Assessments\n\n"
+            "| Record | Assessment | Availability | Current Owner | Decision"
+            " | Reason | Assessed At | Hold |\n"
+            "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
+            "| `retired/01.requirements/0001-example.md` | withdrawn"
+            " | git-history-only | none"
+            f" | `{'0' * 40}:docs/03.specs/0001-x/tasks/tsk-0001-x.md`"
+            " | Removed. | 2026-10-29 | none |\n",
+            encoding="utf-8",
+        )
+        self.assertEqual((), self.boundary())
+
     def test_a_new_shape_tombstone_pairs_with_no_body(self) -> None:
         self.write(
             "docs/98.archive/completed/01.requirements/0001-example.md", "# Example\n"

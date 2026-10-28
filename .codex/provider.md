@@ -1,10 +1,10 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.1.3"
+version: "1.2.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-29"
 runtime: "codex"
 ---
 
@@ -51,8 +51,18 @@ read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
   only from the [Provider Registry](../.agents/governance/providers/registry.yaml).
 - Generated files adapt syntax and cannot own shared policy, role intent,
   lifecycle, templates, model selection, or completion criteria.
+- Native memory is off through `memories.generate_memories = false` and
+  `memories.use_memories = false` in `.codex/config.toml`. Whether Codex
+  honours `[memories]` in a trusted project has not been observed.
 
 ## Limitations
+
+- On this host Codex's `bubblewrap` sandbox cannot start (`bwrap: loopback:
+  Failed RTM_NEWADDR: Operation not permitted`), so a Codex session or role in
+  `workspace-write` cannot write files. This records the limit only and grants
+  no sandbox relaxation: per [approval boundaries](../.agents/governance/approval-boundaries.md),
+  only an operator acting through its trusted channel may run Codex with a
+  relaxed sandbox, and the repository neither authenticates nor relaxes it.
 
 Select checks through the [shared verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix)
 and [completion checklist](../.agents/governance/task-checklists.md#before-completion).

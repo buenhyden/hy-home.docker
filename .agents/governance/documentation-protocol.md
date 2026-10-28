@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.4.1"
+version: "3.5.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 ---
 
 # Documentation Protocol
@@ -251,8 +251,9 @@ evidence; surrounding instructions remain current and validated normally.
 - A Postmortem follows stabilization and separates confirmed root cause,
   contributing factors, detection/response, and learning from the incident's
   factual record. Use blameless language. Corrective actions identify an owner,
-  due date, tracking ID or link, and verification condition; link their execution
-  owner instead of leaving untracked checkboxes.
+  a tracking ID or link, and a verification condition, with no imposed
+  completion deadline; link their execution owner instead of leaving untracked
+  checkboxes. A published postmortem keeps the columns it was written with.
 - Research records source-backed claims and limitations; Audit records criteria
   and dated observations; Data records schema, provenance, consumers, and
   refresh ownership. State evidence limitations and freshness triggers where
@@ -409,6 +410,15 @@ rewriting, and deletion of the capture row are rejected. Keep the catalog and
 capture envelope and route discovery to them, not a missing payload. Restoration
 is a separately explained recovery into a current owner, not silent resurrection
 of frozen authority.
+
+A pre-catalog unit, preserved before the Retention Catalog existed, has no
+capture row and is not loaded retroactively. Its only capture route is the
+change that also records its authorized `git-history-only` assessment and
+removes its whole payload. That capture names the base commit where the origin
+last existed as a regular object of the expected kind. Because no payload
+remains, byte comparison does not apply; the removed bodies stay recoverable at
+the last revision that carried them. Such a capture is never added to a
+retained unit.
 
 `git-history-only` means that the current tree supplies no payload; it makes no
 claim about purging Git history, clones, forks, or caches. `purged` is not a

@@ -81,12 +81,22 @@ def _module_of(entry: str, modules: set[str]) -> str:
 
 _WORKSPACE_CONTRACT_DOCUMENTS = (
     "_workspace/README.md",
+    "_workspace/diagnostics/README.md",
+    "_workspace/diagnostics/ci/README.md",
+    "_workspace/diagnostics/validation/README.md",
     "_workspace/repo-support/README.md",
+    "_workspace/repo-support/analysis/README.md",
+    "_workspace/repo-support/previews/README.md",
 )
 
 _WORKSPACE_SCRATCH_PROBES = (
     "_workspace/scratch.json",
+    "_workspace/diagnostics/scratch.json",
+    "_workspace/diagnostics/ci/scratch.json",
+    "_workspace/diagnostics/validation/scratch.json",
     "_workspace/repo-support/scratch.json",
+    "_workspace/repo-support/analysis/scratch.json",
+    "_workspace/repo-support/previews/scratch.json",
 )
 
 
@@ -229,9 +239,9 @@ class SurfaceOwnershipTests(unittest.TestCase):
                 "/_workspace/*\n!/_workspace/README.md\n", encoding="utf-8"
             )
             (root / "_workspace/repo-support").mkdir(parents=True)
-            for name in _WORKSPACE_CONTRACT_DOCUMENTS:
+            outer, nested = "_workspace/README.md", "_workspace/repo-support/README.md"
+            for name in (outer, nested):
                 (root / name).write_text("", encoding="utf-8")
-            outer, nested = _WORKSPACE_CONTRACT_DOCUMENTS
             self.assertFalse(_is_excluded(root, outer))
             self.assertTrue(
                 _is_excluded(root, nested),

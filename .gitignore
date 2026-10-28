@@ -121,15 +121,31 @@ volumes/
 
 
 # Agent and migration staging. `_workspace/README.md` declares this surface as
-# ignored-by-default with two tracked contract documents; without these rules
+# ignored-by-default with seven tracked contract READMEs; without these rules
 # that contract was prose only, and scripts writing into repo-support/ (grype
 # database seeds, supply-chain verdicts, rehearsal records) showed up as
-# untracked files waiting to be committed.
+# untracked files waiting to be committed. Each tracked README needs its own
+# re-include, re-exclude, re-include ladder.
 /_workspace/*
 !/_workspace/README.md
+!/_workspace/diagnostics/
+/_workspace/diagnostics/*
+!/_workspace/diagnostics/README.md
+!/_workspace/diagnostics/ci/
+/_workspace/diagnostics/ci/*
+!/_workspace/diagnostics/ci/README.md
+!/_workspace/diagnostics/validation/
+/_workspace/diagnostics/validation/*
+!/_workspace/diagnostics/validation/README.md
 !/_workspace/repo-support/
 /_workspace/repo-support/*
 !/_workspace/repo-support/README.md
+!/_workspace/repo-support/analysis/
+/_workspace/repo-support/analysis/*
+!/_workspace/repo-support/analysis/README.md
+!/_workspace/repo-support/previews/
+/_workspace/repo-support/previews/*
+!/_workspace/repo-support/previews/README.md
 
 # Graphify is optional generated intelligence for local exploration, and this
 # rule now governs the whole directory. Forty-seven files under it were tracked
