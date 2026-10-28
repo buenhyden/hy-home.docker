@@ -55,6 +55,8 @@ examples/.generated/
 
 .env
 !.env.example
+# Temporary .env rewrites (oidc-client-secrets.sh).
+/.env.oidc.*
 # Infra Configure Files related to secrets
 infra/**/.env
 infra/**/.env.*

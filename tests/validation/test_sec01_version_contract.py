@@ -444,7 +444,8 @@ class CandidateContract(unittest.TestCase):
             r"(?:openbao/openbao|hy-home/openbao):[^\s]+@sha256:[0-9a-f]{64}",
             runbook,
         )
-        self.assertEqual([OPENBAO, OPENBAO], image_arguments)
+        # The restart step reads the image from Compose; check-tls-material names it.
+        self.assertEqual([OPENBAO], image_arguments)
         config = json.loads(
             compose["services"]["openbao"]["environment"]["BAO_LOCAL_CONFIG"]
         )

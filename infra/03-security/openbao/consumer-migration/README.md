@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.13"
+version: "0.1.14"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -42,6 +42,10 @@ created: "2026-10-11"
   렌더링 version, 관리자 로그인 HTTP 상태만 출력하고 값·hash·길이는 출력하지 않습니다.
 - [verify-oidc-client-secret.sh](verify-oidc-client-secret.sh): OIDC client secret 소비자 하나의
   검사입니다. 렌더링 파일, 서비스 파일, Keycloak client secret의 일치를 container 안에서 비교합니다.
+- [oidc-client-secrets.sh](oidc-client-secrets.sh): OIDC client secret 일괄 전환의 owner 단계입니다.
+  `import <token 파일>`(KV 반입과 metadata 확인), `prepare`(Agent 출력 디렉터리와 읽기 권한
+  확인), `cutover <서비스>`·`rollback <서비스>`(`.env`의 경로 변수 한 줄만 바꾸고 그 서비스를
+  다시 만든 뒤 검사)를 실행합니다. 값·hash·길이는 출력하지 않습니다.
 
 ## Tech Stack
 
@@ -316,22 +320,20 @@ bind합니다(`create_host_path: false`). 각 `<stem>.txt`는 `0640`, `<stem>.ve
 같고 1~3단계는 owner가 실행합니다. 정책은 권한을 더하기만 하므로 병합 전에 적용해도 실행 중인
 Agent와 소비자에 영향이 없습니다.
 
-1. 정책 적용(RUN-0085 W1 → W1c → W7): W1 root ceremony, W1c
-   `protected-renderer-roles.py plan` 결과에서 `renderer`·`hy-home-operator`의 차이가 새 7개 경로뿐인지
-   확인하고 Task에 기록한 뒤 `apply`, W7 root 폐기. helper와 정책은 이 PR head에서 manifest로
-   받습니다(manifest hash가 이 revision에 고정됨).
-2. KV 반입(operator 인증): 경로마다 `secrets/auth/<서비스>/<파일>`을 stdin으로 넣습니다.
-   `-cas=0`은 경로가 이미 있으면 거부하므로 다른 field를 지우지 않습니다. 거부되면 멈추고
-   `kv patch -method=rw`로 바꿉니다. 값을 출력하지 않습니다.
+1. 정책 적용(RUN-0085 W1 → W1c → W7): RUN-0085의 `owner-window.sh` 단계로 W1 root ceremony,
+   이전 root 정리, W1c `roles-plan`·`roles-diff`(`renderer`·`hy-home-operator`의 차이가 새 7개
+   경로뿐인지 확인하고 Task에 기록)·`roles-apply`, W7 `revoke-root`를 실행합니다. helper·정책과
+   script는 이 PR head에서 manifest로 받습니다(manifest hash가 이 revision에 고정됨).
+2. KV 반입(operator 인증): W7 token처럼 W1c 뒤에 받은 operator token 파일로, window의 승인 commit
+   (`$P01_COMMIT`) 객체에서 RUN-0085 Renderer SecretID Delivery 3단계의 `p01_run`으로 실행합니다. window의
+   `cleanup`은 이 token을 폐기하므로 반입 뒤에 합니다. 경로마다
+   `secrets/auth/<서비스>/<파일>`을 stdin으로 넣고 7개 경로의 metadata를 확인합니다. `-cas=0`은
+   경로가 이미 있으면 거부하므로 다른 field를 지우지 않습니다. `put FAIL`이면 멈추고
+   `kv patch -method=rw`로 바꿉니다. 값을 출력하지 않습니다. token은 window의 `cleanup`이 폐기합니다.
 
    ```sh
-   bao kv put -cas=0 secret/hy-home/02-auth/oauth2-proxy client_secret=- < secrets/auth/oauth2-proxy/oauth2_proxy_client_secret.txt
-   bao kv put -cas=0 secret/hy-home/05-messaging/kafbat client_secret=- < secrets/auth/kafbat/kafbat_client_secret.txt
-   bao kv put -cas=0 secret/hy-home/06-observability/dozzle client_secret=- < secrets/auth/dozzle/dozzle_client_secret.txt
-   bao kv put -cas=0 secret/hy-home/06-observability/gatus client_secret=- < secrets/auth/gatus/gatus_oidc_client_secret.txt
-   bao kv put -cas=0 secret/hy-home/07-workflow/airflow client_secret=- < secrets/auth/airflow/airflow_client_secret.txt
-   bao kv put -cas=0 secret/hy-home/08-ai/open-webui client_secret=- < secrets/auth/open-webui/openwebui_oidc_client_secret.txt
-   bao kv put -cas=0 secret/hy-home/12-analytics/superset client_secret=- < secrets/auth/superset/superset_oidc_client_secret.txt
+   p01_run "$P01_COMMIT" infra/03-security/openbao/consumer-migration/oidc-client-secrets.sh \
+     import "$XDG_RUNTIME_DIR/p01-op-w7.token"
    ```
 
    병합 전 종료 조건: 7개 경로 모두 `bao kv metadata get`이 성공해야 합니다. 하나라도 빠지면 그
@@ -341,30 +343,36 @@ Agent와 소비자에 영향이 없습니다.
      다시 만듭니다. bind는 `create_host_path: false`이므로 디렉터리가 없으면 container를 만들지
      못하고, 기존 container는 이미 지워진 뒤라 그 서비스가 멈춥니다(`oauth2-proxy`면 SSO 전체).
      fast-forward 전에 Agent 사용자로 디렉터리를 만듭니다. health는 디렉터리를 보지 않습니다.
+     main checkout에는 아직 script가 없으므로, script를 담은 PR이 병합된 commit의 전체 SHA에서
+     `p01_run`으로 읽어 실행합니다. 그 commit에 script가 없으면 실패하고 아무것도 하지 않습니다.
 
      ```sh
-     docker exec -u 100 openbao-agent mkdir -m 0755 /openbao/out/oauth2-proxy /openbao/out/kafbat \
-       /openbao/out/dozzle /openbao/out/gatus /openbao/out/airflow /openbao/out/open-webui /openbao/out/superset
+     git -C /home/hyunyoun/data/hy-home.docker fetch origin
+     p01_run <병합 commit 40자리> infra/03-security/openbao/consumer-migration/oidc-client-secrets.sh prepare
      ```
 
    - fast-forward하면 `scripts/`의 새 health가 바로 적용되지만 `agent.hcl`은 단일 파일 bind라 실행 중인
      Agent는 재시작 전까지 예전 5개 template만 검사합니다. 새 health는 `out` 전체에서 목록에 없는
-     group/other-readable 파일을 찾으므로, fast-forward 직전
-     `docker exec openbao-agent find /openbao/out -mindepth 1 ! -type d \( -perm -040 -o -perm -004 \)`가
-     현재 `.txt` 3개만 출력하는지 확인합니다.
-   - 재시작 후 healthy와 7개 디렉터리의 `.txt`·`.version`을 확인합니다.
+     group/other-readable 파일을 찾으므로, `prepare`가 마지막에 출력하는 읽기 가능 파일이 현재
+     `.txt` 3개뿐인지 확인한 뒤 fast-forward합니다.
+   - 재시작은 RUN-0085 Renderer SecretID Delivery 3단계의 `owner-window.sh agent-restart`로 합니다.
+     끝에 출력되는 Agent health(최대 90초 대기)가 `healthy`이고 7개 디렉터리의 `.txt`가 `0640`, `.version`이 `0600`인지
+     확인합니다.
 4. 서비스마다 전환 전 검사:
    `bash infra/03-security/openbao/consumer-migration/verify-oidc-client-secret.sh <서비스>`.
    `healthy`, `consumed_file`, `rendered_version`, `mounted_equals_rendered`,
    `keycloak_client_matches`가 모두 `PASS`여야 합니다. 서비스 파일은 `docker cp`로 읽으므로
    shell이 없는 image도 검사합니다. `docker cp`는 daemon 권한으로 읽으므로 `PASS`는 서비스 사용자가
    파일을 읽을 수 있다는 증거가 아닙니다. 전환 뒤 실제 OIDC 로그인으로 확인합니다.
-5. 전환: 로컬 `.env`에 표의 경로 변수를 `/run/openbao/<출력 파일>`로 넣고 그 서비스만 다시 만든 뒤
-   같은 검사를 실행합니다. `consumed_file`이 Agent 경로여야 합니다. `oauth2-proxy`와
+5. 전환: 실행 중인 서비스에만 합니다(멈춘 서비스는 `--no-deps`가 의존 서비스 없이 띄우므로 거부합니다).
+   `oidc-client-secrets.sh cutover <서비스>`가 로컬 `.env`에 표의 경로 변수를
+   `/run/openbao/<출력 파일>`로 넣고(같은 변수의 기존 줄은 지움) `docker compose up -d --no-deps`로
+   그 서비스만 다시 만든 뒤 같은 검사를 실행합니다. `consumed_file`이 Agent 경로여야 합니다. `oauth2-proxy`와
    `opensearch-dashboards`는 같은 파일을 읽지만 변수가 따로이므로 하나씩 전환합니다.
    `opensearch-dashboards`가 `out/oauth2-proxy` 전체를 bind하므로 그 디렉터리와 KV 경로에는
    `client_secret`만 둡니다. cookie secret 등을 더하려면 먼저 디렉터리를 나눕니다.
-6. 되돌리기: 변수를 비우고 그 서비스만 다시 만든 뒤 검사합니다.
+6. 되돌리기: `oidc-client-secrets.sh rollback <서비스>`가 그 변수 줄을 지우고 그 서비스만 다시
+   만든 뒤 검사합니다. `consumed_file`이 `/run/secrets/…`여야 합니다.
 
 실행 중이 아닌 서비스(`kafbat-ui`, `opensearch-dashboards`, `superset`, `airflow-apiserver`)는
 다음에 기동할 때 4~5단계를 합니다. 변수를 비워도 bind는 남으므로 Agent 출력 디렉터리가 없으면
