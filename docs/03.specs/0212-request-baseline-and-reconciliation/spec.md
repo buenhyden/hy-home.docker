@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.9.0"
+version: "1.10.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -60,7 +60,8 @@ removal; any later removal needs its own unit-scoped approval. The owner then
 approved removal of its candidates the same day; criterion 23/W28 applies it in
 TSK-0012. Criterion 24/W29 records the follow-up review of the remaining
 request areas in TSK-0013. Criterion 25/W30 corrects the archive check
-runtime cause in TSK-0014.
+runtime cause in TSK-0014. Criterion 26/W31 applies the owner-approved
+blocked items and a removal regression fix in TSK-0015.
 
 ## Scope
 
@@ -355,6 +356,11 @@ hold, authorization and recovery requirements have been established.
     remote, runtime, or four-repository adoption.
 25. TSK-0014 corrects the stated cause of the slower archive check and removes
     the measured repeat, without changing any archive finding.
+26. TSK-0015 applies the owner's approval of the two items TSK-0013 blocked:
+    it removes the unused git-cliff configuration and adds `###` subtopics to
+    the templates whose sections hold several distinct contents. It also
+    repairs the index-membership regression that the TSK-0012 removal caused
+    on `main`.
 
 ## Failure Conditions
 
