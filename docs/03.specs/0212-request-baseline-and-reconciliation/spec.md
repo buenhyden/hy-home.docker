@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.6.0"
+version: "1.7.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -56,7 +56,9 @@ retention catalog, or a checker.
 A request on 2026-10-29 asks for a per-unit dry-run of the Stage 98 retention
 payload before any Git-history-only disposition. Criterion 22/W27 records it in
 TSK-0011 without an archived-body edit, a catalog row, a checker change, or a
-removal; any later removal needs its own unit-scoped approval.
+removal; any later removal needs its own unit-scoped approval. The owner then
+approved removal of its candidates the same day; criterion 23/W28 applies it in
+TSK-0012.
 
 ## Scope
 
@@ -339,6 +341,11 @@ hold, authorization and recovery requirements have been established.
     units that could be approved. It names which units are removal candidates
     and which are blocked and why. It removes nothing, adds no catalog row or
     authorization, and grants no removal approval.
+23. TSK-0012 moves every TSK-0011 candidate unit to `git-history-only` under
+    the owner's unit, action and date scoped approval: it adds capture rows for
+    pre-catalog candidates, one assessment row per unit, and removes each whole
+    payload in the same change. Blocked units stay retained, and the archive
+    integrity and link checks pass after removal.
 
 ## Failure Conditions
 
