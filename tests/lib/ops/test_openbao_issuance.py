@@ -1109,6 +1109,29 @@ class JournalV3Tests(IssuanceRecoveryTests.__base__):
             self.run_case(api)
         self.assertNotIn("stop", api.calls)
 
+    def test_rolling_back_without_saved_generation_never_stops_a_running_agent(self):
+        api = FakeAPI("start")  # start() raises before agent_started_at is saved.
+        api.revoke_self_allowed = lambda token: False
+        api.sink_token = None
+        api.tokens.pop(OLD)
+        self.journal.save(
+            M.Record(
+                "1" * 32,
+                M.utc(WHEN),
+                M.ROLE,
+                REV,
+                M.MANIFEST,
+                state="rolling_back",
+                schema_version=3,
+            )
+        )
+        api.running = True  # Started by hand after the interrupted rollback.
+        api.recovery_generation = lambda issued_at: api.generation
+        with self.assertRaises(M.Blocked):
+            self.run_case(api)
+        self.assertNotIn("stop", api.calls)
+        self.assertEqual("rolling_back", self.journal.load().state)
+
     def test_rollback_preflight_failure_keeps_rolling_back(self):
         api = FakeAPI()
         api.functional = False

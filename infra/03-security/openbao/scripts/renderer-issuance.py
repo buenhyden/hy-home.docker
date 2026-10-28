@@ -476,12 +476,16 @@ def prepare(api, custody, record):
 
 def rollback(api, journal, custody, record):
     """New generation failed: keep the old token, revoke only this run's token."""
-    if record.schema_version == 3 and record.state != "rolling_back":
+    resumed = record.state == "rolling_back"
+    if record.schema_version == 3 and not resumed:
         record = replace(record, state="rolling_back")
         journal.save(record)
     if not api.stopped():
         generation = api.recovery_generation(record.started_at)
-        if record.agent_started_at not in (None, generation):
+        # A resumed rollback cannot tell its own unsaved start from a later one.
+        if (resumed and record.agent_started_at is None) or (
+            record.agent_started_at not in (None, generation)
+        ):
             raise Blocked()  # A later start is not this issuance's to stop.
     api.stop()
     settle_secret_id(api, replace(record, state="delivered"), stopped=True)
@@ -1129,10 +1133,10 @@ def main(argv):
     if not (Path(directory) / "issuance.json").exists() and not api.stopped():
         raise Blocked()
     api.validate_tokens()
-    journal_info = Path(directory).stat()
-    binding = (server, volume, f"{journal_info.st_dev}:{journal_info.st_ino}")
-    custody = Custody(custody_directory(), binding)
     with Journal(directory) as journal:
+        journal_info = os.fstat(journal.fd)
+        binding = (server, volume, f"{journal_info.st_dev}:{journal_info.st_ino}")
+        custody = Custody(custody_directory(), binding)
         if journal.load() is None and not api.stopped():
             raise Blocked()
         run_issuance(api, journal, revision=revision, custody=custody)
