@@ -149,7 +149,7 @@ OIDC 로그인한다. 결과 정책이 `default`와 `hy-home-operator`뿐이고 
 
 ### 6. Wrapped SecretID 발급과 Agent 전달 (owner-run, 60초 이내)
 
-[RUN-0085 Renderer SecretID Delivery](../04-security-and-secrets/0085-openbao.md#renderer-secretid-delivery)의
+[RUN-0103 Renderer SecretID Delivery](../04-security-and-secrets/0103-openbao-renderer-delivery.md#renderer-secretid-delivery)의
 현재 `host stop Agent → hidden issuer input/helper → TTL 내 start Agent → health` 절차와 검증 항목 전체를 실행한다. UI 로그인만으로 발급자 신원을 대신하지 않는다.
 제한 issuer가 60초 wrapping token을 전달하며, 내부 SecretID 설정은 10분·1회지만 고정 버전의 만료 결함 때문에 TTL 거부를 완료로 취급하지 않는다(RUN-0085 Known Runtime Residual).
 wrap 만료 전에 Agent를 시작하고 replay·만료 시 새 wrap을 재발급한다.
@@ -214,9 +214,9 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 
 ### P01 external trust and bootstrap prerequisite
 
-재부팅 전에 OpenBao 외부 CA/server key 자료, RUN-0085 5단계 custody 기록(SPEC-0242)과 제한
+재부팅 전에 OpenBao 외부 CA/server key 자료, RUN-0105 5단계 custody 기록(SPEC-0242)과 제한
 재발급 신원을 확인한다. Agent process cache는 새 process/host boot를 넘지 않는다.
-[RUN-0085](../04-security-and-secrets/0085-openbao.md#renderer-secretid-delivery)의 60초 wrapping 전달 helper를
+[RUN-0103](../04-security-and-secrets/0103-openbao-renderer-delivery.md#renderer-secretid-delivery)의 60초 wrapping 전달 helper를
 사용하고, source health·KV version·render·실제 consumer 적용을 구분한다. Keycloak/DB는
 기존 Docker Secret bootstrap을 유지하므로 OIDC 발급 경로가 Agent 출력에 의존하지
 않는다. 이전 재부팅 receipt는 역사 증거이며 현재 P01 HOME cold boot 성공이 아니다.
@@ -255,7 +255,7 @@ SecretID, token 값은 기록하지 않는다.
   cluster 상태 진단과 owner escalation을 따른다. unseal 실패만으로 Raft snapshot을
   복원하지 않는다. 데이터 손상 근거와 별도 복구 승인이 있을 때만 격리된 restore를 사용한다.
 - 6단계(SecretID 전달)가 실패하거나 시간을 넘기면
-  [RUN-0085](../04-security-and-secrets/0085-openbao.md#renderer-secretid-delivery)의 실패 처리를 따라 새
+  [RUN-0103](../04-security-and-secrets/0103-openbao-renderer-delivery.md#renderer-secretid-delivery)의 실패 처리를 따라 새
   SecretID를 발급한다. CLI 세션이 끝났으면 그 절차의 1단계부터 다시 시작한다.
   Agent volume의 `role_id`를 유지한다. 새 entrypoint가 이전 token sink를 제거하므로
   그 파일을 복사해 인증을 되살리지 않는다.

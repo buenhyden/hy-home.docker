@@ -222,7 +222,8 @@ class RuntimeCompatibilityTests(unittest.TestCase):
 
     def test_documented_renderer_delivery_names_exact_stopped_agent(self):
         runbook = (
-            ROOT / "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md"
+            ROOT
+            / "docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md"
         ).read_text()
         image = compose("infra/03-security/openbao/docker-compose.yml")["services"][
             "openbao"

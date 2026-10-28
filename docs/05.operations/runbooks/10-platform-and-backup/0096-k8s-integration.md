@@ -358,7 +358,7 @@ bao operator generate-root -status
 DNS/TLS/timeout/sealed/CLI/JSON 오류는 `INDETERMINATE`이며 client와 보호된
 증거를 유지하여 소유자에게 에스컬레이션한다. `Started false`는 발급 ceremony가
 끝났다는 뜻이며 token 폐기 증거가 아니다. 확인 후 root·OTP·share 임시 자료는
-RUN-0085 custody 절차에 따라 처리한다.
+RUN-0105 custody 절차에 따라 처리한다.
 
 추가 KV만 갱신하고 클러스터가 동일하면 Phase7로 진행할 수 있다. 클러스터
 재구축에서는 반드시5.5를 수행한다.

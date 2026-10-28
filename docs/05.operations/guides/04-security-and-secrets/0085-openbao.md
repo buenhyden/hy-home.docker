@@ -175,14 +175,17 @@ W0 사전 점검 뒤 W1 임시 root, W1c renderer 정책, W2 snapshot token, W3 
 W3a 격리 복원 시험(한 번만), W4 server 업그레이드와 수동 unseal(목표상 OpenBao가 약 10분 멈추며, window를 넘기면 다음 window까지 sealed로 남을 수 있다),
 W5 Agent 업그레이드와 재발급, W6 audit 확인, W7 root 폐기 순서다. 정해진 시각까지 단계가 시작되지
 않으면 멈추고, 어디서 멈추든 같은 정리를 한다. Keycloak과 Grafana는 이미 렌더된 값으로 계속
-동작한다. 명령과 멈춤 기준은 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이,
+동작한다. 명령과 멈춤 기준은 [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md)가,
 credential 규칙과 받아들인 잔여 위험은 [policy](../../policies/04-security-and-secrets/0085-openbao.md)가
 소유한다.
 
 ### Runbook Handoff
 
 [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 command, 예상 결과, recovery를
-관장한다. [Policy](../../policies/04-security-and-secrets/0085-openbao.md)가 control을 관장한다.
+관장한다. Renderer SecretID 전달은 [RUN-0103](../../runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md),
+metrics credential은 [RUN-0104](../../runbooks/04-security-and-secrets/0104-openbao-metrics-credential.md),
+유지보수 window는 [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md),
+소비자 이관과 secret catalog는 [RUN-0106](../../runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md)이 관장한다. [Policy](../../policies/04-security-and-secrets/0085-openbao.md)가 control을 관장한다.
 
 ### Traceability
 
@@ -206,7 +209,7 @@ render 사이의 순환을 피한다. 실제 consumer 전환은 P06 gate 이후�
 
 한 config-owned file audit의 용량/권한 장애는 audited 요청을 막을 수 있으며 system
 health가 성공해도 audit 성공을 뜻하지 않는다. 값·raw audit/auth 로그 대신 status와
-KV version/결과만 전달한다. 정확한 실행·복구는 [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의
+KV version/결과만 전달한다. 정확한 실행·복구는 [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md#native-tls-audit-and-recovery-gate)의
 Native TLS, Audit and Recovery Gate를 따른다. HOME custody·cold boot·실제 복구는
 현재 미검증이며 격리 synthetic PASS를 복사하지 않는다.
 
@@ -249,7 +252,7 @@ nullable runtime-evidence pointer가 있으며 `CONFIRMED`일 때 대응 pointer
 경로 `.agent-work/p02-views`에 공개 예시, 값 없는 local view, JSON summary, README를 만든다.
 local view는 기존 공개 표의 10-cell 형식을 유지한다. 상위 `.agent-work/README.md`와
 경로의 소유권·regular/single-link·no-follow 조건을 먼저 확인해야 한다.
-정확한 명령·출력·거절 조건은 [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md#p02-public-catalog-checks)을 따른다.
+정확한 명령·출력·거절 조건은 [Runbook](../../runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md#p02-public-catalog-checks)을 따른다.
 
 canonical SMTP 항목은 `COMM-002`이고 `COMM-003`은 그 항목을 가리키는 source-retired
 alias이다. 별도 값·KV entry나 재발급 대상이 아니며, 이 표시가 실제 파일 삭제 완료를

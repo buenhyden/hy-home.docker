@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.22"
+version: "0.1.23"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1541,6 +1541,79 @@ exists now, and both fall back to `/run/secrets` until a later cutover.
 `.env` holds six path lines; rollback for each is `rollback <service>`. The
 `./secrets` copies, the restore contract (needs a post-import off-host
 snapshot) and the P02 `destination_plan` remain as recorded above.
+
+### RUN-0085 split by role — 2026-10-28
+
+The owner asked to split RUN-0085 by role and chose five documents. The body
+text moved without edits: 1,688 lines before, the same total after.
+
+| Runbook | Holds |
+| --- | --- |
+| RUN-0085 | Status checks, start and stop, initial bootstrap, the OIDC contract, human login and root recovery, Kubernetes auth, break-glass, verification and recovery |
+| RUN-0103 | Renderer SecretID delivery and the Agent restart |
+| RUN-0104 | The Prometheus metrics credential |
+| RUN-0105 | The maintenance window (W0 to W8 and Finish), the TLS, audit and recovery gate, the single-admin custody and the source manifest |
+| RUN-0106 | The P06 consumer migration boundary and the P02 catalog checks |
+
+Links that pointed at moved sections now point at the new files. That
+includes anchors inside the runbooks, RUN-0098, RUN-0021, the 0085 guide and
+SPEC-0229 TSK-0001. The folder index lists all five runbooks. The P06 runtime
+and P02 catalog scripts keep RUN-0085 as their authority. The tests read
+the manifest and image pin from RUN-0105 and the Agent restart call from
+RUN-0103.
+
+Two reviews of the split ran before the PR. code-reviewer found no lost or
+duplicated content: each moved section kept its line count. rules-engineer
+confirmed that the numbering, identity, `parent_ids`, profile shape and
+archive handling are correct. Because RUN-0085 stays active, no tombstone is
+needed.
+
+Both reviews flagged consumers that still sent readers to RUN-0085 for moved
+content. These now name RUN-0103 or RUN-0105:
+
+- the 0085 guide (window, TLS gate, runbook handoff);
+- the policy (window, rekey, custody);
+- RUN-0098, RUN-0021 and RUN-0096;
+- the SPEC-0229 Task;
+- the consumer-migration and OpenBao READMEs;
+- the offsite script comment;
+- the two window scripts (the manifest pins were refreshed).
+
+Wording fixes from the reviews:
+
+- "위/아래" references that crossed files are now links.
+- Two invented boilerplate claims were corrected: RUN-0105's "two share
+  holders" and RUN-0103's journal condition.
+
+Left as they are, with the reason for each:
+
+- `protected-renderer-roles.py` keeps its RUN-0085 header comment. The file is
+  hash-pinned in several places, and RUN-0085 links to RUN-0105.
+- The OpenBao alert `runbook_url`s still point at RUN-0085. Retargeting them
+  needs a Prometheus reload and fixture updates.
+- SPEC-0204 `plan.md` still says RUN-0085 owns maintenance. Changing that
+  needs a plan revision.
+- Four references were already dangling before the split. Their targets do
+  not exist in either version: RUN-0085 "아래 인계", RUN-0105 "위 10단계", and
+  the "Known Runtime Residual" cited by the policy and RUN-0098.
+
+Ownership: TSK-0010 names P01 TSK-0006 as the sole writer of the 0085
+operations documents during its active continuation. TSK-0006 is blocked. The
+owner directly asked for this split, and it is recorded here.
+
+Gate: on the split commit, the metadata check found that the four new
+runbooks did not link the authored Compose source. That was fixed, and
+`check-active` now reports 0 violations. The operations catalog, document
+lifecycle and link checks pass. The 71 related tests pass.
+
+CI `check-changed` then rejected the four new runbooks with
+`invalid-initial-status`, because a new runbook must start at `draft`. They
+now start at `draft`. The script manifest then rejected RUN-0106 as an
+authority, because a script authority must be an `active` runbook. The five
+P06 and P02 manifest rows therefore stay on RUN-0085, as on `main`. RUN-0085
+now links the three scripts and says it keeps their authority while the split
+runbooks are `draft`. Moving those rows is part of the later change that
+promotes the four runbooks to `active`.
 
 ## Evidence
 

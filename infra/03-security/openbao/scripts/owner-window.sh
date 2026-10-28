@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# RUN-0085 maintenance window steps after the W1 source bootstrap. The bootstrap
+# RUN-0105 maintenance window steps after the W1 source bootstrap. The bootstrap
 # copies this file with the protected helpers into $P01_SCRIPT_DIR and checks its
 # hash; run that copy, never the checkout's. Each step reads the window state from
 # $XDG_RUNTIME_DIR/p01-window.vars, so a failed step exits this script, not the
@@ -414,7 +414,7 @@ agent-restart)
   # which delivers the SecretID and starts the Agent. Inputs are the Task's values.
   : "${issuer_commit:?}" "${operator_tools:?}" "${agent_volume:?}" "${issuance_journal:?}"
   issuer="$operator_tools/$issuer_commit/issue-renderer-secret-id.sh"
-  [ -f "$issuer" ] || { echo "install the issuer helper first (RUN-0085 SecretID step 2)" >&2; exit 1; }
+  [ -f "$issuer" ] || { echo "install the issuer helper first (RUN-0103 SecretID step 2)" >&2; exit 1; }
   # The helper requires the exact owned image; the OpenBao Compose file owns the pin.
   image="$(sed -n 's/^    image: //p' "$HOME_ROOT/infra/03-security/openbao/docker-compose.yml" | sort -u)"
   [ "$(printf '%s\n' "$image" | wc -l)" = 1 ] || { echo "expected one pinned OpenBao image" >&2; exit 1; }

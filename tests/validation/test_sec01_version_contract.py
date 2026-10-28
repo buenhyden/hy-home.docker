@@ -438,7 +438,8 @@ class CandidateContract(unittest.TestCase):
         self.assertIn("docker exec -i openbao sh -ec", backup)
         self.assertIn("bao operator raft snapshot save", backup)
         runbook = (
-            ROOT / "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md"
+            ROOT
+            / "docs/05.operations/runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md"
         ).read_text()
         image_arguments = re.findall(
             r"(?:openbao/openbao|hy-home/openbao):[^\s]+@sha256:[0-9a-f]{64}",

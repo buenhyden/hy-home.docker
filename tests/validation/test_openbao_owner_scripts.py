@@ -12,12 +12,20 @@ ROOT = Path(__file__).resolve().parents[2]
 WINDOW = ROOT / "infra/03-security/openbao/scripts/owner-window.sh"
 K8S = ROOT / "infra/03-security/openbao/scripts/k8s-writers.sh"
 OIDC = ROOT / "infra/03-security/openbao/consumer-migration/oidc-client-secrets.sh"
-RUNBOOK = ROOT / "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md"
+RUNBOOKS = ROOT / "docs/05.operations/runbooks/04-security-and-secrets"
+RUNBOOK = RUNBOOKS / "0105-openbao-maintenance-window.md"
 
 
 class OwnerWindowScriptTests(unittest.TestCase):
     def test_runbook_copies_and_calls_every_step(self):
-        runbook = RUNBOOK.read_text()
+        runbook = "".join(
+            (RUNBOOKS / name).read_text()
+            for name in (
+                "0085-openbao.md",
+                "0103-openbao-renderer-delivery.md",
+                "0105-openbao-maintenance-window.md",
+            )
+        )
         manifest = runbook.split("<<'P01_SOURCE_MANIFEST'\n", 1)[1]
         self.assertIn(" infra/03-security/openbao/scripts/owner-window.sh\n", manifest)
         self.assertIn(" infra/03-security/openbao/scripts/k8s-writers.sh\n", manifest)
