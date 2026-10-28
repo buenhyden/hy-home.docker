@@ -2,7 +2,7 @@
 title: "OpenBao Consumer Migration and Secret Catalog"
 version: "0.1.0"
 type: "operation/runbook"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-10-28"
 layer: "operations"

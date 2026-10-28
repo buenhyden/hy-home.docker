@@ -1607,6 +1607,11 @@ runbooks did not link the authored Compose source. That was fixed, and
 `check-active` now reports 0 violations. The operations catalog, document
 lifecycle and link checks pass. The 71 related tests pass.
 
+CI `check-changed` then rejected the four new runbooks with
+`invalid-initial-status`, because a new runbook must start at `draft`. They
+now start at `draft`. Until a later change promotes them to `active`, the
+moved procedures are still current text, and RUN-0085 links to each of them.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
