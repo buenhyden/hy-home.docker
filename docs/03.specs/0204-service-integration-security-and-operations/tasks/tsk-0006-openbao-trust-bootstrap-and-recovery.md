@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.36"
+version: "0.2.37"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3658,6 +3658,55 @@ are not an approval.
 Installation runs RUN-0103 step 2 with `issuer_commit` set to the commit above
 and the existing operator tools root. A later W5 then passes that commit to
 `agent-restart`. RUN-0103 now describes v3 and this outage pattern.
+
+### Outage follow-ups and v3 install (2026-10-28)
+
+**v3 issuer installed.** The owner approved B4 v3 for P01 on 2026-10-28
+("Approve v3 for P01, then install it"). RUN-0103 step 2 ran verbatim from the
+runbook with:
+
+- `issuer_repository=/home/hyunyoun/data/hy-home.docker`;
+- `issuer_commit=4f2e7f9badf2db592de91d20146d68f87a228213`;
+- the existing operator tools root.
+
+It exited 0. The new directory holds the wrapper (mode 0500), the helper and
+request shell (0400), and `source-receipt.json` (0400). The receipt names the
+same commit, and all three file hashes match the install packet above. No W5
+ran, because the Agent was healthy after the v2 recovery; the next W5 passes
+this commit to `agent-restart`. The v2 directory `422b4adfd…` is left in place.
+
+**Stopped containers restarted.**
+
+- **`airflow-dag-processor`.** It had exited 1 at 07:47:32Z because `mng-pg`
+  reported "the database system is starting up". With `mng-pg` healthy,
+  `docker start` brought it back healthy.
+- **`crawl4ai-egress`.** Its first start failed with `Address already in use`.
+  `crawl4ai`, which had a dynamic address on `crawl4ai_egress_net`, came back
+  first at 07:35:17Z and took the gateway's static `10.250.200.2`. Stopping
+  `crawl4ai`, starting the gateway, then starting `crawl4ai` restored `.2` for
+  the gateway (healthy) and `.3` for the crawler.
+- **Source fix.** The crawler now has a fixed `10.250.200.3`. The egress test
+  first failed with an error, then passed with 15 OK and 6 native tests skipped,
+  and the public Compose config passed. The running crawler already holds
+  `.3`; the configuration takes effect at its next recreate.
+
+**OpenBao server metrics.**
+
+- **DNS cleared.** The 2026-10-24 DNS failure (`lookup openbao … server
+  misbehaving`) cleared when the server container was restarted. Prometheus
+  now resolves `openbao` on the shared networks; the cause of the original
+  loss is not determined.
+- **New failure: HTTP 403.** The scrape now fails with `403 Forbidden`, so the
+  metrics token is no longer accepted. The agent's attempt to read the
+  non-secret `expires=` line of the custody file was denied by the `secrets/`
+  boundary and was not worked around.
+- **Owner steps.** RUN-0104 rotation needs the temporary root session of
+  RUN-0096 5.2/5.4, because the operator policy cannot mint a `prometheus`
+  token. This stays an owner step.
+
+**Host upgrades.** RUN-0085 now treats `containerd.io` and `docker-ce` upgrades
+as an OpenBao maintenance window, with a pre-check, an optional package hold,
+and the recovery order.
 
 ## Evidence
 
