@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.5.2"
+version: "1.6.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -52,6 +52,11 @@ A follow-up request on the same date classifies the 2,870 links behind the
 standing `historical-links-unrecorded` link warning. Criterion 21/W26 records
 that classification in TSK-0010 without changing an archived body, the
 retention catalog, or a checker.
+
+A request on 2026-10-29 asks for a per-unit dry-run of the Stage 98 retention
+payload before any Git-history-only disposition. Criterion 22/W27 records it in
+TSK-0011 without an archived-body edit, a catalog row, a checker change, or a
+removal; any later removal needs its own unit-scoped approval.
 
 ## Scope
 
@@ -328,6 +333,12 @@ hold, authorization and recovery requirements have been established.
     resolve historically from the residual set, and names the cause it can
     prove. It changes no archived body, retention-catalog row, or checker, and
     it does not convert the warning into a failure or a pass.
+22. TSK-0011 groups every tracked retention-class payload file into its
+    catalog unit and records, per unit, current Markdown and machine
+    consumers, capture state, hold, and an isolated Git restore result for the
+    units that could be approved. It names which units are removal candidates
+    and which are blocked and why. It removes nothing, adds no catalog row or
+    authorization, and grants no removal approval.
 
 ## Failure Conditions
 

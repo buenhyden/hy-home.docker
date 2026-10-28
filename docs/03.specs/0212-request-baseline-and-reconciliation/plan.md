@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.5.1"
+version: "1.6.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -35,7 +35,8 @@ R13 adds W25 in TSK-0009 for one current-source follow-up. It began separately
 from W24's independent infrastructure work and now preserves the published
 W24/criterion 19 allocation alongside W25/criterion 20. W26 in TSK-0010
 classifies the links behind the standing `historical-links-unrecorded` warning
-as a read-only, documentation-only follow-up.
+as a read-only, documentation-only follow-up. W27 in TSK-0011 records a
+read-only per-unit Stage 98 disposition dry-run; it removes nothing.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -71,6 +72,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W24 | 19 | INFRA-P0 inventory scope, owner routes, QA/CI mapping, writer leases, evidence ladder, and P1–P9 handoffs for requirements 11–32 and distinct F01–F29 findings | None | TSK-0008 | Value-free source/static evidence; no native/HOME/recovery claim |
 | W25 | 20 | Classify r13 P01-P08 follow-up findings; remove one reproduced link-graph duplicate, bind repository-file provenance to its declared revision, and retain one shared memory store through sanitized CLI common-directory identity | W16 | TSK-0009 | Focused link and memory regressions, changed-path CI selection, and changed document checks |
 | W26 | 21 | Classify the links counted by `historical-links-unrecorded` against each record's pre-archive Git origin and record the residual set and its proven cause | W25 | TSK-0010 | Read-only Git object resolution; changed document metadata and link checks |
+| W27 | 22 | Per-unit Stage 98 retention-payload dry-run: consumers, capture, hold, isolated restore, and candidate or blocked disposition; no removal | W26 | TSK-0011 | Read-only checker-library reuse and `git archive` restore; changed document metadata and link checks |
 
 ### Current v30 continuation and delivery
 
