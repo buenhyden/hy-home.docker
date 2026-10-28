@@ -20,7 +20,13 @@ observed_at: "{{OBSERVED_AT}}"
 
 ## Scope
 
-{{INCLUDED_AND_EXCLUDED_CONTENT}}
+### Included
+
+{{INCLUDED_CONTENT}}
+
+### Excluded
+
+{{EXCLUDED_CONTENT}}
 
 ## Rules
 
@@ -28,7 +34,13 @@ observed_at: "{{OBSERVED_AT}}"
 
 ## Evidence
 
-{{TRACKED_SOURCES_COMMIT_OBSERVATION_DATE_AND_REFRESH_TRIGGERS}}
+### Sources
+
+{{TRACKED_SOURCES_COMMIT_AND_OBSERVATION_DATE}}
+
+### Refresh Triggers
+
+{{REFRESH_TRIGGERS}}
 
 ## Related Documents
 

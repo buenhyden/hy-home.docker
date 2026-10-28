@@ -22,15 +22,33 @@ created: "{{CREATED}}"
 
 ## Scope and Method
 
-{{BOUNDED_SCOPE_AND_REPRODUCIBLE_METHOD}}
+### Boundaries
+
+{{OBSERVED_BOUNDARIES}}
+
+### Reproducible Method
+
+{{REPRODUCIBLE_METHOD}}
 
 ## Findings
 
-{{DATED_FINDINGS_WITH_SOURCE_REFERENCES}}
+### Dated Observations
+
+{{DATED_OBSERVATIONS_WITH_SOURCE_REFERENCES}}
+
+### Interpretation
+
+{{INTERPRETATION_OF_OBSERVATIONS}}
 
 ## Limitations
 
-{{UNOBSERVED_FACTS_AND_INTERPRETATION_LIMITS}}
+### Unobserved Facts
+
+{{UNOBSERVED_FACTS}}
+
+### Interpretation Limits
+
+{{INTERPRETATION_LIMITS}}
 
 ## Sources
 

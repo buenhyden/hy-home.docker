@@ -24,7 +24,13 @@ metadata:
 
 ## Inputs
 
+### Required Inputs
+
 {{REQUIRED_INPUTS}}
+
+### Preconditions
+
+{{PRECONDITIONS}}
 
 ## Procedure
 
@@ -32,11 +38,23 @@ metadata:
 
 ## Outputs
 
-{{PRODUCED_ARTIFACTS_AND_EVIDENCE}}
+### Artifacts
+
+{{PRODUCED_ARTIFACTS}}
+
+### Evidence
+
+{{PRODUCED_EVIDENCE}}
 
 ## Failure Handling
 
-{{STOP_CONDITIONS_AND_RECOVERY}}
+### Stop Conditions
+
+{{STOP_CONDITIONS}}
+
+### Recovery
+
+{{RECOVERY}}
 
 ## References
 

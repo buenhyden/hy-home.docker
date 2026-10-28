@@ -18,19 +18,43 @@ updated: "{{UPDATED}}"
 
 ## Inputs
 
-{{APPROVED_SCOPE_AND_REQUIRED_SOURCE_INPUTS}}
+### Approved Scope
+
+{{APPROVED_SCOPE}}
+
+### Source Inputs
+
+{{REQUIRED_SOURCE_INPUTS}}
 
 ## Sequence
 
-{{STAGE_SEQUENCE_AND_STATUS_TRANSITIONS}}
+### Stages
+
+{{STAGE_SEQUENCE}}
+
+### Status Transitions
+
+{{STATUS_TRANSITIONS}}
 
 ## Stop Conditions
 
-{{OWNED_AND_NOT_OWNED_DECISIONS}}
+### Owned Decisions
+
+{{OWNED_DECISIONS}}
+
+### Not-Owned Decisions
+
+{{NOT_OWNED_DECISIONS}}
 
 ## Outputs
 
-{{RESULT_ARTIFACTS_AND_TASK_EVIDENCE}}
+### Artifacts
+
+{{RESULT_ARTIFACTS}}
+
+### Task Evidence
+
+{{TASK_EVIDENCE}}
 
 ## Related Documents
 

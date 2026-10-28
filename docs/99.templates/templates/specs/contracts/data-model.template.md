@@ -26,19 +26,43 @@ created: "{{CREATED}}"
 
 ## Attributes
 
-{{ATTRIBUTE_TYPES_AND_NULLABILITY}}
+### Types
+
+{{ATTRIBUTE_TYPES}}
+
+### Nullability and Defaults
+
+{{NULLABILITY_AND_DEFAULTS}}
 
 ## Relationships
 
-{{CARDINALITY_AND_OWNERSHIP}}
+### Cardinality
+
+{{CARDINALITY}}
+
+### Ownership
+
+{{OWNERSHIP}}
 
 ## Constraints
 
-{{KEYS_UNIQUENESS_AND_REFERENTIAL_RULES}}
+### Keys and Uniqueness
+
+{{KEYS_AND_UNIQUENESS}}
+
+### Referential Rules
+
+{{REFERENTIAL_RULES}}
 
 ## Lifecycle
 
-{{CREATION_MUTATION_AND_RETENTION_RULES}}
+### Creation and Mutation
+
+{{CREATION_AND_MUTATION_RULES}}
+
+### Retention
+
+{{RETENTION_RULES}}
 
 ## Traceability
 

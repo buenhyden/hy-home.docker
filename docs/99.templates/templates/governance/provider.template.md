@@ -18,15 +18,33 @@ updated: "{{UPDATED}}"
 
 ## Loading
 
-{{ENTRY_SHIM_AND_BOOTSTRAP_ORDER}}
+### Entry Shim
+
+{{ENTRY_SHIM}}
+
+### Bootstrap Order
+
+{{BOOTSTRAP_ORDER}}
 
 ## Native Controls
 
-{{GENERATED_VERSUS_NATIVE_SURFACES}}
+### Generated Surfaces
+
+{{GENERATED_SURFACES}}
+
+### Authored Native Surfaces
+
+{{AUTHORED_NATIVE_SURFACES}}
 
 ## Limitations
 
+### Registered Gate
+
 {{REGISTERED_GATE_COMMAND}}
+
+### Unsupported Behavior
+
+{{UNSUPPORTED_OR_UNOBSERVED_BEHAVIOR}}
 
 ## Related Documents
 
