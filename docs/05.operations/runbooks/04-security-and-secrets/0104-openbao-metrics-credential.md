@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Prometheus Metrics Credential"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -37,8 +37,17 @@ metrics token을 처음 발급하거나, 만료 전에 회전하거나, 이미 �
    대한 `read`만 포함하며, 승인된 관리자가 대기 중이고, rollback이 현재 configuration
    commit을 사용함을 확인한다. Prometheus credential로 renderer AppRole, renderer sink
    token, human operator token, root token을 사용하지 않는다.
-2. policy를 적용하고 default policy가 없는 새 orphan service token을 발급한다. 유효 시스템
-   최댓값 이내의 유한한 TTL을 부여하고, 만료 시각과 accessor를 보호된 custody에 기록하고,
+2. policy를 적용하고 default policy가 없는 새 orphan service token을 발급한다. TTL은
+   1년(`8760h`)이다(2026-10-28 owner 결정. 이전 `720h`는 경고 없이 만료되었다). 기본
+   token mount 최댓값(768h)을 넘으므로 같은 root 세션에서 `token/` mount의 최대 TTL을 먼저
+   `8760h`로 tune한다. 이 token은 `sys/metrics` read만 가진다. 만료 30일 전부터
+   `owner-window.sh status`가 경고한다. 만료가 없는 일반 service token은 만들 수 없다.
+   TTL을 지정하지 않으면 mount 기본 TTL을 받고, period token도 갱신하지 않으면 만료된다.
+   tune은 최댓값만 바꾸며 TTL을 지정하지 않은 다른 token은 계속 기본 TTL을 받는다. 다만 tune은
+   영구적이다. `auth/token/create*`를 쓸 수 있는 호출자는 명시 TTL로 최대 1년짜리 token을 받을
+   수 있고, 명시 최댓값이 없는 갱신 가능 token은 1년까지 갱신된다. 이 잔여 위험은 owning
+   Task에 기록한다. 새 token은 `-explicit-max-ttl`과 `-renewable=false`로 스스로 묶는다. 발급한 뒤 만료 시각과
+   accessor를 보호된 custody에 기록하고,
    token 값만 mode `0640`, group `SECRETS_GID`로 `secrets/security/openbao/openbao_token.txt`에
    전달한다(Prometheus는 `group_add`를 통해 `nobody`로 이를 읽는다). 출력하거나 인자로
    전달하지 않는다. 아래 명령의 owner-only 세션 디렉터리만 스테이징으로 허용되며 이후
@@ -70,7 +79,7 @@ metrics 회전에는 CA, policy 디렉터리와 owner 전용 작업 디렉터리
 snapshot, 임시 root, root 폐기 단계는 그대로 따른다.
 
 ```bash
-K8S_WORK=/tmp/bao-k8s; install -d -m 0700 "$K8S_WORK"
+K8S_WORK=/tmp/bao-k8s; install -d -m 0700 "$K8S_WORK" && [ -O "$K8S_WORK" ] && [ "$(stat -c %a "$K8S_WORK")" = 700 ] || { echo STOP; exit 1; }
 IMG=$(docker compose config --images openbao)
 docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp \
   -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem \
@@ -81,7 +90,8 @@ docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp \
 
 ```sh
 R policy write prometheus /policies/prometheus.hcl
-R token create -orphan -no-default-policy -policy=prometheus -ttl=720h -field=token >/s/k8s/metrics.token
+R auth tune -max-lease-ttl=8760h token/
+R token create -orphan -no-default-policy -policy=prometheus -ttl=8760h -explicit-max-ttl=8760h -renewable=false -field=token >/s/k8s/metrics.token
 R write -format=json auth/token/lookup token=@/s/k8s/metrics.token | grep -E '"(accessor|expire_time)"' >/s/k8s/metrics.custody
 grep -c . /s/k8s/metrics.custody
 BAO_TOKEN="$(cat /s/k8s/metrics.token)" bao read sys/metrics >/dev/null 2>&1 && echo "metrics: allowed" || echo "metrics: DENIED"
@@ -138,28 +148,40 @@ bao status -format=json >/s/k8s/server-control.json 2>/s/k8s/server-control.err
 
 **만료된 이전 token.** custody의 `expires=`가 이미 지났다면 위 폐기 요청을 보내지 않는다.
 폐기 전 조회가 실패하는 것이 정상이므로, 위 순서대로 하면 첫 조회에서 중단되고 custody가
-교체되지 않는다. 같은 세션에서 다음만 실행한다.
+교체되지 않는다. 만료 여부는 custody만 믿지 않고 실제 배포된 token으로도 확인한다. custody가
+오래되었으면 accessor는 무효여도 배포된 token은 유효할 수 있기 때문이다. 따라서 위 파일 교체
+**전에** host에서 배포된 이전 token을 세션 디렉터리에 복사해 둔다.
+
+```bash
+install -m 600 secrets/security/openbao/openbao_token.txt /tmp/bao-k8s/old.token
+```
+
+파일 교체 뒤 같은 root 세션에서 다음만 실행한다. 각 검사는 결과를 출력하며 `STOP`이 하나라도
+나오면 중단한다.
 
 ```sh
 umask 077
-test "$(grep -c '^accessor=' /s/k8s/old.custody)" -eq 1
+[ "$(grep -c '^accessor=' /s/k8s/old.custody)" -eq 1 ] && echo "accessor: one" || echo STOP
 OLD_ACCESSOR=$(sed -n 's/^accessor=//p' /s/k8s/old.custody)
-test -n "$OLD_ACCESSOR"
-R token lookup -accessor -format=json "$OLD_ACCESSOR" >/s/k8s/old-expired.json 2>/s/k8s/old-expired.err; echo "lookup rc=$?"
+[ -n "$OLD_ACCESSOR" ] && echo "accessor: set" || echo STOP
+R token lookup -accessor -format=json "$OLD_ACCESSOR" >/s/k8s/old-expired.json 2>/s/k8s/old-expired.err; echo "accessor lookup rc=$?"
 grep -c 'invalid accessor' /s/k8s/old-expired.err
+R write -format=json auth/token/lookup token=@/s/k8s/old.token >/s/k8s/old-token.json 2>/s/k8s/old-token.err; echo "token lookup rc=$?"
+grep -c 'bad token' /s/k8s/old-token.err
 R token lookup -format=json >/s/k8s/caller-control.json 2>/s/k8s/caller-control.err; echo "caller rc=$?"
 bao status -format=json >/s/k8s/server-control.json 2>/s/k8s/server-control.err; echo "status rc=$?"
 ```
 
-다음 네 조건이 모두 맞을 때만 `old: expired (<custody expires 값>)`로 기록하고 폐기 없이
-아래 custody 교체로 넘어간다.
+다음 조건이 모두 맞을 때만 `old: expired (<custody expires 값>)`로 기록하고, 폐기 없이 아래
+custody 교체로 넘어간 뒤 `/s/k8s/old.token`을 지운다.
 
-- 조회가 0이 아닌 코드로 끝난다.
-- 오류에 `invalid accessor`가 정확히 한 번 나온다.
-- 관리 호출자 조회가 0으로 끝난다.
-- server 상태 조회가 0으로 끝난다.
+- `accessor: one`과 `accessor: set`이 출력되고 `STOP`이 없다.
+- accessor 조회가 0이 아닌 코드로 끝나고, 오류에 `invalid accessor`가 정확히 한 번 나온다.
+- 배포된 token 조회가 0이 아닌 코드로 끝나고, 오류에 `bad token`이 정확히 한 번 나온다.
+- 관리 호출자 조회와 server 상태 조회가 0으로 끝난다.
 
-조회가 성공하면 token이 아직 유효하므로 위 폐기 순서를 따른다. 그 밖의 결과(403, DNS,
+어느 조회든 성공하면 token이 아직 유효하므로 위 폐기 순서를 따른다. 배포된 token이 유효하고
+accessor만 다르면 custody가 오래된 것이므로 중단하고 원인을 확인한다. 그 밖의 결과(403, DNS,
 TLS, timeout, sealed, 파싱 실패)는 `INDETERMINATE`이며 위와 같이 중단한다.
 
 ```bash
@@ -172,7 +194,7 @@ unset A E; sed -n 's/^expires=//p' secrets/security/openbao/openbao_metrics_toke
 rm -f /tmp/bao-k8s/old.custody /tmp/bao-k8s/metrics.custody
 ```
 
-예상 결과: `old: revoked`, 그다음 새 만료일(secret이 아니므로 기록한다). 그런 다음 통합
+예상 결과: `old: revoked` 또는 `old: expired (<날짜>)`, 그다음 새 만료일(secret이 아니므로 기록한다). 그런 다음 통합
 runbook의 root 폐기 단계로 root 세션을 종료한다. `Started false`는 발급 시도 종료일
 뿐 root 폐기 증거가 아니다. root 폐기도 해당 절차의 서버 응답과 양성 대조로
 확인한 후, 이 단계에서 만든 보호된 응답 파일과 `OLD_ACCESSOR`를 정리한다.
@@ -188,7 +210,7 @@ credential이 필요하다. 발급에는 승인된 운영자 신원이 필요하
 
 ## Verification
 
-`metrics: allowed`, `policy list: denied`, `up{job="openbao"}` 값 1, 이전 token의 `old: revoked`와 새 만료일을 값 없이 Task에 기록한다.
+`metrics: allowed`, `policy list: denied`, `up{job="openbao"}` 값 1, 이전 token의 `old: revoked` 또는 `old: expired (<날짜>)`와 새 만료일을 값 없이 Task에 기록한다.
 
 ## Failure and Recovery
 
