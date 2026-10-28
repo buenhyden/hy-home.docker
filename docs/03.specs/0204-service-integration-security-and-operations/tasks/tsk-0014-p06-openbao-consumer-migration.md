@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.21"
+version: "0.1.22"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1426,6 +1426,121 @@ seven directories existed. No consumer had been recreated, and all were still
 healthy. The owner then created the seven directories as the Agent user. All
 nine `out` directories are `drwxr-xr-x openbao`. The readable-file sweep lists
 only the three current `.txt` files. NOT_RUN: Agent restart, every cutover.
+
+### RUN-0085 remaining blocks as scripts — 2026-10-28
+
+The owner asked that every scriptable RUN-0085 block run as a script. PR #593
+(`19ccd6bae`) had already moved the W1 to W7 core and the Agent restart.
+
+`owner-window.sh` gains the following steps. Each keeps the removed block's
+helper, arguments and FDs.
+
+- W0: `retire-token`, for the old operator token, and `audit-list`.
+- W2: `w2`.
+- W3: `lease-start`, `w3`, `lease-bind`.
+- W3a: `w3a-inputs`, `w3a`.
+- W3b: `w3b`.
+- W4: `w4`.
+- W5: `w5-create`.
+
+Some steps add checks:
+
+- `w3` checks the writers itself, or needs an explicit `--writers-checked`.
+- `w4` compares the Raft mount name, source and device/inode before and after
+  the recreate.
+- `w3a` shreds its share files on any exit.
+
+A new `k8s-writers.sh` is for the external cluster operator. It holds the W3
+writer quiescence and the ESO Finish gate as `discover`, `stop`, `check`,
+`restore`, `finish`, `force-refresh` and `finish-wait`. Its functions are the
+removed runbook functions, unchanged, and their state lives in
+`$P01_K8S_STATE`. `force-refresh` now refuses a second refresh of the same
+target.
+
+Both scripts are pinned in the source manifest. The window-override tests now
+take the writer and gate functions from the script.
+
+These blocks stay in the runbook:
+
+- The three trust anchors stay because they verify the scripts themselves: the
+  issuer install bootstrap, the W1 source bootstrap and `p01_run`.
+- The Prometheus metrics credential stays because it runs inside the
+  throwaway client of the hy-home.k8s integration runbook.
+- The single-command lifecycle checks stay.
+
+Review of `3e20d342e`, before the PR:
+
+- iac-reviewer found one High issue: `w3` did not pass a `P01_K8S_STATE`
+  read from `p01-window.vars` to the child writer check. That made W3 fail
+  after the writers had stopped. The value is now passed explicitly.
+- iac-reviewer and security-auditor both raised the same Medium issue:
+  `retire-token` deleted the token file on any lookup failure without revoking
+  the token. It now deletes only when the server refuses the lookup, and
+  requires a 0600 single-link regular file.
+- iac-reviewer's other Mediums:
+  - `w4` now takes the recorded Raft identity and checks it before recreating.
+    It also requires a W3a acceptance marker and the W3b receipt that `w3b`
+    now saves.
+  - Rerunning `w3a-inputs` keeps an existing bundle and receipt and retries
+    the contract.
+- The Lows:
+  - The K8s `finish` writes a `restored` marker that `force-refresh` and
+    `finish-wait` require. This prevents accepting the window with Argo CD
+    still stopped.
+  - `audit-list` checks jq.
+  - Shares are also removed on HUP and QUIT.
+  - `bao_as` drops `DOCKER_HOST`, `DOCKER_CONTEXT`, `DOCKER_CONFIG` and
+    `COMPOSE_FILE`.
+  - `evidence` copies the K8s state.
+  - The `token w3a` step moved into the W3 preconditions.
+- `oidc-client-secrets.sh cutover`, run through `p01_run`, could not find its
+  verifier next to the temporary file. It now falls back to the checkout's
+  verifier.
+- New tests cover the state handoff, the `w4` and `w3` gates, the
+  `retire-token` file check, and the restored-Finish requirement.
+
+### OIDC batch: Agent restart and HOME cutover — 2026-10-28
+
+The owner fast-forwarded the main checkout to `19ccd6bae` (#593).
+
+Agent restart (owner, `owner-window.sh agent-restart` from `19ccd6bae`
+through `p01_run`):
+
+- The first call had no inputs. It stopped at the input check before stopping
+  the Agent.
+- The inputs were the earlier restart's values: issuer helper revision
+  `422b4adf…` under the operator tools directory, Agent volume
+  `hy-home-infra_openbao-agent-data`, and the persistent issuance journal.
+- The Agent restarted at 01:05:42Z, is healthy, and the journal anchor is
+  `complete`.
+- All seven new directories hold a `.txt` (0640) and a `.version` (0600). The
+  readable-file sweep counts 10, one for each `.txt` template.
+
+Cutover (owner, `oidc-client-secrets.sh cutover` from the checkout). The
+recreate times below are UTC; each service reads its `/run/openbao/<dir>/…`
+file and is healthy.
+
+| Service | Recreated (UTC) |
+| --- | --- |
+| dozzle | 01:06:38 |
+| gatus | 01:08:22 |
+| open-webui | 01:09:22 |
+| oauth2-proxy | 01:16:36 |
+| kafbat-ui | 01:18:32 |
+| airflow-apiserver | 01:21:16 |
+
+- open-webui took about six minutes to load on CPU and became healthy at
+  01:15:28Z with no restart. Its log showed no secret or OAuth error.
+- The owner reports all six cutovers complete. The verifier output and the
+  login checks were run and judged by the owner; the session could not run the
+  verifier, because it compares credentials.
+
+The owner put opensearch-dashboards and superset on hold. Neither container
+exists now, and both fall back to `/run/secrets` until a later cutover.
+
+`.env` holds six path lines; rollback for each is `rollback <service>`. The
+`./secrets` copies, the restore contract (needs a post-import off-host
+snapshot) and the P02 `destination_plan` remain as recorded above.
 
 ## Evidence
 
