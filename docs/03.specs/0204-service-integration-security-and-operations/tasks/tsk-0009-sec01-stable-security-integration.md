@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.37"
+version: "0.4.38"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2884,6 +2884,16 @@ probed, and CUDA0 was found in 2.9 s. The Compose service now sets
 `OLLAMA_LLM_LIBRARY=cuda_v12`, the service wiring test pins it, RUN-0056
 explains it, and the ledger `include_inputs` hash follows the Compose file. The
 running container picks it up at the next recreate from `main`.
+
+After #600 merged, the owner recreated Ollama from `main` at 05:41:20Z.
+`printenv` shows `OLLAMA_LLM_LIBRARY=cuda_v12`. The server listened at
+05:41:22Z and found CUDA0 at 05:41:23.854Z (`library=CUDA`, compute 6.1,
+`libdirs=ollama,cuda_v12`, 5.9 GiB). That is 1.8 s of discovery with no
+watchdog timeout and no other library probed. The warm-up took about 2 s
+because the libraries were still in the page cache, so this start does not
+prove a fully cold start. The service is healthy. The 0.40.12 runtime
+acceptance is complete; signature, SBOM and advisory applicability stay
+NOT_RUN.
 
 ## Evidence
 
