@@ -3963,6 +3963,51 @@ for an honest object store and a clean environment. Each finding was fixed:
   - the `p01_run` text now claims only blob re-hashing. Tree substitution is
     named as the accepted residual risk.
 
+### Metrics token rotation: owner run (2026-10-28)
+
+The owner ran the scripted RUN-0104 rotation in a clean `env -i` bash, using
+`P01_APPROVED_COMMIT` `67357246f1afae063878cc757aaa466a8747e75f` (PR #607).
+This was the first live run of `preflight`, `p01-bootstrap.sh`,
+`metrics-rotate` and the new `p01_run`. The output below is value-free.
+
+| Step | Result |
+| --- | --- |
+| `preflight` (run twice) | `problems: 0`; `Sealed false`, image `a58fb110…`, dockerd debug false, Linger yes, R2 60 snapshots |
+| `p01_run` with `p01-bootstrap.sh` | 20 × `OK`, `bootstrap ok` |
+| `token w1` and `check-token w1` | policies `default` and `hy-home-operator`, path `auth/oidc/oidc/callback`, `started:false` |
+| `w1` | `DELIVERED` |
+| `root-sweep` | `revoked=0`, `remaining=0` |
+| `metrics-rotate` | `metrics: allowed`, `policy list: denied`, `old token: expired`, `target: openbao up` |
+| New token | `new: expires 2027-10-28T14:31:33Z` |
+| Old token | `old: expired (2026-10-24T10:04:32Z)` |
+| `status` | `problems: 0`; metrics token 364 days; targets `openbao` and `openbao-agent` up |
+| `revoke-root` | `ROOT_REVOKED_OPERATOR_HEALTHY` |
+| `cleanup` | `revoked p01-op-w1.token`; `revoke failed p01-op-w7.token` |
+
+Notes:
+
+- **Prometheus restored.** OpenBao server metrics are back, so the 2026-10-24
+  outage is closed. An agent read-only check afterwards showed `up` = 1 for
+  both jobs and no OpenBao alert active.
+- **Pending alert.** `OpenBaoTooManyPendingTokens` was pending at 14:32:53Z,
+  when metrics first returned after the outage. It cleared within its
+  5-minute `for` window. Its expression read -1 afterwards.
+- **`jq` noise.** `metrics-rotate` printed two `null cannot be parsed as a
+  number` lines. They came from the wait loop, while Prometheus had no
+  post-recreate `up == 1` sample yet. The wait still worked. The empty result
+  now counts as "not up" without an error.
+- **w7 revoke.** `revoke-root` confirmed the w7 operator healthy right after
+  root was revoked. The w7 token therefore became invalid only between that
+  check and `cleanup`. The likely cause is that it came from the same UI
+  login as w1, so revoking w1 already revoked it. If it was a separate login,
+  it expires within its 1-hour TTL (4-hour maximum). The value was shredded
+  with the file.
+- **Leftover client copies.** `cleanup` left four `p01-client.*` directories.
+  They hold only reviewed source copies and no secret.
+- **Garbled paste.** In the owner's paste, the last lines of `p01_run` were
+  redrawn out of place by the terminal. The function still ran, as the
+  bootstrap's `OK` lines show.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |

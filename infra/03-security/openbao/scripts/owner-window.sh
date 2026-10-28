@@ -520,7 +520,7 @@ metrics-rotate)
     for _ in $(seq "${metrics_wait:-12}"); do
       sleep "${metrics_interval:-10}"
       docker exec prometheus wget -qO- 'http://localhost:9090/api/v1/query?query=timestamp%28up%7Bjob%3D%22openbao%22%7D%3D%3D1%29' 2>/dev/null |
-        jq -e --argjson s "$start" '.data.result[0].value[1] | tonumber > $s' >/dev/null && return 0
+        jq -e --argjson s "$start" '(.data.result[0].value[1] // "0" | tonumber) > $s' >/dev/null && return 0
     done
     return 1
   }
