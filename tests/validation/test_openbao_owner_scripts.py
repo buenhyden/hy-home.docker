@@ -143,7 +143,7 @@ class WindowGateTests(unittest.TestCase):
             'case "$*" in\n'
             "  'ps -a --filter name=^openbao$ --filter name=^openbao-agent$'*)"
             " echo 'openbao: Up 1 hour (healthy)'; echo 'openbao-agent: Up 1 hour (healthy)' ;;\n"
-            "  'compose exec -T openbao bao status -format=json')"
+            "  'exec openbao bao status -format=json')"
             f' echo \'{{"sealed":{sealed},"ha_enabled":true,"is_self":true,"version":"2.7.1"}}\' ;;\n'
             "  *api/v1/alerts*)"
             f' echo \'{{"data":{{"alerts":[{{"labels":{{"alertname":"OpenBaoMetricsScrapeFailing"}},'

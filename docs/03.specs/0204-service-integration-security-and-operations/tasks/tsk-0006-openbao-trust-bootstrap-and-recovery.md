@@ -3765,7 +3765,9 @@ target with an empty `lastError` was also warned as a problem, because `read`
 strips the trailing space; the step now matches the job and health fields. The
 agent's earlier live run used the first draft. The RUN-0105 manifest pin
 follows the new script hash. The Crawl4AI runtime test now reads the network
-names from the new map form.
+names from the new map form. The seal probe now uses `docker exec`, as the
+Prometheus probe does, because the Compose form changes into the fixed host
+checkout, which hosted CI does not have.
 
 **Residual (owner decision).** Tuning the `token/` mount to `8760h` is
 persistent. Any caller allowed on `auth/token/create*` can then get an

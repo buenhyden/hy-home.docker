@@ -420,7 +420,7 @@ status)
     case "$line" in *"(healthy)"*) ;; *) warn "not healthy: $line" ;; esac
   done < <(docker ps -a --filter name='^openbao$' --filter name='^openbao-agent$' --format '{{.Names}}: {{.Status}}')
   [ "$seen" = 2 ] || warn "expected openbao and openbao-agent, found $seen"
-  seal="$( (cd "$HOME_ROOT" && docker compose exec -T openbao bao status -format=json) 2>/dev/null)"
+  seal="$(docker exec openbao bao status -format=json 2>/dev/null)"
   if sealed="$(printf '%s' "$seal" | jq -r '.sealed' 2>/dev/null)" && [ -n "$sealed" ] && [ "$sealed" != null ]; then
     echo "server: sealed=$sealed $(printf '%s' "$seal" | jq -r '"ha=\(if .sealed then "-" elif .is_self then "active" elif .ha_enabled then "standby" else "-" end) version=\(.version)"')"
     [ "$sealed" = false ] || warn "server sealed: unseal (RUN-0085), then agent-restart"
