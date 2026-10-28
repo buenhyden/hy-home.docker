@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from .test_openbao_issuance import BASE, REV, WHEN, FakeAPI, M
+from .test_openbao_issuance import BASE, REV, WHEN, FakeAPI, M, custody_dir
 
 
 class RequestCustodyTests(unittest.TestCase):
@@ -276,11 +276,17 @@ esac
             api = UncertainAPI()
             api.journal = journal
             with self.assertRaises(M.Blocked):
-                M.run_issuance(api, journal, revision=REV, clock=lambda: WHEN)
+                M.run_issuance(
+                    api,
+                    journal,
+                    revision=REV,
+                    custody=custody_dir(self),
+                    clock=lambda: WHEN,
+                )
             self.assertEqual(["issue"], api.calls)
             self.assertIsNotNone(journal.load())
             with self.assertRaises(M.Blocked):
-                M.run_issuance(api, journal, revision=REV)
+                M.run_issuance(api, journal, revision=REV, custody=custody_dir(self))
             self.assertEqual(["issue", "accessors"], api.calls)
             self.assertIsNotNone(journal.load())
 

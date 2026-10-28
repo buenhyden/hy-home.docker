@@ -1,9 +1,17 @@
-"""Durable, secret-free renderer issuance; a journal records uncertainty, not success."""
+"""Durable, secret-free renderer issuance; a journal records uncertainty, not success.
+
+Journal v3 phases: prepared -> issuing -> delivered -> verified -> revoking ->
+complete, or rolled_back. The old Agent token lives only in owner-only tmpfs
+custody, never in the journal; custody is destroyed once that token is revoked
+or denied. Rollback keeps the old token and revokes only this run's new one.
+v1/v2 journals are still read and reconciled.
+"""
 
 from __future__ import annotations
 
 import fcntl
 import hashlib
+import hmac
 import json
 import os
 import re
@@ -33,6 +41,10 @@ class Uncertain(Blocked):
     """A request may have succeeded; retain its journal for explicit reconciliation."""
 
 
+class Denied(Blocked):
+    """The server refused a self-token request with 403: that token is unusable."""
+
+
 def unique_fields(pairs):
     result = {}
     for key, value in pairs:
@@ -46,6 +58,27 @@ def utc(seconds):
     return datetime.fromtimestamp(seconds, UTC).isoformat()
 
 
+V1_FIELDS = (
+    "nonce",
+    "started_at",
+    "role",
+    "source_revision",
+    "image_manifest",
+    "state",
+    "agent_started_at",
+)
+VERSION_FIELDS = {
+    1: set(),
+    2: {"schema_version", "issuance_id"},
+    3: {"schema_version", "issuance_id", "old_created"},
+}
+STATES = {
+    1: {"issuing", "delivered"},
+    2: {"issuing", "delivered"},
+    3: {"prepared", "issuing", "delivered", "verified", "revoking", "rolling_back"},
+}
+
+
 @dataclass(frozen=True)
 class Record:
     nonce: str
@@ -56,47 +89,58 @@ class Record:
     state: str = "issuing"
     agent_started_at: str | None = None
     schema_version: int = 1
+    # v3: creation time of the captured old Agent token; None when none is live.
+    old_created: int | None = None
 
     @property
     def issuance_id(self):
         return self.nonce
 
+    @property
+    def terminal(self):
+        # A v3 run that never revoked the old token ends rolled_back.
+        return "rolled_back" if self.schema_version == 3 else "complete"
+
     @classmethod
     def from_document(cls, raw):
         if not isinstance(raw, dict):
             raise Blocked()
-        if "schema_version" not in raw and set(raw) != (
-            set(cls.__dataclass_fields__) - {"schema_version"}
+        version = raw.get("schema_version", 1)
+        if (
+            type(version) is not int
+            or version not in VERSION_FIELDS
+            or set(raw) != set(V1_FIELDS) | VERSION_FIELDS[version]
+            or raw.get("issuance_id", raw["nonce"]) != raw["nonce"]
         ):
             raise Blocked()
-        if "schema_version" in raw:
-            if (
-                type(raw["schema_version"]) is not int
-                or raw["schema_version"] != 2
-                or set(raw) != set(cls.__dataclass_fields__) | {"issuance_id"}
-                or raw["issuance_id"] != raw["nonce"]
-            ):
-                raise Blocked()
-            raw = {k: v for k, v in raw.items() if k != "issuance_id"}
         try:
-            return cls(**raw).validate()
+            return cls(
+                **{k: raw[k] for k in V1_FIELDS},
+                schema_version=version,
+                old_created=raw.get("old_created"),
+            ).validate()
         except (ValueError, TypeError):
             raise Blocked() from None
 
     def document(self):
-        fields = {k: v for k, v in self.__dict__.items() if k != "schema_version"}
-        return (
-            fields
-            if self.schema_version == 1
-            else {**fields, "schema_version": 2, "issuance_id": self.nonce}
-        )
+        fields = {k: getattr(self, k) for k in V1_FIELDS}
+        if self.schema_version == 1:
+            return fields
+        fields = {**fields, "schema_version": self.schema_version}
+        if self.schema_version == 3:
+            fields = {**fields, "old_created": self.old_created}
+        return {**fields, "issuance_id": self.nonce}
 
     def anchor(self, state):
         fields = {"nonce": self.nonce, "state": state}
         return (
             fields
             if self.schema_version == 1
-            else {**fields, "schema_version": 2, "issuance_id": self.nonce}
+            else {
+                **fields,
+                "schema_version": self.schema_version,
+                "issuance_id": self.nonce,
+            }
         )
 
     def metadata(self):
@@ -108,18 +152,24 @@ class Record:
         return (
             fields
             if self.schema_version == 1
-            else {**fields, "issuance_schema": "2", "issuance_id": self.nonce}
+            else {
+                **fields,
+                "issuance_schema": str(self.schema_version),
+                "issuance_id": self.nonce,
+            }
         )
 
     def validate(self):
         if (
             type(self.schema_version) is not int
-            or self.schema_version not in {1, 2}
+            or self.schema_version not in STATES
+            or not isinstance(self.nonce, str)
             or not re.fullmatch(r"[a-f0-9]{32}", self.nonce)
             or self.role != ROLE
+            or not isinstance(self.source_revision, str)
             or not REVISION.fullmatch(self.source_revision)
             or self.image_manifest != MANIFEST
-            or self.state not in {"issuing", "delivered"}
+            or self.state not in STATES[self.schema_version]
         ):
             raise Blocked()
         try:
@@ -128,12 +178,18 @@ class Record:
                 raise ValueError()
         except (ValueError, TypeError):
             raise Blocked() from None
+        if self.old_created is not None and (
+            self.schema_version != 3
+            or type(self.old_created) is not int
+            or not 0 < self.old_created < when.timestamp()
+        ):
+            raise Blocked()
         if self.agent_started_at is not None:
             try:
                 generation = datetime.fromisoformat(
                     self.agent_started_at.replace("Z", "+00:00")
                 )
-                if self.state != "delivered" or generation.tzinfo is None:
+                if self.state in {"prepared", "issuing"} or generation.tzinfo is None:
                     raise ValueError()
             except (AttributeError, ValueError, TypeError):
                 raise Blocked() from None
@@ -209,23 +265,26 @@ class Journal:
                 if version == 1
                 else {"nonce", "state", "schema_version", "issuance_id"}
             )
+            states = {"active", "complete"} | (
+                {"rolled_back"} if version == 3 else set()
+            )
             if (
                 not isinstance(anchor, dict)
                 or type(version) is not int
-                or version not in {1, 2}
+                or version not in STATES
                 or set(anchor) != keys
-                or anchor["state"] not in {"active", "complete"}
+                or anchor["state"] not in states
                 or not isinstance(anchor["nonce"], str)
                 or not re.fullmatch(r"[a-f0-9]{32}", anchor["nonce"])
-                or (version == 2 and anchor["issuance_id"] != anchor["nonce"])
+                or (version != 1 and anchor["issuance_id"] != anchor["nonce"])
             ):
                 raise Blocked()
         if raw is None:
-            if anchor is not None and anchor["state"] != "complete":
+            if anchor is not None and anchor["state"] == "active":
                 raise Blocked()  # Lost active journal never means fresh issuance.
             return None
         record = Record.from_document(raw)
-        if anchor == record.anchor("complete"):
+        if anchor in (record.anchor("complete"), record.anchor("rolled_back")):
             # Finish an interrupted clear using the independently durable witness.
             os.unlink("issuance.json", dir_fd=self.fd)
             os.fsync(self.fd)
@@ -235,10 +294,13 @@ class Journal:
         return record
 
     def _write_json(self, name, document):
+        self._write(name, json.dumps(document, sort_keys=True))
+
+    def _write(self, name, text):
         pending = name + ".pending"
         fd = self._open(pending, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
         with os.fdopen(fd, "w") as stream:
-            json.dump(document, stream, sort_keys=True)
+            stream.write(text)
             stream.flush()
             os.fsync(stream.fileno())
         os.replace(pending, name, src_dir_fd=self.fd, dst_dir_fd=self.fd)
@@ -249,14 +311,68 @@ class Journal:
         self._write_json("issuance.anchor", record.anchor("active"))
         self._write_json("issuance.json", record.document())
 
-    def clear(self):
+    def clear(self, state="complete"):
         record = self.load()
         if record is None:
             raise Blocked()
         # Retain a durable completion witness separately from the active journal.
-        self._write_json("issuance.anchor", record.anchor("complete"))
+        self._write_json("issuance.anchor", record.anchor(state))
         os.unlink("issuance.json", dir_fd=self.fd)
         os.fsync(self.fd)
+
+
+def token_text(raw):
+    token = raw.decode("ascii", "replace")
+    if not raw or len(raw) > 1024 or not SAFE.fullmatch(token):
+        raise Blocked()
+    return token
+
+
+class Custody(Journal):
+    """Old Agent token in owner-only 0600 tmpfs custody; never printed or journaled.
+
+    The file name binds server, volume and journal, so a restore rehearsal with
+    its own journal never reads or destroys HOME's custody. The journal lock
+    serializes every run that shares one binding.
+    """
+
+    def __init__(self, directory, binding):
+        super().__init__(directory)
+        digest = hashlib.sha256("\0".join(binding).encode()).hexdigest()[:16]
+        self.name = "hy-home-renderer-old-token-" + digest
+
+    def read(self):
+        try:
+            fd = self._open(self.name, os.O_RDONLY)
+        except FileNotFoundError:
+            return None
+        with os.fdopen(fd, "rb") as stream:
+            return token_text(stream.read(1025))
+
+    def write(self, token):
+        self._unlink(self.name + ".pending")  # An interrupted earlier write.
+        self._write(self.name, token_text(token.encode()))
+
+    def destroy(self):
+        self._unlink(self.name + ".pending")
+        self._unlink(self.name)
+
+    def _unlink(self, name):
+        try:
+            os.unlink(name, dir_fd=self.fd)
+        except FileNotFoundError:
+            return
+        os.fsync(self.fd)
+
+
+def custody_directory():
+    # The approved custody is owner-only tmpfs under XDG_RUNTIME_DIR; a reboot
+    # destroys it, which leaves an interrupted revoke INDETERMINATE (Blocked).
+    directory = f"/run/user/{os.getuid()}"
+    with open("/proc/self/mounts") as mounts:
+        if not any(line.split()[1:3] == [directory, "tmpfs"] for line in mounts):
+            raise Blocked()
+    return directory
 
 
 def matching_accessors(api, record):
@@ -289,43 +405,196 @@ def matching_accessors(api, record):
     return matches
 
 
-def reconcile(api, journal, record, *, ready=False, stopped=False):
+def settle_secret_id(api, record, *, ready=False, stopped=False):
     matches = matching_accessors(api, record)
     if not matches:
         # Issuing without a matching accessor is ambiguous (including expired ID).
-        if record.state != "delivered" or not ready:
+        # A delivered ID is consumed or expired once its generation is ready or
+        # stopped; a rollback then revokes a token it minted into the sink.
+        if record.state != "delivered" or not (ready or stopped):
             raise Blocked()
+        return
+    if record.state == "delivered" and not (ready or stopped):
+        raise Blocked()
+    api.destroy(matches[0])
+    if matching_accessors(api, record):
+        raise Blocked()
+
+
+def reconcile(api, journal, record, *, ready=False, stopped=False):
+    settle_secret_id(api, record, ready=ready, stopped=stopped)
+    journal.clear(record.terminal)
+
+
+def renderer_token(api, token):
+    """Creation time of a live renderer login token; None once the server denies it."""
+    data = api.lookup_self(token)
+    if data is None:
+        return None
+    created = data.get("creation_time")
+    if (
+        data.get("policies") != ["default", "renderer"]
+        or data.get("path") != "auth/approle/login"
+        or not isinstance(data.get("meta"), dict)
+        or data["meta"].get("role_name") != ROLE
+        or type(created) is not int
+        or created <= 0
+    ):
+        raise Blocked()
+    return created
+
+
+def revoke(api, token):
+    # Pre-flight: the selected server must grant revoke-self to this token.
+    if not api.revoke_self_allowed(token):
+        raise Blocked()
+    api.revoke_self(token)
+    if renderer_token(api, token) is not None:
+        raise Blocked()
+
+
+def prepare(api, custody, record):
+    """Capture the one live old generation before any new SecretID exists."""
+    candidates = {t for t in (custody.read(), api.sink()) if t}
+    live = {}
+    for token in candidates:
+        created = renderer_token(api, token)
+        if created is not None:
+            live = {**live, token: created}
+    if len(live) > 1:
+        raise Blocked()  # Several live generations: never guess which to revoke.
+    if not live:
+        custody.destroy()  # Anything held is already unusable.
+        return replace(record, state="issuing")
+    ((token, created),) = live.items()
+    record = replace(record, state="issuing", old_created=created).validate()
+    if not api.revoke_self_allowed(token):
+        raise Blocked()
+    custody.write(token)
+    return record
+
+
+def rollback(api, journal, custody, record):
+    """New generation failed: keep the old token, revoke only this run's token."""
+    resumed = record.state == "rolling_back"
+    if record.schema_version == 3 and not resumed:
+        record = replace(record, state="rolling_back")
+        journal.save(record)
+    if not api.stopped():
+        generation = api.recovery_generation(record.started_at)
+        # A resumed rollback cannot tell its own unsaved start from a later one.
+        if (resumed and record.agent_started_at is None) or (
+            record.agent_started_at not in (None, generation)
+        ):
+            raise Blocked()  # A later start is not this issuance's to stop.
+    api.stop()
+    settle_secret_id(api, replace(record, state="delivered"), stopped=True)
+    token = api.sink()
+    held = custody.read() if record.schema_version == 3 else None
+    if token is not None and not (held and hmac.compare_digest(token, held)):
+        created = renderer_token(api, token)
+        start = int(datetime.fromisoformat(record.started_at).timestamp())
+        # An older sink token is not this run's; the rollback leaves it alone.
+        if created is not None and created >= start:
+            revoke(api, token)
+    journal.clear(record.terminal)
+
+
+def revoke_old(api, journal, custody, record):
+    """Durable intent first; a timeout stays INDETERMINATE for the next run."""
+    if record.old_created is not None:
+        token = custody.read()
+        if token is None:
+            raise Blocked()  # Custody lost (reboot): owner reconciliation.
+        created = renderer_token(api, token)
+        if record.state != "revoking":
+            # Before the intent a 403 is not proof: the token must be live,
+            # exactly the captured generation, and allowed to revoke itself.
+            if created != record.old_created or not api.revoke_self_allowed(token):
+                raise Blocked()
+            record = replace(record, state="revoking")
+            journal.save(record)
+            api.revoke_self(token)
+            if renderer_token(api, token) is not None:
+                raise Blocked()
+        elif created is not None:
+            # Denied only once revoking was durable, right after the checks
+            # above: the revoke landed or the token expired; it is unusable.
+            if created != record.old_created:
+                raise Blocked()
+            revoke(api, token)
+    journal.clear("complete")
+    custody.destroy()
+
+
+def finish(api, journal, custody, record):
+    """Verify a distinct new generation, then revoke the old one."""
+    settle_secret_id(api, record, ready=True)
+    held = custody.read() if record.old_created is not None else None
+    current = api.sink()
+    start = int(datetime.fromisoformat(record.started_at).timestamp())
+    if (
+        current is None
+        or (held is not None and hmac.compare_digest(current, held))
+        or (renderer_token(api, current) or 0) < start
+    ):
+        rollback(api, journal, custody, record)
+        raise Blocked()
+    record = replace(record, state="verified")
+    journal.save(record)
+    revoke_old(api, journal, custody, record)
+
+
+def resume(api, journal, custody, record):
+    if record.state == "prepared":
+        journal.clear("rolled_back")  # Nothing was issued.
+    elif record.state == "issuing":
+        reconcile(api, journal, record)
+    elif record.state in {"verified", "revoking"}:
+        revoke_old(api, journal, custody, record)
+    elif record.state == "rolling_back":
+        rollback(api, journal, custody, record)
     else:
-        if record.state == "delivered" and not (ready or stopped):
-            raise Blocked()
-        api.destroy(matches[0])
-        if matching_accessors(api, record):
-            raise Blocked()
-    journal.clear()
+        ready = False
+        if not api.stopped():
+            generation = api.recovery_generation(record.started_at)
+            if record.agent_started_at not in (None, generation):
+                raise Blocked()  # A later start is not this issuance's to judge.
+            if record.agent_started_at is None and generation is not None:
+                record = replace(record, agent_started_at=generation)
+                journal.save(record)
+            ready = generation is not None and api.ready(generation)
+        if not ready:
+            rollback(api, journal, custody, record)
+        elif record.schema_version == 3:
+            finish(api, journal, custody, record)
+        else:
+            reconcile(api, journal, record, ready=True)
 
 
-def run_issuance(api, journal, *, revision, clock=time.time, nonce=secrets.token_hex):
+def run_issuance(
+    api, journal, *, revision, custody, clock=time.time, nonce=secrets.token_hex
+):
     previous = journal.load()
     if previous is not None:
-        stopped = False
-        ready = False
-        if previous.state == "delivered":
-            generation = previous.agent_started_at
-            if generation is None:
-                generation = api.recovery_generation(previous.started_at)
-                if generation is not None:
-                    previous = replace(previous, agent_started_at=generation)
-                    journal.save(previous)
-                else:
-                    stopped = api.stopped()
-            if generation is not None:
-                ready = api.ready(generation)
-        reconcile(api, journal, previous, ready=ready, stopped=stopped)
+        resume(api, journal, custody, previous)
         # Reconciliation is a distinct result; do not mint another ID on this run.
         return "reconciled"
     record = Record(
-        nonce(16), utc(clock()), ROLE, revision, MANIFEST, schema_version=2
+        nonce(16),
+        utc(clock()),
+        ROLE,
+        revision,
+        MANIFEST,
+        state="prepared",
+        schema_version=3,
     ).validate()
+    journal.save(record)  # Durable before the old token is captured.
+    try:
+        record = prepare(api, custody, record)
+    except Exception:
+        journal.clear("rolled_back")  # No server mutation yet.
+        raise Blocked() from None
     journal.save(record)  # Durable before any potentially successful server call.
     try:
         wrapped = api.issue(record.metadata())
@@ -337,16 +606,18 @@ def run_issuance(api, journal, *, revision, clock=time.time, nonce=secrets.token
         journal.save(delivered)
         if not api.ready(started_at):
             raise Blocked()
-        reconcile(api, journal, delivered, ready=True)
+        finish(api, journal, custody, delivered)
         return "authenticated"
     except Uncertain:
         raise
     except Exception:
         # A failed delivery may have issued an ID. Revoke only an exact single match.
-        # Delivered IDs await current-process authentication proof on the next run.
+        # A delivered generation that fails verification is rolled back.
         current = journal.load()
         if current is not None and current.state == "issuing":
             reconcile(api, journal, current)
+        elif current is not None and current.state == "delivered":
+            rollback(api, journal, custody, current)
         raise Blocked() from None
 
 
@@ -362,7 +633,7 @@ class DockerAPI:
         self.wrap_deadline = self.deadline  # set by issue()
 
     @staticmethod
-    def command(argv, *, payload=None, seconds=20, empty_list_path=None):
+    def command(argv, *, payload=None, seconds=20, empty_list_path=None, denied=False):
         try:
             done = subprocess.run(
                 argv, input=payload, capture_output=True, timeout=seconds, check=False
@@ -370,6 +641,9 @@ class DockerAPI:
         except (OSError, subprocess.TimeoutExpired):
             raise Blocked() from None
         if done.returncode:
+            # Only self-token requests map a server 403 to Denied.
+            if denied and done.returncode == 2 and b"Code: 403." in done.stderr:
+                raise Denied()
             # The verified 2.7.1 JSON CLI renders a LIST HTTP 404 as stdout {}.
             # ACL/transport failures and any unknown output still block recovery.
             absent_json = not done.stderr and done.stdout.strip() == b"{}"
@@ -398,18 +672,24 @@ class DockerAPI:
             raise Blocked()
         return seconds
 
-    def request(self, operation, path, payload=None, *, issuer=False):
+    def request(self, operation, path, payload=None, *, issuer=False, token=None):
         # Leave renewal-free token lifetime margin; never turn a large LIST into an unbounded run.
-        seconds = min(20, self.deadline - time.monotonic())
+        # A renderer token's own requests do not spend the short tokens' deadline.
+        self_token = token is not None
+        seconds = 20 if self_token else min(20, self.deadline - time.monotonic())
         if seconds < 4:
             raise Blocked()
-        token = self.issuer if issuer else self.cleanup
+        if not self_token:
+            token = self.issuer if issuer else self.cleanup
         body = (token + "\n").encode()
         arguments = [*operation.split(), "-format=json", path]
         if payload is not None:
             body += json.dumps(payload).encode()
             arguments.append("-")
-        destroying = path == PREFIX + "/secret-id-accessor/destroy"
+        silent = path in {
+            PREFIX + "/secret-id-accessor/destroy",
+            "auth/token/revoke-self",
+        }
         argv = [
             "docker",
             "exec",
@@ -425,10 +705,13 @@ class DockerAPI:
                 payload=body,
                 seconds=seconds,
                 empty_list_path=path if operation == "list" else None,
+                denied=self_token,
             )
+        except Denied:
+            raise
         except (Blocked, InterruptedError):
             raise Uncertain() from None
-        if destroying:
+        if silent:
             return {}
         try:
             return json.loads(raw, object_pairs_hook=unique_fields)
@@ -497,6 +780,63 @@ class DockerAPI:
             PREFIX + "/secret-id-accessor/destroy",
             {"secret_id_accessor": accessor},
         )
+
+    def lookup_self(self, token):
+        try:
+            response = self.request("read", "auth/token/lookup-self", token=token)
+        except Denied:
+            return None
+        if not isinstance(response, dict) or not isinstance(response.get("data"), dict):
+            raise Blocked()
+        return response["data"]
+
+    def revoke_self_allowed(self, token):
+        path = "auth/token/revoke-self"
+        response = self.request(
+            "write", "sys/capabilities-self", {"paths": [path]}, token=token
+        )
+        data = response.get("data") if isinstance(response, dict) else None
+        allowed = data.get(path) if isinstance(data, dict) else None
+        return isinstance(allowed, list) and "update" in allowed
+
+    def revoke_self(self, token):
+        # bao write returns no JSON on a successful revoke-self.
+        self.request("write -force", "auth/token/revoke-self", token=token)
+
+    def sink(self):
+        """Read the Agent sink token through a no-network, read-only container."""
+        script = (
+            "set +x; set -eu; f=/openbao/agent/token; "
+            '[ -e "$f" ] || [ -L "$f" ] || exit 0; '
+            '[ -f "$f" ] && [ ! -L "$f" ]; '
+            '[ "$(stat -c %a:%h "$f")" = 600:1 ]; head -c 1025 "$f"'
+        )
+        raw = self.command(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "--pull=never",
+                "--network=none",
+                "--log-driver=none",
+                "--user=100:1000",
+                "--cap-drop=ALL",
+                "--security-opt=no-new-privileges",
+                "--read-only",
+                "--mount",
+                "type=volume,source=" + self.volume + ",target=/openbao/agent,readonly",
+                "--entrypoint",
+                "sh",
+                IMAGE,
+                "-c",
+                script,
+            ],
+            seconds=45,
+        )
+        return token_text(raw) if raw else None
+
+    def stop(self):
+        self.command(["docker", "stop", "--time=10", self.agent], seconds=30)
 
     def deliver(self, wrapped):
         script = (
@@ -794,9 +1134,12 @@ def main(argv):
         raise Blocked()
     api.validate_tokens()
     with Journal(directory) as journal:
+        journal_info = os.fstat(journal.fd)
+        binding = (server, volume, f"{journal_info.st_dev}:{journal_info.st_ino}")
+        custody = Custody(custody_directory(), binding)
         if journal.load() is None and not api.stopped():
             raise Blocked()
-        run_issuance(api, journal, revision=revision)
+        run_issuance(api, journal, revision=revision, custody=custody)
     return 0
 
 

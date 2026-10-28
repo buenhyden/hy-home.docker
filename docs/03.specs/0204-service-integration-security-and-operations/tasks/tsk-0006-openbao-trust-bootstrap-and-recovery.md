@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.33"
+version: "0.2.34"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-28"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -3449,6 +3449,100 @@ Residuals:
   start and the one from 10-22 (B4).
 - Changing a template's `perms` takes effect only on a re-render. The
   consumer-migration README now says so, and a source-level fix is not decided.
+
+### v30 B4 renderer issuance journal v3 source — 2026-10-28
+
+Source only. No live token, root, lock or Agent was touched, and no window ran.
+The work was done in a worktree on `origin/main` `463eb3b0a`, which contains
+`68a4b4753`, and implements the two B4 owner inputs above unchanged.
+
+**What v3 does.** `renderer-issuance.py` writes new journals as
+`schema_version: 3`. A run moves through `prepared`, `issuing`, `delivered`,
+`verified`, `revoking` and then `complete`. A failed run moves through
+`rolling_back` to a `rolled_back` anchor.
+
+1. While the Agent is stopped, the helper reads the old sink token. It uses a
+   `docker run` with no network, a read-only volume and `--log-driver=none`.
+2. It checks that the token is a live renderer AppRole token and passes a
+   revoke-self pre-flight (`sys/capabilities-self`).
+3. It stores the token in owner-only 0600 custody under `/run/user/<uid>`.
+   The custody file name is bound to the server, the volume and the journal
+   directory's device and inode. The journal records only the old token's
+   creation time, never a token or an accessor.
+4. After the new generation passes readiness and its SecretID is consumed, the
+   helper checks that the current sink token is distinct from the old one and
+   was created after the issuance started. It then saves `verified`.
+5. It checks again that the old token is live, is exactly the captured
+   generation, and passes the pre-flight. Only then does it save `revoking`,
+   send revoke-self and confirm denial. It writes the `complete` anchor and
+   destroys custody.
+6. If verification fails, the helper stops this run's Agent and destroys an
+   unconsumed SecretID. After a pre-flight, it revokes only a sink token that
+   this run minted. The old token and custody are kept.
+
+**v1/v2 compatibility.** The current HOME journal shape, a v2 `complete` anchor
+plus `issuance.json.recovered-20261027T172054`, loads as idle, and the next run
+writes v3. A `delivered` journal whose Agent is stopped and whose SecretID is
+consumed or expired no longer blocks. That is the 2026-10-27 second-run case:
+the helper rolls it back by itself, revokes only the token created after
+issuance started, and anchors v2 records `complete`. In that case the token is
+the 08:14 one; the 10-22 generation is left alone.
+
+**Independent security review (security-auditor, read-only).**
+
+- **First pass — REJECT** with one High and two Medium findings:
+  - High: one fixed custody file per UID, so the semantic-restore rehearsal
+    could read or destroy HOME's custody.
+  - Medium: the sink read went through the Docker log driver.
+  - Medium: a 403 before any revoke-self was taken as revoke proof.
+  - Medium: rollback could stop a later, foreign Agent generation.
+- **Fixes.** All of these were fixed, along with a stale custody `.pending` file
+  and a comment.
+- **Re-review — APPROVE_WITH_FINDINGS,** with nothing above Low. Two of its
+  Lows were then fixed and tested: the journal binding now comes from the open
+  journal descriptor, and a resumed rollback with no saved generation blocks
+  instead of stopping a running Agent.
+
+**Verification.**
+
+- 167 tests across the issuance, issuance trust/custody, Agent contract,
+  rehearsal and semantic-restore suites: OK, with 3 native opt-in tests
+  SKIPPED.
+- The Agent contract test now runs the real helper end to end through stubs
+  that model distinct old and new renderer tokens, revocation (403), custody
+  and the read-only sink read.
+- A mutation of each new guard fails the suite.
+- Ruff: no findings. The changed-profile gate result is recorded in the PR.
+
+**NOT_RUN.**
+
+- Native OpenBao 2.7.1 behaviour of `sys/capabilities-self`,
+  `write -force auth/token/revoke-self`, the lookup-self 403 text, and AppRole
+  `meta.role_name`. If any of these differs, the helper blocks.
+- P06 consumer verification and renewal readback before revoke.
+- Any HOME window.
+
+**Residuals (owner).**
+
+- A 403 during capture or rollback is still read as "unusable, skip". That
+  token is left unrenewed and expires in about 24 h. Treating it as a block
+  would stop issuance after any long Agent stop, so the choice is the owner's.
+- Custody is kept after `rolled_back` until the next run, completion or a
+  reboot.
+- Recreating the journal directory or renaming the server or volume orphans
+  custody; a `revoking` journal then blocks.
+- A Docker restart of this run's Agent, or expiry between capture and
+  `verified`, blocks for owner reconciliation.
+- Deadline pressure can roll back a healthy generation.
+- Running v1/v2 `delivered` journals with an Agent that is not ready are now
+  rolled back instead of left blocked.
+- RUN-0103 still describes the v2 contract. Update it when v3 is installed.
+
+**Owner acceptance.**
+
+- The helper hash changes, so a new P01 approval of the merged issuer commit,
+  and its installation, are required before any W5.
+- The owner runs W5 in a terminal.
 
 ## Evidence
 
