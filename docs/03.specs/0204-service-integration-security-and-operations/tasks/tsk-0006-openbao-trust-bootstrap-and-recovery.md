@@ -3797,6 +3797,8 @@ The owner asked for each follow-up as a working script. Three steps join
   policy.
 - **`renderer-expiry <since>`.** It prints only the timestamps of revoked
   renderer AppRole login leases, plus the time the server became active.
+- **`metrics-revoke`.** It retries what `metrics-rotate` could not confirm,
+  before W7.
 - **`host-hold`.** It holds `containerd.io`, `docker-ce` and `docker-ce-cli`
   and, when needrestart is installed, excludes containerd and Docker from its
   restarts.
@@ -3834,6 +3836,22 @@ value. Each finding was fixed:
   branches. The tests cover the preconditions, `cleanup`, and the
   value-free output of `renderer-expiry` and `host-hold`. The first live run
   is the owner's.
+
+**Re-review (same auditor).** The verdict was APPROVE_WITH_FINDINGS, with
+F1–F3 and F5–F10 closed. It reopened the stale-sample finding: an instant
+query's `value[0]` is the evaluation time, not the sample time. Fixes:
+
+- **Sample time.** The wait now uses `timestamp(up{job="openbao"} == 1)`. A
+  read-only live check showed a fresh timestamp for the `prometheus` job and
+  an empty result for `openbao`, whose `up` is 0.
+- **Failed restore.** A failed file restore records the deployed new token in
+  custody and marks the still-valid old token. A restored file with
+  Prometheus still down is reported as such, and the new token is revoked.
+- **Recovery step.** `metrics-revoke` retries an unconfirmed revocation or
+  custody write with the W1 root, and must run before W7 `revoke-root`.
+  `cleanup` refuses while a marker exists, and its flag can no longer come
+  from the environment.
+- **Empty file.** An empty deployed token file stops the run.
 
 **Why the manual root session stopped.** The owner had started the manual
 RUN-0096 client. `R` stopped with `missing root token; STOP` because no

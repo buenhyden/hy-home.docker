@@ -259,14 +259,32 @@ class WindowGateTests(unittest.TestCase):
             (work / "new.unrevoked").touch()
             runtime = self.runtime(directory)
             result = self.run_window(runtime, "cleanup", "--keep-root")
-            self.assertIn("not confirmed revoked", result.stderr)
+            self.assertIn("run metrics-revoke", result.stderr)
             self.assertEqual(1, result.returncode)
             self.assertTrue((work / "new.token").exists())
+            self.assertNotIn("synthetic-metrics-value", result.stdout + result.stderr)
             result = self.run_window(
                 runtime, "cleanup", "--keep-root", "--discard-metrics"
             )
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertFalse(work.exists())
+
+    def test_metrics_revoke_without_leftovers_does_nothing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            custody = Path(directory) / "p01-custody.synthetic"
+            custody.mkdir()
+            root = custody / "root.token"
+            root.write_text("synthetic-root-value")
+            root.chmod(0o600)
+            runtime = self.runtime(
+                directory,
+                P01_CUSTODY_DIR=custody,
+                P01_METRICS_DIR=Path(directory) / "p01-metrics.gone",
+            )
+            result = self.run_window(runtime, "metrics-revoke")
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertIn("nothing to resolve", result.stdout)
+            self.assertNotIn("synthetic-root-value", result.stdout + result.stderr)
 
     def stub(self, bin_dir, name, body):
         path = bin_dir / name

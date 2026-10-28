@@ -9,7 +9,7 @@ set -uo pipefail
 umask 077
 
 usage() {
-  echo "usage: $0 token <stage>|check-token <stage>|retire-token <file>|w1|audit-list|root-sweep|roles-plan|roles-diff|roles-apply|w2|lease-start|w3 <new dir> <expected version> [--writers-checked]|lease-bind|w3a-inputs|w3a|w3b|w4 <recorded device/inode>|metrics-rotate|renderer-expiry <since>|host-hold|status|w5-create|agent-restart|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root] [--discard-metrics]" >&2
+  echo "usage: $0 token <stage>|check-token <stage>|retire-token <file>|w1|audit-list|root-sweep|roles-plan|roles-diff|roles-apply|w2|lease-start|w3 <new dir> <expected version> [--writers-checked]|lease-bind|w3a-inputs|w3a|w3b|w4 <recorded device/inode>|metrics-rotate|metrics-revoke|renderer-expiry <since>|host-hold|status|w5-create|agent-restart|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root] [--discard-metrics]" >&2
   exit 2
 }
 [ "$#" -ge 1 ] || usage
@@ -41,6 +41,52 @@ new_dir() {
   dir="$(/usr/bin/mktemp -d "${P01_RUNTIME_DIR:?run the W1 bootstrap first}/$2.XXXXXX")" || exit 1
   printf -v "$1" '%s' "$dir"
   declare -p "$1" >>"$vars"
+}
+
+# metrics-rotate and metrics-revoke: $root is the W1 root, $d the p01-metrics custody
+# directory and $custody the metrics custody file. Values go over stdin only.
+feed() { printf '%s' "$(cat "$1")"; }
+# A root call; its error text stays in the custody directory for the checks below.
+as_root() { bao_as "$root" "$@" 2>"$d/last.err"; }
+errs() { [ "$(grep -c "$1" "$d/last.err")" = 1 ]; }
+# Positive controls: root still authenticates and the server is unsealed.
+controls() { bao_as "$root" token lookup </dev/null >/dev/null 2>&1 && docker exec openbao bao status >/dev/null 2>&1; }
+# The new token counts as revoked only when the server then refuses its lookup with "bad token".
+revoke_new() {
+  if feed "$d/new.token" | as_root write auth/token/revoke token=- >/dev/null &&
+    ! feed "$d/new.token" | as_root write -format=json auth/token/lookup token=- >/dev/null && errs 'bad token'; then
+    rm -f "$d/new.unrevoked"
+    echo "new token revoked" >&2
+  else
+    : >"$d/new.unrevoked"
+    echo "new token: NOT confirmed revoked; run metrics-revoke before revoke-root" >&2
+    return 1
+  fi
+}
+# The old token counts as revoked only on "invalid accessor" plus the positive controls.
+revoke_old() {
+  if feed "$d/old.accessor" | as_root write auth/token/revoke-accessor accessor=- >/dev/null &&
+    ! feed "$d/old.accessor" | as_root write -format=json auth/token/lookup-accessor accessor=- >/dev/null &&
+    errs 'invalid accessor' && controls; then
+    rm -f "$d/old.unrevoked"
+    echo "old: revoked"
+  else
+    : >"$d/old.unrevoked"
+    echo "old token: NOT confirmed revoked; run metrics-revoke before revoke-root" >&2
+    return 1
+  fi
+}
+write_custody() {
+  local next="${custody%/*}/.openbao_metrics_token.custody.new"
+  rm -f "$next"
+  if (umask 077; printf 'accessor=%s\nexpires=%s\nissued=%s\npolicy=prometheus\n' "$(cat "$d/new.accessor")" \
+    "$(jq -r '.data.expire_time' "$d/new.json")" "$(date -u +%FT%TZ)" >"$next") && mv "$next" "$custody"; then
+    rm -f "$d/custody.unwritten"
+  else
+    : >"$d/custody.unwritten"
+    echo "custody write failed: run metrics-revoke before revoke-root" >&2
+    return 1
+  fi
 }
 
 case "$step" in
@@ -207,13 +253,13 @@ cleanup)
   # --keep-w2: an unresolved W2 exit 2 keeps its custody.
   # --discard-root: delete W1 custody before W7 proved root revoked (W1 exit 2, sealed server).
   # --discard-metrics: delete a metrics-rotate directory whose token was not confirmed revoked.
-  P01_KEEP_ROOT=0 P01_KEEP_W2=0 discard=0
+  P01_KEEP_ROOT=0 P01_KEEP_W2=0 discard=0 discard_metrics=0
   for a in "$@"; do
     case "$a" in --keep-root) P01_KEEP_ROOT=1 ;; --keep-w2) P01_KEEP_W2=1 ;; --discard-root) discard=1 ;;
       --discard-metrics) discard_metrics=1 ;; *) usage ;; esac
   done
-  if [ "${discard_metrics:-0}" != 1 ] && compgen -G "$XDG_RUNTIME_DIR/p01-metrics.*/*.unrevoked" >/dev/null; then
-    echo "a metrics token is not confirmed revoked: resolve it from p01-metrics.*, or pass --discard-metrics" >&2
+  if [ "$discard_metrics" != 1 ] && compgen -G "$XDG_RUNTIME_DIR/p01-metrics.*/*.un*" >/dev/null; then
+    echo "metrics-rotate left an unconfirmed revoke or custody write: run metrics-revoke, or pass --discard-metrics" >&2
     exit 1
   fi
   if [ "$P01_KEEP_ROOT" != 1 ] && [ "$discard" != 1 ] && compgen -G "$XDG_RUNTIME_DIR/p01-custody.*/root.token" >/dev/null; then
@@ -428,29 +474,8 @@ metrics-rotate)
   sed -n 's/^accessor=//p' "$custody" >"$d/old.accessor"
   [ -s "$d/old.accessor" ] || { echo "custody accessor is empty" >&2; exit 1; }
   install -m 600 "$deployed" "$d/old.token" || exit 1
+  [ -s "$d/old.token" ] || { echo "deployed token file is empty" >&2; exit 1; }
   old_expires="$(sed -n 's/^expires=//p' "$custody")"
-  feed() { printf '%s' "$(cat "$1")"; }
-  # A root call; its error text stays in the custody directory for the checks below.
-  as_root() { bao_as "$root" "$@" 2>"$d/last.err"; }
-  errs() { [ "$(grep -c "$1" "$d/last.err")" = 1 ]; }
-  # Positive controls: root still authenticates and the server is unsealed.
-  controls() { bao_as "$root" token lookup </dev/null >/dev/null 2>&1 && docker exec openbao bao status >/dev/null 2>&1; }
-  # Revoked only when the server then refuses a lookup of that token with "bad token".
-  revoke_new() {
-    if feed "$d/new.token" | as_root write auth/token/revoke token=- >/dev/null &&
-      ! feed "$d/new.token" | as_root write -format=json auth/token/lookup token=- >/dev/null && errs 'bad token'; then
-      echo "new token revoked" >&2
-    else
-      : >"$d/new.unrevoked"
-      echo "new token: NOT confirmed revoked; it stays in $d and cleanup keeps it" >&2
-    fi
-  }
-  write_custody() {
-    local next="${custody%/*}/.openbao_metrics_token.custody.new"
-    rm -f "$next"
-    (umask 077; printf 'accessor=%s\nexpires=%s\nissued=%s\npolicy=prometheus\n' "$(cat "$d/new.accessor")" \
-      "$new_expires" "$(date -u +%FT%TZ)" >"$next") && mv "$next" "$custody"
-  }
   as_root policy write prometheus - <"$policy" >/dev/null || { echo "policy write failed" >&2; exit 1; }
   as_root auth tune -max-lease-ttl=8760h token/ </dev/null >/dev/null || { echo "token/ tune failed" >&2; exit 1; }
   # The custody directory is new, so new.token cannot already exist.
@@ -463,7 +488,6 @@ metrics-rotate)
     and .data.explicit_max_ttl == 31536000 and .data.ttl > 0 and (.data.accessor | length) > 0' \
     "$d/new.json" >/dev/null || { echo "new token shape is wrong" >&2; revoke_new; exit 1; }
   jq -r '.data.accessor' "$d/new.json" >"$d/new.accessor"
-  new_expires="$(jq -r '.data.expire_time' "$d/new.json")"
   bao_as "$d/new.token" read sys/metrics </dev/null >/dev/null 2>&1 || { echo "metrics: DENIED" >&2; revoke_new; exit 1; }
   echo "metrics: allowed"
   ! bao_as "$d/new.token" policy list </dev/null >/dev/null 2>&1 || { echo "policy list: LEAK" >&2; revoke_new; exit 1; }
@@ -487,15 +511,16 @@ metrics-rotate)
   group="$(stat -c %g "$deployed")"
   tmp="${deployed%/*}/.openbao_token.new"
   swap() { { install -m 640 -g "$group" "$1" "$tmp" && mv "$tmp" "$deployed"; } || { rm -f "$tmp"; return 1; }; }
-  # Up only on a sample taken after the recreate, not one replayed from before it.
+  # Up only on a sample scraped after the recreate: timestamp() is the sample's own time,
+  # so an up=1 replayed from before the restart does not count.
   prom_up() {
     local start
     start="$(date +%s)"
     (cd "$HOME_ROOT" && /usr/bin/docker compose --profile obs up -d --no-deps --force-recreate --wait prometheus) >/dev/null 2>&1 || return 1
     for _ in $(seq "${metrics_wait:-12}"); do
       sleep "${metrics_interval:-10}"
-      docker exec prometheus wget -qO- 'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22openbao%22%7D' 2>/dev/null |
-        jq -e --argjson s "$start" '.data.result[0].value | .[0] > $s and .[1] == "1"' >/dev/null && return 0
+      docker exec prometheus wget -qO- 'http://localhost:9090/api/v1/query?query=timestamp%28up%7Bjob%3D%22openbao%22%7D%3D%3D1%29' 2>/dev/null |
+        jq -e --argjson s "$start" '.data.result[0].value[1] | tonumber > $s' >/dev/null && return 0
     done
     return 1
   }
@@ -503,36 +528,46 @@ metrics-rotate)
   if ! prom_up; then
     if [ "$old" = expired ]; then
       # Restoring an expired token gains nothing: keep the verified new token and record it.
-      write_custody || { echo "custody write failed: the new accessor stays in $d" >&2; : >"$d/new.unrevoked"; exit 1; }
+      write_custody || exit 1
       echo "openbao target not up; the new token stays deployed and in custody: check Prometheus (RUN-0104)" >&2
       exit 1
     fi
     echo "openbao target not up: restoring the old file and Prometheus" >&2
-    if swap "$d/old.token" && prom_up; then
-      echo "restored" >&2; revoke_new
-    else
-      : >"$d/new.unrevoked"
-      echo "RESTORE FAILED: the deployed file holds the new token, which is not revoked" >&2
+    if ! swap "$d/old.token"; then
+      # The new token stays deployed: record it, and keep the still-valid old one for metrics-revoke.
+      write_custody
+      : >"$d/old.unrevoked"
+      echo "RESTORE FAILED: the new token stays deployed and in custody; the old token is still valid" >&2
+      exit 1
     fi
+    if prom_up; then echo "restored" >&2; else echo "restored file; Prometheus not up" >&2; fi
+    revoke_new
     exit 1
   fi
   echo "target: openbao up"
-  write_custody || { echo "custody write failed: the new accessor stays in $d" >&2; : >"$d/new.unrevoked"; exit 1; }
-  echo "new: expires $new_expires"
+  write_custody || exit 1
+  echo "new: expires $(jq -r '.data.expire_time' "$d/new.json")"
   if [ "$old" = valid ]; then
-    if feed "$d/old.accessor" | as_root write auth/token/revoke-accessor accessor=- >/dev/null &&
-      ! feed "$d/old.accessor" | as_root write -format=json auth/token/lookup-accessor accessor=- >/dev/null &&
-      errs 'invalid accessor' && controls; then
-      echo "old: revoked"
-    else
-      : >"$d/old.unrevoked"
-      echo "old token: NOT confirmed revoked; its accessor stays in $d and cleanup keeps it" >&2
-      exit 1
-    fi
+    revoke_old || exit 1
   else
     echo "old: expired ($old_expires)"
   fi
   find "$d" -type f -exec shred -u {} + && rmdir "$d"
+  ;;
+metrics-revoke)
+  # Retry what metrics-rotate could not confirm, with the W1 root, before W7 revoke-root.
+  root="${P01_CUSTODY_DIR:?run w1 first}/root.token"
+  private "$root" || { echo "no W1 root custody" >&2; exit 1; }
+  d="${P01_METRICS_DIR:?no metrics-rotate directory}"
+  [ -d "$d" ] || { echo "nothing to resolve: metrics-rotate finished or cleanup ran"; exit 0; }
+  custody="${metrics_custody:-$HOME_ROOT/secrets/security/openbao/openbao_metrics_token.custody}"
+  unset DOCKER_HOST DOCKER_CONTEXT DOCKER_CONFIG
+  rc=0
+  [ ! -e "$d/custody.unwritten" ] || write_custody || rc=1
+  [ ! -e "$d/new.unrevoked" ] || revoke_new || rc=1
+  [ ! -e "$d/old.unrevoked" ] || revoke_old || rc=1
+  [ "$rc" = 0 ] && find "$d" -type f -exec shred -u {} + && rmdir "$d" && echo "metrics custody resolved"
+  exit "$rc"
   ;;
 renderer-expiry)
   # Value-free: when the server revoked renderer AppRole login leases since $1. Timestamps only.
