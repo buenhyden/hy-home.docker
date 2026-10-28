@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.25"
+version: "0.1.26"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1656,6 +1656,15 @@ for IAM-013, whose superset consumer is on hold.
 A side effect follows the earlier rule: an entry with a confirmed lane is no
 longer generated, so `gen-secrets` keeps these seven `./secrets` files as
 `keep-catalog-protected`. That protects the rollback copies.
+
+### Prometheus reload after the alert retarget — 2026-10-28
+
+The owner reloaded Prometheus after #596. `/api/v1/status/runtimeinfo` reports
+`reloadConfigSuccess: true` with `lastConfigTime` 2026-10-28T04:03:03Z, and
+`prometheus_config_last_reload_successful` is 1. All 98 rules in 20 groups
+report `ok`. The loaded OpenBao rules carry the new runbook URLs: the sealed and
+token alerts RUN-0085, the metrics scrape alert RUN-0104, the audit alert
+RUN-0105, and both Agent alerts RUN-0103.
 
 ## Evidence
 
