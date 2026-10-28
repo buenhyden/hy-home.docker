@@ -604,7 +604,9 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         version = crawler["image"].split("@", 1)[0].rsplit(":", 1)[1]
         self.assertGreaterEqual(tuple(map(int, version.split("."))), (0, 9, 4))
         self.assertEqual(["crawl4ai"], crawler["profiles"])
-        self.assertEqual(["crawl4ai_net", "crawl4ai_egress_net"], crawler["networks"])
+        self.assertEqual(
+            ["crawl4ai_net", "crawl4ai_egress_net"], list(crawler["networks"])
+        )
         self.assertEqual("false", crawler["labels"]["traefik.enable"])
 
     def test_crawl4ai_launcher_rejects_short_tokens_without_disclosing_them(self):

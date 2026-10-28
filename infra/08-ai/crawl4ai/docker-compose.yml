@@ -78,8 +78,11 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - crawl4ai_net
-      - crawl4ai_egress_net
+      crawl4ai_net: {}
+      crawl4ai_egress_net:
+        # Fixed beside the gateway's .2 so a daemon restart cannot hand the
+        # crawler the gateway address before the gateway is back.
+        ipv4_address: 10.250.200.3
     labels:
       <<: *tier-label
       traefik.enable: 'false'

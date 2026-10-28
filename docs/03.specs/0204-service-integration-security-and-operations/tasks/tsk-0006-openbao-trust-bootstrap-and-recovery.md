@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.36"
+version: "0.2.37"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3638,9 +3638,9 @@ Results:
   24-hour period. Like the 08:14 token, it is UNKNOWN until an expiry is
   observed, and no owner-held policy can look it up.
 - **OpenBao server metrics.** Server metrics have not been scraped since
-  2026-10-24 10:04Z: Prometheus cannot resolve `openbao` (`server misbehaving`),
-  and `OpenBaoMetricsScrapeFailing` keeps firing. This is separate from the
-  outage and has no owner yet.
+  2026-10-24 10:04Z, and `OpenBaoMetricsScrapeFailing` keeps firing. This is
+  separate from the outage. The cause given here at first, a Prometheus DNS
+  failure, was wrong; see the correction in the follow-ups entry below.
 - **Other stopped containers.** The owner decides on restarting
   `crawl4ai-egress` and `airflow-dag-processor`.
 
@@ -3658,6 +3658,123 @@ are not an approval.
 Installation runs RUN-0103 step 2 with `issuer_commit` set to the commit above
 and the existing operator tools root. A later W5 then passes that commit to
 `agent-restart`. RUN-0103 now describes v3 and this outage pattern.
+
+### Outage follow-ups and v3 install (2026-10-28)
+
+**v3 issuer installed.** The owner approved B4 v3 for P01 on 2026-10-28
+("Approve v3 for P01, then install it"). RUN-0103 step 2 ran verbatim from the
+runbook with:
+
+- `issuer_repository=/home/hyunyoun/data/hy-home.docker`;
+- `issuer_commit=4f2e7f9badf2db592de91d20146d68f87a228213`;
+- the existing operator tools root.
+
+It exited 0. The new directory holds the wrapper (mode 0500), the helper and
+request shell (0400), and `source-receipt.json` (0400). The receipt names the
+same commit, and all three file hashes match the install packet above. No W5
+ran, because the Agent was healthy after the v2 recovery; the next W5 passes
+this commit to `agent-restart`. The v2 directory `422b4adfd…` is left in place.
+
+**Stopped containers restarted.**
+
+- **`airflow-dag-processor`.** It had exited 1 at 07:47:32Z because `mng-pg`
+  reported "the database system is starting up". With `mng-pg` healthy,
+  `docker start` brought it back healthy.
+- **`crawl4ai-egress`.** Its first start failed with `Address already in use`.
+  `crawl4ai`, which had a dynamic address on `crawl4ai_egress_net`, came back
+  first at 07:35:17Z and took the gateway's static `10.250.200.2`. Stopping
+  `crawl4ai`, starting the gateway, then starting `crawl4ai` restored `.2` for
+  the gateway (healthy) and `.3` for the crawler.
+- **Source fix.** The crawler now has a fixed `10.250.200.3`. The egress test
+  first failed with an error, then passed with 15 OK and 6 native tests skipped,
+  and the public Compose config passed. The running crawler already holds
+  `.3`; the configuration takes effect at its next recreate.
+
+**OpenBao server metrics.**
+
+- **Root cause: the metrics token expired.** The owner printed only the
+  custody file's `expires=` line: `2026-10-24T10:04:32.941302101Z`. That is
+  21 seconds before the first failed scrape at 10:04:53Z.
+- **Correction.** The earlier "Prometheus DNS since 10-24" diagnosis was
+  wrong. The `lookup openbao … server misbehaving` error seen at 09:28Z
+  existed only because `openbao` was down during today's outage. Once the
+  server was restarted, Prometheus resolved `openbao` on the shared networks,
+  and the scrape returned `403 Forbidden`, the expired token.
+- **Boundary.** The agent's own attempt to read that `expires=` line was denied
+  by the `secrets/` boundary and was not worked around.
+- **Owner steps.** RUN-0104 rotation needs the temporary root session of
+  RUN-0096 5.2/5.4, because the operator policy cannot mint a `prometheus`
+  token. This stays an owner step.
+
+**Host upgrades.** RUN-0085 now treats `containerd.io` and `docker-ce` upgrades
+as an OpenBao maintenance window, with a pre-check, an optional package hold,
+and the recovery order.
+
+**Owner decisions after review, 2026-10-28.**
+
+- **RUN-0104 fixes.** RUN-0104 gains an expired-old-token branch. When the
+  custody expiry has passed, the procedure no longer stops at the pre-revoke
+  lookup. Instead it requires the server's explicit `invalid accessor`, plus a
+  working management caller and server, then records `old: expired` and skips
+  the revoke. RUN-0104 also gains a least-privilege throwaway client that
+  mounts only the CA, the policies and the work directory.
+- **Metrics token TTL.** The metrics token TTL becomes 1 year (`8760h`). In the
+  same temporary root session, the `token/` mount maximum is tuned to `8760h`
+  first. A non-expiring ordinary service token is not possible: TTL 0 follows
+  the mount maximum, and a periodic token expires unless renewed.
+- **New `status` step.** A new read-only `owner-window.sh status` step prints
+  states and dates only. It covers container health, seal state, the journal
+  anchor, the metrics token expiry with a 30-day warning, OpenBao alerts and
+  targets, and stopped containers. It exits 1 on any problem.
+  - **Test.** The owner-script test covers healthy and problem cases, and
+    asserts that the custody accessor is never printed.
+  - **Live run.** The agent ran it read-only with the custody path pointed
+    away from `secrets/`. It reported the 403 target and the firing alert.
+  - **Owner run.** The owner's run reads the real expiry.
+- **Rotation itself.** The rotation stays an owner root-session step: RUN-0104
+  with the expired branch.
+
+**Independent security review (security-auditor, read-only).** The verdict was
+APPROVE_WITH_FINDINGS, with nothing Critical or High. `status` cannot print a
+token, accessor or value, and it mutates nothing. Each finding was fixed:
+
+- **Expired-token branch (Medium).** Its silent guards could let a malformed
+  custody file be recorded as `old: expired`. The guards now print, and
+  acceptance also needs the deployed token, copied before the file swap, to
+  fail lookup with `bad token`.
+- **Journal path (Medium).** `status` used an invented default journal path.
+  It now requires `issuance_journal` and also warns on `*.pending` files.
+- **Lower findings.** These were also fixed:
+  - every problem now prints `WARN`;
+  - a missing container is reported;
+  - the Docker host and context are unset;
+  - containers stopped by signal are not counted;
+  - a clean exit-0 test and a nonce no-leak check were added;
+  - the new token is bound with `-explicit-max-ttl=8760h -renewable=false`;
+  - the work-directory ownership is checked;
+  - expected results accept `old: expired`;
+  - host upgrades refresh the package list first, keep the hold by default,
+    name unattended-upgrades and reboots, and use `docker start` rather than
+    `up -d`.
+
+**Placement fix (hosted CI).** Hosted `candidate-quality` failed on the
+status test. The reviewed status body had been inserted at the end of the `w4`
+step, so `w4` ran it after the unseal, and `status` still ran the first draft.
+The body now sits only under `status`, and the first draft is deleted. A
+target with an empty `lastError` was also warned as a problem, because `read`
+strips the trailing space; the step now matches the job and health fields. The
+agent's earlier live run used the first draft. The RUN-0105 manifest pin
+follows the new script hash. The Crawl4AI runtime test now reads the network
+names from the new map form. The seal probe now uses `docker exec`, as the
+Prometheus probe does, because the Compose form changes into the fixed host
+checkout, which hosted CI does not have.
+
+**Residual (owner decision).** Tuning the `token/` mount to `8760h` is
+persistent. Any caller allowed on `auth/token/create*` can then get an
+explicit TTL of up to one year. Today the renderer roles pin 5 minutes and
+`k8s-bootstrap` has a 2-hour explicit maximum. The operator policy's
+`auth/token/create/k8s-bootstrap` path, however, has no parameter limit, so
+that role's explicit maximum becomes the only bound.
 
 ## Evidence
 

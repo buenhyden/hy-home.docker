@@ -195,7 +195,7 @@
     },
     {
       "path": "infra/08-ai/crawl4ai/docker-compose.yml",
-      "sha256": "4501b298103e367d907fcee57f24ad2e1d7c6acfa5cb13134a8c74b05717dc5b"
+      "sha256": "c5f39f53255c7c02ee6eacddc8b3d5935f87b431e606523ef63386a0d50c5d88"
     },
     {
       "path": "infra/08-ai/mlflow/docker-compose.yml",

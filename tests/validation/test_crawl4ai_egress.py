@@ -26,6 +26,7 @@ gateway = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(gateway)
 COMPOSE = ROOT / "infra/08-ai/crawl4ai/docker-compose.yml"
 EGRESS_IP = "10.250.200.2"
+CRAWLER_IP = "10.250.200.3"
 
 
 def dns_query(name: str, qtype: int, ident: int = 0x1234) -> bytes:
@@ -340,7 +341,14 @@ class ComposeContractTests(unittest.TestCase):
         )
         self.assertEqual(crawler["image"].rsplit("@", 1)[1], IMAGE.rsplit("@", 1)[1])
 
-        self.assertEqual(["crawl4ai_net", "crawl4ai_egress_net"], crawler["networks"])
+        self.assertEqual(
+            {"crawl4ai_net", "crawl4ai_egress_net"}, set(crawler["networks"])
+        )
+        # A fixed address keeps a daemon restart from handing the crawler the
+        # gateway's static .2 before the gateway itself is back (2026-10-28).
+        self.assertEqual(
+            {"ipv4_address": CRAWLER_IP}, crawler["networks"]["crawl4ai_egress_net"]
+        )
         for name in crawler["networks"]:
             self.assertIs(True, self.data["networks"][name]["internal"], name)
         self.assertEqual([EGRESS_IP], crawler["dns"])
