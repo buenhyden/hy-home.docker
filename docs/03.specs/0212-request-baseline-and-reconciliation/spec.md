@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.7.0"
+version: "1.8.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -58,7 +58,8 @@ payload before any Git-history-only disposition. Criterion 22/W27 records it in
 TSK-0011 without an archived-body edit, a catalog row, a checker change, or a
 removal; any later removal needs its own unit-scoped approval. The owner then
 approved removal of its candidates the same day; criterion 23/W28 applies it in
-TSK-0012.
+TSK-0012. Criterion 24/W29 records the follow-up review of the remaining
+request areas in TSK-0013.
 
 ## Scope
 
@@ -341,11 +342,16 @@ hold, authorization and recovery requirements have been established.
     units that could be approved. It names which units are removal candidates
     and which are blocked and why. It removes nothing, adds no catalog row or
     authorization, and grants no removal approval.
-23. TSK-0012 moves every TSK-0011 candidate unit to `git-history-only` under
-    the owner's unit, action and date scoped approval: it adds capture rows for
+23. TSK-0012 moves the TSK-0011 candidate units that have no current
+    consumer to `git-history-only` under the owner's unit, action and date
+    scoped approval: it adds capture rows for
     pre-catalog candidates, one assessment row per unit, and removes each whole
     payload in the same change. Blocked units stay retained, and the archive
     integrity and link checks pass after removal.
+24. TSK-0013 records the 2026-10-29 review of the remaining request areas:
+    each finding is applied with its own checks, or deferred or blocked with
+    a named owner and reason. It changes no completed Task and claims no
+    remote, runtime, or four-repository adoption.
 
 ## Failure Conditions
 

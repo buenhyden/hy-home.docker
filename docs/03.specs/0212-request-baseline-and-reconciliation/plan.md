@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.7.0"
+version: "1.8.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -38,6 +38,7 @@ classifies the links behind the standing `historical-links-unrecorded` warning
 as a read-only, documentation-only follow-up. W27 in TSK-0011 records a
 read-only per-unit Stage 98 disposition dry-run; it removes nothing. W28 in
 TSK-0012 applies the owner-approved history-only removal of its candidates.
+W29 in TSK-0013 records the follow-up review of the remaining request areas.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -75,6 +76,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W26 | 21 | Classify the links counted by `historical-links-unrecorded` against each record's pre-archive Git origin and record the residual set and its proven cause | W25 | TSK-0010 | Read-only Git object resolution; changed document metadata and link checks |
 | W27 | 22 | Per-unit Stage 98 retention-payload dry-run: consumers, capture, hold, isolated restore, and candidate or blocked disposition; no removal | W26 | TSK-0011 | Read-only checker-library reuse and `git archive` restore; changed document metadata and link checks |
 | W28 | 23 | Owner-approved history-only removal of the TSK-0011 candidates: capture rows for pre-catalog units, assessment rows, whole-payload removal | W27 | TSK-0012 | Corpus lifecycle, link alignment, and changed document checks after removal |
+| W29 | 24 | Review of the remaining request areas: apply verified small corrections; defer or block the rest with owner and reason | W28 | TSK-0013 | Renderer drift, metadata contracts and changed checks, affected unit tests |
 
 ### Current v30 continuation and delivery
 
