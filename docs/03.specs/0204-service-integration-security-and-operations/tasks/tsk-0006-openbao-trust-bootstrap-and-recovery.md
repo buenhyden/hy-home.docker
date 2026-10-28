@@ -3638,9 +3638,9 @@ Results:
   24-hour period. Like the 08:14 token, it is UNKNOWN until an expiry is
   observed, and no owner-held policy can look it up.
 - **OpenBao server metrics.** Server metrics have not been scraped since
-  2026-10-24 10:04Z: Prometheus cannot resolve `openbao` (`server misbehaving`),
-  and `OpenBaoMetricsScrapeFailing` keeps firing. This is separate from the
-  outage and has no owner yet.
+  2026-10-24 10:04Z, and `OpenBaoMetricsScrapeFailing` keeps firing. This is
+  separate from the outage. The cause given here at first, a Prometheus DNS
+  failure, was wrong; see the correction in the follow-ups entry below.
 - **Other stopped containers.** The owner decides on restarting
   `crawl4ai-egress` and `airflow-dag-processor`.
 
@@ -3692,14 +3692,16 @@ this commit to `agent-restart`. The v2 directory `422b4adfd…` is left in place
 
 **OpenBao server metrics.**
 
-- **DNS cleared.** The 2026-10-24 DNS failure (`lookup openbao … server
-  misbehaving`) cleared when the server container was restarted. Prometheus
-  now resolves `openbao` on the shared networks; the cause of the original
-  loss is not determined.
-- **New failure: HTTP 403.** The scrape now fails with `403 Forbidden`, so the
-  metrics token is no longer accepted. The agent's attempt to read the
-  non-secret `expires=` line of the custody file was denied by the `secrets/`
-  boundary and was not worked around.
+- **Root cause: the metrics token expired.** The owner printed only the
+  custody file's `expires=` line: `2026-10-24T10:04:32.941302101Z`. That is
+  21 seconds before the first failed scrape at 10:04:53Z.
+- **Correction.** The earlier "Prometheus DNS since 10-24" diagnosis was
+  wrong. The `lookup openbao … server misbehaving` error seen at 09:28Z
+  existed only because `openbao` was down during today's outage. Once the
+  server was restarted, Prometheus resolved `openbao` on the shared networks,
+  and the scrape returned `403 Forbidden`, the expired token.
+- **Boundary.** The agent's own attempt to read that `expires=` line was denied
+  by the `secrets/` boundary and was not worked around.
 - **Owner steps.** RUN-0104 rotation needs the temporary root session of
   RUN-0096 5.2/5.4, because the operator policy cannot mint a `prometheus`
   token. This stays an owner step.
