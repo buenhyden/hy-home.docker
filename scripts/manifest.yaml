@@ -586,7 +586,7 @@ files:
   - tests/lib/ops/test_openbao_copy_runtime.py
 - path: scripts/lib/ops/_openbao_copy_transport.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -597,7 +597,7 @@ files:
   - tests/lib/ops/test_openbao_copy_runtime.py
 - path: scripts/lib/ops/_secret_catalog_io.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
   lifecycle: active
   mutation: check-write
   consumers:
@@ -630,7 +630,7 @@ files:
   - tests/lib/hooks/test_agent_memory.py
 - path: scripts/lib/ops/openbao_consumer_migration.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -682,7 +682,7 @@ files:
   - tests/validation/test_root_resource_contract.py
 - path: scripts/lib/ops/secret_catalog.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
   lifecycle: active
   mutation: check-write
   consumers:
@@ -968,11 +968,11 @@ files:
   - tests/validation/test_root_resource_contract.py
 - path: scripts/operations/secret-catalog.py
   kind: operations
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
   lifecycle: active
   mutation: check-write
   consumers:
-  - docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  - docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
   - tests/lib/ops/test_secret_catalog.py
   disposition: retain
   successor: null

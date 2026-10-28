@@ -1558,7 +1558,7 @@ text moved without edits: 1,688 lines before, the same total after.
 Links that pointed at moved sections now point at the new files. That
 includes anchors inside the runbooks, RUN-0098, RUN-0021, the 0085 guide and
 SPEC-0229 TSK-0001. The folder index lists all five runbooks. The P06 runtime
-and P02 catalog scripts now name RUN-0106 as their authority. The tests read
+and P02 catalog scripts keep RUN-0085 as their authority. The tests read
 the manifest and image pin from RUN-0105 and the Agent restart call from
 RUN-0103.
 
@@ -1582,7 +1582,6 @@ content. These now name RUN-0103 or RUN-0105:
 Wording fixes from the reviews:
 
 - "위/아래" references that crossed files are now links.
-- The `scripts/lib/ops/secret_catalog.py` authority row moved to RUN-0106.
 - Two invented boilerplate claims were corrected: RUN-0105's "two share
   holders" and RUN-0103's journal condition.
 
@@ -1609,8 +1608,12 @@ lifecycle and link checks pass. The 71 related tests pass.
 
 CI `check-changed` then rejected the four new runbooks with
 `invalid-initial-status`, because a new runbook must start at `draft`. They
-now start at `draft`. Until a later change promotes them to `active`, the
-moved procedures are still current text, and RUN-0085 links to each of them.
+now start at `draft`. The script manifest then rejected RUN-0106 as an
+authority, because a script authority must be an `active` runbook. The five
+P06 and P02 manifest rows therefore stay on RUN-0085, as on `main`. RUN-0085
+now links the three scripts and says it keeps their authority while the split
+runbooks are `draft`. Moving those rows is part of the later change that
+promotes the four runbooks to `active`.
 
 ## Evidence
 

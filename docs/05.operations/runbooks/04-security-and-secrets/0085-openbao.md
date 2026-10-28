@@ -16,7 +16,7 @@ created: "2026-09-19"
 
 ## Overview
 
-이 런북은 OpenBao(`openbao`, `openbao-agent`)의 상태 점검, 승인된 대상 기동·중지, initial bootstrap, 사람 로그인과 root 복구, break-glass, 복구를 다룬다. Renderer SecretID 전달은 [RUN-0103](0103-openbao-renderer-delivery.md), metrics credential은 [RUN-0104](0104-openbao-metrics-credential.md), 유지보수 window는 [RUN-0105](0105-openbao-maintenance-window.md), 소비자 이관과 secret catalog는 [RUN-0106](0106-openbao-consumer-catalog.md)이 소유한다. OpenBao는 재시작 뒤 owner가 직접 하는 수동 Shamir unseal이 필요하다. 이 문서의 어떤 단계도 unseal share를 대신 입력하거나 자동화하지 않는다.
+이 런북은 OpenBao(`openbao`, `openbao-agent`)의 상태 점검, 승인된 대상 기동·중지, initial bootstrap, 사람 로그인과 root 복구, break-glass, 복구를 다룬다. Renderer SecretID 전달은 [RUN-0103](0103-openbao-renderer-delivery.md), metrics credential은 [RUN-0104](0104-openbao-metrics-credential.md), 유지보수 window는 [RUN-0105](0105-openbao-maintenance-window.md), 소비자 이관과 secret catalog는 [RUN-0106](0106-openbao-consumer-catalog.md)이 소유한다. 분리된 네 런북이 `draft`인 동안에는 [copy runtime](../../../../scripts/lib/ops/openbao_consumer_migration.py), [HTTPS transport](../../../../scripts/lib/ops/_openbao_copy_transport.py), [secret catalog CLI](../../../../scripts/operations/secret-catalog.py)의 script authority가 이 런북에 남는다. OpenBao는 재시작 뒤 owner가 직접 하는 수동 Shamir unseal이 필요하다. 이 문서의 어떤 단계도 unseal share를 대신 입력하거나 자동화하지 않는다.
 
 ## Trigger
 
