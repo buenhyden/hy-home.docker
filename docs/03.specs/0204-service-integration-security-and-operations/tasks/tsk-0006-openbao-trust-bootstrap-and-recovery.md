@@ -3710,6 +3710,60 @@ this commit to `agent-restart`. The v2 directory `422b4adfd…` is left in place
 as an OpenBao maintenance window, with a pre-check, an optional package hold,
 and the recovery order.
 
+**Owner decisions after review, 2026-10-28.**
+
+- **RUN-0104 fixes.** RUN-0104 gains an expired-old-token branch. When the
+  custody expiry has passed, the procedure no longer stops at the pre-revoke
+  lookup. Instead it requires the server's explicit `invalid accessor`, plus a
+  working management caller and server, then records `old: expired` and skips
+  the revoke. RUN-0104 also gains a least-privilege throwaway client that
+  mounts only the CA, the policies and the work directory.
+- **Metrics token TTL.** The metrics token TTL becomes 1 year (`8760h`). In the
+  same temporary root session, the `token/` mount maximum is tuned to `8760h`
+  first. A non-expiring ordinary service token is not possible: TTL 0 follows
+  the mount maximum, and a periodic token expires unless renewed.
+- **New `status` step.** A new read-only `owner-window.sh status` step prints
+  states and dates only. It covers container health, seal state, the journal
+  anchor, the metrics token expiry with a 30-day warning, OpenBao alerts and
+  targets, and stopped containers. It exits 1 on any problem.
+  - **Test.** The owner-script test covers healthy and problem cases, and
+    asserts that the custody accessor is never printed.
+  - **Live run.** The agent ran it read-only with the custody path pointed
+    away from `secrets/`. It reported the 403 target and the firing alert.
+  - **Owner run.** The owner's run reads the real expiry.
+- **Rotation itself.** The rotation stays an owner root-session step: RUN-0104
+  with the expired branch.
+
+**Independent security review (security-auditor, read-only).** The verdict was
+APPROVE_WITH_FINDINGS, with nothing Critical or High. `status` cannot print a
+token, accessor or value, and it mutates nothing. Each finding was fixed:
+
+- **Expired-token branch (Medium).** Its silent guards could let a malformed
+  custody file be recorded as `old: expired`. The guards now print, and
+  acceptance also needs the deployed token, copied before the file swap, to
+  fail lookup with `bad token`.
+- **Journal path (Medium).** `status` used an invented default journal path.
+  It now requires `issuance_journal` and also warns on `*.pending` files.
+- **Lower findings.** These were also fixed:
+  - every problem now prints `WARN`;
+  - a missing container is reported;
+  - the Docker host and context are unset;
+  - containers stopped by signal are not counted;
+  - a clean exit-0 test and a nonce no-leak check were added;
+  - the new token is bound with `-explicit-max-ttl=8760h -renewable=false`;
+  - the work-directory ownership is checked;
+  - expected results accept `old: expired`;
+  - host upgrades refresh the package list first, keep the hold by default,
+    name unattended-upgrades and reboots, and use `docker start` rather than
+    `up -d`.
+
+**Residual (owner decision).** Tuning the `token/` mount to `8760h` is
+persistent. Any caller allowed on `auth/token/create*` can then get an
+explicit TTL of up to one year. Today the renderer roles pin 5 minutes and
+`k8s-bootstrap` has a 2-hour explicit maximum. The operator policy's
+`auth/token/create/k8s-bootstrap` path, however, has no parameter limit, so
+that role's explicit maximum becomes the only bound.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
