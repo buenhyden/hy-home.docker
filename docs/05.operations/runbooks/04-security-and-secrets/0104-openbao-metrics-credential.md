@@ -20,7 +20,7 @@ created: "2026-10-28"
 
 ## Trigger
 
-metrics token을 처음 발급하거나, 만료 전에 회전하거나, 노출이 의심될 때 사용한다.
+metrics token을 처음 발급하거나, 만료 전에 회전할 때 사용한다.
 
 ## Prerequisites
 
@@ -136,12 +136,12 @@ runbook의 root 폐기 단계로 root 세션을 종료한다. `Started false`는
 뿐 root 폐기 증거가 아니다. root 폐기도 해당 절차의 서버 응답과 양성 대조로
 확인한 후, 이 단계에서 만든 보호된 응답 파일과 `OLD_ACCESSOR`를 정리한다.
 
-Agent 재시작 전에 승인된 운영자는 보호된 채널을 통해 새 SecretID를 전달해야 한다.
+Agent 재시작 전에 승인된 운영자는 보호된 채널을 통해 새 SecretID를 전달해야 한다([RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery)).
 RoleID/SecretID 파일(0600, 컨테이너 UID 100/GID 1000)을 배치하는 동안 Agent만 중단한
 뒤 시작한다. Agent가 소비하기 전에 같은 일회용 SecretID로 test-login하지 않는다.
 server를 재시작하면 unseal ceremony가 필요하고 Agent token을 잃거나 만료되어도 새 AppRole
 credential이 필요하다. 발급에는 승인된 운영자 신원이 필요하다. 아직 수립되지 않았다면
-아래의 별도로 승인된 loopback recovery 절차를 사용한다. 일반 generate-root도 현재 API에서
+[RUN-0085 break-glass](0085-openbao.md#no-administrative-identity-explicit-break-glass-recovery)의 별도로 승인된 loopback recovery 절차를 사용한다. 일반 generate-root도 현재 API에서
 인증된 권한이 필요하다. quorum key만으로는 그 endpoint를 승인할 수 없다. 자동화 지름길로
 활성 영구 root token을 저장하지 않는다.
 

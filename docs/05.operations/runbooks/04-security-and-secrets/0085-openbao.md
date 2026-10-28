@@ -65,7 +65,7 @@ docker compose --profile security up -d --no-deps --no-build --pull never openba
 health는 0만 허용하며 sealed(2)는 `unhealthy`다. 새 Compose 기동의 Agent health 의존성은
 unseal 이후에 통과한다. Docker daemon의 기존 Agent 자동 재시작에는 이 의존성이 적용되지 않는다. 이미 initialize된 저장소를 다시 initialize하지 않는다.
 위 initial/bootstrap 또는 승인된 unseal 뒤 실제 `Sealed false`를 확인하고, 새로
-필요한 SecretID를 아래 절차로 전달한 후 Agent만 시작한다.
+필요한 SecretID를 [RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery) 절차로 전달한 후 Agent만 시작한다.
 
 ```bash
 docker compose --profile security up -d --no-deps --no-build --pull never openbao-agent
@@ -98,7 +98,7 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 스냅샷이 모두 성공한 뒤에만 폐기해야 한다. setup이 실패하면 운영자 복구를 위해 보호된
 복구 자료를 유지한다.
 
-이 HOME은 1인 관리자 결정(SPEC-0242)으로 share를 host에 두며 아래 [1인 관리자 custody 절차](0105-openbao-maintenance-window.md#1인-관리자-custody-절차)를 따른다. 기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
+이 HOME은 1인 관리자 결정(SPEC-0242)으로 share를 host에 두며 [1인 관리자 custody 절차](0105-openbao-maintenance-window.md#1인-관리자-custody-절차)를 따른다. 기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
 [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)가
 소유한다. 이 예외는 share 분리 검증을 뜻하지 않는다. 승인된 운영자는 대화형
 `docker compose exec openbao bao operator unseal`의 숨겨진 prompt로 share를 하나씩

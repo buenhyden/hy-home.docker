@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# RUN-0085 hy-home.k8s writer quiescence (W3) and the ESO Finish gate, for the
+# RUN-0105 hy-home.k8s writer quiescence (W3) and the ESO Finish gate, for the
 # external cluster operator with a per-window approval. Stops the two Argo CD
 # controllers and External Secrets, then restores only the writers it changed,
 # in reverse order. State (original UID, replicas, selector, changed list, Finish

@@ -164,7 +164,7 @@ layer에 생성돼 재생성마다 바뀌었다. 이제 `WEBUI_SECRET_KEY_FILE`�
 바뀌지 않았고 재로그인도 필요 없었다. 그 뒤로도 재생성 때 유지된다.
 
 OpenBao는 Raft snapshot으로 백업합니다. 최초 snapshot-only periodic token 발급은
-[RUN-0085 Maintenance Window Plan의 W1·W2](../04-security-and-secrets/0105-openbao-maintenance-window.md#maintenance-window-plan)가
+[RUN-0105 Maintenance Window Plan의 W1·W2](../04-security-and-secrets/0105-openbao-maintenance-window.md#maintenance-window-plan)가
 소유합니다. 독립 검토된 helper가 실제 root identity, 고정 gateway CA·cluster,
 정확한 정책과 ordinary-secret denial·renewal을 확인하며, 기존 token을 덮지 않고
 `secrets/backup/openbao/snapshot_token.txt`에 0600 single-link로 전달합니다.
@@ -287,7 +287,7 @@ IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/restic/r2_secret_access_k
 
 `.env`에 `BACKUP_OFFSITE_R2_ACCOUNT_ID`(16진수 32자)와
 `BACKUP_OFFSITE_R2_BUCKET`을 넣는다. BKP-003, BKP-004, BKP-005, account ID,
-bucket 이름을 BKP-002와 함께 [RUN-0085](../04-security-and-secrets/0085-openbao.md) 1인 관리자 custody의 계정 A에
+bucket 이름을 BKP-002와 함께 [RUN-0105](../04-security-and-secrets/0105-openbao-maintenance-window.md#1인-관리자-custody-절차) 1인 관리자 custody의 계정 A에
 복사한다. BKP-001은 host `secrets/`에 있어 host 백업으로 함께 복구된다. host를 잃은
 뒤의 복구가 OpenBao에 기대면 안 되므로 OpenBao에는 절대 두지 않는다. 그다음
 state repository의 chunker 설정으로 원격을 초기화하고 첫 copy를 한다:

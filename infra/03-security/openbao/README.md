@@ -81,7 +81,7 @@ SEC01 candidate는 server·Agent·snapshot CLI를 2.7.1로 정렬합니다. oper
 영속 journal을 API 호출 전에 기록하며 새 process 기능 readiness와 accessor 정합화 후에만
 완료합니다. source checkout은 신뢰 설치 경로가 아니므로
 [installer](./scripts/install-renderer-issuer.sh)는 승인 commit의 blob에서 읽고,
-`RUN-0085`의 operator-private 설치 절차를 따릅니다. checkout의 installer를 직접 실행하지 않습니다.
+`RUN-0103`의 operator-private 설치 절차를 따릅니다. checkout의 installer를 직접 실행하지 않습니다.
 격리 시험은 HOME 배포·cold boot·독립 custody 확인과 별개입니다. 실제 consumer 적용은 별도입니다.
 
 config-owned HMAC audit는 `openbao-audit`에 기록합니다. 한 backend가 실패하면 audited
@@ -98,14 +98,14 @@ P06 확대 전제입니다. 임시 고정 버전 시험은 HOME 완료 증거가
 완료를 보고합니다. mutation 이후 cleanup·출력 실패는 `INDETERMINATE`로 보존합니다.
 별도 [token helper](./scripts/protected-token-operations.py)는 제한 snapshot token을 발급하고
 고정 HOME 대상에 한 번만 전달합니다. root 폐기는 별도의 현재 OIDC 관리자 입력과
-600초 이상 TTL을 폐기 직전·직후에 확인해야 완료합니다. 운영 명령은 `RUN-0085`가
+600초 이상 TTL을 폐기 직전·직후에 확인해야 완료합니다. 운영 명령은 `RUN-0105`가
 소유합니다. [snapshot helper](./scripts/protected-raft-snapshot.py)는 보호 FD token으로
 검증·갱신·bounded save를 수행하고 snapshot과 receipt를 덮어쓰기 없이 게시합니다.
 저장 후 불확실성에서는 산출물과 lock을 보존하며 writer 정지·offsite·복구는 실행하지 않습니다.
 [semantic restore helper](./scripts/protected-semantic-restore.py)는 검토된 snapshot·receipt와
 유효한 writer 정지 lease를 고정하고, 선택한 빈 격리 대상에서 복구·canary·Agent 재인증을
 검증합니다. 실행 peer와 renderer 3파일·인접 receipt를 검증한 동일 바이트로 구성하며,
-한 번의 시도 이후 불확실성에서는 대상과 ledger를 보존합니다. 실제 실행 절차는 `RUN-0085`가
+한 번의 시도 이후 불확실성에서는 대상과 ledger를 보존합니다. 실제 실행 절차는 `RUN-0105`가
 소유합니다. 단위시험 통과는 HOME 복구 성공을 뜻하지 않습니다.
 운영자 `buenhyden`은 서로 다른 share와 off-host 보관 준비를 확인했습니다. 실제 현재 인증과
 share 입력은 보호 client에서만 처리하며, 준비 확인을 발급·upgrade·semantic restore 성공으로

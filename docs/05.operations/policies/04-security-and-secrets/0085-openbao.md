@@ -108,7 +108,7 @@ credential 폐기와 보호 자료 보존을 각각 승인받아 수행하며 `d
 
 ### Maintenance window credential handling
 
-HOME 유지보수 window(SPEC-0243, 절차는 RUN-0085)는 아래 규칙을 따른다.
+HOME 유지보수 window(SPEC-0243, 절차는 RUN-0105)는 아래 규칙을 따른다.
 
 - share·root·operator token은 숨김 입력, stdin, 보호된 FD, tmpfs의 0600 파일, 또는 명령 하나에만
   붙는 환경 변수(`BAO_TOKEN="$(cat …)"`와 이름만 넘기는 `docker compose exec -e BAO_TOKEN`)로만
@@ -152,7 +152,7 @@ host Restic 저장소(BKP-002로 암호화)는 `secrets/` 전체를 담고, `res
 host 백업에 포함한다. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근과 secret이 아닌 R2
 식별자만 owner가 관리하는 host 밖 장소(비밀번호 관리자 계정이나 별도 데스크탑)에 둔다. host를
 잃어도 R2에서 모두 복구하려는 배치이지만(R2 원격 복구는 아직 미실행), 그 장소가 뚫리면 모든 secret과 share가 노출되고 off-host 사본을 지울 수도 있으며, host를 읽는 한 주체가 threshold를 넘는다. owner는 이 노출을
-받아들였고 rekey는 하지 않는다(RUN-0085). 이 결정은 이 예외를 닫지 않는다. 이 문서는
+받아들였고 rekey는 하지 않는다(RUN-0105). 이 결정은 이 예외를 닫지 않는다. 이 문서는
 결정을 기록할 뿐 그 실행이나 새 credential 처리, 이 결정을 넘는 예외 확대를 승인하지 않는다.
 기존 기록에는 **만료와 종료 조건이 없다**. 위 Exceptions의 필수 항목을 충족했다고
 표시하지 않으며 @buenhyden의 후속 결정이 필요하다. 파일을 읽거나 이동하거나
@@ -198,7 +198,7 @@ config-owned HMAC file audit를 유지하며 모든 필수 backend 실패 시 �
 알리는 경보는 아직 없으며, 이 운영 공백은 owner @buenhyden이 맡고 logrotate 실패나 audit 파일
 정체 경보를 더하면 닫는다. 기존 single-file custody 예외는 미해결 상태로 보존한다. P01 격리 시험은
 그 예외를 종료하거나 HOME 복구 자료를 만들어내지 않는다. P06 확대는 실제 cold boot·
-RUN-0085 5단계 custody 기록(SPEC-0242)·선정 snapshot 복구 수용 이후만 허용한다.
+RUN-0105 5단계 custody 기록(SPEC-0242)·선정 snapshot 복구 수용 이후만 허용한다.
 
 ### Versioned issuance identity control
 

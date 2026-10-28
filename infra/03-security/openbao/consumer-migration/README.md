@@ -270,7 +270,7 @@ Entrypoint는 파일의 CR·LF를 모두 지우므로 검사도 같은 방식으
    version을 확인한 뒤 `./secrets/auth/grafana/grafana_client_secret.txt`를 stdin으로
    `bao kv patch -method=rw secret/hy-home/06-observability/grafana grafana_client_secret=-`에 넣습니다.
    값을 출력하지 않습니다. version이 하나 오르고 Agent가 5분 안에 `.version`을 다시 렌더링합니다.
-2. 병합 후 main fast-forward 직후 Agent를 다시 시작합니다(RUN-0085 SecretID 전달).
+2. 병합 후 main fast-forward 직후 Agent를 다시 시작합니다(RUN-0103 SecretID 전달).
    새 health는 client secret 파일을 요구하므로 fast-forward와 재시작 사이에는 Agent가 unhealthy입니다.
 3. 전환 전 검사: `bash infra/03-security/openbao/consumer-migration/verify-grafana-client-secret.sh`.
    `consumed_file`, `rendered_version`, `mounted_equals_rendered`와 Keycloak이 가진 client secret과의
@@ -320,12 +320,12 @@ bind합니다(`create_host_path: false`). 각 `<stem>.txt`는 `0640`, `<stem>.ve
 같고 1~3단계는 owner가 실행합니다. 정책은 권한을 더하기만 하므로 병합 전에 적용해도 실행 중인
 Agent와 소비자에 영향이 없습니다.
 
-1. 정책 적용(RUN-0085 W1 → W1c → W7): RUN-0085의 `owner-window.sh` 단계로 W1 root ceremony,
+1. 정책 적용(RUN-0105 W1 → W1c → W7): RUN-0105의 `owner-window.sh` 단계로 W1 root ceremony,
    이전 root 정리, W1c `roles-plan`·`roles-diff`(`renderer`·`hy-home-operator`의 차이가 새 7개
    경로뿐인지 확인하고 Task에 기록)·`roles-apply`, W7 `revoke-root`를 실행합니다. helper·정책과
    script는 이 PR head에서 manifest로 받습니다(manifest hash가 이 revision에 고정됨).
 2. KV 반입(operator 인증): W7 token처럼 W1c 뒤에 받은 operator token 파일로, window의 승인 commit
-   (`$P01_COMMIT`) 객체에서 RUN-0085 Renderer SecretID Delivery 3단계의 `p01_run`으로 실행합니다. window의
+   (`$P01_COMMIT`) 객체에서 RUN-0103 Renderer SecretID Delivery 3단계의 `p01_run`으로 실행합니다. window의
    `cleanup`은 이 token을 폐기하므로 반입 뒤에 합니다. 경로마다
    `secrets/auth/<서비스>/<파일>`을 stdin으로 넣고 7개 경로의 metadata를 확인합니다. `-cas=0`은
    경로가 이미 있으면 거부하므로 다른 field를 지우지 않습니다. `put FAIL`이면 멈추고
@@ -338,7 +338,7 @@ Agent와 소비자에 영향이 없습니다.
 
    병합 전 종료 조건: 7개 경로 모두 `bao kv metadata get`이 성공해야 합니다. 하나라도 빠지면 그
    template이 렌더링되지 않아 3단계 Agent 재시작이 90초 health 조건에서 `BLOCKED`로 끝납니다.
-3. 병합 → 출력 디렉터리 생성 → main fast-forward → Agent 재시작(RUN-0085 SecretID 전달).
+3. 병합 → 출력 디렉터리 생성 → main fast-forward → Agent 재시작(RUN-0103 SecretID 전달).
    - 병합하면 8개 소비자 정의에 새 bind가 생겨 다음 `docker compose up -d`가 변수와 상관없이 모두
      다시 만듭니다. bind는 `create_host_path: false`이므로 디렉터리가 없으면 container를 만들지
      못하고, 기존 container는 이미 지워진 뒤라 그 서비스가 멈춥니다(`oauth2-proxy`면 SSO 전체).
@@ -355,7 +355,7 @@ Agent와 소비자에 영향이 없습니다.
      Agent는 재시작 전까지 예전 5개 template만 검사합니다. 새 health는 `out` 전체에서 목록에 없는
      group/other-readable 파일을 찾으므로, `prepare`가 마지막에 출력하는 읽기 가능 파일이 현재
      `.txt` 3개뿐인지 확인한 뒤 fast-forward합니다.
-   - 재시작은 RUN-0085 Renderer SecretID Delivery 3단계의 `owner-window.sh agent-restart`로 합니다.
+   - 재시작은 RUN-0103 Renderer SecretID Delivery 3단계의 `owner-window.sh agent-restart`로 합니다.
      끝에 출력되는 Agent health(최대 90초 대기)가 `healthy`이고 7개 디렉터리의 `.txt`가 `0640`, `.version`이 `0600`인지
      확인합니다.
 4. 서비스마다 전환 전 검사:

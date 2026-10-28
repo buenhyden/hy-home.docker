@@ -180,7 +180,7 @@ case "$action" in
         echo "R2 repository size: $size bytes"
         ;;
     artifact)
-        # RUN-0085 W3b: store the W3 OpenBao snapshot and its receipt, mounted
+        # RUN-0105 W3b: store the W3 OpenBao snapshot and its receipt, mounted
         # read-only at /artifact, then read both back from R2 and compare.
         # Prints only names, sizes, SHA-256 and the snapshot ID; no retry.
         # A failed restic must fail the pipe, not hide behind sed or sha256sum.

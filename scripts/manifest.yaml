@@ -682,7 +682,7 @@ files:
   - tests/validation/test_root_resource_contract.py
 - path: scripts/lib/ops/secret_catalog.py
   kind: library
-  authority: docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: check-write
   consumers:

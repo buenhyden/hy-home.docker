@@ -24,7 +24,7 @@ Agent 설정이 바뀌어 다시 시작해야 하거나, Agent가 재인증하�
 
 ## Prerequisites
 
-OpenBao가 initialized·unsealed이고, 승인된 issuer helper가 operator 전용 디렉터리에 설치돼 있으며, 현재 OIDC operator credential을 받을 수 있어야 한다. issuance journal이 `complete`가 아니면 새로 발급하지 않는다.
+OpenBao가 initialized·unsealed이고, 승인된 issuer helper가 operator 전용 디렉터리에 설치돼 있으며, 현재 OIDC operator credential을 받을 수 있어야 한다. 진행 중인 issuance journal이 있으면 그 실행은 이전 발급을 정합화만 하고 새로 발급하지 않으며, 불명확·복수 결과·sealed·권한 거부는 새 발급을 막는다.
 
 ## Procedure
 
@@ -37,7 +37,7 @@ OpenBao가 initialized·unsealed이고, 승인된 issuer helper가 operator 전�
 [cleanup role](../../../../infra/03-security/openbao/config/renderer-cleanup-token-role.json),
 [issuer policy](../../../../infra/03-security/openbao/config/policies/renderer-issuer.hcl),
 [cleanup policy](../../../../infra/03-security/openbao/config/policies/renderer-cleanup.hcl)를
-window의 W1c가 root로 먼저 적용한다. HOME 적용 여부는 별도이며 source를 배포 증거로 쓰지 않는다.
+[RUN-0105](0105-openbao-maintenance-window.md) window의 W1c가 root로 먼저 적용한다. HOME 적용 여부는 별도이며 source를 배포 증거로 쓰지 않는다.
 cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐이다. 두 token의
 `lookup-self`는 정확한 policy·TTL·비갱신 신원을 검사하며 다른 KV나 AppRole을 열지 않는다.
 
@@ -110,7 +110,7 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    입력으로 받고, 두 짧은 token은 server 안의 CLI가 만들어 변수로 바로 받으므로 화면에
    나오지 않는다. CLI의 `policies=…`는 문자열로 보내져 operator 정책의 허용 형식과 맞는다.
 
-   W0의 셸 규칙대로 `bash --noprofile --norc` 셸에서 실행한다.
+   [RUN-0105](0105-openbao-maintenance-window.md) W0의 셸 규칙대로 `bash --noprofile --norc` 셸에서 실행한다.
 
    [window script](../../../../infra/03-security/openbao/scripts/owner-window.sh)의 `agent-restart`가
    이 순서를 실행한다. operator credential을 숨김 입력으로 받아 `hy-home-operator` 정책인지 먼저
@@ -181,13 +181,13 @@ response wrapping을 사용한다. raw `-field=secret_id` 전달과 root UID로 
 
 ## Verification
 
-`issue rc=0`, Agent `healthy`, 렌더 파일의 mode와 KV version 일치, journal `complete`를 확인하고 값 없이 Task에 기록한다.
+`issue rc=0`, Agent `healthy`, 렌더 파일의 mode와 KV version 일치, issuance anchor `complete`를 확인하고 값 없이 Task에 기록한다.
 
 ## Failure and Recovery
 
 ### Rollback or Recovery
 
-전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다. 재시작을 반복하거나 오래된 sink를 성공으로 처리하지 않고, 같은 journal로 정합화한 뒤에만 다시 발급한다.
+전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다. 재시작을 반복하거나 오래된 sink를 성공으로 처리하지 않고, 같은 journal로 정합화한 뒤에만 다시 발급한다. 불명확·복수 결과·시간/nonce 불일치·sealed·권한 거부·journal 유실은 새 발급을 막고 custody/API 대조 복구로 넘긴다.
 
 ### Escalation
 

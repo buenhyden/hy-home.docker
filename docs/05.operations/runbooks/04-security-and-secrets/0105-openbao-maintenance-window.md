@@ -24,7 +24,7 @@ OpenBao image 업그레이드, root가 필요한 정책·role 변경, snapshot·
 
 ## Prerequisites
 
-W0 조건(승인 commit, CI·독립 검토 통과, unseal share 두 명, tmpfs 런타임 디렉터리, 깨끗한 HOME checkout)을 모두 확인하고, 하나라도 없으면 window를 열지 않는다.
+W0 조건(CI와 독립 검토를 통과한 `P01_APPROVED_COMMIT`, 1인 관리자 custody의 서로 다른 unseal share 두 개, tmpfs 런타임 디렉터리, 깨끗한 HOME checkout)을 모두 확인하고, 하나라도 없으면 window를 열지 않는다.
 
 ## Procedure
 
@@ -595,8 +595,8 @@ fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b infra/03-securi
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
 e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json
-ac23a2fa7dc72552d08f9232035f851b739a749745786046598b16475303b228 infra/03-security/openbao/scripts/owner-window.sh
-152754095d8051fd6018ddb352b83ebb8d15ad2eb1599788ea6da28f2bf6dfaf infra/03-security/openbao/scripts/k8s-writers.sh
+cad5de97bd301588e914a0a813cd5e5c21337984bcffc68099d72bf59f3a313c infra/03-security/openbao/scripts/owner-window.sh
+6e99a1fa6ba153642b66be1fd353e237cc25640e81386de203d2b232a6c00eed infra/03-security/openbao/scripts/k8s-writers.sh
 P01_SOURCE_MANIFEST
 ```
 
@@ -957,7 +957,7 @@ image를 붙이지 않는다(in-place Raft downgrade 금지). W4가 실패하면
 window 안에 끝나지 않으면 server를 sealed 또는 정지 상태로 두고, consumer는 이미 렌더된
 파일로 계속 동작하며, 남은 단계는 다음 window로 넘긴다. 유일한 예외는 Raft 데이터 손상처럼
 새 owned image에서 고칠 수 없는 경우다. 그때만 HOME을 보류하고 @buenhyden에게 반환하며, 별도 승인으로
-W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 경로를 연다(아래 Rollback or Recovery).
+W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 경로를 연다([RUN-0085 Rollback or Recovery](0085-openbao.md#rollback-or-recovery)).
 지금의 restore 도구는 격리 target-05에 고정돼 있으므로, HOME을 복원된 volume으로 바꾸는
 절차는 그때 따로 검토한다.
 
