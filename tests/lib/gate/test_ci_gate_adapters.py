@@ -956,43 +956,6 @@ class CiGateAdapterTests(unittest.TestCase):
                 with self.subTest(breaking_header=header):
                     self.assertEqual("MAJOR", increment_for(header))
 
-        cliff_config = tomllib.loads((ROOT / "cliff.toml").read_text(encoding="utf-8"))
-        cliff = cliff_config["git"]
-        changelog = cliff_config["changelog"]
-        self.assertTrue(cliff["protect_breaking_commits"])
-        self.assertIn("commit.breaking", changelog["body"])
-
-        def first_parser(message: str, footer: str = "") -> dict[str, object] | None:
-            for parser in cliff["commit_parsers"]:
-                if "footer" in parser and re.search(parser["footer"], footer):
-                    return parser
-                if "message" in parser and re.search(parser["message"], message):
-                    return parser
-            return None
-
-        for change_type in sorted(expected_types - {"release"}):
-            with self.subTest(change_type=change_type):
-                parser = first_parser(f"{change_type}: Subject")
-                self.assertIsNotNone(parser)
-                self.assertFalse(parser.get("skip", False))
-        for message in ("release: Publish v1.2.3", "chore(release): Publish v1.2.3"):
-            with self.subTest(message=message):
-                parser = first_parser(message)
-                self.assertIsNotNone(parser)
-                self.assertTrue(parser.get("skip", False))
-        for footer in (
-            "BREAKING CHANGE: The legacy endpoint was removed",
-            "BREAKING-CHANGE: The legacy endpoint was removed",
-        ):
-            with self.subTest(footer=footer):
-                breaking = first_parser("feat: Remove legacy endpoint", footer)
-                self.assertEqual("Changed", breaking.get("group"))
-        nonbreaking = first_parser(
-            "feat: Keep legacy endpoint",
-            "BREAKING-CHANGED: This is an ordinary custom footer",
-        )
-        self.assertEqual("Added", nonbreaking.get("group"))
-
         def hook_pattern(name: str) -> re.Pattern[str]:
             source = (ROOT / ".agents/governance/hooks" / name).read_text(
                 encoding="utf-8"

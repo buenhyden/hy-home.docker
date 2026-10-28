@@ -946,7 +946,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "tests/validation/test_release.py",
             ".github/workflows/generate-changelog.yml",
             ".cz.toml",
-            "cliff.toml",
             "CHANGELOG.md",
         )
         for path in release_inputs:

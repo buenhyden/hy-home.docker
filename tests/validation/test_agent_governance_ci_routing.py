@@ -86,7 +86,6 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             ".rtk/",
             ".shellcheckrc",
             ".yamllint",
-            "cliff.toml",
             "ruff.toml",
         }
         public = contract.parse_public_gate_contract(
