@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.8.0"
+version: "1.9.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -59,7 +59,8 @@ TSK-0011 without an archived-body edit, a catalog row, a checker change, or a
 removal; any later removal needs its own unit-scoped approval. The owner then
 approved removal of its candidates the same day; criterion 23/W28 applies it in
 TSK-0012. Criterion 24/W29 records the follow-up review of the remaining
-request areas in TSK-0013.
+request areas in TSK-0013. Criterion 25/W30 corrects the archive check
+runtime cause in TSK-0014.
 
 ## Scope
 
@@ -352,6 +353,8 @@ hold, authorization and recovery requirements have been established.
     each finding is applied with its own checks, or deferred or blocked with
     a named owner and reason. It changes no completed Task and claims no
     remote, runtime, or four-repository adoption.
+25. TSK-0014 corrects the stated cause of the slower archive check and removes
+    the measured repeat, without changing any archive finding.
 
 ## Failure Conditions
 
