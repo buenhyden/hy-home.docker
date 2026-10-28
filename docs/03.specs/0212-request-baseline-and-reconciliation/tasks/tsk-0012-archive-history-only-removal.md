@@ -1,8 +1,8 @@
 ---
 title: "Archive History-Only Removal Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-29"
 layer: "specs"
@@ -2575,10 +2575,12 @@ archive_authorizations:
 
 ### Objective
 
-Execute W28: move the 213 candidate units named by TSK-0011 to
-`git-history-only` availability and remove their 275 payload files from the
+Execute W28: move 196 of the 213 candidate units named by TSK-0011 to
+`git-history-only` availability and remove their 244 payload files from the
 current tree. This Task owns criterion 23 only. The 24 units TSK-0011 found
-blocked by current links or machine references stay `retained`.
+blocked stay `retained`, and so do the seventeen units its correction moved to
+blocked. Their authorization entries below were recorded before the correction
+and are not used.
 
 ## Inputs and Authorization
 
@@ -3031,10 +3033,11 @@ stays reachable. It does not cover the 24 blocked units or any history rewrite.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0012 | draft | ready | #owner-approval |
 | SPEC-0212-TSK-0012 | ready | in-progress | #inputs-and-authorization |
+| SPEC-0212-TSK-0012 | in-progress | completed | #evidence |
 
 ### Scope
 
-46 captured candidates keep their existing capture rows. 167 pre-catalog
+36 captured candidates keep their existing capture rows. 160 pre-catalog
 candidates receive a capture row in the removal change, naming the base commit
 where each origin last existed. Every removed unit receives one Current
 Assessments row: `withdrawn` for `retired/` units, `usable` for `completed/`
@@ -3042,19 +3045,74 @@ and `superseded/` units whose frozen record remains accurate history, all with
 availability `git-history-only`, hold `none`, and this Task revision as the
 decision.
 
+### TSK-0011 correction
+
+The consumer trace missed three consumer kinds, which this removal run exposed through the repository checks:
+
+- A link to a package directory: the trace stripped the trailing `/` before
+  mapping the target to its unit. `docs/02.architecture/decisions/0044-readme-navigation-and-document-language.md`
+  links `completed/03.specs/0184-readme-navigation-and-language-contract/` and
+  `completed/03.specs/0187-document-language-migration/`.
+- A reference by identifier or archive-relative path: current frontmatter
+  (`supersedes`, `parent_ids`) names ADR-0015, ADR-0019, ADR-0029, and AD-0014,
+  and `docs/99.templates/registry.json` names
+  `superseded/02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md`.
+
+- The closure of those references through kept archived bodies: a retained
+  record's own `supersedes` or `parent_ids` names another candidate. That adds
+  ten units: `completed/03.specs/0157-script-surface-ownership-convergence/`,
+  ADR-0027, ADR-0030, ADR-0031, ADR-0033, ADR-0035, and the superseded
+  packages SPEC-0174, SPEC-0201, SPEC-0202, and SPEC-0203.
+
+These seventeen units are blocked, not candidates: the corrected totals are 196
+candidates and 41 blocked units. `check-document-links.py --mode alignment`
+and `check-document-metadata.py` are the authorities that caught them. TSK-0011 stays
+as recorded, because a completed Task body is immutable.
+
 ## Evidence
 
-Recorded when the removal commit exists.
+### Validator corrections
+
+Removal exposed two latent defects in the archive validators, fixed in the
+same delivery with regression coverage:
+
+- `validate_preservation_boundary()` required every sealed Tombstone to pair
+  with a retained `retired/` body. A Tombstone whose Retired Path lies inside a
+  `git-history-only` unit now pairs with Git history; the sealed record stays
+  unchanged. `test_a_sealed_tombstone_pairs_with_git_history_after_removal`
+  covers both the failing and the passing case.
+- `_historical_units()` used simplified `git log` without per-parent merge
+  diffs, so five captured units merged in from side branches looked as if they
+  had never been archived. It now passes `--full-history -m`. No isolated
+  fixture reproduces Git's merge simplification; the corpus check below is the
+  reproduction (5 findings before, 0 after).
+- The pinned Task frontmatter (426 authorization entries) was re-parsed for
+  every assessment row. A per-`commit:path` cache of the immutable blob cut one
+  `validate_archive_assessments()` call from 260 s to 25 s.
+
+The corpus check still takes about 250 s on this host, against 95 s on
+`main`, because each run validates the 196 assessment rows twice (once in the
+catalog check and once in the archive route). That cost is open, not accepted.
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Approval structure | 23 | W28 | `_approval_record_matches()` for `assess` and `remove` | Pinned revision `11aa14767` | PASS | Every history-only row matches its two authorization entries | required | - |
+| Archive integrity | 23 | W28 | `check-document-corpus-lifecycle.py` | This branch | PASS | See Review and Completion | required | - |
+| Current link regression | 23 | W28 | `check-document-links.py --mode alignment` | This branch | PASS | 0 failures; 1 warning (pre-catalog legacy links) | required | - |
+| Changed document metadata | 23 | W28 | `check-document-metadata.py --mode check-changed --base-ref origin/main` | This branch | PASS | 0 violations | required | - |
+| Archive regressions | 23 | W28 | `python3 -m unittest tests.lib.document_governance.test_archive tests.lib.document_governance.test_archive_assessments` | This branch; Python 3.12.3 | PASS | 103 tests | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 23 | pending | - | Removal not yet applied. | SPEC-0212 TSK-0012 |
+| 23 | accepted | Approval structure, Archive integrity, Current link regression, Changed document metadata, Archive regressions | 196 units moved to `git-history-only` with whole-payload removal; 41 blocked units stay retained. | SPEC-0212 TSK-0012 |
 
 ## Review and Completion
 
-Pending the removal commit and its archive checks.
+This Task completes on the evidence above. Hosted checks and the merge are
+observed on the pull request, which must merge with a merge commit so the
+pinned decision revision stays reachable.
 
 ## Related Documents
 
