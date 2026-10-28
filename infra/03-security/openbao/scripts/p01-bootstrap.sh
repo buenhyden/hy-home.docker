@@ -8,7 +8,7 @@
 [ "$#" -eq 1 ] || { echo "usage: p01-bootstrap.sh <approved 40-character commit>" >&2; exit 2; }
 P01_APPROVED_COMMIT=$1
 unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH
-readonly P01_HOME_ROOT=/home/hyunyoun/data/hy-home.docker
+P01_HOME_ROOT=/home/hyunyoun/data/hy-home.docker
 test "$P01_HOME_ROOT" = "$(/usr/bin/realpath -e -- "$P01_HOME_ROOT")" || exit 1
 test "$(/usr/bin/stat -c '%d:%i:%u' -- "$P01_HOME_ROOT")" = 64512:4338469:1000 || exit 1
 test ! -L "$P01_HOME_ROOT/.git" || exit 1
@@ -19,17 +19,16 @@ P01_COMMIT="$(/usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 \
   GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 /usr/bin/git \
   --git-dir="$P01_HOME_ROOT/.git" rev-parse --verify "$P01_APPROVED_COMMIT^{commit}")" || exit 1
 test "$P01_COMMIT" = "$P01_APPROVED_COMMIT" || exit 1
-readonly P01_COMMIT
-readonly P01_RUNTIME_DIR="${XDG_RUNTIME_DIR:?}"
+P01_RUNTIME_DIR="${XDG_RUNTIME_DIR:?}"
 test -d "$P01_RUNTIME_DIR" || exit 1
 test ! -L "$P01_RUNTIME_DIR" || exit 1
 test "$P01_RUNTIME_DIR" = "$(/usr/bin/realpath -e -- "$P01_RUNTIME_DIR")" || exit 1
 test "$(/usr/bin/stat -c '%u:%a' -- "$P01_RUNTIME_DIR")" = "$(/usr/bin/id -u):700" || exit 1
 test "$(/usr/bin/findmnt -n -T "$P01_RUNTIME_DIR" -o FSTYPE)" = tmpfs || exit 1
 P01_CLIENT_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-client.XXXXXX")" || exit 1
-declare -p P01_CLIENT_DIR >>"$XDG_RUNTIME_DIR/p01-window.vars"
+# A copy that failed a pin never survives, and the window records no path to it.
+trap '[ "${ok:-}" = 1 ] || /usr/bin/rm -rf -- "$P01_CLIENT_DIR"' EXIT
 P01_SCRIPT_DIR="$P01_CLIENT_DIR/infra/03-security/openbao/scripts"
-declare -p P01_RUNTIME_DIR P01_COMMIT P01_SCRIPT_DIR >>"$XDG_RUNTIME_DIR/p01-window.vars"
 /usr/bin/install -d -m 0700 "$P01_SCRIPT_DIR" "$P01_CLIENT_DIR/infra/03-security/openbao/config/policies" || exit 1
 set -C  # never overwrite a copied source file
 while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
@@ -56,8 +55,11 @@ fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b infra/03-securi
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
 e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json
-1beccdca8e47c06c76dd462041f736b08565cf25d67b0c3992c90636bb8d375d infra/03-security/openbao/scripts/owner-window.sh
+ed96e5ffb5ed3639f21917b2e533fb64f4906f3e6fe49a1a088eb5c6cb858396 infra/03-security/openbao/scripts/owner-window.sh
 68c20addfcfab05118c75ff5f0b25330743c82f7f7f1305f26b3f0fe65652d50 infra/03-security/openbao/config/policies/prometheus.hcl
 6e99a1fa6ba153642b66be1fd353e237cc25640e81386de203d2b232a6c00eed infra/03-security/openbao/scripts/k8s-writers.sh
 P01_SOURCE_MANIFEST
+# Only now, with every pin checked, does the window learn these paths.
+declare -p P01_CLIENT_DIR P01_RUNTIME_DIR P01_COMMIT P01_SCRIPT_DIR >>"$XDG_RUNTIME_DIR/p01-window.vars" || exit 1
+ok=1
 echo "bootstrap ok: $P01_SCRIPT_DIR"

@@ -75,7 +75,7 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    입력으로 받고, 두 짧은 token은 server 안의 CLI가 만들어 변수로 바로 받으므로 화면에
    나오지 않는다. CLI의 `policies=…`는 문자열로 보내져 operator 정책의 허용 형식과 맞는다.
 
-   [RUN-0105](0105-openbao-maintenance-window.md) W0의 셸 규칙대로 `bash --noprofile --norc` 셸에서 실행한다.
+   [RUN-0105 window 셸](0105-openbao-maintenance-window.md#window-shell-and-path-variables) 규칙대로 깨끗한 환경의 bash에서 실행한다.
 
    [window script](../../../../infra/03-security/openbao/scripts/owner-window.sh)의 `agent-restart`가
    이 순서를 실행한다. operator credential을 숨김 입력으로 받아 `hy-home-operator` 정책인지 먼저

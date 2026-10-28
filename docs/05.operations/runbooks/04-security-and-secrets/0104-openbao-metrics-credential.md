@@ -77,14 +77,18 @@ Prometheus만 재생성한다. source rollback은 `vault_token`을 다시 도입
 `owner-window.sh metrics-rotate`가 위 규칙의 발급·교체·이전 token 처리를 한 번에 실행한다. root는
 [RUN-0105](0105-openbao-maintenance-window.md) W1 source bootstrap과 W1 ceremony로 얻고, W7
 `revoke-root`로 폐기한다. throwaway client와 수동 generate-root는 필요 없다.
-`bash --noprofile --norc` 셸 하나에서 저장소 루트로 이동해 다음 순서로 실행한다.
+[RUN-0105 window 셸](0105-openbao-maintenance-window.md#window-shell-and-path-variables)을 열고 저장소 루트에서
+다음 순서로 실행한다. 명령마다 exit 0을 확인한 뒤 다음으로 간다.
 `p01_run`은 [RUN-0085 Reviewed Script Runner](0085-openbao.md#reviewed-script-runner)의 함수이고,
 `P01_APPROVED_COMMIT`은 이 script를 담은 검토된 전체 commit이다.
 
 ```bash
-bash infra/03-security/openbao/scripts/owner-window.sh preflight
-p01_run "$P01_APPROVED_COMMIT" infra/03-security/openbao/scripts/p01-bootstrap.sh "$P01_APPROVED_COMMIT"
-. "$XDG_RUNTIME_DIR/p01-window.vars"
+bash infra/03-security/openbao/scripts/owner-window.sh preflight   # problems: 0이 아니면 멈춘다
+```
+
+```bash
+p01_run "$P01_APPROVED_COMMIT" infra/03-security/openbao/scripts/p01-bootstrap.sh "$P01_APPROVED_COMMIT" &&
+  . "$XDG_RUNTIME_DIR/p01-window.vars"
 bash "$P01_SCRIPT_DIR/owner-window.sh" token w1        # OIDC 로그인 후 Copy token
 bash "$P01_SCRIPT_DIR/owner-window.sh" check-token w1  # policy·TTL과 attempt started:false
 bash "$P01_SCRIPT_DIR/owner-window.sh" w1              # unseal share 2개 숨김 입력, root는 custody로

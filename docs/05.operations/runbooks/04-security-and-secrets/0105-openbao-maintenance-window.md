@@ -348,7 +348,9 @@ W3a 복구 gate도 계속 필요합니다.
 #### W0 Preflight
 
 window를 열기 전에 저장소 루트에서 읽기 전용 점검을 실행한다. secret을 다루지 않으므로 checkout의
-script를 그대로 쓴다. 마지막에 이 window의 경로 변수 기록(`$XDG_RUNTIME_DIR/p01-window.vars`)을 비운다.
+script를 그대로 쓴다. 실패한 점검은 `WARN:`으로 세고 `problems: <n>`과 exit 1로 끝난다. 이전 window의
+custody(`p01-custody.*`·`p01-metrics.*`)가 남아 있어도 멈춘다(먼저 `cleanup`). 문제가 없을 때만 이
+window의 경로 변수 기록(`$XDG_RUNTIME_DIR/p01-window.vars`)을 비운다.
 
 ```bash
 bash infra/03-security/openbao/scripts/owner-window.sh preflight
@@ -361,13 +363,21 @@ Linger(yes가 아니면 window 동안 다른 로그인 세션을 유지한다), 
 
 ##### Window Shell and Path Variables
 
-window 전체를 `bash --noprofile --norc`로 연 셸 하나에서 `unset HISTFILE`과
-`cd /home/hyunyoun/data/hy-home.docker` 뒤에 실행한다(상대 경로와 `.env`가 main checkout을
-가리킨다). 기본 셸 zsh의 `read -p`는 coprocess 읽기라 숨김 입력이 되지 않는다. 블록의
-`|| exit 1`은 그 셸을 닫으므로, 값이 아닌 경로 변수(`P01_RUNTIME_DIR`·`P01_SCRIPT_DIR`·
-`P01_CUSTODY_DIR`·`P01_TOKEN_CUSTODY_DIR`·`P01_INPUTS`·`P01_SNAPSHOT_DIRECTORY` 등)는 만들 때마다
-`declare -p <이름> >>"$XDG_RUNTIME_DIR/p01-window.vars"`로 남기고(W0의 `preflight`가 끝에
-비운다. 정리는 이 파일 없이 고정 glob으로 한다), 셸이 닫히면 같은 규칙의 새
+window 전체를 깨끗한 환경으로 연 bash 하나에서 실행한다. 기본 셸 zsh의 `read -p`는
+coprocess 읽기라 숨김 입력이 되지 않고, 상속한 `BASH_ENV`·`SHELLOPTS`·export된 함수는 script에
+넘어가면 안 된다.
+
+```bash
+/usr/bin/env -i HOME="$HOME" USER="$USER" LANG="$LANG" TERM="$TERM" XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" \
+  PATH=/usr/bin:/bin /usr/bin/bash --noprofile --norc
+```
+
+그 셸에서 `unset HISTFILE`과 `cd /home/hyunyoun/data/hy-home.docker`를 하고(상대 경로와 `.env`가
+main checkout을 가리킨다) [`p01_run`](0085-openbao.md#reviewed-script-runner)을 붙여 넣는다. 실패한
+script는 그 script만 끝나고 셸은 남으므로 명령마다 exit 0을 확인한 뒤 다음으로 간다. 값이 아닌 경로
+변수(`P01_RUNTIME_DIR`·`P01_SCRIPT_DIR`·`P01_CUSTODY_DIR`·`P01_TOKEN_CUSTODY_DIR`·`P01_INPUTS`·
+`P01_SNAPSHOT_DIRECTORY` 등)는 script가 만들 때마다 `$XDG_RUNTIME_DIR/p01-window.vars`에 남긴다(W0의
+`preflight`가 문제 없이 끝날 때 비운다. 정리는 이 파일 없이 고정 glob으로 한다). 셸이 닫히면 같은 규칙의 새
 셸에서 `. "$XDG_RUNTIME_DIR/p01-window.vars"`로 되살린 뒤 정리나 재시도를 한다. 값·token은 이
 파일에 넣지 않는다. 마지막 로그인 세션이 끝나면 logind가 W1 custody가 있는
 `$XDG_RUNTIME_DIR`를 지우므로 Linger나 별도 세션으로 막는다.
@@ -598,12 +608,12 @@ mutable checkout의 helper를 그대로 실행하지 않습니다. `XDG_RUNTIME_
 매번 새 custody를 만들고 이전 attempt를 덮어쓰거나 재사용하지 않습니다.
 
 ```bash
-p01_run "$P01_APPROVED_COMMIT" infra/03-security/openbao/scripts/p01-bootstrap.sh "$P01_APPROVED_COMMIT"
-. "$XDG_RUNTIME_DIR/p01-window.vars"   # P01_SCRIPT_DIR 등 경로 변수를 이 셸로 가져온다
+p01_run "$P01_APPROVED_COMMIT" infra/03-security/openbao/scripts/p01-bootstrap.sh "$P01_APPROVED_COMMIT" &&
+  . "$XDG_RUNTIME_DIR/p01-window.vars"   # 성공했을 때만 P01_SCRIPT_DIR 등 경로 변수를 이 셸로 가져온다
 ```
 
-기대: 복사한 파일마다 `OK` 한 줄과 마지막 `bootstrap ok: <경로>`. hash가 하나라도 다르면 멈추고
-경로 변수를 남기지 않는다.
+기대: 복사한 파일마다 `OK` 한 줄과 마지막 `bootstrap ok: <경로>`. hash가 하나라도 다르면 멈추고,
+복사본을 지우며 경로 변수를 남기지 않는다. 다시 시도할 때는 같은 셸에서 이 두 줄을 다시 실행한다.
 
 ##### W1 Execution
 

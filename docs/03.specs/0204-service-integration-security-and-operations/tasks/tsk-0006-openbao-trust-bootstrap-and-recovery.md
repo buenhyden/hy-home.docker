@@ -3926,6 +3926,35 @@ W1, and W7 root revocation now precedes Finish.
   steps now start with `preflight` and the bootstrap, and include
   `root-sweep`.
 
+**Independent security review (security-auditor, read-only).** The verdict
+was APPROVE_WITH_FINDINGS, with nothing Critical or High. The trust chain held
+for an honest object store and a clean environment. Each finding was fixed:
+
+- **Failed bootstrap kept going (Medium).** A pasted block's `exit` used to
+  close the owner's shell. A script's `exit` only ends the script, and the
+  vars file had been written before the pins were checked. The bootstrap now
+  records the path variables only after every pin passes, and it removes the
+  copy on failure. The runbooks load the vars only on success (`&&`).
+- **Inherited environment (Low-Medium).** The window shell now starts from
+  `env -i` with absolute paths. `p01_run` runs `/usr/bin/bash` and unsets
+  `BASH_ENV` and `ENV`.
+- **Object store as the anchor (Low).** `p01_run` re-hashes the copied blob
+  against the commit's object ID. A replaced tree object behind the same
+  commit stays a residual risk: only a process running as the owner's UID can
+  do that, and that same UID can already read W1 custody.
+- **Lower findings.** These were also fixed:
+  - the bootstrap writes no readonly variables, so a retry in the same shell
+    takes the new commit;
+  - `preflight` counts failed checks, exits 1, and refuses to clear the vars
+    file while an earlier window's custody exists;
+  - `p01_run` checks that `XDG_RUNTIME_DIR` is an owner-only tmpfs;
+  - the window-shell text and RUN-0104's step split were corrected;
+  - tests pin `p01_run`'s checks, and check that the bootstrap writes the vars
+    file only after the manifest.
+- **Live check (read-only).** In a clean bash, the new `p01_run` ran the
+  merged main commit's `owner-window.sh nope`, which returned the usage exit 2.
+  A short commit was refused with exit 1, and no temporary file was left.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |

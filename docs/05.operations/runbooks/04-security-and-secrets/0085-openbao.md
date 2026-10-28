@@ -54,23 +54,32 @@ created: "2026-09-19"
 ### Reviewed Script Runner
 
 host에서 secret을 다루는 script는 mutable checkout이 아니라 owner가 검토·승인한 commit의 Git
-객체에서 실행한다. 그 진입점은 아래 함수 하나뿐이며, 이 절의 코드만 셸에 붙여 넣는다. 나머지
-절차는 모두 이 함수로 저장소의 script 파일을 실행한다.
+객체에서 실행한다. 그 진입점은 아래 두 함수뿐이며, 이 절의 코드만 셸에 붙여 넣는다. 나머지
+절차는 모두 이 함수로 저장소의 script 파일을 실행한다. 붙여 넣는 셸은
+[RUN-0105의 window 셸](0105-openbao-maintenance-window.md#window-shell-and-path-variables)처럼 깨끗한
+환경으로 연다. 그러면 `BASH_ENV`·`SHELLOPTS`·export된 함수가 script에 넘어가지 않는다.
 
 ```bash
+p01_git() {
+  /usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 \
+    /usr/bin/git --git-dir=/home/hyunyoun/data/hy-home.docker/.git "$@"
+}
 p01_run() {  # p01_run <40자리 commit> <저장소 경로> <인자…>
-  local h=/home/hyunyoun/data/hy-home.docker c f r
-  unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH
+  local h=/home/hyunyoun/data/hy-home.docker c b f r
+  unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH BASH_ENV ENV
   case "$1" in *[!0-9a-f]*) return 1 ;; esac; [ "${#1}" = 40 ] || return 1
   [ "$h" = "$(/usr/bin/realpath -e -- "$h")" ] && [ ! -L "$h/.git" ] &&
-    [ "$(/usr/bin/stat -c '%d:%i:%u' -- "$h" "$h/.git" | /usr/bin/paste -sd ' ')" = '64512:4338469:1000 64512:4338470:1000' ] || return 1
-  c="$(/usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 \
-    /usr/bin/git --git-dir="$h/.git" rev-parse --verify "$1^{commit}")" && [ "$c" = "$1" ] || return 1
-  f="$(umask 077; /usr/bin/mktemp "${XDG_RUNTIME_DIR:?}/p01-run.XXXXXX")" || return 1
-  /usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 \
-    /usr/bin/git --git-dir="$h/.git" show --no-textconv "$1:$2" >"$f" && [ -s "$f" ] &&
-    bash "$f" "${@:3}"; r=$?
-  rm -f "$f"; return "$r"
+    [ "$(/usr/bin/stat -c '%d:%i:%u' -- "$h" "$h/.git" | /usr/bin/paste -sd ' ')" = '64512:4338469:1000 64512:4338470:1000' ] &&
+    [ "$(/usr/bin/stat -c '%u:%a' -- "${XDG_RUNTIME_DIR:?}")" = "$(/usr/bin/id -u):700" ] &&
+    [ "$(/usr/bin/findmnt -n -T "$XDG_RUNTIME_DIR" -o FSTYPE)" = tmpfs ] || return 1
+  c="$(p01_git rev-parse --verify "$1^{commit}")" && [ "$c" = "$1" ] || return 1
+  b="$(p01_git rev-parse --verify "$1:$2")" || return 1
+  f="$(umask 077; /usr/bin/mktemp "$XDG_RUNTIME_DIR/p01-run.XXXXXX")" || return 1
+  # Re-hash the copy: a changed object behind the same commit does not run.
+  p01_git show --no-textconv "$1:$2" >"$f" && [ -s "$f" ] &&
+    [ "$(p01_git hash-object --no-filters -- "$f")" = "$b" ] &&
+    /usr/bin/bash "$f" "${@:3}"; r=$?
+  /usr/bin/rm -f -- "$f"; return "$r"
 }
 ```
 
@@ -78,7 +87,9 @@ p01_run() {  # p01_run <40자리 commit> <저장소 경로> <인자…>
 
 - 고정 HOME 저장소 경로가 symlink가 아니고, 저장소와 `.git`의 device·inode·소유자가 기록값과 같다.
 - 인자가 전체 40자리 commit이고, Git 환경·replacement object를 막은 상태에서 그 commit이 존재한다.
-- 그 commit의 blob을 owner 전용 tmpfs 파일로 꺼내 실행하고 끝나면 지운다. checkout의 파일은 열지 않는다.
+- `XDG_RUNTIME_DIR`이 owner 전용 0700 tmpfs다.
+- 그 commit의 blob을 그 tmpfs 파일로 꺼낸 뒤 다시 hash해 commit의 object ID와 같을 때만
+  `/usr/bin/bash`로 실행하고, 끝나면 지운다. checkout의 파일은 열지 않는다.
 
 그 commit에 script가 없으면(그 script를 담은 PR이 병합되기 전) 실행하지 않고 실패한다. 값·token은
 인자로 넘기지 않는다. 저장소 inode가 바뀌면(다시 clone 등) 기록값을 검토해 이 절에서 고친다.

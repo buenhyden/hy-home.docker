@@ -18,8 +18,8 @@ shift
 
 : "${XDG_RUNTIME_DIR:?}"
 vars="$XDG_RUNTIME_DIR/p01-window.vars"
-# The bootstrap appends with declare -p; a retry appends again. The last value wins,
-# except for the bootstrap's readonly variables, where the first one stays.
+# The bootstrap appends with declare -p after its pins pass; a retry appends again, and the
+# last value wins.
 # shellcheck disable=SC1090
 [ -f "$vars" ] && . "$vars" 2>/dev/null
 HOME_ROOT=/home/hyunyoun/data/hy-home.docker
@@ -594,20 +594,31 @@ host-hold)
   ;;
 preflight)
   # RUN-0105 W0: read-only checks before the bootstrap. It handles no secret, so the checkout
-  # copy may run it. It ends by clearing this window's path-variable record.
+  # copy may run it. A failed check exits 1; only a clean run clears the window's path record.
   cd "$HOME_ROOT" || exit 1
-  HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
-  docker compose exec -T openbao bao status
-  docker compose --profile security config --images | grep '^hy-home/openbao' | sort -u |
-    xargs docker image inspect --format '{{.Id}}'   # fails when the image is missing
+  problems=0
+  check() { "$@" || { echo "WARN: failed: $*"; problems=$((problems + 1)); }; }
+  check env HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
+  check docker compose exec -T openbao bao status
+  # The pinned image must exist locally; there is no registry to pull it from.
+  check sh -c "docker compose --profile security config --images | grep '^hy-home/openbao' | sort -u |
+    xargs docker image inspect --format '{{.Id}}'"
   df -h /home
   systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
-  echo "dockerd debug: $(docker info -f '{{.Debug}}')"   # must be false: true logs the exec environment
-  command -v jq                                          # root-sweep needs it
+  debug="$(docker info -f '{{.Debug}}')"
+  echo "dockerd debug: $debug"
+  [ "$debug" = false ] || { echo "WARN: dockerd debug would log the exec environment"; problems=$((problems + 1)); }
+  check command -v jq                                    # root-sweep needs it
   loginctl show-user "$USER" -p Linger                   # not yes: keep another login session open
-  docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock --compact | tail -4
+  check sh -c "docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock --compact | tail -4"
   docker compose --profile backup run --rm --no-deps restic-offsite cmd stats --no-lock --mode debug 2>&1 |
     grep -A2 '^File Type: data'
+  # An open window's custody would lose the paths cleanup and metrics-revoke need.
+  if compgen -G "$XDG_RUNTIME_DIR/p01-custody.*" >/dev/null || compgen -G "$XDG_RUNTIME_DIR/p01-metrics.*" >/dev/null; then
+    echo "WARN: an earlier window left custody: run cleanup first"; problems=$((problems + 1))
+  fi
+  echo "problems: $problems"
+  [ "$problems" = 0 ] || exit 1
   : >"$vars"
   echo "window path variables cleared"
   ;;
