@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.23"
+version: "0.1.24"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1614,6 +1614,25 @@ P06 and P02 manifest rows therefore stay on RUN-0085, as on `main`. RUN-0085
 now links the three scripts and says it keeps their authority while the split
 runbooks are `draft`. Moving those rows is part of the later change that
 promotes the four runbooks to `active`.
+
+### Split runbook promotion and follow-ups — 2026-10-28
+
+After #595 merged, the owner reviewed the remaining split items and asked to
+proceed. RUN-0103 to RUN-0106 moved from `draft` to `active` (0.2.0), which the
+runbook lifecycle allows directly. The five P06 and P02 manifest rows now name
+RUN-0106, and RUN-0085 dropped its interim authority sentence. The OpenBao
+alert `runbook_url`s and their promtool fixtures now point at the runbook that
+owns each response: the metrics scrape alert at RUN-0104, the audit alert at
+RUN-0105, and the two Agent alerts at RUN-0103. The sealed and token alerts stay
+on RUN-0085. SPEC-0204 plan W20 now names RUN-0105 as the maintenance owner.
+The `protected-renderer-roles.py` docstring names RUN-0105 W1c, and its
+RUN-0105 source manifest pin was refreshed; every pin in that manifest matches
+its file. The four dangling references were resolved. The policy and RUN-0098
+now link RUN-0105 "Current candidate and preserved residual", which is the
+renamed "Known Runtime Residual". RUN-0105 "위 10단계" now links RUN-0106. RUN-0085
+"아래 인계" had no target even in the commit that added it, so the sentence
+keeps only the POL-0085 decision. Prometheus has not reloaded the changed rule
+file. Until the owner reloads it, the running alerts still carry the old URLs.
 
 ## Evidence
 

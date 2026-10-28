@@ -24,7 +24,7 @@ tests:
         summary: OpenBao Agent 인증 실패
         description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
           갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
-        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md
   - eval_time: 25m
     alertname: OpenBaoAgentAuthFailure
     exp_alerts:
@@ -37,7 +37,7 @@ tests:
         summary: OpenBao Agent 인증 실패
         description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
           갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
-        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md
   - eval_time: 35m
     alertname: OpenBaoAgentAuthFailure
     exp_alerts: []
@@ -56,7 +56,7 @@ tests:
         summary: OpenBao Agent 메트릭 수집 실패
         description: Prometheus가 openbao-agent의 /agent/v1/metrics를 읽지 못합니다. Agent가 멈췄거나 obs_net에서
           떨어졌는지 확인하세요.
-        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md
   - eval_time: 15m
     alertname: OpenBaoAgentMetricsScrapeFailing
     exp_alerts: []
@@ -79,7 +79,7 @@ tests:
         summary: OpenBao Agent 인증 실패
         description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
           갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
-        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md
   - eval_time: 14m
     alertname: OpenBaoAgentAuthFailure
     exp_alerts:
@@ -92,7 +92,7 @@ tests:
         summary: OpenBao Agent 인증 실패
         description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
           갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
-        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md
   - eval_time: 22m
     alertname: OpenBaoAgentAuthFailure
     exp_alerts:
@@ -105,7 +105,7 @@ tests:
         summary: OpenBao Agent 인증 실패
         description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
           갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
-        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md
   - eval_time: 24m
     alertname: OpenBaoAgentAuthFailure
     exp_alerts:
@@ -118,4 +118,4 @@ tests:
         summary: OpenBao Agent 인증 실패
         description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
           갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
-        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md
