@@ -4015,6 +4015,44 @@ Notes:
   redrawn out of place by the terminal. The function still ran, as the
   bootstrap's `OK` lines show.
 
+### 10-27 Agent run tokens: attribution (2026-10-28)
+
+The owner ran `renderer-expiry 2026-10-28T07:35:00Z` at about 14:40Z. It
+showed three revocations: 09:32:41.749Z, 09:32:41.847Z and 13:48:31.447Z. The
+log starts at 09:31:51Z, because the server was down from 07:33Z. The
+13:48:31Z line came before the expected end of the 08:21 run, so the agent
+read the Agent log and printed timestamps only.
+
+The 10-27 Agent run did not hold one token. It logged in four times, and each
+login created a token that was renewed only until the next one replaced it:
+
+| Login | Last renewal | Expiry (24-hour period) | Revocation |
+| --- | --- | --- | --- |
+| 10-27 08:21:57Z | 08:21:57Z | 10-28 08:21:57Z, server down | 10-28 09:32:41Z at startup |
+| 10-27 13:48:29Z | 13:48:30Z | 10-28 13:48:30Z | 10-28 13:48:31.447Z |
+| 10-27 14:51:48Z | 14:51:49Z | 10-28 14:51:49Z | not yet at 14:43Z (expected) |
+| 10-28 01:05:46Z | 01:05:47Z | 10-29 01:05:47Z | not yet |
+
+Corrections and findings:
+
+- **Startup revocations.** The 08:14 token, the 08:21:57Z login and the
+  outage all line up, so the two startup revocations at 09:32:41Z are the
+  08:14 token and the 08:21:57Z login token. This replaces "the second
+  startup revocation is not attributed".
+- **When the run ends.** The 10-27 run's last token expires about 10-29
+  01:05:47Z, not 07:35Z as estimated before. The closing check is
+  `renderer-expiry 2026-10-28T14:00:00Z` after that time. Two new lines, near
+  14:51:49Z and 01:05:47Z, close the 10-27 run as natural expiry.
+- **The current Agent.** It started at 09:34:17Z, authenticated at 09:34:20Z
+  and renewed at 09:34:21Z. It has logged no auth error, and no OpenBao alert
+  is active.
+- **Open question.** Why the Agent re-authenticated three times while the
+  previous token was still valid is UNKNOWN. A single-use SecretID would
+  normally block a second AppRole login. This needs the Agent auth
+  configuration and the role's SecretID settings, read without values.
+- **Package hold.** The owner ran `apt-mark unhold`, which reported that no
+  package was held. The hold itself (`host-hold`) is still NOT_RUN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
