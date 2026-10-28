@@ -376,7 +376,7 @@ def _historical_units(root: pathlib.Path) -> set[str]:
     )
     return {
         retention_unit(path.removeprefix("docs/98.archive/"))
-        for path in paths
+        for path in set(paths)
         if path.startswith("docs/98.archive/")
     }
 
@@ -636,13 +636,16 @@ def validate_assessment_snapshot(
         ArchiveFinding("assessment-row-removed", unit, surface)
         for unit in previous.keys() - rows.keys()
     ]
+    historical: set[str] | None = None
     for unit, row in rows.items():
         codes = _assessment_change(pathlib.Path(root), previous.get(unit), row)
         if row.availability == "git-history-only":
-            try:
-                archived = unit in _historical_units(pathlib.Path(root))
-            except (OSError, ValueError, UnicodeError):
-                archived = False
+            if historical is None:
+                try:
+                    historical = _historical_units(pathlib.Path(root))
+                except (OSError, ValueError, UnicodeError):
+                    historical = set()
+            archived = unit in historical
             if not archived:
                 codes.append("assessment-removal-without-capture")
         if (
