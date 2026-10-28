@@ -1,10 +1,10 @@
 ---
 title: "보안과 비밀값 런북"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-28"
 layer: "operations"
 ---
 
@@ -24,7 +24,11 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [OpenBao Runbook](0085-openbao.md) | `RUN-0085` | 이 런북은 OpenBao(`openbao`, `openbao-agent`)의 상태 점검, 승인된 대상 기동·중지, initial bootstrap, Renderer SecretID 전달, 복구를 다룬다. OpenBao는 재시작 뒤 owner가 직접 하 |
+| [OpenBao Runbook](0085-openbao.md) | `RUN-0085` | OpenBao 상태 점검, 기동·중지, initial bootstrap, 사람 로그인과 root 복구, break-glass, 복구 |
+| [OpenBao Renderer SecretID Delivery](0103-openbao-renderer-delivery.md) | `RUN-0103` | renderer SecretID wrapping 전달과 Agent 재시작 |
+| [OpenBao Prometheus Metrics Credential](0104-openbao-metrics-credential.md) | `RUN-0104` | Prometheus `sys/metrics` token 발급·검증·회전·폐기 |
+| [OpenBao Maintenance Window](0105-openbao-maintenance-window.md) | `RUN-0105` | 업그레이드·정책 변경용 W0–W8·Finish, TLS·audit gate, 1인 custody |
+| [OpenBao Consumer Migration and Secret Catalog](0106-openbao-consumer-catalog.md) | `RUN-0106` | P06 소비자 이관 운영 경계와 P02 secret catalog 점검 |
 
 ## Usage
 

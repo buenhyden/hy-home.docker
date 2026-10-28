@@ -249,7 +249,7 @@ nullable runtime-evidence pointer가 있으며 `CONFIRMED`일 때 대응 pointer
 경로 `.agent-work/p02-views`에 공개 예시, 값 없는 local view, JSON summary, README를 만든다.
 local view는 기존 공개 표의 10-cell 형식을 유지한다. 상위 `.agent-work/README.md`와
 경로의 소유권·regular/single-link·no-follow 조건을 먼저 확인해야 한다.
-정확한 명령·출력·거절 조건은 [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md#p02-public-catalog-checks)을 따른다.
+정확한 명령·출력·거절 조건은 [Runbook](../../runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md#p02-public-catalog-checks)을 따른다.
 
 canonical SMTP 항목은 `COMM-002`이고 `COMM-003`은 그 항목을 가리키는 source-retired
 alias이다. 별도 값·KV entry나 재발급 대상이 아니며, 이 표시가 실제 파일 삭제 완료를

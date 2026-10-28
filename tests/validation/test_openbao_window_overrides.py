@@ -75,7 +75,8 @@ class WindowOverrideTests(unittest.TestCase):
     def test_runbook_source_manifest_pins_match_the_files(self):
         # A stale pin would stop the window at W1's sha256sum check.
         runbook = (
-            ROOT / "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md"
+            ROOT
+            / "docs/05.operations/runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md"
         ).read_text()
         body = runbook.split("<<'P01_SOURCE_MANIFEST'\n", 1)[1].split(
             "\nP01_SOURCE_MANIFEST\n", 1

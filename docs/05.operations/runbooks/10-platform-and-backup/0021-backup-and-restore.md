@@ -164,7 +164,7 @@ layer에 생성돼 재생성마다 바뀌었다. 이제 `WEBUI_SECRET_KEY_FILE`�
 바뀌지 않았고 재로그인도 필요 없었다. 그 뒤로도 재생성 때 유지된다.
 
 OpenBao는 Raft snapshot으로 백업합니다. 최초 snapshot-only periodic token 발급은
-[RUN-0085 Maintenance Window Plan의 W1·W2](../04-security-and-secrets/0085-openbao.md#maintenance-window-plan)가
+[RUN-0085 Maintenance Window Plan의 W1·W2](../04-security-and-secrets/0105-openbao-maintenance-window.md#maintenance-window-plan)가
 소유합니다. 독립 검토된 helper가 실제 root identity, 고정 gateway CA·cluster,
 정확한 정책과 ordinary-secret denial·renewal을 확인하며, 기존 token을 덮지 않고
 `secrets/backup/openbao/snapshot_token.txt`에 0600 single-link로 전달합니다.

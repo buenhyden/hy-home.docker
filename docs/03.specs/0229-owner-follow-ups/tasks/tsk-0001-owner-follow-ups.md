@@ -90,7 +90,7 @@ The original W3 syntax PASS and owner-run NOT_RUN rows above describe the
 
 As read back on 2026-10-22, [RUN-0021](../../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md#procedure)
 records removal of that inline block and routes first token issuance to the
-reviewed helper in [RUN-0085 W1–W2](../../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md#maintenance-window-plan),
+reviewed helper in [RUN-0085 W1–W2](../../../05.operations/runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md#maintenance-window-plan),
 whose execution record belongs to SPEC-0243. Follow that owner for current
 issuance and acceptance evidence. The original candidate and token-run rows
 remain unchanged; this readback does not reissue a token or accept a criterion.

@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.22"
+version: "0.1.23"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1541,6 +1541,26 @@ exists now, and both fall back to `/run/secrets` until a later cutover.
 `.env` holds six path lines; rollback for each is `rollback <service>`. The
 `./secrets` copies, the restore contract (needs a post-import off-host
 snapshot) and the P02 `destination_plan` remain as recorded above.
+
+### RUN-0085 split by role — 2026-10-28
+
+The owner asked to split RUN-0085 by role and chose five documents. The body
+text moved without edits: 1,688 lines before, the same total after.
+
+| Runbook | Holds |
+| --- | --- |
+| RUN-0085 | Status checks, start and stop, initial bootstrap, the OIDC contract, human login and root recovery, Kubernetes auth, break-glass, verification and recovery |
+| RUN-0103 | Renderer SecretID delivery and the Agent restart |
+| RUN-0104 | The Prometheus metrics credential |
+| RUN-0105 | The maintenance window (W0 to W8 and Finish), the TLS, audit and recovery gate, the single-admin custody and the source manifest |
+| RUN-0106 | The P06 consumer migration boundary and the P02 catalog checks |
+
+Links that pointed at moved sections now point at the new files. That
+includes anchors inside the runbooks, RUN-0098, RUN-0021, the 0085 guide and
+SPEC-0229 TSK-0001. The folder index lists all five runbooks. The P06 runtime
+and P02 catalog scripts now name RUN-0106 as their authority. The tests read
+the manifest and image pin from RUN-0105 and the Agent restart call from
+RUN-0103.
 
 ## Evidence
 
