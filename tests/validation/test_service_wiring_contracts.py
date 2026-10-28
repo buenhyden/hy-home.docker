@@ -552,7 +552,7 @@ class AiRuntimeContractTests(unittest.TestCase):
     def test_images_are_the_requested_tags_pinned_by_digest(self) -> None:
         pattern = r"^{}@sha256:[0-9a-f]{{64}}$"
         self.assertRegex(
-            self.ollama["image"], pattern.format(r"ollama/ollama:0\.40\.6")
+            self.ollama["image"], pattern.format(r"ollama/ollama:0\.40\.12")
         )
         self.assertRegex(
             self.webui["image"],

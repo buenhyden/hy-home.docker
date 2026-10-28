@@ -1,10 +1,10 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.35"
+version: "0.4.36"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-28"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0009"
 parent_ids:
@@ -2841,6 +2841,22 @@ shared `mng-pg` and `mng-pg-init`, whose Compose config has drifted since
 touches only `mlflow`; the runbook now says so. MLflow then reported `healthy`,
 `/health` OK, 2 experiments, `mlflow, version 3.17.2`, and no error in its log.
 `mng-pg` was not restarted.
+
+### Ollama 0.40.12 source pin — 2026-10-28
+
+The owner directed moving Ollama to 0.40.12. `gh release view v0.40.12 --repo
+ollama/ollama` reports a stable release (not draft, not prerelease) published
+2026-10-27T00:07:12Z. The registry index is
+`sha256:20d1bbfbabe1c97ba4b16301f08a20d8484bcf77047742a3cb71c613d8e12d0b`;
+its linux/amd64 manifest is
+`sha256:a6b23ad2a921327c4bc6f5e0c9ec375e08d73e5b94a68d3e87fb1613e93c5e30`.
+As with 0.40.6, the index-digest pin replaces 0.40.6 in the Compose file,
+both `tech-stack.versions.json` entries, the ledger `current_declared` field
+and the two version tests, and the ledger `include_inputs` hash follows the
+new Compose content. The release, target, assessment and census fields keep
+their earlier observations. The recreate from `main`, the GPU check and the
+model check follow the merge and are owner steps. Signature, SBOM and advisory
+applicability stay NOT_RUN.
 
 ## Evidence
 

@@ -24,7 +24,7 @@ PATCH_STABLE_IMAGES = {
     (
         "infra/08-ai/ollama/docker-compose.yml",
         "ollama",
-    ): "ollama/ollama:0.40.6@sha256:265409e1d931028a8f7d5a32bcbafddd7bffbc6cc629d77efe9560adf692a5e7",
+    ): "ollama/ollama:0.40.12@sha256:20d1bbfbabe1c97ba4b16301f08a20d8484bcf77047742a3cb71c613d8e12d0b",
     (
         "infra/09-platform-ops/renovate/docker-compose.yml",
         "renovate",

@@ -203,7 +203,7 @@
     },
     {
       "path": "infra/08-ai/ollama/docker-compose.yml",
-      "sha256": "5cff149ef82fb45b18163f4328795256233a230c0be33db2c086c245781bde19"
+      "sha256": "786d8a14241574530e8570fccde07e43aed75661fc80841aea317b3024f943a2"
     },
     {
       "path": "infra/08-ai/open-notebook/docker-compose.yml",
@@ -9994,7 +9994,7 @@
       "service": "ollama",
       "scope": "root",
       "compose_file": "infra/08-ai/ollama/docker-compose.yml",
-      "current_declared": "ollama/ollama:0.40.6@sha256:265409e1d931028a8f7d5a32bcbafddd7bffbc6cc629d77efe9560adf692a5e7",
+      "current_declared": "ollama/ollama:0.40.12@sha256:20d1bbfbabe1c97ba4b16301f08a20d8484bcf77047742a3cb71c613d8e12d0b",
       "profiles_declared": [
         "ai",
         "ai-llm",
