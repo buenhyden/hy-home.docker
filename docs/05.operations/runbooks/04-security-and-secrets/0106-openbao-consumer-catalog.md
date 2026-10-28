@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration and Secret Catalog"
-version: "0.2.1"
+version: "0.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -41,9 +41,9 @@ consumer 렌더·pilot·authority 전환·복구·삭제·회전은
 [P06 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md)의
 별도 입력·검토·수용 전까지 **NOT_RUN**입니다. source/unit 통과로 이 경계를 완료 처리하지 않습니다.
 
-## Verification
-
 ### P02 Public Catalog Checks
+
+#### Metadata Check
 
 이 절차는 검토된 checkout의 공개 metadata와 staging view만 확인한다. OpenBao API,
 private metadata·환경·credential 파일, HOME 서비스에 접속하지 않는다. 저장소 루트의
@@ -59,6 +59,8 @@ rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check
 `result`는 `P02_METADATA_VALID`, `entries`와 `aliases`는 실제 입력의 개수이며 exit 0이다.
 `P02_METADATA_BLOCKED`와 exit 2는 형식·원본·경로·의존성 등 검사 실패이므로 중단한다.
 이 결과는 credential 값 또는 권리·운영 상태를 검사한 결과가 아니다.
+
+#### Staging Views
 
 staging이 필요한 경우에만 operator-owned `.agent-work`와 그 안의 regular, single-link,
 동일 소유자 `README.md`를 먼저 확인한다. 기존 타 작업자의 경로를 교체하거나 symlink,
@@ -78,6 +80,8 @@ exit 2다. 경로·소유권 등 안전 검사 실패는 `P02_METADATA_BLOCKED`,
 소비하지 말고 원인과 공개 입력을 검토한 뒤 동일 전용 staging을 다시 생성·검사한다.
 private 파일 삭제나 runtime rollback을 이 절차의 정리로 수행하지 않는다.
 
+#### Generation Refusal Probes
+
 아래 두 거절 probe는 각각 독립적으로 실행한다. `check-generation`은 생성 적격성만
 검사하며 secret을 발급하지 않는다. 두 명령 모두 `P02_GENERATION_BLOCKED`, exit 2가
 정상 예상 결과이며, 일반 shell의 실패 코드와 구별해 기록한다.
@@ -94,6 +98,11 @@ guard가 거부해야 한다. 공개 staging만으로 실제 발급·수집·이
 복구를 수용하지 않는다. ACL mapping은 `BLOCKED_P01`이고 delivery는 Agent 전달이 확인된
 `DEPLOYED` 항목만 `openbao_agent`다. 실제 pilot은 대상 ID·KV
 path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 있어야 한다. 현재 HOME/P06 hold를 유지한다.
+
+## Verification
+
+catalog 점검 결과 `P02_METADATA_VALID`, staging을 만든 경우 `P02_VIEWS_MATCH`, 두 거절 probe의
+`P02_GENERATION_BLOCKED`(exit 2)를 값 없이 Task에 기록한다. 소비자 전환의 수용은 P06 Task가 따로 가진다.
 
 ## Failure and Recovery
 

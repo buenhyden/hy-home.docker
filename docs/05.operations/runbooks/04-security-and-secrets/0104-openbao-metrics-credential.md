@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Prometheus Metrics Credential"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -33,7 +33,9 @@ metrics token을 처음 발급하거나, 만료 전에 회전하거나, 이미 �
 이 절차는 승인이 OpenBao policy/token 변경과 Prometheus 재생성을 정확한 대상으로 명시한
 경우에만 사용한다.
 
-**스크립트 실행(기본 경로).** `owner-window.sh metrics-rotate`가 아래 수동 1–5단계와 만료 분기를
+#### Scripted Rotation
+
+기본 경로다. `owner-window.sh metrics-rotate`가 아래 수동 1–5단계와 만료 분기를
 한 번에 실행한다. root는 [RUN-0105](0105-openbao-maintenance-window.md) W1 source bootstrap과
 W1 ceremony로 얻고, W7 `revoke-root`로 폐기한다. 이 경로에서는 throwaway client와 수동
 generate-root가 필요 없다. 저장소 루트에서 다음 순서로 실행한다.
@@ -93,6 +95,8 @@ accessor 조회의 `invalid accessor`와 양성 대조이다.
 `cleanup --discard-metrics`로 지우지 않는다. 변경은 policy(같은 내용), tune, 새 token뿐이며 accessor
 폐기와 tune 원복으로 되돌릴 수 있으므로 Raft snapshot은 만들지 않는다.
 
+#### Manual Procedure
+
 아래 수동 절차는 스크립트를 쓸 수 없을 때의 기준이다. 스크립트는 같은 판정과 양성 대조를 하고, 이전 token을 accessor뿐 아니라 배포된 파일로도 확인한다.
 
 1. OpenBao가 initialized/unsealed 상태이고, 검토된 `prometheus.hcl`이 `sys/metrics`에
@@ -130,6 +134,8 @@ source/runtime 구성을 계속 사용 가능하게 유지하고, accessor로 �
 Prometheus만 재생성한다. source rollback은 `vault_token`을 다시 도입해서는 안 된다.
 전용 credential 경로가 복구될 때까지 OpenBao metrics는 비활성 상태로 둔다.
 
+#### Minimal Client
+
 아래 policy 발급·검증·회전 명령은 [hy-home.k8s integration runbook](../10-platform-and-backup/0096-k8s-integration.md)의
 throwaway 클라이언트(5.2, `/s/k8s`는 host의 owner-only `/tmp/bao-k8s`)에서, 그
 임시 root 세션(5.4, `R`이 명령마다 root를 전달) 안에서 실행한다. operator policy는
@@ -150,6 +156,8 @@ docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp \
   -v "$K8S_WORK:/s/k8s" --entrypoint sh "$IMG"
 ```
 
+#### Issue and Verify the New Token
+
 ```sh
 R policy write prometheus /policies/prometheus.hcl
 R auth tune -max-lease-ttl=8760h token/
@@ -165,6 +173,8 @@ BAO_TOKEN="$(cat /s/k8s/metrics.token)" bao policy list >/dev/null 2>&1 && echo 
 `sys/metrics`이므로 root로 lookup한다. root 세션은 열어 둔다. host에서 같은
 mode와 group으로 파일을 교체하고, Prometheus만 재생성하고 target을 기다린다.
 
+#### Swap the Deployed File
+
 ```bash
 install -m 640 -g "$(stat -c %g secrets/security/openbao/openbao_token.txt)" /tmp/bao-k8s/metrics.token secrets/security/.openbao_token.new
 mv secrets/security/.openbao_token.new secrets/security/openbao/openbao_token.txt
@@ -176,6 +186,9 @@ docker exec prometheus wget -qO- 'http://localhost:9090/api/v1/query?query=up%7B
 
 예상 결과: 값 `"1"`. Prometheus는 host port를 게시하지 않으므로 점검은 컨테이너 내부에서
 실행한다. custody 파일은 `accessor=`, `expires=`, `issued=`, `policy=` 줄을 담는다.
+
+#### Revoke a Valid Old Token
+
 기존 파일을 컨테이너용으로 준비하고 root 세션에서 그 파일로 폐기한 뒤, 같은 형식으로 새
 파일을 작성한다.
 
@@ -208,7 +221,9 @@ bao status -format=json >/s/k8s/server-control.json 2>/s/k8s/server-control.err
 교체·정리를 실행하지 말고 보호된 응답과 관리 세션을 보존하여 원인을 확인한다.
 폐기가 확인된 경우에만 다음 단계로 진행한다.
 
-**만료된 이전 token.** custody의 `expires=`가 이미 지났다면 위 폐기 요청을 보내지 않는다.
+#### Expired Old Token
+
+custody의 `expires=`가 이미 지났다면 위 폐기 요청을 보내지 않는다.
 폐기 전 조회가 실패하는 것이 정상이므로, 위 순서대로 하면 첫 조회에서 중단되고 custody가
 교체되지 않는다. 만료 여부는 custody만 믿지 않고 실제 배포된 token으로도 확인한다. custody가
 오래되었으면 accessor는 무효여도 배포된 token은 유효할 수 있기 때문이다. 따라서 위 파일 교체
@@ -246,6 +261,8 @@ custody 교체로 넘어간 뒤 `/s/k8s/old.token`을 지운다.
 accessor만 다르면 custody가 오래된 것이므로 중단하고 원인을 확인한다. 그 밖의 결과(403, DNS,
 TLS, timeout, sealed, 파싱 실패)는 `INDETERMINATE`이며 위와 같이 중단한다.
 
+#### Write the New Custody
+
 ```bash
 umask 077
 A=$(sed -n 's/.*"accessor": *"\([^"]*\)".*/\1/p' /tmp/bao-k8s/metrics.custody)
@@ -260,6 +277,8 @@ rm -f /tmp/bao-k8s/old.custody /tmp/bao-k8s/metrics.custody
 runbook의 root 폐기 단계로 root 세션을 종료한다. `Started false`는 발급 시도 종료일
 뿐 root 폐기 증거가 아니다. root 폐기도 해당 절차의 서버 응답과 양성 대조로
 확인한 후, 이 단계에서 만든 보호된 응답 파일과 `OLD_ACCESSOR`를 정리한다.
+
+#### Agent and Root Boundary
 
 Agent 재시작 전에 승인된 운영자는 보호된 채널을 통해 새 SecretID를 전달해야 한다([RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery)).
 RoleID/SecretID 파일(0600, 컨테이너 UID 100/GID 1000)을 배치하는 동안 Agent만 중단한

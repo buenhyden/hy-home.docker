@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Renderer SecretID Delivery"
-version: "0.2.1"
+version: "0.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -30,6 +30,8 @@ OpenBao가 initialized·unsealed이고, 승인된 issuer helper가 operator 전�
 
 ### Renderer SecretID Delivery
 
+#### Issuer and Cleanup Token Roles
+
 현재 source는 60초 wrapping, issuer/cleanup 분리, 영속 journal을 함께 사용한다.
 `operator`는 renderer SecretID를 직접 만들 수 없다. 두 token role은 각각 정확한 policy만
 허용하며 5분·비갱신·default policy 없음·explicit max TTL 5분을 요구한다.
@@ -40,6 +42,8 @@ OpenBao가 initialized·unsealed이고, 승인된 issuer helper가 operator 전�
 [RUN-0105](0105-openbao-maintenance-window.md) window의 W1c가 root로 먼저 적용한다. HOME 적용 여부는 별도이며 source를 배포 증거로 쓰지 않는다.
 cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐이다. 두 token의
 `lookup-self`는 정확한 policy·TTL·비갱신 신원을 검사하며 다른 KV나 AppRole을 열지 않는다.
+
+#### Delivery Steps
 
 1. TLS·unseal·두 제한 KV/version·정확한 Agent named volume과 RoleID를 준비한다.
    기존 Agent 자동 재시작이나 sink 존재를 준비 완료로 판단하지 않는다. 운영자가 지정한
@@ -160,6 +164,8 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    유실은 실패로 유지하고 새 발급을 차단한다. 자동으로 journal을 지우거나 광범위 accessor를
    폐기하지 않는다. 해당 상태는 승인된 관리 신원의 custody/API 대조 복구가 필요하다.
 
+#### Journal v2 Contract
+
 새 발급 journal은 `schema_version: 2`, `issuance_id`, 기존 `nonce`를 함께 보관하며 두
 identity 값은 같아야 한다. 실제 accessor metadata도 `issuance_schema: "2"`,
 `issuance_id`, `sec01_nonce`를 모두 포함한다. v1 journal과 anchor는 version 필드 없이
@@ -168,6 +174,8 @@ identity 값은 같아야 한다. 실제 accessor metadata도 `issuance_schema: 
 정확히 일치해야 한다. completion witness는 중단된 정리의 복구를 허용하는 별도 기록이다.
 v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 폐기하지 말고 중단한다.
 이전 발급을 정합화한 같은 실행에서는 새 SecretID를 발급하지 않는다.
+
+#### Journal v3
 
 journal v3는 commit `4f2e7f9badf2db592de91d20146d68f87a228213`(B4)부터 source에 있다. 실제로
 쓰이는 것은 설치된 issuer commit이며 owning Task가 그 값을 기록한다. 2026-10-28 현재 설치된 것은
@@ -214,7 +222,11 @@ response wrapping을 사용한다. raw `-field=secret_id` 전달과 root UID로 
 
 ### Rollback or Recovery
 
+#### Failed Delivery
+
 전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다. 재시작을 반복하거나 오래된 sink를 성공으로 처리하지 않고, 같은 journal로 정합화한 뒤에만 다시 발급한다. 불명확·복수 결과·시간/nonce 불일치·sealed·권한 거부·journal 유실은 새 발급을 막고 custody/API 대조 복구로 넘긴다.
+
+#### Containerd or Docker Restart
 
 containerd나 Docker 재시작으로 `openbao`가 종료되면 server를 다시 시작하고 수동으로
 unseal한다. Agent는 restart policy로 다시 시작되지만 시작 스크립트가 sink를 지우고, SecretID는
