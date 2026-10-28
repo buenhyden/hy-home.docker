@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Prometheus Metrics Credential"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -20,7 +20,7 @@ created: "2026-10-28"
 
 ## Trigger
 
-metrics token을 처음 발급하거나, 만료 전에 회전할 때 사용한다.
+metrics token을 처음 발급하거나, 만료 전에 회전하거나, 이미 만료된 token을 교체할 때 사용한다. 만료된 경우는 아래 `만료된 이전 token` 분기를 따른다.
 
 ## Prerequisites
 
@@ -63,6 +63,21 @@ Prometheus만 재생성한다. source rollback은 `vault_token`을 다시 도입
 throwaway 클라이언트(5.2, `/s/k8s`는 host의 owner-only `/tmp/bao-k8s`)에서, 그
 임시 root 세션(5.4, `R`이 명령마다 root를 전달) 안에서 실행한다. operator policy는
 `prometheus` policy를 가진 token을 발급할 수 없다.
+
+이 runbook만 수행할 때는 RUN-0096의 throwaway client 대신 아래 최소 권한 client를 쓴다.
+RUN-0096 명령은 Valkey 비밀번호, Prometheus API 비밀번호와 `.env`의 사용자 이름도 mount하지만,
+metrics 회전에는 CA, policy 디렉터리와 owner 전용 작업 디렉터리만 필요하다. RUN-0096의
+snapshot, 임시 root, root 폐기 단계는 그대로 따른다.
+
+```bash
+K8S_WORK=/tmp/bao-k8s; install -d -m 0700 "$K8S_WORK"
+IMG=$(docker compose config --images openbao)
+docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp \
+  -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem \
+  -v "$PWD/secrets/certs/rootCA.pem:/ca.pem:ro" \
+  -v "$PWD/infra/03-security/openbao/config/policies:/policies:ro" \
+  -v "$K8S_WORK:/s/k8s" --entrypoint sh "$IMG"
+```
 
 ```sh
 R policy write prometheus /policies/prometheus.hcl
@@ -120,6 +135,32 @@ bao status -format=json >/s/k8s/server-control.json 2>/s/k8s/server-control.err
 응답 해석 실패는 `INDETERMINATE`이며 폐기 증거가 아니다. 이 경우 아래 custody
 교체·정리를 실행하지 말고 보호된 응답과 관리 세션을 보존하여 원인을 확인한다.
 폐기가 확인된 경우에만 다음 단계로 진행한다.
+
+**만료된 이전 token.** custody의 `expires=`가 이미 지났다면 위 폐기 요청을 보내지 않는다.
+폐기 전 조회가 실패하는 것이 정상이므로, 위 순서대로 하면 첫 조회에서 중단되고 custody가
+교체되지 않는다. 같은 세션에서 다음만 실행한다.
+
+```sh
+umask 077
+test "$(grep -c '^accessor=' /s/k8s/old.custody)" -eq 1
+OLD_ACCESSOR=$(sed -n 's/^accessor=//p' /s/k8s/old.custody)
+test -n "$OLD_ACCESSOR"
+R token lookup -accessor -format=json "$OLD_ACCESSOR" >/s/k8s/old-expired.json 2>/s/k8s/old-expired.err; echo "lookup rc=$?"
+grep -c 'invalid accessor' /s/k8s/old-expired.err
+R token lookup -format=json >/s/k8s/caller-control.json 2>/s/k8s/caller-control.err; echo "caller rc=$?"
+bao status -format=json >/s/k8s/server-control.json 2>/s/k8s/server-control.err; echo "status rc=$?"
+```
+
+다음 네 조건이 모두 맞을 때만 `old: expired (<custody expires 값>)`로 기록하고 폐기 없이
+아래 custody 교체로 넘어간다.
+
+- 조회가 0이 아닌 코드로 끝난다.
+- 오류에 `invalid accessor`가 정확히 한 번 나온다.
+- 관리 호출자 조회가 0으로 끝난다.
+- server 상태 조회가 0으로 끝난다.
+
+조회가 성공하면 token이 아직 유효하므로 위 폐기 순서를 따른다. 그 밖의 결과(403, DNS,
+TLS, timeout, sealed, 파싱 실패)는 `INDETERMINATE`이며 위와 같이 중단한다.
 
 ```bash
 umask 077
