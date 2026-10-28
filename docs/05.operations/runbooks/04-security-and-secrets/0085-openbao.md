@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.14.0"
+version: "0.14.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -80,6 +80,31 @@ Agent restart는 유효한 AppRole 재인증 입력을 요구할 수 있다. `ag
 대상 재생성·hash 검사를 따른다. Compose의 server 환경 변경도 재생성이 필요하다.
 재생성 전후 Raft mount identity가 바뀌면 중단한다. 자동 bootstrap job은 없으며
 이 절차의 daemon health를 초기화 완료로 표시하지 않는다.
+
+**Host package upgrade.** `containerd.io`나 `docker-ce`를 바꾸는 host package upgrade는
+OpenBao maintenance window로 다룬다. containerd가 재시작되면 모든 container가 멈춘다.
+2026-10-28에는 `apt-get upgrade`가 containerd를 재시작했고, 다음 일이 이어졌다.
+
+- `openbao`는 exit 255로 끝났고, `unless-stopped`인데도 다시 시작되지 않았다.
+- Agent는 다시 시작됐지만 sink가 지워졌고 SecretID는 이미 소비되어 인증을 반복했다.
+- 공유 DB를 기다리던 consumer와, 고정 주소를 쓰는 egress gateway도 멈췄다.
+
+1. **준비.** 먼저 대상 package가 있는지 확인한다.
+
+   ```bash
+   apt list --upgradable 2>/dev/null | grep -E '^(containerd\.io|docker-ce|docker-ce-cli)/'
+   ```
+
+   있으면 unseal share 보유자와 현재 OIDC operator credential을 준비한 window에서
+   upgrade한다. 일상 upgrade에서 제외하려면 owner가 `sudo apt-mark hold`로 해당 package를
+   보류하고 window에서 해제한다.
+2. **upgrade 뒤 server.** `openbao`를 다시 시작하고(`docker start openbao` 또는 위 `up -d`)
+   위 unseal 절차로 `Sealed false`를 확인한다.
+3. **Agent.** 설치된 issuer로 [RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery)
+   `agent-restart`를 실행한다. Agent 재시작은 새 SecretID가 있어야 인증된다.
+4. **나머지 container.** `docker ps -a --filter status=exited`로 멈춘 container를 확인하고
+   의존 순서대로 시작한다. 공유 DB가 healthy가 된 뒤 consumer를 시작하고, Crawl4AI는 egress
+   gateway를 먼저 시작한다.
 
 upgrade는 [RUN-0086](../10-platform-and-backup/0086-dependency-version-management.md), backup·retention은
 [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)을 적용한다. 아래 격리 restore는
