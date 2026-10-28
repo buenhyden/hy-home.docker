@@ -1499,6 +1499,49 @@ Review of `3e20d342e`, before the PR:
 - New tests cover the state handoff, the `w4` and `w3` gates, the
   `retire-token` file check, and the restored-Finish requirement.
 
+### OIDC batch: Agent restart and HOME cutover — 2026-10-28
+
+The owner fast-forwarded the main checkout to `19ccd6bae` (#593).
+
+Agent restart (owner, `owner-window.sh agent-restart` from `19ccd6bae`
+through `p01_run`):
+
+- The first call had no inputs. It stopped at the input check before stopping
+  the Agent.
+- The inputs were the earlier restart's values: issuer helper revision
+  `422b4adf…` under the operator tools directory, Agent volume
+  `hy-home-infra_openbao-agent-data`, and the persistent issuance journal.
+- The Agent restarted at 01:05:42Z, is healthy, and the journal anchor is
+  `complete`.
+- All seven new directories hold a `.txt` (0640) and a `.version` (0600). The
+  readable-file sweep counts 10, one for each `.txt` template.
+
+Cutover (owner, `oidc-client-secrets.sh cutover` from the checkout). The
+recreate times below are UTC; each service reads its `/run/openbao/<dir>/…`
+file and is healthy.
+
+| Service | Recreated (UTC) |
+| --- | --- |
+| dozzle | 01:06:38 |
+| gatus | 01:08:22 |
+| open-webui | 01:09:22 |
+| oauth2-proxy | 01:16:36 |
+| kafbat-ui | 01:18:32 |
+| airflow-apiserver | 01:21:16 |
+
+- open-webui took about six minutes to load on CPU and became healthy at
+  01:15:28Z with no restart. Its log showed no secret or OAuth error.
+- The owner reports all six cutovers complete. The verifier output and the
+  login checks were run and judged by the owner; the session could not run the
+  verifier, because it compares credentials.
+
+The owner put opensearch-dashboards and superset on hold. Neither container
+exists now, and both fall back to `/run/secrets` until a later cutover.
+
+`.env` holds six path lines; rollback for each is `rollback <service>`. The
+`./secrets` copies, the restore contract (needs a post-import off-host
+snapshot) and the P02 `destination_plan` remain as recorded above.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
