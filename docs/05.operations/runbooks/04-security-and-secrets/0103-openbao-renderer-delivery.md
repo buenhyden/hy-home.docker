@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Renderer SecretID Delivery"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -169,6 +169,33 @@ identity 값은 같아야 한다. 실제 accessor metadata도 `issuance_schema: 
 v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 폐기하지 말고 중단한다.
 이전 발급을 정합화한 같은 실행에서는 새 SecretID를 발급하지 않는다.
 
+journal v3는 commit `4f2e7f9badf2db592de91d20146d68f87a228213`(B4)부터 source에 있다. 실제로
+쓰이는 것은 설치된 issuer commit이며 owning Task가 그 값을 기록한다. 2026-10-28 현재 설치된 것은
+v2 `422b4adfd`이므로 위 v2 계약이 현재 동작이다. v3를 쓰려면 새 commit의 P01 승인과 2단계 설치가
+먼저 필요하다. installer 자체는 바뀌지 않았으므로 2단계 bootstrap의 고정 hash를 그대로 쓴다.
+
+v3 helper는 새 journal을 `schema_version: 3`으로 쓰고 metadata `issuance_schema`도 `"3"`이다.
+단계는 `prepared → issuing → delivered → verified → revoking → complete`이고, 실패하면
+`rolling_back → rolled_back`이다.
+
+- **이전 token 보관.** 발급 전에 정지된 Agent sink의 이전 token을 network·log driver 없는
+  읽기 전용 container로 읽는다. owner 전용 0600 tmpfs custody(`/run/user/<uid>`)에 두며,
+  custody 이름은 server·volume·journal 디렉터리에 묶인다.
+- **사전 확인.** 그 token이 살아 있는 renderer AppRole token인지와 revoke-self 권한을 확인한다.
+- **기록 범위.** journal에는 token·accessor 대신 이전 token의 생성 시간만 남는다.
+- **완료.** 새 generation이 검증되면 이전 token을 revoke-self로 폐기하고 곧바로 custody를 지운다.
+- **rollback.** 검증에 실패하면 이전 token은 유지하고, 이 실행이 만든 새 token만 사전 확인 뒤
+  revoke-self로 폐기한다.
+- **v1/v2 호환.** v1/v2 journal은 그대로 읽는다. `delivered`에서 Agent가 정지되고 SecretID가
+  소비되거나 만료된 경우도 helper가 rollback으로 스스로 정합화한다.
+- **차단되는 경우.** 다음 경우는 차단되고 owner 대조가 필요하다.
+  - reboot로 custody가 사라진 `revoking`
+  - 이 실행의 것이 아닌 Agent 시작
+  - 살아 있는 이전 generation이 둘 이상인 경우
+
+sink가 이미 지워진 뒤(예: Agent 재시작 후)에는 v3도 이전 token을 회수하지 못한다. 그 token은
+갱신되지 않으므로 24시간 period 안에 만료된다.
+
 이 프로토콜은 아직 HOME에서 수행하지 않았다. 운영 실패 시 journal·completion witness·
 보호된 snapshot과 관리 인증을 보존한다. 재시작을 반복하거나 오래된 sink를 PASS로 처리하지 않는다.
 
@@ -188,6 +215,16 @@ response wrapping을 사용한다. raw `-field=secret_id` 전달과 root UID로 
 ### Rollback or Recovery
 
 전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다. 재시작을 반복하거나 오래된 sink를 성공으로 처리하지 않고, 같은 journal로 정합화한 뒤에만 다시 발급한다. 불명확·복수 결과·시간/nonce 불일치·sealed·권한 거부·journal 유실은 새 발급을 막고 custody/API 대조 복구로 넘긴다.
+
+containerd나 Docker 재시작으로 `openbao`가 종료되면 server를 다시 시작하고 수동으로
+unseal한다. Agent는 restart policy로 다시 시작되지만 시작 스크립트가 sink를 지우고, SecretID는
+이미 소비되었다. 따라서 `no known secret ID`로 인증을 반복하며 `OpenBaoAgentAuthFailure`가
+발생한다. 이때 복구 순서는 다음과 같다.
+
+1. server를 다시 시작하고 수동으로 unseal한다.
+2. 설치된 issuer로 위 3단계 `agent-restart`를 실행한다.
+
+2026-10-28 사례는 SPEC-0204 TSK-0006에 기록되어 있다.
 
 ### Escalation
 
