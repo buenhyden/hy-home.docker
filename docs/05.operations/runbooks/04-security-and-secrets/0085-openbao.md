@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.13.0"
+version: "0.14.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -16,7 +16,7 @@ created: "2026-09-19"
 
 ## Overview
 
-이 런북은 OpenBao(`openbao`, `openbao-agent`)의 상태 점검, 승인된 대상 기동·중지, initial bootstrap, 사람 로그인과 root 복구, break-glass, 복구를 다룬다. Renderer SecretID 전달은 [RUN-0103](0103-openbao-renderer-delivery.md), metrics credential은 [RUN-0104](0104-openbao-metrics-credential.md), 유지보수 window는 [RUN-0105](0105-openbao-maintenance-window.md), 소비자 이관과 secret catalog는 [RUN-0106](0106-openbao-consumer-catalog.md)이 소유한다. 분리된 네 런북이 `draft`인 동안에는 [copy runtime](../../../../scripts/lib/ops/openbao_consumer_migration.py), [HTTPS transport](../../../../scripts/lib/ops/_openbao_copy_transport.py), [secret catalog CLI](../../../../scripts/operations/secret-catalog.py)의 script authority가 이 런북에 남는다. OpenBao는 재시작 뒤 owner가 직접 하는 수동 Shamir unseal이 필요하다. 이 문서의 어떤 단계도 unseal share를 대신 입력하거나 자동화하지 않는다.
+이 런북은 OpenBao(`openbao`, `openbao-agent`)의 상태 점검, 승인된 대상 기동·중지, initial bootstrap, 사람 로그인과 root 복구, break-glass, 복구를 다룬다. Renderer SecretID 전달은 [RUN-0103](0103-openbao-renderer-delivery.md), metrics credential은 [RUN-0104](0104-openbao-metrics-credential.md), 유지보수 window는 [RUN-0105](0105-openbao-maintenance-window.md), 소비자 이관과 secret catalog는 [RUN-0106](0106-openbao-consumer-catalog.md)이 소유한다. OpenBao는 재시작 뒤 owner가 직접 하는 수동 Shamir unseal이 필요하다. 이 문서의 어떤 단계도 unseal share를 대신 입력하거나 자동화하지 않는다.
 
 ## Trigger
 
@@ -116,7 +116,7 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 갱신 주기다. 갱신이 계속되면 총수명 상한이 없다([공식 token 수명](https://openbao.org/docs/concepts/tokens/)).
 SecretID TTL은 10분, 사용 횟수는 1회다. sink 복사본도 갱신 가능하고 W5는 이전 Agent token을
 폐기하지 않는다. 두 KV 읽기·sink0600과 2026-12-15까지의 기존 예외를 유지한다.
-유한수명이나 이전 세대 폐기는 아래 인계와 POL-0085의 별도 결정이 필요하다. Agent는 SecretID 파일을 읽은 뒤
+유한수명이나 이전 세대 폐기는 POL-0085의 별도 결정이 필요하다. Agent는 SecretID 파일을 읽은 뒤
 삭제하므로, token이 끝나면 새 SecretID를 전달해야 한다([RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery)). 기존 Docker Secret 소비자는 현재 파일을 계속 사용하며, 렌더링된 출력이 자동으로
 애플리케이션 mount를 전환하지는 않는다.
 

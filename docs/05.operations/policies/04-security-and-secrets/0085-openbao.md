@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.8.5"
+version: "0.8.6"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-28"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -266,4 +266,4 @@ Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-
 
 고정 runtime의 미사용 SecretID 만료 결함(GHSA-7m59-mp95-w6ph)은 TTL·wrapping·1회 사용 선언으로
 해결됐다고 간주하지 않는다. 수정 버전 검증과 HOME gate 전에는 배포·P06 확대를 보류하며,
-미사용 발급의 명시적 폐기와 거부를 별도로 확인한다. 상세 근거는 RUN-0085의 Known Runtime Residual을 따른다.
+미사용 발급의 명시적 폐기와 거부를 별도로 확인한다. 상세 근거는 RUN-0105의 [Current candidate and preserved residual](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md#current-candidate-and-preserved-residual)을 따른다.

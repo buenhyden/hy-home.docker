@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.3.5"
+version: "0.3.6"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-28"
 layer: "operations"
 artifact_id: "RUN-0098"
 parent_ids:
@@ -151,7 +151,7 @@ OIDC 로그인한다. 결과 정책이 `default`와 `hy-home-operator`뿐이고 
 
 [RUN-0103 Renderer SecretID Delivery](../04-security-and-secrets/0103-openbao-renderer-delivery.md#renderer-secretid-delivery)의
 현재 `host stop Agent → hidden issuer input/helper → TTL 내 start Agent → health` 절차와 검증 항목 전체를 실행한다. UI 로그인만으로 발급자 신원을 대신하지 않는다.
-제한 issuer가 60초 wrapping token을 전달하며, 내부 SecretID 설정은 10분·1회지만 고정 버전의 만료 결함 때문에 TTL 거부를 완료로 취급하지 않는다(RUN-0085 Known Runtime Residual).
+제한 issuer가 60초 wrapping token을 전달하며, 내부 SecretID 설정은 10분·1회지만 고정 버전의 만료 결함 때문에 TTL 거부를 완료로 취급하지 않는다([RUN-0105 Current candidate and preserved residual](../04-security-and-secrets/0105-openbao-maintenance-window.md#current-candidate-and-preserved-residual)).
 wrap 만료 전에 Agent를 시작하고 replay·만료 시 새 wrap을 재발급한다.
 
 ```bash

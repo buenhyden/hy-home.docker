@@ -1,8 +1,8 @@
 ---
 title: "OpenBao Prometheus Metrics Credential"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/runbook"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-28"
 layer: "operations"

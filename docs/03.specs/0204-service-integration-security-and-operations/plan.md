@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.14"
+version: "1.8.15"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-28"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -127,7 +127,7 @@ provisioning, LAB runtime or learning-application work.
 | W17 | 4, 9 | SonarQube JDBC password from its secret | W12 | TSK-0005 | Task evidence |
 | W18 | 8, 9 | Third-round validation | W13, W14, W15, W16, W17 | TSK-0005 | Task evidence |
 | W19 | 1, 11 | Baseline, existing source exclusions, exact endpoint and recovery boundary | None | TSK-0006 | Tracked source/official tagged 2.6.2 docs; independent IaC design review |
-| W20 | 4, 11 | TLS listener/Agent/metrics/Traefik, protected root ceremony, restricted issuance/revocation and wrapped reissue/readiness; RUN-0085 owns maintenance and RUN-0021 links to it | W19 | TSK-0006 | RED/GREEN failure, argv/redaction, authenticated recovery access and endpoint tests |
+| W20 | 4, 11 | TLS listener/Agent/metrics/Traefik, protected root ceremony, restricted issuance/revocation and wrapped reissue/readiness; RUN-0105 owns maintenance and RUN-0021 links to it | W19 | TSK-0006 | RED/GREEN failure, argv/redaction, authenticated recovery access and endpoint tests |
 | W21 | 7, 11 | Declarative HMAC audit, capacity/failure alerts, protected bounded snapshot and host rotation; reuse existing backup ownership | W20 | TSK-0006 | Exact image isolated audit and snapshot recovery cases; atomic artifact and native rotation evidence |
 | W22 | 8, 11 | Changed QA, independent IaC/security/code review, scoped commits/PR | W21 | TSK-0006 | Registered local/hosted candidate checks and actual delivery receipt |
 | W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |

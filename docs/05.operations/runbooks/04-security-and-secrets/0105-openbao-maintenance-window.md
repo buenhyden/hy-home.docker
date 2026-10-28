@@ -1,8 +1,8 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/runbook"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-28"
 layer: "operations"
@@ -586,7 +586,7 @@ fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-securi
 32412b2a6f4d28f6e6105066dafd61d876443cd3160bb4feb120d7e175e3c6ef infra/03-security/openbao/scripts/protected-semantic-restore.py
 b5aa92bdf528eb92993fc46061ead65b72bf71efe30182cca7cc5b5706ab396e infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
-52f47d119920ca8942a9d8a3f4ab352dbc05898a7fecabe8c02af0ec1a0e8cba infra/03-security/openbao/scripts/protected-renderer-roles.py
+d2bfabe2b12271d5fdb3785c32f41c2a534fafed4126712e710c3ad0a3be2ec3 infra/03-security/openbao/scripts/protected-renderer-roles.py
 3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e infra/03-security/openbao/config/policies/renderer.hcl
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl
@@ -1121,7 +1121,7 @@ mutation을 재시도하지 않습니다. 더 이른 단계에서 window를 접�
 
 - W3a는 window 뒤 잔여가 아니라 W4 전 필수 gate입니다. 도구는 리허설·검토를 마쳤고, 새
   attempt의 W3 산출물·빈 대상 입력이 없으면 HOME upgrade는 계속 미실행입니다.
-- consumer와 ACL 선택(위 10단계, P06).
+- consumer와 ACL 선택([RUN-0106](0106-openbao-consumer-catalog.md), P06).
 
 ## Verification
 
