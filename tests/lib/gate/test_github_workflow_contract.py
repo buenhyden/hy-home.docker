@@ -136,6 +136,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_openbao_protected_renderer_roles",
                 "tests.validation.test_openbao_protected_restore_inputs",
                 "tests.validation.test_openbao_window_overrides",
+                "tests.validation.test_openbao_owner_scripts",
                 "tests.validation.test_restic_offsite_artifact",
                 "tests.validation.test_restic_offsite_cap",
                 "tests.validation.test_openbao_audit_rotation",
