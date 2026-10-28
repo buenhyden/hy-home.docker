@@ -3776,6 +3776,13 @@ explicit TTL of up to one year. Today the renderer roles pin 5 minutes and
 `auth/token/create/k8s-bootstrap` path, however, has no parameter limit, so
 that role's explicit maximum becomes the only bound.
 
+**Owner decision (2026-10-28): keep the tune.** The `token/` mount maximum
+stays at `8760h`. Only root can create a token without a role, and the root
+used for this is temporary and revoked after each window. The role maximums
+still bound the operator (`k8s-bootstrap`, 2 hours) and the renderer roles
+(5 minutes). OIDC tokens come from the `oidc/` mount (1 hour, 4 hours at
+most) and are not affected. The next 1-year rotation needs the same maximum.
+
 ### Owner steps as scripts (2026-10-28)
 
 The owner asked for each follow-up as a working script. Three steps join
