@@ -27,7 +27,11 @@ class OwnerWindowScriptTests(unittest.TestCase):
                 "0105-openbao-maintenance-window.md",
             )
         )
-        manifest = runbook.split("<<'P01_SOURCE_MANIFEST'\n", 1)[1]
+        bootstrap = (WINDOW.parent / "p01-bootstrap.sh").read_text()
+        manifest = bootstrap.split("<<'P01_SOURCE_MANIFEST'\n", 1)[1]
+        # The runbook runs the bootstrap through p01_run, never a pasted copy.
+        self.assertNotIn("P01_SOURCE_MANIFEST", runbook)
+        self.assertIn("p01-bootstrap.sh", runbook)
         self.assertIn(" infra/03-security/openbao/scripts/owner-window.sh\n", manifest)
         self.assertIn(" infra/03-security/openbao/scripts/k8s-writers.sh\n", manifest)
         for script, minimum in ((WINDOW, 20), (K8S, 7)):
@@ -44,6 +48,29 @@ class OwnerWindowScriptTests(unittest.TestCase):
                     self.assertRegex(
                         runbook, rf'{re.escape(script.name)}"? {re.escape(step)}\b'
                     )
+
+    def test_p01_run_keeps_its_trust_checks(self):
+        runner = (RUNBOOKS / "0085-openbao.md").read_text()
+        runner = runner.split("p01_git() {", 1)[1].split("```", 1)[0]
+        for token in (
+            "GIT_NO_REPLACE_OBJECTS=1",
+            "GIT_CONFIG_NOSYSTEM=1",
+            "'64512:4338469:1000 64512:4338470:1000'",
+            "--no-textconv",
+            "hash-object --no-filters",
+            "findmnt -n -T",
+            '/usr/bin/bash "$f"',
+            "BASH_ENV ENV",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, runner)
+
+    def test_bootstrap_records_paths_only_after_every_pin(self):
+        bootstrap = (WINDOW.parent / "p01-bootstrap.sh").read_text()
+        record = bootstrap.index('>>"$XDG_RUNTIME_DIR/p01-window.vars"')
+        self.assertGreater(record, bootstrap.index("\nP01_SOURCE_MANIFEST\n"))
+        self.assertEqual(1, bootstrap.count('>>"$XDG_RUNTIME_DIR/p01-window.vars"'))
+        self.assertNotIn("readonly", bootstrap)
 
     def test_unknown_step_exits_two_without_touching_state(self):
         with tempfile.TemporaryDirectory() as runtime:

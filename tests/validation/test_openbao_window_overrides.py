@@ -72,11 +72,10 @@ class WindowOverrideTests(unittest.TestCase):
             lines, ["[Timer]", "OnCalendar=", "OnCalendar=hourly", "AccuracySec=5m"]
         )
 
-    def test_runbook_source_manifest_pins_match_the_files(self):
+    def test_bootstrap_source_manifest_pins_match_the_files(self):
         # A stale pin would stop the window at W1's sha256sum check.
         runbook = (
-            ROOT
-            / "docs/05.operations/runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md"
+            ROOT / "infra/03-security/openbao/scripts/p01-bootstrap.sh"
         ).read_text()
         body = runbook.split("<<'P01_SOURCE_MANIFEST'\n", 1)[1].split(
             "\nP01_SOURCE_MANIFEST\n", 1

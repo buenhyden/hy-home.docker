@@ -3892,6 +3892,77 @@ was. If it was the 08:21 generation's token, the check after 07:35Z on 10-29
 shows no new line, and that token is then recorded from this line, not as
 UNKNOWN.
 
+### OpenBao runbooks: headings and script files (2026-10-28)
+
+The owner asked to give each OpenBao runbook proper headings, and to move the
+scripts written in them into script files.
+
+**Headings.** RUN-0085, 0103, 0104, 0105 and 0106 gained H3 to H5 headings for
+each step and rule. Bold run-in labels became headings. Body text and every
+linked anchor stayed the same; a line-by-line comparison showed only the
+removed labels. RUN-0106's P02 catalog checks moved under Procedure, and its
+Verification now names the expected results. In RUN-0105, two sections moved
+to the place the text already gave them: the previous-root sweep now follows
+W1, and W7 root revocation now precedes Finish.
+
+**Scripts (owner decisions).** Only `p01_run` stays as pasted code:
+
+- **`p01_run`.** It now lives in RUN-0085 "Reviewed Script Runner" and gained
+  the checks the removed inline blocks had: the repository path is not a
+  symlink, the repository and `.git` match their recorded device, inode and
+  owner, and the `LD_*` and `PYTHON*` variables are unset.
+- **`p01-bootstrap.sh`.** The RUN-0105 W1 source bootstrap block became this
+  script, with the hash manifest inside it. `p01_run` runs it from the
+  approved commit, never from the checkout. The tests now read the manifest
+  from the script.
+- **Issuer installer.** RUN-0103 step 2 now runs
+  `install-renderer-issuer.sh` through `p01_run`. The approved commit pins
+  the installer instead of the separate hash `27a097f1…`, and the installer
+  still runs itself under `env -i`.
+- **`preflight`.** The RUN-0105 W0 checks became an `owner-window.sh` step.
+  It ends by clearing the window's path variables, as the block did.
+- **RUN-0104.** The manual commands were removed. The rules stay, and
+  `metrics-rotate` and `metrics-revoke` are the only executable path. The
+  steps now start with `preflight` and the bootstrap, and include
+  `root-sweep`.
+
+**Independent security review (security-auditor, read-only).** The verdict
+was APPROVE_WITH_FINDINGS, with nothing Critical or High. The trust chain held
+for an honest object store and a clean environment. Each finding was fixed:
+
+- **Failed bootstrap kept going (Medium).** A pasted block's `exit` used to
+  close the owner's shell. A script's `exit` only ends the script, and the
+  vars file had been written before the pins were checked. The bootstrap now
+  records the path variables only after every pin passes, and it removes the
+  copy on failure. The runbooks load the vars only on success (`&&`).
+- **Inherited environment (Low-Medium).** The window shell now starts from
+  `env -i` with absolute paths. `p01_run` runs `/usr/bin/bash` and unsets
+  `BASH_ENV` and `ENV`.
+- **Object store as the anchor (Low).** `p01_run` re-hashes the copied blob
+  against the commit's object ID. A replaced tree object behind the same
+  commit stays a residual risk: only a process running as the owner's UID can
+  do that, and that same UID can already read W1 custody.
+- **Lower findings.** These were also fixed:
+  - the bootstrap writes no readonly variables, so a retry in the same shell
+    takes the new commit;
+  - `preflight` counts failed checks, exits 1, and refuses to clear the vars
+    file while an earlier window's custody exists;
+  - `p01_run` checks that `XDG_RUNTIME_DIR` is an owner-only tmpfs;
+  - the window-shell text and RUN-0104's step split were corrected;
+  - tests pin `p01_run`'s checks, and check that the bootstrap writes the vars
+    file only after the manifest.
+- **Live check (read-only).** In a clean bash, the new `p01_run` ran the
+  merged main commit's `owner-window.sh nope`, which returned the usage exit 2.
+  A short commit was refused with exit 1, and no temporary file was left.
+- **Re-review (same auditor).** The verdict was APPROVE_WITH_FINDINGS, Low
+  and Info only. Three items were fixed:
+  - `preflight`'s image and R2 checks now run under `bash -o pipefail`, so
+    their status is no longer `tail`'s;
+  - the bootstrap sets `ok=0` before its trap, so the environment cannot keep
+    a copy that failed a pin;
+  - the `p01_run` text now claims only blob re-hashing. Tree substitution is
+    named as the accepted residual risk.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |

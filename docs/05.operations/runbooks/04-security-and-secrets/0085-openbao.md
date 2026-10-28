@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.15.0"
+version: "0.16.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -24,13 +24,15 @@ created: "2026-09-19"
 
 ## Prerequisites
 
-### Trigger and Preconditions
+### Starting State
 
 저장소
 루트에서 작업한다. 런타임 변경 전에 configuration commit, 이미지 source, 기존 데이터 위치,
 보호된 backup을 확인한다.
 
 ## Procedure
+
+### Read-only Status Check
 
 1. 기존 Compose validator로 선택한 profile을 검증한다. 비공개 렌더링 모델은 절대 출력하지
    않는다.
@@ -49,7 +51,51 @@ created: "2026-09-19"
 
 [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
 
-### Lifecycle and maintenance boundary
+### Reviewed Script Runner
+
+host에서 secret을 다루는 script는 mutable checkout이 아니라 owner가 검토·승인한 commit의 Git
+객체에서 실행한다. 그 진입점은 아래 두 함수뿐이며, 이 절의 코드만 셸에 붙여 넣는다. 나머지
+절차는 모두 이 함수로 저장소의 script 파일을 실행한다. 붙여 넣는 셸은
+[RUN-0105의 window 셸](0105-openbao-maintenance-window.md#window-shell-and-path-variables)처럼 깨끗한
+환경으로 연다. 그러면 `BASH_ENV`·`SHELLOPTS`·export된 함수가 script에 넘어가지 않는다.
+
+```bash
+p01_git() {
+  /usr/bin/env -i PATH=/usr/bin:/bin GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_NO_REPLACE_OBJECTS=1 \
+    /usr/bin/git --git-dir=/home/hyunyoun/data/hy-home.docker/.git "$@"
+}
+p01_run() {  # p01_run <40자리 commit> <저장소 경로> <인자…>
+  local h=/home/hyunyoun/data/hy-home.docker c b f r
+  unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH BASH_ENV ENV
+  case "$1" in *[!0-9a-f]*) return 1 ;; esac; [ "${#1}" = 40 ] || return 1
+  [ "$h" = "$(/usr/bin/realpath -e -- "$h")" ] && [ ! -L "$h/.git" ] &&
+    [ "$(/usr/bin/stat -c '%d:%i:%u' -- "$h" "$h/.git" | /usr/bin/paste -sd ' ')" = '64512:4338469:1000 64512:4338470:1000' ] &&
+    [ "$(/usr/bin/stat -c '%u:%a' -- "${XDG_RUNTIME_DIR:?}")" = "$(/usr/bin/id -u):700" ] &&
+    [ "$(/usr/bin/findmnt -n -T "$XDG_RUNTIME_DIR" -o FSTYPE)" = tmpfs ] || return 1
+  c="$(p01_git rev-parse --verify "$1^{commit}")" && [ "$c" = "$1" ] || return 1
+  b="$(p01_git rev-parse --verify "$1:$2")" || return 1
+  f="$(umask 077; /usr/bin/mktemp "$XDG_RUNTIME_DIR/p01-run.XXXXXX")" || return 1
+  # Re-hash the copy: a changed blob behind the same tree entry does not run.
+  p01_git show --no-textconv "$1:$2" >"$f" && [ -s "$f" ] &&
+    [ "$(p01_git hash-object --no-filters -- "$f")" = "$b" ] &&
+    /usr/bin/bash "$f" "${@:3}"; r=$?
+  /usr/bin/rm -f -- "$f"; return "$r"
+}
+```
+
+함수는 다음을 확인한 뒤에만 실행한다.
+
+- 고정 HOME 저장소 경로가 symlink가 아니고, 저장소와 `.git`의 device·inode·소유자가 기록값과 같다.
+- 인자가 전체 40자리 commit이고, Git 환경·replacement object를 막은 상태에서 그 commit이 존재한다.
+- `XDG_RUNTIME_DIR`이 owner 전용 0700 tmpfs다.
+- 그 commit의 blob을 그 tmpfs 파일로 꺼낸 뒤 다시 hash해 tree가 가리키는 blob ID와 같을 때만
+  `/usr/bin/bash`로 실행하고, 끝나면 지운다. checkout의 파일은 열지 않는다. 같은 commit 뒤의 tree
+  object를 바꾸는 것은 막지 못하며, 그것은 owner UID의 쓰기 권한이 필요한 수용된 잔여 위험이다.
+
+그 commit에 script가 없으면(그 script를 담은 PR이 병합되기 전) 실행하지 않고 실패한다. 값·token은
+인자로 넘기지 않는다. 저장소 inode가 바뀌면(다시 clone 등) 기록값을 검토해 이 절에서 고친다.
+
+### Start and Stop
 
 `openbao`와 `openbao-agent`만 대상으로 하며 기본 `security` 선택을 사용한다.
 기존 local image와 root network, bind 경로의 소유권·용량, 보존된 Raft identity,
@@ -81,7 +127,9 @@ Agent restart는 유효한 AppRole 재인증 입력을 요구할 수 있다. `ag
 재생성 전후 Raft mount identity가 바뀌면 중단한다. 자동 bootstrap job은 없으며
 이 절차의 daemon health를 초기화 완료로 표시하지 않는다.
 
-**Host package upgrade.** `containerd.io`나 `docker-ce`를 바꾸는 host package upgrade는
+### Host Package Upgrade
+
+`containerd.io`나 `docker-ce`를 바꾸는 host package upgrade는
 OpenBao maintenance window로 다룬다. containerd가 재시작되면 모든 container가 멈춘다.
 2026-10-28에는 `apt-get upgrade`가 containerd를 재시작했고, 다음 일이 이어졌다.
 
@@ -119,6 +167,8 @@ OpenBao maintenance window로 다룬다. containerd가 재시작되면 모든 co
    의존 순서대로 시작한다. 공유 DB가 healthy가 된 뒤 consumer를 시작하고, Crawl4AI는 egress
    gateway를 먼저 시작한다.
 
+### Upgrade Backup and Removal
+
 upgrade는 [RUN-0086](../10-platform-and-backup/0086-dependency-version-management.md), backup·retention은
 [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)을 적용한다. 아래 격리 restore는
 계획이지 검증된 실행 명령이 아니다. artifact·custody·격리 target·승인·독립 검토가
@@ -128,6 +178,8 @@ consumer와 보호 자료 disposition이 별도 승인된 뒤에만 수행하며
 
 ### Initial Bootstrap and Credential Recovery
 
+#### Initial Bootstrap
+
 owner가 승인한 initial bootstrap은 threshold 2의 Shamir unseal share 3개를 사용한다.
 임시 전달 후 share는 서로 분리된 오프라인 custody에 보관한다. 모든 share를 담은 단일
 파일은 custody 분리가 아니다. initialization 출력은 절대 출력하지 않고, credential을
@@ -135,6 +187,8 @@ owner가 승인한 initial bootstrap은 threshold 2의 Shamir unseal share 3개�
 OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/렌더링, 보호된 Raft
 스냅샷이 모두 성공한 뒤에만 폐기해야 한다. setup이 실패하면 운영자 복구를 위해 보호된
 복구 자료를 유지한다.
+
+#### Unseal Share Custody
 
 이 HOME은 1인 관리자 결정(SPEC-0242)으로 share를 host에 두며 [1인 관리자 custody 절차](0105-openbao-maintenance-window.md#1인-관리자-custody-절차)를 따른다. 기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
 [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)가
@@ -145,6 +199,8 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 `vault_token.txt`와 `vault_unseal_keys.legacy.txt`), 보존된 Vault 트리
 `${DEFAULT_MOUNT_VOLUME_PATH}/security/vault`, 레거시 `hashicorp/vault` 이미지를
 폐기했다. 데이터가 사라졌으므로 레거시 Vault root token은 의미가 없다.
+
+#### Renderer AppRole Token Lifetime
 
 `hy-home-renderer` AppRole은
 [renderer policy](../../../../infra/03-security/openbao/config/policies/renderer.hcl)를
@@ -270,7 +326,9 @@ issuance_journal=<Task의 journal 디렉터리> bash infra/03-security/openbao/s
 문제가 하나라도 있으면 `WARN:` 줄을 출력하고 1로 끝난다. metrics token은 만료 30일 전부터
 경고하며 회전은 [RUN-0104](0104-openbao-metrics-credential.md)를 따른다.
 
-**Renderer token 만료 확인.** 갱신이 멈춘 renderer token(이전 Agent 세대)이 만료됐는지는 server
+### Renderer Token Expiry
+
+갱신이 멈춘 renderer token(이전 Agent 세대)이 만료됐는지는 server
 로그의 lease 폐기 시각으로 확인한다. lease ID는 출력하지 않고 시각만 출력한다.
 
 ```bash
@@ -291,7 +349,7 @@ renderer 두 data와 해당 metadata 경로 read와 사람 operator의 platform 
 승인된 변경 후에는 exact binding과 경로 밖 read/list/write 거부를 비밀값 없는
 결과로 확인하며 불일치 시 중단한다.
 
-### 증거 기록
+### Evidence Record
 
 날짜, configuration commit, 서비스 이름, exit status, 정제된 health/resource 결과를 현재
 Task에 기록한다. secret 값, 원본 환경, state, token 파일, 메시지/database 콘텐츠는 캡처하지
@@ -301,8 +359,12 @@ Task에 기록한다. secret 값, 원본 환경, state, token 파일, 메시지/
 
 ### Rollback or Recovery
 
+#### W4 Failure
+
 maintenance window의 W4 실패는 fix-forward가 규칙이다([W4](0105-openbao-maintenance-window.md#maintenance-window-plan)의 rollback
 규칙). 아래 snapshot 복원은 새 owned image에서 고칠 수 없는 손상에 대한 별도 승인 경로다.
+
+#### Isolated Snapshot Restore
 
 non-root operator 신원으로 보호된 Raft 스냅샷을 캡처하고, checksum, cluster ID, 이미지
 선언, seal 구성, custody 영수증을 기록한 뒤, network egress와 consumer가 비활성화된 새
@@ -311,6 +373,8 @@ threshold unseal ceremony를 완료하고, secret 값을 공개하지 않고 clu
 auth 방식, Agent 인증/렌더링, denial 테스트를 검증한다. 증거가 승인된 후 격리 사본을
 파기한다. 실제 Raft 데이터 위에는 절대 복원하지 않는다. 이 격리 restore는 계획된 채로
 남아 있으며 2026-09-20 수정 중에는 실행되지 않았다.
+
+#### Restored Token State
 
 스냅샷은 캡처 시점의 token 상태를 담는다. root 폐기 이전에 캡처한 스냅샷을 복원하면
 그 credential 상태가 복원될 수 있다. 격리 recovery validation 중 복원된 bootstrap/recovery
