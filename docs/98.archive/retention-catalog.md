@@ -1,10 +1,10 @@
 ---
 title: "Retention Catalog"
-version: "1.1.17"
+version: "1.2.0"
 type: "archive/catalog"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-29"
 ---
 
 # Retention Catalog
@@ -20,7 +20,10 @@ change that moves a unit cannot name its own commit, so it records the base
 commit where the source still existed.
 
 Records preserved before this catalog existed keep the withdrawal records their
-contract required at the time; they are not loaded here retroactively. The
+contract required at the time; they are not loaded here retroactively, except
+that the change recording an authorized `git-history-only` removal of such a
+unit adds its capture row, naming the base commit where its origin last existed.
+The
 [Stage 98 README](README.md) routes readers here, and the archive validator
 reads this table.
 
