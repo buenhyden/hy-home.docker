@@ -49,6 +49,7 @@ VIEW_NAMES = (
     "SENSITIVE_ENV_VARS.md",
 )
 IDENTIFIER = re.compile(r"[A-Z][A-Z0-9]{1,15}-[0-9]{3}\Z")
+FIELD = re.compile(r"[a-z][a-z0-9_]{0,63}\Z")
 ENTRY_FIELDS = frozenset(
     {
         "id",
@@ -341,17 +342,37 @@ def _validate_plans(entry):
         plan,
         "status kv_path acl delivery reload mount field uid gid mode restart rotation".split(),
     )
-    if any(plan[key] is not None for key in ("mount", "field", "uid", "gid", "mode")):
-        raise CatalogError("unapproved_delivery_binding")
+    if plan["status"] == "DEPLOYED":
+        # A rendered OpenBao Agent file proven by the evidence Task; no value.
+        if (
+            entry["action"] != "IMPLEMENT"
+            or entry["lifecycle"].get("delivered") != "CONFIRMED"
+            or plan["delivery"] != "openbao_agent"
+            or plan["mount"] != "secret"
+            or not isinstance(plan["kv_path"], str)
+            or not plan["kv_path"].startswith("hy-home/")
+            or not isinstance(plan["field"], str)
+            or not FIELD.fullmatch(plan["field"])
+            or any(
+                type(plan[key]) is not int or not 0 <= plan[key] <= 65535
+                for key in ("uid", "gid")
+            )
+            or plan["mode"] not in {"0600", "0640"}
+        ):
+            raise CatalogError("invalid_deployed_destination")
+        contract = ("acl", "reload", "restart", "rotation")
+    else:
+        if any(
+            plan[key] is not None for key in ("mount", "field", "uid", "gid", "mode")
+        ):
+            raise CatalogError("unapproved_delivery_binding")
+        contract = ("status", "acl", "delivery", "reload", "restart", "rotation")
     if (
         entry["classification"] != "kv_static"
         or entry["disposition"] == "RETAINED_FOR_RECOVERY"
     ) and plan["kv_path"] is not None:
         raise CatalogError("destination_not_applicable")
-    if any(
-        plan[key] != "BLOCKED_P01"
-        for key in ("status", "acl", "delivery", "reload", "restart", "rotation")
-    ):
+    if any(plan[key] != "BLOCKED_P01" for key in contract):
         raise CatalogError("unapproved_delivery_contract")
     _path(plan["kv_path"], nullable=True)
     recovery = entry["recovery"]
@@ -469,10 +490,11 @@ def validate_catalog(catalog, schema=None):
             entry["source_path"] is not None and entry["source_path"] in paths
         ):
             raise CatalogError("duplicate_catalog_owner")
-        destination = entry["destination_plan"]["kv_path"]
-        if destination is not None and destination in destinations:
+        plan = entry["destination_plan"]
+        destination = (plan["mount"], plan["kv_path"], plan["field"])
+        if plan["kv_path"] is not None and destination in destinations:
             raise CatalogError("duplicate_planned_destination")
-        if destination is not None:
+        if plan["kv_path"] is not None:
             destinations.add(destination)
         identifiers.add(entry["id"])
         if entry["source_path"] is not None:
@@ -575,6 +597,12 @@ def generation_binding_allowed(catalog, identifier, source_path, env_key, automa
     )
 
 
+def _destination_cell(plan):
+    if plan["status"] == "DEPLOYED":
+        return f"{plan['mount']}/{plan['kv_path']}#{plan['field']}"
+    return plan["kv_path"] or "BLOCKED_P01"
+
+
 def render_views(catalog):
     validate_catalog(catalog)
     lines = [
@@ -657,7 +685,7 @@ def _local_view(catalog):
             entry["id"],
             entry["classification"],
             entry["source_path"] or "-",
-            entry["destination_plan"]["kv_path"] or "BLOCKED_P01",
+            _destination_cell(entry["destination_plan"]),
             entry["action"],
             entry["owner"],
             lifecycle,

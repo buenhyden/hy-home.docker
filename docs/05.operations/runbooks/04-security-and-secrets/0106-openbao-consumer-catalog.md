@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration and Secret Catalog"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -91,7 +91,8 @@ rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-generation 
 alias COMM-003은 실제 폐기 완료가 아니며 별도 credential/KV 대상을 만들 수 없다.
 다른 crypto/bootstrap/recovery/LAB/unknown/migrated/retired 항목과 observed/consumed 항목도
 guard가 거부해야 한다. 공개 staging만으로 실제 발급·수집·이관·delivery·reload·rotation·
-복구를 수용하지 않는다. ACL/delivery mapping은 `BLOCKED_P01`, 실제 pilot은 대상 ID·KV
+복구를 수용하지 않는다. ACL mapping은 `BLOCKED_P01`이고 delivery는 Agent 전달이 확인된
+`DEPLOYED` 항목만 `openbao_agent`다. 실제 pilot은 대상 ID·KV
 path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 있어야 한다. 현재 HOME/P06 hold를 유지한다.
 
 ## Failure and Recovery

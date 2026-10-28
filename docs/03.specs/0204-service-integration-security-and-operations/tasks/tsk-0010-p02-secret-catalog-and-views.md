@@ -1,10 +1,10 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.12"
+version: "0.1.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-28"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -961,6 +961,34 @@ HOME and stateful recovery remain NOT_RUN or pending under their existing owner
 contracts. The default/base dedicated exporter admin-credential risk is still
 present until explicit overlay adoption; an isolated monitor test does not prove
 adoption. C16/C17 remain pending and no completed Task is reopened.
+
+### `DEPLOYED` destination plans — 2026-10-28
+
+The owner chose to let the catalog record delivered destinations. The change
+was made under SPEC-0204 TSK-0014 on the owner's choice. The schema and
+`_validate_plans` now accept a second `destination_plan.status`, `DEPLOYED`,
+next to `BLOCKED_P01`. A `DEPLOYED` plan is allowed only on an `IMPLEMENT`
+entry whose `delivered` lane is `CONFIRMED`. It requires:
+
+- mount `secret`;
+- a KV path under `hy-home/`;
+- a lowercase field name;
+- integer UID and GID;
+- mode `0600` or `0640`;
+- delivery `openbao_agent`.
+
+ACL, reload, restart and rotation must stay `BLOCKED_P01`. A `BLOCKED_P01` plan
+still requires null bindings. The duplicate-destination rule now keys on mount,
+path and field, so two fields of one KV secret (Grafana's admin password and
+client secret) are separate destinations. The view cell shows
+`secret/<path>#<field>` for a deployed plan.
+
+`schema_version` stays `1.0.0`. The change only adds values, so every earlier
+catalog stays valid, and P06 bindings also pin the schema's SHA-256. The P06
+copier still requires status `APPROVED` and field `value`, so a `DEPLOYED`
+entry is never a copy candidate. Tests cover the accepted plan, a second field
+on one path, a duplicate binding and eight refusals, and a schema test refuses
+a partial `DEPLOYED` plan and a bound `BLOCKED_P01` plan.
 
 ## Evidence
 

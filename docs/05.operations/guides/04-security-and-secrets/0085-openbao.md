@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Guide"
-version: "0.7.2"
+version: "0.7.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -236,10 +236,12 @@ source와 합성 검증의 범위이고, HOME 대상·custody·복원 입력이 
 마지막 날짜는 원 공개 기록의 날짜이며 검토·rotation·운영 관찰 날짜가 아니다.
 
 분류는 `kv_static`, `stable_crypto`, `bootstrap_external`, `public_configuration`,
-`derived_runtime`, `unused_delete`, `lab_excluded`이다. 현재 destination plan의
-mount·field·UID/GID·mode는 null이고 ACL·delivery·reload·restart·rotation은
-`BLOCKED_P01`이다. 실제 KV destination, 소비자 권한, 전달·reload와 RPO/RTO는 후속
-담당자가 정확한 대상과 증거로 수용해야 한다. catalog 등록만으로 승인되지 않는다.
+`derived_runtime`, `unused_delete`, `lab_excluded`이다. destination plan은 대부분
+`BLOCKED_P01`이며 mount·field·UID/GID·mode가 null이다. P06이 증거와 함께 Agent 전달을
+확인한 항목만 `DEPLOYED`로 실제 mount·KV path·field·출력 UID/GID·mode를 기록하고
+delivery를 `openbao_agent`로 둔다. 이때도 ACL·reload·restart·rotation은 `BLOCKED_P01`이다.
+나머지 KV destination, 소비자 권한, 전달·reload와 RPO/RTO는 후속 담당자가 정확한
+대상과 증거로 수용해야 한다. catalog 등록만으로 승인되지 않는다.
 
 선언과 실제 관찰을 구분하기 위해 lifecycle은 declared, observed, imported, delivered,
 consumed, rotated, recovered, retired의 여덟 lane을 둔다. declared 이외 일곱 lane에는

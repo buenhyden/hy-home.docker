@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.11"
+version: "0.1.12"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-28"
 ---
 
 # OpenBao
@@ -130,8 +130,9 @@ journal과 활성 anchor는 version·identity가 정확히 일치해야 하며, 
 
 [secret-catalog.json](secret-catalog.json)과 [schema](secret-catalog.schema.json)는 값 없는
 공개 분류·보존·미결정 mapping을 소유합니다. 각 항목의 원본 기록 날짜와 실행 증거를
-구분하며, 계획된 mount·field·UID/GID·mode는 미확정입니다. ACL·delivery·reload·restart·
-rotation의 `BLOCKED_P01`은 실제 권한이나 전달 완료가 아닙니다.
+구분합니다. Agent 전달이 확인된 항목은 `DEPLOYED`로 실제 mount·KV path·field·출력
+UID/GID·mode를 기록하고, 나머지는 미확정입니다. `BLOCKED_P01`은 실제 권한이나 전달
+완료가 아닙니다.
 
 [catalog CLI](../../../scripts/operations/secret-catalog.py)는 catalog, schema, 기존 공개
 secret 표, support matrix 네 추적 입력을 검사합니다. `render`는 승인된
