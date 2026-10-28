@@ -3560,13 +3560,28 @@ docker logs openbao --since 2026-10-27T07:45:00Z 2>&1 | grep -c 'revoked lease: 
 1
 ```
 
-One renderer-login lease revocation is in the retained server log since the
-first W5 stop. The count alone does not show which token it was. It also does
-not show whether the other one expired outside the retained log (Docker log
-rotation can drop older lines) or is still valid. The recording rule set two
-outcomes: natural expiry of both at 2 or more, and report-only at 0. This
-result is 1, so it is recorded as an observation, not as natural expiry of both
-tokens, and reported to the owner.
+Value-free follow-ups printed only timestamps and never a lease ID.
+
+| Read | Result |
+| --- | --- |
+| Revocation timestamps (owner) | `2026-10-28T01:39:08.159Z` |
+| Retained log start for the window (owner) | `2026-10-27T07:47:01.568Z`, the W5 wrap expiry |
+| Log configuration (owner) | `json-file`, `max-file` 3, `max-size` 10m |
+| Same timestamp read at `2026-10-28T08:56:59Z` (agent) | Still only `2026-10-28T01:39:08.159Z` |
+
+The retained log starts within two minutes of `--since`, so no line in the
+window was lost to rotation. The single revocation at 01:39:08Z fits the 10-22
+token: its Agent was renewing until the 07:45:17Z stop, and an unrenewed
+24-hour period then ends about 24 hours after the last renewal. **The 10-22
+token is recorded as expired.**
+
+The 08:14 token had no renewal before its Agent stopped at 08:15:26Z, so it
+was expected to expire near 08:14Z on 2026-10-28. By 08:56:59Z no revocation
+appeared, so its state is **UNKNOWN** and it may still be valid. The recording
+rule set two outcomes: natural expiry of both at 2 or more, and report-only at
+0. This result is 1, so it is recorded and reported to the owner, not recorded
+as natural expiry of both. Confirming the 08:14 token needs an accessor
+lookup with a management credential, which is the owner's decision.
 
 The current healthy generation, started 08:21:50Z on 2026-10-27, is renewed
 and is not expected in this count. Attribution needs the event timestamps and

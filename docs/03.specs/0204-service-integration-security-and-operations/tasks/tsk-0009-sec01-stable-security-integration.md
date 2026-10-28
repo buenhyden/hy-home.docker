@@ -2896,7 +2896,7 @@ prove a fully cold start. The service is healthy. The 0.40.12 runtime
 acceptance is complete; signature, SBOM and advisory applicability stay
 NOT_RUN.
 
-### v30 criterion 15 generation-7 migration and acceptance — 2026-10-28
+### v30 criterion 15 generation-7 migration and acceptance (2026-10-28)
 
 The owner authorized the criterion 15 decision on 2026-10-28. The validator
 locks a generation-6 Evidence or Acceptance table: a draft that only appended
@@ -3057,7 +3057,7 @@ and its later observations are recorded above.
 
 This is the current generation-7 projection. The original generation-6
 Evidence and Criterion Acceptance tables, including their resolution edges,
-are preserved verbatim in [the C15 migration record](#v30-criterion-15-generation-7-migration-and-acceptance--2026-10-28).
+are preserved verbatim in [the C15 migration record](#v30-criterion-15-generation-7-migration-and-acceptance-2026-10-28).
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
