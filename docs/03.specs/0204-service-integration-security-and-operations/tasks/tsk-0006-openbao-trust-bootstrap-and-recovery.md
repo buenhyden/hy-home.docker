@@ -3776,6 +3776,104 @@ explicit TTL of up to one year. Today the renderer roles pin 5 minutes and
 `auth/token/create/k8s-bootstrap` path, however, has no parameter limit, so
 that role's explicit maximum becomes the only bound.
 
+### Owner steps as scripts (2026-10-28)
+
+The owner asked for each follow-up as a working script. Three steps join
+`owner-window.sh`:
+
+- **`metrics-rotate`.** It runs RUN-0104 end to end with the root that the
+  RUN-0105 W1 ceremony leaves in custody. W7 `revoke-root` then revokes that
+  root. The step:
+  - issues the 1-year token and checks its shape and least privilege;
+  - classifies the old token (valid, expired, stale custody or
+    INDETERMINATE);
+  - swaps the deployed file and recreates Prometheus alone;
+  - waits for `up{job="openbao"}` to equal 1, revokes a valid old token and
+    rewrites the custody.
+
+  Tokens and accessors travel over stdin only. A failure before the target is
+  up revokes the new token and restores the old file. The RUN-0105 manifest
+  now pins `prometheus.hcl` so that the bootstrap copy carries the reviewed
+  policy.
+- **`renderer-expiry <since>`.** It prints only the timestamps of revoked
+  renderer AppRole login leases, plus the time the server became active.
+- **`host-hold`.** It holds `containerd.io`, `docker-ce` and `docker-ce-cli`
+  and, when needrestart is installed, excludes containerd and Docker from its
+  restarts.
+
+**Independent security review (security-auditor, read-only).** The verdict
+was APPROVE_WITH_FINDINGS, and it found no path that prints or passes a
+value. Each finding was fixed:
+
+- **Custody that names another token (High).** The valid branch could revoke
+  a custody accessor that belongs to some other token. The deployed file is
+  now the truth: its lookup must match the custody accessor and policy.
+- **Unchecked revocation (Medium).** "Revoked" now needs the server to refuse
+  a lookup afterwards. The new token is revoked by value through stdin, so the
+  two early failures after creation also revoke it.
+- **Stale target sample (Medium).** Only an `up` sample taken after the
+  recreate counts.
+- **Rollback (Medium).** A failed restore is reported and leaves the new
+  token unrevoked. With an expired old token, the verified new token stays
+  deployed and goes into custody instead of being rolled back.
+- **Lower findings.** These were also fixed:
+  - custody is written before the old token is revoked, so a re-run does not
+    deadlock;
+  - an unconfirmed token leaves an `*.unrevoked` marker, and `cleanup`
+    refuses to delete its directory without `--discard-metrics`;
+  - leftover temporary files are removed;
+  - positive controls (root lookup, unsealed server) back the expired and
+    revoked verdicts;
+  - `renderer-expiry` fails when `docker logs` fails, and prints a count and
+    the start of the retained log;
+  - the runbook wording on mode and group was corrected.
+- **Informational.** dockerd debug is off, so the exec environment is not
+  logged. `host-hold` writes only constant text.
+- **Test gap (recorded).** `bao_as` calls `/usr/bin/docker` by absolute path
+  on purpose, so tests cannot stub the token classification and rollback
+  branches. The tests cover the preconditions, `cleanup`, and the
+  value-free output of `renderer-expiry` and `host-hold`. The first live run
+  is the owner's.
+
+**Why the manual root session stopped.** The owner had started the manual
+RUN-0096 client. `R` stopped with `missing root token; STOP` because no
+runbook gives commands to issue the temporary root. The guard worked: no root
+command ran, and OpenBao was not changed. The scripted path replaces that
+manual root step.
+
+**Handover from the hy-home.k8s session (read-only, 13:10Z).** Two facts came
+in:
+
+- `openbao` has `unless-stopped` and a restart count of 0. It started at
+  09:31:43Z, so the owner started it. Docker did not restart it when dockerd
+  returned, while `openbao-agent` and Crawl4AI did. The cause is UNKNOWN. With
+  a Shamir seal and no auto-unseal, a restart would only have brought it back
+  sealed. Detection is the `status` step plus the existing `OpenBaoSealed`
+  and `OpenBaoMetricsScrapeFailing` alerts, so no new alert is added.
+- The 10-27 08:21 Agent generation lost its sink at 07:35Z on 10-28. Its
+  token should expire by about 07:35Z on 10-29. `renderer-expiry
+  2026-10-28T07:35:00Z` after that time records it as expired or UNKNOWN.
+
+**08:14 token: agent run of `renderer-expiry 2026-10-27T07:45:00Z`, about
+13:20Z, read-only.** The output was:
+
+```text
+2026-10-28T01:39:08.159Z
+2026-10-28T09:32:41.749Z
+2026-10-28T09:32:41.847Z
+server active since: 2026-10-28T09:32:39.599407309Z
+```
+
+The 08:14 token's expiry near 08:14Z on 10-28 fell while the server was
+down, from 07:33Z to 09:31Z. The server revokes such leases when it becomes
+active, and two revocations follow activation by two seconds. With 01:39:08Z
+(the 10-22 token) the count is 3. Under the owner's rule (2 or more), the
+08:14 token is **recorded as natural expiry** at 09:32:41Z. The second
+startup revocation is not attributed: timestamps cannot tell which lease it
+was. If it was the 08:21 generation's token, the check after 07:35Z on 10-29
+shows no new line, and that token is then recorded from this line, not as
+UNKNOWN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |

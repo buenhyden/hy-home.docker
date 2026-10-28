@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -595,7 +595,8 @@ fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b infra/03-securi
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
 e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json
-eb11ccd20429f4a0975bb706970b9ae943dd847956fb3abd824b9402340a67c2 infra/03-security/openbao/scripts/owner-window.sh
+050dbee35ed97f4f7ed85109b00775d2263d12b79a7e8047c5e5587b49f0324e infra/03-security/openbao/scripts/owner-window.sh
+68c20addfcfab05118c75ff5f0b25330743c82f7f7f1305f26b3f0fe65652d50 infra/03-security/openbao/config/policies/prometheus.hcl
 6e99a1fa6ba153642b66be1fd353e237cc25640e81386de203d2b232a6c00eed infra/03-security/openbao/scripts/k8s-writers.sh
 P01_SOURCE_MANIFEST
 ```

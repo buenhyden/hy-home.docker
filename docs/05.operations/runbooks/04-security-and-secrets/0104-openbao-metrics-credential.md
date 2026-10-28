@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Prometheus Metrics Credential"
-version: "0.2.2"
+version: "0.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -32,6 +32,61 @@ metrics token을 처음 발급하거나, 만료 전에 회전하거나, 이미 �
 
 이 절차는 승인이 OpenBao policy/token 변경과 Prometheus 재생성을 정확한 대상으로 명시한
 경우에만 사용한다.
+
+**스크립트 실행(기본 경로).** `owner-window.sh metrics-rotate`가 아래 수동 1–5단계와 만료 분기를
+한 번에 실행한다. root는 [RUN-0105](0105-openbao-maintenance-window.md) W1 source bootstrap과
+W1 ceremony로 얻고, W7 `revoke-root`로 폐기한다. 이 경로에서는 throwaway client와 수동
+generate-root가 필요 없다. 저장소 루트에서 다음 순서로 실행한다.
+
+```bash
+# 0. RUN-0105의 W1 source bootstrap 블록을 승인된 commit(P01_APPROVED_COMMIT)으로 실행한다.
+bash "$P01_SCRIPT_DIR/owner-window.sh" token w1        # OIDC 로그인 후 Copy token
+bash "$P01_SCRIPT_DIR/owner-window.sh" check-token w1  # policy·TTL과 attempt started:false
+bash "$P01_SCRIPT_DIR/owner-window.sh" w1              # unseal share 2개 숨김 입력, root는 custody로
+bash "$P01_SCRIPT_DIR/owner-window.sh" metrics-rotate
+bash "$P01_SCRIPT_DIR/owner-window.sh" token w7        # 새 OIDC 로그인
+bash "$P01_SCRIPT_DIR/owner-window.sh" revoke-root
+bash "$P01_SCRIPT_DIR/owner-window.sh" cleanup
+```
+
+W1 뒤에는 RUN-0105 W7 절의 이전 root 정리 블록도 매 window 실행한다. `metrics-rotate`는
+다음을 순서대로 한다. token과 accessor는 stdin으로만 넘기며 출력하거나 인자로 넘기지 않는다.
+
+1. bootstrap 사본의 `prometheus.hcl`을 쓰고 `token/` mount 최대 TTL을 `8760h`로 tune한다.
+2. 1년 token을 발급하고 정책·orphan·갱신 불가·명시 최댓값을 확인한 뒤 `sys/metrics` 허용과
+   `policy list` 거부를 확인한다.
+3. 이전 token을 판정한다. 기준은 배포된 파일이다.
+   - 배포된 token 조회가 성공하고 그 accessor와 정책이 custody와 같으면 `valid`다. 다르면
+     custody가 오래된 것이므로 멈춘다.
+   - 배포된 token이 `bad token`이고 custody accessor가 `invalid accessor`이며, root 조회와
+     unsealed 상태(양성 대조)가 확인되면 `expired`다.
+   - 그 밖은 `INDETERMINATE`로 멈춘다.
+4. 배포 파일을 mode `0640`과 기존 group으로 교체하고 Prometheus만 재생성한다. 재생성 뒤에
+   수집한 `up{job="openbao"}` 표본이 1이 될 때까지 최대 2분 기다린다.
+5. custody를 새 accessor·만료일로 교체한다.
+6. `valid`였으면 accessor로 폐기하고, 조회가 `invalid accessor`이며 양성 대조가 통과해야
+   `old: revoked`로 출력한다. 작업 파일을 지운다.
+
+기대 출력은 `metrics: allowed`, `policy list: denied`, `old token: valid|expired`,
+`target: openbao up`, `new: expires <날짜>`, `old: revoked` 또는 `old: expired (<날짜>)`이다.
+
+실패 시 동작은 다음과 같다. 폐기는 서버가 그 token 조회를 `bad token`으로 거절할 때만
+확인된 것으로 본다.
+
+- **교체 전 실패.** 새 token을 값으로 폐기하고 멈춘다.
+- **target이 올라오지 않음, 이전 token 만료.** 만료된 token으로 되돌려도 소용없으므로 검증된 새
+  token을 배포한 채 custody에 기록하고 exit 1로 멈춘다. Prometheus를 점검한다.
+- **target이 올라오지 않음, 이전 token 유효.** 이전 파일과 Prometheus를 되돌린 뒤 새 token을
+  폐기한다. 되돌리기가 실패하면 `RESTORE FAILED`를 출력하고 새 token을 폐기하지 않는다.
+- **이전 token 폐기를 확인하지 못함.** custody는 이미 새 token이다. `NOT confirmed revoked`로
+  멈춘다.
+
+확인되지 않은 token이 있으면 작업 디렉터리 `$XDG_RUNTIME_DIR/p01-metrics.*`에 `*.unrevoked`
+표시가 남고 `cleanup`이 지우기를 거부한다. 남은 accessor로 root 세션에서 폐기를 확인한 뒤
+`cleanup --discard-metrics`로 지운다. 변경은 policy(같은 내용), tune, 새 token뿐이며 accessor
+폐기와 tune 원복으로 되돌릴 수 있으므로 Raft snapshot은 만들지 않는다.
+
+아래 수동 절차는 스크립트를 쓸 수 없을 때의 기준이다. 스크립트는 같은 판정과 양성 대조를 하고, 이전 token을 accessor뿐 아니라 배포된 파일로도 확인한다.
 
 1. OpenBao가 initialized/unsealed 상태이고, 검토된 `prometheus.hcl`이 `sys/metrics`에
    대한 `read`만 포함하며, 승인된 관리자가 대기 중이고, rollback이 현재 configuration
