@@ -5,6 +5,7 @@ import json
 import re
 import unittest
 from pathlib import Path
+from types import MappingProxyType
 
 from jsonschema import Draft202012Validator
 
@@ -211,9 +212,30 @@ class SecretCatalogContractTests(unittest.TestCase):
                 item["value"] = "synthetic-forbidden"
                 self.assertTrue(list(validator.iter_errors(candidate)))
 
-    # P06 consumers proven on HOME; every other entry makes no runtime claim.
-    MIGRATED = frozenset({"IAM-002", "IAM-007", "OBS-002"})
-    MIGRATED_LANES = ("observed", "imported", "delivered", "consumed")
+    # P06 deliveries proven on HOME; every other entry makes no runtime claim.
+    # IAM-004 and IAM-013 still have a held consumer, so consumption stays open.
+    DEPLOYED = MappingProxyType(
+        {
+            "IAM-002": ("hy-home/02-auth/keycloak", "admin_password"),
+            "OBS-002": ("hy-home/06-observability/grafana", "admin_password"),
+            "IAM-007": ("hy-home/06-observability/grafana", "grafana_client_secret"),
+            "IAM-004": ("hy-home/02-auth/oauth2-proxy", "client_secret"),
+            "IAM-009": ("hy-home/05-messaging/kafbat", "client_secret"),
+            "IAM-010": ("hy-home/06-observability/dozzle", "client_secret"),
+            "IAM-011": ("hy-home/08-ai/open-webui", "client_secret"),
+            "IAM-012": ("hy-home/06-observability/gatus", "client_secret"),
+            "IAM-013": ("hy-home/12-analytics/superset", "client_secret"),
+            "AUTO-015": ("hy-home/07-workflow/airflow", "client_secret"),
+        }
+    )
+    HELD_CONSUMER = frozenset({"IAM-004", "IAM-013"})
+
+    def migrated_lanes(self, identifier):
+        if identifier not in self.DEPLOYED:
+            return ()
+        lanes = ("observed", "imported", "delivered")
+        return lanes if identifier in self.HELD_CONSUMER else (*lanes, "consumed")
+
     P06_TASK = (
         "docs/03.specs/0204-service-integration-security-and-operations/tasks/"
         "tsk-0014-p06-openbao-consumer-migration.md"
@@ -234,19 +256,55 @@ class SecretCatalogContractTests(unittest.TestCase):
                 },
             )
             self.assertTrue(row["evidence_ref"].startswith("docs/03.specs/0204-"))
-            for field in ("mount", "field", "uid", "gid", "mode"):
-                self.assertIsNone(row["destination_plan"][field])
+            plan = row["destination_plan"]
+            if row["id"] in self.DEPLOYED:
+                kv_path, field = self.DEPLOYED[row["id"]]
+                self.assertEqual(
+                    ("DEPLOYED", "openbao_agent", "secret", kv_path, field),
+                    (
+                        plan["status"],
+                        plan["delivery"],
+                        plan["mount"],
+                        plan["kv_path"],
+                        plan["field"],
+                    ),
+                )
+                self.assertEqual(
+                    (100, 1000, "0640"), (plan["uid"], plan["gid"], plan["mode"])
+                )
+            else:
+                for field in ("mount", "field", "uid", "gid", "mode"):
+                    self.assertIsNone(plan[field])
             for field in ("restart", "rotation"):
                 self.assertEqual(row["destination_plan"][field], "BLOCKED_P01")
             expected = {
                 lane: (
-                    self.P06_TASK
-                    if row["id"] in self.MIGRATED and lane in self.MIGRATED_LANES
-                    else None
+                    self.P06_TASK if lane in self.migrated_lanes(row["id"]) else None
                 )
                 for lane in row["runtime_evidence"]
             }
             self.assertEqual(expected, row["runtime_evidence"])
+
+    def test_schema_refuses_partial_deployed_and_bound_blocked_plans(self):
+        validator = Draft202012Validator(self.schema)
+        self.assertEqual([], list(validator.iter_errors(self.catalog)))
+        for scenario in ("deployed_unbound", "deployed_undelivered", "blocked_bound"):
+            candidate = copy.deepcopy(self.catalog)
+            if scenario == "blocked_bound":
+                row = next(
+                    item for item in candidate["entries"] if item["id"] == "INFRA-001"
+                )
+                row["destination_plan"]["uid"] = 100
+            else:
+                row = next(
+                    item for item in candidate["entries"] if item["id"] == "IAM-010"
+                )
+                if scenario == "deployed_unbound":
+                    row["destination_plan"]["mount"] = None
+                else:
+                    row["lifecycle"]["delivered"] = "NOT_RUN"
+            with self.subTest(scenario=scenario):
+                self.assertTrue(list(validator.iter_errors(candidate)))
 
     def test_schema_refuses_crypto_delete_and_nonstatic_or_recovery_kv_plans(self):
         validator = Draft202012Validator(self.schema)
@@ -275,17 +333,21 @@ class SecretCatalogContractTests(unittest.TestCase):
         for entry in self.catalog["entries"]:
             self.assertIn("source_recorded_at", entry)
             self.assertNotIn("reviewed_at", entry)
-            self.assertEqual(entry["destination_plan"]["status"], "BLOCKED_P01")
+            self.assertEqual(
+                entry["destination_plan"]["status"],
+                "DEPLOYED" if entry["id"] in self.DEPLOYED else "BLOCKED_P01",
+            )
             self.assertEqual(entry["destination_plan"]["acl"], "BLOCKED_P01")
+            migrated = self.migrated_lanes(entry["id"])
             for lane in ("observed", "consumed"):
                 self.assertEqual(
                     entry["lifecycle"][lane],
-                    "CONFIRMED" if entry["id"] in self.MIGRATED else "UNKNOWN",
+                    "CONFIRMED" if lane in migrated else "UNKNOWN",
                 )
             for lane in ("imported", "delivered"):
                 self.assertEqual(
                     entry["lifecycle"][lane],
-                    "CONFIRMED" if entry["id"] in self.MIGRATED else "NOT_RUN",
+                    "CONFIRMED" if lane in migrated else "NOT_RUN",
                 )
             for lane in ("rotated", "recovered", "retired"):
                 self.assertEqual(entry["lifecycle"][lane], "NOT_RUN")

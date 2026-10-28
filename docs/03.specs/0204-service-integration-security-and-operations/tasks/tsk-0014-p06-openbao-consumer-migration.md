@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.24"
+version: "0.1.25"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1633,6 +1633,29 @@ renamed "Known Runtime Residual". RUN-0105 "위 10단계" now links RUN-0106. RU
 "아래 인계" had no target even in the commit that added it, so the sentence
 keeps only the POL-0085 decision. Prometheus has not reloaded the changed rule
 file. Until the owner reloads it, the running alerts still carry the old URLs.
+
+### Catalog destinations for the delivered secrets — 2026-10-28
+
+The owner reviewed the P02 `destination_plan` and chose to record the real
+deployments. Ten entries now carry `DEPLOYED` plans: IAM-002, OBS-002, IAM-007,
+IAM-004, IAM-009, IAM-010, IAM-011, IAM-012, IAM-013 and AUTO-015. Each plan
+names mount `secret`, the KV path and field that the tracked Agent template
+reads, delivery `openbao_agent`, and the rendered file's UID 100, GID 1000 and
+mode `0640`. ACL, reload, restart and rotation stay `BLOCKED_P01`.
+
+Delivery evidence on 2026-10-28 was value-free: `stat` inside `openbao-agent`
+reported all ten `/openbao/out/<dir>/<file>.txt` outputs as 100:1000, mode 640,
+non-empty. No content was read. The seven OIDC secrets were imported at KV
+version 1 and cut over as recorded in the OIDC batch section above, so the
+seven entries now confirm `observed`, `imported` and `delivered` with this Task
+as evidence. `consumed` is confirmed for kafbat-ui, dozzle, open-webui, gatus
+and airflow-apiserver. It stays `UNKNOWN` for IAM-004, whose other declared
+consumer opensearch-dashboards is on hold and still reads `/run/secrets`, and
+for IAM-013, whose superset consumer is on hold.
+
+A side effect follows the earlier rule: an entry with a confirmed lane is no
+longer generated, so `gen-secrets` keeps these seven `./secrets` files as
+`keep-catalog-protected`. That protects the rollback copies.
 
 ## Evidence
 

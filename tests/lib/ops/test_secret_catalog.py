@@ -129,6 +129,54 @@ class SecretCatalogTests(unittest.TestCase):
             with self.subTest(lane=lane):
                 self.assertFalse(catalog.generation_allowed(document, "TEST-001"))
 
+    def test_deployed_destination_needs_a_delivered_full_binding(self):
+        def deployed(field="client_secret"):
+            document = generation_model()
+            entry = document["entries"][1]
+            entry["lifecycle"]["delivered"] = "CONFIRMED"
+            entry["runtime_evidence"]["delivered"] = EVIDENCE
+            entry["destination_plan"].update(
+                status="DEPLOYED",
+                delivery="openbao_agent",
+                mount="secret",
+                kv_path="hy-home/test/app",
+                field=field,
+                uid=100,
+                gid=1000,
+                mode="0640",
+            )
+            return document
+
+        catalog.validate_catalog(deployed())
+        twin = deployed()
+        sibling = deepcopy(twin["entries"][1])
+        sibling.update(id="TEST-002", source_path="secrets/db/example/other.txt")
+        sibling["destination_plan"]["field"] = "admin_password"
+        twin["entries"].append(sibling)
+        catalog.validate_catalog(twin)
+        sibling["destination_plan"]["field"] = "client_secret"
+        with self.subTest(case="duplicate_binding"):
+            self.assert_invalid(twin)
+        for case, change in [
+            ("not_delivered", ("lifecycle", "delivered", "NOT_RUN")),
+            ("other_mount", ("destination_plan", "mount", "kv")),
+            ("outside_prefix", ("destination_plan", "kv_path", "secret/x")),
+            ("bad_field", ("destination_plan", "field", "Value")),
+            ("bool_uid", ("destination_plan", "uid", True)),
+            ("open_mode", ("destination_plan", "mode", "0644")),
+            ("other_delivery", ("destination_plan", "delivery", "BLOCKED_P01")),
+            ("rotation_claim", ("destination_plan", "rotation", "openbao_agent")),
+        ]:
+            document = deployed()
+            section, key, value = change
+            document["entries"][1][section][key] = value
+            with self.subTest(case=case):
+                self.assert_invalid(document)
+        document = generation_model()
+        document["entries"][1]["destination_plan"]["field"] = "client_secret"
+        with self.subTest(case="blocked_with_binding"):
+            self.assert_invalid(document)
+
     def test_secret_source_prefix_and_planned_destinations_are_unique(self):
         document = generation_model()
         document["entries"][1]["source_path"] = "infra/public.txt"

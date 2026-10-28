@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.8.6"
+version: "0.8.7"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -221,8 +221,10 @@ catalog와 schema는 공개 분류·보존 계약의 단일 원천이다. 값·�
 payload를 넣거나 같은 ID를 별도 inventory로 복제하지 않는다. `source_recorded_at`은
 공개 원본의 기록 날짜이며 runtime 증거 날짜로 승격하지 않는다.
 
-현재 destination plan의 mount·field·UID/GID·mode는 null이며 ACL·delivery·reload·restart·
-rotation은 `BLOCKED_P01`이다. 이를 실제 binding으로 바꾸려면 해당 소비자·신원·경로와
+destination plan의 기본값은 `BLOCKED_P01`이며 mount·field·UID/GID·mode는 null이다.
+`DEPLOYED`는 delivered lane이 `CONFIRMED`인 `IMPLEMENT` 항목에만 허용하며 실제 mount·
+KV path·field·출력 UID/GID·mode와 delivery `openbao_agent`를 기록한다. ACL·reload·
+restart·rotation은 그때도 `BLOCKED_P01`이다. 이를 바꾸려면 해당 소비자·신원·경로와
 복구 경계를 후속 검토해야 한다. `CONFIRMED` lane의 증거 pointer는 구조적 기록일 뿐,
 실제 소비·이관·rotation·복구를 별도로 확인하지 않은 수용을 허용하지 않는다.
 
