@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 import datetime
+import functools
 import pathlib
 import re
 from collections.abc import Mapping
@@ -362,6 +363,10 @@ def _historical_units(root: pathlib.Path) -> set[str]:
             "--format=",
             "--name-only",
             "--no-renames",
+            # A unit merged in from a side branch is invisible to simplified
+            # history and to merge commits without a per-parent diff.
+            "--full-history",
+            "-m",
             "HEAD",
             "--",
             *(f"docs/98.archive/{item}" for item in PRESERVED_DISPOSITIONS),
@@ -374,6 +379,13 @@ def _historical_units(root: pathlib.Path) -> set[str]:
         for path in paths
         if path.startswith("docs/98.archive/")
     }
+
+
+@functools.lru_cache(maxsize=64)
+def _pinned_record(root: str, revision: str, path: str):
+    """Parse a pinned Task once; a full commit and path name immutable bytes."""
+    text = _historical_text(pathlib.Path(root), revision, path)
+    return None if text is None else (text, parse_frontmatter_text(text))
 
 
 def _approval_record_matches(
@@ -390,13 +402,13 @@ def _approval_record_matches(
 
     revision, path = _source(row.decision)
     _git(root, "merge-base", "--is-ancestor", revision, context_revision)
-    text = _historical_text(root, revision, path)
-    if text is None:
+    pinned = _pinned_record(str(pathlib.Path(root).resolve()), revision, path)
+    if pinned is None:
         return False
+    text, metadata = pinned
     origin = preserved_origin_path(path) or path
     if classify_path(origin, _catalog_registry()) != "task":
         return False
-    metadata = parse_frontmatter_text(text)
     parts = pathlib.PurePosixPath(origin).parts
     identity = f"SPEC-{parts[2][:4]}-TSK-{parts[-1][4:8]}"
     if (

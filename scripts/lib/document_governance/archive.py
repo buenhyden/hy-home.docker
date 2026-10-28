@@ -1234,7 +1234,30 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
         else frozenset()
     )
     retired_records = preserved["retired"]
+    # A unit moved to Git-history-only keeps its sealed Tombstone; its body now
+    # pairs with Git history, which the assessment validator checks separately.
+    history_only: set[str] = set()
+    if adopted:
+        from scripts.lib.document_governance.archive_assessments import (
+            assessment_lookup,
+        )
+
+        try:
+            assessed = assessment_lookup(archive_root.parent.parent)
+        except (OSError, ValueError):
+            assessed = {}
+        history_only = {
+            origin
+            for unit, row in assessed.items()
+            if row.availability == "git-history-only"
+            and unit.startswith("retired/")
+            and (
+                origin := preserved_origin_path(f"{_ARCHIVE_PREFIX}{unit.rstrip('/')}")
+            )
+        }
     for retired, tombstone in sorted(expected.items()):
+        if any(retired == o or retired.startswith(f"{o}/") for o in history_only):
+            continue
         if retired not in retired_records:
             findings.append(
                 f"{tombstone}: tombstone has no preserved record: {retired}"
