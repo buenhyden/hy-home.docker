@@ -95,12 +95,10 @@ class WindowEsoGateTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
-        runbook = (
-            ROOT / "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md"
-        ).read_text()
+        script = (ROOT / "infra/03-security/openbao/scripts/k8s-writers.sh").read_text()
         self.function = (
             "p01_eso_gate() {\n"
-            + runbook.split("p01_eso_gate() {\n", 1)[1].split("\nif p01_eso_gate;", 1)[
+            + script.split("p01_eso_gate() {\n", 1)[1].split("\n# end p01_eso_gate", 1)[
                 0
             ]
         )
@@ -240,11 +238,9 @@ class WindowWriterRestoreTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
-        runbook = (
-            ROOT / "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md"
-        ).read_text()
-        start = runbook.index("p01_ns=(")
-        self.function = runbook[start : runbook.index("p01_writers_zero() {", start)]
+        script = (ROOT / "infra/03-security/openbao/scripts/k8s-writers.sh").read_text()
+        start = script.index("p01_ns=(")
+        self.function = script[start : script.index("p01_writers_zero() {", start)]
         for index in range(3):
             (self.root / f"{index}.json").write_text(
                 json.dumps({"uid": f"uid-{index}", "desired": index + 1})

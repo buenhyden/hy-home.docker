@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.21"
+version: "0.1.22"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1426,6 +1426,47 @@ seven directories existed. No consumer had been recreated, and all were still
 healthy. The owner then created the seven directories as the Agent user. All
 nine `out` directories are `drwxr-xr-x openbao`. The readable-file sweep lists
 only the three current `.txt` files. NOT_RUN: Agent restart, every cutover.
+
+### RUN-0085 remaining blocks as scripts — 2026-10-28
+
+The owner asked that every scriptable RUN-0085 block run as a script. PR #593
+(`19ccd6bae`) had already moved the W1 to W7 core and the Agent restart.
+
+`owner-window.sh` gains the following steps. Each keeps the removed block's
+helper, arguments and FDs.
+
+- W0: `retire-token`, for the old operator token, and `audit-list`.
+- W2: `w2`.
+- W3: `lease-start`, `w3`, `lease-bind`.
+- W3a: `w3a-inputs`, `w3a`.
+- W3b: `w3b`.
+- W4: `w4`.
+- W5: `w5-create`.
+
+Some steps add checks:
+
+- `w3` checks the writers itself, or needs an explicit `--writers-checked`.
+- `w4` compares the Raft mount name, source and device/inode before and after
+  the recreate.
+- `w3a` shreds its share files on any exit.
+
+A new `k8s-writers.sh` is for the external cluster operator. It holds the W3
+writer quiescence and the ESO Finish gate as `discover`, `stop`, `check`,
+`restore`, `finish`, `force-refresh` and `finish-wait`. Its functions are the
+removed runbook functions, unchanged, and their state lives in
+`$P01_K8S_STATE`. `force-refresh` now refuses a second refresh of the same
+target.
+
+Both scripts are pinned in the source manifest. The window-override tests now
+take the writer and gate functions from the script.
+
+These blocks stay in the runbook:
+
+- The three trust anchors stay because they verify the scripts themselves: the
+  issuer install bootstrap, the W1 source bootstrap and `p01_run`.
+- The Prometheus metrics credential stays because it runs inside the
+  throwaway client of the hy-home.k8s integration runbook.
+- The single-command lifecycle checks stay.
 
 ## Evidence
 

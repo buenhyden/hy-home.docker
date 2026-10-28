@@ -9,7 +9,7 @@ set -uo pipefail
 umask 077
 
 usage() {
-  echo "usage: $0 token <stage>|check-token <stage>|w1|root-sweep|roles-plan|roles-diff|roles-apply|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root]|agent-restart" >&2
+  echo "usage: $0 token <stage>|check-token <stage>|retire-token <file>|w1|audit-list|root-sweep|roles-plan|roles-diff|roles-apply|w2|lease-start|w3 <new dir> <expected version> [--writers-checked]|lease-bind|w3a-inputs|w3a|w3b|w4|w5-create|agent-restart|revoke-root|evidence <dir>|cleanup [--keep-root] [--keep-w2] [--discard-root]" >&2
   exit 2
 }
 [ "$#" -ge 1 ] || usage
@@ -239,6 +239,149 @@ cleanup)
   [ "${P01_KEEP_ROOT:-0}" = 1 ] || rm -f "$vars"
   # What is left: the p01-client.* helper copies (no secret) and, if any, p01-inputs.*.
   find "$XDG_RUNTIME_DIR" -maxdepth 1 -name 'p01-*' -printf '%f\n'
+  ;;
+retire-token)
+  # A leftover operator token from an earlier window: revoke it, prove it is gone, delete it.
+  if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then usage; fi
+  policies="$(bao_as "$1" read -field=policies auth/token/lookup-self </dev/null 2>/dev/null)"
+  if [ -z "$policies" ]; then
+    shred -u "$1" && echo "already expired; file removed"
+    exit 0
+  fi
+  [ "$policies" = "[hy-home-operator]" ] || { echo "not an operator token: $policies" >&2; exit 1; }
+  bao_as "$1" token revoke -self </dev/null >/dev/null || exit 1
+  ! bao_as "$1" token lookup </dev/null >/dev/null 2>&1 || { echo "token still valid" >&2; exit 1; }
+  shred -u "$1" && echo "revoked; file removed"
+  ;;
+audit-list)
+  # W3a gate input, with the W1 root after W1 and before W1c. Names and types only.
+  root="${P01_CUSTODY_DIR:?run w1 first}/root.token"
+  for kind in audit secrets auth; do
+    out="$(bao_as "$root" "$kind" list -format=json </dev/null)" || { echo "$kind: rc=1" >&2; exit 1; }
+    echo "== $kind"
+    jq -r 'to_entries[] | "\(.key) \(.value.type)"' <<<"$out"
+  done
+  ;;
+w2)
+  # Snapshot token into the fixed secrets/backup/openbao target, never overwriting.
+  new_dir P01_TOKEN_CUSTODY_DIR p01-token
+  exec 3<"${P01_CUSTODY_DIR:?run w1 first}/root.token" || exit 1
+  helper protected-token-operations.py issue-snapshot-token "${TLS[@]}" \
+    --custody-directory "$P01_TOKEN_CUSTODY_DIR" --w1-custody-directory "$P01_CUSTODY_DIR" --root-fd 3 \
+    --home-root "$HOME_ROOT" --expected-home-device 64512 --expected-home-inode 4338469 \
+    --policy-sha256 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622
+  status=$?
+  exec 3<&-
+  exit "$status"
+  ;;
+lease-start)
+  # The moment the writers were confirmed stopped, before the snapshot.
+  new_dir P01_INPUTS p01-inputs
+  helper protected-restore-inputs.py lease-start --directory "$P01_INPUTS"
+  ;;
+w3)
+  # The writers must be zero right before the snapshot: checked here when this shell
+  # holds the K8s state, otherwise the external operator's check is attested.
+  if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then usage; fi
+  : "${P01_INPUTS:?run lease-start first}"
+  case "$1" in /*) ;; *) usage ;; esac
+  if [ -n "${P01_K8S_STATE:-}" ]; then
+    bash "$P01_SCRIPT_DIR/k8s-writers.sh" check || exit 1
+  else
+    [ "${3:-}" = --writers-checked ] || { echo "run k8s-writers.sh check, then pass --writers-checked" >&2; exit 1; }
+  fi
+  P01_SNAPSHOT_DIRECTORY=$1
+  declare -p P01_SNAPSHOT_DIRECTORY >>"$vars"
+  # A new path only: mkdir fails on an existing one.
+  (umask 077; /usr/bin/mkdir -- "$P01_SNAPSHOT_DIRECTORY") || exit 1
+  exec 3<"$HOME_ROOT/secrets/backup/openbao/snapshot_token.txt" || exit 1
+  helper protected-raft-snapshot.py "${TLS[@]}" --output-directory "$P01_SNAPSHOT_DIRECTORY" \
+    --artifact-name raft-pre-upgrade.snap --token-fd 3 --expected-version "$2"
+  status=$?
+  exec 3<&-
+  exit "$status"
+  ;;
+lease-bind)
+  helper protected-restore-inputs.py lease-bind --directory "${P01_INPUTS:?run lease-start first}" \
+    --snapshot-receipt "${P01_SNAPSHOT_DIRECTORY:?run w3 first}/raft-pre-upgrade.snap.receipt.json" --minutes 60
+  ;;
+w3a-inputs)
+  # Bundle, security receipt and contract from the same approved commit as the issuer helper.
+  : "${issuer_commit:?}" "${operator_tools:?}" "${P01_INPUTS:?}" "${P01_SNAPSHOT_DIRECTORY:?}"
+  [ "$issuer_commit" = "${P01_COMMIT:?}" ] || { echo "issuer_commit must equal P01_COMMIT" >&2; exit 1; }
+  helper protected-restore-inputs.py bundle --repository "$HOME_ROOT" \
+    --revision "$P01_COMMIT" --target "$P01_INPUTS/bundle" || exit 1
+  helper protected-restore-inputs.py security-receipt --repository "$HOME_ROOT" \
+    --revision "$P01_COMMIT" --output "$P01_INPUTS/security-receipt.json" || exit 1
+  line="$(helper protected-restore-inputs.py contract --output "$P01_INPUTS/restore-contract.json" \
+    --snapshot "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap" \
+    --snapshot-receipt "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap.receipt.json" \
+    --lease "$P01_INPUTS/quiescence-lease.json" \
+    --helper-directory "$operator_tools/$issuer_commit" --bundle "$P01_INPUTS/bundle" \
+    --revision "$P01_COMMIT" --security-receipt "$P01_INPUTS/security-receipt.json" \
+    --repository "$HOME_ROOT")" || exit 1
+  echo "$line"
+  P01_RESTORE_CONTRACT="$P01_INPUTS/restore-contract.json"
+  P01_RESTORE_CONTRACT_SHA256="${line#CONTRACT_WRITTEN }"
+  P01_SECURITY_RECEIPT="$P01_INPUTS/security-receipt.json"
+  declare -p P01_RESTORE_CONTRACT P01_RESTORE_CONTRACT_SHA256 P01_SECURITY_RECEIPT >>"$vars"
+  ;;
+w3a)
+  # Isolated semantic restore: HOME read token, W1 root and two shares on four FDs.
+  f="$(token_file w3a)"
+  private "$f" || { echo "run: $0 token w3a (before W3)" >&2; exit 1; }
+  exec 4<"${P01_INPUTS:?}/quiescence-lease.json" || exit 1
+  secrets="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-w3a.XXXXXX")" || exit 1
+  trap 'find "$secrets" -type f -exec shred -u {} + 2>/dev/null; rmdir "$secrets" 2>/dev/null' EXIT
+  trap 'exit 130' INT TERM
+  for n in share-1 share-2; do
+    IFS= read -rsp "W3a $n> " v </dev/tty
+    printf '\n'
+    printf '%s' "$v" >"$secrets/$n" || exit 1
+  done
+  unset v
+  exec 5<"$f" 6<"${P01_CUSTODY_DIR:?}/root.token" 7<"$secrets/share-1" 8<"$secrets/share-2" || exit 1
+  helper protected-semantic-restore.py \
+    --contract "${P01_RESTORE_CONTRACT:?}" --contract-sha256 "${P01_RESTORE_CONTRACT_SHA256:?}" \
+    --snapshot "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap" \
+    --snapshot-receipt "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap.receipt.json" \
+    --security-receipt "${P01_SECURITY_RECEIPT:?}" --quiescence-fd 4 \
+    --ca "$CA" --ca-sha256 "$CA_SHA256" --connect-ip "$CONNECT_IP" \
+    --home-read-fd 5 --root-fd 6 --share-1-fd 7 --share-2-fd 8
+  status=$?
+  exec 4<&- 5<&- 6<&- 7<&- 8<&-
+  exit "$status"
+  ;;
+w3b)
+  # The W3 snapshot and receipt to the R2 Restic repository, read back and compared.
+  (cd "$HOME_ROOT" && /usr/bin/docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock >/dev/null) || exit 1
+  (cd "$HOME_ROOT" && /usr/bin/docker compose --profile backup run --rm --no-deps \
+    -v "${P01_SNAPSHOT_DIRECTORY:?run w3 first}:/artifact:ro" restic-offsite artifact)
+  ;;
+w4)
+  # Server upgrade: the Raft mount must keep its identity. Never accept a Compose
+  # prompt to recreate a volume; answer no and stop.
+  mount_id() {
+    # Name, source and the device/inode the server sees at the mount (the same as the host's).
+    local src
+    src="$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/openbao/data"}}{{.Name}} {{.Source}}{{end}}{{end}}' openbao)" || return 1
+    printf '%s %s\n' "$src" "$(docker exec openbao /bin/stat -c '%d/%i' /openbao/data)"
+  }
+  before="$(mount_id)" || exit 1
+  echo "before: $before"
+  (cd "$HOME_ROOT" && /usr/bin/docker compose --profile security up -d --no-deps --no-build --pull never openbao) || exit 1
+  after="$(mount_id)" || exit 1
+  echo "after:  $after"
+  [ "$before" = "$after" ] || { echo "Raft mount identity changed: stop" >&2; exit 1; }
+  for n in 1 2; do
+    echo "unseal share $n (hidden prompt)"
+    (cd "$HOME_ROOT" && /usr/bin/docker compose exec openbao bao operator unseal) || exit 1
+  done
+  (cd "$HOME_ROOT" && /usr/bin/docker compose exec -T openbao bao status)
+  ;;
+w5-create)
+  # Agent container only; the issuer helper requires it stopped. Then agent-restart.
+  (cd "$HOME_ROOT" && /usr/bin/docker compose --profile security up --no-start --no-deps --no-build --pull never openbao-agent)
   ;;
 agent-restart)
   # Renderer SecretID delivery step 3: stop the Agent, mint the two 5-minute tokens

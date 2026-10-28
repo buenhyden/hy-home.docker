@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.12.49"
+version: "0.12.50"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -899,8 +899,8 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   plugin mount가 있으면 W3a를 열지 않고 검토로 돌린다. `hy-home-operator`에는
   `sys/audit`·`sys/mounts`·`sys/auth` 읽기가 없어 W0에서는 403이다(2026-10-21 관측). 2026-10-21
   owner 결정대로 이 확인은 W1 직후, W1c 전에 W1 custody의 root로 한다:
-  `(set -o pipefail; BAO_TOKEN="$(cat "$P01_CUSTODY_DIR/root.token")" docker compose exec -T -e BAO_TOKEN openbao bao audit list -format=json | jq -r 'to_entries[] | "\(.key) \(.value.type)"'); echo "rc=$?"`
-  (`secrets`·`auth`도 같은 형식). `rc=0`일 때만 빈 출력을 "없음"으로 기록한다. 이 목록은 W3a gate이므로
+  `bash "$P01_SCRIPT_DIR/owner-window.sh" audit-list`가 audit·secrets·auth의 이름과 type만 출력한다
+  (실패하면 `<종류>: rc=1`로 멈춘다). 성공한 빈 목록만 "없음"으로 기록한다. 이 목록은 W3a gate이므로
   W1·W1c·W2·W3의 진행 조건이 아니다.
 - **이전 operator token.** host에 남은 `p01-operator.token`은 W7 입력으로 쓰지 않는다.
   2026-10-14 owner 결정대로 owner가 그 token으로 `revoke-self`한 뒤 파일을 지운다. 값은
@@ -908,15 +908,12 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   성공하고 그 token의 조회가 거부될 때만 파일을 지운다. 결과는 값 없이 Task에 기록한다:
 
   ```bash
-  t=<path>/p01-operator.token
-  BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao \
-    bao read -field=policies auth/token/lookup-self   # [hy-home-operator]만
-  BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao bao token revoke -self &&
-    ! BAO_TOKEN="$(cat "$t")" docker compose exec -T -e BAO_TOKEN openbao bao token lookup >/dev/null 2>&1 &&
-    shred -u "$t"
+  p01_run "$P01_APPROVED_COMMIT" infra/03-security/openbao/scripts/owner-window.sh retire-token <path>/p01-operator.token
   ```
 
-  첫 조회가 403이면 token은 이미 만료됐으므로 폐기 없이 `shred -u "$t"`로 지우고 그렇게 기록한다.
+  `p01_run`은 아래 [Renderer SecretID Delivery](#renderer-secretid-delivery) 3단계에 있다. 정책이
+  `[hy-home-operator]`가 아니면 멈춘다. 첫 조회가 거부되면 token은 이미 만료됐으므로 폐기 없이 지우고
+  `already expired; file removed`를 출력한다. 그렇게 기록한다.
 
 - **Traefik CA mount(W4 전).** 새 `openbao` label은 https와 `openbao-tls@file` transport를
   쓰므로 Traefik 안에 `/openbao-ca/ca.pem`이 있어야 한다. 없으면 W4 뒤 gateway를 거치는
@@ -1041,7 +1038,8 @@ fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b infra/03-securi
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
 e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json
-318695520ba1417651fd5c2fc8557a1c969d21a94d2fff4e2e1fa6e351b6a2ed infra/03-security/openbao/scripts/owner-window.sh
+e94696df7b4631be87b957f096ab90495b947a3b94626ea13c118737ce62772f infra/03-security/openbao/scripts/owner-window.sh
+6849fffb2952c6f2d225f659c13661a7e009179f229fe1e23f339136270aca0d infra/03-security/openbao/scripts/k8s-writers.sh
 P01_SOURCE_MANIFEST
 ```
 
@@ -1143,22 +1141,7 @@ HOME root의 사전 기록은 device64512/inode4338469입니다. 실행 직전�
 확인하며, 기대 identity를 임의의 다른 경로에서 계산해 이 인자에 넣지 않습니다.
 
 ```bash
-P01_TOKEN_CUSTODY_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-token.XXXXXX")" || exit 1
-declare -p P01_TOKEN_CUSTODY_DIR >>"$XDG_RUNTIME_DIR/p01-window.vars"
-exec 3<"$P01_CUSTODY_DIR/root.token" || exit 1
-/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-token-operations.py" issue-snapshot-token \
-  --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
-  --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
-  --connect-ip 192.168.0.13 \
-  --expected-cluster-id 51fbfa38-a715-7dca-629f-3f07233749f4 \
-  --custody-directory "$P01_TOKEN_CUSTODY_DIR" \
-  --w1-custody-directory "$P01_CUSTODY_DIR" --root-fd 3 \
-  --home-root /home/hyunyoun/data/hy-home.docker \
-  --expected-home-device 64512 --expected-home-inode 4338469 \
-  --policy-sha256 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622
-P01_TOKEN_EXIT=$?
-exec 3<&-
-test "$P01_TOKEN_EXIT" = 0 || exit "$P01_TOKEN_EXIT"
+bash "$P01_SCRIPT_DIR/owner-window.sh" w2
 ```
 
 기대: exit0/`SNAPSHOT_TOKEN_DELIVERED`, 기존 파일을 덮지 않고 0600 single-link token이
@@ -1187,66 +1170,21 @@ Application의 자동 sync를 patch로 끄는 방법은 상위 관리자가 곧 
 unreviewed-step/실행으로 승인 기록은 과거 사실이며 다음 창의 검토·권한이 아니다.
 현재 replica를 1/1/1로 가정하지 않는다.
 
-아래 Bash는 실행 권한이 있는 외부 운영자용이다. 새 owner 전용 0700 증거 디렉터리를 사용하고,
+아래 [K8s writer script](../../../../infra/03-security/openbao/scripts/k8s-writers.sh)는 실행 권한이 있는 외부 운영자용이다. 새 owner 전용 0700 증거 디렉터리를 사용하고,
 세 대상의 UID·원래 desired/current/ready·selector를 저장한 뒤에만 정지한다. 원래 상태가
 불안정하거나 selector에 matchExpressions가 있으면 임의 변환하지 않고 중단·검토한다.
-`P01_K8S_WINDOW_APPROVED`는 그 창의 승인 참조이며 변수 설정 자체가 승인 증거는 아니다.
+`P01_K8S_WINDOW_APPROVED`는 그 창의 승인 참조이며 변수 설정 자체가 승인 증거는 아니다. `stop`이 출력한
+`P01_K8S_STATE`는 이후 `check`·`restore`·`finish` 단계에 환경으로 넘긴다(W1 bootstrap 셸이면
+`p01-window.vars`에도 남는다).
 
 ```bash
-: "${P01_K8S_WINDOW_APPROVED:?창별 클러스터 운영 승인 참조 필요}"
-: "${P01_EXPECTED_ES:?정지 전 검토된 정확한 여섯 namespace/name/store JSON 파일 필요}"
-: "${P01_ES_SET_APPROVAL:?여섯 대상의 외부 운영자 승인 참조 필요}"
-jq -e 'length == 6 and (map([.namespace,.name]) | unique | length) == 6 and all(.[]; (.namespace | type == "string" and length > 0) and (.name | type == "string" and length > 0) and .store.kind == "ClusterSecretStore" and .store.name == "vault-backend")' "$P01_EXPECTED_ES" >/dev/null || exit 1
-P01_K8S_STATE="$(umask 077; mktemp -d "${XDG_RUNTIME_DIR:?}/p01-k8s.XXXXXX")" || exit 1
-p01_ns=(argocd argocd external-secrets)
-p01_resource=(statefulset/argocd-application-controller deployment/argocd-applicationset-controller deployment/external-secrets)
-p01_changed=()
-p01_restore_writers() {
-  local i uid replicas failed=0
-  for i in 2 1 0; do
-    [[ " ${p01_changed[*]} " == *" $i "* ]] || continue
-    uid="$(kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o jsonpath='{.metadata.uid}')" || { failed=1; continue; }
-    [[ "$uid" == "$(jq -er '.uid' "$P01_K8S_STATE/$i.json")" ]] || { failed=1; continue; }
-    replicas="$(jq -er '.desired' "$P01_K8S_STATE/$i.json")" || { failed=1; continue; }
-    kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" scale "${p01_resource[i]}" --replicas="$replicas" || { failed=1; continue; }
-    kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" rollout status "${p01_resource[i]}" --timeout=90s || { failed=1; continue; }
-    kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o json |
-      jq -e --arg uid "$uid" --argjson n "$replicas" '.metadata.uid == $uid and .spec.replicas == $n and (.status.replicas // 0) == $n and (.status.readyReplicas // 0) == $n' >/dev/null || failed=1
-  done
-  return "$failed"
-}
-p01_writers_zero() {
-  local i selector pods
-  for i in 0 1 2; do
-    kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o json |
-      jq -e --arg uid "$(jq -er '.uid' "$P01_K8S_STATE/$i.json")" '.metadata.uid == $uid and .spec.replicas == 0 and (.status.replicas // 0) == 0 and (.status.readyReplicas // 0) == 0 and .status.observedGeneration >= .metadata.generation' >/dev/null || return 1
-    selector="$(jq -er '.selector' "$P01_K8S_STATE/$i.json")" || return 1
-    pods="$(kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get pods -l "$selector" -o name)" || return 1
-    [[ -z "$pods" ]] || return 1
-  done
-}
-set -o pipefail
-for i in 0 1 2; do
-  kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o json |
-    jq -e 'select(.spec.replicas >= 0 and (.status.replicas // 0) == .spec.replicas and (.status.readyReplicas // 0) == .spec.replicas and ((.spec.selector.matchExpressions // []) | length) == 0) | {uid:.metadata.uid, desired:.spec.replicas, current:(.status.replicas // 0), ready:(.status.readyReplicas // 0), selector:(.spec.selector.matchLabels | to_entries | map("\(.key)=\(.value)") | join(","))} | select(.uid != null and .selector != "")' >"$P01_K8S_STATE/$i.json" || exit 1
-  jq -e . "$P01_K8S_STATE/$i.json" >/dev/null || exit 1
- done
-for i in 0 1 2; do
-  uid="$(kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" get "${p01_resource[i]}" -o jsonpath='{.metadata.uid}')" || { p01_restore_writers; exit 1; }
-  [[ "$uid" == "$(jq -er '.uid' "$P01_K8S_STATE/$i.json")" ]] || { p01_restore_writers; exit 1; }
-  p01_changed+=("$i") # 요청 결과가 불확실해도 복구 대상에 포함한다.
-  printf '%s\n' "${p01_changed[@]}" >"$P01_K8S_STATE/changed" || { p01_restore_writers; exit 1; }
-  kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" scale "${p01_resource[i]}" --replicas=0 || { p01_restore_writers; exit 1; }
-  selector="$(jq -er '.selector' "$P01_K8S_STATE/$i.json")" || { p01_restore_writers; exit 1; }
-  kubectl --context k3d-hyhome --request-timeout=15s -n "${p01_ns[i]}" wait --for=delete pod -l "$selector" --timeout=90s || { p01_restore_writers; exit 1; }
-done
-sleep 30
-p01_writers_zero || { p01_restore_writers; exit 1; }
+P01_K8S_WINDOW_APPROVED=<승인 참조> P01_EXPECTED_ES=<여섯 대상 JSON> P01_ES_SET_APPROVAL=<승인 참조> \
+  bash "$P01_SCRIPT_DIR/k8s-writers.sh" stop     # P01_K8S_STATE=<경로>와 WRITERS_ZERO를 출력
 ```
 
-두 Argo controller → ESO 순서다. snapshot **직전**에도 `p01_writers_zero`를 다시 실행하고
+두 Argo controller → ESO 순서다. snapshot **직전**에도 `k8s-writers.sh check`를 다시 실행하고
 0일 때만 W3를 계속한다. 조회 오류·nonzero·UID 변경·pod 재등장 시 다음 쓰기를 멈추고
-`p01_restore_writers`로 실제 변경 요청을 보낸 대상만 ESO → ApplicationSet → Application
+`k8s-writers.sh restore`로 실제 변경 요청을 보낸 대상만 ESO → ApplicationSet → Application
 Controller 순서로 복구한다. 복구 함수의 nonzero를 별도 실패로 Task에 남기고 원래
 UID/replica·남은 pod·담당자·수동 재개 조건을 기록한다. 자동 재축소·무한 대기는 금지한다.
 셸 단절 때도 보존한 state와 변경 목록으로 같은 복구 순서를 사용한다. state/변경 목록을
@@ -1260,6 +1198,8 @@ Agent와 해당 writer가 정지했음을 확인한 뒤 아래
 디렉터리, HOME data 또는 source 디렉터리를 재사용하지 않습니다. 생성 명령은 기존 경로에서
 실패해야 하며 helper가 canonical 경로·UID·0700·alias와 모든 산출물 이름을 다시 검사합니다.
 아래 expected-version은 W0에 기록한 업그레이드 전 HOME 검사값이며 새 image pin이 아닙니다.
+`w3`는 이 셸에 `P01_K8S_STATE`가 있으면 `k8s-writers.sh check`를 먼저 실행하고, 없으면 외부 운영자가
+방금 `check`한 것을 확인한 뒤 셋째 인자 `--writers-checked`를 붙여야 실행한다.
 
 writer가 멈춘 것을 확인한 즉시, snapshot 전에
 [restore input producer](../../../../infra/03-security/openbao/scripts/protected-restore-inputs.py)로
@@ -1267,28 +1207,11 @@ quiescence lease의 시작 시각을 남긴다. lease 디렉터리는 새 0700 �
 때까지 보존한다.
 
 ```bash
-P01_INPUTS="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-inputs.XXXXXX")" || exit 1
-declare -p P01_INPUTS >>"$XDG_RUNTIME_DIR/p01-window.vars"
-/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-restore-inputs.py" \
-  lease-start --directory "$P01_INPUTS" || exit 1
+bash "$P01_SCRIPT_DIR/owner-window.sh" lease-start
 ```
 
 ```bash
-p01_writers_zero || { p01_restore_writers; exit 1; }
-declare -p P01_SNAPSHOT_DIRECTORY >>"$XDG_RUNTIME_DIR/p01-window.vars"
-(umask 077; /usr/bin/mkdir -- "${P01_SNAPSHOT_DIRECTORY:?}") || exit 1
-exec 3</home/hyunyoun/data/hy-home.docker/secrets/backup/openbao/snapshot_token.txt || exit 1
-/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-raft-snapshot.py" \
-  --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
-  --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
-  --connect-ip 192.168.0.13 \
-  --expected-cluster-id 51fbfa38-a715-7dca-629f-3f07233749f4 \
-  --output-directory "$P01_SNAPSHOT_DIRECTORY" \
-  --artifact-name raft-pre-upgrade.snap --token-fd 3 \
-  --expected-version 2.6.2 # <!-- runtime-version-exception: migration — fixed observed pre-upgrade HOME version check -->
-P01_SNAPSHOT_EXIT=$?
-exec 3<&-
-test "$P01_SNAPSHOT_EXIT" = 0 || exit "$P01_SNAPSHOT_EXIT"
+bash "$P01_SCRIPT_DIR/owner-window.sh" w3 <새 절대 경로> 2.6.2 # <!-- runtime-version-exception: migration — fixed observed pre-upgrade HOME version check -->
 ```
 
 기대: exit0/`SAVED`, barrier-encrypted `raft-pre-upgrade.snap`과 값 없는
@@ -1312,9 +1235,7 @@ window 증거로 붙입니다. 이 helper는 Restic 또는 offsite 전송을 실
 ID와 SHA-256은 contract가 쓴다.
 
 ```bash
-/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-restore-inputs.py" \
-  lease-bind --directory "$P01_INPUTS" \
-  --snapshot-receipt "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap.receipt.json" --minutes 60 || exit 1
+bash "$P01_SCRIPT_DIR/owner-window.sh" lease-bind
 ```
 
 **W3a 격리 semantic restore.** W4 전에 새 W3 artifact를 실제 빈 대상에서 복원하고
@@ -1353,25 +1274,7 @@ image 하나다. `contract`는 snapshot archive를 검증하고 W3 receipt·leas
 대조한 뒤 restore client의 schema 검사를 통과해야만 파일을 남긴다.
 
 ```bash
-test "$issuer_commit" = "$P01_COMMIT" || exit 1
-p01_produce() {
-  /usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-restore-inputs.py" "$@"
-}
-p01_produce bundle --repository /home/hyunyoun/data/hy-home.docker \
-  --revision "$P01_COMMIT" --target "$P01_INPUTS/bundle" || exit 1
-p01_produce security-receipt --repository /home/hyunyoun/data/hy-home.docker \
-  --revision "$P01_COMMIT" --output "$P01_INPUTS/security-receipt.json" || exit 1
-P01_CONTRACT_LINE="$(p01_produce contract --output "$P01_INPUTS/restore-contract.json" \
-  --snapshot "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap" \
-  --snapshot-receipt "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap.receipt.json" \
-  --lease "$P01_INPUTS/quiescence-lease.json" \
-  --helper-directory "$operator_tools/$issuer_commit" --bundle "$P01_INPUTS/bundle" \
-  --revision "$P01_COMMIT" --security-receipt "$P01_INPUTS/security-receipt.json" \
-  --repository /home/hyunyoun/data/hy-home.docker)" || exit 1
-P01_RESTORE_CONTRACT="$P01_INPUTS/restore-contract.json"
-P01_RESTORE_CONTRACT_SHA256="${P01_CONTRACT_LINE#CONTRACT_WRITTEN }"
-P01_SECURITY_RECEIPT="$P01_INPUTS/security-receipt.json"
-declare -p P01_RESTORE_CONTRACT P01_RESTORE_CONTRACT_SHA256 P01_SECURITY_RECEIPT >>"$XDG_RUNTIME_DIR/p01-window.vars"
+issuer_commit=… operator_tools=… bash "$P01_SCRIPT_DIR/owner-window.sh" w3a-inputs
 ```
 
 기대: `BUNDLE_WRITTEN`·`SECURITY_RECEIPT`·`CONTRACT_WRITTEN <sha256>`. exit1/`BLOCKED`는 기존
@@ -1403,30 +1306,8 @@ commit/manifest를 설치하기 전까지 BLOCKED다. 기존 숫자와 경로는
 writer 정지 확인은 W3 저장 전부터 W3a 종료까지 별도로 유지해야 합니다.
 
 ```bash
-exec 4<"$P01_INPUTS/quiescence-lease.json" || exit 1
-P01_QUIESCENCE_FD=4
-umask 077
-P01_W3A_SECRETS="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-w3a.XXXXXX")" || exit 1
-trap 'shred -u "$P01_W3A_SECRETS"/* 2>/dev/null; rmdir "$P01_W3A_SECRETS" 2>/dev/null' EXIT
-for n in share-1 share-2; do
-  IFS= read -rsp "W3a $n> " v </dev/tty; printf '\n'
-  printf '%s' "$v" >"$P01_W3A_SECRETS/$n" || exit 1
-done
-unset v
-exec 5<"$XDG_RUNTIME_DIR/p01-op-w3a.token" 6<"$P01_CUSTODY_DIR/root.token" \
-  7<"$P01_W3A_SECRETS/share-1" 8<"$P01_W3A_SECRETS/share-2" || exit 1
-/usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/python3 -I -S "$P01_SCRIPT_DIR/protected-semantic-restore.py" \
-  --contract "${P01_RESTORE_CONTRACT:?}" --contract-sha256 "${P01_RESTORE_CONTRACT_SHA256:?}" \
-  --snapshot "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap" \
-  --snapshot-receipt "$P01_SNAPSHOT_DIRECTORY/raft-pre-upgrade.snap.receipt.json" \
-  --security-receipt "${P01_SECURITY_RECEIPT:?}" --quiescence-fd "${P01_QUIESCENCE_FD:?}" \
-  --ca /home/hyunyoun/data/hy-home.docker/secrets/certs/rootCA.pem \
-  --ca-sha256 6b7c5c752a6dee074b7f9c83da98b2b8784831edde3d8f50b694acd0e280af87 \
-  --connect-ip 192.168.0.13 --home-read-fd 5 --root-fd 6 --share-1-fd 7 --share-2-fd 8
-P01_RESTORE_EXIT=$?
-exec 4<&- 5<&- 6<&- 7<&- 8<&-
-shred -u "$P01_W3A_SECRETS"/share-1 "$P01_W3A_SECRETS"/share-2 && rmdir "$P01_W3A_SECRETS"
-test "$P01_RESTORE_EXIT" = 0 || exit "$P01_RESTORE_EXIT"
+bash "$P01_SCRIPT_DIR/owner-window.sh" token w3a   # W3 전에 받는다
+bash "$P01_SCRIPT_DIR/owner-window.sh" w3a
 ```
 
 HOME 읽기용 현재 관리자 token·임시 root·서로 다른 원본 share 둘은 네 개의 서로 다른
@@ -1476,11 +1357,7 @@ standalone helper와 RUN-0021의 별도 full backup은 이 W3 경로를 자동�
 전용 `snapshots --no-lock`(lock 파일도 쓰지 않음)으로 저장소에 닿는지 확인한다.
 
 ```bash
-docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock >/dev/null || exit 1
-docker compose --profile backup run --rm --no-deps \
-  -v "${P01_SNAPSHOT_DIRECTORY:?}:/artifact:ro" restic-offsite artifact
-P01_W3B_EXIT=$?
-test "$P01_W3B_EXIT" = 0 || exit "$P01_W3B_EXIT"
+bash "$P01_SCRIPT_DIR/owner-window.sh" w3b
 ```
 
 기대: 마지막 줄이 `{"state":"W3B_STORED","snapshot_id":...,"files":[...]}`이고 두 파일의
@@ -1506,10 +1383,7 @@ semantic restore 중 하나라도 없으면 아래 server 재생성 명령을 �
 않고 중단합니다.
 
 ```bash
-docker compose --profile security up -d --no-deps --no-build --pull never openbao
-docker compose exec openbao bao operator unseal   # 숨겨진 prompt, 지정 운영자가 share 입력
-docker compose exec openbao bao operator unseal   # 두 번째 share
-docker compose exec -T openbao bao status
+bash "$P01_SCRIPT_DIR/owner-window.sh" w4   # 전후 mount identity 출력·비교, share 두 번 숨김 입력, 마지막에 bao status
 ```
 
 기대: 새 image로 재생성, Raft mount identity 불변, threshold 뒤 `Sealed false`.
@@ -1524,7 +1398,7 @@ W3 snapshot을 이전 버전 image의 빈 대상에 복원하는 경로를 연�
 절차는 그때 따로 검토한다.
 
 **W5 Agent 업그레이드와 재발급.** server가 unsealed이고 health가 통과한 뒤에만
-`docker compose --profile security up --no-start --no-deps --no-build --pull never openbao-agent`로
+`owner-window.sh w5-create`로
 컨테이너만 만든다(journal이 없을 때 helper는 Agent가 멈춰 있기를 요구한다). 그다음 위 [Renderer SecretID Delivery](#renderer-secretid-delivery)로 wrapped
 SecretID를 다시 전달한다. 기대: Agent `healthy`, 렌더 bytes와 version 일치. 중단:
 재인증 실패, health 실패. Agent는 server보다 앞서 rollback하지 않는다.
@@ -1564,7 +1438,7 @@ backup 단위의 OpenBao snapshot 성공은 window 뒤 관찰입니다. W7 뒤 b
 hy-home.k8s 로그인 주체를 아래 Finish대로 복구·검증하고, 경보를 기록한 뒤 silence를 지웁니다.
 
 **Finish — writer 복구와 ESO 수용.** W3의 저장된 UID/replica와 변경 목록으로
-`p01_restore_writers`를 호출하고 nonzero면 Finish FAIL로 남긴다. 원래 0이던 대상은
+`k8s-writers.sh finish`가 writer를 복구하고 nonzero면 Finish FAIL로 남긴다. 원래 0이던 대상은
 0으로 유지한다. Store Ready·실제 refresh·Application 상태까지 통과해야 완료다.
 2026-10-22 12:54–12:56의 ESO lookup/read403 원인은 UNKNOWN이며 cache/token 재사용은
 검증되지 않은 가설이다. W5 typed-JSON403과 별개다. 복원 뒤 대부분 회복했으나
@@ -1577,11 +1451,7 @@ latest 공식 문서는 참고이며 설치 버전의 지원 증거가 아니다
 cache/auth의 세부 launch 값은 보호된 운영자 preflight에서 확인하고 값 없는 판정만 기록한다.
 
 ```bash
-set -o pipefail
-kubectl --context k3d-hyhome --request-timeout=15s get externalsecrets -A -o json |
-  jq '[.items[] | select(.spec.secretStoreRef.kind == "ClusterSecretStore" and .spec.secretStoreRef.name == "vault-backend") | {namespace:.metadata.namespace,name:.metadata.name,store:.spec.secretStoreRef,refreshPolicy:(.spec.refreshPolicy // "Periodic"),refreshInterval:.spec.refreshInterval,refreshTime:.status.refreshTime,conditions:.status.conditions}]' || exit 1
-kubectl --context k3d-hyhome --request-timeout=15s -n external-secrets get deployment external-secrets -o json |
-  jq '{name:.metadata.name,uid:.metadata.uid,containers:[.spec.template.spec.containers[] | {name,image}]}' || exit 1
+bash "$P01_SCRIPT_DIR/k8s-writers.sh" discover
 ```
 
 discovery를 자동 승인 목록으로 사용하지 않는다. 운영자가 의도된 **정확히 여섯**
@@ -1590,31 +1460,12 @@ JSON 배열로 확정하고 창별 승인 참조를 남긴다. 각 행 형식은
 `{"namespace":"확인한 namespace","name":"확인한 name","store":{"kind":"ClusterSecretStore","name":"vault-backend"}}`다.
 누락·중복·집합 변경 또는 여섯 이름 미확보는 W3/Finish만 BLOCKED이며 이름을 만들지 않는다.
 
-아래는 writer 복구 전에 Finish 기준시각을 저장한 같은 Bash에서 실행한다. query 실패는
+`finish`는 writer 복구 전에 Finish 기준시각을 state에 저장하고, 복구한 뒤 gate를 한 번 실행한다. query 실패는
 즉시 실패이며 stale Ready는 통과시키지 않는다. 원래 0 replica이거나 설치된 정책이 새
 refresh를 허용하지 않으면 그 자원의 복구 판정을 별도로 인계하고 성공으로 표시하지 않는다.
 
 ```bash
-: "${P01_EXPECTED_ES:?검토된 정확한 여섯 namespace/name/store JSON 파일 필요}"
-: "${P01_ES_SET_APPROVAL:?여섯 대상과 버전/정책에 대한 외부 운영자 승인 참조 필요}"
-jq -e 'length == 6 and (map([.namespace,.name]) | unique | length) == 6 and all(.[]; (.namespace | type == "string" and length > 0) and (.name | type == "string" and length > 0) and .store.kind == "ClusterSecretStore" and .store.name == "vault-backend")' "$P01_EXPECTED_ES" >/dev/null || exit 1
-P01_FINISH_EPOCH="$(date -u +%s)" || exit 1
-p01_restore_writers || { printf '%s\n' 'Finish FAIL: writer 복구 실패' >&2; exit 1; }
-p01_eso_gate() {
-  local store actual applications
-  store="$(kubectl --context k3d-hyhome --request-timeout=5s get clustersecretstore vault-backend -o json)" || return 2
-  jq -e 'any(.status.conditions[]?; .type == "Ready" and .status == "True")' <<<"$store" >/dev/null || return 1
-  actual="$(kubectl --context k3d-hyhome --request-timeout=5s get externalsecrets -A -o json)" || return 2
-  jq -e --slurpfile expected "$P01_EXPECTED_ES" --argjson since "$P01_FINISH_EPOCH" '
-    [.items[] | select(.spec.secretStoreRef.kind == "ClusterSecretStore" and .spec.secretStoreRef.name == "vault-backend")] as $actual |
-    ($actual | map({namespace:.metadata.namespace,name:.metadata.name,store:{kind:.spec.secretStoreRef.kind,name:.spec.secretStoreRef.name}}) | sort_by(.namespace,.name)) == ($expected[0] | map({namespace,name,store}) | sort_by(.namespace,.name)) and
-    all($actual[]; any(.status.conditions[]?; .type == "Ready" and .status == "True" and .reason == "SecretSynced") and ((.status.refreshTime // "1970-01-01T00:00:00Z" | sub("\\.[0-9]+Z$";"Z") | fromdateiso8601) > $since))' <<<"$actual" >/dev/null || return 1
-  applications="$(kubectl --context k3d-hyhome --request-timeout=5s -n argocd get applications root-platform platform-cluster-config platform-external-secrets-operator -o json)" || return 2
-  jq -e '.items | length == 3 and all(.[]; .status.sync.status == "Synced" and .status.health.status == "Healthy")' <<<"$applications" >/dev/null
-}
-if p01_eso_gate; then P01_FINISH_GATE_EXIT=0; else P01_FINISH_GATE_EXIT=$?; fi
-[[ "$P01_FINISH_GATE_EXIT" != 2 ]] || exit 1
-
+P01_K8S_STATE=… P01_EXPECTED_ES=… P01_ES_SET_APPROVAL=… bash "$P01_SCRIPT_DIR/k8s-writers.sh" finish   # ESO_GATE_PASS 또는 exit1
 ```
 
 첫 gate 실패는 조사 대상이다. API/Store/controller 실패와 ES stale/오류를 구분한다.
@@ -1630,13 +1481,8 @@ Store와 writer rollout이 정상이고 **설치 버전**의 manual refresh·각
 권한 확대·Secret 삭제·전체 accessor 폐기는 이 fallback에 포함하지 않는다.
 
 ```bash
-: "${P01_FORCE_REFRESH_APPROVAL:?정확한 실패 대상의 강제 갱신 승인 필요}"
-: "${P01_ES_NAMESPACE:?승인된 실패 대상 namespace 필요}"
-: "${P01_ES_NAME:?승인된 실패 대상 name 필요}"
-jq -e --arg ns "$P01_ES_NAMESPACE" --arg name "$P01_ES_NAME" 'any(.[]; .namespace == $ns and .name == $name)' "$P01_EXPECTED_ES" >/dev/null || exit 1
-kubectl --context k3d-hyhome --request-timeout=15s -n "$P01_ES_NAMESPACE" get externalsecret "$P01_ES_NAME" -o json |
-  jq -e '.spec.secretStoreRef.kind == "ClusterSecretStore" and .spec.secretStoreRef.name == "vault-backend" and ((.spec.refreshPolicy // "Periodic") == "OnChange" or ((.spec.refreshPolicy // "Periodic") == "Periodic" and (.spec.refreshInterval // "1h" | test("[1-9]") )))' >/dev/null || exit 1
-kubectl --context k3d-hyhome --request-timeout=15s -n "$P01_ES_NAMESPACE" annotate externalsecret "$P01_ES_NAME" force-sync="$(date -u +%s)" --overwrite || exit 1
+P01_FORCE_REFRESH_APPROVAL=<승인 참조> P01_K8S_STATE=… P01_EXPECTED_ES=… P01_ES_SET_APPROVAL=… \
+  bash "$P01_SCRIPT_DIR/k8s-writers.sh" force-refresh <namespace> <name>   # 대상당 한 번만
 ```
 
 강제 갱신은 대상당 최대 1회다. 승인된 실패 대상의 annotation이 끝난 뒤 다음으로
@@ -1644,15 +1490,7 @@ kubectl --context k3d-hyhome --request-timeout=15s -n "$P01_ES_NAMESPACE" annota
 즉시 중단하고 Ready/시각/집합 불일치(exit1)만 유한 재확인한다.
 
 ```bash
-P01_FINISH_DEADLINE=$(( $(date -u +%s) + 180 ))
-P01_FINISH_GATE_EXIT=1
-for attempt in 1 2 3 4 5 6; do
-  [[ $(date -u +%s) -lt "$P01_FINISH_DEADLINE" ]] || break
-  if p01_eso_gate; then P01_FINISH_GATE_EXIT=0; break; else P01_FINISH_GATE_EXIT=$?; fi
-  [[ "$P01_FINISH_GATE_EXIT" != 2 ]] || break
-  [[ "$attempt" == 6 ]] || sleep 10
-done
-[[ "$P01_FINISH_GATE_EXIT" == 0 ]] || { printf '%s\n' 'Finish FAIL: ESO gate 미통과' >&2; exit 1; }
+P01_K8S_STATE=… P01_EXPECTED_ES=… P01_ES_SET_APPROVAL=… bash "$P01_SCRIPT_DIR/k8s-writers.sh" finish-wait   # ESO_GATE_PASS
 ```
 
  annotation 성공은 인수가 아니다. timeout·계속된403·

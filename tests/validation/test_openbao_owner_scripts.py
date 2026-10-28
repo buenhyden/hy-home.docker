@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 WINDOW = ROOT / "infra/03-security/openbao/scripts/owner-window.sh"
+K8S = ROOT / "infra/03-security/openbao/scripts/k8s-writers.sh"
 OIDC = ROOT / "infra/03-security/openbao/consumer-migration/oidc-client-secrets.sh"
 RUNBOOK = ROOT / "docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md"
 
@@ -19,12 +20,21 @@ class OwnerWindowScriptTests(unittest.TestCase):
         runbook = RUNBOOK.read_text()
         manifest = runbook.split("<<'P01_SOURCE_MANIFEST'\n", 1)[1]
         self.assertIn(" infra/03-security/openbao/scripts/owner-window.sh\n", manifest)
-        rows = re.findall(r"^(\S+(?: \| \S+)*)\)$", WINDOW.read_text(), re.M)
-        steps = {s for row in rows for s in row.split(" | ") if s != "*"}
-        self.assertGreaterEqual(len(steps), 10)
-        for step in steps:
-            with self.subTest(step=step):
-                self.assertIn(f'owner-window.sh" {step}', runbook)
+        self.assertIn(" infra/03-security/openbao/scripts/k8s-writers.sh\n", manifest)
+        for script, minimum in ((WINDOW, 20), (K8S, 7)):
+            rows = re.findall(r"^(\S+(?: \| \S+)*)\)$", script.read_text(), re.M)
+            steps = {
+                s
+                for row in rows
+                for s in row.split(" | ")
+                if re.fullmatch(r"[a-z][a-z0-9-]*", s)
+            }
+            self.assertGreaterEqual(len(steps), minimum)
+            for step in steps:
+                with self.subTest(script=script.name, step=step):
+                    self.assertRegex(
+                        runbook, rf'{re.escape(script.name)}"? {re.escape(step)}\b'
+                    )
 
     def test_unknown_step_exits_two_without_touching_state(self):
         with tempfile.TemporaryDirectory() as runtime:
