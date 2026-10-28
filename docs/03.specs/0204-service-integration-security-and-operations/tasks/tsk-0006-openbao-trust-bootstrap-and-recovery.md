@@ -3954,6 +3954,14 @@ for an honest object store and a clean environment. Each finding was fixed:
 - **Live check (read-only).** In a clean bash, the new `p01_run` ran the
   merged main commit's `owner-window.sh nope`, which returned the usage exit 2.
   A short commit was refused with exit 1, and no temporary file was left.
+- **Re-review (same auditor).** The verdict was APPROVE_WITH_FINDINGS, Low
+  and Info only. Three items were fixed:
+  - `preflight`'s image and R2 checks now run under `bash -o pipefail`, so
+    their status is no longer `tail`'s;
+  - the bootstrap sets `ok=0` before its trap, so the environment cannot keep
+    a copy that failed a pin;
+  - the `p01_run` text now claims only blob re-hashing. Tree substitution is
+    named as the accepted residual risk.
 
 ## Evidence
 

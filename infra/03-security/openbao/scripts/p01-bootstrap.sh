@@ -27,6 +27,7 @@ test "$(/usr/bin/stat -c '%u:%a' -- "$P01_RUNTIME_DIR")" = "$(/usr/bin/id -u):70
 test "$(/usr/bin/findmnt -n -T "$P01_RUNTIME_DIR" -o FSTYPE)" = tmpfs || exit 1
 P01_CLIENT_DIR="$(/usr/bin/mktemp -d "$P01_RUNTIME_DIR/p01-client.XXXXXX")" || exit 1
 # A copy that failed a pin never survives, and the window records no path to it.
+ok=0
 trap '[ "${ok:-}" = 1 ] || /usr/bin/rm -rf -- "$P01_CLIENT_DIR"' EXIT
 P01_SCRIPT_DIR="$P01_CLIENT_DIR/infra/03-security/openbao/scripts"
 /usr/bin/install -d -m 0700 "$P01_SCRIPT_DIR" "$P01_CLIENT_DIR/infra/03-security/openbao/config/policies" || exit 1
@@ -55,7 +56,7 @@ fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b infra/03-securi
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
 e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json
-ed96e5ffb5ed3639f21917b2e533fb64f4906f3e6fe49a1a088eb5c6cb858396 infra/03-security/openbao/scripts/owner-window.sh
+38755318a3b585c78611f54fead604218ee6abd6f6c005ac15db1134ff3609c0 infra/03-security/openbao/scripts/owner-window.sh
 68c20addfcfab05118c75ff5f0b25330743c82f7f7f1305f26b3f0fe65652d50 infra/03-security/openbao/config/policies/prometheus.hcl
 6e99a1fa6ba153642b66be1fd353e237cc25640e81386de203d2b232a6c00eed infra/03-security/openbao/scripts/k8s-writers.sh
 P01_SOURCE_MANIFEST

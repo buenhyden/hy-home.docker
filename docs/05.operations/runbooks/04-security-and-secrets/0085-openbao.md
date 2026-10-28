@@ -75,7 +75,7 @@ p01_run() {  # p01_run <40자리 commit> <저장소 경로> <인자…>
   c="$(p01_git rev-parse --verify "$1^{commit}")" && [ "$c" = "$1" ] || return 1
   b="$(p01_git rev-parse --verify "$1:$2")" || return 1
   f="$(umask 077; /usr/bin/mktemp "$XDG_RUNTIME_DIR/p01-run.XXXXXX")" || return 1
-  # Re-hash the copy: a changed object behind the same commit does not run.
+  # Re-hash the copy: a changed blob behind the same tree entry does not run.
   p01_git show --no-textconv "$1:$2" >"$f" && [ -s "$f" ] &&
     [ "$(p01_git hash-object --no-filters -- "$f")" = "$b" ] &&
     /usr/bin/bash "$f" "${@:3}"; r=$?
@@ -88,8 +88,9 @@ p01_run() {  # p01_run <40자리 commit> <저장소 경로> <인자…>
 - 고정 HOME 저장소 경로가 symlink가 아니고, 저장소와 `.git`의 device·inode·소유자가 기록값과 같다.
 - 인자가 전체 40자리 commit이고, Git 환경·replacement object를 막은 상태에서 그 commit이 존재한다.
 - `XDG_RUNTIME_DIR`이 owner 전용 0700 tmpfs다.
-- 그 commit의 blob을 그 tmpfs 파일로 꺼낸 뒤 다시 hash해 commit의 object ID와 같을 때만
-  `/usr/bin/bash`로 실행하고, 끝나면 지운다. checkout의 파일은 열지 않는다.
+- 그 commit의 blob을 그 tmpfs 파일로 꺼낸 뒤 다시 hash해 tree가 가리키는 blob ID와 같을 때만
+  `/usr/bin/bash`로 실행하고, 끝나면 지운다. checkout의 파일은 열지 않는다. 같은 commit 뒤의 tree
+  object를 바꾸는 것은 막지 못하며, 그것은 owner UID의 쓰기 권한이 필요한 수용된 잔여 위험이다.
 
 그 commit에 script가 없으면(그 script를 담은 PR이 병합되기 전) 실행하지 않고 실패한다. 값·token은
 인자로 넘기지 않는다. 저장소 inode가 바뀌면(다시 clone 등) 기록값을 검토해 이 절에서 고친다.

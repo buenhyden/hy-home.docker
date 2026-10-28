@@ -601,7 +601,7 @@ preflight)
   check env HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
   check docker compose exec -T openbao bao status
   # The pinned image must exist locally; there is no registry to pull it from.
-  check sh -c "docker compose --profile security config --images | grep '^hy-home/openbao' | sort -u |
+  check /usr/bin/bash -o pipefail -c "docker compose --profile security config --images | grep '^hy-home/openbao' | sort -u |
     xargs docker image inspect --format '{{.Id}}'"
   df -h /home
   systemctl show hyhome-backup.service -p Result,ExecMainExitTimestamp
@@ -610,7 +610,7 @@ preflight)
   [ "$debug" = false ] || { echo "WARN: dockerd debug would log the exec environment"; problems=$((problems + 1)); }
   check command -v jq                                    # root-sweep needs it
   loginctl show-user "$USER" -p Linger                   # not yes: keep another login session open
-  check sh -c "docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock --compact | tail -4"
+  check /usr/bin/bash -o pipefail -c "docker compose --profile backup run --rm --no-deps restic-offsite cmd snapshots --no-lock --compact | tail -4"
   docker compose --profile backup run --rm --no-deps restic-offsite cmd stats --no-lock --mode debug 2>&1 |
     grep -A2 '^File Type: data'
   # An open window's custody would lose the paths cleanup and metrics-revoke need.
