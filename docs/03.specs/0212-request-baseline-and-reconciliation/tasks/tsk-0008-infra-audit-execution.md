@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.14"
+version: "0.1.15"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-28"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0008"
 parent_ids:
@@ -847,6 +847,50 @@ it as expected-by-design, covered by hosted candidate-quality PASS on real PRs.
 operator `.agent-work` staging, and `native-home-recovery` stays with the
 P1–P10 owners. The owner kept C19 pending on those two rows.
 
+### C19 row resolutions (2026-10-28)
+
+The three remaining required C19 rows now have resolvers with the identical
+Check and W24. The original FAIL and NOT_RUN rows are unchanged.
+
+- **`secret-catalog-views`.** The earlier `P02_METADATA_BLOCKED` did not mean
+  missing staging. The host `/usr/bin/python3` lacks `jsonschema` and
+  `referencing`, and the CLI reports that `ImportError` as
+  `P02_METADATA_BLOCKED`. The `.agent-work` staging and its README already
+  exist with mode 0700. The owner ran the value-free checks with the prepared
+  venv Python on HOME (2026-10-28):
+  - `check` returned `P02_METADATA_VALID` with 149 entries and 1 alias, rc 0.
+  - `check-views` returned `P02_VIEWS_MATCH`, rc 0.
+
+  The original row failed differently, with `P02_VIEW_DRIFT` against 145
+  entries. Since then the catalog grew to 149 entries (PR #599). The four
+  staging views were re-rendered at 13:37 KST on 2026-10-28, mode 0600 (file
+  metadata only). The match is therefore against the current catalog. As
+  before, this is a check of ignored operator staging, not runtime evidence.
+- **`native-home-recovery`.** MLflow is the named target. The owner ran these
+  steps on HOME at 16:11 KST on 2026-10-28, following RUN-0088:
+  - **Native service.** `mlflow` was `Up 25 hours (healthy)`; `/health`
+    returned `OK` and the API returned 2 experiments.
+  - **HOME flow.** The tracking database is at revision `dc11669786a5` with
+    2 experiments and 2 runs.
+  - **Backup.** A fresh custom-format dump has 65 `TABLE DATA` entries. Its
+    SHA-256 is `351ed956c3940ed84c6daabc6305bcbe542f6f516791cb515aa26253d781c6e5`,
+    under the owner-only `mlflow-20261028-161148` snapshot directory.
+  - **Isolated restore.** The dump was restored into a throwaway PostgreSQL on
+    an internal network with no published port. It showed `dc11669786a5` with
+    2 experiments and 2 runs, the same as HOME. The container and network
+    were removed afterwards.
+
+  This is one named target's native, HOME and isolated-restore receipt. It is
+  not P1–P10 acceptance for other services.
+- **`ci-local-context`.** Hosted `candidate-quality` step "Select candidate
+  prerequisites" runs the same `run-ci-gate.py --profile changed --requirements`
+  in an authenticated `pull_request` context. It succeeded on PR #602 (run
+  `40646915873`, merged as `4f2e7f9ba`). That context is real, not invented;
+  no CI variable was set by hand. This replaces the earlier disposition, which
+  sat only in the Decision cell and did not clear the required row.
+
+The owner accepted criterion 19 on 2026-10-28 on this basis.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -874,12 +918,15 @@ P1–P10 owners. The owner kept C19 pending on those two rows.
 | ci-routing-regressions-main-7ba82fcf3 | 19 | W24 | Registered CI gate and SMTP routing unit suites | main `7ba82fcf3` | PASS | 6 registered routing suites (agent-governance, CI gate context/model/plan, SEC01, SMTP): 172 tests OK; #c19-reruns-and-owner-disposition-2026-10-27 | required | ci-routing-regressions |
 | root-hardening-coverage-main-7ba82fcf3 | 19 | W24 | Existing hardening script tier coverage | main `7ba82fcf3` | PASS | Tier list now includes `13-experience`; `13-experience` alone and all tiers: ALL checks passed; #c19-reruns-and-owner-disposition-2026-10-27 | required | root-hardening-coverage |
 | workflow-isolated-denial-main-7ba82fcf3 | 19 | W24 | `env OPSFLOW_PG_REHEARSAL_IMAGE=sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873 OPSFLOW_PG_REHEARSAL_CONTEXT=default python3 -m unittest tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseNativeRehearsal -v` | main `7ba82fcf3` | PASS | 6 tests OK in 171.9 s including cross-database connect denial; no owned container left; #c19-reruns-and-owner-disposition-2026-10-27 | required | workflow-isolated-denial |
+| secret-catalog-views-home-20261028 | 19 | W24 | Value-free secret-catalog public validation and view check | HOME main checkout, owner terminal 2026-10-28; prepared venv Python | PASS | #c19-row-resolutions-2026-10-28; `P02_METADATA_VALID` 149 entries/1 alias rc 0; `P02_VIEWS_MATCH` rc 0 against views re-rendered 2026-10-28 13:37 KST; ignored operator staging, not runtime evidence | required | secret-catalog-views |
+| ci-local-context-pr602 | 19 | W24 | `python3 scripts/validation/run-ci-gate.py --profile changed --requirements` without invented PR context | Hosted PR #602 run `40646915873`, authenticated `pull_request` context | PASS | #c19-row-resolutions-2026-10-28; `candidate-quality` step "Select candidate prerequisites" success | required | ci-local-context |
+| native-home-recovery-mlflow-20261028 | 19 | W24 | Native service, HOME flow, and isolated restore result | MLflow on HOME, owner terminal 2026-10-28 16:11 KST | PASS | #c19-row-resolutions-2026-10-28; healthy, `/health` OK, 2 experiments; HOME `dc11669786a5` 2/2; dump 65 TABLE DATA; isolated restore `dc11669786a5` 2/2; cleaned up; single named target (MLflow) only, not P1–P10 acceptance | required | native-home-recovery |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 19 | pending | main-baseline, document-baseline, current-service-inventory, secret-catalog-views, ci-local-context, remote-protection, root-hardening-coverage, ci-routing-regressions, workflow-source-suite, workflow-isolated-denial, native-home-recovery, ci-routing-regressions-main-7ba82fcf3, root-hardening-coverage-main-7ba82fcf3, workflow-isolated-denial-main-7ba82fcf3 | Routing, hardening and workflow denial now pass on main 7ba82fcf3. Owner disposition 2026-10-27: the ci-local-context FAIL is expected by design (the local requirements check needs a PR context) and is covered by hosted candidate-quality PASS on PRs #566–#570. Pending on secret-catalog-views (P02 staging) and native-home-recovery (P1–P10 owners). | SPEC-0212 coordinator for routing; named primary owners for execution. |
+| 19 | accepted | main-baseline, document-baseline, current-service-inventory, secret-catalog-views, ci-local-context, remote-protection, root-hardening-coverage, ci-routing-regressions, workflow-source-suite, workflow-isolated-denial, native-home-recovery, ci-routing-regressions-main-7ba82fcf3, root-hardening-coverage-main-7ba82fcf3, workflow-isolated-denial-main-7ba82fcf3, secret-catalog-views-home-20261028, ci-local-context-pr602, native-home-recovery-mlflow-20261028 | Owner accepted 2026-10-28. Every required row passes or has a same-Check resolver: routing, hardening and workflow denial on main 7ba82fcf3; secret-catalog-views, ci-local-context and native-home-recovery on 2026-10-28 (#c19-row-resolutions-2026-10-28). native-home-recovery covers one named target (MLflow), not P1–P10 acceptance; downstream native, HOME, recovery and delivery stay with their owners. | SPEC-0212 coordinator for routing; named primary owners for execution. |
 
 ## Review and Completion
 

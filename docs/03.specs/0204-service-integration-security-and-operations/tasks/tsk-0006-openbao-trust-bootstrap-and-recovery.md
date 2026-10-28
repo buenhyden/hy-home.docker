@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.34"
+version: "0.2.35"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3543,6 +3543,51 @@ the 08:14 one; the 10-22 generation is left alone.
 - The helper hash changes, so a new P01 approval of the merged issuer commit,
   and its installation, are required before any W5.
 - The owner runs W5 in a terminal.
+
+### Unused renderer tokens: expiry observation — 2026-10-28
+
+The 2026-10-27 residuals left two unused renderer-generation tokens valid. One
+came from the 08:14 start and one from 10-22. Neither is renewed: their Agent
+generations stopped, and the period is 24 hours. Each should therefore expire
+within 24 hours of its last renewal. The 08:14 token is expected near 08:14Z on
+2026-10-28. The 10-22 token's last renewal came before the Agent stopped at
+07:45:17Z on 2026-10-27, so it expires earlier.
+
+The owner ran this value-free count on HOME on 2026-10-28:
+
+```text
+docker logs openbao --since 2026-10-27T07:45:00Z 2>&1 | grep -c 'revoked lease: lease_id=auth/approle/login/'
+1
+```
+
+Value-free follow-ups printed only timestamps and never a lease ID.
+
+| Read | Result |
+| --- | --- |
+| Revocation timestamps (owner) | `2026-10-28T01:39:08.159Z` |
+| Retained log start for the window (owner) | `2026-10-27T07:47:01.568Z`, the W5 wrap expiry |
+| Log configuration (owner) | `json-file`, `max-file` 3, `max-size` 10m |
+| Same timestamp read at `2026-10-28T08:56:59Z` (agent) | Still only `2026-10-28T01:39:08.159Z` |
+
+The retained log starts within two minutes of `--since`, so no line in the
+window was lost to rotation. The single revocation at 01:39:08Z fits the 10-22
+token: its Agent was renewing until the 07:45:17Z stop, and an unrenewed
+24-hour period then ends about 24 hours after the last renewal. **The 10-22
+token is recorded as expired.**
+
+The 08:14 token had no renewal before its Agent stopped at 08:15:26Z, so it
+was expected to expire near 08:14Z on 2026-10-28. By 08:56:59Z no revocation
+appeared, so its state is **UNKNOWN** and it may still be valid. The recording
+rule set two outcomes: natural expiry of both at 2 or more, and report-only at
+0. This result is 1, so it is recorded and reported to the owner, not recorded
+as natural expiry of both. Confirming the 08:14 token needs an accessor
+lookup with a management credential, which is the owner's decision.
+
+The current healthy generation, started 08:21:50Z on 2026-10-27, is renewed
+and is not expected in this count. Attribution needs the event timestamps and
+the log retention start only, never the lease ID. Root and the other
+residuals stay out of scope. Source journal v3 (B4) will revoke the old
+generation at a future W5 instead of waiting for expiry.
 
 ## Evidence
 
