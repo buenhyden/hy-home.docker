@@ -3757,6 +3757,16 @@ token, accessor or value, and it mutates nothing. Each finding was fixed:
     name unattended-upgrades and reboots, and use `docker start` rather than
     `up -d`.
 
+**Placement fix (hosted CI).** Hosted `candidate-quality` failed on the
+status test. The reviewed status body had been inserted at the end of the `w4`
+step, so `w4` ran it after the unseal, and `status` still ran the first draft.
+The body now sits only under `status`, and the first draft is deleted. A
+target with an empty `lastError` was also warned as a problem, because `read`
+strips the trailing space; the step now matches the job and health fields. The
+agent's earlier live run used the first draft. The RUN-0105 manifest pin
+follows the new script hash. The Crawl4AI runtime test now reads the network
+names from the new map form.
+
 **Residual (owner decision).** Tuning the `token/` mount to `8760h` is
 persistent. Any caller allowed on `auth/token/create*` can then get an
 explicit TTL of up to one year. Today the renderer roles pin 5 minutes and

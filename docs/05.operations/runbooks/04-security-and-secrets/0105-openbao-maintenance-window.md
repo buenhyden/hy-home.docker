@@ -595,7 +595,7 @@ fd277c7e09cd9a9ade1f1067664dafb39b6d91be524f285d6851919f2144847b infra/03-securi
 4a1052b4e888e5e0c5b025db7f6447f4719264343abc8f67e0c17fc3269e3a0f infra/03-security/openbao/config/renderer-issuer-token-role.json
 bceb1e97853f173b5011f1af34033d01c07309e582137d0e67f85ae33b9eb17e infra/03-security/openbao/config/renderer-cleanup-token-role.json
 e0dafc929bd037ef7910c04ee5ec343566ef7000ed7172032be3bfd95cabeb11 infra/03-security/openbao/config/renderer-role.json
-9bc43539663e5c5cb8ae134f6deabd1e5f9115e901816b26b3e16773ac500c5f infra/03-security/openbao/scripts/owner-window.sh
+7b9cabbc2fa87d8696179a417fbcd99e4ede28d46022a943a33c0310314ebcbc infra/03-security/openbao/scripts/owner-window.sh
 6e99a1fa6ba153642b66be1fd353e237cc25640e81386de203d2b232a6c00eed infra/03-security/openbao/scripts/k8s-writers.sh
 P01_SOURCE_MANIFEST
 ```
