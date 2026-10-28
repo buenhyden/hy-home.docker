@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.35"
+version: "0.2.36"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -3588,6 +3588,76 @@ and is not expected in this count. Attribution needs the event timestamps and
 the log retention start only, never the lease ID. Root and the other
 residuals stay out of scope. Source journal v3 (B4) will revoke the old
 generation at a future W5 instead of waiting for expiry.
+
+### OpenBao outage and v2 recovery (2026-10-28)
+
+**What happened.**
+
+- **Trigger.** At 16:33:02 KST (07:33Z) a `sudo apt-get upgrade` ran from
+  another terminal. systemd stopped `containerd.service` at 07:33:28Z, and
+  Docker became active again at 08:06:29Z.
+- **Server.** `openbao` exited 255 at 07:34:18Z, with no OOM and no error
+  recorded. Its `unless-stopped` policy did not restart it.
+- **Other containers.** `crawl4ai-egress` (255) and `airflow-dag-processor`
+  (exit 1) also stopped at that moment.
+- **Agent.** `openbao-agent` restarted at 07:35:09Z. `start-agent.sh` removed
+  its sink, and the 10-27 SecretID had been consumed, so it looped on
+  `no known secret ID`. `OpenBaoAgentAuthFailure` fired from 07:42:53Z.
+- **Consumers.** Rendered files stayed in place throughout.
+
+The diagnosis used only container state, the systemd journal and redacted
+Agent log lines; no value was read. Nothing was started, stopped or unsealed
+by the agent.
+
+**Owner recovery, 09:32–09:35Z, on the owner's choice to use the installed
+v2 issuer.** The owner ran `docker start openbao`. Before unseal, `bao status`
+could not connect. Two of three shares were entered through the hidden prompt,
+and the server became active at 09:32:39Z on version
+`2.7.1+hyhome.go1.27.3.net0.60.0.r1`.
+
+The owner then ran RUN-0103 `agent-restart` through `p01_run` on reviewed
+script commit `977baee0bb24ae693381412da74059a7db0c43de` with these inputs:
+
+- issuer `422b4adfd108429e2acc5c4df313761227d36f4d`;
+- the operator tools root;
+- `hy-home-infra_openbao-agent-data`;
+- the existing journal, whose anchor was v2 `complete`.
+
+Results:
+
+- **Issuance.** It printed `issue rc=0` and `agent: healthy`. Every rendered
+  `.txt` is `-rw-r-----` and every `.version` is `-rw-------`; the Grafana
+  client secret has no version template.
+- **Value-free postcheck.** The journal anchor is v2 `complete`. `openbao` and
+  `openbao-agent` are both healthy, the Agent since 09:34:17Z.
+
+**Residuals.**
+
+- **Orphaned 10-27 08:21 Agent token.** Its sink copy was removed at 07:35Z
+  without revocation. It is no longer renewed, so it should expire within the
+  24-hour period. Like the 08:14 token, it is UNKNOWN until an expiry is
+  observed, and no owner-held policy can look it up.
+- **OpenBao server metrics.** Server metrics have not been scraped since
+  2026-10-24 10:04Z: Prometheus cannot resolve `openbao` (`server misbehaving`),
+  and `OpenBaoMetricsScrapeFailing` keeps firing. This is separate from the
+  outage and has no owner yet.
+- **Other stopped containers.** The owner decides on restarting
+  `crawl4ai-egress` and `airflow-dag-processor`.
+
+**B4 v3 install packet.** These are the inputs for a new P01 approval; they
+are not an approval.
+
+| Input | Value |
+| --- | --- |
+| Issuer commit | `4f2e7f9badf2db592de91d20146d68f87a228213` (PR #602) |
+| `issue-renderer-secret-id.sh` | `d92ed0353fc6885ec803a223cb1eeb845d78b3f86cde4e2ed700c9a276df1878` (same as v2) |
+| `renderer-issuance.py` | `b20015ab047255d7af0c6e97e2b613faef0db220b2e513805bff40e881122f50` (v2: `8175070b…`) |
+| `renderer-request.sh` | `be1865325138679ab8cac82e0203cdbe308c2f66651b920c0f2c4cb9ae103014` (same as v2) |
+| Installer `install-renderer-issuer.sh` | `27a097f133ced7bc1d3657c401a16fa923d464878a10b38d69d5e0e7033343c9` (unchanged; RUN-0103 step 2 pin) |
+
+Installation runs RUN-0103 step 2 with `issuer_commit` set to the commit above
+and the existing operator tools root. A later W5 then passes that commit to
+`agent-restart`. RUN-0103 now describes v3 and this outage pattern.
 
 ## Evidence
 
