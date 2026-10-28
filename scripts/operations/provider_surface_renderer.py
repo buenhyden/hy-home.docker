@@ -318,9 +318,9 @@ def _pointer(
         return (
             f"{envelope}{_marker(source)}\n\n# {title}\n\n"
             f"## Overview\n\n{route_sentence}\n\n"
-            "## Scope\n\nThis directory contains generated provider adapters.\n\n"
-            "## Structure\n\nCanonical governance remains in the linked source.\n\n"
-            "## Usage\n\nRead the linked source before using these adapters.\n\n"
+            "## Scope\n\n이 디렉터리는 생성된 provider 어댑터를 담습니다.\n\n"
+            "## Structure\n\n정본 거버넌스는 연결된 원본에 남습니다.\n\n"
+            "## Usage\n\n이 어댑터를 사용하기 전에 연결된 원본을 읽습니다.\n\n"
             "## Related Documents\n\n"
             f"- [`{source}`](../{source})\n"
         ).encode()

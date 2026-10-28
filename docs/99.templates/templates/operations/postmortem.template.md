@@ -43,11 +43,11 @@ created: "{{CREATED}}"
 
 ## Corrective Actions
 
-<!-- Author prompt: Each action needs an owner, due date, tracking ID and verification; avoid blame. -->
+<!-- Author prompt: Each action needs an owner, tracking ID and verification; avoid blame. Do not set a completion deadline. -->
 
-| Action | Owner | Due date | Tracking ID | Verification |
-| --- | --- | --- | --- | --- |
-| {{ACTION}} | {{ACTION_OWNER}} | {{DUE_DATE}} | {{TRACKING_ID}} | {{VERIFICATION}} |
+| Action | Owner | Tracking ID | Verification |
+| --- | --- | --- | --- |
+| {{ACTION}} | {{ACTION_OWNER}} | {{TRACKING_ID}} | {{VERIFICATION}} |
 
 ### Follow-up Review
 

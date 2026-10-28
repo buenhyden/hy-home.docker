@@ -1,10 +1,10 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.2.0"
+version: "1.3.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-29"
 runtime: "claude"
 ---
 
@@ -47,6 +47,8 @@ projection of either, and their absence under `.claude/` is not a defect.
 - Generated files may adapt syntax but do not define shared policy, role intent,
   lifecycle, templates, model selection, or completion criteria. Canonical
   `.agents/` files are never generated, quarantined, or overwritten as outputs.
+- Native memory is off through `autoMemoryEnabled: false` in
+  `.claude/settings.json`; no `.claude/agents/*.md` sets `memory:`.
 
 ## Limitations
 

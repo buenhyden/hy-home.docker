@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.5.0"
+version: "3.5.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -251,8 +251,9 @@ evidence; surrounding instructions remain current and validated normally.
 - A Postmortem follows stabilization and separates confirmed root cause,
   contributing factors, detection/response, and learning from the incident's
   factual record. Use blameless language. Corrective actions identify an owner,
-  due date, tracking ID or link, and verification condition; link their execution
-  owner instead of leaving untracked checkboxes.
+  a tracking ID or link, and a verification condition, with no imposed
+  completion deadline; link their execution owner instead of leaving untracked
+  checkboxes. A published postmortem keeps the columns it was written with.
 - Research records source-backed claims and limitations; Audit records criteria
   and dated observations; Data records schema, provenance, consumers, and
   refresh ownership. State evidence limitations and freshness triggers where

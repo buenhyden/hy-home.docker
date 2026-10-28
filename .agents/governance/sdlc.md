@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.4.2"
+version: "1.4.3"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 ---
 
 # Software Development Lifecycle
@@ -52,7 +52,7 @@ Stage 99 assigns document-family states and legal transitions. Requirements use
 `draft`, `in-review`, `approved`, `superseded`, and `retired`; architecture
 descriptions and operational guidance use `draft`, `in-review`, `active`,
 `deprecated`, `superseded`, and `retired`; ADRs use `proposed`, `accepted`,
-`rejected`, `superseded`, and `retired`. Specs and Plans record authority
+`rejected`, `deprecated`, and `superseded`. Specs and Plans record authority
 only: `draft`, `in-review`, `approved`, `cancelled`, and `superseded`. Tasks
 retain `draft`, `ready`, `in-progress`, `blocked`, `completed`, and
 `cancelled`. Navigation READMEs and the current archive

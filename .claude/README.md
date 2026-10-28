@@ -18,15 +18,15 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 ## Scope
 
-This directory contains generated provider adapters.
+이 디렉터리는 생성된 provider 어댑터를 담습니다.
 
 ## Structure
 
-Canonical governance remains in the linked source.
+정본 거버넌스는 연결된 원본에 남습니다.
 
 ## Usage
 
-Read the linked source before using these adapters.
+이 어댑터를 사용하기 전에 연결된 원본을 읽습니다.
 
 ## Related Documents
 
