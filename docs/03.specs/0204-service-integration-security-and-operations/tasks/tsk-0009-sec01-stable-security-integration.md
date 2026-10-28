@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.4.36"
+version: "0.4.37"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2857,6 +2857,33 @@ new Compose content. The release, target, assessment and census fields keep
 their earlier observations. The recreate from `main`, the GPU check and the
 model check follow the merge and are owner steps. Signature, SBOM and advisory
 applicability stay NOT_RUN.
+
+### Ollama 0.40.12 runtime and discovery library — 2026-10-28
+
+The owner recreated Ollama from `main` at 04:35Z. The image was the 0.40.12
+pin and the service was healthy, with all eight models listed. GPU discovery
+probed `cuda_v13` and then `cuda_v12`, and each hit the 30 s watchdog, so the
+server chose `library=cpu`. `gemma4:e2b` answered on the CPU at 6.31 tokens/s.
+This is the cold-library failure SPEC-0246 recorded on 0.40.6. The host showed
+swap full (8146 of 8191 MB) and I/O pressure averages of 40-62%. Reading the
+1.3 GB `cuda_v12` warm-up took about four minutes.
+
+After `docker restart ollama` (04:51:55Z), the unwarmed `vulkan` and `cuda_v13`
+probes timed out again. The warmed `cuda_v12` probe then found CUDA0 (GTX 1060
+6GB, compute 6.1, `libdirs=ollama,cuda_v12`, 5.9 GiB VRAM). `gemma4:e2b` loaded
+in 2 m 8 s with its compute buffers on CUDA0 and `gpu_layers=-1`, and generated
+at 74.65 tokens/s. `ollama ps` printed no rows even right after a run; the
+log, not `ps`, shows the placement.
+
+The owner chose to limit discovery to the warmed library. Two probe
+containers ran with no network and no model volume. With
+`OLLAMA_LLM_LIBRARY=cuda_v12` and the image's default entrypoint, only
+`cuda_v12` was probed; it was cold and timed out. With the variable and the
+service's warm-up entrypoint, the warm-up took 3 m 18 s, only `cuda_v12` was
+probed, and CUDA0 was found in 2.9 s. The Compose service now sets
+`OLLAMA_LLM_LIBRARY=cuda_v12`, the service wiring test pins it, RUN-0056
+explains it, and the ledger `include_inputs` hash follows the Compose file. The
+running container picks it up at the next recreate from `main`.
 
 ## Evidence
 

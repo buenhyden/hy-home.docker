@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-28"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -112,7 +112,7 @@ curl -f http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/api/tags
 
 재생성 뒤 version, health, 기존 digest, loopback 포트, GPU 요청, `ai_net`/`edge_net`, exporter와 Open WebUI backend `/api/tags`를 확인한다. decision 확인은 Guide의 synthetic `tev1:0.8b` 요청과 `keep_alive: 0`을 사용한다.
 
-GPU warm-up entrypoint(`cat /usr/lib/ollama/cuda_v12/* > /dev/null; exec /bin/ollama serve`)는 경로가 없어도 조용히 넘어가므로, 재생성 전에 새 image pin에 `cuda_v12` 경로가 있는지, 재생성 뒤 GPU가 실제로 선택됐는지 확인한다. GTX 1060(compute 6.1)은 CUDA 12 runtime을 쓴다. entrypoint 변경은 별도 승인 대상이다.
+GPU warm-up entrypoint(`cat /usr/lib/ollama/cuda_v12/* > /dev/null; exec /bin/ollama serve`)는 경로가 없어도 조용히 넘어가므로, 재생성 전에 새 image pin에 `cuda_v12` 경로가 있는지, 재생성 뒤 GPU가 실제로 선택됐는지 확인한다. GTX 1060(compute 6.1)은 CUDA 12 runtime을 쓴다. `OLLAMA_LLM_LIBRARY=cuda_v12`는 discovery를 미리 읽은 `cuda_v12`로 한정한다. 0.40.12는 이 설정 없이 읽지 않은 `cuda_v13`·`vulkan`을 먼저 시험해 30초 watchdog을 넘기고 CPU로 fallback했다. 새 image에서 `cuda_v12` 이름이 바뀌면 entrypoint와 이 변수를 함께 고친다. entrypoint 변경은 별도 승인 대상이다.
 
 ```bash
 docker run --rm --network none --entrypoint /bin/ls "<새 image pin>" /usr/lib/ollama/cuda_v12

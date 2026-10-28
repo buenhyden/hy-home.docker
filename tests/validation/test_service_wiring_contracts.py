@@ -566,6 +566,8 @@ class AiRuntimeContractTests(unittest.TestCase):
             script.startswith("cat /usr/lib/ollama/cuda_v12/* > /dev/null;")
         )
         self.assertTrue(script.endswith("exec /bin/ollama serve"))
+        # Discovery must not wait on the unwarmed cuda_v13 or vulkan libraries.
+        self.assertEqual("cuda_v12", self.ollama_env["OLLAMA_LLM_LIBRARY"])
 
     def test_slow_loads_are_not_cut_off(self) -> None:
         # Ollama's limit is for a stalled load; Open WebUI keeps its default of

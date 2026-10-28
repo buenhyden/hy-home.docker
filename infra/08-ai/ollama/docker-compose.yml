@@ -30,7 +30,9 @@ services:
     # GPU discovery allows 30 s per library; reading the 1.3 GB CUDA 12
     # libraries cold from the busy HDD image store took longer, so the server
     # fell back to the CPU (SPEC-0246). Warm them first; the path follows the
-    # image's library layout and needs review on an Ollama upgrade.
+    # image's library layout and needs review on an Ollama upgrade. 0.40.12
+    # also probes the unwarmed cuda_v13 and vulkan libraries, so
+    # OLLAMA_LLM_LIBRARY below limits discovery to the warmed cuda_v12.
     entrypoint:
       - /bin/sh
       - -c
@@ -45,6 +47,8 @@ services:
       - OLLAMA_LOAD_TIMEOUT=15m
       # Keep prompts on this host: no ollama.com cloud models or sign-in.
       - OLLAMA_NO_CLOUD=1
+      # GTX 1060 (compute 6.1) runs on CUDA 12; probe only the warmed library.
+      - OLLAMA_LLM_LIBRARY=cuda_v12
     volumes:
       - ollama-data:/root/.ollama:rw
     deploy:
