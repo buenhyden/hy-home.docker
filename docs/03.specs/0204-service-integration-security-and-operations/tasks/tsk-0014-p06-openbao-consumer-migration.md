@@ -1,6 +1,6 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.20"
+version: "0.1.21"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1300,6 +1300,115 @@ this revision and a post-import off-host snapshot exist. The catalog
 earlier three; recording deployed paths is the separate P02 schema change.
 Health now makes 21 `bao` calls each run; the worst case exceeds the 30 s
 healthcheck timeout only when the server is already degraded.
+
+### OIDC batch: policy window, KV import and owner scripts — 2026-10-28
+
+Approval: PR #586 head `b986fb716` was the approved commit. CI on it was all
+PASS. The local `changed` gate failed one test only,
+`test_fixture_preflight_is_contract_only_and_never_calls_docker`, with
+`loopback-port-unavailable`: a kubectl port-forward holds 127.0.0.1:18080. This
+also fails on main and is a known environment issue.
+
+Owner window, run by the owner on 2026-10-28 and reported value-free:
+
+- W1: `DELIVERED`.
+- Old-root sweep: `revoked=0`, `remaining=0`.
+- W1c plan: `RENDERER_ROLES_PLANNED`. Only `renderer` and `hy-home-operator`
+  changed. The owner compared HOME's policy text with the approved files. The
+  differences were the seven paths and one comment line. `renderer` gained
+  read access, and `hy-home-operator` gained create, read and update on data
+  plus read on metadata. The owner accepted the differences.
+- W1c apply: `RENDERER_ROLES_APPLIED` with the same targets. `prior:same`. The
+  Agent stayed healthy, and the `.version` times did not change.
+- W7: `ROOT_REVOKED_OPERATOR_HEALTHY`.
+- KV import: `put ok` on all seven paths, each at `current_version` 1.
+- Cleanup: the owner copied the eight receipts to owner storage outside tmpfs
+  and the repository. Both operator tokens were revoked, and the custody,
+  share and token files were removed.
+
+Three attempts were BLOCKED before W1 succeeded. None started a
+generate-root attempt.
+
+1. The manifest was copied from the main checkout, which still had the hash of
+   the restore helper from before the PR.
+2. The operator token file was 0644. The helper requires 0600 and a single
+   link.
+3. The operator token was no longer valid: `lookup-self` returned permission
+   denied. Signing out of the UI revokes the token.
+
+Earlier, the shell closed because `P01_APPROVED_COMMIT` was not set in the new
+`bash --noprofile --norc` shell. Running the block with `sudo bash` dropped
+the environment.
+
+The owner merged PR #586 as `c673ccba7`. The main checkout is still at
+`c3af19a7c`, before the merge. The seven output directories do not exist yet.
+The readable-file sweep lists only the current three `.txt` files.
+
+NOT_RUN: `prepare`, fast-forward, Agent restart, every cutover.
+
+The owner asked that these steps run as scripts from now on.
+
+- `infra/03-security/openbao/scripts/owner-window.sh` covers these RUN-0085
+  steps: `token`, `check-token`, `w1`, `root-sweep`, `roles-plan`,
+  `roles-diff`, `roles-apply`, `revoke-root`, `evidence`, `cleanup` and
+  `agent-restart` (Renderer SecretID delivery step 3).
+  - It is pinned in the source manifest, so the bootstrap copies it and checks
+    its hash with the helpers.
+  - Each step reads its paths from `p01-window.vars`. A failure ends the script
+    instead of closing the owner's shell.
+  - The runbook blocks it replaces are now calls to it, so the runbook no
+    longer holds a second copy of those blocks.
+  - `agent-restart` reads the image from the OpenBao Compose file instead of a
+    second pin in the runbook. Outside a window, the owner runs it from a
+    reviewed commit object with `bash <(git show …)`, not from the checkout.
+- `infra/03-security/openbao/consumer-migration/oidc-client-secrets.sh`
+  covers `import`, `prepare`, `cutover <service>` and `rollback <service>`.
+  - `cutover` and `rollback` change only that service's line in `.env`,
+    recreate that service with `--no-deps`, and run the verifier.
+- A new test checks the following:
+  - the manifest entry;
+  - that the runbook calls every step;
+  - that an unknown step changes no state;
+  - that cutover and rollback edit `.env` correctly;
+  - that an unknown service leaves `.env` unchanged.
+
+Review of the owner scripts (before the first commit): security-auditor found
+one High issue. The old keep flags were shell variables, so a `cleanup` run as
+a child script could not see them. It would have revoked the operator tokens
+and deleted root custody while OIDC was down. `cleanup` now takes
+`--keep-root`, `--keep-w2` and `--discard-root`. It also refuses to delete root
+custody unless a W7 `ROOT_REVOKED_OPERATOR_HEALTHY` receipt exists. The
+Medium issue was the `.env` rewrite. It is now atomic (`mv` with the same owner
+and mode, grep status checked, temporary file trapped and ignored).
+
+The Lows are also fixed:
+
+- an unknown stage stops the step;
+- `token` writes only into the bootstrap's tmpfs, with `set -C`;
+- `check-token` uses `curl -q --noproxy '*' --proto =https`;
+- an interrupted `w1` removes its share files;
+- the `evidence` path is resolved with `realpath`;
+- `import` refuses the test-only root override.
+
+iac-reviewer found four Medium issues:
+
+- `prepare` silently did nothing when read from a commit that lacks the
+  script. `p01_run` now checks the 40-hex SHA with the W1 bootstrap's Git
+  isolation and fails when the blob is missing.
+- `agent-restart` stopped the Agent before checking the credential. It now
+  checks the policy first.
+- Docker health reads `starting` right after the restart. The step now waits
+  up to 90 s.
+- `cutover` started a stopped service without its dependencies. It now refuses
+  a service that is not running.
+
+Its Lows were also fixed:
+
+- the exported variable override;
+- the single-image check;
+- the in-window inputs;
+- the unresolved-W1 rerun guard;
+- the import-before-cleanup note.
 
 ## Evidence
 

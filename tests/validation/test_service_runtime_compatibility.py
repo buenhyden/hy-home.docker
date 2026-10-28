@@ -227,12 +227,21 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         image = compose("infra/03-security/openbao/docker-compose.yml")["services"][
             "openbao"
         ]["image"]
+        self.assertIn("owner-window.sh agent-restart", runbook)
+        script = (
+            ROOT / "infra/03-security/openbao/scripts/owner-window.sh"
+        ).read_text()
+        # The script reads the image from the Compose file it names.
+        self.assertIn("infra/03-security/openbao/docker-compose.yml", script)
+        self.assertTrue(image.startswith("hy-home/openbao:") and "@sha256:" in image)
         self.assertIn(
-            image + ' openbao-agent "$issuance_journal" "$issuer_commit"', runbook
+            '"$issuer" openbao "$agent_volume" "$image" openbao-agent '
+            '"$issuance_journal" "$issuer_commit"',
+            script,
         )
-        self.assertIn('openbao "$agent_volume"', runbook)
         self.assertIn(
-            '"$operator_tools/$issuer_commit/issue-renderer-secret-id.sh"', runbook
+            'issuer="$operator_tools/$issuer_commit/issue-renderer-secret-id.sh"',
+            script,
         )
 
     def test_openbao_exception_names_key_and_audit_without_home_claim(self):
