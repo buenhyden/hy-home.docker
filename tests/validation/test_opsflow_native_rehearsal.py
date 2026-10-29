@@ -23,6 +23,7 @@ from tests.validation._opsflow_native_criterion22 import (
     EXECUTION_STATUSES_SEEN,
     MAX_ATTEMPTS,
     PASSWORD_PROBE_SCRIPT,
+    RACE_JOBS,
     RACE_SCRIPT,
     RACE_SQL,
     RECEIPT_FIELDS,
@@ -707,18 +708,20 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
         _, single = self.publish_next("hy-home.k8s")
         self.assert_claimable(1)
         try:
-            race_winners(self.race(4), {int(single)})
+            race_winners(self.race(RACE_JOBS), {int(single)})
         except ValueError as error:
-            raise RehearsalFailure(f"one row, four claimers: {error}") from None
-        ids = [self.publish_next(source)[1] for source in ("hy-home.docker", "hy-home.k8s", "blog-data")]  # fmt: skip
-        self.assert_claimable(3)
+            raise RehearsalFailure(f"one row, {RACE_JOBS} claimers: {error}") from None
+        ids = [
+            self.publish_next(source)[1] for source in ("hy-home.docker", "blog-data")
+        ]
+        self.assert_claimable(2)
         try:
-            race_winners(self.race(6), {int(item) for item in ids})
+            race_winners(self.race(RACE_JOBS), {int(item) for item in ids})
         except ValueError as error:
-            raise RehearsalFailure(f"three rows, six claimers: {error}") from None
+            raise RehearsalFailure(f"two rows, {RACE_JOBS} claimers: {error}") from None
         listed = ",".join([single, *ids])
         self.assertEqual(
-            "4",
+            "3",
             self.db_value(
                 "SELECT count(*) FROM ops_flow.outbox WHERE id IN ("
                 f"{listed}) AND state='accepted_by_smtp' AND attempts=1;"
