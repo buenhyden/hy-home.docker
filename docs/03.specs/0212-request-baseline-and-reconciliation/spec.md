@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.23.0"
+version: "1.24.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -77,7 +77,10 @@ TSK-0024. Criterion 36/W41 removes a dead CI routing prefix, in TSK-0025. Criter
 37/W42 records the re-run of the full request against the current baseline,
 in TSK-0026. Criterion 38/W43 reads the archive policy against its code, in
 TSK-0027. Criterion 39/W44 reads the SDLC and CI/QA policy against their code
-and renames the release workflow, in TSK-0028.
+and renames the release workflow, in TSK-0028. Criterion 40/W45 audits the meaning
+of every request line against the repository, in TSK-0029. Criterion 41/W46
+judges every pair of the request's 148 requirements for duplication and
+conflict, in TSK-0030.
 
 ## Scope
 
@@ -427,6 +430,12 @@ hold, authorization and recovery requirements have been established.
 39. TSK-0028 reads the SDLC policy and the CI/QA policy against the Registry,
     the Spec Package reader, the workflows, and the hooks, and renames the
     sole release workflow to a name that matches what it does.
+40. TSK-0029 records a meaning judgement against this repository for each
+    of the 355 non-blank request lines, keeps raw wording preservation
+    unverified, and corrects the stale statement it confirms.
+41. TSK-0030 judges all 10,878 pairs of the 148 requirements, lists every
+    pair that is not a different responsibility with its reason, and blocks
+    execution only on a real contradiction.
 
 ## Failure Conditions
 
