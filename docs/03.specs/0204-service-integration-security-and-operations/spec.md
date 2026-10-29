@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.7.14"
+version: "1.8.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -472,13 +472,14 @@ inferred from document relocation.
 19. P05 implements one independent DEV-only n8n notifier consuming P04's
     versioned `ops_flow` claim/ack/retry interface. A value-free workflow imports
     inactive, uses operator-resolved native credential references and proves
-    manual then one-minute scheduled execution on the actual queue worker.
-    The notifier has function-only database access and a restricted Mailpit
-    capture path. Run-derived Message-ID, bounded transports, checked ack/retry,
-    empty queue, concurrent claims, stale leases, retry/dead, uncertain SMTP,
-    restart, credential rotation and paired metadata/encryption-key restoration
-    have genuine native evidence. SMTP acceptance is not external delivery or
-    exactly-once processing. TSK-0013 owns W40-W45; P04 retains SQL/provisioning,
+    manual execution on the actual queue worker and external runner. The
+    notifier has function-only database access and a restricted Mailpit
+    capture path. Run-derived Message-ID, bounded transports, checked ack,
+    stale leases, uncertain SMTP isolation and reconciliation, restart and
+    serial metadata and database restoration have genuine native evidence.
+    Criterion 22 holds the scheduled, concurrent, retry/dead and rotation
+    evidence. SMTP acceptance is not external delivery or exactly-once
+    processing. TSK-0013 owns W40-W41; P04 retains SQL/provisioning,
     SEC01 images and the coordinator shared integration. Draft source tests may
     run in parallel; native P05 execution follows P04 publication/outbox proof.
     No Wiki schedule, Airflow mail duplicate, external SMTP or extra engine is
@@ -525,6 +526,13 @@ inferred from document relocation.
     learning applications and LAB runtime. TSK-0016 owns W63–W69 and dedicated
     acceptance-only fixtures/tests; shared registration and feature fixes remain
     single-writer proposals. Local source delivery cannot close this criterion.
+22. The P05 notifier proves one-minute scheduled execution on the actual queue
+    worker, concurrent claims, retry and dead-letter handling, an empty queue,
+    credential rotation with stale-credential denial, and paired metadata and
+    encryption-key restoration with genuine native evidence, building on the
+    criterion 19 notifier. TSK-0013 owns W42-W45. On 2026-10-29 the owner moved
+    these obligations out of criterion 19, whose native evidence covers manual
+    execution only.
 <!-- markdownlint-enable MD029 -->
 
 ## Failure Conditions

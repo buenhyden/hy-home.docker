@@ -1,10 +1,10 @@
 ---
 title: "Quality Reload Interruption Evidence"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0214-TSK-0003"
 parent_ids:
@@ -38,6 +38,14 @@ remain pending. Existing successful two-cycle and HOME evidence is reused within
 TSK-0002's dated scope, without declaring a new runtime PASS.
 
 ## Work Log
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0214-TSK-0003 | draft | ready | #inputs-and-authorization |
+| SPEC-0214-TSK-0003 | ready | in-progress | #preparation-and-failure-reproduction |
+| SPEC-0214-TSK-0003 | in-progress | completed | #owner-decision-2026-10-29 |
 
 ### Preparation and Failure Reproduction
 
@@ -134,7 +142,7 @@ unchanged. The earlier local commit preserves the superseded claims.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 10 | pending | - | Independent review and owner acceptance pending | @buenhyden |
+| 10 | accepted | Interruption GREEN, Cleanup-only failure, Affected k6 module, Scoped style, Independent review, Scoped metadata, Changed-line coverage | Owner accepted on 2026-10-29; the RED row is resolved by Interruption GREEN. | @buenhyden |
 
 ## Review and Completion
 
@@ -142,6 +150,12 @@ Implementation, focused source validation, scoped metadata and independent revie
 are complete; owner acceptance and coordinator-selected staging/delivery checks
 remain pending.
 No Docker, Native, HOME or remote execution is claimed by this continuation.
+
+### Owner decision 2026-10-29
+
+The owner accepted criterion 10 on documents alone and closed this Task. The
+acceptance rests on the PASS rows named in Criterion Acceptance, including the
+independent review; no runtime was rerun.
 
 ## Related Documents
 
