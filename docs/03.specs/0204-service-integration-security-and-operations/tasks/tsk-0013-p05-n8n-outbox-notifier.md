@@ -807,6 +807,24 @@ gate tests passed. This is source only: no Docker command ran, W42 still waits
 for P04 W36, and criterion 22 stays pending until one approved native run
 returns its receipt.
 
+### Owner native attempt 2026-10-30
+
+The owner ran the opt-in native class once from `main` at `032818766`, before
+the criterion 22 harness merged, so the run carried none of the criterion 22
+steps. Attempt `opsflow-native-1b407daf3eb9138fa67527cb` used image
+`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`, the
+same image as TSK-0019 attempt 11, and source binding `03892eb1a9a4`. Main
+readiness and liveness, the worker broker and Mailpit all answered 200. The
+first manual execution did not turn terminal within 60 seconds, so the run
+stopped with `native` ERROR after 598.7 seconds. Cleanup passed: all eight
+containers were confirmed absent and nothing was retained.
+
+The harness for that step is unchanged since attempt 11, and the receipt kept
+no execution status or log, so the cause is unknown. The harness now records
+`execution_timeout_facts` when a queued execution times out: the last status
+seen and whether known main and worker log lines exist, as booleans only. One
+further native run is needed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -826,6 +844,7 @@ returns its receipt.
 | Segmented source checks | 8 | W45 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | required | - |
 | Rerun of Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | `main` at merged PR #640 with the notifier source and node READMEs | PASS | `check-document-metadata.py --mode check-contracts` 0 violations; `check-document-links.py --mode all` PASS; PR #640 `candidate-quality` run 40874942142 success, which runs pre-commit and gate routing | required | Document and shared gate integration |
 | Criterion 22 harness source | 22 | W44 | Offline scenario guards, gate registration and independent review | Worktree on `main` at merged PR #654 | PASS | Criterion 22 harness source 2026-10-30; 67 tests OK with the native class skipped; no native run | required | - |
+| Owner native attempt | 22 | W43 | Opt-in native class, first manual execution | `main` at `032818766` before the criterion 22 harness; attempt `opsflow-native-1b407daf3eb9138fa67527cb` | FAIL | Owner native attempt 2026-10-30; queued execution did not turn terminal in 60 s; cleanup PASS | required | - |
 
 Actual existing-source command, exit0:
 

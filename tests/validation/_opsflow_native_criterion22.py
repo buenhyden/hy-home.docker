@@ -41,6 +41,39 @@ def initial_receipt() -> dict[str, str]:
     return {field: "NOT_RUN" for field in RECEIPT_FIELDS}
 
 
+# --- Closed diagnostics when a queued execution never turns terminal: the last
+# status seen and whether known n8n log lines exist. No log text is kept.
+EXECUTION_STATUSES_SEEN = frozenset(
+    {"none", "new", "running", "waiting", "success", "error", "canceled", "crashed"}
+)
+TIMEOUT_LOG_MARKERS = {
+    "main": {"enqueued": "Enqueued execution"},
+    "worker": {
+        "started": "Worker started execution",
+        "finished": "Worker finished execution",
+        "unknown_node": "Unrecognized node type",
+        "runner_timeout": "Task request timed out",
+        "runner_registered": 'Registered runner "',
+    },
+}
+
+
+def execution_timeout_facts(last_status: str, logs_contain) -> dict[str, object]:
+    facts: dict[str, object] = {
+        "last_status": last_status
+        if last_status in EXECUTION_STATUSES_SEEN
+        else "other"
+    }
+    for role, markers in TIMEOUT_LOG_MARKERS.items():
+        try:
+            facts[f"{role}_log"] = {
+                key: bool(logs_contain(role, text)) for key, text in markers.items()
+            }
+        except Exception:  # diagnostics must not mask the timeout itself
+            facts[f"{role}_log"] = "unavailable"
+    return facts
+
+
 def backoff_seconds(attempts: int) -> int:
     """retry_not_sent_notification(): least(900, 30 * 2^attempts) seconds."""
     return min(900, 30 * 2**attempts)
