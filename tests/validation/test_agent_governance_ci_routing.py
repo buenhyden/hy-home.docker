@@ -2062,8 +2062,9 @@ class PostToolFormattingOwnershipTests(unittest.TestCase):
         """Three mutators exclude these bytes; they must not drift apart.
 
         `.pre-commit-config.yaml` declares the boundary once as an anchor, and
-        the PostToolUse hook reads that declaration. `markdownlint-cli2` runs
-        with `fix: true` and cannot read a YAML anchor from another file, so it
+        the PostToolUse hook reads that declaration. An explicit
+        `markdownlint-cli2 --fix` rewrites files and cannot read a YAML anchor
+        from another file, so it
         restates the boundary in its own ignore list. This compares the two by
         what they select rather than by how they spell it.
         """

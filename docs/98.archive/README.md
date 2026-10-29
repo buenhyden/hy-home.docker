@@ -1,6 +1,6 @@
 ---
 title: "98.archive"
-version: "2.6.0"
+version: "2.6.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -167,7 +167,8 @@ Task revision의 승인 상태·범위·본문 증거로 검증합니다. 포착
    구분하며 외부 filter나 renormalize로 원문을 맞추지 않습니다.
    현재 계약에 맞추기 위한 편집은 보존하려던 대상을 훼손합니다. 그래서 이
    기록들은 frontmatter가 관리되지 않는 보존 프로파일로 등록됩니다. 자동
-   포맷터도 예외가 아닙니다. `.markdownlint-cli2.yaml`은 `fix: true`로 동작하므로
+   포맷터도 예외가 아닙니다. 커밋 검사는 `fix: false`이지만 명시적인
+   `markdownlint-cli2 --fix`가 서식을 고치므로, `.markdownlint-cli2.yaml`은
    `completed/`, `superseded/`, `retired/` 세 하위 트리를 ignore에 두어야 하며,
    `resolved/`도 그것을 만드는 변경이 ignore에 추가합니다. 저작 기록인
    `migrations/`와 `tombstones/`는 계속 lint 대상입니다. 다만 Registry가 frozen
