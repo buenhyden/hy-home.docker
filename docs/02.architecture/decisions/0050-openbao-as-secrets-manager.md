@@ -78,7 +78,5 @@ None. Any change of seal method or HA topology needs its own ADR.
 ## Related Documents
 
 - [AD-0003](../descriptions/0003-security-architecture.md)
-- [ADR-0003](0003-vault-as-secrets-manager.md)
-- [ADR-0018](0018-vault-hardening-and-ha-expansion-strategy.md)
 - [ADR-0042](0042-openbao-unseal-method.md)
 - [OpenBao policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)

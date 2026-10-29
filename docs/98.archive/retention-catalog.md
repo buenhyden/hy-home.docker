@@ -252,6 +252,8 @@ reads this table.
 | `retired/05.operations/guides/10-platform-and-backup/0068-terraform.md` | retired | No Terraform service exists; the live migration steps moved to the 0082 OpenTofu guide, policy and runbook (SPEC-0212 TSK-0036), so no successor exists. | `e9c87bad255ceb392bed62c8170a38d0f84e9cfe:docs/05.operations/guides/10-platform-and-backup/0068-terraform.md` |
 | `retired/05.operations/policies/10-platform-and-backup/0068-terraform.md` | retired | No Terraform service exists; the live migration steps moved to the 0082 OpenTofu guide, policy and runbook (SPEC-0212 TSK-0036), so no successor exists. | `e9c87bad255ceb392bed62c8170a38d0f84e9cfe:docs/05.operations/policies/10-platform-and-backup/0068-terraform.md` |
 | `retired/05.operations/runbooks/10-platform-and-backup/0068-terraform.md` | retired | No Terraform service exists; the live migration steps moved to the 0082 OpenTofu guide, policy and runbook (SPEC-0212 TSK-0036), so no successor exists. | `e9c87bad255ceb392bed62c8170a38d0f84e9cfe:docs/05.operations/runbooks/10-platform-and-backup/0068-terraform.md` |
+| `superseded/02.architecture/decisions/0003-vault-as-secrets-manager.md` | superseded | ADR-0050 | `a03c3748a6df073db672503b406f801556916138:docs/02.architecture/decisions/0003-vault-as-secrets-manager.md` |
+| `superseded/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md` | superseded | ADR-0050 | `a03c3748a6df073db672503b406f801556916138:docs/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md` |
 
 ## Current Assessments
 

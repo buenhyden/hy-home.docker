@@ -113,7 +113,7 @@ path stays out of service and must never share storage with OpenBao.
 ## Related Documents
 
 - [Security requirement](../../01.requirements/0003-security.md)
-- [Historical central secrets manager decision](../decisions/0003-vault-as-secrets-manager.md)
+- [Secrets manager decision](../decisions/0050-openbao-as-secrets-manager.md)
 - [Current OpenBao custody policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
 - [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 
