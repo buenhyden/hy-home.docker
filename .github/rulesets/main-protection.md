@@ -112,6 +112,15 @@ settings by itself.
   `89eb43f683a11587cf4f125be534ae720c20a55c`. This is a matching-success
   observation for that exact head, not a claim about later revisions or the
   unexercised missing, stale and wrong-App cases.
+- On 2026-10-29, at the owner's direction (AskUserQuestion), the repository
+  merge methods were narrowed with `gh api -X PATCH repos/buenhyden/hy-home.docker`.
+  Before: `allow_merge_commit=true`, `allow_squash_merge=true`,
+  `allow_rebase_merge=true`. After, read back: `allow_merge_commit=true`,
+  `allow_squash_merge=false`, `allow_rebase_merge=false`. An archive
+  authorization's `decision` names a commit that must stay reachable from
+  `main`, which a squash or rebase merge would drop. Branch protection was
+  read back unchanged. The rollback is the before-state, after a fresh
+  read-back and separate approval.
 
 ## Target Ruleset
 
