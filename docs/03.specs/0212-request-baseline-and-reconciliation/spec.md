@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.20.0"
+version: "1.21.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -73,7 +73,9 @@ conflict between the worktree rule and a CI script, in TSK-0021. Criterion 33/W3
 records a read-only runtime snapshot and a skill bundle audit, in TSK-0022.
 Criterion 34/W39 records the owner's correction of that runtime drift, in
 TSK-0023. Criterion 35/W40 corrects a stale path in the agent governance, in
-TSK-0024. Criterion 36/W41 removes a dead CI routing prefix, in TSK-0025.
+TSK-0024. Criterion 36/W41 removes a dead CI routing prefix, in TSK-0025. Criterion
+37/W42 records the re-run of the full request against the current baseline,
+in TSK-0026.
 
 ## Scope
 
@@ -413,6 +415,10 @@ hold, authorization and recovery requirements have been established.
     files outside Stage 03 and Stage 98, removes the dead CI routing prefix,
     and keeps dated research, ledgers, fixtures, and intentional absence
     lists unchanged.
+37. TSK-0026 re-runs the full request against the current baseline without
+    redoing kept work, closes TSK-0008 on its owner-accepted criterion, and
+    records the request-line meaning audit and the pairwise CR conflict check
+    as not performed.
 
 ## Failure Conditions
 
