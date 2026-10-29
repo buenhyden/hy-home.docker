@@ -43,7 +43,7 @@ created: "{{CREATED}}"
 
 ### Non-functional Requirements
 
-- **REQ-####-NFR-####**: {{NON_FUNCTIONAL_REQUIREMENT}}
+- **REQ-####-NFR-#### — {{QUALITY_CHARACTERISTIC}}**: {{NON_FUNCTIONAL_REQUIREMENT}}; measure: {{MEASURE_UNIT_ENVIRONMENT_AND_ACCEPTANCE}}
 
 ### Interface Requirements
 
