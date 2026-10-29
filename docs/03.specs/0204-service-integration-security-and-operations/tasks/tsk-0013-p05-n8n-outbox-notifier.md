@@ -4,7 +4,7 @@ version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0013"
 parent_ids:
@@ -777,6 +777,36 @@ check, which the current shape does not allow, so its `Resolves` is now `-`
 and `Rerun of Document and shared gate integration` resolves that FAIL with
 the same check on today's `main`.
 
+### Criterion 22 harness source 2026-10-30
+
+The owner chose to build the criterion 22 harness, register it in the gate and
+merge it after independent review. The opt-in native class
+`OpsflowN8nNativeRehearsal` in `tests/validation/test_opsflow_native_rehearsal.py`
+now runs seven further steps after the existing manual run: scheduled
+execution, concurrent claims, retry and dead letter, empty queue, database
+credential rotation, paired restore decrypt in the fresh generation, and wrong
+key fail-closed after a correct-key control on the same path. The helpers live
+in `tests/validation/_opsflow_native_criterion22.py`, and the Docker-free guards
+in `tests/validation/test_opsflow_native_criterion22.py` join the default gate
+through `.github/workflow-contract.yml`. The work budget rises from 25 to 40
+minutes. SMTP credential rotation stays NOT_RUN, because Mailpit has no
+authentication to rotate.
+
+Security review approved; its medium finding (no correct-key control for the
+explicit-key path) and the shared `/tmp` probe path were fixed. Code review
+asked for changes, all applied: the race and retry outputs join a boolean onto
+text, which PostgreSQL renders as `true` or `false`, so the parsers and stubs
+had expected the wrong `t` or `f`; the session check after rotation now waits
+for terminated backends; and two minor test defects were removed. The concurrent
+claim and retry scenarios drive the database contract as the notifier role in
+`psql`, with the retry backoff fast-forwarded by the superuser, and the receipt
+records this as `driver` and `backoff` facts. Accepting criterion 22 on that
+reading is the owner's decision. After the fixes the offline set ran 67 tests,
+OK, one skipped (the opt-in native class), and the workflow contract and its
+gate tests passed. This is source only: no Docker command ran, W42 still waits
+for P04 W36, and criterion 22 stays pending until one approved native run
+returns its receipt.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -795,6 +825,7 @@ the same check on today's `main`.
 | Delivery | 8, 22 | W45 | Latest-head CI/review/PR/merge | Integrated source phase | NOT_RUN | Two source commits recorded above; final Task commit and combined-head registration/CI remain separate; native holds are unchanged | required | - |
 | Segmented source checks | 8 | W45 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | required | - |
 | Rerun of Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | `main` at merged PR #640 with the notifier source and node READMEs | PASS | `check-document-metadata.py --mode check-contracts` 0 violations; `check-document-links.py --mode all` PASS; PR #640 `candidate-quality` run 40874942142 success, which runs pre-commit and gate routing | required | Document and shared gate integration |
+| Criterion 22 harness source | 22 | W44 | Offline scenario guards, gate registration and independent review | Worktree on `main` at merged PR #654 | PASS | Criterion 22 harness source 2026-10-30; 67 tests OK with the native class skipped; no native run | required | - |
 
 Actual existing-source command, exit0:
 
