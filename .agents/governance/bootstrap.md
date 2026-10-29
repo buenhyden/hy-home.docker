@@ -1,6 +1,6 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.6.0"
+version: "1.7.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -38,6 +38,10 @@ Supported agent entry shims, authored provider adapters, and request-scoped cano
 5. Execute the applicable registered gates and record evidence in that Task.
 
 Root shims and adapters route to this sequence and do not define alternatives.
+Root `AGENTS.md` and `CLAUDE.md` are entry shims: tool-neutral rules live in
+`.agents/governance/`, which both shims reach, so no rule is copied into a
+shim. Provider names appear under `.agents/` only as Provider Registry
+translation facts and the capability matrix, which carry no policy.
 Loading governing stage documents and the current Task is scoped execution
 context, not permission for outside-docs instructions to depend on an individual
 stage document. Current agent rules live in their canonical governance owner;

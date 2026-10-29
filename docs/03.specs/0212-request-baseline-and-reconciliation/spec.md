@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.28.0"
+version: "1.29.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -84,7 +84,8 @@ conflict, in TSK-0030. Criterion 42/W47 adds the five rules that
 TSK-0029 found missing, in TSK-0031. Criterion 43/W48 makes governance and
 provider guidance English, in TSK-0032. Criterion 44/W49 adds a Verification
 section to every skill, in TSK-0033. Criterion 45/W50 moves the Migration
-0003 cutover proof into its own module, in TSK-0034.
+0003 cutover proof into its own module, in TSK-0034. Criterion 46/W51 writes the rule text
+behind the partly met request lines, in TSK-0035.
 
 ## Scope
 
@@ -449,6 +450,8 @@ hold, authorization and recovery requirements have been established.
     observable success conditions and makes the section required.
 45. TSK-0034 moves the Migration 0003 cutover proof out of the general
     archive module without changing what any check proves.
+46. TSK-0035 writes the missing rule text behind the partly met request
+    lines in their canonical owners and records the lines later Tasks closed.
 
 ## Failure Conditions
 

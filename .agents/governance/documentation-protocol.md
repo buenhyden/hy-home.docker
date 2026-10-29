@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.6.0"
+version: "3.7.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -42,6 +42,10 @@ progress, or handoff authorities when the canonical package already owns the
 content. Root `DESIGN.md` remains UI and design-system authority only.
 
 #### Entry point for documents outside `docs/`
+
+Inside `docs/`, a document may link to Stage 99 templates and Stage 05
+operations documents for their shape or procedure; anything else it relies on
+is written in the document itself rather than replaced by a link.
 
 Outside `docs/`, README navigation and directory-purpose routes are allowed.
 Do not link to individual numbered-stage documents or depend on them for current
@@ -311,7 +315,9 @@ of external templates.
 
 ### Document Retention and Retirement
 
-Retention follows lifecycle and ownership. Age and document count are never
+Archive work is a disposition inside the current approved Task, never a new
+Spec project of its own, and a closed Spec gets no new standing verification
+pipeline. Retention follows lifecycle and ownership. Age and document count are never
 retention criteria. A document is retained while it owns current behavior,
 structure, decision, or procedure. It is retired when its status is terminal
 and its still-current meaning has moved to a canonical owner.
