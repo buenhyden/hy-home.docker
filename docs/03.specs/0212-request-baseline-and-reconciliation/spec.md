@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.19.0"
+version: "1.20.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -73,7 +73,7 @@ conflict between the worktree rule and a CI script, in TSK-0021. Criterion 33/W3
 records a read-only runtime snapshot and a skill bundle audit, in TSK-0022.
 Criterion 34/W39 records the owner's correction of that runtime drift, in
 TSK-0023. Criterion 35/W40 corrects a stale path in the agent governance, in
-TSK-0024.
+TSK-0024. Criterion 36/W41 removes a dead CI routing prefix, in TSK-0025.
 
 ## Scope
 
@@ -409,6 +409,10 @@ hold, authorization and recovery requirements have been established.
     running `hy-home-infra` container is healthy; the agent read state only.
 35. TSK-0024 checks every repository path that `.agents/`, `.claude/`, and
     `.codex/` name and corrects each one that no longer exists.
+36. TSK-0025 checks script, infra, workflow, and test paths named by active
+    files outside Stage 03 and Stage 98, removes the dead CI routing prefix,
+    and keeps dated research, ledgers, fixtures, and intentional absence
+    lists unchanged.
 
 ## Failure Conditions
 

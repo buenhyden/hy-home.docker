@@ -1579,7 +1579,6 @@
           "scripts/validation/check-conftest-policy.sh",
           "scripts/validation/check-supply-chain-policy.py",
           "scripts/validation/compose_controls.py",
-          "scripts/validation/check-supply-chain.sh",
           "scripts/validation/check-template-security-baseline.sh",
           "scripts/validation/validate-docker-compose.sh",
           "tests/lib/supply_chain/",
