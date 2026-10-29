@@ -1,10 +1,10 @@
 ---
 title: "QA Scope and Delivery Rationalization Task"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0211-TSK-0001"
 parent_ids:
@@ -1756,6 +1756,49 @@ Primary [pre-commit documentation](https://pre-commit.com/#pre-commit-run)
 confirms staged execution is distinct from explicit all-files/ref-range modes;
 shared pins do not make different local/PR trust identities interchangeable.
 
+### Owner acceptance 2026-10-29
+
+On 2026-10-29 the owner reviewed the evidence below and accepted all five
+criteria; criteria 2 and 3 cannot be recorded yet, as the end of this section states. The evidence was re-read against `main` at merged PR #632:
+
+- Criterion 1: `check-script-manifest.py` passes with a disposition and
+  consumers for every script, and the absence tests were dispositioned in
+  SPEC-0212 TSK-0016 and TSK-0017.
+- Criterion 2: the hosted gate plans of two real pull requests differ and
+  neither repeats a gate. Documentation PR #628 (run 40827180657) and
+  implementation PR #631 (run 40833393523) each ran eight gates, all `PASS`.
+  Only the documentation run selected `leaf.local-agent-governance-contract`
+  and `leaf.local-provider-surface-drift`. Only the implementation run
+  selected `leaf.local-script-manifest` and
+  `leaf.repository-integrity-regressions`. `test_ci_gate_plan` keeps the
+  rename, unknown-path, and name-status failure cases, and they pass.
+- Criterion 3: a pull request runs `candidate-quality`, a `main` push runs
+  `main-security`, and `publish-release.yml` alone publishes a release, as
+  SPEC-0212 TSK-0028 read.
+- Criterion 4: the commitizen hook checked every commit of this session,
+  and `publish-release.yml` with `scripts/operations/release.py` produces `v`
+  plus SemVer tags with a draft-asset release.
+- Criterion 5: `github-governance.md` now records that no GitHub Project is
+  used, so policy, templates, and Issue guidance agree. Independent review is
+  recorded in TSK-0002.
+
+The Evidence and Criterion Acceptance tables move from the pre-generation-7
+shape to the current one so that this acceptance can be recorded: each row
+gains `Required`, and each criterion row gains its current owner. Two old rows
+named an earlier failure in `Resolves` with a different check, which the
+current shape does not allow, so their `Resolves` is now `-`:
+`Corrected local ownership prerequisite` named `Local-only ownership validation, Narrow integrity retry`; `Remaining QA source guarantees` named `Manifest owner focused followup`.
+The failures they answered stay recorded as `FAIL` rows above.
+
+Criteria 2 and 3 are recorded as `pending` even though the owner accepted
+them. Completed TSK-0002 keeps two required `FAIL` rows, `First hosted
+candidate RED` and `Hosted retry`, that no row resolves: its later `Final
+hosted candidate recovery` PASS has the same Check and Work Unit but names only
+`Final hosted candidate` in `Resolves`. A terminal Task cannot be edited, and
+`Resolves` only reaches rows in the same Task, so the Spec validator rejects an
+accepted decision for either criterion. This Task stays `in-progress` until
+that record can be corrected.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -1828,42 +1871,56 @@ shared pins do not make different local/PR trust identities interchangeable.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Current source baseline | 5 | W1 | HEAD, clean paths, remote main and identity history | main `849ef009a`; Registry `210/211` | PASS | Actual root and planner read-only observations | - |
-| Initial draft validation | 5 | W1 | Metadata, package relationship, links, style and independent review | Corrected five-file draft preserved in `0e0e8f16` | PASS | Initial validation and authoring correction | - |
-| QA retirement | 1 | W2 | Focused generic preservation and disposition | Approved patch and current-owner cleanup | PASS | Focused implementation evidence; integrated closure pending | - |
-| Changed selection | 2 | W3 | Focused behavior regressions and historical context reuse | Frozen pipeline and metadata writer inputs | PASS | Focused implementation evidence | - |
-| Remote phase validation | 3 | W4 | Candidate manifest and actual hosted validation | PR368 a4e928b66; opened cancelled, ready run failed links | FAIL | First hosted candidate and bounded correction | - |
-| Commit and release validation | 4 | W5 | Grammar, SemVer, draft assets and read-back regressions | Frozen helper; all remote commands mocked | PASS | Focused implementation evidence | - |
-| Governance | 5 | W6 | Current policy, evaluation role and alignment | Scoped 16-document PASS; hosted all-mode found 3 new routing failures | FAIL | First hosted candidate and bounded correction; scoped evidence retained | - |
-| Final review | 1, 2, 3, 4, 5 | W7 | Exact source diff, contract and actual independent reviews | Reviewed source slices; first hosted FAIL, corrective acceptance pending | PASS | Final selector and evaluation-role alignment; candidate validation pending | - |
-| Corrective hosted validation | 3 | W4 | Actual candidate job result | PR368 2732b47de; run37557391324/job112586668864 | FAIL | Corrective candidate failure and user-directed test retirement | - |
-| Current test retirement | 1 | W2 | Exact deletion/proof review and focused current boundaries | Reviewed five-file patch 2f54ea47; 18 focused tests | PASS | Test retirement application and focused verification | - |
-| Retirement hosted result | 3 | W4 | Actual remote validation and approved value-free diagnosis | PR368 549aee5c; run37560655770/job112596913297 | FAIL | Local-only implementation verification ownership | - |
-| Local-only ownership validation | 2 | W3 | Canonical local-only execution, typed plan and independent review | Frozen13 treec341179b; twelve selected invocations | FAIL | Local-only validation failure and narrow consumer repair | - |
-| Narrow integrity retry | 2 | W3 | Changed registered leaf only | Frozen16 tree41c3da3e; 174 tests | FAIL | Narrow integrity retry result | - |
-| Corrected local ownership prerequisite | 2 | W3 | Preserved eleven leaves plus approved changed registered leaf | Frozen17 tree9542ed9f; final174 tests | PASS | Final local ownership result and submission input | Local-only ownership validation, Narrow integrity retry |
-| Submitted local-only candidate | 3 | W4 | Actual hosted candidate status and time | PR368 head076b976; run37568286266/job112620932425 | FAIL | Submitted local-only candidate and unit followup | - |
-| Isolated unit ownership prerequisite | 1, 2, 5 | W7 | Exact retirement owners, canonical LOCAL run and bounded continuation | tree519ab7b2 failed workflow; corrected treee4e3d664 five leaves PASS | PASS | Narrow unit prerequisite result and metadata-library extension | - |
-| Metadata-library retirement prerequisite | 1 | W2 | Exact current-owner disposition, affected LOCAL leaves and one narrow case | tree878ca39f130/647 PASS; tree3c263847 changed case PASS | PASS | Metadata-library actual result and narrow expectation closeout | - |
-| Local unit closeout documents | 5 | W7 | Result-only Task metadata, read-only style and LOCAL links | Task3b327b2a; other four docs unchanged | PASS | Local unit closeout document evidence | - |
-| Submitted unit candidate | 3 | W4 | Actual hosted result and approved value-free diagnosis | PR368 head2cf46fb; run37579620261/job112656063347 | FAIL | Submitted unit candidate manifest failure | - |
-| Manifest owner focused followup | 1, 2, 5 | W7 | Existing fixture, actual manifest and registered read-only statics | HEAD2cf; exact approved two-source after-images | FAIL | Manifest owner focused result and wider QA request | - |
-| Remaining QA source guarantees | 1, 2, 5 | W7 | Focused RED/GREEN, actual shell, manifest, registered statics and independent review | HEAD2cf; reviewed21file batch, corrected manifest364899b9 | PASS | Remaining QA local source closeout | Manifest owner focused followup |
-| Remaining-QA hosted candidate | 3 | W4 | Actual remote job/step status only | PR368 headd46f19685; run37586857030/job112678882658 | FAIL | Submitted remaining-QA candidate failure | - |
-| Lint phase ownership | 2, 3, 5 | W7 | Focused RED/GREEN, pinned staged isolation, exact-source security/policy review and guidance minimum | Final source receipt506263ea; eight guidance hashes; no aggregate replay | PASS | Local commit and server lint/format ownership | - |
-| Conftest lint correction | 2, 5 | W7 | Registered one-file ShellCheck and bash/sh syntax, exact source/proposal review | HEADd46; applied6dd6d3d8, quote-only patch13f1d0fb | PASS | Approved Conftest ShellCheck correction | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Current source baseline | 5 | W1 | HEAD, clean paths, remote main and identity history | main `849ef009a`; Registry `210/211` | PASS | Actual root and planner read-only observations | required | - |
+| Initial draft validation | 5 | W1 | Metadata, package relationship, links, style and independent review | Corrected five-file draft preserved in `0e0e8f16` | PASS | Initial validation and authoring correction | required | - |
+| QA retirement | 1 | W2 | Focused generic preservation and disposition | Approved patch and current-owner cleanup | PASS | Focused implementation evidence; integrated closure pending | required | - |
+| Changed selection | 2 | W3 | Focused behavior regressions and historical context reuse | Frozen pipeline and metadata writer inputs | PASS | Focused implementation evidence | required | - |
+| Remote phase validation | 3 | W4 | Candidate manifest and actual hosted validation | PR368 a4e928b66; opened cancelled, ready run failed links | FAIL | First hosted candidate and bounded correction | required | - |
+| Commit and release validation | 4 | W5 | Grammar, SemVer, draft assets and read-back regressions | Frozen helper; all remote commands mocked | PASS | Focused implementation evidence | required | - |
+| Governance | 5 | W6 | Current policy, evaluation role and alignment | Scoped 16-document PASS; hosted all-mode found 3 new routing failures | FAIL | First hosted candidate and bounded correction; scoped evidence retained | required | - |
+| Final review | 1, 2, 3, 4, 5 | W7 | Exact source diff, contract and actual independent reviews | Reviewed source slices; first hosted FAIL, corrective acceptance pending | PASS | Final selector and evaluation-role alignment; candidate validation pending | required | - |
+| Corrective hosted validation | 3 | W4 | Actual candidate job result | PR368 2732b47de; run37557391324/job112586668864 | FAIL | Corrective candidate failure and user-directed test retirement | required | - |
+| Current test retirement | 1 | W2 | Exact deletion/proof review and focused current boundaries | Reviewed five-file patch 2f54ea47; 18 focused tests | PASS | Test retirement application and focused verification | required | - |
+| Retirement hosted result | 3 | W4 | Actual remote validation and approved value-free diagnosis | PR368 549aee5c; run37560655770/job112596913297 | FAIL | Local-only implementation verification ownership | required | - |
+| Local-only ownership validation | 2 | W3 | Canonical local-only execution, typed plan and independent review | Frozen13 treec341179b; twelve selected invocations | FAIL | Local-only validation failure and narrow consumer repair | required | - |
+| Narrow integrity retry | 2 | W3 | Changed registered leaf only | Frozen16 tree41c3da3e; 174 tests | FAIL | Narrow integrity retry result | required | - |
+| Corrected local ownership prerequisite | 2 | W3 | Preserved eleven leaves plus approved changed registered leaf | Frozen17 tree9542ed9f; final174 tests | PASS | Final local ownership result and submission input | required | - |
+| Submitted local-only candidate | 3 | W4 | Actual hosted candidate status and time | PR368 head076b976; run37568286266/job112620932425 | FAIL | Submitted local-only candidate and unit followup | required | - |
+| Isolated unit ownership prerequisite | 1, 2, 5 | W7 | Exact retirement owners, canonical LOCAL run and bounded continuation | tree519ab7b2 failed workflow; corrected treee4e3d664 five leaves PASS | PASS | Narrow unit prerequisite result and metadata-library extension | required | - |
+| Metadata-library retirement prerequisite | 1 | W2 | Exact current-owner disposition, affected LOCAL leaves and one narrow case | tree878ca39f130/647 PASS; tree3c263847 changed case PASS | PASS | Metadata-library actual result and narrow expectation closeout | required | - |
+| Local unit closeout documents | 5 | W7 | Result-only Task metadata, read-only style and LOCAL links | Task3b327b2a; other four docs unchanged | PASS | Local unit closeout document evidence | required | - |
+| Submitted unit candidate | 3 | W4 | Actual hosted result and approved value-free diagnosis | PR368 head2cf46fb; run37579620261/job112656063347 | FAIL | Submitted unit candidate manifest failure | required | - |
+| Manifest owner focused followup | 1, 2, 5 | W7 | Existing fixture, actual manifest and registered read-only statics | HEAD2cf; exact approved two-source after-images | FAIL | Manifest owner focused result and wider QA request | required | - |
+| Remaining QA source guarantees | 1, 2, 5 | W7 | Focused RED/GREEN, actual shell, manifest, registered statics and independent review | HEAD2cf; reviewed21file batch, corrected manifest364899b9 | PASS | Remaining QA local source closeout | required | - |
+| Remaining-QA hosted candidate | 3 | W4 | Actual remote job/step status only | PR368 headd46f19685; run37586857030/job112678882658 | FAIL | Submitted remaining-QA candidate failure | required | - |
+| Lint phase ownership | 2, 3, 5 | W7 | Focused RED/GREEN, pinned staged isolation, exact-source security/policy review and guidance minimum | Final source receipt506263ea; eight guidance hashes; no aggregate replay | PASS | Local commit and server lint/format ownership | required | - |
+| Conftest lint correction | 2, 5 | W7 | Registered one-file ShellCheck and bash/sh syntax, exact source/proposal review | HEADd46; applied6dd6d3d8, quote-only patch13f1d0fb | PASS | Approved Conftest ShellCheck correction | required | - |
+| Hosted plan comparison | 2 | W3 | Gate plans of PR #628 and PR #631 runs | Runs 40827180657 and 40833393523 | PASS | Owner acceptance 2026-10-29 | required | - |
+| Remote phase ownership | 3 | W4 | Hosted `candidate-quality` and `main-security` results on current `main` | PR #631 run 40833393523 and merged-main runs | PASS | Owner acceptance 2026-10-29 | required | - |
+| Governance alignment | 5 | W6 | `github-governance.md` Projects decision and SPEC-0212 TSK-0028 read | `main` at PR #632 plus this change | PASS | Owner acceptance 2026-10-29 | required | - |
+| Acceptance re-read | 1, 3, 4, 5 | W7 | `check-script-manifest.py`, workflow read, commitizen hook | `main` at PR #632 | PASS | Owner acceptance 2026-10-29 | required | - |
+| Rerun of Remote phase validation | 3 | W4 | Candidate manifest and actual hosted validation | PR #631 run 40833393523 at head `2aca64b63`; merged `main` `ced46a658` | PASS | Owner acceptance 2026-10-29 | required | Remote phase validation |
+| Rerun of Governance | 5 | W6 | Current policy, evaluation role and alignment | `main` at PR #632: `check-agent-governance-contract.py` PASS, `check-document-links.py --mode alignment` PASS | PASS | Owner acceptance 2026-10-29 | required | Governance |
+| Rerun of Corrective hosted validation | 3 | W4 | Actual candidate job result | PR #631 run 40833393523 at head `2aca64b63`; merged `main` `ced46a658` | PASS | Owner acceptance 2026-10-29 | required | Corrective hosted validation |
+| Rerun of Retirement hosted result | 3 | W4 | Actual remote validation and approved value-free diagnosis | PR #631 run 40833393523 at head `2aca64b63`; merged `main` `ced46a658` | PASS | Owner acceptance 2026-10-29 | required | Retirement hosted result |
+| Rerun of Local-only ownership validation | 2 | W3 | Canonical local-only execution, typed plan and independent review | PR #628 and PR #631 hosted plans, eight selected gates each, none repeated; `test_ci_gate_plan` OK | PASS | Owner acceptance 2026-10-29 | required | Local-only ownership validation |
+| Rerun of Narrow integrity retry | 2 | W3 | Changed registered leaf only | PR #628 and PR #631 hosted plans, eight selected gates each, none repeated; `test_ci_gate_plan` OK | PASS | Owner acceptance 2026-10-29 | required | Narrow integrity retry |
+| Rerun of Submitted local-only candidate | 3 | W4 | Actual hosted candidate status and time | PR #631 run 40833393523 at head `2aca64b63`; merged `main` `ced46a658` | PASS | Owner acceptance 2026-10-29 | required | Submitted local-only candidate |
+| Rerun of Submitted unit candidate | 3 | W4 | Actual hosted result and approved value-free diagnosis | PR #631 run 40833393523 at head `2aca64b63`; merged `main` `ced46a658` | PASS | Owner acceptance 2026-10-29 | required | Submitted unit candidate |
+| Rerun of Manifest owner focused followup | 1, 2, 5 | W7 | Existing fixture, actual manifest and registered read-only statics | `main` at PR #632: `check-script-manifest.py` PASS | PASS | Owner acceptance 2026-10-29 | required | Manifest owner focused followup |
+| Rerun of Remaining-QA hosted candidate | 3 | W4 | Actual remote job/step status only | PR #631 run 40833393523 at head `2aca64b63`; merged `main` `ced46a658` | PASS | Owner acceptance 2026-10-29 | required | Remaining-QA hosted candidate |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
-| 5 | pending | - | - |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | accepted | QA retirement, Acceptance re-read | Removed QA has no active caller and every retained guarantee has an owner and disposition. | SPEC-0211 TSK-0001 |
+| 2 | pending | Hosted plan comparison | Owner accepted on 2026-10-29; recording waits on the unresolved TSK-0002 FAIL rows. | SPEC-0211 TSK-0001 |
+| 3 | pending | Remote phase ownership, Acceptance re-read | Owner accepted on 2026-10-29; recording waits on the unresolved TSK-0002 FAIL rows. | SPEC-0211 TSK-0001 |
+| 4 | accepted | Commit and release validation, Acceptance re-read | Commit grammar, changelog preparation, and the one SemVer release producer run. | SPEC-0211 TSK-0001 |
+| 5 | accepted | Governance alignment | Policy, templates, and Issue guidance agree, with no GitHub Project. | SPEC-0211 TSK-0001 |
 
 ## Review and Completion
 
@@ -1872,7 +1929,8 @@ shared pins do not make different local/PR trust identities interchangeable.
 merge와 merged-main security 실행의 완료를 기록한다. 따라서 앞선 candidate
 실패를 현재 통합 상태의 최종 결과로 삼지 않는다. 현재 QA 실행과 남은 검사·검토의
 지원 증거는 TSK-0003이 기록하며, 기준 1–5의 유일한 수용 결정 소유자는 이
-Task다. 위 다섯 Criterion Acceptance 행은 모두 pending으로 유지한다.
+Task다. 2026-10-29 owner 결정으로 기준 1, 4, 5는 accepted이고, 기준 2와 3은
+[Owner acceptance](#owner-acceptance-2026-10-29)의 이유로 pending이다.
 
 전체 FULL 성공이나 운영 활성화는 이 요약으로 확정하지 않는다. 미실행 운영
 관측과 release publication은 기존 경계를 유지하며, 소스 구조와 mocked
