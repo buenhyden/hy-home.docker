@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.29.0"
+version: "1.30.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -85,7 +85,10 @@ TSK-0029 found missing, in TSK-0031. Criterion 43/W48 makes governance and
 provider guidance English, in TSK-0032. Criterion 44/W49 adds a Verification
 section to every skill, in TSK-0033. Criterion 45/W50 moves the Migration
 0003 cutover proof into its own module, in TSK-0034. Criterion 46/W51 writes the rule text
-behind the partly met request lines, in TSK-0035.
+behind the partly met request lines, in TSK-0035. Criterion 47/W52 records the
+investigations, owner decisions and currency fixes, in TSK-0036. Criterion
+48/W53 lets the validator accept the one approved terminal Task correction,
+in TSK-0037.
 
 ## Scope
 
@@ -452,6 +455,10 @@ hold, authorization and recovery requirements have been established.
     archive module without changing what any check proves.
 46. TSK-0035 writes the missing rule text behind the partly met request
     lines in their canonical owners and records the lines later Tasks closed.
+47. TSK-0036 records the read-only investigations, the owner decisions and
+    the Stage 01, 02 and 05 fixes they led to.
+48. TSK-0037 lets the validator accept the one owner-approved `Resolves`
+    correction of a completed Task and nothing else.
 
 ## Failure Conditions
 
