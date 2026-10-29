@@ -372,6 +372,53 @@ printf '[{"id":"c1","data":{"password":"right-secret"}}]' >"$out"
             self.assertFalse((Path(root) / "credential-probe.json").exists())
 
 
+class ExecutionTimeoutFactsTests(unittest.TestCase):
+    def test_facts_are_closed_booleans_and_never_mask_the_timeout(self):
+        lines = {"worker": 'Registered runner "js"\nWorker started execution 7'}
+        facts = c22.execution_timeout_facts(
+            "running", lambda role, text: text in lines.get(role, "")
+        )
+        self.assertEqual("running", facts["last_status"])
+        self.assertEqual({"enqueued": False}, facts["main_log"])
+        self.assertEqual(
+            {
+                "started": True,
+                "finished": False,
+                "unknown_node": False,
+                "runner_timeout": False,
+                "runner_registered": True,
+            },
+            facts["worker_log"],
+        )
+        self.assertEqual(
+            "other",
+            c22.execution_timeout_facts("secret text", lambda *a: False)["last_status"],
+        )
+
+        def broken(role, text):
+            raise RehearsalFailure("container gone")
+
+        facts = c22.execution_timeout_facts("none", broken)
+        self.assertEqual("unavailable", facts["worker_log"])
+
+    def test_await_execution_records_the_facts_on_timeout(self):
+        case = driver()
+        case.api = lambda *a, **k: {"id": "e1", "status": "new"}
+        case.fixture.logs_contain = lambda role, text: False
+
+        def wait_until(probe, message, seconds, failure=None):
+            self.assertFalse(probe())
+            failure()
+            raise RehearsalFailure(message)
+
+        case.fixture.wait_until = wait_until
+        with self.assertRaises(RehearsalFailure):
+            case.await_execution("e1", "success")
+        self.assertEqual(
+            "new", case.fixture.receipt["execution_timeout_facts"]["last_status"]
+        )
+
+
 class Criterion22DriverTests(unittest.TestCase):
     def test_publish_next_uses_rising_unique_capture_times_and_safe_ids(self):
         case = driver()

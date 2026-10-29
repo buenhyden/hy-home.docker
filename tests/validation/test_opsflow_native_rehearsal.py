@@ -20,6 +20,7 @@ from tests.validation._opsflow_native_criterion22 import (
     CREDENTIAL_PROBE_SCRIPT,
     DEACTIVATED_HOLD_SECONDS,
     EXECUTION_STATUSES_OPEN,
+    EXECUTION_STATUSES_SEEN,
     MAX_ATTEMPTS,
     PASSWORD_PROBE_SCRIPT,
     RACE_SCRIPT,
@@ -27,6 +28,7 @@ from tests.validation._opsflow_native_criterion22 import (
     RECEIPT_FIELDS,
     RETRY_CYCLE_SQL,
     SCHEDULE_WAIT_SECONDS,
+    execution_timeout_facts,
     exhaust_sql,
     fast_forward_sql,
     initial_receipt,
@@ -467,17 +469,29 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
         self, execution_id: str, status: str, code_node: str | None = None
     ) -> dict:
         terminal: dict[str, object] = {}
+        seen = {"status": "none"}
 
         def probe() -> bool:
             summary = self.api("execution", executionId=execution_id)
             if summary.get("id") != execution_id:
                 raise RehearsalFailure("execution safe ID changed")
-            if summary.get("status") in {"success", "error", "canceled", "crashed"}:
+            status_seen = summary.get("status")
+            seen["status"] = (
+                status_seen if status_seen in EXECUTION_STATUSES_SEEN else "other"
+            )
+            if status_seen in {"success", "error", "canceled", "crashed"}:
                 terminal.update(summary)
                 return True
             return False
 
-        self.fixture.wait_until(probe, "queued execution did not become terminal", 60)
+        def timed_out() -> None:
+            self.fixture.receipt["execution_timeout_facts"] = execution_timeout_facts(
+                seen["status"], self.fixture.logs_contain
+            )
+
+        self.fixture.wait_until(
+            probe, "queued execution did not become terminal", 60, timed_out
+        )
         if terminal.get("status") != status or terminal.get("terminal") is not True:
             raise RehearsalFailure("queued execution terminal status rejected")
         if status == "success" and terminal.get("finished") is not True:
