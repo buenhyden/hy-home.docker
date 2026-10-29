@@ -53,11 +53,12 @@ Provider-neutral agent execution, delegation, capability intake, and Task eviden
   because neither provider shows a hook's other non-zero exits to the model.
   `post-tool-validate.sh --write` is the explicit fix, under
   [formatting ownership](quality-standards.md#10-formatting-and-linting-ownership).
-- 에디터 단축키, 코드 액션, 인라인 편집은 저장소 표면이 아니라 개인 IDE
-  설정입니다. `.vscode/`와 `.idea/`는 Git에서 제외하고 `.editorconfig`만
-  공유합니다. 공유 PostToolUse hook이 이미 바뀐 문서를 고치지 않고 검사하므로
-  별도 문서화 hook은 두지 않습니다. 이 중 하나라도 추가하려면 명령, 권한, 입력,
-  출력을 명시한 승인된 Spec이 먼저 있어야 합니다.
+- Editor shortcuts, code actions, and inline edit are not repository surfaces.
+  They are personal IDE settings, and `.vscode/` and `.idea/` stay out of Git;
+  only `.editorconfig` is shared. No separate documentation hook is added,
+  because the shared PostToolUse hook already checks changed documents without
+  rewriting them. Adding any of these needs an approved Spec that names its
+  command, permission, inputs, and output.
 
 ### Delegation Contract
 
@@ -74,10 +75,11 @@ authorization source and scope. Those fields are structural records, not
 authentication; their validity is resolved through approval boundaries.
 Unsupported fields are recorded unknown. It refuses an unapproved fallback,
 extra spend, or silent resume. A supervisor may request one narrower retry after
-a failed check. 모든 agent 루프에는 성공, 실패, 진전 없음, 예산 소진, 취소의 다섯
-가지 종료 조건이 있습니다. 파일, 검사 결과, Task 기록 중 아무것도 바꾸지 못한
-반복은 진전 없음이며, 그런 반복이 두 번 연속되면 루프를 끝냅니다. 사용자나
-supervisor가 취소하면 추가 시도 없이 즉시 끝냅니다. Repeated failure, conflicting authority, missing or revoked
+a failed check. Every agent loop has five exits: success, failure, no progress,
+budget, and cancellation. An iteration that changes no file, check result, or
+Task record counts as no progress, and a second one in a row ends the loop.
+A cancellation from the user or supervisor ends it at once, without another
+attempt. Repeated failure, conflicting authority, missing or revoked
 approval, exhausted declared budget, or expanding blast radius stops and
 escalates. Provider delivery and hook events are neither approval nor completion
 evidence. This contract does not infer account RPM, TPM, price, or a provider

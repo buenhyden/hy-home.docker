@@ -31,11 +31,11 @@ projection of either, and their absence under `.claude/` is not a defect.
   copy procedure bodies or become a second authority.
 - Generated Claude skill adapters set `disable-model-invocation: true` and are
   explicitly invoked. A discovered skill grants no additional tools or approval.
-- Skill은 `.agents/skills/`를 가리키는 심볼릭 링크가 아니라 생성된 adapter
-  파일입니다. 심볼릭 링크는 canonical `SKILL.md`를 그대로 읽히므로
-  `disable-model-invocation: true`가 빠져 Claude가 공통 skill을 스스로 시작할
-  수 있고, canonical 파일은 공급자 중립을 유지해야 합니다. Codex는
-  `.agents/skills/`를 직접 읽으므로 어느 쪽도 필요하지 않습니다.
+- Skills are generated adapter files, not symlinks to `.agents/skills/`. A
+  symlink would load the canonical `SKILL.md` as is, without
+  `disable-model-invocation: true`, so Claude could start a shared skill on its
+  own, and the canonical file must stay provider-neutral. Codex needs neither,
+  because it reads `.agents/skills/` directly.
 - `.claude/settings.json`, `.claude/hooks/`, and `.claude/output-styles/` are
   native mechanics that route to shared policies and scripts. The `.claude/hooks/`
   wrappers are authored, not rendered. The Registry PreToolUse binding's

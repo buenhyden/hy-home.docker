@@ -70,11 +70,13 @@ redaction boundary are defined by
   a remote mutation outside the request's branch and pull request; issuing,
   rotating, or revoking a credential; deleting data or volumes; opening a
   public endpoint; and anything billed. Once the user names the target, run it.
-- 네 워크스페이스 저장소(`blog-data`, `Project-Template`, `hy-home.docker`,
-  `hy-home.k8s`)가 공유하는 의미의 공동 결정 주체는 네 저장소를 모두 소유한
-  owner `@buenhyden` 한 명입니다. 공유 계약은 그 owner가 계약, 판본, 적용할
-  저장소를 명시해 승인할 때만 활성화됩니다. 각 저장소는 자기 Task에 자기 채택만
-  기록하며, 이 저장소가 다른 저장소의 채택을 결정하거나 기록하지 않습니다.
+- A meaning shared by the four workspace repositories (`blog-data`,
+  `Project-Template`, `hy-home.docker`, `hy-home.k8s`) has one joint decision
+  maker: the owner `@buenhyden`, who owns all four. A shared contract becomes
+  active only by that owner's explicit approval naming the contract, its
+  revision, and the repositories it applies to. Each repository records its own
+  adoption in its own Task; this repository never decides or records adoption
+  for another.
 - Role permissions come from canonical role frontmatter; provider/model and
   permission translations come from `.agents/governance/providers/registry.yaml`; lifecycle,
   retry, and stop behavior comes from [workflows.md](workflows.md). Provider
