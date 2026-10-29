@@ -1,10 +1,10 @@
 ---
 title: "Compose Container and Host Naming Task"
-version: "0.2.3"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0216-TSK-0001"
 parent_ids:
@@ -96,25 +96,46 @@ in HA mode `active`, version 2.6.2, and the `openbao` container was healthy.
 `openbao-agent` was then recreated and runs healthy with container name and
 hostname `openbao-agent`.
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0216 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0216-PLAN-0001 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0216-TSK-0001 | draft | ready | #inputs-and-authorization |
+| SPEC-0216-TSK-0001 | ready | in-progress | #w1-rule-exceptions-test-and-compose-edits |
+| SPEC-0216-TSK-0001 | in-progress | completed | #owner-decision-2026-10-29 |
+
+### Owner decision 2026-10-29
+
+The work already landed. On 2026-10-29 the owner approved SPEC-0216 and its
+Plan after the fact and closed the package on documents alone. Criterion 4 is
+now accepted: the sealed OpenBao FAIL row is resolved by the PASS row
+"Owner acceptance 2026-10-29", which rests on the earlier PASS row
+"OpenBao unseal and agent recreation" (owner unseal per RUN-0085, healthy
+`openbao`, recreated `openbao-agent`). Criteria 1 to 3 keep their earlier
+acceptance. No runtime check was rerun.
+
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Naming test | 1 | W1 | RED with previous Compose files, GREEN after | Working tree | PASS | W1 Rule, Exceptions, Test and Compose Edits | - |
-| Render and catalog | 3 | W1 | Root render; `check-operations-catalog.py`; projection check | `.env.example` | PASS | W1 Rule, Exceptions, Test and Compose Edits | - |
-| Document references | 2 | W2 | `git grep` for retired names outside history | Working tree | PASS | W2 Documents | - |
-| HOME recreation | 4 | W3 | Recreate running services; health, names, scrape targets | Merged `948fd7e3b`; HOME 2026-10-08 | PASS | W3 HOME Recreation | - |
-| OpenBao after recreation | 4 | W3 | `bao status`; container health | HOME 2026-10-08 | FAIL | W3 HOME Recreation | - |
-| OpenBao unseal and agent recreation | 4 | W3 | Owner unseal per RUN-0085, then recreate `openbao-agent`; `bao status`; container health | HOME 2026-10-08 | PASS | W3 HOME Recreation | OpenBao after recreation |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Naming test | 1 | W1 | RED with previous Compose files, GREEN after | Working tree | PASS | W1 Rule, Exceptions, Test and Compose Edits | required | - |
+| Render and catalog | 3 | W1 | Root render; `check-operations-catalog.py`; projection check | `.env.example` | PASS | W1 Rule, Exceptions, Test and Compose Edits | required | - |
+| Document references | 2 | W2 | `git grep` for retired names outside history | Working tree | PASS | W2 Documents | required | - |
+| HOME recreation | 4 | W3 | Recreate running services; health, names, scrape targets | Merged `948fd7e3b`; HOME 2026-10-08 | PASS | W3 HOME Recreation | required | - |
+| OpenBao after recreation | 4 | W3 | `bao status`; container health | HOME 2026-10-08 | FAIL | W3 HOME Recreation | required | - |
+| OpenBao unseal and agent recreation | 4 | W3 | Owner unseal per RUN-0085, then recreate `openbao-agent`; `bao status`; container health | HOME 2026-10-08 | PASS | W3 HOME Recreation | required | - |
+| Owner acceptance 2026-10-29 | 4 | W3 | `bao status`; container health | Recorded unseal and agent result re-read by the owner; no rerun | PASS | Owner decision 2026-10-29 | required | OpenBao after recreation |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 1 | accepted | Naming test | Generation 5 row acceptance |
-| 2 | accepted | Document references | Generation 5 row acceptance |
-| 3 | accepted | Render and catalog | Generation 5 row acceptance |
-| 4 | rejected | OpenBao after recreation | Generation 5 Evidence row rejected |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | accepted | Naming test | Generation 5 row acceptance | SPEC-0216 TSK-0001 |
+| 2 | accepted | Document references | Generation 5 row acceptance | SPEC-0216 TSK-0001 |
+| 3 | accepted | Render and catalog | Generation 5 row acceptance | SPEC-0216 TSK-0001 |
+| 4 | accepted | OpenBao unseal and agent recreation, Owner acceptance 2026-10-29 | Owner accepted on 2026-10-29; the unseal PASS row resolves the sealed FAIL. | SPEC-0216 TSK-0001 |
 
 ## Review and Completion
 
@@ -123,10 +144,9 @@ recreation left OpenBao sealed, which remains a recorded FAIL; the owner then
 unsealed it and `openbao-agent` was recreated, as recorded in the resolving
 PASS row.
 
-The 2026-10-22 readback distinguishes that recovery from acceptance: criterion
-4 remains `rejected` above under its recorded decision. The later recovery
-row resolves the execution failure; this documentation correction does not
-accept criterion 4 or change lifecycle status. Current source also reflects
+The 2026-10-22 readback distinguished that recovery from acceptance: criterion
+4 was then `rejected`; the owner accepted it on 2026-10-29, as recorded in
+the owner decision above. Current source also reflects
 SPEC-0225's node-exporter hostname omission and the LAB-owned Supabase naming
 registry, now stated in the [Spec contracts](../spec.md#contracts).
 
