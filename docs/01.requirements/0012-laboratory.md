@@ -1,15 +1,15 @@
 ---
-title: "Administration and Experimentation Product Requirements"
-version: "1.1.3"
+title: "Administration and Experimentation Requirements"
+version: "1.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "requirements"
 artifact_id: "REQ-0012"
 created: "2026-03-26"
 ---
-# Administration and Experimentation Product Requirements
+# Administration and Experimentation Requirements
 
 ## Overview
 
@@ -61,6 +61,7 @@ N/A
 - **REQ-0012-FR-0001**: Every active infrastructure service must be exposed on the dashboard, either automatically or through manual configuration.
 - **REQ-0012-FR-0002**: Every admin tool UI route must preserve its approved gateway, authentication and allowlist boundary. RedisInsight uses ForwardAuth; Dozzle uses native OIDC with the gateway CIDR control; Open Notebook uses its password-file authentication with the gateway CIDR control. These existing service-specific exceptions are recorded in POL-0073 and the corresponding source, not introduced by relocation. MLflow and JupyterLab browser routes use ForwardAuth; direct network/API paths require separate access evidence.
 - **REQ-0012-FR-0004**: Root Compose validation must cover `admin` (Dozzle and RedisInsight), `notebook` (Open Notebook and SurrealDB), `surrealdb`, `mlops` (MLflow and its provisioner), and `data-science` (MLflow, its provisioner and JupyterLab), preserving existing selections.
+- **REQ-0012-FR-0005**: The operator and knowledge-work capabilities are optional and outside HOME, and their absence must not affect core traffic. Their broad visibility into Docker, Redis/Valkey, provider APIs and notebook content makes them an admin security boundary, not a harmless dashboard layer.
 
 ### Non-functional Requirements
 

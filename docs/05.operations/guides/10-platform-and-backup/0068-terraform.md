@@ -1,10 +1,10 @@
 ---
 title: "Operations: Terraform Policy Usage Guide"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/guide"
-status: "active"
+status: "retired"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "GDE-0068"
 parent_ids:

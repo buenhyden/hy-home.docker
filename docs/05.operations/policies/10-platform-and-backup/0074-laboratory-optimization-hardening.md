@@ -1,10 +1,10 @@
 ---
-title: "Administration and Experimentation Hardening Operations Policy"
-version: "1.0.4"
+title: "Admin and Experiment Tools Hardening Operations Policy"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "POL-0074"
 parent_ids:
@@ -12,7 +12,7 @@ parent_ids:
 created: "2026-05-10"
 ---
 
-# Administration and Experimentation Hardening Operations Policy
+# Admin and Experiment Tools Hardening Operations Policy
 
 ## Overview
 
@@ -36,7 +36,7 @@ created: "2026-05-10"
   - dozzle docker socket은 read-only로 유지한다.
   - open-notebook UI route는 승인된 allowlist+large-body+앱 비밀번호 경계를 유지하고, credential은 Docker Secret file로만 주입한다.
   - Open Notebook API의 loopback 게시와 SurrealDB의 호스트 게시 없음은 현재 경계로 기록하되, production-like promotion 전 direct exposure review를 수행해야 한다.
-  - laboratory 변경은 `check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics` 및 CI `infrastructure-hardening` 통과가 필수다.
+  - 관리·실험 기능 변경은 `check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics` 및 CI `infrastructure-hardening` 통과가 필수다.
   - optimization-hardening 문서(PRD~Procedure)와 README 인덱스를 동기화한다.
 - **Allowed**:
   - 카탈로그 확장 항목을 단계적으로 도입하는 정책/절차/문서 작업

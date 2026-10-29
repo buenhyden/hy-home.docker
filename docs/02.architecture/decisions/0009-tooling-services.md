@@ -1,10 +1,10 @@
 ---
 title: "Tooling Services Selection and Configuration"
-version: "2.0.2"
+version: "2.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "ADR-0009"
 parent_ids:
@@ -29,7 +29,7 @@ The `09-tooling` layer includes auxiliary tools for maximizing development and o
 
 ### Options Considered
 
-The retained decision selects OpenTofu/Terrakube, SonarQube, Locust and an OCI registry, and records the withdrawal of Syncthing. It contains selection rationale, but no named rejected candidates or comparative evaluation for that stack. This section records that limit of the historical decision; it does not invent an alternatives review.
+The retained decision selects OpenTofu/Terrakube, SonarQube, k6 (default load tool, per ADR-0047) and an OCI registry, with Locust as an optional standalone LAB, and records the withdrawal of Syncthing. It contains selection rationale, but no named rejected candidates or comparative evaluation for that stack. This section records that limit of the historical decision; it does not invent an alternatives review.
 
 ## Decision
 
@@ -39,8 +39,8 @@ The following service stack is selected as the standard tooling for `09-tooling`
    - Reason: the current CLI helper is OpenTofu, and Terrakube manages workspace state and execution. The existing Terraform workspace state/provider contract is reviewed in the migration handoff.
 2. **Code Quality**: **SonarQube**
    - Reason: multi-language support and precise static analysis capability let it centrally manage the project's overall code quality and security vulnerabilities.
-3. **Performance Testing**: **Locust**
-   - Reason: Python-based scenario definitions make it easy to extend, and a distributed architecture can generate large-scale load.
+3. **Performance Testing**: **k6** is the default load tool ([ADR-0047](0047-dev-timescale-influx-retirement-and-load-tools.md)); Locust stays an optional standalone LAB (`labs/locust.yml`) for Python or protocol comparisons.
+   - Reason: k6 already owns the run/result contract; Locust's Python scenario definitions remain available in the LAB.
 4. **OCI Registry**: **OCI Distribution Registry**
    - Reason: provides a lightweight private image store for internal service deployment.
 5. **Withdrawn selection**: the Syncthing runtime and its file-synchronization obligation have been removed. This item is a record of the withdrawal of a past selection, not a requirement replaced by a current service or another feature.
@@ -53,7 +53,7 @@ The following service stack is selected as the standard tooling for `09-tooling`
 
 ### Decision Record
 
-Accepted (2026-03-26). Amended on 2026-09-19 to withdraw Syncthing and align the CLI helper with OpenTofu; no runtime deployment or recovery success is asserted.
+Accepted (2026-03-26). Amended on 2026-09-19 to withdraw Syncthing and align the CLI helper with OpenTofu. Amended on 2026-10-29 so k6 is the default load tool per ADR-0047 and Locust is an optional standalone LAB; no runtime deployment or recovery success is asserted.
 
 ## Consequences
 
@@ -77,4 +77,3 @@ Accepted (2026-03-26). Amended on 2026-09-19 to withdraw Syncthing and align the
 - [Tooling Architecture Description](../descriptions/0009-tooling-architecture.md)
 - [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 - [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
-- [Terraform migration handoff](../../05.operations/guides/10-platform-and-backup/0068-terraform.md)

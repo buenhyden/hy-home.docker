@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Runbook"
-version: "0.2.3"
+version: "0.3.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "RUN-0082"
 parent_ids:
@@ -81,6 +81,18 @@ atomic/versioned backup 기능이나 `tofu state pull`을 보호된 파일로 �
 backend로 격리된 restore를 검증한다. 중간의 모든 OpenTofu upgrade 노트를
 검토하고 apply하지 않고 저장된 plan workflow를 테스트한다. 이 문서를 변경하면서
 plan, state backup, restore, provider 호출은 실행하지 않았다.
+
+### Terraform 이관
+
+기동할 Terraform 서비스가 없으므로 과거 Compose 명령을 재실행하지 않는다.
+
+1. state backend와 lock 소유자, provider lock file, module source를 메타데이터로 식별한다.
+2. 승인된 절차로 암호화된 state 복구본을 확보하고 복제 workspace를 준비한다.
+3. 위 승인 경계에 따라 복제본을 검증하고 Terrakube workspace의 실제 엔진, provider 및 state 호환성을 확인한다.
+4. 예상하지 않은 resource replacement, backend 이동 또는 schema 변경이 있으면 멈춘다.
+5. 검토된 plan과 복구 증거를 확인한 뒤 실제 이관 대상을 별도로 승인받는다.
+
+검증 전 원본 state를 덮어쓰지 않는다. 적용 이후에는 Git 되돌리기만으로 복구하지 말고 원래 CLI/provider의 호환성과 백업을 확인한다. 동시 lock, 미검증 provider 또는 복구본 부재는 @buenhyden에게 보고하고 중단한다.
 
 ## Verification
 

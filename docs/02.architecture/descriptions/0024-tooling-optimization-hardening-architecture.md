@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Architecture Description"
-version: "2.0.7"
+version: "2.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
@@ -35,7 +35,7 @@ platform operational quality.
 
 - IaC: OpenTofu/Terrakube
 - Quality: sonarqube
-- Performance: k6/locust
+- Performance: k6 (Locust is an optional standalone LAB in `labs/locust.yml`)
 - Artifact storage: registry
 
 Every public management path must be policy-controlled behind the Traefik
@@ -49,7 +49,7 @@ non-goals, and constraints already recorded in the current document.
 - **Owns**:
   - tooling public router gateway/SSO boundary contract
   - tooling network boundary contract
-  - test tool (locust/k6) runtime stability contract
+  - k6 runtime stability contract
   - tooling hardening CI policy gate
   - Tooling/Quality catalog expansion roadmap
 - **Consumes**:
@@ -79,7 +79,7 @@ as the view for that concern.
 - **Execution plane**:
   - OpenTofu job container
   - terrakube api/ui/executor
-  - locust master/worker, k6 service
+  - k6 service (`infra/11-quality/k6`, `testing` profile)
 - **Shared dependencies**:
   - PostgreSQL, Valkey, SeaweedFS, Keycloak
 
@@ -120,7 +120,7 @@ section and the existing infrastructure/deployment descriptions.
   branch/security rule sets
 - **k6**: automating performance regression baseline storage/comparison,
   standardizing scenario tags
-- **locust**: standardizing distributed topology, test data
+- **Locust LAB** (`labs/locust.yml`, standalone): standardizing test data
   initialization/cleanup routine
 
 ## Quality and Risks
@@ -132,7 +132,7 @@ and verification expectation to which the attributes below apply. Concrete
 execution evidence is owned by the related Spec and Operations documents.
 
 - **Performance**: secures a minimum runtime stability contract for
-  locust/k6 distributed execution.
+  k6 execution.
 - **Security**: enforces the gateway+SSO chain on public tooling UIs.
 - **Reliability**: strengthens startup stability with the worker
   healthcheck/compose contract.

@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.0.6"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -216,7 +216,7 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 #### 09-platform-ops
 
 - [opentofu](../../../../infra/09-platform-ops/opentofu/README.md): plan/apply 승인 게이트, state 잠금/백업 정책 강화, drift 자동 탐지 추가
-  ([OPER](../../guides/10-platform-and-backup/0082-opentofu.md), [RUN](../../runbooks/10-platform-and-backup/0082-opentofu.md)); 기존 Terraform workspace는 [migration handoff](../../guides/10-platform-and-backup/0068-terraform.md)를 따른다.
+  ([OPER](../../guides/10-platform-and-backup/0082-opentofu.md), [RUN](../../runbooks/10-platform-and-backup/0082-opentofu.md)); 기존 Terraform workspace는 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md)를 따른다.
 - [terrakube](../../../../infra/09-platform-ops/terrakube/README.md): 워크스페이스 분리 전략, 실행 권한과 감사로그 연동 강화
   ([OPER](../../guides/10-platform-and-backup/0069-terrakube.md), [RUN](../../runbooks/10-platform-and-backup/0069-terrakube.md))
 - [registry](../../../../infra/09-platform-ops/registry/README.md): 이미지 서명/검증(cosign) 도입, 취약점 스캔 실패 차단 정책 적용

@@ -1,10 +1,10 @@
 ---
 title: "Tooling Hardening and HA Expansion Strategy"
-version: "2.0.2"
+version: "1.0.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "ADR-0024"
 parent_ids:
@@ -47,7 +47,7 @@ The tooling tier corresponds to the platform's operational control plane, and if
   - Align the SonarQube/Terrakube routers to `gateway-standard-chain + sso-errors + sso-auth`.
   - Make the `infra_net` external boundary declaration explicit in the tooling compose.
   - Add a locust-worker healthcheck and align k6 volume reference drift.
-  - Introduce `scripts/hardening/check-all-hardening.sh 09-tooling` and the CI `infrastructure-hardening` job.
+  - Introduce `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality` and the CI `infrastructure-hardening` job.
 - Carry out catalog expansion in phases.
   - OpenTofu approval/backup/drift automatic detection
   - Strengthen terrakube permissions/audit log
@@ -75,7 +75,7 @@ The tooling tier corresponds to the platform's operational control plane, and if
 ### Agent-related Example Decisions
 
 - Guardrail strategy: The tooling public router requires the gateway+SSO chain
-- Tool gating: Enforce `check-all-hardening.sh 09-tooling` as a required policy gate before merging
+- Tool gating: Enforce `check-all-hardening.sh 09-platform-ops 11-quality` as a required policy gate before merging
 
 ## Related Documents
 
