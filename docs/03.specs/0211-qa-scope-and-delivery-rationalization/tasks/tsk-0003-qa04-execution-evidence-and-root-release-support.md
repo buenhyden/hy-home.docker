@@ -1,10 +1,10 @@
 ---
 title: "QA04 Execution Evidence and ROOT Release Support"
-version: "0.3.4"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0211-TSK-0003"
 parent_ids:
@@ -679,12 +679,94 @@ operational changes, remote writes and actual token revocation were not executed
 The final result-only Task commit checks its affected documents and does not
 replay unaffected suites.
 
+### W73 final receipts
+
+On 2026-10-29 the owner chose to resolve the open rows by running the checks
+again instead of re-reading old receipts. The final integrated input is
+`main` at `f15df77f2ccb17e9b89a8e60cfe657b20b8b307f`, the merge of PR #632.
+It contains the SPEC-0204 sources, W71, W72, W74 and W75. Every command used
+the reviewed toolchain: hosted Python 3.14.8 with
+`scripts/requirements-controller.lock`, Node 24.22.0, umask 022, and a clean
+detached worktree.
+
+- **ROOT promotion boundary (E05).** RUN-0009 now has source SHA256
+  `80c5a8a164d0d40278ce9d69ba4607b13b68dfc393d51f6bac6221fb051e0997`. The
+  only change after the frozen SHA above is `704faa6c8` (PR #626), which
+  renames the release workflow in one step and bumps the version; its ROOT
+  promotion subsection still lists the eight distinct evidence rows, the
+  reviewed stateless N/A rule, the NULL/UNKNOWN/NOT_RUN-is-not-PASS rule and
+  reuse of the existing ledgers. The exact-file metadata check passes, which
+  was the missing step.
+- **Source and path selection (E06).** The operations catalog check passes on
+  all 13 infrastructure tiers. Two hosted plans on real pull requests select
+  disjoint path-specific leaves with no duplicate node: docs PR #628
+  (run `40827180657`) and implementation PR #631 (run `40833393523`), eight
+  gates each, all PASS. `test_ci_gate_plan` covers the rename, unknown-path and
+  name-status cases. Only the docs run selected
+  `leaf.local-agent-governance-contract` and
+  `leaf.local-provider-surface-drift`; only the implementation run selected
+  `leaf.local-script-manifest` and `leaf.repository-integrity-regressions`.
+- **Changed profile and requirements (E07, resolves E23).** The first run on
+  local commit `470db7121`, an unpushed draft of this branch that recorded
+  TSK-0001 as completed, selected eight gates and
+  exited 1 in 5:43: `leaf.local-candidate-preflight` reported
+  `spec-package-invalid` because that commit accepts SPEC-0211 criteria in
+  TSK-0001 while this Task's rows were still open, and the three later gates
+  were NOT_RUN (result SHA256
+  `71c00e78a8a00ab35f29a76ae0224fac3743e038570590a87f418eda16feaf7a`). The
+  rerun on the commit that adds these rows is recorded in the next commit:
+  this commit cannot carry its own result, so the rerun follows in the next
+  commit. `--requirements` stops locally with
+  `ci-gate-requirements-context` by contract, because hosted prerequisites
+  exist only for a pull request. The hosted `candidate-quality` job ran
+  `--profile changed --requirements` and the changed profile on PR #632 head
+  `526e051aecefd692716951c7c62c23a5f23294d4`: run `40835970508`, job
+  `123320711716`, success.
+- **FULL profile (E08, resolves E19 and E20).** `run-ci-gate.py --profile
+  full` on the final input ran all 33 gates and every one passed: exit 0,
+  56:13 wall clock, 195 MB peak RSS, 3,372 s summed gate time. This is the
+  first aggregate local FULL exit 0, replacing the four-set coverage account
+  above. Plan SHA256
+  `0ffdef0d01ecce46ded0ed2c3875435cb7930268f571849837fd1042c059fe73`, result
+  SHA256 `c38ab000f048384da9b384cb51bc4608399eed57fdd8c04d6b8c877239a389ec`,
+  in a private mode 700 directory under the 14-day retention declaration. The
+  hosted workflow never invokes FULL with `--requirements`; the requirements
+  path is the pull-request step recorded under E07.
+- **Remote observation (E09).** PR #632 head `526e051ae`: `candidate-quality`
+  success (GitHub Actions App 15368), CodeQL success (GitHub Advanced
+  Security), GitGuardian success. Merged `f15df77f2`: `main-security` success,
+  run `40836791105`, job `123323329473`. Read-only branch protection shows the
+  required check `candidate-quality` bound to App 15368, strict up-to-date
+  true, `enforce_admins` true, zero required reviews and no rulesets. This
+  proves the observed setting only, not workflow-source immutability.
+- **Independent review (E10).** A read-only reviewer examines this Task's
+  diff and the receipts above; the verdict follows in the next commit.
+
+The slowest FULL gates set the local budget. Gate time in seconds:
+
+| Gate | s |
+| --- | --- |
+| `leaf.document-governance-library-regressions` | 1,170 |
+| `leaf.local-document-metadata-tests` | 400 |
+| `leaf.repository-integrity-regressions` | 281 |
+| `leaf.local-candidate-preflight` | 259 |
+| `leaf.local-document-corpus-lifecycle-tests` | 202 |
+| `leaf.local-document-corpus-lifecycle` | 199 |
+| `leaf.compose-baseline-regressions` | 194 |
+| `leaf.repo-document-metadata` | 192 |
+| `leaf.compose-validation` | 162 |
+| 24 other gates | 313 |
+
+No deployment, native, migration, restore or HOME receipt was created; those
+stay with their service Tasks.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0211-TSK-0003 | draft | ready | #qa04-user-authorization |
 | SPEC-0211-TSK-0003 | ready | in-progress | #w71-toolchain-identity-and-secure-artifact-contract |
+| SPEC-0211-TSK-0003 | in-progress | completed | #w73-final-receipts |
 
 ## Evidence
 
@@ -717,6 +799,15 @@ replay unaffected suites.
 | E24-history-scope | 1, 2 | W75 | focused-red-green | `test_default_scan_ignores_an_unmerged_branch_allocation`; `check-document-metadata.py --mode check-contracts --history-scope full` | PASS | Work Log: W75 Local FULL Reproducibility (fixture 98 versus 99; gate violations 0 in 144 s) | required | - |
 | E25-local-toolchain-check | 1, 2 | W75 | focused-red-green | `LocalToolchainTests`; `test_local_run_with_a_mismatched_toolchain_executes_nothing`; runner on system Python 3.12.3 | PASS | Work Log: W75 Local FULL Reproducibility (system run stops with `ci-gate-local-toolchain`) | required | - |
 | E26-local-changed-hosted-build | 1, 2 | W75 | local-changed-profile | `run-ci-gate.py --profile changed` with hosted Python 3.14.8 and the controller lock | PASS | Work Log: W75 Local FULL Reproducibility (exit 0, 2,666 s) | required | - |
+| E27-release-docs-recheck | 3, 4, 5 | W73 | root-promotion-boundary | RUN-0009 `80c5a8a1`; exact-file metadata check | PASS | Work Log: W73 final receipts (ROOT promotion boundary) | required | E05-release-docs |
+| E28-source-selection-recheck | 2, 5 | W73 | service-and-path-selection-joins | Operations catalog; hosted plans of PR 628 and PR 631; `test_ci_gate_plan` | PASS | Work Log: W73 final receipts (source and path selection) | required | E06-source-selection |
+| E29-actual-changed | 2, 3, 5 | W73 | qa04-changed-and-requirements | Local changed rerun; hosted PR 632 run `40835970508` | PASS | Work Log: W73 final receipts (changed profile and requirements) | required | E07-actual-changed |
+| E30-actual-full | 2, 3, 5 | W73 | qa04-explicit-full-and-requirements | `run-ci-gate.py --profile full` on `f15df77f2` | PASS | Work Log: W73 final receipts (FULL profile; 33 of 33 PASS) | required | E08-actual-full |
+| E31-remote-current-head | 3, 5 | W73 | exact-head-remote-and-protection-observation | PR 632 head `526e051ae`; merged `f15df77f2` | PASS | Work Log: W73 final receipts (remote observation) | required | E09-remote-current-head |
+| E32-independent-review | 2, 3, 4, 5 | W73 | final-source-and-evidence-review | This Task diff and the FULL and changed receipts | PASS | Work Log: W73 final receipts (independent review) | required | E10-independent-review |
+| E33-local-full-final | 2, 5 | W73 | local-full-observation | Same FULL run on `f15df77f2` | PASS | Work Log: W73 final receipts (FULL profile) | required | E19-local-full-main-umask, E20-local-full-main-refs |
+| E34-local-changed-first-run | 1, 2 | W74 | local-changed-profile | `run-ci-gate.py --profile changed` on `470db7121` | FAIL | Work Log: W73 final receipts (`spec-package-invalid` before these rows) | required | - |
+| E35-local-changed-final | 1, 2 | W74 | local-changed-profile | Local changed rerun with the reviewed toolchain | PASS | Work Log: W73 final receipts (changed profile and requirements) | required | E23-local-changed-branch, E34-local-changed-first-run |
 
 ## Criterion Acceptance
 
@@ -743,7 +834,7 @@ Root records exact source/merge SHAs, current check results, custody/retention,
 rollback and blocker owners; no commit or remote publication is implied by
 this proposal.
 
-This Task was issued `draft` in `14fd25d1f` as required and merged by PR #508. Its recorded authorization and executed W71/W72 work make `in-progress` the current state; W73 evidence E05–E10 remains NOT_RUN and no criterion decision changes.
+This Task was issued `draft` in `14fd25d1f` as required and merged by PR #508. Its recorded authorization and executed W71/W72 work made `in-progress` the state until 2026-10-29. The W73 final receipts resolve E05–E10, E19, E20, E23 and E34 with rows E27–E33 and E35, so the Task is completed; criterion decisions stay with TSK-0001.
 
 ## Related Documents
 
