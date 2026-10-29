@@ -10,7 +10,8 @@ ai/open-webui/uploads
 # Open WebUI's session/encryption key; webui.db comes from the SQLite export.
 ai/open-webui/.webui_secret_key
 # Ollama model catalog (name -> digest manifests, POL-0021); the blobs are
-# re-pulled by digest and stay out.
+# re-pulled by digest and stay out. backup.sh reads these two from the
+# OLLAMA_MODEL_DIR mount at /src/state/ollama-models, not DEFAULT_MOUNT_VOLUME_PATH.
 ai/ollama/models/manifests
 ai/ollama/models/manifests-v2
 auth/keycloak

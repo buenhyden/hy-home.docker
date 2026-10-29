@@ -60,8 +60,12 @@ case "$action" in
         : >"$list"
         grep -v -e '^#' -e '^$' "$SETS_DIR/state-include.txt" | while read -r rel; do
             case "$rel" in /* | *..*) echo "invalid include: $rel" >&2; exit 64 ;; esac
-            if [ -e "/src/state/volumes/$rel" ]; then
-                printf '/src/state/volumes/%s\n' "$rel" >>"$list"
+            case "$rel" in
+            ai/ollama/models/*) src=/src/state/ollama-models/${rel#ai/ollama/models/} ;;
+            *) src=/src/state/volumes/$rel ;;
+            esac
+            if [ -e "$src" ]; then
+                printf '%s\n' "$src" >>"$list"
             else
                 echo "include not present, skipped: $rel"
             fi

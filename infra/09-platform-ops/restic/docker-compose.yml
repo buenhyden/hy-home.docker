@@ -58,6 +58,12 @@ services:
         source: ${DEFAULT_MOUNT_VOLUME_PATH}
         target: /src/state/volumes
         read_only: true
+      # Ollama binds OLLAMA_MODEL_DIR (an SSD path since SPEC-0246), outside
+      # DEFAULT_MOUNT_VOLUME_PATH; backup.sh reads only its manifest catalog.
+      - type: bind
+        source: ${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}/models
+        target: /src/state/ollama-models
+        read_only: true
       - type: bind
         source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/staging
         target: /src/state/exports
