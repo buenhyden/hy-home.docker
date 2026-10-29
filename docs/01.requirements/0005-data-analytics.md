@@ -1,15 +1,15 @@
 ---
-title: "Analytics Services Product Requirements"
-version: "1.2.1"
+title: "Analytics Services Requirements"
+version: "1.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "requirements"
 artifact_id: "REQ-0005"
 created: "2026-03-26"
 ---
-# Analytics Services Product Requirements
+# Analytics Services Requirements
 
 ## Overview
 

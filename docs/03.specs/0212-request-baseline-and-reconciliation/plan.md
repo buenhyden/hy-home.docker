@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.29.0"
+version: "1.30.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -61,6 +61,8 @@ W48 in TSK-0032 makes governance and provider guidance English.
 W49 in TSK-0033 adds a Verification section to every skill.
 W50 in TSK-0034 moves the Migration 0003 proof into its own module.
 W51 in TSK-0035 writes the rule text behind the partly met lines.
+W52 in TSK-0036 records the investigations, decisions and currency fixes.
+W53 in TSK-0037 lets the validator accept the approved terminal Task correction.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -121,6 +123,8 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W49 | 44 | Add a required Verification section to every skill | W48 | TSK-0033 | Section coverage, metadata contracts, registry and heading tests |
 | W50 | 45 | Move the Migration 0003 cutover proof into its own module | W49 | TSK-0034 | Archive behavior parity, document governance suite, script manifest |
 | W51 | 46 | Write the rule text behind the partly met request lines | W50 | TSK-0035 | Agent governance, language check, routing tests, metadata contracts |
+| W52 | 47 | Record the investigations, owner decisions and currency fixes | W51 | TSK-0036 | Metadata contracts, links, corpus and archive, workflow contract, tests |
+| W53 | 48 | Accept the one approved terminal Task `Resolves` correction | W52 | TSK-0037 | RED and GREEN tests, end-to-end check, spec package tests, lint |
 
 ### Current v30 continuation and delivery
 

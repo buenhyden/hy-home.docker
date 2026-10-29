@@ -1,10 +1,10 @@
 ---
 title: "Terraform Runbook"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/runbook"
-status: "active"
+status: "retired"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "RUN-0068"
 parent_ids:

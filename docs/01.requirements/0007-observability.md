@@ -1,15 +1,15 @@
 ---
-title: "Observability Tier Product Requirements"
-version: "1.0.3"
+title: "Observability Tier Requirements"
+version: "1.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "requirements"
 artifact_id: "REQ-0007"
 created: "2026-03-26"
 ---
-# Observability Tier Product Requirements
+# Observability Tier Requirements
 
 ## Overview
 

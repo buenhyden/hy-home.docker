@@ -1,15 +1,15 @@
 ---
-title: "Open WebUI Product Requirements"
-version: "1.0.2"
+title: "Open WebUI Requirements"
+version: "1.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "requirements"
 artifact_id: "REQ-0013"
 created: "2026-03-27"
 ---
-# Open WebUI Product Requirements
+# Open WebUI Requirements
 
 ## Overview
 

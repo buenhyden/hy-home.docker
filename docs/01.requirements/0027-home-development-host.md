@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/requirement"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -79,6 +79,10 @@ needed.
 - **REQ-0027-FR-0008**: Approved execution verification must separate
   startup, status, authentication, persistence, resource, backup, and
   recovery results into actual evidence versus unverified items.
+- **REQ-0027-FR-0009**: The optional `experience` profile must serve shared
+  Storybook documentation and a read-only docs MCP only to authenticated
+  administrators, both built from one source commit, and must stay outside
+  the default HOME selection.
 
 ### Non-functional Requirements
 

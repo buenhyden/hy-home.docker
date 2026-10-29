@@ -7,6 +7,7 @@ import io
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -2504,32 +2505,45 @@ class DocumentLinksCliTests(unittest.TestCase):
         self.assertEqual([], findings)
 
     def test_repository_modes_are_deterministic_and_non_mutating(self) -> None:
-        before = subprocess.run(
-            ["git", "diff", "--name-only"],
-            cwd=ROOT,
-            text=True,
-            check=True,
-            capture_output=True,
-        ).stdout
-        # `all` runs every handler over one graph build; four separate
-        # processes would rebuild the real-tree graph four times.
-        result = subprocess.run(
-            [sys.executable, str(CLI), "--mode", "all"],
-            cwd=ROOT,
-            text=True,
-            check=False,
-            capture_output=True,
+        # `leaf.docs-traceability` already runs `--mode all` over the real
+        # tree; this test checks only what that gate cannot see, on a small
+        # committed fixture: two runs agree and leave the tree untouched.
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            templates = root / "docs/99.templates"
+            shutil.copytree(
+                ROOT / "docs/99.templates/contracts", templates / "contracts"
+            )
+            shutil.copy2(ROOT / "docs/99.templates/registry.json", templates)
+            readme = root / "docs/01.requirements/README.md"
+            readme.parent.mkdir(parents=True)
+            readme.write_text("# Requirements\n\n[x](./missing.md)\n", encoding="utf-8")
+            git = ["git", "-C", str(root), "-c", "user.email=t@t", "-c", "user.name=t"]
+            subprocess.run([*git, "init", "-q"], check=True)
+            subprocess.run([*git, "add", "-A"], check=True)
+            subprocess.run([*git, "commit", "-qm", "fixture"], check=True)
+            runs = [
+                subprocess.run(
+                    [sys.executable, str(CLI), "--root", str(root), "--mode", "all"],
+                    cwd=ROOT,
+                    text=True,
+                    check=False,
+                    capture_output=True,
+                )
+                for _ in range(2)
+            ]
+            status = subprocess.run(
+                [*git, "status", "--porcelain"],
+                text=True,
+                check=True,
+                capture_output=True,
+            ).stdout
+        self.assertIn("mode=all", runs[0].stdout)
+        self.assertEqual(
+            (runs[0].returncode, runs[0].stdout, runs[0].stderr),
+            (runs[1].returncode, runs[1].stdout, runs[1].stderr),
         )
-        self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("mode=all", result.stdout)
-        after = subprocess.run(
-            ["git", "diff", "--name-only"],
-            cwd=ROOT,
-            text=True,
-            check=True,
-            capture_output=True,
-        ).stdout
-        self.assertEqual(before, after)
+        self.assertEqual("", status)
 
     def test_cli_rejects_unknown_mode(self) -> None:
         result = subprocess.run(

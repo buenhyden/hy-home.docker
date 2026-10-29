@@ -1,10 +1,10 @@
 ---
 title: "Laboratory Services Selection and Configuration"
-version: "1.0.2"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "deprecated"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "ADR-0011"
 parent_ids:
@@ -20,6 +20,10 @@ This document records the architecture decision for selecting the core managemen
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
+### Current Applicability
+
+Deprecated on 2026-10-29: the `11-laboratory` tier was removed under SPEC-0197, and Homer and Portainer have no current service; [AD-0011](../descriptions/0011-laboratory-architecture.md) owns the current admin tools.
 
 ## Decision Drivers
 

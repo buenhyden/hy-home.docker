@@ -1,10 +1,10 @@
 ---
 title: "플랫폼과 백업 정책"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-29"
 layer: "operations"
 ---
 
@@ -28,9 +28,8 @@ layer: "operations"
 | [IaC Deployment Policy](0060-iac-deployment.md) | `POL-0060` | 이 정책은 `09-platform-ops`의 OpenTofu CLI helper와 Terrakube API/UI/executor를 이용한 IaC 변경의 승인, state, secret, evidence 기준을 정의한다. |
 | [Platform Operations and Quality Optimization Hardening Operations Policy](0063-tooling-optimization-hardening.md) | `POL-0063` | 이 문서는 `09-platform-ops`·`11-quality`의 최적화/하드닝 운영 정책을 정의한다. 관리 경로 보안, 네트워크 경계, 테스트 도구 안정성, 카탈로그 확장 승인 게이트를 통제한다. |
 | [Docker Registry Operations Policy](0065-registry.md) | `POL-0065` | Registry는 `HOME` 아티팩트 저장소다. 현재 추적 중인 엔드포인트는 네이티브 TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트워크에서만 서비스할 수 있다. |
-| [Terraform Operations Policy](0068-terraform.md) | `POL-0068` | Terraform 운영 주제는 MIGRATE 상태의 사용 맥락이며 현재 실행 소유자는 OpenTofu다. |
 | [Terrakube Operations Policy](0069-terrakube.md) | `POL-0069` | Terrakube는 명시적인 `iac` 컨트롤 플레인이다. Apache-2.0 프로젝트 라이선스가 이 단일 호스트 배포의 지원, SLA, 엔터프라이즈 기능, HA를 보장하지는 않는다. |
-| [Administration and Experimentation Hardening Operations Policy](0074-laboratory-optimization-hardening.md) | `POL-0074` | 이 문서는 여러 tier의 관리·실험 기능 최적화/하드닝 운영 정책을 정의한다. 관리 UI 보안 경계, 실험성 서비스 운영 통제, 카탈로그 확장 승인 게이트를 명문화한다. |
+| [Admin and Experiment Tools Hardening Operations Policy](0074-laboratory-optimization-hardening.md) | `POL-0074` | 이 문서는 여러 tier의 관리·실험 기능 최적화/하드닝 운영 정책을 정의한다. 관리 UI 보안 경계, 실험성 서비스 운영 통제, 카탈로그 확장 승인 게이트를 명문화한다. |
 | [OpenTofu Policy](0082-opentofu.md) | `POL-0082` | OpenTofu는 명시적인 `iac` job이다. 정적 선택과 검증은 provider 계정을 읽거나 원격 인프라를 변경할 권한을 결코 뜻하지 않는다. |
 | [Renovate Policy](0083-renovate.md) | `POL-0083` | Renovate는 원격 저장소 쓰기 권한을 가지며 명시적으로 선택하는 `dependency-update` job이다. HOME이나 일반 도구 기동에는 절대 포함되지 않는다. |
 | [Dependency Version Management Policy](0086-dependency-version-management.md) | `POL-0086` | 인프라 버전 변경은 하나의 HOME/DEV 호스트에서 검토 가능하고 재현 가능해야 한다. 버전 업데이트가 배포나 데이터 마이그레이션을 승인하지는 않는다. |

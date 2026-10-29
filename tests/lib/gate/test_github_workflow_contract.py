@@ -508,23 +508,23 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertIn("local.workflow-harness", roots)
 
-    def test_storybook_shell_accepts_typed_full_route_direct_and_held(self) -> None:
+    def test_storybook_shell_accepts_typed_full_route_when_held(self) -> None:
+        # `leaf.storybook-contract` runs the script by path; this test covers
+        # only the descriptor-held route that the gate never takes.
         script = ROOT / "scripts/validation/check-storybook-contract.sh"
         env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
         env["PYTHONSAFEPATH"] = "1"
         with script.open("rb") as held:
-            for path in (str(script), f"/proc/self/fd/{held.fileno()}"):
-                with self.subTest(path=path):
-                    result = subprocess.run(
-                        ["bash", path],
-                        cwd=ROOT,
-                        env=env,
-                        pass_fds=(held.fileno(),),
-                        capture_output=True,
-                        text=True,
-                        check=False,
-                    )
-                    self.assertEqual(0, result.returncode, result.stderr)
+            result = subprocess.run(
+                ["bash", f"/proc/self/fd/{held.fileno()}"],
+                cwd=ROOT,
+                env=env,
+                pass_fds=(held.fileno(),),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(0, result.returncode, result.stderr)
 
     def test_storybook_shell_rejects_lost_routes_and_changed_quality_contracts(
         self,

@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Software Verification Architecture Description"
-version: "2.1.3"
+version: "2.3.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -34,7 +34,7 @@ This section preserves the system boundaries, consumption relationships, non-goa
 - **Owns**:
   - IaC CLI helper (`OpenTofu`) and automation platform (`Terrakube`)
   - Static code analysis engine (`SonarQube`)
-  - Distributed load-testing system (`Locust`) and explicit load-testing jobs (`k6`)
+  - Explicit load-testing jobs (`k6`, the default load tool); Locust is an optional standalone LAB (`labs/locust.yml`), not a Compose service of this tier
   - Private package/image storage (`Registry`)
   - Manual dependency update jobs (`Renovate`)
   - Cross-platform backup orchestration (`Restic` and its SQLite export helper)
@@ -62,7 +62,7 @@ This section uses the context, component, or deployment representation as the vi
 The system is divided into "Managed Tools" and "Execution Tools."
 
 1. **Management**: SonarQube, the Terrakube API, and similar services manage central state in an environment where the matching profile is selected. They are not automatically included as HOME always-on targets.
-2. **Execution**: Terrakube Worker, Locust Worker, and similar services occupy resources and perform the actual computation when a job occurs.
+2. **Execution**: Terrakube Worker and similar services occupy resources and perform the actual computation when a job occurs.
 
 ## Runtime and Deployment
 
@@ -79,7 +79,7 @@ Data and control flows include only the interactions specified in this section a
 - **Runtime / Platform**: Docker Compose using the current root Compose include and profile contract.
 - **Deployment Model**: The root `docker-compose.yml` includes every leaf, and
   a profile selects the service. `tooling` selects only Registry and
-  SonarQube; `testing` selects both k6 and Locust master/worker; `iac`
+  SonarQube; `testing` selects k6 (`infra/11-quality/k6`); no Locust service exists in the root model; `iac`
   selects OpenTofu and the Terrakube API/UI/executor together;
   `dependency-update` selects only Renovate. `registry` and `sast` each
   select that single role. `analytics-engineering` selects dbt and its DB
@@ -95,7 +95,7 @@ Data and control flows include only the interactions specified in this section a
 
 Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
 
-- **Scalability**: Locust worker and Terrakube execution capacity are adjusted through approved configuration changes. This does not mean the current fixed Compose services implement or have verified auto-scaling.
+- **Scalability**: Terrakube execution capacity are adjusted through approved configuration changes. This does not mean the current fixed Compose services implement or have verified auto-scaling.
 - **Security**: Applies a gateway+SSO chain to public admin UIs such as SonarQube/Terrakube.
 - **Reliability**: Keeps IaC state/object persistence in the declared backend. SeaweedFS and PostgreSQL on the same host are not independent failure domains, so continuity is not guaranteed during a host failure. Backup and isolated recovery verification need separate operational evidence.
 - **Operability**: Provides a unified control environment through a centralized dashboard and API.
@@ -105,7 +105,7 @@ Quality scenarios point to the existing configuration these attributes apply to 
 - **PRD**: [010-tooling.md](../../01.requirements/0010-tooling.md)
 - [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 - [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
-- [Terraform migration handoff](../../05.operations/guides/10-platform-and-backup/0068-terraform.md)
+- [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
 - **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

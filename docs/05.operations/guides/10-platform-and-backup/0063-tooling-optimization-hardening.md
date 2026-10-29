@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Usage Guide"
-version: "1.0.5"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -62,7 +62,7 @@ created: "2026-05-17"
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - 동일 주제 문서: [Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`POL-0063`), [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`RUN-0063`)
 
-현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [migration handoff](0068-terraform.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](0082-opentofu.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
 
 ## Troubleshooting
 

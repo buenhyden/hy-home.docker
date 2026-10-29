@@ -1,10 +1,10 @@
 ---
 title: "Terraform Operations Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
-status: "active"
+status: "retired"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "POL-0068"
 parent_ids:

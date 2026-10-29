@@ -1,10 +1,10 @@
 ---
-title: "Administration and Experimentation Hardening Runbook"
-version: "1.0.4"
+title: "Admin and Experiment Tools Hardening Runbook"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "RUN-0074"
 parent_ids:
@@ -12,7 +12,7 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# Administration and Experimentation Hardening Runbook
+# Admin and Experiment Tools Hardening Runbook
 
 ## Overview
 
@@ -99,8 +99,8 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 
 ### Verification Steps
 
-- [ ] Laboratory compose static validation 통과
-- [ ] laboratory hardening script 실패 0건
+- [ ] 관리·실험 기능 compose static validation 통과
+- [ ] 관리·실험 기능 hardening script 실패 0건
 - [ ] optimization-hardening 문서 링크/README 인덱스 최신화 확인
 
 ### 증거 출처
@@ -136,7 +136,7 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 
 ### Traceability
 
-- 상위 문서: [Administration and Experimentation Hardening Usage Guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`)
+- 상위 문서: [Admin and Experiment Tools Hardening Usage Guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`)
 - 설계 근거: [Administration and Experimentation Architecture Description](../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Policy](../../policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`POL-0074`)
 

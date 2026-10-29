@@ -1,10 +1,10 @@
 ---
 title: "플랫폼과 백업 가이드"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-10-29"
 layer: "operations"
 ---
 
@@ -30,9 +30,8 @@ layer: "operations"
 | [Backup and Restore Guide](0021-backup-and-restore.md) | `GDE-0021` | HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackRest, Restic, R2 오프사이트 사본, SQLite export, host orchestrator가 각각 무엇을 보호하고 무엇을 보호하지 않는지 설명한다. |
 | [Platform Operations and Quality Optimization Hardening Usage Guide](0063-tooling-optimization-hardening.md) | `GDE-0063` | 이 가이드는 `09-platform-ops`와 `11-quality`의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다. 공개 경계 보안, 네트워크 경계 표준화, 테스트 도구 안정성 계약, 검증 절차를 다룬다. `system-guide \| ho |
 | [Docker Registry Usage Guide](0065-registry.md) | `GDE-0065` | Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하는 HOME OCI 이미지 저장소다. `registry` 또는 `tooling` profile에서 선택된다. |
-| [Operations: Terraform Policy Usage Guide](0068-terraform.md) | `GDE-0068` | 이 가이드는 기존 Terraform 사용자의 OpenTofu 이관 맥락을 보존한다. 현재 저장소의 실행 도구는 OpenTofu이며 Terraform Compose 서비스는 없다. |
 | [Terrakube Usage Guide](0069-terrakube.md) | `GDE-0069` | Terrakube는 `infra/09-platform-ops/terrakube/`의 `terrakube-api`, `terrakube-ui`, `terrakube-executor`로 구성한 온디맨드 DEV IaC 자동화·제어 플레인이다. 세 servi |
-| [Administration and Experimentation Hardening Usage Guide](0074-laboratory-optimization-hardening.md) | `GDE-0074` | 이 가이드는 Data·Observability·AI·Analytics tier에 흩어진 관리·실험 기능(dozzle, redisinsight, open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가능하게 적용하는 |
+| [Admin and Experiment Tools Hardening Usage Guide](0074-laboratory-optimization-hardening.md) | `GDE-0074` | 이 가이드는 Data·Observability·AI·Analytics tier에 흩어진 관리·실험 기능(dozzle, redisinsight, open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가능하게 적용하는 |
 | [OpenTofu Guide](0082-opentofu.md) | `GDE-0082` | OpenTofu는 `infra/09-platform-ops/opentofu/`의 `opentofu` service로 요청 시 실행하는 DEV IaC CLI 작업이다. `iac` profile에서만 선택된다. |
 | [Renovate Guide](0083-renovate.md) | `GDE-0083` | Renovate는 `infra/09-platform-ops/renovate/`의 `renovate` service로 실행하는 의존성 갱신 작업이다. `dependency-update` profile에서만 선택된다. |
 | [Dependency Version Management Guide](0086-dependency-version-management.md) | `GDE-0086` | 이 가이드는 Compose 이미지, Dockerfile, 파생 버전 projection의 버전 선언을 어떻게 찾고 확인하는지 설명한다. 버전 변경은 선언 소유자를 먼저 찾은 뒤에 시작한다. |

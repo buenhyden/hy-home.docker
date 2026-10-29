@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Software Verification Requirements"
-version: "2.0.3"
+version: "2.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "requirements"
 artifact_id: "REQ-0010"
 created: "2026-03-26"
@@ -15,7 +15,7 @@ created: "2026-03-26"
 
 ### Problem and Goals
 
-This document retains the tooling requirements across `09-platform-ops` platform operations and `11-quality` software verification. IaC, Registry, Renovate and Restic remain in Platform Operations; SonarQube, k6, Locust, WireMock, Pact Broker, Conftest and Mailpit belong to Quality under SPEC-0197. Issued functional requirement identities remain unchanged. The tier provides supporting services across the whole development cycle, aiming to build a stable and efficient development environment by supporting IaC (Infrastructure as Code) automation, code quality analysis, and large-scale performance testing.
+This document retains the tooling requirements across `09-platform-ops` platform operations and `11-quality` software verification. IaC, Registry, Renovate and Restic remain in Platform Operations; SonarQube, k6, WireMock, Pact Broker, Conftest and Mailpit belong to Quality under SPEC-0197. Issued functional requirement identities remain unchanged. The tier provides supporting services across the whole development cycle, aiming to build a stable and efficient development environment by supporting IaC (Infrastructure as Code) automation, code quality analysis, and large-scale performance testing.
 
 ### Problem Statement
 
@@ -37,7 +37,7 @@ Build an integrated tooling ecosystem spanning code quality checks to infrastruc
 
 - **STORY-01**: A DevOps engineer automatically reviews and deploys an infrastructure plan through Terrakube on every code change.
 - **STORY-02**: A developer automatically receives analysis of bugs, vulnerabilities, and code smells through SonarQube on every source push.
-- **STORY-03**: A performance engineer uses Locust to simulate tens of thousands of concurrent users in a distributed environment and find bottlenecks.
+- **STORY-03**: A performance engineer uses k6, the default load tool, to run load scenarios and find bottlenecks; Locust is an optional standalone LAB for Python or protocol comparisons.
 
 ### Constraints
 
@@ -68,7 +68,7 @@ N/A
 
 - **REQ-0010-FR-0001**: Support an OpenTofu CLI helper for IaC execution and state management, plus centralized orchestration (Terrakube).
 - **REQ-0010-FR-0002**: Support multi-language static code analysis and quality gate enforcement (SonarQube).
-- **REQ-0010-FR-0003**: Support Python-based scenario definition and distributed load generation (Locust).
+- **REQ-0010-FR-0003**: Provide k6 as the default load tool; Locust is an optional standalone LAB (`labs/locust.yml`), not a Compose service.
 - **REQ-0010-FR-0004**: Provide a single-node private image registry for internal service deployment.
 
 ### Non-functional Requirements
