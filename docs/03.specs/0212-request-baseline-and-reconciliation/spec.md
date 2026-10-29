@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.11.0"
+version: "1.12.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -63,7 +63,8 @@ request areas in TSK-0013. Criterion 25/W30 corrects the archive check
 runtime cause in TSK-0014. Criterion 26/W31 applies the owner-approved
 blocked items and a removal regression fix in TSK-0015. Criterion 27/W32
 records the owner's choices for the three items TSK-0013 deferred or left not
-run, in TSK-0016.
+run, in TSK-0016. Criterion 28/W33 reviews those deferred and not-run
+items again in TSK-0017.
 
 ## Scope
 
@@ -368,6 +369,11 @@ hold, authorization and recovery requirements have been established.
     deletes none. It lists the scripts that write under `_workspace` without
     changing their paths, and keeps four-repository, remote, runtime, and
     native-loader acceptance `NOT_RUN` with the owner.
+28. TSK-0017 re-reviews the TSK-0016 deferred and not-run items: each
+    past-removal absence check is kept, or replaced by a current-rule check
+    that fails on the same leftover. Remote protection and the other three
+    repositories are read without writing; four-repository adoption is not
+    claimed without a shared revision, and runtime acceptance stays `NOT_RUN`.
 
 ## Failure Conditions
 

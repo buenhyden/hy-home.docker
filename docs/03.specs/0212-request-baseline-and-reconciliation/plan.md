@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.11.0"
+version: "1.12.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -42,6 +42,7 @@ W29 in TSK-0013 records the follow-up review of the remaining request areas.
 W30 in TSK-0014 removes a repeated history scan from the archive check.
 W31 in TSK-0015 applies the owner-approved blocked items from TSK-0013.
 W32 in TSK-0016 records the owner's choices for the remaining TSK-0013 items.
+W33 in TSK-0017 re-reviews the deferred and not-run items from TSK-0016.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -83,6 +84,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W30 | 25 | Measure and remove the repeated history scan in the archive assessment snapshot check | W29 | TSK-0014 | Archive regressions and timed corpus check |
 | W31 | 26 | Remove git-cliff configuration, add template subtopics, and repair the index-membership regression | W30 | TSK-0015 | Metadata contracts, template and gate tests, full unit suite |
 | W32 | 27 | Classify repository-path absence tests, list `_workspace` writers, and keep external acceptance not run | W31 | TSK-0016 | Absence-test scan, metadata contracts, workspace contract tests |
+| W33 | 28 | Replace past-removal absence checks with current-rule checks and read remote and cross-repository state without writing | W32 | TSK-0017 | Tier and routing tests, manifest negative check, read-only API and repository reads |
 
 ### Current v30 continuation and delivery
 
