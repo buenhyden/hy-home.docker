@@ -1,10 +1,10 @@
 ---
 title: "DEV Backup Activation and Monitoring Task"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0213-TSK-0002"
 parent_ids:
@@ -229,28 +229,51 @@ new acceptance decision. The W8 HOME activation and isolated restore-canary
 mean activation was never run. This readback adds no operational execution.
 Criterion 10 remains pending, and HOME PITR and R2 restore remain `NOT_RUN`.
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0213-TSK-0002 | draft | ready | #inputs-and-authorization |
+| SPEC-0213-TSK-0002 | ready | in-progress | #baseline-and-residual-check |
+| SPEC-0213-TSK-0002 | in-progress | completed | #owner-decision-2026-10-29 |
+
+### Owner decision 2026-10-29
+
+The work already landed. On 2026-10-29 the owner closed this Task on
+documents alone (see the owner decision in Task 0001). Criterion 8 is now
+accepted: the owner ran `bash scripts/validation/validate-docker-compose.sh
+--preflight` against the HOME `.env` on 2026-10-29 and it passed, with volume
+host paths distinct and not nested. The PASS row "HOME preflight rerun"
+resolves the earlier HOME preflight FAIL; "Data path guard" and "HOME
+resolved-path check" stay as the source PASS rows. Criterion 10
+is now accepted on the PASS row "HOME activation"; HOME PITR and R2 restore
+stay `NOT_RUN`, which criterion 10 allows, so that row is now marked optional.
+Criteria 7 and 9 keep their earlier acceptance. The preflight is the only
+check rerun; it reads configuration and starts nothing.
+
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| HOME backup boundary | 10 | W8 | `pgbackrest info`/`check`; journal of `hyhome-backup.service` | HOME 2026-10-08 | PASS | HOME Observation | - |
-| Exporter accounts | 7 | W5 | Isolated monitor provision, exporter and ACL denial run | Label `s0213mon`, synthetic secrets | PASS | W5 Exporter Monitor Accounts | - |
-| Exporter unit tests | 7 | W5 | `test_dev_pg_provision`, `test_dev_valkey_acl`, `test_dev_data_boundary` | Commit `e5a813e3d` | PASS | W5 Exporter Monitor Accounts | - |
-| Data path guard | 8 | W6 | RED/GREEN overlap regression; `validate-docker-compose.sh` | Commit `6fbc3bf99`; `.env.example` | PASS | W6 Data Path Guard | - |
-| HOME preflight | 8 | W6 | `validate-docker-compose.sh --preflight` | HOME `.env` | FAIL | W6 Data Path Guard | - |
-| HOME resolved-path check | 8 | W6 | `report_storage_overlaps realpath` on the HOME model | HOME `.env` | PASS | W6 Data Path Guard | HOME preflight |
-| WAL and PITR rehearsal | 9 | W7 | Isolated stanza, archive, full/diff backup, time restore | Label `s0213wal`, image `sha256:d2999910…` | PASS | W7 WAL Archive and PITR | - |
-| HOME activation | 10 | W8 | Stanza, `check`, first full backup, exporters, scrape, restore canary | Merged `2e484a940`; HOME 2026-10-08 | PASS | W8 HOME Activation | - |
-| HOME PITR and R2 restore | 10 | W8 | Restore to a chosen time; offsite copy restore | No approved target | NOT_RUN | Review and Completion | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| HOME backup boundary | 10 | W8 | `pgbackrest info`/`check`; journal of `hyhome-backup.service` | HOME 2026-10-08 | PASS | HOME Observation | required | - |
+| Exporter accounts | 7 | W5 | Isolated monitor provision, exporter and ACL denial run | Label `s0213mon`, synthetic secrets | PASS | W5 Exporter Monitor Accounts | required | - |
+| Exporter unit tests | 7 | W5 | `test_dev_pg_provision`, `test_dev_valkey_acl`, `test_dev_data_boundary` | Commit `e5a813e3d` | PASS | W5 Exporter Monitor Accounts | required | - |
+| Data path guard | 8 | W6 | RED/GREEN overlap regression; `validate-docker-compose.sh` | Commit `6fbc3bf99`; `.env.example` | PASS | W6 Data Path Guard | required | - |
+| HOME preflight | 8 | W6 | `validate-docker-compose.sh --preflight` | HOME `.env` | FAIL | W6 Data Path Guard | required | - |
+| HOME resolved-path check | 8 | W6 | `report_storage_overlaps realpath` on the HOME model | HOME `.env` | PASS | W6 Data Path Guard | required | - |
+| HOME preflight rerun | 8 | W6 | `validate-docker-compose.sh --preflight` | HOME `.env`, owner-run on 2026-10-29 | PASS | Owner decision 2026-10-29 (`Preflight checks passed.`; volume host paths distinct and not nested; optional external networks `project_net` and `kind` absent) | required | HOME preflight |
+| WAL and PITR rehearsal | 9 | W7 | Isolated stanza, archive, full/diff backup, time restore | Label `s0213wal`, image `sha256:d2999910…` | PASS | W7 WAL Archive and PITR | required | - |
+| HOME activation | 10 | W8 | Stanza, `check`, first full backup, exporters, scrape, restore canary | Merged `2e484a940`; HOME 2026-10-08 | PASS | W8 HOME Activation | required | - |
+| HOME PITR and R2 restore | 10 | W8 | Restore to a chosen time; offsite copy restore | No approved target | NOT_RUN | Review and Completion | optional | - |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 7 | accepted | Exporter accounts, Exporter unit tests | Generation 5 row acceptance |
-| 8 | rejected | HOME preflight | Generation 5 Evidence row rejected |
-| 9 | accepted | WAL and PITR rehearsal | Generation 5 row acceptance |
-| 10 | pending | - | - |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 7 | accepted | Exporter accounts, Exporter unit tests | Generation 5 row acceptance | SPEC-0213 TSK-0002 |
+| 8 | accepted | Data path guard, HOME resolved-path check, HOME preflight rerun | Owner accepted on 2026-10-29; the owner-run HOME preflight passed and resolves the earlier HOME preflight FAIL. | SPEC-0213 TSK-0002 |
+| 9 | accepted | WAL and PITR rehearsal | Generation 5 row acceptance | SPEC-0213 TSK-0002 |
+| 10 | accepted | HOME activation | Owner accepted on 2026-10-29; HOME activation passed, and HOME PITR and R2 restore stay NOT_RUN as the Spec allows. | SPEC-0213 TSK-0002 |
 
 ## Review and Completion
 
