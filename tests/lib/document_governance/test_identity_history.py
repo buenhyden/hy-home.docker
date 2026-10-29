@@ -165,7 +165,9 @@ class IdentityHistoryTests(unittest.TestCase):
     def _test_allocation_transition_reads_each_blob_once(
         self, root: pathlib.Path
     ) -> None:
-        from scripts.lib.document_governance.archive import _approved_migration_document
+        from scripts.lib.document_governance.archive_migration_0003 import (
+            _approved_migration_document,
+        )
 
         base = _approved_migration_document(root)["baseline_commit"]
         real = identity_history._run_git
@@ -192,7 +194,9 @@ class IdentityHistoryTests(unittest.TestCase):
     def _test_approved_pre_introduction_base_preserves_existing_identity(
         self, root: pathlib.Path
     ) -> None:
-        from scripts.lib.document_governance.archive import _approved_migration_document
+        from scripts.lib.document_governance.archive_migration_0003 import (
+            _approved_migration_document,
+        )
 
         approved = _approved_migration_document(root)
         base = approved["baseline_commit"]

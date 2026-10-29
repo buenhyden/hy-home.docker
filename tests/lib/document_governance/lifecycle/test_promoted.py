@@ -17,7 +17,7 @@ class HistoricalPromotedEvidenceTests(unittest.TestCase):
 
     def test_missing_recovery_mapping_fails_closed(self) -> None:
         with mock.patch.object(
-            promoted.archive_authority,
+            promoted.archive_migration_0003,
             "_migration_document",
             return_value={"rows": []},
         ):

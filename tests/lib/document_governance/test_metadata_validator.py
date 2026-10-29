@@ -77,6 +77,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
     ) -> None:
         from scripts.lib.document_governance import (
             archive,
+            archive_migration_0003,
         )
         from scripts.lib.document_governance import (
             metadata_validator as metadata,
@@ -88,7 +89,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         profiles = metadata.build_registry_profiles(self.registry)
         base = next(
             row["recovery_commit"]
-            for row in archive._migration_document(ROOT)["rows"]
+            for row in archive_migration_0003._migration_document(ROOT)["rows"]
             if row["source_path"]
             == "docs/03.specs/0153-workspace-governance-simplification/spec.md"
             and row["action"] == "delete"
@@ -165,7 +166,9 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                     )
                 )
         with mock.patch.object(
-            archive.HistoricalDocument, "read_bytes", return_value=b"unproved history"
+            archive_migration_0003.HistoricalDocument,
+            "read_bytes",
+            return_value=b"unproved history",
         ):
             self.assertIsNone(
                 metadata._native_migration_compaction_witness(ROOT, record, base)
@@ -197,7 +200,9 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                     metadata._native_migration_compaction_witness(ROOT, record, base)
                 )
         with mock.patch.object(
-            archive, "_migration_document", return_value={"schema_version": 2}
+            archive_migration_0003,
+            "_migration_document",
+            return_value={"schema_version": 2},
         ):
             self.assertIsNone(
                 metadata._native_migration_compaction_witness(ROOT, record, base)
@@ -263,7 +268,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             # Native compact selection has its own real-905 integration test;
             # this injects only that parsed boundary, not Git/blob recovery.
             with mock.patch(
-                "scripts.lib.document_governance.archive._migration_document",
+                "scripts.lib.document_governance.archive_migration_0003._migration_document",
                 return_value={"schema_version": 3, "rows": [row]},
             ):
                 manifest = metadata.build_current_manifest(root, [record])
@@ -307,7 +312,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                 with self.assertRaises(metadata.ProfileError):
                     metadata.build_current_manifest(root, [record])
             with mock.patch(
-                "scripts.lib.document_governance.archive._migration_document",
+                "scripts.lib.document_governance.archive_migration_0003._migration_document",
                 return_value={"schema_version": 3, "rows": []},
             ):
                 self.assertNotIn(

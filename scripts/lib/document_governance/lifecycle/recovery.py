@@ -5,6 +5,7 @@ from __future__ import annotations
 import pathlib
 
 from scripts.lib.document_governance import archive as archive_authority
+from scripts.lib.document_governance import archive_migration_0003
 from scripts.lib.document_governance.registry import PRESERVED_DISPOSITIONS
 
 
@@ -29,8 +30,8 @@ def run(root: pathlib.Path, base: str | None = None) -> int:
             "recovery_rows=0 violations=1"
         )
         return 1
-    decisions = archive_authority.load_task10_preservation_decisions(root)
-    recovery_rows = archive_authority.load_task10_recovery_references(root)
+    decisions = archive_migration_0003.load_task10_preservation_decisions(root)
+    recovery_rows = archive_migration_0003.load_task10_recovery_references(root)
     findings = archive_authority.validate_recovery_rows(recovery_rows, root)
     for finding in findings:
         print(f"{finding.code}: {finding.path}: validation rule is not satisfied")

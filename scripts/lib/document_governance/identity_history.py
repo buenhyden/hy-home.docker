@@ -768,7 +768,9 @@ def validate_allocation_transition(
         root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
     )
     if migration_path.exists():
-        from scripts.lib.document_governance.archive import _approved_migration_document
+        from scripts.lib.document_governance.archive_migration_0003 import (
+            _approved_migration_document,
+        )
 
         try:
             approved_selection = _approved_migration_document(root)
@@ -793,7 +795,9 @@ def validate_allocation_transition(
             ) from error
     if registry_oid is None:
         # Only the reviewed pre-introduction lineage can bootstrap a Registry.
-        from scripts.lib.document_governance.archive import _approved_migration_document
+        from scripts.lib.document_governance.archive_migration_0003 import (
+            _approved_migration_document,
+        )
 
         try:
             approved = _approved_migration_document(root)
