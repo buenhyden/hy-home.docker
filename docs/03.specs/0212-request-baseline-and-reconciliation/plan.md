@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.31.0"
+version: "1.32.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -64,6 +64,7 @@ W51 in TSK-0035 writes the rule text behind the partly met lines.
 W52 in TSK-0036 records the investigations, decisions and currency fixes.
 W53 in TSK-0037 lets the validator accept the approved terminal Task correction.
 W54 in TSK-0038 accepts ADR-0050 and archives the Vault ADRs.
+W55 in TSK-0039 records the open Spec reconciliation and the OpenTofu promotion.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -127,6 +128,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W52 | 47 | Record the investigations, owner decisions and currency fixes | W51 | TSK-0036 | Metadata contracts, links, corpus and archive, workflow contract, tests |
 | W53 | 48 | Accept the one approved terminal Task `Resolves` correction | W52 | TSK-0037 | RED and GREEN tests, end-to-end check, spec package tests, lint |
 | W54 | 49 | Accept ADR-0050 and archive the Vault ADRs it supersedes | W53 | TSK-0038 | Changed metadata, metadata contracts, links, corpus and archive |
+| W55 | 50 | Record the open Spec reconciliation and promote the OpenTofu documents | W54 | TSK-0039 | Package pull requests, metadata contracts, changed metadata, links |
 
 ### Current v30 continuation and delivery
 

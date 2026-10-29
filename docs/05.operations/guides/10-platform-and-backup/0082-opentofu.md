@@ -1,8 +1,8 @@
 ---
 title: "OpenTofu Guide"
-version: "0.3.0"
+version: "1.0.0"
 type: "operation/guide"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-29"
 layer: "operations"
