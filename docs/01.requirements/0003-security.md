@@ -118,4 +118,4 @@ certification or a claim to have reviewed the paid standards' full text.
 - **Custody policy**: [OpenBao policy](../05.operations/policies/04-security-and-secrets/0085-openbao.md)
 - **Recovery procedure**: [OpenBao runbook](../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
 - **Quality references**: [ISO/IEC 25010](https://www.iso.org/standard/78176.html), [ISO/IEC 25023](https://www.iso.org/standard/35747.html), [ISO/IEC 25030](https://www.iso.org/standard/72116.html).
-- **Historical ADR**: [Central secrets manager decision](../02.architecture/decisions/0003-vault-as-secrets-manager.md)
+- **Secrets manager decision**: [ADR-0050](../02.architecture/decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0003

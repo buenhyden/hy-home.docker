@@ -79,7 +79,7 @@ topology without a separately approved Requirement and ADR.
 ### Traceability
 
 - [REQ-0003](../../01.requirements/0003-security.md)
-- [ADR-0018](../decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
+- [ADR-0050](../decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0018
 - [SPEC-0003](0003-security-architecture.md)
 - [OpenBao policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
 - [OpenBao runbook](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)

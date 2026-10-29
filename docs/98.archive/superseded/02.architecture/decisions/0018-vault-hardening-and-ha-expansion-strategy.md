@@ -1,14 +1,15 @@
 ---
 title: "Vault Hardening and HA Expansion Strategy"
-version: "1.0.3"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "ADR-0018"
 parent_ids:
 - "AD-0018"
+superseded_by: "ADR-0050"
 created: "2026-03-28"
 ---
 # ADR-0018: Vault Hardening and HA Expansion Strategy

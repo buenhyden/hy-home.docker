@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.30.0"
+version: "1.31.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -88,7 +88,8 @@ section to every skill, in TSK-0033. Criterion 45/W50 moves the Migration
 behind the partly met request lines, in TSK-0035. Criterion 47/W52 records the
 investigations, owner decisions and currency fixes, in TSK-0036. Criterion
 48/W53 lets the validator accept the one approved terminal Task correction,
-in TSK-0037.
+in TSK-0037. Criterion 49/W54 accepts ADR-0050 and archives the Vault ADRs it
+supersedes, in TSK-0038.
 
 ## Scope
 
@@ -459,6 +460,8 @@ hold, authorization and recovery requirements have been established.
     the Stage 01, 02 and 05 fixes they led to.
 48. TSK-0037 lets the validator accept the one owner-approved `Resolves`
     correction of a completed Task and nothing else.
+49. TSK-0038 accepts ADR-0050 and moves ADR-0003 and ADR-0018 to the
+    superseded archive.
 
 ## Failure Conditions
 

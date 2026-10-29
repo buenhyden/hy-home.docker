@@ -229,7 +229,7 @@ Rationale:
 ### Traceability
 
 - Parent: [AD-0003 Security Architecture](../descriptions/0003-security-architecture.md)
-- Earlier deferral: [ADR-0018](0018-vault-hardening-and-ha-expansion-strategy.md)
+- Earlier deferral: ADR-0018, superseded by [ADR-0050](0050-openbao-as-secrets-manager.md)
 - Spec: [SPEC-0182](../../03.specs/0182-home-residual-backlog/spec.md) criterion 10 and 11,
   Plan W10/W11,
   [Task 0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)
