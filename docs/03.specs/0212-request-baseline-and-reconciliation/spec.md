@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.17.0"
+version: "1.18.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -71,6 +71,8 @@ choices on two gaps a re-read of the request found, in TSK-0019. Criterion
 measure in the requirement template, in TSK-0020. Criterion 32/W37 removes a
 conflict between the worktree rule and a CI script, in TSK-0021. Criterion 33/W38
 records a read-only runtime snapshot and a skill bundle audit, in TSK-0022.
+Criterion 34/W39 records the owner's correction of that runtime drift, in
+TSK-0023.
 
 ## Scope
 
@@ -401,6 +403,9 @@ hold, authorization and recovery requirements have been established.
     starting, stopping, or recreating any, names declared-versus-running
     drift for its owner, and audits each canonical skill for needed
     references or scripts without creating any.
+34. TSK-0023 records that the owner recreated `airflow-statsd-exporter`, that
+    it now runs its declared healthcheck and reports healthy, and that every
+    running `hy-home-infra` container is healthy; the agent read state only.
 
 ## Failure Conditions
 
