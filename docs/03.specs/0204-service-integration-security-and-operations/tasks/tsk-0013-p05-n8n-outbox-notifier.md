@@ -846,6 +846,18 @@ UTC day from 2026-10-17, still rising, and the offline test pins those dates.
 The first attempt's manual-execution timeout did not recur, so it remains
 unexplained. One further native run is needed.
 
+### Owner decision on criterion 22 drivers 2026-10-30
+
+The owner chose on 2026-10-30 to accept criterion 22 with the concurrent claim
+and retry scenarios as they stand: driven in `psql` as the notifier role, with
+the retry backoff fast-forwarded by the superuser. These scenarios prove the
+database lease and retry contract. That n8n itself claims and acknowledges
+rows is proved by the scheduled and manual executions. The other options,
+one real n8n retry with a 30-second backoff or every scenario through n8n,
+were declined. This settles how the evidence is read, not whether it exists:
+criterion 22 stays pending until one native run returns all seven fields and
+`native` as PASS.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
