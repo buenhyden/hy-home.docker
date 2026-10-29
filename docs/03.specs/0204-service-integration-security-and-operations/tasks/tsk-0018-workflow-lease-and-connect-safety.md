@@ -1,10 +1,10 @@
 ---
 title: "Workflow Lease and Database Connect Safety Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0018"
 parent_ids:
@@ -212,6 +212,19 @@ Affected final gates will run once against the final source after the separate
 CI policy integration; pre-rebase tests are not relabeled as final-head or
 hosted CI evidence. The separate blocked image-native/HOME/recovery lanes
 remain visible.
+
+### Owner decision 2026-10-29
+
+On 2026-10-29 the owner decided that the frontmatter `draft` is stale: the Work
+Log above already reports the source corrections and isolated verification. The status moves `draft`, `ready`, then
+`in-progress`. No criterion is accepted here: criteria 18 and 19 keep their acceptance owners in TSK-0012 and TSK-0013, and HOME and complete recovery stay `NOT_RUN`.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0018 | draft | ready | #inputs-and-authorization |
+| SPEC-0204-TSK-0018 | ready | in-progress | #owner-decision-2026-10-29 |
 
 ## Evidence
 
