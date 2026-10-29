@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Guide"
-version: "0.2.4"
+version: "0.3.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "GDE-0082"
 parent_ids:
@@ -76,6 +76,10 @@ tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가�
 ### 백업과 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0082-opentofu.md)의 `상태 보존과 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+
+### Terraform 이관
+
+기존 Terraform workspace를 옮기기 전에 state와 lock 정보를 보호한다. 독립 Terraform Compose 서비스가 없다는 사실은 Terrakube workspace의 엔진까지 OpenTofu로 고정되었다는 뜻이 아니다. Terrakube executor는 외부 도구·엔진 목록을 참조하므로 이관 대상별 실제 엔진, provider 및 state 호환성을 확인하고, Terraform configuration과 state가 자동으로 호환된다고 가정하지 않는다. 민감한 state와 plan payload는 문서나 로그에 넣지 않는다.
 
 ### Runbook Handoff
 

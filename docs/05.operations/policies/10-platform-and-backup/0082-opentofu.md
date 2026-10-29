@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Policy"
-version: "0.2.3"
+version: "0.3.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "POL-0082"
 parent_ids:
@@ -52,6 +52,13 @@ lock, plan, provider 작업, 업그레이드, 서비스 폐기.
 책임자는 `@buenhyden`이다. 버전 조회·format/validate라도 선언된 마운트와
 실행 영향을 확인한다. 정확한 바이너리 태그 외의 distro 패키지와 provider 선택은
 완전히 고정된 빌드가 아니므로 복구 시 사용한 이미지·provider lock 식별자를 보존한다.
+
+### Terraform 이관
+
+- 기존 state와 lock 정보를 보존하고 암호화된 복구본을 먼저 준비한다.
+- 복제 workspace에서 provider 및 backend 호환성을 검증하고, 이관 대상별 Terrakube 실제 엔진을 확인한다.
+- CLI 교체와 실제 remote resource 변경을 별도 검토한다. `apply`, `destroy`, state rewrite와 force-unlock은 정확한 대상 승인을 요구한다.
+- 새로운 Terraform 서비스나 병렬 updater를 만들지 않는다. 호환성 때문에 기존 CLI가 필요하면 담당자, 대상 workspace, 지원 종료 조건과 검증 계획을 기록하며 private state 공개는 허용하지 않는다.
 
 ## Exceptions
 

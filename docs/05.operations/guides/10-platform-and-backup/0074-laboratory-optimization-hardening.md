@@ -1,10 +1,10 @@
 ---
-title: "Administration and Experimentation Hardening Usage Guide"
-version: "1.0.3"
+title: "Admin and Experiment Tools Hardening Usage Guide"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "GDE-0074"
 parent_ids:
@@ -12,7 +12,7 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# Administration and Experimentation Hardening Usage Guide
+# Admin and Experiment Tools Hardening Usage Guide
 
 ## Overview
 
@@ -59,7 +59,7 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 
 ### Traceability
 
-- 상위 문서: [Administration and Experimentation Hardening Operations Policy](../../policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`POL-0074`)
+- 상위 문서: [Admin and Experiment Tools Hardening Operations Policy](../../policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`POL-0074`)
 - 설계 근거: [Administration and Experimentation Architecture Description](../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
 - 동일 주제 문서: [Policy](../../policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`POL-0074`), [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
 

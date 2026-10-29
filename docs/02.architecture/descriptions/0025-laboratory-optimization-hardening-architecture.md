@@ -1,17 +1,17 @@
 ---
-title: "Administration and Experimentation Hardening Architecture Description"
-version: "1.1.4"
+title: "Admin and Experiment Tools Hardening Architecture Description"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "AD-0025"
 parent_ids:
 - "REQ-0012"
 created: "2026-03-28"
 ---
-# Administration and Experimentation Hardening Architecture Description
+# Admin and Experiment Tools Hardening Architecture Description
 
 ## Overview
 

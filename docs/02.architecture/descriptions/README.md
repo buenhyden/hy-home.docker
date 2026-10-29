@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.1.6"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-29"
 layer: "architecture"
 ---
 
@@ -59,6 +59,8 @@ docs/02.architecture/descriptions/
   문서 lifecycle 거버넌스 아키텍처.
 - [`AD-0031`](./0031-home-development-host.md):
   home and development host 아키텍처.
+- [`AD-0032`](./0032-experience-architecture.md):
+  13-experience Storybook 아키텍처.
 
 ## Usage
 

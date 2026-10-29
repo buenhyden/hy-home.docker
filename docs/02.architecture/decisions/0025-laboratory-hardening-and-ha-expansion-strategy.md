@@ -1,10 +1,10 @@
 ---
 title: "Laboratory Hardening and HA Expansion Strategy"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "ADR-0025"
 parent_ids:
@@ -49,11 +49,11 @@ The laboratory tier greatly affects operator productivity but provides UIs with 
   - Keep the service network block that joins the root `infra_net` context.
   - Restrict the dozzle docker socket to read-only.
   - Protect the open-notebook UI route with an allowlist+large-body+SSO boundary and keep Docker Secret-based credential injection.
-  - Introduce `check-all-hardening.sh 11-laboratory` and the CI `infrastructure-hardening` job.
+  - Introduce `check-all-hardening.sh 04-data 06-observability 08-ai` and the CI `infrastructure-hardening` job.
 - Apply catalog expansion in phases.
   - Dashboard expiration policy
   - Dozzle log access scope restriction
-  - Portainer session/approval policy
+  - Dozzle and RedisInsight admin session/approval policy
   - RedisInsight minimal-privilege/audit log policy
   - open-notebook notebook data retention/expiration and direct API/DB host-port exposure review
 

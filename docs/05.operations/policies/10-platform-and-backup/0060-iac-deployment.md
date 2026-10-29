@@ -1,10 +1,10 @@
 ---
 title: "IaC Deployment Policy"
-version: "1.1.2"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "POL-0060"
 parent_ids:
@@ -23,7 +23,7 @@ created: "2026-03-25"
 - **Systems**: `infra/09-platform-ops/opentofu/docker-compose.yml`, `infra/09-platform-ops/terrakube/docker-compose.yml`
 - **Environments**: local, development, homelab operations
 
-Terraform Compose runtime은 제거되었다. 기존 workspace 이관은 [migration handoff](../../guides/10-platform-and-backup/0068-terraform.md)를 따른다.
+Terraform Compose runtime은 제거되었다. 기존 workspace 이관은 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md)를 따른다.
 
 ## Rules
 
@@ -66,7 +66,7 @@ socket 권한과 외부 도구 선택은 OpenTofu의 읽기 전용 cloud credent
 - 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
 - [Operations index](../../README.md)
 - [OpenTofu guide](../../guides/10-platform-and-backup/0082-opentofu.md)
-- [Terraform migration handoff](../../guides/10-platform-and-backup/0068-terraform.md)
+- [OpenTofu guide](../../guides/10-platform-and-backup/0082-opentofu.md)
 - [Terrakube guide](../../guides/10-platform-and-backup/0069-terrakube.md)
 - [OpenTofu runbook](../../runbooks/10-platform-and-backup/0082-opentofu.md)
 - [Terrakube runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)

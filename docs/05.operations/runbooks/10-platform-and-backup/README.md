@@ -1,10 +1,10 @@
 ---
 title: "플랫폼과 백업 런북"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-10-29"
 layer: "operations"
 ---
 
@@ -30,7 +30,7 @@ layer: "operations"
 | [Docker Registry Runbook](0065-registry.md) | `RUN-0065` | Registry(`registry` service)의 장애 진단, 일관된 백업·복원, 업그레이드, 별도로 승인된 garbage collection 절차다. |
 | [Terraform Runbook](0068-terraform.md) | `RUN-0068` | 기존 Terraform workspace를 OpenTofu 운영으로 이관하는 절차다. state 보호와 복제 workspace 검증을 다룬다. |
 | [Terrakube Recovery Runbook](0069-terrakube.md) | `RUN-0069` | Terrakube(`terrakube-api`, `terrakube-ui`, `terrakube-executor`)의 장애 진단, 조정된 백업·격리 복원, 업그레이드 절차다. |
-| [Administration and Experimentation Hardening Runbook](0074-laboratory-optimization-hardening.md) | `RUN-0074` | 관리·실험 기능 하드닝 항목의 회귀를 복구하는 절차다. direct 노출 복원, allowlist/SSO/gateway 체인 누락, 네트워크 경계 드리프트, CI 게이트 실패를 점검하고 복구한다. 관리 UI 보안 경계와 운영 안정성 기준을 빠르게 되돌 |
+| [Admin and Experiment Tools Hardening Runbook](0074-laboratory-optimization-hardening.md) | `RUN-0074` | 관리·실험 기능 하드닝 항목의 회귀를 복구하는 절차다. direct 노출 복원, allowlist/SSO/gateway 체인 누락, 네트워크 경계 드리프트, CI 게이트 실패를 점검하고 복구한다. 관리 UI 보안 경계와 운영 안정성 기준을 빠르게 되돌 |
 | [OpenTofu Runbook](0082-opentofu.md) | `RUN-0082` | OpenTofu(`opentofu` job)의 plan 검토, lock 실패, state 백업·복구, 업그레이드 절차다. |
 | [Renovate Runbook](0083-renovate.md) | `RUN-0083` | Renovate job의 정적 점검, 승인된 live run, 잘못된 변경의 복구, systemd timer 운영 절차다. |
 | [Dependency Version Management Runbook](0086-dependency-version-management.md) | `RUN-0086` | 이 런북은 소스 이미지, 빌드 의존성, updater 정책, 파생 버전 projection을 바꿀 때 따르는 검증과 적용 절차를 안내한다. |

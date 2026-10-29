@@ -4486,12 +4486,13 @@
         "REQ-0012.FR": {
           "prefix": "REQ-0012-FR-",
           "width": 4,
-          "high_water": 4,
-          "next_number": 5,
+          "high_water": 5,
+          "next_number": 6,
           "current_issued": [
             1,
             2,
-            4
+            4,
+            5
           ],
           "reserved_history": [
             3
@@ -5125,8 +5126,8 @@
         "REQ-0027.FR": {
           "prefix": "REQ-0027-FR-",
           "width": 4,
-          "high_water": 8,
-          "next_number": 9,
+          "high_water": 9,
+          "next_number": 10,
           "current_issued": [
             1,
             2,
@@ -5135,7 +5136,8 @@
             5,
             6,
             7,
-            8
+            8,
+            9
           ],
           "reserved_history": [],
           "child_spaces": {}
@@ -5168,15 +5170,15 @@
     "architecture-description": {
       "prefix": "AD-",
       "width": 4,
-      "high_water": 31,
-      "next_number": 32,
+      "high_water": 32,
+      "next_number": 33,
       "child_spaces": {}
     },
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 49,
-      "next_number": 50,
+      "high_water": 50,
+      "next_number": 51,
       "child_spaces": {}
     },
     "spec": {

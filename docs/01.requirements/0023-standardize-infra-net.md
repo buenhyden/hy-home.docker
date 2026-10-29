@@ -1,15 +1,15 @@
 ---
-title: "Compose Network Segmentation Product Requirements"
-version: "1.0.3"
+title: "Compose Network Segmentation Requirements"
+version: "1.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "requirements"
 artifact_id: "REQ-0023"
 created: "2026-04-01"
 ---
-# Compose Network Segmentation Product Requirements
+# Compose Network Segmentation Requirements
 
 ## Overview
 

@@ -1,15 +1,15 @@
 ---
-title: "Security Tier (03-security) Product Requirements"
-version: "1.1.1"
+title: "Security Tier (03-security) Requirements"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "requirements"
 artifact_id: "REQ-0003"
 created: "2026-03-26"
 ---
-# Security Tier (03-security) Product Requirements
+# Security Tier (03-security) Requirements
 
 ## Overview
 
