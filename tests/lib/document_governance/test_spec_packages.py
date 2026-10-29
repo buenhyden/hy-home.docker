@@ -4950,6 +4950,12 @@ class TerminalTaskResolvesCorrectionTests(unittest.TestCase):
             _spec_packages_module()._terminal_task_migration_matches(before, after)
         )
 
+    def test_unchanged_task_still_matches(self) -> None:
+        before = self._task("2026-10-22", "Final hosted candidate")
+        self.assertTrue(
+            _spec_packages_module()._terminal_task_migration_matches(before, before)
+        )
+
     def test_other_resolves_change_is_rejected(self) -> None:
         before = self._task("2026-10-22", "Final hosted candidate")
         self.assertFalse(
