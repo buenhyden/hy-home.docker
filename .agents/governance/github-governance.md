@@ -1,6 +1,6 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.6.0"
+version: "1.7.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -42,11 +42,12 @@ Repository protection, pull requests, hosted workflows, and separately authorize
 
 Issues provide intake, coordination, and branch links. The current Task owns
 approval, evidence, and lifecycle state; closing a stale Issue does not
-transition a Task. Projects provides a filtered work view when an owner configures it; its
-fields are coordination data, not Task execution authority. Keep Issue intake
-and priority plus Spec/Task links, without copying their full bodies or
-bidirectional state synchronization. No Project resource or credential is
-created by this source change. A remote Issue, tag, or release mutation requires approval naming the exact
+transition a Task. This repository uses no GitHub Project: with one developer,
+Issues cover intake and priority and Tasks cover execution, so a Project
+would only repeat Task state. Adding one needs the owner's approval naming
+it, and its fields stay coordination data, never Task execution authority.
+Keep Issue intake and priority plus Spec/Task links, without copying their
+full bodies or bidirectional state synchronization. A remote Issue, tag, or release mutation requires approval naming the exact
 target and action.
 
 - A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved BLOCK-severity findings remain.
