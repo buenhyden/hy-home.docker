@@ -1,10 +1,10 @@
 ---
 title: "Host Storage Tiering Task"
-version: "0.1.10"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0246-TSK-0001"
 parent_ids:
@@ -58,6 +58,7 @@ below adds criterion 6 and W7 to the Spec and Plan.
 | SPEC-0246-PLAN-0001 | draft | approved | #plan-approval |
 | SPEC-0246-TSK-0001 | draft | ready | #inputs-and-authorization |
 | SPEC-0246-TSK-0001 | ready | in-progress | #baseline-observation |
+| SPEC-0246-TSK-0001 | in-progress | completed | #owner-completion-2026-10-29 |
 
 ### Baseline observation
 
@@ -564,6 +565,12 @@ findings, all addressed here:
 
 Criteria 1–6 are all accepted; the Task's completion transition is left to the
 owner.
+
+### Owner completion 2026-10-29
+
+On 2026-10-29 the owner approved completing this Task. Every criterion was
+already accepted on direct host observation (2026-10-19 to 2026-10-27), so no
+new check runs and no host state changes.
 
 ## Evidence
 
