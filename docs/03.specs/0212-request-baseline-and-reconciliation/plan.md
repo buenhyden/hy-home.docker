@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.15.0"
+version: "1.16.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -46,6 +46,7 @@ W33 in TSK-0017 re-reviews the deferred and not-run items from TSK-0016.
 W34 in TSK-0018 applies the owner's choices on the items TSK-0017 left open.
 W35 in TSK-0019 applies the owner's choices on two gaps from a request re-read.
 W36 in TSK-0020 adds a quality characteristic and measure to the NFR template line.
+W37 in TSK-0021 scopes the worktree rule to branch worktrees.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -91,6 +92,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W34 | 29 | Narrow merge methods, diagnose pre-existing unit failures, run static Compose validation, and hand off cross-repository gaps | W33 | TSK-0018 | Merge-method read-back, isolated-venv test run, Compose validation in a clean worktree |
 | W35 | 30 | Delete the stale `main-current` tag and add the worktree location rule | W34 | TSK-0019 | Remote tag read-back, governance contract, provider render |
 | W36 | 31 | Add a quality characteristic and measure to the requirement template's NFR line | W35 | TSK-0020 | Requirement parser and template tests |
+| W37 | 32 | Scope the worktree location rule to branch worktrees | W36 | TSK-0021 | Governance contract, provider render |
 
 ### Current v30 continuation and delivery
 
