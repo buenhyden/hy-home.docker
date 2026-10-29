@@ -1,10 +1,10 @@
 ---
 title: "Storybook Build and Delivery Task"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0219-TSK-0001"
 parent_ids:
@@ -276,6 +276,25 @@ logged in"); the browser ran on another device, so the callback reached the
 server by forwarding the redirected URL. GDE-0101 now carries the consumer
 check, the Codex callback, the cross-device callback, and Ubuntu and Windows
 steps for the root CA, `NODE_EXTRA_CA_CERTS` and `CODEX_CA_CERTIFICATE`.
+
+### Owner decision 2026-10-29
+
+On 2026-10-29 the owner ratified the approval of SPEC-0219 and its Plan and
+moved this Task from `draft` through `ready` to `in-progress`; the Work Log
+above already reports the executed units W1 to W8. Criterion 2 stays `pending`:
+the remote-device MCP login and tool call is `NOT_RUN` and needs the owner on
+another device. Criteria 1, 3, 4 and 5 keep their accepted decisions. The
+GHSA-vfj7 acceptance recorded in SPEC-0222 expires on 2026-11-08T07:00:00Z;
+the npm risk acceptance must be renewed or the advisory resolved before then.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0219 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0219-PLAN-0001 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0219-TSK-0001 | draft | ready | #inputs-and-authorization |
+| SPEC-0219-TSK-0001 | ready | in-progress | #owner-decision-2026-10-29 |
 
 ## Evidence
 
