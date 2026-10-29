@@ -1,10 +1,10 @@
 ---
 title: "Shared Agent Memory"
-version: "0.4.1"
+version: "0.5.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0236"
 parent_ids:
