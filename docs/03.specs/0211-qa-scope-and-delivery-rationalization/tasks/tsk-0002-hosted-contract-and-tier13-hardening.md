@@ -4,7 +4,7 @@ version: "0.2.0"
 type: "sdlc/task"
 status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0211-TSK-0002"
 parent_ids:
@@ -308,7 +308,7 @@ new operational validation or an archive move.
 | Node prerequisite routing RED | 2, 3 | W70 | Selected Node prerequisites for promoted regression leaves | Registered `leaf.compose-baseline-regressions` and `leaf.repository-integrity-regressions`; infra-only Compose selector | FAIL | Two focused methods produced three exact false-negative assertions; independent model receipt `30474f6616fd6f9513321e3a5a0969e17811017b28d593bd311863e703434af6` | required | - |
 | Node prerequisite routing GREEN | 2, 3 | W70 | Selected Node prerequisites for promoted regression leaves | Runner `bb2a2720cdb94918bef5c080e5659a11cef35c610b3168e7f492830800d3c267`; plan test `ec642a47f1a1e6342f91f30e9ac1458859b40138d750507e2085c748dc3d2d2a` | PASS | Focused two-method batch and complete runner/execution-context batch passed; independent security review approved the exact two-ID change | required | Node prerequisite routing RED |
 | Final hosted candidate | 2, 3 | W70 | Actual PR candidate | Final receipt commit not yet created | NOT_RUN | A new exact-head hosted run is required | required | - |
-| Final hosted candidate recovery | 2, 3 | W70 | Actual PR candidate | PR 505 head `9bf618a80d192d974d494b164b8af4df07dfb6ae`; run 38826848451, job 116736189044 | PASS | Required App 15368 `candidate-quality` passed in 12 minutes 16 seconds; CodeQL and GitGuardian passed; protected PR merged as main `2de045e3b6f79967b4b4050e5cff53ee0b38158f` | required | Final hosted candidate |
+| Final hosted candidate recovery | 2, 3 | W70 | Actual PR candidate | PR 505 head `9bf618a80d192d974d494b164b8af4df07dfb6ae`; run 38826848451, job 116736189044 | PASS | Required App 15368 `candidate-quality` passed in 12 minutes 16 seconds; CodeQL and GitGuardian passed; protected PR merged as main `2de045e3b6f79967b4b4050e5cff53ee0b38158f` | required | First hosted candidate RED, Hosted retry, Final hosted candidate |
 | Merged main security | 3, 5 | W70 | Actual merged-main security | Main `2de045e3b6f79967b4b4050e5cff53ee0b38158f`; run 38828232689, job 116740637022 | PASS | Audit merged workflow revision and SARIF upload steps passed; candidate PR job was skipped on push by design | optional | - |
 | Remote protection observation | 3 | W70 | Read-only main protection, effective rules and latest successful candidate App identity | Current remote main; run 38695709347 | FAIL | Required contexts/checks empty; App 15368 observed; no mutation | optional | - |
 | Remote protection recovery observation | 3 | W70 | Read-only main protection, effective rules and latest successful candidate App identity | Separately approved main setting change recorded on current `origin/main`; independent API read-back | PASS | Strict required `candidate-quality` is bound to App 15368; PR 505 head `e459c4ec1aaf652ad26d17e67daaf7ff5bb23aac` remained `BLOCKED` on its failed current-head check; no mutation by this Task | optional | Remote protection observation |
