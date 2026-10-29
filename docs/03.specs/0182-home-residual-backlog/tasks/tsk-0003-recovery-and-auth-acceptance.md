@@ -1,10 +1,10 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.17"
+version: "0.8.0"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0003"
 parent_ids:
@@ -414,38 +414,48 @@ synthetic CDC and owner-accepted empty JupyterLab evidence remain historical
 receipts. W10 R2 scratch restore/offline key custody also remain open; this
 Task is blocked while the Spec package remains active.
 
+### Owner decision 2026-10-29
+
+On 2026-10-29 the owner accepted criteria 8, 9, 11 and 12 on their existing
+`PASS` Evidence rows (W8, W9, W11, W12). Criteria 7 and 10 stay `pending`: W7
+verify, restore and PITR and W10 R2 scratch restore with offline key custody are
+runtime work and remain `NOT_RUN`. This Task stays `blocked`. The Evidence and
+Criterion Acceptance tables move to the current shape (each Evidence row gains
+`Required`, each criterion row gains `Current Owner`) so the acceptance can be
+recorded; no row content changed.
+
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Current Task status: blocked | 7 | W7 | Current recovery evidence | [Backup policy](../../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md) | NOT_RUN | This Task, Evidence | - |
-| Current Task status: completed | 8 | W8 | Measurement evidence | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) | PASS | This Task, Evidence | - |
-| Current Task status: completed (2) | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | - |
-| Current Task status: blocked (2) | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | - |
-| Current Task status: completed (3) | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/01-common/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | - |
-| Current Task status: completed (4) | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Current Task status: blocked | 7 | W7 | Current recovery evidence | [Backup policy](../../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md) | NOT_RUN | This Task, Evidence | required | - |
+| Current Task status: completed | 8 | W8 | Measurement evidence | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) | PASS | This Task, Evidence | required | - |
+| Current Task status: completed (2) | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | required | - |
+| Current Task status: blocked (2) | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | required | - |
+| Current Task status: completed (3) | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/01-common/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | required | - |
+| Current Task status: completed (4) | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | required | - |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 7 | pending | - | - |
-| 8 | pending | - | - |
-| 9 | pending | - | - |
-| 10 | pending | - | - |
-| 11 | pending | - | - |
-| 12 | pending | - | - |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 7 | pending | - | - | SPEC-0182 TSK-0003 |
+| 8 | accepted | Current Task status: completed | Owner accepted on 2026-10-29 on the recorded W8 measurement observations. | SPEC-0182 TSK-0003 |
+| 9 | accepted | Current Task status: completed (2) | Owner accepted on 2026-10-29 on the recorded SSO behavior rows. | SPEC-0182 TSK-0003 |
+| 10 | pending | - | - | SPEC-0182 TSK-0003 |
+| 11 | accepted | Current Task status: completed (3) | Owner accepted on 2026-10-29 on the recorded reboot rehearsal and SecretID delivery. | SPEC-0182 TSK-0003 |
+| 12 | accepted | Current Task status: completed (4) | Owner accepted on 2026-10-29 on the recorded retired and entry-closed dispositions. | SPEC-0182 TSK-0003 |
 
 ## Review and Completion
 
 | Acceptance criterion | Acceptance | Evidence |
 | --- | --- | --- |
 | 7 | pending | Current isolated recovery and consistency evidence remains unavailable. |
-| 8 | pending | The recorded observations remain in Verification Evidence; no v4 acceptance is recorded. |
-| 9 | pending | The recorded SSO rows remain in Verification Evidence; no v4 acceptance is recorded. |
+| 8 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
+| 9 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
 | 10 | pending | R2 scratch restore and offline-key custody remain open. |
-| 11 | pending | The recorded rehearsal remains in Verification Evidence; no v4 acceptance is recorded. |
-| 12 | pending | The recorded dispositions remain in Verification Evidence; no v4 acceptance is recorded. |
+| 11 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
+| 12 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
 
 2026-10-04 independent read-only review: Task 0002 completion receipts PASS;
 Task 0003 W8 aggregates and current W7/W10 holds PASS with the scope of
