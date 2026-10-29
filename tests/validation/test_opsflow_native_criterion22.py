@@ -420,6 +420,15 @@ class ExecutionTimeoutFactsTests(unittest.TestCase):
 
 
 class Criterion22DriverTests(unittest.TestCase):
+    def test_race_fits_the_notifier_connection_budget(self):
+        from tests.validation.test_opsflow_database_rehearsal import provision_sql
+
+        limit = f"ALTER ROLE opsflow_notifier CONNECTION LIMIT {c22.NOTIFIER_CONNECTION_LIMIT};"
+        self.assertEqual(1, provision_sql().count(limit))
+        pool = native_driver.OpsflowN8nNativeRehearsal.postgres_credential("x")
+        self.assertEqual(c22.WORKFLOW_POOL_CONNECTIONS, pool["data"]["maxConnections"])
+        self.assertEqual(3, c22.RACE_JOBS)
+
     def test_publish_next_uses_rising_unique_capture_times_and_safe_ids(self):
         case = driver()
         seen = []

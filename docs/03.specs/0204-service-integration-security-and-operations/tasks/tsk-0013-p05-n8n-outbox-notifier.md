@@ -858,6 +858,26 @@ were declined. This settles how the evidence is read, not whether it exists:
 criterion 22 stays pending until one native run returns all seven fields and
 `native` as PASS.
 
+### Owner native attempt three 2026-10-30
+
+The owner ran the native class a third time, from `main` with the
+business-date fix. Attempt `opsflow-native-cd9f2fadd4086d1c86311ead` passed
+`scheduled_execution`: one trigger-mode execution delivered in 41 seconds,
+with the worker as the only member of the DEV network, and the deactivated
+hold kept the next row unclaimed. In `concurrent_claims`, the race with one
+row and four claimers passed. The race with three rows and six claimers
+returned a summary the parser rejected. The step was recorded FAIL, the later
+five steps NOT_RUN, and `native` ERROR after 855.9 seconds. Cleanup passed.
+
+This was another harness defect. The reviewed provisioning gives
+`opsflow_notifier` `CONNECTION LIMIT 5`, and the workflow credential pools up
+to two connections as the same role. The sixth psql claimer could not
+connect, and its missing fields failed the parser. The four-claimer race
+passed only because the pool happened to hold few connections. Each race now
+uses three claimers, five minus two: one row with three claimers, then two
+rows with three claimers. An offline test pins the limit in the provisioning
+SQL and the pool size in the credential. One further native run is needed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -879,6 +899,7 @@ criterion 22 stays pending until one native run returns all seven fields and
 | Criterion 22 harness source | 22 | W44 | Offline scenario guards, gate registration and independent review | Worktree on `main` at merged PR #654 | PASS | Criterion 22 harness source 2026-10-30; 67 tests OK with the native class skipped; no native run | required | - |
 | Owner native attempt | 22 | W43 | Opt-in native class, first manual execution | `main` at `032818766` before the criterion 22 harness; attempt `opsflow-native-1b407daf3eb9138fa67527cb` | FAIL | Owner native attempt 2026-10-30; queued execution did not turn terminal in 60 s; cleanup PASS | required | - |
 | Owner native attempt with criterion 22 steps | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `4de81f1a4`; attempt `opsflow-native-5c855b474d846df902d87001` | FAIL | Owner native attempt with criterion 22 steps 2026-10-30; scheduled delivery passed, next publication hit the business-date index; harness fixed; cleanup PASS | required | - |
+| Owner native attempt three | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `e3e504514`; attempt `opsflow-native-cd9f2fadd4086d1c86311ead` | FAIL | Owner native attempt three 2026-10-30; scheduled execution PASS; six-claimer race exceeded the notifier connection limit; harness fixed; cleanup PASS | required | - |
 
 Actual existing-source command, exit0:
 

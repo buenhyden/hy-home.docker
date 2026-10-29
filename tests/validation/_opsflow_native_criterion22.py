@@ -32,6 +32,11 @@ SCHEDULE_WAIT_SECONDS = 150
 # More than one full minute with the trigger deactivated.
 DEACTIVATED_HOLD_SECONDS = 70
 RACE_HOLD_SECONDS = 3
+# opsflow_notifier has CONNECTION LIMIT 5 and the workflow credential pools up
+# to two of them, so only three psql claimers are sure to connect.
+NOTIFIER_CONNECTION_LIMIT = 5
+WORKFLOW_POOL_CONNECTIONS = 2
+RACE_JOBS = NOTIFIER_CONNECTION_LIMIT - WORKFLOW_POOL_CONNECTIONS
 
 UUID_NIL = "00000000-0000-0000-0000-000000000000"
 EXECUTION_STATUSES_OPEN = {"new", "running", "waiting", "unknown"}
