@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-29"
 created: "2026-02-21"
 ---
 
@@ -115,6 +115,13 @@ GitHub Actions controller는 `requirements.txt`와
 Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-commit
 도구 준비는 기존 `requirements-pre-commit.txt`를 계속 직접 소비하며, lock
 재생성은 입력 변경을 동반한 별도 리뷰 대상입니다.
+
+로컬에서 단위 테스트를 돌릴 때도 같은 lock이 필요합니다. 배포판 Python
+패키지는 더 오래될 수 있습니다. 예를 들어 `jsonschema` 4.10에는
+`referencing`이 없어 secret catalog, SMTP 생성기, metadata sync 테스트가
+실패합니다. lock을 별도 venv에 `--require-hashes`로 설치하고, 그 venv의
+`bin`을 `PATH` 맨 앞에 둡니다. `gen-secrets.sh`가 `PATH`의 `python3`를
+호출하기 때문입니다.
 
 ## Active Surface Retention Rules
 
