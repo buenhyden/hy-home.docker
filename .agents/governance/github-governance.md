@@ -52,14 +52,13 @@ target and action.
 - A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved BLOCK-severity findings remain.
 - Draft/WIP PRs are allowed for collaboration; section 3 owns what that means for merge readiness.
 - Agents must not self-approve or bypass required reviewers.
-- This repository has one developer and no second reviewer. That risk is
-  handled by the required `candidate-quality` check, a review of the final diff
-  in a fresh context separate from the one that wrote it, and the owner's own
-  merge. The review path calls no AI-agent API: no workflow, hook, or script
-  sends the diff to a model provider, and an agent review runs only inside the
-  developer's own interactive session. One person's review is never recorded as
-  two independent approvals, and an automated check, App, or signature does not
-  stand in for the owner's acceptance.
+- 이 저장소는 개발자 한 명이 두 번째 리뷰어 없이 운영합니다. 그 위험은 필수
+  `candidate-quality` 검사, 작성한 맥락과 분리된 새 맥락에서 최종 diff를 다시
+  보는 검토, owner 본인의 병합으로 다룹니다. 이 리뷰 경로는 AI agent API를
+  호출하지 않습니다. 어떤 workflow, hook, 스크립트도 diff를 모델 공급자에게
+  보내지 않으며, agent 리뷰는 개발자 본인의 대화형 세션 안에서만 실행합니다.
+  한 사람의 검토를 독립된 두 승인으로 기록하지 않으며, 자동 검사·App·서명은
+  owner의 수용을 대신하지 않습니다.
 - When agents propose changes, they must list which CODEOWNERS paths are touched and which review gates apply.
 - Git history is the recovery mechanism. A current Task may name a temporary
   recovery commit, but must not turn a branch tip, expected SHA, checksum, or
