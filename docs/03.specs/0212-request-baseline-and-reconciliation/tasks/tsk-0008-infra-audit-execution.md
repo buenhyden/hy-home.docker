@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Audit Execution Task"
-version: "0.1.15"
+version: "0.1.16"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0008"
 parent_ids:
@@ -52,6 +52,24 @@ acceptance-PASS claim: each draft or nonterminal record retains its own
 criteria, evidence, merge, and operation disposition under its primary owner.
 
 ## Work Log
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0008 | draft | ready | #inputs-and-authorization |
+| SPEC-0212-TSK-0008 | ready | in-progress | #p0-execution-state |
+| SPEC-0212-TSK-0008 | in-progress | completed | #completion-2026-10-29 |
+
+### Completion (2026-10-29)
+
+The owner accepted criterion 19 on 2026-10-28; every required row passes or
+has a same-Check resolver (#c19-row-resolutions-2026-10-28). On 2026-10-29
+the owner directed that this Task close on that acceptance. The acceptance
+scope is unchanged: routing for requirements 11–32 only, with native, HOME,
+recovery, hosted delivery, and remote protection left with their named
+owners. The `draft` wording in the sections below records the state when
+they were written.
 
 ### P0 execution state
 
