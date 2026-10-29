@@ -1,6 +1,6 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.6.0"
+version: "1.7.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -40,6 +40,15 @@ Provider-neutral agent execution, delegation, capability intake, and Task eviden
   record it as unknown and stop or use the authorized operator route; do not
   claim hard enforcement, alter a command, or use a wrapper to bypass the
   boundary.
+- This repository calls no paid model API. No workflow, hook, or script sends
+  a request to a model provider, so there is no repository rate-limit, token,
+  or retry policy to set; cost and limits are the account settings of the
+  developer's own interactive session. Adding an API call needs an approved
+  Spec that states its rate, cost, retry, and cancellation limits first.
+- No automatic PR reviewer or test-case generator is installed. Both would
+  call a model API, which the single-developer review path forbids; an agent
+  may review a diff or draft tests only inside the developer's interactive
+  session.
 - Generated native role and skill projections are adapters and never own shared
   policy, role intent, or procedure content. Authored native `provider.md` files
   own loading and syntax differences only; `.agents/` is canonical input.

@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.4.3"
+version: "1.5.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -31,6 +31,12 @@ Spec Package, the current Task, and the registered Stage 99 contract.
    approved Spec Package and recorded in its current Task.
 5. **Operations** — Stage 05 owns guides, policies, runbooks, and incidents for
    the running system.
+
+Research, design drafts, and isolated trials never require a future
+approval, commit, or digest before they start. Activating a new shared norm,
+switching a numbering scheme, or applying a retention policy needs the
+approval for that scope first, and a still-valid earlier approval for the
+same scope is reused rather than asked again.
 
 Reuse approved Requirement and Architecture inputs when they already cover the
 change. Within Stage 03, clarify unresolved scope before writing the Spec, map

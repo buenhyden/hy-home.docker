@@ -1,6 +1,6 @@
 ---
 title: "Git Workflow Governance"
-version: "1.5.0"
+version: "1.6.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -77,6 +77,10 @@ automatic enforcement from configuration alone.
   directory. Remove a worktree and its merged branch when the work ends. A
   detached checkout that a script creates and removes inside its own scratch
   directory is not a branch worktree.
+- Start a new branch or worktree from the latest committed state the work
+  builds on, normally `main` after the previous pull request merged. Never
+  stash, reset, discard, or force-commit uncommitted user work to make room;
+  stop and ask instead.
 
 ### 3. Pull Request Protocol
 
@@ -93,11 +97,14 @@ automatic enforcement from configuration alone.
 4. For governance work, ensure linked stage docs remain accurate.
 5. Apply the Completion Gate from `.agents/governance/github-governance.md` before declaring the PR done.
 6. Mark incomplete work as Draft/WIP and do not request final review until the PR is ready. Merge readiness and branch lifecycle belong to `.agents/governance/github-governance.md` section 3.
-7. Keep commits atomic and reviewable. Document any cleanup proposal in the PR;
+7. A pull request carries the work of one Spec Package. It may hold several
+   of that Spec's Tasks as separate logical commits, and it never mixes
+   Specs.
+8. Keep commits atomic and reviewable. Document any cleanup proposal in the PR;
    the recovery-commit and history-rewrite rules it must satisfy are owned by
    `.agents/governance/github-governance.md` section 3.
-8. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
-9. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
+9. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
+10. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 
 ### 4. Operational Best Practices
 

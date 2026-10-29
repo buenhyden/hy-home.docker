@@ -1,6 +1,6 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.7.0"
+version: "1.8.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -93,6 +93,18 @@ main-push security remains a post-merge observation.
 - Runtime health, live smoke, operator acceptance, backup and restore evidence
   belong to their approved service Task. Compose render or static hardening does
   not prove any of them. A SEV1/SEV2 incident uses its incident postmortem.
+- Optimize QA in this order: remove duplicate leaves; separate document
+  content checks from validator regression tests; share parsing and Git reads
+  within one run; select by change impact; reuse only a provably equivalent
+  narrow result. Compare a reproducible measure before and after (run time,
+  wait, installs, call count, CPU, or cost); never call a change faster
+  without a number, and do not start with a large global cache or a new gate.
+- A non-functional requirement names one ISO/IEC 25010 quality
+  characteristic and a measure in the ISO/IEC 25023 sense: what is measured,
+  the unit, the environment, and the acceptance value. The Requirement
+  template carries that line. A characteristic left out states why it does
+  not apply, and no threshold is forced on every project. This adds no
+  separate compliance gate.
 - Retire one-time QA in this order: transfer a continuing guarantee to its
   current owner; remove callers and registration; remove exclusive helpers,
   fixtures and tests; preserve useful actual results in existing Task/history.

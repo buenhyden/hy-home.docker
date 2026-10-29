@@ -1,6 +1,6 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.2.0"
+version: "1.3.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
@@ -63,6 +63,10 @@ read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
   no sandbox relaxation: per [approval boundaries](../.agents/governance/approval-boundaries.md),
   only an operator acting through its trusted channel may run Codex with a
   relaxed sandbox, and the repository neither authenticates nor relaxes it.
+- No `approval_policy` is tracked in `.codex/config.toml`, so Codex keeps its
+  default approval mode. Edits inside the current request's scope are already
+  authorized under approval boundaries; Claude's counterpart is
+  `autoMode.allow: ["$defaults"]` in `.claude/settings.json`.
 
 Select checks through the [shared verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix)
 and [completion checklist](../.agents/governance/task-checklists.md#before-completion).
