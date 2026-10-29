@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.9.0"
+version: "1.10.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -40,6 +40,7 @@ read-only per-unit Stage 98 disposition dry-run; it removes nothing. W28 in
 TSK-0012 applies the owner-approved history-only removal of its candidates.
 W29 in TSK-0013 records the follow-up review of the remaining request areas.
 W30 in TSK-0014 removes a repeated history scan from the archive check.
+W31 in TSK-0015 applies the owner-approved blocked items from TSK-0013.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -79,6 +80,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W28 | 23 | Owner-approved history-only removal of the TSK-0011 candidates: capture rows for pre-catalog units, assessment rows, whole-payload removal | W27 | TSK-0012 | Corpus lifecycle, link alignment, and changed document checks after removal |
 | W29 | 24 | Review of the remaining request areas: apply verified small corrections; defer or block the rest with owner and reason | W28 | TSK-0013 | Renderer drift, metadata contracts and changed checks, affected unit tests |
 | W30 | 25 | Measure and remove the repeated history scan in the archive assessment snapshot check | W29 | TSK-0014 | Archive regressions and timed corpus check |
+| W31 | 26 | Remove git-cliff configuration, add template subtopics, and repair the index-membership regression | W30 | TSK-0015 | Metadata contracts, template and gate tests, full unit suite |
 
 ### Current v30 continuation and delivery
 

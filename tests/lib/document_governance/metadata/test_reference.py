@@ -1238,6 +1238,33 @@ class IndexMembershipTests(unittest.TestCase):
                     continue
                 if classify_registered_path(origin, registry) == member_profile:
                     found.append(path)
+        # A Git-history-only unit keeps its capture row for discovery, so the
+        # index still governs the members its source object names.
+        from scripts.lib.document_governance.archive_assessments import (
+            assessment_lookup,
+            capture_sources,
+        )
+
+        sources = capture_sources(ROOT)
+        for unit, row in assessment_lookup(ROOT).items():
+            if row.availability != "git-history-only" or unit not in sources:
+                continue
+            revision, origin = sources[unit]
+            if not f"{origin}/".startswith(f"{stage_dir}/"):
+                continue
+            listed = subprocess.run(
+                ["git", "ls-tree", "-r", "--name-only", revision, "--", origin],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=30,
+            ).stdout.split()
+            found.extend(
+                pathlib.Path(member)
+                for member in listed
+                if classify_registered_path(member, registry) == member_profile
+            )
         return found
 
 

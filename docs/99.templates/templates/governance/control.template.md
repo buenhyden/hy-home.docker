@@ -18,19 +18,47 @@ updated: "{{UPDATED}}"
 
 ## Scope
 
-{{SURFACES_AND_ACTORS_UNDER_CONTROL}}
+### Surfaces
+
+{{SURFACES_UNDER_CONTROL}}
+
+### Actors
+
+{{ACTORS_UNDER_CONTROL}}
 
 ## Rules
 
-{{NORMATIVE_RULES}}
+### Required
+
+{{REQUIRED_BEHAVIOR}}
+
+### Prohibited
+
+{{PROHIBITED_BEHAVIOR}}
 
 ## Exceptions
 
-{{SCOPED_EXCEPTIONS_AND_AUTHORIZATION_BOUNDARIES}}
+### Scoped Exceptions
+
+{{SCOPED_EXCEPTIONS}}
+
+### Authorization Boundaries
+
+{{AUTHORIZATION_BOUNDARIES}}
 
 ## Verification
 
-{{SCOPED_CHECKS_EXPECTED_SIGNALS_AND_EVIDENCE_LIMITS}}
+### Checks
+
+{{SCOPED_CHECKS}}
+
+### Expected Signals
+
+{{EXPECTED_SIGNALS}}
+
+### Evidence Limits
+
+{{EVIDENCE_LIMITS}}
 
 ## Related Documents
 

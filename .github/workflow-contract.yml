@@ -1493,7 +1493,6 @@
           ".rtk/",
           ".shellcheckrc",
           ".yamllint",
-          "cliff.toml",
           "ruff.toml"
         ],
         "suites": [
@@ -1889,7 +1888,6 @@
       {
         "prefixes": [
           "CHANGELOG.md",
-          "cliff.toml",
           ".github/workflows/generate-changelog.yml",
           "scripts/operations/release.py",
           "tests/validation/test_release.py"
