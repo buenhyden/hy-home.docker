@@ -1,10 +1,10 @@
 ---
 title: "Backup Telemetry and Budget"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0228"
 parent_ids:
