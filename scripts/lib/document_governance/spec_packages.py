@@ -59,6 +59,18 @@ _RECONCILIATION_HEADERS = (
     "Evidence",
 )
 _FORBIDDEN_PACKAGE_ROLES = frozenset({"design.md", "tests.md", "task.md"})
+# Owner-approved one-off corrections of a terminal Task, by path: the Evidence
+# row name, its Resolves cell before, and the cell after. Nothing else changes.
+_TERMINAL_TASK_RESOLVES_CORRECTIONS: Mapping[str, tuple[tuple[str, str, str], ...]] = {
+    "docs/03.specs/0211-qa-scope-and-delivery-rationalization/tasks/"
+    "tsk-0002-hosted-contract-and-tier13-hardening.md": (
+        (
+            "Final hosted candidate recovery",
+            "Final hosted candidate",
+            "First hosted candidate RED, Hosted retry, Final hosted candidate",
+        ),
+    ),
+}
 _CONTRACT_PROFILES = {
     "openapi.yaml": "openapi-contract",
     "schema.graphql": "graphql-contract",
@@ -4365,10 +4377,21 @@ def _terminal_task_migration_matches(before: SpecDocument, task: SpecDocument) -
         for key, value in current_record.metadata.items()
         if key not in {"parent_ids", "updated"}
     }
-    return (
-        before_record.body == current_record.body
-        and before_metadata == current_metadata
-    )
+    before_body = before_record.body
+    corrections = _TERMINAL_TASK_RESOLVES_CORRECTIONS.get(before.path.as_posix(), ())
+    for name, old, new in corrections:
+        before_body = _corrected_resolves(before_body, name, old, new)
+    return before_body == current_record.body and before_metadata == current_metadata
+
+
+def _corrected_resolves(body: str, name: str, old: str, new: str) -> str:
+    """Replace the Resolves cell of the one named Evidence row."""
+
+    lines = body.split("\n")
+    for index, line in enumerate(lines):
+        if line.startswith(f"| {name} |") and line.endswith(f"| {old} |"):
+            lines[index] = line[: -len(f"{old} |")] + f"{new} |"
+    return "\n".join(lines)
 
 
 def _mainline_historical_terminal_tasks(
