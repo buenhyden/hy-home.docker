@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.31.0"
+version: "1.32.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -89,7 +89,8 @@ behind the partly met request lines, in TSK-0035. Criterion 47/W52 records the
 investigations, owner decisions and currency fixes, in TSK-0036. Criterion
 48/W53 lets the validator accept the one approved terminal Task correction,
 in TSK-0037. Criterion 49/W54 accepts ADR-0050 and archives the Vault ADRs it
-supersedes, in TSK-0038.
+supersedes, in TSK-0038. Criterion 50/W55 records the open Spec
+reconciliation and the OpenTofu promotion, in TSK-0039.
 
 ## Scope
 
@@ -462,6 +463,8 @@ hold, authorization and recovery requirements have been established.
     correction of a completed Task and nothing else.
 49. TSK-0038 accepts ADR-0050 and moves ADR-0003 and ADR-0018 to the
     superseded archive.
+50. TSK-0039 records an owner decision for every open Spec Package and
+    promotes the OpenTofu operations documents.
 
 ## Failure Conditions
 
