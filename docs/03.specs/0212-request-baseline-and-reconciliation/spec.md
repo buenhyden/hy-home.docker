@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.26.0"
+version: "1.27.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -82,7 +82,8 @@ of every request line against the repository, in TSK-0029. Criterion 41/W46
 judges every pair of the request's 148 requirements for duplication and
 conflict, in TSK-0030. Criterion 42/W47 adds the five rules that
 TSK-0029 found missing, in TSK-0031. Criterion 43/W48 makes governance and
-provider guidance English, in TSK-0032.
+provider guidance English, in TSK-0032. Criterion 44/W49 adds a Verification
+section to every skill, in TSK-0033.
 
 ## Scope
 
@@ -443,6 +444,8 @@ hold, authorization and recovery requirements have been established.
 43. TSK-0032 makes non-README governance and provider documents English,
     enforces it through their Registry profiles, and keeps every README
     Korean.
+44. TSK-0033 gives every canonical skill a Verification section with
+    observable success conditions and makes the section required.
 
 ## Failure Conditions
 
