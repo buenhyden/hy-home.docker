@@ -1,10 +1,10 @@
 ---
 title: "n8n Stable Source Preparation Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0017"
 parent_ids:
@@ -445,6 +445,19 @@ approve with notes.
 
 This was a self-requested subagent review, not owner review. PR #522 was merged
 before these fixes were pushed, so they follow in a separate PR.
+
+### Owner decision 2026-10-29
+
+On 2026-10-29 the owner decided that the frontmatter `draft` is stale: the Work
+Log above already reports the stable source preparation, isolated build and HOME upgrade. The status moves `draft`, `ready`, then
+`in-progress`. No criterion is accepted here: criterion 2 keeps its acceptance owner in TSK-0001, and the exact-head review and image, security and recovery coverage stay open.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0017 | draft | ready | #inputs-and-authorization |
+| SPEC-0204-TSK-0017 | ready | in-progress | #owner-decision-2026-10-29 |
 
 ## Evidence
 

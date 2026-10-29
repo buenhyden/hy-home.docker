@@ -1,10 +1,10 @@
 ---
 title: "Storybook Build and Delivery"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0219"
 parent_ids:
