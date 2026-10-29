@@ -1,10 +1,10 @@
 ---
 title: "Storybook Build and Delivery Task"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0219-TSK-0001"
 parent_ids:
@@ -288,6 +288,21 @@ GHSA-vfj7 acceptance recorded in SPEC-0222 is no longer active: GitHub
 withdrew the advisory on 2026-10-23, the acceptance was retired, and the
 dependency audit is again the strict high-level run, so no renewal is due.
 
+### Owner remote-device check 2026-10-30
+
+From another device (192.168.0.22), the owner opened
+`https://storybook-mcp.hy.home.arpa/.well-known/oauth-protected-resource/mcp`
+and received `resource` `https://storybook-mcp.hy.home.arpa/mcp`, the
+`hy-home.realm` authorization server and scope `storybook-mcp`. Codex
+`codex mcp login hyhome_storybook` reported `Authentication complete`.
+`docs-list` returned three documents (AsyncState, Button, UI/Introduction) and
+`docs-show` returned the `ui-button` document. No token was recorded. The
+owner accepted criterion 2, so every criterion is accepted. This Task stays
+`in-progress`: Plan W5 also covers criteria 3 and 5, and no Evidence row records
+a W5 PASS for either, so completion waits for that evidence or a Plan
+correction. The Evidence and Criterion Acceptance tables move to the current
+shape so the decision can be recorded.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -299,28 +314,29 @@ dependency audit is again the strict high-level run, so no renewal is due.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Build contract | 1 | W1 | Unit tests; Alpine SHA check; trial build and verify | `cdbf5768a` | PASS | W1 Build Contract | - |
-| Ingress checks | 2 | W2 | Static tests; missing-image failure | `f1ae14eb0` | PASS | W2 Ingress Regression | - |
-| Shared UI | 3 | W3 | Story tests RED and GREEN; parity test (removed with `DESIGN.md`); tarball consumer | `73beaa382` | PASS | W3 Shared UI | - |
-| Dependencies | 3 | W4 | Full checks on TypeScript 6.0.3; TypeScript 7 trials | `943108232` | PASS | W4 Dependencies | - |
-| Remote MCP and export | 2, 4 | W5 | Node and unit tests; live local server | `f9977d135` | PASS | W5 Remote MCP, Design Export and Documents | - |
-| Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9`, `300b12a86` | PASS | W6 Images and Rehearsal | - |
-| Validation | 5 | W7 | Changed gate; CI; npm risk amendment | `6169a8f1f`, `412ec8298` | PASS | W7 Validation | - |
-| HOME activation | 2 | W8 | Keycloak client and scope read-back; image verify; no-session probes; owner admin login | `0df98f405` | PASS | W8 HOME Activation | - |
-| Codex MCP login on HOME | 2 | W8 | Owner's `codex mcp login` after the redirect URI change | `0df98f405` | PASS | W8 HOME Activation | - |
-| Remote-device MCP login and tool call | 2 | W8 | Login from another device; `docs-list` | — | NOT_RUN | W8 HOME Activation | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Build contract | 1 | W1 | Unit tests; Alpine SHA check; trial build and verify | `cdbf5768a` | PASS | W1 Build Contract | required | - |
+| Ingress checks | 2 | W2 | Static tests; missing-image failure | `f1ae14eb0` | PASS | W2 Ingress Regression | required | - |
+| Shared UI | 3 | W3 | Story tests RED and GREEN; parity test (removed with `DESIGN.md`); tarball consumer | `73beaa382` | PASS | W3 Shared UI | required | - |
+| Dependencies | 3 | W4 | Full checks on TypeScript 6.0.3; TypeScript 7 trials | `943108232` | PASS | W4 Dependencies | required | - |
+| Remote MCP and export | 2, 4 | W5 | Node and unit tests; live local server | `f9977d135` | PASS | W5 Remote MCP, Design Export and Documents | required | - |
+| Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9`, `300b12a86` | PASS | W6 Images and Rehearsal | required | - |
+| Validation | 5 | W7 | Changed gate; CI; npm risk amendment | `6169a8f1f`, `412ec8298` | PASS | W7 Validation | required | - |
+| HOME activation | 2 | W8 | Keycloak client and scope read-back; image verify; no-session probes; owner admin login | `0df98f405` | PASS | W8 HOME Activation | required | - |
+| Codex MCP login on HOME | 2 | W8 | Owner's `codex mcp login` after the redirect URI change | `0df98f405` | PASS | W8 HOME Activation | required | - |
+| Remote-device MCP login and tool call | 2 | W8 | Login from another device; `docs-list` | — | NOT_RUN | W8 HOME Activation | required | - |
+| Remote-device MCP login and tool call rerun | 2 | W8 | Login from another device; `docs-list` | Owner on 192.168.0.22 with Codex, 2026-10-30 | PASS | Owner remote-device check 2026-10-30 (metadata probe returned the expected resource; `codex mcp login hyhome_storybook` completed; `docs-list` returned three documents; `docs-show` returned ui-button) | required | Remote-device MCP login and tool call |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 1 | accepted | Build contract, Images and rehearsal | Generation 5 row acceptance |
-| 2 | pending | - | - |
-| 3 | accepted | Shared UI, Dependencies | Generation 5 row acceptance |
-| 4 | accepted | Remote MCP and export | Generation 5 row acceptance |
-| 5 | accepted | Validation | Generation 5 row acceptance |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | accepted | Build contract, Images and rehearsal | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
+| 2 | accepted | Ingress checks, Remote MCP and export, HOME activation, Codex MCP login on HOME, Remote-device MCP login and tool call rerun | Owner accepted on 2026-10-30 after the remote-device login and tool calls succeeded. | SPEC-0219 TSK-0001 |
+| 3 | accepted | Shared UI, Dependencies | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
+| 4 | accepted | Remote MCP and export | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
+| 5 | accepted | Validation | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
 
 ## Review and Completion
 
