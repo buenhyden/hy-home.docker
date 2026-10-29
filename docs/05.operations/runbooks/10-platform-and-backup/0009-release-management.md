@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-10-29"
 layer: "operations"
 artifact_id: "RUN-0009"
 created: "2026-06-04"
@@ -74,7 +74,7 @@ SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이
    ```
 
 5. PR과 승인된 코드가 main에 통합되면 정확한 commit과 아직 존재하지 않는
-   `v` + SemVer를 확인한다. `generate-changelog.yml`의 main-only 수동 dispatch가
+   `v` + SemVer를 확인한다. `publish-release.yml`의 main-only 수동 dispatch가
    유일한 태그·Release 생산자다. 태그를 따로 push하거나 다른 writer를 추가하지
    않는다. 실제 dispatch에는 정확한 version·repository·commit의 별도 승인이 필요하다.
 

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.22.0"
+version: "1.23.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -76,7 +76,8 @@ TSK-0023. Criterion 35/W40 corrects a stale path in the agent governance, in
 TSK-0024. Criterion 36/W41 removes a dead CI routing prefix, in TSK-0025. Criterion
 37/W42 records the re-run of the full request against the current baseline,
 in TSK-0026. Criterion 38/W43 reads the archive policy against its code, in
-TSK-0027.
+TSK-0027. Criterion 39/W44 reads the SDLC and CI/QA policy against their code
+and renames the release workflow, in TSK-0028.
 
 ## Scope
 
@@ -423,6 +424,9 @@ hold, authorization and recovery requirements have been established.
 38. TSK-0027 reads the Stage 98 policy text in the archive index and the
     documentation protocol against the code and checks that enforce it, and
     corrects each statement that no longer matches.
+39. TSK-0028 reads the SDLC policy and the CI/QA policy against the Registry,
+    the Spec Package reader, the workflows, and the hooks, and renames the
+    sole release workflow to a name that matches what it does.
 
 ## Failure Conditions
 

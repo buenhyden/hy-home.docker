@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.22.0"
+version: "1.23.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -53,6 +53,7 @@ W40 in TSK-0024 corrects stale paths named in agent and provider surfaces.
 W41 in TSK-0025 removes a dead CI routing prefix.
 W42 in TSK-0026 records the re-run of the full request against the baseline.
 W43 in TSK-0027 reads the archive policy against its code.
+W44 in TSK-0028 reads the SDLC and CI/QA policy and renames the release workflow.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -105,6 +106,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W41 | 36 | Remove routing and references to files that do not exist in active surfaces | W40 | TSK-0025 | Path existence scan, workflow-contract and gate tests |
 | W42 | 37 | Re-run the request against the baseline, close TSK-0008, and record the unperformed specification audits | W41 | TSK-0026 | Baseline readback, metadata contracts |
 | W43 | 38 | Read the archive policy text against its code and checks, and correct mismatches | W42 | TSK-0027 | Archive corpus check, metadata contracts, routing tests |
+| W44 | 39 | Read SDLC and CI/QA policy against code and rename the release workflow | W43 | TSK-0028 | Workflow contract, gate and release tests, metadata contracts |
 
 ### Current v30 continuation and delivery
 
