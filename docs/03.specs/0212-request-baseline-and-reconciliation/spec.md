@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.14.0"
+version: "1.15.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -66,7 +66,9 @@ records the owner's choices for the three items TSK-0013 deferred or left not
 run, in TSK-0016. Criterion 28/W33 reviews those deferred and not-run
 items again in TSK-0017. Criterion 29/W34 applies the owner's choices on
 the items TSK-0017 left open, in TSK-0018. Criterion 30/W35 applies the owner's
-choices on two gaps a re-read of the request found, in TSK-0019.
+choices on two gaps a re-read of the request found, in TSK-0019. Criterion
+31/W36 links non-functional requirements to a quality characteristic and
+measure in the requirement template, in TSK-0020.
 
 ## Scope
 
@@ -386,6 +388,10 @@ hold, authorization and recovery requirements have been established.
     request found: the stale non-SemVer `main-current` tag is deleted under
     ref-scoped approval with its commit kept in history, and the worktree
     location rule names `.worktrees/<branch>`.
+31. TSK-0020 gives the requirement template's non-functional line a quality
+    characteristic and a measure, following REQ-0003's existing ISO/IEC
+    25010/25023/25030 use, without a separate compliance section or registry
+    and without rewriting existing requirements.
 
 ## Failure Conditions
 
