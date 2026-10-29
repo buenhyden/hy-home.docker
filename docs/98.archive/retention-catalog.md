@@ -249,6 +249,11 @@ reads this table.
 | `retired/archive/Windows-Network-IP.md` | retired | pre-catalog withdrawal with no successor; reason in its sealed record | `0c5144c3ee1d489a2a9fefb376419a2790f5f54d:archive/Windows-Network-IP.md` |
 | `superseded/90.references/audits/0033-readme/README.md` | superseded | AUD-0019 | `3c574af85a32cc9c227f2dd1cfa47f9ddfcbe2c7:docs/90.references/audits/0033-readme/README.md` |
 | `superseded/90.references/research/0080-roadmap-v1/README.md` | superseded | RES-0081 | `3c574af85a32cc9c227f2dd1cfa47f9ddfcbe2c7:docs/90.references/research/0080-roadmap-v1/README.md` |
+| `superseded/02.architecture/decisions/0003-vault-as-secrets-manager.md` | superseded | ADR-0050 | `157db45e91067e6436722fd10e2770b2561d80c2:docs/02.architecture/decisions/0003-vault-as-secrets-manager.md` |
+| `superseded/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md` | superseded | ADR-0050 | `157db45e91067e6436722fd10e2770b2561d80c2:docs/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md` |
+| `retired/05.operations/guides/10-platform-and-backup/0068-terraform.md` | retired | No Terraform service exists; the live migration steps moved to the 0082 OpenTofu guide, policy and runbook (SPEC-0212 TSK-0036), so no successor exists. | `157db45e91067e6436722fd10e2770b2561d80c2:docs/05.operations/guides/10-platform-and-backup/0068-terraform.md` |
+| `retired/05.operations/policies/10-platform-and-backup/0068-terraform.md` | retired | No Terraform service exists; the live migration steps moved to the 0082 OpenTofu guide, policy and runbook (SPEC-0212 TSK-0036), so no successor exists. | `157db45e91067e6436722fd10e2770b2561d80c2:docs/05.operations/policies/10-platform-and-backup/0068-terraform.md` |
+| `retired/05.operations/runbooks/10-platform-and-backup/0068-terraform.md` | retired | No Terraform service exists; the live migration steps moved to the 0082 OpenTofu guide, policy and runbook (SPEC-0212 TSK-0036), so no successor exists. | `157db45e91067e6436722fd10e2770b2561d80c2:docs/05.operations/runbooks/10-platform-and-backup/0068-terraform.md` |
 
 ## Current Assessments
 

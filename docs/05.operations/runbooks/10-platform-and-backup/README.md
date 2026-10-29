@@ -28,7 +28,6 @@ layer: "operations"
 | [Backup and Restore Runbook](0021-backup-and-restore.md) | `RUN-0021` | pgBackRest, Restic, SQLite export, R2 오프사이트 사본의 설정·실행·검증·복구 절차를 다룬다. 정책은 POL-0021, 설명은 GDE-0021이 소유한다. |
 | [Platform Operations and Quality Optimization Hardening Runbook](0063-tooling-optimization-hardening.md) | `RUN-0063` | `09-platform-ops`와 `11-quality` 하드닝 회귀가 의심될 때 문서화된 기준을 복구하는 절차다. 공개 경계 SSO 체인, root가 소유한 network 경계, 독립 Locust LAB worker healthcheck, k6 vo |
 | [Docker Registry Runbook](0065-registry.md) | `RUN-0065` | Registry(`registry` service)의 장애 진단, 일관된 백업·복원, 업그레이드, 별도로 승인된 garbage collection 절차다. |
-| [Terraform Runbook](0068-terraform.md) | `RUN-0068` | 기존 Terraform workspace를 OpenTofu 운영으로 이관하는 절차다. state 보호와 복제 workspace 검증을 다룬다. |
 | [Terrakube Recovery Runbook](0069-terrakube.md) | `RUN-0069` | Terrakube(`terrakube-api`, `terrakube-ui`, `terrakube-executor`)의 장애 진단, 조정된 백업·격리 복원, 업그레이드 절차다. |
 | [Admin and Experiment Tools Hardening Runbook](0074-laboratory-optimization-hardening.md) | `RUN-0074` | 관리·실험 기능 하드닝 항목의 회귀를 복구하는 절차다. direct 노출 복원, allowlist/SSO/gateway 체인 누락, 네트워크 경계 드리프트, CI 게이트 실패를 점검하고 복구한다. 관리 UI 보안 경계와 운영 안정성 기준을 빠르게 되돌 |
 | [OpenTofu Runbook](0082-opentofu.md) | `RUN-0082` | OpenTofu(`opentofu` job)의 plan 검토, lock 실패, state 백업·복구, 업그레이드 절차다. |
