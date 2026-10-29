@@ -4913,5 +4913,63 @@ class HistoricalSpecSnapshotReuseTests(unittest.TestCase):
                 )
 
 
+class TerminalTaskResolvesCorrectionTests(unittest.TestCase):
+    """The one registered Resolves correction is the only allowed change."""
+
+    PATH = pathlib.PurePosixPath(
+        "docs/03.specs/0211-qa-scope-and-delivery-rationalization/tasks/"
+        "tsk-0002-hosted-contract-and-tier13-hardening.md"
+    )
+    ROW = (
+        "| Final hosted candidate recovery | 2, 3 | W70 | Actual PR candidate "
+        "| PR 505 | PASS | Passed | required | {} |"
+    )
+    TEXT = (
+        '---\ntitle: "T"\nversion: "0.2.0"\ntype: "sdlc/task"\n'
+        'status: "completed"\nupdated: "{}"\n---\n\n# T\n\n{}\n'
+    )
+
+    def _task(self, updated: str, resolves: str, path=None):
+        text = self.TEXT.format(updated, self.ROW.format(resolves))
+        return _spec_packages_module().SpecDocument(
+            path or self.PATH,
+            "task",
+            "SPEC-0211-TSK-0002",
+            "completed",
+            (),
+            source_text=text,
+        )
+
+    def test_registered_resolves_correction_matches(self) -> None:
+        before = self._task("2026-10-22", "Final hosted candidate")
+        after = self._task(
+            "2026-10-29",
+            "First hosted candidate RED, Hosted retry, Final hosted candidate",
+        )
+        self.assertTrue(
+            _spec_packages_module()._terminal_task_migration_matches(before, after)
+        )
+
+    def test_other_resolves_change_is_rejected(self) -> None:
+        before = self._task("2026-10-22", "Final hosted candidate")
+        self.assertFalse(
+            _spec_packages_module()._terminal_task_migration_matches(
+                before, self._task("2026-10-22", "Hosted retry")
+            )
+        )
+
+    def test_correction_does_not_apply_to_another_task(self) -> None:
+        other = pathlib.PurePosixPath("docs/03.specs/0001-x/tasks/tsk-0001-x.md")
+        before = self._task("2026-10-22", "Final hosted candidate", other)
+        after = self._task(
+            "2026-10-22",
+            "First hosted candidate RED, Hosted retry, Final hosted candidate",
+            other,
+        )
+        self.assertFalse(
+            _spec_packages_module()._terminal_task_migration_matches(before, after)
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
