@@ -1,10 +1,10 @@
 ---
 title: "Repository Support Staging"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-10-29"
 created: "2026-09-27"
 ---
 
@@ -46,6 +46,16 @@ created: "2026-09-27"
 
 `README.md`만 추적됩니다. 작업별 하위 디렉터리는 무시되는 임시 공간이므로
 이 README가 목록을 관리하지 않습니다.
+
+다음 스크립트가 `task-*/` 아래에 결과를 씁니다.
+
+| 스크립트 | 결과 |
+| --- | --- |
+| `scripts/security/seed-grype-db-cache.sh` | Grype DB seed |
+| `scripts/security/verify-sample-service-supply-chain.sh` | 공급망 검증 기록 |
+| `scripts/operations/rehearse-sample-service-delivery.sh` | 배포 리허설 입력과 기록 |
+| `scripts/operations/rehearse-postgres-logical-upgrade.sh` | 업그레이드 리허설 인계 파일 |
+| `scripts/lib/ops/compose-core-readiness.sh` | readiness 기록 |
 
 ## Usage
 
