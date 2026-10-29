@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.18.0"
+version: "1.19.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -49,6 +49,7 @@ W36 in TSK-0020 adds a quality characteristic and measure to the NFR template li
 W37 in TSK-0021 scopes the worktree rule to branch worktrees.
 W38 in TSK-0022 records a read-only runtime snapshot and a skill bundle audit.
 W39 in TSK-0023 records the owner's correction of the exporter drift.
+W40 in TSK-0024 corrects stale paths named in agent and provider surfaces.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -97,6 +98,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W37 | 32 | Scope the worktree location rule to branch worktrees | W36 | TSK-0021 | Governance contract, provider render |
 | W38 | 33 | Read running container health and audit skill bundles | W37 | TSK-0022 | Read-only `docker ps`/`inspect`, skill inventory |
 | W39 | 34 | Record the owner's recreation of `airflow-statsd-exporter` and its health | W38 | TSK-0023 | Read-only `docker inspect` and project health count |
+| W40 | 35 | Correct repository paths in agent and provider surfaces that no longer exist | W39 | TSK-0024 | Path existence scan, governance contract |
 
 ### Current v30 continuation and delivery
 
