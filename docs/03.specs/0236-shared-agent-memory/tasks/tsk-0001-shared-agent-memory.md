@@ -1,10 +1,10 @@
 ---
 title: "Shared Agent Memory Task"
-version: "0.5.3"
+version: "0.6.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0236-TSK-0001"
 parent_ids:
@@ -42,6 +42,16 @@ memories, as SPEC-0236 states.
   decided to accept ADR-0049 ("Accept both").
 
 ## Work Log
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0236 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0236-PLAN-0001 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0236-TSK-0001 | draft | ready | #inputs-and-authorization |
+| SPEC-0236-TSK-0001 | ready | in-progress | #w1-starting-state |
+| SPEC-0236-TSK-0001 | in-progress | completed | #owner-decision-2026-10-29 |
 
 ### W1 Starting State
 
@@ -360,43 +370,46 @@ recorded at the time.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Starting state | 5, 6 | W1 | Read-only file and settings inventory | `b1a6976f4` | PASS | W1 Starting State | - |
-| Provider settings | 1 | W1 | Official Claude and Codex documentation | Pages read 2026-10-13 | PASS | W1 Starting State | - |
-| Host library | 3 | W1 | Linked SQLite version | This host | PASS | W1 Starting State | - |
-| Governance owner | 6 | W2 | Governance contract | Branch | PASS | W2 Governance Owner | - |
-| Store and CLI | 2, 3 | W3 | `test_agent_memory` (8) | Branch | PASS | W3 Store and CLI | - |
-| Failure handling | 3 | W4 | Stale, limits, race, full, backup failure, restore tests | Branch | PASS | W4 Limits, Failures and Backup | - |
-| Hook rule | 4, 5 | W5 | `test_tool_payload` RED (5) then GREEN (15) | Branch | PASS | W5 Hook Rule and Exclusions | - |
-| Native settings | 1 | W6 | JSON and TOML parse; provider renderer `--check` | Branch | PASS | W6 Native Memory Settings | - |
-| Security review | 7 | W7 | Independent `security-auditor` review: pass with notes, two medium findings | `b9c9e3a07` | FAIL | Reviews at `b9c9e3a07` | - |
-| Rules review | 7 | W7 | Independent `rules-engineer` review: changes required | `b9c9e3a07` | FAIL | Reviews at `b9c9e3a07` | - |
-| Review fixes | 3 | W4 | `test_agent_memory` 11 failures and 1 error on `b9c9e3a07`, then 13 pass | Branch | PASS | Review Fixes | - |
-| Stage owners | 6 | W2 | Metadata `check-changed` (11, 0 violations); `test_identity_history` (27); corpus lifecycle (0); links `--mode all` (0 failures); governance contract | Branch | PASS | Stage 01 and 02 Owners | - |
-| Review checks | 7 | W7 | `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (141); manifest, workflow contract, renderer `--check` | Branch | PASS | Review Fixes | - |
-| Restic coverage | 3 | W4 | Memory backup in the `hyhome-backup.service` snapshot | - | NOT_RUN | W4 Limits, Failures and Backup | - |
-| Codex trust | 1 | W6 | Main checkout `trusted`; repository hooks ran for Codex in a linked worktree | SPEC-0232 W7 observation | PASS | W8 Native Acceptance | - |
-| Security re-review | 7 | W7 | Independent `security-auditor` re-review: pass with notes, low only | `b42117a68` | PASS | Re-reviews at `b42117a68` | Security review |
-| Rules re-review | 7 | W7 | Independent `rules-engineer` re-review: changes required (H1, contract 7, criterion 4) | `b42117a68` | FAIL | Re-reviews at `b42117a68` | - |
-| Re-review fixes | 7 | W7 | New tests RED on `b42117a68` (2 failures, 1 error) then GREEN; `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (145); manifest, workflow contract, renderer `--check` (drift 0), governance contract; metadata `check-changed` (11, 0 violations); corpus lifecycle (0); `test_identity_history` (27) | Branch | PASS | Re-reviews at `b42117a68` | - |
-| Rules final review | 7 | W7 | Independent `rules-engineer` final review: approve; low notes applied (RUN-0021 Overview and Trigger name the memory store) | `f46ea2ee0` | PASS | Work Log | Rules review, Rules re-review |
-| Candidate | 7 | W7 | Hosted `candidate-quality`, run 38393988883 | PR #450 at `4229ac8c4` | PASS | W7 Verification | - |
-| Local gate | 7 | W7 | `run-ci-gate.py --profile changed` | - | NOT_RUN | W7 Verification | - |
-| Native acceptance | 1, 2, 4 | W8 | Claude, Codex and a new Claude session revise one record from two worktrees; stale write refused | `40f194e99` | PASS | W8 Native Acceptance | - |
-| Migration | 1 | W9 | Six eligible Claude native memories entered once through the CLI | `40f194e99` | PASS | W9 Native Memory Migration | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Starting state | 1, 2, 3, 4, 5, 6 | W1 | Read-only file and settings inventory | `b1a6976f4` | PASS | W1 Starting State | required | - |
+| Provider settings | 1 | W1 | Official Claude and Codex documentation | Pages read 2026-10-13 | PASS | W1 Starting State | required | - |
+| Host library | 3 | W1 | Linked SQLite version | This host | PASS | W1 Starting State | required | - |
+| Governance owner | 6 | W2 | Governance contract | Branch | PASS | W2 Governance Owner | required | - |
+| Store and CLI | 2, 3 | W3 | `test_agent_memory` (8) | Branch | PASS | W3 Store and CLI | required | - |
+| Failure handling | 3 | W4 | Stale, limits, race, full, backup failure, restore tests | Branch | PASS | W4 Limits, Failures and Backup | required | - |
+| Hook rule | 4, 5 | W5 | `test_tool_payload` RED (5) then GREEN (15) | Branch | PASS | W5 Hook Rule and Exclusions | required | - |
+| Native settings | 1 | W6 | JSON and TOML parse; provider renderer `--check` | Branch | PASS | W6 Native Memory Settings | required | - |
+| Security review | 7 | W7 | Independent `security-auditor` review: pass with notes, two medium findings | `b9c9e3a07` | FAIL | Reviews at `b9c9e3a07` | required | - |
+| Rules review | 7 | W7 | Independent `rules-engineer` review: changes required | `b9c9e3a07` | FAIL | Reviews at `b9c9e3a07` | required | - |
+| Review fixes | 3 | W4 | `test_agent_memory` 11 failures and 1 error on `b9c9e3a07`, then 13 pass | Branch | PASS | Review Fixes | required | - |
+| Stage owners | 6 | W2 | Metadata `check-changed` (11, 0 violations); `test_identity_history` (27); corpus lifecycle (0); links `--mode all` (0 failures); governance contract | Branch | PASS | Stage 01 and 02 Owners | required | - |
+| Review checks | 7 | W7 | `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (141); manifest, workflow contract, renderer `--check` | Branch | PASS | Review Fixes | required | - |
+| Restic coverage | 3 | W4 | Memory backup in the `hyhome-backup.service` snapshot | - | NOT_RUN | W4 Limits, Failures and Backup | optional | - |
+| Codex trust | 1 | W6 | Main checkout `trusted`; repository hooks ran for Codex in a linked worktree | SPEC-0232 W7 observation | PASS | W8 Native Acceptance | required | - |
+| Security re-review | 7 | W7 | Independent `security-auditor` re-review: pass with notes, low only | `b42117a68` | PASS | Re-reviews at `b42117a68` | required | - |
+| Rules re-review | 7 | W7 | Independent `rules-engineer` re-review: changes required (H1, contract 7, criterion 4) | `b42117a68` | FAIL | Re-reviews at `b42117a68` | required | - |
+| Re-review fixes | 7 | W7 | New tests RED on `b42117a68` (2 failures, 1 error) then GREEN; `test_agent_memory`, `test_tool_payload`, script manifest and routing tests (145); manifest, workflow contract, renderer `--check` (drift 0), governance contract; metadata `check-changed` (11, 0 violations); corpus lifecycle (0); `test_identity_history` (27) | Branch | PASS | Re-reviews at `b42117a68` | required | - |
+| Rules final review | 7 | W7 | Independent `rules-engineer` final review: approve; low notes applied (RUN-0021 Overview and Trigger name the memory store) | `f46ea2ee0` | PASS | Work Log | required | - |
+| Candidate | 7 | W7 | Hosted `candidate-quality`, run 38393988883 | PR #450 at `4229ac8c4` | PASS | W7 Verification | required | - |
+| Local gate | 7 | W7 | `run-ci-gate.py --profile changed` | - | NOT_RUN | W7 Verification | optional | - |
+| Native acceptance | 1, 2, 4 | W8 | Claude, Codex and a new Claude session revise one record from two worktrees; stale write refused | `40f194e99` | PASS | W8 Native Acceptance | required | - |
+| Migration | 1 | W9 | Six eligible Claude native memories entered once through the CLI | `40f194e99` | PASS | W9 Native Memory Migration | required | - |
+| Security review resolved | 7 | W7 | Independent `security-auditor` review: pass with notes, two medium findings | `b42117a68` (see Security re-review) | PASS | Re-reviews at `b42117a68` | required | Security review |
+| Rules review resolved | 7 | W7 | Independent `rules-engineer` review: changes required | `f46ea2ee0` (see Rules final review) | PASS | Work Log | required | Rules review |
+| Rules re-review resolved | 7 | W7 | Independent `rules-engineer` re-review: changes required (H1, contract 7, criterion 4) | `f46ea2ee0` (see Rules final review) | PASS | Work Log | required | Rules re-review |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
-| 5 | pending | - | - |
-| 6 | pending | - | - |
-| 7 | pending | - | - |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | accepted | Provider settings, Native settings, Codex trust, Native acceptance, Migration | Owner accepted on 2026-10-29 on these PASS rows. | SPEC-0236 TSK-0001 |
+| 2 | accepted | Store and CLI, Native acceptance | Owner accepted on 2026-10-29 on these PASS rows. | SPEC-0236 TSK-0001 |
+| 3 | accepted | Starting state, Host library, Store and CLI, Failure handling, Review fixes | Owner accepted on 2026-10-29 on these PASS rows; the Restic coverage row is optional here because the owner deferred it to SPEC-0237. | SPEC-0236 TSK-0001 |
+| 4 | accepted | Hook rule, Native acceptance | Owner accepted on 2026-10-29 on these PASS rows. | SPEC-0236 TSK-0001 |
+| 5 | accepted | Starting state, Hook rule | Owner accepted on 2026-10-29 on these PASS rows. | SPEC-0236 TSK-0001 |
+| 6 | accepted | Governance owner, Stage owners | Owner accepted on 2026-10-29 on these PASS rows. | SPEC-0236 TSK-0001 |
+| 7 | accepted | Candidate, Review checks, Re-review fixes, Security review resolved, Rules review resolved, Rules re-review resolved | Owner accepted on 2026-10-29; the hosted `candidate-quality` job runs the same `run-ci-gate.py --profile changed`, so the unrun local row is optional. | SPEC-0236 TSK-0001 |
 
 ## Review and Completion
 
@@ -406,11 +419,26 @@ Codex project `[memories]` effectiveness remains unverified. Restic coverage
 is no longer deferred: SPEC-0237 records the source change and a real snapshot
 path in W4; that memory step succeeded while the whole service run failed on
 the separate OpenBao snapshot-token gap. Its source/snapshot observation does
-not establish a restore or accept this package's pending criteria. No criterion
-is accepted until the owner accepts it.
+not establish a restore or accept this package's pending criteria. The owner accepted
+all criteria on 2026-10-29 (see Owner decision 2026-10-29).
 
 W2 to W7 merged in #450 with the review and re-review fixes, after the final
 rules review approved.
+
+### Owner decision 2026-10-29
+
+The owner decided to close this package on documents alone and ratified Spec
+and Plan approval after the fact. All seven criteria are accepted on the PASS rows named in Criterion
+Acceptance; no runtime was rerun. The Restic coverage row (owner-deferred to
+SPEC-0237) and the local changed gate row (the hosted `candidate-quality` job
+runs the same command, row Candidate) are optional and stay NOT_RUN.
+
+The tables move to the current shape so this acceptance can be recorded. The
+`Starting state` row now lists criteria 1–6 because Plan W1 maps all six and a
+completed Task needs a PASS row for each criterion and Work Unit pair. That row
+records that the W1 read-only inventory was done for every criterion; it is
+not evidence that criteria 1–4 are met, which rests on the later rows named in
+Criterion Acceptance.
 
 ## Related Documents
 
