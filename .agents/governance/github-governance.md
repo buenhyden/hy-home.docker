@@ -1,6 +1,6 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.4.2"
+version: "1.5.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -52,6 +52,14 @@ target and action.
 - A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved BLOCK-severity findings remain.
 - Draft/WIP PRs are allowed for collaboration; section 3 owns what that means for merge readiness.
 - Agents must not self-approve or bypass required reviewers.
+- This repository has one developer and no second reviewer. That risk is
+  handled by the required `candidate-quality` check, a review of the final diff
+  in a fresh context separate from the one that wrote it, and the owner's own
+  merge. The review path calls no AI-agent API: no workflow, hook, or script
+  sends the diff to a model provider, and an agent review runs only inside the
+  developer's own interactive session. One person's review is never recorded as
+  two independent approvals, and an automated check, App, or signature does not
+  stand in for the owner's acceptance.
 - When agents propose changes, they must list which CODEOWNERS paths are touched and which review gates apply.
 - Git history is the recovery mechanism. A current Task may name a temporary
   recovery commit, but must not turn a branch tip, expected SHA, checksum, or
