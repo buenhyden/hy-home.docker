@@ -4377,11 +4377,14 @@ def _terminal_task_migration_matches(before: SpecDocument, task: SpecDocument) -
         for key, value in current_record.metadata.items()
         if key not in {"parent_ids", "updated"}
     }
-    before_body = before_record.body
+    corrected = before_record.body
     corrections = _TERMINAL_TASK_RESOLVES_CORRECTIONS.get(before.path.as_posix(), ())
     for name, old, new in corrections:
-        before_body = _corrected_resolves(before_body, name, old, new)
-    return before_body == current_record.body and before_metadata == current_metadata
+        corrected = _corrected_resolves(corrected, name, old, new)
+    return before_metadata == current_metadata and current_record.body in {
+        before_record.body,
+        corrected,
+    }
 
 
 def _corrected_resolves(body: str, name: str, old: str, new: str) -> str:
