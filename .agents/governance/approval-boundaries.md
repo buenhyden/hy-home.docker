@@ -1,10 +1,10 @@
 ---
 title: "Approval Boundaries"
-version: "1.2.1"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 ---
 
 # Approval Boundaries
@@ -70,6 +70,13 @@ redaction boundary are defined by
   a remote mutation outside the request's branch and pull request; issuing,
   rotating, or revoking a credential; deleting data or volumes; opening a
   public endpoint; and anything billed. Once the user names the target, run it.
+- A meaning shared by the four workspace repositories (`blog-data`,
+  `Project-Template`, `hy-home.docker`, `hy-home.k8s`) has one joint decision
+  maker: the owner `@buenhyden`, who owns all four. A shared contract becomes
+  active only by that owner's explicit approval naming the contract, its
+  revision, and the repositories it applies to. Each repository records its own
+  adoption in its own Task; this repository never decides or records adoption
+  for another.
 - Role permissions come from canonical role frontmatter; provider/model and
   permission translations come from `.agents/governance/providers/registry.yaml`; lifecycle,
   retry, and stop behavior comes from [workflows.md](workflows.md). Provider

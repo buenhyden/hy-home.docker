@@ -1,6 +1,6 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.3.0"
+version: "1.4.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
@@ -31,6 +31,11 @@ projection of either, and their absence under `.claude/` is not a defect.
   copy procedure bodies or become a second authority.
 - Generated Claude skill adapters set `disable-model-invocation: true` and are
   explicitly invoked. A discovered skill grants no additional tools or approval.
+- Skills are generated adapter files, not symlinks to `.agents/skills/`. A
+  symlink would load the canonical `SKILL.md` as is, without
+  `disable-model-invocation: true`, so Claude could start a shared skill on its
+  own, and the canonical file must stay provider-neutral. Codex needs neither,
+  because it reads `.agents/skills/` directly.
 - `.claude/settings.json`, `.claude/hooks/`, and `.claude/output-styles/` are
   native mechanics that route to shared policies and scripts. The `.claude/hooks/`
   wrappers are authored, not rendered. The Registry PreToolUse binding's
