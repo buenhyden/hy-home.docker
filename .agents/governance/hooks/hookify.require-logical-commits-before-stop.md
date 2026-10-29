@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: incomplete logical commits"
-version: "1.0.3"
+version: "1.0.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 action: "block"
 enabled: true
 event: "stop"
@@ -20,7 +20,7 @@ Apply the declared `block` action for require-logical-commits-before-stop.
 
 ## Scope
 
-`stop` 이벤트의 `require-logical-commits-before-stop` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+Applies to the `require-logical-commits-before-stop` rule on the `stop` event. The frontmatter of this document owns the exact matcher.
 
 ## Rules
 

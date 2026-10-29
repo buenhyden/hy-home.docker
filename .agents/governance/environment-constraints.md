@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.6.1"
+version: "1.7.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -150,41 +150,53 @@ This project has a graphify knowledge graph at `graphify-out/`.
 - Limits are logical: the CLI refuses a write that would cross them and keeps
   every existing revision. No filesystem quota enforces them, so none is
   claimed. The backup and restore runbook refreshes one online backup.
-- 새 revision은 schema 2이며, 기존 schema 1 본문·revision·출처는 그대로
-  보존한다. `candidate`, `current`, `needs-review`, `superseded`, `withdrawn`은
-  별도 provenance로 구분한다. `eligible`만으로 current가 되지 않는다. 기본
-  `get`/`list`는 검토자가 `current`로 기록하고 caller worktree의 원본 pin이
-  일치하는 기억만 반환한다. 기존 pin 없는 기억은 `needs-review`로 보이며,
-  `get --historical`, `history`, `list --all`, `export`로 본문을 보존 조회한다.
-  역사 조회를 현재 판단에 자동 주입하지 않는다. 재활성화도 `candidate`부터
-  시작하며, 원본 변경·삭제·접근 불가이면 current 조회에서 제외한다.
-- repository source pin은 `kind=repository-file`, 상대 `path`, `revision`,
-  `hash_algorithm`, `digest`, `context`를 명시한다. `sha256`은 파일 bytes,
-  `git-blob`은 Git blob identity이며 서로 바꾸어 쓰지 않는다. 조회는 main이
-  아닌 caller worktree의 tracked 정상 파일을 제한하여 읽고, 경로 이탈·symlink·
-  비밀/인증/native memory 경로를 거절한다. 과거 native 이관과 외부 출처 문자열은
-  provenance로 남지만 다시 읽거나 자동 current로 승격하지 않는다.
-- `revision`은 완전한 Git commit object ID여야 한다. 해당 commit의 같은 상대
-  `path`는 일반 blob이고 그 bytes가 caller worktree의 bytes와 같아야 하며,
-  선언한 `sha256` 또는 `git-blob` digest도 그 bytes와 일치해야 한다. commit,
-  path, blob, worktree bytes 또는 digest가 없거나 다르면 current가 될 수 없다.
-- `--request-key` 재시도는 대상·workspace·기대 revision·본문·출처·owner·계층·
-  영역·민감도·재사용 상태가 모두 같을 때만 과거 성공 revision을 반환한다.
-  다른 입력은 conflict다. revision, provenance, 요청 identity와 용량 검사는
-  같은 SQLite 쓰기 트랜잭션을 사용하며, conflict 본문과 metadata도 과금한다.
-- 기존 16 KiB 본문/10,000 revision/32 MiB 전체 본문 상한을 유지한다.
-  추가 논리 상한은 단기 8 MiB, 장기 16 MiB, 영역 계층 16 MiB,
-  영역 ID별 8 MiB, revision/conflict metadata 각각 16 KiB 및 전체 8 MiB,
-  conflict 10,000건이다. 단기는 짧은 문맥, 장기와 영역은 검토된 축적 용도로
-  기존 전체 예산을 나누며, 전체 32 MiB 상한도 함께 적용한다. 기존 초과 자료는
-  지우지 않고 새 쓰기만 거절한다. legacy 영역 ID는 `legacy`로 대응한다.
-- DB는 재연결마다 64 MiB 상당의 SQLite page 상한을 다시 적용한다. 이미 그보다
-  큰 DB는 기존 page 수 때문에 상한이 내려가지 않으므로 실제 값을 `usage`에
-  표시하고 새 쓰기를 거절한다. DB·rollback journal·고정 백업·임시 복사본의
-  각 64 MiB 예산은 파일시스템 hard quota가 아니다. journal은 관측 예산이며,
-  백업/복원은 64 MiB를 넘는 복사본을 거절한다. 동시 백업은 원본 inode의
-  advisory lock으로 직렬화하고 정상 snapshot을 검사한 뒤 고정 백업 하나를
-  원자 교체한다. 어떤 용량 초과도 기존 revision 자동 삭제를 허용하지 않는다.
+- A new revision uses schema 2; existing schema 1 bodies, revisions, and
+  sources are preserved as they are. `candidate`, `current`, `needs-review`,
+  `superseded`, and `withdrawn` are kept apart as separate provenance.
+  `eligible` alone never makes a record current. Default `get` and `list`
+  return only memories a reviewer recorded as `current` whose source pin
+  matches the caller worktree. An older memory without a pin shows as
+  `needs-review`, and its body stays readable through `get --historical`,
+  `history`, `list --all`, and `export`. A historical read is never injected
+  into a current judgement. Reactivation also starts at `candidate`, and a
+  source that changed, was deleted, or cannot be read drops out of current
+  reads.
+- A repository source pin states `kind=repository-file`, a relative `path`,
+  `revision`, `hash_algorithm`, `digest`, and `context`. `sha256` covers the
+  file bytes and `git-blob` the Git blob identity; they are never
+  interchanged. A read is limited to tracked regular files in the caller
+  worktree, not `main`, and refuses path escape, symlinks, and secret, auth,
+  or native memory paths. Past native migrations and external source strings
+  stay as provenance but are never re-read or promoted to current on their
+  own.
+- `revision` must be a full Git commit object ID. The same relative `path`
+  in that commit must be a regular blob whose bytes equal the caller
+  worktree's bytes, and the declared `sha256` or `git-blob` digest must match
+  those bytes. If the commit, path, blob, worktree bytes, or digest is missing
+  or differs, the record cannot become current.
+- A `--request-key` retry returns the earlier successful revision only when
+  the target, workspace, expected revision, body, source, owner, tier, area,
+  sensitivity, and reuse state are all the same. Any other input is a
+  conflict. The revision, provenance, request identity, and capacity checks
+  share one SQLite write transaction, and conflict bodies and metadata count
+  against capacity too.
+- The existing limits stay: 16 KiB per body, 10,000 revisions, and 32 MiB
+  of bodies in total. The added logical limits are 8 MiB short-term, 16 MiB
+  long-term, 16 MiB for the area tier, 8 MiB per area ID, 16 KiB each for
+  revision and conflict metadata with 8 MiB in total, and 10,000 conflicts.
+  Short-term holds brief context, while long-term and area hold reviewed
+  accumulation; they divide the existing total budget, and the 32 MiB total
+  limit still applies. Data already over a limit is not deleted; only new
+  writes are refused. A legacy area ID maps to `legacy`.
+- Every reconnect reapplies a SQLite page limit worth 64 MiB. A database
+  already larger than that keeps its page count, so the limit cannot drop;
+  `usage` shows the real value and new writes are refused. The 64 MiB budgets
+  for the database, the rollback journal, the fixed backup, and a temporary
+  copy are not filesystem hard quotas. The journal budget is observed only,
+  and backup and restore refuse a copy over 64 MiB. Concurrent backups are
+  serialized by an advisory lock on the source inode, check a clean snapshot,
+  and atomically replace the one fixed backup. No capacity overrun ever
+  allows an existing revision to be deleted automatically.
 
 ## Exceptions
 

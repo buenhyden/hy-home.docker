@@ -1,10 +1,10 @@
 ---
 title: "WARNING: parallel replacement document file"
-version: "1.0.3"
+version: "1.0.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -23,7 +23,7 @@ Apply the declared `warn` action for warn-parallel-doc-file.
 
 ## Scope
 
-`file` 이벤트의 `warn-parallel-doc-file` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+Applies to the `warn-parallel-doc-file` rule on the `file` event. The frontmatter of this document owns the exact matcher.
 
 ## Rules
 

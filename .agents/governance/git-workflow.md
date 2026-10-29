@@ -1,6 +1,6 @@
 ---
 title: "Git Workflow Governance"
-version: "1.4.1"
+version: "1.5.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -48,14 +48,17 @@ Immediately before an ordinary commit, stage the reviewed changes and run:
 git commit -F /tmp/commit-message.txt
 ```
 
-메시지 파일은 위 명령 전에 준비한다. 정상 커밋에서 실제 관측한 읽기 전용
-pre-commit·commit-msg hook이 최종 index와 메시지를 검사하며 같은 입력의
-스타일 검사를 미리 반복하지 않는다. 설치된 검사의 전달이 확인되지 않았거나
-진단이 필요하면 `scripts/validation/run-ci-precommit.sh --mode local-staged`가
-등록 pin으로 index의 격리 복사본을 검사한다. 이 제어기는 hook을 설치하지
-않으며 유효한 secret guard를 보존한다. 실패하면 수정·diff 검토·재staging
-후 정상 커밋하고, index가 바뀌면 이전 PASS를 재사용하지 않는다.
-user-global hook을 대체하거나 설정만으로 자동 강제를 주장하지 않는다.
+Prepare the message file before the command above. The read-only
+pre-commit and commit-msg hooks actually observed on a normal commit check
+the final index and message, so the same style checks on the same input are
+not repeated beforehand. When delivery of the installed checks is
+unconfirmed or a diagnosis is needed,
+`scripts/validation/run-ci-precommit.sh --mode local-staged` checks an
+isolated copy of the index with the registered pins. That controller
+installs no hook and keeps the effective secret guard. On failure, fix,
+review the diff, restage, and commit normally; when the index changes, an
+earlier PASS is not reused. It never replaces a user-global hook or claims
+automatic enforcement from configuration alone.
 
 ### 2. Branching Strategy
 

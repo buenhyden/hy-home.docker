@@ -1,10 +1,10 @@
 ---
 title: "WARNING: template use required"
-version: "1.1.1"
+version: "1.1.2"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -23,7 +23,7 @@ Apply the declared `warn` action for enforce-docs-templates.
 
 ## Scope
 
-`file` 이벤트의 `enforce-docs-templates` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+Applies to the `enforce-docs-templates` rule on the `file` event. The frontmatter of this document owns the exact matcher.
 
 ## Rules
 

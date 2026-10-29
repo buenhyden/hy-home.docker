@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.6.5"
+version: "1.7.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-29"
 ---
 
 # Agent Quality and Security Standards
@@ -173,15 +173,18 @@ main-push security remains a post-merge observation.
   changed link destinations, without repeating the whole link corpus.
   Local focused feedback does not become hosted evidence or trigger another
   candidate aggregate.
-- **Before local commit**: 검토한 변경을 stage한 뒤 정상 `git commit`에서
-  관측한 읽기 전용 pre-commit·commit-msg hook이 최종 index·설정·메시지를
-  검사한다. 설치·실행이 확인된 동일 hook을 수동으로 먼저 반복하지 않는다.
-  설치된 검사의 전달이 확인되지 않았거나 별도 진단이 필요하면
-  `scripts/validation/run-ci-precommit.sh --mode local-staged`로 같은 등록
-  pin과 index를 격리 복사하여 검사한다. 복사본 수정이나 source/index drift도
-  실패이며 정상 hook의 우회 근거가 되지 않는다. 실패하면 명시적으로 수정하고
-  diff 검토·재staging 후 다시 정상 커밋한다. index가 바뀌면 이전 결과를
-  재사용하지 않는다. 유효한 secret guard와 user-global hook을 보존한다.
+- **Before local commit**: after the reviewed change is staged, the
+  read-only pre-commit and commit-msg hooks observed on a normal `git commit`
+  check the final index, configuration, and message. Do not run the same
+  hooks by hand first once their installation and execution are confirmed.
+  When delivery of the installed checks is unconfirmed, or a separate
+  diagnosis is needed, `scripts/validation/run-ci-precommit.sh --mode
+  local-staged` checks an isolated copy of the same registered pins and
+  index. A change to that copy, or source or index drift, is also a failure
+  and never a reason to bypass the normal hooks. On failure, fix explicitly,
+  review the diff, restage, and commit normally again. When the index changes,
+  an earlier result is not reused. Keep the effective secret guard and the
+  user-global hooks.
 - **Server final defense**: the PR candidate runs the same controller with
   `--mode pr-merge` on its authenticated merge input before accepting selected
   builds. As in local mode, every hook runs on an isolated copy and a fixer
@@ -212,7 +215,7 @@ main-push security remains a post-merge observation.
 
 | Boundary | Automatic owner | Distinct evidence |
 | --- | --- | --- |
-| Commit | 관측한 읽기 전용 installed pre-commit·commit-msg; 미확인 전달 또는 진단은 local-staged controller | Exact index/config and message; effective secret guard |
+| Commit | Observed read-only installed pre-commit and commit-msg; the local-staged controller for unconfirmed delivery or diagnosis | Exact index/config and message; effective secret guard |
 | Feature push | No repeated public QA | New commits become PR candidate input |
 | Agent Stop | Diagnostics only | Working tree; no second aggregate run |
 | Before submission | Selected local-only implementation and link leaves once | Final source/index, base/history, tools and actual local result |
@@ -328,14 +331,15 @@ proof of a hosted result. Do not fake GitHub environment variables to
 invoke CI-only wrappers locally. Record missing tools and unexecuted checks
 explicitly; neither absence nor a skipped check is a PASS.
 
-로컬 실행은 hosted controller와 같은 toolchain에서만 결과를 남깁니다. runner는
-LOCAL 실행 전에 interpreter 버전이 `.github/workflows/ci-quality.yml`의
-`python-version` pin과 같은지, `scripts/requirements-controller.lock`의 활성
-패키지가 같은 버전으로 설치되어 있는지 확인하고 다르면
-`ci-gate-local-toolchain`으로 실행 없이 실패합니다. hosted와 같은 build는
-`actions/python-versions`의 해당 Ubuntu 배포본이며, uv standalone build처럼
-memfd seal 상수가 없는 build도 거부합니다. `--explain`은 실행이 아니므로 이
-확인을 거치지 않습니다.
+A local run records a result only on the same toolchain as the hosted
+controller. Before a LOCAL run, the runner checks that the interpreter
+version equals the `python-version` pin in `.github/workflows/ci-quality.yml`
+and that the active packages in `scripts/requirements-controller.lock` are
+installed at the same versions; otherwise it fails with
+`ci-gate-local-toolchain` without running. The build that matches hosted is
+the Ubuntu release from `actions/python-versions`, and a build without the
+memfd seal constants, such as a uv standalone build, is refused. `--explain`
+is not a run, so it skips this check.
 
 The local runner validates `.github/workflow-contract.yml` and the registered
 workflow definitions through
@@ -382,13 +386,14 @@ execution. A smaller suite must not mean missing behavioral coverage.
 
 ### 10. Formatting and Linting Ownership
 
-커밋 단계에서는 EOF·trailing whitespace를 읽기 전용 검사기로 확인하고,
-mixed-line-ending은 `--fix=no`, Ruff format은 `--check`, markdownlint는
-`fix: false`로 실행한다. 수정이 필요하면 대상 파일을 명시하여 기존
-`end-of-file-fixer`·`trailing-whitespace`의 manual hook, `ruff format`,
-`markdownlint-cli2 --fix`를 별도로 실행한다. 수정 diff를 검토하고 필요한
-파일·헝크만 다시 stage한 뒤 정상 커밋한다. 검사기가 unstaged 내용을
-자동으로 index에 포함하거나 별도 포맷 도구를 추가해서는 안 된다.
+At commit time, end-of-file and trailing whitespace are checked by
+read-only checkers, mixed-line-ending runs with `--fix=no`, Ruff format with
+`--check`, and markdownlint with `fix: false`. When a fix is needed, run the
+existing `end-of-file-fixer` and `trailing-whitespace` manual hooks,
+`ruff format`, or `markdownlint-cli2 --fix` separately on named files.
+Review the fix diff, restage only the needed files or hunks, and commit
+normally. A checker must never add unstaged content to the index on its own,
+and no separate formatting tool is added.
 
 - `.pre-commit-config.yaml` owns shared formatter and linter invocations;
   registered project-local package scripts own their actual package scope.

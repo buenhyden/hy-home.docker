@@ -1,6 +1,6 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.5.0"
+version: "1.6.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -155,22 +155,26 @@ available, and no local-only check replaces required protected-branch gates.
 
 #### 5.3 QA Definition Trust and Amendment
 
-QA 정의를 바꾸는 변경은 현재 소유자의 실제 수용을 해당 diff·revision과
-연결하고, 비교한 trusted base 정의의 출처·revision을 Task에 기록한다.
-대상은 `.github/workflows/`, `.github/workflow-contract.yml`,
-`scripts/lib/gate/`, `scripts/validation/ci_gate_runner.py`,
-`scripts/validation/run-ci-gate.py`, QA dependency pins와
-`.pre-commit-config.yaml`이다. 일반 문서 변경에는 이 승인 절차를 추가하지
-않으며 이미 같은 범위에 주어진 명시적 승인을 다시 요구하지 않는다.
+A change to a QA definition ties the current owner's actual acceptance to
+that diff and revision, and records in the Task the source and revision of
+the trusted base definition it was compared with. The QA definitions are
+`.github/workflows/`, `.github/workflow-contract.yml`, `scripts/lib/gate/`,
+`scripts/validation/ci_gate_runner.py`, `scripts/validation/run-ci-gate.py`,
+the QA dependency pins, and `.pre-commit-config.yaml`. An ordinary documentation change does not
+add this approval step, and an explicit approval already given for the same
+scope is not requested again.
 
-후보가 자신의 workflow·controller·설정을 실행한 성공 결과만으로 QA 정의가
-변경되지 않았거나 승인되었다고 판정하지 않는다. 현재 `candidate-quality`는
-후보 실행의 증거이며 trusted base 실행기나 독립적인 정의 변경 승인 증거가
-아니다. 원격에서 이 경계를 강제하려면 후보가 수정할 수 없는 검증 정의와
-그 결과를 소비하는 보호 설정을 별도로 승인·적용·read-back해야 한다.
-이 정책의 로컬 개정은 그런 원격 강제의 관측이 아니다. 이를 구현한다며
-권한 있는 `pull_request_target` 실행기에 후보 코드를 checkout·실행하거나
-새 App·credential을 암묵적으로 만들지 않는다.
+A success from a candidate running its own workflow, controller, and
+configuration never shows that the QA definition is unchanged or approved.
+The current `candidate-quality` is evidence of the candidate's run, not of
+a trusted base runner or of an independent approval of a definition change.
+Enforcing this boundary remotely needs a verification definition the
+candidate cannot modify, plus protection settings that consume its result,
+each separately approved, applied, and read back. A local revision of this
+policy is not an observation of such remote enforcement. Implementing it
+never checks out or runs candidate code in a privileged
+`pull_request_target` runner, and never creates a new App or credential
+implicitly.
 
 ### 6. Local Instruction Authority
 

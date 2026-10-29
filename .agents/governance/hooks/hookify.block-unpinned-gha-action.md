@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: floating reference"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -26,7 +26,7 @@ Apply the declared `block` action for block-unpinned-gha-action.
 
 ## Scope
 
-`file` 이벤트의 `block-unpinned-gha-action` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+Applies to the `block-unpinned-gha-action` rule on the `file` event. The frontmatter of this document owns the exact matcher.
 
 ## Rules
 
