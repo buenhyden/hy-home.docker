@@ -1,10 +1,10 @@
 ---
 title: "AI Runtime Pin Verification Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0226-TSK-0001"
 parent_ids:
@@ -186,12 +186,42 @@ modules compiled into the binary and fixed upstream, so only a newer Ollama
 removes them. Open WebUI (CUDA) has 72 Critical and 530 High findings; 490 of
 them are Debian 12 packages, 431 marked won't-fix or not yet fixed. Both
 images serve the DEV-only AI runtime, and Open WebUI sign-in goes through
-the gateway and Keycloak (Owner sign-in canary), so the current pins stay. Follow-up: move both images to versions that fix the
-Critical and High findings under the image tag policy, with a new scan.
+the gateway and Keycloak (Owner sign-in canary). The scan covered the pins of
+that date, Ollama 0.40.0 and Open WebUI v0.11.4. The pins have since moved to
+Open WebUI v0.12.0-cuda (`5b7a261a6`, 2026-10-12) and Ollama 0.40.12
+(SPEC-0204 TSK-0009, 2026-10-28), both running healthy, and neither new image
+has a recorded scan. Follow-up: scan the current pins and compare the
+Critical and High counts with this result.
 
 The Evidence and Criterion Acceptance tables move to the current shape so
 this decision can be recorded: each row gains `Required`, and each criterion
 row gains its current owner. Criterion 3 stays pending on the restic listing.
+
+### Owner backup run and catalog mount fix 2026-10-30
+
+The owner ran `sudo systemctl start hyhome-backup.service` on 2026-10-30. The
+unit finished successfully: state snapshot `1b9c77fc` (2026-10-29 15:10:24
+UTC) and host snapshot `45ce6744`, both local `restic check` runs reported
+`no errors were found`, and the R2 copies are `562fbdbb` and `b73280d2` with
+the R2 repository at 6,272,426,182 bytes. The snapshot's path list includes
+`/src/state/volumes/ai/open-webui/.webui_secret_key` and `/src/state/exports`,
+where the run exported `open-webui` (749,568 bytes, integrity ok). The run also
+printed `include not present, skipped: ai/ollama/models/manifests` and the same
+for `manifests-v2`: since SPEC-0246 the Ollama store binds `OLLAMA_MODEL_DIR`
+on the SSD, outside `DEFAULT_MOUNT_VOLUME_PATH`, so the catalog has not been
+in a backup since that move.
+
+The restic service now binds
+`${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}/models` read-only at
+`/src/state/ollama-models`, and `backup.sh` resolves the two catalog includes
+there. The catalog is 10,513 bytes in 8 files (blobs, 26 GiB, stay out), so
+the R2 copy stays far below its 9 GB upload cap and the owner's 10 GB limit.
+Criterion 3 stays pending until the next owner backup run shows the catalog in
+a snapshot. Because the snapshot path set changes, that run finds no parent
+snapshot and re-reads the whole state set once; deduplication keeps the
+upload small. An independent IaC review approved the change with two low
+notes, both applied: the include file comment names the new mount, and RUN-0056
+names the older snapshot path.
 
 ## Evidence
 
@@ -203,6 +233,9 @@ row gains its current owner. Criterion 3 stays pending on the restic listing.
 | Restore | 3 | W3 | Isolated SQLite, upload, key and catalog restore | `2ac1db09c` | PASS | W3 Backup and Restore | required | - |
 | Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | required | - |
 | Restic snapshot contents | 3 | W3 | State-set backup, then listing the key and catalog paths | — | NOT_RUN | W3 Backup and Restore | required | - |
+| Owner backup run | 3 | W3 | State-set backup, then listing the key and catalog paths | Owner-run `hyhome-backup.service` 2026-10-30, snapshot `1b9c77fc` | FAIL | Owner backup run and catalog mount fix 2026-10-30 (key and SQLite export present; Ollama catalog skipped as not present) | required | - |
+| IaC review | 3 | W3 | Independent `iac-reviewer` review of the restic mount and mapping | This branch | PASS | Approve; read-only and no-network invariants hold; two low notes applied | required | - |
+| Catalog mount regression | 3 | W3 | `test_restic_reads_the_ollama_catalog_from_the_model_dir` RED then GREEN; compose baseline suite; `validate-docker-compose.sh` | This branch | PASS | 125 tests OK; Compose validation passed | required | - |
 | HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | required | - |
 | Owner sign-in canary | 5 | W5 | Owner-attested report; Traefik and Keycloak logs | `f75275651` | PASS | Review and Completion | required | - |
 | Hardening baseline | 6 | W6 | `check-all-hardening.sh` | `16c4794a8` | PASS | Review and Completion | required | - |
@@ -214,7 +247,7 @@ row gains its current owner. Criterion 3 stays pending on the restic listing.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | accepted | Source facts, Image scan | Owner accepted the scan risk on 2026-10-29 for the DEV-only AI runtime; upgrading Ollama and Open WebUI is a recorded follow-up. | SPEC-0226 TSK-0001 |
+| 1 | accepted | Source facts, Image scan | Owner accepted the scan risk on 2026-10-29 for the DEV-only AI runtime; the scan covered Ollama 0.40.0 and Open WebUI v0.11.4, and scanning the current pins is a recorded follow-up. | SPEC-0226 TSK-0001 |
 | 2 | accepted | Pins and limits | Generation 5 row acceptance | SPEC-0226 TSK-0001 |
 | 3 | pending | - | - | SPEC-0226 TSK-0001 |
 | 4 | accepted | Features | Generation 5 row acceptance | SPEC-0226 TSK-0001 |
