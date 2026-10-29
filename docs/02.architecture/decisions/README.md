@@ -127,7 +127,7 @@ docs/02.architecture/decisions/
   쓴다. ADR-0032의 memory·`.codex/config.toml` 금지를 이 두 항목에 한해 좁히며
   SPEC-0236가 구현·검증을 소유한다.
 - [`ADR-0050`](./0050-openbao-as-secrets-manager.md):
-  OpenBao와 `openbao-agent`를 secrets manager로 제안하는 proposed decision. 수용되면 ADR-0003, ADR-0018을 supersede한다.
+  OpenBao와 `openbao-agent`를 secrets manager로 채택하며 ADR-0003, ADR-0018을 supersede한 accepted decision.
 
 ## Usage
 

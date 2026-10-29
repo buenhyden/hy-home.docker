@@ -1,14 +1,15 @@
 ---
 title: "HashiCorp Vault as Centralized Secrets Manager"
-version: "1.0.2"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
-status: "deprecated"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "ADR-0003"
 parent_ids:
 - "AD-0003"
+superseded_by: "ADR-0050"
 created: "2026-03-26"
 ---
 # ADR-0003: HashiCorp Vault as Centralized Secrets Manager

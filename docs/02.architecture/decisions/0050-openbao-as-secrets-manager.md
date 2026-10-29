@@ -1,14 +1,17 @@
 ---
 title: "OpenBao as Secrets Manager"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-10-29"
 layer: "architecture"
 artifact_id: "ADR-0050"
 parent_ids:
 - "AD-0003"
+supersedes:
+- "ADR-0003"
+- "ADR-0018"
 created: "2026-10-29"
 ---
 
@@ -57,9 +60,8 @@ implementation of consumer secret rendering.
 
 ## Consequences
 
-Once accepted, this record supersedes ADR-0003 and ADR-0018, which then move
-to the superseded archive; until then it is a proposal and both stay where
-they are. The Vault-era
+This record supersedes ADR-0003 and ADR-0018. The owner accepted it on
+2026-10-29, and both move to the superseded archive. The Vault-era
 auto-unseal and remote-audit deferral recorded in ADR-0018 was never decided
 and is not carried here; ADR-0042 owns the seal question. This record changes
 no runtime behavior and claims no data migration, recovery or deployment result.
@@ -71,8 +73,7 @@ state needs separate execution evidence.
 
 ### Follow-up
 
-Accept this record, then mark ADR-0003 and ADR-0018 superseded by it and
-archive them. Any change of seal method or HA topology needs its own ADR.
+None. Any change of seal method or HA topology needs its own ADR.
 
 ## Related Documents
 
