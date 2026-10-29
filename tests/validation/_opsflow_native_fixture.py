@@ -60,8 +60,11 @@ from tests.validation.test_datastore_rehearsal_boundary import DockerClientBound
 
 # Generation 1 and the restore took about 660 s on 2026-10-20 (SPEC-0204
 # TSK-0019), and a 13-minute limit expired during generation 2's main start.
-# The first full pass took 864 s, about 0.58 of this limit.
-WORK_SECONDS = 25 * 60
+# The first full pass took 864 s, about 0.58 of the former 25-minute limit.
+# The criterion 22 scenarios add a scheduled-trigger wait of up to 150 s, a
+# 70 s deactivated hold, three more n8n CLI/REST rounds and five credential
+# probes (an estimate, not a measurement), so the limit moves to 40 minutes.
+WORK_SECONDS = 40 * 60
 
 
 class RehearsalFailure(AssertionError):

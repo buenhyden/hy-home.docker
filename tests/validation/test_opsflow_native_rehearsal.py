@@ -6,11 +6,40 @@ import hashlib
 import json
 import os
 import re
+import secrets
 import stat
+import subprocess
+import time
 import unittest
 from copy import deepcopy
 from pathlib import Path
 
+from tests.validation._opsflow_native_criterion22 import (
+    CLAIM_PROBE_SQL,
+    CLAIMABLE_SQL,
+    CREDENTIAL_PROBE_SCRIPT,
+    DEACTIVATED_HOLD_SECONDS,
+    EXECUTION_STATUSES_OPEN,
+    MAX_ATTEMPTS,
+    PASSWORD_PROBE_SCRIPT,
+    RACE_SCRIPT,
+    RACE_SQL,
+    RECEIPT_FIELDS,
+    RETRY_CYCLE_SQL,
+    SCHEDULE_WAIT_SECONDS,
+    exhaust_sql,
+    fast_forward_sql,
+    initial_receipt,
+    outbox_row_sql,
+    parse_probe,
+    parse_race,
+    race_winners,
+    retry_expected,
+    retry_row_sql,
+    role_sessions_sql,
+    rotate_role_sql,
+    terminate_role_sql,
+)
 from tests.validation._opsflow_native_evidence import (
     BODY_FETCH_FAILURE_JS,
     body_fetch_failure_facts,
@@ -55,17 +84,25 @@ async function call(path,method='GET',body,headers={}) {
  opsflowRequireOk(r); const j=await opsflowJson(r);
  return {data:j.data===undefined?j:j.data,cookie:(r.headers.get('set-cookie')||'').split(';',1)[0]};
 }
+async function toggle(id,on,versionId,auth){
+ try{return await call('/rest/workflows/'+encodeURIComponent(id)+'/'+(on?'activate':'deactivate'),'POST',{versionId},auth);}
+ catch(e){if(![404,405].includes(e.opsflowStatus))throw e;
+  return await call('/rest/workflows/'+encodeURIComponent(id),'PATCH',{active:on,versionId},auth);}
+}
 async function login(){return (await call('/rest/login','POST',{emailOrLdapLoginId:input.email,password:input.password})).cookie;}
 (async()=>{let out;
  if(input.action==='setup'){const r=await call('/rest/owner/setup','POST',{email:input.email,firstName:'Opsflow',lastName:'Fixture',password:input.password});out={id:r.data.id};}
  else {const fresh=!input.cookie; const cookie=input.cookie||await login(); const auth={cookie};
   if(input.action==='credential'){const r=await call('/rest/credentials','POST',input.credential,auth);out={id:r.data.id};}
-  else if(input.action==='workflows'){const r=await call('/rest/workflows?take=100','GET',undefined,auth);const rows=r.data.results||r.data.data||r.data;out={rows:rows.map(x=>({id:x.id,name:x.name,active:x.active,versionId:x.versionId}))};}
+  else if(input.action==='workflows'){const r=await call('/rest/workflows?take=100','GET',undefined,auth);const rows=r.data.results||r.data.data||r.data;out={rows:rows.map(x=>({id:x.id,name:x.name,active:x.active!==undefined?Boolean(x.active):Boolean(x.activeVersionId),versionId:x.versionId}))};}
+  else if(input.action==='executions'){const r=await call('/rest/executions?limit=50&filter='+encodeURIComponent(JSON.stringify({workflowId:input.workflowId})),'GET',undefined,auth);const rows=r.data.results||r.data.data||r.data;out={rows:rows.map(x=>({id:String(x.id),mode:String(x.mode),status:String(x.status)}))};}
+  else if(input.action==='activate'||input.action==='deactivate'){await toggle(input.workflowId,input.action==='activate',input.versionId,auth);out={ok:true};}
+  else if(input.action==='credential_update'){const r=await call('/rest/credentials/'+encodeURIComponent(input.credentialId),'PATCH',input.credential,auth);out={id:String(r.data.id)};}
   else if(input.action==='run'){const r=await call('/rest/workflows/'+encodeURIComponent(input.workflowId)+'/run','POST',{triggerToStartFrom:{name:'Manual'}},auth);out={executionId:r.data.executionId};}
   else if(input.action==='execution'){const r=await call('/rest/executions/'+encodeURIComponent(input.executionId),'GET',undefined,auth);const d=r.data;
    const parsed=typeof d.data==='string'?require('flatted').parse(d.data):d.data;const rd=parsed?.resultData?.runData||{};
    const ns=n=>{const rows=rd[n]||[];return rows.length?String(rows[rows.length-1].executionStatus||'unknown'):'absent';};
-   out={id:String(d.id),status:String(d.status),finished:Boolean(d.finished),terminal:Boolean(d.stoppedAt),acknowledged:ns('Acknowledged'),deliveryRedacted:ns('Redact Delivery Uncertain')};}
+   out={id:String(d.id),mode:String(d.mode),status:String(d.status),finished:Boolean(d.finished),terminal:Boolean(d.stoppedAt),acknowledged:ns('Acknowledged'),deliveryRedacted:ns('Redact Delivery Uncertain')};}
   else throw new Error('unknown_action');
   if(fresh) out._session=cookie;
  }
@@ -122,6 +159,9 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
         self.secrets: dict[str, tuple[str, Path]] = {}
         self.email = f"owner-{self.fixture.attempt}@opsflow.invalid"
         self._finished = False
+        self.credential_ids: dict[str, str] = {}
+        self.published = 0
+        self.stale_notifier = ""
 
     def tearDown(self):
         pass
@@ -290,6 +330,22 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
             raise RehearsalFailure("synthetic publication failed")
         return run_id
 
+    @staticmethod
+    def postgres_credential(password: str) -> dict:
+        return {
+            "name": "opsflow-native-postgres",
+            "type": "postgres",
+            "data": {
+                "host": "dev-pg",
+                "database": "opsflow_dev",
+                "user": "opsflow_notifier",
+                "password": password,
+                "maxConnections": 2,
+                "ssl": "disable",
+                "port": 5432,
+            },
+        }
+
     def bind_and_import(self) -> tuple[str, str]:
         setup = self.api("setup")
         owner_id = setup.get("id")
@@ -297,19 +353,7 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
             raise RehearsalFailure("owner setup safe ID rejected")
         postgres = self.api(
             "credential",
-            credential={
-                "name": "opsflow-native-postgres",
-                "type": "postgres",
-                "data": {
-                    "host": "dev-pg",
-                    "database": "opsflow_dev",
-                    "user": "opsflow_notifier",
-                    "password": self.secrets["notifier"][0],
-                    "maxConnections": 2,
-                    "ssl": "disable",
-                    "port": 5432,
-                },
-            },
+            credential=self.postgres_credential(self.secrets["notifier"][0]),
         ).get("id")
         smtp = self.api(
             "credential",
@@ -332,6 +376,7 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
             for value in (postgres, smtp)
         ):
             raise RehearsalFailure("credential safe IDs rejected")
+        self.credential_ids = {"postgres": postgres, "smtp": smtp}
         workflow_path = (
             Path(__file__).resolve().parents[2]
             / "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/manifest-outbox-mailpit.json"
@@ -443,6 +488,428 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
         if isinstance(ids, list):
             ids.append(execution_id)
         return terminal
+
+    # --- SPEC-0204 criterion 22 scenarios (see _opsflow_native_criterion22).
+
+    def step(self, name: str, action) -> None:
+        receipt = self.fixture.receipt
+        try:
+            action()
+        except BaseException:
+            receipt[name] = "FAIL"
+            raise
+        receipt[name] = "PASS"
+
+    def generation_1_scenarios(self, workflow_id: str) -> tuple:
+        # Order matters: each leaves the claimable queue empty for the next, and
+        # none leaves a pending row for the later restore checks.
+        return (
+            (
+                "scheduled_execution",
+                lambda: self.scenario_scheduled_execution(workflow_id),
+            ),
+            ("concurrent_claims", self.scenario_concurrent_claims),
+            ("retry_dead_letter", self.scenario_retry_dead_letter),
+            ("empty_queue", lambda: self.scenario_empty_queue(workflow_id)),
+            (
+                "credential_rotation",
+                lambda: self.scenario_credential_rotation(workflow_id),
+            ),
+        )
+
+    def restore_scenarios(self) -> tuple:
+        # The wrong-key probe runs last: it is the only step that starts a
+        # second n8n process with another key.
+        return (
+            ("paired_restore_decrypt", self.scenario_paired_restore_decrypt),
+            ("wrong_key_fail_closed", self.scenario_wrong_key_fail_closed),
+        )
+
+    def require_criterion_22_pass(self) -> None:
+        if any(self.fixture.receipt.get(field) != "PASS" for field in RECEIPT_FIELDS):
+            raise RehearsalFailure("criterion 22 scenarios did not all pass")
+
+    def publish_next(self, source: str) -> tuple[str, str]:
+        # Capture times only rise, so every row is `published` with an outbox
+        # row; hours 01-03 belong to the earlier steps.
+        self.published += 1
+        digest = hashlib.sha256(f"criterion-22-{self.published}".encode()).hexdigest()
+        captured = f"2026-10-16T{3 + self.published:02d}:00:00Z"
+        run_id = self.publish(source, digest, captured)
+        outbox_id = self.db_value(
+            f"SELECT id FROM ops_flow.outbox WHERE run_id='{run_id}';"
+        )
+        if not outbox_id.isdecimal():
+            raise RehearsalFailure("outbox safe ID rejected")
+        return run_id, outbox_id
+
+    def notifier(self, sql: str) -> str:
+        return self.fixture.psql("opsflow_notifier", "opsflow_dev", sql).stdout.strip()
+
+    def assert_claimable(self, expected: int) -> None:
+        if self.db_value(CLAIMABLE_SQL) != str(expected):
+            raise RehearsalFailure("claimable outbox row count rejected")
+
+    def row(self, outbox_id: str, columns: str) -> str:
+        return self.db_value(outbox_row_sql(outbox_id, columns))
+
+    def workflow_row(self, workflow_id: str) -> dict:
+        rows = self.api("workflows").get("rows")
+        matches = (
+            [row for row in rows if row.get("id") == workflow_id]
+            if isinstance(rows, list)
+            else []
+        )
+        if len(matches) != 1 or not SAFE_ID.fullmatch(matches[0].get("versionId", "")):
+            raise RehearsalFailure("workflow lookup failed")
+        return matches[0]
+
+    def set_active(self, workflow_id: str, active: bool) -> None:
+        version = self.workflow_row(workflow_id)["versionId"]
+        self.api(
+            "activate" if active else "deactivate",
+            workflowId=workflow_id,
+            versionId=version,
+        )
+        if self.workflow_row(workflow_id).get("active") is not active:
+            raise RehearsalFailure("workflow activation state rejected")
+
+    def executions(self, workflow_id: str) -> list[dict]:
+        rows = self.api("executions", workflowId=workflow_id).get("rows")
+        if not isinstance(rows, list) or not all(
+            isinstance(row, dict)
+            and SAFE_ID.fullmatch(row.get("id", ""))
+            and isinstance(row.get("mode"), str)
+            and isinstance(row.get("status"), str)
+            for row in rows
+        ):
+            raise RehearsalFailure("execution list safe summary rejected")
+        return rows
+
+    def mail_total(self) -> int:
+        # Mailpit counts every message in the generation, whatever the run.
+        return self.capture("0" * 64)["total"]
+
+    def drain_manual(self, workflow_id: str, run_id: str) -> None:
+        execution = self.run_manual(workflow_id)
+        self.await_execution(execution, "success", "acknowledged")
+        self.wait_state(run_id, "accepted_by_smtp")
+
+    def scenario_scheduled_execution(self, workflow_id: str) -> None:
+        containers = self.fixture.containers
+        # Only the worker is on the dev network, so a claim that reaches the
+        # DEV database can only have run on the actual queue worker.
+        if "dev" in containers["main"].networks or (
+            "dev" not in containers["worker"].networks
+        ):
+            raise RehearsalFailure("main/worker network roles changed")
+        self.assert_claimable(0)
+        run_id, _ = self.publish_next("blog-data")
+        self.assert_claimable(1)
+        before = {row["id"] for row in self.executions(workflow_id)}
+        total = self.mail_total()
+        self.set_active(workflow_id, True)
+        started = time.monotonic()
+
+        def delivered() -> bool:
+            time.sleep(2)
+            return (
+                self.db_value(
+                    f"SELECT state FROM ops_flow.delivery_status WHERE run_id='{run_id}';",
+                    "opsflow_reader",
+                )
+                == "accepted_by_smtp"
+            )
+
+        self.fixture.wait_until(
+            delivered, "scheduled execution did not deliver", SCHEDULE_WAIT_SECONDS
+        )
+        waited = round(time.monotonic() - started)
+        self.set_active(workflow_id, False)
+        self.fixture.wait_until(
+            lambda: (
+                not {row["status"] for row in self.executions(workflow_id)}
+                & EXECUTION_STATUSES_OPEN
+            ),
+            "scheduled executions did not settle",
+            60,
+        )
+        new = [row for row in self.executions(workflow_id) if row["id"] not in before]
+        if not new or {row["mode"] for row in new} != {"trigger"}:
+            raise RehearsalFailure("scheduled executions were not trigger-mode")
+        summaries = [self.api("execution", executionId=row["id"]) for row in new]
+        if any(
+            summary.get("status") != "success" or summary.get("mode") != "trigger"
+            for summary in summaries
+        ) or not any(summary.get("acknowledged") == "success" for summary in summaries):
+            raise RehearsalFailure("scheduled execution outcome rejected")
+        capture = self.capture(run_id)
+        if (capture["matched"], capture["safe"], capture["total"]) != (
+            True,
+            True,
+            total + 1,
+        ):
+            raise RehearsalFailure("scheduled delivery was not exactly one message")
+        self.fixture.receipt["scheduled_execution_facts"] = {
+            "wait_seconds": waited,
+            "trigger_executions": len(new),
+            "worker_only_dev_network": True,
+        }
+        # Deactivated: more than one full minute passes and the row stays put.
+        held, _ = self.publish_next("hy-home.docker")
+        deadline = time.monotonic() + DEACTIVATED_HOLD_SECONDS
+        while time.monotonic() < deadline:
+            self.fixture.runtime_headroom()
+            if (
+                self.db_value(
+                    f"SELECT state||'|'||attempts FROM ops_flow.outbox WHERE run_id='{held}';"
+                )
+                != "pending|0"
+            ):
+                raise RehearsalFailure("deactivated workflow still claimed a row")
+            time.sleep(5)
+        self.drain_manual(workflow_id, held)
+
+    def race(self, jobs: int) -> list[dict]:
+        result = self.fixture.exec_result(
+            "dev-pg",
+            "/bin/sh",
+            "-ec",
+            RACE_SCRIPT,
+            "race",
+            str(jobs),
+            input_=RACE_SQL,
+        )
+        if result.returncode:
+            raise RehearsalFailure("concurrent claim session failed (output withheld)")
+        try:
+            return parse_race(result.stdout, jobs)
+        except ValueError:
+            raise RehearsalFailure("concurrent claim summary rejected") from None
+
+    def scenario_concurrent_claims(self) -> None:
+        self.assert_claimable(0)
+        _, single = self.publish_next("hy-home.k8s")
+        self.assert_claimable(1)
+        try:
+            race_winners(self.race(4), {int(single)})
+        except ValueError as error:
+            raise RehearsalFailure(f"one row, four claimers: {error}") from None
+        ids = [self.publish_next(source)[1] for source in ("hy-home.docker", "hy-home.k8s", "blog-data")]  # fmt: skip
+        self.assert_claimable(3)
+        try:
+            race_winners(self.race(6), {int(item) for item in ids})
+        except ValueError as error:
+            raise RehearsalFailure(f"three rows, six claimers: {error}") from None
+        listed = ",".join([single, *ids])
+        self.assertEqual(
+            "4",
+            self.db_value(
+                "SELECT count(*) FROM ops_flow.outbox WHERE id IN ("
+                f"{listed}) AND state='accepted_by_smtp' AND attempts=1;"
+            ),
+        )
+        self.assert_claimable(0)
+        # The database claim contract, driven as the notifier role in psql;
+        # the workflow itself runs one worker at concurrency 1.
+        self.fixture.receipt["concurrent_claims_facts"] = {
+            "driver": "psql_notifier_role"
+        }
+
+    def scenario_retry_dead_letter(self) -> None:
+        self.assert_claimable(0)
+        run_id, outbox_id = self.publish_next("hy-home.docker")
+        for attempt in range(1, MAX_ATTEMPTS + 1):
+            self.assertEqual(
+                f"claimed|{outbox_id}\nretried|true", self.notifier(RETRY_CYCLE_SQL)
+            )
+            self.assertEqual(
+                retry_expected(attempt),
+                self.db_value(retry_row_sql(outbox_id, attempt)),
+            )
+            self.assertEqual("0", self.notifier(CLAIM_PROBE_SQL))
+            if attempt < MAX_ATTEMPTS:
+                # The backoff (60..480 s) is fast-forwarded as the superuser;
+                # the notifier role cannot do that.
+                self.assertEqual(outbox_id, self.db_value(fast_forward_sql(outbox_id)))
+        self.assertEqual(
+            f"dead|{MAX_ATTEMPTS}|true",
+            self.row(
+                outbox_id, "state||'|'||attempts||'|'||(lease_token IS NULL)::text"
+            ),
+        )
+        self.assertEqual(
+            "dead",
+            self.db_value(
+                f"SELECT state FROM ops_flow.delivery_status WHERE run_id='{run_id}';",
+                "opsflow_reader",
+            ),
+        )
+        # An exhausted row that never reached `sending` is dead-lettered too.
+        _, exhausted = self.publish_next("hy-home.k8s")
+        self.assertEqual(exhausted, self.db_value(exhaust_sql(exhausted)))
+        self.assertEqual("0", self.notifier(CLAIM_PROBE_SQL))
+        self.assertEqual(
+            f"dead|{MAX_ATTEMPTS}|retry_exhausted",
+            self.row(
+                exhausted, "state||'|'||attempts||'|'||coalesce(last_error_code,'')"
+            ),
+        )
+        self.fixture.receipt["retry_dead_letter_facts"] = {
+            "driver": "psql_notifier_role",
+            "backoff": "fast_forwarded",
+        }
+
+    def scenario_empty_queue(self, workflow_id: str) -> None:
+        self.assert_claimable(0)
+        self.assertEqual(
+            "2",
+            self.db_value("SELECT count(*) FROM ops_flow.outbox WHERE state='dead';"),
+        )
+        fingerprint = (
+            "SELECT md5(string_agg(id||state||attempts||coalesce(last_error_code,'')"
+            "||coalesce(accepted_at::text,''),',' ORDER BY id)) FROM ops_flow.outbox;"
+        )
+        before, total = self.db_value(fingerprint), self.mail_total()
+        execution = self.run_manual(workflow_id)
+        terminal = self.await_execution(execution, "success")
+        self.assertEqual("absent", terminal.get("acknowledged"))
+        self.assertEqual(total, self.mail_total())
+        self.assertEqual(before, self.db_value(fingerprint))
+        self.assert_claimable(0)
+
+    def password_probe(self, role: str, password: str) -> subprocess.CompletedProcess:
+        return self.fixture.exec_result(
+            "dev-pg",
+            "/bin/sh",
+            "-ec",
+            PASSWORD_PROBE_SCRIPT,
+            "password-probe",
+            role,
+            input_=password + "\n",
+        )
+
+    def assert_password(self, role: str, password: str, accepted: bool) -> None:
+        result = self.password_probe(role, password)
+        if accepted and (result.returncode or result.stdout.strip() != "1"):
+            raise RehearsalFailure("current notifier password was refused")
+        denied = (
+            "28P01" in result.stderr
+            or "password authentication failed" in result.stderr
+        )
+        if not accepted and (result.returncode == 0 or not denied):
+            raise RehearsalFailure("stale notifier password was not denied")
+
+    def rewrite_secret_file(self, key: str, value: str) -> None:
+        # Same inode, so the retained-evidence registry redacts the live value.
+        path = self.secrets[key][1]
+        expected = self.fixture.files[path]
+        descriptor = os.open(path, os.O_WRONLY | os.O_NOFOLLOW)
+        try:
+            metadata = os.fstat(descriptor)
+            if (metadata.st_dev, metadata.st_ino) != (expected.device, expected.inode):
+                raise RehearsalFailure("rotated secret file identity changed")
+            os.ftruncate(descriptor, 0)
+            os.write(descriptor, (value + "\n").encode())
+        finally:
+            os.close(descriptor)
+        self.secrets[key] = (value, path)
+
+    def scenario_credential_rotation(self, workflow_id: str) -> None:
+        old = self.secrets["notifier"][0]
+        # Control: a wrong password is refused on this path, so a pass below
+        # is not a `trust` rule accepting anything.
+        self.assert_password("opsflow_notifier", secrets.token_urlsafe(32), False)
+        self.assert_password("opsflow_notifier", old, True)
+        run_id, outbox_id = self.publish_next("blog-data")
+        total = self.mail_total()
+        new = secrets.token_urlsafe(32)
+        self.fixture.psql(
+            "p04_audit", "postgres", rotate_role_sql("opsflow_notifier", new)
+        )
+        self.db_value(terminate_role_sql("opsflow_notifier"))
+        self.assertEqual("0", self.db_value(role_sessions_sql("opsflow_notifier")))
+        self.assert_password("opsflow_notifier", old, False)
+        self.assert_password("opsflow_notifier", new, True)
+        # n8n still holds the stale password: the claim is denied, nothing sent.
+        execution = self.run_manual(workflow_id)
+        self.await_execution(execution, "error")
+        self.assertEqual("pending|0", self.row(outbox_id, "state||'|'||attempts"))
+        self.assertEqual(total, self.mail_total())
+        self.api(
+            "credential_update",
+            credentialId=self.credential_ids["postgres"],
+            credential=self.postgres_credential(new),
+        )
+        self.drain_manual(workflow_id, run_id)
+        capture = self.capture(run_id)
+        self.assertEqual(
+            (total + 1, True, True),
+            (capture["total"], capture["matched"], capture["safe"]),
+        )
+        self.stale_notifier = old
+        # Restore re-applies role passwords from this registry after the dump.
+        self.rewrite_secret_file("notifier", new)
+        self.fixture.receipt["credential_rotation_facts"] = {
+            "stale_password_denied": True,
+            "new_password_accepted": True,
+            "stale_workflow_status": "error",
+            "rotated_workflow_status": "success",
+            "smtp_rotation": "NOT_RUN",
+        }
+
+    def credential_probe(
+        self, credential_id: str, field: str, value: str, key: str = ""
+    ) -> dict:
+        digest = hashlib.sha256(value.encode()).hexdigest()
+        result = self.fixture.exec_result(
+            "main",
+            "/bin/sh",
+            "-ec",
+            CREDENTIAL_PROBE_SCRIPT,
+            "credential-probe",
+            credential_id,
+            field,
+            digest,
+            input_=key + "\n",
+        )
+        if result.returncode:
+            raise RehearsalFailure("credential probe failed (output withheld)")
+        try:
+            return parse_probe(result.stdout)
+        except (ValueError, TypeError):
+            raise RehearsalFailure("credential probe summary rejected") from None
+
+    def scenario_paired_restore_decrypt(self) -> None:
+        if self.fixture.generation != 2:
+            raise RehearsalFailure("paired restore must run in the fresh generation")
+        postgres, smtp = (self.credential_ids[key] for key in ("postgres", "smtp"))
+        rotated = self.secrets["notifier"][0]
+        decrypted = self.credential_probe(postgres, "password", rotated)
+        if decrypted != {"exported": True, "present": True, "match": True}:
+            raise RehearsalFailure("restored credential did not decrypt")
+        stale = self.credential_probe(postgres, "password", self.stale_notifier)
+        if stale != {"exported": True, "present": True, "match": False}:
+            raise RehearsalFailure("restored metadata lost the rotated credential")
+        mail = self.credential_probe(smtp, "host", "mailpit")
+        if mail != {"exported": True, "present": True, "match": True}:
+            raise RehearsalFailure("restored SMTP credential did not decrypt")
+
+    def scenario_wrong_key_fail_closed(self) -> None:
+        # Positive control: the explicit-key path must decrypt with the right
+        # key, so a refusal below is about the key and not a broken path.
+        args = (
+            self.credential_ids["postgres"],
+            "password",
+            self.secrets["notifier"][0],
+        )
+        right = self.credential_probe(*args, self.secrets["encryption"][0])
+        if right != {"exported": True, "present": True, "match": True}:
+            raise RehearsalFailure("the explicit-key path did not decrypt")
+        wrong = self.credential_probe(*args, secrets.token_urlsafe(48))
+        if wrong["match"]:
+            raise RehearsalFailure("a mismatched encryption key decrypted the secret")
+        self.fixture.receipt["wrong_key_facts"] = {"exported": wrong["exported"]}
 
     def test_actual_queue_runner_capture_unknown_reconcile_and_restore(self):
         scenario_error = finish_error = None
@@ -590,6 +1057,10 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
             ),
         )
 
+        self.fixture.receipt.update(initial_receipt())
+        for name, action in self.generation_1_scenarios(workflow_id):
+            self.step(name, action)
+
         self.restore_and_restart()
         restored = self.api("workflows").get("rows")
         self.assertEqual(
@@ -619,6 +1090,9 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
                 f"SELECT evidence_sha256 FROM ops_flow.notification_reconciliations WHERE outbox_id={outbox_id} AND attempt=1;"
             ),
         )
+        for name, action in self.restore_scenarios():
+            self.step(name, action)
+        self.require_criterion_22_pass()
         self.fixture.receipt.update(
             {
                 "native": "PASS",
