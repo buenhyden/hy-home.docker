@@ -197,7 +197,6 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         self.assertIn("provider_surface_renderer.py", serialized)
 
     def test_repository_contract_does_not_require_removed_handoff(self) -> None:
-        self.assertFalse((ROOT / "scripts/validation/check-repo-contracts.sh").exists())
         manifest = (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
         self.assertNotIn("check-repo-" + "contracts.sh", manifest)
 

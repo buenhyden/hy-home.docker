@@ -28,9 +28,30 @@ DATA = (
     "qdrant",
 )
 ANALYTICS = ("flink", "spark", "trino", "great-expectations", "superset", "dbt")
+# ADR-0046 capability tiers; a renamed or retired tier fails here.
+TIERS = (
+    "01-gateway",
+    "02-auth",
+    "03-security",
+    "04-data",
+    "05-messaging",
+    "06-observability",
+    "07-workflow",
+    "08-ai",
+    "09-platform-ops",
+    "10-communication",
+    "11-quality",
+    "12-analytics",
+    "13-experience",
+)
 
 
 class TierLayoutTests(unittest.TestCase):
+    def test_infra_has_exactly_the_registered_tiers(self):
+        self.assertEqual(
+            set(TIERS), {p.name for p in (ROOT / "infra").iterdir() if p.is_dir()}
+        )
+
     def test_every_infra_service_names_its_container_and_host(self):
         # container_name and hostname equal the service key; a different
         # container_name needs a registered reason (Docker names are host-wide).
@@ -145,9 +166,6 @@ class TierLayoutTests(unittest.TestCase):
         self.assertTrue(
             (ROOT / "infra/10-communication/stalwart/docker-compose.yml").is_file()
         )
-        self.assertFalse((ROOT / "infra/11-laboratory").exists())
-        for package in placements["11-quality"]:
-            self.assertFalse((ROOT / "infra/09-tooling" / package).exists())
         self.assertFalse((ROOT / "infra/10-communication/mailpit").exists())
 
     def test_transferred_hardening_retains_controls(self):
@@ -282,7 +300,6 @@ class TierLayoutTests(unittest.TestCase):
             },
             names,
         )
-        self.assertFalse((ROOT / "infra/09-tooling").exists())
         relative = "infra/09-platform-ops/restic/bin/hyhome-backup.sh"
         unit = ROOT / "infra/09-platform-ops/restic/systemd/hyhome-backup.service"
         self.assertIn(
