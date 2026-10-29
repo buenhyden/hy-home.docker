@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.8.15"
+version: "1.9.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -149,10 +149,10 @@ provisioning, LAB runtime or learning-application work.
 | W39 | 8, 18 | Registered gates, independent review, logical commits, owning-Spec PR and handoffs | W38 | TSK-0012 | Current-head checks/review; preserve unexecuted lanes and actual delivery receipt |
 | W40 | 1, 8, 19 | P05 baseline, source/reference reuse, exact writer ledger and RED cases | None | TSK-0013 | Fresh Git and public metadata; reference static results are not native proof |
 | W41 | 19 | Deterministic inactive workflow and bounded SMTP implementation with synthetic privacy/state tests | W40 | TSK-0013 | Closed inputs, graph/credential placeholders, Message-ID and checked ack/retry; no import side effects |
-| W42 | 19 | Consume and freeze P04's reviewed SQL/outbox version and interface hash | W41, W36 | TSK-0013 | P04 owns SQL; publication/view/claim/ack/retry/state/lease and least-privilege contract |
-| W43 | 19 | Exact-image inactive native import, credential binding and manual queue-worker Mailpit capture | W42, W38 | TSK-0013 | Relevant image/node/security receipt plus exact DEV/mail target, network, credential and recovery review |
-| W44 | 19 | One-minute polling, concurrency/failures/dead/requeue, restart/rotation and empty restoration | W43 | TSK-0013 | Actual captured acceptance, duplicate uncertainty, stale-token denial and paired metadata/key recovery |
-| W45 | 8, 19 | Shared registration/docs integration, final QA/review, logical commits and owning-Spec PR | W44 | TSK-0013 | Current-head required checks/review, actual merge and versioned downstream handoffs |
+| W42 | 22 | Consume and freeze P04's reviewed SQL/outbox version and interface hash | W41, W36 | TSK-0013 | P04 owns SQL; publication/view/claim/ack/retry/state/lease and least-privilege contract |
+| W43 | 22 | Exact-image inactive native import, credential binding and manual queue-worker Mailpit capture | W42, W38 | TSK-0013 | Relevant image/node/security receipt plus exact DEV/mail target, network, credential and recovery review |
+| W44 | 22 | One-minute polling, concurrency/failures/dead/requeue, restart/rotation and empty restoration | W43 | TSK-0013 | Actual captured acceptance, duplicate uncertainty, stale-token denial and paired metadata/key recovery |
+| W45 | 8, 22 | Shared registration/docs integration, final QA/review, logical commits and owning-Spec PR | W44 | TSK-0013 | Current-head required checks/review, actual merge and versioned downstream handoffs |
 | W46 | 1, 8, 20 | P06 baseline, existing authority and exact consumer/ownership ledger; RED cases | None | TSK-0014 | Fresh SHA/clean state and prompt audit; no private value I/O |
 | W47 | 20 | Closed value-free wave/receipt schemas and catalog-bound selection tests | W46 | TSK-0014 | Synthetic rejection of aliases, unknown IDs, unsafe paths, destinations and classifications |
 | W48 | 20 | Bounded same-byte KV-v2 copy executor/CLI and failure reconciliation | W47, W32 | TSK-0014 | Reuse integrated P02 API; CAS=0, equal/conflict/ambiguous-readback, TLS/privacy and file safety tests |
