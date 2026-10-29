@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.4.1"
+version: "1.4.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 ---
 
 # GitHub Governance Policy
@@ -248,4 +248,4 @@ If any gate is unmet, the task status is "blocked" not "done."
 - `.codex/provider.md`
 - `.github/repository-surface.md`
 - `.github/rulesets/main-protection.md`
-- `docs/05.operations/runbooks/0009-release-management.md`
+- `docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md`
