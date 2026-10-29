@@ -1790,15 +1790,18 @@ def _native_migration_compaction_witness(
         or record.metadata.get("status") != "completed"
     ):
         return None
-    from scripts.lib.document_governance import archive
+    from scripts.lib.document_governance import archive, archive_migration_0003
 
     try:
-        previous = archive.HistoricalDocument(
+        previous = archive_migration_0003.HistoricalDocument(
             root, base_ref, record.path.as_posix()
         ).read_bytes()
-        if hashlib.sha256(previous).hexdigest() != archive.FROZEN_MIGRATION_SHA256:
+        if (
+            hashlib.sha256(previous).hexdigest()
+            != archive_migration_0003.FROZEN_MIGRATION_SHA256
+        ):
             return None
-        if archive._migration_document(root)["schema_version"] != 3:
+        if archive_migration_0003._migration_document(root)["schema_version"] != 3:
             return None
         current = archive._read_regular(root / record.path).decode("utf-8")
         if _parse_frontmatter_text(current) != record.metadata:

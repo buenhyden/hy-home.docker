@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.27.0"
+version: "1.28.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -83,7 +83,8 @@ judges every pair of the request's 148 requirements for duplication and
 conflict, in TSK-0030. Criterion 42/W47 adds the five rules that
 TSK-0029 found missing, in TSK-0031. Criterion 43/W48 makes governance and
 provider guidance English, in TSK-0032. Criterion 44/W49 adds a Verification
-section to every skill, in TSK-0033.
+section to every skill, in TSK-0033. Criterion 45/W50 moves the Migration
+0003 cutover proof into its own module, in TSK-0034.
 
 ## Scope
 
@@ -446,6 +447,8 @@ hold, authorization and recovery requirements have been established.
     Korean.
 44. TSK-0033 gives every canonical skill a Verification section with
     observable success conditions and makes the section required.
+45. TSK-0034 moves the Migration 0003 cutover proof out of the general
+    archive module without changing what any check proves.
 
 ## Failure Conditions
 

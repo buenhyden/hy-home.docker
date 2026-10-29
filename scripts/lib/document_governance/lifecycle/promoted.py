@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pathlib
 
-from scripts.lib.document_governance import archive as archive_authority
+from scripts.lib.document_governance import archive_migration_0003
 from scripts.lib.document_governance.git_provenance import HistoricalDocument
 from scripts.lib.document_governance.lifecycle.contract import (
     Finding,
@@ -18,7 +18,7 @@ from scripts.lib.document_governance.lifecycle.contract import (
 def _historical_promoted_findings(root: pathlib.Path) -> list[Finding]:
     """Compare DATA-0067 with its exact approved recovery blob."""
 
-    migration = archive_authority._migration_document(root)
+    migration = archive_migration_0003._migration_document(root)
     selected = [
         row for row in migration["rows"] if row.get("artifact_id") == "DATA-0067"
     ]

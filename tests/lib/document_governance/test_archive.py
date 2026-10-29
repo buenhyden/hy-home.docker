@@ -24,6 +24,12 @@ def archive_api():
     return archive
 
 
+def migration_api():
+    from scripts.lib.document_governance import archive_migration_0003
+
+    return archive_migration_0003
+
+
 class MigrationStateTests(unittest.TestCase):
     def test_tombstone_identity_inherits_the_retired_artifact_id(self) -> None:
         """A tombstone names which artifact it records, not where it sits.
@@ -81,6 +87,7 @@ class MigrationStateTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.archive = archive_api()
+        self.migration = migration_api()
         self.commit = "494065806794980080b081439298d7b534d10803"
         self.row = {
             "row_id": "mig-0003-r0001",
@@ -191,13 +198,13 @@ class MigrationStateTests(unittest.TestCase):
         with (
             mock.patch.object(self.archive, "_read_regular", return_value=raw),
             mock.patch.object(
-                self.archive,
+                self.migration,
                 "_approved_migration_document",
                 return_value=copy.deepcopy(self.approved),
                 create=True,
             ),
         ):
-            return self.archive._migration_document(ROOT)
+            return self.migration._migration_document(ROOT)
 
     def compact(self):
         row = {
@@ -219,7 +226,7 @@ class MigrationStateTests(unittest.TestCase):
                 "action": "delete",
                 "recovery_commit": self.commit,
             }
-            for path in self.archive.ONE_TIME_VERIFIER_PATHS
+            for path in self.migration.ONE_TIME_VERIFIER_PATHS
         ]
         additions.extend(
             {
@@ -259,13 +266,13 @@ class MigrationStateTests(unittest.TestCase):
                     return_value=candidate.encode(),
                 ),
                 mock.patch.object(
-                    self.archive,
+                    self.migration,
                     "_approved_migration_document",
                     return_value=self.approved,
                 ),
                 self.assertRaisesRegex(ValueError, "fenced"),
             ):
-                self.archive._migration_document(ROOT)
+                self.migration._migration_document(ROOT)
 
     def test_compact_live_reader_rejects_missing_extra_duplicate_unsafe_and_wrong_recovery(
         self,
@@ -338,6 +345,7 @@ class MigrationStateTests(unittest.TestCase):
 class ArchiveMinimizationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.archive = archive_api()
+        self.migration = migration_api()
 
     def test_preservation_boundary_is_total_and_exclusive(self) -> None:
         """The two kinds of Stage 98 record must not be conflated.
@@ -668,7 +676,7 @@ class ArchiveMinimizationTests(unittest.TestCase):
         recoverable. None of that needs a literal.
         """
 
-        decisions = self.archive.load_task10_preservation_decisions(ROOT)
+        decisions = self.migration.load_task10_preservation_decisions(ROOT)
         inventory = self.archive.load_archive(ROOT / "docs/98.archive")
         self.assertEqual(len(decisions), len({item.stable_path for item in decisions}))
         dispositions = collections.Counter(item.disposition for item in decisions)
@@ -692,11 +700,11 @@ class ArchiveMinimizationTests(unittest.TestCase):
             unlisted,
         )
         with mock.patch.object(
-            self.archive,
+            self.migration,
             "read_archived_metadata_batch",
             return_value=(metadata,),
         ):
-            resolved = self.archive._legacy_change_recoveries(
+            resolved = self.migration._legacy_change_recoveries(
                 ROOT,
                 (*approved, unlisted),
             )
@@ -704,23 +712,23 @@ class ArchiveMinimizationTests(unittest.TestCase):
         self.assertEqual(metadata.archived_commit, resolved[unlisted].commit)
 
         with mock.patch.object(
-            self.archive,
+            self.migration,
             "read_archived_metadata_batch",
             return_value=(),
         ):
             with self.assertRaisesRegex(ValueError, "unapproved missing"):
-                self.archive._legacy_change_recoveries(ROOT, (*approved, unlisted))
+                self.migration._legacy_change_recoveries(ROOT, (*approved, unlisted))
 
         swapped = git_provenance.ArchivedMetadata(
             approved[0], TASK10_BASELINE, approved[0]
         )
         with mock.patch.object(
-            self.archive,
+            self.migration,
             "read_archived_metadata_batch",
             return_value=(swapped,),
         ):
             with self.assertRaisesRegex(ValueError, "unapproved missing"):
-                self.archive._legacy_change_recoveries(ROOT, (*approved, unlisted))
+                self.migration._legacy_change_recoveries(ROOT, (*approved, unlisted))
 
     def test_recovery_validator_rejects_unsafe_values_and_non_blobs(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1051,6 +1059,7 @@ class RetentionCatalogTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.archive = archive_api()
+        self.migration = migration_api()
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         self.root = pathlib.Path(temp.name)
@@ -1179,10 +1188,10 @@ class RetentionCatalogTests(unittest.TestCase):
                 return_value=self.archive.ArchiveInventory((), (), ()),
             ),
             mock.patch.object(
-                self.archive, "load_task10_preservation_decisions", return_value=()
+                self.migration, "load_task10_preservation_decisions", return_value=()
             ),
             mock.patch.object(
-                self.archive, "load_task10_recovery_references", return_value=()
+                self.migration, "load_task10_recovery_references", return_value=()
             ),
             mock.patch.object(
                 pathlib.Path, "rglob", side_effect=AssertionError("unsafe scan")
@@ -1643,6 +1652,7 @@ class WithdrawalRecordTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.archive = archive_api()
+        self.migration = migration_api()
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         self.root = pathlib.Path(temp.name)

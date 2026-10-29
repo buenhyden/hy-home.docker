@@ -991,7 +991,9 @@ def build_current_manifest(
         ).exists()
     ):
         return current
-    from scripts.lib.document_governance.archive import _migration_document
+    from scripts.lib.document_governance.archive_migration_0003 import (
+        _migration_document,
+    )
     from scripts.lib.document_governance.git_provenance import HistoricalDocument
 
     try:

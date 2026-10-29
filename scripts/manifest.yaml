@@ -160,7 +160,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/lib/document_governance/lifecycle/promoted.py
+  - scripts/lib/document_governance/archive_migration_0003.py
   - scripts/lib/document_governance/lifecycle/recovery.py
   disposition: retain
   successor: null
@@ -180,6 +180,21 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_archive_assessments.py
+- path: scripts/lib/document_governance/archive_migration_0003.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/identity_history.py
+  - scripts/lib/document_governance/lifecycle/promoted.py
+  - scripts/lib/document_governance/lifecycle/recovery.py
+  - scripts/lib/document_governance/metadata/heading.py
+  - scripts/lib/document_governance/metadata/profile.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_archive.py
 - path: scripts/lib/document_governance/archive_snapshots.py
   kind: library
   authority: docs/99.templates/registry.json
