@@ -3,11 +3,11 @@ name: "change-review-execution"
 description: "Use when an exact diff or commit range needs independent specification-compliance and quality verdicts backed by verification evidence."
 metadata:
   title: "change-review-execution"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "change-review-execution"
   scope: "common"
   owner_agent: "code-reviewer"
@@ -43,6 +43,12 @@ The review package must identify the base/head range, task requirements, and obs
 ## Outputs
 
 - Actionable findings and explicit PASS/APPROVED or correction-required verdicts.
+
+## Verification
+
+- The review cites the exact reviewed range and leaves the working tree unchanged.
+- Each finding names a file and line that reproduces it, or it is dropped.
+- The specification-compliance verdict and the quality verdict are recorded separately.
 
 ## Failure Handling
 

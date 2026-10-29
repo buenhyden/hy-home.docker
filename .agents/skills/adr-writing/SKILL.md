@@ -3,11 +3,11 @@ name: "adr-writing"
 description: "Use when an approved material architecture choice needs one ADR with alternatives, consequences, and traceable decision status."
 metadata:
   title: "adr-writing"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "adr-writing"
   scope: "architecture"
   owner_agent: "doc-writer"
@@ -43,6 +43,12 @@ Use only when a material architecture choice has approved context, explicit driv
 ## Outputs
 
 - One typed ADR in `docs/02.architecture/decisions/` with decision rationale and consequences.
+
+## Verification
+
+- `scripts/validation/check-document-metadata.py --mode check-changed` reports no violation for the new ADR.
+- `scripts/validation/check-document-links.py --mode alignment` resolves its upstream and downstream links.
+- The ADR names at least two alternatives and states its consequences and reversibility.
 
 ## Failure Handling
 

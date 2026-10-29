@@ -3,11 +3,11 @@ name: "requirements-to-design-agent"
 description: "Use when approved requirements need traceable architecture inputs, coverage analysis, alternatives, and explicit unresolved decision gaps."
 metadata:
   title: "requirements-to-design-agent"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "requirements-to-design-agent"
   scope: "architecture"
   owner_agent: "rules-engineer"
@@ -43,6 +43,12 @@ Requirements must be approved, testable, and traceable; unresolved product choic
 ## Outputs
 
 - Traceable design input with requirement coverage, boundaries, and decision needs.
+
+## Verification
+
+- Every in-scope requirement and acceptance criterion has an architecture disposition.
+- Uncovered or contradictory requirements are listed rather than dropped.
+- No design input crosses an approved system or authority boundary without saying so.
 
 ## Failure Handling
 

@@ -46,6 +46,10 @@ metadata:
 
 {{PRODUCED_EVIDENCE}}
 
+## Verification
+
+{{OBSERVABLE_SUCCESS_CONDITIONS}}
+
 ## Failure Handling
 
 ### Stop Conditions

@@ -3,11 +3,11 @@ name: "e2e-testing"
 description: "Use when approved acceptance criteria need reproducible end-to-end scenarios through public interfaces within an authorized runtime boundary."
 metadata:
   title: "e2e-testing"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "e2e-testing"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -43,6 +43,12 @@ Acceptance criteria, runnable boundary, deterministic fixture strategy, and runt
 ## Outputs
 
 - End-to-end evidence with scenario, expected/actual result, and reproduction details.
+
+## Verification
+
+- Each acceptance criterion maps to a scenario with its expected and actual result.
+- A failing scenario fails again on re-run before it is reported as a defect.
+- After correction, the focused suite passes and the evidence holds no secret or unsanitized output.
 
 ## Failure Handling
 

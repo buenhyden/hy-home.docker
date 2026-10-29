@@ -3,11 +3,11 @@ name: "knowledge-map-agent"
 description: "Use when tracked documentation navigation needs canonical ownership, safe source coverage, and corroboration of advisory graph output against tracked source."
 metadata:
   title: "knowledge-map-agent"
-  version: "2.0.0"
+  version: "2.1.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "knowledge-map-agent"
   scope: "docs"
   owner_agent: "doc-writer"
@@ -54,6 +54,12 @@ routing from a repository surface to its canonical owner.
 
 - A curated knowledge map that points to canonical sources and records which
   claims were corroborated against tracked source.
+
+## Verification
+
+- Every map entry points to a tracked canonical source that exists.
+- `scripts/validation/check-document-links.py --mode alignment` passes for the changed map.
+- Each advisory graph claim is marked corroborated against tracked source, or it is left out.
 
 ## Failure Handling
 

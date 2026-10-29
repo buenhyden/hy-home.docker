@@ -3,11 +3,11 @@ name: "ci-cd-patterns"
 description: "Use when delivery workflows need deterministic local and CI gates, least-privilege jobs, and explicit remote promotion boundaries."
 metadata:
   title: "ci-cd-patterns"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "ci-cd-patterns"
   scope: "ops"
   owner_agent: "ci-cd-engineer"
@@ -43,6 +43,12 @@ The delivery contract, repository workflow state, and protected remote-action bo
 ## Outputs
 
 - A pipeline pattern with ordered checks, permissions, evidence, and rollback behavior.
+
+## Verification
+
+- `scripts/validation/check-github-workflow-contract.py` passes for any changed workflow.
+- Every job declares explicit least-privilege `permissions` and pins each action to a full commit SHA.
+- Each check is marked reproducible locally or CI-only, and the remote gates left unobserved are listed.
 
 ## Failure Handling
 
