@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.12.0"
+version: "1.13.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -64,7 +64,8 @@ runtime cause in TSK-0014. Criterion 26/W31 applies the owner-approved
 blocked items and a removal regression fix in TSK-0015. Criterion 27/W32
 records the owner's choices for the three items TSK-0013 deferred or left not
 run, in TSK-0016. Criterion 28/W33 reviews those deferred and not-run
-items again in TSK-0017.
+items again in TSK-0017. Criterion 29/W34 applies the owner's choices on
+the items TSK-0017 left open, in TSK-0018.
 
 ## Scope
 
@@ -374,6 +375,12 @@ hold, authorization and recovery requirements have been established.
     that fails on the same leftover. Remote protection and the other three
     repositories are read without writing; four-repository adoption is not
     claimed without a shared revision, and runtime acceptance stays `NOT_RUN`.
+29. TSK-0018 applies the owner's choices on the items TSK-0017 left open: it
+    narrows the repository merge methods to merge commits with a read-back,
+    names the cause of the pre-existing unit failures without changing any
+    secret surface, records a static Compose validation that starts nothing,
+    and hands the cross-repository gaps to their owners without writing to
+    another repository.
 
 ## Failure Conditions
 
