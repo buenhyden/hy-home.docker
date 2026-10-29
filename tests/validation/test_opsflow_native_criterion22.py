@@ -430,7 +430,7 @@ class Criterion22DriverTests(unittest.TestCase):
         ids = [case.publish_next("hy-home.docker")[1] for _ in range(3)]
         self.assertEqual(["42"] * 3, ids)
         self.assertEqual(
-            ["2026-10-16T04:00:00Z", "2026-10-16T05:00:00Z", "2026-10-16T06:00:00Z"],
+            ["2026-10-17T00:00:00Z", "2026-10-18T00:00:00Z", "2026-10-19T00:00:00Z"],
             [captured for _, _, captured in seen],
         )
         self.assertEqual(3, len({digest for _, digest, _ in seen}))

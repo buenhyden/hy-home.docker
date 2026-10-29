@@ -545,10 +545,11 @@ class OpsflowN8nNativeRehearsal(unittest.TestCase):
 
     def publish_next(self, source: str) -> tuple[str, str]:
         # Capture times only rise, so every row is `published` with an outbox
-        # row; hours 01-03 belong to the earlier steps.
+        # row. Each takes its own UTC day after the earlier steps' 2026-10-16,
+        # since V2 allows one run per source and business date.
         self.published += 1
         digest = hashlib.sha256(f"criterion-22-{self.published}".encode()).hexdigest()
-        captured = f"2026-10-16T{3 + self.published:02d}:00:00Z"
+        captured = f"2026-10-{16 + self.published:02d}T00:00:00Z"
         run_id = self.publish(source, digest, captured)
         outbox_id = self.db_value(
             f"SELECT id FROM ops_flow.outbox WHERE run_id='{run_id}';"
