@@ -1,10 +1,10 @@
 ---
 title: "DEV Data Boundary and InfluxDB Retirement Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0213-TSK-0001"
 parent_ids:
@@ -187,30 +187,49 @@ Cleanup is incomplete: removal of the isolated containers
 by the session permission policy. They hold synthetic data only and remain
 for the operator to remove.
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0213 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0213-PLAN-0001 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0213-TSK-0001 | draft | ready | #inputs-and-authorization |
+| SPEC-0213-TSK-0001 | ready | in-progress | #w1-decision-and-documents |
+| SPEC-0213-TSK-0001 | in-progress | completed | #owner-decision-2026-10-29 |
+
+### Owner decision 2026-10-29
+
+The work already landed. On 2026-10-29 the owner approved SPEC-0213 and its
+Plan after the fact and closed the package on documents alone. Criterion 6 is
+now accepted on the PASS row "Backup chain and canary" (isolated offline full
+backup, `--set` restore, row and hash match). HOME restore and PITR stay
+`NOT_RUN`, which criterion 6 allows, so that row is now marked optional.
+Criteria 1 to 5 keep their earlier acceptance. No runtime check was rerun.
+
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Decision and documents | 1 | W1 | `check-document-metadata.py --mode check-changed`; link gate | Commit `12aeec76b` | PASS | W1 Decision and Documents | - |
-| Variable boundary | 2 | W2 | Non-interference renders; RED/GREEN unit test | `.env.example` with synthetic overrides | PASS | W2 Variable Boundary and Provisioning | - |
-| Isolated provisioning | 3 | W2 | Isolated dev-pg run, network-client auth | Project `s0213iso`, synthetic secrets | PASS | W2 Variable Boundary and Provisioning | - |
-| Influx source absence | 4 | W3 | Root render, explicit target, reference scan, RED/GREEN absence test | `.env.example`; working tree | PASS | W3 InfluxDB Retirement | - |
-| HOME data check | 5 | W3 | `docker ps -a`/volume/image list; directory size, count and file-type scan | HOME host, 2026-10-07 | PASS | HOME Data Check | - |
-| Backup chain and canary | 6 | W4 | Source chain read; isolated offline full backup, `--set` restore, row/hash match | Project `s0213iso`, label `20261007-120930F` | PASS | W4 Backup Chain and Restore Canary | - |
-| Remote candidate (W2) | 2, 3 | W2 | PR #370 `candidate-quality` run 37628494658 | Head `26d2e9717` | PASS | PR #370 | - |
-| Remote candidate (W3) | 4 | W3 | PR #370 `candidate-quality` run 37628494658 | Head `26d2e9717` | PASS | PR #370 | - |
-| HOME restore, WAL and PITR | 6 | W4 | HOME stanza, WAL archive and restore | No approved target | NOT_RUN | W4 Backup Chain and Restore Canary | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Decision and documents | 1 | W1 | `check-document-metadata.py --mode check-changed`; link gate | Commit `12aeec76b` | PASS | W1 Decision and Documents | required | - |
+| Variable boundary | 2 | W2 | Non-interference renders; RED/GREEN unit test | `.env.example` with synthetic overrides | PASS | W2 Variable Boundary and Provisioning | required | - |
+| Isolated provisioning | 3 | W2 | Isolated dev-pg run, network-client auth | Project `s0213iso`, synthetic secrets | PASS | W2 Variable Boundary and Provisioning | required | - |
+| Influx source absence | 4 | W3 | Root render, explicit target, reference scan, RED/GREEN absence test | `.env.example`; working tree | PASS | W3 InfluxDB Retirement | required | - |
+| HOME data check | 5 | W3 | `docker ps -a`/volume/image list; directory size, count and file-type scan | HOME host, 2026-10-07 | PASS | HOME Data Check | required | - |
+| Backup chain and canary | 6 | W4 | Source chain read; isolated offline full backup, `--set` restore, row/hash match | Project `s0213iso`, label `20261007-120930F` | PASS | W4 Backup Chain and Restore Canary | required | - |
+| Remote candidate (W2) | 2, 3 | W2 | PR #370 `candidate-quality` run 37628494658 | Head `26d2e9717` | PASS | PR #370 | required | - |
+| Remote candidate (W3) | 4 | W3 | PR #370 `candidate-quality` run 37628494658 | Head `26d2e9717` | PASS | PR #370 | required | - |
+| HOME restore, WAL and PITR | 6 | W4 | HOME stanza, WAL archive and restore | No approved target | NOT_RUN | W4 Backup Chain and Restore Canary | optional | - |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 1 | accepted | Decision and documents | Generation 5 row acceptance |
-| 2 | accepted | Variable boundary, Remote candidate (W2) | Generation 5 row acceptance |
-| 3 | accepted | Isolated provisioning, Remote candidate (W2) | Generation 5 row acceptance |
-| 4 | accepted | Influx source absence, Remote candidate (W3) | Generation 5 row acceptance |
-| 5 | accepted | HOME data check | Generation 5 row acceptance |
-| 6 | pending | - | - |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | accepted | Decision and documents | Generation 5 row acceptance | SPEC-0213 TSK-0001 |
+| 2 | accepted | Variable boundary, Remote candidate (W2) | Generation 5 row acceptance | SPEC-0213 TSK-0001 |
+| 3 | accepted | Isolated provisioning, Remote candidate (W2) | Generation 5 row acceptance | SPEC-0213 TSK-0001 |
+| 4 | accepted | Influx source absence, Remote candidate (W3) | Generation 5 row acceptance | SPEC-0213 TSK-0001 |
+| 5 | accepted | HOME data check | Generation 5 row acceptance | SPEC-0213 TSK-0001 |
+| 6 | accepted | Backup chain and canary | Owner accepted on 2026-10-29; the isolated backup and restore canary passed, and HOME restore and PITR stay NOT_RUN as the Spec allows. | SPEC-0213 TSK-0001 |
 
 ## Review and Completion
 
