@@ -2110,6 +2110,25 @@ class BackupContractTests(unittest.TestCase):
         script = (ROOT / RESTIC_DIR / "backup.sh").read_text(encoding="utf-8")
         self.assertIn("--files-from-verbatim", script)
 
+    def test_restic_reads_the_ollama_catalog_from_the_model_dir(self) -> None:
+        # The Ollama store binds OLLAMA_MODEL_DIR (an SSD path since SPEC-0246),
+        # not DEFAULT_MOUNT_VOLUME_PATH, so the catalog includes need their own
+        # read-only mount or they are skipped as not present.
+        service = _compose_service(RESTIC_COMPOSE, "restic")
+        mounts = {
+            volume["target"]: volume
+            for volume in service["volumes"]
+            if isinstance(volume, dict)
+        }
+        models = mounts["/src/state/ollama-models"]
+        self.assertEqual(
+            "${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}/models",
+            models["source"],
+        )
+        self.assertIs(True, models["read_only"])
+        script = (ROOT / RESTIC_DIR / "backup.sh").read_text(encoding="utf-8")
+        self.assertIn("ai/ollama/models/*) src=/src/state/ollama-models/", script)
+
     def test_restic_skips_telemetry_and_budgets_eight_gib(self) -> None:
         # SPEC-0228: Loki and Tempo collections are short-lived telemetry; copying
         # them pushed the state repository over its budget.
