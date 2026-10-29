@@ -1,6 +1,6 @@
 ---
 title: "Storybook Build and Delivery Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -284,8 +284,9 @@ moved this Task from `draft` through `ready` to `in-progress`; the Work Log
 above already reports the executed units W1 to W8. Criterion 2 stays `pending`:
 the remote-device MCP login and tool call is `NOT_RUN` and needs the owner on
 another device. Criteria 1, 3, 4 and 5 keep their accepted decisions. The
-GHSA-vfj7 acceptance recorded in SPEC-0222 expires on 2026-11-08T07:00:00Z;
-the npm risk acceptance must be renewed or the advisory resolved before then.
+GHSA-vfj7 acceptance recorded in SPEC-0222 is no longer active: GitHub
+withdrew the advisory on 2026-10-23, the acceptance was retired, and the
+dependency audit is again the strict high-level run, so no renewal is due.
 
 ### Lifecycle Events
 
