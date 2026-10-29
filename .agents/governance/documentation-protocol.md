@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.7.0"
+version: "3.7.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -226,9 +226,9 @@ evidence; surrounding instructions remain current and validated normally.
   consequential choice. Preserve accepted decisions and use explicit
   supersession when the choice changes.
 - Use the Description core for architecture views: context and scope
-  in `Scope`, building blocks, runtime interaction, and topology in `Architecture`,
-  and quality scenarios in
-  `Quality Attributes`. Add registered optional content only when it helps the
+  in `Scope`, building blocks in `Structure`, runtime interaction and topology
+  in `Runtime and Deployment`, and quality scenarios and risks in
+  `Quality and Risks`. Add registered optional content only when it helps the
   reader; do not impose an empty full architecture framework.
 - Consider system context and container diagrams for system-level Descriptions.
   Use component detail only when useful, dynamic diagrams for interactions, and

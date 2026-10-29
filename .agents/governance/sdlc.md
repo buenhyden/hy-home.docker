@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.5.0"
+version: "1.5.1"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -29,8 +29,8 @@ Spec Package, the current Task, and the registered Stage 99 contract.
    technical approach, plan, tasks, and executable interface contracts.
 4. **Implementation** — code and configuration changes are executed from the
    approved Spec Package and recorded in its current Task.
-5. **Operations** — Stage 05 owns guides, policies, runbooks, and incidents for
-   the running system.
+5. **Operations** — Stage 05 owns guides, policies, runbooks, incidents, and
+   their postmortems for the running system.
 
 Research, design drafts, and isolated trials never require a future
 approval, commit, or digest before they start. Activating a new shared norm,
@@ -61,7 +61,11 @@ descriptions and operational guidance use `draft`, `in-review`, `active`,
 `rejected`, `deprecated`, and `superseded`. Specs and Plans record authority
 only: `draft`, `in-review`, `approved`, `cancelled`, and `superseded`. Tasks
 retain `draft`, `ready`, `in-progress`, `blocked`, `completed`, and
-`cancelled`. Navigation READMEs and the current archive
+`cancelled`. Incidents use `open`, `investigating`, `mitigated`, `resolved`,
+and `closed`; postmortems use `draft`, `in-review`, and `published`;
+publications use `draft`, `in-review`, `published`, `superseded`, and
+`retired`; executable contracts use `draft`, `review`, `approved`, `active`,
+`superseded`, and `retired`. Navigation READMEs and the current archive
 catalog remain `active`; route records use `draft` or `sealed`.
 
 A Plan has one Spec parent and a Task has one Plan parent. A Plan is never
