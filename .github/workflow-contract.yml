@@ -855,6 +855,7 @@
       "argv": [
         "run-unittest",
         "tests.validation.test_agent_governance_ci_routing",
+        "tests.validation.test_shell_regressions",
         "-v"
       ],
       "cwd": ".",
@@ -1644,6 +1645,10 @@
           "tests/validation/test_ci_gate_plan.py",
           "tests/validation/test_release.py",
           "tests/validation/test_run_ci_precommit.sh",
+          "tests/validation/test_run_agent_precommit_all_files.sh",
+          "tests/validation/test_hardening_lib.sh",
+          "tests/validation/test_shell_regressions.py",
+          "scripts/lib/hardening-lib.sh",
           "tests/validation/test_script_manifest.py",
           "tests/validation/test_tech_stack_version_contract.py",
           "scripts/operations/release.py",
@@ -1937,7 +1942,12 @@
           ".shellcheckrc",
           "scripts/validation/run-ci-precommit.sh",
           "tests/validation/test_run_ci_precommit.sh",
-          "scripts/operations/use-qa-ci-tools.sh"
+          "scripts/operations/use-qa-ci-tools.sh",
+          "scripts/lib/hardening-lib.sh",
+          "scripts/validation/run-agent-precommit-all-files.sh",
+          "tests/validation/test_hardening_lib.sh",
+          "tests/validation/test_run_agent_precommit_all_files.sh",
+          "tests/validation/test_shell_regressions.py"
         ],
         "root_gate_ids": [
           "leaf.local-shell-syntax",
@@ -1955,7 +1965,6 @@
           "scripts/hooks/agent-event-hook.sh",
           "scripts/hooks/pre-push-guard.sh",
           "scripts/validation/check-template-security-baseline.sh",
-          "scripts/validation/run-agent-precommit-all-files.sh",
           "scripts/validation/validate-docker-compose.sh",
           "scripts/validation/check-conftest-policy.sh"
         ],

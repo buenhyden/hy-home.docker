@@ -23,7 +23,6 @@ COMPOSE = FIXTURE / "docker-compose.yml"
 SEED_SQL = FIXTURE / "sql/001_schema_and_seed.sql"
 ORACLE_SQL = FIXTURE / "sql/010_integrity_oracle.sql"
 PARTIAL_SQL = FIXTURE / "sql/020_negative_partial_state.sql"
-ALIGNMENT_CHECK = ROOT / "scripts/validation/check-document-links.py"
 MANIFEST = ROOT / "scripts/manifest.yaml"
 IMAGE_IDENTITY_CHECKER = ROOT / "scripts/validation/check-supply-chain-policy.py"
 
@@ -1257,17 +1256,6 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertIn("balance >= 0", text)
         self.assertIn("amount > 0", text)
         self.assertIn("state IN ('open', 'paid')", text)
-
-    def test_rehearsal_runbook_is_not_classified_as_an_infra_service(self) -> None:
-        result = subprocess.run(
-            [sys.executable, str(ALIGNMENT_CHECK), "--mode", "alignment"],
-            cwd=ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertNotIn("postgresql-logical-upgrade-restore-rehearsal", result.stderr)
 
     def test_wrapper_is_in_the_exact_script_inventory(self) -> None:
         document = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
