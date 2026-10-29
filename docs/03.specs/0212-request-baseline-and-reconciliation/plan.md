@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.27.0"
+version: "1.28.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -59,6 +59,7 @@ W46 in TSK-0030 judges every pair of the 148 requirements.
 W47 in TSK-0031 adds the five missing governance rules.
 W48 in TSK-0032 makes governance and provider guidance English.
 W49 in TSK-0033 adds a Verification section to every skill.
+W50 in TSK-0034 moves the Migration 0003 proof into its own module.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -117,6 +118,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W47 | 42 | Add the missing rules for lines L047, L171, L175, L292, and L369 | W46 | TSK-0031 | Agent governance, provider projections, routing tests, metadata contracts |
 | W48 | 43 | Make governance and provider guidance English and enforce it | W47 | TSK-0032 | Language check, language and registry tests, agent governance, metadata contracts |
 | W49 | 44 | Add a required Verification section to every skill | W48 | TSK-0033 | Section coverage, metadata contracts, registry and heading tests |
+| W50 | 45 | Move the Migration 0003 cutover proof into its own module | W49 | TSK-0034 | Archive behavior parity, document governance suite, script manifest |
 
 ### Current v30 continuation and delivery
 
