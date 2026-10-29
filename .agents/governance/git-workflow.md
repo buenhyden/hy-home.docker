@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.3.1"
+version: "1.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 ---
 
 # Git Workflow Governance
@@ -70,6 +70,8 @@ user-global hook을 대체하거나 설정만으로 자동 강제를 주장하�
 - Automation branch exceptions: `dependabot/**` and `codex/**` are allowed for
   tool-generated PR branches only. They must still merge through the PR
   protocol and required checks.
+- Create linked worktrees under the ignored `.worktrees/<branch>` directory.
+  Remove a worktree and its merged branch when the work ends.
 
 ### 3. Pull Request Protocol
 
@@ -111,7 +113,7 @@ user-global hook을 대체하거나 설정만으로 자동 강제를 주장하�
   workflow is their sole producer and owns create-only tag plus draft Release,
   complete assets, then publication. Do not push a tag independently or add a
   moving channel producer. Existing non-SemVer historical refs remain evidence;
-  this policy does not authorize deleting or rewriting them.
+  deleting or rewriting one needs the owner's approval for that ref.
 - A specific release publication still requires its exact version, commit,
   approved target and recovery path. Select `RUN-0009` through the
   [Operations runbook index](../../docs/05.operations/runbooks/README.md#cross-cutting-workspace).
