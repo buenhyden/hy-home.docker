@@ -1,10 +1,10 @@
 ---
 title: "Agent Memory Restic Coverage Task"
-version: "0.3.1"
+version: "0.4.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0237-TSK-0001"
 parent_ids:
@@ -30,6 +30,16 @@ states.
   contents were not read.
 
 ## Work Log
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0237 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0237-PLAN-0001 | draft | approved | #owner-decision-2026-10-29 |
+| SPEC-0237-TSK-0001 | draft | ready | #inputs-and-authorization |
+| SPEC-0237-TSK-0001 | ready | in-progress | #w1-backup-step |
+| SPEC-0237-TSK-0001 | in-progress | completed | #owner-decision-2026-10-29 |
 
 ### W1 Backup Step
 
@@ -95,26 +105,33 @@ contents. The offsite copy reported 7 snapshots in R2.
 
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Step test | 1 | W1 | Harness test RED on the `main` script, GREEN after; backup contract tests (13) | Branch on `f1214c839` | PASS | W1 Backup Step | - |
-| Checks | 2 | W2 | `bash -n` and shellcheck; script manifest; backup contract and tier layout tests (23); changed metadata (7 documents) and corpus lifecycle, 0 violations; links `--mode all` 0 failures; Registry identity tests; markdownlint | `06da0708f` | PASS | W2 Policy and Runbook | - |
-| IaC review | 3 | W3 | Independent `iac-reviewer`: READY with notes, notes applied | `3a8a8f941` | PASS | W3 IaC Review | - |
-| Symlink case | 1 | W1 | `dangling` case RED against the old check, GREEN after; shellcheck | Branch | PASS | W3 IaC Review | - |
-| Real run | 4 | W4 | One `hyhome-backup.service` run includes `agent-memory.sqlite3`; memory step succeeded, run failed only on the known OpenBao token gap | snapshot `ae96be5f` | PASS | W4 Real Run | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Step test | 1 | W1 | Harness test RED on the `main` script, GREEN after; backup contract tests (13) | Branch on `f1214c839` | PASS | W1 Backup Step | required | - |
+| Step contract tests | 2 | W1 | Backup contract tests (13) on the new step | Branch on `f1214c839` | PASS | W1 Backup Step | required | - |
+| Checks | 2 | W2 | `bash -n` and shellcheck; script manifest; backup contract and tier layout tests (23); changed metadata (7 documents) and corpus lifecycle, 0 violations; links `--mode all` 0 failures; Registry identity tests; markdownlint | `06da0708f` | PASS | W2 Policy and Runbook | required | - |
+| IaC review | 3 | W3 | Independent `iac-reviewer`: READY with notes, notes applied | `3a8a8f941` | PASS | W3 IaC Review | required | - |
+| Symlink case | 1 | W1 | `dangling` case RED against the old check, GREEN after; shellcheck | Branch | PASS | W3 IaC Review | required | - |
+| Real run | 4 | W4 | One `hyhome-backup.service` run includes `agent-memory.sqlite3`; memory step succeeded, run failed only on the known OpenBao token gap | snapshot `ae96be5f` | PASS | W4 Real Run | required | - |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | pending | - | - |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | accepted | Step test, Symlink case | Owner accepted on 2026-10-29 on this PASS row. | SPEC-0237 TSK-0001 |
+| 2 | accepted | Checks | Owner accepted on 2026-10-29 on this PASS row. | SPEC-0237 TSK-0001 |
+| 3 | accepted | IaC review | Owner accepted on 2026-10-29 on this PASS row. | SPEC-0237 TSK-0001 |
+| 4 | accepted | Real run | Owner accepted on 2026-10-29 on this PASS row. | SPEC-0237 TSK-0001 |
 
 ## Review and Completion
 
-No criterion is accepted until the owner accepts it.
+### Owner decision 2026-10-29
+
+The owner decided to close this package on documents alone and ratified Spec
+and Plan approval after the fact. Criteria 1 to 4 are accepted on the PASS
+rows named in Criterion Acceptance; criterion 4 rests on the Real run row
+(snapshot `ae96be5f`). No runtime was rerun. The OpenBao snapshot-token gap
+that failed the whole service run is separate from this package.
 
 ## Related Documents
 
