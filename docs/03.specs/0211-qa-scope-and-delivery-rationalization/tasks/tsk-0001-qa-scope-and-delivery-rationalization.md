@@ -1929,7 +1929,8 @@ that record can be corrected.
 merge와 merged-main security 실행의 완료를 기록한다. 따라서 앞선 candidate
 실패를 현재 통합 상태의 최종 결과로 삼지 않는다. 현재 QA 실행과 남은 검사·검토의
 지원 증거는 TSK-0003이 기록하며, 기준 1–5의 유일한 수용 결정 소유자는 이
-Task다. 위 다섯 Criterion Acceptance 행은 모두 pending으로 유지한다.
+Task다. 2026-10-29 owner 결정으로 기준 1, 4, 5는 accepted이고, 기준 2와 3은
+[Owner acceptance](#owner-acceptance-2026-10-29)의 이유로 pending이다.
 
 전체 FULL 성공이나 운영 활성화는 이 요약으로 확정하지 않는다. 미실행 운영
 관측과 release publication은 기존 경계를 유지하며, 소스 구조와 mocked

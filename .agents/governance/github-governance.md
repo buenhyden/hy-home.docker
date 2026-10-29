@@ -220,8 +220,8 @@ Issue forms collect problem/request, priority and optional contract/execution
 links. Specs retain AC/contracts; Tasks retain actual commands, results,
 acceptance and authorization. A Project may show owner, priority and linked
 Issue/PR state as a view; it must not overwrite document lifecycle or duplicate
-an execution ledger. Use manual views until a specific Project and automation
-permission is approved. GitHub's repository token cannot access Projects; do
+an execution ledger. No Project exists today (§2), and adding one or its
+automation permission needs the owner's approval. GitHub's repository token cannot access Projects; do
 not add an App/PAT just to mirror Task state. See
 [Project automation](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/automating-projects-using-actions).
 

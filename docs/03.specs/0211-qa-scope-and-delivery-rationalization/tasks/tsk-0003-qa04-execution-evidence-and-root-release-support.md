@@ -699,7 +699,7 @@ detached worktree.
   was the missing step.
 - **Source and path selection (E06).** The operations catalog check passes on
   all 13 infrastructure tiers. Two hosted plans on real pull requests select
-  disjoint path-specific leaves with no duplicate node: docs PR #628
+  different path-specific leaves and neither repeats a node: docs PR #628
   (run `40827180657`) and implementation PR #631 (run `40833393523`), eight
   gates each, all PASS. `test_ci_gate_plan` covers the rename, unknown-path and
   name-status cases. Only the docs run selected
@@ -714,9 +714,13 @@ detached worktree.
   TSK-0001 while this Task's rows were still open, and the three later gates
   were NOT_RUN (result SHA256
   `71c00e78a8a00ab35f29a76ae0224fac3743e038570590a87f418eda16feaf7a`). The
-  rerun on the commit that adds these rows is recorded in the next commit:
-  this commit cannot carry its own result, so the rerun follows in the next
-  commit. `--requirements` stops locally with
+  rerun on `b40f6d332`, the commit that adds these rows, selected the same
+  eight gates and all passed: exit 0 in 10:07 with a 188 MB peak RSS. Plan
+  SHA256 `dee49ca63b83501c820ed5d200a3a302faa74a917a672703029d852d3d62e2f1`,
+  result SHA256
+  `49b11c33ebec918185ddb3ad28cc575066cc1dd9a8af7dd97d2b95bbf9f8b684`. A commit
+  cannot carry its own result, so this record follows in the next commit,
+  which changes only this Task's prose. `--requirements` stops locally with
   `ci-gate-requirements-context` by contract, because hosted prerequisites
   exist only for a pull request. The hosted `candidate-quality` job ran
   `--profile changed --requirements` and the changed profile on PR #632 head
@@ -724,7 +728,7 @@ detached worktree.
   `123320711716`, success.
 - **FULL profile (E08, resolves E19 and E20).** `run-ci-gate.py --profile
   full` on the final input ran all 33 gates and every one passed: exit 0,
-  56:13 wall clock, 195 MB peak RSS, 3,372 s summed gate time. This is the
+  56:14 wall clock, 195 MB peak RSS, 3,372 s summed gate time. This is the
   first aggregate local FULL exit 0, replacing the four-set coverage account
   above. Plan SHA256
   `0ffdef0d01ecce46ded0ed2c3875435cb7930268f571849837fd1042c059fe73`, result
@@ -739,8 +743,22 @@ detached worktree.
   required check `candidate-quality` bound to App 15368, strict up-to-date
   true, `enforce_admins` true, zero required reviews and no rulesets. This
   proves the observed setting only, not workflow-source immutability.
-- **Independent review (E10).** A read-only reviewer examines this Task's
-  diff and the receipts above; the verdict follows in the next commit.
+- **Independent review (E10).** A read-only `code-reviewer` agent checked
+  `b40f6d332` against the receipts and the validator. It confirmed the FULL
+  and first changed results, the receipt hashes linked in each manifest, the
+  RUN-0009 ROOT subsection, the `--requirements` scope, every `Resolves` link
+  and the TSK-0001 reason for criteria 2 and 3, and found no secret. It asked
+  for two stale sentences to be fixed (TSK-0001 said all five criteria were
+  pending; this Task's Criterion Acceptance note said the same) and for minor
+  corrections: the 24-gate remainder is 315 s, the wall clock rounds to
+  56:14, and one sentence repeated. All are fixed in the next commit. With
+  read tools only, it could not hash files or query GitHub. The agent that ran
+  the commands checked those itself: `sha256sum` of each receipt and RUN-0009,
+  `git diff 14fd25d1f 704faa6c8` of RUN-0009, `gh run list` and
+  `gh run view` for runs `40835970508` and `40836791105`, and a
+  `check-contracts` run that rejected an accepted criterion 2 on the
+  TSK-0002 rows, which shows TSK-0002 is a current Task, not a historical
+  one.
 
 The slowest FULL gates set the local budget. Gate time in seconds:
 
@@ -755,7 +773,7 @@ The slowest FULL gates set the local budget. Gate time in seconds:
 | `leaf.compose-baseline-regressions` | 194 |
 | `leaf.repo-document-metadata` | 192 |
 | `leaf.compose-validation` | 162 |
-| 24 other gates | 313 |
+| 24 other gates | 315 |
 
 No deployment, native, migration, restore or HOME receipt was created; those
 stay with their service Tasks.
@@ -811,14 +829,13 @@ stay with their service Tasks.
 
 ## Criterion Acceptance
 
-This support Task has no Criterion Acceptance table. SPEC-0211-TSK-0001 retains
-the sole durable decisions for criteria1–5; all remain pending until their
-current owner records an actual decision. W71–W75 provide supporting evidence
-for criteria2–5 without adding, accepting, rejecting or reassigning a criterion.
+This support Task has no Criterion Acceptance table. SPEC-0211-TSK-0001 holds
+the only decisions for criteria 1–5. W71–W75 provide supporting evidence for
+criteria 2–5 without adding, accepting, rejecting or reassigning a criterion.
 
 ## Review and Completion
 
-Keep this new Task draft at initial issuance. Completion requires focused
+Completion required focused
 RED/GREEN for the changed behavior, relevant actual registered checks, independent
 source/security review, protected artifact correctness, actual requested
 changed/FULL/requirements results and current remote observations. Any missing
