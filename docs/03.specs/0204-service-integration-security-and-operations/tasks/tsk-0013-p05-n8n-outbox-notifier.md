@@ -1,10 +1,10 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.3.7"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0013"
 parent_ids:
@@ -756,23 +756,45 @@ credential binding, queue-worker capture, scheduling and recovery are NOT_RUN.
 Source/common commits are preserved; no fresh coverage or production acceptance
 is inferred. Final Task checks and local-main source delivery remain pending.
 
+### Owner decision 2026-10-29
+
+On 2026-10-29 the owner split criterion 19. Its native evidence covered
+manual execution only: TSK-0019 W74 attempt 11 proved inactive import, the
+actual queue worker and external runner, Mailpit capture, Message-ID,
+unknown-outcome isolation, reconciliation, restart and generation-2 metadata
+and database restoration, and TSK-0018 W73 proved stale-lease rejection and
+ambiguous-send quarantine. No native run covered one-minute scheduled
+execution, concurrent claims, retry and dead-letter, or credential rotation.
+Those obligations move to new criterion 22, which this Task owns through
+W42–W45; their rows now name criterion 22 and stay open. Criterion 19 is
+accepted for the narrowed text.
+
+The Evidence and Criterion Acceptance tables move to the current shape so the
+decision can be recorded: each row gains `Required`, and each criterion row
+gains its current owner. `Independent source reviews` named the earlier
+`Document and shared gate integration` FAIL in `Resolves` with a different
+check, which the current shape does not allow, so its `Resolves` is now `-`
+and `Rerun of Document and shared gate integration` resolves that FAIL with
+the same check on today's `main`.
+
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Git and owner baseline | 1, 19 | W40 | status/worktrees/fetch/open PR list | Local/remote4e26a5a80 | PASS | Baseline only; no remote or runtime write by this assessment | - |
-| Existing source contracts | 1, 8, 19 | W40 | Workflow version, SMTP and service wiring unittest | Clean4e26a5a80 | PASS | 45 tests, 3.023s, exit0; command below | - |
-| Supplied reference audit | 19 | W40 | Six public files, four static tests and JSON generator parity | Prompt669a86c89a76 | PASS | 4 tests, 0.02s, exit0; generator semantic parity; no native proof | - |
-| New notifier source | 19 | W41 | RED/GREEN builder/workflow/transport/privacy | Source snapshot 496e59646b17 | PASS | 15 Python and 24 offline node tests; coverage and audit above; native acceptance is separate | - |
-| Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | Actual Registry at issuance; exact proposal only | FAIL | Links/precommit pass; actual metadata has ten findings on two node README paths; candidate-only metadata passes; shared CI registration pending | - |
-| Independent source reviews | 19 | W41 | Code/specification and source-security review | Source snapshot 496e59646b17 | PASS | Code approved with follow-up; security approved; no remaining source findings; runtime/delivery excluded | Document and shared gate integration |
-| Integrated source checks | 19 | W41 | Default Registry metadata, synthetic tests/coverage/audit/build/pack, links and staged gate | Source snapshot 55856ce4aa2f; base4c83f14b11 | PASS | Integrated work log and ignored receipts above; native and combined-head acceptance excluded | - |
-| Integrated independent reviews | 19 | W41 | Code and security review | Source snapshot 55856ce4aa2f | PASS | No source findings; code approved with follow-up; security approves source-only scope | - |
-| Frozen P04 binding | 19 | W42 | Reviewed SQL/version/hash and roles | P04 W36 pending | NOT_RUN | P04 remains sole SQL owner | - |
-| Native import and manual execution | 19 | W43 | Exact image, credential and worker/SMTP proof | P04 W38 and relevant readiness pending | NOT_RUN | No import/credential/network/DB action | - |
-| Scheduled failures and recovery | 19 | W44 | Polling, outages, restart/rotation and empty restoration | No exact action selected | NOT_RUN | No operational acceptance | - |
-| Delivery | 8, 19 | W45 | Latest-head CI/review/PR/merge | Integrated source phase | NOT_RUN | Two source commits recorded above; final Task commit and combined-head registration/CI remain separate; native holds are unchanged | - |
-| Segmented source checks | 8 | W45 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Git and owner baseline | 1, 19 | W40 | status/worktrees/fetch/open PR list | Local/remote4e26a5a80 | PASS | Baseline only; no remote or runtime write by this assessment | required | - |
+| Existing source contracts | 1, 8, 19 | W40 | Workflow version, SMTP and service wiring unittest | Clean4e26a5a80 | PASS | 45 tests, 3.023s, exit0; command below | required | - |
+| Supplied reference audit | 19 | W40 | Six public files, four static tests and JSON generator parity | Prompt669a86c89a76 | PASS | 4 tests, 0.02s, exit0; generator semantic parity; no native proof | required | - |
+| New notifier source | 19 | W41 | RED/GREEN builder/workflow/transport/privacy | Source snapshot 496e59646b17 | PASS | 15 Python and 24 offline node tests; coverage and audit above; native acceptance is separate | required | - |
+| Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | Actual Registry at issuance; exact proposal only | FAIL | Links/precommit pass; actual metadata has ten findings on two node README paths; candidate-only metadata passes; shared CI registration pending | required | - |
+| Independent source reviews | 19 | W41 | Code/specification and source-security review | Source snapshot 496e59646b17 | PASS | Code approved with follow-up; security approved; no remaining source findings; runtime/delivery excluded | required | - |
+| Integrated source checks | 19 | W41 | Default Registry metadata, synthetic tests/coverage/audit/build/pack, links and staged gate | Source snapshot 55856ce4aa2f; base4c83f14b11 | PASS | Integrated work log and ignored receipts above; native and combined-head acceptance excluded | required | - |
+| Integrated independent reviews | 19 | W41 | Code and security review | Source snapshot 55856ce4aa2f | PASS | No source findings; code approved with follow-up; security approves source-only scope | required | - |
+| Frozen P04 binding | 22 | W42 | Reviewed SQL/version/hash and roles | P04 W36 pending | NOT_RUN | P04 remains sole SQL owner | required | - |
+| Native import and manual execution | 22 | W43 | Exact image, credential and worker/SMTP proof | P04 W38 and relevant readiness pending | NOT_RUN | No import/credential/network/DB action | required | - |
+| Scheduled failures and recovery | 22 | W44 | Polling, outages, restart/rotation and empty restoration | No exact action selected | NOT_RUN | No operational acceptance | required | - |
+| Delivery | 8, 22 | W45 | Latest-head CI/review/PR/merge | Integrated source phase | NOT_RUN | Two source commits recorded above; final Task commit and combined-head registration/CI remain separate; native holds are unchanged | required | - |
+| Segmented source checks | 8 | W45 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | required | - |
+| Rerun of Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | `main` at merged PR #640 with the notifier source and node READMEs | PASS | `check-document-metadata.py --mode check-contracts` 0 violations; `check-document-links.py --mode all` PASS; PR #640 `candidate-quality` run 40874942142 success, which runs pre-commit and gate routing | required | Document and shared gate integration |
 
 Actual existing-source command, exit0:
 
@@ -810,9 +832,10 @@ separate. No shared harness was created or replaced to satisfy the stale text.
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 19 | pending | - | - |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 19 | accepted | Git and owner baseline, Supplied reference audit, New notifier source, Integrated source checks, Integrated independent reviews, Rerun of Document and shared gate integration | Owner accepted on 2026-10-29 for the narrowed criterion: this Task's source rows plus native manual execution, isolation, reconciliation, restart and restoration in TSK-0018 W73 and TSK-0019 W74. | SPEC-0204 TSK-0013 |
+| 22 | pending | - | - | SPEC-0204 TSK-0013 |
 
 ## Review and Completion
 
