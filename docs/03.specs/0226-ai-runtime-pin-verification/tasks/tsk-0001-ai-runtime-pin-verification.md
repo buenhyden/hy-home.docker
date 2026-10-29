@@ -223,6 +223,22 @@ upload small. An independent IaC review approved the change with two low
 notes, both applied: the include file comment names the new mount, and RUN-0056
 names the older snapshot path.
 
+### Owner backup rerun 2026-10-30
+
+The owner ran `sudo systemctl start hyhome-backup.service` again on
+2026-10-30 at 07:18 KST, on `main` after the catalog mount fix. The unit
+finished successfully. State snapshot `1726fde5` (343 new, 35 changed, 21,977
+unmodified files; 27.580 MiB added) and host snapshot `ab0b164b` were saved,
+both local `restic check` runs reported `no errors were found`, and the R2
+copies are `7f9315e3` and `993a30f2` with 11 snapshots and the R2 repository
+at 6,320,807,564 bytes. The service journal, read read-only, lists
+`/src/state/ollama-models/manifests`, `/src/state/ollama-models/manifests-v2`
+and `/src/state/volumes/ai/open-webui/.webui_secret_key` among the paths of
+snapshot `1726fde5`, and no `include not present` line was printed. The key,
+SQLite export and Ollama catalog are therefore in a snapshot and in its R2
+copy, and criterion 3 is accepted. Scanning the current pins stays the
+recorded criterion 1 follow-up, so the Task stays in progress.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -236,6 +252,7 @@ names the older snapshot path.
 | Owner backup run | 3 | W3 | State-set backup, then listing the key and catalog paths | Owner-run `hyhome-backup.service` 2026-10-30, snapshot `1b9c77fc` | FAIL | Owner backup run and catalog mount fix 2026-10-30 (key and SQLite export present; Ollama catalog skipped as not present) | required | - |
 | IaC review | 3 | W3 | Independent `iac-reviewer` review of the restic mount and mapping | This branch | PASS | Approve; read-only and no-network invariants hold; two low notes applied | required | - |
 | Catalog mount regression | 3 | W3 | `test_restic_reads_the_ollama_catalog_from_the_model_dir` RED then GREEN; compose baseline suite; `validate-docker-compose.sh` | This branch | PASS | 125 tests OK; Compose validation passed | required | - |
+| Owner backup rerun | 3 | W3 | State-set backup, then listing the key and catalog paths | Owner-run `hyhome-backup.service` 2026-10-30 07:18 KST, snapshot `1726fde5` (R2 `7f9315e3`) | PASS | Owner backup rerun 2026-10-30 (catalog, key and export paths present; nothing skipped) | required | Restic snapshot contents, Owner backup run |
 | HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | required | - |
 | Owner sign-in canary | 5 | W5 | Owner-attested report; Traefik and Keycloak logs | `f75275651` | PASS | Review and Completion | required | - |
 | Hardening baseline | 6 | W6 | `check-all-hardening.sh` | `16c4794a8` | PASS | Review and Completion | required | - |
@@ -249,7 +266,7 @@ names the older snapshot path.
 | --- | --- | --- | --- | --- |
 | 1 | accepted | Source facts, Image scan | Owner accepted the scan risk on 2026-10-29 for the DEV-only AI runtime; the scan covered Ollama 0.40.0 and Open WebUI v0.11.4, and scanning the current pins is a recorded follow-up. | SPEC-0226 TSK-0001 |
 | 2 | accepted | Pins and limits | Generation 5 row acceptance | SPEC-0226 TSK-0001 |
-| 3 | pending | - | - | SPEC-0226 TSK-0001 |
+| 3 | accepted | Restore, Owner backup rerun | Owner backup rerun on 2026-10-30 put the Ollama catalog, Open WebUI key and SQLite export in snapshot `1726fde5` and its R2 copy | SPEC-0226 TSK-0001 |
 | 4 | accepted | Features | Generation 5 row acceptance | SPEC-0226 TSK-0001 |
 | 5 | accepted | HOME rollout, Owner sign-in canary | Generation 5 row acceptance | SPEC-0226 TSK-0001 |
 | 6 | accepted | Hardening baseline, Changed gate, Staged style check, Remote candidate | Generation 5 row acceptance | SPEC-0226 TSK-0001 |

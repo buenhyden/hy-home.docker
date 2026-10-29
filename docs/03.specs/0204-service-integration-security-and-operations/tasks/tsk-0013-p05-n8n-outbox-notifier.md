@@ -825,6 +825,27 @@ no execution status or log, so the cause is unknown. The harness now records
 seen and whether known main and worker log lines exist, as booleans only. One
 further native run is needed.
 
+### Owner native attempt with criterion 22 steps 2026-10-30
+
+The owner ran the native class again from `main` at `4de81f1a4`, with the
+criterion 22 harness and timeout diagnostics. Attempt
+`opsflow-native-5c855b474d846df902d87001` used the same image and source
+binding. This time the earlier steps passed: executions 1 to 4 turned
+terminal and every health probe answered 200. In `scheduled_execution`, the
+scheduled delivery itself passed: one trigger-mode execution within 60
+seconds, with the worker as the only member of the DEV network. The next
+publication then failed in PostgreSQL, so that step was recorded FAIL, the
+later six steps NOT_RUN, and `native` ERROR after 715.6 seconds. Cleanup
+passed and nothing was retained.
+
+The cause is a harness defect, not the notifier. `003_business_date.sql`
+adds a unique index on source and UTC business date, and `publish_next` gave
+every publication a time on 2026-10-16, the day of the earlier
+`hy-home.docker` publication. Each criterion 22 publication now takes its own
+UTC day from 2026-10-17, still rising, and the offline test pins those dates.
+The first attempt's manual-execution timeout did not recur, so it remains
+unexplained. One further native run is needed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -845,6 +866,7 @@ further native run is needed.
 | Rerun of Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | `main` at merged PR #640 with the notifier source and node READMEs | PASS | `check-document-metadata.py --mode check-contracts` 0 violations; `check-document-links.py --mode all` PASS; PR #640 `candidate-quality` run 40874942142 success, which runs pre-commit and gate routing | required | Document and shared gate integration |
 | Criterion 22 harness source | 22 | W44 | Offline scenario guards, gate registration and independent review | Worktree on `main` at merged PR #654 | PASS | Criterion 22 harness source 2026-10-30; 67 tests OK with the native class skipped; no native run | required | - |
 | Owner native attempt | 22 | W43 | Opt-in native class, first manual execution | `main` at `032818766` before the criterion 22 harness; attempt `opsflow-native-1b407daf3eb9138fa67527cb` | FAIL | Owner native attempt 2026-10-30; queued execution did not turn terminal in 60 s; cleanup PASS | required | - |
+| Owner native attempt with criterion 22 steps | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `4de81f1a4`; attempt `opsflow-native-5c855b474d846df902d87001` | FAIL | Owner native attempt with criterion 22 steps 2026-10-30; scheduled delivery passed, next publication hit the business-date index; harness fixed; cleanup PASS | required | - |
 
 Actual existing-source command, exit0:
 
