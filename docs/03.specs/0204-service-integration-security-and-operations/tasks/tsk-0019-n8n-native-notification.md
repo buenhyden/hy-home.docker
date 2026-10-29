@@ -1,10 +1,10 @@
 ---
 title: "n8n Native Notification Rehearsal Task"
-version: "0.2.4"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0019"
 parent_ids:
@@ -775,6 +775,7 @@ Local `/tmp` receipts have no durability guarantee. This later cleanup does not 
 | SPEC-0204-TSK-0019 | ready | in-progress | #w74-source-and-execution-boundary |
 | SPEC-0204-TSK-0019 | in-progress | blocked | #review-and-completion |
 | SPEC-0204-TSK-0019 | blocked | in-progress | #w74-native-rerun-2026-10-20 |
+| SPEC-0204-TSK-0019 | in-progress | completed | #owner-decision-2026-10-29 |
 
 ### Fixture runner switch removal — 2026-10-20
 
@@ -895,6 +896,16 @@ Attempt 11, `opsflow-native-d4d77ba49bd1026ff4c1557d`, on that final source,
 and six executions reached a terminal state. The receipt is in
 `w74-attempt-pass-d4d77ba49bd1026ff4c1557d/` (`SHA256SUMS`).
 
+### Owner decision 2026-10-29
+
+On 2026-10-29 the owner accepted this Task's W74 work and completed it. The
+blocker is cleared and native attempt 11 passed on the final reviewed source
+with all owned resources absent. The earlier required `ERROR` and `NOT_RUN`
+rows are resolved by the attempt 11 rows below, which name them in `Resolves`.
+Criterion 19 has one acceptance row, in TSK-0013, which stays `pending` and is
+not changed here. The result is isolated synthetic fixture evidence; HOME
+deployment, real SMTP delivery and exactly-once delivery are not shown.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -904,10 +915,12 @@ and six executions reached a terminal state. The receipt is in
 | Reconciliation and empty restore | 19 | W74 | Quiesced no-send evidence, one resend and separate DB replacement | Synthetic owned state | NOT_RUN | W74 source and execution boundary | required | - |
 | Native rerun, attempt 10 | 19 | W74 | Full native rehearsal: generations 1 and 2, restore and restart, six terminal executions, cleanup | `w74-attempt-pass-a9076a87295ba1ce557e5898/` | PASS | W74 native rerun — 2026-10-20 | required | - |
 | Native rerun, attempt 11 | 19 | W74 | Same run on the final reviewed source `aaa5f4ff6`, 888.8 s, all owned resources absent | `w74-attempt-pass-d4d77ba49bd1026ff4c1557d/` | PASS | W74 native rerun — 2026-10-20 | required | - |
+| Actual queue/runner/SMTP execution, attempt 11 | 19 | W74 | Terminal workflow, external Code node, capture and unknown isolation | Attempt 11: six executions terminal, runner and SMTP capture, unknown outcome isolated; `native` PASS | PASS | W74 native rerun — 2026-10-20 | required | Actual queue/runner/SMTP execution |
+| Reconciliation and empty restore, attempt 11 | 19 | W74 | Quiesced no-send evidence, one resend and separate DB replacement | Attempt 11: reconciliation, restore and restart inside the passing run; cleanup PASS | PASS | W74 native rerun — 2026-10-20 | required | Reconciliation and empty restore |
 
 ## Criterion Acceptance
 
-Criterion 19 retains TSK-0013 as its durable acceptance owner. TSK-0016 retains complete
+Criterion 19 retains TSK-0013 as its durable acceptance owner (still `pending` there). TSK-0016 retains complete
 vertical acceptance. W74 adds supporting native evidence only and does not add an acceptance-criteria row.
 
 ## Review and Completion
