@@ -936,7 +936,7 @@ files:
   lifecycle: active
   mutation: runtime
   consumers:
-  - .github/workflows/generate-changelog.yml
+  - .github/workflows/publish-release.yml
   - docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
   - scripts/README.md
   disposition: retain

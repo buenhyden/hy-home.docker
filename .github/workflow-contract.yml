@@ -52,40 +52,6 @@
         }
       }
     },
-    ".github/workflows/generate-changelog.yml": {
-      "name": "Publish SemVer Release",
-      "classification": "non-gating",
-      "triggers": {
-        "workflow_dispatch": {
-          "inputs": {
-            "version": {
-              "description": "Prepared SemVer version without v prefix (for example 1.2.3 or 1.2.3-rc.1)",
-              "required": true,
-              "type": "string"
-            }
-          }
-        }
-      },
-      "permissions": {
-        "contents": "read"
-      },
-      "concurrency": {
-        "group": "release-${{ inputs.version }}",
-        "cancel-in-progress": false
-      },
-      "jobs": {
-        "release": {
-          "permissions": {
-            "contents": "write"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10,
-          "condition": "github.ref == 'refs/heads/main'",
-          "needs": [],
-          "environment": null
-        }
-      }
-    },
     ".github/workflows/greetings.yml": {
       "name": "Greeting",
       "classification": "non-gating",
@@ -159,6 +125,40 @@
           "runs_on": "ubuntu-latest",
           "timeout_minutes": 5,
           "condition": null,
+          "needs": [],
+          "environment": null
+        }
+      }
+    },
+    ".github/workflows/publish-release.yml": {
+      "name": "Publish SemVer Release",
+      "classification": "non-gating",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "version": {
+              "description": "Prepared SemVer version without v prefix (for example 1.2.3 or 1.2.3-rc.1)",
+              "required": true,
+              "type": "string"
+            }
+          }
+        }
+      },
+      "permissions": {
+        "contents": "read"
+      },
+      "concurrency": {
+        "group": "release-${{ inputs.version }}",
+        "cancel-in-progress": false
+      },
+      "jobs": {
+        "release": {
+          "permissions": {
+            "contents": "write"
+          },
+          "runs_on": "ubuntu-latest",
+          "timeout_minutes": 10,
+          "condition": "github.ref == 'refs/heads/main'",
           "needs": [],
           "environment": null
         }
@@ -1887,7 +1887,7 @@
       {
         "prefixes": [
           "CHANGELOG.md",
-          ".github/workflows/generate-changelog.yml",
+          ".github/workflows/publish-release.yml",
           "scripts/operations/release.py",
           "tests/validation/test_release.py"
         ],
@@ -2203,7 +2203,7 @@
       "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/ci-quality.yml",
-        ".github/workflows/generate-changelog.yml"
+        ".github/workflows/publish-release.yml"
       ],
       "security_disposition": "approved-node24"
     },

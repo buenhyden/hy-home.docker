@@ -944,7 +944,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         release_inputs = (
             "scripts/operations/release.py",
             "tests/validation/test_release.py",
-            ".github/workflows/generate-changelog.yml",
+            ".github/workflows/publish-release.yml",
             ".cz.toml",
             "CHANGELOG.md",
         )

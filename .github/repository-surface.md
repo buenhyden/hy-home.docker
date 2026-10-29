@@ -1,10 +1,10 @@
 ---
 title: "GitHub Control Surface"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-29"
 created: "2026-02-14"
 ---
 
@@ -60,7 +60,7 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
 - [기여자 환영 워크플로](./workflows/greetings.yml)
 - [풀 리퀘스트 라벨러 워크플로](./workflows/pr-labeler.yml)
 - [스테일 스레드 워크플로](./workflows/stale.yml)
-- [단일 SemVer 릴리스 생산자](./workflows/generate-changelog.yml)
+- [단일 SemVer 릴리스 생산자](./workflows/publish-release.yml)
 - [코드 소유권](./CODEOWNERS)
 - [풀 리퀘스트 템플릿](./PULL_REQUEST_TEMPLATE.md)
 - [라벨 라우팅](./labeler.yml)

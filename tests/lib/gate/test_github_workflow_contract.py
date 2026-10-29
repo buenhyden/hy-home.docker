@@ -1738,7 +1738,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self,
     ) -> None:
         expected = {
-            ".github/workflows/generate-changelog.yml": (
+            ".github/workflows/publish-release.yml": (
                 {"contents": "read"},
                 {"release": {"contents": "write"}},
             ),
@@ -1813,7 +1813,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(
             {
                 (
-                    ".github/workflows/generate-changelog.yml",
+                    ".github/workflows/publish-release.yml",
                     "release",
                     "contents",
                 ),
