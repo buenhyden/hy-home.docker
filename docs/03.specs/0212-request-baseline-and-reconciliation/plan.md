@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.24.0"
+version: "1.25.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -56,6 +56,7 @@ W43 in TSK-0027 reads the archive policy against its code.
 W44 in TSK-0028 reads the SDLC and CI/QA policy and renames the release workflow.
 W45 in TSK-0029 audits the meaning of every request line.
 W46 in TSK-0030 judges every pair of the 148 requirements.
+W47 in TSK-0031 adds the five missing governance rules.
 
 W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
@@ -111,6 +112,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W44 | 39 | Read SDLC and CI/QA policy against code and rename the release workflow | W43 | TSK-0028 | Workflow contract, gate and release tests, metadata contracts |
 | W45 | 40 | Audit the meaning of each non-blank request line against the repository | W44 | TSK-0029 | Line coverage, metadata contracts, agent governance |
 | W46 | 41 | Judge every pair of the 148 requirements for duplication and conflict | W45 | TSK-0030 | Pair coverage, attribute coverage, metadata contracts |
+| W47 | 42 | Add the missing rules for lines L047, L171, L175, L292, and L369 | W46 | TSK-0031 | Agent governance, provider projections, routing tests, metadata contracts |
 
 ### Current v30 continuation and delivery
 

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.24.0"
+version: "1.25.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -80,7 +80,8 @@ TSK-0027. Criterion 39/W44 reads the SDLC and CI/QA policy against their code
 and renames the release workflow, in TSK-0028. Criterion 40/W45 audits the meaning
 of every request line against the repository, in TSK-0029. Criterion 41/W46
 judges every pair of the request's 148 requirements for duplication and
-conflict, in TSK-0030.
+conflict, in TSK-0030. Criterion 42/W47 adds the five rules that
+TSK-0029 found missing, in TSK-0031.
 
 ## Scope
 
@@ -436,6 +437,8 @@ hold, authorization and recovery requirements have been established.
 41. TSK-0030 judges all 10,878 pairs of the 148 requirements, lists every
     pair that is not a different responsibility with its reason, and blocks
     execution only on a real contradiction.
+42. TSK-0031 adds the missing rules for request lines L047, L171, L175,
+    L292, and L369, each in its canonical owner.
 
 ## Failure Conditions
 
