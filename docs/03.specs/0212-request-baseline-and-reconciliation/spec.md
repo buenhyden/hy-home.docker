@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.10.0"
+version: "1.11.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -61,7 +61,9 @@ approved removal of its candidates the same day; criterion 23/W28 applies it in
 TSK-0012. Criterion 24/W29 records the follow-up review of the remaining
 request areas in TSK-0013. Criterion 25/W30 corrects the archive check
 runtime cause in TSK-0014. Criterion 26/W31 applies the owner-approved
-blocked items and a removal regression fix in TSK-0015.
+blocked items and a removal regression fix in TSK-0015. Criterion 27/W32
+records the owner's choices for the three items TSK-0013 deferred or left not
+run, in TSK-0016.
 
 ## Scope
 
@@ -361,6 +363,11 @@ hold, authorization and recovery requirements have been established.
     the templates whose sections hold several distinct contents. It also
     repairs the index-membership regression that the TSK-0012 removal caused
     on `main`.
+27. TSK-0016 classifies every test that asserts a literal repository path is
+    absent as guarding a current rule or only recording a past removal, and
+    deletes none. It lists the scripts that write under `_workspace` without
+    changing their paths, and keeps four-repository, remote, runtime, and
+    native-loader acceptance `NOT_RUN` with the owner.
 
 ## Failure Conditions
 
