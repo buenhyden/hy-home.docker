@@ -1,10 +1,10 @@
 ---
 title: "Owner Follow-ups Task"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0229-TSK-0001"
 parent_ids:
@@ -61,26 +61,57 @@ discarded snapshot and only then move it into
 `secrets/backup/openbao/snapshot_token.txt`. `bash -n` accepts the block; it
 was not run.
 
+### Owner decision 2026-10-29
+
+The owner decided on 2026-10-29 that criterion 3 is `not-required`: RUN-0105
+and SPEC-0243 replaced the inline RUN-0021 token procedure, and SPEC-0243
+TSK-0001 completed with `SNAPSHOT_TOKEN_DELIVERED`. Criterion 4 is accepted on
+the hosted `candidate-quality` run for PR #406 (merge `d19fbfde6`). Criteria 1
+and 2 are accepted on their existing PASS rows.
+
+The Evidence and Criterion Acceptance tables moved to the current shape (a
+`Required` column and a `Current Owner` column, existing rows kept as they
+were) so this acceptance can be recorded.
+
+### Spec approval
+
+The owner ratified the Spec on 2026-10-29.
+
+### Plan approval
+
+The owner ratified the Plan on 2026-10-29.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0229 | draft | approved | #spec-approval |
+| SPEC-0229-PLAN-0001 | draft | approved | #plan-approval |
+| SPEC-0229-TSK-0001 | draft | ready | #inputs-and-authorization |
+| SPEC-0229-TSK-0001 | ready | in-progress | #owner-decision-2026-10-29 |
+| SPEC-0229-TSK-0001 | in-progress | completed | #review-and-completion |
+
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Keycloak | 1 | W1 | Event counts by type, client, reason, source | `32fb2e69d` | PASS | W1 Keycloak | - |
-| Grype | 2 | W2 | Seed tests; offline scans | `32fb2e69d` | PASS | W2 Grype | - |
-| Snapshot token | 3 | W3 | `bash -n` of the RUN-0021 block | `32fb2e69d` | PASS | W3 OpenBao Snapshot Token | - |
-| Owner token run | 3 | W3 | Owner runs the RUN-0021 commands; next backup takes a snapshot | — | NOT_RUN | W3 OpenBao Snapshot Token | - |
-| Changed gate | 4 | W4 | Hardening; `run-ci-gate.py --profile changed --local-only`, base `8594cf406`; operations catalog | `a827e2873` | PASS | Review and Completion | - |
-| Staged style check | 4 | W4 | `run-ci-precommit.sh --mode local-staged` | `a827e2873` | PASS | Review and Completion | - |
-| Remote candidate | 4 | W4 | `candidate-quality` | — | NOT_RUN | Review and Completion | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Keycloak | 1 | W1 | Event counts by type, client, reason, source | `32fb2e69d` | PASS | W1 Keycloak | required | - |
+| Grype | 2 | W2 | Seed tests; offline scans | `32fb2e69d` | PASS | W2 Grype | required | - |
+| Snapshot token | 3 | W3 | `bash -n` of the RUN-0021 block | `32fb2e69d` | PASS | W3 OpenBao Snapshot Token | required | - |
+| Owner token run | 3 | W3 | Owner runs the RUN-0021 commands; next backup takes a snapshot | — | NOT_RUN | W3 OpenBao Snapshot Token | required | - |
+| Changed gate | 4 | W4 | Hardening; `run-ci-gate.py --profile changed --local-only`, base `8594cf406`; operations catalog | `a827e2873` | PASS | Review and Completion | required | - |
+| Staged style check | 4 | W4 | `run-ci-precommit.sh --mode local-staged` | `a827e2873` | PASS | Review and Completion | required | - |
+| Remote candidate | 4 | W4 | `candidate-quality` | — | NOT_RUN | Review and Completion | required | - |
+| Rerun of Remote candidate | 4 | W4 | `candidate-quality` | PR #406 head `d537df0e1`, run 38009744323, merged as `d19fbfde6` | PASS | Review and Completion | required | Remote candidate |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 1 | accepted | Keycloak | Generation 5 row acceptance |
-| 2 | accepted | Grype | Generation 5 row acceptance |
-| 3 | pending | - | - |
-| 4 | pending | - | - |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | accepted | Keycloak | Generation 5 row acceptance | SPEC-0229 TSK-0001 |
+| 2 | accepted | Grype | Generation 5 row acceptance | SPEC-0229 TSK-0001 |
+| 3 | not-required | - | RUN-0105 and SPEC-0243 replaced the inline RUN-0021 procedure; SPEC-0243 TSK-0001 completed with `SNAPSHOT_TOKEN_DELIVERED`. Owner decision 2026-10-29. | SPEC-0229 TSK-0001 |
+| 4 | accepted | Changed gate, Staged style check, Rerun of Remote candidate | Local checks PASS; hosted `candidate-quality` PASS on PR #406. | SPEC-0229 TSK-0001 |
 
 ## Review and Completion
 
@@ -94,6 +125,11 @@ reviewed helper in [RUN-0105 W1–W2](../../../05.operations/runbooks/04-securit
 whose execution record belongs to SPEC-0243. Follow that owner for current
 issuance and acceptance evidence. The original candidate and token-run rows
 remain unchanged; this readback does not reissue a token or accept a criterion.
+
+On 2026-10-29 the owner closed the package. The hosted `candidate-quality`
+check of PR #406 (run 38009744323, head `d537df0e1`) succeeded and the PR
+merged as `d19fbfde6`; the appended row resolves the earlier NOT_RUN row.
+Criterion 3 is `not-required` and criteria 1, 2 and 4 are accepted.
 
 ## Related Documents
 

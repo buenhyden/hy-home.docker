@@ -1,10 +1,10 @@
 ---
 title: "Compose Container and Host Naming Plan"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0216-PLAN-0001"
 parent_ids:
