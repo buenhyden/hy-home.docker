@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.16.0"
+version: "1.17.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -69,7 +69,8 @@ the items TSK-0017 left open, in TSK-0018. Criterion 30/W35 applies the owner's
 choices on two gaps a re-read of the request found, in TSK-0019. Criterion
 31/W36 links non-functional requirements to a quality characteristic and
 measure in the requirement template, in TSK-0020. Criterion 32/W37 removes a
-conflict between the worktree rule and a CI script, in TSK-0021.
+conflict between the worktree rule and a CI script, in TSK-0021. Criterion 33/W38
+records a read-only runtime snapshot and a skill bundle audit, in TSK-0022.
 
 ## Scope
 
@@ -396,6 +397,10 @@ hold, authorization and recovery requirements have been established.
 32. TSK-0021 scopes the worktree location rule to branch worktrees, so the
     detached checkout `run-ci-precommit.sh` creates and removes in its own
     scratch directory does not contradict it.
+33. TSK-0022 records a read-only snapshot of running containers without
+    starting, stopping, or recreating any, names declared-versus-running
+    drift for its owner, and audits each canonical skill for needed
+    references or scripts without creating any.
 
 ## Failure Conditions
 
