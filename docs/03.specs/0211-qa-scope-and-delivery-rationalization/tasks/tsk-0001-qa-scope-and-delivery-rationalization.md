@@ -1,8 +1,8 @@
 ---
 title: "QA Scope and Delivery Rationalization Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-29"
 layer: "specs"
@@ -1759,7 +1759,7 @@ shared pins do not make different local/PR trust identities interchangeable.
 ### Owner acceptance 2026-10-29
 
 On 2026-10-29 the owner reviewed the evidence below and accepted all five
-criteria; criteria 2 and 3 cannot be recorded yet, as the end of this section states. The evidence was re-read against `main` at merged PR #632:
+criteria. The evidence was re-read against `main` at merged PR #632:
 
 - Criterion 1: `check-script-manifest.py` passes with a disposition and
   consumers for every script, and the absence tests were dispositioned in
@@ -1790,14 +1790,12 @@ current shape does not allow, so their `Resolves` is now `-`:
 `Corrected local ownership prerequisite` named `Local-only ownership validation, Narrow integrity retry`; `Remaining QA source guarantees` named `Manifest owner focused followup`.
 The failures they answered stay recorded as `FAIL` rows above.
 
-Criteria 2 and 3 are recorded as `pending` even though the owner accepted
-them. Completed TSK-0002 keeps two required `FAIL` rows, `First hosted
-candidate RED` and `Hosted retry`, that no row resolves: its later `Final
-hosted candidate recovery` PASS has the same Check and Work Unit but names only
-`Final hosted candidate` in `Resolves`. A terminal Task cannot be edited, and
-`Resolves` only reaches rows in the same Task, so the Spec validator rejects an
-accepted decision for either criterion. This Task stays `in-progress` until
-that record can be corrected.
+Criteria 2 and 3 were first left `pending`: completed TSK-0002 kept two
+required `FAIL` rows, `First hosted candidate RED` and `Hosted retry`, that its
+`Final hosted candidate recovery` PASS answered but did not name in
+`Resolves`. The owner approved a one-off correction of that cell, and SPEC-0212
+TSK-0037 made the validator accept exactly that change. TSK-0002 now names both
+rows, so criteria 2 and 3 are accepted and this Task is completed.
 
 ### Lifecycle Events
 
@@ -1857,6 +1855,7 @@ that record can be corrected.
 | SPEC-0211 | blocked | in-progress | #approved-conftest-shellcheck-correction |
 | SPEC-0211-PLAN-0001 | blocked | in-progress | #approved-conftest-shellcheck-correction |
 | SPEC-0211-TSK-0001 | blocked | in-progress | #approved-conftest-shellcheck-correction |
+| SPEC-0211-TSK-0001 | in-progress | completed | #owner-acceptance-2026-10-29 |
 
 ### Official research inputs
 
@@ -1917,8 +1916,8 @@ that record can be corrected.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 1 | accepted | QA retirement, Acceptance re-read | Removed QA has no active caller and every retained guarantee has an owner and disposition. | SPEC-0211 TSK-0001 |
-| 2 | pending | Hosted plan comparison | Owner accepted on 2026-10-29; recording waits on the unresolved TSK-0002 FAIL rows. | SPEC-0211 TSK-0001 |
-| 3 | pending | Remote phase ownership, Acceptance re-read | Owner accepted on 2026-10-29; recording waits on the unresolved TSK-0002 FAIL rows. | SPEC-0211 TSK-0001 |
+| 2 | accepted | Hosted plan comparison | Documentation and implementation plans differ, repeat no gate, and keep failure handling. | SPEC-0211 TSK-0001 |
+| 3 | accepted | Remote phase ownership, Acceptance re-read | Each delivery stage has one quality owner. | SPEC-0211 TSK-0001 |
 | 4 | accepted | Commit and release validation, Acceptance re-read | Commit grammar, changelog preparation, and the one SemVer release producer run. | SPEC-0211 TSK-0001 |
 | 5 | accepted | Governance alignment | Policy, templates, and Issue guidance agree, with no GitHub Project. | SPEC-0211 TSK-0001 |
 
@@ -1929,8 +1928,7 @@ that record can be corrected.
 merge와 merged-main security 실행의 완료를 기록한다. 따라서 앞선 candidate
 실패를 현재 통합 상태의 최종 결과로 삼지 않는다. 현재 QA 실행과 남은 검사·검토의
 지원 증거는 TSK-0003이 기록하며, 기준 1–5의 유일한 수용 결정 소유자는 이
-Task다. 2026-10-29 owner 결정으로 기준 1, 4, 5는 accepted이고, 기준 2와 3은
-[Owner acceptance](#owner-acceptance-2026-10-29)의 이유로 pending이다.
+Task다. 2026-10-29 owner 결정으로 기준 1–5는 모두 accepted이다.
 
 전체 FULL 성공이나 운영 활성화는 이 요약으로 확정하지 않는다. 미실행 운영
 관측과 release publication은 기존 경계를 유지하며, 소스 구조와 mocked
