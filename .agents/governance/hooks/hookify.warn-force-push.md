@@ -1,10 +1,10 @@
 ---
 title: "Prefer --force-with-lease over --force."
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 action: "warn"
 enabled: true
 event: "bash"
@@ -20,7 +20,7 @@ Apply the declared `warn` action for warn-force-push.
 
 ## Scope
 
-`bash` 이벤트의 `warn-force-push` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+Applies to the `warn-force-push` rule on the `bash` event. The frontmatter of this document owns the exact matcher.
 
 ## Rules
 

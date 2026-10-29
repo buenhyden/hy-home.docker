@@ -2611,7 +2611,7 @@
     {
       "id": "governance-policy",
       "type": "governance/policy",
-      "language": "ko-or-en",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/bootstrap.md",
       "artifact_id_pattern": null,
@@ -2676,7 +2676,7 @@
     {
       "id": "governance-hook-policy",
       "type": "governance/rule",
-      "language": "ko-or-en",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/hooks/{hook_slug}.md",
       "artifact_id_pattern": null,
@@ -2730,7 +2730,7 @@
     {
       "id": "governance-role",
       "type": "governance/role",
-      "language": "ko-or-en",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/roles/{slug}.md",
       "artifact_id_pattern": null,
@@ -2787,7 +2787,7 @@
     {
       "id": "governance-skill",
       "type": "governance/skill",
-      "language": "ko-or-en",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/skills/{slug}/SKILL.md",
       "artifact_id_pattern": null,
@@ -2841,7 +2841,7 @@
     {
       "id": "governance-provider",
       "type": "governance/provider",
-      "language": "ko-or-en",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".claude/provider.md",
       "artifact_id_pattern": null,
@@ -2928,7 +2928,7 @@
     {
       "id": "governance-sdlc",
       "type": "governance/workflow",
-      "language": "ko-or-en",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/sdlc.md",
       "artifact_id_pattern": null,
@@ -2973,7 +2973,7 @@
     {
       "id": "governance-knowledge",
       "type": "governance/control",
-      "language": "ko-or-en",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/knowledge/{slug}.md",
       "artifact_id_pattern": null,
@@ -3060,7 +3060,7 @@
     {
       "id": "governance-prompt",
       "type": "governance/prompt",
-      "language": "ko-or-en",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/prompts/{slug}.md",
       "artifact_id_pattern": null,

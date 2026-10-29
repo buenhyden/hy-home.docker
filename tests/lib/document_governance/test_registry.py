@@ -3230,8 +3230,6 @@ class ProfileLanguageTests(unittest.TestCase):
                 "archive-record-"
             ):
                 expected = None
-            elif profile_id.startswith("governance-"):
-                expected = "ko-or-en"
             else:
                 expected = "en"
             with self.subTest(profile=profile_id):

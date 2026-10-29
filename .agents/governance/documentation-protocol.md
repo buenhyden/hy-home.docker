@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.5.1"
+version: "3.6.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -163,14 +163,14 @@ its prose. The profiles follow one priority order:
    language it was written in.
 2. Every other document under `docs/05.operations/` is Korean.
 3. Every other document under `docs/` that declares a language is English.
+4. Every non-README governance, hook, role, skill, knowledge, and prompt
+   document under `.agents/`, and the authored `.claude/provider.md` and
+   `.codex/provider.md`, is English.
 
-공통 거버넌스·역할·스킬·지식·프롬프트와 provider 안내의 새 설명은 한국어를
-기본으로 작성합니다. 해당 profile의 `ko-or-en`은 기존 영어 원문과 새 한국어
-설명의 공존을 허용하는 이행 계약이며, 기존 본문의 일괄 번역을 요구하지 않습니다.
-Stage 01·02·03의 non-README 본문은 계속 영어이고 README와 운영 본문은 한국어입니다.
-template 작성 안내는 대상 profile의 언어를 명시합니다. native key, 필수 heading,
-명령·코드·인용·외부 원문은 원래 문법을 유지합니다. Stage 98 원문, template source,
-generated runtime adapter에는 현재 저술 언어를 소급 적용하지 않습니다.
+A template's author prompt names its profile's language. Native keys,
+required headings, commands, code, quotations, and external originals keep
+their original syntax. The current authoring language is not applied back
+to Stage 98 originals, template sources, or generated runtime adapters.
 
 Structure tokens keep their original form in every language: required headings,
 identifiers, paths, command text, metadata keys, environment variables, profile

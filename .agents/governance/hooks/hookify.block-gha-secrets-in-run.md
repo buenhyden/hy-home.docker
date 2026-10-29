@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: prints a secret to logs"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -26,7 +26,7 @@ Apply the declared `block` action for block-gha-secrets-in-run.
 
 ## Scope
 
-`file` 이벤트의 `block-gha-secrets-in-run` 규칙에 적용한다. 정확한 matcher는 이 문서의 frontmatter가 소유한다.
+Applies to the `block-gha-secrets-in-run` rule on the `file` event. The frontmatter of this document owns the exact matcher.
 
 ## Rules
 

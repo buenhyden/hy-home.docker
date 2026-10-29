@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.25.0"
+version: "1.26.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -81,7 +81,8 @@ and renames the release workflow, in TSK-0028. Criterion 40/W45 audits the meani
 of every request line against the repository, in TSK-0029. Criterion 41/W46
 judges every pair of the request's 148 requirements for duplication and
 conflict, in TSK-0030. Criterion 42/W47 adds the five rules that
-TSK-0029 found missing, in TSK-0031.
+TSK-0029 found missing, in TSK-0031. Criterion 43/W48 makes governance and
+provider guidance English, in TSK-0032.
 
 ## Scope
 
@@ -439,6 +440,9 @@ hold, authorization and recovery requirements have been established.
     execution only on a real contradiction.
 42. TSK-0031 adds the missing rules for request lines L047, L171, L175,
     L292, and L369, each in its canonical owner.
+43. TSK-0032 makes non-README governance and provider documents English,
+    enforces it through their Registry profiles, and keeps every README
+    Korean.
 
 ## Failure Conditions
 
