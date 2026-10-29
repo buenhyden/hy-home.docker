@@ -1,6 +1,6 @@
 ---
 title: "AI Runtime Pin Verification Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -178,33 +178,48 @@ The owner ratified the Plan on 2026-10-29.
 | SPEC-0226-TSK-0001 | draft | ready | #inputs-and-authorization |
 | SPEC-0226-TSK-0001 | ready | in-progress | #owner-decision-2026-10-29 |
 
+### Criterion 1 risk acceptance 2026-10-29
+
+The owner reviewed the 2026-10-10 offline Grype scan of both pinned images
+and accepted the risk. Ollama has 2 Critical and 20 High findings, all Go
+modules compiled into the binary and fixed upstream, so only a newer Ollama
+removes them. Open WebUI (CUDA) has 72 Critical and 530 High findings; 490 of
+them are Debian 12 packages, 431 marked won't-fix or not yet fixed. Both
+images serve the DEV-only AI runtime, and Open WebUI sign-in goes through
+the gateway and Keycloak (Owner sign-in canary), so the current pins stay. Follow-up: move both images to versions that fix the
+Critical and High findings under the image tag policy, with a new scan.
+
+The Evidence and Criterion Acceptance tables move to the current shape so
+this decision can be recorded: each row gains `Required`, and each criterion
+row gains its current owner. Criterion 3 stays pending on the restic listing.
+
 ## Evidence
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Source facts | 1 | W1 | Registry, release, licence and advisory queries; Ollama GPU log | `c3ce31973` | PASS | W1 Source Facts | - |
-| Image scan | 1 | W1 | Pinned Grype, offline, DB built 2026-10-09 (SPEC-0229) | `32fb2e69d` | PASS | W1 Source Facts | - |
-| Pins and limits | 2 | W2 | Contract tests; Compose rendering; version sync | `41a711771` | PASS | W2 Pins and Limits | - |
-| Restore | 3 | W3 | Isolated SQLite, upload, key and catalog restore | `2ac1db09c` | PASS | W3 Backup and Restore | - |
-| Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | - |
-| Restic snapshot contents | 3 | W3 | State-set backup, then listing the key and catalog paths | — | NOT_RUN | W3 Backup and Restore | - |
-| HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | - |
-| Owner sign-in canary | 5 | W5 | Owner-attested report; Traefik and Keycloak logs | `f75275651` | PASS | Review and Completion | - |
-| Hardening baseline | 6 | W6 | `check-all-hardening.sh` | `16c4794a8` | PASS | Review and Completion | - |
-| Changed gate | 6 | W6 | `run-ci-gate.py --profile changed --local-only`, base `c3ce31973` | `16c4794a8` | PASS | Review and Completion | - |
-| Staged style check | 6 | W6 | `run-ci-precommit.sh --mode local-staged` over `c3ce31973..HEAD` | `16c4794a8` | PASS | Review and Completion | - |
-| Remote candidate | 6 | W6 | `candidate-quality` run 37965521891, base `c3ce31973` | `9ff118f08` | PASS | Review and Completion | - |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Source facts | 1 | W1 | Registry, release, licence and advisory queries; Ollama GPU log | `c3ce31973` | PASS | W1 Source Facts | required | - |
+| Image scan | 1 | W1 | Pinned Grype, offline, DB built 2026-10-09 (SPEC-0229) | `32fb2e69d` | PASS | W1 Source Facts | required | - |
+| Pins and limits | 2 | W2 | Contract tests; Compose rendering; version sync | `41a711771` | PASS | W2 Pins and Limits | required | - |
+| Restore | 3 | W3 | Isolated SQLite, upload, key and catalog restore | `2ac1db09c` | PASS | W3 Backup and Restore | required | - |
+| Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | required | - |
+| Restic snapshot contents | 3 | W3 | State-set backup, then listing the key and catalog paths | — | NOT_RUN | W3 Backup and Restore | required | - |
+| HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | required | - |
+| Owner sign-in canary | 5 | W5 | Owner-attested report; Traefik and Keycloak logs | `f75275651` | PASS | Review and Completion | required | - |
+| Hardening baseline | 6 | W6 | `check-all-hardening.sh` | `16c4794a8` | PASS | Review and Completion | required | - |
+| Changed gate | 6 | W6 | `run-ci-gate.py --profile changed --local-only`, base `c3ce31973` | `16c4794a8` | PASS | Review and Completion | required | - |
+| Staged style check | 6 | W6 | `run-ci-precommit.sh --mode local-staged` over `c3ce31973..HEAD` | `16c4794a8` | PASS | Review and Completion | required | - |
+| Remote candidate | 6 | W6 | `candidate-quality` run 37965521891, base `c3ce31973` | `9ff118f08` | PASS | Review and Completion | required | - |
 
 ## Criterion Acceptance
 
-| Criterion | Acceptance | Evidence | Decision |
-| --- | --- | --- | --- |
-| 1 | pending | - | - |
-| 2 | accepted | Pins and limits | Generation 5 row acceptance |
-| 3 | pending | - | - |
-| 4 | accepted | Features | Generation 5 row acceptance |
-| 5 | accepted | HOME rollout, Owner sign-in canary | Generation 5 row acceptance |
-| 6 | accepted | Hardening baseline, Changed gate, Staged style check, Remote candidate | Generation 5 row acceptance |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 1 | accepted | Source facts, Image scan | Owner accepted the scan risk on 2026-10-29 for the DEV-only AI runtime; upgrading Ollama and Open WebUI is a recorded follow-up. | SPEC-0226 TSK-0001 |
+| 2 | accepted | Pins and limits | Generation 5 row acceptance | SPEC-0226 TSK-0001 |
+| 3 | pending | - | - | SPEC-0226 TSK-0001 |
+| 4 | accepted | Features | Generation 5 row acceptance | SPEC-0226 TSK-0001 |
+| 5 | accepted | HOME rollout, Owner sign-in canary | Generation 5 row acceptance | SPEC-0226 TSK-0001 |
+| 6 | accepted | Hardening baseline, Changed gate, Staged style check, Remote candidate | Generation 5 row acceptance | SPEC-0226 TSK-0001 |
 
 ## Review and Completion
 
