@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 
-LANGUAGES = ("ko", "en", "ko-or-en")
+LANGUAGES = ("ko", "en")
 # ponytail: character-ratio heuristic; it sees script, not meaning. Calibrated
 # against the tracked corpus in SPEC-0184 TSK-0001; recalibrate there, never
 # with a per-path allowlist.
@@ -55,8 +55,6 @@ def hangul_ratio(text: str) -> float | None:
 def language_mismatch(text: str, declared: str) -> str | None:
     """Return a reason when prose does not read as the declared language."""
 
-    if declared == "ko-or-en":
-        return None
     ratio = hangul_ratio(text)
     if ratio is None:
         return None

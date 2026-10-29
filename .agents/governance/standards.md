@@ -1,6 +1,6 @@
 ---
 title: "AI Agent Standards"
-version: "1.1.0"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -27,10 +27,12 @@ Loading cost, language, stage gates, execution discipline, and GitHub delivery s
 
 ### 2. Language Standard
 
-- Stage 01·02·03의 non-README 본문은 영어로, 모든 `README.md`와
-  `docs/05.operations/` 본문은 한국어로 작성합니다. native key, 필수 heading,
-  명령·코드·인용은 원래 형식을 유지합니다. profile별 판정은
-  `.agents/governance/documentation-protocol.md#document-language`가 소유합니다.
+- Every `README.md` and every `docs/05.operations/` body is Korean. Other
+  `docs/` documents, governance, role, skill, knowledge, and prompt
+  documents, and provider guidance are English. Native keys, required
+  headings, commands, code, and quotations keep their original form.
+  `.agents/governance/documentation-protocol.md#document-language` owns the
+  per-profile decision.
 - Conversational responses follow the user's active language preference under
   `.agents/governance/output-style.md`.
 
