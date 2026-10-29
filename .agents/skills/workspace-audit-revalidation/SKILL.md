@@ -3,11 +3,11 @@ name: "workspace-audit-revalidation"
 description: "Use when a dated audit needs criterion-level revalidation against current representative repository evidence and explicit uncertainty."
 metadata:
   title: "workspace-audit-revalidation"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "workspace-audit-revalidation"
   scope: "agentic"
   owner_agent: "eval-engineer"
@@ -43,6 +43,12 @@ A canonical audit, criterion definitions, current repository baseline, and repre
 ## Outputs
 
 - A calibrated revalidation with criterion-level evidence and explicit uncertainty.
+
+## Verification
+
+- Each criterion's status cites current tracked evidence and the scorer result.
+- No criterion passes on absent runtime or provider observation.
+- Changed statuses, unchanged gaps, and confidence are recorded without backdating.
 
 ## Failure Handling
 

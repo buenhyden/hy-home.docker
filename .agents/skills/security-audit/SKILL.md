@@ -3,11 +3,11 @@ name: "security-audit"
 description: "Use when an exact change needs read-only analysis of trust boundaries, exposed inputs, privileges, dependencies, and plausible security findings. Reach for it when someone asks whether a change has a security problem, wants exposed inputs or privilege paths examined, or asks whether a new dependency is safe to take. Do NOT use it to exploit a finding, to call an external system, to read or rotate a secret, or to sign off a release; it describes a mechanism and its evidence and changes nothing."
 metadata:
   title: "security-audit"
-  version: "1.2.0"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "security-audit"
   scope: "security"
   owner_agent: "security-auditor"
@@ -47,6 +47,12 @@ The exact change boundary, security contract, trust assumptions, and read-only a
 - A read-only analysis in the shape of `assets/findings.md`. Every axis gets a
   row even when it found nothing, and `not-assessable` is recorded as a result
   rather than as a pass.
+
+## Verification
+
+- The analysis follows `assets/findings.md`, with a row for every axis even when nothing was found.
+- Every finding cites exact evidence, and `not-assessable` is recorded as a result, not a pass.
+- The output holds no secret value or prohibited sensitive payload.
 
 ## Failure Handling
 

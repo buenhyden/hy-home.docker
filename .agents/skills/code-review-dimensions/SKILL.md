@@ -3,11 +3,11 @@ name: "code-review-dimensions"
 description: "Use when a scoped diff needs evidence-backed correctness, security, maintainability, performance, and governance review with calibrated severity."
 metadata:
   title: "code-review-dimensions"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "code-review-dimensions"
   scope: "common"
   owner_agent: "code-reviewer"
@@ -43,6 +43,12 @@ An exact diff and governing specification must be available; review scope and no
 ## Outputs
 
 - A dimensioned review with evidence-backed findings and a bounded verdict.
+
+## Verification
+
+- Every finding cites a file and line and carries one calibrated severity.
+- A dimension the diff does not touch is stated as not assessed rather than passed.
+- The verdict is bounded to the reviewed diff and specification.
 
 ## Failure Handling
 

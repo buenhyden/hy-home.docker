@@ -3,11 +3,11 @@ name: "deployment-pipeline-design"
 description: "Use when release requirements need a pipeline design with immutable artifacts, approval gates, rollout observations, and concrete rollback."
 metadata:
   title: "deployment-pipeline-design"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "deployment-pipeline-design"
   scope: "ops"
   owner_agent: "ci-cd-engineer"
@@ -43,6 +43,12 @@ Release policy, deployment constraints, environments, approval authority, and ro
 ## Outputs
 
 - A deployment pipeline design with stages, authorities, evidence, and rollback semantics.
+
+## Verification
+
+- Every promotion step names the approval that allows it; none crosses an approval boundary implicitly.
+- The rollback path names the exact artifact and configuration version it restores.
+- Rollout observations and stop conditions are stated before release.
 
 ## Failure Handling
 

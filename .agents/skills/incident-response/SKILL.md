@@ -3,11 +3,11 @@ name: "incident-response"
 description: "Use when an authorized incident owner needs a sanitized response timeline, bounded recovery actions, escalation, and postmortem handoff."
 metadata:
   title: "incident-response"
-  version: "1.3.0"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "incident-response"
   scope: "ops"
   owner_agent: "incident-responder"
@@ -57,6 +57,12 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 ## Outputs
 
 - A sanitized response record with timeline, actions, decisions, outcome, and handoff.
+
+## Verification
+
+- The response record has a timeline, actions, decisions, outcome, and handoff, and holds no secret or raw auth data.
+- Every executed step is inside the declared escalation boundary and records its expected and observed result.
+- A stateful recovery carries the independent readiness verdict and a separate human approval before it runs.
 
 ## Failure Handling
 

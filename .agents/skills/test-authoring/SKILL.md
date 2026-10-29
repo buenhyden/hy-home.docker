@@ -3,11 +3,11 @@ name: "test-authoring"
 description: "Use when a behavioral contract or reproducible defect needs a witnessed RED test, minimal correction, GREEN result, and regression coverage."
 metadata:
   title: "test-authoring"
-  version: "1.2.0"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "test-authoring"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -47,6 +47,12 @@ A behavioral contract and reproducible failure or not-yet-implemented expectatio
 ## Outputs
 
 - Deterministic tests and RED/GREEN/regression evidence.
+
+## Verification
+
+- The new test was run and failed for the intended reason before the implementation.
+- The focused test then passes, and the affected suite stays green.
+- The Task records the exact commands and observed outcomes.
 
 ## Failure Handling
 

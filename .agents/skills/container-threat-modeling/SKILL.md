@@ -3,11 +3,11 @@ name: "container-threat-modeling"
 description: "Use when a container workload needs a read-only threat model of assets, trust boundaries, exploit paths, and owned mitigations."
 metadata:
   title: "container-threat-modeling"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "container-threat-modeling"
   scope: "security"
   owner_agent: "security-auditor"
@@ -43,6 +43,12 @@ Workload boundaries, assets, actors, data flows, and deployment assumptions must
 ## Outputs
 
 - A container threat model with scoped threats, mitigations, owners, and residual risks.
+
+## Verification
+
+- Every asset and trust boundary in scope has at least one threat row or an explicit none-found row.
+- Every accepted mitigation names its canonical implementation or policy owner.
+- Residual risk that needs approval is listed with its owner.
 
 ## Failure Handling
 

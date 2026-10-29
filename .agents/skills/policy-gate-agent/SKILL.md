@@ -3,11 +3,11 @@ name: "policy-gate-agent"
 description: "Use when a governed change needs a read-only verdict on canonical ownership, typed contracts, protected-surface approval, and evidence. Reach for it when someone asks whether a change passes the gates, which gate failed and who owns the fix, what has not been checked yet, or whether a protected file needs approval before merge. Do NOT use it to run the fix, to review code quality, or to approve a protected surface; it reports the verdict and its owner, and changes nothing."
 metadata:
   title: "policy-gate-agent"
-  version: "1.3.0"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "policy-gate-agent"
   scope: "agentic"
   owner_agent: "rules-engineer"
@@ -54,6 +54,12 @@ The governed change, canonical policy owner, typed contract, and applicable appr
   shape of `assets/verdict.md`. Its gate table carries one row per in-scope
   gate, written before the results are known, because a gate with no row is a
   gate nobody looked at.
+
+## Verification
+
+- The verdict follows `assets/verdict.md`, with one gate row per in-scope gate.
+- Each row says passed, failed, skipped, blocked, or not run, and names the gate that produced it.
+- Each finding names exactly one canonical correction owner.
 
 ## Failure Handling
 

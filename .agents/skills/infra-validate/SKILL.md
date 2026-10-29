@@ -3,11 +3,11 @@ name: "infra-validate"
 description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence. Reach for it when someone asks whether a Compose or infrastructure change is valid, wants only the checks that need no running services, or asks what could not be verified without touching runtime. Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 metadata:
   title: "infra-validate"
-  version: "1.4.1"
+  version: "1.5.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "infra-validate"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -63,6 +63,12 @@ The approved infrastructure change and its validation contract must identify whi
 ## Outputs
 
 - Infrastructure validation evidence separated into static, runtime-observed, CI-only, and skipped results.
+
+## Verification
+
+- `scripts/static-checks.sh` exits 0, and every required record is `PASS` or `NOT_APPLICABLE`.
+- Runtime observation runs only after static validation passes, and only within the approved scope.
+- The evidence separates static, runtime-observed, CI-only, and skipped results.
 
 ## Failure Handling
 

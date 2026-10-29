@@ -3,11 +3,11 @@ name: "compose-stack-agent"
 description: "Use when an approved Compose specification must become a minimal reversible configuration change with static validation."
 metadata:
   title: "compose-stack-agent"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "compose-stack-agent"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -43,6 +43,12 @@ An approved Compose specification, exact service scope, and rollback path must e
 ## Outputs
 
 - A validated Compose change plus exact configuration and safety evidence.
+
+## Verification
+
+- `scripts/validation/validate-docker-compose.sh` passes on the changed stack.
+- The rendered `docker compose config` delta matches the requested change and nothing else.
+- No secret value appears in the Compose files, the rendered output, or the evidence.
 
 ## Failure Handling
 

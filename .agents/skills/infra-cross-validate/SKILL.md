@@ -3,11 +3,11 @@ name: "infra-cross-validate"
 description: "Use when a proposed infrastructure diff needs independent read-only cross-file review against architecture, operations, security, and rollback contracts."
 metadata:
   title: "infra-cross-validate"
-  version: "1.2.0"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "infra-cross-validate"
   scope: "infra"
   owner_agent: "iac-reviewer"
@@ -45,6 +45,12 @@ A proposed infrastructure diff, declared runtime contract, and static validation
 ## Outputs
 
 - Cross-validation findings with exact file evidence, downstream observation needs, and any separate recovery-readiness verdict.
+
+## Verification
+
+- Every changed service, network, volume, secret, health, and resource edge is traced to each affected file.
+- The review leaves the working tree unchanged and reports conflicts with exact file evidence.
+- Any recovery-readiness verdict is reported apart from, and never as, an executed restore.
 
 ## Failure Handling
 

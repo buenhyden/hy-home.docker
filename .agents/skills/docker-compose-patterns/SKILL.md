@@ -3,11 +3,11 @@ name: "docker-compose-patterns"
 description: "Use when workload requirements need a Compose-native topology and configuration pattern consistent with repository constraints."
 metadata:
   title: "docker-compose-patterns"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "docker-compose-patterns"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -43,6 +43,12 @@ Compose requirements and workspace conventions must identify whether the task is
 ## Outputs
 
 - A Compose pattern selection with rationale and validation requirements.
+
+## Verification
+
+- `scripts/validation/validate-docker-compose.sh` accepts the selected YAML and Compose features.
+- The chosen pattern follows the repository naming, secret, network, and lifecycle rules, with any exception recorded.
+- Behavior that needs an orchestrator is labelled as not native to Compose.
 
 ## Failure Handling
 

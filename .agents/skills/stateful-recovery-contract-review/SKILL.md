@@ -3,11 +3,11 @@ name: "stateful-recovery-contract-review"
 description: "Use when an explicitly supplied sanitized stateful recovery contract needs read-only production readiness review or a bounded first isolated restoreability evidence-generation review before any recovery action."
 metadata:
   title: "stateful-recovery-contract-review"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-11"
+  updated: "2026-10-29"
   function_id: "stateful-recovery-contract-review"
   scope: "infra"
   owner_agent: "iac-reviewer"
@@ -153,6 +153,12 @@ two review modes:
   separately executed attempt must retain for success, failure, abort, or
   partial completion. A dated actual receipt may be supplied to a later strict
   production-readiness review; the review itself never fabricates that receipt.
+
+## Verification
+
+- `assets/verdict.md` is complete, with every required matrix row supplied.
+- The verdict is exactly one of `READY_FOR_SEPARATE_RECOVERY_APPROVAL`, `READY_FOR_SEPARATELY_AUTHORIZED_FIRST_ISOLATED_REHEARSAL`, or `BLOCKED`.
+- Execution-time checks stay `NOT_RUN_BY_DESIGN`, and the review never reports a restore as executed.
 
 ## Failure Handling
 

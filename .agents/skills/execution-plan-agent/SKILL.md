@@ -3,11 +3,11 @@ name: "execution-plan-agent"
 description: "Use when an approved specification needs an executable plan mapping acceptance criteria to exact files, ordered work, risks, and checks."
 metadata:
   title: "execution-plan-agent"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "execution-plan-agent"
   scope: "agentic"
   owner_agent: "workflow-supervisor"
@@ -43,6 +43,12 @@ An approved specification and corroborated repository baseline must exist; unres
 ## Outputs
 
 - An executable Plan co-located at `docs/03.specs/####-<slug>/plan.md` with exact file map, sequence, risks, and verification ladder.
+
+## Verification
+
+- Every acceptance criterion maps to at least one Work Unit with exact files and a verification command.
+- `scripts/validation/check-document-metadata.py --mode check-changed` reports no violation for the Plan.
+- Skipped and CI-only gates are named in the Plan.
 
 ## Failure Handling
 

@@ -3,11 +3,11 @@ name: "task-breakdown-agent"
 description: "Use when an approved plan needs reversible logical work units with one implementer, acceptance checks, dependencies, and independent review."
 metadata:
   title: "task-breakdown-agent"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-29"
   function_id: "task-breakdown-agent"
   scope: "agentic"
   owner_agent: "workflow-supervisor"
@@ -43,6 +43,12 @@ An approved Plan, dependency map, acceptance criteria, and protected-surface dec
 ## Outputs
 
 - Bounded work units suitable for co-located Task evidence and logical commits.
+
+## Verification
+
+- Every acceptance criterion is covered by at least one work unit.
+- Each work unit names one implementer scope, its validation, its commit boundary, and an independent reviewer.
+- Protected or runtime work is isolated into its own unit.
 
 ## Failure Handling
 

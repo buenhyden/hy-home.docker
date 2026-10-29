@@ -3,11 +3,11 @@ name: "provider-model-evaluation"
 description: "Use when a provider or model decision needs dated official-source comparison, native-schema review, and explicit observation boundaries. Reach for it when someone asks whether to switch the default model, whether a model is actually usable here, whether the provider registry is current, or what a model change would cost in evidence. Do NOT use it to call a provider, to benchmark quality or latency, or to grant an entitlement; it reports a sourced disposition and stops."
 metadata:
   title: "provider-model-evaluation"
-  version: "1.4.0"
+  version: "1.5.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-07"
+  updated: "2026-10-29"
   function_id: "provider-model-evaluation"
   scope: "qa"
   owner_agent: "eval-engineer"
@@ -60,6 +60,12 @@ recurring workspace scoring gate.
   The shapes keep provider lifecycle, repository disposition, entitlement, and
   runtime acceptance in separate rows, because collapsing any pair is how a
   catalog row becomes a claim that a model is usable here.
+
+## Verification
+
+- Every fast-moving fact carries its official source and retrieval date.
+- Provider lifecycle, repository disposition, entitlement, and runtime acceptance sit in separate rows of `assets/disposition.md`.
+- No provider was called, and runtime acceptance stays `needs_revalidation` without direct evidence.
 
 ## Failure Handling
 
