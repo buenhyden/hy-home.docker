@@ -1,10 +1,10 @@
 ---
 title: "AI Runtime Pin Verification Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-29"
 layer: "specs"
 artifact_id: "SPEC-0226-TSK-0001"
 parent_ids:
@@ -154,6 +154,29 @@ key read from the volume and byte-identical to the backup, gateway health 200.
 
 The sign-in, sign-out and token refresh of a real user through Keycloak need
 the owner's browser session and were not run.
+
+### Owner decision 2026-10-29
+
+The owner ratified the Spec and Plan and moved the Task to `in-progress` on
+2026-10-29 as a status fix only. Criterion 1 (the owner's decision on the scan
+findings) and criterion 3 (the restic snapshot contents) stay pending.
+
+### Spec approval
+
+The owner ratified the Spec on 2026-10-29.
+
+### Plan approval
+
+The owner ratified the Plan on 2026-10-29.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0226 | draft | approved | #spec-approval |
+| SPEC-0226-PLAN-0001 | draft | approved | #plan-approval |
+| SPEC-0226-TSK-0001 | draft | ready | #inputs-and-authorization |
+| SPEC-0226-TSK-0001 | ready | in-progress | #owner-decision-2026-10-29 |
 
 ## Evidence
 
