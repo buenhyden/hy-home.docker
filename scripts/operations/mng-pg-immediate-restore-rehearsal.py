@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Owner-run RUN-0021 step 5a: selected-backup immediate consistency rehearsal.
+"""Owner-run RUN-0021 step 5a (and step 5 with `--target-time`): selected-backup rehearsal.
 
 Restores one verified pgBackRest set of `mng-pg` with `--type=immediate` into a new
 scratch PGDATA, starts a network-less clone, and checks that the clone is the same
@@ -17,6 +17,24 @@ repository read-only because recovery needs `archive-get` even for `immediate`.
 Only containers this run created (name and ID both match) are stopped and removed,
 and `removed` is reported only after a by-ID `docker ps -a` shows them absent.
 The scratch PGDATA is kept, mode 0700, for the 7-day owner review.
+
+`--target-time <ISO timestamp with explicit UTC offset>` switches to the RUN-0021
+step 5 time-target PITR rehearsal. Aliases such as `now` and naive times are
+refused (exit 2). Before anything is restored, `pgbackrest info --set` (read-only
+repository, a `hyhome-pitr-info-*` container) must show a backup stop strictly
+before the target (`target_before_backup_stop`). The set is restored with
+`--type=time --target=<time> --target-action=promote --archive-mode=off`, and the
+clone starts with `logging_collector=on` so recovery messages land in
+`$PGDATA/log` (the image logs to stderr only). The target counts as reached only
+when the clone is promoted, its timeline is above the source's, the log has a
+`recovery stopping` line and not `recovery ended before configured recovery target
+was reached` (`target_not_reached`; an unreadable timeline or log, or no log file, is
+`target_evidence_unreadable`; if the clone exits instead, the reason is
+`clone_exited` and the scratch log is the evidence). Only booleans are printed.
+Time mode appends the fields `recovery_type`, `target_time`,
+`target_after_backup_stop`, `target_reached` and `promoted`, and names its
+containers `hyhome-pitr-*` with label `mng-pg-pitr-5`, so it never touches 5a
+artifacts. Immediate output is unchanged.
 
 Output is a fixed list of `key=value` lines: no rows, secrets or raw logs.
 Exit 0 PASS, 1 FAIL (reason `io_error` for a file or lock OSError), 2 refused
@@ -37,6 +55,7 @@ import subprocess
 import sys
 import time
 import uuid
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 
 SOURCE = "mng-pg"
@@ -45,6 +64,7 @@ STANZA = "mng"
 UID = "70"
 LABEL_KEY = "hy.rehearsal"
 LABEL = f"{LABEL_KEY}=mng-pg-immediate-5a"
+LABEL_TIME = f"{LABEL_KEY}=mng-pg-pitr-5"
 REPO_TARGET = "/var/lib/pgbackrest"
 SECRET_TARGET = "/run/secrets/pgbackrest_cipher_pass"
 DATA_TARGET = "/var/lib/postgresql/data"
@@ -76,6 +96,16 @@ FIELDS = (
     "clone_hba_probe_rule",
     "scratch_mode_0700",
     "cleanup_status",
+)
+TIME_FIELDS = (
+    "recovery_type",
+    "target_time",
+    "target_after_backup_stop",
+    "target_reached",
+    "promoted",
+)
+TARGET_RE = re.compile(
+    r"^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})([+-])(\d{2})(?::?(\d{2}))?$"
 )
 EXIT = {"PASS": 0, "FAIL": 1, "REFUSED": 2}
 VERIFY_TIMEOUT = 900
@@ -121,8 +151,25 @@ def _dotted(value: str, parts: tuple[int, ...], what: str) -> list[str]:
     return [_ident(name, what) for name in names]
 
 
+def parse_target(text: str) -> datetime:
+    """An explicit local time with a numeric UTC offset, as aware UTC; else Refused."""
+    match = TARGET_RE.fullmatch(text.strip())
+    if not match:
+        raise Refused("target_time")
+    day, clock, sign, hours, minutes = match.groups()
+    try:
+        offset = timedelta(hours=int(hours), minutes=int(minutes or 0))
+        zone = timezone(-offset if sign == "-" else offset)
+        local = datetime.fromisoformat(f"{day}T{clock}").replace(tzinfo=zone)
+    except ValueError:
+        raise Refused("target_time") from None
+    return local.astimezone(UTC)
+
+
 def check_inputs(args, *, forbidden=None) -> Path:
     """Return the resolved scratch root or raise Refused."""
+    if getattr(args, "target_time", None) is not None:
+        parse_target(args.target_time)
     if not LABEL_RE.fullmatch(args.label):
         raise Refused("label")
     root = Path(args.scratch_root)
@@ -235,33 +282,79 @@ class Owned:
         return "failed:" + ",".join(failed) if failed else "removed"
 
 
-def _container_argv(source, root: Path, *, command: list[str]) -> list[str]:
-    argv = [f"--label={LABEL}", "--network=none", "--pull=never", "--cap-drop=ALL"]
+def _container_argv(
+    source, root: Path, *, command: list[str], label: str = LABEL, data_ro: bool = False
+) -> list[str]:
+    argv = [f"--label={label}", "--network=none", "--pull=never", "--cap-drop=ALL"]
     argv += [f"--memory={MEMORY}", f"--memory-swap={MEMORY}", f"--cpus={CPUS}"]
     argv += [f"--cap-add={cap}" for cap in CAPS]
     argv += ["--security-opt=no-new-privileges", "--pids-limit=512", "--shm-size=256m"]
     argv += ["--env=PGDATA=" + DATA_TARGET + "/pgdata"]
     argv += ["--env=PGBACKREST_CONFIG_INCLUDE_PATH=/tmp/pgbackrest/conf.d"]
-    argv += [f"--mount=type=bind,src={root}/data,dst={DATA_TARGET}"]
+    ro = ",readonly" if data_ro else ""
+    argv += [f"--mount=type=bind,src={root}/data,dst={DATA_TARGET}{ro}"]
     argv += [f"--mount=type=bind,src={source['secret']},dst={SECRET_TARGET},readonly"]
     argv += [f"--mount=type=bind,src={source['repo']},dst={REPO_TARGET},readonly"]
     return [*argv, source["image_id"], *command]
 
 
-def restore_command(label: str) -> list[str]:
+def restore_command(label: str, target: datetime | None = None) -> list[str]:
     pgdata = DATA_TARGET + "/pgdata"
+    if target is None:
+        kind = "--type=immediate"
+    else:
+        when = shlex.quote(target.strftime("%Y-%m-%d %H:%M:%S+00"))
+        kind = f"--type=time --target={when}"
     script = (
         f"install -d -o postgres -g postgres -m 0700 {pgdata}; "
         f"chown postgres:postgres {DATA_TARGET}; chmod 0700 {DATA_TARGET}; "
         f"exec gosu postgres pgbackrest --stanza={STANZA} "
-        f"--set={shlex.quote(label)} --type=immediate --target-action=promote "
+        f"--set={shlex.quote(label)} {kind} --target-action=promote "
         f"--archive-mode=off --pg1-path={pgdata} restore"
     )
     return ["sh", "-ec", script]
 
 
-def clone_command() -> list[str]:
-    return ["postgres", "-c", "archive_mode=off", "-c", "listen_addresses=127.0.0.1"]
+def clone_command(time_mode: bool = False) -> list[str]:
+    argv = ["postgres", "-c", "archive_mode=off", "-c", "listen_addresses=127.0.0.1"]
+    if time_mode:  # the image logs to stderr only; keep recovery lines in PGDATA/log
+        argv += ["-c", "logging_collector=on", "-c", "log_directory=log"]
+        argv += ["-c", "log_filename=postgresql.log"]
+    return argv
+
+
+def info_command(label: str) -> list[str]:
+    script = (
+        f"exec gosu postgres pgbackrest --stanza={STANZA} "
+        f"--set={shlex.quote(label)} --output=json info"
+    )
+    return ["sh", "-ec", script]
+
+
+def backup_stop(out: str, label: str) -> datetime:
+    """The selected set's stop time from `pgbackrest info --output=json`."""
+    try:
+        stanzas, _ = json.JSONDecoder().raw_decode(out[out.index("[") :])
+        sets = [b for b in stanzas[0]["backup"] if b["label"] == label]
+        return datetime.fromtimestamp(sets[0]["timestamp"]["stop"], UTC)
+    except (ValueError, KeyError, IndexError, TypeError, OSError, OverflowError):
+        raise Stop("backup_info") from None
+
+
+# promotion and timeline come from the WAL position, not pg_control_checkpoint():
+# the end-of-recovery checkpoint can land after pg_is_in_recovery() turns false
+_TIMELINE_SQL = (
+    "SELECT 'promoted=' || NOT pg_is_in_recovery();\n"
+    "SELECT 'tl=' || ('x' || substr(pg_walfile_name(pg_current_wal_lsn()), 1, 8))"
+    "::bit(32)::int;\n"
+)
+_LOG_SCRIPT = (
+    'n=0; for f in "$PGDATA"/log/*; do [ -f "$f" ] && n=$((n+1)); done; '
+    'echo "files=$n"; [ "$n" -gt 0 ] || exit 0; '
+    'echo "stopping=$(cat "$PGDATA"/log/* | grep -c \'recovery stopping\' || true)"; '
+    'echo "ended=$(cat "$PGDATA"/log/* | grep -c \'recovery ended before '
+    "configured recovery target was reached' || true)\""
+)
 
 
 def _probe_sql(role: str, password: str) -> str:
@@ -430,8 +523,10 @@ def probe(run, clone, admin, role, state, sleep=time.sleep) -> None:
     state["probe_result"] = "PASS"
 
 
-def count_stable(run, clone, admin, tables) -> bool:
+def count_stable(run, clone, admin, tables, root: Path | None = None) -> bool:
+    """Check each count twice in one snapshot; record values in scratch only."""
     by_db: dict[str, list[tuple[str, str]]] = {}
+    seen: dict[str, int] = {}
     for table in tables:
         db, schema, name = table.split(".")
         by_db.setdefault(db, []).append((schema, name))
@@ -451,6 +546,11 @@ def count_stable(run, clone, admin, tables) -> bool:
             first, second = got.get(f"t{i}a", ""), got.get(f"t{i}b", "")
             if not (first.isdigit() and first == second):
                 return False
+            seen[f"{db}.{items[i][0]}.{items[i][1]}"] = int(first)
+    if root is not None:
+        note = root / "count-observations.json"
+        note.write_text(json.dumps(seen, indent=2) + "\n")
+        note.chmod(0o600)
     return True
 
 
@@ -512,6 +612,45 @@ _IDENTITY_SQL = (
 )
 
 
+def check_target(run, clone, admin, source_tl: int, state) -> None:
+    """Promoted, timeline above the source's, stop marker in the log, no early end."""
+    code, lines = _sql(run, clone, admin, "postgres", _TIMELINE_SQL, timeout=60)
+    got = _kv(lines)
+    state["promoted"] = code == 0 and got.get("promoted") == "true"
+    argv = ["docker", "exec", "--user", UID, clone, "sh", "-ec", _LOG_SCRIPT]
+    code2, out = run(argv, timeout=60)
+    seen = _kv(out.splitlines())
+    # no evidence is not evidence of failure: name it apart from a missed target
+    if (
+        code
+        or code2
+        or not got.get("tl", "").isdigit()
+        or seen.get("files")
+        in (
+            None,
+            "0",
+        )
+    ):
+        state["target_reached"] = False
+        raise Stop("target_evidence_unreadable")
+    tl, stopping, ended = (
+        got.get("tl", ""),
+        seen.get("stopping", ""),
+        seen.get("ended", ""),
+    )
+    state["target_reached"] = bool(
+        state["promoted"]
+        and code2 == 0
+        and tl.isdigit()
+        and int(tl) > source_tl
+        and stopping.isdigit()
+        and int(stopping) > 0
+        and ended == "0"
+    )
+    if not state["target_reached"]:
+        raise Stop("target_not_reached")
+
+
 def check_docker_target(run, env) -> None:
     """Refuse a remote or non-default Docker target; bind mounts must be local."""
     if env.get("DOCKER_HOST"):
@@ -538,14 +677,21 @@ def rehearse(
     except OSError:
         raise Refused("scratch_io") from None
     check_docker_target(run, env)
-    state = dict.fromkeys(FIELDS, "NOT_RUN")
+    when = getattr(args, "target_time", None)
+    target = None if when is None else parse_target(when)
+    state = dict.fromkeys(FIELDS if target is None else FIELDS + TIME_FIELDS, "NOT_RUN")
     state.update(result="FAIL", reason="none", cleanup_status="none_created")
+    if target is not None:
+        state.update(
+            recovery_type="time", target_time=target.strftime("%Y-%m-%d %H:%M:%S+00")
+        )
+    tag, label = ("pitr", LABEL_TIME) if target else ("5a", LABEL)
     started = clock()
     owned = Owned(run)
     lock = None
     role = "hy_5a_probe_" + uuid.uuid4().hex[:8]
     suffix = uuid.uuid4().hex[:12]
-    clone, admin = f"hyhome-5a-clone-{suffix}", None
+    clone, admin = f"hyhome-{tag}-clone-{suffix}", None
     try:
         source = read_source(run)
         admin = source["admin"]
@@ -579,9 +725,35 @@ def rehearse(
         if code or not source_id.get("sysid"):
             raise Stop("source_query")
         (root / "data").mkdir(mode=0o700)
+        if target is not None:
+            code, lines = _sql(
+                run, SOURCE, admin, "postgres", _TIMELINE_SQL, timeout=60
+            )
+            source_tl = _kv(lines).get("tl", "")
+            if code or not source_tl.isdigit():
+                raise Stop("source_query")
+            cid = owned.create(
+                f"hyhome-{tag}-info-{suffix}",
+                _container_argv(
+                    source,
+                    root,
+                    command=info_command(args.label),
+                    label=label,
+                    data_ro=True,
+                ),
+            )
+            code, out = run(["docker", "start", "--attach", cid], timeout=120)
+            if code:
+                raise Stop("backup_info")
+            stop = backup_stop(out, args.label)
+            state["target_after_backup_stop"] = target > stop
+            if not state["target_after_backup_stop"]:
+                raise Stop("target_before_backup_stop")
         cid = owned.create(
-            f"hyhome-5a-restore-{suffix}",
-            _container_argv(source, root, command=restore_command(args.label)),
+            f"hyhome-{tag}-restore-{suffix}",
+            _container_argv(
+                source, root, command=restore_command(args.label, target), label=label
+            ),
         )
         code, _ = run(["docker", "start", cid], timeout=60)
         if code:
@@ -594,13 +766,18 @@ def rehearse(
         if code or state["restore_rc"]:
             raise Stop("restore")
         cid = owned.create(
-            clone, _container_argv(source, root, command=clone_command())
+            clone,
+            _container_argv(
+                source, root, command=clone_command(target is not None), label=label
+            ),
         )
         if run(["docker", "start", cid], timeout=60)[0]:
             raise Stop("clone_start")
         wait_ready(run, owned, cid, clone, admin, sleep=sleep, clock=clock)
         _release(lock)
         lock = None
+        if target is not None:
+            check_target(run, clone, admin, int(source_tl), state)
         code, lines = _sql(run, clone, admin, "postgres", _IDENTITY_SQL, timeout=60)
         clone_id = _kv(lines)
         state["system_id_match"] = (
@@ -624,7 +801,7 @@ def rehearse(
         )
         if not all(state[key] is True for key in wanted):
             raise Stop("required_object_missing")
-        state["count_stable"] = count_stable(run, clone, admin, args.count_table)
+        state["count_stable"] = count_stable(run, clone, admin, args.count_table, root)
         if not state["count_stable"]:
             raise Stop("count_unstable")
         inventory(run, clone, admin, dbs, root, state)
@@ -657,7 +834,7 @@ def render(state: dict) -> str:
     def text(value):
         return str(value).lower() if isinstance(value, bool) else str(value)
 
-    return "".join(f"{key}={text(state[key])}\n" for key in FIELDS)
+    return "".join(f"{key}={text(value)}\n" for key, value in state.items())
 
 
 def main(argv=None, **kwargs) -> int:
@@ -668,14 +845,21 @@ def main(argv=None, **kwargs) -> int:
     parser.add_argument("--dbt", required=True, help="DB.SCHEMA[.RELATION]")
     parser.add_argument("--count-table", action="append", help="DB.SCHEMA.TABLE")
     parser.add_argument("--min-free-gib", type=int, default=20)
+    parser.add_argument(
+        "--target-time",
+        help="PITR target, e.g. '2026-10-29 22:20:00+00'; UTC offset required",
+    )
     args = parser.parse_args(argv)
     try:
         state = rehearse(args, **kwargs)
     except Refused as refused:
-        state = dict.fromkeys(FIELDS, "NOT_RUN")
+        timed = args.target_time is not None
+        state = dict.fromkeys(FIELDS + TIME_FIELDS if timed else FIELDS, "NOT_RUN")
         state.update(
             result="REFUSED", reason=str(refused), cleanup_status="none_created"
         )
+        if timed:
+            state["recovery_type"] = "time"
     sys.stdout.write(render(state))
     if state["reason"] == "lock_busy":
         return 75

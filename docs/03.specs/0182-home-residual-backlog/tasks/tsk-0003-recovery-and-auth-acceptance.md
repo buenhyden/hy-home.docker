@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.8.1"
+version: "0.8.4"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -576,6 +576,135 @@ excludes exactly that view, and a failing privilege check names its fixed key
 (for example `probe_privileges_table_writes`). The fix needs a rerun. The scratch
 is kept for the 7-day review.
 
+### W7 5a rehearsal attempt 02 2026-10-30
+
+The owner reran the 5a rehearsal from `main` `e065bce16`, after the
+`pg_settings` fix, into a new owned scratch under `~/storage/backups`, with the
+same set and RUN-0021 arguments. Every fixed field passed, with `result=PASS`
+and exit 0:
+
+- `verify_rc` and `restore_rc` were 0, in 683.7 s;
+- system ID and DB list matched;
+- `app_db`, `mlflow`, `debezium_heartbeat.heartbeat` and
+  `analytics.hyhome_dbt_connectivity` were present;
+- `count_stable` was true, with 11 extensions and 132 sequences observed;
+- `probe_result=PASS` with `clone_hba_probe_rule=added`, so the one-time
+  CONNECT/TEMP login was refused a wrong password, authenticated with SCRAM
+  over 127.0.0.1, then inserted, counted and rolled back a temp row, and was
+  dropped;
+- the scratch stayed 0700, and every owned container was removed.
+
+The selected backup set restores to a consistent, isolated clone whose
+access controls hold. As RUN-0021 states, 5a does not prove WAL after the
+backup, the 5-minute RPO or application recovery. Criterion 7 stays pending on
+step 5 time-target PITR, which needs a recovery time inside the archived WAL
+range and its own approval, and on the remaining isolated restores the
+criterion names. The scratch is kept for the owner's 7-day review. Its
+`pg_hba.conf` carries the probe line.
+
+### Owner decisions for criterion 7 scope 2026-10-30
+
+- Scratch cleanup: the owner chose to remove both 5a scratches now rather
+  than wait for the 7-day review. The owner ran
+  `sudo rm -rf ~/storage/backups/mng-pg-5a-*` and the follow-up check printed
+  `removed`. Both scratches were owner-owned clones with no other use.
+- Step 5 PITR target: the recovery time is based on the latest backup point.
+  The set is `20261024-184214F_20261029-221825D`, which stopped at 2026-10-29
+  22:18:29 UTC at WAL `000000010000002700000036`, and the archive reaches
+  `00000001000000270000006A`. The target is 2026-10-29 22:20:00 UTC, about
+  90 seconds after the backup stop, so that recovery replays archived WAL
+  past the backup instead of stopping at its consistency point.
+- Remaining isolated restores: criterion 7 covers MLflow and JupyterLab with
+  real content. The CDC restore is removed because CDC is retired
+  (Task 0002, 2026-09-29). SPEC-0182 criterion 7 is amended to match.
+
+The step 5 run needs a time-target mode for the reviewed 5a script, an
+independent stateful recovery review and separate owner approval. Until then
+it stays NOT_RUN.
+
+### W7 step 5 time-target script 2026-10-30
+
+`scripts/operations/mng-pg-immediate-restore-rehearsal.py` gains
+`--target-time`. Without it the script runs the reviewed 5a path unchanged.
+With it, the script:
+
+- accepts only an ISO time with an explicit offset;
+- reads the set's stop time through read-only `pgbackrest info` and refuses
+  a target that is not strictly after it;
+- restores with `--type=time --target-action=promote --archive-mode=off`;
+- requires the clone to be promoted onto a timeline above the source's, with
+  a `recovery stopping` line in its kept scratch log.
+
+It uses its own `hyhome-pitr-*` names and `mng-pg-pitr-5` label, and RUN-0021
+step 5 now carries the owner command. The script's 49 tests pass.
+
+Read-only checks on `mng-pg`:
+
+- `pgbackrest info --set=<label> --output=json` returned stop epoch
+  1793312309, which is 22:18:29 UTC;
+- `pg_stat_archiver` showed the archive at `0000000100000027000000B1`, at
+  2026-10-30 08:34:35 UTC, past the target.
+
+The run itself proves WAL continuity. A gap ends recovery early and reports
+`clone_exited`.
+
+The first independent stateful recovery review returned REQUEST_CHANGES:
+
+- Its HIGH finding was that pgBackRest refuses `--set` with JSON output.
+  The live observation above refutes it.
+- Its MEDIUM archive-coverage finding is answered by the `pg_stat_archiver`
+  check above.
+- Its LOW findings added the `target_evidence_unreadable` reason, a
+  read-only data mount for the info container, and tests.
+
+The fix-range re-review returned APPROVE_WITH_NOTES. Its runbook notes are
+applied. One label-only note remains: an unreadable log file reports
+`target_not_reached` rather than `target_evidence_unreadable`, and the run
+still fails safe. The run stays NOT_RUN until the owner approves it.
+
+### Owner decisions for MLflow and JupyterLab 2026-10-30
+
+Read-only observations on 2026-10-30:
+
+- `mlflow` tracking counts: experiments 2, runs 2, metrics 1, params 1,
+  tags 8, registered models 0, model versions 0. These match the 2026-09-25
+  counts. Both runs use `mlflow-artifacts:/1/<run>/artifacts`, served from
+  the `mlflow-artifacts` bucket on SeaweedFS.
+- JupyterLab has no container and no image on the host. Its work directory
+  under the management volume root holds 0 files.
+
+The owner decided:
+
+- MLflow: the step 5 command adds `--count-table` for runs, metrics, params
+  and tags. The script now writes the stable values to
+  `count-observations.json` (0600) in scratch, and its printed output is
+  unchanged. The artifact half is the RUN-0088 owner command. It copies the
+  bucket read-only into new scratch and compares each object's ETag with its
+  local MD5, printing counts only.
+- JupyterLab: not applicable while it has no real content. Criterion 7 says
+  so. The 2026-09-22 synthetic rehearsal stays a historical receipt.
+
+Both runs are NOT_RUN until the owner runs them.
+
+The independent review returned REQUEST_CHANGES, and every finding is fixed:
+
+- The artifact command now prints `copy_rc` and a single `result`.
+- A failed copy, an empty listing, or a key that starts or ends with `/` or
+  contains `..` is FAIL.
+- The listing and run list sit in a `meta/` bind that the sync cannot reach.
+- The secret is bound with `--mount`, from the repository root.
+- RUN-0088 says the artifact half copies the live bucket. It does not
+  restore from backup, and it claims no artifact RPO.
+- RUN-0021 says the cross-time count comparison holds only because MLflow
+  has had no writes since 2026-09-25.
+- The plan's old isolated-network wording is removed.
+- The test now checks that no count value is printed.
+
+The fix-range re-review returned APPROVE_WITH_NOTES. Its three notes are
+applied: the command runs from the main checkout, which holds `secrets/`;
+it refuses a non-empty scratch; and the test uses a distinctive mocked
+count.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -586,6 +715,7 @@ is kept for the 7-day review.
 | Current Task status: blocked (2) | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | required | - |
 | W7 selected backup verify | 7 | W7 | `pgbackrest verify` of the selected backup set | `20261024-184214F_20261029-221825D`, owner-run 2026-10-30 | PASS | W7 verify and W10 snapshot pair 2026-10-30; rc 0 in 2,483 ms | required | - |
 | W7 5a rehearsal attempt 01 | 7 | W7 | RUN-0021 step 5a immediate consistency rehearsal | `mng-pg-immediate-restore-rehearsal.py` at `15159fc73`, set `20261024-184214F_20261029-221825D`, 2026-10-30 | FAIL | W7 5a rehearsal attempt 01 2026-10-30; recovery checks passed, stopped at `probe_privileges` on the default PUBLIC UPDATE of `pg_settings` | required | - |
+| W7 5a rehearsal attempt 02 | 7 | W7 | RUN-0021 step 5a immediate consistency rehearsal | `mng-pg-immediate-restore-rehearsal.py` at `e065bce16`, set `20261024-184214F_20261029-221825D`, 2026-10-30 | PASS | W7 5a rehearsal attempt 02 2026-10-30; `result=PASS`, restore 683.7 s, probe PASS | required | W7 5a rehearsal attempt 01 |
 | W10 R2 restore attempt 01 | 10 | W10 | R2 scratch restore of the selected host and state pair | One-off `restic-offsite` run, host `993a30f2`, state `7f9315e3`, 2026-10-30 | FAIL | W10 restore attempt and procedure rewrite 2026-10-30; `mkdir /restore/host: permission denied`, nothing restored | required | - |
 | W10 R2 restore rerun | 10 | W10 | R2 scratch restore of the selected host and state pair | `offsite.sh restore 993a30f2 7f9315e3` as the scratch owner, 2026-10-30 | PASS | W10 R2 scratch restore 2026-10-30; host rc 0 in 16 s (203 files), state rc 0 in 153 s (22,355 files, 2.10 GB) | required | W10 R2 restore attempt 01 |
 | W10 recovery evidence | 10 | W10 | Recovery evidence | R2 scratch restore rerun plus owner confirmation of off-host BKP-003, BKP-002 and R2 credential custody, 2026-10-30 | PASS | W10 offline key custody and criterion 10 2026-10-30 | required | Current Task status: blocked (2) |
