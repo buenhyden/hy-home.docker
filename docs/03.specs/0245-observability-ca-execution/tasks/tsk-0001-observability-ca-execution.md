@@ -377,6 +377,19 @@ It does not cover rule health or Alertmanager delivery. It does not accept any
 criterion. Acceptance of criteria 1 to 7, including the criterion 2 ordering
 deviation, stays with the owner.
 
+### Owner decision on criterion 2 ordering 2026-10-30
+
+On 2026-10-30 the owner chose to accept the pre-recreation ordering deviation
+for criterion 2 as recorded, rather than run a fresh backup, restore and
+recreate cycle. The later cold-copy restore passed, and repeating the cycle
+would add no safety. Criterion 2 still cannot be marked accepted here:
+required rows for criterion 2 remain unresolved, namely the integrity
+rehash, the isolated restore, the quarantine leaf and restore attempts 01 to
+03. The later rows use separate inputs and do not resolve them. Acceptance
+needs those rows reconciled, either by matching PASS rows or by an owner
+decision that the later evidence supersedes them. The rule and alert checks in
+RUN-0045 are also still not run. Criteria 1 and 3 to 7 stay pending.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
