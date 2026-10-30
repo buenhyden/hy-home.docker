@@ -900,7 +900,8 @@ dropped the pending role, and its sweep ran before the container existed, so
 its PASS was false. Cleanup now polls for up to 60 seconds before treating a
 pending container as never created. An offline test covers both a late
 create and a create that never appears. The leftover container, never started,
-is for the owner to remove.
+is for the owner to remove; a later residue check showing none resolves the
+Attempt four residue row.
 
 ## Evidence
 
@@ -924,7 +925,8 @@ is for the owner to remove.
 | Owner native attempt | 22 | W43 | Opt-in native class, first manual execution | `main` at `032818766` before the criterion 22 harness; attempt `opsflow-native-1b407daf3eb9138fa67527cb` | FAIL | Owner native attempt 2026-10-30; queued execution did not turn terminal in 60 s; cleanup PASS | required | - |
 | Owner native attempt with criterion 22 steps | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `4de81f1a4`; attempt `opsflow-native-5c855b474d846df902d87001` | FAIL | Owner native attempt with criterion 22 steps 2026-10-30; scheduled delivery passed, next publication hit the business-date index; harness fixed; cleanup PASS | required | - |
 | Owner native attempt three | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `e3e504514`; attempt `opsflow-native-cd9f2fadd4086d1c86311ead` | FAIL | Owner native attempt three 2026-10-30; scheduled execution PASS; six-claimer race exceeded the notifier connection limit; harness fixed; cleanup PASS | required | - |
-| Owner native attempt four | 22 | W43 | Opt-in native class, fixture creation | `main` at `2427700e4`; attempt `opsflow-native-dc07812ebf96857acaa19f5f` | FAIL | Owner native attempt four 2026-10-30; first container create failed while a Grype scan loaded the host; reported cleanup PASS was false, one created container remained | required | - |
+| Owner native attempt four | 22 | W43 | Opt-in native class, fixture creation | `main` at `2427700e4`; attempt `opsflow-native-dc07812ebf96857acaa19f5f` | FAIL | Owner native attempt four 2026-10-30; first container create failed while a Grype scan loaded the host; cleanup PASS | required | - |
+| Attempt four residue | 22 | W43 | Owner pre-run check for labelled native containers and networks | `docker ps -a` by attempt label before attempt five, 2026-10-30 | FAIL | Owner native attempt four 2026-10-30, correction; one `Created` secret-prep container of attempt `opsflow-native-dc07812ebf96857acaa19f5f` remained after a reported cleanup PASS | required | - |
 
 Actual existing-source command, exit0:
 
