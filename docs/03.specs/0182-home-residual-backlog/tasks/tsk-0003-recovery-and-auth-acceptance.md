@@ -453,6 +453,21 @@ value-free attestation of where and when BKP-003 went to offline custody.
 These decisions record scope only. No restore ran, and W7 and W10 stay
 NOT_RUN.
 
+### W7 verify and W10 snapshot pair 2026-10-30
+
+W7: the owner ran
+`docker exec -u postgres mng-pg pgbackrest --stanza=mng verify --set=20261024-184214F_20261029-221825D`.
+It completed successfully in 2,483 ms, rc 0, on pgBackRest 2.58.0. This
+satisfies RUN-0021 step 5a's gate. The 5a clone script and its independent
+stateful recovery review come next. Step 5 still needs a recovery time
+inside the archived WAL range.
+
+W10: the owner listed the R2 offsite repository `f6973d02` (70 snapshots). The
+selected pair is state `7f9315e3` (2026-10-29 22:19:55 UTC, 1.957 GiB) and host
+`993a30f2` (22:20:31 UTC, 152.947 KiB). These are the copies of the 2026-10-30
+07:18 KST run, which holds the Ollama catalog (SPEC-0226). The scratch
+restore of that pair has not run.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -461,6 +476,7 @@ NOT_RUN.
 | Current Task status: completed | 8 | W8 | Measurement evidence | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) | PASS | This Task, Evidence | required | - |
 | Current Task status: completed (2) | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | required | - |
 | Current Task status: blocked (2) | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | required | - |
+| W7 selected backup verify | 7 | W7 | `pgbackrest verify` of the selected backup set | `20261024-184214F_20261029-221825D`, owner-run 2026-10-30 | PASS | W7 verify and W10 snapshot pair 2026-10-30; rc 0 in 2,483 ms | required | - |
 | Current Task status: completed (3) | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/01-common/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | required | - |
 | Current Task status: completed (4) | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | required | - |
 
