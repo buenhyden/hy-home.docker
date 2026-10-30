@@ -417,9 +417,11 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 )
                 self.assertEqual("NOT_UPSTREAM_SIGNED", row["signature"])
             elif row["service"] in {"traefik", "prometheus"}:
-                # SEC01 2026-10-15: offline scan of the upstream Compose pin.
+                # 2026-10-30: the adopted fixed pin is unscanned; the prior
+                # pin's offline scan receipt is kept as history.
+                self.assertTrue(row["sbom_scan"].startswith("NOT_RUN"))
                 self.assertTrue(
-                    row["sbom_scan"].startswith(
+                    row["previous_adopted_pin_assessment"]["sbom_scan"].startswith(
                         "PASS: offline Syft v1.54.1/Grype v0.120.1"
                     )
                 )

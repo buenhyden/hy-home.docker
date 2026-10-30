@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.1.8"
+version: "1.1.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-10-30"
 ---
 
 # 보안 업데이트 조사 증거
@@ -102,6 +102,13 @@ SurrealDB 고정은 알려진 Critical 권고를 해결한 보안 변경이 아�
 custom 이미지가 새로 빌드되지 않은 경우 upstream base 증거를 custom image
 합격으로 사용하지 않습니다. 변경된 여덟 source unit의 기존 Guide/Policy/Runbook,
 요구사항·아키텍처·template 영향 판정은 소유 Task에 기록합니다.
+
+2026-10-30에 owner는 만료된 Traefik·Prometheus SEC01 위험 수용을 고친 upstream image 채택으로
+대체했다. Traefik v3.7.16과 Prometheus v3.15.1의 index digest·linux/amd64 manifest를
+공개 registry API로 다시 대조해 두 서비스 행, 입력 SHA, `source_refreshes`와 조회 파일에
+기록했다. 이전 pin의 scan·검토 영수증은 `previous_adopted_pin_assessment`에 보존하며 새 image의
+pull·scan·독립 검토·config 검사·HOME 재생성·rollback은 `NOT_RUN`이고
+`SPEC-0204-TSK-0021`이 owner 단계로 기록한다.
 
 ## Structure
 

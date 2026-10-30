@@ -1793,6 +1793,56 @@
         "same_index": true
       },
       "meaning": "OpenSearch config descriptors only, no bodies; Trino public config body verified by separate read-only researcher. Surreal publicconfig labels identify only inherited base. No runtime/imagebuild/signature/scan/restore acceptance."
+    },
+    {
+      "assessed_at": "2026-10-30T03:01:50.900933+00:00",
+      "input_head": "ef6ad5f11b7f1fcfe9fae10bebb1ea611c299546",
+      "source_input_manifest_sha256": "05a8b6acbaf0e0f2694b34e1025a707783fca7752fee8b85fa6eefa2f90a1015",
+      "records": [
+        {
+          "repository": "library/traefik",
+          "tag": "v3.7.16",
+          "checked_at": "2026-10-30T03:01:50.900933+00:00",
+          "expected_index_digest": "sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+          "scope": "Public OCI index/platform manifest JSON only; anonymous bearer held in memory; no layer pull, Docker call or signature",
+          "result": "PASS",
+          "index_url": "https://registry-1.docker.io/v2/library/traefik/manifests/v3.7.16",
+          "index_digest": "sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+          "platform": "linux/amd64",
+          "platform_manifest_url": "https://registry-1.docker.io/v2/library/traefik/manifests/sha256:abb2b9c1b132b5b0be40d09c85bf8d3dab2a59fa0eb3aa955ab8be5efbb73de6",
+          "platform_manifest_digest": "sha256:abb2b9c1b132b5b0be40d09c85bf8d3dab2a59fa0eb3aa955ab8be5efbb73de6",
+          "config_digest": "sha256:3733df53e74cd0df7d1b839168e30d2bd7f5e77dd6214ef3d8056ee1f21392b7",
+          "config_content": "NOT_FETCHED",
+          "metadata": {
+            "response_url": "https://registry-1.docker.io/v2/library/traefik/manifests/v3.7.16",
+            "status": 200,
+            "content_type": "application/vnd.oci.image.index.v1+json",
+            "docker_content_digest": "sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65"
+          }
+        },
+        {
+          "repository": "prom/prometheus",
+          "tag": "v3.15.1",
+          "checked_at": "2026-10-30T03:01:50.900933+00:00",
+          "expected_index_digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
+          "scope": "Public OCI index/platform manifest JSON only; anonymous bearer held in memory; no layer pull, Docker call or signature",
+          "result": "PASS",
+          "index_url": "https://registry-1.docker.io/v2/prom/prometheus/manifests/v3.15.1",
+          "index_digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
+          "platform": "linux/amd64",
+          "platform_manifest_url": "https://registry-1.docker.io/v2/prom/prometheus/manifests/sha256:d445d1806b38f85b5c394a1b87f94113fde0473b45245922c2e8b1bd41fa68ae",
+          "platform_manifest_digest": "sha256:d445d1806b38f85b5c394a1b87f94113fde0473b45245922c2e8b1bd41fa68ae",
+          "config_digest": "sha256:876ae6bcb0d6c9190d799e82c996fbe5faecdaaa0ec84f5e7dd272c0542ea63c",
+          "config_content": "NOT_FETCHED",
+          "metadata": {
+            "response_url": "https://registry-1.docker.io/v2/prom/prometheus/manifests/v3.15.1",
+            "status": 200,
+            "content_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+            "docker_content_digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2"
+          }
+        }
+      ],
+      "meaning": "Raw index SHA and linux/amd64 manifest digest equality with the registry Docker-Content-Digest verified for the adopted Traefik and Prometheus pins. Config descriptors only; layers, signatures, SBOM/scans, native and HOME NOT_RUN."
     }
   ],
   "local_source_rebindings": [

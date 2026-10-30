@@ -32,7 +32,7 @@ from tests.validation.test_datastore_rehearsal_boundary import (
 ROOT = Path(__file__).resolve().parents[2]
 PG = "postgres:18.6-alpine"
 VALKEY = "valkey/valkey:9.1.2-alpine"
-PROMETHEUS = "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
+PROMETHEUS = "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2"
 PREFIX = ""
 DOCKER_BINARY = Path("/usr/bin/docker")
 DOCKER_SOCKET = Path("/run/docker.sock")

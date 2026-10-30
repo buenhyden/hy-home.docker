@@ -20,7 +20,7 @@
       },
       "images": [
         "traefik:v3.7.13@sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259",
-        "traefik:v3.7.14@sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c"
+        "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65"
       ],
       "compose_files": [
         "infra/01-gateway/traefik/compose.window-ca.override.yml",
@@ -36,7 +36,7 @@
         {
           "compose_file": "infra/01-gateway/traefik/docker-compose.yml",
           "images": [
-            "traefik:v3.7.14@sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c"
+            "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65"
           ]
         }
       ]
@@ -267,7 +267,7 @@
         "prom/prometheus": "external"
       },
       "images": [
-        "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
+        "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -276,7 +276,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
+            "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2"
           ]
         }
       ]
