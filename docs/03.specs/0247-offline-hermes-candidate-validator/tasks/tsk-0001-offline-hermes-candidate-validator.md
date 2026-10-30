@@ -79,6 +79,8 @@ and criterion decisions are pending; this transition does not assert completion.
 | E15 | 4 | W3 | document-links | entrypoint and navigation after lifecycle anchors | PASS | both modes reported zero failures | required | - |
 | E16 | 4 | W3 | corpus-lifecycle | latest base e0d68d7ec, corpus and archive recovery | PASS | zero violations; 5 migrations, 140 tombstones, 116 preserved, 286 decisions, 374 recovery rows | required | - |
 | E17 | 4 | W3 | script-manifest | final implementation against base e0d68d7ec | PASS | script manifest is valid | required | - |
+| E18 | 4 | W3 | hosted-candidate-quality | run 41033114804, HEAD eb38630ada56c25ab1079d7cc2635204d207736c | FAIL | test module missing from full profile; script authority pointed to Stage 03 | required | - |
+| E19 | 4 | W3 | local-regressions | worktree with test registration and authority correction | PASS | unittest surface ownership, script manifest and Hermes validator: 91 tests; CI gate model: 8 tests; script manifest checker: PASS | required | - |
 
 ## Criterion Acceptance
 
@@ -106,8 +108,24 @@ draft package was included. E13 applies to the staged inputs observed at that
 time; subsequent changes need their applicable checks rerun. Corpus lifecycle
 and recovery passed in E16, and criterion 4 is accepted for the observed local
 checks. Task completion, the exact diff and local commits remain pending.
-Remote CI and remote review have not yet run.
+At that review point, remote CI and remote review had not yet run.
 No deployment, Blog-data write, or delivery is claimed.
+
+Hosted candidate-quality run 41033114804 subsequently failed as recorded in
+E18. The local correction registers the Hermes unittest module in the full
+profile and points the manifest authority to the script's usage documentation.
+E19 verifies the correction locally; it does not resolve E18 or establish a
+passing hosted run. The commands were `python3 -m unittest
+tests.lib.test_surface_ownership tests.validation.test_script_manifest
+tests.validation.test_hermes_candidate_validator -q`, `python3 -m unittest
+tests.validation.test_ci_gate_model -q`, and `python3
+scripts/validation/check-script-manifest.py`. The workflow contract is a QA definition, so its amendment
+requires owner acceptance and trusted-base comparison. The user explicitly
+accepted the presented Hermes test registration and manifest authority change
+for PR #685. The trusted base is main revision
+`b0c71ff36cc536adf101ae2e9a7f5f94721eedaf`; the QA definition diff adds only
+the Hermes test module to the existing repository-integrity unittest leaf.
+Remote CI and review for the corrected revision remain pending.
 
 ## Related Documents
 

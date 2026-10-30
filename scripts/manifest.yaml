@@ -1196,7 +1196,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-hermes-candidate.py
   kind: validator
-  authority: docs/03.specs/0247-offline-hermes-candidate-validator/spec.md
+  authority: scripts/README.md
   lifecycle: active
   mutation: none
   consumers:
