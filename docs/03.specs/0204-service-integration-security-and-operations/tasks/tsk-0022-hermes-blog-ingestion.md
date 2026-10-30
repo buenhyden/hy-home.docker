@@ -618,6 +618,31 @@ NOT_RUN. All isolated test resources were removed and the observed production
 n8n services remained healthy. A previously reported shell-pipeline “PASS” was
 invalid and is explicitly excluded from this evidence.
 
+### Isolated Queue publication and dispatch follow-up — 2026-10-30
+
+The isolated n8n setup now uses the default workflow-publication API rather
+than assuming an imported active version has registered a webhook. The
+synthetic Webhook node has a stable `webhookId`, so n8n registers its configured
+static path. This resolves the prior 404: the isolated webhook is registered
+before its request is made. The tracked workflow's exact
+path was also checked by the native helper in this isolated setup.
+
+An isolated Queue run completed through the synthetic n8n main and worker with
+an external JavaScript task runner. The fake Gateway returned `201` and the
+test recorded the expected synthetic persisted-receipt evidence. This is an
+N8N_NATIVE receipt for the isolated topology only. It does not execute the
+tracked workflow against its configured endpoint, use a production credential,
+or establish any server-B DNS, TCP, TLS, authentication, timeout, durable
+receipt, outage/recovery, email, or existing-workload property. Those remain
+NOT_RUN.
+
+The direct-fetch timestamp experiment writes evidence only in a temporary
+location and is not integrated into Hermes, its structured exporter, or the
+Publisher. It therefore supplies no source admission for a candidate and does
+not change the all-items collection-time hold. Likewise, an Outbox evidence
+snapshot is retained for later verification only: it is not dispatch authority
+and cannot cause a send, replay, activation, or credential use.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -627,8 +652,9 @@ invalid and is explicitly excluded from this evidence.
 | Publisher staging and Outbox | 23 | W80 | Single/multiple idea, replay, conflict, restart, paths/hashes and permissions | Synthetic fixtures and reviewed validator | PASS | W80 synthetic evidence | required | - |
 | Delivery and reconciliation | 23 | W81 | Durable receipts, lost response, bounded retry and immutable request binding | Fake adapters | PASS | W80 synthetic evidence | required | - |
 | Exact Gateway compatibility | 23 | W82 | Approved API revision/fixtures and inactive n8n source | Pinned source tested; actual timestamp provenance absent | NOT_RUN | Gateway source admission after Blog-data PR #620 | required | - |
-| Inactive n8n workflow import | 23 | W83 | Isolated owner/project setup, synthetic workflow import/publish and main/worker/runner health | Synthetic environment passed; webhook returned 404 and recorded no execution | PASS | Current producer and isolated Queue evidence — 2026-10-30 | required | - |
-| Native worker to Gateway | 23 | W83 | Queue round trip plus DNS/TCP/TLS/auth/timeout, outage/recovery and durable persistence | Webhook 404 with no execution; Queue and Gateway were not exercised | NOT_RUN | Current producer and isolated Queue evidence — 2026-10-30 | required | - |
+| Inactive n8n workflow import | 23 | W83 | Isolated owner/project setup, default publication API, static-webhook registration, exact-path helper and main/worker/runner health | Synthetic environment passed; registered webhook accepted its request | PASS | Isolated Queue publication and dispatch follow-up — 2026-10-30 | required | - |
+| Isolated Queue worker to fake Gateway | 23 | W83 | Queue round trip through external JavaScript runner and synthetic persisted receipt | Fake Gateway returned 201 with recorded synthetic receipt | PASS | Isolated Queue publication and dispatch follow-up — 2026-10-30 | required | - |
+| Native worker to Gateway | 23 | W83 | Tracked workflow plus server-B DNS/TCP/TLS/auth/timeout, outage/recovery and durable persistence | No tracked-workflow or server-B execution; isolated fake-Gateway receipt is non-operational | NOT_RUN | Isolated Queue publication and dispatch follow-up — 2026-10-30 | required | - |
 | Existing email/workload regression | 23 | W83 | Preserve Cron/email and existing n8n/Docker workloads | Read-only baseline plus later approved Native scenario | NOT_RUN | Design admission — 2026-10-30 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, coverage, docs gates and independent review | Final Task-owned diff | NOT_RUN | Review and Completion | required | - |
 
