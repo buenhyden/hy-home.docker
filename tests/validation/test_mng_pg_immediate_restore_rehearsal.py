@@ -376,9 +376,15 @@ class RehearsalTests(unittest.TestCase):
 
     def test_probe_blocked_when_public_could_write(self):
         result, _ = self.run_rehearsal(table_writes="3")
-        self.assertEqual(result["reason"], "probe_privileges")
+        self.assertEqual(result["reason"], "probe_privileges_table_writes")
         self.assertEqual(result["probe_result"], "FAIL")
         self.assertEqual(result["result"], "FAIL")
+
+    def test_pg_settings_view_is_not_a_persistent_write(self):
+        # PUBLIC holds UPDATE on pg_catalog.pg_settings by default (SET only).
+        sql = _load()._grant_check_sql("hy_5a_probe_x")
+        self.assertIn("c.oid <> 'pg_catalog.pg_settings'::regclass", sql)
+        self.assertIn("has_table_privilege", sql)
 
     def test_probe_session_never_logs_the_password_statement(self):
         _, fake = self.run_rehearsal()
@@ -387,7 +393,7 @@ class RehearsalTests(unittest.TestCase):
 
     def test_role_dropped_in_finally_after_mid_probe_failure(self):
         for over, reason in (
-            ({"table_writes": "3"}, "probe_privileges"),
+            ({"table_writes": "3"}, "probe_privileges_table_writes"),
             ({"session_fail": True}, "probe_session"),
         ):
             result, fake = self.run_rehearsal(**over)

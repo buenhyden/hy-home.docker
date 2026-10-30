@@ -553,6 +553,29 @@ R2 scratch restore above, W10's recovery evidence is complete. ADR-0041 (R2)
 and ADR-0042 were accepted on 2026-09-25, R2 is implemented, and both
 halves of its recovery are proven, so criterion 10 is accepted.
 
+### W7 5a rehearsal attempt 01 2026-10-30
+
+The owner ran the 5a rehearsal from `main` `15159fc73` into scratch
+`~/storage/backups/mng-pg-5a-nSNI0R`, using the RUN-0021 command and set
+`20261024-184214F_20261029-221825D`. Recovery itself passed:
+
+- `verify_rc` and `restore_rc` were 0, in 612.7 s;
+- `system_id_match` and `db_list_match` were true;
+- `app_db`, `mlflow`, the heartbeat table and the dbt view were present;
+- `count_stable` was true, with 11 extensions and 132 sequences observed;
+- the scratch stayed 0700, and every owned container was removed.
+
+It stopped with `result=FAIL` and `reason=probe_privileges` before the hba rule
+or any TCP login (`clone_hba_probe_rule=NOT_RUN`). A read-only check on the
+source `app_db` found the cause. PostgreSQL grants PUBLIC UPDATE on the view
+`pg_catalog.pg_settings` by default, which lets `SET` change session settings
+and writes nothing persistent. The check counted it as a table write.
+`app_db` grants PUBLIC only CONNECT and TEMP, its `public` schema grants
+PUBLIC only USAGE, and no other PUBLIC table write exists. The script now
+excludes exactly that view, and a failing privilege check names its fixed key
+(for example `probe_privileges_table_writes`). The fix needs a rerun. The scratch
+is kept for the 7-day review.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -562,6 +585,7 @@ halves of its recovery are proven, so criterion 10 is accepted.
 | Current Task status: completed (2) | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | required | - |
 | Current Task status: blocked (2) | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | required | - |
 | W7 selected backup verify | 7 | W7 | `pgbackrest verify` of the selected backup set | `20261024-184214F_20261029-221825D`, owner-run 2026-10-30 | PASS | W7 verify and W10 snapshot pair 2026-10-30; rc 0 in 2,483 ms | required | - |
+| W7 5a rehearsal attempt 01 | 7 | W7 | RUN-0021 step 5a immediate consistency rehearsal | `mng-pg-immediate-restore-rehearsal.py` at `15159fc73`, set `20261024-184214F_20261029-221825D`, 2026-10-30 | FAIL | W7 5a rehearsal attempt 01 2026-10-30; recovery checks passed, stopped at `probe_privileges` on the default PUBLIC UPDATE of `pg_settings` | required | - |
 | W10 R2 restore attempt 01 | 10 | W10 | R2 scratch restore of the selected host and state pair | One-off `restic-offsite` run, host `993a30f2`, state `7f9315e3`, 2026-10-30 | FAIL | W10 restore attempt and procedure rewrite 2026-10-30; `mkdir /restore/host: permission denied`, nothing restored | required | - |
 | W10 R2 restore rerun | 10 | W10 | R2 scratch restore of the selected host and state pair | `offsite.sh restore 993a30f2 7f9315e3` as the scratch owner, 2026-10-30 | PASS | W10 R2 scratch restore 2026-10-30; host rc 0 in 16 s (203 files), state rc 0 in 153 s (22,355 files, 2.10 GB) | required | W10 R2 restore attempt 01 |
 | W10 recovery evidence | 10 | W10 | Recovery evidence | R2 scratch restore rerun plus owner confirmation of off-host BKP-003, BKP-002 and R2 credential custody, 2026-10-30 | PASS | W10 offline key custody and criterion 10 2026-10-30 | required | Current Task status: blocked (2) |
