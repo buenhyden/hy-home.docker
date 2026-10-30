@@ -99,6 +99,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_mng_pg_init_sql",
                 "tests.validation.test_config_mount_hashes",
                 "tests.validation.test_prometheus_isolated_restore",
+                "tests.validation.test_mng_pg_immediate_restore_rehearsal",
                 "tests.validation.test_service_wiring_contracts",
                 "tests.validation.test_service_runtime_compatibility",
                 "tests.validation.test_supabase_smtp_rehearsal",

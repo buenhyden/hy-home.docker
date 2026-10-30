@@ -877,6 +877,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_lab_controller.py
+- path: scripts/operations/mng-pg-immediate-restore-rehearsal.py
+  kind: operations
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_mng_pg_immediate_restore_rehearsal.py
 - path: scripts/operations/openbao-consumer-migration.py
   kind: operations
   authority: infra/03-security/openbao/consumer-migration/README.md
