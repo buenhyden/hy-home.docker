@@ -4,7 +4,7 @@ version: "1.4.27"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-10-30"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -334,6 +334,19 @@ host를 잃은 뒤에는 Docker·보존 source revision과 image identity, 계�
 승인된 새 data-disk scratch에 먼저 원격 snapshot 목록의 metadata만 조사한다. 원격 snapshot ID는 local과 다르므로 host/tag/time과 전체 성공 실행 기록으로 host/state pair를 고정한다. 원격 접근에 필요한 전용 network와 R2 credential을 최소 범위로 제공하고, 기본 bridge·전체 secret 디렉터리 공유를 암묵적으로 사용하지 않는다.
 
 `restic restore <host-id> --tag hyhome-host --target <owned-host-scratch>`와 `restic restore <state-id> --tag hyhome-state --target <owned-state-scratch>`의 정확한 ID를 검토한 후 실행한다. `latest`와 기본 `/tmp`는 사용하지 않는다. host의 `/src/host`에서 설정/custody를 복원하고 state의 `/src/state/pgbackrest`는 별도 승인된 repository 경로에 owner70:70/mode0750로 준비한다. 실제 database 복원은 step5의 backup label/WAL target 계약을 따른다. 원격 copy가 담은 마지막 WAL 이후의 복구는 보장되지 않는다.
+
+R2 scratch 복원 리허설은 wrapper의 `restore` action으로만 한다. 이 action은 R2에 lock을 포함해 아무것도 쓰지 않는다. host와 state snapshot ID 한 쌍(8~64자 소문자 hex)과 `/restore`에 연결한 빈 scratch를 요구하고, 각 ID가 `hyhome-host`·`hyhome-state` tag를 가졌는지 먼저 확인하며, uid 0으로는 실행을 거부한다. 결과로 set별 exit code, 초, 파일 수, byte만 출력한다. container는 root로 실행되지만 `DAC_READ_SEARCH` 외의 capability가 없어 소유자가 다른 0700 scratch에 쓸 수 없으므로, scratch 소유자로 실행한다.
+
+```bash
+cd ~/data/hy-home.docker
+mkdir -p ~/storage/backups/r2-restore-scratch
+SCR=$(mktemp -d -p ~/storage/backups/r2-restore-scratch r2-restore-XXXXXX)
+docker compose --profile backup run --rm --no-deps \
+  --user "$(id -u):$(id -g)" -v "$SCR:/restore" \
+  restic-offsite restore <host-id> <state-id>; echo "rc=$?"
+```
+
+host snapshot은 `$SCR/host`, state snapshot은 `$SCR/state`에 복원된다. 소유권은 복원하지 않는다. 결과 줄과 소요 시간을 기록한 뒤, 정확히 그 `$SCR`만 별도 승인을 받아 지운다.
 
 로컬 repository를 다시 만드는 경우에도 빈 target과 원격 snapshot scope를 검토한다. `restic init --copy-chunker-params --from-repo` 후 승인된 ID를 `copy`하며, 기존 repository를 덮어쓰거나 전체 tag를 무조건 복사하지 않는다. encrypted snapshot 존재만으로 key custody와 application restore가 검증되지는 않는다. 실패 artifact는 보존하고 cleanup/cutover는 별도 승인한다.
 

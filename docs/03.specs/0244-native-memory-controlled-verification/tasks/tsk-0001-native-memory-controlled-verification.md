@@ -503,6 +503,43 @@ user-level hooks excluded from the session, or the owner to accept foreign
 `abs-other` calls and a missing `is_error` as outside the probe. It also needs
 the harness to classify those cases, a fresh review, and a release.
 
+### Native PostToolUse Attempt 08 Result
+
+On 2026-10-30 the owner chose option (a) for Attempt 08: foreign shell calls to
+absolute paths outside the reviewed hook set, and a missing `is_error` on the
+tool result, are outside this probe. The shim still refuses and records them.
+Harness 08 is
+`/tmp/claude-1000/-home-hyunyoun-data-hy-home-docker/abdf464e-1ee1-47b0-a9b5-818d08efdd35/scratchpad/hyhome-r13-run-native-hook-probe-08.py`,
+SHA-256 `7df03fae87f38c681ae6e0d01104f62d2c87562f14dac547136688e253d49acb`. It
+differs from 07 in these ways:
+
+- It adds `dispatcher-argv` and `repo-other` shim classes, so a repo hook is
+  never excused.
+- It passes the event check only when every `UNKNOWN` token is a classified
+  `abs-other` line.
+- It splits `is_error` into `ABSENT` and a non-boolean `UNKNOWN` and accepts
+  only `false` or `ABSENT`.
+- It adds two preflight guard tests and a `scope_exclusions` receipt field.
+
+An independent security review returned READY_WITH_NOTES. Its four notes were
+applied, and the re-review returned READY.
+
+Attempt 08 ran once from a clean governance worktree at `main` `bdaab6d2e`. The
+receipt `/tmp/hyhome-r13-native-hook-probe-receipt-08.json` has SHA-256
+`44894122d868c9f0bb7eb82a5e4769c2d6f4a508fb4ac119ef7a2c73176a5481`. Its
+classification is `POSTTOOLUSE_DELIVERY_VERIFIED_WITH_NORMAL_MERGED_MEMORY_OFF`,
+with harness exit 0. Preflight passed, including all 14 guard tests. Native and
+Dispatcher each counted one `SessionStart`, `UserPromptSubmit`, `PreToolUse`,
+`PostToolUse`, `Stop` and `SessionEnd`, and `PostToolValidate-Check` counted
+one. The guard forwarded exactly one Write, the output was exact, and the
+final token was seen. There were seven foreign `abs-other` calls and one
+`ABSENT` `is_error`, both within the stated scope. The label keeps its limits.
+It covers the named tracked project wrappers, dispatcher and post-validator in
+this ECC-disabled session with normal merged memory off, on Claude 2.1.312. It
+does not cover ECC or Codex hooks, OS isolation, or user-level plugin hooks.
+The row below resolves the earlier diagnostic failures with the same Check.
+Criterion 4's acceptance is the owner's.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -547,6 +584,7 @@ the harness to classify those cases, a fresh review, and a release.
 | Native PostToolUse attempt 06 plan review | 4 | W4 | Independent security review of one preflight-corrected ECC-disabled, normal-memory-off named-project wrapper diagnostic | Plan `b63759b956db133f0c7f2a1ec6c430befb9dd4623df3c2dd14ac767f57803990`; harness `e33dbd56a113285318ab5c9d7ef6ed90a921966a6e1ad93c9e553912ceac3d34`; public root mode/private group/current UID/full nine chain/no ACL/no writer checks; offline host 9/9 and guard tests 12/12; Write-only/max two turns/USD 1/180 seconds/no MCP unchanged | PASS | Native PostToolUse Attempt 06 Plan | required | - |
 | Native PostToolUse attempt 06 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt SHA-256 `1086eaa6…`, 2026-10-16 | FAIL | Native PostToolUse Attempt 06 Result; timed out, `SessionStart` 0, `PostToolUse` 0, one `UNKNOWN` event | required | - |
 | Native PostToolUse attempt 07 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt SHA-256 `3af58d34…`, 2026-10-30, Claude 2.1.312 | FAIL | Native PostToolUse Attempt 07 Result; all native and dispatcher hooks delivered once and the Write was exact, but seven `abs-other` UNKNOWN calls and a non-boolean `is_error` failed the closed checks | required | - |
+| Native PostToolUse attempt 08 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt SHA-256 `44894122…`, 2026-10-30, Claude 2.1.312, harness `7df03fae…` | PASS | Native PostToolUse Attempt 08 Result; `POSTTOOLUSE_DELIVERY_VERIFIED_WITH_NORMAL_MERGED_MEMORY_OFF` with the owner's two scope exclusions | required | Native PostToolUse attempt 05, Native PostToolUse attempt 06, Native PostToolUse attempt 07 |
 
 ## Criterion Acceptance
 

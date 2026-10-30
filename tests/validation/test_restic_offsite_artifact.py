@@ -151,5 +151,32 @@ class ArtifactRehearsalTests(unittest.TestCase):
         self.assertNotIn("hy-home-openbao-window", listed.stdout)
 
 
+class RestoreContractTests(unittest.TestCase):
+    def test_restore_reads_the_remote_into_an_empty_scratch_only(self):
+        script = SCRIPT.read_text()
+        start = script.index("    restore)\n")
+        body = script[start : script.index("        ;;\n", start)]
+        self.assertIn('[ "$#" -ne 2 ]', body)
+        self.assertIn("*[!0-9a-f]*", body)
+        self.assertIn('[ "$(id -u)" -eq 0 ]', body)
+        self.assertIn("does not carry tag", body)
+        self.assertIn('[ -n "$(ls -A /restore)" ]', body)
+        self.assertIn(
+            'restic --no-cache --no-lock restore "$1" --tag "$2" --target "/restore/$3"',
+            body,
+        )
+        for word in (
+            "restic forget",
+            "prune",
+            "unlock",
+            "restic copy",
+            "restic backup",
+            "restic init",
+            "--force",
+            "latest",
+        ):
+            self.assertNotIn(word, body)
+
+
 if __name__ == "__main__":
     unittest.main()
