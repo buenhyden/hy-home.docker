@@ -286,6 +286,18 @@ mind that rolling back past a migration means restoring that backup, and
 rescan the new image. The Task stays in progress until that image is pinned
 and scanned or the owner accepts the risk.
 
+### Open WebUI target decision 2026-10-30
+
+The owner chose on 2026-10-30 to move Open WebUI to v0.12.5-cuda once it meets
+the seven-day release age on 2026-11-05. That release carries both rounds of
+security fixes and the Debian 13 base, and the policy needs no exception. The
+options declined were v0.12.4 on 2026-11-01, v0.12.5 now under a release-age
+exception, and v0.12.3 now. The move takes a new Spec Package from 2026-11-05.
+Its steps are the pin and digest check, a database backup before the
+migration, HOME recreation of `open-webui` only, and an offline scan of the new
+image. This Task completes when that scan is recorded and the owner decides on
+it.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
