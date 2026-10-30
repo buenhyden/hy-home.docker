@@ -903,6 +903,33 @@ create and a create that never appears. The leftover container, never started,
 is for the owner to remove; a later residue check showing none resolves the
 Attempt four residue row.
 
+### Owner native attempt five 2026-10-30
+
+The owner ran the native class a fifth time, from `main` at `badfddd01`. A
+read-only check found no labelled native container or network before the run.
+Attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` finished `OK` in 1,221.6
+seconds with `native` PASS. Its image was
+`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`,
+with source binding `03892eb1a9a4`. All seven criterion 22 fields passed:
+
+| Field | Facts |
+| --- | --- |
+| `scheduled_execution` | One trigger-mode execution delivered in 23 s; the worker was the only member of the DEV network |
+| `concurrent_claims` | Driven in psql as the notifier role (owner decision 2026-10-30) |
+| `retry_dead_letter` | Same driver, backoff fast-forwarded; five attempts to `dead`, exhausted row dead-lettered |
+| `empty_queue` | Manual execution succeeded with nothing claimed, sent or changed |
+| `credential_rotation` | Stale password denied, new one accepted; stale workflow `error`, rotated `success`; SMTP rotation NOT_RUN |
+| `paired_restore_decrypt` | Restored metadata and key decrypted the rotated credential and the SMTP host |
+| `wrong_key_fail_closed` | Right key decrypted; a wrong key exported nothing |
+
+The earlier fields also passed: `queue_runner`, `restore` and
+`smtp_connect_failure_before_acceptance`. `exactly_once` stays NOT_CLAIMED and
+`response_loss_after_acceptance` NOT_RUN. All nine containers were confirmed
+absent, nothing was retained, and a read-only check after the run found no
+labelled resource. These rows resolve the W43 and W44 failures. Criterion 22
+still has two NOT_RUN rows. W42 freezes the reviewed P04 SQL and interface
+hash. W45 is delivery with a final review. Criterion 22 stays pending on them.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -927,6 +954,12 @@ Attempt four residue row.
 | Owner native attempt three | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `e3e504514`; attempt `opsflow-native-cd9f2fadd4086d1c86311ead` | FAIL | Owner native attempt three 2026-10-30; scheduled execution PASS; six-claimer race exceeded the notifier connection limit; harness fixed; cleanup PASS | required | - |
 | Owner native attempt four | 22 | W43 | Opt-in native class, fixture creation | `main` at `2427700e4`; attempt `opsflow-native-dc07812ebf96857acaa19f5f` | FAIL | Owner native attempt four 2026-10-30; first container create failed while a Grype scan loaded the host; cleanup PASS | required | - |
 | Attempt four residue | 22 | W43 | Owner pre-run check for labelled native containers and networks | `docker ps -a` by attempt label before attempt five, 2026-10-30 | FAIL | Owner native attempt four 2026-10-30, correction; one `Created` secret-prep container of attempt `opsflow-native-dc07812ebf96857acaa19f5f` remained after a reported cleanup PASS | required | - |
+| Native import and manual execution, attempt five | 22 | W43 | Exact image, credential and worker/SMTP proof | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; exact image and source binding, manual queue-worker executions to Mailpit | required | Native import and manual execution |
+| Owner native attempt five, manual execution | 22 | W43 | Opt-in native class, first manual execution | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; manual executions turned terminal | required | Owner native attempt |
+| Owner native attempt five, fixture creation | 22 | W43 | Opt-in native class, fixture creation | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; all nine containers created and confirmed absent after cleanup | required | Owner native attempt four |
+| Attempt five residue | 22 | W43 | Owner pre-run check for labelled native containers and networks | Read-only `docker ps -a` and `docker network ls` by attempt label before and after attempt five | PASS | Owner native attempt five 2026-10-30; none before and none after | required | Attempt four residue |
+| Scheduled failures and recovery, attempt five | 22 | W44 | Polling, outages, restart/rotation and empty restoration | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; scheduled polling, SMTP outage, rotation, paired restore and wrong-key checks | required | Scheduled failures and recovery |
+| Owner native attempt five | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; seven criterion 22 fields and `native` PASS; cleanup PASS | required | Owner native attempt with criterion 22 steps, Owner native attempt three |
 
 Actual existing-source command, exit0:
 
