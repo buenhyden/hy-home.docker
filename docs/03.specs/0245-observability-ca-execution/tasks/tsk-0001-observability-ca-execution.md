@@ -4,7 +4,7 @@ version: "0.1.24"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0245-TSK-0001"
 parent_ids:
@@ -366,6 +366,17 @@ consumers before this Task can accept them. No criterion is accepted by this
 documentation correction. The later rows use separately recorded inputs and
 checks, so they do not declare `Resolves` against the earlier NOT_RUN rows.
 
+### TLS consumer binding 2026-10-30
+
+The OpenBao window of 2026-10-22 recorded its W6 consumer results in SPEC-0243
+TSK-0001 ("W6" row). OpenBao answered HTTPS and refused plain HTTP. Prometheus
+reported `up` 1 for the `openbao` and `openbao-agent` targets, and Gatus
+reported its OpenBao check `success=true`. Those are the two consumers this
+Task changed, so the result binds to criterion 5 as the TLS consumer outcome.
+It does not cover rule health or Alertmanager delivery. It does not accept any
+criterion. Acceptance of criteria 1 to 7, including the criterion 2 ordering
+deviation, stays with the owner.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -401,6 +412,7 @@ checks, so they do not declare `Resolves` against the earlier NOT_RUN rows.
 | Later Gatus backup and isolated restore | 3 | W3 | Reuse the documented consistent copy and isolated SQLite validation | Recorded 2026-10-21 archive 4,545,536 bytes, SHA-256 prefix `c1e5cdcc…`, mode 0400; integrity_check ok, 8 endpoints, 835 results, 195 events; protected raw receipt not re-read | PASS | Prometheus isolated restore and Gatus W3 — 2026-10-21; Later-result reconciliation — 2026-10-22 | required | - |
 | Later Gatus delta image | 4 | W3 | Reuse the documented no-network/no-pull delta build | Recorded base `c52ad951…`, result `503e6af2…`, tracked entrypoint `4d4264b5…`, unchanged binary `c127f7e9…`; raw image identities not re-observed | PASS | Prometheus isolated restore and Gatus W3 — 2026-10-21; Later-result reconciliation — 2026-10-22 | required | - |
 | Later Gatus CA application | 5 | W5 | Reuse the documented bounded recreation and CA mount result | Recorded recreation at main `5c77e8681`, healthy, zero restarts, CA mount/bundle and SSL_CERT_FILE present; consumer TLS result not established by this row | PASS | Prometheus isolated restore and Gatus W3 — 2026-10-21; Later-result reconciliation — 2026-10-22 | required | - |
+| OpenBao TLS consumer result | 5 | W5 | Bind the OpenBao window's consumer checks to the two changed services | SPEC-0243 TSK-0001 W6 row, 2026-10-22: Prometheus `up` 1 for `openbao` and `openbao-agent`; Gatus OpenBao `success=true` | PASS | TLS consumer binding 2026-10-30 | required | - |
 
 ## Criterion Acceptance
 
