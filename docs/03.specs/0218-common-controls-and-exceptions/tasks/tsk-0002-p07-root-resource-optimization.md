@@ -511,6 +511,14 @@ took 29 s. These are single measurements on a loaded host, not an RTO; T5's
 RTO is set after a measurement on a quieter host or after the owner accepts
 these figures.
 
+Owner decision, T5 RTO — 2026-10-30: the owner accepted the 2026-10-21 figures.
+T5 RTO is 870 s (about 14.5 minutes: 814.4 s extraction plus 55.4 s to
+ready), recorded as one measurement on a loaded host, not an optimum. A
+quieter re-measurement may lower it later. This closes only the T5 target.
+T1 to T4 still need their own measured restore, and criterion 7 stays pending
+on the W11 and W12 workload and budget measurements. S9.1 status: PARTIAL, T5
+RTO set, T1 to T4 RTO pending measurement.
+
 ### Current Registration Reconciliation — 2026-10-22
 
 At `d7bec9a9a4318caa60cc0f5f99a1de6cfa71a580`, `scripts/manifest.yaml`
