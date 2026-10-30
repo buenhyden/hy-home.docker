@@ -1183,6 +1183,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-hermes-candidate.py
+  kind: validator
+  authority: docs/03.specs/0247-offline-hermes-candidate-validator/spec.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_hermes_candidate_validator.py
 - path: scripts/validation/check-operations-catalog.py
   kind: validator
   authority: docs/99.templates/registry.json
