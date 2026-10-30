@@ -149,7 +149,14 @@
       "ownership_repository": "traefik/traefik",
       "ownership_channel_reason": "Vendor release policy lists 3.7 with active and security support; GitHub latest patch v3.7.14 belongs to that supported GA minor. Main branch is upcoming releases, not stable. Support dates may change.",
       "native_test": "NOT_RUN",
-      "signature_scan": "NOT_RUN"
+      "signature_scan": "NOT_RUN",
+      "later_observation": {
+        "checked_at": "2026-10-30T03:01:50.900933+00:00",
+        "vendor_latest": "3.7.16",
+        "source_release_date": "2026-10-20T15:19:30Z",
+        "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.16",
+        "meaning": "GitHub latest published final release only; the 3.7 support-policy page was not re-read. The 2026-10-10 fields above are preserved as history."
+      }
     },
     {
       "product": "keycloak",

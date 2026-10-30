@@ -9329,6 +9329,34 @@
           ],
           "same_index": true
         }
+      },
+      {
+        "supplier": "traefik/traefik",
+        "request_url": "https://api.github.com/repos/traefik/traefik/releases/latest",
+        "checked_at": "2026-10-30T03:01:50.900933+00:00",
+        "status": 200,
+        "response_sha256": "76eb4af0620e3829835574c66deb95d33e94ec3139503c13e5349593c88af1f2",
+        "tag": "v3.7.16",
+        "published_at": "2026-10-20T15:19:30Z",
+        "prerelease": false,
+        "draft": false,
+        "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.16",
+        "channel": "github_latest_published_final_only; vendor stable support not independently established",
+        "scope": "Anonymous read-only GitHub API for the SPEC-0204-TSK-0021 pin adoption; no security, runtime or HOME acceptance."
+      },
+      {
+        "supplier": "prometheus/prometheus",
+        "request_url": "https://api.github.com/repos/prometheus/prometheus/releases/latest",
+        "checked_at": "2026-10-30T03:01:50.900933+00:00",
+        "status": 200,
+        "response_sha256": "88bf4a41340e603e66a36b19f897c74bee5b5204182fc7e46a7d8478d0f5d4f4",
+        "tag": "v3.15.1",
+        "published_at": "2026-10-21T16:15:57Z",
+        "prerelease": false,
+        "draft": false,
+        "release_url": "https://github.com/prometheus/prometheus/releases/tag/v3.15.1",
+        "channel": "github_latest_published_final_only; vendor stable support not independently established",
+        "scope": "Anonymous read-only GitHub API for the SPEC-0204-TSK-0021 pin adoption; no security, runtime or HOME acceptance."
       }
     ],
     "vendor_channel_interpretations": [

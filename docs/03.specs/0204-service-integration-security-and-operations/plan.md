@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.9.0"
+version: "1.9.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -183,6 +183,7 @@ provisioning, LAB runtime or learning-application work.
 | W73 | 19 | Quarantine ambiguous sends and reject expired SMTP leases | W72 | TSK-0018 | Versioned SQL004, closed consumer contract, deadline and native quarantine tests |
 | W74 | 19 | Execute the existing n8n notifier through an actual isolated queue worker, external runner and SMTP capture, then perform serial empty restoration | W73 | TSK-0019 | Exact reviewed images, terminal execution and Code-node proof, capture/unknown/reconciliation/no-resend and separate metadata/DEV restore; no accepted-response-loss or HOME claim |
 | W75 | 18 | Execute existing Airflow manifest DAG through actual isolated Celery publication, retry, replay and serial empty restoration | None | TSK-0020 | Exact cached-image driver/UID preflight, terminal DagRun/task/Celery identity, real S3 readback and separate DEV/metadata PG18.6 restore |
+| W76 | 15 | Adopt the fixed Traefik v3.7.16 and Prometheus v3.15.1 image pins, supersede the lapsed SEC01 acceptances in POL-0013 and POL-0045, and record the owner pull, scan, config-check, HOME recreation and rollback steps | None | TSK-0021 | Registry digests and latest releases verified, pins, tech-stack projection and ledger refreshed; pull, scan, boot, recreation and rollback `NOT_RUN` |
 
 ### P10 staged admission and acceptance ownership
 
@@ -780,6 +781,7 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 ## Related Documents
 
 - [W74 n8n native notification Task](tasks/tsk-0019-n8n-native-notification.md)
+- [W76 Traefik and Prometheus fixed image pins Task](tasks/tsk-0021-traefik-prometheus-fixed-image-pins.md)
 - [W75 Airflow native publication Task](tasks/tsk-0020-airflow-native-publication.md)
 - [P10 opsflow acceptance Task](tasks/tsk-0016-p10-opsflow-acceptance.md)
 

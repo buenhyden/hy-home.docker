@@ -5619,7 +5619,7 @@ class ImageTagPolicyTests(unittest.TestCase):
                 )
 
     def test_version_rule_separates_channels_from_versions(self):
-        for tag in ("483", "v3.15.0", "18.6-alpine", "1.0.3", "9cd150bf" * 5):
+        for tag in ("483", "v3.15.1", "18.6-alpine", "1.0.3", "9cd150bf" * 5):
             self.assertIsNotNone(self.VERSIONED.fullmatch(tag), tag)
         for tag in ("alpine", "latest", "cu126-slim", "local", "stable", "v2", "18"):
             self.assertIsNone(self.VERSIONED.fullmatch(tag), tag)
