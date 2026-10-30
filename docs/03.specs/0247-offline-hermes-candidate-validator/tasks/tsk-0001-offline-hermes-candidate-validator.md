@@ -81,6 +81,7 @@ and criterion decisions are pending; this transition does not assert completion.
 | E17 | 4 | W3 | script-manifest | final implementation against base e0d68d7ec | PASS | script manifest is valid | required | - |
 | E18 | 4 | W3 | hosted-candidate-quality | run 41033114804, HEAD eb38630ada56c25ab1079d7cc2635204d207736c | FAIL | test module missing from full profile; script authority pointed to Stage 03 | required | - |
 | E19 | 4 | W3 | local-regressions | worktree with test registration and authority correction | PASS | unittest surface ownership, script manifest and Hermes validator: 91 tests; CI gate model: 8 tests; script manifest checker: PASS | required | - |
+| E20 | 4 | W3 | hosted-document-validation | run 41038194439 | FAIL | accepted criterion 4 has unresolved required observation E18; lifecycle initial-status also failed from package validation | required | - |
 
 ## Criterion Acceptance
 
@@ -89,7 +90,7 @@ and criterion decisions are pending; this transition does not assert completion.
 | 1 | accepted | E8 | - | @buenhyden |
 | 2 | accepted | E8, E10 | - | @buenhyden |
 | 3 | accepted | E10 | - | @buenhyden |
-| 4 | accepted | E9, E13, E14, E15, E16, E17 | - | @buenhyden |
+| 4 | pending | E9, E13, E14, E15, E16, E17 | - | @buenhyden |
 
 ## Review and Completion
 
@@ -106,8 +107,8 @@ in the observed record and did not directly observe the entire earlier draft
 trial. The active metadata check above does not establish whether the new
 draft package was included. E13 applies to the staged inputs observed at that
 time; subsequent changes need their applicable checks rerun. Corpus lifecycle
-and recovery passed in E16, and criterion 4 is accepted for the observed local
-checks. Task completion, the exact diff and local commits remain pending.
+and recovery passed in E16. Criterion 4 was accepted for the observed local
+checks at that point. Task completion, the exact diff and local commits remain pending.
 At that review point, remote CI and remote review had not yet run.
 No deployment, Blog-data write, or delivery is claimed.
 
@@ -126,6 +127,12 @@ for PR #685. The trusted base is main revision
 `b0c71ff36cc536adf101ae2e9a7f5f94721eedaf`; the QA definition diff adds only
 the Hermes test module to the existing repository-integrity unittest leaf.
 Remote CI and review for the corrected revision remain pending.
+
+Hosted run 41038194439 then failed document validation as recorded in E20:
+criterion 4 remained accepted despite the unresolved required hosted failure E18.
+The lifecycle initial-status failure followed from the same invalid package.
+Criterion 4 is pending until the required failures are resolved by applicable
+observations; the local results in E19 do not establish a passing hosted run.
 
 ## Related Documents
 
