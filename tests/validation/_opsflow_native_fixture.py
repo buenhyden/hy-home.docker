@@ -68,7 +68,8 @@ WORK_SECONDS = 40 * 60
 # A create whose client call fails can still finish in the daemon: on
 # 2026-10-30 one appeared after its attempt's cleanup had passed, under a
 # loaded host. Cleanup polls this long (of its two minutes) before treating a
-# pending container as never created.
+# pending container as never created. A create that lands after this grace
+# and after the final sweep still escapes; the owner's residue check covers it.
 PENDING_CREATE_GRACE_SECONDS = 60
 
 
@@ -716,17 +717,27 @@ class NativeFixture:
         cancellation: BaseException | None = None
         try:
             self.client.begin_cleanup()
+
+            def remove_each(roles: tuple[str, ...]) -> None:
+                for role in roles:
+                    try:
+                        self.remove(role)
+                    except Exception:
+                        failures.append("container")
+
+            # Known containers go first, so the pending poll below cannot use
+            # up the cleanup budget they need; each container gets one removal.
+            remove_each(tuple(reversed(self.containers)))
+            adopted = []
             for role in tuple(self.pending_containers):
                 if role not in self.containers:
                     try:
                         self._adopt_pending_container(role)
                     except Exception:
                         failures.append("container_adoption")
-            for role in tuple(reversed(self.containers)):
-                try:
-                    self.remove(role)
-                except Exception:
-                    failures.append("container")
+                    if role in self.containers:
+                        adopted.append(role)
+            remove_each(tuple(adopted))
             for role in tuple(self.pending_networks):
                 if role not in self.networks:
                     try:

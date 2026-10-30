@@ -930,6 +930,68 @@ labelled resource. These rows resolve the W43 and W44 failures. Criterion 22
 still has two NOT_RUN rows. W42 freezes the reviewed P04 SQL and interface
 hash. W45 is delivery with a final review. Criterion 22 stays pending on them.
 
+### W42 freeze, W45 review and criterion 22 acceptance 2026-10-30
+
+On 2026-10-30 the owner chose to freeze the P04 interface after an
+independent review, then accept criterion 22. The frozen binding is the three
+migrations that attempt five applied, at `main` `8e84763bd`:
+
+| File | SHA256 |
+| --- | --- |
+| `001_opsflow.sql` | `82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f` |
+| `003_business_date.sql` | `830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72` |
+| `004_notification_quarantine.sql` | `ad8176d875b75c15d0e7bfc21c1cb67cd5b31240a4901bccec5b8bb0d931bde9` |
+
+`sha256sum` gave these values. 003 and 004 also embed the receipts of 001 and
+003. The P05 contract consumes these functions:
+
+- `claim_notification`, which uses `FOR UPDATE SKIP LOCKED`;
+- `ack_notification`, which needs the lease token and an unexpired lease;
+- `retry_not_sent_notification`, which has the same guards, backs off 60 to
+  900 seconds and dead-letters after five attempts;
+- `unknown_notification`, which needs the token only and quarantines the row.
+
+An expired lease becomes `unknown` and is never resent automatically.
+
+An independent `security-auditor` reviewed the three files, the provisioner
+and `002_checks.sql`. It found no Critical or High issue and approved with
+notes. Medium: `002_checks.sql` accepts only versions 1 and 2, so no reusable
+post-004 drift and ACL check exists, and no executable case shows that ingest
+and reader cannot run `unknown_notification` or `retry_not_sent_notification`
+or read `notification_reconciliations`. Medium: the database cannot itself
+enforce "not sent" before `retry_not_sent_notification`. On the P05 side,
+`test_n8n_outbox_contract.py` checks that only a proven `cancelled` receipt
+reaches that function and that every SMTP, ack and ambiguous error reaches
+`unknown_notification`; attempt five passed
+`smtp_connect_failure_before_acceptance`. Low notes:
+
+- `search_path` lacks a trailing `pg_temp`, which cannot be exploited while
+  clients have no TEMP;
+- 001 has no lock or statement timeout of its own;
+- the claim's expiry sweep has no SKIP LOCKED;
+- a same-day publication fails with raw `23505`;
+- the migrator `EXECUTE` grant on reconcile has no effect;
+- the fingerprint omits connection limits;
+- the checksum input is checked for shape only.
+
+These are P04 follow-ups for TSK-0012 and do not change the frozen
+interface.
+
+An independent `code-reviewer` reviewed the harness changes since the
+reviewed `16fa28d6f` and approved with notes. Two notes were fixed here.
+Cleanup now removes known containers before polling pending ones, so the
+60-second poll cannot use up their removal budget, and each container still
+gets one removal. A test now checks that the concurrent-claims scenario
+passes `RACE_JOBS`. The grace comment also now states that a create landing
+after the grace and the final sweep can still escape. In that case, the
+residue check is the guard. Deferred: the dates overflow past 15
+publications (the scenario makes 8), and timeout diagnostics read the logs
+once per marker. The native offline set ran 64 tests, OK, one skipped.
+
+W45 delivery is PRs #656 to #665, each merged after `candidate-quality`
+passed, plus this change. Criterion 22 is accepted. Criterion 8 shares the
+Delivery row and stays with its owner.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -960,6 +1022,8 @@ hash. W45 is delivery with a final review. Criterion 22 stays pending on them.
 | Attempt five residue | 22 | W43 | Owner pre-run check for labelled native containers and networks | Read-only `docker ps -a` and `docker network ls` by attempt label before and after attempt five | PASS | Owner native attempt five 2026-10-30; none before and none after | required | Attempt four residue |
 | Scheduled failures and recovery, attempt five | 22 | W44 | Polling, outages, restart/rotation and empty restoration | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; scheduled polling, SMTP outage, rotation, paired restore and wrong-key checks | required | Scheduled failures and recovery |
 | Owner native attempt five | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; seven criterion 22 fields and `native` PASS; cleanup PASS | required | Owner native attempt with criterion 22 steps, Owner native attempt three |
+| Reviewed frozen P04 binding | 22 | W42 | Reviewed SQL/version/hash and roles | 001, 003 and 004 at `8e84763bd` with the SHA256 values above; independent `security-auditor` review | PASS | W42 freeze, W45 review and criterion 22 acceptance 2026-10-30; approved with notes, no Critical or High; the notes are P04 follow-ups | required | Frozen P04 binding |
+| Criterion 22 delivery | 22 | W45 | Latest-head CI/review/PR/merge | PRs #656 to #665 merged after `candidate-quality` success; independent `code-reviewer` review with two notes fixed here | PASS | W42 freeze, W45 review and criterion 22 acceptance 2026-10-30; native offline set 64 tests OK, one skipped | required | Delivery |
 
 Actual existing-source command, exit0:
 
@@ -1000,7 +1064,7 @@ separate. No shared harness was created or replaced to satisfy the stale text.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 19 | accepted | Git and owner baseline, Supplied reference audit, New notifier source, Integrated source checks, Integrated independent reviews, Rerun of Document and shared gate integration | Owner accepted on 2026-10-29 for the narrowed criterion: this Task's source rows plus native manual execution, isolation, reconciliation, restart and restoration in TSK-0018 W73 and TSK-0019 W74. | SPEC-0204 TSK-0013 |
-| 22 | pending | - | - | SPEC-0204 TSK-0013 |
+| 22 | accepted | Owner native attempt five, Attempt five residue, Reviewed frozen P04 binding, Criterion 22 delivery | Owner accepted on 2026-10-30: native attempt five passed every criterion 22 field, with concurrent claims and retry driven in psql (owner decision 2026-10-30), after independent SQL and harness reviews. | SPEC-0204 TSK-0013 |
 
 ## Review and Completion
 
