@@ -301,6 +301,51 @@ passed 13/13. This is source evidence;
 Native Queue, credentials, alerts and runner execution remain NOT_RUN, and
 actual delivery remains BLOCKED by missing article collection time.
 
+Read-only timestamp reinvestigation found that the installed scheduler's Run
+Time header is generated after the agent runs and the filename records save
+time. Execution database entries establish the run interval and `generated_at`
+as the finish, not individual article collection times. The examined 14 news
+items and eight idea items contain collection-evidence strings without such
+timestamps. The eight idea references for the examined candidate were missing
+at inspection; nine files in the corresponding date directory had later
+modification times and none matched those references' hashes. The raw report
+hash matched. The reason the referenced files are absent is unknown; do not
+infer deletion or replace them with unrelated files. Actual article
+`collected_at` remains BLOCKED and no timestamp may be guessed. These are
+read-only observations, not Native operation or delivery evidence.
+
+Replacement PR #689 hosted run `41042875715` first attempt failed when its skip
+parser encountered an interleaved unrelated `BrokenPipe` message. A re-run was
+requested and is in progress; no hosted pass is claimed. Main has advanced
+since the prior baseline and must be verified against the actual candidate.
+
+The pinned Gateway runtime restricts timestamp fractions to one through three
+digits. Actual candidates carry six fractional digits in `generated_at`;
+after exact matching, the Gateway wire value is truncated to milliseconds.
+The local original retains microseconds, while the wire representation loses at
+most 999 microseconds. This conversion does not supply or substitute the actual
+article `collected_at`. For the two investigated runs, the corresponding
+`request_id` follows `cron:<job_id>:<run_id>` and is associated with the
+session. The read-only investigation followed exact request-to-session and
+tool-call relationships and matched requested URLs and successful results to
+candidate source URLs: 11 of 14 news items and two of eight idea items matched;
+the remainder did not. The observed timestamp is message creation after tool
+execution and is shared across a batch, so it does not establish per-item fetch
+time or the user-defined actual `collected_at`. Original collection timestamps
+remain BLOCKED. Original Outbox data retains microseconds; downstream wire
+precision is limited as described above. The first CI re-run and a limited
+synthetic n8n import test are in progress; neither is claimed as PASS. HEAD and
+main may change during these checks and must be matched to their results.
+
+An isolated import/export smoke attempt used one exact-image n8n container with
+no network, a read-only filesystem, dropped capabilities and only the approved
+read-only bind. The Docker client exited 130 after five minutes; a stop of the
+exact temporary labelled container returned 0. The container remains with
+daemon status `removing`, `Dead=true`, `Pid=0` and exit code 137. The reason is
+unknown and further diagnosis is pending; no forced removal or daemon restart
+was performed. Existing n8n main, worker and runners were observed up and
+healthy. The import is BLOCKED, not a PASS or Native workflow execution receipt.
+
 The replacement checkout's full suite subsequently passed 107 tests with the
 pinned validator and synthetic localhost tests. Independent final adapter,
 replay and workflow correctness and security reviews found no remaining Critical

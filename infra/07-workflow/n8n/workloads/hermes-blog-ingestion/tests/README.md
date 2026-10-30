@@ -12,7 +12,8 @@ updated: "2026-10-30"
 ## Overview
 
 로컬 파일 보존과 전송 상태 처리, 비활성 흐름의 보안 경계를 검증합니다.
-실제 게이트웨이 호환성·엔진 가져오기·서버 간 통신 성공은 별도 증거입니다.
+고정된 Gateway 계약·Fixture에 대한 합성 호환성을 확인합니다. 실제 엔진
+가져오기·서버 간 통신과 영속 수신 성공은 별도 증거입니다.
 
 ## Scope
 
@@ -22,8 +23,13 @@ updated: "2026-10-30"
 
 ## Structure
 
-- [test_workflow.py](test_workflow.py): 인증 선언, 정적 오류 경로, 실행 저장 제한,
-  비활성 상태와 인증 참조·본문·표현식 부재를 확인하는 다섯 시험입니다.
+- [test_workflow.py](test_workflow.py): 비활성 흐름과 입력 선별, 분기, 고정 대상,
+  영속 수신 응답을 합성 데이터와 빈 Node VM으로 검증합니다.
+- [test_gateway_adapter.py](test_gateway_adapter.py)와
+  [test_gateway_transport.py](test_gateway_transport.py): 고정 계약 어댑터와
+  동일 요청 재전송·Outbox 처리를 합성 방식으로 검증합니다.
+- [합성 보고서](fixtures/synthetic-report.json)와 같은 디렉터리의 계약 파일: Blog-data `dev` 커밋
+  `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`에서 고정한 계약과 합성 보고서입니다.
 
 그 밖의 준비·대기함·전송 시험 파일은 이 디렉터리의 전체 탐색 명령으로 함께
 실행합니다. 실제 검증기의 누락·변경은 의존성 실패로 보고합니다.
@@ -36,15 +42,15 @@ updated: "2026-10-30"
 python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -v
 ```
 
-차단 흐름만 확인하려면 다음 명령을 사용합니다.
+흐름 소스만 확인하려면 다음 명령을 사용합니다.
 
 ```bash
 python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p test_workflow.py -v
 ```
 
-흐름 소스가 없을 때 다섯 시험의 실패를 먼저 확인했고, 소스 추가 후 같은
-명령에서 다섯 시험이 통과했습니다. 전체 결과·측정 범위·독립 검토는 작업 기록을
-따릅니다. 정적 통과는 실제 엔진의 인증 처리나 오류 응답 코드를 증명하지 않습니다.
+전체 시험 결과·측정 범위·독립 검토는 작업 기록을 따릅니다. 합성 검증은
+실제 n8n Queue·외부 Runner·인증 처리나 서버 B의 영속 수신을 증명하지 않습니다.
+일부 시험은 별도 고정 검증기 또는 로컬 합성 HTTP/TLS 환경이 필요합니다.
 
 ## Related Documents
 
