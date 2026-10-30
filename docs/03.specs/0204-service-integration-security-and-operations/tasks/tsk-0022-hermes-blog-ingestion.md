@@ -342,6 +342,30 @@ remain source-only; latest-main integration and hosted checks are pending.
 The final `graphify update .` passed with 26,414 nodes and 49,344 edges; the
 optional SQL and HCL parsers remained unavailable.
 
+### Follow-up integration observation
+
+PR #684 candidate-quality run `41030161941` passed for its then-current head
+`be0ee1b` and base `e0d68d`; changed head and main have not yet been revalidated
+by that run. A later hy-home.docker main `b0c71ff` includes a separate 0182
+PITR change. In Blog-data main `7c8b1e` and dev `18a2b`, the paths
+`scripts/lib/ingestion/contracts/openapi-v1.json`, `ingestion-v1.schema.json`,
+`responses-v1.schema.json` in that same contracts directory, and
+`tests/workspace/fixtures/ingestion/synthetic-report.json` each returned 404.
+The contract contents and a fixed accessible revision remain unavailable. The
+last Gateway chat observation reported a synthetic container pass and ongoing
+overall QA; the chat host is currently unavailable for a newer observation.
+
+Upstream n8n 2.43.6 source indicates that the current stub's `responseNode`
+setting without a connected response node causes a configuration error when
+processing a request. Native import and activation remain NOT_RUN; this is not
+an active workflow. PR CodeQL identified TLS 1.0/1.1 in the synthetic test
+server; the test server was corrected to require TLS 1.2 or newer. Limited
+loopback HTTP/TLS tests for that final revision passed 11/11 and independent
+security re-review found no additional findings. Hosted candidate and CodeQL
+checks for the new revision remain NOT_RUN. The user requested commit and push of the completed
+scope followed by the contract wait; that request does not establish completed
+Git integration or operational delivery.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
