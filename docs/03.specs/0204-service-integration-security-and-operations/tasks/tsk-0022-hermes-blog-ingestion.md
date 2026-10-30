@@ -397,6 +397,54 @@ alerts, outage/recovery and email/workflow regression remain NOT_RUN. This
 bounded observation authorizes none of activation, Compose recreation, port or
 network changes.
 
+### Publisher endpoint binding follow-up — source and synthetic evidence
+
+The delivery path now obtains the configured relay endpoint's SHA-256 from the
+transport and writes it with the contract revision, destination, and immutable
+request bytes in the Outbox. Every later send or replay compares that stored
+digest with both the request and the configured transport before dispatching.
+An endpoint replacement therefore fails closed as an `invalid_binding` outcome
+instead of silently reusing a request for a different endpoint. The first
+Outbox open adds the nullable digest column for existing local databases; it
+does not change any Cron, workflow, Compose, network, credential, or remote
+resource.
+
+Independent correctness and security review of this change found no unresolved
+Critical or Important finding. The focused suite ran 115 tests: 113 passed and
+two were skipped. This is SOURCE/SYNTHETIC evidence only. A SHA-256 digest of
+an endpoint string proves neither DNS/TLS routing nor that the endpoint belongs
+to the intended Blog-data tenant. Tenant ownership, credential scope, certificate
+identity, and a durable Gateway receipt still require the separately approved
+operational validation lane.
+
+The first open of an older Outbox can run its SQLite schema migration. Concurrent
+first opens can contend for that migration and temporarily make the Publisher
+unavailable; startup procedure must serialize the first migration and retry a
+safe open rather than assuming concurrent availability. This has no automatic
+service deployment or retry policy attached.
+
+The current source inventory contains 153 items without authoritative actual
+article collection timestamps. They remain deferred and cannot be request-bound
+or delivered as `collected_at`; the execution finish, report-save, and tool
+message timestamps are not substitutes. This preserves the user's collection
+time requirement while the producer-side provenance gap is resolved.
+
+### n8n inactive workflow import — isolated Native PASS
+
+The earlier 45-second `--help` delay was traced to an I/O wait followed by
+`EACCES` on the temporary n8n configuration directory, not to workflow parsing or import.
+An exact n8n 2.43.6 container with `network=none`, read-only root filesystem,
+non-root execution, a synthetic key, and a tmpfs owned by UID/GID 1000 with
+mode 0700 imported the tracked inactive workflow into SQLite successfully
+(exit 0, 31 seconds). The temporary container count is zero afterwards; the
+existing main, worker, and two task runners remained healthy.
+
+This is a narrowly isolated N8N_NATIVE import receipt. Queue execution,
+activation, credentials, relay/Gateway network reachability, TLS/authentication,
+durable Gateway persistence, alerting, outage/recovery, and regression of
+existing email and workflows remain NOT_RUN. The synthetic key and isolated
+database prove none of those operational properties.
+
 ### State, failures and later MCP
 
 Outbox stores immutable original bytes and SHA-256 digests under
@@ -537,6 +585,7 @@ Git integration or operational delivery.
 | Publisher staging and Outbox | 23 | W80 | Single/multiple idea, replay, conflict, restart, paths/hashes and permissions | Synthetic fixtures and reviewed validator | PASS | W80 synthetic evidence | required | - |
 | Delivery and reconciliation | 23 | W81 | Durable receipts, lost response, bounded retry and immutable request binding | Fake adapters | PASS | W80 synthetic evidence | required | - |
 | Exact Gateway compatibility | 23 | W82 | Approved API revision/fixtures and inactive n8n source | Pinned source tested; actual timestamp provenance absent | NOT_RUN | Gateway source admission after Blog-data PR #620 | required | - |
+| Inactive n8n workflow import | 23 | W83 | Tracked workflow import into isolated n8n 2.43.6 SQLite | Network-none, read-only, non-root container with synthetic key; exit 0 in 31 seconds | PASS | n8n inactive workflow import — isolated Native PASS | required | - |
 | Native worker to Gateway | 23 | W83 | DNS/TCP/TLS/auth/timeout, outage/recovery and durable persistence | Exact approved server-B and secret targets absent; BLOCKED | NOT_RUN | Gateway contract and native gates | required | - |
 | Existing email/workload regression | 23 | W83 | Preserve Cron/email and existing n8n/Docker workloads | Read-only baseline plus later approved Native scenario | NOT_RUN | Design admission — 2026-10-30 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, coverage, docs gates and independent review | Final Task-owned diff | NOT_RUN | Review and Completion | required | - |
