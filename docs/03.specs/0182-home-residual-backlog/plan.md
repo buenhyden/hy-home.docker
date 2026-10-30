@@ -1,6 +1,6 @@
 ---
 title: "HOME Residual Backlog Plan"
-version: "0.4.5"
+version: "0.4.6"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -191,6 +191,13 @@ failed before Restic; the actual 2026-09-29 and 2026-09-30 receipts close
 that condition. These are historical execution results, not a new runtime
 apply or today's recovery proof. The current Task status and its item evidence
 own remaining-work progress; this Plan remains the execution sequence.
+
+### Completion Evidence
+
+W1 to W12 are complete: W1 and W2 by Task 0001, W3 to W6 by Task 0002, and W7
+to W12 by Task 0003, each recorded with its dated result. The Plan stays
+`approved`, the Registry's archive-eligible state. Durable operating guidance
+lives in POL-0021, RUN-0021, RUN-0088 and RUN-0098; nothing remains to promote.
 
 ## Related Documents
 
