@@ -1,6 +1,6 @@
 ---
 title: "HOME Residual Backlog Specification"
-version: "0.5.6"
+version: "0.5.7"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -186,6 +186,19 @@ down for that window; it never overlaps the SSO checks.
 Existing Restic snapshots keep the Vault tree and the quarantined credential
 files (the host set covers all of `secrets/`) until their retention expires,
 up to twelve months; that is the accepted cost of not rewriting snapshots.
+
+### Completion Evidence
+
+On 2026-10-30 every criterion is accepted and all three Tasks are
+`completed`; the package is ready for archive review. Criteria 1 and 2 are
+closed by [Task 0001](tasks/tsk-0001-repository-follow-ups.md), criteria 3 to 6
+by [Task 0002](tasks/tsk-0002-runtime-and-legacy-data.md), and criteria 7 to 12
+by [Task 0003](tasks/tsk-0003-recovery-and-auth-acceptance.md) (Criterion
+Acceptance table). The Spec stays `approved`, which the Registry marks eligible
+for completed-archive disposition; no further status exists. Current
+obligations are held by POL-0021, RUN-0021, RUN-0088, RUN-0098, ADR-0041 and
+ADR-0042; the Spec adds no obligation of its own. The move and its receipt are
+a separately approved change.
 
 ## Related Documents
 
