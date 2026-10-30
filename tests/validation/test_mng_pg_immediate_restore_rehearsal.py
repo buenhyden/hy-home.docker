@@ -5,14 +5,17 @@ tests pin what the script asks Docker to do, not what a database returns.
 """
 
 import argparse
+import errno
 import fcntl
 import importlib.util
 import json
 import os
 import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/operations/mng-pg-immediate-restore-rehearsal.py"
@@ -58,7 +61,18 @@ class FakeDocker:
         self.kw = kw
         self.calls, self.inputs, self.created, self.removed = [], [], {}, []
         self.auth_ok = kw.get("auth_enforced", True)
-        self.lock_held_at_ready = None
+        self.timeouts = {}
+        self.lock_held = {}  # event -> whether the host backup lock was held
+
+    def held(self, event):
+        probe = open(self.state / ".hyhome-backup.lock", "a")
+        try:
+            fcntl.flock(probe, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            self.lock_held[event] = False
+        except BlockingIOError:
+            self.lock_held[event] = True
+        finally:
+            probe.close()
 
     def source_info(self):
         return [
@@ -85,6 +99,13 @@ class FakeDocker:
     def __call__(self, argv, *, timeout, input=None):
         self.calls.append(argv)
         self.inputs.append(input)
+        self.timeouts[" ".join(argv[:2])] = timeout
+        if argv[:3] == ["docker", "context", "show"]:
+            return 0, self.kw.get("context", "default") + "\n"
+        if argv[:3] == ["docker", "ps", "-a"]:
+            cid = next(a.split("=", 2)[2] for a in argv if a.startswith("--filter=id="))
+            gone = cid in self.removed and not self.kw.get("ps_still_lists")
+            return self.kw.get("ps_rc", 0), "" if gone else cid + "\n"
         if argv[:3] == ["docker", "inspect", "mng-pg"]:
             return 0, json.dumps(self.source_info())
         if argv[:2] == ["docker", "create"]:
@@ -95,19 +116,26 @@ class FakeDocker:
         if argv[:2] == ["docker", "start"]:
             return 0, ""
         if argv[:2] == ["docker", "wait"]:
+            self.held("restore_wait")
+            if self.kw.get("wait_timeout"):
+                return 1, ""  # what _run returns on TimeoutExpired
             return 0, self.restore_rc + "\n"
         if argv[:2] == ["docker", "stop"]:
             return 0, ""
         if argv[:2] == ["docker", "rm"]:
-            self.removed.append(argv[-1])
+            if not self.kw.get("rm_noop"):
+                self.removed.append(argv[-1])
             return 0, ""
         if argv[:2] == ["docker", "inspect"]:
+            if "{{.State.Running}}" in argv:
+                return 0, "false\n" if self.kw.get("clone_down") else "true\n"
+            if self.kw.get("inspect_fail"):
+                return 1, ""
             if argv[-1] in self.created:  # by name
                 return 0, self.kw.get("inspect_id", self.created[argv[-1]])
-            if argv[-1] in self.removed:
-                return 1, ""
             return 0, "true"
         if "verify" in argv:
+            self.held("verify")
             return self.verify_rc, ""
         if "psql" in argv:
             return self.psql(argv, input or "")
@@ -118,8 +146,12 @@ class FakeDocker:
     def psql(self, argv, sql):
         container = argv[argv.index("--user") + 2]
         if "pg_is_in_recovery" in sql:
-            return 0, "f\n"
+            self.held("ready")
+            if self.kw.get("clone_down"):
+                return 1, ""
+            return 0, "t\n" if self.kw.get("in_recovery") else "f\n"
         if "pg_control_system" in sql:
+            self.held(f"identity_{container}")
             sysid = SYSID if container == "mng-pg" else self.clone_sysid
             dbs = DBS if container == "mng-pg" else self.kw.get("clone_dbs", DBS)
             return 0, f"sysid={sysid}\ndbs={dbs}\n"
@@ -145,13 +177,15 @@ class FakeDocker:
         if "DROP ROLE" in sql:
             return 0, ""
         if "pg_roles" in sql:
-            return 0, "role=0\ntemp=0\n"
+            return 0, f"role={self.kw.get('role_left', '0')}\ntemp=0\n"
         raise AssertionError(sql)
 
     def tcp(self, text):
         _, _, sql = text.partition("\n")
         if sql.strip() == "SELECT 1;":  # wrong-password attempt
             return (1, "") if self.auth_ok else (0, "1\n")
+        if self.kw.get("session_fail"):
+            return 1, ""
         return 0, "rows=1\ntcp=true\ntemp_after=0\n"
 
 
@@ -196,7 +230,9 @@ class RehearsalTests(unittest.TestCase):
             shutil.rmtree(old) if old.is_dir() else old.unlink()
         fake = FakeDocker(self.state, **kw)
         clock = Clock()
-        result = self.m.rehearse(self.args(), run=fake, sleep=clock.sleep, clock=clock)
+        result = self.m.rehearse(
+            self.args(), run=fake, sleep=clock.sleep, clock=clock, env={}
+        )
         return result, fake
 
     def test_refuses_bad_inputs(self):
@@ -273,7 +309,34 @@ class RehearsalTests(unittest.TestCase):
         self.assertTrue(any("dst=/var/lib/pgbackrest,readonly" in a for a in restore))
         self.assertTrue(any("pgbackrest_cipher_pass,readonly" in a for a in restore))
         self.assertIn("archive_mode=off", clone)
-        self.assertFalse(any("/var/lib/pgbackrest" in a for a in clone))
+        # pgbackrest.conf has no archive-copy: recovery needs archive-get
+        self.assertTrue(any("dst=/var/lib/pgbackrest,readonly" in a for a in clone))
+        self.assertFalse(
+            any(
+                "dst=/var/lib/pgbackrest" in a and "readonly" not in a
+                for a in creates[0] + clone
+            )
+        )
+        for argv in creates:
+            self.assertIn(f"--memory={self.m.MEMORY}", argv)
+            self.assertIn(f"--memory-swap={self.m.MEMORY}", argv)
+            self.assertIn(f"--cpus={self.m.CPUS}", argv)
+
+    def test_refuses_remote_or_non_default_docker_target(self):
+        fake = FakeDocker(self.state)
+        with self.assertRaises(self.m.Refused) as caught:
+            self.m.rehearse(self.args(), run=fake, env={"DOCKER_HOST": "ssh://x"})
+        self.assertEqual(str(caught.exception), "docker_host_set")
+        self.assertEqual(fake.calls, [])
+        fake = FakeDocker(self.state, context="remote")
+        with self.assertRaises(self.m.Refused) as caught:
+            self.m.rehearse(self.args(), run=fake, env={})
+        self.assertEqual(str(caught.exception), "docker_context")
+        self.assertEqual(fake.calls, [["docker", "context", "show"]])
+
+    def test_limits_are_bounded(self):
+        self.assertRegex(self.m.MEMORY, r"^[1-8]g$")
+        self.assertTrue(1 <= float(self.m.CPUS) <= 8)
 
     def test_source_and_clone_queries_use_uid_70_socket(self):
         _, fake = self.run_rehearsal()
@@ -299,6 +362,87 @@ class RehearsalTests(unittest.TestCase):
         self.assertEqual(result["reason"], "probe_privileges")
         self.assertEqual(result["probe_result"], "FAIL")
         self.assertEqual(result["result"], "FAIL")
+
+    def test_probe_session_never_logs_the_password_statement(self):
+        _, fake = self.run_rehearsal()
+        sql = next(i for i in fake.inputs if i and "CREATE ROLE" in i)
+        self.assertLess(sql.index("SET log_statement = none"), sql.index("CREATE ROLE"))
+
+    def test_role_dropped_in_finally_after_mid_probe_failure(self):
+        for over, reason in (
+            ({"table_writes": "3"}, "probe_privileges"),
+            ({"session_fail": True}, "probe_session"),
+        ):
+            result, fake = self.run_rehearsal(**over)
+            self.assertEqual(result["reason"], reason)
+            idx = [i for i, t in enumerate(fake.inputs) if t and "DROP ROLE" in t]
+            self.assertEqual(len(idx), 1, reason)  # only the finally drop ran
+            stop = next(
+                i for i, c in enumerate(fake.calls) if c[:2] == ["docker", "stop"]
+            )
+            self.assertLess(idx[0], stop)
+
+    def test_failing_probe_cleanup_is_a_failure(self):
+        result, _ = self.run_rehearsal(role_left="1")
+        self.assertEqual(result["reason"], "probe_cleanup")
+        self.assertEqual(result["probe_result"], "FAIL")
+        self.assertEqual(result["result"], "FAIL")
+
+    def test_wait_timeout_is_a_restore_failure(self):
+        result, fake = self.run_rehearsal(wait_timeout=True)
+        self.assertEqual((result["reason"], result["restore_rc"]), ("restore", 1))
+        self.assertEqual(fake.timeouts["docker wait"], self.m.RESTORE_TIMEOUT)
+        self.assertEqual(list(fake.created), [next(iter(fake.created))])  # no clone
+        timed_out = subprocess.TimeoutExpired("docker", 1)
+        with mock.patch.object(self.m.subprocess, "run", side_effect=timed_out):
+            self.assertEqual(self.m._run(["docker", "wait", "x"], timeout=1), (1, ""))
+
+    def test_clone_exit_and_ready_timeout(self):
+        result, _ = self.run_rehearsal(clone_down=True)
+        self.assertEqual(result["reason"], "clone_exited")
+        result, _ = self.run_rehearsal(in_recovery=True)
+        self.assertEqual(result["reason"], "clone_ready_timeout")
+
+    def test_lock_is_held_from_verify_until_ready(self):
+        result, fake = self.run_rehearsal()
+        self.assertEqual(result["result"], "PASS")
+        for event in ("verify", "restore_wait", "ready", "identity_mng-pg"):
+            self.assertIs(fake.lock_held[event], True, event)
+        clone = next(k for k in fake.lock_held if k.startswith("identity_hyhome"))
+        self.assertIs(fake.lock_held[clone], False)  # released once ready
+
+    def test_busy_lock_runs_no_verify(self):
+        holder = open(self.state / ".hyhome-backup.lock", "w")
+        self.addCleanup(holder.close)
+        fcntl.flock(holder, fcntl.LOCK_EX)
+        _, fake = self.run_rehearsal()
+        self.assertFalse([c for c in fake.calls if "verify" in c])
+
+    def test_oserror_becomes_fixed_output_and_unknown_removal_is_not_removed(self):
+        eio = OSError(errno.EIO, "io")
+        with mock.patch.object(self.m.fcntl, "flock", side_effect=eio):
+            result, _ = self.run_rehearsal()
+        self.assertEqual((result["result"], result["reason"]), ("FAIL", "io_error"))
+        with mock.patch.object(self.m, "inventory", side_effect=eio):
+            result, _ = self.run_rehearsal()
+        self.assertEqual(result["reason"], "io_error")
+        self.assertEqual(result["cleanup_status"], "removed")
+        self.assertEqual(len(self.m.render(result).splitlines()), len(FIELDS))
+
+    def test_removed_needs_a_by_id_absence_check(self):
+        for over in ({"ps_still_lists": True}, {"ps_rc": 1}, {"rm_noop": True}):
+            result, fake = self.run_rehearsal(**over)
+            self.assertTrue(result["cleanup_status"].startswith("failed:"), over)
+            self.assertEqual(result["result"], "FAIL")
+            ps = [c for c in fake.calls if c[:3] == ["docker", "ps", "-a"]]
+            self.assertIn("--no-trunc", ps[0])
+            self.assertIn(f"--filter=id={RESTORE_ID}", ps[0])
+        # a failed inspect is unknown: still stopped and removed by ID, then confirmed
+        result, fake = self.run_rehearsal(inspect_fail=True)
+        self.assertEqual(result["cleanup_status"], "removed")
+        self.assertEqual(sorted(fake.removed), sorted({RESTORE_ID, CLONE_ID}))
+        result, _ = self.run_rehearsal(inspect_fail=True, ps_rc=1)
+        self.assertTrue(result["cleanup_status"].startswith("failed:"))
 
     def test_trust_auth_is_a_failure(self):
         result, _ = self.run_rehearsal(auth_enforced=False)

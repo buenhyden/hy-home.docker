@@ -235,12 +235,12 @@ install -d -m 0700 "$SCRATCH_ROOT/mng-pg-5a-20261030"
 python3 scripts/operations/mng-pg-immediate-restore-rehearsal.py \
   --label 20261024-184214F_20261029-221825D \
   --scratch-root "$SCRATCH_ROOT/mng-pg-5a-20261030" \
-  --heartbeat platform_dev.debezium_heartbeat \
-  --dbt platform_dev.analytics \
+  --heartbeat app_db.debezium_heartbeat.heartbeat \
+  --dbt app_db.analytics.hyhome_dbt_connectivity \
   --count-table mlflow.public.experiments
 ```
 
-`--heartbeat`와 `--dbt`는 `DB.SCHEMA` 또는 `DB.SCHEMA.RELATION`, `--count-table`은 반복 가능한 `DB.SCHEMA.TABLE`이다. 위 값은 저장소가 추적하는 dev-pg 이름과 MLflow 표준 table에서 온 예시이므로 `mng-pg`에 실제로 있는지 실행 전에 소유자가 확인하고 다르면 값을 바꾼다. 없는 객체는 FAIL이다. script는 `latest`, 형식이 다른 label, `/tmp`·`/var/tmp`·`/dev/shm`, 비어 있지 않거나 소유자 소유가 아닌 target, symlink 경로를 실행 전에 거부한다(exit 2). backup scheduler lock(`$BACKUP_STATE_REPO_DIR/.hyhome-backup.lock`)이 사용 중이면 exit 75다.
+`--heartbeat`와 `--dbt`는 `DB.SCHEMA` 또는 `DB.SCHEMA.RELATION`, `--count-table`은 반복 가능한 `DB.SCHEMA.TABLE`이다. 위 값은 2026-10-30 `mng-pg`에서 읽기 전용 catalog 조회로 확인한 실제 객체다(`app_db`의 `debezium_heartbeat.heartbeat` table과 `analytics.hyhome_dbt_connectivity` view, `mlflow`의 `public.experiments`). 실행 전에 다시 바뀌었는지 확인한다. 없는 객체는 FAIL이다. script는 `latest`, 형식이 다른 label, `/tmp`·`/var/tmp`·`/dev/shm`, 비어 있지 않거나 소유자 소유가 아닌 target, symlink 경로를 실행 전에 거부한다(exit 2). backup scheduler lock(`$BACKUP_STATE_REPO_DIR/.hyhome-backup.lock`)이 사용 중이면 exit 75다.
 
 기대 출력은 아래 고정 필드뿐이다. 행, 비밀값, 원문 log는 없다. `extension_count`와 `sequence_count`는 관측값이며 이름 목록은 scratch root의 `inventory-observations.json`(0600)에만 있고 원본과 같다고 주장하지 않는다. `elapsed_seconds`는 실행마다 다르다.
 

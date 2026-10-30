@@ -503,6 +503,11 @@ dbt objects to require in `mng-pg`, the named management tables to count, and th
 approved data-disk scratch path. Step 5 time-target PITR still needs its own
 recovery time and approval.
 
+The 5a loopback TCP-auth probe stays as built: `mng-pg` `pg_hba` trusts
+127.0.0.1, so the wrong-password control fails closed as
+`probe_auth_not_enforced`; how 5a's auth probe is satisfied is pending an owner
+decision.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |

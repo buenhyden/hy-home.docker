@@ -6,14 +6,18 @@ scratch PGDATA, starts a network-less clone, and checks that the clone is the sa
 cluster and is usable. SPEC-0182 W7. Nothing here touches the source database
 except read-only catalog queries and `pgbackrest verify`.
 
-Order: refuse bad input, read the source container, `pgbackrest verify --set`
-(continue only on rc 0), take the backup scheduler's host lock, restore, start the
-clone, release the lock once recovery has finished, compare, probe, clean up.
-Only containers this run created (name and ID both match) are stopped and removed.
+Order: refuse bad input (including DOCKER_HOST or a non-default docker context),
+read the source container, take the backup scheduler's host lock, `pgbackrest
+verify --set` (continue only on rc 0), restore, start the clone, release the lock
+once recovery has finished, compare, probe, clean up. The clone mounts the
+repository read-only because recovery needs `archive-get` even for `immediate`.
+Only containers this run created (name and ID both match) are stopped and removed,
+and `removed` is reported only after a by-ID `docker ps -a` shows them absent.
 The scratch PGDATA is kept, mode 0700, for the 7-day owner review.
 
 Output is a fixed list of `key=value` lines: no rows, secrets or raw logs.
-Exit 0 PASS, 1 FAIL, 2 refused input, 75 backup lock busy.
+Exit 0 PASS, 1 FAIL (reason `io_error` for a file or lock OSError), 2 refused
+input, 75 backup lock busy.
 """
 
 from __future__ import annotations
@@ -72,6 +76,8 @@ EXIT = {"PASS": 0, "FAIL": 1, "REFUSED": 2}
 VERIFY_TIMEOUT = 900
 RESTORE_TIMEOUT = 3600
 READY_TIMEOUT = 300
+MEMORY = "2g"  # database is about 126 MB; the host has 32 GB
+CPUS = "2"
 
 
 class Refused(Exception):
@@ -199,6 +205,12 @@ class Owned:
         code, out = self.run(["docker", "inspect", "--format", fmt, cid], timeout=30)
         return code == 0 and out.strip() == "true"
 
+    def absent(self, cid) -> bool:
+        """True only when `docker ps -a` answers and lists nothing for the ID."""
+        argv = ["docker", "ps", "-a", "--no-trunc", f"--filter=id={cid}"]
+        code, out = self.run([*argv, "--format", "{{.ID}}"], timeout=30)
+        return code == 0 and not out.strip()
+
     def remove_all(self) -> str:
         if not self.items:
             return "none_created"
@@ -207,29 +219,27 @@ class Owned:
             code, out = self.run(
                 ["docker", "inspect", "--format", "{{.Id}}", name], timeout=30
             )
-            if code:
-                continue  # already gone
-            if out.strip() != cid:
+            if not code and out.strip() != cid:
                 failed.append("id_mismatch")
                 continue
+            # a failed inspect is unknown, not gone: stop and remove by our own ID
             self.run(["docker", "stop", "--time=60", cid], timeout=120)
-            code, _ = self.run(["docker", "rm", "--force", cid], timeout=60)
-            gone, _ = self.run(["docker", "inspect", "--format", "x", cid], timeout=30)
-            if code or not gone:
-                failed.append("rm_failed")
+            self.run(["docker", "rm", "--force", cid], timeout=60)
+            if not self.absent(cid):
+                failed.append("rm_unconfirmed")
         return "failed:" + ",".join(failed) if failed else "removed"
 
 
-def _container_argv(source, root: Path, *, repo: bool, command: list[str]) -> list[str]:
+def _container_argv(source, root: Path, *, command: list[str]) -> list[str]:
     argv = [f"--label={LABEL}", "--network=none", "--pull=never", "--cap-drop=ALL"]
+    argv += [f"--memory={MEMORY}", f"--memory-swap={MEMORY}", f"--cpus={CPUS}"]
     argv += [f"--cap-add={cap}" for cap in CAPS]
     argv += ["--security-opt=no-new-privileges", "--pids-limit=512", "--shm-size=256m"]
     argv += ["--env=PGDATA=" + DATA_TARGET + "/pgdata"]
     argv += ["--env=PGBACKREST_CONFIG_INCLUDE_PATH=/tmp/pgbackrest/conf.d"]
     argv += [f"--mount=type=bind,src={root}/data,dst={DATA_TARGET}"]
     argv += [f"--mount=type=bind,src={source['secret']},dst={SECRET_TARGET},readonly"]
-    if repo:
-        argv += [f"--mount=type=bind,src={source['repo']},dst={REPO_TARGET},readonly"]
+    argv += [f"--mount=type=bind,src={source['repo']},dst={REPO_TARGET},readonly"]
     return [*argv, source["image_id"], *command]
 
 
@@ -251,6 +261,8 @@ def clone_command() -> list[str]:
 
 def _probe_sql(role: str, password: str) -> str:
     return (
+        "SET log_statement = none;\n"
+        "SET log_min_duration_statement = -1;\n"
         "SET log_min_error_statement = panic;\n"
         f"CREATE ROLE \"{role}\" LOGIN PASSWORD '{password}' NOSUPERUSER NOCREATEDB "
         "NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 2;\n"
@@ -435,8 +447,32 @@ _IDENTITY_SQL = (
 )
 
 
-def rehearse(args, *, run=_run, sleep=time.sleep, clock=time.monotonic) -> dict:
-    root = check_inputs(args)
+def check_docker_target(run, env) -> None:
+    """Refuse a remote or non-default Docker target; bind mounts must be local."""
+    if env.get("DOCKER_HOST"):
+        raise Refused("docker_host_set")
+    code, out = run(["docker", "context", "show"], timeout=30)
+    if code or out.strip() != "default":
+        raise Refused("docker_context")
+
+
+def _release(lock) -> None:
+    try:
+        fcntl.flock(lock, fcntl.LOCK_UN)
+    except OSError:
+        pass  # closing the descriptor drops the lock either way
+    finally:
+        lock.close()
+
+
+def rehearse(
+    args, *, run=_run, sleep=time.sleep, clock=time.monotonic, env=os.environ
+) -> dict:
+    try:
+        root = check_inputs(args)
+    except OSError:
+        raise Refused("scratch_io") from None
+    check_docker_target(run, env)
     state = dict.fromkeys(FIELDS, "NOT_RUN")
     state.update(result="FAIL", reason="none", cleanup_status="none_created")
     started = clock()
@@ -448,6 +484,14 @@ def rehearse(args, *, run=_run, sleep=time.sleep, clock=time.monotonic) -> dict:
     try:
         source = read_source(run)
         admin = source["admin"]
+        lock_path = Path(source["repo"]).parent / LOCK_NAME
+        if lock_path.is_symlink() or not lock_path.parent.is_dir():
+            raise Stop("lock_path")
+        lock = open(lock_path, "a")
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise Stop("lock_busy") from None
         code, out = run(
             [
                 "docker",
@@ -469,21 +513,10 @@ def rehearse(args, *, run=_run, sleep=time.sleep, clock=time.monotonic) -> dict:
         source_id = _kv(lines)
         if code or not source_id.get("sysid"):
             raise Stop("source_query")
-        lock_path = Path(source["repo"]).parent / LOCK_NAME
-        if lock_path.is_symlink() or not lock_path.parent.is_dir():
-            raise Stop("lock_path")
-        lock = open(lock_path, "a")
-        try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except OSError:
-            state["reason"] = "lock_busy"
-            raise Stop("lock_busy") from None
         (root / "data").mkdir(mode=0o700)
         cid = owned.create(
             f"hyhome-5a-restore-{suffix}",
-            _container_argv(
-                source, root, repo=True, command=restore_command(args.label)
-            ),
+            _container_argv(source, root, command=restore_command(args.label)),
         )
         code, _ = run(["docker", "start", cid], timeout=60)
         if code:
@@ -496,13 +529,12 @@ def rehearse(args, *, run=_run, sleep=time.sleep, clock=time.monotonic) -> dict:
         if code or state["restore_rc"]:
             raise Stop("restore")
         cid = owned.create(
-            clone, _container_argv(source, root, repo=False, command=clone_command())
+            clone, _container_argv(source, root, command=clone_command())
         )
         if run(["docker", "start", cid], timeout=60)[0]:
             raise Stop("clone_start")
         wait_ready(run, owned, cid, clone, admin, sleep=sleep, clock=clock)
-        fcntl.flock(lock, fcntl.LOCK_UN)
-        lock.close()
+        _release(lock)
         lock = None
         code, lines = _sql(run, clone, admin, "postgres", _IDENTITY_SQL, timeout=60)
         clone_id = _kv(lines)
@@ -536,17 +568,20 @@ def rehearse(args, *, run=_run, sleep=time.sleep, clock=time.monotonic) -> dict:
         state["result"] = "PASS"
     except Stop as stop:
         state["reason"] = str(stop)
+    except OSError:
+        state["reason"] = "io_error"
     finally:
         if lock is not None:
-            fcntl.flock(lock, fcntl.LOCK_UN)
-            lock.close()
+            _release(lock)
         if admin and owned.items.get(clone):
             _sql(run, clone, admin, PROBE_DB, _drop_role_sql(role), timeout=60)
         state["cleanup_status"] = owned.remove_all()
         data = root / "data"
-        state["scratch_mode_0700"] = (
-            data.is_dir() and (data.stat().st_mode & 0o777) == 0o700
-        )
+        try:
+            mode = data.stat().st_mode
+            state["scratch_mode_0700"] = data.is_dir() and (mode & 0o777) == 0o700
+        except OSError:
+            state["scratch_mode_0700"] = False
         state["elapsed_seconds"] = round(clock() - started, 1)
     if state["cleanup_status"] not in ("removed", "none_created"):
         state["result"] = "FAIL"
