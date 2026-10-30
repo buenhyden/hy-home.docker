@@ -212,7 +212,7 @@ class Connection:
     def close(self): pass
 http.client.HTTPSConnection = Connection
 """
-        key = ("6eabd835f969", "a" * 32)
+        key = ("synthetic-job", "a" * 32)
         with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
             box = Outbox(Path(tmp) / "private" / "box.sqlite")
             try:

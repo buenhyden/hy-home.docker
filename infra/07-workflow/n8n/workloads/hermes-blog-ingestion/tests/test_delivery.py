@@ -15,7 +15,7 @@ sys.path.insert(0, str(WORKLOAD))
 Snapshot = import_module("publisher.candidates").Snapshot
 Outbox = import_module("publisher.outbox").Outbox
 
-KEY = ("6eabd835f969", "a" * 32)
+KEY = ("synthetic-job", "a" * 32)
 SOURCE = b"original synthetic report private-source-marker"
 BODY = b"synthetic request; not a Gateway fixture"
 

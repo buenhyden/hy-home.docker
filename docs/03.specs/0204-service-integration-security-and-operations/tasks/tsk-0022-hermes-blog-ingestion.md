@@ -643,6 +643,39 @@ not change the all-items collection-time hold. Likewise, an Outbox evidence
 snapshot is retained for later verification only: it is not dispatch authority
 and cannot cause a send, replay, activation, or credential use.
 
+### Publisher evidence-bound staging follow-up — source/synthetic only
+
+The current Publisher change makes the candidate/source snapshot and its opaque
+companion evidence one atomic Outbox operation.  It keeps the existing identity
+and digest checks under the delivery lock, so a restart or a concurrent caller
+cannot expose a successfully staged snapshot without its selected evidence
+bytes.  Repeating the same input remains idempotent; a different candidate,
+source, or evidence for the same identity remains a conflict.  This is durable
+local preservation only, not producer authentication.
+
+The three approved Hermes job identities were tested with evidence present but
+unverified.  None can be promoted to a request: `bind_request` rejects every
+record while provisional evidence exists, and the per-job policy also requires
+verified evidence.  Consequently all three delivery boundaries remain
+`blocked`; the change cannot dispatch, replay, activate a workflow, or obtain a
+credential.  The source-focused suite reported 134 tests, 132 passed and two
+optional tests skipped, including restart and concurrent staging cases.  This
+does not replace the separately recorded Gateway contract and Native evidence.
+
+The experimental direct-fetch producer currently writes only beneath a
+temporary directory and relies on same-UID local-writer trust.  It has no
+reviewed durable producer identity, no authenticated handoff to the exporter,
+and no recovery rule for a crash between fetch and evidence persistence.
+Accordingly it is not an admission source for the Outbox, is not connected to
+the Publisher execution path, and dispatch remains NOT_RUN.  A complete design
+must eliminate that crash gap and bind each verified item record to the
+candidate before calculating the report maximum `collected_at`.
+
+Hosted CI evidence is limited to a pass for an earlier PR head.  It is not a
+result for the present uncommitted Publisher change and must not be used as its
+acceptance or merge evidence.  The current revision requires its own complete
+checks after the final committed PR head is known.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |

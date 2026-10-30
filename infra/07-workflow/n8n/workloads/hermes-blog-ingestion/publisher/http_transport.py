@@ -10,6 +10,7 @@ import sys
 from dataclasses import dataclass, field
 from urllib.parse import urlsplit
 
+from . import policy
 from .delivery import FailureKind, TransportFailure
 
 _LIMIT = 1024 * 1024
@@ -178,7 +179,10 @@ class HttpTransport:
 
     def send(self, request):
         if (
-            request.destination != self._destination
+            not isinstance(request.key, tuple)
+            or len(request.key) != 2
+            or policy.evidence_required(request.key[0])
+            or request.destination != self._destination
             or request.endpoint_sha256 != self.endpoint_sha256
             or not isinstance(request.body, bytes)
             or len(request.body) > self._max_bytes

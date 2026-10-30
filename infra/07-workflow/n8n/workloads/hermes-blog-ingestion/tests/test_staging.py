@@ -9,6 +9,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -328,6 +329,310 @@ class StagingTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(json.loads(status.stdout), {"awaiting_contract": 1})
+
+    def test_cli_snapshots_untrusted_evidence_without_authorizing_delivery(self):
+        from argparse import Namespace
+
+        from publisher.cli import _scan
+        from publisher.delivery import process_one
+        from publisher.outbox import Outbox
+
+        evidence_root = self.root / "evidence"
+        evidence_root.mkdir()
+        name = digest((JOB + "\0" + RUN).encode()) + ".json"
+        evidence = b'{"untrusted":"private-evidence-marker"}'
+        (evidence_root / name).write_bytes(evidence)
+        args = Namespace(
+            exports=self.root / "exports",
+            source_root=self.root / "source",
+            item_root=self.root / "items",
+            validator=self.validator,
+            validator_sha256=self.validator_sha,
+            evidence_root=evidence_root,
+        )
+        box = Outbox(self.root / "private" / "outbox.sqlite")
+        self.addCleanup(box.close)
+        result = _scan(args, box)
+        self.assertEqual(result["evidence_stored"], 1)
+        self.assertEqual(box.get_unverified_evidence((JOB, RUN)), evidence)
+        self.assertEqual(process_one(box, (JOB, RUN)), "blocked")
+        (evidence_root / name).write_bytes(b"changed")
+        self.assertEqual(_scan(args, box)["rejected"], 1)
+        self.assertEqual(box.get_unverified_evidence((JOB, RUN)), evidence)
+        self.assertEqual(box.get((JOB, RUN))["status"], "awaiting_contract")
+
+    def test_evidence_missing_and_symlink_fail_closed(self):
+        from argparse import Namespace
+
+        from publisher.cli import _scan
+        from publisher.outbox import Outbox
+
+        evidence_root = self.root / "evidence"
+        evidence_root.mkdir()
+        args = Namespace(
+            exports=self.root / "exports",
+            source_root=self.root / "source",
+            item_root=self.root / "items",
+            validator=self.validator,
+            validator_sha256=self.validator_sha,
+            evidence_root=evidence_root,
+        )
+        box = Outbox(self.root / "private" / "outbox.sqlite")
+        self.addCleanup(box.close)
+        self.assertEqual(_scan(args, box)["rejected"], 1)
+        name = digest((JOB + "\0" + RUN).encode()) + ".json"
+        (evidence_root / name).symlink_to(self.export)
+        self.assertEqual(_scan(args, box)["rejected"], 1)
+        self.assertEqual(box.counts(), {})
+
+    def test_cli_accepts_evidence_root_and_never_prints_evidence(self):
+        from publisher.outbox import Outbox
+
+        evidence_root = self.root / "evidence"
+        evidence_root.mkdir()
+        name = digest((JOB + "\0" + RUN).encode()) + ".json"
+        evidence = b"private-evidence-marker"
+        (evidence_root / name).write_bytes(evidence)
+        db = self.root / "private" / "outbox.sqlite"
+        args = [
+            sys.executable,
+            "-c",
+            "import runpy, sys; import publisher.candidates as c; "
+            "c.REVIEWED_SHA256 = sys.argv.pop(1); "
+            "runpy.run_module('publisher.cli', run_name='__main__')",
+            self.validator_sha,
+            "stage",
+            "--exports",
+            str(self.root / "exports"),
+            "--source-root",
+            str(self.root / "source"),
+            "--item-root",
+            str(self.root / "items"),
+            "--validator",
+            str(self.validator),
+            "--validator-sha256",
+            self.validator_sha,
+            "--outbox",
+            str(db),
+            "--evidence-root",
+            str(evidence_root),
+        ]
+        result = subprocess.run(
+            args, cwd=WORKLOAD, capture_output=True, text=True, check=False
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["evidence_stored"], 1)
+        self.assertNotIn(evidence.decode(), result.stdout + result.stderr)
+        box = Outbox(db)
+        self.addCleanup(box.close)
+        self.assertEqual(box.get_unverified_evidence((JOB, RUN)), evidence)
+
+    def test_evidence_snapshot_rolls_back_as_one_transaction(self):
+        from publisher.outbox import Outbox
+
+        box = Outbox(self.root / "private" / "outbox.sqlite")
+        self.addCleanup(box.close)
+        with patch.object(
+            box, "_bind_unverified_evidence", side_effect=RuntimeError("interrupt")
+        ):
+            with self.assertRaises(RuntimeError):
+                box.stage_with_unverified_evidence(self.load(), b"evidence")
+        box.close()
+        box = Outbox(self.root / "private" / "outbox.sqlite")
+        self.addCleanup(box.close)
+        self.assertEqual(box.counts(), {})
+        self.assertEqual(
+            box.stage_with_unverified_evidence(self.load(), b"evidence"), "staged"
+        )
+        self.assertEqual(box.get_unverified_evidence((JOB, RUN)), b"evidence")
+
+    def test_unverified_evidence_cannot_dispatch_with_adapter_and_transport(self):
+        from publisher.delivery import process_one
+        from publisher.gateway_adapter import DESTINATION, GatewayAdapter
+        from publisher.http_transport import HttpTransport
+        from publisher.outbox import Outbox
+
+        box = Outbox(self.root / "private" / "outbox.sqlite")
+        self.addCleanup(box.close)
+        box.stage_with_unverified_evidence(self.load(), b"evidence")
+        adapter = GatewayAdapter(
+            scheduled_at="2026-10-30T00:00:00Z",
+            generated_at="2026-10-30T09:00:00+09:00",
+            collected_at="2026-10-30T00:02:00Z",
+        )
+        transport = HttpTransport(
+            endpoint="http://127.0.0.1/fixture",
+            destination=DESTINATION,
+            auth=("Authorization", "synthetic"),
+            allow_loopback_http=True,
+        )
+        with patch.object(HttpTransport, "send") as send:
+            self.assertEqual(
+                process_one(box, (JOB, RUN), adapter, transport), "blocked"
+            )
+            send.assert_not_called()
+        self.assertIsNone(box.get((JOB, RUN))["request_body"])
+        from publisher.outbox import OutboxError
+
+        with self.assertRaisesRegex(OutboxError, "^evidence_unverified$"):
+            box.bind_request((JOB, RUN), "v1", b"body")
+
+    def test_missing_evidence_cannot_dispatch_with_gateway_adapter_and_transport(self):
+        from publisher.delivery import process_one
+        from publisher.gateway_adapter import DESTINATION, GatewayAdapter
+        from publisher.http_transport import HttpTransport
+        from publisher.outbox import Outbox
+
+        box = Outbox(self.root / "private" / "outbox.sqlite")
+        self.addCleanup(box.close)
+        box.stage(self.load())
+        adapter = GatewayAdapter(
+            scheduled_at="2026-10-30T00:00:00Z",
+            generated_at="2026-10-30T09:00:00+09:00",
+            collected_at="2026-10-30T00:02:00Z",
+        )
+        transport = HttpTransport(
+            endpoint="http://127.0.0.1/fixture",
+            destination=DESTINATION,
+            auth=("Authorization", "synthetic"),
+            allow_loopback_http=True,
+        )
+        with patch.object(HttpTransport, "send") as send:
+            self.assertEqual(
+                process_one(box, (JOB, RUN), adapter, transport), "blocked"
+            )
+            send.assert_not_called()
+        self.assertIsNone(box.get((JOB, RUN))["request_body"])
+
+    def test_all_admitted_jobs_block_low_level_request_binding(self):
+        from publisher.candidates import JOBS, Snapshot
+        from publisher.outbox import Outbox, OutboxError
+
+        box = Outbox(self.root / "private" / "outbox.sqlite")
+        self.addCleanup(box.close)
+        for job in JOBS:
+            key = (job, RUN)
+            box.stage(Snapshot(*key, b"candidate", "source", b"report"))
+            with (
+                self.subTest(job=job),
+                self.assertRaisesRegex(OutboxError, "^evidence_required$"),
+            ):
+                box.bind_request(key, "v1", b"body")
+            self.assertIsNone(box.get(key)["request_body"])
+
+    def test_all_admitted_jobs_block_direct_gateway_replay(self):
+        from dataclasses import replace
+
+        from publisher.candidates import JOBS
+        from publisher.delivery import DispatchRequest, TransportFailure
+        from publisher.gateway_adapter import DESTINATION, REVISION
+        from publisher.gateway_transport import GatewayReplayTransport
+        from publisher.http_transport import HttpTransport
+
+        class Network:
+            endpoint_sha256 = "e" * 64
+
+            def __init__(self):
+                self.operations = []
+
+            def send(self, request):
+                self.operations.append(request)
+
+        network = Network()
+        transport = GatewayReplayTransport(
+            object(), network, allow_idempotent_replay=True
+        )
+        http = HttpTransport(
+            endpoint="https://example.test/ingest",
+            destination=DESTINATION,
+            auth=("Authorization", "synthetic"),
+        )
+        for job in JOBS:
+            request = DispatchRequest(
+                (job, RUN), "a" * 64, "b" * 64, REVISION, DESTINATION, b"body", "e" * 64
+            )
+            for operation in (transport.send, transport.reconcile):
+                with self.subTest(job=job, operation=operation.__name__):
+                    with self.assertRaises(TransportFailure):
+                        operation(request)
+            with patch("publisher.http_transport.subprocess.run") as child:
+                with self.assertRaises(TransportFailure):
+                    http.send(replace(request, endpoint_sha256=http.endpoint_sha256))
+                child.assert_not_called()
+        self.assertEqual(network.operations, [])
+
+    def test_missing_evidence_root_rejected_even_when_no_candidates(self):
+        from argparse import Namespace
+
+        from publisher.cli import _scan
+        from publisher.files import InputError
+        from publisher.outbox import Outbox
+
+        self.export.unlink()
+        args = Namespace(
+            exports=self.root / "exports",
+            source_root=self.root / "source",
+            item_root=self.root / "items",
+            validator=self.validator,
+            validator_sha256=self.validator_sha,
+            evidence_root=self.root / "missing",
+        )
+        box = Outbox(self.root / "private" / "outbox.sqlite")
+        self.addCleanup(box.close)
+        with self.assertRaisesRegex(InputError, "^directory_missing$"):
+            _scan(args, box)
+
+    def test_concurrent_dispatch_cannot_enter_during_evidence_staging(self):
+        from publisher.delivery import process_one
+        from publisher.outbox import Outbox, OutboxError
+
+        class SyntheticAdapter:
+            pass
+
+        class SyntheticGateway:
+            def __init__(self):
+                self.operations = []
+
+        snapshot = self.load()
+        path = self.root / "private" / "outbox.sqlite"
+        box = Outbox(path)
+        self.addCleanup(box.close)
+        entered, release = threading.Event(), threading.Event()
+        failures = []
+        original = Outbox._bind_unverified_evidence
+
+        def pause(local, *args):
+            entered.set()
+            if not release.wait(5):
+                raise RuntimeError("test_timeout")
+            return original(local, *args)
+
+        def stage():
+            local = Outbox(path)
+            try:
+                local.stage_with_unverified_evidence(snapshot, b"evidence")
+            except Exception as error:
+                failures.append(error)
+            finally:
+                local.close()
+
+        gateway = SyntheticGateway()
+        with patch.object(Outbox, "_bind_unverified_evidence", pause):
+            thread = threading.Thread(target=stage)
+            thread.start()
+            try:
+                self.assertTrue(entered.wait(5))
+                with self.assertRaisesRegex(OutboxError, "^delivery_locked$"):
+                    process_one(box, (JOB, RUN), SyntheticAdapter(), gateway)
+            finally:
+                release.set()
+                thread.join(5)
+        self.assertFalse(thread.is_alive())
+        self.assertEqual(failures, [])
+        self.assertEqual(
+            process_one(box, (JOB, RUN), SyntheticAdapter(), gateway), "blocked"
+        )
+        self.assertEqual(gateway.operations, [])
 
     def test_validator_schema_error_sanitized(self):
         from publisher.files import InputError

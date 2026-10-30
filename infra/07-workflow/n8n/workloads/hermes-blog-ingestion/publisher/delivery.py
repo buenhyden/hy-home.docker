@@ -13,6 +13,7 @@ from enum import Enum
 from types import MappingProxyType
 from typing import Protocol
 
+from . import policy
 from .outbox import Outbox, OutboxError, valid_gateway_report_id
 
 Key = tuple[str, str]
@@ -292,6 +293,13 @@ def process_one(
         row = outbox.get(key)
         if row["status"] in ("delivered", "failed"):
             return row["status"]
+        if policy.evidence_required(key[0]):
+            return "blocked"
+        try:
+            if outbox.get_unverified_evidence(key) is not None:
+                return "blocked"
+        except OutboxError:
+            return "blocked"
         if adapter is None or transport is None:
             return "blocked"
         if row["attempts"] >= max_attempts:
