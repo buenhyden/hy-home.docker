@@ -540,6 +540,22 @@ does not cover ECC or Codex hooks, OS isolation, or user-level plugin hooks.
 The row below resolves the earlier diagnostic failures with the same Check.
 Criterion 4's acceptance is the owner's.
 
+### Criterion 4 acceptance 2026-10-30
+
+On 2026-10-30 the owner accepted criterion 4 on Native PostToolUse attempt 08.
+The owner also decided that attempt 08 supersedes the six earlier criterion 4
+rows that were never resolved. Those are the four forced-off attempts (the
+approach moved to normal merged memory off), the merged-hook listing
+classifier qualification (replaced by the harness's own closed
+classification), and the conditional fixture probe (attempt 08's exact
+fixture Write after the separate memory-off control receipt). One PASS row
+per superseded Check records the decision and resolves its row. The accepted
+claim stays within attempt 08's limits: the named tracked project wrappers,
+dispatcher and post-validator, in an ECC-disabled session with normal merged
+memory off, on Claude 2.1.312. Foreign user-level hook calls and an absent
+`is_error` are excluded. ECC or Codex hooks, OS isolation and other provider
+versions are not covered.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -585,6 +601,12 @@ Criterion 4's acceptance is the owner's.
 | Native PostToolUse attempt 06 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt SHA-256 `1086eaa6…`, 2026-10-16 | FAIL | Native PostToolUse Attempt 06 Result; timed out, `SessionStart` 0, `PostToolUse` 0, one `UNKNOWN` event | required | - |
 | Native PostToolUse attempt 07 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt SHA-256 `3af58d34…`, 2026-10-30, Claude 2.1.312 | FAIL | Native PostToolUse Attempt 07 Result; all native and dispatcher hooks delivered once and the Write was exact, but seven `abs-other` UNKNOWN calls and a non-boolean `is_error` failed the closed checks | required | - |
 | Native PostToolUse attempt 08 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt SHA-256 `44894122…`, 2026-10-30, Claude 2.1.312, harness `7df03fae…` | PASS | Native PostToolUse Attempt 08 Result; `POSTTOOLUSE_DELIVERY_VERIFIED_WITH_NORMAL_MERGED_MEMORY_OFF` with the owner's two scope exclusions | required | Native PostToolUse attempt 05, Native PostToolUse attempt 06, Native PostToolUse attempt 07 |
+| Conditional fixture probe superseded | 4 | W4 | Exact ignored-fixture read/write provider prompt after effective-memory-off proof | Owner decision 2026-10-30: superseded by Native PostToolUse attempt 08 (receipt `44894122…`) | PASS | Criterion 4 acceptance 2026-10-30 | required | Conditional fixture probe |
+| Forced-off hook attempt superseded | 4 | W4 | One approved session-only forced-off hook-delivery attempt | Owner decision 2026-10-30: superseded by Native PostToolUse attempt 08 (receipt `44894122…`) | PASS | Criterion 4 acceptance 2026-10-30 | required | Forced-off hook attempt |
+| Forced-off hook retry 02 attempt superseded | 4 | W4 | One approved fresh session-only forced-off hook-delivery retry | Owner decision 2026-10-30: superseded by Native PostToolUse attempt 08 (receipt `44894122…`) | PASS | Criterion 4 acceptance 2026-10-30 | required | Forced-off hook retry 02 attempt |
+| Forced-off hook retry 03 attempt superseded | 4 | W4 | One released frozen strict-MCP, no-config hook-delivery retry | Owner decision 2026-10-30: superseded by Native PostToolUse attempt 08 (receipt `44894122…`) | PASS | Criterion 4 acceptance 2026-10-30 | required | Forced-off hook retry 03 attempt |
+| Forced-off hook attempt 04 superseded | 4 | W4 | One released final forced-off exact-Write diagnostic | Owner decision 2026-10-30: superseded by Native PostToolUse attempt 08 (receipt `44894122…`) | PASS | Criterion 4 acceptance 2026-10-30 | required | Forced-off hook attempt 04 |
+| Merged hook listing classifier qualification superseded | 4 | W4 | Validate candidate attribution and aggregate counts from the immutable control receipt | Owner decision 2026-10-30: superseded by Native PostToolUse attempt 08 (receipt `44894122…`) | PASS | Criterion 4 acceptance 2026-10-30 | required | Merged hook listing classifier qualification |
 
 ## Criterion Acceptance
 
@@ -593,7 +615,7 @@ Criterion 4's acceptance is the owner's.
 | 1 | pending | - | Await W1 control record | @buenhyden |
 | 2 | pending | - | Await W2 observation | @buenhyden |
 | 3 | accepted | Normal settings memory-control query result | Normal non-mutating effective-memory-off proof and independent security review passed | @buenhyden |
-| 4 | pending | - | Await W4 receipt classification | @buenhyden |
+| 4 | accepted | Native PostToolUse attempt 08 | Owner accepted on 2026-10-30: PostToolUse delivery verified with normal merged memory off on Claude 2.1.312, within the two stated scope exclusions; earlier unresolved rows superseded by owner decision. | @buenhyden |
 | 5 | pending | - | Await W5 boundary and cleanup record | @buenhyden |
 | 6 | pending | - | Await W6 review and gates | @buenhyden |
 
