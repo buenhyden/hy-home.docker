@@ -1,7 +1,7 @@
 #!/bin/sh
 # Offsite Restic entrypoint (ADR-0041): one Cloudflare R2 repository that
 # receives the snapshots of both local repositories (state and host).
-# Usage: offsite.sh {snapshots|init|copy|check|forget-prune|cmd <restic args...>}
+# Usage: offsite.sh {snapshots|init|copy|check|forget-prune|restore <host-id> <state-id>|cmd <restic args...>}
 # The daily run never deletes. forget-prune is the owner-run, separately
 # confirmed monthly procedure that keeps the remote inside the R2 free tier
 # (RUN-0021); it keeps every snapshot within the 30-day bucket lock.
@@ -225,6 +225,75 @@ case "$action" in
             entries="$entries${entries:+,}{\"name\":\"$name\",\"bytes\":$size,\"sha256\":\"$local_sum\"}"
         done
         echo "{\"state\":\"W3B_STORED\",\"snapshot_id\":\"$id\",\"tag\":\"hy-home-openbao-w3\",\"files\":[$entries]}"
+        ;;
+    restore)
+        # RUN-0021 8.3: restore one paired host and state snapshot into an
+        # owned, empty scratch mounted at /restore. Never writes to R2 (no
+        # lock either); run it as the scratch owner (compose run --user).
+        # Prints only per-set exit codes, seconds, file counts and bytes.
+        if [ "$#" -ne 2 ]; then
+            echo "restore needs <host-id> <state-id>" >&2
+            exit 64
+        fi
+        host_id="$1"
+        state_id="$2"
+        for id in "$host_id" "$state_id"; do
+            case "$id" in
+                '' | *[!0-9a-f]*) echo "snapshot IDs must be lowercase hex" >&2; exit 64 ;;
+            esac
+            if [ "${#id}" -lt 8 ] || [ "${#id}" -gt 64 ]; then
+                echo "snapshot IDs must be 8 to 64 hex characters" >&2
+                exit 64
+            fi
+        done
+        # Root here holds only DAC_READ_SEARCH and cannot write the scratch;
+        # test -w would still say yes for uid 0.
+        if [ "$(id -u)" -eq 0 ]; then
+            echo "run restore as the scratch owner (compose run --user)" >&2
+            exit 64
+        fi
+        if [ ! -d /restore ] || [ -L /restore ] || [ ! -w /restore ] ||
+            [ -n "$(ls -A /restore)" ]; then
+            echo "/restore must be an empty directory writable by this user" >&2
+            exit 64
+        fi
+        # No cache: the scratch user's cache would be thrown away anyway.
+        if ! restic --no-cache --no-lock cat config >/dev/null 2>&1; then
+            echo "R2 repository is not initialized or not reachable; see RUN-0021 (Offsite copy)" >&2
+            exit 65
+        fi
+        # An explicit ID bypasses --tag, so check each ID's tag first: a swapped
+        # pair must not restore state into host.
+        for pair in "$host_id hyhome-host" "$state_id hyhome-state"; do
+            # shellcheck disable=SC2086 # two hex/tag words by construction.
+            set -- $pair
+            if ! restic --no-cache --no-lock snapshots --json --tag "$2" 2>/dev/null |
+                grep -qE "\"(short_)?id\":\"$1"; then
+                echo "snapshot $1 does not carry tag $2" >&2
+                exit 64
+            fi
+        done
+        rc=0
+        for pair in "$host_id hyhome-host host" "$state_id hyhome-state state"; do
+            # shellcheck disable=SC2086 # three words by construction.
+            set -- $pair
+            start="$(date +%s)"
+            # Paths stay out of the output: restic and find errors are dropped.
+            if restic --no-cache --no-lock restore "$1" --tag "$2" --target "/restore/$3" >/dev/null 2>&1; then
+                set_rc=0
+            else
+                set_rc=$?
+                rc=1
+            fi
+            files=0
+            bytes=0
+            if [ -d "/restore/$3" ]; then
+                files="$(find "/restore/$3" -type f 2>/dev/null | wc -l)"
+                bytes="$(du -sb "/restore/$3" 2>/dev/null | cut -f1)"
+            fi
+            echo "restore $3 snapshot=$1 rc=$set_rc seconds=$(($(date +%s) - start)) files=$files bytes=$bytes"
+        done
+        exit "$rc"
         ;;
     cmd)
         case "${1:-}" in

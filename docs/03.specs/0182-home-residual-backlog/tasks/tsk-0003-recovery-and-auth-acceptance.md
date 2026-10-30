@@ -468,6 +468,28 @@ selected pair is state `7f9315e3` (2026-10-29 22:19:55 UTC, 1.957 GiB) and host
 07:18 KST run, which holds the Ollama catalog (SPEC-0226). The scratch
 restore of that pair has not run.
 
+### W10 restore attempt and procedure rewrite 2026-10-30
+
+The owner ran a one-off `restic-offsite` command for the selected pair (host
+`993a30f2`, state `7f9315e3`) into a new owned scratch. Both restores ended
+rc 1 within seconds with `mkdir /restore/host: permission denied`. The
+container runs as root with every capability dropped except
+`DAC_READ_SEARCH`, so it cannot write into a 0700 directory that another user
+owns. Nothing was restored, and the remote was only read. RUN-0021 8.3 now
+uses a reviewed `restore` action in `offsite.sh`. The action:
+
+- takes exactly two lowercase hex snapshot IDs;
+- checks that each ID carries its `hyhome-host` or `hyhome-state` tag;
+- refuses uid 0;
+- requires an empty, writable `/restore`;
+- reads the remote with `--no-cache --no-lock`, writing nothing there;
+- keeps restored paths out of its output;
+- prints only per-set exit codes, seconds, file counts and bytes;
+- runs as the scratch owner through `compose run --user`.
+
+An independent IaC review approved it with notes, which are applied. A contract test pins the action to read-only restore. The rehearsal itself is
+still NOT_RUN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -477,6 +499,7 @@ restore of that pair has not run.
 | Current Task status: completed (2) | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | required | - |
 | Current Task status: blocked (2) | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | required | - |
 | W7 selected backup verify | 7 | W7 | `pgbackrest verify` of the selected backup set | `20261024-184214F_20261029-221825D`, owner-run 2026-10-30 | PASS | W7 verify and W10 snapshot pair 2026-10-30; rc 0 in 2,483 ms | required | - |
+| W10 R2 restore attempt 01 | 10 | W10 | R2 scratch restore of the selected host and state pair | One-off `restic-offsite` run, host `993a30f2`, state `7f9315e3`, 2026-10-30 | FAIL | W10 restore attempt and procedure rewrite 2026-10-30; `mkdir /restore/host: permission denied`, nothing restored | required | - |
 | Current Task status: completed (3) | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/01-common/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | required | - |
 | Current Task status: completed (4) | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | required | - |
 
