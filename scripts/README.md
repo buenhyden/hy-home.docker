@@ -101,6 +101,17 @@ direct purpose folders so it does not duplicate that manifest.
 
 ## Usage
 
+Hermes v1 후보 JSON의 로컬 사전 검사는
+`python3 scripts/validation/check-hermes-candidate.py <candidate.json>`으로
+실행합니다. `--source-root <staged-hermes-home>`을 주면 `cron/output/` 원본
+바이트를, `--item-root <staged-user-home>`을 주면 사업 아이디어 항목 원본
+바이트를 SHA-256과 대조합니다. 루트를 생략한 원본은 해시 형식만 검사하며
+출력에 `not checked`로 표시합니다. 종료 코드 0은 구조 검증(`VALID`),
+1은 입력 오류(`INVALID`), 2는 인프라 비공개 차단(`BLOCKED`)입니다.
+어느 결과도 게시 승인·멱등 쓰기·실제 전달을 증명하지 않으며 네트워크나
+Blog-data에 접근하지 않습니다. Stage 03의 SPEC-0247 문서 탐색은
+[docs/README.md](../docs/README.md)에서 시작합니다.
+
 1. 스크립트를 추가, 이름 변경, 삭제하기 전에 이 README를 먼저 읽습니다.
 2. 새 스크립트는 해당 동작을 소유하는 기존 purpose 폴더 아래에 둡니다.
 3. purpose-folder 스크립트에 대한 루트 레벨 `scripts/*.sh` 중복 파일을 추가하지 않습니다.

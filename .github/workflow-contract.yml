@@ -810,6 +810,7 @@
       "argv": [
         "run-unittest",
         "tests.lib.test_surface_ownership",
+        "tests.validation.test_hermes_candidate_validator",
         "tests.validation.test_reference_stage_repo_contract",
         "tests.validation.test_script_manifest",
         "tests.validation.test_tech_stack_version_contract",
