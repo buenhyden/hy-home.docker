@@ -11,6 +11,7 @@ import stat
 import time
 from contextlib import contextmanager
 from pathlib import Path
+from types import SimpleNamespace
 
 from .files import InputError, open_directory
 
@@ -142,6 +143,11 @@ class Outbox:
                 CREATE TABLE IF NOT EXISTS ideas (
                     job_id TEXT, run_id TEXT, ordinal INTEGER, ref TEXT, content BLOB,
                     PRIMARY KEY(job_id,run_id,ordinal));
+                CREATE TABLE IF NOT EXISTS unverified_evidence (
+                    job_id TEXT NOT NULL, run_id TEXT NOT NULL,
+                    candidate_sha256 TEXT NOT NULL, source_sha256 TEXT NOT NULL,
+                    snapshot_sha256 TEXT NOT NULL, evidence BLOB NOT NULL, evidence_sha256 TEXT NOT NULL,
+                    PRIMARY KEY(job_id,run_id));
                 CREATE TABLE IF NOT EXISTS events (
                     id INTEGER PRIMARY KEY, job_id TEXT, run_id TEXT, status TEXT,
                     code TEXT, digest TEXT, created REAL);
@@ -164,6 +170,16 @@ class Outbox:
                 if "endpoint_sha256" not in columns:
                     self._db.execute(
                         "ALTER TABLE records ADD COLUMN endpoint_sha256 TEXT"
+                    )
+                evidence_columns = {
+                    row["name"]
+                    for row in self._db.execute(
+                        "PRAGMA table_info(unverified_evidence)"
+                    )
+                }
+                if "snapshot_sha256" not in evidence_columns:
+                    self._db.execute(
+                        "ALTER TABLE unverified_evidence ADD COLUMN snapshot_sha256 TEXT"
                     )
         except (OSError, sqlite3.Error, InputError):
             self.close()
@@ -296,6 +312,83 @@ class Outbox:
                 key,
             )
         ]
+
+    def get_unverified_evidence(self, key):
+        """Return private, untrusted evidence bytes; never a dispatch authorization."""
+        row = self._db.execute(
+            "SELECT * FROM unverified_evidence WHERE job_id=? AND run_id=?", key
+        ).fetchone()
+        if row is None:
+            return None
+        snapshot = self.get(key)
+        if (
+            not isinstance(row["evidence"], bytes)
+            or _sha(row["evidence"]) != row["evidence_sha256"]
+            or _sha(snapshot["candidate"]) != row["candidate_sha256"]
+            or snapshot["candidate_sha256"] != row["candidate_sha256"]
+            or _sha(snapshot["source"]) != row["source_sha256"]
+            or snapshot["source_sha256"] != row["source_sha256"]
+            or snapshot["snapshot_sha256"] != row["snapshot_sha256"]
+            or _snapshot_digest(SimpleNamespace(**snapshot)) != row["snapshot_sha256"]
+        ):
+            raise OutboxError("evidence_conflict")
+        return row["evidence"]
+
+    def bind_unverified_evidence(self, key, candidate_sha256, source_sha256, evidence):
+        """Keep a provisional evidence snapshot unchanged, without authenticating it.
+
+        The publisher must separately authenticate its producer and validate the
+        contents before these bytes can become evidence. This method only stores
+        opaque bytes and is deliberately not connected to the dispatch path.
+        """
+        if (
+            not isinstance(evidence, bytes)
+            or not evidence
+            or len(evidence) > 10_000_000
+            or not isinstance(candidate_sha256, str)
+            or not re.fullmatch(r"[a-f0-9]{64}", candidate_sha256)
+            or not isinstance(source_sha256, str)
+            or not re.fullmatch(r"[a-f0-9]{64}", source_sha256)
+        ):
+            raise OutboxError("invalid_evidence")
+        digest = _sha(evidence)
+        with self._transaction():
+            row = self.get(key)
+            if (
+                row["candidate_sha256"] != candidate_sha256
+                or row["source_sha256"] != source_sha256
+                or _sha(row["candidate"]) != candidate_sha256
+                or _sha(row["source"]) != source_sha256
+                or _snapshot_digest(SimpleNamespace(**row)) != row["snapshot_sha256"]
+            ):
+                raise OutboxError("evidence_conflict")
+            prior = self._db.execute(
+                "SELECT * FROM unverified_evidence WHERE job_id=? AND run_id=?", key
+            ).fetchone()
+            if prior is not None:
+                if (
+                    prior["candidate_sha256"] != candidate_sha256
+                    or prior["source_sha256"] != source_sha256
+                    or prior["snapshot_sha256"] != row["snapshot_sha256"]
+                    or prior["evidence"] != evidence
+                    or prior["evidence_sha256"] != digest
+                ):
+                    raise OutboxError("evidence_conflict")
+                return
+            if row["status"] != "awaiting_contract" or row["request_body"] is not None:
+                raise OutboxError("evidence_conflict")
+            self._db.execute(
+                "INSERT INTO unverified_evidence (job_id,run_id,candidate_sha256,source_sha256,snapshot_sha256,evidence,evidence_sha256) VALUES(?,?,?,?,?,?,?)",
+                (
+                    *key,
+                    candidate_sha256,
+                    source_sha256,
+                    row["snapshot_sha256"],
+                    evidence,
+                    digest,
+                ),
+            )
+            self._event(key, row["status"], "unverified_evidence_stored", digest)
 
     def bind_request(
         self,
