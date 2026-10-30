@@ -1596,6 +1596,21 @@ Low, for the next migration:
 None of these changes the frozen interface. A migration that does change it
 needs a new TSK-0013 binding.
 
+### Handoff from SPEC-0204 TSK-0013 2026-10-30
+
+TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. The P05 notifier consumes the
+frozen P04 interface: SHA256 `82a4762a…` (001), `830b62c6…` (003) and `ad8176d8…`
+(004) at `8e84763bd`. The functions are `claim_notification`,
+`ack_notification`, `retry_not_sent_notification` and `unknown_notification`.
+An expired lease becomes `unknown` and is never resent. Native attempt five
+(`opsflow-native-85d1c643ffb54ca7bf5da4e7`) ran on a disposable PostgreSQL 18.6
+and passed concurrent claims, retry to `dead` after five attempts, an
+exhausted row dead-lettered, an empty queue and a paired restore. Not
+claimed: `exactly_once` is NOT_CLAIMED and `response_loss_after_acceptance` is
+NOT_RUN. The SQL review follow-ups are in "Follow-ups from the TSK-0013 W42
+review 2026-10-30". Next input: any migration that changes these functions
+needs a new TSK-0013 binding.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |

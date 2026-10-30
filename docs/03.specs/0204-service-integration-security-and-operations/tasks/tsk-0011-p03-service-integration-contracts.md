@@ -4,7 +4,7 @@ version: "0.2.15"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0011"
 parent_ids:
@@ -1152,6 +1152,16 @@ HOME and stateful recovery remain NOT_RUN or pending under their existing owner
 contracts. The default/base dedicated exporter admin-credential risk is still
 present until explicit overlay adoption; an isolated monitor test does not prove
 adoption. C16/C17 remain pending and no completed Task is reopened.
+
+### Handoff from SPEC-0204 TSK-0013 2026-10-30
+
+TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. The only network fact proven
+natively: in attempt five the queue worker was the sole member of the DEV
+network, and main was not on it (`worker_only_dev_network: true`). That is a
+membership fact, not a denial test. NOT_RUN: actual executor, endpoint and
+network denial tests for the P05 notifier, and HOME endpoint and TLS
+binding. Next input: a P03 denial case that main and runner cannot reach the
+DEV database, run under P03's own approval.
 
 ## Evidence
 

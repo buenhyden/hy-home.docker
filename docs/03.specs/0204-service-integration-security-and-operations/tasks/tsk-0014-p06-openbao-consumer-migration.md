@@ -4,7 +4,7 @@ version: "0.1.26"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0014"
 parent_ids:
@@ -1665,6 +1665,14 @@ The owner reloaded Prometheus after #596. `/api/v1/status/runtimeinfo` reports
 report `ok`. The loaded OpenBao rules carry the new runbook URLs: the sealed and
 token alerts RUN-0085, the metrics scrape alert RUN-0104, the audit alert
 RUN-0105, and both Agent alerts RUN-0103.
+
+### Handoff from SPEC-0204 TSK-0013 2026-10-30
+
+TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. The notifier uses two n8n
+credentials, PostgreSQL as `opsflow_notifier` and SMTP. Attempt five proved
+rotation and stale denial for the PostgreSQL one as an n8n-native credential.
+NOT_RUN: delivery or refresh of either through OpenBao, and SMTP rotation.
+Next input: a P06 consumer decision for these two credentials.
 
 ## Evidence
 

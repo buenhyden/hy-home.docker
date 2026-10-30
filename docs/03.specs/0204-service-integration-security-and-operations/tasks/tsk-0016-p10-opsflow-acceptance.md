@@ -4,7 +4,7 @@ version: "0.1.22"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0016"
 parent_ids:
@@ -1074,6 +1074,20 @@ seven-document metadata and spec reader/traceability/navigation/catalog checks
 passed on their frozen inputs; they are not relabeled as validation of this
 last wording change. Task-only metadata/link review and staged hooks must bind
 the corrected final hash before its logical commit.
+
+### Handoff from SPEC-0204 TSK-0013 2026-10-30
+
+TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. Native attempt five passed every
+criterion 22 field: scheduled execution on the actual queue worker,
+concurrent claims and retry and dead-letter (driven in psql as the notifier
+role, by owner decision), an empty queue, credential rotation, paired restore,
+and wrong-key fail-closed. It also passed `queue_runner`, `restore` and an SMTP
+connect failure before acceptance. TSK-0019 W74 is a standalone synthetic
+fixture, not the W65 Airflow-to-n8n vertical. NOT_RUN: the full
+publication-to-capture chain from Airflow (W65) and any HOME run. Next input:
+W65 uses attempt five's harness and image
+`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153` as
+its n8n side.
 
 ## Evidence
 
