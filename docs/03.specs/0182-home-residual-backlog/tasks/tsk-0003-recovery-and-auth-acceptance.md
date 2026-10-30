@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.8.2"
+version: "0.8.3"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -621,6 +621,46 @@ criterion names. The scratch is kept for the owner's 7-day review. Its
 The step 5 run needs a time-target mode for the reviewed 5a script, an
 independent stateful recovery review and separate owner approval. Until then
 it stays NOT_RUN.
+
+### W7 step 5 time-target script 2026-10-30
+
+`scripts/operations/mng-pg-immediate-restore-rehearsal.py` gains
+`--target-time`. Without it the script runs the reviewed 5a path unchanged.
+With it, the script:
+
+- accepts only an ISO time with an explicit offset;
+- reads the set's stop time through read-only `pgbackrest info` and refuses
+  a target that is not strictly after it;
+- restores with `--type=time --target-action=promote --archive-mode=off`;
+- requires the clone to be promoted onto a timeline above the source's, with
+  a `recovery stopping` line in its kept scratch log.
+
+It uses its own `hyhome-pitr-*` names and `mng-pg-pitr-5` label, and RUN-0021
+step 5 now carries the owner command. The script's 49 tests pass.
+
+Read-only checks on `mng-pg`:
+
+- `pgbackrest info --set=<label> --output=json` returned stop epoch
+  1793312309, which is 22:18:29 UTC;
+- `pg_stat_archiver` showed the archive at `0000000100000027000000B1`, at
+  2026-10-30 08:34:35 UTC, past the target.
+
+The run itself proves WAL continuity. A gap ends recovery early and reports
+`clone_exited`.
+
+The first independent stateful recovery review returned REQUEST_CHANGES:
+
+- Its HIGH finding was that pgBackRest refuses `--set` with JSON output.
+  The live observation above refutes it.
+- Its MEDIUM archive-coverage finding is answered by the `pg_stat_archiver`
+  check above.
+- Its LOW findings added the `target_evidence_unreadable` reason, a
+  read-only data mount for the info container, and tests.
+
+The fix-range re-review returned APPROVE_WITH_NOTES. Its runbook notes are
+applied. One label-only note remains: an unreadable log file reports
+`target_not_reached` rather than `target_evidence_unreadable`, and the run
+still fails safe. The run stays NOT_RUN until the owner approves it.
 
 ## Evidence
 
