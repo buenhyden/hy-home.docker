@@ -4,7 +4,7 @@ version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0002"
 parent_ids:
@@ -627,6 +627,17 @@ budgets, least privilege, service recovery and HOME acceptance remain with
 W11–W16 and their existing owners. No load, actual W7 collection, secret,
 Docker runtime mutation, token action or remote write ran. Root retains final
 registered gates, independent review and commit ownership.
+
+### Handoff from SPEC-0204 TSK-0013 2026-10-30
+
+SPEC-0204 TSK-0013 (P05 n8n notifier) is final at `main`
+`c585c5244`. Its only measured facts that bear on P07 are timings from one
+native fixture run on 2026-10-30. A scheduled delivery took 23 s from
+activation, and the whole native class took 1,221.6 s. Fixture caps were
+40 minutes total and per-container resource caps from `RESOURCE_CAPS`.
+NOT_RUN: CPU, memory and polling-load measurement of the notifier. Next input:
+measure the notifier's one-minute polling load on HOME when P07 W11 binds
+its inputs.
 
 ## Evidence
 

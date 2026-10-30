@@ -4,7 +4,7 @@ version: "0.2.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0015"
 parent_ids:
@@ -852,6 +852,17 @@ and cross-cutting headings, and all fourteen repaired descriptions against
 current subject Overviews, with no semantic finding. Final changed-document
 checks and staged hooks still bind the final receipt before its logical commit.
 Owning-Spec push/PR/CI/merge is separate and not yet claimed.
+
+### Handoff from SPEC-0204 TSK-0013 2026-10-30
+
+TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. The P05 operations documents now
+live under the nested layout:
+`guides/08-workflows-and-automation/0053-n8n.md` (blob `a64817a7`),
+`policies/08-workflows-and-automation/0053-n8n.md` (blob `3dc31e28`) and
+`runbooks/08-workflows-and-automation/0053-n8n.md` (blob `896fcb6f`). The TSK-0013
+proposal base was the old flat paths, for example `guides/0053-n8n.md` blob
+`2e76cfce…` (TSK-0013 W41 sections). No P05 lane is NOT_RUN for this handoff.
+Next input: confirm the subject 0053 paths in this Task's layout map.
 
 ## Evidence
 
