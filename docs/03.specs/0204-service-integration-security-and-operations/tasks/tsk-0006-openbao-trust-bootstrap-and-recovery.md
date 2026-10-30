@@ -4,7 +4,7 @@ version: "0.2.37"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -4062,6 +4062,29 @@ Corrections and findings:
   `agent-restart` line still had its `<…>` placeholder, which bash read as an
   input redirection, so nothing ran. Neither changed anything. The Agent was
   healthy and needed no restart.
+
+### Deadline reconciliation 2026-10-30
+
+The v29 handoff listed the three D1 owner decisions "before 2026-11-15". The
+D1 items are the renderer token, the sealed-server cleanup and the kept W2
+custody. On 2026-10-27 the owner re-accepted all five window residuals until
+2026-12-15: the D1 three plus shared UID 100 and unencrypted swap (POL-0085).
+That later decision governs, so this Task has no 2026-11-15 deadline. The
+2026-11-15 expiries that remain are the Traefik and Prometheus image
+acceptances (POL-0013, POL-0045), which belong to SEC01, not here. Of the v29
+items, A1 and B1 are closed (SPEC-0212 TSK-0008), and A3 is done (both restore
+targets removed). B4 v3 is installed, but no W5 has run with it. The first W5
+with v3 starts with `owner-window.sh preflight`. The Evidence rows above are
+unchanged. Their reconciliation stays with the next approved window.
+
+### Handoff from SPEC-0204 TSK-0013 2026-10-30
+
+TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. The OpenBao boundary P05 hands to
+P01: n8n credentials were rotated as n8n-native credentials in a disposable
+fixture (stale denied, new accepted, paired metadata and key restore). NOT_RUN:
+future management of these credentials through OpenBao and native credential
+refresh. Next input: when P01 and P06 deliver, P06 decides whether the
+notifier's PostgreSQL and SMTP credentials move to OpenBao.
 
 ## Evidence
 

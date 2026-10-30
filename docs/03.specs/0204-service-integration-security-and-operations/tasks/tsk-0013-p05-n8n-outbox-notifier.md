@@ -1,8 +1,8 @@
 ---
 title: "P05 n8n Independent Outbox Notifier Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-30"
 layer: "specs"
@@ -271,6 +271,7 @@ checks와 현재 입력의 등록 gate 결과를 별도로 평가하며 과거 �
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0013 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0013 | ready | in-progress | #w40-w41-source-execution |
+| SPEC-0204-TSK-0013 | in-progress | completed | #handoffs-and-completion-2026-10-30 |
 
 ### W40 W41 Source Execution
 
@@ -992,6 +993,36 @@ W45 delivery is PRs #656 to #665, each merged after `candidate-quality`
 passed, plus this change. Criterion 22 is accepted. Criterion 8 shares the
 Delivery row and stays with its owner.
 
+### Handoffs and completion 2026-10-30
+
+The final source is `main` `c585c5244` (PR #666). Each receiver has a dated
+"Handoff from SPEC-0204 TSK-0013 2026-10-30" section. Each section names this
+SHA, the native facts it can use, its NOT_RUN lanes and its next input.
+
+| Phase | Receiver | NOT_RUN lanes handed over |
+| --- | --- | --- |
+| P04 | TSK-0012 | `exactly_once` not claimed; response loss after acceptance; ingest and reader denial cases |
+| P02 | TSK-0010 | SMTP credential rotation; execution-copy catalog row |
+| P03 | TSK-0011 | Executor, endpoint and network denial tests; HOME endpoint and TLS |
+| P01 | TSK-0006 | OpenBao management and refresh of the notifier credentials |
+| P06 | TSK-0014 | OpenBao delivery of both notifier credentials; SMTP rotation |
+| P07 | SPEC-0218 TSK-0002 | CPU, memory and polling-load measurement |
+| P08 | TSK-0015 | None; nested 0053 paths and blobs given |
+| P10 | TSK-0016 | Airflow-to-n8n publication-to-capture chain (W65); HOME |
+
+SEC01's TSK-0009 is completed and frozen, so its handoff stays here. Native
+attempt five ran image
+`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`, built
+from n8n 2.43.6 with source binding `03892eb1a9a4`, the same image as TSK-0019
+attempt 11. NOT_RUN: an installed-node schema and security receipt for that
+image, and any HOME n8n upgrade from the running 2.41.6. A non-terminal SEC
+successor takes this up.
+
+Criteria 19 and 22 are accepted, and every assigned criterion and Work Unit
+pair has a PASS row, so the Task is complete. Criterion 8 shares the Delivery
+row, which stays unresolved for criterion 8. Its owner must add a criterion 8
+PASS row with the same Check before accepting it.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -1068,30 +1099,11 @@ separate. No shared harness was created or replaced to satisfy the stale text.
 
 ## Review and Completion
 
-The Task remains in-progress; W41 source evidence does not complete criterion19.
-Criterion19 requires real native notification/failure/rotation/recovery proof;
-source-only delivery is reported separately and does not complete this Task.
-Existing criterion10 remains the P04/P05 umbrella and cannot close on one side.
-
-Keep logical commits for validation/builder, bounded SMTP implementation,
-P04 contract binding, native/failure/restore evidence and operational docs.
-Coordinate shared hunks after final image/SQL/endpoints freeze, then retest the
-combined head. P04 dependency delivery comes before the P05-only owning-Spec
-PR merge; preserve logical commits rather than folding unrelated work into it.
-Required CI and independent reviews apply to its latest head; a head change
-reruns affected checks/review. Record PR/head/merge SHA and actual runtime
-state separately. Retire branches/worktrees only after delivery and evidence
-preservation; never delete dirty/undelivered work to satisfy a Stop hook.
-
-Hand P04 ack/retry/duplicate/requeue and restore findings with final consumer
-SHA/interface hash; P02 native execution-copy/reference/rotation classification;
-P03 actual executor/endpoint/network denials; SEC01 installed node/image
-compatibility; P01/P06 future management/native credential refresh boundary;
-P07 measured polling/resource facts; P08 final subject0053 paths; P10 the full
-publication-to-capture failure/recovery fixture. Each handoff names final SHA,
-actual versus NOT_RUN lanes, proposal base blobs and next exact commands/inputs.
-Wiki implementation/schedules, learning-app planning, LAB runtime, raw Git
-collection, external workspace and blog-data writes remain excluded.
+Complete. The notifier source (criterion 19) and the native proof (criterion
+22) are accepted. The P04 interface is frozen at the three SQL SHA256 values.
+The handoffs above name every lane left NOT_RUN. Wiki implementation and
+schedules, learning-app planning, LAB runtime, raw Git collection, the
+external workspace and blog-data writes stay excluded.
 
 ## Related Documents
 

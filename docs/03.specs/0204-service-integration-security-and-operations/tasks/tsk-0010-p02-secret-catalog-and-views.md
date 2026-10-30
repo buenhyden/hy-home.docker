@@ -4,7 +4,7 @@ version: "0.1.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -989,6 +989,23 @@ copier still requires status `APPROVED` and field `value`, so a `DEPLOYED`
 entry is never a copy candidate. Tests cover the accepted plan, a second field
 on one path, a duplicate binding and eight refusals, and a schema test refuses
 a partial `DEPLOYED` plan and a bound `BLOCKED_P01` plan.
+
+### Handoff from SPEC-0204 TSK-0013 2026-10-30
+
+TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. Native attempt five proved, as
+execution copies:
+
+- the stale DB password is denied and the new one accepted;
+- the workflow on the stale credential ends `error`, and after the
+  credential update `success`;
+- restored n8n metadata with its paired encryption key decrypts the rotated
+  credential and the SMTP host;
+- a wrong key exports nothing.
+
+NOT_RUN: SMTP credential rotation. Also not done: a catalog classification row
+for n8n execution copies and their reference and rotation class. Next input:
+classify the n8n credential execution copy in this catalog. The source is
+TSK-0013 "Owner native attempt five 2026-10-30".
 
 ## Evidence
 
