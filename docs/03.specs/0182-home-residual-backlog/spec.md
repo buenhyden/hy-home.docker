@@ -1,6 +1,6 @@
 ---
 title: "HOME Residual Backlog Specification"
-version: "0.5.5"
+version: "0.5.6"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -48,12 +48,12 @@ records the six-container re-decision and subsequent CDC retirement on
 2026-09-29; that owner decision is closed. Its completed W3–W6 receipts
 cover criteria 3–6, with dated results and the disclosed Pyroscope hash
 limitation. Task 0003 now records W8/criterion 8 observations, including
-sample gaps and identity deduplication. Criterion 10 is accepted. Criterion 7
-still needs the step 5 time-target PITR and the isolated MLflow restore. On
-2026-10-30 the owner removed the retired CDC restore from criterion 7, set the
-PITR target just after the latest backup, and recorded JupyterLab as not
-applicable because it has no real content. That
-operational hold prevents package completion.
+sample gaps and identity deduplication. Criteria 7 and 10 are accepted, so
+Task 0003 is completed. On 2026-10-30 the owner removed the retired CDC
+restore from criterion 7, set the PITR target just after the latest backup,
+and recorded JupyterLab as not applicable because it has no real content.
+The step 5 PITR and the MLflow evidence then passed. No operational hold
+remains on the package.
 
 ### Operational Impact
 
