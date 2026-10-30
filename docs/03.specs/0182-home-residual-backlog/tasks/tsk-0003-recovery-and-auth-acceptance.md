@@ -4,7 +4,7 @@ version: "0.8.0"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0003"
 parent_ids:
@@ -423,6 +423,35 @@ runtime work and remain `NOT_RUN`. This Task stays `blocked`. The Evidence and
 Criterion Acceptance tables move to the current shape (each Evidence row gains
 `Required`, each criterion row gains `Current Owner`) so the acceptance can be
 recorded; no row content changed.
+
+### Owner decisions for W7 and W10 2026-10-30
+
+W7: the owner chose RUN-0021 step 5a first, as the lower-risk consistency gate,
+then step 5 time-target PITR. The owner ran
+`docker exec -u postgres mng-pg pgbackrest --stanza=mng info` (read-only):
+
+- stanza `mng` status ok, cipher aes-256-cbc;
+- WAL archive min/max `0000000100000011000000B4` / `00000001000000270000006A`;
+- full backups `20261010-183424F` and `20261024-184214F`;
+- six diff backups on the 10-24 full, the latest
+  `20261024-184214F_20261029-221825D` (2026-10-29 22:18:25 to 22:18:29 UTC, WAL
+  `000000010000002700000036`).
+
+The running image is `hy-home/mng-pg:18.6-pgbackrest`
+(`sha256:0abb5ce5c0ad…`) with PostgreSQL 18.6 and pgBackRest 2.58.0, which is
+the same major version that took every listed backup. The data disk had 85 GB
+free. The selected set for 5a is `20261024-184214F_20261029-221825D`. Its
+first step is `pgbackrest verify --set=` that label. The owner runs that
+read-only check next. The 5a clone script and its independent stateful
+recovery review follow before any restore. Step 5 needs a recovery time
+inside the archived WAL range, chosen by the owner, and its own approval.
+
+W10: the owner chose a full restore of a paired host and state snapshot from
+R2 into owned scratch, with elapsed times (RUN-0021 step 8.3), plus a
+value-free attestation of where and when BKP-003 went to offline custody.
+
+These decisions record scope only. No restore ran, and W7 and W10 stay
+NOT_RUN.
 
 ## Evidence
 
