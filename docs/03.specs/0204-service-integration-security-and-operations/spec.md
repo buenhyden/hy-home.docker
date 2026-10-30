@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.8.0"
+version: "1.9.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -282,6 +282,47 @@ leases and fixed feature-owner SHAs. Future delivery requires an owning-Spec PR,
 exact-head CI and independent review before merge; operational acceptance is not
 inferred from document relocation.
 
+### Hermes ingestion transport contract
+
+The direct 2026-10-30 request adds the bounded TSK-0022 continuation. Existing
+Hermes Cron jobs and email remain producers. The active structured exporter
+`84d3f689378b` remains the sole exporter; consume completed
+`out/<job_id>/<run_id>.json` files without a duplicate exporter or Cron.
+
+A restricted host Publisher reads only the three approved job identities and
+approved report/idea roots. It verifies the reviewed SPEC-0247 validator by exact
+path/SHA-256 and fails closed if unavailable or changed; do not copy or weaken
+that validator. Snapshot candidate, original report and per-idea bytes losslessly
+in a private SQLite Outbox (directory 0700, files 0600). Reject path/symlink
+escapes, incomplete artifacts, hash mismatch and private-infrastructure inputs.
+No LLM summary, source deletion, whole Hermes home, credentials, browser session,
+Hermes database or Docker socket exposure is authorized.
+
+Outbox identity is `(job_id, run_id)` with immutable candidate, report, idea and
+prepared-request digests. Exact replay deduplicates; changed bytes with the same
+identity preserve original snapshots and conflict history. States distinguish
+pending, sending, uncertain, delivered, failed and conflict; the delivery processor converts interrupted sending to uncertain after acquiring its lock. Bounded retries require provable no-send or contract-defined
+reconciliation. Only an authenticated, identity/digest-bound receipt proving
+Gateway durable persistence permits delivered. A queue/webhook acknowledgement
+is insufficient. Lost responses remain uncertain until duplicate-safe reconciliation.
+
+Adapter-independent source and synthetic tests may proceed while Blog-data's
+Gateway API develops. Its exact approved contract and fixtures must define
+request/authentication/status/receipt/reconciliation before any live adapter or
+forwarding workflow is authored. An inactive preparation stub may contain only
+authenticated Webhook → StopAndError `GATEWAY_CONTRACT_NOT_BOUND`, with no
+HTTP node, Gateway endpoint or body mapping. The supplied public web build manifest is not
+an ingestion contract. Never infer Gateway JSON/status codes from it. Each
+repository's adoption remains with the common owner and exact approved revision.
+
+Start with a restricted host process, requiring no Compose change. A later
+approved non-root container may use existing `n8n_net` after overlay/network
+review and exact read-only artifact mounts. Public Traefik SSO and ports remain
+unchanged. Reuse queue workers, PostgreSQL metadata, selected Valkey and OpenBao
+ownership. Do not repurpose Manifest Outbox Notifier or duplicate `hy-home.n8n`
+news crawling. Actual server-B DNS/TCP/TLS/authentication/timeout evidence must
+originate from the actual n8n worker; host probes prove a different path.
+
 ## Acceptance Criteria
 
 ### Acceptance Contract
@@ -533,6 +574,15 @@ inferred from document relocation.
     criterion 19 notifier. TSK-0013 owns W42-W45. On 2026-10-29 the owner moved
     these obligations out of criterion 19, whose native evidence covers manual
     execution only.
+23. Hermes transport preserves Cron/exporter/email and proves a bounded,
+    lossless Publisher/Outbox with immutable execution identity, reviewed
+    candidate validation, duplicate/conflict handling, restart recovery,
+    bounded retry and durable-receipt reconciliation. TSK-0022 owns W79-W83
+    and reports SOURCE, SYNTHETIC, API_COMPATIBILITY, N8N_NATIVE,
+    SERVER_B_NATIVE and DELIVERY separately. Exact Gateway contract/fixtures,
+    native worker networking/authentication and actual durable persistence
+    remain required blocked lanes until supplied and approved. Source-only
+    Publisher or simulated adapter evidence does not close this criterion.
 <!-- markdownlint-enable MD029 -->
 
 ## Failure Conditions
@@ -553,6 +603,8 @@ integration/runtime commits.
 Missing permission or target defers only the dependent operation.
 
 ## Related Documents
+
+- [Hermes transport Task](tasks/tsk-0022-hermes-blog-ingestion.md)
 
 - [P10 opsflow acceptance Task](tasks/tsk-0016-p10-opsflow-acceptance.md)
 
