@@ -64,7 +64,9 @@ No deployment, data deletion or queue reset is a rollback step.
 | Staging implementer | Workload `publisher/{__init__,files,candidates,outbox,cli}.py`, staging tests | W79 frozen roots/validator; actual Outbox API handed to delivery writer |
 | Delivery implementer | Workload `publisher/delivery.py`, delivery tests | W80 immutable record/transaction interface, reviewed before shared integration |
 | HTTP transport implementer | Workload `publisher/http_transport.py`, `tests/test_http_transport.py` | Independent W82 groundwork only; no edits to delivery, CLI or workflow; synthetic loopback endpoint and fake credentials |
-| Workflow source writer | Inactive `workflow.json`, `tests/test_workflow.py`, workload READMEs and workloads README link | Authenticated Webhook → StopAndError only; full forwarding stays BLOCKED |
+| Gateway adapter implementer | Workload Gateway adapter source and its dedicated tests | Pin and verify the exact Gateway contract/fixture revision below; establish timestamp provenance before mapping; coordinate any shared delivery integration explicitly |
+| n8n integration implementer | Workload `workflow.json` and workflow-specific tests | Consume the pinned contract and adapter handoff; remain inactive; no credential IDs, activation or production changes |
+| Workflow source writer | Inactive `workflow.json`, workflow tests, workload READMEs and workloads README link | Contract-based source; Native import and actual forwarding remain NOT_RUN |
 | Documentation writer | Spec criterion 23/contract, Plan W79-W83, this Task; later source-only RUN-0053 section | Implemented commands and measured evidence; no guessed operational procedure |
 | Controller | Read-only inventory, test registration proposals, review coordination and final evidence | Exact worker handoffs, single-writer shared integration |
 
@@ -144,7 +146,7 @@ are not established by these read-only checks. Developing Blog-data drafts are
 uncommitted/unapproved interface evidence; required `scheduled_at` semantics
 are absent from producer candidates and must not be fabricated.
 
-### Gateway contract and native gates
+### Gateway contract and native gates — earlier observation
 
 A read-only inspection of the shared diff in the “Hermes 수집 API 구축” chat
 found a provisional, uncommitted `ingestion-v1.schema.json`. It requires
@@ -182,7 +184,7 @@ Gateway durable receipt tests remain BLOCKED. Do not read/use real secrets to
 resolve them without separate concrete authorization. Existing n8n PostgreSQL,
 selected Valkey and OpenBao consumers are reused through their current owners.
 
-### Follow-up source admission — 2026-10-30
+### Follow-up source admission — earlier observation, 2026-10-30
 
 The owner requested a fresh check of the developing Gateway and continuation of
 independent integration work. The separate Gateway chat remains active; its
@@ -230,10 +232,83 @@ passed. The final revision's complete suite reported 74 PASS and one optional
 validator SKIP out of 75; Ruff check and format passed. A separately approved
 synthetic localhost HTTP/TLS run on the final revision passed 11/11. Private CA and actual
 operational connectivity remain unverified. Exact Gateway contract and
-fixtures remain inaccessible, Gateway workflow integration is not implemented,
-and API compatibility and Native operation remain pending. Focused tests using
+fixtures were inaccessible at that observation and Gateway workflow integration
+was not yet implemented; Native operation remains pending. Focused tests using
 the fixed validator passed 14/14. The measured 93% coverage excludes the child
 subprocess; it is not a complete coverage figure for the transport child.
+
+### Gateway source admission after Blog-data PR #620
+
+Blog-data PR #620 merged to `dev` at fixed revision
+`a6d0957ad380f179f73bdd2a60ff23792d53f7ae`. The contract inputs to obtain and
+verify at that revision are `scripts/lib/ingestion/contracts/openapi-v1.json`,
+`scripts/lib/ingestion/contracts/ingestion-v1.schema.json`,
+`scripts/lib/ingestion/contracts/responses-v1.schema.json`, and
+`tests/workspace/fixtures/ingestion/synthetic-report.json`. Earlier 404 and
+inaccessible-contract observations in this log refer to earlier revisions and are
+historical, not evidence about this merged revision. Record actual retrieved
+contents and digests before claiming adoption or compatibility.
+
+W82 proceeds in separately owned adapter and inactive workflow lanes: read the
+fixed API and fixture, write contract-backed tests, implement exact request,
+receipt and idempotency handling, then connect the inactive workflow through an
+explicit integration handoff. Actual producer provenance for every required
+timestamp remains a prerequisite; do not manufacture values. Source tests and
+an inactive workflow do not authorize production network or secret use, workflow
+activation, Compose changes, or Native verification. The current PR branch was
+fast-forwarded to `4bb1d7c`. Its latest candidate check FAILed on a malformed
+merge commit message. Correction is deferred pending discussion of alternatives;
+preserve history and do not rewrite it.
+
+The user specified `collected_at` as the actual Hermes article collection time;
+`generated_at` is execution finish time and `scheduled_at` is the exact
+execution `scheduled_instant`. The eight existing candidates and their database
+records do not contain the actual article collection time, so actual conversion
+and delivery are BLOCKED until authoritative provenance is available. Gateway
+adapter and transport review was in progress at that observation. n8n Native
+workflow execution, authenticated relay and live operation are NOT_RUN; the
+previous stub's `responseNode` configuration produced a configuration error as
+recorded below. The API and fixture are pinned to the four Blog-data PR #620
+dev blobs above, which does not itself establish compatibility. Work in review
+includes an adapter and receipt/Outbox handling, pinned fixture/schema tests,
+content-type validation, an explicit offline replay wrapper and a real
+adapter/Outbox response-loss test. The inactive n8n source uses a reserved
+domain, with pure Node tests; at that observation independent review was still
+in progress. Native operation, credentials, URL
+runner, queue logging, HTTP 400 branch and alerting remain NOT_RUN.
+
+The user chose a replacement PR while preserving the existing PR. The existing
+PR's candidate failed on the malformed merge commit; replacement recovery is
+being prepared. This selection does not establish a new passing candidate.
+
+The fixed Blog-data `dev` revision above supplies the contract and fixtures for
+the current source scope. Adapter/replay synthetic tests, including real Outbox
+handling after a lost response, passed 6/6. The inactive workflow source screens
+input and returns a fixed 400 for invalid input, a stricter boundary than the
+Gateway contract. Independent code and security reviews were performed. The
+full suite ran 105 tests with one skipped before the final IF test change; that
+receipt does not cover the later change. Import into n8n, Queue execution,
+credentials, TLS, actual logs and alerts, and runtime operation remain NOT_RUN.
+Actual conversion remains BLOCKED because the user-defined original article
+collection time is absent. PR #684's malformed-history candidate remains FAIL;
+the replacement selection preserves #684 and does not establish hosted acceptance.
+
+The latest inactive workflow source removes reliance on the URL global and
+delegates URL authority validation to the Gateway, avoiding rejection of valid
+IDN or IPv6 authorities. It applies a stricter 24-hour prefilter, a fail-safe
+fixed 400 IF branch, and a success MIME check. Pure Node tests with an empty VM
+passed 13/13. This is source evidence;
+Native Queue, credentials, alerts and runner execution remain NOT_RUN, and
+actual delivery remains BLOCKED by missing article collection time.
+
+The replacement checkout's full suite subsequently passed 107 tests with the
+pinned validator and synthetic localhost tests. Independent final adapter,
+replay and workflow correctness and security reviews found no remaining Critical
+or Important findings. The workflow URL preprocessing accepts a subset of the
+Gateway's valid inputs; it is not equivalent to the Gateway's full URL parser.
+The replacement branch integrates `6a` without rewriting the existing history;
+its draft PR is not yet published. PR #684's malformed merge CI remains FAIL,
+and hosted acceptance, n8n Native and criterion completion are not established.
 
 ### State, failures and later MCP
 
@@ -342,7 +417,7 @@ remain source-only; latest-main integration and hosted checks are pending.
 The final `graphify update .` passed with 26,414 nodes and 49,344 edges; the
 optional SQL and HCL parsers remained unavailable.
 
-### Follow-up integration observation
+### Follow-up integration observation — earlier revision
 
 PR #684 candidate-quality run `41030161941` passed for its then-current head
 `be0ee1b` and base `e0d68d`; changed head and main have not yet been revalidated
@@ -374,7 +449,7 @@ Git integration or operational delivery.
 | Source/runtime duplicate inventory | 23 | W79 | Latest main/HEAD/worktrees, host Cron and n8n workflow identities | Redacted observed metadata; remote hy-home.n8n operation unknown | PASS | Observed inventory — 2026-10-30 | required | - |
 | Publisher staging and Outbox | 23 | W80 | Single/multiple idea, replay, conflict, restart, paths/hashes and permissions | Synthetic fixtures and reviewed validator | PASS | W80 synthetic evidence | required | - |
 | Delivery and reconciliation | 23 | W81 | Durable receipts, lost response, bounded retry and immutable request binding | Fake adapters | PASS | W80 synthetic evidence | required | - |
-| Exact Gateway compatibility | 23 | W82 | Approved API revision/fixtures and inactive n8n source | Contract still developing; BLOCKED | NOT_RUN | Gateway contract and native gates | required | - |
+| Exact Gateway compatibility | 23 | W82 | Approved API revision/fixtures and inactive n8n source | Pinned source tested; actual timestamp provenance absent | NOT_RUN | Gateway source admission after Blog-data PR #620 | required | - |
 | Native worker to Gateway | 23 | W83 | DNS/TCP/TLS/auth/timeout, outage/recovery and durable persistence | Exact approved server-B and secret targets absent; BLOCKED | NOT_RUN | Gateway contract and native gates | required | - |
 | Existing email/workload regression | 23 | W83 | Preserve Cron/email and existing n8n/Docker workloads | Read-only baseline plus later approved Native scenario | NOT_RUN | Design admission — 2026-10-30 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, coverage, docs gates and independent review | Final Task-owned diff | NOT_RUN | Review and Completion | required | - |
@@ -404,7 +479,7 @@ actual implementation/test/review receipts and any registered lifecycle changes.
 Close only with required criterion evidence or an explicit owner disposition.
 Report SOURCE and SYNTHETIC independently from API_COMPATIBILITY, N8N_NATIVE,
 SERVER_B_NATIVE and DELIVERY. No workflow activation, secret use, Compose
-recreation, external port or remote Git action is claimed.
+recreation or external port is claimed.
 
 ## Related Documents
 

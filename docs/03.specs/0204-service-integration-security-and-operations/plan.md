@@ -187,7 +187,7 @@ provisioning, LAB runtime or learning-application work.
 | W79 | 23 | Freeze runtime/source inventory, duplicate-workflow and validator dependencies | None | TSK-0022 | Redacted identities, roots, digests and owner exclusions |
 | W80 | 23 | Implement narrow discovery, lossless snapshots and private local Outbox | W79 | TSK-0022 | RED/GREEN replay, restart, multiple ideas, paths/hashes, conflict and permissions |
 | W81 | 23 | Implement adapter-independent delivery and reconciliation | W80 | TSK-0022 | Fake adapters prove bounded retry, response loss, strict durable receipt and request binding |
-| W82 | 23 | Prepare bounded generic transport; adopt exact Gateway fixtures and inactive n8n forwarding | W81 | TSK-0022 | Generic source and synthetic localhost tests completed; Gateway integration BLOCKED pending exact contract and fixtures; operational connectivity unverified |
+| W82 | 23 | Prepare bounded generic transport; adopt exact Gateway fixtures and inactive n8n forwarding | W81 | TSK-0022 | Fixed PR620 dev contract/fixture pinned and source reviewed; actual conversion BLOCKED on article collection time; Native operation NOT_RUN |
 | W83 | 8, 23 | Document recovery/metrics/MCP, independently review and admit approved Native checks | W80-W82 | TSK-0022 | Source/synthetic and actual worker-to-Gateway evidence separated |
 
 ### P10 staged admission and acceptance ownership
@@ -769,11 +769,16 @@ TSK-0022 alone owns the new
 worker owns `publisher/{__init__,files,candidates,outbox,cli}.py` and staging tests;
 the delivery worker owns `publisher/delivery.py` and delivery tests, consuming
 the staging worker's actual interface handoff. The workflow writer owns only inactive `workflow.json`, `tests/test_workflow.py`,
-workload READMEs and the workloads README link. Its stub is headerAuth Webhook
-→ StopAndError `GATEWAY_CONTRACT_NOT_BOUND`, with no HTTP node, Gateway
-endpoint or body mapping and no import/activation. Gateway-dependent W82 remains blocked.
+workload READMEs and the workloads README link. Its initial stub was headerAuth
+Webhook → StopAndError `GATEWAY_CONTRACT_NOT_BOUND`; the current source is a
+contract-based inactive workflow. Native import and activation are not established.
 The HTTP transport writer owns only `publisher/http_transport.py` and
 `tests/test_http_transport.py`; the Task records its narrow source admission.
+The Gateway adapter writer owns separate adapter source and its dedicated tests;
+the n8n writer owns `workflow.json` and workflow-specific tests. Shared delivery
+integration requires a serial handoff. Pin contract and fixture inputs to
+Blog-data dev revision `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`, as listed
+in Task0022; verify retrieved content and digests before compatibility claims.
 The doc-writer owns this
 Spec/Plan, Task0022 and later implemented source-only RUN-0053 procedures.
 The controller owns inventory, registered checks, independent review and final
@@ -838,17 +843,42 @@ worktrees, installed Cron, credentials and runtime resources from writes.
   final revision; the 93% measured coverage excludes its child subprocess.
   Fixed-validator focused tests passed 14/14. Private CA and live operational
   connectivity remain unverified.
-- [x] Prepare and test only the inactive authenticated fail-closed stub above;
-  record this as partial source preparation, not Gateway compatibility.
-- [ ] Obtain the owner's exact approved Gateway API revision and fixtures for
-  requests, authentication, idempotency/conflict, durable receipt and status
-  reconciliation. The Gateway chat records the operator's QA baseline designation
-  and Docker build work in progress; keep Gateway-dependent work BLOCKED until
-  the fixed contract and fixtures are accessible and adopted here.
+- [x] Prepare and test the initial inactive authenticated fail-closed stub;
+  this historical step does not establish Gateway compatibility.
+- [ ] Retrieve and verify the Gateway API and fixture at the fixed Blog-data dev
+  revision recorded in Task0022. Bind tests to its exact requests, authentication,
+  idempotency/conflict, durable receipt and reconciliation semantics. Establish
+  authoritative producer timestamp provenance before mapping required fields:
+  `collected_at` is the actual Hermes article collection time, `generated_at`
+  the execution finish and `scheduled_at` the exact execution `scheduled_instant`.
+  Existing eight candidates and database records lack actual article collection
+  time; actual conversion and delivery are blocked until that source exists.
+- [ ] Implement the adapter and its tests independently from the inactive n8n
+  workflow and its tests, then review their integration through explicit handoff.
+  Source includes receipt/Outbox handling, pinned fixture and schema, content
+  type, explicit offline replay and adapter/Outbox response loss. Synthetic
+  adapter/replay tests passed 6/6; independent code and security reviews were
+  performed. The inactive workflow uses a reserved domain, screens input and
+  returns a fixed 400 on invalid input, stricter than the Gateway contract.
+  Native import, Queue execution, credentials, TLS, actual logs and alerts, URL
+  runner and runtime operation remain NOT_RUN. The 105-test full suite with one
+  skip predates the final IF test change and does not prove that later revision.
+  The latest source removes the URL global, delegates authority validation to
+  the Gateway to retain valid IDN/IPv6, applies a stricter 24-hour prefilter,
+  fixed fail-safe 400 IF branch and success MIME check. Empty-VM Node tests
+  passed 13/13. Its URL preprocessing admits only a subset of Gateway-valid
+  inputs. Independent final adapter, replay and workflow correctness/security
+  reviews found no remaining Critical or Important findings. The replacement
+  checkout's full suite passed 107 tests using the pinned validator and
+  synthetic localhost tests; this is not Native or hosted acceptance.
 - [ ] Test those exact fixtures RED/GREEN, then prepare versioned inactive n8n
   source: authenticated event, schema and file/report identity checks, Gateway
   request, durable receipt validation, state recording and bounded error alerting.
   Never record real credential IDs/values in workflow JSON.
+- [ ] Preserve the existing PR and prepare the user-selected replacement PR to
+  address the candidate failure caused by a malformed merge commit message.
+  The replacement branch integrates `6a` without rewriting existing history;
+  its draft PR is not yet published. Run applicable hosted checks on it.
 - [ ] Review existing network/overlay policy before restricted host transport
   or non-root container membership in `n8n_net`. No new public path or port;
   any later Compose source gets scoped validation and independent review.
