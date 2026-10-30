@@ -22,7 +22,10 @@ BODY = json.dumps(
     }
 ).encode()
 BODY_SHA = hashlib.sha256(BODY).hexdigest()
-REQUEST = DispatchRequest(KEY, SOURCE_SHA, BODY_SHA, REVISION, DESTINATION, BODY)
+ENDPOINT_SHA = "e" * 64
+REQUEST = DispatchRequest(
+    KEY, SOURCE_SHA, BODY_SHA, REVISION, DESTINATION, BODY, ENDPOINT_SHA
+)
 
 
 class Box:
@@ -35,6 +38,7 @@ class Box:
             request_body=BODY,
             contract_revision=REVISION,
             destination=DESTINATION,
+            endpoint_sha256=ENDPOINT_SHA,
             status="uncertain",
         )
 
@@ -45,6 +49,8 @@ class Box:
 
 
 class Network:
+    endpoint_sha256 = ENDPOINT_SHA
+
     def __init__(self):
         self.sent = []
 
@@ -98,6 +104,8 @@ class GatewayTransportTests(unittest.TestCase):
         )
 
         class SyntheticGateway:
+            endpoint_sha256 = ENDPOINT_SHA
+
             def __init__(self):
                 self.saved = {}
                 self.requests = []
@@ -157,6 +165,34 @@ class GatewayTransportTests(unittest.TestCase):
             self.assertEqual(box.get(KEY)["receipt"]["gateway_report_id"], report_id)
             box.close()
 
+    def test_replay_rejects_missing_or_malformed_endpoint_binding(self):
+        from publisher.gateway_transport import GatewayReplayTransport
+
+        for digest in (None, "", "a" * 63, "g" * 64):
+            network = Network()
+            network.endpoint_sha256 = digest
+            with self.subTest(digest=digest), self.assertRaises(ValueError):
+                GatewayReplayTransport(self.box, network)
+        with self.assertRaises(ValueError):
+            GatewayReplayTransport(self.box, object())
+
+    def test_null_or_different_request_binding_never_reaches_transport(self):
+        from dataclasses import replace
+
+        relay = self.transport(allow_idempotent_replay=True)
+        for endpoint in (None, "f" * 64):
+            self.box.row["endpoint_sha256"] = endpoint
+            with self.subTest(endpoint=endpoint), self.assertRaises(TransportFailure):
+                relay.reconcile(replace(REQUEST, endpoint_sha256=endpoint))
+        self.assertEqual(self.network.sent, [])
+
+    def test_transport_endpoint_cannot_change_after_construction(self):
+        relay = self.transport(allow_idempotent_replay=True)
+        self.network.endpoint_sha256 = "f" * 64
+        with self.assertRaises(TransportFailure):
+            relay.reconcile(REQUEST)
+        self.assertEqual(self.network.sent, [])
+
     def test_replay_requires_explicit_true_and_uncertain_bound_record(self):
         with self.assertRaises(TransportFailure) as error:
             self.transport().reconcile(REQUEST)
@@ -209,6 +245,8 @@ class GatewayTransportTests(unittest.TestCase):
                 )
 
         class Flaky:
+            endpoint_sha256 = ENDPOINT_SHA
+
             def __init__(self):
                 self.bodies = []
                 self.always_fail = False

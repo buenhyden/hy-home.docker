@@ -33,6 +33,7 @@ class DispatchRequest:
     contract_revision: str
     destination: str
     body: bytes = field(repr=False)
+    endpoint_sha256: str | None = None
 
 
 @dataclass(frozen=True)
@@ -118,13 +119,18 @@ def _prepare_failure(box, key, status, code):
     return _move(box, key, status, "failed", code=code)
 
 
-def _prepare(box, key, row, adapter):
+def _prepare(box, key, row, adapter, transport):
     try:
         bound = adapter.prepare(MappingProxyType(dict(row)))
         if not isinstance(bound, BoundRequest):
             raise ValueError("invalid_request")
+        endpoint_sha256 = getattr(transport, "endpoint_sha256", None)
         body = box.bind_request(
-            key, bound.contract_revision, bound.body, destination=bound.destination
+            key,
+            bound.contract_revision,
+            bound.body,
+            destination=bound.destination,
+            endpoint_sha256=endpoint_sha256,
         )
     except OutboxError:
         return None, _prepare_failure(box, key, row["status"], "request_conflict")
@@ -137,6 +143,7 @@ def _prepare(box, key, row, adapter):
         bound.contract_revision,
         bound.destination,
         body,
+        endpoint_sha256,
     )
     if row["status"] == "awaiting_contract":
         _move(box, key, "awaiting_contract", "pending", code="request_ready")
@@ -297,7 +304,7 @@ def process_one(
             return target
         if row["next_attempt"] > now:
             return "deferred"
-        request, error = _prepare(outbox, key, row, adapter)
+        request, error = _prepare(outbox, key, row, adapter, transport)
         if error:
             return error
         return _operate(

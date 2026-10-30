@@ -155,6 +155,12 @@ class Outbox:
                       AND code IN ('identity_conflict','source_identity_conflict')
                       AND job_id IS NOT NULL AND run_id IS NOT NULL AND digest IS NOT NULL;
             """)
+            columns = {
+                row["name"] for row in self._db.execute("PRAGMA table_info(records)")
+            }
+            if "endpoint_sha256" not in columns:
+                self._db.execute("ALTER TABLE records ADD COLUMN endpoint_sha256 TEXT")
+                self._db.commit()
         except (OSError, sqlite3.Error, InputError):
             self.close()
             raise OutboxError("unsafe_outbox") from None
@@ -287,7 +293,15 @@ class Outbox:
             )
         ]
 
-    def bind_request(self, key, contract_revision, body, *, destination="unconfigured"):
+    def bind_request(
+        self,
+        key,
+        contract_revision,
+        body,
+        *,
+        destination="unconfigured",
+        endpoint_sha256=None,
+    ):
         if not isinstance(body, bytes) or not body or len(body) > 32 * 1024 * 1024:
             raise OutboxError("invalid_request")
         if not isinstance(contract_revision, str) or not re.fullmatch(
@@ -298,6 +312,11 @@ class Outbox:
             r"[a-z][a-z0-9_]{0,63}", destination
         ):
             raise OutboxError("invalid_destination")
+        if endpoint_sha256 is not None and (
+            not isinstance(endpoint_sha256, str)
+            or not re.fullmatch(r"[a-f0-9]{64}", endpoint_sha256)
+        ):
+            raise OutboxError("invalid_endpoint_binding")
         with self._transaction():
             row = self.get(key)
             if row["request_body"] is not None:
@@ -305,12 +324,20 @@ class Outbox:
                     row["contract_revision"] != contract_revision
                     or row["request_body"] != body
                     or row["destination"] != destination
+                    or row["endpoint_sha256"] != endpoint_sha256
                 ):
                     raise OutboxError("request_conflict")
                 return row["request_body"]
             self._db.execute(
-                "UPDATE records SET contract_revision=?,request_body=?,body_sha256=?,destination=? WHERE job_id=? AND run_id=?",
-                (contract_revision, body, _sha(body), destination, *key),
+                "UPDATE records SET contract_revision=?,request_body=?,body_sha256=?,destination=?,endpoint_sha256=? WHERE job_id=? AND run_id=?",
+                (
+                    contract_revision,
+                    body,
+                    _sha(body),
+                    destination,
+                    endpoint_sha256,
+                    *key,
+                ),
             )
             self._event(key, row["status"], "request_bound", _sha(body))
         return body

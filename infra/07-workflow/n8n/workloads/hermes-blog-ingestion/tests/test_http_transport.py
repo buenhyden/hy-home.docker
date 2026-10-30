@@ -7,6 +7,7 @@ import tempfile
 import threading
 import time
 import unittest
+from dataclasses import replace
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import ClassVar
@@ -18,6 +19,10 @@ from publisher.delivery import DispatchRequest, FailureKind, TransportFailure
 REQUEST = DispatchRequest(
     ("job", "run"), "a" * 64, "b" * 64, "test", "local", b"private payload"
 )
+
+
+def bound_request(transport):
+    return replace(REQUEST, endpoint_sha256=transport.endpoint_sha256)
 
 
 class HttpTransportTests(unittest.TestCase):
@@ -45,7 +50,7 @@ class HttpTransportTests(unittest.TestCase):
                     self.subTest(options=repr(options)),
                     self.assertRaises(TransportFailure),
                 ):
-                    self.transport(**options).send(REQUEST)
+                    self.transport(**options).send(bound_request(self.transport()))
             run.assert_not_called()
 
     def test_invalid_configuration(self):
@@ -83,7 +88,9 @@ class Connection:
 http.client.HTTPSConnection = Connection
 """
         with patch("publisher.http_transport._CHILD", prefix + _CHILD):
-            response = self.transport(content_type="application/json").send(REQUEST)
+            response = self.transport(content_type="application/json").send(
+                bound_request(self.transport())
+            )
         self.assertEqual((response.status, response.body), (200, b"ok"))
 
     def test_authentication_cannot_override_content_type(self):
@@ -97,7 +104,7 @@ http.client.HTTPSConnection = Connection
         with patch("publisher.http_transport._CHILD", "import time; time.sleep(5)"):
             start = time.monotonic()
             with self.assertRaises(TransportFailure) as error:
-                self.transport().send(REQUEST)
+                self.transport().send(bound_request(self.transport()))
         self.assertEqual(error.exception.kind, FailureKind.AMBIGUOUS)
         self.assertLess(time.monotonic() - start, 2)
 
@@ -134,7 +141,7 @@ http.client.HTTPSConnection = Connection
             ):
                 start = time.monotonic()
                 with self.assertRaises(TransportFailure) as error:
-                    self.transport().send(REQUEST)
+                    self.transport().send(bound_request(self.transport()))
                 self.assertEqual(error.exception.kind, FailureKind.AMBIGUOUS)
                 self.assertLess(time.monotonic() - start, 2)
 
@@ -152,7 +159,7 @@ http.client.HTTPSConnection = Connection
 """
         with patch("publisher.http_transport._CHILD", prefix + _CHILD):
             with self.assertRaises(TransportFailure) as error:
-                self.transport().send(REQUEST)
+                self.transport().send(bound_request(self.transport()))
         self.assertEqual(error.exception.kind, FailureKind.TLS)
         self.assertNotIn("fake-token", str(error.exception))
 
@@ -181,7 +188,7 @@ http.client.HTTPSConnection = Connection
                 ),
             ):
                 with self.assertRaises(TransportFailure) as error:
-                    self.transport().send(REQUEST)
+                    self.transport().send(bound_request(self.transport()))
                 self.assertEqual(error.exception.kind, kind)
                 self.assertNotIn("private-token", str(error.exception))
 
@@ -225,7 +232,7 @@ http.client.HTTPSConnection = Connection
             [], 0, b'{"status":403,"body":"eHg=","content_type":"text/plain"}', b""
         )
         with patch("publisher.http_transport.subprocess.run", return_value=fake) as run:
-            response = self.transport().send(REQUEST)
+            response = self.transport().send(bound_request(self.transport()))
         self.assertEqual((response.status, response.body), (403, b"xx"))
         self.assertNotIn("fake-token", repr(run.call_args.args))
         self.assertNotIn("private payload", repr(run.call_args.args))
@@ -237,7 +244,7 @@ http.client.HTTPSConnection = Connection
         )
         with patch("publisher.http_transport.subprocess.run", return_value=fake):
             with self.assertRaises(TransportFailure) as error:
-                self.transport().send(REQUEST)
+                self.transport().send(bound_request(self.transport()))
         self.assertEqual(error.exception.kind, FailureKind.AMBIGUOUS)
         self.assertNotIn("fake-token", str(error.exception))
         with patch("publisher.http_transport.subprocess.run") as run:
@@ -290,7 +297,7 @@ class LoopbackTests(unittest.TestCase):
             auth=("X-Test", "fake-token"),
             allow_loopback_http=True,
         )
-        response = transport.send(REQUEST)
+        response = transport.send(bound_request(transport))
         self.assertEqual((response.status, response.body), (302, b"opaque"))
         self.assertEqual(
             self.handler.records, [("/ingest", REQUEST.body, "fake-token")]
@@ -342,7 +349,7 @@ class LoopbackTests(unittest.TestCase):
                     auth=("X-Test", "fake-token"),
                 )
                 with self.assertRaises(TransportFailure) as error:
-                    transport.send(REQUEST)
+                    transport.send(bound_request(transport))
                 self.assertEqual(error.exception.kind, FailureKind.TLS)
                 self.assertEqual(self.handler.records, [])
             finally:

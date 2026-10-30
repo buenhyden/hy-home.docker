@@ -1,6 +1,7 @@
 """Isolated bounded HTTP transport, without Gateway interpretation or wiring."""
 
 import base64
+import hashlib
 import json
 import math
 import re
@@ -168,9 +169,17 @@ class HttpTransport:
         object.__setattr__(self, "_max_bytes", max_bytes)
         object.__setattr__(self, "_content_type", content_type)
 
+    @property
+    def endpoint_sha256(self):
+        # Hash the validated, exact network target; credentials are never included.
+        return hashlib.sha256(
+            json.dumps(self._endpoint, separators=(",", ":")).encode("ascii")
+        ).hexdigest()
+
     def send(self, request):
         if (
             request.destination != self._destination
+            or request.endpoint_sha256 != self.endpoint_sha256
             or not isinstance(request.body, bytes)
             or len(request.body) > self._max_bytes
         ):
