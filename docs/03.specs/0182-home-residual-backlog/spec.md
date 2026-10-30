@@ -1,6 +1,6 @@
 ---
 title: "HOME Residual Backlog Specification"
-version: "0.5.4"
+version: "0.5.5"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -49,9 +49,10 @@ records the six-container re-decision and subsequent CDC retirement on
 cover criteria 3–6, with dated results and the disclosed Pyroscope hash
 limitation. Task 0003 now records W8/criterion 8 observations, including
 sample gaps and identity deduplication. Criterion 10 is accepted. Criterion 7
-still needs the step 5 time-target PITR and the isolated MLflow and JupyterLab
-restores. On 2026-10-30 the owner removed the retired CDC restore from
-criterion 7 and set the PITR target just after the latest backup. That
+still needs the step 5 time-target PITR and the isolated MLflow restore. On
+2026-10-30 the owner removed the retired CDC restore from criterion 7, set the
+PITR target just after the latest backup, and recorded JupyterLab as not
+applicable because it has no real content. That
 operational hold prevents package completion.
 
 ### Operational Impact
@@ -146,7 +147,8 @@ result. A failed or unexecuted step is never recorded as done.
 7. A PITR restore of HOME PostgreSQL data from the real pgBackRest
    repository, and isolated restores of MLflow and JupyterLab (real content)
    are recorded with recovery points, counts and elapsed times compared with
-   the POL-0021 RPO and RTO targets.
+   the POL-0021 RPO and RTO targets. JupyterLab is not applicable while it has
+   no real content, as observed on 2026-10-30.
 8. Sustained and peak CPU, memory, GPU and disk growth are measured over an
    owner-chosen window and recorded.
 9. The SSO behavioural matrix (no cookie, non-allowed user, logout, role

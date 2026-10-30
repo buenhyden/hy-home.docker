@@ -204,8 +204,8 @@ class FakeDocker:
         if "to_regnamespace" in sql or "to_regclass" in sql:
             return 0, "t\n" if self.kw.get("objects", True) else "f\n"
         if "REPEATABLE READ" in sql:
-            second = self.kw.get("second_count", "5")
-            return 0, f"t0a=5\nt0b={second}\n"
+            second = self.kw.get("second_count", "73915")
+            return 0, f"t0a=73915\nt0b={second}\n"
         if "pg_extension" in sql:
             return 0, "e=plpgsql 1.0\ns=public.seq_a\n"
         if "aclexplode" in sql:
@@ -611,6 +611,16 @@ class RehearsalTests(unittest.TestCase):
         result, _ = self.run_rehearsal(objects=False)
         self.assertEqual(result["reason"], "required_object_missing")
         self.assertIs(result["heartbeat_present"], False)
+
+    def test_stable_counts_are_recorded_only_in_scratch(self):
+        result, _ = self.run_rehearsal()
+        self.assertIs(result["count_stable"], True)
+        note = self.scratch / "count-observations.json"
+        self.assertEqual(
+            json.loads(note.read_text()), {"mlflow.public.experiments": 73915}
+        )
+        self.assertEqual(note.stat().st_mode & 0o777, 0o600)
+        self.assertNotIn("73915", self.m.render(result))
 
     def test_unequal_counts_fail(self):
         result, _ = self.run_rehearsal(second_count="6")
