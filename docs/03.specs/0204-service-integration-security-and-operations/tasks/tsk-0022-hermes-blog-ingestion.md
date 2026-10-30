@@ -417,17 +417,36 @@ to the intended Blog-data tenant. Tenant ownership, credential scope, certificat
 identity, and a durable Gateway receipt still require the separately approved
 operational validation lane.
 
-The first open of an older Outbox can run its SQLite schema migration. Concurrent
-first opens can contend for that migration and temporarily make the Publisher
-unavailable; startup procedure must serialize the first migration and retry a
-safe open rather than assuming concurrent availability. This has no automatic
-service deployment or retry policy attached.
+The owner selected the report-level `collected_at` rule: use the latest actual
+collection time among all items in that report. Admission is all-or-nothing:
+every included item needs its own authoritative actual collection time, and a
+single missing value keeps the complete report deferred. The current source
+inventory contains 153 items without that evidence. They cannot be
+request-bound or delivered as `collected_at`; execution finish, report-save,
+and tool-message timestamps are not substitutes.
 
-The current source inventory contains 153 items without authoritative actual
-article collection timestamps. They remain deferred and cannot be request-bound
-or delivered as `collected_at`; the execution finish, report-save, and tool
-message timestamps are not substitutes. This preserves the user's collection
-time requirement while the producer-side provenance gap is resolved.
+The present Hermes evidence is also insufficient for cached or batched tool
+work. A session message is written after the tool returns and can represent a
+batch, so it cannot attribute a completion time to an individual source URL.
+A cache hit additionally cannot establish a new network retrieval from that
+message alone. The producer must persist a per-item collection record at the
+tool boundary, keyed by Cron `run_id` and immutable source identity (at least
+the canonical source URL and content digest). It must record the actual per-item source fetch time in an unambiguous
+timezone and whether the result was fetched or served from cache. Provider batch
+response or materialization time alone is not evidence of an individual fetch;
+a cache hit needs verifiable provenance of the original fetch. The structured candidate must carry that
+record or a digest-bound reference to it. Only then may the Publisher verify
+all included item records, calculate their maximum as report `collected_at`,
+and bind the request. This preserves the owner's collection-time requirement
+without inventing a timestamp from scheduler, cache, or batch metadata.
+
+The current Outbox code serializes legacy schema inspection and the nullable
+endpoint-digest migration in one SQLite transaction. A synthetic concurrent
+two-caller open of the same legacy Outbox now verifies that both callers retain
+the unbound request rather than racing the column addition. It changes
+no running Publisher, Cron, workflow, Compose configuration, network,
+credential, or remote resource. The focused synthetic suite now reports 117
+tests: 115 passed and two optional tests skipped, including rollback and retry.
 
 ### n8n inactive workflow import — isolated Native PASS
 
