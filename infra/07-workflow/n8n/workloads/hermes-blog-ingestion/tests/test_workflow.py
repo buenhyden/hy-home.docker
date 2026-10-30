@@ -3,6 +3,7 @@
 import json
 import subprocess
 import unittest
+import uuid
 from pathlib import Path
 
 WORKFLOW = Path(__file__).resolve().parents[1] / "workflow.json"
@@ -44,6 +45,15 @@ class WorkflowSourceTests(unittest.TestCase):
         settings = self.workflow["settings"]
         self.assertEqual(settings["saveDataErrorExecution"], "none")
         self.assertEqual(settings["saveDataSuccessExecution"], "none")
+
+    def test_ingress_has_stable_webhook_id_for_the_configured_path(self):
+        # n8n prefixes webhook paths with workflow/node IDs if webhookId is absent.
+        ingress = self.get_node("Authenticated Ingress")
+        self.assertEqual(ingress["webhookId"], "e0e44720-8ff3-4c52-a052-6cd0472582c3")
+        self.assertEqual(str(uuid.UUID(ingress["webhookId"])), ingress["webhookId"])
+        self.assertEqual(
+            ingress["parameters"]["path"], "hermes-blog-ingestion-contract-hold"
+        )
 
     def test_relay_configuration_is_fixed_and_preserves_http_status(self):
         request = self.get_node("Send to Gateway")["parameters"]

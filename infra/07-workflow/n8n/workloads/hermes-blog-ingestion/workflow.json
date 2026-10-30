@@ -11,6 +11,7 @@
         "options": {}
       },
       "id": "hermes-ingress",
+      "webhookId": "e0e44720-8ff3-4c52-a052-6cd0472582c3",
       "name": "Authenticated Ingress",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
