@@ -261,6 +261,31 @@ reachable. The criterion 1 follow-up is done. Whether the 2026-10-29 risk
 acceptance covers the new Open WebUI counts is the owner's decision, so the
 Task stays in progress.
 
+### Newer Open WebUI review 2026-10-30
+
+On 2026-10-30 the owner chose to hold the Task and check for a newer Open WebUI
+image rather than extend the risk acceptance to v0.12.0-cuda. Upstream has
+released v0.12.1 to v0.12.5 since the pin. The facts below come from the GitHub
+releases and advisories API and anonymous ghcr manifest requests.
+
+| Release | Published (UTC) | CUDA index digest | Relevant notes |
+| --- | --- | --- | --- |
+| v0.12.1 | 2026-10-14 | - | Database migration (SCIM sign-in records) |
+| v0.12.2 | 2026-10-14 | - | Patches GHSA-3vvh-g22g-jq6r (medium, channels) |
+| v0.12.3 | 2026-10-16 | `sha256:99e6fbec…dc9a` | OAuth refresh fix only |
+| v0.12.4 | 2026-10-25 | `sha256:6684f0a7…d9f1` | Undisclosed security fixes; image moves to Python 3.12 on Debian 13 |
+| v0.12.5 | 2026-10-29 | `sha256:d9433f74…5bfb` | Further undisclosed security fixes |
+
+`renovate.json5` sets `minimumReleaseAge` to 7 days. On 2026-10-30, v0.12.3
+meets it, v0.12.4 meets it on 2026-11-01 and v0.12.5 on 2026-11-05. The Debian
+13 base is the likely remedy for most of the 526 Debian findings, but only a
+scan of the new image shows that. Open WebUI sets no channel option here, so
+the medium advisory is not known to be exposed. A pin move needs its own
+Spec. It must take a database backup before the v0.12.1 migration, keep in
+mind that rolling back past a migration means restoring that backup, and
+rescan the new image. The Task stays in progress until that image is pinned
+and scanned or the owner accepts the risk.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
