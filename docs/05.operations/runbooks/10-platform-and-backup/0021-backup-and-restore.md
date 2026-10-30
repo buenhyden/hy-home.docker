@@ -208,22 +208,51 @@ timestamp was not written"을 남기고 exit 1로 끝난다.
 
 ### 5. Point-in-time restore of `mng-pg` into isolation
 
-이 절차의 action readiness는 **BLOCKED**다. 실행 전에 @buenhyden이 정확한 source backup label, recovery timestamp/timezone, 연속 WAL 범위, 원래 PostgreSQL major/extension/pgBackRest와 호환되는 보존 image digest, 빈 target과 충분한 data-disk capacity를 정하고 stateful recovery 검토를 받아야 한다. 현재 Compose image를 원래 backup image로 추정하지 않는다. W4에서는 source 문서만 수정했고 runtime은 NOT_RUN이다.
+이 절차의 action readiness는 **BLOCKED**다. 2026-10-30 독립 stateful recovery 검토는 REQUEST_CHANGES 후 수정 범위 재검토에서 APPROVE_WITH_NOTES였다. 실행은 **NOT_RUN**이며 @buenhyden의 별도 실행 승인 전에는 실행하지 않는다. 실행 전에 정확한 source backup label, recovery timestamp(명시적 UTC offset 포함), 연속 WAL 범위, 원래 PostgreSQL major/extension/pgBackRest와의 image 호환성, 빈 target과 충분한 data-disk capacity를 owner가 확인한다. script는 실행 중인 `mng-pg`의 image ID를 쓰며 원래 backup image와 같다고 추정하지 않으므로 호환성은 owner가 검토한다.
 
-승인된 구현의 순서는 다음과 같다. 이는 아직 소유 target이 지정되지 않은 실행 명령이 아니다.
+소유자 실행 command는 5a와 같은 `scripts/operations/mng-pg-immediate-restore-rehearsal.py`에 `--target-time`을 더한 형태다. 이 옵션이 없으면 5a(`--type=immediate`)이고, 있으면 아래 time-target 모드이며 출력 필드와 container 이름(`hyhome-pitr-*`)·label(`hy.rehearsal=mng-pg-pitr-5`)이 5a와 겹치지 않아 cleanup이 5a artifact를 건드리지 않는다.
 
-1. data disk의 승인된 `SCRATCH_ROOT`에서 `mktemp -d -p`로 새 target을 만들고 소유 UID/mode/device/inode를 보존한다. 기존 경로·container·network 이름 충돌은 중단한다. recovery copy에는 UID70만 쓰게 하고 원본 repository는 read-only로 연결한다.
-2. 첫 pgBackRest restore container는 `--network none`으로 실행한다. custom image의 기본 secret-aware entrypoint를 유지하고 **command**로 `sh -ec`를 전달한다. `--entrypoint sh`로 우회하거나 cipher include를 직접 생성하지 않는다. `/run/secrets/pgbackrest_cipher_pass`를 read-only로 연결하면 wrapper가 `/tmp/pgbackrest/conf.d`의0600 include를 준비한다.
-3. `gosu postgres pgbackrest`의 `--stanza=mng`, 검토된 `--set=<backup-label>`, `--type=time`, `--target=<approved-time>`, `--target-action=promote`, `--archive-mode=off`를 사용한다. 정확한 pgBackRest 옵션과 repository/WAL 가용성을 먼저 검토한다. command 실패·chain 누락·version 불일치면 재시도/승격하지 않는다.
-4. 복원본 server 검증에만 새 이름의 `--internal` network를 사용한다. 원본 네트워크/host port와 연결하지 않는다. 같은 보존 image/entrypoint/cipher와 read-only repository, `PGDATA=/var/lib/postgresql/data/pgdata`를 사용하고 `postgres -c archive_mode=off`로 archive 재유입을 막는다.
-5. 로그의 target 도달/timeline, recovery 완료, role/extension/schema/sequence와 승인된 application invariants를 비교한다. 단순 시작이나 `selected new timeline`만으로 시점 정합성을 인정하지 않는다. dump·row·credential은 evidence에 출력하지 않는다.
-6. 실패 시 target을 중지하고 scratch/evidence를 보존한다. cleanup은 기록한 identity와 label을 재검증한 **정확한 소유 artifact만** 별도 승인 후 삭제한다. source·backup은 보존한다. live cutover는 별도 승인된 절차다.
+```bash
+SCRATCH_ROOT=<승인된 data-disk scratch 경로>   # /tmp 아님, 비어 있고 소유자 소유, mode 0700
+install -d -m 0700 "$SCRATCH_ROOT/mng-pg-pitr-20261030"
+python3 scripts/operations/mng-pg-immediate-restore-rehearsal.py \
+  --label 20261024-184214F_20261029-221825D \
+  --scratch-root "$SCRATCH_ROOT/mng-pg-pitr-20261030" \
+  --heartbeat app_db.debezium_heartbeat.heartbeat \
+  --dbt app_db.analytics.hyhome_dbt_connectivity \
+  --count-table mlflow.public.experiments \
+  --target-time '2026-10-29 22:20:00+00'
+```
 
-기존 synthetic test의 network/entrypoint 예시는 이 강화된 계약의 충족 증거가 아니다. source test 수정과 새 격리 검증은 별도 구현 작업이다.
+`--target-time`은 명시적 UTC offset(`+00`, `+00:00`, `+09:00` 등)이 붙은 ISO 시각만 받는다. offset이 없는 시각, `latest`, `now` 같은 별칭은 실행 전에 거부한다(exit 2). 위 label의 backup 종료는 2026-10-29 22:18:29 UTC이고 archive는 그 뒤 WAL까지 이어지므로 `2026-10-29 22:20:00+00`을 권장 target으로 삼는다. 다른 시각이면 backup 종료 이후이면서 archive 범위 안인지 먼저 확인한다.
+
+script가 하는 일은 다음 순서와 같다(검증·scratch·lock·probe·cleanup은 5a와 동일하다).
+
+1. 입력을 거부 기준(label, `/tmp` 등 금지 경로, 비어 있지 않거나 소유자 소유가 아닌 target, Docker context)으로 검사하고, backup scheduler host lock을 잡은 뒤 `pgbackrest verify --set=<label>`가 exit 0인 경우에만 계속한다. 원본 `mng-pg`에서는 읽기 전용 catalog 조회로 system ID, DB 목록, timeline만 읽는다.
+2. 같은 image·secret-aware entrypoint·read-only repository와 cipher secret을 쓰고 scratch data를 read-only로 연결한 `--network none` container에서 `pgbackrest info --stanza=mng --set=<label> --output=json`으로 선택한 set의 backup 종료 시각을 읽는다. target이 종료 시각보다 **엄격히 뒤**가 아니면 복원하지 않고 `target_before_backup_stop`으로 FAIL한다. info를 읽거나 해석하지 못하면 `backup_info`로 FAIL한다.
+3. 별도 `--network none` restore container가 `gosu postgres pgbackrest`로 `--stanza=mng`, `--set=<label>`, `--type=time`, `--target=<UTC로 정규화한 시각>`, `--target-action=promote`, `--archive-mode=off`를 사용해 새 scratch PGDATA에 복원한다. 실패하면 재시도·승격하지 않는다.
+4. clone도 `--network none`(host port 없음)이며 `postgres -c archive_mode=off`로 archive 재유입을 막는다. recovery 메시지를 남기기 위해 이 모드에서만 `logging_collector=on`, `log_directory=log`, `log_filename=postgresql.log`를 추가해 scratch PGDATA의 `log/`에 서버 로그를 쓴다(image 기본 설정은 stderr 전용이다).
+5. clone이 promote되면 host lock을 풀고 target 도달을 확인한다. `pg_is_in_recovery()`가 false이고, 현재 WAL 파일명에서 읽은 timeline이 원본 timeline보다 크며(`pg_control_checkpoint()`의 end-of-recovery checkpoint는 promote 직후에 늦게 기록될 수 있어 쓰지 않는다), 서버 로그에 `recovery stopping` 줄이 있고 `recovery ended before configured recovery target was reached`가 없어야 한다. 하나라도 아니면 `target_not_reached`로 FAIL한다. timeline 조회나 로그 읽기가 실패하거나 `log/`에 파일이 없으면 증거를 읽지 못한 것이므로 `target_evidence_unreadable`로 FAIL한다. 로그 줄은 출력하지 않고 true/false만 낸다. target에 도달하지 못해 clone이 종료되면 `clone_exited`로 FAIL하며, 근거는 보존된 scratch의 `log/`다.
+6. 이후 identity, DB 목록, 필수 객체, count 안정성, SCRAM probe는 5a와 같고, `selected new timeline`만으로 시점 정합성을 인정하지 않는다. dump·row·credential은 출력하지 않는다.
+7. 성공과 실패 모두 정확히 소유한 container(info, restore, clone)만 이름과 ID를 대조해 멈추고 제거한다. scratch PGDATA와 `log/`는 mode 0700으로 보존하고 증거 수집 시점부터 7일 안에 @buenhyden가 검토한다. 삭제는 별도 identity·owner 승인이다. source·backup은 보존하며 live cutover는 별도 승인된 절차다.
+
+기대 출력은 5a의 고정 필드 뒤에 다음 필드가 붙는다. 행, 비밀값, 원문 log는 없다.
+
+```text
+recovery_type=time
+target_time=2026-10-29 22:20:00+00
+target_after_backup_stop=true
+target_reached=true
+promoted=true
+```
+
+`result=FAIL`이면 `reason`이 `target_before_backup_stop`, `backup_info`, `target_not_reached`, `target_evidence_unreadable`, `clone_exited` 또는 5a의 reason 중 하나이며 이후 필드는 `NOT_RUN`(또는 해당 boolean `false`)이다. 이 모드의 실행 결과는 승인과 독립 검토 전까지 증거로 쓰지 않는다.
+
+2026-10-30 읽기 전용 `pg_stat_archiver` 확인에서 `last_archived_wal`은 `0000000100000027000000B1`(2026-10-30 08:34:35 UTC)로 권장 target보다 한참 뒤이므로 archive는 target 너머까지 이어진다. 그 사이 WAL의 연속성은 실행 자체가 증명하며, 끊겨 있으면 recovery가 일찍 끝나 `clone_exited`로 FAIL한다. `db_list_match`는 선택한 set 당시가 아니라 원본의 **현재** DB 목록과 비교하므로 5a와 같은 한계가 있다.
 
 #### 5a. Selected-backup immediate consistency rehearsal
 
-SPEC-0201-TSK-0002의 제안 경로는 step 5의 time-target PITR와 별개다. 실행은 별도 소유자 승인 전 **BLOCKED**이고, 백업 종료 뒤의 WAL 시점·5분 RPO·관리 앱 복구를 증명하지 않는다. 승인된 현재 backup set에 대해 `pgbackrest verify --set=<label>`가 exit 0인 후에만 같은 set을 `--type=immediate --target-action=promote --archive-mode=off`로 새 격리 target에 복원한다. 원본 repository와 BKP-001 secret은 기존 bind를 read-only로 소비한다. backup scheduler의 host lock, 정확한 scratch identity, image/PG major/pgBackRest 호환성, Docker context, 자원·시간 상한, 실패 보존을 먼저 검토한다.
+SPEC-0201-TSK-0002의 제안 경로는 step 5의 time-target PITR(`--target-time`)와 별개다. 실행은 별도 소유자 승인 전 **BLOCKED**이고, 백업 종료 뒤의 WAL 시점·5분 RPO·관리 앱 복구를 증명하지 않는다. 승인된 현재 backup set에 대해 `pgbackrest verify --set=<label>`가 exit 0인 후에만 같은 set을 `--type=immediate --target-action=promote --archive-mode=off`로 새 격리 target에 복원한다. 원본 repository와 BKP-001 secret은 기존 bind를 read-only로 소비한다. backup scheduler의 host lock, 정확한 scratch identity, image/PG major/pgBackRest 호환성, Docker context, 자원·시간 상한, 실패 보존을 먼저 검토한다.
 
 Clone은 `--network none`, host port 없음, 원본 PGDATA와 분리된 scratch만 사용하고 archive를 끈다. 선택 set의 DB 목록과 원본 cluster system ID는 clone과 정확히 같아야 하며 `app_db`, `mlflow`, 추적된 heartbeat·dbt 객체는 존재해야 한다. 복구된 local socket 관리 연결은 `docker exec --user 70`과 복원된 관리자 role을 사용하고 실패하면 중단한다. Clone 안에 직접 grant와 membership이 `CONNECT,TEMP`뿐인 일회성 LOGIN을 만들고, `app_db`·`public` schema·시험 객체의 유효 `PUBLIC` 권한이 영속 객체 변경을 허용하면 중단한다. `mng-pg`의 `pg_hba.conf`는 loopback을 trust로 두므로, 복원된 clone의 scratch `pg_hba.conf` 맨 앞에만 probe 전용 SCRAM 규칙 `host app_db <일회성 role> 127.0.0.1/32 scram-sha-256` 한 줄을 UID 70으로 추가하고 reload한 뒤 `pg_hba_file_rules`에서 1번 규칙·오류 없음을 확인한다(원본 `mng-pg`는 건드리지 않으며 scratch는 검토용으로 보존하므로 되돌리지 않고 `clone_hba_probe_rule=added`로 기록한다). 틀린 비밀번호가 거부되고 맞는 비밀번호가 내부 loopback `127.0.0.1:5432` TCP로 실제 인증되어야 한다. 이 role은 `app_db`의 임시 테이블 생성·합성 행 insert·count 1·rollback을 확인한 뒤 임시 객체와 LOGIN 모두 부재를 확인한다. 비밀번호 평문은 프로세스 밖에 보존하지 않는다. 실제 행·비밀값·원문 로그는 증거에 남기지 않는다. 지정된 관리 테이블 count는 동일 snapshot에서 두 번 동일한 비음수 값을 반환해야 하며 원본의 다른 시점 count와 같다고 가정하지 않는다. Extension과 sequence inventory는 관측값으로 기록하고 backup 시점 비교 자료가 없으면 같음을 주장하지 않는다. Clone이 일관성 상태에 도달하면 host lock을 해제하고, 성공과 실패 모두 정확히 소유한 임시 container 이름과 생성 ID를 대조해 멈추고 제거한다. 실패 경로에서는 아직 보유한 lock도 해제한다. scratch PGDATA는 mode 0700으로 보존하고 증거 수집 시점부터 7일 안에 @buenhyden이 검토한다. 기한을 넘기면 owner에게 상향 보고하며 삭제는 별도 identity·owner 승인이 필요하다. HOME cutover·서비스 중단·time-target PITR는 이 분기의 범위 밖이다.
 

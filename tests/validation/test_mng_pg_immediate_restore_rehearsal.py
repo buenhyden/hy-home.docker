@@ -21,7 +21,16 @@ ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/operations/mng-pg-immediate-restore-rehearsal.py"
 LABEL = "20261024-184214F_20261029-221825D"
 IMAGE_ID = "sha256:" + "ab" * 32
-RESTORE_ID, CLONE_ID = "1" * 64, "2" * 64
+RESTORE_ID, CLONE_ID, INFO_ID = "1" * 64, "2" * 64, "3" * 64
+STOP_EPOCH = 1793312309  # 2026-10-29 22:18:29 UTC
+TARGET = "2026-10-29 22:20:00+00"
+TIME_FIELDS = [
+    "recovery_type",
+    "target_time",
+    "target_after_backup_stop",
+    "target_reached",
+    "promoted",
+]
 SYSID = "7123456789012345678"
 DBS = "app_db,mlflow,platform_dev,postgres"
 FIELDS = [
@@ -113,8 +122,15 @@ class FakeDocker:
         if argv[:2] == ["docker", "create"]:
             name = argv[2].split("=", 1)[1]
             cid = RESTORE_ID if "restore" in name else CLONE_ID
+            cid = INFO_ID if "info" in name else cid
             self.created[name] = cid
             return 0, cid + "\n"
+        if argv[:3] == ["docker", "start", "--attach"]:
+            self.held("info")
+            if "info_out" in self.kw:
+                return 0, self.kw["info_out"]
+            backup = [{"label": LABEL, "timestamp": {"start": 1, "stop": STOP_EPOCH}}]
+            return 0, "banner\n" + json.dumps([{"name": "mng", "backup": backup}])
         if argv[:2] == ["docker", "start"]:
             return 0, ""
         if argv[:2] == ["docker", "wait"]:
@@ -142,6 +158,14 @@ class FakeDocker:
         if argv[-2].endswith("pg_hba.conf"):
             self.hba_write = (argv[argv.index("--user") + 2], argv[-2], argv[-1])
             return self.kw.get("hba_write_rc", 0), ""
+        if "recovery stopping" in argv[-1]:
+            files = self.kw.get("log_files", "1")
+            if files == "0":
+                return self.kw.get("log_rc", 0), "files=0\n"
+            stopping = self.kw.get("log_stopping", "1")
+            ended = self.kw.get("log_ended", "0")
+            out = f"files={files}\nstopping={stopping}\nended={ended}\n"
+            return self.kw.get("log_rc", 0), out
         if "psql" in argv:
             return self.psql(argv, input or "")
         if "sh" in argv:
@@ -150,6 +174,11 @@ class FakeDocker:
 
     def psql(self, argv, sql):
         container = argv[argv.index("--user") + 2]
+        if "pg_walfile_name" in sql:
+            tl = "1" if container == "mng-pg" else self.kw.get("clone_tl", "2")
+            promoted = "false" if self.kw.get("not_promoted") else "true"
+            rc = self.kw.get("tl_rc", 0) if container != "mng-pg" else 0
+            return rc, f"promoted={promoted}\ntl={tl}\n"
         if "pg_is_in_recovery" in sql:
             self.held("ready")
             if self.kw.get("clone_down"):
@@ -242,13 +271,14 @@ class RehearsalTests(unittest.TestCase):
         values.update(over)
         return argparse.Namespace(**values)
 
-    def run_rehearsal(self, **kw):
+    def run_rehearsal(self, target=None, **kw):
         for old in self.scratch.iterdir():  # one fresh target per run
             shutil.rmtree(old) if old.is_dir() else old.unlink()
         fake = FakeDocker(self.state, **kw)
         clock = Clock()
+        extra = {} if target is None else {"target_time": target}
         result = self.m.rehearse(
-            self.args(), run=fake, sleep=clock.sleep, clock=clock, env={}
+            self.args(**extra), run=fake, sleep=clock.sleep, clock=clock, env={}
         )
         return result, fake
 
@@ -631,12 +661,255 @@ class RehearsalTests(unittest.TestCase):
         text = SCRIPT.read_text()
         self.assertNotIn("--entrypoint", text)
         self.assertNotIn("latest", text)
-        self.assertNotIn("--type=time", text)
         self.assertNotIn("--publish", text)
         self.assertIn("--network=none", text)
         self.assertIn("--archive-mode=off", text)
         self.assertIn("archive_mode=off", text)
         self.assertTrue(os.access(SCRIPT, os.X_OK))
+
+
+class TimeTargetTests(unittest.TestCase):
+    """`--target-time`: the RUN-0021 step 5 time-target PITR mode."""
+
+    setUp = RehearsalTests.setUp
+    args = RehearsalTests.args
+    run_rehearsal = RehearsalTests.run_rehearsal
+
+    def test_target_parsing(self):
+        for text, want in {
+            "2026-10-29 22:20:00+00": "2026-10-29 22:20:00",
+            "2026-10-29T22:20:00+00:00": "2026-10-29 22:20:00",
+            "2026-10-30 07:20:00+0900": "2026-10-29 22:20:00",
+            "2026-10-29 17:20:00-05:00": "2026-10-29 22:20:00",
+        }.items():
+            got = self.m.parse_target(text)
+            self.assertEqual(got.strftime("%Y-%m-%d %H:%M:%S"), want, text)
+            self.assertEqual(got.utcoffset().total_seconds(), 0)
+        for bad in (
+            "latest",
+            "now",
+            "",
+            "2026-10-29 22:20:00",
+            "2026-10-29",
+            "2026-10-29 22:20:00Z",
+            "2026-13-29 22:20:00+00",
+            "2026-10-29 22:20:00+99",
+            "2026-10-29 22:20:00+00; x",
+            "2026-10-29 22:20:00.5+00",
+        ):
+            with self.assertRaises(self.m.Refused, msg=bad):
+                self.m.parse_target(bad)
+            with self.assertRaises(self.m.Refused, msg=bad):
+                self.m.check_inputs(self.args(target_time=bad))
+
+    def test_bad_target_runs_nothing_and_refused_output_has_time_fields(self):
+        fake = FakeDocker(self.state)
+        with self.assertRaises(self.m.Refused):
+            self.m.rehearse(self.args(target_time="now"), run=fake)
+        self.assertEqual(fake.calls, [])
+        out = []
+        with mock.patch("sys.stdout.write", out.append):
+            code = self.m.main(
+                [
+                    "--label=" + LABEL,
+                    "--scratch-root=" + str(self.scratch),
+                    "--heartbeat=a.b",
+                    "--dbt=a.b",
+                    "--count-table=a.b.c",
+                    "--min-free-gib=0",
+                    "--target-time=now",
+                ]
+            )
+        keys = [line.split("=")[0] for line in "".join(out).splitlines()]
+        self.assertEqual((code, keys), (2, FIELDS + TIME_FIELDS))
+        self.assertIn("reason=target_time\n", "".join(out))
+        self.assertNotIn("now", "".join(out).replace("none", ""))
+
+    def test_restore_command_for_time_mode(self):
+        target = self.m.parse_target("2026-10-30 07:20:00+09:00")
+        script = self.m.restore_command(LABEL, target)[-1]
+        self.assertIn("--type=time", script)
+        self.assertNotIn("--type=immediate", script)
+        self.assertIn("--target='2026-10-29 22:20:00+00' ", script)
+        for option in (
+            f"--set={LABEL}",
+            "--target-action=promote",
+            "--archive-mode=off",
+            "gosu postgres pgbackrest",
+        ):
+            self.assertIn(option, script)
+        self.assertIn("--type=immediate", self.m.restore_command(LABEL)[-1])
+        self.assertIn("logging_collector=on", self.m.clone_command(True))
+        self.assertNotIn("logging_collector=on", self.m.clone_command())
+
+    def test_time_success_contract(self):
+        result, fake = self.run_rehearsal(target=TARGET)
+        self.assertEqual(result["result"], "PASS", result)
+        self.assertEqual(result["cleanup_status"], "removed")
+        self.assertEqual(
+            [result[k] for k in TIME_FIELDS],
+            ["time", "2026-10-29 22:20:00+00", True, True, True],
+        )
+        lines = self.m.render(result).splitlines()
+        self.assertEqual([x.split("=")[0] for x in lines], FIELDS + TIME_FIELDS)
+        self.assertIn("target_time=2026-10-29 22:20:00+00", lines)
+        creates = [c for c in fake.calls if c[:2] == ["docker", "create"]]
+        self.assertEqual(len(creates), 3)
+        for argv in creates:
+            self.assertIn("--label=hy.rehearsal=mng-pg-pitr-5", argv)
+            self.assertTrue(argv[2].startswith("--name=hyhome-pitr-"), argv[2])
+            self.assertIn("--network=none", argv)
+            self.assertTrue(any("dst=/var/lib/pgbackrest,readonly" in a for a in argv))
+        info, restore, clone = creates
+        self.assertIn("--output=json info", info[-1])
+        self.assertIn(f"--set={LABEL}", info[-1])
+        self.assertIn("--type=time", restore[-1])
+        self.assertIn("logging_collector=on", clone)
+        self.assertEqual(sorted(fake.removed), sorted({INFO_ID, RESTORE_ID, CLONE_ID}))
+
+    def test_target_not_after_backup_stop_fails_before_restore(self):
+        for target in ("2026-10-29 22:18:29+00", "2026-10-29 22:18:00+00"):
+            result, fake = self.run_rehearsal(target=target)
+            self.assertEqual(
+                (result["result"], result["reason"]),
+                ("FAIL", "target_before_backup_stop"),
+            )
+            self.assertIs(result["target_after_backup_stop"], False)
+            self.assertEqual(result["restore_rc"], "NOT_RUN")
+            self.assertFalse([n for n in fake.created if "restore" in n])
+            self.assertEqual(result["cleanup_status"], "removed")
+        result, _ = self.run_rehearsal(target="2026-10-29 22:18:30+00")
+        self.assertEqual(result["result"], "PASS", result)
+
+    def test_unreadable_backup_info_fails_closed(self):
+        for out in ("", "no json", "[]", '[{"backup": []}]'):
+            result, fake = self.run_rehearsal(target=TARGET, info_out=out)
+            self.assertEqual(result["reason"], "backup_info", out)
+            self.assertFalse([n for n in fake.created if "restore" in n])
+
+    def test_target_not_reached_fails_on_log_markers_and_state(self):
+        cases = {
+            "no_stopping_line": {"log_stopping": "0"},
+            "ended_early": {"log_ended": "1"},
+            "not_promoted": {"not_promoted": True},
+            "timeline_not_advanced": {"clone_tl": "1"},
+        }
+        for name, kw in cases.items():
+            result, _ = self.run_rehearsal(target=TARGET, **kw)
+            self.assertEqual(
+                (result["result"], result["reason"]),
+                ("FAIL", "target_not_reached"),
+                name,
+            )
+            self.assertIs(result["target_reached"], False, name)
+            self.assertEqual(result["probe_result"], "NOT_RUN", name)
+            self.assertEqual(result["cleanup_status"], "removed", name)
+
+    def test_unreadable_evidence_is_not_a_missed_target(self):
+        cases = {
+            "timeline_exec_fails": {"tl_rc": 1},
+            "log_exec_fails": {"log_rc": 1, "log_stopping": "1"},
+            "no_log_file": {"log_files": "0"},
+        }
+        for name, kw in cases.items():
+            result, _ = self.run_rehearsal(target=TARGET, **kw)
+            self.assertEqual(
+                (result["result"], result["reason"]),
+                ("FAIL", "target_evidence_unreadable"),
+                name,
+            )
+            self.assertIs(result["target_reached"], False, name)
+            self.assertEqual(result["cleanup_status"], "removed", name)
+
+    def test_log_script_against_a_real_pgdata_log(self):
+        def counts(log_text):
+            pgdata = Path(tempfile.mkdtemp(dir=self.tmp))
+            if log_text is not None:
+                (pgdata / "log").mkdir()
+                (pgdata / "log" / "postgresql.log").write_text(log_text)
+            done = subprocess.run(
+                ["sh", "-ec", self.m._LOG_SCRIPT],
+                env={"PGDATA": str(pgdata), "PATH": os.environ["PATH"]},
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            return dict(x.split("=") for x in done.stdout.split())
+
+        stop = "LOG:  recovery stopping before commit of transaction 5, time x\n"
+        early = "FATAL:  recovery ended before configured recovery target was reached\n"
+        self.assertEqual(
+            counts("a\n" + stop + "b\n"), {"files": "1", "stopping": "1", "ended": "0"}
+        )
+        self.assertEqual(
+            counts("a\n" + early), {"files": "1", "stopping": "0", "ended": "1"}
+        )
+        self.assertEqual(
+            counts("nothing here\n"), {"files": "1", "stopping": "0", "ended": "0"}
+        )
+        self.assertEqual(counts(None), {"files": "0"})
+
+    def test_clone_exit_is_clone_exited(self):
+        result, _ = self.run_rehearsal(target=TARGET, clone_down=True)
+        self.assertEqual((result["result"], result["reason"]), ("FAIL", "clone_exited"))
+        self.assertEqual(result["target_reached"], "NOT_RUN")
+        self.assertEqual(result["cleanup_status"], "removed")
+        self.assertTrue((self.scratch / "data").is_dir())
+
+    def test_lock_is_held_while_the_info_container_runs(self):
+        result, fake = self.run_rehearsal(target=TARGET)
+        self.assertEqual(result["result"], "PASS", result)
+        for event in ("verify", "info", "restore_wait", "ready"):
+            self.assertIs(fake.lock_held[event], True, event)
+
+    def test_info_container_mounts_data_read_only(self):
+        _, fake = self.run_rehearsal(target=TARGET)
+        info, restore, clone = [c for c in fake.calls if c[:2] == ["docker", "create"]]
+        data = "dst=/var/lib/postgresql/data"
+        self.assertTrue(any(a.endswith(data + ",readonly") for a in info))
+        for argv in (restore, clone):
+            self.assertTrue(any(a.endswith(data) for a in argv))
+
+    def test_only_read_only_queries_and_verify_reach_the_source(self):
+        _, fake = self.run_rehearsal(target=TARGET)
+        allowed = {self.m._IDENTITY_SQL, self.m._TIMELINE_SQL}
+        seen = 0
+        for argv, sql in zip(fake.calls, fake.inputs, strict=True):
+            if "mng-pg" not in argv:
+                continue
+            seen += 1
+            if argv[:3] == ["docker", "inspect", "mng-pg"]:
+                continue
+            self.assertEqual(argv[:2], ["docker", "exec"], argv)
+            if "pgbackrest" in argv:
+                self.assertEqual(argv[-2:], ["verify", f"--set={LABEL}"])
+            else:
+                self.assertIn(sql, allowed)
+        self.assertEqual(seen, 4)  # inspect, verify, identity, timeline
+
+    def test_log_check_prints_nothing_and_reads_scratch_log(self):
+        self.assertIn('$PGDATA"/log', self.m._LOG_SCRIPT)
+        self.assertIn("recovery stopping", self.m._LOG_SCRIPT)
+        self.assertIn(
+            "recovery ended before configured recovery target was reached",
+            self.m._LOG_SCRIPT,
+        )
+        result, _ = self.run_rehearsal(target=TARGET)
+        self.assertNotIn("recovery stopping", self.m.render(result))
+
+    def test_immediate_mode_output_is_unchanged(self):
+        result, fake = self.run_rehearsal()
+        self.assertEqual(list(result), FIELDS)
+        self.assertEqual(self.m.render(result).count("\n"), len(FIELDS))
+        for key in TIME_FIELDS:
+            self.assertNotIn(key + "=", self.m.render(result))
+        creates = [c for c in fake.calls if c[:2] == ["docker", "create"]]
+        self.assertEqual(len(creates), 2)
+        for argv in creates:
+            self.assertIn("--label=hy.rehearsal=mng-pg-immediate-5a", argv)
+            self.assertTrue(argv[2].startswith("--name=hyhome-5a-"), argv[2])
+        self.assertNotIn("logging_collector=on", creates[1])
+        self.assertIn("--type=immediate", creates[0][-1])
 
 
 if __name__ == "__main__":
