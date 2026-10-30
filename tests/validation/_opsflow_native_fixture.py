@@ -65,6 +65,11 @@ from tests.validation.test_datastore_rehearsal_boundary import DockerClientBound
 # 70 s deactivated hold, three more n8n CLI/REST rounds and five credential
 # probes (an estimate, not a measurement), so the limit moves to 40 minutes.
 WORK_SECONDS = 40 * 60
+# A create whose client call fails can still finish in the daemon: on
+# 2026-10-30 one appeared after its attempt's cleanup had passed, under a
+# loaded host. Cleanup polls this long (of its two minutes) before treating a
+# pending container as never created.
+PENDING_CREATE_GRACE_SECONDS = 60
 
 
 class RehearsalFailure(AssertionError):
@@ -335,10 +340,12 @@ class NativeFixture:
 
     def _adopt_pending_container(self, role: str) -> None:
         pending = self.pending_containers[role]
-        record = discover_container(self.client, pending, self.attempt)
-        if record is None:
-            self.pending_containers.pop(role)
-            return
+        deadline = time.monotonic() + PENDING_CREATE_GRACE_SECONDS
+        while (record := discover_container(self.client, pending, self.attempt)) is None:  # fmt: skip
+            if time.monotonic() >= deadline:
+                self.pending_containers.pop(role)
+                return
+            time.sleep(3)
         self.containers[role] = record
         self._verify_owned(record)
 

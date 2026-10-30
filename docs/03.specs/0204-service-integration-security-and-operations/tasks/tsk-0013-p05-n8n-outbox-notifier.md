@@ -883,14 +883,25 @@ SQL and the pool size in the credential. One further native run is needed.
 The owner ran the native class a fourth time, from `main` at `2427700e4`.
 Attempt `opsflow-native-dc07812ebf96857acaa19f5f` failed after 70 seconds,
 before any container existed: creating the first secret-preparation
-container ended with `owned container identity is ambiguous`. Cleanup passed
-and nothing was retained. Docker's event log shows no container for the
-attempt, and the daemon had not restarted. During the attempt, the Open WebUI
+container ended with `owned container identity is ambiguous`. The receipt
+reported cleanup PASS with nothing retained, but that was wrong (see the
+correction below). The daemon had not restarted. During the attempt, the Open WebUI
 Grype scan was running on the same host (08:53 to 09:09 KST, load
 average near 20), and each fixture Docker call has a 60-second limit. The
 harness withholds Docker's error, so contention is the likely cause but not
-proven. The same code passed this step in the three earlier attempts, so
-nothing changed. The next run must not overlap other heavy work.
+proven. The same code passed this step in the three earlier attempts. The
+next run must not overlap other heavy work.
+
+Correction, 2026-10-30: the owner's pre-run check for attempt five found
+`opsflow-native-dc07812ebf96857acaa19f5f-g1-secret-prep` in state `Created`,
+made at 08:52:15 KST and carrying the attempt's labels. The daemon finished
+the create after the client call had failed. Cleanup found no container,
+dropped the pending role, and its sweep ran before the container existed, so
+its PASS was false. Cleanup now polls for up to 60 seconds before treating a
+pending container as never created. An offline test covers both a late
+create and a create that never appears. The leftover container, never started,
+is for the owner to remove; a later residue check showing none resolves the
+Attempt four residue row.
 
 ## Evidence
 
@@ -915,6 +926,7 @@ nothing changed. The next run must not overlap other heavy work.
 | Owner native attempt with criterion 22 steps | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `4de81f1a4`; attempt `opsflow-native-5c855b474d846df902d87001` | FAIL | Owner native attempt with criterion 22 steps 2026-10-30; scheduled delivery passed, next publication hit the business-date index; harness fixed; cleanup PASS | required | - |
 | Owner native attempt three | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `e3e504514`; attempt `opsflow-native-cd9f2fadd4086d1c86311ead` | FAIL | Owner native attempt three 2026-10-30; scheduled execution PASS; six-claimer race exceeded the notifier connection limit; harness fixed; cleanup PASS | required | - |
 | Owner native attempt four | 22 | W43 | Opt-in native class, fixture creation | `main` at `2427700e4`; attempt `opsflow-native-dc07812ebf96857acaa19f5f` | FAIL | Owner native attempt four 2026-10-30; first container create failed while a Grype scan loaded the host; cleanup PASS | required | - |
+| Attempt four residue | 22 | W43 | Owner pre-run check for labelled native containers and networks | `docker ps -a` by attempt label before attempt five, 2026-10-30 | FAIL | Owner native attempt four 2026-10-30, correction; one `Created` secret-prep container of attempt `opsflow-native-dc07812ebf96857acaa19f5f` remained after a reported cleanup PASS | required | - |
 
 Actual existing-source command, exit0:
 
