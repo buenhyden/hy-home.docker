@@ -390,6 +390,19 @@ needs those rows reconciled, either by matching PASS rows or by an owner
 decision that the later evidence supersedes them. The rule and alert checks in
 RUN-0045 are also still not run. Criteria 1 and 3 to 7 stay pending.
 
+### Criterion 2 acceptance 2026-10-30
+
+On 2026-10-30 the owner decided that the later Prometheus evidence supersedes
+the earlier criterion 2 rows that were never resolved: the integrity rehash,
+the isolated restore, the initial and intermediate plan rows, the quarantine
+leaf, and restore attempts 01 to 03. The later restore of the SEC01 10-20 cold
+copy checked the archive's SHA-256 before extraction and exited 0. It read 23
+blocks, reached ready in 55.4 s, found no WAL corruption and answered three
+historical queries (64/64/63). One PASS row per superseded Check records the
+decision and resolves its row. Criterion 2 is accepted with the
+pre-recreation ordering recorded as a deviation. Not covered: rule health and
+Alertmanager delivery (RUN-0045). Criteria 1 and 3 to 7 stay pending.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -426,13 +439,21 @@ RUN-0045 are also still not run. Criteria 1 and 3 to 7 stay pending.
 | Later Gatus delta image | 4 | W3 | Reuse the documented no-network/no-pull delta build | Recorded base `c52ad951…`, result `503e6af2…`, tracked entrypoint `4d4264b5…`, unchanged binary `c127f7e9…`; raw image identities not re-observed | PASS | Prometheus isolated restore and Gatus W3 — 2026-10-21; Later-result reconciliation — 2026-10-22 | required | - |
 | Later Gatus CA application | 5 | W5 | Reuse the documented bounded recreation and CA mount result | Recorded recreation at main `5c77e8681`, healthy, zero restarts, CA mount/bundle and SSL_CERT_FILE present; consumer TLS result not established by this row | PASS | Prometheus isolated restore and Gatus W3 — 2026-10-21; Later-result reconciliation — 2026-10-22 | required | - |
 | OpenBao TLS consumer result | 5 | W5 | Bind the OpenBao window's consumer checks to the two changed services | SPEC-0243 TSK-0001 W6 row, 2026-10-22: Prometheus `up` 1 for `openbao` and `openbao-agent`; Gatus OpenBao `success=true` | PASS | TLS consumer binding 2026-10-30 | required | - |
+| Prometheus backup integrity rehash superseded | 2 | W2 | Independent rehash of the captured Prometheus archive | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Prometheus backup integrity rehash |
+| Prometheus isolated restore superseded | 2 | W2 | Isolated restoration and validation of the captured Prometheus archive | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Prometheus isolated restore |
+| Initial Prometheus isolated restore plan binding superseded | 2 | W2 | Bind the initial isolated-mode Prometheus restore packet to its frozen contract and script | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Initial Prometheus isolated restore plan binding |
+| Intermediate Prometheus restore candidate superseded | 2 | W2 | Record the reblessed candidate before the final immutable-tree release candidate | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Intermediate Prometheus restore candidate |
+| Isolated restore quarantine evidence leaf superseded | 2 | W2 | Retain only sanitized execution evidence for the released isolated clones | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Isolated restore quarantine evidence leaf |
+| Isolated restore attempt 01 superseded | 2 | W2 | Released synthetic-ownership probe for the first isolated restore attempt | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Isolated restore attempt 01 |
+| Isolated restore attempt 02 superseded | 2 | W2 | Released synthetic-owner stage for the second isolated restore attempt | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Isolated restore attempt 02 |
+| Isolated restore attempt 03 superseded | 2 | W2 | Released Prometheus isolated restore through offline preflight | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Isolated restore attempt 03 |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 1 | pending | - | Await W1 preflight | @buenhyden |
-| 2 | pending | Later Prometheus isolated restore | Later cold-copy restore is recorded PASS; pre-recreation ordering remains a deviation, with rule/alert and exact TLS consumer acceptance outstanding. | @buenhyden |
+| 2 | accepted | Later Prometheus isolated restore | Owner accepted on 2026-10-30: the later cold-copy restore supersedes the earlier unresolved rows, and the pre-recreation ordering is a recorded deviation; rule health and Alertmanager delivery are not covered. | @buenhyden |
 | 3 | pending | Later Gatus backup and isolated restore | Later consistent copy and isolated integrity check are recorded PASS; owner acceptance and exact post-window consumer verification remain outstanding. | @buenhyden |
 | 4 | pending | Later Gatus delta image | Minimal delta build identity is recorded; final owner acceptance remains outstanding. | @buenhyden |
 | 5 | pending | Later Gatus CA application | Gatus CA application is recorded; bind the later OpenBao TLS consumer results and required service checks before acceptance. | @buenhyden |

@@ -471,6 +471,38 @@ On 2026-10-30 the tracked hook files on `main` matched the frozen hashes for
 `.claude/settings.json`, `session-start.sh` and `agent-event-hook.sh`, and the
 ECC root identity was unchanged. Attempt 07 has not run.
 
+### Native PostToolUse Attempt 07 Result
+
+Attempt 07 ran once on 2026-10-30 from a clean governance worktree at `main`
+`b6a1fb085`. All ten frozen tracked hashes and all ten ECC hashes matched, and
+the harness hash was `a74f4984…`. The receipt
+`/tmp/hyhome-r13-native-hook-probe-receipt-07.json` has SHA-256
+`3af58d3424f8edd65fbfae2704df76f8a70c13ebbbea4e2f8ce6a44e249defa6`. It
+classifies the run `HOOK_DELIVERY_PROBE_FAILED_CLOSED`, harness exit 1.
+
+Hook delivery itself worked:
+
+- Native and Dispatcher each counted one `SessionStart`, `UserPromptSubmit`,
+  `PreToolUse`, `PostToolUse`, `Stop` and `SessionEnd`.
+- `PostToolValidate-Check` counted one.
+- The guard forwarded exactly one Write, the output was exact, the final
+  token was seen, the provider exited 0, and there was no timeout or stderr.
+- The first offsets were SessionStart at 1.4 s, PreToolUse at 4.9 s,
+  PostToolUse at 5.3 s and SessionEnd at 7.6 s.
+
+The 06 stall did not recur.
+
+It failed closed for two reasons. First, there were seven `UNKNOWN` shim
+calls, all of class `abs-other`: three with one argument and four with two.
+The first came at 1.4 s, alongside SessionStart. Shell calls to absolute
+paths outside the reviewed hook set are consistent with user-level plugin
+hooks, which the session-only ECC disable does not cover. Second, the one tool
+result's `is_error` was not a boolean (`UNKNOWN` 1), while the harness
+expects `false` 1. Criterion 4 stays pending. An Attempt 08 would need either
+user-level hooks excluded from the session, or the owner to accept foreign
+`abs-other` calls and a missing `is_error` as outside the probe. It also needs
+the harness to classify those cases, a fresh review, and a release.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -514,6 +546,7 @@ ECC root identity was unchanged. Attempt 07 has not run.
 | Native PostToolUse attempt 05 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt `7662bae15c4b64b47c862f4632edfc65b6a4d7cfa460a565273e7c84fbc78e5d`; failed closed before provider launch because ECC root mode 0775 made `ecc_root_guard=false`; null exit code; zero stdout/stderr/tool/events; guard tests 12/12; cleanup PASS; status equal; no retry | FAIL | Native PostToolUse Attempt 05 Result | required | - |
 | Native PostToolUse attempt 06 plan review | 4 | W4 | Independent security review of one preflight-corrected ECC-disabled, normal-memory-off named-project wrapper diagnostic | Plan `b63759b956db133f0c7f2a1ec6c430befb9dd4623df3c2dd14ac767f57803990`; harness `e33dbd56a113285318ab5c9d7ef6ed90a921966a6e1ad93c9e553912ceac3d34`; public root mode/private group/current UID/full nine chain/no ACL/no writer checks; offline host 9/9 and guard tests 12/12; Write-only/max two turns/USD 1/180 seconds/no MCP unchanged | PASS | Native PostToolUse Attempt 06 Plan | required | - |
 | Native PostToolUse attempt 06 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt SHA-256 `1086eaa6…`, 2026-10-16 | FAIL | Native PostToolUse Attempt 06 Result; timed out, `SessionStart` 0, `PostToolUse` 0, one `UNKNOWN` event | required | - |
+| Native PostToolUse attempt 07 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt SHA-256 `3af58d34…`, 2026-10-30, Claude 2.1.312 | FAIL | Native PostToolUse Attempt 07 Result; all native and dispatcher hooks delivered once and the Write was exact, but seven `abs-other` UNKNOWN calls and a non-boolean `is_error` failed the closed checks | required | - |
 
 ## Criterion Acceptance
 
