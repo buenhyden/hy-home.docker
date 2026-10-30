@@ -239,12 +239,35 @@ SQLite export and Ollama catalog are therefore in a snapshot and in its R2
 copy, and criterion 3 is accepted. Scanning the current pins stays the
 recorded criterion 1 follow-up, so the Task stays in progress.
 
+### Current pin scan 2026-10-30
+
+The owner scanned the current pins on 2026-10-30 with the pinned Grype
+v0.120.1. The database was built 2026-10-29T06:23:34Z and downloaded once; the
+scans ran with `--network none`. Each archive's `index.json` names the pinned
+index digest (`20d1bbfb…` for Ollama, `3a4f953b…` for Open WebUI), and the
+image ID Grype reports is the archive's config digest.
+
+| Image | Critical | High | Medium | Low/negligible/unknown | Against 2026-10-10 |
+| --- | --- | --- | --- | --- | --- |
+| Ollama 0.40.12 | 0 | 0 | 69 | 13 | Critical 2 and High 20 are gone |
+| Open WebUI v0.12.0-cuda | 64 | 603 | 542 | 921 | Critical down 8, High up 73 |
+
+Of Open WebUI's 667 Critical and High findings, 526 are Debian packages (348
+not fixed upstream, 167 won't fix, 11 fixed), 76 are Python packages (71
+fixable: `pillow`, `pypdf`, `pyjwt`, `authlib`, `aiohttp`, `cryptography` and
+others) and 65 are binaries (30 fixable, mostly bundled `ffmpeg` and Node). Only
+a newer image removes them. As before, Grype does not show whether a path is
+reachable. The criterion 1 follow-up is done. Whether the 2026-10-29 risk
+acceptance covers the new Open WebUI counts is the owner's decision, so the
+Task stays in progress.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Source facts | 1 | W1 | Registry, release, licence and advisory queries; Ollama GPU log | `c3ce31973` | PASS | W1 Source Facts | required | - |
 | Image scan | 1 | W1 | Pinned Grype, offline, DB built 2026-10-09 (SPEC-0229) | `32fb2e69d` | PASS | W1 Source Facts | required | - |
+| Current pin scan | 1 | W1 | Pinned Grype v0.120.1, offline, DB built 2026-10-29 | Owner-run scan of `ollama/ollama:0.40.12` and `open-webui:v0.12.0-cuda` archives, 2026-10-30 | PASS | Current pin scan 2026-10-30 | required | - |
 | Pins and limits | 2 | W2 | Contract tests; Compose rendering; version sync | `41a711771` | PASS | W2 Pins and Limits | required | - |
 | Restore | 3 | W3 | Isolated SQLite, upload, key and catalog restore | `2ac1db09c` | PASS | W3 Backup and Restore | required | - |
 | Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | required | - |
