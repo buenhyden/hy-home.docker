@@ -1,8 +1,8 @@
 ---
 title: "Storybook Build and Delivery Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-30"
 layer: "specs"
@@ -303,6 +303,21 @@ a W5 PASS for either, so completion waits for that evidence or a Plan
 correction. The Evidence and Criterion Acceptance tables move to the current
 shape so the decision can be recorded.
 
+### W5 rerun and completion 2026-10-30
+
+The W5 Work Log already reports the criterion 3 checks (lint, typecheck,
+Storybook build with its artifact and MCP tests, story tests, bundle) and the
+criterion 5 documents and catalog bindings at `f9977d135`. That run predates
+the dependency patch, so the checks were run again at `main` `c585c5244`.
+`npm audit` exited 0. `npm ci`, `lint`, `typecheck`, `build-storybook`,
+`build:mcp`, `coverage` (100% statements, branches, functions and lines) and
+`build` all passed with `--prefix projects/storybook/nextjs`.
+`check-storybook-contract.sh` passed, and `test_storybook_image` ran seven
+tests, OK. Two W5 rows now record criteria 3 and 5, so every planned criterion
+and Work Unit pair has a PASS row, and the Task is complete. Running
+`/design-sync`, which needs the owner's Claude Design login, stays out of
+scope (Spec Scope). `DESIGN.md` is separate later work.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -311,6 +326,7 @@ shape so the decision can be recorded.
 | SPEC-0219-PLAN-0001 | draft | approved | #owner-decision-2026-10-29 |
 | SPEC-0219-TSK-0001 | draft | ready | #inputs-and-authorization |
 | SPEC-0219-TSK-0001 | ready | in-progress | #owner-decision-2026-10-29 |
+| SPEC-0219-TSK-0001 | in-progress | completed | #w5-rerun-and-completion-2026-10-30 |
 
 ## Evidence
 
@@ -321,6 +337,8 @@ shape so the decision can be recorded.
 | Shared UI | 3 | W3 | Story tests RED and GREEN; parity test (removed with `DESIGN.md`); tarball consumer | `73beaa382` | PASS | W3 Shared UI | required | - |
 | Dependencies | 3 | W4 | Full checks on TypeScript 6.0.3; TypeScript 7 trials | `943108232` | PASS | W4 Dependencies | required | - |
 | Remote MCP and export | 2, 4 | W5 | Node and unit tests; live local server | `f9977d135` | PASS | W5 Remote MCP, Design Export and Documents | required | - |
+| W5 checks rerun | 3 | W5 | Lint, typecheck, Storybook build with artifact and MCP tests, story coverage, bundle | `main` at `c585c5244` | PASS | W5 rerun and completion 2026-10-30 | required | - |
+| W5 documents and catalog | 5 | W5 | Storybook contract check; image unit tests; documents and catalog bindings | `f9977d135` Work Log; contract check and seven tests at `c585c5244` | PASS | W5 rerun and completion 2026-10-30 | required | - |
 | Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9`, `300b12a86` | PASS | W6 Images and Rehearsal | required | - |
 | Validation | 5 | W7 | Changed gate; CI; npm risk amendment | `6169a8f1f`, `412ec8298` | PASS | W7 Validation | required | - |
 | HOME activation | 2 | W8 | Keycloak client and scope read-back; image verify; no-session probes; owner admin login | `0df98f405` | PASS | W8 HOME Activation | required | - |
@@ -334,17 +352,16 @@ shape so the decision can be recorded.
 | --- | --- | --- | --- | --- |
 | 1 | accepted | Build contract, Images and rehearsal | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
 | 2 | accepted | Ingress checks, Remote MCP and export, HOME activation, Codex MCP login on HOME, Remote-device MCP login and tool call rerun | Owner accepted on 2026-10-30 after the remote-device login and tool calls succeeded. | SPEC-0219 TSK-0001 |
-| 3 | accepted | Shared UI, Dependencies | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
+| 3 | accepted | Shared UI, Dependencies, W5 checks rerun | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
 | 4 | accepted | Remote MCP and export | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
-| 5 | accepted | Validation | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
+| 5 | accepted | Validation, W5 documents and catalog | Generation 5 row acceptance | SPEC-0219 TSK-0001 |
 
 ## Review and Completion
 
-Not complete. Open for the owner: sign in from another device after its DNS
-and root CA are set, call the document tools (GDE-0101), and run `/design-sync` from an
-exported bundle. SPEC-0222 extended the GHSA-vfj7 acceptance to
-`2026-11-08T07:00:00Z` by the owner's approval. `DESIGN.md` is separate later
-work.
+Complete. Every criterion is accepted, and each planned criterion and Work Unit
+pair has a PASS row. The remote-device sign-in and document tool calls passed
+on 2026-10-30. The GHSA-vfj7 acceptance was retired after GitHub withdrew the
+advisory. `/design-sync` and `DESIGN.md` stay outside this Task.
 
 ## Related Documents
 
