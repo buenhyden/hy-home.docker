@@ -40,6 +40,7 @@ FIELDS = [
     "extension_count",
     "sequence_count",
     "probe_result",
+    "clone_hba_probe_rule",
     "scratch_mode_0700",
     "cleanup_status",
 ]
@@ -62,6 +63,7 @@ class FakeDocker:
         self.calls, self.inputs, self.created, self.removed = [], [], {}, []
         self.auth_ok = kw.get("auth_enforced", True)
         self.timeouts = {}
+        self.hba_write = None  # (container, path, line) the clone was asked to write
         self.lock_held = {}  # event -> whether the host backup lock was held
 
     def held(self, event):
@@ -137,6 +139,9 @@ class FakeDocker:
         if "verify" in argv:
             self.held("verify")
             return self.verify_rc, ""
+        if argv[-2].endswith("pg_hba.conf"):
+            self.hba_write = (argv[argv.index("--user") + 2], argv[-2], argv[-1])
+            return self.kw.get("hba_write_rc", 0), ""
         if "psql" in argv:
             return self.psql(argv, input or "")
         if "sh" in argv:
@@ -150,6 +155,18 @@ class FakeDocker:
             if self.kw.get("clone_down"):
                 return 1, ""
             return 0, "t\n" if self.kw.get("in_recovery") else "f\n"
+        if "current_setting('hba_file')" in sql:
+            return 0, "hba=" + self.kw.get(
+                "hba_file", "/var/lib/postgresql/data/pgdata/pg_hba.conf"
+            ) + "\n"
+        if "pg_reload_conf" in sql:
+            role = self.hba_write[2].split()[2] if self.hba_write else ""
+            rule1 = f"host|app_db|{role}|127.0.0.1|255.255.255.255|scram-sha-256|"
+            rule1 = self.kw.get("rule1", rule1)
+            return (
+                0,
+                f"reload=true\nrule1={rule1}\nerrors={self.kw.get('hba_errors', 0)}\n",
+            )
         if "pg_control_system" in sql:
             self.held(f"identity_{container}")
             sysid = SYSID if container == "mng-pg" else self.clone_sysid
@@ -354,7 +371,7 @@ class RehearsalTests(unittest.TestCase):
         password = secret_inputs[0].split("PASSWORD '")[1].split("'")[0]
         self.assertTrue(password)
         self.assertFalse([a for call in fake.calls for a in call if password in a])
-        tcp = [c for c in fake.calls if "sh" in c and "127.0.0.1" in " ".join(c)]
+        tcp = [c for c in fake.calls if "sh" in c and "-p 5432" in " ".join(c)]
         self.assertEqual(len(tcp), 2)  # wrong password first, then the real one
 
     def test_probe_blocked_when_public_could_write(self):
@@ -445,8 +462,109 @@ class RehearsalTests(unittest.TestCase):
         self.assertTrue(result["cleanup_status"].startswith("failed:"))
 
     def test_trust_auth_is_a_failure(self):
-        result, _ = self.run_rehearsal(auth_enforced=False)
+        result, fake = self.run_rehearsal(auth_enforced=False)
         self.assertEqual(result["reason"], "probe_auth_not_enforced")
+        wrong = [i for i in fake.inputs if i and i.endswith("\nSELECT 1;\n")]
+        self.assertEqual(len(wrong), 5)  # retried while the reload settles, then closed
+
+    def probe_role(self, fake):
+        return fake.hba_write[2].split()[2]
+
+    def test_hba_rule_goes_only_into_the_clone_scratch_pgdata(self):
+        result, fake = self.run_rehearsal()
+        self.assertEqual(result["clone_hba_probe_rule"], "added")
+        container, path, line = fake.hba_write
+        self.assertTrue(container.startswith("hyhome-5a-clone-"))
+        self.assertEqual(path, self.m.HBA_FILE)
+        self.assertTrue(path.startswith(self.m.DATA_TARGET + "/pgdata/"))
+        self.assertEqual(
+            line, f"host app_db {self.probe_role(fake)} 127.0.0.1/32 scram-sha-256"
+        )
+        exec_call = next(c for c in fake.calls if path in c)
+        self.assertEqual(exec_call[exec_call.index("--user") + 1], "70")
+        # order: role created, path checked, rule written, reloaded, then TCP auth
+        texts = [
+            (i or "") + " ".join(c)
+            for c, i in zip(fake.calls, fake.inputs, strict=True)
+        ]
+        first = lambda needle: next(n for n, t in enumerate(texts) if needle in t)  # noqa: E731
+        self.assertLess(first("CREATE ROLE"), first("current_setting('hba_file')"))
+        self.assertLess(first("current_setting('hba_file')"), first(path))
+        self.assertLess(first(path), first("pg_reload_conf"))
+        self.assertLess(first("pg_reload_conf"), first("127.0.0.1 -p 5432"))
+
+    def test_hba_prepend_script_puts_rule_before_trust_and_keeps_mode(self):
+        hba = self.tmp / "pg_hba.conf"
+        hba.write_text("local all all trust\nhost all all 127.0.0.1/32 trust\n")
+        hba.chmod(0o640)
+        before = hba.stat()
+        rule = "host app_db hy_5a_probe_ab12cd34 127.0.0.1/32 scram-sha-256"
+        argv = ["sh", "-ec", self.m.HBA_PREPEND, "sh", str(hba), rule]
+        subprocess.run(argv, check=True)
+        lines = hba.read_text().splitlines()
+        self.assertEqual(lines[0], rule)
+        self.assertEqual(
+            lines[1:], ["local all all trust", "host all all 127.0.0.1/32 trust"]
+        )
+        after = hba.stat()
+        self.assertEqual(
+            (after.st_ino, after.st_mode, after.st_uid),
+            (before.st_ino, before.st_mode, before.st_uid),
+        )
+        self.assertFalse((self.tmp / "pg_hba.conf.probe").exists())
+
+    def test_hba_role_name_is_validated(self):
+        for bad in ('x"; DROP', "a b", "1abc", "", "a\nhost all all 0.0.0.0/0 trust"):
+            with self.assertRaises(self.m.Stop, msg=bad) as caught:
+                self.m.hba_rule(bad)
+            self.assertEqual(str(caught.exception), "probe_identifier")
+            calls = []
+            with self.assertRaises(self.m.Stop):
+                self.m.probe(
+                    lambda *a, calls=calls, **k: calls.append(a) or (0, ""),
+                    "c",
+                    "adm",
+                    bad,
+                    {},
+                )
+            self.assertEqual(calls, [])
+
+    def test_hba_failures_stop_closed(self):
+        result, fake = self.run_rehearsal(hba_file="/etc/postgresql/pg_hba.conf")
+        self.assertEqual(result["reason"], "probe_hba_path")
+        self.assertIsNone(fake.hba_write)
+        self.assertEqual(result["clone_hba_probe_rule"], "NOT_RUN")
+        result, _ = self.run_rehearsal(hba_write_rc=1)
+        self.assertEqual(result["reason"], "probe_hba_write")
+        self.assertEqual(result["clone_hba_probe_rule"], "unknown")
+        for over in (
+            {"hba_errors": 1},
+            {"rule1": "host|all|all|127.0.0.1|255.255.255.255|trust|"},
+        ):
+            result, fake = self.run_rehearsal(**over)
+            self.assertEqual(result["reason"], "probe_hba_check", over)
+            self.assertEqual(result["clone_hba_probe_rule"], "added")
+            self.assertFalse(
+                [i for i in fake.inputs if i and i.endswith("\nSELECT 1;\n")]
+            )
+
+    def test_source_container_is_never_modified(self):
+        _, fake = self.run_rehearsal()
+        for argv, text in zip(fake.calls, fake.inputs, strict=True):
+            if "mng-pg" not in argv:
+                continue
+            ok = (
+                argv[:3] == ["docker", "inspect", "mng-pg"]
+                or "verify" in argv
+                or "pg_control_system" in (text or "")
+            )
+            self.assertTrue(ok, argv)
+        self.assertEqual(fake.hba_write[0][:16], "hyhome-5a-clone-")
+        for argv, text in zip(fake.calls, fake.inputs, strict=True):
+            if text and any(
+                k in text for k in ("CREATE ROLE", "DROP ROLE", "pg_reload_conf")
+            ):
+                self.assertNotIn("mng-pg", argv)
 
     def test_identity_mismatch_and_missing_objects_fail(self):
         result, _ = self.run_rehearsal(clone_sysid="1")

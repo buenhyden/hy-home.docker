@@ -9,7 +9,10 @@ except read-only catalog queries and `pgbackrest verify`.
 Order: refuse bad input (including DOCKER_HOST or a non-default docker context),
 read the source container, take the backup scheduler's host lock, `pgbackrest
 verify --set` (continue only on rc 0), restore, start the clone, release the lock
-once recovery has finished, compare, probe, clean up. The clone mounts the
+once recovery has finished, compare, probe, clean up. `mng-pg` trusts loopback, so
+the probe prepends one `scram-sha-256` rule for its one-time role to the restored
+clone `pg_hba.conf` only (UID 70 in the clone, then reload and a
+`pg_hba_file_rules` check); the source is never touched and the scratch keeps it. The clone mounts the
 repository read-only because recovery needs `archive-get` even for `immediate`.
 Only containers this run created (name and ID both match) are stopped and removed,
 and `removed` is reported only after a by-ID `docker ps -a` shows them absent.
@@ -45,6 +48,7 @@ LABEL = f"{LABEL_KEY}=mng-pg-immediate-5a"
 REPO_TARGET = "/var/lib/pgbackrest"
 SECRET_TARGET = "/run/secrets/pgbackrest_cipher_pass"
 DATA_TARGET = "/var/lib/postgresql/data"
+HBA_FILE = DATA_TARGET + "/pgdata/pg_hba.conf"
 LOCK_NAME = ".hyhome-backup.lock"
 PROBE_DB = "app_db"
 REQUIRED_DBS = ("app_db", "mlflow")
@@ -69,6 +73,7 @@ FIELDS = (
     "extension_count",
     "sequence_count",
     "probe_result",
+    "clone_hba_probe_rule",
     "scratch_mode_0700",
     "cleanup_status",
 )
@@ -261,6 +266,7 @@ def clone_command() -> list[str]:
 
 def _probe_sql(role: str, password: str) -> str:
     return (
+        "SET password_encryption = 'scram-sha-256';\n"
         "SET log_statement = none;\n"
         "SET log_min_duration_statement = -1;\n"
         "SET log_min_error_statement = panic;\n"
@@ -317,6 +323,29 @@ def _probe_session_sql() -> str:
     )
 
 
+def hba_rule(role: str) -> str:
+    if not IDENT_RE.fullmatch(role):
+        raise Stop("probe_identifier")
+    return f"host {PROBE_DB} {role} 127.0.0.1/32 scram-sha-256"
+
+
+# in place (`cat >`) so the file keeps its inode, mode and owner
+HBA_PREPEND = (
+    '{ printf "%s\\n" "$2"; cat "$1"; } > "$1.probe"; cat "$1.probe" > "$1"; '
+    'rm -f "$1.probe"'
+)
+
+
+def _hba_check_sql(role: str) -> str:
+    return (
+        "SELECT 'reload=' || pg_reload_conf();\n"
+        "SELECT 'rule1=' || concat_ws('|', type, array_to_string(database, ','), "
+        "array_to_string(user_name, ','), address, netmask, auth_method, "
+        "COALESCE(error, '')) FROM pg_hba_file_rules WHERE rule_number = 1;\n"
+        "SELECT 'errors=' || count(*) FROM pg_hba_file_rules WHERE error IS NOT NULL;\n"
+    )
+
+
 def _tcp_psql(run, clone, role, password, sql):
     """Authenticate over TCP; the password travels on stdin, never argv."""
     script = (
@@ -337,7 +366,29 @@ def _drop_role_sql(role: str) -> str:
     )
 
 
-def probe(run, clone, admin, role, state) -> None:
+def add_hba_rule(run, clone, admin, role, state) -> None:
+    """Prepend the probe-only rule to the clone's scratch pg_hba.conf, reload, check."""
+    rule = hba_rule(role)
+    code, lines = _sql(
+        run, clone, admin, "postgres", "SELECT 'hba=' || current_setting('hba_file');\n"
+    )
+    if code or _kv(lines).get("hba") != HBA_FILE:
+        raise Stop("probe_hba_path")
+    state["clone_hba_probe_rule"] = "unknown"  # the scratch may now be changed
+    argv = ["docker", "exec", "--user", UID, clone, "sh", "-ec", HBA_PREPEND]
+    code, _ = run([*argv, "sh", HBA_FILE, rule], timeout=60)
+    if code:
+        raise Stop("probe_hba_write")
+    state["clone_hba_probe_rule"] = "added"
+    code, lines = _sql(run, clone, admin, "postgres", _hba_check_sql(role))
+    rule1 = f"host|{PROBE_DB}|{role}|127.0.0.1|255.255.255.255|scram-sha-256|"
+    want = {"reload": "true", "rule1": rule1, "errors": "0"}
+    if code or _kv(lines) != want:
+        raise Stop("probe_hba_check")
+
+
+def probe(run, clone, admin, role, state, sleep=time.sleep) -> None:
+    hba_rule(role)  # refuse an unsafe role name before anything runs
     password = secrets.token_hex(16)
     code, _ = _sql(run, clone, admin, PROBE_DB, _probe_sql(role, password))
     if code:
@@ -345,8 +396,13 @@ def probe(run, clone, admin, role, state) -> None:
     code, lines = _sql(run, clone, admin, PROBE_DB, _grant_check_sql(role))
     if code or _kv(lines) != GRANTS_OK:
         raise Stop("probe_privileges")
-    bad, _ = _tcp_psql(run, clone, role, secrets.token_hex(16), "SELECT 1;\n")
-    if not bad:
+    add_hba_rule(run, clone, admin, role, state)
+    for _ in range(5):  # the reload is asynchronous; fail closed if never refused
+        bad, _ = _tcp_psql(run, clone, role, secrets.token_hex(16), "SELECT 1;\n")
+        if bad:
+            break
+        sleep(1)
+    else:
         raise Stop("probe_auth_not_enforced")
     code, lines = _tcp_psql(run, clone, role, password, _probe_session_sql())
     if code or _kv(lines) != {"rows": "1", "tcp": "true", "temp_after": "0"}:
@@ -564,7 +620,7 @@ def rehearse(
             raise Stop("count_unstable")
         inventory(run, clone, admin, dbs, root, state)
         state["probe_result"] = "FAIL"
-        probe(run, clone, admin, role, state)
+        probe(run, clone, admin, role, state, sleep)
         state["result"] = "PASS"
     except Stop as stop:
         state["reason"] = str(stop)

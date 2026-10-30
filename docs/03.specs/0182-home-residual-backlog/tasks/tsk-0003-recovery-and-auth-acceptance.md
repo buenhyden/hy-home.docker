@@ -503,10 +503,13 @@ dbt objects to require in `mng-pg`, the named management tables to count, and th
 approved data-disk scratch path. Step 5 time-target PITR still needs its own
 recovery time and approval.
 
-The 5a loopback TCP-auth probe stays as built: `mng-pg` `pg_hba` trusts
-127.0.0.1, so the wrong-password control fails closed as
-`probe_auth_not_enforced`; how 5a's auth probe is satisfied is pending an owner
-decision.
+The owner decided on 2026-10-30 (option A) how the 5a auth probe is satisfied:
+`mng-pg` trusts loopback, so the script prepends one probe-only
+`scram-sha-256` rule for the one-time role to the restored clone `pg_hba.conf`
+(scratch only, never the source), reloads, and confirms it is rule 1 in
+`pg_hba_file_rules`. The wrong-password control must be refused, and the output
+records `clone_hba_probe_rule`. The independent review of this change is
+pending.
 
 ### W10 R2 scratch restore 2026-10-30
 
