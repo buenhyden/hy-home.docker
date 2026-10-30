@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from publisher.delivery import DispatchRequest, FailureKind, TransportFailure
@@ -61,6 +62,10 @@ class Network:
 
 class GatewayTransportTests(unittest.TestCase):
     def setUp(self):
+        # Exercise the isolated replay state machine, not Hermes dispatch authorization.
+        gate = patch("publisher.policy.evidence_required", return_value=False)
+        gate.start()
+        self.addCleanup(gate.stop)
         self.box = Box()
         self.network = Network()
 

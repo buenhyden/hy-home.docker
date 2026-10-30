@@ -15,7 +15,7 @@ from publisher.delivery import BoundRequest, process_one
 from publisher.http_transport import HttpTransport
 from publisher.outbox import Outbox
 
-KEY = ("6eabd835f969", "a" * 32)
+KEY = ("synthetic-job", "a" * 32)
 
 
 class Adapter:

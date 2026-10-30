@@ -1,19 +1,25 @@
 """Offline staging/status CLI. No send command or credential inputs."""
 
 import argparse
+import hashlib
 import json
 import os
 import sqlite3
 from pathlib import Path
 
 from .candidates import EXPORT_NAME, JOBS, load_candidate, load_validator
-from .files import InputError, open_directory
+from .files import InputError, open_directory, safe_read
 from .outbox import Outbox, OutboxError
 
 
 def _scan(args, box):
     validator = load_validator(args.validator, args.validator_sha256)
     counts = dict(staged=0, duplicate=0, conflict=0, rejected=0)
+    evidence_root = getattr(args, "evidence_root", None)
+    if evidence_root is not None:
+        counts["evidence_stored"] = 0
+        with open_directory(evidence_root):
+            pass
     with open_directory(args.exports):
         pass
     for job in JOBS:
@@ -35,7 +41,24 @@ def _scan(args, box):
                 snapshot = load_candidate(
                     args.exports, job, name, args.source_root, args.item_root, validator
                 )
-                outcome = box.stage(snapshot)
+                evidence = None
+                if evidence_root is not None:
+                    evidence_name = (
+                        hashlib.sha256(
+                            (job + "\0" + snapshot.run_id).encode("ascii")
+                        ).hexdigest()
+                        + ".json"
+                    )
+                    evidence = safe_read(evidence_root, evidence_name)
+                    if not evidence:
+                        raise InputError("empty_evidence")
+                outcome = (
+                    box.stage(snapshot)
+                    if evidence is None
+                    else box.stage_with_unverified_evidence(snapshot, evidence)
+                )
+                if evidence is not None and outcome != "conflict":
+                    counts["evidence_stored"] += 1
                 counts[outcome] += 1
             except (InputError, OutboxError):
                 counts["rejected"] += 1
@@ -49,6 +72,7 @@ def main(argv=None):
     for name in ("exports", "source-root", "item-root", "validator"):
         stage.add_argument("--" + name, type=Path, required=True)
     stage.add_argument("--validator-sha256", required=True)
+    stage.add_argument("--evidence-root", type=Path)
     stage.add_argument("--outbox", type=Path, required=True)
     status = sub.add_parser("status")
     status.add_argument("--outbox", type=Path, required=True)

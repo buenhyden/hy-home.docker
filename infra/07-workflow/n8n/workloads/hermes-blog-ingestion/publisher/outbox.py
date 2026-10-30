@@ -13,6 +13,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
+from . import policy
 from .files import InputError, open_directory
 
 TRANSITIONS = {
@@ -223,46 +224,63 @@ class Outbox:
             self._event(key, "conflict", code, digest)
 
     def stage(self, snapshot):
+        with self._transaction():
+            return self._stage(snapshot)
+
+    def stage_with_unverified_evidence(self, snapshot, evidence):
+        """Commit snapshot and opaque evidence together under the delivery lock."""
+        with self.delivery_lock():
+            with self._transaction():
+                outcome = self._stage(snapshot)
+                if outcome != "conflict":
+                    self._bind_unverified_evidence(
+                        (snapshot.job_id, snapshot.run_id),
+                        _sha(snapshot.candidate),
+                        _sha(snapshot.source),
+                        evidence,
+                    )
+                return outcome
+
+    def _stage(self, snapshot):
         key = (snapshot.job_id, snapshot.run_id)
         digest = _snapshot_digest(snapshot)
-        with self._transaction():
-            prior = self._db.execute(
-                "SELECT snapshot_sha256 FROM records WHERE job_id=? AND run_id=?", key
-            ).fetchone()
-            if prior:
-                if prior["snapshot_sha256"] == digest:
-                    return "duplicate"
-                self._conflict(key, "identity_conflict", digest)
-                return "conflict"
-            prior_source = self._db.execute(
-                "SELECT run_id FROM records WHERE job_id=? AND source_ref=? AND source_sha256=?",
-                (snapshot.job_id, snapshot.source_ref, _sha(snapshot.source)),
-            ).fetchone()
-            if prior_source:
-                self._conflict(key, "source_identity_conflict", digest)
-                return "conflict"
-            self._db.execute(
-                """INSERT INTO records
-                (job_id,run_id,candidate,source_ref,source,candidate_sha256,source_sha256,snapshot_sha256)
-                VALUES(?,?,?,?,?,?,?,?)""",
-                (
-                    *key,
-                    snapshot.candidate,
-                    snapshot.source_ref,
-                    snapshot.source,
-                    _sha(snapshot.candidate),
-                    _sha(snapshot.source),
-                    digest,
-                ),
-            )
-            self._db.executemany(
-                "INSERT INTO ideas VALUES(?,?,?,?,?)",
-                (
-                    (*key, index, ref, raw)
-                    for index, (ref, raw) in enumerate(snapshot.ideas)
-                ),
-            )
-            self._event(key, "awaiting_contract", "staged", digest)
+        prior = self._db.execute(
+            "SELECT snapshot_sha256 FROM records WHERE job_id=? AND run_id=?", key
+        ).fetchone()
+        if prior:
+            if prior["snapshot_sha256"] == digest:
+                return "duplicate"
+            self._conflict(key, "identity_conflict", digest)
+            return "conflict"
+        prior_source = self._db.execute(
+            "SELECT run_id FROM records WHERE job_id=? AND source_ref=? AND source_sha256=?",
+            (snapshot.job_id, snapshot.source_ref, _sha(snapshot.source)),
+        ).fetchone()
+        if prior_source:
+            self._conflict(key, "source_identity_conflict", digest)
+            return "conflict"
+        self._db.execute(
+            """INSERT INTO records
+            (job_id,run_id,candidate,source_ref,source,candidate_sha256,source_sha256,snapshot_sha256)
+            VALUES(?,?,?,?,?,?,?,?)""",
+            (
+                *key,
+                snapshot.candidate,
+                snapshot.source_ref,
+                snapshot.source,
+                _sha(snapshot.candidate),
+                _sha(snapshot.source),
+                digest,
+            ),
+        )
+        self._db.executemany(
+            "INSERT INTO ideas VALUES(?,?,?,?,?)",
+            (
+                (*key, index, ref, raw)
+                for index, (ref, raw) in enumerate(snapshot.ideas)
+            ),
+        )
+        self._event(key, "awaiting_contract", "staged", digest)
         return "staged"
 
     def get(self, key):
@@ -335,6 +353,12 @@ class Outbox:
         return row["evidence"]
 
     def bind_unverified_evidence(self, key, candidate_sha256, source_sha256, evidence):
+        with self._transaction():
+            self._bind_unverified_evidence(
+                key, candidate_sha256, source_sha256, evidence
+            )
+
+    def _bind_unverified_evidence(self, key, candidate_sha256, source_sha256, evidence):
         """Keep a provisional evidence snapshot unchanged, without authenticating it.
 
         The publisher must separately authenticate its producer and validate the
@@ -352,43 +376,42 @@ class Outbox:
         ):
             raise OutboxError("invalid_evidence")
         digest = _sha(evidence)
-        with self._transaction():
-            row = self.get(key)
+        row = self.get(key)
+        if (
+            row["candidate_sha256"] != candidate_sha256
+            or row["source_sha256"] != source_sha256
+            or _sha(row["candidate"]) != candidate_sha256
+            or _sha(row["source"]) != source_sha256
+            or _snapshot_digest(SimpleNamespace(**row)) != row["snapshot_sha256"]
+        ):
+            raise OutboxError("evidence_conflict")
+        prior = self._db.execute(
+            "SELECT * FROM unverified_evidence WHERE job_id=? AND run_id=?", key
+        ).fetchone()
+        if prior is not None:
             if (
-                row["candidate_sha256"] != candidate_sha256
-                or row["source_sha256"] != source_sha256
-                or _sha(row["candidate"]) != candidate_sha256
-                or _sha(row["source"]) != source_sha256
-                or _snapshot_digest(SimpleNamespace(**row)) != row["snapshot_sha256"]
+                prior["candidate_sha256"] != candidate_sha256
+                or prior["source_sha256"] != source_sha256
+                or prior["snapshot_sha256"] != row["snapshot_sha256"]
+                or prior["evidence"] != evidence
+                or prior["evidence_sha256"] != digest
             ):
                 raise OutboxError("evidence_conflict")
-            prior = self._db.execute(
-                "SELECT * FROM unverified_evidence WHERE job_id=? AND run_id=?", key
-            ).fetchone()
-            if prior is not None:
-                if (
-                    prior["candidate_sha256"] != candidate_sha256
-                    or prior["source_sha256"] != source_sha256
-                    or prior["snapshot_sha256"] != row["snapshot_sha256"]
-                    or prior["evidence"] != evidence
-                    or prior["evidence_sha256"] != digest
-                ):
-                    raise OutboxError("evidence_conflict")
-                return
-            if row["status"] != "awaiting_contract" or row["request_body"] is not None:
-                raise OutboxError("evidence_conflict")
-            self._db.execute(
-                "INSERT INTO unverified_evidence (job_id,run_id,candidate_sha256,source_sha256,snapshot_sha256,evidence,evidence_sha256) VALUES(?,?,?,?,?,?,?)",
-                (
-                    *key,
-                    candidate_sha256,
-                    source_sha256,
-                    row["snapshot_sha256"],
-                    evidence,
-                    digest,
-                ),
-            )
-            self._event(key, row["status"], "unverified_evidence_stored", digest)
+            return
+        if row["status"] != "awaiting_contract" or row["request_body"] is not None:
+            raise OutboxError("evidence_conflict")
+        self._db.execute(
+            "INSERT INTO unverified_evidence (job_id,run_id,candidate_sha256,source_sha256,snapshot_sha256,evidence,evidence_sha256) VALUES(?,?,?,?,?,?,?)",
+            (
+                *key,
+                candidate_sha256,
+                source_sha256,
+                row["snapshot_sha256"],
+                evidence,
+                digest,
+            ),
+        )
+        self._event(key, row["status"], "unverified_evidence_stored", digest)
 
     def bind_request(
         self,
@@ -416,6 +439,12 @@ class Outbox:
             raise OutboxError("invalid_endpoint_binding")
         with self._transaction():
             row = self.get(key)
+            if self._db.execute(
+                "SELECT 1 FROM unverified_evidence WHERE job_id=? AND run_id=?", key
+            ).fetchone():
+                raise OutboxError("evidence_unverified")
+            if policy.evidence_required(key[0]):
+                raise OutboxError("evidence_required")
             if row["request_body"] is not None:
                 if (
                     row["contract_revision"] != contract_revision

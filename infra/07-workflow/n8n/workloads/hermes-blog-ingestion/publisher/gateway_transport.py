@@ -9,6 +9,7 @@ import hashlib
 import json
 import re
 
+from . import policy
 from .delivery import DispatchRequest, FailureKind, TransportFailure
 from .gateway_adapter import DESTINATION, REVISION
 
@@ -80,6 +81,8 @@ class GatewayReplayTransport:
 
     def _bound(self, request, status, failure):
         try:
+            if policy.evidence_required(request.key[0]):
+                raise ValueError("evidence_required")
             if (
                 getattr(self._transport, "endpoint_sha256", None)
                 != self._endpoint_sha256

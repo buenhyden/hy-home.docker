@@ -15,6 +15,9 @@ from test_staging import JOB, RUN, fixture, synthetic_validator
 
 class OutboxTests(unittest.TestCase):
     def setUp(self):
+        gate = patch("publisher.policy.evidence_required", return_value=False)
+        gate.start()
+        self.addCleanup(gate.stop)
         self.tmp = tempfile.TemporaryDirectory(prefix="hermes-outbox-", dir="/tmp")
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)

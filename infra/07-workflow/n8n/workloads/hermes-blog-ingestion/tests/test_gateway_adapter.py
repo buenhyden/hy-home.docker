@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 WORKLOAD = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WORKLOAD))
@@ -14,6 +15,9 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 class GatewayAdapterTests(unittest.TestCase):
     def setUp(self):
+        gate = patch("publisher.policy.evidence_required", return_value=False)
+        gate.start()
+        self.addCleanup(gate.stop)
         from publisher.gateway_adapter import GatewayAdapter
 
         self.adapter = GatewayAdapter(
