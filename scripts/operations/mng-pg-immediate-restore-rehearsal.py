@@ -291,9 +291,12 @@ def _grant_check_sql(role: str) -> str:
         f"refclassid = 'pg_authid'::regclass AND refobjid = {r} AND NOT "
         "(deptype = 'a' AND classid = 'pg_database'::regclass);\n"
         f"SELECT 'members=' || count(*) FROM pg_auth_members WHERE member = {r};\n"
+        # PUBLIC holds UPDATE on the pg_settings view by default; that only
+        # changes session settings (SET), so it is not a persistent write.
         "SELECT 'table_writes=' || count(*) FROM pg_class c WHERE "
+        "c.oid <> 'pg_catalog.pg_settings'::regclass AND ("
         f"(c.relkind IN ('r','p','v','m','f') AND ({priv})) OR "
-        f"(c.relkind = 'S' AND has_sequence_privilege({r}, c.oid, 'UPDATE'));\n"
+        f"(c.relkind = 'S' AND has_sequence_privilege({r}, c.oid, 'UPDATE')));\n"
         "SELECT 'schema_create=' || count(*) FROM pg_namespace WHERE "
         f"has_schema_privilege({r}, oid, 'CREATE') AND nspname NOT LIKE 'pg\\_%temp\\_%';\n"
         f"SELECT 'db_create=' || has_database_privilege({r}, current_database(), "
@@ -394,7 +397,13 @@ def probe(run, clone, admin, role, state, sleep=time.sleep) -> None:
     if code:
         raise Stop("probe_create")
     code, lines = _sql(run, clone, admin, PROBE_DB, _grant_check_sql(role))
-    if code or _kv(lines) != GRANTS_OK:
+    if code:
+        raise Stop("probe_privileges")
+    got = _kv(lines)
+    for key in GRANTS_OK:  # name the first failing fixed check, never its value
+        if got.get(key) != GRANTS_OK[key]:
+            raise Stop(f"probe_privileges_{key}")
+    if set(got) != set(GRANTS_OK):
         raise Stop("probe_privileges")
     add_hba_rule(run, clone, admin, role, state)
     for _ in range(5):  # the reload is asynchronous; fail closed if never refused
