@@ -490,6 +490,24 @@ uses a reviewed `restore` action in `offsite.sh`. The action:
 An independent IaC review approved it with notes, which are applied. A contract test pins the action to read-only restore. The rehearsal itself is
 still NOT_RUN.
 
+### W10 R2 scratch restore 2026-10-30
+
+The owner ran the RUN-0021 8.3 restore action from `main` `fcd9f3049`:
+`docker compose --profile backup run --rm --no-deps --user "$(id -u):$(id -g)" -v "$SCR:/restore" restic-offsite restore 993a30f2 7f9315e3`,
+into a new owned scratch on the data disk.
+
+| Set | Snapshot | rc | Seconds | Files | Bytes |
+| --- | --- | --- | --- | --- | --- |
+| host | `993a30f2` | 0 | 16 | 203 | 438,938 |
+| state | `7f9315e3` | 0 | 153 | 22,355 | 2,103,585,131 |
+
+The whole run exited 0. The R2 offsite copy is therefore restorable into
+scratch: the paired host and state snapshots came back in 169 seconds, which
+is the elapsed time RUN-0021 8.4 asks for. Ownership is not restored by
+design, and the scratch is removed only with the owner's separate approval.
+Criterion 10 still needs the value-free attestation that BKP-003 is in offline
+custody.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -500,6 +518,7 @@ still NOT_RUN.
 | Current Task status: blocked (2) | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | required | - |
 | W7 selected backup verify | 7 | W7 | `pgbackrest verify` of the selected backup set | `20261024-184214F_20261029-221825D`, owner-run 2026-10-30 | PASS | W7 verify and W10 snapshot pair 2026-10-30; rc 0 in 2,483 ms | required | - |
 | W10 R2 restore attempt 01 | 10 | W10 | R2 scratch restore of the selected host and state pair | One-off `restic-offsite` run, host `993a30f2`, state `7f9315e3`, 2026-10-30 | FAIL | W10 restore attempt and procedure rewrite 2026-10-30; `mkdir /restore/host: permission denied`, nothing restored | required | - |
+| W10 R2 restore rerun | 10 | W10 | R2 scratch restore of the selected host and state pair | `offsite.sh restore 993a30f2 7f9315e3` as the scratch owner, 2026-10-30 | PASS | W10 R2 scratch restore 2026-10-30; host rc 0 in 16 s (203 files), state rc 0 in 153 s (22,355 files, 2.10 GB) | required | W10 R2 restore attempt 01 |
 | Current Task status: completed (3) | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/01-common/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | required | - |
 | Current Task status: completed (4) | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | required | - |
 
