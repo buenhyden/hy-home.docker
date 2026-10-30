@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:blog-data:ingestion:v1",
+  "title": "Blog-data ingestion v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "job_id",
+    "report_kind",
+    "scheduled_at",
+    "generated_at",
+    "collected_at",
+    "source_ref",
+    "source_text",
+    "source_sha256",
+    "idempotency_key",
+    "items"
+  ],
+  "anyOf": [
+    { "properties": { "run_id": {} }, "required": ["run_id"] },
+    { "properties": { "fire_id": {} }, "required": ["fire_id"] }
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "producer": { "$ref": "#/definitions/identity" },
+    "job_id": { "$ref": "#/definitions/identity" },
+    "run_id": { "$ref": "#/definitions/identity" },
+    "fire_id": { "$ref": "#/definitions/identity" },
+    "report_kind": {
+      "enum": ["news", "devops", "business_ideas", "infrastructure", "mixed"]
+    },
+    "scheduled_at": { "type": "string", "format": "date-time" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "collected_at": { "type": "string", "format": "date-time" },
+    "source_ref": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "source_text": { "type": "string", "minLength": 1, "maxLength": 524288 },
+    "source_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "idempotency_key": { "$ref": "#/definitions/identity" },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": { "$ref": "#/definitions/item" }
+    }
+  },
+  "definitions": {
+    "identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item_id", "kind", "title", "body"],
+      "properties": {
+        "item_id": { "$ref": "#/definitions/identity" },
+        "kind": {
+          "enum": ["news", "devops", "business_idea", "infrastructure"]
+        },
+        "title": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "body": { "type": "string", "minLength": 1, "maxLength": 32768 },
+        "source_url": {
+          "type": "string",
+          "format": "source-url",
+          "maxLength": 2048
+        }
+      }
+    }
+  }
+}

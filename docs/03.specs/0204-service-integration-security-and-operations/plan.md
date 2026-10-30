@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.9.1"
+version: "1.10.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -184,6 +184,11 @@ provisioning, LAB runtime or learning-application work.
 | W74 | 19 | Execute the existing n8n notifier through an actual isolated queue worker, external runner and SMTP capture, then perform serial empty restoration | W73 | TSK-0019 | Exact reviewed images, terminal execution and Code-node proof, capture/unknown/reconciliation/no-resend and separate metadata/DEV restore; no accepted-response-loss or HOME claim |
 | W75 | 18 | Execute existing Airflow manifest DAG through actual isolated Celery publication, retry, replay and serial empty restoration | None | TSK-0020 | Exact cached-image driver/UID preflight, terminal DagRun/task/Celery identity, real S3 readback and separate DEV/metadata PG18.6 restore |
 | W76 | 15 | Adopt the fixed Traefik v3.7.16 and Prometheus v3.15.1 image pins, supersede the lapsed SEC01 acceptances in POL-0013 and POL-0045, and record the owner pull, scan, config-check, HOME recreation and rollback steps | None | TSK-0021 | Registry digests and latest releases verified, pins, tech-stack projection and ledger refreshed; pull, scan, boot, recreation and rollback `NOT_RUN` |
+| W79 | 23 | Freeze runtime/source inventory, duplicate-workflow and validator dependencies | None | TSK-0022 | Redacted identities, roots, digests and owner exclusions |
+| W80 | 23 | Implement narrow discovery, lossless snapshots and private local Outbox | W79 | TSK-0022 | RED/GREEN replay, restart, multiple ideas, paths/hashes, conflict and permissions |
+| W81 | 23 | Implement adapter-independent delivery and reconciliation | W80 | TSK-0022 | Fake adapters prove bounded retry, response loss, strict durable receipt and request binding |
+| W82 | 23 | Prepare bounded generic transport; adopt exact Gateway fixtures and inactive n8n forwarding | W81 | TSK-0022 | Fixed PR620 dev contract/fixture pinned and source reviewed; actual conversion BLOCKED on article collection time; Native operation NOT_RUN |
+| W83 | 8, 23 | Document recovery/metrics/MCP, independently review and admit approved Native checks | W80-W82 | TSK-0022 | Source/synthetic and actual worker-to-Gateway evidence separated |
 
 ### P10 staged admission and acceptance ownership
 
@@ -746,6 +751,159 @@ its own logical commit, focused RED/GREEN, native evidence where executable,
 changed/full gate routing, and independent review. HOME, live cluster ACLs,
 real workflow activation and complete recovery remain separate blocked lanes.
 
+### Hermes ingestion implementation plan — 2026-10-30
+
+**Goal:** preserve Hermes execution/email and durably stage completed structured
+exports for reliable authenticated n8n delivery. **Architecture:** a restricted
+host Publisher reads approved files, invokes the reviewed external validator,
+and stores immutable snapshots in SQLite; a separate adapter-independent state
+machine accepts only Gateway durable-persistence receipts. **Tech stack:** Python
+standard library, SQLite and existing Hermes/n8n. **Spec:** criterion 23 and the
+Hermes transport contract. Existing Stage 03 ownership overrides the
+writing-plans skill's default location. Execution uses subagent-driven-development.
+
+#### Global constraints and ownership
+
+TSK-0022 alone owns the new
+`infra/07-workflow/n8n/workloads/hermes-blog-ingestion/` package. The staging
+worker owns `publisher/{__init__,files,candidates,outbox,cli}.py` and staging tests;
+the delivery worker owns `publisher/delivery.py` and delivery tests, consuming
+the staging worker's actual interface handoff. The workflow writer owns only inactive `workflow.json`, `tests/test_workflow.py`,
+workload READMEs and the workloads README link. Its initial stub was headerAuth
+Webhook → StopAndError `GATEWAY_CONTRACT_NOT_BOUND`; the current source is a
+contract-based inactive workflow. Native import and activation are not established.
+The HTTP transport writer owns only `publisher/http_transport.py` and
+`tests/test_http_transport.py`; the Task records its narrow source admission.
+The Gateway adapter writer owns separate adapter source and its dedicated tests;
+the n8n writer owns `workflow.json` and workflow-specific tests. Shared delivery
+integration requires a serial handoff. Pin contract and fixture inputs to
+Blog-data dev revision `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`, as listed
+in Task0022; verify retrieved content and digests before compatibility claims.
+The doc-writer owns this
+Spec/Plan, Task0022 and later implemented source-only RUN-0053 procedures.
+The controller owns inventory, registered checks, independent review and final
+evidence. Shared files require serial handoff and every worker preserves others'
+changes. Exclude Task0013, Manifest Outbox Notifier, SPEC0247 source, other
+worktrees, installed Cron, credentials and runtime resources from writes.
+
+#### Review focus
+
+- W80: parent symlinks/path escapes/source replacement fail without source logs.
+- W80: same execution identity with changed bytes preserves first snapshots and
+  conflict evidence, including multiple-idea references and hashes.
+- W81: death after send or lost acknowledgement recovers uncertain, not pending.
+- W81: unrelated or generic success receipts never mark durable delivery.
+- W82-W83: unknown Gateway schema/authentication/TLS fails closed; fake outcomes
+  cannot establish actual worker networking or Gateway persistence.
+
+#### W79: input and ownership admission
+
+- [ ] Record fresh remote main, HEAD, worktree and runtime inventory in Task0022.
+- [ ] Bind the three approved job IDs, actual output/idea roots and run IDs.
+- [ ] Bind the stronger SPEC0247 validator path/SHA; missing dependency blocks
+  staging. Compare actual workflow identities with `hy-home.n8n` before adding
+  workflow source; active exporter is reused without a new Cron.
+
+#### W80: candidate staging and Outbox
+
+- [ ] Write failing tests: one export, multiple ideas, exact replay, changed
+  identity contents, missing/changed validator, path escape/symlink, hash drift,
+  excluded private job, permissions, restart and original retention.
+- [ ] Run workload unittest discovery and record RED in Task0022.
+- [ ] Implement bounded approved-root reads, reviewed validator invocation,
+  immutable snapshots, identity uniqueness and transactional conflict history
+  in staging-owned files. CLI supports safe staging/status without secret use.
+- [ ] Re-run the same tests GREEN and measure coverage. Hand off the actual
+  Outbox record/transaction API to W81; never duplicate the candidate validator.
+
+#### W81: delivery/reconciliation
+
+- [ ] Write failing fake-adapter tests for durable receipt, response loss,
+  proven-no-send retry, n8n/Gateway outage, timeout/auth/TLS rejection, restart,
+  conflict and immutable prepared-request/destination binding.
+- [ ] Record RED, implement the agreed Outbox consumer and bounded protocol,
+  then run GREEN and the complete suite. Retain failed/uncertain evidence;
+  reconciliation never replaces snapshots. Fake adapters are synthetic only.
+  No live HTTP adapter, guessed endpoint, Gateway JSON or status enters this unit.
+
+#### W82: exact Gateway and inactive n8n source
+
+- [x] Implement and test bounded generic HTTP transport independently of a
+  Gateway protocol, using isolated loopback tests and fake credentials only.
+  Follow the exact HTTPS, TLS, redirect, ambiguity and reconciliation limits
+  in Task0022; no CLI dispatch or runtime resource changes are included.
+  The first experiment was removed after independent review found idle timeouts
+  did not bound the complete request. Its replacement bounds DNS, TLS, request,
+  headers and body after subprocess startup; input acquisition and subprocess
+  creation are outside that deadline. Timeout kills and reaps the child and
+  remains ambiguous. After a correction to pre-send connect failure classification,
+  independent security re-review passed. The final suite reported 74 PASS and
+  one optional validator SKIP out of 75, with Ruff check and format passing.
+  A separately approved synthetic localhost HTTP/TLS run passed 11/11 on the
+  final revision; the 93% measured coverage excludes its child subprocess.
+  Fixed-validator focused tests passed 14/14. Private CA and live operational
+  connectivity remain unverified.
+- [x] Prepare and test the initial inactive authenticated fail-closed stub;
+  this historical step does not establish Gateway compatibility.
+- [ ] Retrieve and verify the Gateway API and fixture at the fixed Blog-data dev
+  revision recorded in Task0022. Bind tests to its exact requests, authentication,
+  idempotency/conflict, durable receipt and reconciliation semantics. Establish
+  authoritative producer timestamp provenance before mapping required fields:
+  `collected_at` is the actual Hermes article collection time, `generated_at`
+  the execution finish and `scheduled_at` the exact execution `scheduled_instant`.
+  Existing eight candidates and database records lack actual article collection
+  time; actual conversion and delivery are blocked until that source exists.
+- [ ] Implement the adapter and its tests independently from the inactive n8n
+  workflow and its tests, then review their integration through explicit handoff.
+  Source includes receipt/Outbox handling, pinned fixture and schema, content
+  type, explicit offline replay and adapter/Outbox response loss. Synthetic
+  adapter/replay tests passed 6/6; independent code and security reviews were
+  performed. The inactive workflow uses a reserved domain, screens input and
+  returns a fixed 400 on invalid input, stricter than the Gateway contract.
+  Native import, Queue execution, credentials, TLS, actual logs and alerts, URL
+  runner and runtime operation remain NOT_RUN. The 105-test full suite with one
+  skip predates the final IF test change and does not prove that later revision.
+  The latest source removes the URL global, delegates authority validation to
+  the Gateway to retain valid IDN/IPv6, applies a stricter 24-hour prefilter,
+  fixed fail-safe 400 IF branch and success MIME check. Empty-VM Node tests
+  passed 13/13. Its URL preprocessing admits only a subset of Gateway-valid
+  inputs. Independent final adapter, replay and workflow correctness/security
+  reviews found no remaining Critical or Important findings. The replacement
+  checkout's full suite passed 107 tests using the pinned validator and
+  synthetic localhost tests; this is not Native or hosted acceptance.
+- [ ] Test those exact fixtures RED/GREEN, then prepare versioned inactive n8n
+  source: authenticated event, schema and file/report identity checks, Gateway
+  request, durable receipt validation, state recording and bounded error alerting.
+  Never record real credential IDs/values in workflow JSON.
+- [ ] Preserve the existing PR and prepare the user-selected replacement PR to
+  address the candidate failure caused by a malformed merge commit message.
+  The replacement branch integrates `6a` without rewriting existing history;
+  its draft PR is not yet published. Run applicable hosted checks on it.
+- [ ] Review existing network/overlay policy before restricted host transport
+  or non-root container membership in `n8n_net`. No new public path or port;
+  any later Compose source gets scoped validation and independent review.
+
+#### W83: docs, review and Native admission
+
+- [ ] Update Korean workload README and existing RUN-0053 only with implemented
+  safe commands and recovery/uncertainty limits. Record metrics design for
+  success/failure, pending/uncertain, retries and oldest pending age without
+  source, credentials or report-ID labels; reuse Grafana/Prometheus ownership.
+- [ ] Design later read-only MCP `search_collected_news`,
+  `search_business_ideas`, `list_review_candidates`, `get_ingestion_status`.
+  HTTP stability precedes implementation; verify actual Hermes client,
+  authentication and Queue-mode persistent connections first. Never change
+  Blog-data MCP or treat retrieval as Vault-change/publication approval.
+- [ ] Run measured source tests, required documentation/static checks,
+  `git diff --check` and independent review. Logical local commits follow
+  repository gates; remote Git remains excluded by the current request.
+- [ ] Admit Native checks only with exact server-B endpoint/private IP/DNS/OS,
+  VPN/firewall/TLS and separately approved secrets/workflow/recovery targets.
+  Probe DNS/TCP/TLS/authentication/timeouts from the actual n8n worker. Approve
+  bounded outage/response-loss/replay and email/workflow regressions separately;
+  never interrupt shared services just to simulate a fault. Keep all unexecuted
+  lanes visible and criterion 23 pending.
+
 ## Verification Plan
 
 ### Verification
@@ -779,6 +937,8 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 | Observed protection still names a retired required context | Preserve the general no-bypass default. For W7 only, use the separately approved one-time Task delivery boundary and actual remote readback; do not infer a hosted PASS or weaken the post-merge security audit. |
 
 ## Related Documents
+
+- [Hermes transport Task](tasks/tsk-0022-hermes-blog-ingestion.md)
 
 - [W74 n8n native notification Task](tasks/tsk-0019-n8n-native-notification.md)
 - [W76 Traefik and Prometheus fixed image pins Task](tasks/tsk-0021-traefik-prometheus-fixed-image-pins.md)

@@ -1,0 +1,223 @@
+{
+  "name": "Hermes Blog Ingestion — INACTIVE TEMPLATE",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hermes-blog-ingestion-contract-hold",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "hermes-ingress",
+      "name": "Authenticated Ingress",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n// Preliminary shape screening only. The Gateway owns authoritative schema validation.\nconst data = $input.first().json.body;\nconst fail = () => { throw new Error('INGESTION_INPUT_INVALID'); };\nconst object = x => x !== null && typeof x === 'object' && !Array.isArray(x);\nconst keys = (x, allowed, required) => object(x) && Object.keys(x).every(k => allowed.includes(k)) && required.every(k => Object.hasOwn(x, k));\nconst id = x => typeof x === 'string' && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(x);\nconst timestamp = value => {\n  if (typeof value !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$/.test(value)) return false;\n  // Stricter than Gateway date normalization: reject 24:00 and other out-of-range times.\n  if (Number(value.slice(11, 13)) > 23 || Number(value.slice(14, 16)) > 59 || Number(value.slice(17, 19)) > 59) return false;\n  const date = new Date(value); const day = value.slice(0, 10); const start = new Date(day + 'T00:00:00Z');\n  return Number.isFinite(date.getTime()) && Number.isFinite(start.getTime()) && start.toISOString().slice(0, 10) === day;\n};\n// Source URL parsing belongs to the Gateway; screen only control characters and whitespace.\nconst sourceUrl = value => typeof value === 'string' && !/[\\p{Cc}\\p{White_Space}]/u.test(value);\nconst fields = ['schema_version','producer','job_id','run_id','fire_id','report_kind','scheduled_at','generated_at','collected_at','source_ref','source_text','source_sha256','idempotency_key','items'];\nconst required = fields.filter(x => x !== 'run_id' && x !== 'fire_id');\nconst text = (x, max) => typeof x === 'string' && x.length > 0 && Array.from(x).length <= max;\nif (!keys(data, fields, required) || data.schema_version !== '1.0' || !id(data.producer) || !id(data.job_id) || !id(data.idempotency_key) || (!id(data.run_id) && !id(data.fire_id)) || (Object.hasOwn(data,'run_id') && !id(data.run_id)) || (Object.hasOwn(data,'fire_id') && !id(data.fire_id))) fail();\nif (!['news','devops','business_ideas','infrastructure','mixed'].includes(data.report_kind) || !['scheduled_at','generated_at','collected_at'].every(k => timestamp(data[k])) || !text(data.source_ref,1024) || !text(data.source_text,524288) || typeof data.source_sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(data.source_sha256)) fail();\nif (!Array.isArray(data.items) || data.items.length < 1 || data.items.length > 100) fail();\nfor (const item of data.items) {\n  if (!keys(item,['item_id','kind','title','body','source_url'],['item_id','kind','title','body']) || !id(item.item_id) || !['news','devops','business_idea','infrastructure'].includes(item.kind) || !text(item.title,300) || !text(item.body,32768) || (Object.hasOwn(item,'source_url') && (!text(item.source_url,2048) || !sourceUrl(item.source_url)))) fail();\n}\nreturn [{json: {valid: true, body: data}}];\n} catch (error) {\n if (error.message !== 'INGESTION_INPUT_INVALID') throw new Error('SCREEN_ENV_UNAVAILABLE');\n return [{json: {valid: false}}];\n}"
+      },
+      "id": "hermes-screen",
+      "name": "Screen Ingestion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://gateway.invalid/v1/ingestions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "id": "hermes-gateway",
+      "name": "Send to Gateway",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst status = response.statusCode;\nconst body = response.body;\nconst fail = () => { throw new Error('GATEWAY_RESPONSE_UNCONFIRMED'); };\nconst obj = x => x !== null && typeof x === 'object' && !Array.isArray(x);\nif (!Number.isInteger(status) || !obj(body)) fail();\nif (status === 200 || status === 201) {\n const contentType = response.headers?.['content-type'];\n if (typeof contentType !== 'string' || contentType.split(';', 1)[0].trim().toLowerCase() !== 'application/json') fail();\n const keys = ['id','persisted','duplicate','status','candidate_count','status_url'];\n if (Object.keys(body).length !== keys.length || !keys.every(k => Object.hasOwn(body,k)) || typeof body.id !== 'string' || !/^[a-f0-9-]{36}$/.test(body.id) || body.persisted !== true || body.status !== 'received' || body.duplicate !== (status === 200) || !Number.isInteger(body.candidate_count) || body.candidate_count !== $('Screen Ingestion').first().json.body.items.length || body.status_url !== '/v1/ingestions/' + body.id) fail();\n} else if (status < 400 || status > 599 || Object.keys(body).length !== 1 || typeof body.error !== 'string' || !/^[A-Z][A-Z0-9_]{0,79}$/.test(body.error)) fail();\nreturn [{json: {statusCode: status, body}}];"
+      },
+      "id": "hermes-validate-response",
+      "name": "Validate Gateway Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "responseCode": "={{ $json.statusCode }}"
+        }
+      },
+      "id": "hermes-respond",
+      "name": "Return Gateway Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1040,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "valid-ingestion",
+              "leftValue": "={{ $json.valid === true }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "id": "hermes-input-accepted",
+      "name": "Input Accepted",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        420,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"error\":\"INVALID_REQUEST\"}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "hermes-input-invalid",
+      "name": "Return Invalid Input",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        660,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "Authenticated Ingress": {
+      "main": [
+        [
+          {
+            "node": "Screen Ingestion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Screen Ingestion": {
+      "main": [
+        [
+          {
+            "node": "Input Accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Gateway": {
+      "main": [
+        [
+          {
+            "node": "Validate Gateway Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Gateway Response": {
+      "main": [
+        [
+          {
+            "node": "Return Gateway Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input Accepted": {
+      "main": [
+        [
+          {
+            "node": "Send to Gateway",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Invalid Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 30,
+    "saveExecutionProgress": false,
+    "saveManualExecutions": false,
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none"
+  }
+}

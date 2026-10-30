@@ -1,0 +1,283 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:blog-data:ingestion-responses:v1",
+  "definitions": {
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9-]{36}$"
+        },
+        "persisted": {
+          "const": true
+        },
+        "duplicate": {
+          "type": "boolean"
+        },
+        "status": {
+          "const": "received"
+        },
+        "candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status_url": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "persisted", "duplicate", "status", "candidate_count", "status_url"]
+    },
+    "report": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9-]{36}$"
+        },
+        "received_at": {
+          "type": "string"
+        },
+        "persisted": {
+          "const": true
+        },
+        "status": {
+          "const": "received"
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-f0-9-]{36}$"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": ["id", "status"]
+          }
+        },
+        "conflict_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "vault_status": {
+          "enum": ["captured", "not_captured", "partially_captured", "needs_attention"]
+        }
+      },
+      "required": [
+        "id",
+        "received_at",
+        "persisted",
+        "status",
+        "candidates",
+        "conflict_count",
+        "vault_status"
+      ]
+    },
+    "candidates": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-f0-9-]{36}$"
+              },
+              "report_id": {
+                "type": "string",
+                "pattern": "^[a-f0-9-]{36}$"
+              },
+              "kind": {
+                "enum": ["news", "devops", "business_idea", "infrastructure"]
+              },
+              "status": {
+                "enum": ["pending", "quarantined", "prepared", "captured", "failed", "conflict"]
+              },
+              "content_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "collected_at": {
+                "type": "string"
+              },
+              "duplicate_of": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9-]{36}$"
+                    },
+                    "reason": {
+                      "enum": ["same_source_url", "same_title", "similar_title_tokens"]
+                    }
+                  },
+                  "required": ["id", "reason"]
+                }
+              },
+              "title": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              },
+              "item_id": {
+                "type": "string"
+              },
+              "source_url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "report_id",
+              "kind",
+              "status",
+              "content_sha256",
+              "collected_at",
+              "duplicate_of",
+              "title",
+              "body"
+            ]
+          }
+        },
+        "next_after": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      },
+      "required": ["items", "next_after"]
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9-]{36}$"
+        },
+        "vault_status": {
+          "const": "captured"
+        },
+        "path": {
+          "type": "string"
+        },
+        "duplicate": {
+          "type": "boolean"
+        }
+      },
+      "required": ["id", "vault_status", "path", "duplicate"]
+    },
+    "captureRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": ["content_sha256"]
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": ["error"]
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reports_by_day": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": ["date", "count"]
+          }
+        },
+        "candidates_by_kind": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": ["kind", "count"]
+          }
+        },
+        "candidates_by_status": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "status": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": ["status", "count"]
+          }
+        },
+        "duplicate_candidates": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "conflicts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "oldest_unreviewed_at": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "reports_by_day",
+        "candidates_by_kind",
+        "candidates_by_status",
+        "duplicate_candidates",
+        "conflicts",
+        "oldest_unreviewed_at"
+      ]
+    }
+  }
+}
