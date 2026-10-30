@@ -27,9 +27,11 @@ _IDENTITY = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\Z")
 _REPORT_ID = re.compile(r"[a-f0-9-]{36}\Z")
 
 
-def _timestamp(value):
+def _timestamp(value, *, generated=False):
+    fraction = r"\d{1,6}" if generated else r"\d{1,3}"
     if not isinstance(value, str) or not re.fullmatch(
-        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})", value
+        rf"\d{{4}}-\d{{2}}-\d{{2}}T\d{{2}}:\d{{2}}:\d{{2}}(?:\.{fraction})?(?:Z|[+-]\d{{2}}:\d{{2}})",
+        value,
     ):
         raise ValueError("invalid_timestamp")
     try:
@@ -39,6 +41,11 @@ def _timestamp(value):
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         raise ValueError("invalid_timestamp")
     return value
+
+
+def _gateway_generated_timestamp(value):
+    # Gateway v1 accepts milliseconds; the original candidate remains unchanged.
+    return re.sub(r"(\.\d{3})\d{1,3}(?=Z|[+-]\d{2}:\d{2}$)", r"\1", value)
 
 
 def _identity(value):
@@ -137,8 +144,9 @@ class GatewayAdapter:
     idempotent_writes = True
 
     def __post_init__(self):
-        for value in (self.scheduled_at, self.generated_at, self.collected_at):
+        for value in (self.scheduled_at, self.collected_at):
             _timestamp(value)
+        _timestamp(self.generated_at, generated=True)
 
     def prepare(self, snapshot):
         try:
@@ -180,7 +188,7 @@ class GatewayAdapter:
                 run_id=run,
                 report_kind=report_kind,
                 scheduled_at=self.scheduled_at,
-                generated_at=self.generated_at,
+                generated_at=_gateway_generated_timestamp(self.generated_at),
                 collected_at=self.collected_at,
                 source_ref=source_ref,
                 source_text=source,

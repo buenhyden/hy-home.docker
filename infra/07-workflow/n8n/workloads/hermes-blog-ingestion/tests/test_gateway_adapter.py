@@ -3,6 +3,7 @@
 import hashlib
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -141,6 +142,114 @@ class GatewayAdapterTests(unittest.TestCase):
         self.set_candidate()
         with self.assertRaises(ValueError):
             self.adapter.prepare(self.snapshot)
+
+    def test_microsecond_generated_timestamp_is_truncated_only_after_exact_binding(
+        self,
+    ):
+        from publisher.gateway_adapter import GatewayAdapter
+
+        for original, expected in (
+            ("2026-10-30T00:01:00.123456Z", "2026-10-30T00:01:00.123Z"),
+            ("2026-10-30T23:59:59.000999+09:00", "2026-10-30T23:59:59.000+09:00"),
+            ("2026-10-30T00:00:00.999999-04:30", "2026-10-30T00:00:00.999-04:30"),
+            ("2026-10-30T00:01:00.123Z", "2026-10-30T00:01:00.123Z"),
+            ("2026-10-30T00:01:00.1234Z", "2026-10-30T00:01:00.123Z"),
+            ("2026-10-30T00:01:00.12345Z", "2026-10-30T00:01:00.123Z"),
+        ):
+            with self.subTest(original=original):
+                self.candidate["generated_at"] = original
+                self.set_candidate()
+                before = self.snapshot["candidate"]
+                self.adapter = GatewayAdapter(
+                    scheduled_at="2026-10-30T00:00:00Z",
+                    generated_at=original,
+                    collected_at="2026-10-30T00:02:00Z",
+                )
+                first = self.adapter.prepare(self.snapshot).body
+                self.assertEqual(first, self.adapter.prepare(self.snapshot).body)
+                sent = json.loads(first)
+                self.assertEqual(sent["generated_at"], expected)
+                self.assertRegex(
+                    sent["generated_at"],
+                    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$",
+                )
+                self.assertEqual(self.snapshot["candidate"], before)
+                self.assertEqual(self.snapshot["source"], self.raw)
+                self.assertEqual(
+                    hashlib.sha256(before).hexdigest(),
+                    self.snapshot["candidate_sha256"],
+                )
+
+        self.candidate["generated_at"] = "2026-10-30T00:01:00.123001Z"
+        self.set_candidate()
+        self.adapter = GatewayAdapter(
+            scheduled_at="2026-10-30T00:00:00Z",
+            generated_at="2026-10-30T00:01:00.123999Z",
+            collected_at="2026-10-30T00:02:00Z",
+        )
+        with self.assertRaises(ValueError):
+            self.adapter.prepare(self.snapshot)
+
+    def test_microsecond_candidate_survives_outbox_restart_and_request_binding(self):
+        from publisher.candidates import Snapshot
+        from publisher.gateway_adapter import GatewayAdapter
+        from publisher.outbox import Outbox
+
+        original = "2026-10-30T00:01:00.123456Z"
+        self.candidate["generated_at"] = original
+        self.set_candidate()
+        adapter = GatewayAdapter(
+            scheduled_at="2026-10-30T00:00:00Z",
+            generated_at=original,
+            collected_at="2026-10-30T00:02:00Z",
+        )
+        key = (self.snapshot["job_id"], self.snapshot["run_id"])
+        with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
+            path = Path(tmp) / "private" / "outbox.sqlite"
+            box = Outbox(path)
+            box.stage(
+                Snapshot(
+                    *key,
+                    self.snapshot["candidate"],
+                    self.snapshot["source_ref"],
+                    self.raw,
+                )
+            )
+            first = adapter.prepare(box.get(key))
+            box.bind_request(
+                key, first.contract_revision, first.body, destination=first.destination
+            )
+            box.close()
+            box = Outbox(path)
+            row = box.get(key)
+            self.assertEqual(row["candidate"], self.snapshot["candidate"])
+            self.assertEqual(json.loads(row["candidate"])["generated_at"], original)
+            self.assertEqual(row["source"], self.raw)
+            self.assertEqual(adapter.prepare(row).body, first.body)
+            self.assertEqual(row["request_body"], first.body)
+            box.close()
+
+    def test_microsecond_timestamp_validation_rejects_invalid_and_missing_values(self):
+        from publisher.gateway_adapter import GatewayAdapter
+
+        for generated in (
+            None,
+            "2026-10-30T00:01:00.1234567Z",
+            "2026-10-30T00:01:00.123456",
+            "2026-13-30T00:01:00.123456Z",
+        ):
+            with self.subTest(generated=generated), self.assertRaises(ValueError):
+                GatewayAdapter(
+                    scheduled_at="2026-10-30T00:00:00Z",
+                    generated_at=generated,
+                    collected_at="2026-10-30T00:02:00Z",
+                )
+        with self.assertRaises(ValueError):
+            GatewayAdapter(
+                scheduled_at="2026-10-30T00:00:00Z",
+                generated_at="2026-10-30T00:01:00.123456Z",
+                collected_at=None,
+            )
 
     def test_receipt_and_replay(self):
         from publisher.delivery import OutcomeKind
