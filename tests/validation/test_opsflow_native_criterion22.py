@@ -420,6 +420,27 @@ class ExecutionTimeoutFactsTests(unittest.TestCase):
 
 
 class Criterion22DriverTests(unittest.TestCase):
+    def test_concurrent_claims_scenario_races_with_the_budgeted_jobs(self):
+        case = driver()
+        published = iter([("r1", "5"), ("r2", "6"), ("r3", "7")])
+        case.publish_next = lambda source: next(published)
+        case.assert_claimable = lambda count: None
+        case.db_value = lambda sql, role="p04_audit": "3"
+        jobs = []
+
+        def race(count):
+            jobs.append(count)
+            ids = [5] if len(jobs) == 1 else [6, 7]
+            won = [
+                {"claim": i, "stale": False, "ack": True, "again": False} for i in ids
+            ]
+            lost = {"claim": 0, "stale": False, "ack": False, "again": False}
+            return won + [dict(lost) for _ in range(count - len(ids))]
+
+        case.race = race
+        case.scenario_concurrent_claims()
+        self.assertEqual([c22.RACE_JOBS, c22.RACE_JOBS], jobs)
+
     def test_race_fits_the_notifier_connection_budget(self):
         from tests.validation.test_opsflow_database_rehearsal import provision_sql
 

@@ -725,6 +725,58 @@ class NativeEvidenceGuardTests(unittest.TestCase):
         self.assertIn("container", fixture.receipt["cleanup_failures"])
         fixture._cleanup_host.assert_not_called()
 
+    def test_cleanup_removes_known_containers_before_polling_pending(self):
+        fixture = object.__new__(NativeFixture)
+        record = ownership.Container(
+            "d" * 64,
+            "owned-main",
+            "main",
+            1,
+            N8N_ID,
+            N8N_REF,
+            "1000:1000",
+            ("ctl",),
+            (),
+            (),
+        )
+        late = ownership.Container(
+            "e" * 64, "owned-prep", "secret-prep", 1, N8N_ID, N8N_REF, "0:0", (), (), ()
+        )
+        fixture.client = mock.Mock()
+        fixture.client.run.return_value = ""
+        fixture.containers = {"main": record}
+        fixture.networks = {}
+        fixture.pending_containers = {"main": mock.Mock(), "secret-prep": mock.Mock()}
+        fixture.pending_networks = {}
+        fixture.swept_cids, fixture.swept_nids = set(), set()
+        fixture.receipt = {"cleanup": "PENDING"}
+        fixture.attempt = "opsflow-native-" + "b" * 24
+        fixture.directory = Path("/tmp/owned-attempt-safe-name")
+        fixture.dir_identity = (1, 2)
+        fixture.lock_fd = -1
+        fixture._cleanup_host = mock.Mock()
+        events = []
+
+        def remove(role):
+            events.append(("remove", role))
+            fixture.containers.pop(role)
+            fixture.pending_containers.pop(role, None)
+
+        def adopt(role):
+            events.append(("adopt", role))
+            fixture.containers[role] = late
+
+        fixture.remove = remove
+        fixture._adopt_pending_container = adopt
+        try:
+            fixture.cleanup()
+        except RehearsalFailure:
+            pass
+        self.assertEqual(
+            [("remove", "main"), ("adopt", "secret-prep"), ("remove", "secret-prep")],
+            events,
+        )
+
     def test_registered_scenario_finalizes_once_and_preserves_original_error(self):
         case = native_driver.OpsflowN8nNativeRehearsal(
             "test_actual_queue_runner_capture_unknown_reconcile_and_restore"

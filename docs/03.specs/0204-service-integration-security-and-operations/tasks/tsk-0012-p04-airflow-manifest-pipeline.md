@@ -4,7 +4,7 @@ version: "0.1.24"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0012"
 parent_ids:
@@ -1570,6 +1570,31 @@ not relabeled as a check of this new Task hash. Independent final code/security
 review approved the last wording clarification before the staged gate.
 Task-only metadata/links/review must cover this new receipt before commit;
 unchanged source tests are not repeated merely to record their result.
+
+### Follow-ups from the TSK-0013 W42 review 2026-10-30
+
+TSK-0013 froze 001, 003 and 004 as the P05 interface after an independent
+security review that approved them with notes. The notes belong to this Task.
+Medium:
+
+- `002_checks.sql` accepts only versions 1 and 2, so it needs a post-004
+  version.
+- The checks need executable denial cases: ingest and reader cannot run
+  `unknown_notification` or `retry_not_sent_notification`, and cannot read
+  `notification_reconciliations`.
+
+Low, for the next migration:
+
+- use `SET search_path = pg_catalog, pg_temp`;
+- give 001-style migrations their own lock and statement timeouts and the
+  migration advisory lock;
+- add SKIP LOCKED to the claim's expiry sweep;
+- map a same-day publication's `23505` to a named contract error;
+- drop or fix the migrator `EXECUTE` grant on reconcile, which has no effect;
+- add connection limits and per-database role settings to the fingerprint.
+
+None of these changes the frozen interface. A migration that does change it
+needs a new TSK-0013 binding.
 
 ## Evidence
 
