@@ -496,11 +496,11 @@ The RUN-0021 step 5a script now exists as
 `scripts/operations/mng-pg-immediate-restore-rehearsal.py`, with a Docker-free
 safety test (`tests/validation/test_mng_pg_immediate_restore_rehearsal.py`) in
 the operation-script test set. RUN-0021 5a carries the exact owner command and the
-fixed expected output. The independent stateful recovery review of the script is
-pending and the owner has not run it. The run is NOT_RUN, so criterion 7 stays
-`pending`. Three inputs need an owner answer before the run: the heartbeat and
-dbt objects to require in `mng-pg`, the named management tables to count, and the
-approved data-disk scratch path. Step 5 time-target PITR still needs its own
+fixed expected output. The run is NOT_RUN, so criterion 7 stays `pending`.
+A read-only catalog check on 2026-10-30 settled two inputs: `app_db` holds
+`debezium_heartbeat.heartbeat` and the view `analytics.hyhome_dbt_connectivity`,
+and `mlflow` holds `public.experiments`. RUN-0021 now uses these. The owner
+still chooses the data-disk scratch path at run time. Step 5 time-target PITR still needs its own
 recovery time and approval.
 
 The owner decided on 2026-10-30 (option A) how the 5a auth probe is satisfied:
@@ -508,8 +508,19 @@ The owner decided on 2026-10-30 (option A) how the 5a auth probe is satisfied:
 `scram-sha-256` rule for the one-time role to the restored clone `pg_hba.conf`
 (scratch only, never the source), reloads, and confirms it is rule 1 in
 `pg_hba_file_rules`. The wrong-password control must be refused, and the output
-records `clone_hba_probe_rule`. The independent review of this change is
-pending.
+records `clone_hba_probe_rule`.
+
+An independent `iac-reviewer` first requested changes. The main finding was
+that the clone needs the read-only repository for `archive-get`, because
+pgbackrest.conf has no archive-copy. The other findings were by-ID removal
+confirmation, resource limits, refusal of non-default Docker targets, the
+lock before verify, `io_error` handling, password-statement logging and test
+gaps. All were fixed, and the re-review of the fixes and the hba change
+returned APPROVE_WITH_NOTES with low notes only. The in-place `pg_hba.conf`
+rewrite is not atomic, which affects only the clone. The kept scratch
+`pg_hba.conf` keeps the probe line, so the 7-day review must not treat it as
+identical to the backup's. Running the script still needs the owner's
+approval.
 
 ### W10 R2 scratch restore 2026-10-30
 
