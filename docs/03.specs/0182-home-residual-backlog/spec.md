@@ -1,10 +1,10 @@
 ---
 title: "HOME Residual Backlog Specification"
-version: "0.5.3"
+version: "0.5.4"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0182"
 parent_ids:
@@ -48,9 +48,11 @@ records the six-container re-decision and subsequent CDC retirement on
 2026-09-29; that owner decision is closed. Its completed W3–W6 receipts
 cover criteria 3–6, with dated results and the disclosed Pyroscope hash
 limitation. Task 0003 now records W8/criterion 8 observations, including
-sample gaps and identity deduplication. Criterion 7 still needs current-policy PostgreSQL
-recovery evidence; criterion 10 still needs the R2 scratch restore and offline
-key custody. Those operational holds prevent package completion.
+sample gaps and identity deduplication. Criterion 10 is accepted. Criterion 7
+still needs the step 5 time-target PITR and the isolated MLflow and JupyterLab
+restores. On 2026-10-30 the owner removed the retired CDC restore from
+criterion 7 and set the PITR target just after the latest backup. That
+operational hold prevents package completion.
 
 ### Operational Impact
 
@@ -142,10 +144,9 @@ result. A failed or unexecuted step is never recorded as done.
    decision (keep or stop, "keep all" allowed), and the decisions are
    applied.
 7. A PITR restore of HOME PostgreSQL data from the real pgBackRest
-   repository, and isolated restores of MLflow, JupyterLab (real content) and
-   CDC (RUN-0036 planned isolated restore, steps 4–6) are recorded with
-   recovery points, counts and elapsed times compared with the POL-0021 RPO
-   and RTO targets.
+   repository, and isolated restores of MLflow and JupyterLab (real content)
+   are recorded with recovery points, counts and elapsed times compared with
+   the POL-0021 RPO and RTO targets.
 8. Sustained and peak CPU, memory, GPU and disk growth are measured over an
    owner-chosen window and recorded.
 9. The SSO behavioural matrix (no cookie, non-allowed user, logout, role
