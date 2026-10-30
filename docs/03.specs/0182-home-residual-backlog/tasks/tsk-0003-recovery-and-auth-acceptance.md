@@ -1,8 +1,8 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.8.4"
+version: "0.9.0"
 type: "sdlc/task"
-status: "blocked"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-30"
 layer: "specs"
@@ -73,6 +73,8 @@ entry-closed dispositions are preserved above`.
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0182-TSK-0003 | in-progress | blocked | #current-lifecycle-reconciliation |
+| SPEC-0182-TSK-0003 | blocked | in-progress | #w7-step-5-pitr-and-mlflow-evidence-2026-10-30 |
+| SPEC-0182-TSK-0003 | in-progress | completed | #criterion-7-acceptance-and-completion-2026-10-30 |
 
 - 2026-09-25 W12: the retired and entry-closed items were re-checked
   against the live host and `main`; results are under Verification Evidence.
@@ -705,6 +707,74 @@ applied: the command runs from the main checkout, which holds `secrets/`;
 it refuses a non-empty scratch; and the test uses a distinctive mocked
 count.
 
+### W7 step 5 PITR and MLflow evidence 2026-10-30
+
+The owner ran RUN-0021 step 5 from `main` `b4d01a252` three times, each
+time into a new owned scratch under `~/storage/backups`:
+
+- Run `mng-pg-pitr-20261030`, from 18:10 KST, and run
+  `mng-pg-pitr-20261030b`, from 18:47 KST, reached at least the inventory
+  step. Run `b` also wrote `count-observations.json`. Their printed output was
+  not kept, so neither counts as evidence. No PITR container was left
+  behind.
+- Run `mng-pg-pitr-20261030c` was saved with `tee`. It passed every fixed
+  field, with `result=PASS` and `reason=none`:
+  - `verify_rc` and `restore_rc` were 0, and the run took 625.9 s;
+  - `recovery_type=time`, `target_time=2026-10-29 22:20:00+00`;
+  - `target_after_backup_stop`, `target_reached` and `promoted` were all
+    true, so the clone stopped at the target and moved to a new timeline;
+  - system ID and DB list matched, the required objects were present, and
+    `count_stable` was true, with 11 extensions and 132 sequences observed;
+  - `probe_result=PASS` with `clone_hba_probe_rule=added`, the scratch stayed
+    0700, and every owned container was removed.
+
+MLflow tracking counts at the target, from run `b`'s
+`count-observations.json`, were experiments 2, runs 2, metrics 1, params 1
+and tags 8. They equal the production counts read on 2026-10-30. That
+comparison across time holds because MLflow has had no writes since
+2026-09-25.
+
+The owner also ran the RUN-0088 artifact command into
+`~/storage/backups/mlflow-artifacts-20261030`. The result was `copy_rc=0`
+and `result=PASS` in 79 s:
+
+- `objects_listed`, `objects_local` and `md5_match` were each 2;
+- `multipart_unchecked` and `unsafe_keys` were 0;
+- `runs_with_objects` was 2/2.
+
+This was a read-only copy of the live bucket, so it claims no artifact RPO.
+
+Against POL-0021, the PITR recovered to the chosen time with no loss up to
+the target, inside the 5-minute RPO. 625.9 s is well inside the 4-hour RTO.
+Criterion 7's remaining scope is now covered:
+
+- the PITR from the real repository;
+- MLflow tracking counts and an artifact integrity copy;
+- JupyterLab not applicable, and CDC removed.
+
+Criterion 7 acceptance is the owner's decision. The three PITR scratches and
+the MLflow copy are kept until the owner approves their removal. The PITR
+`data/` directories are UID 70-owned and need sudo.
+
+### Criterion 7 acceptance and completion 2026-10-30
+
+The owner accepted criterion 7 on the `W7 current recovery evidence` row.
+That row covers:
+
+- the selected backup verify;
+- the 5a rehearsal;
+- the step 5 PITR run `c`;
+- the MLflow counts at the target and the artifact copy.
+
+Every criterion this Task owns (7 to 12) is now accepted, so the Task moves
+from `blocked` to `completed`. The
+owner's step 5 and MLflow runs resumed it to `in-progress` first.
+
+The owner also chose to remove the scratches now instead of after the 7-day
+review: the three PITR scratches, the MLflow copy and
+`pitr-20261030c.out`. The owner runs the removal, which needs sudo for the
+UID 70-owned clone data. Removal changes no evidence recorded here.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -716,6 +786,10 @@ count.
 | W7 selected backup verify | 7 | W7 | `pgbackrest verify` of the selected backup set | `20261024-184214F_20261029-221825D`, owner-run 2026-10-30 | PASS | W7 verify and W10 snapshot pair 2026-10-30; rc 0 in 2,483 ms | required | - |
 | W7 5a rehearsal attempt 01 | 7 | W7 | RUN-0021 step 5a immediate consistency rehearsal | `mng-pg-immediate-restore-rehearsal.py` at `15159fc73`, set `20261024-184214F_20261029-221825D`, 2026-10-30 | FAIL | W7 5a rehearsal attempt 01 2026-10-30; recovery checks passed, stopped at `probe_privileges` on the default PUBLIC UPDATE of `pg_settings` | required | - |
 | W7 5a rehearsal attempt 02 | 7 | W7 | RUN-0021 step 5a immediate consistency rehearsal | `mng-pg-immediate-restore-rehearsal.py` at `e065bce16`, set `20261024-184214F_20261029-221825D`, 2026-10-30 | PASS | W7 5a rehearsal attempt 02 2026-10-30; `result=PASS`, restore 683.7 s, probe PASS | required | W7 5a rehearsal attempt 01 |
+| W7 step 5 PITR run c | 7 | W7 | RUN-0021 step 5 time-target PITR | `mng-pg-immediate-restore-rehearsal.py --target-time` at `b4d01a252`, set `20261024-184214F_20261029-221825D`, target 2026-10-29 22:20:00 UTC, 2026-10-30 | PASS | W7 step 5 PITR and MLflow evidence 2026-10-30; `result=PASS`, 625.9 s, target reached and promoted, probe PASS | required | - |
+| W7 MLflow tracking counts at target | 7 | W7 | MLflow tracking counts in the PITR clone | Run `b` `count-observations.json` against production counts of 2026-10-30 | PASS | W7 step 5 PITR and MLflow evidence 2026-10-30; experiments 2, runs 2, metrics 1, params 1, tags 8 on both | required | - |
+| W7 MLflow artifact copy | 7 | W7 | RUN-0088 read-only artifact copy with ETag check | `mlflow-artifacts` bucket, owner-run 2026-10-30 | PASS | W7 step 5 PITR and MLflow evidence 2026-10-30; `copy_rc=0`, 2/2 objects MD5 match, 79 s | required | - |
+| W7 current recovery evidence | 7 | W7 | Current recovery evidence | Rows W7 selected backup verify through W7 MLflow artifact copy | PASS | W7 step 5 PITR and MLflow evidence 2026-10-30; JupyterLab not applicable and CDC removed per Spec criterion 7 | required | Current Task status: blocked |
 | W10 R2 restore attempt 01 | 10 | W10 | R2 scratch restore of the selected host and state pair | One-off `restic-offsite` run, host `993a30f2`, state `7f9315e3`, 2026-10-30 | FAIL | W10 restore attempt and procedure rewrite 2026-10-30; `mkdir /restore/host: permission denied`, nothing restored | required | - |
 | W10 R2 restore rerun | 10 | W10 | R2 scratch restore of the selected host and state pair | `offsite.sh restore 993a30f2 7f9315e3` as the scratch owner, 2026-10-30 | PASS | W10 R2 scratch restore 2026-10-30; host rc 0 in 16 s (203 files), state rc 0 in 153 s (22,355 files, 2.10 GB) | required | W10 R2 restore attempt 01 |
 | W10 recovery evidence | 10 | W10 | Recovery evidence | R2 scratch restore rerun plus owner confirmation of off-host BKP-003, BKP-002 and R2 credential custody, 2026-10-30 | PASS | W10 offline key custody and criterion 10 2026-10-30 | required | Current Task status: blocked (2) |
@@ -726,7 +800,7 @@ count.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 7 | pending | - | - | SPEC-0182 TSK-0003 |
+| 7 | accepted | W7 current recovery evidence | Owner accepted on 2026-10-30 on the step 5 PITR PASS, MLflow counts at the target and the artifact copy, with JupyterLab not applicable and CDC removed. | SPEC-0182 TSK-0003 |
 | 8 | accepted | Current Task status: completed | Owner accepted on 2026-10-29 on the recorded W8 measurement observations. | SPEC-0182 TSK-0003 |
 | 9 | accepted | Current Task status: completed (2) | Owner accepted on 2026-10-29 on the recorded SSO behavior rows. | SPEC-0182 TSK-0003 |
 | 10 | accepted | W10 R2 restore rerun, W10 recovery evidence | Owner accepted on 2026-10-30: ADR-0041/0042 accepted, R2 implemented, scratch restore passed, and off-host key custody confirmed. | SPEC-0182 TSK-0003 |
@@ -737,7 +811,7 @@ count.
 
 | Acceptance criterion | Acceptance | Evidence |
 | --- | --- | --- |
-| 7 | pending | Current isolated recovery and consistency evidence remains unavailable. |
+| 7 | accepted | Owner accepted on 2026-10-30; see Criterion 7 acceptance and completion 2026-10-30. |
 | 8 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
 | 9 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
 | 10 | accepted | R2 scratch restore passed and off-host key custody confirmed on 2026-10-30; see W10 offline key custody and criterion 10 2026-10-30. |
