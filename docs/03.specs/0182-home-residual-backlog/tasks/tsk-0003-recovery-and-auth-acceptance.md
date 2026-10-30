@@ -540,6 +540,19 @@ design, and the scratch is removed only with the owner's separate approval.
 Criterion 10 still needs the value-free attestation that BKP-003 is in offline
 custody.
 
+### W10 offline key custody and criterion 10 2026-10-30
+
+On 2026-10-30 the owner confirmed, value-free, that BKP-003, BKP-002 and the
+R2 credentials are still kept only on the owner's separate desktop, off this
+host. This matches the RUN-0085 step 5 owner record of 2026-10-14 (SPEC-0204
+TSK-0006 "Step 5 Owner Record"). That record also confirmed a read-only R2
+listing with the off-host values and kept the desktop recovery means outside
+both places. The owner decided this existing off-host custody satisfies
+W10's offline-key requirement, without a further offline medium. With the
+R2 scratch restore above, W10's recovery evidence is complete. ADR-0041 (R2)
+and ADR-0042 were accepted on 2026-09-25, R2 is implemented, and both
+halves of its recovery are proven, so criterion 10 is accepted.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -551,6 +564,7 @@ custody.
 | W7 selected backup verify | 7 | W7 | `pgbackrest verify` of the selected backup set | `20261024-184214F_20261029-221825D`, owner-run 2026-10-30 | PASS | W7 verify and W10 snapshot pair 2026-10-30; rc 0 in 2,483 ms | required | - |
 | W10 R2 restore attempt 01 | 10 | W10 | R2 scratch restore of the selected host and state pair | One-off `restic-offsite` run, host `993a30f2`, state `7f9315e3`, 2026-10-30 | FAIL | W10 restore attempt and procedure rewrite 2026-10-30; `mkdir /restore/host: permission denied`, nothing restored | required | - |
 | W10 R2 restore rerun | 10 | W10 | R2 scratch restore of the selected host and state pair | `offsite.sh restore 993a30f2 7f9315e3` as the scratch owner, 2026-10-30 | PASS | W10 R2 scratch restore 2026-10-30; host rc 0 in 16 s (203 files), state rc 0 in 153 s (22,355 files, 2.10 GB) | required | W10 R2 restore attempt 01 |
+| W10 recovery evidence | 10 | W10 | Recovery evidence | R2 scratch restore rerun plus owner confirmation of off-host BKP-003, BKP-002 and R2 credential custody, 2026-10-30 | PASS | W10 offline key custody and criterion 10 2026-10-30 | required | Current Task status: blocked (2) |
 | Current Task status: completed (3) | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/01-common/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | required | - |
 | Current Task status: completed (4) | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | required | - |
 
@@ -561,7 +575,7 @@ custody.
 | 7 | pending | - | - | SPEC-0182 TSK-0003 |
 | 8 | accepted | Current Task status: completed | Owner accepted on 2026-10-29 on the recorded W8 measurement observations. | SPEC-0182 TSK-0003 |
 | 9 | accepted | Current Task status: completed (2) | Owner accepted on 2026-10-29 on the recorded SSO behavior rows. | SPEC-0182 TSK-0003 |
-| 10 | pending | - | - | SPEC-0182 TSK-0003 |
+| 10 | accepted | W10 R2 restore rerun, W10 recovery evidence | Owner accepted on 2026-10-30: ADR-0041/0042 accepted, R2 implemented, scratch restore passed, and off-host key custody confirmed. | SPEC-0182 TSK-0003 |
 | 11 | accepted | Current Task status: completed (3) | Owner accepted on 2026-10-29 on the recorded reboot rehearsal and SecretID delivery. | SPEC-0182 TSK-0003 |
 | 12 | accepted | Current Task status: completed (4) | Owner accepted on 2026-10-29 on the recorded retired and entry-closed dispositions. | SPEC-0182 TSK-0003 |
 
@@ -572,7 +586,7 @@ custody.
 | 7 | pending | Current isolated recovery and consistency evidence remains unavailable. |
 | 8 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
 | 9 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
-| 10 | pending | R2 scratch restore and offline-key custody remain open. |
+| 10 | accepted | R2 scratch restore passed and off-host key custody confirmed on 2026-10-30; see W10 offline key custody and criterion 10 2026-10-30. |
 | 11 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
 | 12 | accepted | Owner accepted on 2026-10-29; see Owner decision 2026-10-29. |
 
