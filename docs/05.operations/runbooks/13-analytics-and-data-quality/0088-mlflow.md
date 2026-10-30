@@ -1,10 +1,10 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-10-30"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -203,6 +203,64 @@ lifecycle 변경이다. 따라서 artifact 자동 제거를 주장하지 않는�
 [Dockerfile](../../../../infra/08-ai/mlflow/Dockerfile)이며 변경 때 근거를 다시 검토한다.
 secret 파일 교체·서비스 재생성은 [공통 수명주기 정책](../../policies/01-common/0006-infrastructure-optimization-governance.md)을
 따르고 이전 자격 증명 거부와 새 연결·artifact 조회를 각각 확인한다.
+
+### 격리 복원 증거(SPEC-0182 기준 7)
+
+2026-10-30 owner 결정으로 MLflow 격리 복원은 두 부분이다. tracking DB는 [RUN-0021](../10-platform-and-backup/0021-backup-and-restore.md) step 5의 time-target PITR clone에서 `mlflow.public` 표 5개의 count로 확인한다. artifact는 아래 명령이 운영 `mlflow-artifacts` bucket을 읽기 전용으로 새 scratch에 내려받고, 객체마다 ETag와 local MD5를 비교한다. 운영 `mlflow`는 멈추지 않으며 bucket에는 쓰지 않는다. 실행은 owner가 하며 승인 전에는 **NOT_RUN**이다.
+
+artifact 부분은 SeaweedFS/Restic backup에서의 복원이 아니다. 이것이 증명하는 것은 두 가지다. 운영 객체를 mlflow key로 읽을 수 있고, 내려받은 byte가 SeaweedFS에 저장된 MD5와 같다. recovery point는 복사 시각이고 PITR clone의 target 시각과 짝을 이루지 않으며, artifact RPO를 주장하지 않는다. `runs_with_objects`는 clone이 아니라 운영 `runs`와 대조한다.
+
+```bash
+cd ~/data/hy-home.docker   # main checkout 루트(worktree에는 git-ignored secrets/가 없다)
+SCR=~/storage/backups/mlflow-artifacts-20261030   # 새 경로, data disk
+[ -z "$(ls -A "$SCR" 2>/dev/null)" ] || { echo "result=FAIL scratch_not_empty"; exit 1; }
+install -d -m 0700 "$SCR" "$SCR/meta" "$SCR/objects"
+start=$(date +%s)
+admin=$(docker inspect mng-pg --format '{{range .Config.Env}}{{println .}}{{end}}' | sed -n 's/^POSTGRES_USER=//p')
+docker exec --user 70 mng-pg psql -U "$admin" -d mlflow -Atc \
+  "SELECT experiment_id || '/' || run_uuid FROM runs ORDER BY 1" > "$SCR/meta/runs.txt"
+docker run --rm --pull=never --network object_net \
+  --user "$(id -u):$(id -g)" --read-only --tmpfs /tmp -e HOME=/tmp \
+  --cap-drop ALL --security-opt no-new-privileges \
+  --mount "type=bind,src=$PWD/secrets/storage/seaweedfs/seaweedfs_s3_mlflow_secret_key.txt,dst=/run/secrets/k,readonly" \
+  --mount "type=bind,src=$SCR/meta,dst=/meta" \
+  --mount "type=bind,src=$SCR/objects,dst=/objects" \
+  --entrypoint sh \
+  amazon/aws-cli@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce -ec '
+    AWS_SECRET_ACCESS_KEY="$(tr -d "\r\n" </run/secrets/k)"
+    export AWS_SECRET_ACCESS_KEY AWS_ACCESS_KEY_ID=mlflow AWS_DEFAULT_REGION=us-east-1
+    e=http://seaweedfs-s3:8333
+    aws --endpoint-url "$e" s3api list-objects-v2 --bucket mlflow-artifacts --output json >/meta/listing.json
+    aws --endpoint-url "$e" s3 sync --only-show-errors s3://mlflow-artifacts /objects'
+echo "copy_rc=$?"
+python3 - "$SCR" <<'PY'
+import hashlib, json, pathlib, sys
+root = pathlib.Path(sys.argv[1])
+listed = json.loads((root / "meta" / "listing.json").read_text()).get("Contents", [])
+match = multipart = unsafe = 0
+for obj in listed:
+    key, tag = obj["Key"], obj["ETag"].strip('"')
+    if key.startswith("/") or key.endswith("/") or ".." in pathlib.PurePosixPath(key).parts:
+        unsafe += 1
+        continue
+    local = root / "objects" / key
+    if "-" in tag:
+        multipart += 1
+    elif local.is_file() and hashlib.md5(local.read_bytes()).hexdigest() == tag:
+        match += 1
+local_files = sum(1 for f in (root / "objects").rglob("*") if f.is_file())
+runs = (root / "meta" / "runs.txt").read_text().split()
+keys = [o["Key"] for o in listed]
+with_objects = sum(1 for r in runs if any(k.startswith(r + "/") for k in keys))
+ok = len(listed) >= 1 and len(listed) == local_files == match and not (multipart or unsafe)
+print(f"objects_listed={len(listed)}\nobjects_local={local_files}\nmd5_match={match}")
+print(f"multipart_unchecked={multipart}\nunsafe_keys={unsafe}")
+print(f"runs_with_objects={with_objects}/{len(runs)}\nresult={'PASS' if ok else 'FAIL'}")
+PY
+echo "elapsed_seconds=$(( $(date +%s) - start ))"
+```
+
+`copy_rc=0`이고 `result=PASS`여야 한다. PASS는 객체가 1개 이상이고 `objects_listed`, `objects_local`, `md5_match`가 모두 같으며 `multipart_unchecked`와 `unsafe_keys`가 0이라는 뜻이다. 2026-09-25 기록은 객체 2개였으므로 다른 값이면 원인을 기록한다. `copy_rc`가 0이 아니면 listing이 비었거나 일부일 수 있으므로 python 결과와 무관하게 FAIL이다. multipart 객체는 ETag가 MD5가 아니어서 이 방식으로는 PASS가 될 수 없다. 8 MB를 넘는 artifact가 생기면 backup 복원본과의 SHA-256 비교 같은 다른 확인이 필요하다. `/` 시작, `/` 끝, `..` 포함 key는 `unsafe_keys`로 세고 FAIL이며, sync 대상은 `objects/` bind뿐이라 그런 key도 `meta/`를 덮어쓸 수 없다. `runs_with_objects`는 artifact가 있는 run 수의 관측값이며 artifact가 없는 run도 정상일 수 있다. 출력에는 key 이름, 객체 내용, 비밀값이 없다. `meta/`와 `objects/`는 scratch(0700)에만 남고 artifact 내용은 민감할 수 있는 data로 취급한다. scratch 삭제는 별도 owner 승인이다.
 
 ## Verification
 

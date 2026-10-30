@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.28"
+version: "1.4.29"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -221,6 +221,10 @@ python3 scripts/operations/mng-pg-immediate-restore-rehearsal.py \
   --heartbeat app_db.debezium_heartbeat.heartbeat \
   --dbt app_db.analytics.hyhome_dbt_connectivity \
   --count-table mlflow.public.experiments \
+  --count-table mlflow.public.runs \
+  --count-table mlflow.public.metrics \
+  --count-table mlflow.public.params \
+  --count-table mlflow.public.tags \
   --target-time '2026-10-29 22:20:00+00'
 ```
 
@@ -248,6 +252,8 @@ promoted=true
 
 `result=FAIL`이면 `reason`이 `target_before_backup_stop`, `backup_info`, `target_not_reached`, `target_evidence_unreadable`, `clone_exited` 또는 5a의 reason 중 하나이며 이후 필드는 `NOT_RUN`(또는 해당 boolean `false`)이다. 이 모드의 실행 결과는 승인과 독립 검토 전까지 증거로 쓰지 않는다.
 
+MLflow tracking 표 4개를 더한 것은 SPEC-0182 기준 7의 MLflow 격리 복원 중 DB 부분이다. 동일 snapshot에서 두 번 같았던 각 count 값은 출력하지 않고 scratch root의 `count-observations.json`(0600)에만 남는다. 이 값은 2026-10-30 원본 읽기 전용 count(experiments 2, runs 2, metrics 1, params 1, tags 8)와 비교해 기록한다. 서로 다른 시점의 비교가 성립하는 것은 MLflow에 2026-09-25 이후 쓰기가 없었기 때문이다(count 불변, SPEC-0182 TSK-0002/TSK-0003). 쓰기가 생겼다면 같다고 가정하지 않는다. artifact 부분은 [RUN-0088](../13-analytics-and-data-quality/0088-mlflow.md)의 격리 복원 증거 절차다.
+
 2026-10-30 읽기 전용 `pg_stat_archiver` 확인에서 `last_archived_wal`은 `0000000100000027000000B1`(2026-10-30 08:34:35 UTC)로 권장 target보다 한참 뒤이므로 archive는 target 너머까지 이어진다. 그 사이 WAL의 연속성은 실행 자체가 증명하며, 끊겨 있으면 recovery가 일찍 끝나 `clone_exited`로 FAIL한다. `db_list_match`는 선택한 set 당시가 아니라 원본의 **현재** DB 목록과 비교하므로 5a와 같은 한계가 있다.
 
 #### 5a. Selected-backup immediate consistency rehearsal
@@ -271,7 +277,7 @@ python3 scripts/operations/mng-pg-immediate-restore-rehearsal.py \
 
 `--heartbeat`와 `--dbt`는 `DB.SCHEMA` 또는 `DB.SCHEMA.RELATION`, `--count-table`은 반복 가능한 `DB.SCHEMA.TABLE`이다. 위 값은 2026-10-30 `mng-pg`에서 읽기 전용 catalog 조회로 확인한 실제 객체다(`app_db`의 `debezium_heartbeat.heartbeat` table과 `analytics.hyhome_dbt_connectivity` view, `mlflow`의 `public.experiments`). 실행 전에 다시 바뀌었는지 확인한다. 없는 객체는 FAIL이다. script는 `latest`, 형식이 다른 label, `/tmp`·`/var/tmp`·`/dev/shm`, 비어 있지 않거나 소유자 소유가 아닌 target, symlink 경로를 실행 전에 거부한다(exit 2). backup scheduler lock(`$BACKUP_STATE_REPO_DIR/.hyhome-backup.lock`)이 사용 중이면 exit 75다.
 
-기대 출력은 아래 고정 필드뿐이다. 행, 비밀값, 원문 log는 없다. `extension_count`와 `sequence_count`는 관측값이며 이름 목록은 scratch root의 `inventory-observations.json`(0600)에만 있고 원본과 같다고 주장하지 않는다. `elapsed_seconds`는 실행마다 다르다.
+기대 출력은 아래 고정 필드뿐이다. 행, 비밀값, 원문 log는 없다. 안정된 count 값은 scratch root의 `count-observations.json`(0600)에만 있다. `extension_count`와 `sequence_count`는 관측값이며 이름 목록은 scratch root의 `inventory-observations.json`(0600)에만 있고 원본과 같다고 주장하지 않는다. `elapsed_seconds`는 실행마다 다르다.
 
 ```text
 result=PASS

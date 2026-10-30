@@ -1,6 +1,6 @@
 ---
 title: "HOME Residual Backlog Plan"
-version: "0.4.4"
+version: "0.4.5"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -113,9 +113,11 @@ Task 0002, runtime and legacy data:
 SPEC-0182-TSK-0003, recovery and authentication acceptance:
 
 1. W7: RUN-0021 step 5 against the real pgBackRest repository; MLflow
-   (RUN-0088) on a named isolated network with no route to production
-   SeaweedFS or `mng-pg`; JupyterLab (RUN-0089) on real content. The CDC
-   restore left the scope on 2026-10-30 because CDC is retired. Step 5
+   (RUN-0088); JupyterLab (RUN-0089) on real content. The CDC
+   restore left the scope on 2026-10-30 because CDC is retired. MLflow uses
+   the step 5 clone's tracking counts plus a read-only artifact copy checked
+   by ETag (RUN-0088). JupyterLab is not applicable while it has no real
+   content. Step 5
    targets 2026-10-29 22:20:00 UTC, just after the latest backup set.
    Scratch on the data disk, root-level cleanup. Record recovery
    points, counts and elapsed times against the POL-0021 RPO and RTO.
