@@ -12,6 +12,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from tests.validation import _opsflow_native_fixture as fixture_module
 from tests.validation import _opsflow_native_ownership as ownership
 from tests.validation import test_opsflow_native_rehearsal as native_driver
 from tests.validation._opsflow_native_fixture import (
@@ -687,6 +688,40 @@ class NativeGuardTests(unittest.TestCase):
                     self.assertEqual(cid, fixture.containers["main"].cid)
                 finally:
                     fixture.directory.rmdir()
+
+    def test_cleanup_waits_for_a_late_daemon_create(self):
+        fixture = object.__new__(NativeFixture)
+        fixture.attempt = "opsflow-native-" + "b" * 24
+        fixture.client = mock.Mock()
+        fixture.containers = {}
+        fixture.pending_containers = {
+            "secret-prep": mock.Mock(name="pending", role="secret-prep")
+        }
+        found = mock.Mock()
+        with (
+            mock.patch.object(
+                fixture_module, "discover_container", side_effect=[None, None, found]
+            ),
+            mock.patch.object(fixture_module.time, "sleep"),
+            mock.patch.object(fixture, "_verify_owned", create=True),
+        ):
+            fixture._adopt_pending_container("secret-prep")
+        self.assertIs(found, fixture.containers["secret-prep"])
+        clock = iter([0.0, 30.0, 61.0])
+        fixture.containers = {}
+        fixture.pending_containers = {"secret-prep": mock.Mock()}
+        with (
+            mock.patch.object(
+                fixture_module, "discover_container", return_value=None
+            ) as discover,
+            mock.patch.object(fixture_module.time, "sleep"),
+            mock.patch.object(
+                fixture_module.time, "monotonic", side_effect=lambda: next(clock)
+            ),
+        ):
+            fixture._adopt_pending_container("secret-prep")
+        self.assertEqual({}, fixture.pending_containers)
+        self.assertEqual(2, discover.call_count)
 
     def test_raised_network_create_recovers_exact_owned_identity(self):
         fixture = object.__new__(NativeFixture)
