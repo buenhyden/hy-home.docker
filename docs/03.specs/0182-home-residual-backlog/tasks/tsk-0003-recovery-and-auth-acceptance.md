@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.8.0"
+version: "0.8.1"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -489,6 +489,19 @@ uses a reviewed `restore` action in `offsite.sh`. The action:
 
 An independent IaC review approved it with notes, which are applied. A contract test pins the action to read-only restore. The rehearsal itself is
 still NOT_RUN.
+
+### W7 5a script 2026-10-30
+
+The RUN-0021 step 5a script now exists as
+`scripts/operations/mng-pg-immediate-restore-rehearsal.py`, with a Docker-free
+safety test (`tests/validation/test_mng_pg_immediate_restore_rehearsal.py`) in
+the operation-script test set. RUN-0021 5a carries the exact owner command and the
+fixed expected output. The independent stateful recovery review of the script is
+pending and the owner has not run it. The run is NOT_RUN, so criterion 7 stays
+`pending`. Three inputs need an owner answer before the run: the heartbeat and
+dbt objects to require in `mng-pg`, the named management tables to count, and the
+approved data-disk scratch path. Step 5 time-target PITR still needs its own
+recovery time and approval.
 
 ## Evidence
 
