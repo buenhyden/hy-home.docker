@@ -4,7 +4,7 @@ version: "0.1.24"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-10-30"
 layer: "specs"
 artifact_id: "SPEC-0244-TSK-0001"
 parent_ids:
@@ -412,6 +412,26 @@ Sandbox remains disabled; same-UID/current-primary-group TOCTOU and ordinary
 provider authentication/telemetry are residual. Attempts 01–05 remain
 preserved. Attempt 06 has not run; root may release this exact plan once.
 
+### Native PostToolUse Attempt 06 Result
+
+Attempt 06 ran, but this Task did not record it. On 2026-10-30 the sanitized
+receipt `/tmp/hyhome-r13-native-hook-probe-receipt-06.json` was read. The
+receipt is dated 2026-10-16 10:20:59 KST, and its SHA-256 is
+`1086eaa64f84bb83676e3f19efbe499e46935539b552bcfa787e3b4eda32be30`. It classifies
+the run `HOOK_DELIVERY_PROBE_FAILED_CLOSED`: timed out at the 180-second cap,
+exit 1, no final token, no stderr and no guard decision. Both Native and
+Dispatcher counted one `UserPromptSubmit` and one `SessionEnd`. `SessionStart`,
+`PreToolUse` and `PostToolUse` counted zero, and one `UNKNOWN` event token
+appeared. Every preflight check passed, including the nine-check ECC chain,
+and cleanup passed. So the session reached the prompt but never called Write.
+`SessionStart` had counted one in earlier attempts and counted zero here. One
+hypothesis is that the `UNKNOWN` event is a refused `SessionStart` that
+stalls the session, but the receipt cannot show which event it was. Criterion
+4 stays pending. Attempt 07 needs an owner decision: (a) make the harness
+record the `UNKNOWN` event class and per-phase timings, then rerun after a
+fresh security review; (b) stop W4 and leave criterion 4 pending; or (c) rerun
+06 unchanged.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -454,6 +474,7 @@ preserved. Attempt 06 has not run; root may release this exact plan once.
 | Native PostToolUse attempt 05 plan review | 4 | W4 | Independent security review of one ECC-disabled, normal-memory-off named-project wrapper diagnostic | Plan `139634cb63898f23d82dfa4a0d0892313655d13f102eb6741fd249eb486dba4f`; harness `ce345a4ed7b1091f0607560f427623dfc452a5a32b9d7fee3e480692261d7e9e`; session-only `ECC_HOOKS_ENABLED=false`; double-slash Write guard; max two turns/USD 1/180 seconds; strict no-MCP; no ECC delivery claim | PASS | Native PostToolUse Attempt 05 Plan | required | - |
 | Native PostToolUse attempt 05 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt `7662bae15c4b64b47c862f4632edfc65b6a4d7cfa460a565273e7c84fbc78e5d`; failed closed before provider launch because ECC root mode 0775 made `ecc_root_guard=false`; null exit code; zero stdout/stderr/tool/events; guard tests 12/12; cleanup PASS; status equal; no retry | FAIL | Native PostToolUse Attempt 05 Result | required | - |
 | Native PostToolUse attempt 06 plan review | 4 | W4 | Independent security review of one preflight-corrected ECC-disabled, normal-memory-off named-project wrapper diagnostic | Plan `b63759b956db133f0c7f2a1ec6c430befb9dd4623df3c2dd14ac767f57803990`; harness `e33dbd56a113285318ab5c9d7ef6ed90a921966a6e1ad93c9e553912ceac3d34`; public root mode/private group/current UID/full nine chain/no ACL/no writer checks; offline host 9/9 and guard tests 12/12; Write-only/max two turns/USD 1/180 seconds/no MCP unchanged | PASS | Native PostToolUse Attempt 06 Plan | required | - |
+| Native PostToolUse attempt 06 | 4 | W4 | One released ECC-disabled, normal-memory-off named-project wrapper diagnostic | Receipt SHA-256 `1086eaa6…`, 2026-10-16 | FAIL | Native PostToolUse Attempt 06 Result; timed out, `SessionStart` 0, `PostToolUse` 0, one `UNKNOWN` event | required | - |
 
 ## Criterion Acceptance
 
