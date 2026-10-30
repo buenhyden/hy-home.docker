@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.8.1"
+version: "0.8.2"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -601,6 +601,26 @@ step 5 time-target PITR, which needs a recovery time inside the archived WAL
 range and its own approval, and on the remaining isolated restores the
 criterion names. The scratch is kept for the owner's 7-day review. Its
 `pg_hba.conf` carries the probe line.
+
+### Owner decisions for criterion 7 scope 2026-10-30
+
+- Scratch cleanup: the owner chose to remove both 5a scratches now rather
+  than wait for the 7-day review. The owner ran
+  `sudo rm -rf ~/storage/backups/mng-pg-5a-*` and the follow-up check printed
+  `removed`. Both scratches were owner-owned clones with no other use.
+- Step 5 PITR target: the recovery time is based on the latest backup point.
+  The set is `20261024-184214F_20261029-221825D`, which stopped at 2026-10-29
+  22:18:29 UTC at WAL `000000010000002700000036`, and the archive reaches
+  `00000001000000270000006A`. The target is 2026-10-29 22:20:00 UTC, about
+  90 seconds after the backup stop, so that recovery replays archived WAL
+  past the backup instead of stopping at its consistency point.
+- Remaining isolated restores: criterion 7 covers MLflow and JupyterLab with
+  real content. The CDC restore is removed because CDC is retired
+  (Task 0002, 2026-09-29). SPEC-0182 criterion 7 is amended to match.
+
+The step 5 run needs a time-target mode for the reviewed 5a script, an
+independent stateful recovery review and separate owner approval. Until then
+it stays NOT_RUN.
 
 ## Evidence
 
