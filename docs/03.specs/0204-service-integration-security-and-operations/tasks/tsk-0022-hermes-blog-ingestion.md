@@ -355,6 +355,48 @@ The replacement branch integrates `6a` without rewriting the existing history;
 its draft PR is not yet published. PR #684's malformed merge CI remains FAIL,
 and hosted acceptance, n8n Native and criterion completion are not established.
 
+### Publisher delivery CLI review — removed attempt
+
+A proposed explicit single-record Publisher `deliver` CLI and synthetic test
+were reviewed with a fake authorization value and mocked HTTP responses. They
+exercised durable receipt handling, absent authorization, mismatched
+`generated_at`, and an ambiguous response followed by a second invocation.
+The attempt was removed after independent security review: it did not prove
+the user-required actual article collection-time provenance or a reviewed
+binding from the requested relay endpoint to the intended Gateway destination.
+It is not implemented source, SOURCE/SYNTHETIC acceptance, or an operational
+command.
+
+A later delivery interface needs value-safe authorization input, a reviewed
+transport topology, error redaction, immutable Outbox binding, and no POST replay from `uncertain` before explicit idempotent
+replay authorization and relay/Gateway binding evidence. It must not introduce
+automatic delivery service, workflow activation, Cron modification, Compose
+recreation, or external ingress as part of its source scope.
+
+The earlier timestamp evidence remains unchanged: run database and report times
+establish scheduling/execution timing, while linked tool messages establish
+only post-tool, sometimes batch-shared timestamps. They do not establish each
+article's actual `collected_at`. Native worker-to-relay, relay-to-Gateway,
+TLS/authentication, durable receipt, outage/recovery and existing email/workflow
+regression remain NOT_RUN.
+
+### n8n Native admission follow-up — blocked import
+
+The operational n8n 2.43.6 package's `safeParseWorkflowStructure` accepted the
+tracked workflow bytes with `success: true`. This is a parser-only source check:
+it does not import, activate, execute, enqueue, or call the Gateway. On two
+isolated exact-image containers, `n8n import:workflow --help` produced no
+output within 45 seconds, so no import command was run. Both new temporary
+containers were stopped and removed normally; the earlier dead temporary
+container is no longer present. The existing n8n main, worker and two task
+runners remained healthy by their observed health signals.
+
+Native workflow import therefore remains BLOCKED. Queue execution, credential
+binding, relay/Gateway networking, TLS/authentication, durable persistence,
+alerts, outage/recovery and email/workflow regression remain NOT_RUN. This
+bounded observation authorizes none of activation, Compose recreation, port or
+network changes.
+
 ### State, failures and later MCP
 
 Outbox stores immutable original bytes and SHA-256 digests under
