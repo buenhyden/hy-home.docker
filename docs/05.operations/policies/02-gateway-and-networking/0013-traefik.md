@@ -90,9 +90,9 @@ GO-2026-6605·6610·6613은 UNPROVEN이다. 만료는 이 결함들을 고친 Go
 수용 범위가 아니라 열린 증거다. 다른 image로 고정을 바꾸면 이 수용은 이어지지 않는다.
 
 **Superseded — 2026-10-30.** 위 수용은 고친 upstream 릴리스가 나온 뒤 7일이 지난
-2026-10-22에 만료되었다. owner는 2026-10-30에 Compose 고정을 index `1336e85a`의 v3.7.16
-(go1.26.10, x/net v0.60.0, 2026-10-20 공개)으로 바꾸기로 결정했으므로 이 수용은 채택한 고정
-image로 대체된다. 위 기록은 이력으로 보존하며 새 image에는 이어지지 않는다. 새 image의 pull,
+2026-10-22에 만료되었다. owner는 2026-10-30에 Compose 고정을 고친 Go와 x/net으로 빌드된
+upstream 릴리스(index `1336e85a`)로 바꾸기로 결정했으므로 이 수용은 채택한 고정 image로
+대체된다. 정확한 tag와 빌드 정보는 SPEC-0204-TSK-0021과 Compose 고정이 소유한다. 위 기록은 이력으로 보존하며 새 image에는 이어지지 않는다. 새 image의 pull,
 offline scan, 독립 applicability 검토, config 부팅, HOME 재생성과 rollback은 아직 `NOT_RUN`이고
 SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 

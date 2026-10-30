@@ -150,10 +150,10 @@ GO-2026-6608과 GO-2026-6609는 Traefik 인증 뒤에, 그리고 Docker network 
 날이다. WAN 노출이나 공개 exploit이 생기면 수용을 앞당겨 철회한다. publisher 서명 확인은 아직
 하지 않았으며 수용 범위가 아니라 열린 증거다. 다른 image로 고정을 바꾸면 이 수용은 이어지지 않는다.
 
-**Superseded — 2026-10-30.** 위 수용은 고친 upstream 릴리스(Prometheus v3.15.1, go1.27.3,
-x/net v0.60.0, 2026-10-21 공개) 뒤 7일이 지난 2026-10-28에 만료되었다. owner는 2026-10-30에
-Compose 고정을 index `fa330227`의 v3.15.1로 바꾸기로 결정했으므로 이 수용은 채택한 고정
-image로 대체된다. 위 기록은 이력으로 보존하며 새 image에는 이어지지 않는다. 새 image의 pull,
+**Superseded — 2026-10-30.** 위 수용은 고친 Go와 x/net으로 빌드된 upstream 릴리스가 나온
+뒤 7일이 지난 2026-10-28에 만료되었다. owner는 2026-10-30에 Compose 고정을 그 릴리스(index
+`fa330227`)로 바꾸기로 결정했으므로 이 수용은 채택한 고정 image로 대체된다. 정확한 tag와
+빌드 정보는 SPEC-0204-TSK-0021과 Compose 고정이 소유한다. 위 기록은 이력으로 보존하며 새 image에는 이어지지 않는다. 새 image의 pull,
 offline scan, 독립 applicability 검토, `promtool` 검사, HOME 재생성과 rollback은 아직 `NOT_RUN`이고
 SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 
