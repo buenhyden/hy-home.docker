@@ -432,6 +432,45 @@ record the `UNKNOWN` event class and per-phase timings, then rerun after a
 fresh security review; (b) stop W4 and leave criterion 4 pending; or (c) rerun
 06 unchanged.
 
+### Native PostToolUse Attempt 07 Plan
+
+On 2026-10-30 the owner chose option (a): record the `UNKNOWN` event's class and
+per-phase timing, then rerun after a fresh security review. The candidate
+harness is
+`/tmp/claude-1000/-home-hyunyoun-data-hy-home-docker/abdf464e-1ee1-47b0-a9b5-818d08efdd35/scratchpad/hyhome-r13-run-native-hook-probe-07.py`,
+SHA-256 `a74f4984e8f8d89198e6e3148507051f01a817d4b4984573a501ab4b6204c81d`. Its
+changes from 06:
+
+- the -07 runtime, fixture and receipt paths;
+- the Claude binary pinned at 2.1.312
+  (`4f4178ce41d83e23341ebfbaecdbcf8ea6bf7baea0690025abe49eeec3a5d01d`), because
+  2.1.301 is no longer installed;
+- a shim line with the event name, argument count, a closed class (`known`,
+  `native-argc`, `dash-c`, `empty`, `abs-other` or `rel-other`) and a
+  millisecond clock, and never an argument value;
+- receipt fields `unknown_event_details` (counts per argc and class) and
+  `event_first_offset_ms` (earliest offset from launch per event).
+
+The shim still refuses a `bash -c` call as `UNKNOWN`, so a refused user-level
+hook would show as `dash-c`. An independent security review found no leak and
+returned READY_WITH_NOTES. Its notes were applied: field-length bounds, counts
+instead of a set, and the earliest offset. The re-review returned READY.
+
+The owner must re-establish these before the single release:
+
+- recreate `/tmp/hyhome-r13-governance` as a clean checkout of a named commit;
+- re-hash the ten frozen tracked files, the ten ECC files and the binary in
+  that checkout;
+- re-confirm the ECC root identity `(64512, 4478294, 0775, 1000, 1000)` and the
+  nine-component chain;
+- confirm the -07 paths do not exist;
+- hash the harness against the value above;
+- record a security GO that names 2.1.312.
+
+On 2026-10-30 the tracked hook files on `main` matched the frozen hashes for
+`.claude/settings.json`, `session-start.sh` and `agent-event-hook.sh`, and the
+ECC root identity was unchanged. Attempt 07 has not run.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
