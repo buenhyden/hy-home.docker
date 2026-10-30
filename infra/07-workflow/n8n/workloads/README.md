@@ -22,6 +22,8 @@ Airflow의 P04가 소유하며, 실제 import·예약·자격 증명 작업은 T
 
 - [매니페스트 outbox 통지](manifest-outbox-notifier/README.md): 결정적 생성기,
   제한된 SMTP node와 합성 시험입니다.
+- [Hermes 수집 전송](hermes-blog-ingestion/README.md): 로컬 영속 대기함과
+  계약 미확정 상태의 비활성 차단 흐름입니다.
 
 ## Usage
 
