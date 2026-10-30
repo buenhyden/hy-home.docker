@@ -89,6 +89,20 @@ class SyntheticAdapter:
 
 
 class DeliveryTests(unittest.TestCase):
+    def test_request_repr_redacts_body_but_preserves_identity(self):
+        from publisher.delivery import BoundRequest, DispatchRequest
+
+        marker = b"private request body marker"
+        bound = BoundRequest("revision", "destination", marker)
+        dispatch = DispatchRequest(
+            KEY, "a" * 64, "b" * 64, "revision", "destination", marker
+        )
+        for request in (bound, dispatch):
+            with self.subTest(kind=type(request).__name__):
+                self.assertNotIn(marker.decode(), repr(request))
+                self.assertIn("destination", repr(request))
+                self.assertEqual(request.body, marker)
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(prefix="hermes-delivery-", dir="/tmp")
         self.addCleanup(self.tmp.cleanup)
@@ -125,6 +139,37 @@ class DeliveryTests(unittest.TestCase):
         self.assertEqual(self.gateway.operations, ["send"])
         self.assertEqual(self.box.get(KEY)["source"], SOURCE)
         self.assertIs(self.box.get(KEY)["receipt"]["persisted"], True)
+
+    def test_gateway_report_id_is_retained_across_restart(self):
+        from publisher.delivery import Receipt
+
+        report_id = "12345678-1234-1234-1234-123456789abc"
+        self.adapter.bad_receipt = Receipt(
+            KEY,
+            hashlib.sha256(SOURCE).hexdigest(),
+            hashlib.sha256(BODY).hexdigest(),
+            True,
+            gateway_report_id=report_id,
+        )
+        self.assertEqual(self.process(), "delivered")
+        self.box.close()
+        self.box = Outbox(self.path)
+        self.assertEqual(self.box.get(KEY)["receipt"]["gateway_report_id"], report_id)
+        self.assertEqual(self.process(now=200), "delivered")
+        self.assertEqual(self.gateway.operations, ["send"])
+
+    def test_invalid_gateway_report_id_never_marks_delivered(self):
+        from publisher.delivery import Receipt
+
+        self.adapter.bad_receipt = Receipt(
+            KEY,
+            hashlib.sha256(SOURCE).hexdigest(),
+            hashlib.sha256(BODY).hexdigest(),
+            True,
+            gateway_report_id="invalid-secret-value",
+        )
+        self.assertEqual(self.process(), "uncertain")
+        self.assertIsNone(self.box.get(KEY)["receipt"])
 
     def test_lost_response_reconciles_without_duplicate_effect(self):
         self.uncertain()

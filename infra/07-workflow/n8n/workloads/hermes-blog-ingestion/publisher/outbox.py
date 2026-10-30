@@ -32,6 +32,11 @@ def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def valid_gateway_report_id(value):
+    """Accept only the published Gateway receipt identifier format."""
+    return isinstance(value, str) and re.fullmatch(r"[a-f0-9-]{36}", value) is not None
+
+
 def _snapshot_digest(snapshot):
     digest = hashlib.sha256()
     values = (
@@ -347,6 +352,10 @@ class Outbox:
                     body_sha256=row["body_sha256"],
                     persisted=True,
                 )
+                if isinstance(receipt, dict) and "gateway_report_id" in receipt:
+                    if not valid_gateway_report_id(receipt["gateway_report_id"]):
+                        raise OutboxError("invalid_receipt")
+                    required["gateway_report_id"] = receipt["gateway_report_id"]
                 if (
                     not isinstance(receipt, dict)
                     or receipt != required

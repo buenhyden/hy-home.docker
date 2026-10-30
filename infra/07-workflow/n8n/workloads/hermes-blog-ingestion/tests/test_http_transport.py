@@ -57,9 +57,41 @@ class HttpTransportTests(unittest.TestCase):
             {"endpoint": "https://user:pass@example.com/"},
             {"endpoint": "https://example.com/?token=x"},
             {"endpoint": "https://example.com/#frag"},
+            {"content_type": "text/plain"},
+            {"content_type": "application/json\r\nX-Injected: yes"},
         ):
             with self.subTest(options=options), self.assertRaises(ValueError):
                 self.transport(**options)
+
+    def test_json_content_type_is_sent_without_overriding_authentication(self):
+        from publisher.http_transport import _CHILD
+
+        prefix = """
+import http.client
+class Response:
+    status = 200
+    length = None
+    def read(self, n): return b'ok'
+    def getheader(self, name): return None
+class Connection:
+    def __init__(self, *args, **kwargs): pass
+    def connect(self): pass
+    def request(self, method, path, body, headers):
+        assert headers == {'X-Test-Auth': 'fake-token', 'Content-Type': 'application/json'}
+    def getresponse(self): return Response()
+    def close(self): pass
+http.client.HTTPSConnection = Connection
+"""
+        with patch("publisher.http_transport._CHILD", prefix + _CHILD):
+            response = self.transport(content_type="application/json").send(REQUEST)
+        self.assertEqual((response.status, response.body), (200, b"ok"))
+
+    def test_authentication_cannot_override_content_type(self):
+        with self.assertRaises(TransportFailure) as error:
+            self.transport(
+                auth=("content-type", "fake-token"), content_type="application/json"
+            )
+        self.assertEqual(error.exception.kind, FailureKind.AUTH)
 
     def test_total_deadline_terminates_slow_process(self):
         with patch("publisher.http_transport._CHILD", "import time; time.sleep(5)"):

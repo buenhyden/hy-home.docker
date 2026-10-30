@@ -35,7 +35,10 @@ try:
         except Exception:
             print('{"error":"not_sent"}')
             sys.exit(0)
-        c.request('POST', p['path'], body=base64.b64decode(p['body'], validate=True), headers={p['name']: p['value']})
+        headers = {p['name']: p['value']}
+        if p['content_type'] is not None:
+            headers['Content-Type'] = p['content_type']
+        c.request('POST', p['path'], body=base64.b64decode(p['body'], validate=True), headers=headers)
         r = c.getresponse()
         if r.length is not None and r.length > p['max_bytes']:
             raise ValueError()
@@ -102,7 +105,13 @@ def _auth(pair):
             not isinstance(name, str)
             or not _NAME.fullmatch(name)
             or name.lower()
-            in ("host", "content-length", "transfer-encoding", "connection")
+            in (
+                "host",
+                "content-length",
+                "transfer-encoding",
+                "connection",
+                "content-type",
+            )
             or not isinstance(value, str)
             or not value
             or len(value) > 4096
@@ -127,6 +136,7 @@ class HttpTransport:
     _auth_header: tuple
     _timeout: float
     _max_bytes: int
+    _content_type: str | None
 
     def __init__(
         self,
@@ -136,6 +146,7 @@ class HttpTransport:
         auth,
         timeout=10,
         max_bytes=_LIMIT,
+        content_type=None,
         allow_loopback_http=False,
     ):
         parsed = _parse_endpoint(endpoint, allow_loopback_http)
@@ -147,6 +158,7 @@ class HttpTransport:
             or not 0 < timeout <= 60
             or type(max_bytes) is not int
             or not 1 <= max_bytes <= _LIMIT
+            or content_type not in (None, "application/json")
         ):
             raise ValueError("invalid_configuration")
         object.__setattr__(self, "_endpoint", parsed)
@@ -154,6 +166,7 @@ class HttpTransport:
         object.__setattr__(self, "_auth_header", _auth(auth))
         object.__setattr__(self, "_timeout", timeout)
         object.__setattr__(self, "_max_bytes", max_bytes)
+        object.__setattr__(self, "_content_type", content_type)
 
     def send(self, request):
         if (
@@ -175,6 +188,7 @@ class HttpTransport:
                 "body": base64.b64encode(request.body).decode("ascii"),
                 "timeout": self._timeout,
                 "max_bytes": self._max_bytes,
+                "content_type": self._content_type,
             }
         ).encode("ascii")
         try:

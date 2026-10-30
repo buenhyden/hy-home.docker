@@ -315,6 +315,39 @@ class OutboxTests(unittest.TestCase):
         self.assertTrue(box.transition(key, "sending", "delivered", receipt=receipt))
         self.assertEqual(box.get(key)["receipt"], receipt)
 
+    def test_valid_gateway_report_id_is_durable_and_invalid_ids_are_rejected(self):
+        from publisher.outbox import OutboxError
+
+        box = self.box()
+        box.stage(self.snapshot())
+        key = (JOB, RUN)
+        box.bind_request(key, "synthetic-v1", b"{}")
+        box.transition(key, "awaiting_contract", "pending")
+        box.transition(key, "pending", "sending")
+        row = box.get(key)
+        receipt = dict(
+            job_id=JOB,
+            run_id=RUN,
+            source_sha256=row["source_sha256"],
+            body_sha256=row["body_sha256"],
+            persisted=True,
+        )
+        for bad in (None, "", "x" * 36, "a" * 35, "a" * 37, "A" * 36, 123):
+            with self.subTest(bad=bad), self.assertRaises(OutboxError):
+                box.transition(
+                    key,
+                    "sending",
+                    "delivered",
+                    receipt=dict(receipt, gateway_report_id=bad),
+                )
+        report_id = "12345678-1234-1234-1234-123456789abc"
+        receipt["gateway_report_id"] = report_id
+        self.assertTrue(box.transition(key, "sending", "delivered", receipt=receipt))
+        box.close()
+        box = self.box()
+        self.assertEqual(box.get(key)["receipt"], receipt)
+        self.assertFalse(box.transition(key, "sending", "delivered", receipt=receipt))
+
 
 if __name__ == "__main__":
     unittest.main()

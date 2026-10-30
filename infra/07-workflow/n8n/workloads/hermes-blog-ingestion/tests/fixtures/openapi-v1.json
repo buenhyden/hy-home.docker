@@ -1,0 +1,699 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Blog-data Headless Ingestion",
+    "version": "1.0.0",
+    "description": "Blog-data owns this contract. No Obsidian, project MCP, Git or PR data transport."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8787",
+      "description": "Local default; deploy only behind approved TLS/network ACL"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Producer-bound credentials. ingest/read and capture/read credentials are separate; raw tokens are never in configuration."
+      }
+    }
+  },
+  "paths": {
+    "/v1/ingestions": {
+      "post": {
+        "operationId": "createIngestion",
+        "description": "Durably commit source and multiple Items. 201 new, 200 identical replay, 409 crossed identity or changed content. Needs ingest scope.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Existing durable receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/receipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Committed new report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/receipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "415; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "422; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "503; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./ingestion-v1.schema.json"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ingestions/{id}": {
+      "get": {
+        "operationId": "getIngestion",
+        "description": "Reception remains received even when capture fails; vault_status is independent. Producer isolation returns 404.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reception and per-candidate state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/report"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "415; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "422; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "503; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9-]{36}$"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/candidates": {
+      "get": {
+        "operationId": "listCandidates",
+        "description": "UTC collected date; kind/status filters; stable increasing row cursor; default 50/max 100. Quarantined bodies are restricted. No raw source endpoint.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Candidate page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/candidates"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "415; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "422; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "503; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": ["news", "devops", "business_idea", "infrastructure"]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": ["pending", "quarantined", "prepared", "captured", "failed", "conflict"]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ]
+      }
+    },
+    "/v1/candidates/{id}/capture": {
+      "post": {
+        "operationId": "captureCandidate",
+        "description": "Requires capture credential AND operator-managed exact candidate/hash allowlist; always rechecks approval on retry. Request cannot provide a path. 201 completed install, 200 previously completed; later user edits/deletion never cause regeneration.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historical completed capture",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/capture"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "New or recovered capture completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/capture"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "415; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "422; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "503; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9-]{36}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./responses-v1.schema.json#/definitions/captureRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/summary": {
+      "get": {
+        "operationId": "getSummary",
+        "description": "Metadata only: last 90 report dates, candidate kind/state totals, duplicate/conflict counts and oldest unreviewed timestamp. Complements existing Obsidian boards.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producer summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/summary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "415; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "422; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "503; stable error code, no source body or internal details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./responses-v1.schema.json#/definitions/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

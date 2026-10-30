@@ -8,12 +8,12 @@ import hashlib
 import math
 import time
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from types import MappingProxyType
 from typing import Protocol
 
-from .outbox import Outbox, OutboxError
+from .outbox import Outbox, OutboxError, valid_gateway_report_id
 
 Key = tuple[str, str]
 
@@ -22,7 +22,7 @@ Key = tuple[str, str]
 class BoundRequest:
     contract_revision: str
     destination: str
-    body: bytes
+    body: bytes = field(repr=False)
 
 
 @dataclass(frozen=True)
@@ -32,7 +32,7 @@ class DispatchRequest:
     body_sha256: str
     contract_revision: str
     destination: str
-    body: bytes
+    body: bytes = field(repr=False)
 
 
 @dataclass(frozen=True)
@@ -41,6 +41,7 @@ class Receipt:
     source_sha256: str
     body_sha256: str
     persisted: bool
+    gateway_report_id: str | None = None
 
 
 class OutcomeKind(Enum):
@@ -149,6 +150,10 @@ def _durable(receipt, request):
         and receipt.key == request.key
         and receipt.source_sha256 == request.source_sha256
         and receipt.body_sha256 == request.body_sha256
+        and (
+            receipt.gateway_report_id is None
+            or valid_gateway_report_id(receipt.gateway_report_id)
+        )
     )
 
 
@@ -167,6 +172,8 @@ def _interpret(box, key, status, response, request, adapter, attempts, max_attem
             "body_sha256": request.body_sha256,
             "persisted": True,
         }
+        if outcome.receipt.gateway_report_id is not None:
+            receipt["gateway_report_id"] = outcome.receipt.gateway_report_id
         return _move(
             box,
             key,

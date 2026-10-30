@@ -1,6 +1,7 @@
-"""Static security invariants for the inactive, contract-blocked n8n stub."""
+"""Contract relay safeguards, tested without importing a live workflow."""
 
 import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -8,85 +9,282 @@ WORKFLOW = Path(__file__).resolve().parents[1] / "workflow.json"
 
 
 class WorkflowSourceTests(unittest.TestCase):
-    def load_workflow(self):
-        self.assertTrue(WORKFLOW.is_file(), "inactive workflow source is missing")
-        return json.loads(WORKFLOW.read_text(encoding="utf-8"))
+    @classmethod
+    def setUpClass(cls):
+        cls.workflow = json.loads(WORKFLOW.read_text(encoding="utf-8"))
+        cls.nodes = {node["name"]: node for node in cls.workflow["nodes"]}
 
-    def test_source_is_explicitly_inactive_and_contract_blocked(self):
-        workflow = self.load_workflow()
-        self.assertIs(workflow["active"], False)
-        self.assertIn("BLOCKED_GATEWAY_CONTRACT", workflow["name"])
+    def get_node(self, name):
+        self.assertIn(name, self.nodes)
+        return self.nodes[name]
 
-    def test_ingress_requires_header_auth_without_an_immediate_ack(self):
-        workflow = self.load_workflow()
-        webhook = next(
-            node
-            for node in workflow["nodes"]
-            if node["type"] == "n8n-nodes-base.webhook"
+    def run_code(self, name, item):
+        script = self.get_node(name)["parameters"]["jsCode"]
+        program = (
+            "const item = JSON.parse(process.argv[1]);\n"
+            "const $input = {first: () => ({json: item})};\n"
+            "const $ = () => ({first: () => ({json: {body: {items: [{}, {}]}}})});\n"
+            "try { const fn = new Function('$input', '$', process.argv[2]); "
+            "process.stdout.write(JSON.stringify(fn($input, $))); } "
+            "catch (e) { process.stderr.write(e.message); process.exit(1); }"
         )
-        self.assertEqual(webhook["parameters"]["authentication"], "headerAuth")
-        self.assertEqual(webhook["parameters"]["responseMode"], "responseNode")
-        self.assertEqual(webhook["parameters"]["httpMethod"], "POST")
+        return subprocess.run(
+            ["node", "-e", program, json.dumps(item), script],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
 
-    def test_every_ingress_path_ends_with_static_contract_error(self):
-        workflow = self.load_workflow()
-        nodes = {node["name"]: node for node in workflow["nodes"]}
-        self.assertEqual(len(nodes), 2)
-        self.assertEqual(
-            {node["type"] for node in nodes.values()},
-            {"n8n-nodes-base.webhook", "n8n-nodes-base.stopAndError"},
-        )
-        webhook = next(
-            node for node in nodes.values() if node["type"] == "n8n-nodes-base.webhook"
-        )
-        connections = workflow["connections"]
-        self.assertEqual(set(connections), {webhook["name"]})
-        outputs = connections[webhook["name"]]
-        self.assertEqual(set(outputs), {"main"})
-        self.assertEqual(len(outputs["main"]), 1)
-        self.assertEqual(len(outputs["main"][0]), 1)
-        edge = outputs["main"][0][0]
-        self.assertEqual((edge["type"], edge["index"]), ("main", 0))
-        stop = nodes[edge["node"]]
-        self.assertEqual(stop["type"], "n8n-nodes-base.stopAndError")
-        self.assertEqual(stop["parameters"]["errorType"], "errorMessage")
-        self.assertEqual(
-            stop["parameters"]["errorMessage"], "GATEWAY_CONTRACT_NOT_BOUND"
-        )
-        for node in nodes.values():
-            self.assertFalse(node.get("disabled", False))
-            self.assertFalse(node.get("continueOnFail", False))
-            self.assertIn(node.get("onError", "stopWorkflow"), ("stopWorkflow",))
-
-    def test_execution_payload_persistence_is_disabled_and_bounded(self):
-        settings = self.load_workflow()["settings"]
-        self.assertIs(settings["saveExecutionProgress"], False)
-        self.assertIs(settings["saveManualExecutions"], False)
+    def test_workflow_is_inactive_authenticated_and_has_no_credentials(self):
+        self.assertFalse(self.workflow["active"])
+        webhook = self.get_node("Authenticated Ingress")["parameters"]
+        self.assertEqual(webhook["authentication"], "headerAuth")
+        self.assertEqual(webhook["responseMode"], "responseNode")
+        self.assertNotIn("credentials", json.dumps(self.workflow))
+        settings = self.workflow["settings"]
         self.assertEqual(settings["saveDataErrorExecution"], "none")
         self.assertEqual(settings["saveDataSuccessExecution"], "none")
-        self.assertIsInstance(settings["executionTimeout"], int)
-        self.assertGreater(settings["executionTimeout"], 0)
-        self.assertLessEqual(settings["executionTimeout"], 30)
-        self.assertNotIn("errorWorkflow", settings)
 
-    def test_source_contains_no_credentials_payloads_or_expressions(self):
-        forbidden = {"credentials", "pinData", "staticData", "credentialId", "url"}
+    def test_relay_configuration_is_fixed_and_preserves_http_status(self):
+        request = self.get_node("Send to Gateway")["parameters"]
+        self.assertEqual(request["url"], "https://gateway.invalid/v1/ingestions")
+        self.assertEqual(request["authentication"], "genericCredentialType")
+        self.assertEqual(request["genericAuthType"], "httpHeaderAuth")
+        self.assertEqual(
+            request["options"]["redirect"]["redirect"]["followRedirects"], False
+        )
+        self.assertEqual(
+            request["options"]["response"]["response"]["fullResponse"], True
+        )
+        self.assertEqual(request["options"]["response"]["response"]["neverError"], True)
+        self.assertGreater(request["options"]["timeout"], 0)
+        self.assertEqual(
+            self.get_node("Return Gateway Response")["type"],
+            "n8n-nodes-base.respondToWebhook",
+        )
 
-        def inspect(value):
-            if isinstance(value, dict):
-                self.assertFalse(forbidden.intersection(value))
-                for child in value.values():
-                    inspect(child)
-            elif isinstance(value, list):
-                for child in value:
-                    inspect(child)
-            elif isinstance(value, str):
-                self.assertFalse(value.startswith("="))
-                self.assertNotIn("{{", value)
-                self.assertNotIn("http://", value)
-                self.assertNotIn("https://", value)
+    def test_invalid_ingress_has_dedicated_fixed_400_response(self):
+        decision = self.get_node("Input Accepted")
+        self.assertEqual(decision["type"], "n8n-nodes-base.if")
+        conditions = decision["parameters"]["conditions"]
+        self.assertEqual(conditions["combinator"], "and")
+        self.assertEqual(len(conditions["conditions"]), 1)
+        condition = conditions["conditions"][0]
+        self.assertEqual(condition["leftValue"], "={{ $json.valid === true }}")
+        self.assertEqual(
+            condition["operator"],
+            {"operation": "true", "singleValue": True, "type": "boolean"},
+        )
+        self.assertEqual(conditions["options"]["typeValidation"], "strict")
+        edges = self.workflow["connections"]["Input Accepted"]["main"]
+        self.assertEqual(edges[0][0]["node"], "Send to Gateway")
+        self.assertEqual(edges[1][0]["node"], "Return Invalid Input")
+        response = self.get_node("Return Invalid Input")["parameters"]
+        self.assertEqual(response["options"]["responseCode"], 400)
+        self.assertEqual(
+            json.loads(response["responseBody"]), {"error": "INVALID_REQUEST"}
+        )
 
-        inspect(self.load_workflow())
+    def test_valid_receipt_relay_and_status_identity(self):
+        receipt = {
+            "id": "12345678-1234-1234-1234-123456789abc",
+            "persisted": True,
+            "duplicate": False,
+            "status": "received",
+            "candidate_count": 2,
+            "status_url": "/v1/ingestions/12345678-1234-1234-1234-123456789abc",
+        }
+        result = self.run_code(
+            "Validate Gateway Response",
+            {
+                "statusCode": 201,
+                "body": receipt,
+                "headers": {"content-type": "application/json; charset=utf-8"},
+            },
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout)[0]["json"],
+            {"statusCode": 201, "body": receipt},
+        )
+        receipt["duplicate"] = True
+        self.assertEqual(
+            self.run_code(
+                "Validate Gateway Response",
+                {
+                    "statusCode": 200,
+                    "body": receipt,
+                    "headers": {"content-type": "application/json; charset=utf-8"},
+                },
+            ).returncode,
+            0,
+        )
+        self.assertNotEqual(
+            self.run_code(
+                "Validate Gateway Response",
+                {
+                    "statusCode": 201,
+                    "body": receipt,
+                    "headers": {"content-type": "application/json; charset=utf-8"},
+                },
+            ).returncode,
+            0,
+        )
+        receipt["persisted"] = False
+        self.assertNotEqual(
+            self.run_code(
+                "Validate Gateway Response",
+                {
+                    "statusCode": 200,
+                    "body": receipt,
+                    "headers": {"content-type": "application/json; charset=utf-8"},
+                },
+            ).returncode,
+            0,
+        )
+
+    def test_error_response_is_preserved_but_never_echoes_arbitrary_content(self):
+        good = {"statusCode": 409, "body": {"error": "IDEMPOTENCY_CONFLICT"}}
+        result = self.run_code("Validate Gateway Response", good)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)[0]["json"], good)
+        bad = {"statusCode": 409, "body": {"error": "bad", "source_text": "secret"}}
+        result = self.run_code("Validate Gateway Response", bad)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn("secret", result.stderr)
+
+    def test_fixture_passes_screen_without_content_transformation(self):
+        fixture = json.loads(
+            (WORKFLOW.parent / "tests/fixtures/synthetic-report.json").read_text()
+        )
+        result = self.run_code("Screen Ingestion", {"body": fixture})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout)[0]["json"], {"valid": True, "body": fixture}
+        )
+        fixture["unexpected"] = "sensitive"
+        result = self.run_code("Screen Ingestion", {"body": fixture})
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(json.loads(result.stdout), [{"json": {"valid": False}}])
+        self.assertNotIn("sensitive", result.stdout)
+
+    def test_screen_runs_in_empty_node_vm_without_url_global(self):
+        fixture = json.loads(
+            (WORKFLOW.parent / "tests/fixtures/synthetic-report.json").read_text()
+        )
+        code = self.get_node("Screen Ingestion")["parameters"]["jsCode"]
+        program = (
+            "const vm = require('node:vm'); "
+            "const item = JSON.parse(process.argv[1]); "
+            "const ctx = {$input: {first: () => ({json: {body: item}})}}; "
+            "const result = vm.runInNewContext('(function(){' + process.argv[2] + '})()', ctx); "
+            "process.stdout.write(JSON.stringify(result));"
+        )
+        result = subprocess.run(
+            ["node", "-e", program, json.dumps(fixture), code],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout), [{"json": {"valid": True, "body": fixture}}]
+        )
+
+    def test_screen_counts_non_bmp_characters_as_code_points(self):
+        fixture = json.loads(
+            (WORKFLOW.parent / "tests/fixtures/synthetic-report.json").read_text()
+        )
+        fixture["items"][0]["title"] = "😀" * 300
+        result = self.run_code("Screen Ingestion", {"body": fixture})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        fixture["items"][0]["title"] += "😀"
+        result = self.run_code("Screen Ingestion", {"body": fixture})
+        self.assertEqual(json.loads(result.stdout), [{"json": {"valid": False}}])
+
+    def test_invalid_times_and_source_urls_are_screened(self):
+        fixture = json.loads(
+            (WORKFLOW.parent / "tests/fixtures/synthetic-report.json").read_text()
+        )
+        for invalid in (
+            "2026-10-30T00:00:00",
+            "2026-02-30T00:00:00Z",
+            "2026-10-30T24:00:00Z",
+        ):
+            mutated = dict(fixture, scheduled_at=invalid)
+            result = self.run_code("Screen Ingestion", {"body": mutated})
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(json.loads(result.stdout), [{"json": {"valid": False}}])
+        for invalid in ("https://example.org/a b", "https://example.org/\nprivate"):
+            item = dict(fixture["items"][0], source_url=invalid)
+            mutated = dict(fixture, items=[item])
+            result = self.run_code("Screen Ingestion", {"body": mutated})
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(json.loads(result.stdout), [{"json": {"valid": False}}])
+
+    def test_gateway_owns_url_parsing_and_screen_preserves_valid_forms(self):
+        fixture = json.loads(
+            (WORKFLOW.parent / "tests/fixtures/synthetic-report.json").read_text()
+        )
+        for source_url in (
+            "HTTPS://example.org/a",
+            "https://[::1]/",
+            "https://한글.example/",
+        ):
+            item = dict(fixture["items"][0], source_url=source_url)
+            request = dict(fixture, items=[item])
+            result = self.run_code("Screen Ingestion", {"body": request})
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(
+                json.loads(result.stdout), [{"json": {"valid": True, "body": request}}]
+            )
+
+    def test_success_requires_json_content_type(self):
+        receipt = {
+            "id": "12345678-1234-1234-1234-123456789abc",
+            "persisted": True,
+            "duplicate": False,
+            "status": "received",
+            "candidate_count": 2,
+            "status_url": "/v1/ingestions/12345678-1234-1234-1234-123456789abc",
+        }
+        for header in (None, "text/plain"):
+            result = self.run_code(
+                "Validate Gateway Response",
+                {
+                    "statusCode": 201,
+                    "body": receipt,
+                    "headers": {"content-type": header},
+                },
+            )
+            self.assertNotEqual(result.returncode, 0)
+
+    def test_mismatched_candidate_count_fails_closed(self):
+        receipt = {
+            "id": "12345678-1234-1234-1234-123456789abc",
+            "persisted": True,
+            "duplicate": False,
+            "status": "received",
+            "candidate_count": 1,
+            "status_url": "/v1/ingestions/12345678-1234-1234-1234-123456789abc",
+        }
+        result = self.run_code(
+            "Validate Gateway Response",
+            {
+                "statusCode": 201,
+                "body": receipt,
+                "headers": {"content-type": "application/json; charset=utf-8"},
+            },
+        )
+        self.assertNotEqual(result.returncode, 0)
+
+    def test_invalid_ingress_fails_without_echoing_input(self):
+        result = self.run_code(
+            "Screen Ingestion", {"body": {"source_text": "sensitive"}}
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(json.loads(result.stdout), [{"json": {"valid": False}}])
+        self.assertNotIn("sensitive", result.stdout)
 
 
 if __name__ == "__main__":

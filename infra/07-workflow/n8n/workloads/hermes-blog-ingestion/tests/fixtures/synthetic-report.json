@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "producer": "hermes",
+  "job_id": "daily",
+  "run_id": "2026-10-30",
+  "fire_id": "cron-01",
+  "report_kind": "mixed",
+  "scheduled_at": "2026-10-30T00:00:00Z",
+  "generated_at": "2026-10-30T00:01:00Z",
+  "collected_at": "2026-10-30T00:02:00Z",
+  "source_ref": "urn:synthetic:report",
+  "source_text": "Synthetic report with two items.",
+  "source_sha256": "183dc5fd719054028eff26712ac1b1b3e63c7adf6b33f6f9c82d12ebf9ff6048",
+  "idempotency_key": "daily-20261030",
+  "items": [
+    {
+      "item_id": "news-1",
+      "kind": "news",
+      "title": "Container deployment update",
+      "body": "Synthetic news",
+      "source_url": "https://example.org/news"
+    },
+    {
+      "item_id": "idea-1",
+      "kind": "business_idea",
+      "title": "Container deployment service",
+      "body": "Synthetic business idea"
+    }
+  ]
+}
