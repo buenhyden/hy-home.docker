@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.8.3"
+version: "0.8.4"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -661,6 +661,49 @@ The fix-range re-review returned APPROVE_WITH_NOTES. Its runbook notes are
 applied. One label-only note remains: an unreadable log file reports
 `target_not_reached` rather than `target_evidence_unreadable`, and the run
 still fails safe. The run stays NOT_RUN until the owner approves it.
+
+### Owner decisions for MLflow and JupyterLab 2026-10-30
+
+Read-only observations on 2026-10-30:
+
+- `mlflow` tracking counts: experiments 2, runs 2, metrics 1, params 1,
+  tags 8, registered models 0, model versions 0. These match the 2026-09-25
+  counts. Both runs use `mlflow-artifacts:/1/<run>/artifacts`, served from
+  the `mlflow-artifacts` bucket on SeaweedFS.
+- JupyterLab has no container and no image on the host. Its work directory
+  under the management volume root holds 0 files.
+
+The owner decided:
+
+- MLflow: the step 5 command adds `--count-table` for runs, metrics, params
+  and tags. The script now writes the stable values to
+  `count-observations.json` (0600) in scratch, and its printed output is
+  unchanged. The artifact half is the RUN-0088 owner command. It copies the
+  bucket read-only into new scratch and compares each object's ETag with its
+  local MD5, printing counts only.
+- JupyterLab: not applicable while it has no real content. Criterion 7 says
+  so. The 2026-09-22 synthetic rehearsal stays a historical receipt.
+
+Both runs are NOT_RUN until the owner runs them.
+
+The independent review returned REQUEST_CHANGES, and every finding is fixed:
+
+- The artifact command now prints `copy_rc` and a single `result`.
+- A failed copy, an empty listing, or a key that starts or ends with `/` or
+  contains `..` is FAIL.
+- The listing and run list sit in a `meta/` bind that the sync cannot reach.
+- The secret is bound with `--mount`, from the repository root.
+- RUN-0088 says the artifact half copies the live bucket. It does not
+  restore from backup, and it claims no artifact RPO.
+- RUN-0021 says the cross-time count comparison holds only because MLflow
+  has had no writes since 2026-09-25.
+- The plan's old isolated-network wording is removed.
+- The test now checks that no count value is printed.
+
+The fix-range re-review returned APPROVE_WITH_NOTES. Its three notes are
+applied: the command runs from the main checkout, which holds `secrets/`;
+it refuses a non-empty scratch; and the test uses a distinctive mocked
+count.
 
 ## Evidence
 

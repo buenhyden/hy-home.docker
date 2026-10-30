@@ -523,8 +523,10 @@ def probe(run, clone, admin, role, state, sleep=time.sleep) -> None:
     state["probe_result"] = "PASS"
 
 
-def count_stable(run, clone, admin, tables) -> bool:
+def count_stable(run, clone, admin, tables, root: Path | None = None) -> bool:
+    """Check each count twice in one snapshot; record values in scratch only."""
     by_db: dict[str, list[tuple[str, str]]] = {}
+    seen: dict[str, int] = {}
     for table in tables:
         db, schema, name = table.split(".")
         by_db.setdefault(db, []).append((schema, name))
@@ -544,6 +546,11 @@ def count_stable(run, clone, admin, tables) -> bool:
             first, second = got.get(f"t{i}a", ""), got.get(f"t{i}b", "")
             if not (first.isdigit() and first == second):
                 return False
+            seen[f"{db}.{items[i][0]}.{items[i][1]}"] = int(first)
+    if root is not None:
+        note = root / "count-observations.json"
+        note.write_text(json.dumps(seen, indent=2) + "\n")
+        note.chmod(0o600)
     return True
 
 
@@ -794,7 +801,7 @@ def rehearse(
         )
         if not all(state[key] is True for key in wanted):
             raise Stop("required_object_missing")
-        state["count_stable"] = count_stable(run, clone, admin, args.count_table)
+        state["count_stable"] = count_stable(run, clone, admin, args.count_table, root)
         if not state["count_stable"]:
             raise Stop("count_unstable")
         inventory(run, clone, admin, dbs, root, state)
