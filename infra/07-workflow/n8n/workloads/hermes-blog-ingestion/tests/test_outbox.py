@@ -2,6 +2,7 @@
 
 import concurrent.futures
 import dataclasses
+import hashlib
 import os
 import tempfile
 import threading
@@ -167,6 +168,142 @@ class OutboxTests(unittest.TestCase):
         with self.assertRaises(OutboxError):
             box.transition(key, "failed", "pending")
         self.assertEqual(box.keys("failed"), [key])
+
+    def test_provisional_evidence_is_immutable_and_survives_restart(self):
+        from publisher.outbox import OutboxError
+
+        box, snap = self.box(), self.snapshot()
+        key = (JOB, RUN)
+        box.stage(snap)
+        evidence = b'{"synthetic":"private data", "collected_at":"2026-10-30T00:00:00.123001Z"}'
+        candidate_sha = hashlib.sha256(snap.candidate).hexdigest()
+        source_sha = hashlib.sha256(snap.source).hexdigest()
+        box.bind_unverified_evidence(key, candidate_sha, source_sha, evidence)
+        box.close()
+        box = self.box()
+        box.bind_unverified_evidence(key, candidate_sha, source_sha, evidence)
+        stored = box.get_unverified_evidence(key)
+        self.assertEqual(stored, evidence)
+        self.assertEqual(box.get(key)["status"], "awaiting_contract")
+        for candidate, source, raw in (
+            ("0" * 64, source_sha, evidence),
+            (candidate_sha, "0" * 64, evidence),
+            (candidate_sha, source_sha, evidence.replace(b"123001", b"123999")),
+        ):
+            with self.assertRaises(OutboxError):
+                box.bind_unverified_evidence(key, candidate, source, raw)
+        self.assertEqual(box.get_unverified_evidence(key), evidence)
+        self.assertNotIn("private data", repr(box.events(key)))
+
+    def test_unverified_evidence_corruption_is_detected(self):
+        from publisher.outbox import OutboxError
+
+        box, snap = self.box(), self.snapshot()
+        key = (JOB, RUN)
+        box.stage(snap)
+        box.bind_unverified_evidence(
+            key,
+            hashlib.sha256(snap.candidate).hexdigest(),
+            hashlib.sha256(snap.source).hexdigest(),
+            b"private",
+        )
+        box._db.execute("UPDATE unverified_evidence SET evidence=?", (b"tampered",))
+        box._db.commit()
+        with self.assertRaisesRegex(OutboxError, "^evidence_conflict$"):
+            box.get_unverified_evidence(key)
+
+    def test_evidence_binding_checks_snapshot_before_first_write(self):
+        from publisher.outbox import OutboxError
+
+        box, snap = self.box(), self.snapshot()
+        key = (JOB, RUN)
+        box.stage(snap)
+        box._db.execute("UPDATE records SET source_ref='changed'")
+        box._db.commit()
+        with self.assertRaisesRegex(OutboxError, "^evidence_conflict$"):
+            box.bind_unverified_evidence(
+                key,
+                hashlib.sha256(snap.candidate).hexdigest(),
+                hashlib.sha256(snap.source).hexdigest(),
+                b"private",
+            )
+        self.assertIsNone(box.get_unverified_evidence(key))
+
+    def test_evidence_rejects_changed_full_snapshot(self):
+        from publisher.outbox import OutboxError
+
+        for mutation in ("source_ref", "ideas", "snapshot_digest"):
+            with self.subTest(mutation=mutation):
+                box, snap = self.box(), self.snapshot()
+                key = (JOB, RUN)
+                box.stage(snap)
+                box.bind_unverified_evidence(
+                    key,
+                    hashlib.sha256(snap.candidate).hexdigest(),
+                    hashlib.sha256(snap.source).hexdigest(),
+                    b"private",
+                )
+                if mutation == "source_ref":
+                    box._db.execute("UPDATE records SET source_ref='changed'")
+                elif mutation == "ideas":
+                    box._db.execute(
+                        "INSERT INTO ideas VALUES(?,?,?,?,?)",
+                        (*key, 0, "changed", b"changed"),
+                    )
+                else:
+                    box._db.execute("UPDATE records SET snapshot_sha256=?", ("0" * 64,))
+                box._db.commit()
+                with self.assertRaisesRegex(OutboxError, "^evidence_conflict$"):
+                    box.get_unverified_evidence(key)
+                box.close()
+                (self.root / "private" / "outbox.sqlite").unlink()
+
+    def test_competing_evidence_snapshots_cannot_replace_one_another(self):
+        from publisher.outbox import Outbox, OutboxError
+
+        box, snap = self.box(), self.snapshot()
+        key = (JOB, RUN)
+        box.stage(snap)
+        box.close()
+        path = self.root / "private" / "outbox.sqlite"
+        candidate_sha = hashlib.sha256(snap.candidate).hexdigest()
+        source_sha = hashlib.sha256(snap.source).hexdigest()
+        barrier = threading.Barrier(2)
+
+        def write(raw):
+            local = Outbox(path)
+            try:
+                barrier.wait(timeout=5)
+                try:
+                    local.bind_unverified_evidence(key, candidate_sha, source_sha, raw)
+                    return "stored"
+                except OutboxError:
+                    return "conflict"
+            finally:
+                local.close()
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+            outcomes = list(executor.map(write, (b"first", b"second")))
+        self.assertEqual(sorted(outcomes), ["conflict", "stored"])
+        box = self.box()
+        self.assertIn(box.get_unverified_evidence(key), (b"first", b"second"))
+        self.assertEqual(box.get(key)["status"], "awaiting_contract")
+
+    def test_unverified_evidence_cannot_be_added_after_binding_request(self):
+        from publisher.outbox import OutboxError
+
+        box, snap = self.box(), self.snapshot()
+        key = (JOB, RUN)
+        box.stage(snap)
+        box.bind_request(key, "synthetic", b"request")
+        with self.assertRaises(OutboxError):
+            box.bind_unverified_evidence(
+                key,
+                hashlib.sha256(snap.candidate).hexdigest(),
+                hashlib.sha256(snap.source).hexdigest(),
+                b"evidence",
+            )
+        self.assertIsNone(box.get_unverified_evidence(key))
 
     def test_request_binding_cannot_be_replaced_after_restart(self):
         from publisher.outbox import OutboxError

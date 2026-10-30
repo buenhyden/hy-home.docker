@@ -595,6 +595,54 @@ checks for the new revision remain NOT_RUN. The user requested commit and push o
 scope followed by the contract wait; that request does not establish completed
 Git integration or operational delivery.
 
+### Current producer and isolated Queue evidence — 2026-10-30
+
+PR #689 is merged. That merge does not close criterion 23: current evidence
+still distinguishes source implementation from operating acceptance.
+
+Hermes does not yet record a per-item actual collection timestamp at the
+direct fetch boundary. The final tool-result conversion/call-ID linkage and
+immutable source-item binding required to carry that record into the structured
+candidate are also not implemented. Consequently, the existing 153 candidate
+items remain held: neither scheduler time, batch completion time nor cache
+materialization time is substituted for collection time. The publisher must
+continue to reject dispatch until every included item has a bound direct-fetch
+record and can derive report `collected_at` as the latest item record.
+
+The isolated n8n environment passed owner and project setup, synthetic workflow
+import/publish, and main/worker/task-runner health checks. Its synthetic webhook
+returned HTTP 404; the database showed `active=true` with an `activeVersionId`,
+but no webhook execution was recorded. Thus no Queue execution, worker/runner
+round trip, or Gateway delivery was observed. Queue and Gateway evidence remain
+NOT_RUN. All isolated test resources were removed and the observed production
+n8n services remained healthy. A previously reported shell-pipeline “PASS” was
+invalid and is explicitly excluded from this evidence.
+
+### Isolated Queue publication and dispatch follow-up — 2026-10-30
+
+The isolated n8n setup now uses the default workflow-publication API rather
+than assuming an imported active version has registered a webhook. The
+synthetic Webhook node has a stable `webhookId`, so n8n registers its configured
+static path. This resolves the prior 404: the isolated webhook is registered
+before its request is made. The tracked workflow's exact
+path was also checked by the native helper in this isolated setup.
+
+An isolated Queue run completed through the synthetic n8n main and worker with
+an external JavaScript task runner. The fake Gateway returned `201` and the
+test recorded the expected synthetic persisted-receipt evidence. This is an
+N8N_NATIVE receipt for the isolated topology only. It does not execute the
+tracked workflow against its configured endpoint, use a production credential,
+or establish any server-B DNS, TCP, TLS, authentication, timeout, durable
+receipt, outage/recovery, email, or existing-workload property. Those remain
+NOT_RUN.
+
+The direct-fetch timestamp experiment writes evidence only in a temporary
+location and is not integrated into Hermes, its structured exporter, or the
+Publisher. It therefore supplies no source admission for a candidate and does
+not change the all-items collection-time hold. Likewise, an Outbox evidence
+snapshot is retained for later verification only: it is not dispatch authority
+and cannot cause a send, replay, activation, or credential use.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -604,8 +652,9 @@ Git integration or operational delivery.
 | Publisher staging and Outbox | 23 | W80 | Single/multiple idea, replay, conflict, restart, paths/hashes and permissions | Synthetic fixtures and reviewed validator | PASS | W80 synthetic evidence | required | - |
 | Delivery and reconciliation | 23 | W81 | Durable receipts, lost response, bounded retry and immutable request binding | Fake adapters | PASS | W80 synthetic evidence | required | - |
 | Exact Gateway compatibility | 23 | W82 | Approved API revision/fixtures and inactive n8n source | Pinned source tested; actual timestamp provenance absent | NOT_RUN | Gateway source admission after Blog-data PR #620 | required | - |
-| Inactive n8n workflow import | 23 | W83 | Tracked workflow import into isolated n8n 2.43.6 SQLite | Network-none, read-only, non-root container with synthetic key; exit 0 in 31 seconds | PASS | n8n inactive workflow import — isolated Native PASS | required | - |
-| Native worker to Gateway | 23 | W83 | DNS/TCP/TLS/auth/timeout, outage/recovery and durable persistence | Exact approved server-B and secret targets absent; BLOCKED | NOT_RUN | Gateway contract and native gates | required | - |
+| Inactive n8n workflow import | 23 | W83 | Isolated owner/project setup, default publication API, static-webhook registration, exact-path helper and main/worker/runner health | Synthetic environment passed; registered webhook accepted its request | PASS | Isolated Queue publication and dispatch follow-up — 2026-10-30 | required | - |
+| Isolated Queue worker to fake Gateway | 23 | W83 | Queue round trip through external JavaScript runner and synthetic persisted receipt | Fake Gateway returned 201 with recorded synthetic receipt | PASS | Isolated Queue publication and dispatch follow-up — 2026-10-30 | required | - |
+| Native worker to Gateway | 23 | W83 | Tracked workflow plus server-B DNS/TCP/TLS/auth/timeout, outage/recovery and durable persistence | No tracked-workflow or server-B execution; isolated fake-Gateway receipt is non-operational | NOT_RUN | Isolated Queue publication and dispatch follow-up — 2026-10-30 | required | - |
 | Existing email/workload regression | 23 | W83 | Preserve Cron/email and existing n8n/Docker workloads | Read-only baseline plus later approved Native scenario | NOT_RUN | Design admission — 2026-10-30 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, coverage, docs gates and independent review | Final Task-owned diff | NOT_RUN | Review and Completion | required | - |
 
