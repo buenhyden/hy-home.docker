@@ -155,12 +155,16 @@ class Outbox:
                       AND code IN ('identity_conflict','source_identity_conflict')
                       AND job_id IS NOT NULL AND run_id IS NOT NULL AND digest IS NOT NULL;
             """)
-            columns = {
-                row["name"] for row in self._db.execute("PRAGMA table_info(records)")
-            }
-            if "endpoint_sha256" not in columns:
-                self._db.execute("ALTER TABLE records ADD COLUMN endpoint_sha256 TEXT")
-                self._db.commit()
+            # Serialize schema inspection and migration across Publisher processes.
+            with self._transaction():
+                columns = {
+                    row["name"]
+                    for row in self._db.execute("PRAGMA table_info(records)")
+                }
+                if "endpoint_sha256" not in columns:
+                    self._db.execute(
+                        "ALTER TABLE records ADD COLUMN endpoint_sha256 TEXT"
+                    )
         except (OSError, sqlite3.Error, InputError):
             self.close()
             raise OutboxError("unsafe_outbox") from None

@@ -1,8 +1,10 @@
 """Synthetic immutable network endpoint binding tests."""
 
+import concurrent.futures
 import sqlite3
 import sys
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -28,6 +30,85 @@ def transport(endpoint):
 
 
 class RouteBindingTests(unittest.TestCase):
+    def test_concurrent_legacy_migration_preserves_unbound_request(self):
+        with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
+            path = Path(tmp) / "private" / "box.sqlite"
+            box = Outbox(path)
+            box.stage(Snapshot(*KEY, b"candidate", "source", b"report"))
+            box.bind_request(KEY, "test", b"payload", destination="local")
+            original = box.get(KEY)
+            box.close()
+            with sqlite3.connect(path) as database:
+                database.execute("ALTER TABLE records DROP COLUMN endpoint_sha256")
+
+            barrier = threading.Barrier(2)
+            connect = sqlite3.connect
+
+            class RaceConnection(sqlite3.Connection):
+                def execute(self, sql, *args):
+                    result = super().execute(sql, *args)
+                    if sql == "PRAGMA table_info(records)" and not self.in_transaction:
+                        rows = result.fetchall()
+                        barrier.wait(timeout=5)
+                        return rows
+                    return result
+
+            def open_connection(*args, **kwargs):
+                return connect(*args, factory=RaceConnection, **kwargs)
+
+            def open_box():
+                opened = Outbox(path)
+                try:
+                    return opened.get(KEY)
+                finally:
+                    opened.close()
+
+            with patch("publisher.outbox.sqlite3.connect", side_effect=open_connection):
+                with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+                    futures = [pool.submit(open_box) for _ in range(2)]
+                    self.assertEqual(
+                        [future.result() for future in futures], [original, original]
+                    )
+
+    def test_legacy_migration_failure_rolls_back_and_retries(self):
+        with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
+            path = Path(tmp) / "private" / "box.sqlite"
+            box = Outbox(path)
+            box.stage(Snapshot(*KEY, b"candidate", "source", b"report"))
+            box.bind_request(KEY, "test", b"payload", destination="local")
+            original = box.get(KEY)
+            box.close()
+            with sqlite3.connect(path) as database:
+                database.execute("ALTER TABLE records DROP COLUMN endpoint_sha256")
+
+            connect = sqlite3.connect
+
+            class FailingConnection(sqlite3.Connection):
+                def execute(self, sql, *args):
+                    result = super().execute(sql, *args)
+                    if sql == "ALTER TABLE records ADD COLUMN endpoint_sha256 TEXT":
+                        raise sqlite3.OperationalError("synthetic migration failure")
+                    return result
+
+            def failing_connect(*args, **kwargs):
+                return connect(*args, factory=FailingConnection, **kwargs)
+
+            with patch("publisher.outbox.sqlite3.connect", side_effect=failing_connect):
+                from publisher.outbox import OutboxError
+
+                with self.assertRaises(OutboxError):
+                    Outbox(path)
+            with sqlite3.connect(path) as database:
+                columns = {
+                    row[1] for row in database.execute("PRAGMA table_info(records)")
+                }
+            self.assertNotIn("endpoint_sha256", columns)
+            box = Outbox(path)
+            try:
+                self.assertEqual(box.get(KEY), original)
+            finally:
+                box.close()
+
     def test_endpoint_change_after_restart_cannot_send(self):
         with tempfile.TemporaryDirectory(dir="/tmp") as tmp:
             path = Path(tmp) / "private" / "box.sqlite"
