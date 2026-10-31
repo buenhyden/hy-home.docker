@@ -612,5 +612,83 @@ class ComposeCoreReadinessExampleTests(unittest.TestCase):
             self.assertNotIn("INFRA_GATEWAY", text, path.name)
 
 
+class BlogIngestionGatewayTests(unittest.TestCase):
+    """The Blog-data Gateway is opt-in and reachable only from the n8n worker."""
+
+    def render(self, profiles=("mng", "workflow-n8n")):
+        with tempfile.TemporaryDirectory() as directory:
+            env = {
+                "PATH": os.environ["PATH"],
+                "COMPOSE_DISABLE_ENV_FILE": "1",
+                "DOCKER_CONFIG": directory,
+            }
+            args = ["docker", "compose", "--env-file", ".env.example"]
+            args.extend(("-f", "docker-compose.yml"))
+            for profile in profiles:
+                args.extend(("--profile", profile))
+            args.extend(("config", "--format", "json"))
+            result = subprocess.run(
+                args,
+                cwd=ROOT,
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=60,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            return json.loads(result.stdout)
+
+    @unittest.skipUnless(shutil.which("docker"), "docker CLI not available")
+    def test_existing_selections_do_not_start_the_gateway(self):
+        self.assertNotIn("blog-ingestion", self.render()["services"])
+
+    @unittest.skipUnless(shutil.which("docker"), "docker CLI not available")
+    def test_gateway_is_pinned_isolated_and_least_privileged(self):
+        before = self.render()["services"]
+        merged = self.render(profiles=("mng", "workflow-n8n", "blog-ingestion"))
+        self.assertEqual(set(before) | {"blog-ingestion"}, set(merged["services"]))
+        members = {
+            name
+            for name, service in merged["services"].items()
+            if "n8n_blog_ingest_net" in service.get("networks", {})
+        }
+        self.assertEqual({"n8n-worker", "blog-ingestion"}, members)
+        network = merged["networks"]["n8n_blog_ingest_net"]
+        self.assertTrue(network["internal"])
+        self.assertEqual(
+            "isolated",
+            network["driver_opts"]["com.docker.network.bridge.gateway_mode_ipv4"],
+        )
+
+        gateway = merged["services"]["blog-ingestion"]
+        # Built locally from a reviewed Blog-data commit; never pulled.
+        self.assertRegex(gateway["image"], r"^hy-home/blog-ingestion:[0-9a-f]{40}$")
+        self.assertEqual("never", gateway["pull_policy"])
+        self.assertEqual(["blog-ingestion"], gateway["profiles"])
+        self.assertEqual({"n8n_blog_ingest_net"}, set(gateway["networks"]))
+        for absent in ("ports", "secrets", "environment"):
+            self.assertNotIn(absent, gateway)
+        self.assertEqual("10001:10001", gateway["user"])
+        self.assertTrue(gateway["read_only"])
+        self.assertEqual(["ALL"], gateway["cap_drop"])
+        self.assertIn("no-new-privileges:true", gateway["security_opt"])
+        self.assertIn("healthcheck", gateway)
+        mounts = {volume["target"]: volume for volume in gateway["volumes"]}
+        self.assertEqual({"/data", "/run/config.json"}, set(mounts))
+        self.assertTrue(mounts["/run/config.json"]["read_only"])
+        self.assertFalse(mounts["/data"].get("read_only", False))
+        for mount in mounts.values():
+            self.assertEqual("bind", mount["type"])
+        # Some Compose versions omit false defaults when rendering; read the source.
+        source = yaml.load(
+            (ROOT / "infra/07-workflow/n8n/docker-compose.yml").read_text(),
+            Loader=yaml.SafeLoader,
+        )["services"]["blog-ingestion"]["volumes"]
+        self.assertEqual(
+            [False, False], [v["bind"]["create_host_path"] for v in source]
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

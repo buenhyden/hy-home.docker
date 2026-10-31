@@ -186,6 +186,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 07-workflow | `airflow-valkey` | `airflow-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 07-workflow | `airflow-valkey-exporter` | `airflow-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 07-workflow | `airflow-worker` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
+| 07-workflow | `blog-ingestion` | none | `Infrastructure/containers` | own `blog-ingestion` profile; container metrics and logs only, receipt counts via Gateway `/v1/summary` |
 | 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` |  |
 | 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Infrastructure/containers` |  |
 | 07-workflow | `n8n-task-runner` | none | `Infrastructure/containers` | container metrics and logs only |

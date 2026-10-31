@@ -155,7 +155,7 @@ Publisher·Cron·워크플로·Compose·네트워크·Credential은 바뀌지 �
 자식 프로세스가 포함되지 않습니다. 사설 CA, 실제 서버 통신과 n8n Queue를 경유한
 Gateway 전달은 검증되지 않았습니다. PR #695 병합 시점의 전체 합성 시험은
 151건이었습니다. 생산자 인증을 추가한 현재 소스의 수치는 `SPEC-0204-TSK-0022`의
-최신 기록을 따르며, 실제 n8n·서버 B 전달은 포함하지 않습니다.
+최신 기록을 따르며, 운영 n8n·Gateway 전달과 Windows 수신은 포함하지 않습니다.
 
 ## Related Documents
 

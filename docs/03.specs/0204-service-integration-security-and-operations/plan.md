@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.10.1"
+version: "1.11.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -903,6 +903,13 @@ worktrees, installed Cron, credentials and runtime resources from writes.
   rejections by value-free reason, correct the Traefik timeout meaning and record
   the ingest-only server-B contract. Server-A account, install and service stay
   separate approval units (TSK-0022, 2026-10-31).
+- [x] Redirect to the Hermes host direct path: point the inactive workflow at
+  the production webhook path and the internal Gateway, host the Blog-data
+  Gateway on server A as an opt-in pinned service on an internal isolated
+  network shared only with `n8n-worker`, propose the exact-path Traefik router
+  outside the live directory, and prove host → Traefik → native n8n → Gateway →
+  SQLite in a disposable E2E. Export/ACK stays blocked on Blog-data; every
+  deployment step stays a separate approval unit (TSK-0022, 2026-10-31).
 
 - [ ] Update Korean workload README and existing RUN-0053 only with implemented
   safe commands and recovery/uncertainty limits. Record metrics design for
@@ -922,9 +929,10 @@ worktrees, installed Cron, credentials and runtime resources from writes.
 - [ ] Run measured source tests, required documentation/static checks,
   `git diff --check` and independent review. Logical local commits follow
   repository gates; remote Git remains excluded by the current request.
-- [ ] Admit Native checks only with exact server-B endpoint/private IP/DNS/OS,
-  VPN/firewall/TLS and separately approved secrets/workflow/recovery targets.
-  Probe DNS/TCP/TLS/authentication/timeouts from the actual n8n worker. Approve
+- [ ] Admit operational checks only after the separately approved server-A
+  Gateway image, paths, start, credentials, workflow publication and Traefik
+  route (RUN-0053), measuring the host source address first. Probe the
+  worker-to-Gateway path from the actual n8n worker. Approve
   bounded outage/response-loss/replay and email/workflow regressions separately;
   never interrupt shared services just to simulate a fault. Keep all unexecuted
   lanes visible and criterion 23 pending.

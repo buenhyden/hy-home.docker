@@ -1,0 +1,43 @@
+# PROPOSAL — not loaded by Traefik. The live provider watches
+# infra/01-gateway/traefik/dynamic/, so copying this file there applies it at
+# once; do that only as the approved ingress unit in RUN-0053.
+#
+# Admits exactly one request shape without SSO: a host-local POST to the
+# Hermes webhook path. Every other n8n path, method or source still matches the
+# Host-only n8n router and its sso-auth chain. n8n header authentication stays
+# the credential check; this router only narrows who may present it.
+http:
+  routers:
+    hermes-blog-ingestion-webhook:
+      rule: Host(`n8n.hy.home.arpa`) && Path(`/webhook/hermes-blog-ingestion`) && Method(`POST`)
+      priority: 1000
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - hermes-webhook-source
+        - hermes-webhook-body
+        - hermes-webhook-rate
+      service: n8n@docker
+
+  middlewares:
+    # Measured on live Traefik (2026-10-31): a host process dialling the
+    # published 192.168.0.13:443 arrives as 192.168.0.13. LAN clients keep
+    # their own address and are refused. n8n headerAuth stays the credential
+    # check; this only narrows who may present it.
+    hermes-webhook-source:
+      ipAllowList:
+        sourceRange:
+          - 192.168.0.13/32
+        ipStrategy:
+          depth: 0
+    # The Gateway rejects bodies above 1 MiB; refuse them before n8n buffers.
+    hermes-webhook-body:
+      buffering:
+        maxRequestBodyBytes: 1048576
+    # Three scheduled reports a day plus bounded Publisher retries.
+    hermes-webhook-rate:
+      rateLimit:
+        average: 6
+        period: 1m
+        burst: 6

@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.9.2"
+version: "1.10.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -315,13 +315,21 @@ HTTP node, Gateway endpoint or body mapping. The supplied public web build manif
 an ingestion contract. Never infer Gateway JSON/status codes from it. Each
 repository's adoption remains with the common owner and exact approved revision.
 
-Start with a restricted host process, requiring no Compose change. A later
-approved non-root container may use existing `n8n_net` after overlay/network
-review and exact read-only artifact mounts. Public Traefik SSO and ports remain
-unchanged. Reuse queue workers, PostgreSQL metadata, selected Valkey and OpenBao
-ownership. Do not repurpose Manifest Outbox Notifier or duplicate `hy-home.n8n`
-news crawling. Actual server-B DNS/TCP/TLS/authentication/timeout evidence must
-originate from the actual n8n worker; host probes prove a different path.
+Hermes runs as a server-A host process and submits structured reports directly
+to the one n8n webhook; the restricted host Publisher is the file-based recovery
+path to the same webhook until direct submission is operationally verified. The
+n8n worker forwards to the Blog-data Gateway hosted on server A as an opt-in
+`blog-ingestion` service: an image built locally from a pinned Blog-data commit,
+never pulled, read-only and unprivileged, on an internal isolated network whose
+only other member is `n8n-worker`, with SQLite on local disk and no capture on
+A. Traefik keeps the n8n SSO router; only an exact-path, POST-only, host-source
+router with body and rate limits may skip SSO, applied as a separate approval.
+Webhook and Gateway credentials are separate. Reuse queue workers, PostgreSQL
+metadata, selected Valkey and OpenBao ownership. Do not repurpose Manifest
+Outbox Notifier or duplicate `hy-home.n8n` news crawling. Windows server B pulls
+from a Blog-data-owned Export API and acknowledges; until that API exists,
+Windows delivery stays blocked and A-side ingestion is never reported as
+Windows storage.
 
 ## Acceptance Criteria
 

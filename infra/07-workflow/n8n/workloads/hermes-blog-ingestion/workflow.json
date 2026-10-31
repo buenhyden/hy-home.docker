@@ -1,11 +1,11 @@
 {
-  "name": "Hermes Blog Ingestion — INACTIVE TEMPLATE",
+  "name": "Hermes Blog Ingestion",
   "active": false,
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "hermes-blog-ingestion-contract-hold",
+        "path": "hermes-blog-ingestion",
         "authentication": "headerAuth",
         "responseMode": "responseNode",
         "options": {}
@@ -36,7 +36,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://gateway.invalid/v1/ingestions",
+        "url": "http://blog-ingestion:8787/v1/ingestions",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
