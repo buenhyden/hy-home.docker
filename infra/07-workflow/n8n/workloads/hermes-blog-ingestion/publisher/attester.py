@@ -18,7 +18,7 @@ from urllib.parse import urlsplit
 
 from . import attestation
 from .candidates import JOBS
-from .delivery import TransportFailure
+from .delivery import FailureKind, TransportFailure
 from .outbox import valid_gateway_report_id
 from .source_check import check_item, page_text
 from .source_fetch import FetchFailure, fetch
@@ -42,6 +42,8 @@ def _https_opener(host, port, path, headers):
         response = connection.getresponse()
         body = response.read(MAX_RESPONSE + 1)
         return response.status, body
+    except http.client.HTTPException:
+        raise GatewayError("http_protocol") from None
     finally:
         connection.close()
 
@@ -165,6 +167,7 @@ def run(
     _private_dir(evidence_dir)
     counts = dict(attested=0, held_items=0, skipped=0, retry=0, rejected=0)
     errors = {}
+    halt = []
     cache = {}  # url -> FetchResult | FetchFailure, one fetch per URL per run
 
     def fetch_once(url):
@@ -181,7 +184,18 @@ def run(
         except TransportFailure as failure:
             result = failure
         verdict = attestation.outcome(result)
-        if verdict == "attested":
+        # A credential or certificate problem says nothing about the content:
+        # keep the signed body for the next run and stop sending in this one.
+        if verdict == "rejected" and (
+            (
+                isinstance(result, TransportFailure)
+                and result.kind in (FailureKind.AUTH, FailureKind.TLS)
+            )
+            or getattr(result, "status", None) in (401, 403)
+        ):
+            counts["rejected"] += 1
+            halt.append(True)
+        elif verdict == "attested":
             state["status"] = "attested"
             _save(path, state)
             counts["attested"] += 1
@@ -271,7 +285,7 @@ def run(
         try:
             request = json.loads(raw)
             if not isinstance(request, dict):
-                raise ValueError
+                raise attestation.AttestationError("request_invalid")
             verified, entries, pending = check_items(request)
             if pending:
                 started = datetime.strptime(state["first_attempt_at"], _TIME).replace(
@@ -296,7 +310,7 @@ def run(
             digest = hashlib.sha256(evidence).hexdigest()
             signed = attestation.message(raw, verified, digest)
             body = attestation.request_body(key_id, key, signed, verified, digest)
-        except (ValueError, UnicodeError):  # AttestationError is a ValueError
+        except (attestation.AttestationError, json.JSONDecodeError):
             state["status"] = "rejected"
             _save(path, state)
             counts["rejected"] += 1
@@ -312,6 +326,8 @@ def run(
         deliver(path, state)
 
     for report_id in reader.queue():
+        if halt:
+            break
         try:
             if not valid_gateway_report_id(report_id):
                 raise GatewayError("report_id")

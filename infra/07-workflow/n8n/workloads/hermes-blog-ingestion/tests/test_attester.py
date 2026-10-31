@@ -251,6 +251,31 @@ class AttesterTest(unittest.TestCase):
         self.assertEqual((counts["rejected"], counts["skipped"]), (0, 1))
         self.assertEqual(len(sender.sent), 1)
 
+    def test_auth_failure_keeps_body_and_halts_then_resends(self):
+        other = "22222222-2222-2222-2222-222222222222"
+        reader = Reader({RID: request([item("a")]), other: request([item("a")])})
+        for failure in (HttpResponse(401, b"{}"), TransportFailure(FailureKind.TLS)):
+            self.setUp()
+            sender = Sender(failure)
+            fetcher = Fetcher({GOOD: page()})
+            counts = self.go(reader, sender, fetcher)
+            self.assertEqual((counts["rejected"], counts["attested"]), (1, 0))
+            self.assertEqual(len(sender.sent), 1)  # halted before the second
+            state = json.loads((self.state / f"{RID}.json").read_text())
+            self.assertEqual(state["status"], "signed")
+            counts = self.go(reader, sender, fetcher)
+            self.assertEqual(sender.sent[0], sender.sent[1])
+            self.assertEqual(counts["attested"], 2)
+
+    def test_stray_value_error_does_not_close_the_report(self):
+        reader = Reader({RID: request([item("a")])})
+        sender = Sender()
+        counts = self.go(reader, sender, Fetcher({GOOD: ValueError("bug")}))
+        self.assertEqual((counts["rejected"], sender.sent), (1, []))
+        state = json.loads((self.state / f"{RID}.json").read_text())
+        self.assertNotIn("status", state)
+        self.assertEqual(counts["errors"], {"ValueError": 1})
+
     def test_more_than_100_verified_items_records_limit(self):
         items = [item(f"i{n:03d}") for n in range(101)]
         reader = Reader({RID: request(items)})
@@ -311,6 +336,46 @@ class ReaderTest(unittest.TestCase):
         reader, _ = self.reader([(302, b"")])
         with self.assertRaises(attester.GatewayError):
             reader.request(RID)
+
+    def test_http_exception_becomes_gateway_error_without_traceback(self):
+        import http.client
+        from unittest import mock
+
+        from publisher import cli
+
+        # The default opener wraps HTTPException; the CLI catches GatewayError.
+        with (
+            mock.patch.object(cli, "_auth", return_value=("A", "B")),
+            mock.patch.object(attestation, "load_signing_key", return_value=object()),
+            mock.patch.object(
+                attester.http.client.HTTPSConnection,
+                "request",
+                side_effect=http.client.BadStatusLine("x"),
+            ),
+            mock.patch("builtins.print") as out,
+        ):
+            argv = [
+                "attest-queue",
+                "--gateway",
+                "https://gw.example",
+                "--auth-header-file",
+                "/a",
+                "--signing-key",
+                "/k",
+                "--key-id",
+                "k1",
+                "--state-dir",
+                self.tmp,
+                "--evidence-dir",
+                self.tmp,
+            ]
+            self.assertEqual(cli.main(argv), 1)
+        self.assertEqual(out.call_args.args[0], '{"error":"operation_rejected"}')
+
+    def setUp(self):
+        t = tempfile.TemporaryDirectory()
+        self.addCleanup(t.cleanup)
+        self.tmp = t.name
 
     def test_non_advancing_cursor_is_an_error(self):
         loop = json.dumps({"items": [], "next_after": 0}).encode()
