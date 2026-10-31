@@ -108,7 +108,9 @@ def _protected(path):
 
 def _runtime_paths():
     """Interpreter, import path, every loaded module file and the key store."""
-    paths = {TRUST_STORE, Path(sys.executable).resolve(), Path(sys.prefix)}
+    prefix = Path(sys.prefix)
+    paths = {TRUST_STORE, Path(sys.executable).resolve(), prefix}
+    paths.add(prefix / "pyvenv.cfg")
     paths.update(Path(__file__).resolve().parent.glob("*.py"))
     paths.update(Path(entry).resolve() for entry in sys.path if entry)
     for module in list(sys.modules.values()):
@@ -141,7 +143,8 @@ def _runtime_protected():
             raise TrustError("store_unavailable") from None
 
 
-def _public_key(key_id, job_id, now):
+def store_entries():
+    """Return every validated (entry, raw public key) of the protected store."""
     _runtime_protected()
     try:
         raw = safe_read(TRUST_STORE.parent, TRUST_STORE.name, limit=65536)
@@ -155,7 +158,7 @@ def _public_key(key_id, job_id, now):
         and isinstance(store["keys"], list),
         "store_invalid",
     )
-    matches, publics, ids = [], set(), set()
+    entries, publics, ids = [], set(), set()
     for entry in store["keys"]:
         # Validate every entry, not only the selected one.
         _require(
@@ -175,8 +178,12 @@ def _public_key(key_id, job_id, now):
         _require(public not in publics and entry["key_id"] not in ids, "store_invalid")
         publics.add(public)
         ids.add(entry["key_id"])
-        if entry["key_id"] == key_id:
-            matches.append((entry, public))
+        entries.append((entry, public))
+    return entries
+
+
+def _public_key(key_id, job_id, now):
+    matches = [item for item in store_entries() if item[0]["key_id"] == key_id]
     _require(len(matches) == 1, "untrusted_key")
     entry, public = matches[0]
     _require(job_id in entry["jobs"], "key_scope")

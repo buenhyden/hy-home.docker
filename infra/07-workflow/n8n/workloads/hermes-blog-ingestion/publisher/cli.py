@@ -179,7 +179,18 @@ def main(argv=None):
     dispatch.add_argument("--endpoint", required=True)
     dispatch.add_argument("--auth-header-file", type=Path, required=True)
     dispatch.add_argument("--allow-replay", action="store_true")
+    sub.add_parser("verify-install")
     args = parser.parse_args(argv)
+    if args.command == "verify-install":
+        # Run as the dedicated account: proves `python3 -I` loads a protected
+        # install and parses the key store, without printing any key.
+        try:
+            keys = len(trust.store_entries())
+        except trust.TrustError as error:
+            print(json.dumps({"error": str(error)}))
+            return 1
+        print(json.dumps({"keys": keys, "runtime": "protected"}, sort_keys=True))
+        return 0
     box = None
     try:
         box = Outbox(args.outbox)

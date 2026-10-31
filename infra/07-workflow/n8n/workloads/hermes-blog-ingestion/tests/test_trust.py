@@ -205,6 +205,29 @@ class TrustTests(unittest.TestCase):
             if entry and Path(entry).exists():
                 self.assertIn(Path(entry).resolve(), paths)
 
+    def test_verify_install_reports_store_and_runtime_without_values(self):
+        import contextlib
+        import io
+
+        from publisher import cli
+
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(cli.main(["verify-install"]), 0)
+        self.assertEqual(
+            json.loads(out.getvalue()), {"keys": 1, "runtime": "protected"}
+        )
+        out = io.StringIO()
+        with (
+            patch("publisher.trust._runtime_protected", RUNTIME),
+            contextlib.redirect_stdout(out),
+        ):
+            self.assertEqual(cli.main(["verify-install"]), 1)
+        self.assertIn(
+            json.loads(out.getvalue())["error"],
+            ("interpreter_unisolated", "store_unprotected"),
+        )
+
     def test_malformed_or_ambiguous_store_fails_closed(self):
         good = producer.entry(self.key)
         for code, entries in (
