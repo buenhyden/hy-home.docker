@@ -2143,6 +2143,28 @@
           ]
         }
       ]
+    },
+    {
+      "component": "Compose image: hy-home/blog-ingestion",
+      "tier": "07-workflow",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy-home/blog-ingestion": "local-custom"
+      },
+      "images": [
+        "hy-home/blog-ingestion:cbf06c3514970f8ffa86dafa18064bfd3931e06a"
+      ],
+      "compose_files": [
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "images": [
+            "hy-home/blog-ingestion:cbf06c3514970f8ffa86dafa18064bfd3931e06a"
+          ]
+        }
+      ]
     }
   ],
   "required_image_inputs": [
