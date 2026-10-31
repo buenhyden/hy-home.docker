@@ -259,6 +259,44 @@ Gateway로 각각 따로 연결합니다. 두 구간의 인증서 신뢰와 Toke
 승인 키로 서명된 Companion이 모든 항목의 실제 수집 시각을 결속하기 전에는
 발행기 전송이나 재전송을 시작할 수 없습니다.
 
+## Windows Blog-data 전달 설계 및 구현 인계 (2026-10-31)
+
+> **현재 상태: 설계 및 인계만 완료; 실제 서비스 연결·배포·Windows 작업 NOT_RUN.** 서버 B는 Windows(192.168.0.22)이고 Obsidian은 상시 실행되지 않는다. 기존 문서의 Linux/Docker 서버 B는 과거 가정이므로 배포 기준으로 사용하지 않는다. 기존 Gateway v1, Publisher, Outbox, n8n의 구현·합성 시험은 보존하며 재구현하지 않는다.
+
+### 선택 배치
+
+| 경계 | 역할 | 구현 상태 |
+| --- | --- | --- |
+| 서버 A (Ubuntu 192.168.0.13) | 기존 Hermes 세 Cron + no-agent exporter + 제한 Publisher/SQLite Outbox + n8n/Valkey + 서버 A에 새로 배치할 Blog-data 소유 Linux Gateway | 기존 producer/Publisher/n8n 기반은 소스 존재. Gateway A 배치 NOT_RUN |
+| A의 export 경계 | 수신 DB에서 검증된 자료만 Blog-data-owned Resource 템플릿으로 완성 Markdown 생성, 버전/sha 고정, HTTPS export/read/ack 제공 | 신규 기능 필요, NOT_RUN |
+| 서버 B (Windows 192.168.0.22) | Windows 내장 PowerShell 5.1 + Task Scheduler로 주기적 HTTPS pull, hash 검증·파일 단독 게시·ack | 신규 기능 필요, NOT_RUN |
+| Blog-data | `30_PARA/33_Resources/R-<approved-research-slug>-Research/`에 research별 bundle, dashboard, 원문 인덱스, notes 관리 | 기존 템플릿/계약 재사용, 신규 router/consumer 필요 |
+| 공통 운영 | 기존 OpenBao, Traefik, n8n 관측 및 알림 재사용 | 실제 credential, TLS, 방화벽, 운영 실행 NOT_RUN |
+
+흐름: Hermes의 직접 HTTP 수집/Receipt → 제한된 서명 생산자(Companion Ed25519) → 기존 Publisher/Outbox → 기존 n8n → A의 Blog-data Gateway v1 SQLite 영속 수신 → 신규 export 준비 → B의 HTTPS Pull → B 로컬 NTFS 원자 게시 → A의 완료 ACK. 기존 `/v1/ingestions`의 `persisted:true`는 수신 SQLite commit만 뜻하며 Windows Vault 게시 완료가 아니다.
+
+**대안 검토:** Linux A가 Windows SMB 공유에 직접 쓰면 B의 예약 작업은 사라지지만 A에 광범위한 Vault 쓰기 권한을 부여하고, CIFS의 hardlink/rename/fsync 보장이 기존 Capture의 로컬 파일 가정과 다르다. 증명되지 않은 SMB 직접 게시 대신 B pull을 기본 경로로 선택한다. Windows OpenSSH/SFTP, Windows Docker/WSL, Obsidian Local REST, GitHub PR 데이터 전달도 기본 구조로 사용하지 않는다.
+
+### Hermes Agent에 전달할 정확한 구현 요청
+
+1. **무엇:** 이미 등록된 `6eabd835f969`(전략 뉴스), `25674fbc0bf3`(DevOps 브리핑), `8d0925bc571d`(1인 사업 아이디어)의 이메일 발송과 일정은 유지하면서 구조화 Candidate v1과 검증된 수집 증거를 생성한다. 민감한 인프라 보고서 `3c3f81a925e0`는 제외한다.
+2. **어떻게:** `hermes cron list`, `hermes cron status`와 버전별 명령 도움말로 현재 ID·상태·출력 원본을 확인한다. 기존 no-agent exporter `84d3f689378b`를 재사용하고 중복 Cron을 만들지 않는다. 허용된 `~/.hermes/cron/output/<job-id>/`와 기존 아이디어 root만 읽는다. Candidate에는 immutable job/run/fire, source_ref/hash, item 제목·요약·출처 URL·검증 상태를 그대로 보존한다.
+3. **원천 근거:** 모델이 작성한 URL/시간은 증거가 아니다. 허용된 직접 HTTP 수집에서 최종 HTTPS URL, 실제 response byte hash, HTTP 2xx, fetched_at, tool_call_id, cache 정보와 scheduled_at의 신뢰 가능한 출처를 별도 Receipt로 남긴다. 실제 값이 없거나 일부 항목 실패 시 전체 보고서를 보류한다. timestamp는 추정·보간하지 않는다.
+4. **신뢰:** 기존 `hermes-companion-evidence/1` 및 `hermes-companion-signature/1` 계약을 적용하고, Hermes 실행/Publisher와 분리된 제한 signer 계정에서 Ed25519 서명한다. 개인키는 Hermes, n8n, Publisher, Git에 주지 않는다. 기존 key registry가 비어 있는 동안 `blocked`를 유지한다. 키 교체/폐기와 reviewer 승인 없는 trust 우회는 금지한다.
+5. **연결과 검증:** 기존 Publisher `stage`/`dispatch`만 사용한다. 실제 인증·Gateway URL·장기 실행 스케줄을 임의로 켜지 않는다. 세 job 각각 재실행, 중복/충돌, 404/5xx, 부분 수집, URL 리디렉션, 잘못된 타임스탬프, 서명 위조, 키 회수, 이메일 성공과 Gateway 실패 분리를 검증한다. 기존 이메일은 수집 데이터의 정본이나 전송 ACK로 간주하지 않는다.
+6. **왜:** 현재 후보의 `collection_evidence`는 실제 HTTP 수신 바이트의 출처 증명이 아니며 운영 timestamp/signature 근거가 누락되어 있다. 이것을 보완하지 않고 전달하면 재요약이나 출처 위조가 Vault까지 전파된다.
+7. **인계:** 작업별 현재/변경 전후 Cron ID, 읽은 파일과 정확한 검증기 revision/hash, 실패 코드, 관련 테스트와 rollout/rollback, 실제 NOT_RUN 항목을 남긴다. Superpowers를 사용할 수 있으면 Using Superpowers → Brainstorming → Executing Plans/Subagent Driven Development → Finishing A Development Branch 순서를 기존 Spec/Task 및 승인 규칙 아래서 적용한다.
+
+### hy-home.docker에 전달할 정확한 구현 요청
+
+1. **무엇:** 기존 Hermes Publisher·Outbox·n8n/Valkey·Traefik·OpenBao·관측체계로 A의 durable store-and-forward를 구현하고 Blog-data의 새 Windows export 계약을 호스팅한다.
+2. **어떻게:** main HEAD와 `SPEC-0204-TSK-0022`, `SPEC-0247`, 기존 n8n Hermes 워크로드/검증 스크립트를 재점검한다. 항목을 `NO_CHANGE`/`IMPLEMENT`/`RETIRE`로 분리한다. Blob이나 계약을 복제하지 말고 Blog-data가 검증한 Gateway 이미지 digest와 API v1 고정 계약을 사용한다. A의 private container network에 배치하고 n8n의 기존 Gateway 전달 목적지만 변경한다.
+3. B 전용 HTTPS 조회/ACK는 Blog-data export API에 위임하며 A Traefik으로 서버 B(192.168.0.22) 접근만 허용한다. IP 주소 접속만으로 TLS 검증이 해결된다고 가정하지 않는다. 인증은 기존 Secret 관리와 독립 read/ack scope를 사용하며 token·URL credential을 Git, workflow JSON, 로그에 기록하지 않는다.
+4. `received`/`export_prepared`/`delivered_acknowledged`/`retryable`/`quarantined`/`conflict`를 분리한다. 수신 200/201의 persisted receipt를 B 완료로 승격하지 않는다. timeout/503만 고정 payload/idempotency key와 최대 5회 bounded backoff, 401/403/409는 차단·알림한다. B offline/restart 상태에서 outbox를 영속 보존한다.
+5. 기존 Prometheus/Grafana/Alertmanager 경로로 backlog depth/age, last successful ack, failure/duplicate/conflict/signature rejection/lag를 수집한다. 불필요한 Airflow DAG, 신규 Kafka, Qdrant, SeaweedFS·DB를 추가하지 않는다. 필요성이 실측될 때만 신규 서비스 제안한다.
+6. 기존 회귀 및 합성 통합 시험에 B 장기 오프라인, ack 분실, 인증/TLS 오류, 키 회전, 중복/충돌, 디스크 부족, 장애 재시작, no-clobber를 추가한다. 실제 credential 사용·n8n 활성화·Compose 재생성·실 서버 포트 개방은 별도 운용 승인과 복구 계획 없이 수행하지 않는다.
+7. **왜:** 이미 완료된 Publisher/Outbox/API를 다시 만들지 않고 Windows에 추가 프로그램이나 WSL을 설치하지 않으며 서버별 성공 상태를 정확하게 추적하기 위함이다. Linux-B, PR-as-data, 오래된 런북·스크립트·fixture·deprecated 계약은 소유자를 찾아 수정·폐기한다. 실제 수정·검증은 기존 Spec/Task에 기록하고 별도 구현 PR로 수행한다.
+
 ## Related Documents
 
 - [워크로드 목록](../README.md)
