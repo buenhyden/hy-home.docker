@@ -18,7 +18,20 @@ REPORT_SCHEMA = {
         "source_text": {"type": "string"},
         "source_sha256": {"type": "string"},
         "idempotency_key": {"type": "string"},
-        "items": {"type": "array", "items": {"type": "object"}},
+        "items": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "source_quotes": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 3,
+                        "items": {"type": "string", "minLength": 1, "maxLength": 500},
+                    }
+                },
+            },
+        },
         "companion_evidence": {"type": "object"},
     },
     "required": [
