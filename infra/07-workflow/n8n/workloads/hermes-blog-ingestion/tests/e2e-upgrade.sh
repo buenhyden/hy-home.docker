@@ -13,7 +13,7 @@ root=$(git -C "$workload" rev-parse --show-toplevel)
 compose=$root/infra/07-workflow/n8n/docker-compose.yml
 new=$(sed -n 's#.*image: hy-home/blog-ingestion:\([0-9a-f]\{40\}\)$#\1#p' "$compose")
 # The pin PR #699 shipped: Gateway without Resource Export, DB schema 2.
-old=${1:-cbf06c3514970f8ffa86dafa18064bfd3931e06a}
+old=${1:-a43d824334e636ddeab034982b36c0700a9d8f93}
 id=e2e-up-$(od -An -N4 -tx1 /dev/urandom | tr -d ' \n')
 work=$(mktemp -d)
 pass=0

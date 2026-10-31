@@ -1,6 +1,6 @@
 ---
 title: "Hermes 수집 전송 합성 시험"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -30,6 +30,9 @@ updated: "2026-11-01"
   동일 요청 재전송·Outbox 처리를 합성 방식으로 검증합니다.
 - [합성 보고서](fixtures/synthetic-report.json)와 같은 디렉터리의 계약 파일: Blog-data `dev` 커밋
   `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`에서 고정한 계약과 합성 보고서입니다.
+- [attestation-v2.vectors.json](fixtures/attestation-v2.vectors.json): Blog-data `dev` 커밋
+  `b372de374ec589b1bec2ff8096ae2f7272461248`의 `scripts/lib/ingestion/contracts/attestation-v2.vectors.json`을
+  바이트 단위로 그대로 복사한 v2 증명 벡터입니다. 합성 키만 담으며 수정하지 않습니다.
 
 - [test_ingress_route.py](test_ingress_route.py): 제안 Traefik 경로가 흐름의 정확한
   경로·POST·호스트 출발지·본문·속도 제한만 허용하는지 확인합니다.
