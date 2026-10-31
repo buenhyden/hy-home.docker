@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1267,6 +1267,55 @@ pinned constant; the Blog-data signature binds content, not report ID, so equal
 content under another key could be attested again (duplicate exports only); the
 E2E publishes its throwaway Traefik on the LAN address while it runs and keeps
 its built images; the Windows receiver's 429 handling is untested.
+
+### Server A operational rollout — 2026-11-01
+
+Owner decisions: keep Export closed and design the trust adapter separately (no
+`export` block, so attestation answers 403 `EXPORT_DISABLED`); approve RUN-0053
+Gateway start, Worker network join, n8n credentials and publication, and both
+Traefik routes. Base `main` `6e6df4005`. Blog-data `dev` moved to
+`a43d824334e636ddeab034982b36c0700a9d8f93` (PR #640): the ingestion and Export
+API are unchanged, the renderer is `resource-export/2`, and the RFC 8032 test key
+is now refused as an attestation key. No Export existed, so no `ready` manifest
+or Markdown was re-rendered.
+
+Read-only survey before change: no Gateway container, volume, data directory or
+production image; `n8n_blog_ingest_net` absent; `blog_export_net` held only
+Traefik (v3.7.16, recreated earlier the same day). The installed plugin matched
+`hermes-plugin/` byte for byte (`research-report` 0.1.0, doctor OK) but had no
+webhook URL (default `https://n8n.local/...`) and no secret file; its one
+`delivered` Outbox record went to a local stand-in at `127.0.0.1:18787`, not to
+n8n. Cron `6eabd835f969`, `25674fbc0bf3` and `8d0925bc571d` reference
+`submit_research_report`; `3c3f81a925e0` does not. `publisher/producer-keys.json`
+is empty, no producer or attester account exists, and the only producer-side
+sealer is the unreviewed, untested branch `hermes/acquirer-sealer` (`f044fb85c`).
+
+| Unit | Result | Evidence |
+| --- | --- | --- |
+| Source pin | PASS | Compose, wiring test and registry pin `a43d824…`; source binding rehashed `4a5f070d…` → `497a9a7b…`, previous binding archived |
+| Synthetic E2E at the new pin | PASS | `e2e-ingress.sh` 51/51; `e2e-upgrade.sh` 10/10 (`cbf06c35` schema 2 → `a43d824` schema 3) |
+| 2. Image | PASS | `gateway-image.sh` sparse build of `a43d824…`; image ID `sha256:e513b938721f38c201ade72b7d2fef2bb50c32aa78061b099e8f1fa4fe1c7804`; no registry digest; templates, profile registry and research map present; in-image `template_version` `resource-export/2+f45cc9bbc0a4` |
+| 3. Backup | NOT_APPLICABLE | No earlier store existed |
+| 4. Paths and config | PASS | `${DEFAULT_WORKFLOW_DIR}/blog-ingestion/data` 0700 and `config.json` 0600, both UID 10001, on local ext4; credentials `ingest` and `read` only (SHA-256 digests), no `attest`, `export_read`, `export_ack`, `capture` or `export` block. Raw tokens sit in owner-only files outside Git |
+| 5. Gateway start | PASS | `up -d --no-deps --no-build --pull never blog-ingestion`: healthy, user 10001, read-only root, caps dropped, no published port, `export_enabled:false`, DB schema 3; unauthenticated summary 401, `read` token 200 with empty totals |
+| 6. Worker network | PASS (deviation) | `docker network connect n8n_blog_ingest_net n8n-worker` instead of recreation: the worker runs with the extra `docker-compose.ollama-local.yml`, which a root-only recreation would drop. Worker → Gateway 401; n8n main cannot reach the Gateway |
+| 7. Attester | BLOCKED | No producer key, producer account or attester key; Export closed by owner decision |
+| 8. n8n credentials | PASS | Two `httpHeaderAuth` credentials imported from stdin (`HermesIngress001`, `GatewayIngest001`); stored ciphertext, neither token present in the export |
+| 9. Workflow | PASS | Tracked `workflow.json` imported as `HermesBlogIngest` and published; the CLI publication needed one `docker restart n8n` (only active workflow). Internal webhook without or with a wrong token: 403 |
+| 10. Webhook route | PASS | `hermes-webhook.yml` moved into `dynamic/`; source re-measured `192.168.0.13`; host POST reaches n8n header auth (403), GET, other webhook paths and the UI stay on SSO (302) |
+| 11. Export route | PASS (A side) | `blog-export.yml` moved into `dynamic/`; from A: Export read and ACK 403 (allowlist), attestation reaches the Gateway (401), every other path 404. B's source is measured at its dry run |
+| Hermes URL | NOT_RUN (owner) | `~/.hermes/.env` is outside this agent's permitted paths; the secret file `~/.hermes/secrets/research-webhook.secret` (0600) exists and matches the n8n credential |
+| 12–15 | NOT_RUN | Windows dry run, real receipt, ACK and restart/restore checks wait for real Cron submissions and the trust design |
+
+Rollback: delete either route file; `docker compose ... stop blog-ingestion`
+(data directory kept); `docker network disconnect n8n_blog_ingest_net n8n-worker`;
+`n8n unpublish:workflow --id=HermesBlogIngest` then restart n8n. Lanes:
+SOURCE PASS, INTEGRATION PASS, TRUST BLOCKED, RECEIVER NOT_RUN, OPERATIONAL NOT_RUN.
+
+Blog-data handoff: RUN-0009 at `dev` `a43d824` still shows
+`"base_url": "https://ingestion.hy.home.arpa"`; the live router is
+`https://blog-export.hy.home.arpa`, so that example needs correcting in Blog-data.
+`allowed_template_versions` takes `resource-export/2+f45cc9bbc0a4`.
 
 ## Related Documents
 
