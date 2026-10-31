@@ -1088,7 +1088,7 @@ accepted Gateway source; Blog-data `main` is not used.
 | E2E build | MODIFY | Sparse set read from the Dockerfile's `.dockerignore` allowlist (`tests/gateway-image.sh`); Gateway hardening rendered from Compose |
 | Upgrade/restore check | IMPLEMENT | `tests/e2e-upgrade.sh` |
 | `workflow.json`, webhook route, Publisher dispatch/Outbox, trust | NO_CHANGE | Reused as merged in PR #699 |
-| Hermes plugin source | BLOCKED (Hermes lane) | PR #700 open; read-only check: POST to the allowlisted URL, header `X-Hermes-Ingest-Token`, no redirects, durable local outbox, strips `companion_evidence` — consistent with `workflow.json` |
+| Hermes plugin source | NO_CHANGE (Hermes lane) | PR #700 merged as `3727ff0e7` during this slice; all four files match the installed `~/.hermes/plugins/research-report` by SHA-256; read-only check: POST to the allowlisted URL, header `X-Hermes-Ingest-Token`, no redirects, durable local outbox, strips `companion_evidence` — consistent with `workflow.json` |
 | PR #698 (draft) | Superseded, not merged | Describes the pre-#699 `contract-hold` path and an Export API "to be added"; this slice and PR #699 implement the current design |
 | "Export/ACK API absent" statements | RETIRE | README, RUN-0053, spec and policy row corrected; dated history above is kept |
 
@@ -1182,7 +1182,7 @@ dry run; real receive and ACK; backup connection.
 | Attestation/Export/ACK disposable E2E | 23 | W83 | Attest → ready → pull → hash check → ACK, held, forged, scope, routing and restart cases | Synthetic tokens and keys, disposable containers | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Schema-3 upgrade and restore | 23 | W83 | Previous-pin store backed up, upgraded in place, both backups restored | Disposable volumes | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Production attester | 23 | W83 | Real account, key, `attest` token and signed producer evidence | Blocked: producer key store empty; account and key need approval | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
-| Hermes plugin source handoff | 23 | W83 | Plugin source merged and matched to the installed copy | Blocked: PR #700 open in the Hermes lane | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Hermes plugin source handoff | 23 | W83 | Plugin source merged and matched to the installed copy | PR #700 `3727ff0e7`; four files SHA-256 equal to the installed copy; real submission not run | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | Protected-install follow-up slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
 
 ## Criterion Acceptance

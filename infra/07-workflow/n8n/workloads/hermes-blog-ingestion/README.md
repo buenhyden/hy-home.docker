@@ -31,7 +31,7 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 | Attestation·Export·ACK 일회용 E2E | PASS | 합성 서명 → `ready` Export → Manifest·파일 해시 → ACK, `held`·위조·범위 거부, 재시작 영속 |
 | Schema 3 업그레이드·백업 복원 | PASS | 이전 고정본 schema 2 저장소의 제자리 업그레이드와 두 백업의 새 볼륨 복원(합성) |
 | Attestation 서명자 | 소스 PASS, 운영 BLOCKED | `attest` 명령과 합성 시험은 통과했지만 생산자 키 저장소가 비어 있고 서명 계정·키가 없음 |
-| Hermes 플러그인 소스 | BLOCKED | Hermes 작업공간 소유 PR #700이 아직 병합되지 않음 |
+| Hermes 플러그인 소스 | PASS(소스), 운영 NOT_RUN | PR #700으로 `hermes-plugin/`에 추적, 설치본 `~/.hermes/plugins/research-report` 네 파일과 SHA-256 일치(2026-11-01). 실제 제출은 미실행 |
 | 실제 Windows 수신기 | NOT_RUN | 서버 B의 수신기 Dry Run·ACK 미실행 |
 | 실제 운영 검증 | NOT_RUN | 운영 Traefik 경로·실제 인증·Gateway 배치·Hermes 플러그인 미적용 |
 
