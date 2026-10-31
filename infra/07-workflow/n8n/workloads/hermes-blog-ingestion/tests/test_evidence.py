@@ -46,31 +46,40 @@ class EvidenceTests(unittest.TestCase):
         def item(field, value, index=0):
             return lambda d: d["items"][index].__setitem__(field, value)
 
-        cases = {
-            "identity": lambda d: d.__setitem__("run_id", "c" * 32),
-            "candidate_digest": lambda d: d.__setitem__("candidate_sha256", "0" * 64),
-            "schema_version": lambda d: d.__setitem__("schema_version", "v2"),
-            "fields": lambda d: d.__setitem__("extra", 1),
-            "producer": lambda d: d.__setitem__("producer", {"name": "x"}),
-            "coverage": lambda d: d["items"].pop(),
-            "order": item("index", 1),
-            "source_url": item("source_url", "https://example.com/other"),
-            "fetched_url": item("fetched_url", "https://user:pw@example.com/x"),
-            "fetched_url_bare": item("fetched_url", "https://"),
-            "fetched_url_port": item("fetched_url", "https://example.com:99999/x"),
-            "http_status": item("http_status", 304),
-            "body_digest": item("body_sha256", "A" * 64),
-            "cache": item("cache", {"hit": True, "key_sha256": None}),
-            "timestamp": item("fetched_at", "2026-10-30T09:01:10"),
-            "fetched_after_generation": item("fetched_at", "2026-10-30T09:06:00+09:00"),
-            "fetched_before_run": item("fetched_at", "2026-10-30T08:59:59+09:00"),
-            "scheduled_after_generation": lambda d: d.__setitem__(
-                "scheduled_at", "2026-10-30T09:06:00+09:00"
+        cases = [
+            ("identity", lambda d: d.__setitem__("run_id", "c" * 32)),
+            ("candidate_digest", lambda d: d.__setitem__("candidate_sha256", "0" * 64)),
+            ("schema_version", lambda d: d.__setitem__("schema_version", "v2")),
+            ("fields", lambda d: d.__setitem__("extra", 1)),
+            ("producer", lambda d: d.__setitem__("producer", {"name": "x"})),
+            ("coverage", lambda d: d["items"].pop()),
+            ("order", item("index", 1)),
+            ("source_url", item("source_url", "https://example.com/other")),
+            ("fetched_url", item("fetched_url", "https://user:pw@example.com/x")),
+            ("fetched_url", item("fetched_url", "https://")),
+            ("fetched_url", item("fetched_url", "https://example.com:99999/x")),
+            ("http_status", item("http_status", 304)),
+            ("body_digest", item("body_sha256", "A" * 64)),
+            ("cache", item("cache", {"hit": True, "key_sha256": None})),
+            ("tool_call_id", item("tool_call_id", "")),
+            ("tool_call_id", item("tool_call_id", "x" * 129)),
+            ("tool_call_id", item("tool_call_id", 7)),
+            ("fields", lambda d: d["items"][0].pop("status")),
+            ("status", item("status", "partial")),
+            ("timestamp", item("fetched_at", "2026-10-30T09:01:10")),
+            (
+                "fetched_after_generation",
+                item("fetched_at", "2026-10-30T09:06:00+09:00"),
             ),
-        }
-        for name, mutate in cases.items():
-            with self.subTest(code=name):
-                self.check(mutate, name.removesuffix("_bare").removesuffix("_port"))
+            ("fetched_before_run", item("fetched_at", "2026-10-30T08:59:59+09:00")),
+            (
+                "scheduled_after_generation",
+                lambda d: d.__setitem__("scheduled_at", "2026-10-30T09:06:00+09:00"),
+            ),
+        ]
+        for code, mutate in cases:
+            with self.subTest(code=code):
+                self.check(mutate, code)
 
     def test_duplicate_keys_and_garbage_fail_closed(self):
         raw = encode(EVIDENCE)[:-1] + b',"job_id":"6eabd835f969"}'

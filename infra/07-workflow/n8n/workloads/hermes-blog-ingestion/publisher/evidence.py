@@ -39,6 +39,8 @@ _ITEM = {
     "http_status",
     "body_sha256",
     "cache",
+    "tool_call_id",
+    "status",
 }
 
 
@@ -169,6 +171,13 @@ def verify(job_id, run_id, candidate, evidence):
             "body_digest",
         )
         _require(_cache(record["cache"]), "cache")
+        _require(
+            isinstance(record["tool_call_id"], str)
+            and 0 < len(record["tool_call_id"]) <= 128,
+            "tool_call_id",
+        )
+        # Partial, failed or cancelled acquisitions never verify a run.
+        _require(record["status"] == "complete", "status")
         fetched = _time(record["fetched_at"])
         _require(fetched <= generated, "fetched_after_generation")
         _require(record["cache"]["hit"] or fetched >= scheduled, "fetched_before_run")

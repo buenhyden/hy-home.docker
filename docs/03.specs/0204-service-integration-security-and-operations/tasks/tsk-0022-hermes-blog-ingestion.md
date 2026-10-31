@@ -742,8 +742,9 @@ Network observation from server A: `192.168.0.22` answered ICMP, while TCP
 22/80/443/8787 did not connect within 3 seconds. No approved TLS entry or DNS
 name exists yet, so the tracked workflow keeps `https://gateway.invalid` and
 `active:false`. No Hermes live candidate root was found outside scratch
-directories; the recorded 153 held items remain a 2026-10-30 observation and
-no collection time was estimated. No Cron, secret, workflow, container, network
+directories at that point (superseded below by the live exporter root); the
+recorded 153 held items remain a 2026-10-30 observation and no collection
+time was estimated. No Cron, secret, workflow, container, network
 or remote Git state was changed.
 
 ### Handoff: Hermes producer lane (server A)
@@ -751,9 +752,9 @@ or remote Git state was changed.
 Deliver per run a Companion Evidence v1 file exactly as defined in the workload
 README `Companion Evidence v1 계약` section; candidate producer v1.0.0 fields stay unchanged.
 
-1. Record each item at the direct-fetch boundary: final HTTPS URL, 2xx status,
-   SHA-256 of received bytes, receive time with offset (millisecond precision)
-   and cache provenance. A cache hit records the original fetch time and cache
+1. Record each item at the direct-fetch boundary: tool call identifier, final
+   HTTPS URL, 2xx status, SHA-256 of the decoded response body, receive time
+   with offset (millisecond precision), `complete` status and cache provenance. A cache hit records the original fetch time and cache
    key digest, never the materialization time.
 2. Persist the record atomically (temp file, fsync, rename) before the fetched
    bytes are used, closing the crash gap between fetch and evidence.
@@ -767,7 +768,9 @@ README `Companion Evidence v1 계약` section; candidate producer v1.0.0 fields 
 5. Write to `<evidence-root>/SHA256(job_id NUL run_id).json` and validate
    against `tests/fixtures/companion-*-v1.json` plus `publisher/evidence.py`.
 
-Acceptance: real runs verify with zero rejections; crash injection between fetch
+Also re-align the exporter with the SPEC-0247 validator: either regenerate or
+retire pre-change exports, and change `schema_version` whenever the item field
+set changes. Acceptance: real runs verify with zero rejections; crash injection between fetch
 and write yields no unbound item; a forged record from the exporter account is
 rejected by the approved mechanism.
 
@@ -789,6 +792,30 @@ Acceptance: from the n8n worker, DNS/TCP/TLS succeed, an invalid token returns
 401, a wrong certificate fails, and a synthetic tenant ingestion returns 201 then
 200 for the identical request and 409 for a changed body, all durably visible
 through `GET /v1/ingestions/{id}`.
+
+### Live candidate and Hermes-lane alignment — 2026-10-31
+
+A read-only scan of the live exporter root
+(`~/storage/research/hermes-report-export/out`, Cron `84d3f689378b` every five
+minutes) found 14 candidates for the three admitted jobs with 193 items (news
+57, devops 96, ideas 40), 119 of them carrying a source URL, plus five blocked
+private-infra candidates. The earlier 153-item figure is superseded by this
+observation and none of these items has a direct-fetch record. Under main's
+pinned validator eight admitted candidates pass and six fail: three devops
+exports from 2026-10-28 to 2026-10-30 lack `uncertainty`, and three idea exports
+lack `regulation`, `expected_revenue` and `profitability_claim`. All six still
+declare `schema_version` 1.0.0, so the producer changed its field set without a
+version change. The Hermes-lane handoff note reports 18 of 19 passing with its
+own inline validator, which therefore differs from the SPEC-0247 validator.
+Those files were not modified here.
+
+The same note lists receipt minimum fields beyond the first v1 draft. Because no
+producer emits v1 yet, the contract now also requires per-item `tool_call_id`
+and `status` (only `complete` verifies) and defines `body_sha256` over the
+decoded HTTP response body. The Hermes note's trust-boundary position (same-UID
+JSON plus SHA-256 is not authentication; prefer a restricted producer account,
+protected handoff and independent verifier) matches the admission condition
+above. The controller ran the suite: 151/151 with the added rejection subtests.
 
 ### Remaining blocked conditions and recovery
 
@@ -837,13 +864,16 @@ remainder. Its Minor port/length URL check and isolated symlink credential test
 were applied; untested hard-link, foreign-owner and FIFO credential cases, the
 count-based retry exhaustion and the Python 3.11+ timestamp parsing assumption
 (local 3.12.3) remain noted. Reviewers had no shell; the suite (151/151),
-Ruff and document checks were run by the controller. Commits are local only;
-push, PR and merge need separate approval.
+Ruff and document checks were run by the controller. With owner approval the
+slice was pushed as PR #694; head `c346db86e` passed CI Quality Gates and the
+owner merged it at 2026-10-31T01:15:45Z as `7b041d0b1`, whose main CI Quality
+Gates also passed. This integrates source only; criterion 23 stays pending.
 
-Local source verification and the user-authorized Git integration are in progress.
-No commit, push, merge or deployment is claimed here. The Gateway contract
-and timestamp mapping, API compatibility, Native delivery evidence, and the
-required local CI toolchain remain separate pending work. Local source readiness
+Earlier slices (before PR #694) recorded no commit, push, merge or deployment
+from this Task; PR #694 above is the first integrated Task slice. The later
+evidence-alignment slice is committed locally and awaits owner approval for
+push and PR. No deployment is claimed. Producer authentication, server-B TLS,
+Native delivery evidence and operating acceptance remain separate pending work. Local source readiness
 does not imply operating readiness; resume the external-contract and operational
 lanes from these recorded boundaries.
 
