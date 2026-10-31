@@ -925,8 +925,10 @@ TCP 22/443/8443 still did not connect from server A.
 
 ### Protected install and ingest-only contract — 2026-10-31
 
-PR #696 (head `7629bbad4`, CI passed, open) carried the producer verifier above.
-This follow-up updates the same PR; it does not re-implement `trust.authorize`,
+PR #696 carried the producer verifier above; the owner merged it at head
+`7629bbad4` as `82dadf586` (2026-10-31T03:37:58Z) before this slice was pushed.
+This slice is a separate follow-up PR from `feat/hermes-protected-install`; it
+does not re-implement `trust.authorize`,
 the key store format or the 165 earlier tests.
 
 - Runtime protection was weaker than its comment: it accepted any file not owned
@@ -993,7 +995,7 @@ the key store format or the 165 earlier tests.
   on this branch as `f044fb85c` by another lane, outside this Task (the sealer
   handles a private key; an automated review flagged SSRF in the fetcher's
   redirect handling). With owner approval the commit was moved to the local
-  branch `hermes/acquirer-sealer` and is not part of PR #696. `install.py`
+  branch `hermes/acquirer-sealer` and is not part of this follow-up PR. `install.py`
   installs only an explicit Publisher module allowlist in any case; review and
   placement of producer code belong to the Hermes producer lane.
 - CI does not run this workload's suite (no gate entry, `cryptography` absent
@@ -1041,7 +1043,7 @@ DNS/`extra_hosts`; workflow URL/credential binding and publication.
 | Protected install on server A | 23 | W83 | Real `hermes-publisher` account loads `/opt/hermes-publisher` release with `python3 -I` | Blocked: account, path and service need separate approval | NOT_RUN | Protected install and ingest-only contract — 2026-10-31 | required | - |
 | Producer trust anchor | 23 | W83 | Real restricted producer account and reviewed key in `publisher/producer-keys.json` | Blocked: no producer account, key or signed run delivered | NOT_RUN | Handoff: Hermes producer lane (server A) | required | - |
 | Server-B TLS entry | 23 | W83 | DNS/TCP/TLS/auth from n8n worker | Blocked: Blog-data lane handoff; TCP probe from server A failed | NOT_RUN | Handoff: Blog-data Gateway lane (server B) | required | - |
-| Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | PR #696 protected-install slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
+| Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | Protected-install follow-up slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
 
 ## Criterion Acceptance
 
@@ -1077,7 +1079,8 @@ with failing tests first and re-verified (169 tests, install check 17/17 on the
 final head). Deferred minors: skipped non-existent `sys.path` entries, about
 14 ms per runtime check (50-60 ms per record), no archive member size cap,
 undocumented fail-closed symlinked `/opt`, and a Traefik timeout check limited
-to two files. The slice updates PR #696; CI and merge are recorded on the PR.
+to two files. PR #696 had already merged at `7629bbad4`, so this slice is a follow-up PR;
+its CI and merge are recorded on that PR.
 CI does not run this workload's suite, so these results are local evidence.
 
 Design self-review checked scope, dependencies, immutable Outbox interfaces,
