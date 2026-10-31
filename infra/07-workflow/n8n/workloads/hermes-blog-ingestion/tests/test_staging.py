@@ -533,7 +533,7 @@ class StagingTests(unittest.TestCase):
             box.stage(Snapshot(*key, b"candidate", "source", b"report"))
             with (
                 self.subTest(job=job),
-                self.assertRaisesRegex(OutboxError, "^evidence_required$"),
+                self.assertRaisesRegex(OutboxError, "^evidence_unverified$"),
             ):
                 box.bind_request(key, "v1", b"body")
             self.assertIsNone(box.get(key)["request_body"])
