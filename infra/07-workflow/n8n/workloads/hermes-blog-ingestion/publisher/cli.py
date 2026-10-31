@@ -13,9 +13,9 @@ import sqlite3
 import stat
 from pathlib import Path
 
-from . import trust
+from . import attestation, attester, trust
 from .candidates import EXPORT_NAME, JOBS, load_candidate, load_validator
-from .delivery import TransportFailure, process_one
+from .delivery import DispatchRequest, TransportFailure, process_one
 from .files import InputError, open_directory, safe_read
 from .gateway_adapter import DESTINATION, GatewayAdapter
 from .gateway_transport import GatewayReplayTransport
@@ -172,6 +172,48 @@ def _dispatch(args, box):
     return counts
 
 
+def _attest_queue(args):
+    auth = _auth(args.auth_header_file)
+    key = attestation.load_signing_key(args.signing_key)
+    gateway = args.gateway.rstrip("/")
+
+    def send(report_id, body):
+        try:
+            http = HttpTransport(
+                endpoint=f"{gateway}/v1/ingestions/{report_id}/attestations",
+                destination=attestation.DESTINATION,
+                auth=auth,
+                timeout=30,
+                content_type="application/json",
+            )
+        except TransportFailure as failure:
+            return failure
+        digest = hashlib.sha256(body).hexdigest()
+        try:
+            return http.send(
+                DispatchRequest(
+                    key=(attestation.DESTINATION, report_id),
+                    source_sha256=digest,
+                    body_sha256=digest,
+                    contract_revision="blog-data-attestation/2",
+                    destination=attestation.DESTINATION,
+                    body=body,
+                    endpoint_sha256=http.endpoint_sha256,
+                )
+            )
+        except TransportFailure as failure:
+            return failure
+
+    return attester.run(
+        attester.GatewayReader(gateway, auth),
+        send,
+        key_id=args.key_id,
+        key=key,
+        state_dir=args.state_dir,
+        evidence_dir=args.evidence_dir,
+    )
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -188,6 +230,13 @@ def main(argv=None):
     dispatch.add_argument("--endpoint", required=True)
     dispatch.add_argument("--auth-header-file", type=Path, required=True)
     dispatch.add_argument("--allow-replay", action="store_true")
+    queue = sub.add_parser("attest-queue")
+    queue.add_argument("--gateway", required=True)
+    queue.add_argument("--auth-header-file", type=Path, required=True)
+    queue.add_argument("--signing-key", type=Path, required=True)
+    queue.add_argument("--key-id", required=True)
+    queue.add_argument("--state-dir", type=Path, required=True)
+    queue.add_argument("--evidence-dir", type=Path, required=True)
     sub.add_parser("verify-install")
     args = parser.parse_args(argv)
     if args.command == "verify-install":
@@ -200,6 +249,14 @@ def main(argv=None):
             return 1
         print(json.dumps({"keys": keys, "runtime": "protected"}, sort_keys=True))
         return 0
+    if args.command == "attest-queue":
+        try:
+            result = _attest_queue(args)
+        except (ValueError, OSError):
+            print('{"error":"operation_rejected"}')
+            return 1
+        print(json.dumps(result, sort_keys=True))
+        return 1 if result["rejected"] else 0
     box = None
     try:
         box = Outbox(args.outbox)
