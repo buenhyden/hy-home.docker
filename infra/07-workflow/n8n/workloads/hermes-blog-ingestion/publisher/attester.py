@@ -10,13 +10,12 @@ import hashlib
 import http.client
 import json
 import os
-import ssl
 import tempfile
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from . import attestation
+from . import attestation, source_fetch
 from .candidates import JOBS
 from .delivery import FailureKind, TransportFailure
 from .outbox import valid_gateway_report_id
@@ -35,7 +34,7 @@ class GatewayError(ValueError):
 
 def _https_opener(host, port, path, headers):
     connection = http.client.HTTPSConnection(
-        host, port, timeout=30, context=ssl.create_default_context()
+        host, port, timeout=30, context=source_fetch.tls_context()
     )
     try:
         connection.request("GET", path, headers=headers)

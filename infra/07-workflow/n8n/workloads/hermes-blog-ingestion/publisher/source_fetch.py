@@ -53,8 +53,15 @@ class FetchResult:
     body: bytes
 
 
-def _tls_connect(ip, port, server_hostname, timeout):
+def tls_context():
+    """Verifying client context; TLS 1.2 is the oldest protocol accepted."""
     context = ssl.create_default_context()
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
+    return context
+
+
+def _tls_connect(ip, port, server_hostname, timeout):
+    context = tls_context()
     raw = socket.create_connection((ip, port), timeout)
     try:
         return context.wrap_socket(raw, server_hostname=server_hostname)

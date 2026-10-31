@@ -442,3 +442,13 @@ class OutcomeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TlsContextTests(unittest.TestCase):
+    def test_tls_context_refuses_old_protocols_and_verifies(self):
+        import ssl
+
+        context = source_fetch.tls_context()
+        self.assertEqual(ssl.TLSVersion.TLSv1_2, context.minimum_version)
+        self.assertEqual(ssl.CERT_REQUIRED, context.verify_mode)
+        self.assertTrue(context.check_hostname)
