@@ -254,7 +254,11 @@ class AttesterTest(unittest.TestCase):
     def test_auth_failure_keeps_body_and_halts_then_resends(self):
         other = "22222222-2222-2222-2222-222222222222"
         reader = Reader({RID: request([item("a")]), other: request([item("a")])})
-        for failure in (HttpResponse(401, b"{}"), TransportFailure(FailureKind.TLS)):
+        for failure in (
+            HttpResponse(401, b"{}"),
+            HttpResponse(413, b"{}"),
+            TransportFailure(FailureKind.TLS),
+        ):
             self.setUp()
             sender = Sender(failure)
             fetcher = Fetcher({GOOD: page()})
@@ -266,6 +270,17 @@ class AttesterTest(unittest.TestCase):
             counts = self.go(reader, sender, fetcher)
             self.assertEqual(sender.sent[0], sender.sent[1])
             self.assertEqual(counts["attested"], 2)
+
+    def test_unencodable_url_is_permanently_unverified(self):
+        bad = "https://example.org/bad"  # the real fetch raises on a lone surrogate
+        reader = Reader({RID: request([item("a"), item("b", url=bad)])})
+        error = UnicodeEncodeError("utf-8", "\ud800", 0, 1, "surrogates not allowed")
+        sender = Sender()
+        counts = self.go(reader, sender, Fetcher({GOOD: page(), bad: error}))
+        self.assertEqual((counts["attested"], counts["held_items"]), (1, 1))
+        self.assertEqual(counts["retry"], 0)
+        body = json.loads(sender.sent[0][1])
+        self.assertEqual([i["item_id"] for i in body["verified_items"]], ["a"])
 
     def test_stray_value_error_does_not_close_the_report(self):
         reader = Reader({RID: request([item("a")])})

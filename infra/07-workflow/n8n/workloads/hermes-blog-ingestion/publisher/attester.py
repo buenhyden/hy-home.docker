@@ -176,6 +176,8 @@ def run(
                 cache[url] = fetcher(url)
             except FetchFailure as failure:
                 cache[url] = failure
+            except UnicodeError:  # e.g. a lone surrogate in the URL: never fetchable
+                cache[url] = FetchFailure("url")
         return cache[url]
 
     def deliver(path, state):
@@ -184,14 +186,14 @@ def run(
         except TransportFailure as failure:
             result = failure
         verdict = attestation.outcome(result)
-        # A credential or certificate problem says nothing about the content:
+        # A credential, certificate or body-cap (413) problem says nothing about the content:
         # keep the signed body for the next run and stop sending in this one.
         if verdict == "rejected" and (
             (
                 isinstance(result, TransportFailure)
                 and result.kind in (FailureKind.AUTH, FailureKind.TLS)
             )
-            or getattr(result, "status", None) in (401, 403)
+            or getattr(result, "status", None) in (401, 403, 413)
         ):
             counts["rejected"] += 1
             halt.append(True)

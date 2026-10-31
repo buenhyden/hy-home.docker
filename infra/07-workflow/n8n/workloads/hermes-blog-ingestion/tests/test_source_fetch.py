@@ -104,6 +104,9 @@ class GuardTests(unittest.TestCase):
             "[::1]",
             "[fd00::1]",
             "[::ffff:10.0.0.1]",
+            "[::10.0.0.1]",
+            "[64:ff9b::a00:1]",
+            "[64:ff9b:1::a00:1]",
         ):
             connect, calls = connector()
             with self.subTest(host=host):

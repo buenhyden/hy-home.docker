@@ -29,7 +29,12 @@ class DeployUnitTests(unittest.TestCase):
             "PrivateTmp": "yes",
             "PrivateDevices": "yes",
             "RestrictAddressFamilies": "AF_INET AF_INET6 AF_UNIX",
-            "ReadWritePaths": "/var/lib/hermes-attester/state /var/lib/hermes-attester/evidence",
+            "StateDirectory": "hermes-attester/state hermes-attester/evidence",
+            "StateDirectoryMode": "0700",
+            "CapabilityBoundingSet": "",
+            "ProtectKernelTunables": "yes",
+            "ProtectKernelModules": "yes",
+            "ProtectControlGroups": "yes",
             "UMask": "0077",
         }.items():
             self.assertEqual(value, service[key], key)
@@ -52,11 +57,11 @@ class DeployUnitTests(unittest.TestCase):
             flags,
         )
 
-    def test_timer_runs_every_five_minutes_and_persists(self):
+    def test_timer_runs_every_five_minutes(self):
         unit, _ = parse("hermes-attester.timer")
         self.assertEqual("2min", unit["Timer"]["OnBootSec"])
         self.assertEqual("5min", unit["Timer"]["OnUnitActiveSec"])
-        self.assertEqual("true", unit["Timer"]["Persistent"])
+        self.assertNotIn("Persistent", unit["Timer"])
         self.assertEqual("timers.target", unit["Install"]["WantedBy"])
 
     def test_no_secret_value_in_units(self):

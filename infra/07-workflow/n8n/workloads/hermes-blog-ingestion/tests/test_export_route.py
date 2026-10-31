@@ -109,7 +109,10 @@ class ExportRouteTests(unittest.TestCase):
         self.assertEqual({"ipAllowList", "rateLimit"}, set(read))
         for kinds in (ack, attest):
             self.assertEqual({"ipAllowList", "buffering", "rateLimit"}, set(kinds))
-            self.assertLessEqual(kinds["buffering"]["maxRequestBodyBytes"], 16384)
+        # ACKs are small; attestation/2 lists reach ~213 KB at 100 long URLs.
+        self.assertEqual(16384, ack["buffering"]["maxRequestBodyBytes"])
+        self.assertGreaterEqual(attest["buffering"]["maxRequestBodyBytes"], 230000)
+        self.assertLessEqual(attest["buffering"]["maxRequestBodyBytes"], 262144)
         self.assertLessEqual(attest["rateLimit"]["average"], 10)
         reads = self.routers["blog-attestation-read"]
         self.assertEqual(

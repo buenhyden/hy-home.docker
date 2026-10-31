@@ -126,10 +126,17 @@ def _utc_millis(moment):
     return moment.strftime("%Y-%m-%dT%H:%M:%S.") + f"{moment.microsecond // 1000:03d}Z"
 
 
+_NO_GLOBAL_V6 = tuple(
+    ipaddress.ip_network(n) for n in ("::/96", "64:ff9b::/96", "64:ff9b:1::/48")
+)
+
+
 def _is_global(value):
     address = ipaddress.ip_address(value)
     if getattr(address, "ipv4_mapped", None):
         address = address.ipv4_mapped
+    elif address.version == 6 and any(address in net for net in _NO_GLOBAL_V6):
+        return False  # IPv4-compatible and NAT64 forms embed an unvetted IPv4
     return address.is_global
 
 

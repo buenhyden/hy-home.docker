@@ -3,7 +3,7 @@
 # (/opt/hermes-publisher/releases/<commit>); install.py itself creates no
 # `current` link. Secrets under /etc/hermes-attester/ are owned by
 # hermes-attester with mode 0600 (or root:hermes-attester 0640) and read-only
-# here; state and evidence are the only writable paths.
+# here; StateDirectory creates and owns the two writable paths.
 [Unit]
 Description=Hermes attester: attest queued Blog-data reports
 After=network-online.target
@@ -20,5 +20,10 @@ ProtectHome=yes
 PrivateTmp=yes
 PrivateDevices=yes
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
-ReadWritePaths=/var/lib/hermes-attester/state /var/lib/hermes-attester/evidence
+StateDirectory=hermes-attester/state hermes-attester/evidence
+StateDirectoryMode=0700
+CapabilityBoundingSet=
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
 UMask=0077
