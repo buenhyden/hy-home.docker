@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.0"
+version: "0.5.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1387,6 +1387,13 @@ Built on branch `feat/hermes-trust-adapter`, source and synthetic evidence only:
 - Production units (image build, backup then schema 4 switch, workflow republish, route
   pull, attester account/key/token/`export` block, timer, Hermes plugin rollout) are
   NOT_RUN; RUN-0053 lists them as separate approval units.
+- Residual gap: the production POST closure (`cli attest-queue` sending through
+  `HttpTransport`) is exercised by neither the unit tests nor the E2E, whose harness uses
+  its own send function. It is first exercised by the real timer run.
+- Final-review fixes: the attestation route has its own 262144-byte body cap (ACK stays
+  16384) and the attester treats HTTP 413 like 401/403; unencodable URLs are permanently
+  unverified; IPv4-compatible and NAT64 addresses are refused; the service unit uses
+  `StateDirectory` and an empty capability set; the timer no longer sets `Persistent`.
 
 ## Evidence
 

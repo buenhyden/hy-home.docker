@@ -1,6 +1,6 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.3.1"
+version: "0.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -203,7 +203,8 @@ Companion 디렉터리는 생산자 계정만 쓸 수 있어야 합니다.
 ### 직접 제출 경로와 시간 제한
 
 Hermes 플러그인 `submit_research_report`(Hermes 소유)와 복구용 Publisher
-`dispatch`는 같은 Webhook에 제출합니다. 두 구간의 인증은 서로 다르며, A 호스트의
+`dispatch`는 같은 Webhook에 제출합니다. Publisher 복구 경로는 `source_quotes`를 보내지
+않으므로 이 경로의 항목은 항상 `SOURCE_UNVERIFIED`로 보류됩니다. 두 구간의 인증은 서로 다르며, A 호스트의
 요청 성공을 Worker나 Gateway의 성공으로 대신하지 않습니다.
 
 ```text
@@ -278,9 +279,9 @@ Gateway에는 지표 엔드포인트가 없으므로 Prometheus 수집은 Blog-d
 ### Attestation과 Resource Export
 
 Gateway는 `POST /v1/ingestions/{id}/attestations`의 Ed25519 서명이 저장된 보고서와
-맞을 때만 후보마다 Export를 만듭니다. 서명 대상은 `blog-data-attestation/1`, NUL,
-`{producer, job_id, run_id, fire_id, source_sha256, content_sha256}` 정규 JSON이며
-`content_sha256`은 멱등 키를 뺀 요청 전체의 정규 JSON SHA-256입니다. 이 서명은 Hermes
+맞을 때만 후보마다 Export를 만듭니다. 서명 대상은 `blog-data-attestation/2`, NUL,
+`{producer, job_id, run_id, fire_id, source_sha256, content_sha256, verified_items,
+evidence_sha256}` 정규 JSON이며 `content_sha256`은 멱등 키를 뺀 요청 전체의 정규 JSON SHA-256입니다. 이 서명은 Hermes
 Companion 서명과 다른 계약·다른 키입니다.
 
 서명자는 `python3 -I -m publisher.cli attest-queue`이며 Hermes·n8n·Publisher와 다른
