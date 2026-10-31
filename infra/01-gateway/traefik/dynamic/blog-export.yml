@@ -19,6 +19,7 @@ http:
       tls: {}
       middlewares:
         - blog-export-windows
+        - gateway-standard-chain@file
         - blog-export-rate
       service: blog-ingestion-export
     blog-export-ack:
@@ -28,6 +29,7 @@ http:
       tls: {}
       middlewares:
         - blog-export-windows
+        - gateway-standard-chain@file
         - blog-export-rate
         - blog-export-small-body
       service: blog-ingestion-export
@@ -38,6 +40,7 @@ http:
       tls: {}
       middlewares:
         - blog-attestation-host
+        - gateway-standard-chain@file
         - blog-attestation-rate
         - blog-export-small-body
       service: blog-ingestion-export

@@ -16,6 +16,7 @@ http:
       tls: {}
       middlewares:
         - hermes-webhook-source
+        - gateway-standard-chain@file
         - hermes-webhook-body
         - hermes-webhook-rate
       service: n8n@docker

@@ -9,6 +9,7 @@ import yaml
 WORKLOAD = Path(__file__).resolve().parents[1]
 LIVE = WORKLOAD.parents[3] / "01-gateway/traefik/dynamic"
 ROUTE = LIVE / "hermes-webhook.yml"
+STANDARD = "gateway-standard-chain@file"
 
 
 class IngressRouteTests(unittest.TestCase):
@@ -43,7 +44,11 @@ class IngressRouteTests(unittest.TestCase):
     def test_middlewares_bound_source_size_and_rate(self):
         (router,) = self.http["routers"].values()
         middlewares = self.http["middlewares"]
-        self.assertEqual(set(router["middlewares"]), set(middlewares))
+        # POL-0013: the shared per-peer limiter, retry and breaker come right
+        # after the source check; the local limits follow.
+        self.assertEqual(STANDARD, router["middlewares"][1])
+        local = [m for m in router["middlewares"] if m != STANDARD]
+        self.assertEqual(set(local), set(middlewares))
         kinds = {next(iter(m)): m[next(iter(m))] for m in middlewares.values()}
         self.assertEqual({"ipAllowList", "buffering", "rateLimit"}, set(kinds))
         # Measured on live Traefik: a host process dialling 192.168.0.13:443

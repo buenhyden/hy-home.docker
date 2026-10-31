@@ -167,6 +167,13 @@ sed -e "s#192.168.0.13/32#$lan_ip/32#" -e 's#n8n@docker#n8n-e2e@file#' \
 # per-router source split is asserted by test_export_route.py.
 sed -e "s#192.168.0.22/32#$lan_ip/32#" -e "s#192.168.0.13/32#$lan_ip/32#" \
   "$root/infra/01-gateway/traefik/dynamic/blog-export.yml" >"$work/dynamic/blog-export.yml"
+# The routes chain the live POL-0013 standard chain; carry exactly its parts.
+python3 - "$root/infra/01-gateway/traefik/dynamic/middleware.yml" "$work/dynamic/standard-chain.yml" <<'PY2'
+import sys, yaml
+m = yaml.safe_load(open(sys.argv[1]))["http"]["middlewares"]
+names = ["gateway-standard-chain", *m["gateway-standard-chain"]["chain"]["middlewares"]]
+yaml.safe_dump({"http": {"middlewares": {n: m[n] for n in names}}}, open(sys.argv[2], "w"))
+PY2
 sso_hash=$(hex 16 | openssl dgst -sha1 -binary | base64)
 cat >"$work/dynamic/standin.yml" <<YAML
 http:

@@ -11,6 +11,7 @@ LIVE = WORKLOAD.parents[3] / "01-gateway/traefik/dynamic"
 ROUTE = LIVE / "blog-export.yml"
 HOST = "Host(`blog-export.hy.home.arpa`)"
 UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"
+STANDARD = "gateway-standard-chain@file"
 WINDOWS, HOST_A = ["192.168.0.22/32"], ["192.168.0.13/32"]
 
 
@@ -25,6 +26,8 @@ class ExportRouteTests(unittest.TestCase):
     def kinds(self, router):
         found = {}
         for name in router["middlewares"]:
+            if name == STANDARD:
+                continue
             ((kind, value),) = self.middlewares[name].items()
             found[kind] = value
         return found
@@ -52,7 +55,7 @@ class ExportRouteTests(unittest.TestCase):
             self.assertNotIn("sso", " ".join(router["middlewares"]))
         self.assertEqual(
             set(self.middlewares),
-            {m for r in self.routers.values() for m in r["middlewares"]},
+            {m for r in self.routers.values() for m in r["middlewares"]} - {STANDARD},
         )
 
     def test_rules_admit_only_the_export_api_shapes(self):
@@ -98,11 +101,16 @@ class ExportRouteTests(unittest.TestCase):
             self.assertEqual({"ipAllowList", "buffering", "rateLimit"}, set(kinds))
             self.assertLessEqual(kinds["buffering"]["maxRequestBodyBytes"], 16384)
         self.assertLessEqual(attest["rateLimit"]["average"], 10)
-        # Source, then rate, then buffering: a limited request is never buffered.
+        # POL-0013: the shared per-peer chain follows the source check on
+        # every router. Then rate, then buffering: a limited request is never
+        # buffered.
+        for router in self.routers.values():
+            self.assertEqual(STANDARD, router["middlewares"][1])
         for name in ("blog-export-ack", "blog-attestation"):
             chain = [
                 next(iter(self.middlewares[m]))
                 for m in self.routers[name]["middlewares"]
+                if m != STANDARD
             ]
             self.assertEqual(["ipAllowList", "rateLimit", "buffering"], chain, name)
 

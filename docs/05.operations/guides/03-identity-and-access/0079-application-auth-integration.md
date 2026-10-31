@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.7.4"
+version: "0.7.5"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-01"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -420,6 +420,8 @@ TCP router는 두지 않는다.
 | `opensearch`(두 variant), `opensearch-dashboards` | OpenSearch security plugin |
 | `dashboard`(Traefik), `prometheus-api` | Traefik basic auth |
 | `s3` | S3 SigV4 identity |
+| `hermes-blog-ingestion-webhook` | n8n 헤더 인증; `POST /webhook/hermes-blog-ingestion` 정확한 경로만, 출발지 `192.168.0.13/32` |
+| `blog-export-read`, `blog-export-ack`, `blog-attestation` | Blog-data Gateway 단일 범위 Bearer(`export_read`, `export_ack`, `attest`); 정확한 경로·메서드만, 출발지 `192.168.0.22/32`(Export)와 `192.168.0.13/32`(Attestation) |
 | `grafana-static` | 인증 없음: 정확히 `/favicon.ico`와 `/robots.txt` 경로만 해당; Method matcher 없음; 소유자의 해결을 기다리는 policy 미준수 상태 |
 
 2026-09-24(SPEC-0180 S18)에 identity 확인 없이 application에 도달하던 route 네 개의
