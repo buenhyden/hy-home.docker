@@ -23,6 +23,7 @@ _ALLOWED_JOBS = {
 _IDENTITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 _HTTP_TIMEOUT = 15
+SOURCE_QUOTE_MAX = 500
 SCHEMA_VERSION = "1.0"
 
 
@@ -106,6 +107,17 @@ def _validate(payload: dict[str, Any]) -> str | None:
                 or len(item["source_url"]) > 2048
             ):
                 return "invalid_source_url"
+        if "source_quotes" in item:
+            quotes = item["source_quotes"]
+            if not isinstance(quotes, list) or not (1 <= len(quotes) <= 3):
+                return "invalid_source_quotes"
+            for quote in quotes:
+                if (
+                    not isinstance(quote, str)
+                    or not quote.strip()
+                    or len(quote) > SOURCE_QUOTE_MAX
+                ):
+                    return "invalid_source_quote"
     for field in ("scheduled_at", "generated_at", "collected_at"):
         value = payload.get(field)
         if not isinstance(value, str) or not value:
