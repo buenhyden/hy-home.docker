@@ -47,12 +47,15 @@ class FakeSock:
     def __init__(self, response):
         self.response = response
         self.sent = b""
+        self._reader = io.BytesIO(response)
 
     def sendall(self, data):
         self.sent += data
 
-    def makefile(self, *args, **kwargs):
-        return io.BytesIO(self.response)
+    def recv_into(self, buffer, nbytes=0):
+        data = self._reader.read(nbytes or len(buffer))
+        buffer[: len(data)] = data
+        return len(data)
 
     def settimeout(self, value):
         pass
@@ -260,21 +263,29 @@ class UrlEncodingTests(unittest.TestCase):
         refused(self, "https://example.com/" + "한" * 300, "url", resolve=resolver())
 
 
+class DripSock(FakeSock):
+    """Returns one byte per recv and advances the injected clock each time."""
+
+    def __init__(self, response, clock, step):
+        super().__init__(response)
+        self.clock, self.step = clock, step
+
+    def recv_into(self, buffer, nbytes=0):
+        self.clock["t"] += self.step
+        data = self._reader.read(1)
+        buffer[: len(data)] = data
+        return len(data)
+
+
 class DeadlineTests(unittest.TestCase):
-    def test_slow_drip_body_hits_total_deadline(self):
+    def drip(self, response):
         clock = {"t": 0.0}
-
-        class Slow(io.BytesIO):
-            def read(self, n=-1):
-                clock["t"] += 10
-                return super().read(n)
-
-        class SlowSock(FakeSock):
-            def makefile(self, *args, **kwargs):
-                return Slow(self.response)
+        calls = []
 
         def connect(ip, port, name, timeout):
-            return SlowSock(http(200, b"a" * 200_000))
+            sock = DripSock(response, clock, 0.5)
+            calls.append(sock)
+            return sock
 
         refused(
             self,
@@ -285,6 +296,16 @@ class DeadlineTests(unittest.TestCase):
             connect=connect,
             monotonic=lambda: clock["t"],
         )
+        return clock
+
+    def test_slow_drip_body_hits_total_deadline(self):
+        clock = self.drip(http(200, b"a" * 200_000))
+        self.assertLess(clock["t"], 25)
+
+    def test_slow_drip_headers_hit_total_deadline(self):
+        raw = b"HTTP/1.1 200 OK\r\n" + b"X-Pad: " + b"a" * 5000 + b"\r\n\r\n"
+        clock = self.drip(raw)
+        self.assertLess(clock["t"], 25)
 
     def test_deadline_spans_hops_and_connect_gets_remaining_time(self):
         clock = {"t": 0.0}

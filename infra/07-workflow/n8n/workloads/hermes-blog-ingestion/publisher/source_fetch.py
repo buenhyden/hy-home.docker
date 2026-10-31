@@ -4,11 +4,18 @@ The attester runs next to LAN and Docker networks that must stay unreachable,
 so every hop is vetted before any byte leaves: https only, no userinfo, not the
 home zone, and every resolved address globally routable. The connection goes to
 the vetted IP (no second lookup) with the name kept for SNI and Host. The guard
-has no switch; tests inject only `resolve`, `connect` and `now`.
+has no switch; tests inject only `resolve`, `connect`, `now` and `monotonic`.
+
+The 20 s limit bounds the whole fetch: the socket is wrapped so every send and
+recv re-arms its timeout from the one deadline, which covers headers and body
+across all hops. `getaddrinfo` has no timeout in the stdlib and the TLS
+handshake only gets the remaining time as its socket timeout, so those two
+steps are bounded per operation, not by the deadline.
 """
 
 import hashlib
 import http.client
+import io
 import ipaddress
 import socket
 import ssl
@@ -56,18 +63,62 @@ def _tls_connect(ip, port, server_hostname, timeout):
         raise
 
 
+class _DeadlineSock:
+    """Socket wrapper: each send/recv is limited by the time left to the deadline."""
+
+    def __init__(self, sock, deadline, monotonic):
+        self._sock = sock
+        self._deadline = deadline
+        self._monotonic = monotonic
+
+    def _arm(self):
+        left = self._deadline - self._monotonic()
+        if left <= 0:
+            raise TimeoutError("fetch deadline")
+        self._sock.settimeout(max(0.001, left))
+
+    def sendall(self, data):
+        self._arm()
+        self._sock.sendall(data)
+
+    def recv_into(self, buffer, nbytes=0):
+        self._arm()
+        return self._sock.recv_into(buffer, nbytes)
+
+    def makefile(self, mode="rb", buffering=None):
+        return io.BufferedReader(_Raw(self))
+
+    def settimeout(self, value):
+        pass
+
+    def close(self):
+        self._sock.close()
+
+
+class _Raw(io.RawIOBase):
+    def __init__(self, sock):
+        self._wrapped = sock
+
+    def readable(self):
+        return True
+
+    def readinto(self, buffer):
+        return self._wrapped.recv_into(buffer)
+
+
 class _Connection(http.client.HTTPSConnection):
     """HTTPS to a vetted IP; Host and SNI keep the original name."""
 
-    def __init__(self, host, port, ip, connect, timeout):
-        super().__init__(host, port, timeout=timeout)
+    def __init__(self, host, port, ip, connect, deadline, monotonic):
+        super().__init__(host, port, timeout=_remaining(deadline, monotonic))
         self._ip = ip
         self._connect = connect
+        self._deadline = deadline
+        self._monotonic = monotonic
 
     def connect(self):
-        self.opened = self.sock = self._connect(
-            self._ip, self.port, self.host, self.timeout
-        )
+        sock = self._connect(self._ip, self.port, self.host, self.timeout)
+        self.sock = _DeadlineSock(sock, self._deadline, self._monotonic)
 
 
 def _utc_millis(moment):
@@ -148,7 +199,7 @@ def _remaining(deadline, monotonic):
 
 
 def _get(host, port, ip, target, connect, deadline, monotonic):
-    conn = _Connection(host, port, ip, connect, _remaining(deadline, monotonic))
+    conn = _Connection(host, port, ip, connect, deadline, monotonic)
     try:
         conn.request(
             "GET",
@@ -166,7 +217,6 @@ def _get(host, port, ip, target, connect, deadline, monotonic):
             raise FetchFailure("size")
         chunks, total = [], 0
         while True:
-            conn.opened.settimeout(_remaining(deadline, monotonic))
             chunk = response.read(CHUNK)
             if not chunk:
                 break
