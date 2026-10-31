@@ -221,8 +221,8 @@ Hermes(호스트) ─HTTPS─▶ Traefik 정확한 경로 ─▶ n8n ─Queue─
   남습니다. `/webhook/*` 전체를 열지 않습니다. 운영 `dynamic/` 반영은 승인 단위입니다.
 - 인증 분리: Hermes→n8n은 Webhook `headerAuth`(헤더 `X-Hermes-Ingest-Token`),
   n8n→Gateway는 `Authorization: Bearer`의 수집 전용 Token입니다. 둘은 별도 n8n
-  자격 증명이며 Gateway 설정에는 SHA-256 다이제스트만 둡니다. Windows 조회·ACK와
-  운영자 Review는 Gateway의 `read`·`review` 범위로 따로 발급합니다.
+  자격 증명이며 Gateway 설정에는 SHA-256 다이제스트만 둡니다. Windows 조회·ACK는
+  `export_read`·`export_ack`, 서명자는 `attest`, 운영자 Review는 `review` 범위로 각각 따로 발급합니다.
 - Gateway: `blog-ingestion` 프로필, 이미지 `hy-home/blog-ingestion:<Blog-data 커밋>`,
   pull 금지, 읽기 전용 루트, UID 10001, 권한 제거, 공개 포트 없음입니다.
   `n8n_blog_ingest_net`(내부·격리 게이트웨이, `10.250.20.0/24`)에는 `n8n-worker`와
@@ -287,9 +287,15 @@ Companion 서명과 다른 계약·다른 키입니다.
 산출물과 Companion Evidence를 새로 읽어 `trust.verify_signature`와 Evidence 검증을
 통과한 경우에만, 발행기가 보낸 것과 같은 요청 바이트를 다시 만들어 서명합니다.
 서명 없는 Evidence·위조·폐기 키·다른 실행의 Evidence는 키나 네트워크에 닿기 전에
-`blocked`입니다. 개인키는 그 계정 또는 root 소유의 `0400`·`0440`·`0600` PEM 파일이며
+`blocked`입니다. 개인키는 그 계정 또는 root 소유 PEM 파일로, 기타 권한이 없고 그룹
+읽기(`0440`·`0640`)는 그룹이 서명 계정의 기본 그룹일 때만 허용됩니다. 키가 든 디렉터리는
+소유자 외 쓰기가 없어야 하고 상위 경로의 심볼릭 링크는 거부됩니다. 키는
 n8n, Webhook 처리기, Publisher 계정, 저장소에 두지 않습니다. Report ID는 발행기 영수증에서
-옵니다. 틀린 ID나 n8n에서 바뀐 내용은 Gateway가 422로 거부합니다.
+옵니다. 다른 보고서의 ID나 n8n에서 바뀐 내용은 Gateway가 422로, 없는 ID는 404로
+거부하며 어느 쪽도 Export를 만들지 않습니다. 인증서 오류는 `rejected`로 멈춥니다.
+`192.168.0.13/32` 허용은 서버 A의 모든 호스트 프로세스를 통과시키므로 실제 경계는
+`attest` Token입니다. 생산자 키의 `not_after`가 지나면 서명도 막히므로 키 교체 전에
+전달된 보고서의 서명을 끝냅니다.
 
 ```bash
 python3 -I -m publisher.cli attest \

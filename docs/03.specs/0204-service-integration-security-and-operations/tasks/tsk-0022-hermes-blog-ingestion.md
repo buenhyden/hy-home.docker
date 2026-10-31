@@ -1106,8 +1106,8 @@ The served certificate is mkcert with SAN `*.hy.home.arpa`, so
 engine. Plugin reports carry no producer-signed evidence, so they stay
 `ingested` and are never attested.
 
-Disposable E2E `tests/e2e-ingress.sh`, 49/49 PASS (Blog-data `cadea2e`, image
-`sha256:ae1024e7…`, `hyhome/n8n:2.43.6-local`, Traefik `v3.7.16`): the earlier
+Disposable E2E `tests/e2e-ingress.sh`, 51/51 PASS after review fixes (Blog-data
+`cadea2e`, image `sha256:31900db2…`, `hyhome/n8n:2.43.6-local`, Traefik `v3.7.16`): the earlier
 16 scenarios plus image template check, Compose-rendered hardening, wrong webhook
 token 403, trailing-slash and case-changed paths 401, no export before
 attestation, `export_read` cannot attest 403, signature over changed items 422,
@@ -1117,10 +1117,13 @@ SHA-256/length/UTF-8, missing/wrong token 401, cross-scope 403 both ways, ACK 20
 replay 200, different ACK 409, summary/ingest/GET-attest/dot-segment/webhook on
 the export host 404, and after a Gateway restart the acknowledged export, ACK
 replay and attestation replay all persist; the host reaches neither isolated
-network. `tests/e2e-upgrade.sh` 10/10 PASS: `cbf06c3` writes a schema-2 store and
+network; and a Publisher-adapter body rebuilt by `verified_request` from synthetic
+producer-signed evidence persists through n8n and its attestation yields `ready`
+exports, so the `attest` signing path matches the Gateway's stored fingerprint.
+`tests/e2e-upgrade.sh` 10/10 PASS: `cbf06c3` writes a schema-2 store and
 backs it up online; `cadea2e` upgrades it to schema 3 with the receipt intact,
 replays as a duplicate, attests it into a `ready` export; both backups restore
-into fresh volumes. Workload unit suite 191 tests (attestation 14, export route 4).
+into fresh volumes. Workload unit suite 193 tests (attestation 16, export route 4).
 
 Not covered: the real Windows receiver (`receive-hermes-exports.ps1` needs
 Windows PowerShell 5.1 on B), the per-router source split in one-host E2E (static
@@ -1174,8 +1177,8 @@ dry run; real receive and ACK; backup connection.
 | Direct path disposable E2E | 23 | W83 | Host → Traefik → native n8n → built Gateway → SQLite, failure and boundary cases | Synthetic tokens, disposable containers | PASS | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
 | Direct path operational | 23 | W83 | Live Gateway, credentials, publication, Traefik route, Hermes plugin | Blocked: separate approval units, Hermes lane plugin | NOT_RUN | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
 | Windows Export and ACK | 23 | W83 | B pull, Vault write, verified ACK | Blocked: receiver on server B and export route not yet approved; API present at `dev` `cadea2e` | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
-| Gateway `dev` pin and image | 23 | W83 | Exact `dev` commit, Dockerfile allowlist build, templates present, export API live | Blog-data `cadea2e`, image `sha256:ae1024e7…` | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
-| Attester source | 23 | W83 | Cross-language message vector, trust gate, key custody, outcome mapping, CLI ordering | Synthetic keys and fixtures, 14 tests | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Gateway `dev` pin and image | 23 | W83 | Exact `dev` commit, Dockerfile allowlist build, templates present, export API live | Blog-data `cadea2e`, image `sha256:31900db2…` (builds differ per run) | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Attester source | 23 | W83 | Cross-language message vector, trust gate, key custody, outcome mapping, CLI ordering | Synthetic keys and fixtures, 16 tests | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Attestation/Export/ACK disposable E2E | 23 | W83 | Attest → ready → pull → hash check → ACK, held, forged, scope, routing and restart cases | Synthetic tokens and keys, disposable containers | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Schema-3 upgrade and restore | 23 | W83 | Previous-pin store backed up, upgraded in place, both backups restored | Disposable volumes | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Production attester | 23 | W83 | Real account, key, `attest` token and signed producer evidence | Blocked: producer key store empty; account and key need approval | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
@@ -1246,6 +1249,24 @@ Close only with required criterion evidence or an explicit owner disposition.
 Report SOURCE and SYNTHETIC independently from API_COMPATIBILITY, N8N_NATIVE,
 SERVER_B_NATIVE and DELIVERY. No workflow activation, secret use, Compose
 recreation or external port is claimed.
+
+2026-11-01 attestation and Resource Export slice: an independent review (no
+shell) found no Critical issue and two Important ones, both fixed test-first.
+I-1, a group-readable signing key was accepted for any group and its parent was
+unchecked: `load_signing_key` now pins ancestors without symlinks, refuses a
+parent writable by others, and allows group read only for the attester's own
+group (`test_group_read_only_for_the_attester_group`,
+`test_writable_or_linked_parent_directory_is_refused` RED→GREEN). I-2, the E2E
+signed only the direct-path shape: it now sends a `verified_request` body
+through n8n and attests it (51/51). Minors applied: rate limit before
+buffering on the ACK and attestation routes (route test RED→GREEN), read route
+120/min, TLS failures stop as `rejected`, stale `read`-scope and key-mode text,
+the Traefik-recreation note, the host-wide attestation allowlist caveat and
+producer-key expiry. Deferred minors: `--gateway` is an argument rather than a
+pinned constant; the Blog-data signature binds content, not report ID, so equal
+content under another key could be attested again (duplicate exports only); the
+E2E publishes its throwaway Traefik on the LAN address while it runs and keeps
+its built images; the Windows receiver's 429 handling is untested.
 
 ## Related Documents
 
