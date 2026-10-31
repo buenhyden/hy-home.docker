@@ -198,6 +198,18 @@ class RedirectTests(unittest.TestCase):
             200,
         )
 
+    def test_malformed_redirect_target_is_permanent(self):
+        for location in ("//[::1", "http://[::1/x", "//[a"):
+            with self.subTest(location=location):
+                connect, _ = connector(http(302, Location=location))
+                refused(
+                    self,
+                    "https://example.com/",
+                    "url",
+                    resolve=resolver(),
+                    connect=connect,
+                )
+
     def test_redirect_without_location_is_permanent(self):
         connect, _ = connector(http(302))
         refused(

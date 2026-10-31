@@ -242,7 +242,10 @@ def _redirect_target(base, location):
         location = location.encode("latin-1").decode("utf-8")
     except UnicodeError:
         raise FetchFailure("url") from None
-    return urljoin(base, location)
+    try:
+        return urljoin(base, location)
+    except ValueError:  # e.g. an unterminated IPv6 literal
+        raise FetchFailure("url") from None
 
 
 def fetch(
