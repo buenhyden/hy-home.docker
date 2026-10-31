@@ -1044,8 +1044,9 @@ assumption. The live Traefik runs `v3.7.14` while Compose pins `v3.7.16`
 (drift noted, not changed here). Two builds of the same Blog-data commit produced
 different image IDs, so the operational build records its own ID.
 
-Disposable E2E (`tests/e2e-ingress.sh`, Blog-data `cbf06c3`, image
-`sha256:68c57fc6…`, `hyhome/n8n:2.43.6-local` with the upstream entrypoint,
+Disposable E2E (`tests/e2e-ingress.sh`, Traefik published on the LAN address as in
+production, Blog-data `cbf06c3`, image
+`sha256:03bfcbb2…`, `hyhome/n8n:2.43.6-local` with the upstream entrypoint,
 Compose-pinned Traefik), 16/16 PASS: native import and publication of the tracked workflow;
 host POST 201 with `persisted:true`; identical replay 200 duplicate; same key
 with changed content 409; missing webhook token 403; invalid shape 400
@@ -1149,6 +1150,21 @@ undocumented fail-closed symlinked `/opt`, and a Traefik timeout check limited
 to two files. PR #696 had already merged at `7629bbad4`, so this slice is a follow-up PR;
 its CI and merge are recorded on that PR.
 CI does not run this workload's suite, so these results are local evidence.
+
+2026-10-31 direct-path slice: an independent review found no Critical issue.
+Important findings were fixed: the host-source proof used loopback (now LAN
+address, measured live as `192.168.0.13`; the first LAN-address run failed 403
+as predicted), the retry contract omitted 429/500/502/504 and the 404 seen while
+the workflow is unpublished, the shared webhook/Gateway token erases the
+Publisher signature guarantee downstream (documented; splitting needs a
+producer decision), two tests could pass vacuously, and a wrong Grafana row.
+Deferred minors: buffering before rate limiting, `edge_net` peers reaching n8n
+directly, any published workflow reaching the Gateway, missing wrong-token and
+path-variant cases (and live Traefik `v3.7.14` vs tested `v3.7.16`), the Compose
+service shape never started, and unbumped README versions. During the fix a
+probe file was briefly written to the live Traefik directory with an ignored
+extension and removed in the same command; the directory and logs were
+confirmed unchanged.
 
 Design self-review checked scope, dependencies, immutable Outbox interfaces,
 coverage of failure cases, and protected runtime exclusions against the direct
