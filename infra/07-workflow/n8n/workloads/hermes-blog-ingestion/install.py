@@ -20,10 +20,17 @@ import tarfile
 from pathlib import Path
 
 WORKLOAD = "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/"
-MEMBER = re.compile(
-    re.escape(WORKLOAD)
-    + r"(publisher/[a-z_]+\.py|publisher/producer-keys\.json|requirements\.lock)\Z"
-)
+# Publisher modules only: producer-side code (signing, fetching) never ships here.
+MODULES = (
+    "__init__", "candidates", "cli", "delivery", "evidence", "files",
+    "gateway_adapter", "gateway_transport", "http_transport", "outbox",
+    "policy", "trust",
+)  # fmt: skip
+FILES = {
+    *(f"publisher/{name}.py" for name in MODULES),
+    "publisher/producer-keys.json",
+    "requirements.lock",
+}
 COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 
 
@@ -32,18 +39,49 @@ def _fail(message):
     raise SystemExit(1)
 
 
+def _root_only(path, info):
+    if (
+        stat.S_ISLNK(info.st_mode)
+        or info.st_uid != 0
+        or stat.S_IMODE(info.st_mode) & 0o022
+    ):
+        _fail(f"{path} must be root-owned, not a link, without group/other write")
+
+
+def _directory(path):
+    """Create or accept path only if it and every ancestor are root-only."""
+    for item in [*reversed(path.parents), path]:
+        if not os.path.lexists(item):
+            os.mkdir(item, 0o755)
+        info = os.lstat(item)
+        _root_only(item, info)
+        if not stat.S_ISDIR(info.st_mode):
+            _fail(f"{item} is not a directory")
+
+
 def _members(archive):
-    with tarfile.open(archive, "r:") as tar:
-        commit = tar.pax_headers.get("comment", "")
-        if not COMMIT.fullmatch(commit):
-            _fail("archive has no commit id; use git archive <commit>")
-        files = {}
-        for member in tar.getmembers():
-            match = MEMBER.fullmatch(member.name)
-            if match and member.isfile():
-                files[match.group(1)] = tar.extractfile(member).read()
-    if "requirements.lock" not in files or "publisher/trust.py" not in files:
-        _fail("archive lacks the publisher workload")
+    """Read the allowlisted files of a root-only `git archive` tar."""
+    for item in archive.parents:
+        _root_only(item, os.lstat(item))
+    descriptor = os.open(archive, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(descriptor, "rb") as handle:
+        info = os.fstat(handle.fileno())
+        _root_only(archive, info)
+        if not stat.S_ISREG(info.st_mode):
+            _fail("archive is not a regular file")
+        with tarfile.open(fileobj=handle, mode="r:") as tar:
+            commit = tar.pax_headers.get("comment", "")
+            if not COMMIT.fullmatch(commit):
+                _fail("archive has no commit id; use git archive <commit>")
+            files = {}
+            for member in tar.getmembers():
+                name = member.name.removeprefix(WORKLOAD)
+                if member.name.startswith(WORKLOAD) and name in FILES:
+                    if name in files or not member.isfile():
+                        _fail(f"ambiguous archive member {name}")
+                    files[name] = tar.extractfile(member).read()
+    if set(files) != FILES:
+        _fail("archive lacks Publisher files")
     return commit, files
 
 
@@ -71,14 +109,12 @@ def main(argv=None):
     if os.geteuid() != 0 or not sys.flags.isolated:
         _fail("run as root with python3 -I")
     os.umask(0o022)
-    commit, files = _members(args.archive)
+    commit, files = _members(args.archive.absolute())
     releases = args.prefix / "releases"
     final, staging = releases / commit, releases / f".{commit}.partial"
     if final.exists():
         _fail("release already installed; releases are immutable")
-    releases.mkdir(parents=True, exist_ok=True)
-    for path in (args.prefix, releases):
-        _seal(path)
+    _directory(releases.absolute())
     shutil.rmtree(staging, ignore_errors=True)
     staging.mkdir()
     lock = staging / "requirements.lock"

@@ -126,12 +126,18 @@ def _runtime_protected():
     """The interpreter, verifier code, crypto library and key store are fixed.
 
     Requires `python3 -I` (no user site, PYTHONPATH or cwd imports). The
-    signature modules are imported first, so every file that has run or will
-    verify a signature, each import path directory, the interpreter and the
-    key store pass _protected.
+    signature and credential-child modules are imported first, so their source
+    files, each loaded module, each existing import path directory, the
+    interpreter and the key store pass _protected. This is a tripwire over a
+    sealed install, not a substitute for it: bytecode caches, .pth files and
+    code that ran before the check are protected only by the root-owned release.
     """
     _require(sys.flags.isolated, "interpreter_unisolated")
     try:
+        # Also what the credential child imports, so its files are checked too.
+        import http.client  # noqa: F401
+        import ssl  # noqa: F401
+
         import cryptography.exceptions  # noqa: F401
         from cryptography.hazmat.primitives.asymmetric import ed25519  # noqa: F401
     except ImportError:

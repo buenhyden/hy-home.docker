@@ -4,6 +4,7 @@ import base64
 import hashlib
 import json
 import math
+import os
 import re
 import subprocess
 import sys
@@ -206,7 +207,9 @@ class HttpTransport:
         ).encode("ascii")
         try:
             result = subprocess.run(
-                [sys.executable, "-I", "-c", _CHILD],
+                # The resolved target is what trust checks; a venv bin/python
+                # link is not. The child needs only the standard library.
+                [os.path.realpath(sys.executable), "-I", "-c", _CHILD],
                 input=payload,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.DEVNULL,

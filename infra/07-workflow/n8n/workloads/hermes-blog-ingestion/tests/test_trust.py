@@ -192,13 +192,30 @@ class TrustTests(unittest.TestCase):
                 self.assertEqual(str(caught.exception), "store_unprotected")
 
     def test_runtime_check_covers_interpreter_path_and_every_loaded_module(self):
+        import subprocess
         import sys
+
+        # A fresh isolated process: the credential child's ssl/http.client must
+        # be loaded, and therefore checked, by the runtime check itself.
+        probe = (
+            "import sys; sys.path.insert(0, sys.argv[1]); from publisher import trust;"
+            "trust._protected = lambda path: None; trust._runtime_protected();"
+            "print(sorted({'ssl', 'http.client'} & set(sys.modules)))"
+        )
+        result = subprocess.run(
+            [sys.executable, "-I", "-c", probe, str(WORKLOAD)],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        self.assertEqual(result.stdout.strip(), "['http.client', 'ssl']")
 
         from cryptography.hazmat.primitives.asymmetric import ed25519
 
         paths = set(trust._runtime_paths())
         self.assertIn(Path(sys.executable).resolve(), paths)
         self.assertIn(Path(ed25519.__file__).resolve(), paths)
+
         self.assertIn(Path(trust.__file__).resolve(), paths)
         self.assertIn(trust.TRUST_STORE, paths)
         for entry in sys.path:
