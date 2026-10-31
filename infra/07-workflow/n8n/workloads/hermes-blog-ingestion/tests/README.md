@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 합성 시험"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-10-31"
 ---
 
 # Hermes 수집 전송 합성 시험
@@ -31,7 +31,11 @@ updated: "2026-10-30"
 - [합성 보고서](fixtures/synthetic-report.json)와 같은 디렉터리의 계약 파일: Blog-data `dev` 커밋
   `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`에서 고정한 계약과 합성 보고서입니다.
 
+- [test_ingress_route.py](test_ingress_route.py): 제안 Traefik 경로가 흐름의 정확한
+  경로·POST·호스트 출발지·본문·속도 제한만 허용하는지 확인합니다.
 - [install-check.sh](install-check.sh): 보호 설치 시험입니다.
+- [e2e-ingress.sh](e2e-ingress.sh): 일회용 Traefik·n8n·Gateway로 직접 제출 경로 전체를
+  합성 Token으로 확인합니다.
 
 그 밖의 준비·대기함·전송 시험 파일은 이 디렉터리의 전체 탐색 명령으로 함께
 실행합니다. 실제 검증기의 누락·변경은 의존성 실패로 보고합니다.
@@ -58,8 +62,18 @@ python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-inge
 infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/install-check.sh [commit]
 ```
 
+직접 제출 경로 시험은 Docker, 비공개 Blog-data 저장소의 `gh` 접근과 로컬 n8n
+이미지가 필요합니다. 고정 커밋에서 Gateway 이미지를 빌드하고 임의 접미사의
+네트워크·볼륨·컨테이너를 만든 뒤 종료 시 모두 지웁니다. 운영 스택, 네트워크,
+비밀, Traefik 디렉터리는 건드리지 않습니다. n8n은 같은 이미지의 기본 진입점으로
+실행합니다. hy-home 진입점은 운영 비밀을 요구하므로 쓰지 않습니다.
+
+```bash
+infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/e2e-ingress.sh [blog-data-commit]
+```
+
 전체 시험 결과·측정 범위·독립 검토는 작업 기록을 따릅니다. 합성 검증은
-실제 n8n Queue·외부 Runner·인증 처리나 서버 B의 영속 수신을 증명하지 않습니다.
+운영 n8n Queue·외부 Runner·실제 인증이나 운영 Gateway의 영속 수신을 증명하지 않습니다.
 일부 시험은 별도 고정 검증기 또는 로컬 합성 HTTP/TLS 환경이 필요합니다.
 
 ## Related Documents

@@ -1007,6 +1007,66 @@ Approval units still open, none performed: A host `hermes-publisher` account;
 service/timer; producer key admission PR; A exact-path ingress router; worker
 DNS/`extra_hosts`; workflow URL/credential binding and publication.
 
+### Hermes host direct path with the Gateway on server A — 2026-10-31
+
+Owner redirect: Hermes (server-A host process) submits directly to the existing
+n8n webhook; n8n forwards to the Blog-data Gateway hosted on server A; Windows
+server B later pulls from a Blog-data Export API and acknowledges. The owner
+chose to park the unmerged `feat/hermes-research-feed` branch (A-owned pull feed,
+commit `c253024ea`, never pushed) and to deliver repository changes plus a
+disposable synthetic E2E only. Open draft PR #698 (another lane, documentation
+only, failing `candidate-quality`) supplied the prompt and is not merged by this
+slice.
+
+Disposition of existing parts:
+
+| Part | Disposition | Reason |
+| --- | --- | --- |
+| `workflow.json` | MODIFY | Path `hermes-blog-ingestion-contract-hold` → `hermes-blog-ingestion`, URL `https://gateway.invalid/...` → `http://blog-ingestion:8787/v1/ingestions`; both old values were accident guards, now carried by `active:false` and absent credentials |
+| Publisher `stage`/`dispatch`, Outbox, trust, install | NO_CHANGE | Recovery path to the same webhook via `--endpoint`; no second Outbox |
+| Blog-data Gateway | IMPLEMENT (hosting only) | `blog-ingestion` service, own profile, image built locally from pinned Blog-data `cbf06c3514970f8ffa86dafa18064bfd3931e06a`, `pull_policy: never` |
+| `n8n_blog_ingest_net` | IMPLEMENT | Root network, internal, isolated gateway mode, `10.250.20.0/24`; members `n8n-worker` and Gateway only |
+| Exact-path Traefik router | IMPLEMENT (proposal) | `traefik/hermes-webhook.yml` outside the live `dynamic/` directory |
+| Server-B TLS entry, `blog-ingest.hy.home.arpa`, WSL2 notes | RETIRE | Gateway no longer runs on B; history above is kept |
+| Windows Export/ACK | BLOCKED | Blog-data has no Export or ACK API at the pinned commit |
+| Hermes `submit_research_report` plugin | BLOCKED (Hermes lane) | Contract: POST the Gateway v1 report to the webhook with header `X-Hermes-Ingest-Token` |
+
+Facts measured for this slice: the Gateway at the pinned commit serves only
+`POST /v1/ingestions`, `GET /v1/ingestions/{id}`, `/v1/candidates`, `/v1/summary`,
+reviews and capture; its body limit is 1 MiB and its config stores only token
+SHA-256 digests. Operations catalog rules forbid new services and shared root
+networks in overlays, so the Gateway is a base service (SPEC-0219 storybook
+precedent). Traefik is published on `192.168.0.13:443`; `edge_net` gateway is
+`10.250.1.128`. The live Traefik runs `v3.7.14` while Compose pins `v3.7.16`
+(drift noted, not changed here). Two builds of the same Blog-data commit produced
+different image IDs, so the operational build records its own ID.
+
+Disposable E2E (`tests/e2e-ingress.sh`, Blog-data `cbf06c3`, image
+`sha256:68c57fc6…`, `hyhome/n8n:2.43.6-local` with the upstream entrypoint,
+Compose-pinned Traefik), 16/16 PASS: native import and publication of the tracked workflow;
+host POST 201 with `persisted:true`; identical replay 200 duplicate; same key
+with changed content 409; missing webhook token 403; invalid shape 400
+`INVALID_REQUEST` without echo; body above 1 MiB 413 at Traefik; GET on the path,
+another webhook path and the n8n UI all stay behind the SSO stand-in (401);
+non-host source 403; host-local client observed as the bridge gateway; Gateway
+stopped → 500, never 2xx; after Gateway restart the replay is a persisted 200
+duplicate (SQLite survived); the host cannot reach the Gateway on the isolated
+network; a burst above the route limit returns 429. Synthetic tokens only; all
+disposable containers, networks and volumes were removed. Not covered: Hermes
+plugin, real tokens, live Traefik, worker/Valkey queue mode, runner restart and
+a 7-day Windows outage (no Export API).
+
+Trust boundary: on the direct path only the webhook token identifies the
+producer; it does not replace Publisher Ed25519 Companion verification. Direct
+submissions therefore stop at Gateway `received` and review; capture is not
+configured on A. A signed-report contract for the direct path needs a versioned
+Blog-data/Hermes decision first.
+
+Approval units added, none performed (RUN-0053 "서버 A Gateway 배치와 직접 제출
+경로"): local image build; data/config paths with token digests; Gateway start and
+`n8n-worker` recreation; two n8n credentials; workflow publication; Traefik route
+copy after measuring the live host source; Gateway backup connection.
+
 ### Remaining blocked conditions and recovery
 
 - DELIVERY stays BLOCKED until both handoffs are accepted and a reviewed key is
@@ -1042,7 +1102,11 @@ DNS/`extra_hosts`; workflow URL/credential binding and publication.
 | Protected install | 23 | W83 | Hash-locked dependency, root-owned immutable release, verify-install as separate accounts, weakened-path negatives | Disposable container, commit of this slice | PASS | Protected install and ingest-only contract — 2026-10-31 | required | - |
 | Protected install on server A | 23 | W83 | Real `hermes-publisher` account loads `/opt/hermes-publisher` release with `python3 -I` | Blocked: account, path and service need separate approval | NOT_RUN | Protected install and ingest-only contract — 2026-10-31 | required | - |
 | Producer trust anchor | 23 | W83 | Real restricted producer account and reviewed key in `publisher/producer-keys.json` | Blocked: no producer account, key or signed run delivered | NOT_RUN | Handoff: Hermes producer lane (server A) | required | - |
-| Server-B TLS entry | 23 | W83 | DNS/TCP/TLS/auth from n8n worker | Blocked: Blog-data lane handoff; TCP probe from server A failed | NOT_RUN | Handoff: Blog-data Gateway lane (server B) | required | - |
+| Server-B TLS entry | 23 | W83 | DNS/TCP/TLS/auth from n8n worker | Superseded: the Gateway runs on server A | NOT_APPLICABLE | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
+| Direct path source | 23 | W83 | Workflow path/URL, Gateway service isolation, exact-path route | Workload suite, wiring and Compose baseline tests | PASS | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
+| Direct path disposable E2E | 23 | W83 | Host → Traefik → native n8n → built Gateway → SQLite, failure and boundary cases | Synthetic tokens, disposable containers | PASS | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
+| Direct path operational | 23 | W83 | Live Gateway, credentials, publication, Traefik route, Hermes plugin | Blocked: separate approval units, Hermes lane plugin | NOT_RUN | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
+| Windows Export and ACK | 23 | W83 | B pull, Vault write, verified ACK | Blocked: Blog-data Export/ACK API absent | NOT_RUN | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | Protected-install follow-up slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
 
 ## Criterion Acceptance
