@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.9.1"
+version: "1.9.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -581,7 +581,10 @@ originate from the actual n8n worker; host probes prove a different path.
     and reports SOURCE, SYNTHETIC, API_COMPATIBILITY, N8N_NATIVE,
     SERVER_B_NATIVE and DELIVERY separately. Dispatch additionally requires
     producer-authenticated collection evidence, reported as PRODUCER_AUTH; a
-    structural evidence check alone never authorizes delivery. Exact Gateway contract/fixtures,
+    structural evidence check alone never authorizes delivery. The verifier
+    runs only from a hash-locked, root-owned release under a dedicated
+    non-root account with `python3 -I`; server A holds an ingest-only token
+    for `POST /v1/ingestions` and no read permission. Exact Gateway contract/fixtures,
     native worker networking/authentication and actual durable persistence
     remain required blocked lanes until supplied and approved. Source-only
     Publisher or simulated adapter evidence does not close this criterion.

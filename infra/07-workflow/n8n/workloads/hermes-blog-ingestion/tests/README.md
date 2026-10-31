@@ -31,6 +31,8 @@ updated: "2026-10-30"
 - [합성 보고서](fixtures/synthetic-report.json)와 같은 디렉터리의 계약 파일: Blog-data `dev` 커밋
   `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`에서 고정한 계약과 합성 보고서입니다.
 
+- [install-check.sh](install-check.sh): 보호 설치 시험입니다.
+
 그 밖의 준비·대기함·전송 시험 파일은 이 디렉터리의 전체 탐색 명령으로 함께
 실행합니다. 실제 검증기의 누락·변경은 의존성 실패로 보고합니다.
 
@@ -46,6 +48,14 @@ python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-inge
 
 ```bash
 python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p test_workflow.py -v
+```
+
+보호 설치 시험은 Docker와 PyPI 접근이 필요하며 일회용 root 컨테이너에서 커밋
+하나를 설치한 뒤 별도 Publisher·Hermes 계정으로 쓰기 불가와 약화 시 거부를
+확인합니다. 운영 호스트를 바꾸지 않습니다.
+
+```bash
+infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/install-check.sh [commit]
 ```
 
 전체 시험 결과·측정 범위·독립 검토는 작업 기록을 따릅니다. 합성 검증은

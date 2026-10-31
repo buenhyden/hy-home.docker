@@ -44,12 +44,14 @@ updated: "2026-10-31"
 - [workflow.json](workflow.json): 입력 선별, 고정 HTTPS 대상과 영속 수신 응답 확인을 담은 비활성 템플릿입니다.
 - [publisher/](publisher/README.md): 제한된 파일 읽기, 로컬 대기함과 전송 상태 처리입니다.
 - [tests/](tests/README.md): 합성 시험과 소스 경계 검증입니다.
+- [install.py](install.py): 커밋 하나를 root 소유 불변 release로 설치합니다.
+- [pyproject.toml](pyproject.toml), [requirements.lock](requirements.lock): 실행 의존성 선언과 hash 고정본입니다.
 
 ## Usage
 
 로컬 준비·상태 명령은 발행기 설명, 재현 가능한 시험 명령은 시험 설명을 봅니다.
-배포 단위는 제한된 호스트 프로세스가 우선이며 서비스 설치나 예약 실행은
-아직 구성하지 않았습니다. `dispatch` 명령은 있으나 추적 키 저장소가 비어 있어
+배포 단위는 제한된 호스트 프로세스이며 설치물은 아래 "보호 설치"를 따릅니다.
+운영 계정 생성, 설치, 서비스·예약 실행 등록은 아직 수행하지 않았습니다. `dispatch` 명령은 있으나 추적 키 저장소가 비어 있어
 세 작업은 실제 인증 입력이나 네트워크 요청 없이 `blocked`를 반환합니다.
 
 흐름은 `headerAuth` 수신 후 입력을 선별하고 Gateway에 전달한 응답을 확인합니다.
@@ -118,7 +120,7 @@ producer v1.0.0의 필드는 바꾸지 않습니다. 합성 예시는
    `{schema_version:"hermes-companion-signature/1", key_id, algorithm:"ed25519",
    signature}`이고 서명 대상은 `hermes-companion-evidence/1` 뒤에 NUL 한 바이트와
    Companion 원문 바이트를 이은 값입니다.
-4. Publisher는 공개키만 담은 추적 파일 [producer-keys.json](producer-keys.json)을
+4. Publisher는 공개키만 담은 추적 파일 [producer-keys.json](publisher/producer-keys.json)을
    읽습니다. 항목은 `key_id`, `algorithm`, `public_key`(원시 32바이트 base64),
    허용 `jobs`, `not_before`, `not_after`, 선택 `revoked_at`입니다. 폐기는 소급하여
    이미 대기함에 있는 기록도 다시 막습니다. 같은 `key_id`가 둘이면 거부합니다.
@@ -130,17 +132,43 @@ producer v1.0.0의 필드는 바꾸지 않습니다. 합성 예시는
 추적 키 저장소는 비어 있으므로 실제 키를 검토해 추가하기 전까지 운영 기본값은
 `blocked`입니다. 키 추가·회전·폐기 절차는 RUN-0053을 따릅니다.
 
-운영 전제도 코드가 확인합니다. `python3 -I`로 격리 실행해야 하고, 키 저장소,
-Publisher 모듈 전체, `cryptography` 패키지와 그 상위 디렉터리는 실행 계정 소유가
-아니며 실행 계정이 쓸 수 없어야 합니다. 하나라도 어긋나면 `blocked`입니다.
-따라서 Publisher는 Hermes 도구와 다른 전용 계정으로, 작업 사본이 아니라 다른
-계정 소유(예: root, 0755)의 설치 경로에서 실행합니다. root로 실행하면 항상
-막힙니다. Gateway 수신 인증 파일도 그 전용 계정만 읽을 수 있어야 하며, Hermes
-계정이 읽을 수 있으면 Webhook을 직접 호출해 생산자 인증을 우회할 수 있습니다. Companion 디렉터리는 생산자 계정만 쓸 수 있어야 합니다.
+서명 계약의 정본은 [trust.py](publisher/trust.py)의 `DOMAIN`, envelope 필드,
+저장소 검증입니다. Hermes 생산자에게 전달하는 조건은 다음과 같습니다.
+
+- `key_id`는 `[a-z0-9][a-z0-9._-]{0,63}`, `jobs`는 정확한 작업 ID 목록,
+  `not_before`·`not_after`·`revoked_at`은 시간대가 있는 ISO 8601이며
+  `not_before < not_after`입니다. 같은 공개키를 두 `key_id`로 등록할 수 없습니다.
+- 공개키 지문은 원시 32바이트 공개키의 SHA-256 16진수입니다. 등록 PR에는 이
+  지문과, 개인키가 생산자 계정 밖으로 나간 적 없다는 보호 생성·보관 증거를
+  함께 둡니다. 운영자가 생산자 계정에서 따로 받은 지문과 일치해야 등록합니다.
+- 개인키는 Publisher, 이 저장소, 시험 기록으로 가져오지 않습니다. 시험의 합성키는
+  추적 저장소에 넣지 않습니다.
+
+### 보호 설치
+
+운영 전제는 코드가 확인합니다. `python3 -I`로 격리 실행해야 하며, 인터프리터,
+venv 설정, 모든 import 경로, 이미 적재된 모든 모듈 파일(서명 검증 모듈 포함),
+Publisher 모듈 전체와 키 저장소의 모든 상위 경로가 root 소유이고 group·other
+쓰기 권한이 없으며 실행 계정이 쓸 수 없어야 합니다. 실행 계정이 아닌 다른 일반
+계정(예: Hermes 생산자) 소유도 거부합니다. root로 실행하면 항상 막힙니다.
+
+설치물은 사용자 작업 사본이나 편집 가능 설치가 아닙니다. 운영자가 검토된 커밋을
+`git archive --format=tar <commit> -- infra/07-workflow/n8n/workloads/hermes-blog-ingestion`
+으로 만들고 root가 `python3 -I install.py --archive <tar>`로 설치합니다. 설치기는
+pax 머리글의 커밋 ID로 `/opt/hermes-publisher/releases/<commit>`을 만들고, 추적된
+`publisher/*.py`·키 저장소·`requirements.lock`만 꺼내며, lock을
+`--require-hashes --only-binary :all:`로 새 venv에 설치하고 pip를 제거합니다. 같은
+커밋을 다시 설치하지 않으며 되돌리기는 실행기를 이전 release로 바꾸는 것입니다.
+실행 계정 검증은 `<release>/venv/bin/python -I -m publisher.cli verify-install`이
+`{"keys": N, "runtime": "protected"}`를 내는지로 확인합니다.
+
+Gateway 수신 인증 파일도 그 전용 계정만 읽을 수 있어야 하며, Hermes
+계정이 읽을 수 있으면 Webhook을 직접 호출해 생산자 인증을 우회할 수 있습니다.
+Companion 디렉터리는 생산자 계정만 쓸 수 있어야 합니다.
 먼저 고정된 증거·서명이 이기므로 다른 계정이 먼저 쓰면 그 실행은 영구히 막힙니다.
 키 만료는 사용 시점에 확인하므로 미전송 기록은 `not_after` 전에 비워야 합니다.
-이 변경 전에 서명 없이 저장된 증거는 서명을 덧붙일 수 없어 계속 막히며, 복구는
-새 실행으로 다시 만드는 것입니다.
+이 변경 전에 서명 없이 저장된 증거는 서명을 덧붙이거나 덮어쓸 수 없어 계속
+막히며, 복구는 새 실행으로 다시 만드는 것입니다.
 
 ### 생산자 계약 버전과 이관
 
@@ -161,12 +189,27 @@ Gateway로 각각 따로 연결합니다. 두 구간의 인증서 신뢰와 Toke
   Webhook 경로·POST·A 내부 출발지만 허용하는 별도 라우터를 추가하고 n8n
   `headerAuth`로 인증합니다. `/webhook/*` 전체를 열지 않습니다. 이 라우터는
   아직 추가하지 않았습니다.
-- B 진입: Worker가 신뢰하는 인증서의 승인된 DNS 이름·443으로만 연결하고
-  Gateway는 B의 loopback 8787을 유지합니다.
-- 시간 제한은 Gateway 요청 20초 < 흐름 `executionTimeout` 30초 < Publisher
-  45초 < Traefik v3 기본 `readTimeout` 60초 순서입니다. Queue 대기가 여유를
-  넘기면 Publisher는 `uncertain`으로 남기고 같은 요청으로 대조합니다. 흐름에는
-  재시도를 두지 않습니다.
+- B 진입: Worker는 `https://blog-ingest.hy.home.arpa/v1/ingestions`에 POST만
+  보냅니다. Token은 수집 전용이며 A에는 GET·조회 권한을 두지 않습니다. 응답이
+  유실되면 Publisher가 `--allow-replay`로 같은 요청 바이트와 멱등 키를 명시적으로
+  다시 POST해 대조합니다. 조회용 MCP는 별도 경로·Token의 후속 작업입니다.
+- 이름 해석: 이 이름은 Worker 컨테이너 안에서 `192.168.0.22`로 해석되어야
+  합니다. 호스트 `/etc/hosts`는 컨테이너에 자동 전달되지 않으므로 내부 DNS 기록
+  또는 Worker의 `extra_hosts`가 필요하며, 둘 다 Compose·DNS 변경 승인 대상이라
+  적용하지 않았습니다. Worker가 B의 CA를 신뢰하는지도 Worker 안에서 따로
+  확인합니다.
+- B(Windows 11 + WSL2 NAT): Windows 쪽 443 수신, WSL 전달, 방화벽의 출발지
+  `192.168.0.13` 제한이 정본이며 Gateway는 WSL loopback 8787을 유지합니다. 기존
+  Windows Vault는 이전하지 않습니다.
+- 시간 제한: Gateway 요청 20초 < 흐름 `executionTimeout` 30초(Worker가 실행을
+  시작한 뒤부터) < Publisher 시도 45초(Queue 대기 포함 전체)입니다. Traefik v3
+  기본 `readTimeout` 60초는 요청 본문을 읽는 시간만 제한하고 상류 응답 대기
+  제한은 설정되어 있지 않으므로, Publisher 45초가 한 시도의 바깥 한계입니다.
+  Queue 대기가 15초 여유를 넘기면 `uncertain`으로 남기고 같은 요청으로
+  대조합니다. 흐름에는 재시도와 예약 실행을 두지 않습니다.
+- `uncertain`, 영구 거부(401·403·409 등), 재시도 소진은 성공이 아니며
+  `dispatch` 종료 코드 1입니다. 출력의 `reasons`는 거부 이유 코드별 개수만 담고
+  원문·Token·키를 담지 않습니다.
 
 ### Blog-data Gateway 계약 비교
 
@@ -202,8 +245,8 @@ Gateway로 각각 따로 연결합니다. 두 구간의 인증서 신뢰와 Toke
 전송 중 중단은 미확정으로 복구하고, 일치하는 영속 저장 증거 없이 배달 완료로
 바꾸지 않습니다. 인증·인증서·시간 초과의 합성 분류는 실제 통신 시험과 구분합니다.
 
-성공·실패 횟수, 대기·미확정 수, 재시도 수, 가장 오래된 대기 시간을 기존
-관측 체계에 연결하는 설계만 있습니다. 보고서 식별자·제목·본문·비밀값을
+`dispatch` 출력은 결과별 개수와 거부 이유 코드별 개수를 담습니다. 이를 기존
+관측 체계에 연결하는 일과 가장 오래된 대기 시간 지표는 설계만 있습니다. 보고서 식별자·제목·본문·비밀값을
 지표 표지로 사용하지 않습니다. 알림 기준은 운영 주기 확인과 승인 후 정합니다.
 조회 전용 후속 도구는 안정적인 HTTP 전송 후 별도 설계로 진행합니다.
 
