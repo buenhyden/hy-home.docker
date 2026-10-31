@@ -89,8 +89,10 @@ producer v1.0.0의 필드는 바꾸지 않습니다. 합성 예시는
 | `items[].fetched_url` | 실제 응답을 받은 최종 HTTPS URL |
 | `items[].fetched_at` | 응답 바이트를 받은 실제 시각, 시간대 포함, 밀리초까지 |
 | `items[].http_status` | 2xx 정수 |
-| `items[].body_sha256` | 실제 수신 바이트의 SHA-256 |
+| `items[].body_sha256` | 전송·콘텐츠 인코딩을 해제한 실제 HTTP 응답 본문 바이트의 SHA-256 |
 | `items[].cache` | `{hit:false,key_sha256:null}` 또는 `{hit:true,key_sha256:<64 hex>}` |
+| `items[].tool_call_id` | 취득을 수행한 도구 호출 식별자, 1~128자 |
+| `items[].status` | `complete`만 허용, 부분 실패·실패·취소는 보고서 전체 보류 |
 
 모든 시각은 `scheduled_at` 이후, 후보 `generated_at` 이전이어야 합니다. 캐시
 적중은 캐시 생성 시각이 아니라 원래 직접 수집 시각을 기록하므로 실행 예정

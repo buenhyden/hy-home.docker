@@ -19,7 +19,9 @@
       "cache": {
         "hit": false,
         "key_sha256": null
-      }
+      },
+      "tool_call_id": "synthetic-call-1",
+      "status": "complete"
     },
     {
       "index": 1,
@@ -31,7 +33,9 @@
       "cache": {
         "hit": true,
         "key_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
-      }
+      },
+      "tool_call_id": "synthetic-call-2",
+      "status": "complete"
     }
   ]
 }

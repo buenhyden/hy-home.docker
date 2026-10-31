@@ -61,6 +61,8 @@ class EvidenceTests(unittest.TestCase):
             "http_status": item("http_status", 304),
             "body_digest": item("body_sha256", "A" * 64),
             "cache": item("cache", {"hit": True, "key_sha256": None}),
+            "tool_call_id": item("tool_call_id", ""),
+            "status": item("status", "partial"),
             "timestamp": item("fetched_at", "2026-10-30T09:01:10"),
             "fetched_after_generation": item("fetched_at", "2026-10-30T09:06:00+09:00"),
             "fetched_before_run": item("fetched_at", "2026-10-30T08:59:59+09:00"),
