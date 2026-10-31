@@ -17,6 +17,7 @@ from pathlib import Path
 from . import evidence as companion
 from . import trust
 from .delivery import FailureKind, TransportFailure
+from .files import InputError, open_directory
 from .gateway_adapter import GatewayAdapter
 
 PREFIX = b"blog-data-attestation/1\x00"
@@ -82,20 +83,33 @@ def verified_request(snapshot, evidence, signature, *, now=None):
 
 
 def load_signing_key(path):
-    """Load an Ed25519 key readable only by its owner or the attester group."""
+    """Load an Ed25519 key readable only by its owner or the attester's group.
+
+    Every ancestor is pinned without following symlinks, and the directory
+    holding the key must not be writable by anyone but its owner, so another
+    account can neither read nor swap the key.
+    """
+    path = Path(path)
     flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK
     try:
-        descriptor = os.open(Path(path), flags)
-    except OSError:
+        with open_directory(path.parent) as directory:
+            parent = os.fstat(directory)
+            descriptor = os.open(path.name, flags, dir_fd=directory)
+    except (OSError, InputError):
         raise AttestationError("key_unavailable") from None
     try:
         info = os.fstat(descriptor)
+        mode = stat.S_IMODE(info.st_mode)
         if (
-            not stat.S_ISREG(info.st_mode)
+            parent.st_uid not in (0, os.getuid())
+            or stat.S_IMODE(parent.st_mode) & 0o022
+            or not stat.S_ISREG(info.st_mode)
             or info.st_nlink != 1
             or info.st_uid not in (0, os.getuid())
             # Owner read/write and group read at most; nothing for others.
-            or stat.S_IMODE(info.st_mode) & ~0o640
+            or mode & ~0o640
+            # A group may read it only if that group is the attester's own.
+            or (mode & 0o040 and info.st_gid != os.getegid())
             or info.st_size > 4096
         ):
             raise AttestationError("key_permissions")
@@ -131,7 +145,9 @@ def request_body(key_id, key, signed):
 def outcome(result):
     """attested (201 new, 200 resent), rejected (operator), or retry."""
     if isinstance(result, TransportFailure):
-        return "rejected" if result.kind is FailureKind.AUTH else "retry"
+        # Credentials and certificates need an operator, not the timer.
+        stop = (FailureKind.AUTH, FailureKind.TLS)
+        return "rejected" if result.kind in stop else "retry"
     if result.status in (200, 201):
         return "attested"
     if result.status == 429 or result.status >= 500:

@@ -178,6 +178,32 @@ class KeyCustodyTests(unittest.TestCase):
         with self.assertRaises(attestation.AttestationError):
             attestation.load_signing_key(self.path)
 
+    def test_group_read_only_for_the_attester_group(self):
+        foreign = [g for g in os.getgroups() if g != os.getegid()]
+        if not foreign:
+            self.skipTest("no supplementary group to test with")
+        self.path.chmod(0o440)
+        os.chown(self.path, -1, foreign[0])
+        with self.assertRaises(attestation.AttestationError):
+            attestation.load_signing_key(self.path)
+        # Owner-only stays valid whatever the group.
+        self.path.chmod(0o400)
+        attestation.load_signing_key(self.path)
+
+    def test_writable_or_linked_parent_directory_is_refused(self):
+        self.path.chmod(0o600)
+        self.dir.chmod(0o777)
+        self.addCleanup(self.dir.chmod, 0o700)
+        with self.assertRaises(attestation.AttestationError):
+            attestation.load_signing_key(self.path)
+        self.dir.chmod(0o700)
+        alias = Path(tempfile.mkdtemp(prefix="hermes-attest-alias-", dir="/tmp"))
+        self.addCleanup(alias.rmdir)
+        (alias / "dir").symlink_to(self.dir)
+        self.addCleanup((alias / "dir").unlink)
+        with self.assertRaises(attestation.AttestationError):
+            attestation.load_signing_key(alias / "dir" / "attestation.pem")
+
 
 class OutcomeTests(unittest.TestCase):
     def test_gateway_answers_map_to_three_outcomes(self):
@@ -201,10 +227,12 @@ class OutcomeTests(unittest.TestCase):
                     expected, attestation.outcome(HttpResponse(status, b"{}"))
                 )
 
-    def test_transport_failures_retry_except_credentials(self):
+    def test_transport_failures_retry_except_credentials_and_tls(self):
         for kind in FailureKind:
             with self.subTest(kind=kind):
-                expected = "rejected" if kind is FailureKind.AUTH else "retry"
+                # A certificate failure needs an operator, not the timer.
+                stop = (FailureKind.AUTH, FailureKind.TLS)
+                expected = "rejected" if kind in stop else "retry"
                 self.assertEqual(expected, attestation.outcome(TransportFailure(kind)))
 
 

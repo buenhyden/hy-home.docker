@@ -1,7 +1,7 @@
 # PROPOSAL — not loaded by Traefik. The live provider watches
 # infra/01-gateway/traefik/dynamic/, so copying this file there applies it at
-# once; do that only as the approved export ingress unit in RUN-0053, after
-# Traefik has joined blog_export_net.
+# once; do that only as the approved export ingress unit in RUN-0053. Compose
+# already lists Traefik on blog_export_net, so its next recreation joins it.
 #
 # One host name admits three Gateway request shapes, each from one source:
 #   - Windows B GETs the export list, a manifest or one file;
@@ -29,8 +29,8 @@ http:
       tls: {}
       middlewares:
         - blog-export-windows
-        - blog-export-small-body
         - blog-export-rate
+        - blog-export-small-body
       service: blog-ingestion-export
     blog-attestation:
       rule: Host(`blog-export.hy.home.arpa`) && Method(`POST`) && PathRegexp(`^/v1/ingestions/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/attestations$`)
@@ -39,8 +39,8 @@ http:
       tls: {}
       middlewares:
         - blog-attestation-host
-        - blog-export-small-body
         - blog-attestation-rate
+        - blog-export-small-body
       service: blog-ingestion-export
 
   middlewares:
@@ -63,12 +63,13 @@ http:
     blog-export-small-body:
       buffering:
         maxRequestBodyBytes: 16384
-    # One pull reads the list, then a manifest and a few files per export.
+    # One pull reads the list, then a manifest and up to about seven files per
+    # export, one export per candidate; a pull that hits 429 resumes next run.
     blog-export-rate:
       rateLimit:
-        average: 60
+        average: 120
         period: 1m
-        burst: 60
+        burst: 120
     # Three scheduled reports a day plus bounded retries.
     blog-attestation-rate:
       rateLimit:

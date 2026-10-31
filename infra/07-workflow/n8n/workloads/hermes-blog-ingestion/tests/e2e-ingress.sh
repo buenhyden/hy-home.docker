@@ -345,6 +345,31 @@ call 200 "acknowledged export survives Gateway restart" -H "$read" "$xb/v1/expor
 body 'b["state"] == "acknowledged" and b["ack_id"] is not None'
 call 200 "ACK replay after restart is idempotent" -X POST -H "$ack" -H "$json" --data-binary @"$work/ack.json" "$xb/v1/exports/$export_id/acks"
 call 200 "attestation replay after restart is idempotent" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-ready" "$xb/v1/ingestions/$ready_id/attestations"
+# The body the attest command signs: verified_request rebuilds the Publisher
+# adapter request from synthetic producer-signed evidence (test trust store).
+python3 - "$workload" "$work" <<'PY'
+import sys
+from pathlib import Path
+from unittest.mock import patch
+sys.path[:0] = [sys.argv[1], sys.argv[1] + "/tests"]
+import producer
+from test_trust import material
+from publisher import attestation, trust
+work = Path(sys.argv[2])
+key = producer.new_key()
+producer.write_store(work / "producer-keys.json", producer.entry(key))
+snapshot, evidence = material("d" * 32)
+with patch.object(trust, "TRUST_STORE", work / "producer-keys.json"), \
+        patch.object(trust, "_runtime_protected", lambda: None):
+    body, _ = attestation.verified_request(snapshot, evidence, producer.sign(key, evidence))
+(work / "publisher.json").write_bytes(body)
+PY
+sign "$work/publisher.json" "$work/attest.pem" "$work/att-publisher"
+sleep 12  # refill the webhook bucket after the outage probe
+call 201 "Publisher-adapter report persisted through n8n" -X POST -H "$header" -H "$json" --data-binary @"$work/publisher.json" "$url"
+publisher_id=$(field "$work/body" 'b["id"]')
+call 201 "attester signature over the Publisher body creates ready exports" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-publisher" "$xb/v1/ingestions/$publisher_id/attestations"
+body 'b["exports"] and all(e["state"] == "ready" for e in b["exports"])'
 
 gateway_ip=$(docker inspect -f "{{(index .NetworkSettings.Networks \"$id-ingest\").IPAddress}}" "$id-gateway")
 [ -n "$gateway_ip" ] || fail "Gateway has no address on the ingest network"

@@ -98,6 +98,13 @@ class ExportRouteTests(unittest.TestCase):
             self.assertEqual({"ipAllowList", "buffering", "rateLimit"}, set(kinds))
             self.assertLessEqual(kinds["buffering"]["maxRequestBodyBytes"], 16384)
         self.assertLessEqual(attest["rateLimit"]["average"], 10)
+        # Source, then rate, then buffering: a limited request is never buffered.
+        for name in ("blog-export-ack", "blog-attestation"):
+            chain = [
+                next(iter(self.middlewares[m]))
+                for m in self.routers[name]["middlewares"]
+            ]
+            self.assertEqual(["ipAllowList", "rateLimit", "buffering"], chain, name)
 
 
 if __name__ == "__main__":
