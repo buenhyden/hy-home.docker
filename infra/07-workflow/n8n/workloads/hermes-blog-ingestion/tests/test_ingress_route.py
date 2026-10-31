@@ -21,9 +21,13 @@ class IngressRouteTests(unittest.TestCase):
         )
         cls.path = "/webhook/" + ingress["parameters"]["path"]
 
-    def test_file_is_a_proposal_outside_the_live_dynamic_directory(self):
+    def test_file_is_a_proposal_absent_from_the_live_dynamic_directory(self):
         self.assertTrue(self.text.startswith("# PROPOSAL"))
-        self.assertNotIn("dynamic", ROUTE.parent.name)
+        # Traefik watches this directory live; the route lands there only by approval.
+        live = WORKLOAD.parents[3] / "01-gateway/traefik/dynamic"
+        self.assertTrue(live.is_dir())
+        for path in live.iterdir():
+            self.assertNotIn("hermes-blog-ingestion-webhook", path.read_text(), path)
 
     def test_router_matches_only_the_workflow_path_by_post(self):
         (name,) = self.http["routers"]

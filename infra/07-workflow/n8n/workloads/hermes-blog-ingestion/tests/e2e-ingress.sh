@@ -15,6 +15,8 @@ commit=${1:-$(sed -n 's#.*image: hy-home/blog-ingestion:\([0-9a-f]\{40\}\)$#\1#p
 n8n_image=$(sed -n 's#^ *image: \(hyhome/n8n:[^ ]*\)$#\1#p' "$compose" | head -1)
 traefik_image=$(sed -n 's#^ *image: \(traefik:[^ ]*\)$#\1#p' "$root/infra/01-gateway/traefik/docker-compose.yml")
 id=e2e-$(od -An -N4 -tx1 /dev/urandom | tr -d ' \n')
+# Live Traefik publishes only on the LAN address, so Hermes connects there too.
+lan_ip=${E2E_LAN_IP:-$(ip -4 route get 1.1.1.1 | sed -n 's/.* src \([0-9.]*\).*/\1/p')}
 gateway_image=hy-home/blog-ingestion-e2e:$commit
 work=$(mktemp -d)
 pass=0
@@ -139,13 +141,13 @@ http:
         servers: [{url: "http://n8n:5678"}]
 YAML
 chmod -R a+rX "$work/dynamic"
-docker run -d --name "$id-traefik" --network "$id-edge" -p 127.0.0.1::443 \
+docker run -d --name "$id-traefik" --network "$id-edge" -p "$lan_ip::443" \
   -v "$work/dynamic:/dynamic:ro" "$traefik_image" \
   --entrypoints.websecure.address=:443 --providers.file.directory=/dynamic \
   --accesslog=true --accesslog.format=json --log.level=ERROR >/dev/null
 port=$(docker port "$id-traefik" 443/tcp | head -1 | sed 's/.*://')
 url=https://n8n.hy.home.arpa:$port/webhook/hermes-blog-ingestion
-post() { curl -sk -o "$work/body" -w '%{http_code}' --resolve "n8n.hy.home.arpa:$port:127.0.0.1" "$@" || true; }
+post() { curl -sk -o "$work/body" -w '%{http_code}' --resolve "n8n.hy.home.arpa:$port:$lan_ip" "$@" || true; }
 call() { # call <expected-status> <label> [curl args...]
   local expected=$1 label=$2 status
   shift 2
@@ -190,8 +192,8 @@ for line in sys.stdin:
     if entry.get("RouterName", "").startswith("hermes-blog-ingestion-webhook") and entry.get("DownstreamStatus") == 201:
         print(entry["ClientHost"])
         break')
-[ "$source_ip" = "$edge_gateway" ] || fail "host source was $source_ip, expected bridge gateway $edge_gateway"
-ok "host-local client arrives from the bridge gateway $source_ip"
+[ "$source_ip" = "$edge_gateway" ] || fail "host process via $lan_ip arrived as $source_ip, not the bridge gateway $edge_gateway"
+ok "host process connecting to $lan_ip arrives from the bridge gateway $source_ip"
 
 docker stop "$id-gateway" >/dev/null
 sleep 10
@@ -207,6 +209,7 @@ call 200 "replay after Gateway restart is a persisted duplicate" -X POST -H "$he
 body 'b["duplicate"] is True and b["persisted"] is True'
 
 gateway_ip=$(docker inspect -f "{{(index .NetworkSettings.Networks \"$id-ingest\").IPAddress}}" "$id-gateway")
+[ -n "$gateway_ip" ] || fail "Gateway has no address on the ingest network"
 if curl -s -m 3 -o /dev/null "http://$gateway_ip:8787/v1/summary"; then
   fail "host process reached the Gateway on the isolated network"
 fi
