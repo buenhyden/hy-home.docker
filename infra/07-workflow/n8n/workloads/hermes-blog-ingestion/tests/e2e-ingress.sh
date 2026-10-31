@@ -62,7 +62,8 @@ for net in "$id-ingest" "$id-export"; do
 done
 
 # 3. Gateway: synthetic token digests and attestation key only, config 0600
-# owned by 10001. One single-scope credential per role, as in operations.
+# owned by 10001. Single-scope credentials per role; the attester holds
+# attest+read, as in operations.
 hermes_token=$(hex 24)
 gateway_token=$(hex 24)
 attest_token=$(hex 24)
@@ -86,7 +87,7 @@ digest = lambda t: hashlib.sha256(t.encode()).hexdigest()
 grant = lambda t, scopes: {"producer": "hermes", "token_sha256": digest(t), "scopes": scopes}
 json.dump({
     "schema_version": "1.0", "data_dir": "/data", "host": "0.0.0.0", "port": 8787,
-    "credentials": [grant(ingest, ["ingest", "read"]), grant(attest, ["attest"]),
+    "credentials": [grant(ingest, ["ingest", "read"]), grant(attest, ["attest", "read"]),
                     grant(read, ["export_read"]), grant(ack, ["export_ack"])],
     "export": {"attestation_keys": [{"key_id": "attest-e2e", "public_key": public}]},
 }, open(f"{work}/config.json", "w"))
@@ -263,10 +264,6 @@ read="Authorization: Bearer $read_token"
 ack="Authorization: Bearer $ack_token"
 attest="Authorization: Bearer $attest_token"
 field() { python3 -c 'import json,sys; print(eval(sys.argv[2], {"b": json.load(open(sys.argv[1]))}))' "$@"; }
-sign() { # sign <request-json> <key-pem> <out>: what the host attester sends
-  python3 -c 'import sys; sys.path.insert(0, sys.argv[1]); from publisher import attestation as a
-open(sys.argv[4], "wb").write(a.request_body("attest-e2e", a.load_signing_key(sys.argv[3]), a.message(open(sys.argv[2], "rb").read())))' "$workload" "$@"
-}
 held_id=$(field "$work/held-receipt" 'b["id"]')
 # A report for an approved research job (devops), unlike the synthetic "daily".
 python3 - "$report" "$work/devops.json" <<'PY'
@@ -276,9 +273,16 @@ d.update(job_id="25674fbc0bf3", run_id="2026-10-31", fire_id="cron-02",
          source_text="Synthetic DevOps report.")
 d["idempotency_key"] = "devops-" + d["run_id"]
 d["source_sha256"] = hashlib.sha256(d["source_text"].encode()).hexdigest()
-d["items"] = [{"item_id": "devops-1", "kind": "devops", "title": "Synthetic DevOps item",
-               "body": "Synthetic body for the Resource Export E2E.",
-               "source_url": "https://example.org/devops-1"}]
+quotes = {"a": "The synthetic deployment completed without any incident today.",
+          "b": "Release notes confirm the synthetic rollout shipped everywhere."}
+d["items"] = [{"item_id": f"devops-{k}", "kind": "devops", "title": f"Synthetic item {k}",
+               "body": f"Synthetic body of item {k} for the Resource Export E2E.",
+               "source_url": f"https://example.org/{k}", "source_quotes": [quotes[k]]}
+              for k in "ab"]
+# Fixed fake pages: A carries its title, body and quote; B says something else.
+json.dump({"https://example.org/a": f"{d['items'][0]['title']} {d['items'][0]['body']} {quotes['a']}",
+           "https://example.org/b": "The vendor denies that anything shipped."},
+          open(sys.argv[2] + ".pages", "w"))
 json.dump(d, open(sys.argv[2], "w"))
 PY
 sleep 20  # the webhook route allows 6 a minute; let it refill
@@ -286,22 +290,45 @@ call 201 "devops report persisted" -X POST -H "$header" -H "$json" --data-binary
 ready_id=$(field "$work/body" 'b["id"]')
 call 200 "persisted reports have no export before attestation" -H "$read" "$xb/v1/exports"
 body 'b["items"] == []'
-sign "$work/devops.json" "$work/attest.pem" "$work/att-ready"
-sign "$work/conflict.json" "$work/attest.pem" "$work/att-tampered"
-sign "$work/devops.json" "$work/unregistered.pem" "$work/att-forged"
-sign "$report" "$work/attest.pem" "$work/att-held"
-call 403 "export_read token cannot attest" -X POST -H "$read" -H "$json" --data-binary @"$work/att-ready" "$xb/v1/ingestions/$ready_id/attestations"
-call 422 "signature over changed items is refused" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-tampered" "$xb/v1/ingestions/$held_id/attestations"
+python3 - "$work" "$lan_ip" "$port" "$attest_token" <<'PY'
+import json, sys
+work, lan_ip, port, token = sys.argv[1:]
+json.dump({"work": work, "lan_ip": lan_ip, "port": int(port), "attest_token": token,
+           "key": f"{work}/attest.pem", "pages": f"{work}/devops.json.pages"},
+          open(f"{work}/harness.json", "w"))
+PY
+harness() { python3 "$workload/tests/e2e_attest_harness.py" "$work/harness.json" "$@"; }
+# The route admits only the attester source and these two GET shapes; the
+# source split itself is asserted by test_export_route.py.
+call 404 "POST on the attestation queue is not routed" -X POST -H "$attest" -H "$json" --data '{}' "$xb/v1/attestation-queue"
+call 403 "export_read token cannot read the attestation queue" -H "$read" "$xb/v1/attestation-queue"
+call 200 "attest+read token lists the queued reports" -H "$attest" "$xb/v1/attestation-queue"
+body "{'$ready_id', '$held_id'} <= {e['report_id'] for e in b['items']}"
+harness forge "$ready_id" forged "$work/att-forged"
+harness forge "$ready_id" tampered "$work/att-tampered"
+call 403 "export_read token cannot attest" -X POST -H "$read" -H "$json" --data-binary @"$work/att-tampered" "$xb/v1/ingestions/$ready_id/attestations"
+call 422 "signature over changed items is refused" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-tampered" "$xb/v1/ingestions/$ready_id/attestations"
 call 422 "signature by an unregistered key is refused" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-forged" "$xb/v1/ingestions/$ready_id/attestations"
-call 201 "trusted attestation creates a ready export" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-ready" "$xb/v1/ingestions/$ready_id/attestations"
-body 'b["duplicate"] is False and [e["state"] for e in b["exports"]] == ["ready"]'
-call 200 "attestation replay is idempotent" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-ready" "$xb/v1/ingestions/$ready_id/attestations"
-body 'b["duplicate"] is True'
-call 201 "unapproved job attests to held exports only" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-held" "$xb/v1/ingestions/$held_id/attestations"
-body 'b["exports"] and all(e["state"] == "held" and e["hold_reason"] == "UNKNOWN_JOB" for e in b["exports"])'
-held_export=$(field "$work/body" 'b["exports"][0]["export_id"]')
-call 409 "held export serves no file" -H "$read" "$xb/v1/exports/$held_export/files/0"
-call 200 "ready export listed for Windows" -H "$read" "$xb/v1/exports?state=ready"
+sleep 30  # the attestation route allows 6 a minute; let it refill
+# The real attester: GatewayReader through the live blog-attestation-read
+# router, the fake fetcher above, and the signed POST through the attestation route.
+counts=$(harness run) || fail "attester run failed: $counts"
+echo "INFO attester counts $counts"
+[ "$(python3 -c 'import json,sys; c=json.loads(sys.argv[1]); print(c["attested"], c["rejected"], c["retry"], c["held_items"])' "$counts")" = "2 0 0 3" ] ||
+  fail "attester counts: $counts $(cat "$work/sends.log")"
+ok "attester signed and sent two reports (3 items held: 2 unapproved job, 1 source mismatch)"
+sends=$(wc -l <"$work/sends.log")
+counts=$(harness run) || fail "second attester run failed: $counts"
+[ "$(python3 -c 'import json,sys; c=json.loads(sys.argv[1]); print(c["attested"], c["held_items"], c["retry"], c["rejected"])' "$counts")" = "0 0 0 0" ] &&
+  [ "$(wc -l <"$work/sends.log")" = "$sends" ] || fail "second attester run sent again: $counts"
+ok "a second attester run sends nothing new"
+[ "$(harness resend "$ready_id")" = 200 ] || fail "stored body resend"
+ok "resending the stored attestation body is a 200 duplicate"
+call 200 "all exports listed" -H "$read" "$xb/v1/exports"
+body 'sorted((e["state"], e.get("hold_reason")) for e in b["items"]) == [("held", "SOURCE_UNVERIFIED"), ("held", "UNKNOWN_JOB"), ("held", "UNKNOWN_JOB"), ("ready", None)]'
+held_export=$(field "$work/body" '[e for e in b["items"] if e.get("hold_reason") == "SOURCE_UNVERIFIED"][0]["export_id"]')
+call 409 "SOURCE_UNVERIFIED export serves no file" -H "$read" "$xb/v1/exports/$held_export/files/0"
+call 200 "only the verified item is ready for Windows" -H "$read" "$xb/v1/exports?state=ready"
 body 'len(b["items"]) == 1'
 export_id=$(field "$work/body" 'b["items"][0]["export_id"]')
 call 200 "manifest readable" -H "$read" "$xb/v1/exports/$export_id"
@@ -351,33 +378,8 @@ body 'b["duplicate"] is True and b["persisted"] is True'
 call 200 "acknowledged export survives Gateway restart" -H "$read" "$xb/v1/exports/$export_id"
 body 'b["state"] == "acknowledged" and b["ack_id"] is not None'
 call 200 "ACK replay after restart is idempotent" -X POST -H "$ack" -H "$json" --data-binary @"$work/ack.json" "$xb/v1/exports/$export_id/acks"
-call 200 "attestation replay after restart is idempotent" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-ready" "$xb/v1/ingestions/$ready_id/attestations"
-# The body the attest command signs: verified_request rebuilds the Publisher
-# adapter request from synthetic producer-signed evidence (test trust store).
-python3 - "$workload" "$work" <<'PY'
-import sys
-from pathlib import Path
-from unittest.mock import patch
-sys.path[:0] = [sys.argv[1], sys.argv[1] + "/tests"]
-import producer
-from test_trust import material
-from publisher import attestation, trust
-work = Path(sys.argv[2])
-key = producer.new_key()
-producer.write_store(work / "producer-keys.json", producer.entry(key))
-snapshot, evidence = material("d" * 32)
-with patch.object(trust, "TRUST_STORE", work / "producer-keys.json"), \
-        patch.object(trust, "_runtime_protected", lambda: None):
-    body, _ = attestation.verified_request(snapshot, evidence, producer.sign(key, evidence))
-(work / "publisher.json").write_bytes(body)
-PY
-sign "$work/publisher.json" "$work/attest.pem" "$work/att-publisher"
-sleep 12  # refill the webhook bucket after the outage probe
-call 201 "Publisher-adapter report persisted through n8n" -X POST -H "$header" -H "$json" --data-binary @"$work/publisher.json" "$url"
-publisher_id=$(field "$work/body" 'b["id"]')
-call 201 "attester signature over the Publisher body creates ready exports" -X POST -H "$attest" -H "$json" --data-binary @"$work/att-publisher" "$xb/v1/ingestions/$publisher_id/attestations"
-body 'b["exports"] and all(e["state"] == "ready" for e in b["exports"])'
-
+[ "$(harness resend "$ready_id")" = 200 ] || fail "stored body resend after restart"
+ok "resending the stored attestation body after restart is a 200 duplicate"
 gateway_ip=$(docker inspect -f "{{(index .NetworkSettings.Networks \"$id-ingest\").IPAddress}}" "$id-gateway")
 [ -n "$gateway_ip" ] || fail "Gateway has no address on the ingest network"
 if curl -s -m 3 -o /dev/null "http://$gateway_ip:8787/v1/summary"; then
