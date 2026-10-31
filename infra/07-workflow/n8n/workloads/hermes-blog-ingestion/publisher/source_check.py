@@ -51,20 +51,24 @@ def _charset(content_type, body):
     name = None
     if m := re.search(r"charset\s*=\s*[\"']?([\w.:\-]+)", content_type, re.I):
         name = m[1]
-    elif "html" in content_type.lower() and (
+    elif content_type.split(";")[0].strip().lower() != "text/plain" and (
         m := re.search(rb"<meta[^>]+charset\s*=\s*[\"']?([\w.:\-]+)", body[:4096], re.I)
     ):
         name = m[1].decode("ascii")
     try:
-        return codecs.lookup(name).name if name else "utf-8"
+        info = codecs.lookup(name) if name else None
     except LookupError:
         return "utf-8"
+    return info.name if info and info._is_text_encoding else "utf-8"
 
 
 def page_text(result):
     ctype = result.content_type or ""
-    text = result.body.decode(_charset(ctype, result.body), errors="replace")
-    if "html" in ctype.lower():
+    try:
+        text = result.body.decode(_charset(ctype, result.body), errors="replace")
+    except (LookupError, UnicodeError):
+        text = result.body.decode("utf-8", errors="replace")
+    if ctype.split(";")[0].strip().lower() != "text/plain":
         parser = _Text()
         parser.feed(text)
         parser.close()
@@ -90,14 +94,18 @@ _TOKEN = re.compile(
     rf"|(?P<e1>\b(?P<e1m>{_MON})\.?\s+(?P<e1d>\d{{1,2}})(?:st|nd|rd|th)?\b)"
     rf"|(?P<e2>\b(?P<e2d>\d{{1,2}})(?:st|nd|rd|th)?\s+(?:of\s+)?(?P<e2m>{_MON})\b)"
     rf"|(?P<bad>(?<![가-힣])수\s?(?:십|백|천)?(?:만|억|조)"
-    rf"|\b(?i:thousand|million|billion|trillion)\b)"
-    rf"|(?P<num>{_N})",
+    rf"|(?<![가-힣])수(?:십|백|천)"
+    rf"|(?<![가-힣\d])[일이삼사오육칠팔구십백천]+(?:만|억|조)"
+    rf"|\b(?i:(?:thousand|million|billion|trillion)s?|percent)\b"
+    rf"|퍼센트|%)"
+    rf"|(?P<num>(?<![A-Za-z\d])(?<![A-Za-z]-)(?:{_N}))",
     re.ASCII,
 )
 _PCT = re.compile(r"\s*(?:%|(?i:percent)\b|퍼센트)", re.ASCII)
-_KUNIT = re.compile(r"(천|백)?(만|억|조)?")
+_KUNIT = re.compile(r"\s*(천|백)?\s*(만|억|조)?")
 _KCHAIN = re.compile(rf"\s*({_N})(천|백)?(만|억|조)?", re.ASCII)
 _EUNIT = re.compile(r"\s*(?i:(thousand|million|billion|trillion|bn|m))\b", re.ASCII)
+_ELATIN = re.compile(r"(?:[KkMmBb]|\s?(?:mn|bil))\b", re.ASCII)
 _SMALL = {"천": 10**3, "백": 10**2}
 _BIG = {"만": 10**4, "억": 10**8, "조": 10**12}
 _RANK = {"만": 1, "억": 2, "조": 3}
@@ -149,6 +157,9 @@ def _numbers(s):
             ):
                 out.append(("num", value * _ESCALE[e[1].lower()]))
                 pos = e.end()
+            elif e := _ELATIN.match(s, pos):  # 5M, 5K, 5mn: scale we cannot value
+                out.append(BAD)
+                pos = e.end()
             else:
                 out.append(("num", value))
     return out
@@ -158,6 +169,19 @@ def _numbers(s):
 
 _NAME = re.compile(r"\b[A-Z][A-Za-z0-9&.\-]{1,}\b", re.ASCII)
 _SENT_END = re.compile(r"[A-Za-z0-9)\"'][.!?] $")
+# Capitalised only because they start a sentence; never treated as names there.
+_STARTERS = frozenset(
+    """The An This That These Those It Its He She We They You His Her Our Their My
+    Your And But Or So Yet Nor For If When While Although Though Because Since Unless
+    Until After Before As At By In On Of To From With Without Under Over Into About
+    Between During Through Is Are Was Were Be Been Being Has Have Had Do Does Did Will
+    Would Can Could Should May Might Must Shall Not No Yes However Also Then Thus
+    Therefore Meanwhile Moreover Furthermore Instead Still Just Now Today Yesterday
+    Tomorrow Here There What Which Who Whom Whose Why How Where Some Many Most Several
+    Both Each Every All Any One Two Three Other Another Such More Less Only Even
+    Additionally Overall Recently Currently Last Next First Second Finally Please Let
+    Monday Tuesday Wednesday Thursday Friday Saturday Sunday""".split()
+)
 
 
 def _names(s):
@@ -165,10 +189,8 @@ def _names(s):
         if m[0] in _MONTHS:
             continue
         before = s[: m.start()]
-        if (not before or _SENT_END.search(before)) and re.match(
-            r" [A-Za-z]", s[m.end() :]
-        ):
-            continue  # first word of an English sentence
+        if m[0] in _STARTERS and (not before or _SENT_END.search(before)):
+            continue
         yield m[0]
 
 
@@ -192,8 +214,8 @@ def check_item(item, text):
         codes.append("quotes_missing")
     elif len(quotes) > 3 or any(
         not isinstance(q, str)
-        or not 0 < len(q) <= 500
-        or not (n := _norm(q))
+        or len(q) > 500
+        or len(n := _norm(q)) < 20
         or n not in text
         for q in quotes
     ):
