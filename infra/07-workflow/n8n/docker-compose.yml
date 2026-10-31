@@ -351,15 +351,16 @@ services:
 
   # Blog-data ingestion Gateway (SPEC-0204-TSK-0022). Blog-data owns the code,
   # image recipe and contract; this host only runs an image built locally from
-  # the reviewed commit in the tag. Its own profile keeps it out of every
-  # existing selection; n8n-worker is its only peer.
+  # the reviewed Blog-data dev commit in the tag. Its own profile keeps it out
+  # of every existing selection; n8n-worker (ingest) and Traefik (exact-path
+  # export and attestation routes) are its only peers.
   blog-ingestion:
     profiles:
       - blog-ingestion
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med
-    image: hy-home/blog-ingestion:cbf06c3514970f8ffa86dafa18064bfd3931e06a
+    image: hy-home/blog-ingestion:cadea2e683fb3e03e0e7a9f27133421c981bbea8
     pull_policy: never
     container_name: blog-ingestion
     hostname: blog-ingestion
@@ -385,6 +386,7 @@ services:
           create_host_path: false
     networks:
       n8n_blog_ingest_net: {}
+      blog_export_net: {}
     healthcheck:
       # An unauthenticated summary request proves the listener answers: 401.
       test: [ 'CMD', 'node', '-e', "fetch('http://127.0.0.1:8787/v1/summary').then(r => process.exit(r.status === 401 ? 0 : 1), () => process.exit(1))" ]

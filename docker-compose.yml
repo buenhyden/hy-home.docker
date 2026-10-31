@@ -113,8 +113,8 @@ networks:
       config:
         - subnet: 10.250.17.0/24
   # The Blog-data ingestion Gateway answers only n8n-worker here; internal
-  # with no host address, so neither the host, Traefik nor any other
-  # container reaches it (SPEC-0204-TSK-0022).
+  # with no host address, so neither the host nor any other container reaches
+  # it on this network (SPEC-0204-TSK-0022).
   n8n_blog_ingest_net:
     name: n8n_blog_ingest_net
     internal: true
@@ -123,6 +123,16 @@ networks:
     ipam:
       config:
         - subnet: 10.250.20.0/24
+  # Traefik and the Blog-data Gateway only: Windows export pulls, ACKs and
+  # host attestations arrive through exact-path Traefik routes, never a port.
+  blog_export_net:
+    name: blog_export_net
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
+    ipam:
+      config:
+        - subnet: 10.250.21.0/24
   project_net:
     external: true
     name: ${PROJECT_NET_NAME:-project_net}

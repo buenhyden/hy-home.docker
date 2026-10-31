@@ -2152,7 +2152,7 @@
         "hy-home/blog-ingestion": "local-custom"
       },
       "images": [
-        "hy-home/blog-ingestion:cbf06c3514970f8ffa86dafa18064bfd3931e06a"
+        "hy-home/blog-ingestion:cadea2e683fb3e03e0e7a9f27133421c981bbea8"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
@@ -2161,7 +2161,7 @@
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "hy-home/blog-ingestion:cbf06c3514970f8ffa86dafa18064bfd3931e06a"
+            "hy-home/blog-ingestion:cadea2e683fb3e03e0e7a9f27133421c981bbea8"
           ]
         }
       ]
