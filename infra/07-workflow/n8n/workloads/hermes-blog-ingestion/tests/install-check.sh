@@ -17,7 +17,18 @@ installer=/src/infra/07-workflow/n8n/workloads/hermes-blog-ingestion/install.py
 useradd --system --no-create-home hermes-publisher
 useradd --system --no-create-home hermes
 mkdir /src && tar -xf /in/release.tar -C /src
-release=$(python3 -I "$installer" --archive /in/release.tar --python "$python")
+if python3 -I "$installer" --archive /in/release.tar --python "$python" 2>/dev/null; then
+  echo "FAIL archive writable by a non-root owner was installed"; exit 1
+fi
+echo "PASS archive not owned by root refused"
+install -m 0600 /in/release.tar /root/release.tar
+mkdir -m 0755 /opt/taken && chown hermes /opt/taken
+if python3 -I "$installer" --archive /root/release.tar --prefix /opt/taken/p --python "$python" 2>/dev/null \
+  || [ -e /opt/taken/p ]; then
+  echo "FAIL prefix under a Hermes-owned directory was used"; exit 1
+fi
+echo "PASS prefix with a non-root ancestor refused"
+release=$(python3 -I "$installer" --archive /root/release.tar --python "$python")
 venv=$release/venv
 site=$("$venv/bin/python" -I -c "import sysconfig; print(sysconfig.get_path(\"purelib\"))")
 crypto=$site/cryptography/hazmat/primitives/asymmetric/ed25519.py
@@ -28,7 +39,12 @@ verify() { runuser -u hermes-publisher -- "$venv/bin/python" -I -m publisher.cli
 check() { [ "$1" = "$2" ] || { echo "FAIL $3: $1"; exit 1; }; echo "PASS $3"; }
 
 check "$(verify)" "$ok" "dedicated account loads the protected release"
-(cd "$site" && sha256sum --quiet -c "$release/MANIFEST.sha256") && echo "PASS installed files match the commit manifest"
+(cd "$site" && sha256sum --quiet -c "$release/MANIFEST.sha256") || { echo "FAIL manifest"; exit 1; }
+echo "PASS installed files match the archive manifest"
+for name in acquirer producer_sealer; do
+  if [ -e "$site/publisher/$name.py" ]; then echo "FAIL producer module $name installed"; exit 1; fi
+done
+echo "PASS only the Publisher module allowlist is installed"
 for user in hermes-publisher hermes; do
   for target in "$site/publisher/trust.py" "$store" "$crypto" "$venv/pyvenv.cfg" "$site/publisher/x.py" "$python"; do
     if runuser -u "$user" -- sh -c "echo x >> \"$target\"" 2>/dev/null; then echo "FAIL $user wrote $target"; exit 1; fi
@@ -52,7 +68,7 @@ weaken "import directory other-writable" "$site" "chmod o+w" "chmod o-w"
 weaken "interpreter owned by Hermes" "$python" "chown hermes" "chown root"
 check "$(verify)" "$ok" "restored release is protected again"
 
-if python3 -I "$installer" --archive /in/release.tar --python "$python" 2>/dev/null; then
+if python3 -I "$installer" --archive /root/release.tar --python "$python" 2>/dev/null; then
   echo "FAIL reinstall overwrote a release"; exit 1
 fi
 echo "PASS releases are immutable"
