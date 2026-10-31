@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Disposable synthetic check of the Gateway image change on one Docker host:
-# a store written by the previous pin (DB schema 2) is backed up online,
-# upgraded in place by the current pin (schema 3) without losing a receipt,
-# restored from that backup into a fresh volume, and a schema-3 backup with an
+# a store written by the previous pin (DB schema 3) is backed up online,
+# upgraded in place by the current pin (schema 4) without losing a receipt,
+# restored from that backup into a fresh volume, and a schema-4 backup with an
 # export is restored again. Synthetic tokens and keys only; no network, no live
 # container, volume, path or secret. Removes everything it creates on exit.
 # Needs Docker and gh access to the private Blog-data repository.
@@ -12,7 +12,7 @@ workload=$(cd "$(dirname "$0")/.." && pwd)
 root=$(git -C "$workload" rev-parse --show-toplevel)
 compose=$root/infra/07-workflow/n8n/docker-compose.yml
 new=$(sed -n 's#.*image: hy-home/blog-ingestion:\([0-9a-f]\{40\}\)$#\1#p' "$compose")
-# The pin PR #699 shipped: Gateway without Resource Export, DB schema 2.
+# The previous pin: Gateway before attestation/2, DB schema 3.
 old=${1:-a43d824334e636ddeab034982b36c0700a9d8f93}
 id=e2e-up-$(od -An -N4 -tx1 /dev/urandom | tr -d ' \n')
 work=$(mktemp -d)
@@ -49,10 +49,10 @@ public = k.public_key().public_bytes(s.Encoding.PEM, s.PublicFormat.SubjectPubli
 grant = lambda t, scopes: {"producer": "hermes", "scopes": scopes,
                            "token_sha256": hashlib.sha256(t.encode()).hexdigest()}
 base = {"schema_version": "1.0", "data_dir": "/data", "host": "127.0.0.1", "port": 8787}
-# The previous Gateway knows neither attest/export scopes nor the export block.
+# The previous Gateway knows neither the attest/read scopes nor the export block.
 json.dump({**base, "credentials": [grant(ingest, ["ingest", "read"])]},
           open(f"{work}/config-old.json", "w"))
-json.dump({**base, "credentials": [grant(ingest, ["ingest", "read"]), grant(attest, ["attest"]),
+json.dump({**base, "credentials": [grant(ingest, ["ingest", "read"]), grant(attest, ["attest", "read"]),
                                    grant(read, ["export_read"])],
            "export": {"attestation_keys": [{"key_id": "attest-e2e", "public_key": public}]}},
           open(f"{work}/config-new.json", "w"))
@@ -68,11 +68,15 @@ d["items"] = [{"item_id": "devops-1", "kind": "devops", "title": "Synthetic DevO
                "body": "Synthetic body for the upgrade E2E.",
                "source_url": "https://example.org/devops-1"}]
 json.dump(d, open(sys.argv[2], "w"))
+# The previous Gateway rejects source_quotes, so the quoted report is a second
+# one ingested after the upgrade; it is the one attestation/2 can verify.
+d.update(run_id="2026-11-01", fire_id="cron-03", source_text="Synthetic quoted report.")
+d["idempotency_key"] = "devops-" + d["run_id"]
+d["source_sha256"] = hashlib.sha256(d["source_text"].encode()).hexdigest()
+d["items"][0]["source_quotes"] = ["Synthetic quote one for the upgrade E2E."]
+json.dump(d, open(sys.argv[2].replace("devops.json", "quoted.json"), "w"))
 PY
-python3 -c 'import sys; sys.path.insert(0, sys.argv[1]); from publisher import attestation as a
-open(sys.argv[4], "wb").write(a.request_body("attest-e2e", a.load_signing_key(sys.argv[3]), a.message(open(sys.argv[2], "rb").read())))' \
-  "$workload" "$work/devops.json" "$work/attest.pem" "$work/attestation.json"
-chmod 0644 "$work"/config-*.json "$work"/devops.json "$work"/attestation.json
+chmod 0644 "$work"/config-*.json "$work"/devops.json "$work"/quoted.json
 
 volume() { # volume <name> [store-file]: data/, backup/ and both configs, owned by 10001
   docker volume create "$1" >/dev/null
@@ -124,44 +128,66 @@ backup() { # backup <container> <name>: online backup with that container's imag
   docker cp "$1:/backup/$2" "$work/$2" >/dev/null && chmod 0644 "$work/$2"
 }
 
-# 1. The previous pin writes a schema-2 store and takes an online backup.
+# 1. The previous pin writes a schema-3 store and takes an online backup.
 volume "$id-a"
 serve "$id-old" "$id-a" "$old" config-old.json
 answer=$(req "$id-old" POST /v1/ingestions "$ingest" "$work/devops.json")
 expect 201 "previous Gateway persists a report" "$answer" 'b["persisted"] is True'
 report_id=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["id"])' "${answer#* }")
-[ "$(schema "$id-old")" = 2 ] || fail "previous store is not schema 2"
-ok "previous store is DB schema 2"
-backup "$id-old" schema2.sqlite3
-ok "online backup of the schema-2 store"
+[ "$(schema "$id-old")" = 3 ] || fail "previous store is not schema 3"
+ok "previous store is DB schema 3"
+backup "$id-old" schema3.sqlite3
+ok "online backup of the schema-3 store"
 docker stop "$id-old" >/dev/null
 
 # 2. The current pin upgrades that store in place; receipts survive.
 serve "$id-new" "$id-a" "$new" config-new.json
-[ "$(schema "$id-new")" = 3 ] || fail "store was not upgraded to schema 3"
-ok "current Gateway upgrades the store to DB schema 3"
+[ "$(schema "$id-new")" = 4 ] || fail "store was not upgraded to schema 4"
+ok "current Gateway upgrades the store to DB schema 4"
 expect 200 "upgraded store keeps the receipt" "$(req "$id-new" GET "/v1/ingestions/$report_id" "$ingest")"
 expect 200 "replay after upgrade is the same persisted report" \
   "$(req "$id-new" POST /v1/ingestions "$ingest" "$work/devops.json")" \
   "b[\"id\"] == \"$report_id\" and b[\"duplicate\"] is True"
-expect 201 "a pre-upgrade report can be attested into a ready export" \
-  "$(req "$id-new" POST "/v1/ingestions/$report_id/attestations" "$attest" "$work/attestation.json")" \
+# A quoted report, ingested after the upgrade, is what attestation/2 can verify.
+answer=$(req "$id-new" POST /v1/ingestions "$ingest" "$work/quoted.json")
+expect 201 "upgraded Gateway persists a quoted report" "$answer" 'b["persisted"] is True'
+quoted_id=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["id"])' "${answer#* }")
+# Attestation/2 signs the stored request bytes the Gateway returns.
+req "$id-new" GET "/v1/ingestions/$quoted_id/request" "$attest" | cut -d' ' -f2- |
+  python3 -c 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().rstrip(b"\n"))' >"$work/stored-request.json"
+python3 - "$workload" "$work" <<'PY'
+import datetime, json, sys
+sys.path.insert(0, sys.argv[1])
+from publisher import attestation as a
+work = sys.argv[2]
+item = json.load(open(f"{work}/quoted.json"))["items"][0]
+now = datetime.datetime.now(datetime.timezone.utc)
+verified = [{"item_id": item["item_id"], "final_url": item["source_url"],
+             "fetched_at": now.strftime("%Y-%m-%dT%H:%M:%S.") + f"{now.microsecond // 1000:03d}Z"}]
+evidence = "0123456789abcdef" * 4
+signed = a.message(open(f"{work}/stored-request.json", "rb").read(), verified, evidence)
+open(f"{work}/attestation.json", "wb").write(
+    a.request_body("attest-e2e", a.load_signing_key(f"{work}/attest.pem"), signed, verified, evidence))
+PY
+chmod 0644 "$work/attestation.json"
+expect 201 "a quoted report is attested into a ready export" \
+  "$(req "$id-new" POST "/v1/ingestions/$quoted_id/attestations" "$attest" "$work/attestation.json")" \
   '[e["state"] for e in b["exports"]] == ["ready"]'
 export_id=$(req "$id-new" GET "/v1/exports?state=ready" "$read" | cut -d' ' -f2- |
   python3 -c 'import json,sys; print(json.load(sys.stdin)["items"][0]["export_id"])')
-backup "$id-new" schema3.sqlite3
-ok "online backup of the schema-3 store with an export"
+backup "$id-new" schema4.sqlite3
+ok "online backup of the schema-4 store with an export"
 
-# 3. The schema-2 backup restores into a fresh volume and upgrades there too.
-volume "$id-b" schema2.sqlite3
+# 3. The schema-3 backup restores into a fresh volume and upgrades there too.
+volume "$id-b" schema3.sqlite3
 serve "$id-restored" "$id-b" "$new" config-new.json
-[ "$(schema "$id-restored")" = 3 ] || fail "restored schema-2 backup was not upgraded"
-expect 200 "restored schema-2 backup keeps the receipt" \
+[ "$(schema "$id-restored")" = 4 ] || fail "restored schema-3 backup was not upgraded"
+expect 200 "restored schema-3 backup keeps the receipt" \
   "$(req "$id-restored" GET "/v1/ingestions/$report_id" "$ingest")"
 
-# 4. The schema-3 backup restores with its export and manifest intact.
-volume "$id-c" schema3.sqlite3
+# 4. The schema-4 backup restores with its export and manifest intact.
+volume "$id-c" schema4.sqlite3
 serve "$id-again" "$id-c" "$new" config-new.json
-expect 200 "restored schema-3 backup keeps the ready export" \
+expect 200 "restored schema-4 backup keeps the ready export" \
   "$(req "$id-again" GET "/v1/exports/$export_id" "$read")" 'b["state"] == "ready" and b["files"]'
 echo "RESULT $pass PASS, 0 FAIL (blog-data $old -> $new)"
