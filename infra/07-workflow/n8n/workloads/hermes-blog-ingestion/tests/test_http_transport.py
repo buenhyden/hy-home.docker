@@ -53,6 +53,17 @@ class HttpTransportTests(unittest.TestCase):
                     self.transport(**options).send(bound_request(self.transport()))
             run.assert_not_called()
 
+    def test_credential_child_runs_the_checked_interpreter_target(self):
+        import os
+
+        transport = self.transport()
+        with patch("publisher.http_transport.subprocess.run") as run:
+            run.return_value = subprocess.CompletedProcess([], 1, b"", b"")
+            with self.assertRaises(TransportFailure):
+                transport.send(bound_request(transport))
+        # Not a venv bin/python symlink that the trust check never inspects.
+        self.assertEqual(run.call_args.args[0][0], os.path.realpath(sys.executable))
+
     def test_invalid_configuration(self):
         for options in (
             {"timeout": 0},

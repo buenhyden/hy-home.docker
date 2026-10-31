@@ -95,7 +95,9 @@ class TrustTests(unittest.TestCase):
         self.assert_rejected("signature_missing")
 
     def test_empty_tracked_store_blocks_every_job(self):
-        tracked = json.loads((WORKLOAD / "producer-keys.json").read_text())
+        tracked = json.loads(
+            (WORKLOAD / "publisher" / "producer-keys.json").read_text()
+        )
         self.assertEqual(
             tracked, {"schema_version": "hermes-producer-keys/1", "keys": []}
         )
@@ -161,6 +163,86 @@ class TrustTests(unittest.TestCase):
                 trust.authorize(self.box, KEY)
         self.assertIn(
             str(caught.exception), ("interpreter_unisolated", "store_unprotected")
+        )
+
+    def test_only_root_owned_unshared_paths_are_protected(self):
+        import stat
+        from types import SimpleNamespace
+
+        def check(uid, owner, mode):
+            info = SimpleNamespace(st_uid=owner, st_mode=stat.S_IFREG | mode)
+            with (
+                patch("os.getuid", return_value=uid),
+                patch("os.lstat", return_value=info),
+                patch("os.access", return_value=False),
+            ):
+                PROTECTED(Path("/opt/x/publisher/trust.py"))
+
+        check(1000, 0, 0o755)
+        # Another non-root account (the Hermes producer) could rewrite it.
+        for uid, owner, mode in (
+            (1000, 1001, 0o755),
+            (1000, 0, 0o775),
+            (1000, 0, 0o757),
+            (0, 0, 0o755),
+        ):
+            with self.subTest(uid=uid, owner=owner, mode=oct(mode)):
+                with self.assertRaises(trust.TrustError) as caught:
+                    check(uid, owner, mode)
+                self.assertEqual(str(caught.exception), "store_unprotected")
+
+    def test_runtime_check_covers_interpreter_path_and_every_loaded_module(self):
+        import subprocess
+        import sys
+
+        # A fresh isolated process: the credential child's ssl/http.client must
+        # be loaded, and therefore checked, by the runtime check itself.
+        probe = (
+            "import sys; sys.path.insert(0, sys.argv[1]); from publisher import trust;"
+            "trust._protected = lambda path: None; trust._runtime_protected();"
+            "print(sorted({'ssl', 'http.client'} & set(sys.modules)))"
+        )
+        result = subprocess.run(
+            [sys.executable, "-I", "-c", probe, str(WORKLOAD)],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        self.assertEqual(result.stdout.strip(), "['http.client', 'ssl']")
+
+        from cryptography.hazmat.primitives.asymmetric import ed25519
+
+        paths = set(trust._runtime_paths())
+        self.assertIn(Path(sys.executable).resolve(), paths)
+        self.assertIn(Path(ed25519.__file__).resolve(), paths)
+
+        self.assertIn(Path(trust.__file__).resolve(), paths)
+        self.assertIn(trust.TRUST_STORE, paths)
+        for entry in sys.path:
+            if entry and Path(entry).exists():
+                self.assertIn(Path(entry).resolve(), paths)
+
+    def test_verify_install_reports_store_and_runtime_without_values(self):
+        import contextlib
+        import io
+
+        from publisher import cli
+
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(cli.main(["verify-install"]), 0)
+        self.assertEqual(
+            json.loads(out.getvalue()), {"keys": 1, "runtime": "protected"}
+        )
+        out = io.StringIO()
+        with (
+            patch("publisher.trust._runtime_protected", RUNTIME),
+            contextlib.redirect_stdout(out),
+        ):
+            self.assertEqual(cli.main(["verify-install"]), 1)
+        self.assertIn(
+            json.loads(out.getvalue())["error"],
+            ("interpreter_unisolated", "store_unprotected"),
         )
 
     def test_malformed_or_ambiguous_store_fails_closed(self):

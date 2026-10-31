@@ -1,0 +1,13 @@
+[project]
+name = "hermes-publisher"
+version = "1.0.0"
+description = "Hermes candidate Outbox and Blog-data Gateway publisher"
+requires-python = ">=3.12"
+# Exact versions and hashes live in requirements.lock; install.py consumes only the lock.
+dependencies = ["cryptography>=44,<47"]
+
+[tool.setuptools]
+packages = ["publisher"]
+
+[tool.setuptools.package-data]
+publisher = ["producer-keys.json"]

@@ -25,7 +25,7 @@ from . import evidence as companion
 from . import policy
 from .files import InputError, safe_read
 
-TRUST_STORE = Path(__file__).resolve().parents[1] / "producer-keys.json"
+TRUST_STORE = Path(__file__).resolve().parent / "producer-keys.json"
 STORE_SCHEMA = "hermes-producer-keys/1"
 SIGNATURE_SCHEMA = "hermes-companion-signature/1"
 DOMAIN = b"hermes-companion-evidence/1\x00"
@@ -86,45 +86,71 @@ def _epoch(value):
 
 
 def _protected(path):
-    """Fail unless the running account cannot alter path or any ancestor.
+    """Fail unless no non-root account can alter path or any ancestor.
 
-    The trust anchor and the code reading it must come from an install the
-    same-account Hermes tools cannot write (for example root-owned, mode 0755).
+    Each component must be a root-owned non-symlink without group or other
+    write permission that the (non-root) running account cannot write, so
+    neither the Publisher account nor the Hermes producer account can
+    substitute it.
     """
     uid = os.getuid()
     for item in (path, *path.parents):
         info = os.lstat(item)
         _require(
-            not stat.S_ISLNK(info.st_mode)
-            and info.st_uid != uid
+            uid != 0
+            and not stat.S_ISLNK(info.st_mode)
+            and info.st_uid == 0
+            and not stat.S_IMODE(info.st_mode) & 0o022
             and not os.access(item, os.W_OK, follow_symlinks=False),
             "store_unprotected",
         )
 
 
+def _runtime_paths():
+    """Interpreter, import path, every loaded module file and the key store."""
+    prefix = Path(sys.prefix)
+    paths = {TRUST_STORE, Path(sys.executable).resolve(), prefix}
+    paths.add(prefix / "pyvenv.cfg")
+    paths.update(Path(__file__).resolve().parent.glob("*.py"))
+    paths.update(Path(entry).resolve() for entry in sys.path if entry)
+    for module in list(sys.modules.values()):
+        name = getattr(module, "__file__", None)
+        if isinstance(name, str):
+            paths.add(Path(name).resolve())
+    return sorted(
+        path for path in paths if os.path.lexists(path) or path == TRUST_STORE
+    )
+
+
 def _runtime_protected():
     """The interpreter, verifier code, crypto library and key store are fixed.
 
-    Requires `python3 -I` (no user site, PYTHONPATH or cwd imports) and every
-    publisher module, the cryptography package and the key store to pass
-    _protected, so the same-account Hermes tools cannot substitute any of them.
+    Requires `python3 -I` (no user site, PYTHONPATH or cwd imports). The
+    signature and credential-child modules are imported first, so their source
+    files, each loaded module, each existing import path directory, the
+    interpreter and the key store pass _protected. This is a tripwire over a
+    sealed install, not a substitute for it: bytecode caches, .pth files and
+    code that ran before the check are protected only by the root-owned release.
     """
     _require(sys.flags.isolated, "interpreter_unisolated")
     try:
-        import cryptography
+        # Also what the credential child imports, so its files are checked too.
+        import http.client  # noqa: F401
+        import ssl  # noqa: F401
+
+        import cryptography.exceptions  # noqa: F401
+        from cryptography.hazmat.primitives.asymmetric import ed25519  # noqa: F401
     except ImportError:
         raise TrustError("crypto_unavailable") from None
-    package = Path(__file__).resolve().parent
-    paths = [TRUST_STORE, *sorted(package.glob("*.py"))]
-    paths.append(Path(cryptography.__file__).resolve().parent)
-    for path in paths:
+    for path in _runtime_paths():
         try:
             _protected(path)
         except OSError:
             raise TrustError("store_unavailable") from None
 
 
-def _public_key(key_id, job_id, now):
+def store_entries():
+    """Return every validated (entry, raw public key) of the protected store."""
     _runtime_protected()
     try:
         raw = safe_read(TRUST_STORE.parent, TRUST_STORE.name, limit=65536)
@@ -138,7 +164,7 @@ def _public_key(key_id, job_id, now):
         and isinstance(store["keys"], list),
         "store_invalid",
     )
-    matches, publics, ids = [], set(), set()
+    entries, publics, ids = [], set(), set()
     for entry in store["keys"]:
         # Validate every entry, not only the selected one.
         _require(
@@ -158,8 +184,12 @@ def _public_key(key_id, job_id, now):
         _require(public not in publics and entry["key_id"] not in ids, "store_invalid")
         publics.add(public)
         ids.add(entry["key_id"])
-        if entry["key_id"] == key_id:
-            matches.append((entry, public))
+        entries.append((entry, public))
+    return entries
+
+
+def _public_key(key_id, job_id, now):
+    matches = [item for item in store_entries() if item[0]["key_id"] == key_id]
     _require(len(matches) == 1, "untrusted_key")
     entry, public = matches[0]
     _require(job_id in entry["jobs"], "key_scope")

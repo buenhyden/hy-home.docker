@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.10.0"
+version: "1.10.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -896,6 +896,13 @@ worktrees, installed Cron, credentials and runtime resources from writes.
   decision for dispatch, processing, request binding and replay, align timeouts
   and record the producer contract cross-check. The tracked key store stays empty
   until a real producer key is reviewed (TSK-0022, 2026-10-31).
+- [x] Close the protected-install gap: declare and hash-lock `cryptography`,
+  install one immutable root-owned release per commit, require root ownership
+  without group/other write for interpreter, import paths, loaded modules and
+  key store, add `verify-install` and a separate-account container check, count
+  rejections by value-free reason, correct the Traefik timeout meaning and record
+  the ingest-only server-B contract. Server-A account, install and service stay
+  separate approval units (TSK-0022, 2026-10-31).
 
 - [ ] Update Korean workload README and existing RUN-0053 only with implemented
   safe commands and recovery/uncertainty limits. Record metrics design for
@@ -904,7 +911,8 @@ worktrees, installed Cron, credentials and runtime resources from writes.
 - [ ] Design later read-only n8n MCP Server Trigger tools
   `list_review_candidates`, `get_ingestion_status` and `get_ingestion_summary`
   over Gateway `GET /v1/candidates`, `GET /v1/ingestions/{id}` and
-  `GET /v1/summary`. The Gateway has no full-text search, so the earlier
+  `GET /v1/summary` on a separate read path and token, never server A's
+  ingest-only token. The Gateway has no full-text search, so the earlier
   `search_collected_news`/`search_business_ideas` names are withdrawn rather
   than implied. HTTP delivery stability precedes implementation; verify the
   actual client, authentication and Queue-mode connections first. Exclude

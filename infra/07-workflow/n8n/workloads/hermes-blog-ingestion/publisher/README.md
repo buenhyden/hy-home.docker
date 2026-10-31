@@ -70,6 +70,10 @@ python3 -m publisher.cli status --help
 python3 -m publisher.cli dispatch --help
 ```
 
+운영 실행은 작업 사본이 아니라 보호 설치 release의 venv에서 전용 계정으로
+`<release>/venv/bin/python -I -m publisher.cli <명령>`처럼 합니다.
+`verify-install`은 런타임 보호와 키 저장소 해석만 확인하고 키 개수를 출력합니다.
+
 `stage`에는 내보내기·원본·아이디어 기준 경로, 검토된 검증기 경로와 다이제스트,
 전용 대기함 경로를 모두 지정합니다. 실제 대상은 연결된 운영 절차에서
 확인합니다. 대기함은 저장소 밖의 전용 경로에 두며 디렉터리는 0700,
@@ -111,8 +115,8 @@ python3 -m publisher.cli dispatch --help
    남습니다. 대조 중 영구 오류를 받으면 즉시 한도를 소진해 다시 보내지 않습니다.
 
 재시도 주기는 이 명령을 다시 실행하는 호출자가 정하며 n8n은 재시도하지
-않습니다. 출력은 상태별 건수이고 `failed`나 `uncertain`이 있으면 종료 코드
-1입니다. 설정·인증 오류는 `operation_rejected`로 전체 실행을 거부합니다.
+않습니다. 출력은 상태별 건수와 거부 이유 코드별 `reasons`이고 `failed`나
+`uncertain`이 있으면 종료 코드 1입니다. 설정·인증 오류는 `operation_rejected`로 전체 실행을 거부합니다.
 
 ## Verification
 

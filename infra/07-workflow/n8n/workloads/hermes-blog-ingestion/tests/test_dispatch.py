@@ -178,7 +178,10 @@ class DispatchTests(unittest.TestCase):
     def test_verified_shape_is_still_blocked_without_touching_credentials(self):
         self.stage(self.evidence)
         os.unlink(self.auth)
-        self.assertEqual(self.dispatch(), (0, {"blocked": 1}))
+        self.assertEqual(
+            self.dispatch(),
+            (0, {"blocked": 1, "reasons": {"signature_missing": 1}}),
+        )
         self.assertEqual(Gateway.bodies, [])
         self.assertEqual(self.record()["status"], "awaiting_contract")
 
@@ -186,11 +189,11 @@ class DispatchTests(unittest.TestCase):
         tampered = json.loads(self.evidence)
         tampered["items"][0]["http_status"] = 404
         cases = (
-            ("valid", self.evidence),
-            ("invalid", json.dumps(tampered).encode()),
-            ("missing", None),
+            ("valid", self.evidence, "signature_missing"),
+            ("invalid", json.dumps(tampered).encode(), "signature_missing"),
+            ("missing", None, "evidence_missing"),
         )
-        for name, evidence in cases:
+        for name, evidence, reason in cases:
             with self.subTest(evidence=name):
                 self.setUp()
                 gate = patch("publisher.policy.evidence_required", lambda job: False)
@@ -198,7 +201,9 @@ class DispatchTests(unittest.TestCase):
                 self.addCleanup(gate.stop)
                 self.stage(evidence)
                 os.unlink(self.auth)
-                self.assertEqual(self.dispatch(), (0, {"blocked": 1}))
+                self.assertEqual(
+                    self.dispatch(), (0, {"blocked": 1, "reasons": {reason: 1}})
+                )
                 self.assertEqual(Gateway.bodies, [])
                 self.assertEqual(self.record()["status"], "awaiting_contract")
                 gate.stop()
@@ -316,7 +321,10 @@ class DispatchTests(unittest.TestCase):
             replay.reconcile(request)
         self.assertEqual(len(Gateway.bodies), 2)
         # The CLI keeps the trust-blocked in-flight record visible.
-        self.assertEqual(self.dispatch("--allow-replay"), (1, {"uncertain": 1}))
+        self.assertEqual(
+            self.dispatch("--allow-replay"),
+            (1, {"reasons": {"key_revoked": 1}, "uncertain": 1}),
+        )
         self.assertEqual(len(Gateway.bodies), 2)
 
     def test_timeouts_nest_from_gateway_to_proxy(self):
@@ -329,9 +337,21 @@ class DispatchTests(unittest.TestCase):
         execution = workflow["settings"]["executionTimeout"] * 1000
         self.assertLess(gateway, execution)
         self.assertLess(execution, cli.HTTP_TIMEOUT * 1000)
-        self.assertLess(cli.HTTP_TIMEOUT, 60)
-        # Retry belongs to the Publisher; the workflow must not add its own.
+        # Traefik's readTimeout bounds only reading the request; an upstream
+        # response or write timeout, if one is ever set, must outlast the attempt.
+        gateway_root = WORKLOAD.parents[3] / "01-gateway" / "traefik"
+        for name in ("config/traefik.yml", "dynamic/middleware.yml"):
+            text = (gateway_root / name).read_text()
+            for key in ("responseHeaderTimeout", "writeTimeout"):
+                self.assertNotIn(key, text, name)
+        # Retry and scheduling belong to the Publisher, never to the workflow.
         self.assertFalse(any(n.get("retryOnFail") for n in workflow["nodes"]))
+        self.assertFalse(
+            any(
+                "schedule" in n["type"].lower() or "cron" in n["type"].lower()
+                for n in workflow["nodes"]
+            )
+        )
 
     def test_credential_file_must_be_private(self):
         self.open_gate()

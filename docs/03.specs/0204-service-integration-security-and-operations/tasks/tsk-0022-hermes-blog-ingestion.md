@@ -923,18 +923,103 @@ immutable signature, restart, revocation after binding). Ruff passed. These
 results do not replace the earlier 151/151 for the prior revision. Server B
 TCP 22/443/8443 still did not connect from server A.
 
+### Protected install and ingest-only contract — 2026-10-31
+
+PR #696 carried the producer verifier above; the owner merged it at head
+`7629bbad4` as `82dadf586` (2026-10-31T03:37:58Z) before this slice was pushed.
+This slice is a separate follow-up PR from `feat/hermes-protected-install`; it
+does not re-implement `trust.authorize`,
+the key store format or the 165 earlier tests.
+
+- Runtime protection was weaker than its comment: it accepted any file not owned
+  by the running uid (so a Hermes-owned file passed) and checked only the
+  `cryptography` directory, not files under it or the interpreter. It now
+  requires every component of the interpreter, `sys.prefix`/`pyvenv.cfg`, each
+  import path, every loaded module file (signature modules imported first),
+  each Publisher module and the key store to be root-owned, free of group/other
+  write and unwritable by a non-root runner. The key store moved to
+  `publisher/producer-keys.json` so an installed copy sits beside its verifier.
+- `cryptography` is declared in `pyproject.toml` and locked with hashes in
+  `requirements.lock` (cryptography 46.0.7, cffi 2.1.1, pycparser 3.12;
+  `uv pip compile` for CPython 3.12 x86-64 manylinux). `install.py` installs one
+  immutable `/opt/hermes-publisher/releases/<commit>` from `git archive` of a
+  commit (commit id from the pax header, which the installer cannot verify, so
+  the checkout, archive and installer must be root-only), taking only an
+  explicit Publisher module allowlist,
+  the store and the lock, with `--require-hashes --only-binary :all:` into a new
+  venv, removing pip and sealing every path root-owned without group/other
+  write. `verify-install` reports `{"keys": N, "runtime": "protected"}` or a
+  value-free code.
+- `tests/install-check.sh` installs the commit in a disposable root container
+  and, as separate `hermes-publisher` and `hermes` accounts, proved 17/17: a
+  non-root-owned archive and a prefix under a Hermes-owned directory are
+  refused, the dedicated account loads the release, the installed files match
+  the archive manifest, producer modules are not installed, neither account can
+  write code, store, library, venv config or interpreter, non-isolated runs and
+  root runs are refused, PYTHONPATH is ignored, and a Hermes-owned library
+  sub-file, group-writable store, Publisher-owned module, Hermes-owned
+  `pyvenv.cfg`, other-writable import directory and Hermes-owned interpreter
+  each fail closed and recover once restored; reinstalling a release is
+  refused. The container used the image Python, not the A host interpreter.
+- Independent review found no Critical issue; its Important findings were
+  fixed with failing tests first: installer takeover of a non-root prefix,
+  non-root archive, producer modules in releases, the credential child running
+  the unresolved venv `bin/python`, its `ssl`/`http.client` files unchecked, and
+  a manifest check that could not fail. The runtime check is a tripwire over a
+  sealed release: bytecode caches, `.pth` files and code that ran before it are
+  protected by root ownership, not by the check.
+- Dispatch output adds value-free `reasons` counts per rejection code.
+  `uncertain`, permanent rejection and exhausted retry keep exit code 1.
+- Timeout semantics were corrected: Traefik v3 `readTimeout` (60 s default)
+  bounds only reading the request and no upstream response or write timeout is
+  configured, so the Publisher 45 s attempt (queue wait included) is the outer
+  bound over `executionTimeout` 30 s (from worker start) and Gateway 20 s. The
+  check now asserts no shorter Traefik upstream timeout and no workflow retry or
+  schedule.
+- B contract: A sends only `POST /v1/ingestions` with an ingest-only token and
+  holds no GET or read permission; response loss reconciles only by explicit
+  identical-byte, identical-key re-POST (`--allow-replay`). MCP read is a later,
+  separate path and token. `blog-ingest.hy.home.arpa` must resolve to
+  `192.168.0.22` inside the n8n worker; host `/etc/hosts` does not reach
+  containers, so an internal DNS record or worker `extra_hosts` is required
+  (DNS/Compose approval, not applied). Server B is Windows 11 + WSL2 NAT: the
+  Windows 443 listener, WSL forwarding and a firewall rule limited to
+  `192.168.0.13` are canonical; the existing Windows Vault is not migrated.
+- The Hermes producer receives the canonical contract from `trust.py`: `DOMAIN`,
+  envelope fields, raw 32-byte public key, key id pattern, exact job scope,
+  validity window and retroactive revocation. Admission needs protected
+  generation/custody evidence and an out-of-band SHA-256 fingerprint of the raw
+  public key; private and synthetic keys never enter the repository or
+  Publisher. Unsigned rows staged earlier stay blocked; signatures are immutable.
+- `publisher/acquirer.py` and `publisher/producer_sealer.py` had been committed
+  on this branch as `f044fb85c` by another lane, outside this Task (the sealer
+  handles a private key; an automated review flagged SSRF in the fetcher's
+  redirect handling). With owner approval the commit was moved to the local
+  branch `hermes/acquirer-sealer` and is not part of this follow-up PR. `install.py`
+  installs only an explicit Publisher module allowlist in any case; review and
+  placement of producer code belong to the Hermes producer lane.
+- CI does not run this workload's suite (no gate entry, `cryptography` absent
+  from the controller lock); the 168 tests and the install check are local
+  evidence only.
+
+Approval units still open, none performed: A host `hermes-publisher` account;
+`/opt/hermes-publisher` install; outbox and credential file placement; systemd
+service/timer; producer key admission PR; A exact-path ingress router; worker
+DNS/`extra_hosts`; workflow URL/credential binding and publication.
+
 ### Remaining blocked conditions and recovery
 
 - DELIVERY stays BLOCKED until both handoffs are accepted and a reviewed key is
-  added to `producer-keys.json`; the gates already consume one trust decision,
+  added to `publisher/producer-keys.json` and installed as a protected release;
+  the gates already consume one trust decision,
   so no further gate change is planned for admission.
 - Then: bind the workflow URL and credential reference, publish the workflow
   through the approved procedure, and run the W83 Native scenarios (outage and
   recovery, lost response, bad token/certificate, worker/runner path, sensitive
   input blocks, Cron/email regression, source/Outbox/Gateway preservation).
 - Recovery keeps source, Outbox and Gateway data; `failed` records are never
-  reopened automatically; uncertain records resolve only by authenticated
-  status lookup or explicit identical-byte replay (RUN-0053).
+  reopened automatically; uncertain records resolve only by explicit
+  identical-byte, identical-key replay, because A holds no read token (RUN-0053).
 
 ## Evidence
 
@@ -954,9 +1039,11 @@ TCP 22/443/8443 still did not connect from server A.
 | Companion evidence and dispatch | 23 | W83 | Evidence binding rejections, gate closure, loopback 201/200/401/409/503/drop, replay, credential privacy | Synthetic fixtures and loopback Gateway | PASS | Post-PR #693 dispatch readiness — 2026-10-31 | required | - |
 | Producer authentication verifier | 23 | W83 | Ed25519 signature, key store lifecycle and shared gate decision with negative tests | Synthetic keys; tracked store empty | PASS | Producer authentication and gate unification — 2026-10-31 | required | - |
 | Producer contract cross-check | 23 | W83 | Same snapshot through main `957d047c` and Hermes `f454020c` validators | Live export copy, manifest `8d412898b839bdc4` | PASS | Producer authentication and gate unification — 2026-10-31 | required | - |
-| Producer trust anchor | 23 | W83 | Real restricted producer account and reviewed key in `producer-keys.json` | Blocked: no producer account, key or signed run delivered | NOT_RUN | Handoff: Hermes producer lane (server A) | required | - |
+| Protected install | 23 | W83 | Hash-locked dependency, root-owned immutable release, verify-install as separate accounts, weakened-path negatives | Disposable container, commit of this slice | PASS | Protected install and ingest-only contract — 2026-10-31 | required | - |
+| Protected install on server A | 23 | W83 | Real `hermes-publisher` account loads `/opt/hermes-publisher` release with `python3 -I` | Blocked: account, path and service need separate approval | NOT_RUN | Protected install and ingest-only contract — 2026-10-31 | required | - |
+| Producer trust anchor | 23 | W83 | Real restricted producer account and reviewed key in `publisher/producer-keys.json` | Blocked: no producer account, key or signed run delivered | NOT_RUN | Handoff: Hermes producer lane (server A) | required | - |
 | Server-B TLS entry | 23 | W83 | DNS/TCP/TLS/auth from n8n worker | Blocked: Blog-data lane handoff; TCP probe from server A failed | NOT_RUN | Handoff: Blog-data Gateway lane (server B) | required | - |
-| Source/static/review | 8, 23 | W83 | Focused tests, coverage, docs gates and independent review | Final Task-owned diff | NOT_RUN | Review and Completion | required | - |
+| Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | Protected-install follow-up slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
 
 ## Criterion Acceptance
 
@@ -985,6 +1072,16 @@ No deployment is claimed. Producer authentication, server-B TLS,
 Native delivery evidence and operating acceptance remain separate pending work. Local source readiness
 does not imply operating readiness; resume the external-contract and operational
 lanes from these recorded boundaries.
+
+2026-10-31 protected-install slice: an independent whole-branch review of
+`7629bbad4..` found no Critical issue; all five Important findings were fixed
+with failing tests first and re-verified (169 tests, install check 17/17 on the
+final head). Deferred minors: skipped non-existent `sys.path` entries, about
+14 ms per runtime check (50-60 ms per record), no archive member size cap,
+undocumented fail-closed symlinked `/opt`, and a Traefik timeout check limited
+to two files. PR #696 had already merged at `7629bbad4`, so this slice is a follow-up PR;
+its CI and merge are recorded on that PR.
+CI does not run this workload's suite, so these results are local evidence.
 
 Design self-review checked scope, dependencies, immutable Outbox interfaces,
 coverage of failure cases, and protected runtime exclusions against the direct
