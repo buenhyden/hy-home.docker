@@ -742,8 +742,9 @@ Network observation from server A: `192.168.0.22` answered ICMP, while TCP
 22/80/443/8787 did not connect within 3 seconds. No approved TLS entry or DNS
 name exists yet, so the tracked workflow keeps `https://gateway.invalid` and
 `active:false`. No Hermes live candidate root was found outside scratch
-directories; the recorded 153 held items remain a 2026-10-30 observation and
-no collection time was estimated. No Cron, secret, workflow, container, network
+directories at that point (superseded below by the live exporter root); the
+recorded 153 held items remain a 2026-10-30 observation and no collection
+time was estimated. No Cron, secret, workflow, container, network
 or remote Git state was changed.
 
 ### Handoff: Hermes producer lane (server A)
@@ -814,7 +815,7 @@ and `status` (only `complete` verifies) and defines `body_sha256` over the
 decoded HTTP response body. The Hermes note's trust-boundary position (same-UID
 JSON plus SHA-256 is not authentication; prefer a restricted producer account,
 protected handoff and independent verifier) matches the admission condition
-above. The suite remained 151/151 with the added rejection cases.
+above. The controller ran the suite: 151/151 with the added rejection subtests.
 
 ### Remaining blocked conditions and recovery
 
@@ -868,10 +869,11 @@ slice was pushed as PR #694; head `c346db86e` passed CI Quality Gates and the
 owner merged it at 2026-10-31T01:15:45Z as `7b041d0b1`, whose main CI Quality
 Gates also passed. This integrates source only; criterion 23 stays pending.
 
-Local source verification and the user-authorized Git integration are in progress.
-No commit, push, merge or deployment is claimed here. The Gateway contract
-and timestamp mapping, API compatibility, Native delivery evidence, and the
-required local CI toolchain remain separate pending work. Local source readiness
+Earlier slices (before PR #694) recorded no commit, push, merge or deployment
+from this Task; PR #694 above is the first integrated Task slice. The later
+evidence-alignment slice is committed locally and awaits owner approval for
+push and PR. No deployment is claimed. Producer authentication, server-B TLS,
+Native delivery evidence and operating acceptance remain separate pending work. Local source readiness
 does not imply operating readiness; resume the external-contract and operational
 lanes from these recorded boundaries.
 
