@@ -1,7 +1,6 @@
-# PROPOSAL — not loaded by Traefik. The live provider watches
-# infra/01-gateway/traefik/dynamic/, so copying this file there applies it at
-# once; do that only as the approved export ingress unit in RUN-0053. Compose
-# already lists Traefik on blog_export_net, so its next recreation joins it.
+# LIVE — Traefik watches this directory and loads this file at once. Applied
+# as the approved RUN-0053 export ingress unit on 2026-11-01; deleting the file
+# is the rollback. Traefik reaches the Gateway on blog_export_net.
 #
 # One host name admits three Gateway request shapes, each from one source:
 #   - Windows B GETs the export list, a manifest or one file;

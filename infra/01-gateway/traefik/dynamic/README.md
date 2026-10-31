@@ -1,10 +1,10 @@
 ---
 title: "Traefik Dynamic Configuration"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-11-01"
 ---
 
 # Traefik Dynamic Configuration
@@ -16,6 +16,11 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 - **hermes.yml**: host systemd unit으로 도는 Hermes Agent dashboard를 `hermes.hy.home.arpa`로
   노출합니다. container가 아니므로 Docker label 대신 edge_net gateway IP로 연결하며, dashboard가
   자체 OIDC 인증을 하므로 Traefik 인증 middleware를 겹치지 않습니다.
+- **hermes-webhook.yml**: Hermes 호스트의 `POST /webhook/hermes-blog-ingestion` 하나만 SSO 없이 n8n으로
+  보냅니다. 출발지 `192.168.0.13/32`, 본문 1 MiB, 분당 6회. 인증은 n8n 헤더 인증입니다.
+- **blog-export.yml**: `blog-export.hy.home.arpa`에서 Windows B(`192.168.0.22/32`)의 Export 조회·ACK와
+  서버 A 호스트(`192.168.0.13/32`)의 Attestation만 Blog-data Gateway로 보냅니다. 다른 경로는 404입니다.
+  두 파일의 출처와 승인 기록은 [수집 전송 소스](../../../07-workflow/n8n/workloads/hermes-blog-ingestion/README.md)와 RUN-0053입니다.
 
 ---
 
@@ -50,6 +55,8 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 
 ```text
 infra/01-gateway/traefik/dynamic/
+├── blog-export.yml  # Blog-data Export·ACK·Attestation route
+├── hermes-webhook.yml  # Hermes 수집 Webhook route
 ├── hermes.yml  # Hermes dashboard route
 ├── middleware.yml  # 구성 파일
 ├── README.md  # 이 파일
