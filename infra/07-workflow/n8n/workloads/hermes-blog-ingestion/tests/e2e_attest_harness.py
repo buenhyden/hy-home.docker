@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PrivateKey,
 )
-from publisher import attestation, attester
+from publisher import attestation, attester, source_fetch
 from publisher.source_fetch import FetchFailure, FetchResult
 
 
@@ -34,8 +34,9 @@ HOST = "blog-export.hy.home.arpa"
 cfg = json.load(open(sys.argv[1]))
 work = Path(cfg["work"])
 auth = ("Authorization", "Bearer " + cfg["attest_token"])
-context = ssl.create_default_context()
-context.minimum_version = ssl.TLSVersion.TLSv1_2
+context = (
+    source_fetch.tls_context()
+)  # TLS 1.2+, then trust the throwaway cert here only
 context.check_hostname = False
 context.verify_mode = ssl.CERT_NONE
 
