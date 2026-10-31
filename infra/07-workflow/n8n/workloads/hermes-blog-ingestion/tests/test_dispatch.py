@@ -21,11 +21,13 @@ sys.path.insert(0, str(WORKLOAD))
 from publisher import cli  # noqa: E402
 from publisher.candidates import Snapshot  # noqa: E402
 from publisher.delivery import process_one  # noqa: E402
-from publisher.evidence import RunTimes  # noqa: E402
 from publisher.http_transport import HttpTransport  # noqa: E402
 from publisher.outbox import Outbox  # noqa: E402
 
 FIXTURES = Path(__file__).parent / "fixtures"
+sys.path.insert(0, str(Path(__file__).parent))
+import producer  # noqa: E402
+
 KEY = ("6eabd835f969", "b" * 32)
 TOKEN = "synthetic-token"
 REPORT_ID = "12345678-1234-1234-1234-123456789abc"
@@ -56,6 +58,8 @@ class Gateway(BaseHTTPRequestHandler):
             self.close_connection = True
             return
         if self.headers.get("Authorization") != "Bearer " + TOKEN:
+            status, reply = 401, {"error": "UNAUTHORIZED"}
+        elif self.mode == "unauthorized":
             status, reply = 401, {"error": "UNAUTHORIZED"}
         elif self.mode == "forbidden":
             status, reply = 403, {"error": "FORBIDDEN"}
@@ -110,13 +114,13 @@ class DispatchTests(unittest.TestCase):
         Gateway.bodies = []
         self.snapshot, self.evidence = snapshot_and_evidence()
 
-    def stage(self, evidence=None):
+    def stage(self, evidence=None, signature=None):
         box = Outbox(self.outbox)
         try:
             if evidence is None:
                 box.stage(self.snapshot)
             else:
-                box.stage_with_unverified_evidence(self.snapshot, evidence)
+                box.stage_with_unverified_evidence(self.snapshot, evidence, signature)
         finally:
             box.close()
 
@@ -144,16 +148,23 @@ class DispatchTests(unittest.TestCase):
             code = cli.main(argv)
         return code, json.loads(out.getvalue())
 
-    def open_gate(self):
-        """Synthetic stand-in for a future producer trust admission."""
+    def trust_key(self):
+        """Admit a synthetic producer key through a temporary key store."""
+        self.key = producer.new_key()
+        store = self.root / "producer-keys.json"
+        producer.write_store(store, producer.entry(self.key))
         for target, value in (
-            ("publisher.policy.evidence_required", lambda job: False),
-            (
-                "publisher.cli.run_times",
-                lambda box, key: RunTimes(
-                    "2026-10-30T09:00:00+09:00", "2026-10-30T09:01:10.250+09:00"
-                ),
-            ),
+            ("publisher.trust.TRUST_STORE", store),
+            ("publisher.trust._runtime_protected", lambda: None),
+        ):
+            patcher = patch(target, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def open_gate(self):
+        """Signed evidence by an admitted key, the only production path."""
+        self.trust_key()
+        for target, value in (
             (
                 "publisher.cli.HttpTransport",
                 functools.partial(HttpTransport, allow_loopback_http=True),
@@ -162,7 +173,7 @@ class DispatchTests(unittest.TestCase):
             patcher = patch(target, value)
             patcher.start()
             self.addCleanup(patcher.stop)
-        self.stage()
+        self.stage(self.evidence, producer.sign(self.key, self.evidence))
 
     def test_verified_shape_is_still_blocked_without_touching_credentials(self):
         self.stage(self.evidence)
@@ -204,7 +215,7 @@ class DispatchTests(unittest.TestCase):
         self.assertEqual(len(Gateway.bodies), 1)
 
     def test_permanent_rejection_after_lost_response_is_not_replayed(self):
-        for mode in ("conflict", "forbidden"):
+        for mode in ("conflict", "forbidden", "unauthorized"):
             with self.subTest(mode=mode):
                 self.setUp()
                 Gateway.mode = "drop"
@@ -263,6 +274,64 @@ class DispatchTests(unittest.TestCase):
                 self.assertEqual(self.dispatch("--allow-replay"), (0, {"delivered": 1}))
                 clock.stop()
                 self.assertEqual(Gateway.bodies[0], Gateway.bodies[1])
+
+    def test_replay_boundary_consumes_the_trust_decision(self):
+        from publisher import trust
+        from publisher.delivery import DispatchRequest, TransportFailure
+        from publisher.gateway_transport import GatewayReplayTransport
+
+        Gateway.mode = "drop"
+        self.open_gate()
+        self.assertEqual(self.dispatch(), (1, {"uncertain": 1}))
+        endpoint = f"http://127.0.0.1:{self.server.server_port}/webhook/x"
+        box = Outbox(self.outbox)
+        self.addCleanup(box.close)
+        row = box.get(KEY)
+        http = HttpTransport(
+            endpoint=endpoint,
+            destination="n8n_hermes_ingestion",
+            auth=("Authorization", "Bearer " + TOKEN),
+            allow_loopback_http=True,
+            content_type="application/json",
+        )
+        replay = GatewayReplayTransport(box, http, allow_idempotent_replay=True)
+        request = DispatchRequest(
+            KEY,
+            row["source_sha256"],
+            row["body_sha256"],
+            row["contract_revision"],
+            row["destination"],
+            row["request_body"],
+            row["endpoint_sha256"],
+            trust.authorize(box, KEY).evidence_sha256,
+        )
+        Gateway.mode = "duplicate"
+        self.assertEqual(replay.reconcile(request).status, 200)
+        self.assertEqual(len(Gateway.bodies), 2)
+        producer.write_store(
+            self.root / "producer-keys.json",
+            producer.entry(self.key, revoked_at="2026-10-31T00:00:00Z"),
+        )
+        with self.assertRaises(TransportFailure):
+            replay.reconcile(request)
+        self.assertEqual(len(Gateway.bodies), 2)
+        # The CLI keeps the trust-blocked in-flight record visible.
+        self.assertEqual(self.dispatch("--allow-replay"), (1, {"uncertain": 1}))
+        self.assertEqual(len(Gateway.bodies), 2)
+
+    def test_timeouts_nest_from_gateway_to_proxy(self):
+        workflow = json.loads((WORKLOAD / "workflow.json").read_text())
+        gateway = next(
+            n["parameters"]["options"]["timeout"]
+            for n in workflow["nodes"]
+            if n["type"] == "n8n-nodes-base.httpRequest"
+        )
+        execution = workflow["settings"]["executionTimeout"] * 1000
+        self.assertLess(gateway, execution)
+        self.assertLess(execution, cli.HTTP_TIMEOUT * 1000)
+        self.assertLess(cli.HTTP_TIMEOUT, 60)
+        # Retry belongs to the Publisher; the workflow must not add its own.
+        self.assertFalse(any(n.get("retryOnFail") for n in workflow["nodes"]))
 
     def test_credential_file_must_be_private(self):
         self.open_gate()

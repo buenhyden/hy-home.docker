@@ -13,7 +13,7 @@ from enum import Enum
 from types import MappingProxyType
 from typing import Protocol
 
-from . import policy
+from . import trust
 from .outbox import Outbox, OutboxError, valid_gateway_report_id
 
 Key = tuple[str, str]
@@ -35,6 +35,8 @@ class DispatchRequest:
     destination: str
     body: bytes = field(repr=False)
     endpoint_sha256: str | None = None
+    # SHA-256 of the producer-authenticated evidence this request was built from.
+    trust: str | None = None
 
 
 @dataclass(frozen=True)
@@ -120,7 +122,7 @@ def _prepare_failure(box, key, status, code):
     return _move(box, key, status, "failed", code=code)
 
 
-def _prepare(box, key, row, adapter, transport):
+def _prepare(box, key, row, adapter, transport, token):
     try:
         bound = adapter.prepare(MappingProxyType(dict(row)))
         if not isinstance(bound, BoundRequest):
@@ -133,7 +135,10 @@ def _prepare(box, key, row, adapter, transport):
             destination=bound.destination,
             endpoint_sha256=endpoint_sha256,
         )
-    except OutboxError:
+    except OutboxError as error:
+        if str(error) == "evidence_unverified":
+            # A trust change between gates blocks without a terminal state.
+            return None, "blocked"
         return None, _prepare_failure(box, key, row["status"], "request_conflict")
     except Exception:
         return None, _prepare_failure(box, key, row["status"], "adapter_error")
@@ -145,6 +150,7 @@ def _prepare(box, key, row, adapter, transport):
         bound.destination,
         body,
         endpoint_sha256,
+        token,
     )
     if row["status"] == "awaiting_contract":
         _move(box, key, "awaiting_contract", "pending", code="request_ready")
@@ -303,13 +309,11 @@ def process_one(
         row = outbox.get(key)
         if row["status"] in ("delivered", "failed"):
             return row["status"]
-        if policy.evidence_required(key[0]):
-            return "blocked"
         try:
-            if outbox.get_unverified_evidence(key) is not None:
-                return "blocked"
-        except OutboxError:
+            authorization = trust.authorize(outbox, key)
+        except (trust.TrustError, OutboxError):
             return "blocked"
+        token = None if authorization is None else authorization.evidence_sha256
         if adapter is None or transport is None:
             return "blocked"
         if row["attempts"] >= max_attempts:
@@ -322,7 +326,7 @@ def process_one(
             return target
         if row["next_attempt"] > now:
             return "deferred"
-        request, error = _prepare(outbox, key, row, adapter, transport)
+        request, error = _prepare(outbox, key, row, adapter, transport, token)
         if error:
             return error
         return _operate(

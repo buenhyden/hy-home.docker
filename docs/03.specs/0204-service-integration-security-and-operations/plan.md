@@ -890,6 +890,12 @@ worktrees, installed Cron, credentials and runtime resources from writes.
   Companion Evidence v1 structural verification and the bounded `dispatch`
   entry point over existing delivery components. All three Hermes jobs stay
   fail-closed until a producer trust anchor is admitted (TSK-0022, 2026-10-31).
+- [x] Decide one producer authentication design (restricted account, Ed25519
+  detached signature over Companion v1, tracked public key store with job scope,
+  validity and retroactive revocation), implement `trust.authorize` as the single
+  decision for dispatch, processing, request binding and replay, align timeouts
+  and record the producer contract cross-check. The tracked key store stays empty
+  until a real producer key is reviewed (TSK-0022, 2026-10-31).
 
 - [ ] Update Korean workload README and existing RUN-0053 only with implemented
   safe commands and recovery/uncertainty limits. Record metrics design for

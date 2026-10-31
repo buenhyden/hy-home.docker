@@ -181,7 +181,7 @@ class HttpTransport:
         if (
             not isinstance(request.key, tuple)
             or len(request.key) != 2
-            or policy.evidence_required(request.key[0])
+            or (policy.evidence_required(request.key[0]) and not request.trust)
             or request.destination != self._destination
             or request.endpoint_sha256 != self.endpoint_sha256
             or not isinstance(request.body, bytes)

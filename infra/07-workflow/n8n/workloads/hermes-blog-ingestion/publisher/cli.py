@@ -13,8 +13,7 @@ import sqlite3
 import stat
 from pathlib import Path
 
-from . import evidence as companion
-from . import policy
+from . import trust
 from .candidates import EXPORT_NAME, JOBS, load_candidate, load_validator
 from .delivery import TransportFailure, process_one
 from .files import InputError, open_directory, safe_read
@@ -24,6 +23,10 @@ from .http_transport import HttpTransport
 from .outbox import Outbox, OutboxError
 
 OPEN_STATES = ("awaiting_contract", "pending", "sending", "uncertain")
+# Outlasts the workflow executionTimeout (30 s), which outlasts its Gateway
+# request (20 s), and stays under the Traefik v3 default readTimeout (60 s).
+# Queue wait beyond the margin ends uncertain and reconciles idempotently.
+HTTP_TIMEOUT = 45
 
 
 def _scan(args, box):
@@ -55,7 +58,7 @@ def _scan(args, box):
                 snapshot = load_candidate(
                     args.exports, job, name, args.source_root, args.item_root, validator
                 )
-                evidence = None
+                evidence = signature = None
                 if evidence_root is not None:
                     evidence_name = (
                         hashlib.sha256(
@@ -66,10 +69,18 @@ def _scan(args, box):
                     evidence = safe_read(evidence_root, evidence_name)
                     if not evidence:
                         raise InputError("empty_evidence")
+                    # The producer writes the detached signature before the
+                    # evidence file; an absent signature stays unauthenticated.
+                    if os.path.lexists(evidence_root / (evidence_name + ".sig")):
+                        signature = safe_read(
+                            evidence_root, evidence_name + ".sig", limit=4096
+                        )
                 outcome = (
                     box.stage(snapshot)
                     if evidence is None
-                    else box.stage_with_unverified_evidence(snapshot, evidence)
+                    else box.stage_with_unverified_evidence(
+                        snapshot, evidence, signature
+                    )
                 )
                 if evidence is not None and outcome != "conflict":
                     counts["evidence_stored"] += 1
@@ -109,14 +120,6 @@ def _auth(path):
     return name.strip(), value.strip()
 
 
-def run_times(box, key):
-    """Times come only from structurally verified companion evidence."""
-    raw = box.get_unverified_evidence(key)
-    if raw is None:
-        raise companion.EvidenceError("missing")
-    return companion.verify(*key, box.get(key)["candidate"], raw)
-
-
 def _dispatch(args, box):
     counts = {}
     transport = None
@@ -125,22 +128,20 @@ def _dispatch(args, box):
         if row["status"] not in OPEN_STATES:
             continue
         try:
-            bound = box.get_unverified_evidence(key) is not None
-        except OutboxError:
-            bound = True
-        if policy.evidence_required(key[0]) or bound:
-            # Mirror the policy and Outbox evidence gates of process_one before
-            # evidence parsing or credential I/O. Admitting a producer trust
-            # anchor must change those gates together, keeping this order.
-            counts["blocked"] = counts.get("blocked", 0) + 1
-            continue
-        try:
-            times = run_times(box, key)
+            # The same trust decision process_one, bind_request and the replay
+            # boundary consume; it precedes any credential I/O.
+            authorization = trust.authorize(box, key)
+            if authorization is None:
+                raise trust.TrustError("evidence_missing")
+            times = authorization.times
             generated = json.loads(row["candidate"])["generated_at"]
             adapter = GatewayAdapter(times.scheduled_at, generated, times.collected_at)
-        except (companion.EvidenceError, OutboxError, KeyError, ValueError):
-            # Unverified, missing or inconsistent evidence never reaches transport.
-            counts["blocked"] = counts.get("blocked", 0) + 1
+        except (trust.TrustError, OutboxError, KeyError, ValueError):
+            # A possibly durable in-flight record must stay visible to operators.
+            name = (
+                "uncertain" if row["status"] in ("sending", "uncertain") else "blocked"
+            )
+            counts[name] = counts.get(name, 0) + 1
             continue
         if transport is None:
             # Configuration and credential errors reject the whole run.
@@ -149,6 +150,7 @@ def _dispatch(args, box):
                     endpoint=args.endpoint,
                     destination=DESTINATION,
                     auth=_auth(args.auth_header_file),
+                    timeout=HTTP_TIMEOUT,
                     content_type="application/json",
                 )
             except TransportFailure:

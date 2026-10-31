@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
-from . import policy
+from . import trust
 from .files import InputError, open_directory
 
 TRANSITIONS = {
@@ -182,6 +182,10 @@ class Outbox:
                     self._db.execute(
                         "ALTER TABLE unverified_evidence ADD COLUMN snapshot_sha256 TEXT"
                     )
+                if "signature" not in evidence_columns:
+                    self._db.execute(
+                        "ALTER TABLE unverified_evidence ADD COLUMN signature BLOB"
+                    )
         except (OSError, sqlite3.Error, InputError):
             self.close()
             raise OutboxError("unsafe_outbox") from None
@@ -227,7 +231,7 @@ class Outbox:
         with self._transaction():
             return self._stage(snapshot)
 
-    def stage_with_unverified_evidence(self, snapshot, evidence):
+    def stage_with_unverified_evidence(self, snapshot, evidence, signature=None):
         """Commit snapshot and opaque evidence together under the delivery lock."""
         with self.delivery_lock():
             with self._transaction():
@@ -238,6 +242,7 @@ class Outbox:
                         _sha(snapshot.candidate),
                         _sha(snapshot.source),
                         evidence,
+                        signature,
                     )
                 return outcome
 
@@ -352,18 +357,30 @@ class Outbox:
             raise OutboxError("evidence_conflict")
         return row["evidence"]
 
-    def bind_unverified_evidence(self, key, candidate_sha256, source_sha256, evidence):
+    def get_evidence_signature(self, key):
+        """Return the detached producer signature bytes, if any; never trusted here."""
+        if self.get_unverified_evidence(key) is None:
+            return None
+        return self._db.execute(
+            "SELECT signature FROM unverified_evidence WHERE job_id=? AND run_id=?",
+            key,
+        ).fetchone()["signature"]
+
+    def bind_unverified_evidence(
+        self, key, candidate_sha256, source_sha256, evidence, signature=None
+    ):
         with self._transaction():
             self._bind_unverified_evidence(
-                key, candidate_sha256, source_sha256, evidence
+                key, candidate_sha256, source_sha256, evidence, signature
             )
 
-    def _bind_unverified_evidence(self, key, candidate_sha256, source_sha256, evidence):
+    def _bind_unverified_evidence(
+        self, key, candidate_sha256, source_sha256, evidence, signature=None
+    ):
         """Keep a provisional evidence snapshot unchanged, without authenticating it.
 
-        The publisher must separately authenticate its producer and validate the
-        contents before these bytes can become evidence. This method only stores
-        opaque bytes and is deliberately not connected to the dispatch path.
+        Storage is not authentication: trust.authorize must accept the detached
+        signature and the contents before any gate treats these bytes as evidence.
         """
         if (
             not isinstance(evidence, bytes)
@@ -373,6 +390,10 @@ class Outbox:
             or not re.fullmatch(r"[a-f0-9]{64}", candidate_sha256)
             or not isinstance(source_sha256, str)
             or not re.fullmatch(r"[a-f0-9]{64}", source_sha256)
+            or not (
+                signature is None
+                or (isinstance(signature, bytes) and 0 < len(signature) <= 4096)
+            )
         ):
             raise OutboxError("invalid_evidence")
         digest = _sha(evidence)
@@ -395,13 +416,14 @@ class Outbox:
                 or prior["snapshot_sha256"] != row["snapshot_sha256"]
                 or prior["evidence"] != evidence
                 or prior["evidence_sha256"] != digest
+                or prior["signature"] != signature
             ):
                 raise OutboxError("evidence_conflict")
             return
         if row["status"] != "awaiting_contract" or row["request_body"] is not None:
             raise OutboxError("evidence_conflict")
         self._db.execute(
-            "INSERT INTO unverified_evidence (job_id,run_id,candidate_sha256,source_sha256,snapshot_sha256,evidence,evidence_sha256) VALUES(?,?,?,?,?,?,?)",
+            "INSERT INTO unverified_evidence (job_id,run_id,candidate_sha256,source_sha256,snapshot_sha256,evidence,evidence_sha256,signature) VALUES(?,?,?,?,?,?,?,?)",
             (
                 *key,
                 candidate_sha256,
@@ -409,6 +431,7 @@ class Outbox:
                 row["snapshot_sha256"],
                 evidence,
                 digest,
+                signature,
             ),
         )
         self._event(key, row["status"], "unverified_evidence_stored", digest)
@@ -439,12 +462,10 @@ class Outbox:
             raise OutboxError("invalid_endpoint_binding")
         with self._transaction():
             row = self.get(key)
-            if self._db.execute(
-                "SELECT 1 FROM unverified_evidence WHERE job_id=? AND run_id=?", key
-            ).fetchone():
-                raise OutboxError("evidence_unverified")
-            if policy.evidence_required(key[0]):
-                raise OutboxError("evidence_required")
+            try:
+                trust.authorize(self, key)
+            except (trust.TrustError, OutboxError):
+                raise OutboxError("evidence_unverified") from None
             if row["request_body"] is not None:
                 if (
                     row["contract_revision"] != contract_revision

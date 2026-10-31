@@ -48,6 +48,9 @@ class Box:
             raise ValueError("private secret")
         return self.row.copy()
 
+    def get_unverified_evidence(self, key):
+        return None
+
 
 class Network:
     endpoint_sha256 = ENDPOINT_SHA
