@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.2.0"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-31"
+updated: "2026-11-01"
 ---
 
 # Hermes 수집 전송 소스
@@ -15,8 +15,10 @@ updated: "2026-10-31"
 Worker가 같은 서버 A의 격리된 Blog-data 수집 Gateway에 전달하는 경로의 소스입니다.
 파일 기반 로컬 발행기와 영속 대기함은 직접 경로가 운영 검증될 때까지 복구 경로로
 보존합니다. Blog-data `dev` 커밋 `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`의
-수집 API 계약과 합성 Fixture를 고정했고, Gateway 이미지는 Blog-data `main`
-`cbf06c3514970f8ffa86dafa18064bfd3931e06a`에서 로컬 빌드합니다.
+수집 API 계약과 합성 Fixture를 고정했고, Gateway 이미지는 Resource Export가 들어간
+Blog-data `dev` `cadea2e683fb3e03e0e7a9f27133421c981bbea8`에서 로컬 빌드합니다.
+Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 수신 뒤에는 별도 호스트
+서명자가 Attestation을 제출하고, Windows B가 HTTPS로 Export를 가져가 ACK합니다.
 
 | 구분 | 상태 | 확인 범위 |
 | --- | --- | --- |
@@ -26,7 +28,11 @@ Worker가 같은 서버 A의 격리된 Blog-data 수집 Gateway에 전달하는 
 | 실제 원본 변환·전송 | BLOCKED | 실제 기사 수집 시각의 신뢰할 수 있는 근거와 전송 실행 연결 부재 |
 | 격리 n8n Queue 합성 검증 | PASS | 기본 게시 API·정적 Webhook 등록, Worker·외부 JS Runner, 가짜 Gateway 201·합성 영속 수신 |
 | 직접 경로 일회용 E2E | PASS | 호스트 → 제안 Traefik 경로 → n8n(추적 워크플로) → 실제 Gateway 이미지 → SQLite, [시험](tests/README.md) |
-| Windows Export·ACK | BLOCKED | Blog-data에 Export·ACK API가 아직 없음 |
+| Attestation·Export·ACK 일회용 E2E | PASS | 합성 서명 → `ready` Export → Manifest·파일 해시 → ACK, `held`·위조·범위 거부, 재시작 영속 |
+| Schema 3 업그레이드·백업 복원 | PASS | 이전 고정본 schema 2 저장소의 제자리 업그레이드와 두 백업의 새 볼륨 복원(합성) |
+| Attestation 서명자 | 소스 PASS, 운영 BLOCKED | `attest` 명령과 합성 시험은 통과했지만 생산자 키 저장소가 비어 있고 서명 계정·키가 없음 |
+| Hermes 플러그인 소스 | BLOCKED | Hermes 작업공간 소유 PR #700이 아직 병합되지 않음 |
+| 실제 Windows 수신기 | NOT_RUN | 서버 B의 수신기 Dry Run·ACK 미실행 |
 | 실제 운영 검증 | NOT_RUN | 운영 Traefik 경로·실제 인증·Gateway 배치·Hermes 플러그인 미적용 |
 
 전체 시험과 최신 조사·독립 검토 결과는 `SPEC-0204-TSK-0022`가 소유합니다.
@@ -47,6 +53,7 @@ Worker가 같은 서버 A의 격리된 Blog-data 수집 Gateway에 전달하는 
 
 - [workflow.json](workflow.json): 인증 수신, 입력 선별, 내부 Gateway 전달과 영속 수신 응답 확인을 담은 비활성 흐름입니다.
 - [hermes-webhook.yml](traefik/hermes-webhook.yml): Hermes Webhook 정확한 경로 하나만 SSO 없이 허용하는 Traefik 제안 경로입니다. 운영 디렉터리 밖에 둡니다.
+- [blog-export.yml](traefik/blog-export.yml): Windows B의 Export 조회·ACK와 서버 A 호스트의 Attestation 세 요청 형태만 허용하는 Traefik 제안 경로입니다. 역시 운영 디렉터리 밖에 둡니다.
 - [publisher/](publisher/README.md): 제한된 파일 읽기, 로컬 대기함과 전송 상태 처리입니다.
 - [tests/](tests/README.md): 합성 시험과 소스 경계 검증입니다.
 - [install.py](install.py): 커밋 하나를 root 소유 불변 release로 설치합니다.
@@ -249,19 +256,67 @@ Hermes(호스트) ─HTTPS─▶ Traefik 정확한 경로 ─▶ n8n ─Queue─
 | `produced` | Hermes Cron 실행 결과 | Hermes `~/.hermes/cron/output`(Hermes 소유) |
 | `queued` | Publisher `awaiting_contract`·`pending` | `publisher.cli status` |
 | `ingested` | Gateway 영수증 `persisted:true`, `status:"received"`(201·200) | n8n 응답, Gateway `/v1/ingestions/{id}` |
-| `export_prepared` | 없음 | BLOCKED: Blog-data Export API 부재 |
-| `delivered_acknowledged` | 없음 | BLOCKED: Blog-data ACK API 부재 |
+| `export_prepared` | Attestation 뒤 Gateway Export `ready` | `GET /v1/exports?state=ready`(`export_read`) |
+| `delivered_acknowledged` | Gateway Export `acknowledged`(ACK 201·200) | `GET /v1/exports/{id}`의 `ack_id`·`updated_at` |
 | `retryable` | Publisher `pending`(다음 시도 예약)·`uncertain` | `publisher.cli status` |
-| `quarantined` | Publisher `blocked`(신뢰 실패), Gateway 격리 판정 | `status`, Gateway Review |
-| `conflict` | Publisher `conflict`, Gateway 409 `IDEMPOTENCY_CONFLICT` | `status`, n8n 응답 |
+| `quarantined` | Publisher `blocked`(신뢰 실패), 서명자 `blocked`, Gateway 격리 판정, Export `held`(`hold_reason`) | `status`, `attest` 출력, Gateway Review, `GET /v1/exports?state=held` |
+| `conflict` | Publisher `conflict`, Gateway 409 `IDEMPOTENCY_CONFLICT`, Export `conflict`(ACK 409) | `status`, n8n 응답, `GET /v1/exports?state=conflict` |
 
 관측은 기존 체계를 씁니다. n8n 지표(`n8n-monitor`)의 흐름별 실행 성공·실패,
 Traefik 라우터 지표(`addRoutersLabels`)의 `hermes-blog-ingestion-webhook` 상태 코드
 (401·403·413·429·5xx), 컨테이너·디스크 지표, Gateway `/v1/summary`(`read` 범위)의
 일자별 보고서 수와 종류·상태·중복별 후보 수, Publisher `status`의 대기 수입니다.
-작업별 최종 수신 시각은 summary에 없어 Gateway 조회 API 확장이 필요합니다. 가장 오래된 대기
-시간, Windows ACK 미수신, 마지막 Windows 수신은 Export·ACK API가 생긴 뒤 같은
-체계에 붙입니다. 경보 기준은 운영 주기 확인 후 승인으로 정합니다.
+작업별 최종 수신 시각은 summary에 없어 Gateway 조회 API 확장이 필요합니다. Export
+상태는 `export_read` 목록 조회로 셉니다. `state`별 `ready`·`held`·`conflict` 수와
+가장 오래된 `ready`의 `created_at`이 미수신 시간이고, `acknowledged` 항목의
+`updated_at`이 마지막 ACK 시각입니다. 서명 실패는 `attest` 종료 코드와 Traefik
+`blog-attestation` 422, 반복 429·5xx는 `blog-export-*` 라우터 지표로 봅니다.
+Gateway에는 지표 엔드포인트가 없으므로 Prometheus 수집은 Blog-data와 지표 계약을
+정한 뒤 붙입니다(DEFER). 경보 기준은 운영 주기 확인 후 승인으로 정합니다.
+
+### Attestation과 Resource Export
+
+Gateway는 `POST /v1/ingestions/{id}/attestations`의 Ed25519 서명이 저장된 보고서와
+맞을 때만 후보마다 Export를 만듭니다. 서명 대상은 `blog-data-attestation/1`, NUL,
+`{producer, job_id, run_id, fire_id, source_sha256, content_sha256}` 정규 JSON이며
+`content_sha256`은 멱등 키를 뺀 요청 전체의 정규 JSON SHA-256입니다. 이 서명은 Hermes
+Companion 서명과 다른 계약·다른 키입니다.
+
+서명자는 `python3 -I -m publisher.cli attest`이며 Hermes·n8n·Publisher와 다른 전용
+계정으로 같은 보호 설치에서 실행합니다. Publisher 대기함을 읽지 않습니다. Hermes
+산출물과 Companion Evidence를 새로 읽어 `trust.verify_signature`와 Evidence 검증을
+통과한 경우에만, 발행기가 보낸 것과 같은 요청 바이트를 다시 만들어 서명합니다.
+서명 없는 Evidence·위조·폐기 키·다른 실행의 Evidence는 키나 네트워크에 닿기 전에
+`blocked`입니다. 개인키는 그 계정 또는 root 소유의 `0400`·`0440`·`0600` PEM 파일이며
+n8n, Webhook 처리기, Publisher 계정, 저장소에 두지 않습니다. Report ID는 발행기 영수증에서
+옵니다. 틀린 ID나 n8n에서 바뀐 내용은 Gateway가 422로 거부합니다.
+
+```bash
+python3 -I -m publisher.cli attest \
+  --exports <exports> --source-root <source> --item-root <items> \
+  --validator <validator.py> --validator-sha256 <reviewed-digest> \
+  --evidence-root <evidence> --job <job_id> --run <run_id> \
+  --report-id <receipt id> --gateway https://blog-export.hy.home.arpa \
+  --auth-header-file <private attest header> --signing-key <private PEM> --key-id <key_id>
+```
+
+출력은 `{"result":"attested"|"rejected"|"retry"|"blocked", ...}` 한 줄이며 201·200만
+종료 코드 0입니다. 429·5xx·통신 실패는 같은 서명으로 다시 실행해도 안전합니다(200).
+직접 경로(플러그인) 보고서는 서명된 Evidence가 없어 Attestation 대상이 아니며
+`ingested`로 남습니다.
+
+Windows B와 서버 A 호스트는 `blog-export.hy.home.arpa`의 정확한 경로만 씁니다.
+Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만 연결되고
+포트를 공개하지 않습니다. 서버 B 인계 계약은 다음과 같습니다.
+
+| 항목 | 값 |
+| --- | --- |
+| HTTPS 기준 주소 | `https://blog-export.hy.home.arpa`(서버 A `192.168.0.13:443`, `*.hy.home.arpa` SAN) |
+| CA 공개 인증서 | 서버 A의 mkcert 루트 `rootCA.pem` 공개 인증서. 수신기 설정의 CA 파일로 고정하며 지문은 적용 단계에서 운영자가 기록 |
+| 출발지 | Export 조회·ACK는 `192.168.0.22/32`, Attestation은 `192.168.0.13/32` |
+| 인증 | `export_read`, `export_ack` 각각 별도 Bearer 토큰(Gateway에는 SHA-256만 저장) |
+| API·수신기 | Blog-data Resource Export 1.0과 `scripts/ops/receive-hermes-exports.ps1`, 둘 다 `dev` `cadea2e683fb3e03e0e7a9f27133421c981bbea8` |
+| 템플릿 버전 | 각 Manifest의 `template_version`(이미지에 포함된 Resource 템플릿·프로필 레지스트리) |
 
 ### Blog-data Gateway 계약 비교
 

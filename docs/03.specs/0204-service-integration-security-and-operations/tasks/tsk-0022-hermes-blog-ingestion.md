@@ -1,10 +1,10 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-31"
+updated: "2026-11-01"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0022"
 parent_ids:
@@ -1071,6 +1071,69 @@ Approval units added, none performed (RUN-0053 "서버 A Gateway 배치와 직�
 `n8n-worker` recreation; two n8n credentials; workflow publication; Traefik route
 copy after measuring the live host source; Gateway backup connection.
 
+### Attestation, Resource Export and Windows pull — 2026-11-01
+
+Owner decisions for this slice: a separate host attester signs Blog-data
+attestations (not OpenBao Transit, not deferred), and PR #700 (Hermes plugin,
+Hermes workspace) stays with its owner. Base `main` `bc78e354a` (PR #699 merged);
+Blog-data `dev` `cadea2e683fb3e03e0e7a9f27133421c981bbea8` (PR #637 head) is the
+accepted Gateway source; Blog-data `main` is not used.
+
+| Part | Disposition | Reason |
+| --- | --- | --- |
+| Gateway image pin | MODIFY | `cbf06c3` (no Export) → `dev` `cadea2e`; source binding rehashed, tech-stack and inventory regenerated |
+| `blog_export_net` | IMPLEMENT | Root network, internal, isolated, `10.250.21.0/24`; members Traefik and the Gateway only; no published port |
+| Export and attestation routes | IMPLEMENT (proposal) | `traefik/blog-export.yml`: B `GET` list/manifest/file and `POST` ACK, A-host `POST` attestation; nothing else routed |
+| Attester | IMPLEMENT | `publisher/attestation.py` + `cli attest`: rebuilds the dispatch bytes from producer-signed evidence, own account and key, never reads the Outbox |
+| E2E build | MODIFY | Sparse set read from the Dockerfile's `.dockerignore` allowlist (`tests/gateway-image.sh`); Gateway hardening rendered from Compose |
+| Upgrade/restore check | IMPLEMENT | `tests/e2e-upgrade.sh` |
+| `workflow.json`, webhook route, Publisher dispatch/Outbox, trust | NO_CHANGE | Reused as merged in PR #699 |
+| Hermes plugin source | BLOCKED (Hermes lane) | PR #700 open; read-only check: POST to the allowlisted URL, header `X-Hermes-Ingest-Token`, no redirects, durable local outbox, strips `companion_evidence` — consistent with `workflow.json` |
+| PR #698 (draft) | Superseded, not merged | Describes the pre-#699 `contract-hold` path and an Export API "to be added"; this slice and PR #699 implement the current design |
+| "Export/ACK API absent" statements | RETIRE | README, RUN-0053, spec and policy row corrected; dated history above is kept |
+
+Measured facts: the `dev` Gateway adds `attest`, `export_read` and `export_ack`
+scopes, at most one non-`read` scope per credential, and
+`POST /v1/ingestions/{id}/attestations`, `GET /v1/exports`, `/v1/exports/{id}`,
+`/v1/exports/{id}/files/{seq}`, `POST /v1/exports/{id}/acks`; DB schema 3 upgrades
+schemas 0-2 in place. The attestation message is
+`blog-data-attestation/1\0` + canonical `{producer, job_id, run_id, fire_id,
+source_sha256, content_sha256}`; the Python signer reproduces Blog-data's own
+`attestationMessage` byte for byte (vector fixture computed inside the built
+image). Only jobs `6eabd835f969`, `25674fbc0bf3`, `8d0925bc571d` become `ready`.
+The served certificate is mkcert with SAN `*.hy.home.arpa`, so
+`blog-export.hy.home.arpa` needs no new certificate. OpenBao has no Transit
+engine. Plugin reports carry no producer-signed evidence, so they stay
+`ingested` and are never attested.
+
+Disposable E2E `tests/e2e-ingress.sh`, 49/49 PASS (Blog-data `cadea2e`, image
+`sha256:ae1024e7…`, `hyhome/n8n:2.43.6-local`, Traefik `v3.7.16`): the earlier
+16 scenarios plus image template check, Compose-rendered hardening, wrong webhook
+token 403, trailing-slash and case-changed paths 401, no export before
+attestation, `export_read` cannot attest 403, signature over changed items 422,
+unregistered key 422, trusted attestation 201 `ready`, replay 200, unapproved job
+201 `held` `UNKNOWN_JOB` with file 409, six Resource files matching manifest
+SHA-256/length/UTF-8, missing/wrong token 401, cross-scope 403 both ways, ACK 201,
+replay 200, different ACK 409, summary/ingest/GET-attest/dot-segment/webhook on
+the export host 404, and after a Gateway restart the acknowledged export, ACK
+replay and attestation replay all persist; the host reaches neither isolated
+network. `tests/e2e-upgrade.sh` 10/10 PASS: `cbf06c3` writes a schema-2 store and
+backs it up online; `cadea2e` upgrades it to schema 3 with the receipt intact,
+replays as a duplicate, attests it into a `ready` export; both backups restore
+into fresh volumes. Workload unit suite 191 tests (attestation 14, export route 4).
+
+Not covered: the real Windows receiver (`receive-hermes-exports.ps1` needs
+Windows PowerShell 5.1 on B), the per-router source split in one-host E2E (static
+test only), live Traefik `v3.7.14`, real tokens and keys, and the production
+attester account.
+
+Approval units added, none performed (RUN-0053 15-step sequence): image build;
+pre-change SQLite backup; config with four single-scope tokens and the attester
+public key; Gateway start; worker recreation; attester account, key and token;
+n8n credentials; workflow publication; webhook route; Traefik recreation onto
+`blog_export_net` and export route copy after measuring both sources; Windows
+dry run; real receive and ACK; backup connection.
+
 ### Remaining blocked conditions and recovery
 
 - DELIVERY stays BLOCKED until both handoffs are accepted and a reviewed key is
@@ -1110,7 +1173,13 @@ copy after measuring the live host source; Gateway backup connection.
 | Direct path source | 23 | W83 | Workflow path/URL, Gateway service isolation, exact-path route | Workload suite, wiring and Compose baseline tests | PASS | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
 | Direct path disposable E2E | 23 | W83 | Host → Traefik → native n8n → built Gateway → SQLite, failure and boundary cases | Synthetic tokens, disposable containers | PASS | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
 | Direct path operational | 23 | W83 | Live Gateway, credentials, publication, Traefik route, Hermes plugin | Blocked: separate approval units, Hermes lane plugin | NOT_RUN | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
-| Windows Export and ACK | 23 | W83 | B pull, Vault write, verified ACK | Blocked: Blog-data Export/ACK API absent | NOT_RUN | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
+| Windows Export and ACK | 23 | W83 | B pull, Vault write, verified ACK | Blocked: receiver on server B and export route not yet approved; API present at `dev` `cadea2e` | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Gateway `dev` pin and image | 23 | W83 | Exact `dev` commit, Dockerfile allowlist build, templates present, export API live | Blog-data `cadea2e`, image `sha256:ae1024e7…` | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Attester source | 23 | W83 | Cross-language message vector, trust gate, key custody, outcome mapping, CLI ordering | Synthetic keys and fixtures, 14 tests | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Attestation/Export/ACK disposable E2E | 23 | W83 | Attest → ready → pull → hash check → ACK, held, forged, scope, routing and restart cases | Synthetic tokens and keys, disposable containers | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Schema-3 upgrade and restore | 23 | W83 | Previous-pin store backed up, upgraded in place, both backups restored | Disposable volumes | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Production attester | 23 | W83 | Real account, key, `attest` token and signed producer evidence | Blocked: producer key store empty; account and key need approval | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Hermes plugin source handoff | 23 | W83 | Plugin source merged and matched to the installed copy | Blocked: PR #700 open in the Hermes lane | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | Protected-install follow-up slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
 
 ## Criterion Acceptance

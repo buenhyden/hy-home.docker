@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.10.0"
+version: "1.11.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-31"
+updated: "2026-11-01"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -319,17 +319,22 @@ Hermes runs as a server-A host process and submits structured reports directly
 to the one n8n webhook; the restricted host Publisher is the file-based recovery
 path to the same webhook until direct submission is operationally verified. The
 n8n worker forwards to the Blog-data Gateway hosted on server A as an opt-in
-`blog-ingestion` service: an image built locally from a pinned Blog-data commit,
-never pulled, read-only and unprivileged, on an internal isolated network whose
-only other member is `n8n-worker`, with SQLite on local disk and no capture on
-A. Traefik keeps the n8n SSO router; only an exact-path, POST-only, host-source
+`blog-ingestion` service: an image built locally from a pinned, accepted
+Blog-data `dev` commit (never `main`), never pulled, read-only and unprivileged,
+on an internal isolated network whose only other member is `n8n-worker` and a
+second one whose only other member is Traefik, with SQLite on local disk and no
+capture on A. Traefik keeps the n8n SSO router; only an exact-path, POST-only, host-source
 router with body and rate limits may skip SSO, applied as a separate approval.
 Webhook and Gateway credentials are separate. Reuse queue workers, PostgreSQL
 metadata, selected Valkey and OpenBao ownership. Do not repurpose Manifest
-Outbox Notifier or duplicate `hy-home.n8n` news crawling. Windows server B pulls
-from a Blog-data-owned Export API and acknowledges; until that API exists,
-Windows delivery stays blocked and A-side ingestion is never reported as
-Windows storage.
+Outbox Notifier or duplicate `hy-home.n8n` news crawling. A dedicated host
+attester account, separate from Hermes, n8n and the Publisher, signs the
+Blog-data attestation only for reports whose producer-signed evidence passes the
+same trust decision as dispatch; it never holds the producer key and n8n never
+holds the attestation key. Windows server B pulls ready exports from the
+Blog-data-owned Export API over HTTPS through exact-path Traefik routes with
+separate read and ACK tokens, and acknowledges; A-side ingestion or export
+readiness is never reported as Windows storage.
 
 ## Acceptance Criteria
 

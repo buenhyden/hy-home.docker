@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.11.0"
+version: "1.12.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-31"
+updated: "2026-11-01"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -910,6 +910,13 @@ worktrees, installed Cron, credentials and runtime resources from writes.
   outside the live directory, and prove host → Traefik → native n8n → Gateway →
   SQLite in a disposable E2E. Export/ACK stays blocked on Blog-data; every
   deployment step stays a separate approval unit (TSK-0022, 2026-10-31).
+- [x] Connect attestation and Resource Export: pin the Gateway to Blog-data
+  `dev` with Resource Export, add a Traefik-only isolated export network,
+  propose exact-path export and attestation routes, add a separately run
+  `attest` command that signs only producer-verified requests, and prove
+  attestation → ready export → pull → ACK, the schema-3 upgrade and backup
+  restore in disposable E2Es. Production signer, Windows receiver and every
+  deployment step stay separate approval units (TSK-0022, 2026-11-01).
 
 - [ ] Update Korean workload README and existing RUN-0053 only with implemented
   safe commands and recovery/uncertainty limits. Record metrics design for
