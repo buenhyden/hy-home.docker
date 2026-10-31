@@ -989,12 +989,13 @@ the key store format or the 165 earlier tests.
   generation/custody evidence and an out-of-band SHA-256 fingerprint of the raw
   public key; private and synthetic keys never enter the repository or
   Publisher. Unsigned rows staged earlier stay blocked; signatures are immutable.
-- `publisher/acquirer.py` and `publisher/producer_sealer.py` were committed on
-  this branch as `f044fb85c` by another lane, outside this Task (the sealer
+- `publisher/acquirer.py` and `publisher/producer_sealer.py` had been committed
+  on this branch as `f044fb85c` by another lane, outside this Task (the sealer
   handles a private key; an automated review flagged SSRF in the fetcher's
-  redirect handling). `install.py` installs only an explicit Publisher module
-  allowlist, so neither ships in a release; their review and placement belong
-  to the Hermes producer lane.
+  redirect handling). With owner approval the commit was moved to the local
+  branch `hermes/acquirer-sealer` and is not part of PR #696. `install.py`
+  installs only an explicit Publisher module allowlist in any case; review and
+  placement of producer code belong to the Hermes producer lane.
 - CI does not run this workload's suite (no gate entry, `cryptography` absent
   from the controller lock); the 168 tests and the install check are local
   evidence only.
