@@ -205,8 +205,11 @@ Hermes(호스트) ─HTTPS─▶ Traefik 정확한 경로 ─▶ n8n ─Queue─
 
 - 진입: 기존 `n8n` 라우터와 SSO는 그대로 둡니다. [제안 경로](traefik/hermes-webhook.yml)는
   `Host` + 정확한 `Path(/webhook/hermes-blog-ingestion)` + `POST`만 일치시키고,
-  출발지 `10.250.1.128/32`, 본문 1 MiB, 분당 6회로 제한합니다. 호스트 프로세스는
-  게시된 443에 docker-proxy를 거쳐 `edge_net` 게이트웨이 주소로 도착합니다. 같은
+  출발지 `10.250.1.128/32`, 본문 1 MiB, 분당 6회로 제한합니다. 출발지 값은 호스트
+  프로세스가 `192.168.0.13:443`에 접속할 때 docker-proxy를 거쳐 `edge_net` 게이트웨이
+  주소로 보인다는 가정이며, 운영 Traefik 접근 기록으로 측정한 뒤에만 적용합니다.
+  다른 `edge_net` 컨테이너도 같은 주소로 보일 수 있고 n8n 컨테이너에 직접 닿을 수
+  있으므로, 실제 인증 경계는 출발지 제한이 아니라 n8n `headerAuth`입니다. 같은
   경로의 GET, 다른 Webhook 경로, n8n 화면은 SSO 라우터로, LAN 출발지는 403으로
   남습니다. `/webhook/*` 전체를 열지 않습니다. 운영 `dynamic/` 반영은 승인 단위입니다.
 - 인증 분리: Hermes→n8n은 Webhook `headerAuth`(헤더 `X-Hermes-Ingest-Token`),
@@ -220,14 +223,20 @@ Hermes(호스트) ─HTTPS─▶ Traefik 정확한 경로 ─▶ n8n ─Queue─
   격리를 전제로 합니다. capture 설정이 없어 A에서는 Vault 쓰기가 꺼져 있습니다.
 - 신뢰: 직접 경로에서 생산자를 증명하는 것은 Webhook Token뿐입니다. Publisher의
   Ed25519 Companion 검증을 대신하지 않으므로 직접 제출분은 Gateway의 `received`와
-  Review 대기까지만 갑니다. 서명 결속을 직접 경로에 싣는 계약은 Blog-data·Hermes와
-  버전을 맞춰 먼저 정해야 하며 아직 없습니다.
+  Review 대기까지만 갑니다. Publisher도 같은 Webhook·Gateway 자격 증명을 쓰므로
+  Gateway는 서명 검증을 거친 Publisher 제출과 직접 제출을 구별하지 못합니다. 따라서
+  직접 경로가 켜지면 Publisher의 Ed25519 보장은 Gateway에서 효력이 없고, Webhook
+  Token이 LLM 에이전트인 Hermes 프로세스 안에서 읽히며, Token 회전이 두 경로를 함께
+  멈춥니다. 서명 결속을 직접 경로에 싣는 계약, 또는 Publisher 전용 경로·자격 증명은
+  Blog-data·Hermes와 버전을 맞춰 먼저 정해야 하며 아직 없습니다.
 - 시간 제한: Gateway 요청 20초 < 흐름 `executionTimeout` 30초(Worker가 실행을
   시작한 뒤부터) < 제출자 시도 45초(Queue 대기 포함)입니다. Traefik v3 기본
   `readTimeout` 60초는 요청 본문 읽기만 제한하고 상류 응답 대기 제한은 없습니다.
-- 재시도: 제출자(플러그인 또는 Publisher)만 소유합니다. 네트워크 오류·시간 초과·
-  503만 같은 바이트와 멱등 키로 제한 재시도하고, 400·401·403·409·413·422는 다시
-  보내지 않습니다. 흐름에는 재시도와 예약 실행을 두지 않습니다. `uncertain`, 영구
+- 재시도: 제출자(플러그인 또는 Publisher)만 소유합니다. 네트워크 오류·시간 초과와
+  429·500(Gateway 미도달 시 n8n 응답)·502·503·504는 같은 바이트와 멱등 키로 제한
+  재시도합니다. 저장 뒤 재전송은 200 중복이 되므로 안전합니다. 400·401·403·409·413·
+  422는 다시 보내지 않습니다. 404는 흐름이 게시되지 않은 상태이며 Publisher는 이를
+  영구 거부로 처리하므로, 흐름 게시를 해제하기 전에 Publisher 실행기를 먼저 멈춥니다. 흐름에는 재시도와 예약 실행을 두지 않습니다. `uncertain`, 영구
   거부, 재시도 소진은 성공이 아니며 `dispatch` 종료 코드 1입니다.
 
 ### 상태 대응과 관측
