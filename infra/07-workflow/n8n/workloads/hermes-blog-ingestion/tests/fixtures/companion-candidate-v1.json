@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "producer": "hermes",
+  "job_id": "6eabd835f969",
+  "run_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "report_kind": "strategy-news",
+  "generated_at": "2026-10-30T09:05:00+09:00",
+  "source_ref": "cron/output/6eabd835f969/2026-10-30_09-00-00.md",
+  "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "items": [
+    {
+      "title": "Synthetic item 1",
+      "summary": "synthetic summary",
+      "region_or_scope": "global",
+      "category": "test",
+      "source_url": "https://example.com/synthetic/1",
+      "collection_evidence": "Synthetic model-reported source: https://example.com/synthetic/1",
+      "verification_status": "source_cited_unverified"
+    },
+    {
+      "title": "Synthetic item 2",
+      "summary": "synthetic summary",
+      "region_or_scope": "global",
+      "category": "test",
+      "source_url": "https://example.com/synthetic/2",
+      "collection_evidence": "Synthetic model-reported source: https://example.com/synthetic/2",
+      "verification_status": "source_cited_unverified"
+    }
+  ],
+  "state": {
+    "run_completed": true,
+    "source_file_ready": true,
+    "email_delivery": "reported_sent",
+    "blog_data_ingested": "unknown"
+  },
+  "export_status": "ready_for_review",
+  "privacy_classification": "unreviewed",
+  "warnings": []
+}

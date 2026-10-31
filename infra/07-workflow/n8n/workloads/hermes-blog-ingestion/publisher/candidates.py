@@ -11,7 +11,9 @@ from .files import BATCH_LIMIT, InputError, safe_read
 
 JOBS = ("6eabd835f969", "25674fbc0bf3", "8d0925bc571d")
 EXPORT_NAME = re.compile(r"[0-9a-f]{32}\.json\Z")
-REVIEWED_SHA256 = "8c988c715286edd53d2f7e5931cb349e6a5bed49be8ec2f8e7be98f2810c7297"
+# Main-tracked scripts/validation/check-hermes-candidate.py (1003fbe8a). Any byte change needs review and
+# a new digest here; the pre-merge 8c988c71... draft is deliberately rejected.
+REVIEWED_SHA256 = "957d047c77a3448d2ae6ed4cc61d88efc2705599d6f95f20d9d7e99510695714"
 
 
 @dataclass(frozen=True)

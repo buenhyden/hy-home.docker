@@ -5,7 +5,6 @@ import copy
 import hashlib
 import io
 import json
-import os
 import subprocess
 import sys
 import tempfile
@@ -16,9 +15,11 @@ from unittest.mock import patch
 
 WORKLOAD = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WORKLOAD))
-# Test double exercises loader wiring; it is not a schema compatibility fixture.
-VALIDATOR = Path("/nonexistent/spec0247-validator.py")
-VALIDATOR_SHA = "8c988c715286edd53d2f7e5931cb349e6a5bed49be8ec2f8e7be98f2810c7297"
+# The synthetic double below exercises loader wiring only; VALIDATOR is the
+# main-tracked SPEC-0247 validator whose bytes the Publisher pins.
+VALIDATOR = WORKLOAD.parents[4] / "scripts/validation/check-hermes-candidate.py"
+VALIDATOR_SHA = "957d047c77a3448d2ae6ed4cc61d88efc2705599d6f95f20d9d7e99510695714"
+PRE_MERGE_SHA = "8c988c715286edd53d2f7e5931cb349e6a5bed49be8ec2f8e7be98f2810c7297"
 SYNTHETIC_VALIDATOR = b"""def validate(data):
     if any('secret-private-marker' in item for item in data.get('items', [])):
         raise ValueError('synthetic malformed candidate')
@@ -154,15 +155,13 @@ class StagingTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
 
-    def test_pinned_validator_optional_compatibility(self):
-        path = os.environ.get("HERMES_SPEC0247_VALIDATOR")
-        if not path:
-            self.skipTest("set HERMES_SPEC0247_VALIDATOR to the exact pinned validator")
+    def test_pinned_validator_compatibility(self):
         from publisher import candidates
 
         self.validator_patcher.stop()
         self.assertEqual(candidates.REVIEWED_SHA256, VALIDATOR_SHA)
-        validator = candidates.load_validator(Path(path), VALIDATOR_SHA)
+        self.assertEqual(digest(VALIDATOR.read_bytes()), VALIDATOR_SHA)
+        validator = candidates.load_validator(VALIDATOR, VALIDATOR_SHA)
         snapshot = candidates.load_candidate(
             self.root / "exports",
             JOB,
@@ -172,6 +171,25 @@ class StagingTests(unittest.TestCase):
             validator,
         )
         self.assertEqual(snapshot.source, self.report.read_bytes())
+
+    def test_pinned_validator_rejects_draft_changed_or_linked_bytes(self):
+        from publisher import candidates
+        from publisher.files import InputError
+
+        self.validator_patcher.stop()
+        changed = self.root / "changed-validator.py"
+        changed.write_bytes(VALIDATOR.read_bytes() + b"\n")
+        linked = self.root / "linked-validator.py"
+        linked.symlink_to(VALIDATOR)
+        for path, sha in (
+            (VALIDATOR, PRE_MERGE_SHA),
+            (changed, VALIDATOR_SHA),
+            (linked, VALIDATOR_SHA),
+            (self.root / "missing.py", VALIDATOR_SHA),
+        ):
+            with self.subTest(path=path.name, sha=sha[:8]):
+                with self.assertRaises(InputError):
+                    candidates.load_validator(path, sha)
 
     def test_lossless_source_candidate_and_identity(self):
         snapshot = self.load()

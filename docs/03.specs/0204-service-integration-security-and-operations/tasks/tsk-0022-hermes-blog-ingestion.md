@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-10-31"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0022"
 parent_ids:
@@ -676,6 +676,133 @@ result for the present uncommitted Publisher change and must not be used as its
 acceptance or merge evidence.  The current revision requires its own complete
 checks after the final committed PR head is known.
 
+### Post-PR #693 dispatch readiness — 2026-10-31
+
+The owner assigned the Hermes direct-fetch receipt producer and exporter
+integration to the server-A Hermes lane, and the Blog-data TLS entry point and
+server settings to the server-B Blog-data lane. This repository defines their
+contracts and acceptance conditions and does not change either side.
+
+Observed state: origin/main and HEAD were `325dcb63c967` with a clean tree.
+PR #693 merged at 2026-10-30T14:37:38Z with head `a1f0b33bd`; no PR was open. The
+retained `codex/hermes-collection-provenance` worktree was clean. SPEC-0247 is
+`approved` with its Task `completed`; PR #685 (validator) and PR #692 merged
+2026-10-30. The user-reported 136 tests (135 passed, 1 skip) reproduced locally
+on `325dcb63c`; the skip was the optional pinned-validator test. Hosted CI
+Quality Gates succeeded for PR head `a1f0b33bd` and for main `325dcb63c`; those
+runs are revision-specific and are not evidence for this branch.
+
+Validator pin: the Publisher pinned `8c988c71…`, which is the pre-merge draft
+from `edb6aa461` still present only under a temporary restore directory. Main's
+`scripts/validation/check-hermes-candidate.py` is `957d047c…` (one commit,
+`1003fbe8a`). The diff tightens staged-source traversal to directory handles
+with `O_NOFOLLOW`, adds `regulation`, `expected_revenue` and
+`profitability_claim` to idea items, requires `uncertainty` for devops items,
+and validates idea/date paths more strictly. Over 120 parseable local scratch
+exports, no file accepted or blocked differently in a relaxing direction: 30
+accepted and 9 blocked by both, 58 invalid by both, and 23 accepted by the draft
+but rejected by main for the changed field sets. The pin now names the main
+bytes; the draft digest, changed bytes, symlinks and missing files are rejected
+by tests, and the optional skip became a required compatibility test.
+
+Gateway contract: Blog-data `dev` `1a4cd60` publishes OpenAPI 1.1.0. The input
+schema and synthetic report are byte-identical to the pinned `a6d0957` files.
+`POST /v1/ingestions` request, 200/201 receipt and error definitions are
+unchanged, so the pinned revision and existing Outbox bindings stay. Only
+`candidates` gained `matching`, `review_count` and `latest_review`, and review
+definitions and `/v1/candidates/{id}/reviews` were added; those matter only to
+later read tools. The API has no full-text search parameter.
+
+Source added: Companion Evidence v1 structural verification
+(`publisher/evidence.py`) with synthetic candidate/evidence fixtures, and a
+`dispatch` command reusing `process_one`, `GatewayAdapter`,
+`GatewayReplayTransport` and `HttpTransport`. For the three Hermes jobs the
+policy gate returns `blocked` before evidence parsing or credential I/O, and the
+existing Outbox and transport gates still block any record with bound evidence.
+Synthetic loopback tests opened the gate only by patching policy and run times:
+they observed 201 durable receipt and no resend, 401 and 409 `failed` without
+retry, 503 and dropped responses `uncertain`, no reconciliation without
+`--allow-replay`, then an identical-byte replay accepted with 200. Credential
+files must be owner-only with an unshared parent; symlinks are rejected. The
+full workload suite passed 151/151 with no skip, and Ruff check/format passed.
+Independent security review found no Critical or Important issue; its Minor
+findings on credential inode/parent checks and HTTPS URL parsing were fixed.
+Independent code review found three Important issues, all fixed with tests:
+microsecond `generated_at` was rejected by evidence parsing; a 401/403/409
+received while reconciling an uncertain record left the retry budget open, so a
+later replay could re-POST (shared `delivery.py` now exhausts the budget); and
+the evidence-blocking test never reached evidence handling. The CLI now mirrors
+both the policy and Outbox evidence gates before parsing or credential I/O, so
+production dispatch reads no credential. Without `--allow-replay`, uncertain
+records consume attempts without I/O and stay uncertain after five; this is
+documented rather than changed. Separate counts for rejected evidence are not
+added. A follow-up review of the fix range is recorded in Review and Completion.
+
+Network observation from server A: `192.168.0.22` answered ICMP, while TCP
+22/80/443/8787 did not connect within 3 seconds. No approved TLS entry or DNS
+name exists yet, so the tracked workflow keeps `https://gateway.invalid` and
+`active:false`. No Hermes live candidate root was found outside scratch
+directories; the recorded 153 held items remain a 2026-10-30 observation and
+no collection time was estimated. No Cron, secret, workflow, container, network
+or remote Git state was changed.
+
+### Handoff: Hermes producer lane (server A)
+
+Deliver per run a Companion Evidence v1 file exactly as defined in the workload
+README `Companion Evidence v1 계약` section; candidate producer v1.0.0 fields stay unchanged.
+
+1. Record each item at the direct-fetch boundary: final HTTPS URL, 2xx status,
+   SHA-256 of received bytes, receive time with offset (millisecond precision)
+   and cache provenance. A cache hit records the original fetch time and cache
+   key digest, never the materialization time.
+2. Persist the record atomically (temp file, fsync, rename) before the fetched
+   bytes are used, closing the crash gap between fetch and evidence.
+3. Bind records to `job_id`, `run_id`, `scheduled_at` (the execution
+   `scheduled_instant`) and the SHA-256 of the exported candidate bytes, one
+   record per candidate item in the same order; items without a source URL
+   make the whole run unverifiable.
+4. Propose a producer authentication mechanism the Publisher can verify and the
+   same-account LLM tool and exporter stages cannot forge, with key custody and
+   rotation. Its approval is the trust-anchor precondition.
+5. Write to `<evidence-root>/SHA256(job_id NUL run_id).json` and validate
+   against `tests/fixtures/companion-*-v1.json` plus `publisher/evidence.py`.
+
+Acceptance: real runs verify with zero rejections; crash injection between fetch
+and write yields no unbound item; a forged record from the exporter account is
+rejected by the approved mechanism.
+
+### Handoff: Blog-data Gateway lane (server B)
+
+1. Keep the Gateway on loopback `127.0.0.1:8787`; expose it only through an
+   approved TLS terminator on `192.168.0.22` with a DNS name resolvable from the
+   n8n worker on server A and a certificate chain the worker trusts.
+2. Restrict the entry to server A (`192.168.0.13`) and the paths
+   `POST /v1/ingestions` and `GET /v1/ingestions/{id}`; later read tools need
+   `GET /v1/candidates` and `GET /v1/summary` only.
+3. Issue a producer-bound ingest credential for n8n and, separately, a read
+   credential for later tools; deliver both through the operator secret path,
+   never in workflow JSON or logs, with a rotation and revocation procedure.
+4. Report the DNS name, port, CA or chain fingerprint, timeout expectations and
+   rate limits so the HTTP Request node and Native checks can be bound exactly.
+
+Acceptance: from the n8n worker, DNS/TCP/TLS succeed, an invalid token returns
+401, a wrong certificate fails, and a synthetic tenant ingestion returns 201 then
+200 for the identical request and 409 for a changed body, all durably visible
+through `GET /v1/ingestions/{id}`.
+
+### Remaining blocked conditions and recovery
+
+- DELIVERY stays BLOCKED until both handoffs are accepted and one reviewed change
+  opens the policy, Outbox and transport evidence gates together, keeping
+  credential reads behind those gates.
+- Then: bind the workflow URL and credential reference, publish the workflow
+  through the approved procedure, and run the W83 Native scenarios (outage and
+  recovery, lost response, bad token/certificate, worker/runner path, sensitive
+  input blocks, Cron/email regression, source/Outbox/Gateway preservation).
+- Recovery keeps source, Outbox and Gateway data; `failed` records are never
+  reopened automatically; uncertain records resolve only by authenticated
+  status lookup or explicit identical-byte replay (RUN-0053).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -689,6 +816,11 @@ checks after the final committed PR head is known.
 | Isolated Queue worker to fake Gateway | 23 | W83 | Queue round trip through external JavaScript runner and synthetic persisted receipt | Fake Gateway returned 201 with recorded synthetic receipt | PASS | Isolated Queue publication and dispatch follow-up — 2026-10-30 | required | - |
 | Native worker to Gateway | 23 | W83 | Tracked workflow plus server-B DNS/TCP/TLS/auth/timeout, outage/recovery and durable persistence | No tracked-workflow or server-B execution; isolated fake-Gateway receipt is non-operational | NOT_RUN | Isolated Queue publication and dispatch follow-up — 2026-10-30 | required | - |
 | Existing email/workload regression | 23 | W83 | Preserve Cron/email and existing n8n/Docker workloads | Read-only baseline plus later approved Native scenario | NOT_RUN | Design admission — 2026-10-30 | required | - |
+| Validator pin realignment | 23 | W83 | Draft/main diff, local corpus verdicts, pinned-byte, draft/changed/symlink rejection tests | Main `957d047c…`, local scratch exports | PASS | Post-PR #693 dispatch readiness — 2026-10-31 | required | - |
+| Gateway 1.1.0 compatibility | 23 | W82 | Ingestion POST request/receipt/error definitions vs pinned 1.0.0 | Blog-data dev `1a4cd60` | PASS | Post-PR #693 dispatch readiness — 2026-10-31 | required | - |
+| Companion evidence and dispatch | 23 | W83 | Evidence binding rejections, gate closure, loopback 201/200/401/409/503/drop, replay, credential privacy | Synthetic fixtures and loopback Gateway | PASS | Post-PR #693 dispatch readiness — 2026-10-31 | required | - |
+| Producer trust anchor | 23 | W83 | Authenticated Hermes direct-fetch records | Blocked: Hermes lane handoff not delivered | NOT_RUN | Handoff: Hermes producer lane (server A) | required | - |
+| Server-B TLS entry | 23 | W83 | DNS/TCP/TLS/auth from n8n worker | Blocked: Blog-data lane handoff; TCP probe from server A failed | NOT_RUN | Handoff: Blog-data Gateway lane (server B) | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, coverage, docs gates and independent review | Final Task-owned diff | NOT_RUN | Review and Completion | required | - |
 
 ## Criterion Acceptance
@@ -698,6 +830,15 @@ checks after the final committed PR head is known.
 | 23 | pending | Bounded design and ownership | Basic source and safe synthetic checks may proceed; exact API and actual worker/Gateway evidence remain required. | SPEC-0204 TSK-0022 |
 
 ## Review and Completion
+
+2026-10-31 dispatch-readiness slice: a follow-up independent code review of the
+fix range confirmed all five prior findings fixed with no Critical or Important
+remainder. Its Minor port/length URL check and isolated symlink credential test
+were applied; untested hard-link, foreign-owner and FIFO credential cases, the
+count-based retry exhaustion and the Python 3.11+ timestamp parsing assumption
+(local 3.12.3) remain noted. Reviewers had no shell; the suite (151/151),
+Ruff and document checks were run by the controller. Commits are local only;
+push, PR and merge need separate approval.
 
 Local source verification and the user-authorized Git integration are in progress.
 No commit, push, merge or deployment is claimed here. The Gateway contract
