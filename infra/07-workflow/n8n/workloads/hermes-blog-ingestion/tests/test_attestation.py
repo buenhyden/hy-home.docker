@@ -94,6 +94,23 @@ class MessageTests(unittest.TestCase):
             ):
                 attestation.message(REQUEST, ITEMS, evidence)
 
+    def test_lone_surrogates_raise_attestation_error(self):
+        raw = json.dumps(
+            {
+                **{k: v for k, v in V["request"].items() if k != "idempotency_key"},
+                "source_text": "\\ud800",
+            }
+        ).encode()
+        raw = raw.replace(b"\\\\ud800", b"\\ud800")
+        self.assertIn(b"\\ud800", raw)
+        with self.assertRaises(attestation.AttestationError):
+            attestation.message(raw, ITEMS, EVIDENCE)
+        items = [{**ITEMS[0], "item_id": "item-\ud800"}]
+        with self.assertRaises(attestation.AttestationError):
+            attestation.message(REQUEST, items, EVIDENCE)
+        with self.assertRaises(attestation.AttestationError):
+            attestation.request_body("k", producer.new_key(), b"", items, EVIDENCE)
+
     def test_empty_list_and_fire_id_null(self):
         signed = attestation.message(REQUEST, [], EVIDENCE)
         self.assertIn(b'"fire_id":null', signed)

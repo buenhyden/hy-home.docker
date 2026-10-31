@@ -31,9 +31,12 @@ class AttestationError(ValueError):
 
 def _canonical(value):
     # Blog-data contract.mjs canonical(): sorted keys, no spaces, raw UTF-8.
-    return json.dumps(
-        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode()
+    try:
+        return json.dumps(
+            value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        ).encode()
+    except UnicodeError:  # a lone surrogate has no UTF-8 form
+        raise AttestationError("request_invalid") from None
 
 
 def _check(verified_items, evidence_sha256):
@@ -141,6 +144,13 @@ def load_signing_key(path):
 
 def request_body(key_id, key, signed, verified_items, evidence_sha256):
     _check(verified_items, evidence_sha256)
+    try:
+        return _body(key_id, key, signed, verified_items, evidence_sha256)
+    except UnicodeError:
+        raise AttestationError("request_invalid") from None
+
+
+def _body(key_id, key, signed, verified_items, evidence_sha256):
     return json.dumps(
         {
             "schema_version": "2.0",
