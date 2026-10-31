@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1364,6 +1364,30 @@ The owner wants to stop three things:
    account, key, token, Gateway `export` block, timer; only then the Hermes
    plugin/prompt rollout.
 
+### Item-level attester implementation — 2026-11-01
+
+Built on branch `feat/hermes-trust-adapter`, source and synthetic evidence only:
+
+- Blog-data pin `b372de374ec589b1bec2ff8096ae2f7272461248` (attestation/2, schema 4,
+  `resource-export/3+4b681da87f80`); the v1 attester and `cli attest` were removed.
+- `publisher/source_fetch.py` (SSRF-guarded fetch), `publisher/source_check.py` (page text
+  and per-item checks: required fields, 1-3 `source_quotes`, numbers, names) and
+  `publisher/attester.py` (`GatewayReader`, `run`; 6 h transient retry, signed body stored
+  before sending, evidence and state files, quarantined reports skipped), plus
+  `publisher.cli attest-queue` and `deploy/hermes-attester.{service,timer}`.
+- The n8n screen accepts `source_quotes`; Traefik gains the `blog-attestation-read`
+  router (queue and per-report request GETs from the attester host only).
+- Disposable E2E `tests/e2e-ingress.sh`: RESULT 53 PASS, 0 FAIL. It ingests a report with
+  `source_quotes` through Traefik, n8n and the Gateway, then runs the real `attester.run`
+  with the real `GatewayReader` over the throwaway Traefik and a fake fetcher (no network).
+  Item A became `ready`, item B `held` with `SOURCE_UNVERIFIED`; a second run sent nothing and
+  the stored body resent as a 200 duplicate. `tests/e2e-upgrade.sh` passes 11/11.
+  A quarantined report cannot be produced through public interfaces, so that case is
+  covered by unit tests only. TLS verification is skipped only in the test harness.
+- Production units (image build, backup then schema 4 switch, workflow republish, route
+  pull, attester account/key/token/`export` block, timer, Hermes plugin rollout) are
+  NOT_RUN; RUN-0053 lists them as separate approval units.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -1391,10 +1415,10 @@ The owner wants to stop three things:
 | Direct path operational | 23 | W83 | Live Gateway, credentials, publication, Traefik route, Hermes plugin | Gateway, Worker network, credentials, publication and route applied 2026-11-01; Hermes URL and a real Cron submission pending | NOT_RUN | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
 | Windows Export and ACK | 23 | W83 | B pull, Vault write, verified ACK | Blocked: receiver on server B not run; route live since 2026-11-01, Export closed until the trust adapter exists | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Gateway `dev` pin and image | 23 | W83 | Exact `dev` commit, Dockerfile allowlist build, templates present, export API live | Blog-data `a43d824`, production image ID `sha256:e513b938…`, `resource-export/2+f45cc9bbc0a4` | PASS | Server A operational rollout — 2026-11-01 | required | - |
-| Attester source | 23 | W83 | Cross-language message vector, trust gate, key custody, outcome mapping, CLI ordering | Synthetic keys and fixtures, 16 tests | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
-| Attestation/Export/ACK disposable E2E | 23 | W83 | Attest → ready → pull → hash check → ACK, held, forged, scope, routing and restart cases | Synthetic tokens and keys, disposable containers | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
-| Schema-3 upgrade and restore | 23 | W83 | Previous-pin store backed up, upgraded in place, both backups restored | Disposable volumes | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
-| Production attester | 23 | W83 | Real account, key, `attest` token and signed producer evidence | Blocked: producer key store empty; account and key need approval | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Attester source | 23 | W83 | attestation/2 vectors, SSRF-guarded fetch, item checks, queue attester retry/resend/quarantine, deploy units | Synthetic keys, fixtures and fake fetcher; `publisher.cli attest-queue` replaces `attest` | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Attestation/Export/ACK disposable E2E | 23 | W83 | Item-level attest → ready/held → pull → hash check → ACK, forged, scope, read-route and restart cases | Synthetic tokens and keys, fake fetcher, disposable containers at `b372de374e`; 53 PASS, 0 FAIL | PASS | Item-level attester implementation — 2026-11-01 | required | - |
+| Schema-4 upgrade and restore | 23 | W83 | Previous-pin store backed up, upgraded in place to schema 4, both backups restored | Disposable volumes, `e2e-upgrade.sh` 11/11 | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Production attester | 23 | W83 | Real `hermes-attester` account, key, `attest`+`read` token, `export` block, timer and a real item verification | Not run: image `b372de374e`, schema 4 switch, route pull and account need separate approval | NOT_RUN | Item-level attester implementation — 2026-11-01 | required | - |
 | Hermes plugin source handoff | 23 | W83 | Plugin source merged and matched to the installed copy | PR #700 `3727ff0e7`; four files SHA-256 equal to the installed copy; real submission not run | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | Protected-install follow-up slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
 

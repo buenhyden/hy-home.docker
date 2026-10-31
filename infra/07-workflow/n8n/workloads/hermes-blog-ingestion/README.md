@@ -16,7 +16,7 @@ Worker가 같은 서버 A의 격리된 Blog-data 수집 Gateway에 전달하는 
 파일 기반 로컬 발행기와 영속 대기함은 직접 경로가 운영 검증될 때까지 복구 경로로
 보존합니다. Blog-data `dev` 커밋 `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`의
 수집 API 계약과 합성 Fixture를 고정했고, Gateway 이미지는 Resource Export가 들어간
-Blog-data `dev` `a43d824334e636ddeab034982b36c0700a9d8f93`(`resource-export/2`)에서 로컬 빌드합니다.
+Blog-data `dev` `b372de374ec589b1bec2ff8096ae2f7272461248`(attestation/2, schema 4, `resource-export/3+4b681da87f80`)에서 로컬 빌드합니다.
 Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 수신 뒤에는 별도 호스트
 서명자가 Attestation을 제출하고, Windows B가 HTTPS로 Export를 가져가 ACK합니다.
 
@@ -29,11 +29,11 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 | 격리 n8n Queue 합성 검증 | PASS | 기본 게시 API·정적 Webhook 등록, Worker·외부 JS Runner, 가짜 Gateway 201·합성 영속 수신 |
 | 직접 경로 일회용 E2E | PASS | 호스트 → Traefik 경로(합성 사본) → n8n(추적 워크플로) → 실제 Gateway 이미지 → SQLite, [시험](tests/README.md) |
 | Attestation·Export·ACK 일회용 E2E | PASS | 합성 서명 → `ready` Export → Manifest·파일 해시 → ACK, `held`·위조·범위 거부, 재시작 영속 |
-| Schema 3 업그레이드·백업 복원 | PASS | 이전 고정본 schema 2 저장소의 제자리 업그레이드와 두 백업의 새 볼륨 복원(합성) |
-| Attestation 서명자 | 소스 PASS, 운영 BLOCKED | `attest` 명령과 합성 시험은 통과했지만 생산자 키 저장소가 비어 있고 서명 계정·키가 없음 |
+| Schema 4 업그레이드·백업 복원 | PASS | 이전 고정본 저장소의 제자리 업그레이드와 두 백업의 새 볼륨 복원(합성) |
+| 항목 단위 Attester | 소스 PASS, 운영 NOT_RUN | `attest-queue`와 원본 확인 합성 시험·일회용 E2E는 통과했지만 `hermes-attester` 계정·키·Token·timer는 아직 만들지 않음 |
 | Hermes 플러그인 소스 | PASS(소스), 운영 NOT_RUN | PR #700으로 `hermes-plugin/`에 추적, 설치본 `~/.hermes/plugins/research-report` 네 파일과 SHA-256 일치(2026-11-01). 실제 제출은 미실행 |
 | 실제 Windows 수신기 | NOT_RUN | 서버 B의 수신기 Dry Run·ACK 미실행 |
-| 서버 A 운영 배치 | 부분 적용(2026-11-01) | Gateway `a43d824…`(이미지 ID `sha256:e513b938…`) 기동, Worker 내부망 연결, n8n 자격 증명·흐름 게시, Webhook·Export Traefik 경로 적용. `export` 설정이 없어 Export는 닫힘 |
+| 서버 A 운영 배치 | 부분 적용(2026-11-01), 새 고정본 NOT_RUN | 실행 중 Gateway `a43d824…`(이미지 ID `sha256:e513b938…`) 기동, Worker 내부망 연결, n8n 자격 증명·흐름 게시, Webhook·Export Traefik 경로 적용. `export` 설정이 없어 Export는 닫힘 |
 | 실제 운영 검증 | NOT_RUN | Hermes `RESEARCH_WEBHOOK_URL` 연결, 실제 Cron 제출·`received`, Windows 수신기 미실행 |
 
 전체 시험과 최신 조사·독립 검토 결과는 `SPEC-0204-TSK-0022`가 소유합니다.
@@ -260,7 +260,7 @@ Hermes(호스트) ─HTTPS─▶ Traefik 정확한 경로 ─▶ n8n ─Queue─
 | `export_prepared` | Attestation 뒤 Gateway Export `ready` | `GET /v1/exports?state=ready`(`export_read`) |
 | `delivered_acknowledged` | Gateway Export `acknowledged`(ACK 201·200) | `GET /v1/exports/{id}`의 `ack_id`·`updated_at` |
 | `retryable` | Publisher `pending`(다음 시도 예약)·`uncertain` | `publisher.cli status` |
-| `quarantined` | Publisher `blocked`(신뢰 실패), 서명자 `blocked`, Gateway 격리 판정, Export `held`(`hold_reason`) | `status`, `attest` 출력, Gateway Review, `GET /v1/exports?state=held` |
+| `quarantined` | Publisher `blocked`(신뢰 실패), 서명자 `rejected`·건너뜀, Gateway 격리 판정, Export `held`(`hold_reason`) | `status`, `attest-queue` 출력, Gateway Review, `GET /v1/exports?state=held` |
 | `conflict` | Publisher `conflict`, Gateway 409 `IDEMPOTENCY_CONFLICT`, Export `conflict`(ACK 409) | `status`, n8n 응답, `GET /v1/exports?state=conflict` |
 
 관측은 기존 체계를 씁니다. n8n 지표(`n8n-monitor`)의 흐름별 실행 성공·실패,
@@ -270,7 +270,7 @@ Traefik 라우터 지표(`addRoutersLabels`)의 `hermes-blog-ingestion-webhook` 
 작업별 최종 수신 시각은 summary에 없어 Gateway 조회 API 확장이 필요합니다. Export
 상태는 `export_read` 목록 조회로 셉니다. `state`별 `ready`·`held`·`conflict` 수와
 가장 오래된 `ready`의 `created_at`이 미수신 시간이고, `acknowledged` 항목의
-`updated_at`이 마지막 ACK 시각입니다. 서명 실패는 `attest` 종료 코드와 Traefik
+`updated_at`이 마지막 ACK 시각입니다. 서명 실패는 `attest-queue` 종료 코드와 Traefik
 `blog-attestation` 422, 반복 429·5xx는 `blog-export-*` 라우터 지표로 봅니다.
 Gateway에는 지표 엔드포인트가 없으므로 Prometheus 수집은 Blog-data와 지표 계약을
 정한 뒤 붙입니다(DEFER). 경보 기준은 운영 주기 확인 후 승인으로 정합니다.
@@ -283,34 +283,43 @@ Gateway는 `POST /v1/ingestions/{id}/attestations`의 Ed25519 서명이 저장�
 `content_sha256`은 멱등 키를 뺀 요청 전체의 정규 JSON SHA-256입니다. 이 서명은 Hermes
 Companion 서명과 다른 계약·다른 키입니다.
 
-서명자는 `python3 -I -m publisher.cli attest`이며 Hermes·n8n·Publisher와 다른 전용
-계정으로 같은 보호 설치에서 실행합니다. Publisher 대기함을 읽지 않습니다. Hermes
-산출물과 Companion Evidence를 새로 읽어 `trust.verify_signature`와 Evidence 검증을
-통과한 경우에만, 발행기가 보낸 것과 같은 요청 바이트를 다시 만들어 서명합니다.
-서명 없는 Evidence·위조·폐기 키·다른 실행의 Evidence는 키나 네트워크에 닿기 전에
-`blocked`입니다. 개인키는 그 계정 또는 root 소유 PEM 파일로, 기타 권한이 없고 그룹
-읽기(`0440`·`0640`)는 그룹이 서명 계정의 기본 그룹일 때만 허용됩니다. 키가 든 디렉터리는
-소유자 외 쓰기가 없어야 하고 상위 경로의 심볼릭 링크는 거부됩니다. 키는
-n8n, Webhook 처리기, Publisher 계정, 저장소에 두지 않습니다. Report ID는 발행기 영수증에서
-옵니다. 다른 보고서의 ID나 n8n에서 바뀐 내용은 Gateway가 422로, 없는 ID는 404로
-거부하며 어느 쪽도 Export를 만들지 않습니다. 인증서 오류는 `rejected`로 멈춥니다.
+서명자는 `python3 -I -m publisher.cli attest-queue`이며 Hermes·n8n·Publisher와 다른
+전용 계정 `hermes-attester`로 실행합니다. Gateway의 `GET /v1/attestation-queue`에서
+미서명 보고서를 읽고 `GET /v1/ingestions/{id}/request`의 정규 요청 바이트를 받아
+항목마다 원본을 확인한 뒤, 확인된 항목만 `attestation/2`로 서명해 보냅니다.
+서명 대상은 요청 `content_sha256`과 확인된 항목, 증거 해시입니다. 개인키는 그 계정
+또는 root 소유 PEM으로 기타 권한이 없어야 하며 그룹 읽기는 서명 계정의 기본 그룹일
+때만 허용됩니다. 키는 n8n, Webhook 처리기, Publisher 계정, 저장소에 두지 않습니다.
 `192.168.0.13/32` 허용은 서버 A의 모든 호스트 프로세스를 통과시키므로 실제 경계는
-`attest` Token입니다. 생산자 키의 `not_after`가 지나면 서명도 막히므로 키 교체 전에
-전달된 보고서의 서명을 끝냅니다.
+`attest`+`read` Token입니다. 조회 경로 `blog-attestation-read`는 위 두 GET만 연결합니다.
 
 ```bash
-python3 -I -m publisher.cli attest \
-  --exports <exports> --source-root <source> --item-root <items> \
-  --validator <validator.py> --validator-sha256 <reviewed-digest> \
-  --evidence-root <evidence> --job <job_id> --run <run_id> \
-  --report-id <receipt id> --gateway https://blog-export.hy.home.arpa \
-  --auth-header-file <private attest header> --signing-key <private PEM> --key-id <key_id>
+python3 -I -m publisher.cli attest-queue \
+  --gateway https://blog-export.hy.home.arpa \
+  --auth-header-file <private attest header> --signing-key <private PEM> --key-id <key_id> \
+  --state-dir <state> --evidence-dir <evidence>
 ```
 
-출력은 `{"result":"attested"|"rejected"|"retry"|"blocked", ...}` 한 줄이며 201·200만
-종료 코드 0입니다. 429·5xx·통신 실패는 같은 서명으로 다시 실행해도 안전합니다(200).
-직접 경로(플러그인) 보고서는 서명된 Evidence가 없어 Attestation 대상이 아니며
-`ingested`로 남습니다.
+출력은 `attested`·`held_items`·`skipped`·`retry`·`rejected` 개수 한 줄이며
+`rejected`가 있으면 종료 코드 1입니다. 보고서·항목 본문과 URL, 자격 증명은 출력하지 않습니다.
+
+#### 항목 단위 Attester
+
+- 원본 가져오기는 SSRF 방어를 거칩니다. https만, 사용자 정보와 홈 영역 이름 금지,
+  해석된 주소가 모두 전역 라우팅 가능해야 하며 검증한 IP로만 연결합니다. 크기 2 MiB,
+  리다이렉트 5회, 전체 20초로 제한하고 끌 수 있는 스위치는 없습니다.
+- 검사는 필수 필드, `source_quotes` 1~3개(정규화 후 20자 이상)가 페이지 본문에 있는지,
+  제목·본문의 숫자와 고유명이 원본에 있는지입니다. 하나라도 실패한 항목은 `held`
+  (`SOURCE_UNVERIFIED`)이며 승인되지 않은 작업은 항목 전부가 보류됩니다.
+- 일시 실패(통신·5xx 등)는 최초 시도 후 6시간까지 다음 실행에서 재시도하고 그 뒤
+  미확인으로 확정합니다. 서명한 본문은 전송 전에 저장하므로 응답을 잃어도 같은
+  바이트를 다시 보내며 Gateway는 200 중복으로 응답합니다. 격리된 보고서(409
+  `REPORT_QUARANTINED`)는 건너뜁니다.
+- 증거(항목별 결과·코드·응답 SHA-256·확인 시각)는 보고서마다 `--evidence-dir`에,
+  진행 상태는 `--state-dir`에 0600 파일로 둡니다.
+- 실행 단위는 `deploy/hermes-attester.service`(oneshot)와 `.timer`입니다. 비밀은
+  `/etc/hermes-attester/`에 두며 런타임 Python은 HTMLParser 보완이 반영된 최신 패치
+  판본이어야 합니다(RUN-0053 기록).
 
 Windows B와 서버 A 호스트는 `blog-export.hy.home.arpa`의 정확한 경로만 씁니다.
 Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만 연결되고
@@ -322,8 +331,8 @@ Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만
 | CA 공개 인증서 | 서버 A의 mkcert 루트 `rootCA.pem` 공개 인증서. 수신기 설정의 CA 파일로 고정하며 지문은 적용 단계에서 운영자가 기록 |
 | 출발지 | Export 조회·ACK는 `192.168.0.22/32`, Attestation은 `192.168.0.13/32` |
 | 인증 | `export_read`, `export_ack` 각각 별도 Bearer 토큰(Gateway에는 SHA-256만 저장) |
-| API·수신기 | Blog-data Resource Export 1.0과 `scripts/ops/receive-hermes-exports.ps1`, 둘 다 `dev` `a43d824334e636ddeab034982b36c0700a9d8f93` |
-| 템플릿 버전 | 각 Manifest의 `template_version`(이미지에 포함된 Resource 템플릿·프로필 레지스트리, `resource-export/2+…`로 시작) |
+| API·수신기 | Blog-data Resource Export 1.0과 `scripts/ops/receive-hermes-exports.ps1`, 둘 다 `dev` `b372de374ec589b1bec2ff8096ae2f7272461248` |
+| 템플릿 버전 | 각 Manifest의 `template_version`(이미지에 포함된 Resource 템플릿·프로필 레지스트리, `resource-export/3+4b681da87f80`) |
 
 ### Blog-data Gateway 계약 비교
 

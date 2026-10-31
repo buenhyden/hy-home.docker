@@ -43,8 +43,11 @@ no-follow 읽기와 제한된 기준 경로·SHA-256을 검사합니다. 검증�
 
 ## Structure
 
-- [cli.py](cli.py): 파일 준비·집계 상태·제한된 전송과 Attestation 명령입니다.
-- [attestation.py](attestation.py): Blog-data `blog-data-attestation/1` 서명 메시지, 서명 키 보관 검사와 Gateway 응답 분류입니다.
+- [cli.py](cli.py): 파일 준비·집계 상태·제한된 전송과 `attest-queue` 명령입니다.
+- [attestation.py](attestation.py): Blog-data `attestation/2` 서명 메시지(확인된 항목·증거 해시 포함), 서명 키 보관 검사와 Gateway 응답 분류입니다.
+- [attester.py](attester.py): `GatewayReader`와 `run`. 대기열을 읽어 항목별로 원본을 확인하고 확인된 항목만 서명·전송하며 서명 본문·증거·상태를 보존합니다.
+- [source_fetch.py](source_fetch.py): SSRF 방어 원본 가져오기(`fetch`, `FetchResult`, `FetchFailure`)입니다.
+- [source_check.py](source_check.py): 페이지 본문 추출(`page_text`)과 항목 검사(`check_item`)입니다.
 - [evidence.py](evidence.py): Hermes Companion Evidence v1의 구조·결속 검증입니다.
   생산자 인증이 아니며 전송 권한을 만들지 않습니다.
 - [candidates.py](candidates.py): 승인된 작업과 검증기 연결입니다.

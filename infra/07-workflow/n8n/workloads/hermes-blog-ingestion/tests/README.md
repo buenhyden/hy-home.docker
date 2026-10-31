@@ -37,15 +37,20 @@ updated: "2026-11-01"
 - [test_ingress_route.py](test_ingress_route.py): 제안 Traefik 경로가 흐름의 정확한
   경로·POST·호스트 출발지·본문·속도 제한만 허용하는지 확인합니다.
 - [test_export_route.py](test_export_route.py): 제안 Export 경로가 Windows 조회·ACK와
-  호스트 Attestation 세 요청 형태, 출발지, 본문, 속도 제한만 허용하는지 확인합니다.
+  호스트 Attestation 쓰기·조회 네 요청 형태, 출발지, 본문, 속도 제한만 허용하는지 확인합니다.
 - [test_attestation.py](test_attestation.py): Blog-data 코드로 계산한
-  [교차 언어 벡터](fixtures/attestation-vector-v1.json)와의 메시지 일치, 신뢰 판정,
-  서명 키 보관, 응답 분류, `attest` 명령을 검증합니다.
+  [교차 언어 벡터](fixtures/attestation-v2.vectors.json)와의 메시지 일치, 신뢰 판정,
+  서명 키 보관, 응답 분류를 검증합니다.
+- [test_source_fetch.py](test_source_fetch.py), [test_source_check.py](test_source_check.py),
+  [test_attester.py](test_attester.py), [test_deploy_units.py](test_deploy_units.py): 원본 가져오기 방어,
+  항목 검사, 대기열 Attester(재시도·재전송·격리 건너뜀), 배포 단위를 검증합니다.
 - [install-check.sh](install-check.sh): 보호 설치 시험입니다.
 - [gateway-image.sh](gateway-image.sh): Blog-data Dockerfile의 빌드 컨텍스트 허용 목록대로
   정확한 커밋을 Sparse Checkout하여 Gateway 이미지를 빌드하는 공통 함수입니다.
 - [e2e-ingress.sh](e2e-ingress.sh): 일회용 Traefik·n8n·Gateway로 직접 제출 경로와
   Attestation·Export·ACK 경로 전체를 합성 Token과 합성 키로 확인합니다.
+- [e2e_attest_harness.py](e2e_attest_harness.py): 일회용 E2E에서 실제 `GatewayReader`와 `attester.run`을
+  가짜 원본으로 구동하는 시험 전용 도구입니다(TLS 검증 생략은 이 파일에만 있음).
 - [e2e-upgrade.sh](e2e-upgrade.sh): 이전 고정본의 schema 2 저장소를 백업·제자리
   업그레이드·새 볼륨 복원하는 일회용 시험입니다.
 
