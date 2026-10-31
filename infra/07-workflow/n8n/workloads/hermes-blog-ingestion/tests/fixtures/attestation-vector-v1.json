@@ -1,0 +1,26 @@
+{
+  "computed_by": "blog-data cadea2e683fb3e03e0e7a9f27133421c981bbea8 scripts/lib/ingestion/exports.mjs attestationMessage",
+  "request": {
+    "schema_version": "1.0",
+    "producer": "hermes",
+    "job_id": "25674fbc0bf3",
+    "run_id": "20261031T000000Z",
+    "idempotency_key": "k-1",
+    "source_ref": "hermes://r/1",
+    "source_text": "원문   \"q\" \u0001",
+    "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "generated_at": "2026-10-31T00:00:00Z",
+    "items": [
+      {
+        "item_id": "a",
+        "kind": "devops",
+        "title": "제목",
+        "body": "본문",
+        "url": "https://example.org/a?b=1&c=é",
+        "collected_at": "2026-10-31T00:00:00Z"
+      }
+    ]
+  },
+  "message_b64": "YmxvZy1kYXRhLWF0dGVzdGF0aW9uLzEAeyJjb250ZW50X3NoYTI1NiI6IjM1YTgxNTFlMzM2ZDRlNzBjNDBiMzI4NDk5MDE5MDgwZGE2OTQzODM2ODMyMTU4ZjdkMTgxMDQ4OTlmYmIwYmQiLCJmaXJlX2lkIjpudWxsLCJqb2JfaWQiOiIyNTY3NGZiYzBiZjMiLCJwcm9kdWNlciI6Imhlcm1lcyIsInJ1bl9pZCI6IjIwMjYxMDMxVDAwMDAwMFoiLCJzb3VyY2Vfc2hhMjU2IjoiMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCJ9",
+  "message_sha256": "a5522242ce82aedf17742ad3e32acff396abe8f698ed9b77fa659dd04b1da43e"
+}

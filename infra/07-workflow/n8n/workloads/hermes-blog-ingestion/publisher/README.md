@@ -1,10 +1,10 @@
 ---
 title: "Hermes 로컬 발행기"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-31"
+updated: "2026-11-01"
 ---
 
 # Hermes 로컬 발행기
@@ -43,7 +43,8 @@ no-follow 읽기와 제한된 기준 경로·SHA-256을 검사합니다. 검증�
 
 ## Structure
 
-- [cli.py](cli.py): 파일 준비·집계 상태·제한된 전송 명령입니다.
+- [cli.py](cli.py): 파일 준비·집계 상태·제한된 전송과 Attestation 명령입니다.
+- [attestation.py](attestation.py): Blog-data `blog-data-attestation/1` 서명 메시지, 서명 키 보관 검사와 Gateway 응답 분류입니다.
 - [evidence.py](evidence.py): Hermes Companion Evidence v1의 구조·결속 검증입니다.
   생산자 인증이 아니며 전송 권한을 만들지 않습니다.
 - [candidates.py](candidates.py): 승인된 작업과 검증기 연결입니다.
@@ -117,6 +118,15 @@ python3 -m publisher.cli dispatch --help
 재시도 주기는 이 명령을 다시 실행하는 호출자가 정하며 n8n은 재시도하지
 않습니다. 출력은 상태별 건수와 거부 이유 코드별 `reasons`이고 `failed`나
 `uncertain`이 있으면 종료 코드 1입니다. 설정·인증 오류는 `operation_rejected`로 전체 실행을 거부합니다.
+
+`attest`는 별도 서명 계정이 이미 전달된 보고서 하나에 Blog-data Attestation을
+제출합니다. 대기함을 열지 않고 `stage`와 같은 Hermes 입력과 Evidence를 다시 읽어
+`dispatch`와 같은 신뢰 판정을 통과한 경우에만 같은 요청 바이트를 재구성합니다.
+그 뒤 서명 키(소유자 또는 root 소유, 기타 권한 없음, 그룹 읽기까지)를 읽고 고정
+Gateway 주소의 `/v1/ingestions/{report-id}/attestations`에 한 번 POST합니다.
+결과는 `attested`(201·200), `rejected`(그 밖의 4xx·인증 실패), `retry`(429·5xx·통신
+실패), `blocked`(신뢰 실패)이며 `attested`만 종료 코드 0입니다. 절차는
+[워크로드 설명](../README.md#attestation과-resource-export)을 따릅니다.
 
 ## Verification
 

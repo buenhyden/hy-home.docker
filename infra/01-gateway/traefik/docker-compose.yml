@@ -68,6 +68,8 @@ services:
           - auth.${DEFAULT_URL}
       obs_net: {}
       experience_ingress_net: {}
+      # Blog-data Gateway export/attestation routes (SPEC-0204-TSK-0022).
+      blog_export_net: {}
       redisinsight_ingress_net: {}
       # openclaw_default:
       #   ipv4_address: 172.20.0.5

@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 합성 시험"
-version: "0.2.0"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-31"
+updated: "2026-11-01"
 ---
 
 # Hermes 수집 전송 합성 시험
@@ -33,9 +33,18 @@ updated: "2026-10-31"
 
 - [test_ingress_route.py](test_ingress_route.py): 제안 Traefik 경로가 흐름의 정확한
   경로·POST·호스트 출발지·본문·속도 제한만 허용하는지 확인합니다.
+- [test_export_route.py](test_export_route.py): 제안 Export 경로가 Windows 조회·ACK와
+  호스트 Attestation 세 요청 형태, 출발지, 본문, 속도 제한만 허용하는지 확인합니다.
+- [test_attestation.py](test_attestation.py): Blog-data 코드로 계산한
+  [교차 언어 벡터](fixtures/attestation-vector-v1.json)와의 메시지 일치, 신뢰 판정,
+  서명 키 보관, 응답 분류, `attest` 명령을 검증합니다.
 - [install-check.sh](install-check.sh): 보호 설치 시험입니다.
-- [e2e-ingress.sh](e2e-ingress.sh): 일회용 Traefik·n8n·Gateway로 직접 제출 경로 전체를
-  합성 Token으로 확인합니다.
+- [gateway-image.sh](gateway-image.sh): Blog-data Dockerfile의 빌드 컨텍스트 허용 목록대로
+  정확한 커밋을 Sparse Checkout하여 Gateway 이미지를 빌드하는 공통 함수입니다.
+- [e2e-ingress.sh](e2e-ingress.sh): 일회용 Traefik·n8n·Gateway로 직접 제출 경로와
+  Attestation·Export·ACK 경로 전체를 합성 Token과 합성 키로 확인합니다.
+- [e2e-upgrade.sh](e2e-upgrade.sh): 이전 고정본의 schema 2 저장소를 백업·제자리
+  업그레이드·새 볼륨 복원하는 일회용 시험입니다.
 
 그 밖의 준비·대기함·전송 시험 파일은 이 디렉터리의 전체 탐색 명령으로 함께
 실행합니다. 실제 검증기의 누락·변경은 의존성 실패로 보고합니다.
@@ -70,7 +79,14 @@ infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/install-check.sh [co
 
 ```bash
 infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/e2e-ingress.sh [blog-data-commit]
+infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/e2e-upgrade.sh [previous-blog-data-commit]
 ```
+
+Gateway 컨테이너는 Compose에서 렌더링한 사용자·읽기 전용 루트·권한·제한으로
+실행합니다. 일회용 시험에서는 한 호스트가 Windows B와 서버 A 서명자를 함께 대신하므로
+라우터별 출발지 분리는 `test_export_route.py`가 확인합니다. 실제 Windows 수신기,
+운영 Traefik과 Compose 고정 시험 이미지의 버전 차이는 이 시험이 증명하지 않으며
+측정값은 작업 기록에 둡니다.
 
 전체 시험 결과·측정 범위·독립 검토는 작업 기록을 따릅니다. 합성 검증은
 운영 n8n Queue·외부 Runner·실제 인증이나 운영 Gateway의 영속 수신을 증명하지 않습니다.

@@ -613,7 +613,7 @@ class ComposeCoreReadinessExampleTests(unittest.TestCase):
 
 
 class BlogIngestionGatewayTests(unittest.TestCase):
-    """The Blog-data Gateway is opt-in and reachable only from the n8n worker."""
+    """The Blog-data Gateway is opt-in; only the n8n worker and Traefik reach it."""
 
     def render(self, profiles=("mng", "workflow-n8n")):
         with tempfile.TemporaryDirectory() as directory:
@@ -645,8 +645,9 @@ class BlogIngestionGatewayTests(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which("docker"), "docker CLI not available")
     def test_gateway_is_pinned_isolated_and_least_privileged(self):
-        before = self.render()["services"]
-        merged = self.render(profiles=("mng", "workflow-n8n", "blog-ingestion"))
+        # core brings Traefik, the only other export-network member.
+        before = self.render(profiles=("core", "mng", "workflow-n8n"))["services"]
+        merged = self.render(profiles=("core", "mng", "workflow-n8n", "blog-ingestion"))
         self.assertEqual(set(before) | {"blog-ingestion"}, set(merged["services"]))
         members = {
             name
@@ -654,19 +655,35 @@ class BlogIngestionGatewayTests(unittest.TestCase):
             if "n8n_blog_ingest_net" in service.get("networks", {})
         }
         self.assertEqual({"n8n-worker", "blog-ingestion"}, members)
-        network = merged["networks"]["n8n_blog_ingest_net"]
-        self.assertTrue(network["internal"])
-        self.assertEqual(
-            "isolated",
-            network["driver_opts"]["com.docker.network.bridge.gateway_mode_ipv4"],
-        )
+        # Windows B reaches exports only through Traefik's exact-path routes.
+        exporters = {
+            name
+            for name, service in merged["services"].items()
+            if "blog_export_net" in service.get("networks", {})
+        }
+        self.assertEqual({"traefik", "blog-ingestion"}, exporters)
+        for name in ("n8n_blog_ingest_net", "blog_export_net"):
+            network = merged["networks"][name]
+            self.assertTrue(network["internal"], name)
+            self.assertEqual(
+                "isolated",
+                network["driver_opts"]["com.docker.network.bridge.gateway_mode_ipv4"],
+                name,
+            )
 
         gateway = merged["services"]["blog-ingestion"]
         # Built locally from a reviewed Blog-data commit; never pulled.
         self.assertRegex(gateway["image"], r"^hy-home/blog-ingestion:[0-9a-f]{40}$")
+        # Blog-data dev with Resource Export (attestations, exports, ACK).
+        self.assertEqual(
+            "hy-home/blog-ingestion:cadea2e683fb3e03e0e7a9f27133421c981bbea8",
+            gateway["image"],
+        )
         self.assertEqual("never", gateway["pull_policy"])
         self.assertEqual(["blog-ingestion"], gateway["profiles"])
-        self.assertEqual({"n8n_blog_ingest_net"}, set(gateway["networks"]))
+        self.assertEqual(
+            {"n8n_blog_ingest_net", "blog_export_net"}, set(gateway["networks"])
+        )
         for absent in ("ports", "secrets", "environment"):
             self.assertNotIn(absent, gateway)
         self.assertEqual("10001:10001", gateway["user"])
