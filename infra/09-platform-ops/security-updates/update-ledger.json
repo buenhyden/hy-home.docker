@@ -27310,7 +27310,7 @@
           "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
-      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after pinning the Blog-data Gateway to the Resource Export dev commit and adding its export network. Image build inputs are unchanged. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
+      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after moving the Blog-data Gateway pin to dev a43d824 (resource-export/2). Image build inputs are unchanged. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
