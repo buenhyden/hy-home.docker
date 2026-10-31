@@ -21,13 +21,14 @@ http:
       service: n8n@docker
 
   middlewares:
-    # Host processes reach the published 443 through docker-proxy and arrive
-    # from the edge_net gateway, the same address hermes.yml uses in reverse.
-    # LAN clients keep their own address and are refused.
+    # Measured on live Traefik (2026-10-31): a host process dialling the
+    # published 192.168.0.13:443 arrives as 192.168.0.13. LAN clients keep
+    # their own address and are refused. n8n headerAuth stays the credential
+    # check; this only narrows who may present it.
     hermes-webhook-source:
       ipAllowList:
         sourceRange:
-          - 10.250.1.128/32
+          - 192.168.0.13/32
         ipStrategy:
           depth: 0
     # The Gateway rejects bodies above 1 MiB; refuse them before n8n buffers.

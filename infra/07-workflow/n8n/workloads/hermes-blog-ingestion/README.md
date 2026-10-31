@@ -205,11 +205,11 @@ Hermes(호스트) ─HTTPS─▶ Traefik 정확한 경로 ─▶ n8n ─Queue─
 
 - 진입: 기존 `n8n` 라우터와 SSO는 그대로 둡니다. [제안 경로](traefik/hermes-webhook.yml)는
   `Host` + 정확한 `Path(/webhook/hermes-blog-ingestion)` + `POST`만 일치시키고,
-  출발지 `10.250.1.128/32`, 본문 1 MiB, 분당 6회로 제한합니다. 출발지 값은 호스트
-  프로세스가 `192.168.0.13:443`에 접속할 때 docker-proxy를 거쳐 `edge_net` 게이트웨이
-  주소로 보인다는 가정이며, 운영 Traefik 접근 기록으로 측정한 뒤에만 적용합니다.
-  다른 `edge_net` 컨테이너도 같은 주소로 보일 수 있고 n8n 컨테이너에 직접 닿을 수
-  있으므로, 실제 인증 경계는 출발지 제한이 아니라 n8n `headerAuth`입니다. 같은
+  출발지 `192.168.0.13/32`, 본문 1 MiB, 분당 6회로 제한합니다. 운영 Traefik 접근
+  기록에서 호스트 프로세스가 `192.168.0.13:443`으로 보낸 요청은 `192.168.0.13`으로
+  보였고 LAN 클라이언트는 자기 주소를 유지합니다. 이 값은 A의 모든 호스트 프로세스를
+  뜻하며, `edge_net` 컨테이너는 n8n 컨테이너에 직접 닿을 수 있으므로 실제 인증
+  경계는 출발지 제한이 아니라 n8n `headerAuth`입니다. 같은
   경로의 GET, 다른 Webhook 경로, n8n 화면은 SSO 라우터로, LAN 출발지는 403으로
   남습니다. `/webhook/*` 전체를 열지 않습니다. 운영 `dynamic/` 반영은 승인 단위입니다.
 - 인증 분리: Hermes→n8n은 Webhook `headerAuth`(헤더 `X-Hermes-Ingest-Token`),

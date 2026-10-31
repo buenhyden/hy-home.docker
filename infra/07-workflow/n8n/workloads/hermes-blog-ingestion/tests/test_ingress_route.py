@@ -48,8 +48,9 @@ class IngressRouteTests(unittest.TestCase):
         self.assertEqual(set(router["middlewares"]), set(middlewares))
         kinds = {next(iter(m)): m[next(iter(m))] for m in middlewares.values()}
         self.assertEqual({"ipAllowList", "buffering", "rateLimit"}, set(kinds))
-        # Host processes reach the published port through the edge_net gateway.
-        self.assertEqual(["10.250.1.128/32"], kinds["ipAllowList"]["sourceRange"])
+        # Measured on live Traefik: a host process dialling 192.168.0.13:443
+        # arrives as 192.168.0.13; LAN clients keep their own address.
+        self.assertEqual(["192.168.0.13/32"], kinds["ipAllowList"]["sourceRange"])
         self.assertEqual(0, kinds["ipAllowList"]["ipStrategy"]["depth"])
         # The Gateway rejects bodies above 1 MiB; stop them at the edge.
         self.assertEqual(1048576, kinds["buffering"]["maxRequestBodyBytes"])

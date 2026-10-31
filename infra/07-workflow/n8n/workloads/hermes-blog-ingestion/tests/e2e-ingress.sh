@@ -59,7 +59,6 @@ echo "INFO gateway image $gateway_image $(docker image inspect -f '{{.Id}}' "$ga
 docker network create "$id-edge" >/dev/null
 docker network create --internal \
   -o com.docker.network.bridge.gateway_mode_ipv4=isolated "$id-ingest" >/dev/null
-edge_gateway=$(docker network inspect -f '{{(index .IPAM.Config 0).Gateway}}' "$id-edge")
 
 # 3. Gateway: synthetic token digests only, config 0600 owned by 10001.
 hermes_token=$(hex 24)
@@ -119,7 +118,7 @@ ok "n8n imported and published the committed workflow natively"
 
 # 5. Traefik with the proposed route; an SSO stand-in guards everything else.
 mkdir "$work/dynamic"
-sed -e "s#10.250.1.128/32#$edge_gateway/32#" -e 's#n8n@docker#n8n-e2e@file#' \
+sed -e "s#192.168.0.13/32#$lan_ip/32#" -e 's#n8n@docker#n8n-e2e@file#' \
   "$workload/traefik/hermes-webhook.yml" >"$work/dynamic/hermes-webhook.yml"
 sso_hash=$(hex 16 | openssl dgst -sha1 -binary | base64)
 cat >"$work/dynamic/standin.yml" <<YAML
@@ -192,8 +191,8 @@ for line in sys.stdin:
     if entry.get("RouterName", "").startswith("hermes-blog-ingestion-webhook") and entry.get("DownstreamStatus") == 201:
         print(entry["ClientHost"])
         break')
-[ "$source_ip" = "$edge_gateway" ] || fail "host process via $lan_ip arrived as $source_ip, not the bridge gateway $edge_gateway"
-ok "host process connecting to $lan_ip arrives from the bridge gateway $source_ip"
+[ "$source_ip" = "$lan_ip" ] || fail "host process via $lan_ip arrived as $source_ip"
+ok "host process connecting to $lan_ip arrives as $source_ip"
 
 docker stop "$id-gateway" >/dev/null
 sleep 10

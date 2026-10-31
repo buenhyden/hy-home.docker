@@ -1036,8 +1036,11 @@ Facts measured for this slice: the Gateway at the pinned commit serves only
 reviews and capture; its body limit is 1 MiB and its config stores only token
 SHA-256 digests. Operations catalog rules forbid new services and shared root
 networks in overlays, so the Gateway is a base service (SPEC-0219 storybook
-precedent). Traefik is published on `192.168.0.13:443`; `edge_net` gateway is
-`10.250.1.128`. The live Traefik runs `v3.7.14` while Compose pins `v3.7.16`
+precedent). Traefik is published only on `192.168.0.13:443`. One SSO-protected
+request from the A host to that address appeared in the live Traefik access log
+as `192.168.0.13` (302), not the `edge_net` gateway, so the proposed allowlist is
+`192.168.0.13/32`; the independent review caught the earlier loopback-based
+assumption. The live Traefik runs `v3.7.14` while Compose pins `v3.7.16`
 (drift noted, not changed here). Two builds of the same Blog-data commit produced
 different image IDs, so the operational build records its own ID.
 
@@ -1048,7 +1051,7 @@ host POST 201 with `persisted:true`; identical replay 200 duplicate; same key
 with changed content 409; missing webhook token 403; invalid shape 400
 `INVALID_REQUEST` without echo; body above 1 MiB 413 at Traefik; GET on the path,
 another webhook path and the n8n UI all stay behind the SSO stand-in (401);
-non-host source 403; host-local client observed as the bridge gateway; Gateway
+non-host source 403; a host process dialling the LAN address observed as that address; Gateway
 stopped → 500, never 2xx; after Gateway restart the replay is a persisted 200
 duplicate (SQLite survived); the host cannot reach the Gateway on the isolated
 network; a burst above the route limit returns 429. Synthetic tokens only; all
