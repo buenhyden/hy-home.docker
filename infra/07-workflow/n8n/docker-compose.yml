@@ -360,7 +360,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med
-    image: hy-home/blog-ingestion:cadea2e683fb3e03e0e7a9f27133421c981bbea8
+    image: hy-home/blog-ingestion:a43d824334e636ddeab034982b36c0700a9d8f93
     pull_policy: never
     container_name: blog-ingestion
     hostname: blog-ingestion

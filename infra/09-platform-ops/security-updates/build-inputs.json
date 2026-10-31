@@ -2780,10 +2780,10 @@
     "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
     "checked_at": "2026-10-15T16:35:15.922344+00:00",
     "source_binding": {
-      "checked_at": "2026-10-31T15:22:21.926242+00:00",
-      "source_revision": "26aab9fdb8ccfb97a14c617c7d5339fb6928d70c",
-      "source_state": "Uncommitted Blog-data Gateway image pin to Blog-data dev cadea2e683fb3e03e0e7a9f27133421c981bbea8 and blog_export_net membership in the n8n Compose file on top of this revision; not a current image/build/module/Native acceptance receipt",
-      "input_sha256": "4a5f070d5992ee8c68951ba2b6ab859c2bbb13b5a3e338b47fb7f057197ac556",
+      "checked_at": "2026-10-31T18:20:53.550135+00:00",
+      "source_revision": "6e6df4005841a1de47a5cad25536ecc423a1ccc9",
+      "source_state": "Uncommitted Blog-data Gateway image pin to Blog-data dev a43d824334e636ddeab034982b36c0700a9d8f93 (resource-export/2) in the n8n Compose file on top of this revision; not a current image/build/module/Native acceptance receipt",
+      "input_sha256": "497a9a7b42fda84886ec53d6468e5fa1ba6b26e45167e49a4481f19578a346eb",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -2800,7 +2800,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "e98b7f2ac8cea5665a2535b556196c811c1a0d0b00a08443ed35462d2bdd2f62"
+          "sha256": "7fe6600730a0e6aaba0c4a1cb0786d6f7fee141ebc7f8a8b96dd6917164e3599"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -3512,6 +3512,88 @@
             }
           ],
           "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after adding the Blog-data Gateway service and the worker network. Image build inputs are unchanged. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
+      },
+      {
+        "archived_at": "2026-10-31T18:20:53.550135+00:00",
+        "source_binding": {
+          "checked_at": "2026-10-31T15:22:21.926242+00:00",
+          "source_revision": "26aab9fdb8ccfb97a14c617c7d5339fb6928d70c",
+          "source_state": "Uncommitted Blog-data Gateway image pin to Blog-data dev cadea2e683fb3e03e0e7a9f27133421c981bbea8 and blog_export_net membership in the n8n Compose file on top of this revision; not a current image/build/module/Native acceptance receipt",
+          "input_sha256": "4a5f070d5992ee8c68951ba2b6ab859c2bbb13b5a3e338b47fb7f057197ac556",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "e98b7f2ac8cea5665a2535b556196c811c1a0d0b00a08443ed35462d2bdd2f62"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "b6bc5cb8dad469f46aaf6f137643acc2b6e8cb13655b6e6b6723468734a72f82"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "146d22dde82f3d5aab2f3018650c2e8eced9c8559049bffce09aa7fe325b2421"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+            }
+          ],
+          "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after pinning the Blog-data Gateway to the Resource Export dev commit and adding its export network. Image build inputs are unchanged. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
           "native_test": "NOT_RUN",
           "home": "NOT_RUN",
           "signature": "NOT_RUN",

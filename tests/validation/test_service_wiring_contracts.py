@@ -676,7 +676,7 @@ class BlogIngestionGatewayTests(unittest.TestCase):
         self.assertRegex(gateway["image"], r"^hy-home/blog-ingestion:[0-9a-f]{40}$")
         # Blog-data dev with Resource Export (attestations, exports, ACK).
         self.assertEqual(
-            "hy-home/blog-ingestion:cadea2e683fb3e03e0e7a9f27133421c981bbea8",
+            "hy-home/blog-ingestion:a43d824334e636ddeab034982b36c0700a9d8f93",
             gateway["image"],
         )
         self.assertEqual("never", gateway["pull_policy"])
