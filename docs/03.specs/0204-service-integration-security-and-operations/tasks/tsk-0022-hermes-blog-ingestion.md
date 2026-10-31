@@ -941,20 +941,31 @@ the key store format or the 165 earlier tests.
   `requirements.lock` (cryptography 46.0.7, cffi 2.1.1, pycparser 3.12;
   `uv pip compile` for CPython 3.12 x86-64 manylinux). `install.py` installs one
   immutable `/opt/hermes-publisher/releases/<commit>` from `git archive` of a
-  commit (commit id from the pax header), taking only tracked publisher files,
+  commit (commit id from the pax header, which the installer cannot verify, so
+  the checkout, archive and installer must be root-only), taking only an
+  explicit Publisher module allowlist,
   the store and the lock, with `--require-hashes --only-binary :all:` into a new
   venv, removing pip and sealing every path root-owned without group/other
   write. `verify-install` reports `{"keys": N, "runtime": "protected"}` or a
   value-free code.
 - `tests/install-check.sh` installs the commit in a disposable root container
-  and, as separate `hermes-publisher` and `hermes` accounts, proved 14/14: the
-  dedicated account loads the release, the manifest matches, neither account can
+  and, as separate `hermes-publisher` and `hermes` accounts, proved 17/17: a
+  non-root-owned archive and a prefix under a Hermes-owned directory are
+  refused, the dedicated account loads the release, the installed files match
+  the archive manifest, producer modules are not installed, neither account can
   write code, store, library, venv config or interpreter, non-isolated runs and
   root runs are refused, PYTHONPATH is ignored, and a Hermes-owned library
   sub-file, group-writable store, Publisher-owned module, Hermes-owned
   `pyvenv.cfg`, other-writable import directory and Hermes-owned interpreter
   each fail closed and recover once restored; reinstalling a release is
   refused. The container used the image Python, not the A host interpreter.
+- Independent review found no Critical issue; its Important findings were
+  fixed with failing tests first: installer takeover of a non-root prefix,
+  non-root archive, producer modules in releases, the credential child running
+  the unresolved venv `bin/python`, its `ssl`/`http.client` files unchecked, and
+  a manifest check that could not fail. The runtime check is a tripwire over a
+  sealed release: bytecode caches, `.pth` files and code that ran before it are
+  protected by root ownership, not by the check.
 - Dispatch output adds value-free `reasons` counts per rejection code.
   `uncertain`, permanent rejection and exhausted retry keep exit code 1.
 - Timeout semantics were corrected: Traefik v3 `readTimeout` (60 s default)
@@ -978,9 +989,12 @@ the key store format or the 165 earlier tests.
   generation/custody evidence and an out-of-band SHA-256 fingerprint of the raw
   public key; private and synthetic keys never enter the repository or
   Publisher. Unsigned rows staged earlier stay blocked; signatures are immutable.
-- Untracked `publisher/acquirer.py` and `publisher/producer_sealer.py` appeared
-  in the working tree from another lane (the sealer holds a private key). They
-  are not part of this Task's diff and `install.py` installs only tracked files.
+- `publisher/acquirer.py` and `publisher/producer_sealer.py` were committed on
+  this branch as `f044fb85c` by another lane, outside this Task (the sealer
+  handles a private key; an automated review flagged SSRF in the fetcher's
+  redirect handling). `install.py` installs only an explicit Publisher module
+  allowlist, so neither ships in a release; their review and placement belong
+  to the Hermes producer lane.
 - CI does not run this workload's suite (no gate entry, `cryptography` absent
   from the controller lock); the 168 tests and the install check are local
   evidence only.

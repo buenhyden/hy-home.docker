@@ -147,16 +147,21 @@ producer v1.0.0의 필드는 바꾸지 않습니다. 합성 예시는
 ### 보호 설치
 
 운영 전제는 코드가 확인합니다. `python3 -I`로 격리 실행해야 하며, 인터프리터,
-venv 설정, 모든 import 경로, 이미 적재된 모든 모듈 파일(서명 검증 모듈 포함),
+venv 설정, 존재하는 모든 import 경로, 적재된 모듈 원본 파일(서명 검증과 인증
+자식 프로세스가 쓰는 `ssl`·`http.client` 포함),
 Publisher 모듈 전체와 키 저장소의 모든 상위 경로가 root 소유이고 group·other
 쓰기 권한이 없으며 실행 계정이 쓸 수 없어야 합니다. 실행 계정이 아닌 다른 일반
 계정(예: Hermes 생산자) 소유도 거부합니다. root로 실행하면 항상 막힙니다.
+이 검사는 봉인된 설치 위의 탐지선입니다. 바이트코드 캐시, `.pth`, 검사 전에 실행된
+코드는 root 소유 release가 보호합니다.
 
 설치물은 사용자 작업 사본이나 편집 가능 설치가 아닙니다. 운영자가 검토된 커밋을
 `git archive --format=tar <commit> -- infra/07-workflow/n8n/workloads/hermes-blog-ingestion`
-으로 만들고 root가 `python3 -I install.py --archive <tar>`로 설치합니다. 설치기는
-pax 머리글의 커밋 ID로 `/opt/hermes-publisher/releases/<commit>`을 만들고, 추적된
-`publisher/*.py`·키 저장소·`requirements.lock`만 꺼내며, lock을
+으로 만들고 root가 `python3 -I install.py --archive <tar>`로 설치합니다. clone,
+tar, 설치기는 root 전용이어야 하며 설치기는 root 전용이 아닌 tar와 prefix 상위
+경로를 거부합니다. 설치기는 pax 머리글의 커밋 ID로
+`/opt/hermes-publisher/releases/<commit>`을 만들고, 명시된 Publisher 모듈 목록과
+키 저장소·`requirements.lock`만 꺼내며(생산자 쪽 모듈은 설치하지 않음), lock을
 `--require-hashes --only-binary :all:`로 새 venv에 설치하고 pip를 제거합니다. 같은
 커밋을 다시 설치하지 않으며 되돌리기는 실행기를 이전 release로 바꾸는 것입니다.
 실행 계정 검증은 `<release>/venv/bin/python -I -m publisher.cli verify-install`이
