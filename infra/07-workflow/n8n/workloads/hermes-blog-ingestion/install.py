@@ -48,7 +48,10 @@ def _members(archive):
 
 
 def _run(*command):
-    subprocess.run(command, check=True, env={"PATH": "/usr/bin:/bin"})
+    # stdout carries only the release path.
+    subprocess.run(
+        command, check=True, env={"PATH": "/usr/bin:/bin"}, stdout=sys.stderr
+    )
 
 
 def _seal(path):
