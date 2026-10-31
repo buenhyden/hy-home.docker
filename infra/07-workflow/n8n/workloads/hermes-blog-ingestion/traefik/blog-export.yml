@@ -1,0 +1,83 @@
+# PROPOSAL — not loaded by Traefik. The live provider watches
+# infra/01-gateway/traefik/dynamic/, so copying this file there applies it at
+# once; do that only as the approved export ingress unit in RUN-0053, after
+# Traefik has joined blog_export_net.
+#
+# One host name admits three Gateway request shapes, each from one source:
+#   - Windows B GETs the export list, a manifest or one file;
+#   - Windows B POSTs one ACK per export;
+#   - the server-A host attester POSTs one attestation per report.
+# Any other path or method on this host matches no router (Traefik 404), so
+# ingest, read, review and capture stay unreachable from here. The Gateway's
+# single-scope bearer tokens (export_read, export_ack, attest) remain the
+# credential check; these routers only narrow who may present them.
+http:
+  routers:
+    blog-export-read:
+      rule: Host(`blog-export.hy.home.arpa`) && Method(`GET`) && (Path(`/v1/exports`) || PathRegexp(`^/v1/exports/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(/files/[0-9]{1,3})?$`))
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - blog-export-windows
+        - blog-export-rate
+      service: blog-ingestion-export
+    blog-export-ack:
+      rule: Host(`blog-export.hy.home.arpa`) && Method(`POST`) && PathRegexp(`^/v1/exports/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/acks$`)
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - blog-export-windows
+        - blog-export-small-body
+        - blog-export-rate
+      service: blog-ingestion-export
+    blog-attestation:
+      rule: Host(`blog-export.hy.home.arpa`) && Method(`POST`) && PathRegexp(`^/v1/ingestions/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/attestations$`)
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - blog-attestation-host
+        - blog-export-small-body
+        - blog-attestation-rate
+      service: blog-ingestion-export
+
+  middlewares:
+    # Server B, measured as its own LAN address (no proxy in between).
+    blog-export-windows:
+      ipAllowList:
+        sourceRange:
+          - 192.168.0.22/32
+        ipStrategy:
+          depth: 0
+    # A server-A host process dialling 192.168.0.13:443 arrives as
+    # 192.168.0.13 (measured for the Hermes webhook on 2026-10-31).
+    blog-attestation-host:
+      ipAllowList:
+        sourceRange:
+          - 192.168.0.13/32
+        ipStrategy:
+          depth: 0
+    # ACK and attestation bodies are a few hundred bytes.
+    blog-export-small-body:
+      buffering:
+        maxRequestBodyBytes: 16384
+    # One pull reads the list, then a manifest and a few files per export.
+    blog-export-rate:
+      rateLimit:
+        average: 60
+        period: 1m
+        burst: 60
+    # Three scheduled reports a day plus bounded retries.
+    blog-attestation-rate:
+      rateLimit:
+        average: 6
+        period: 1m
+        burst: 6
+
+  services:
+    blog-ingestion-export:
+      loadBalancer:
+        servers:
+          - url: http://blog-ingestion:8787
