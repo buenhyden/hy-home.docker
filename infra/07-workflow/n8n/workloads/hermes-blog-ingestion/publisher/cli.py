@@ -23,9 +23,11 @@ from .http_transport import HttpTransport
 from .outbox import Outbox, OutboxError
 
 OPEN_STATES = ("awaiting_contract", "pending", "sending", "uncertain")
-# Outlasts the workflow executionTimeout (30 s), which outlasts its Gateway
-# request (20 s), and stays under the Traefik v3 default readTimeout (60 s).
-# Queue wait beyond the margin ends uncertain and reconciles idempotently.
+# The outer bound of one attempt: n8n queue wait plus the workflow
+# executionTimeout (30 s, counted from worker start), which outlasts its Gateway
+# request (20 s). Traefik's 60 s readTimeout bounds only reading the request and
+# no upstream response timeout is configured, so this value ends the wait.
+# Queue wait beyond the 15 s margin ends uncertain and reconciles idempotently.
 HTTP_TIMEOUT = 45
 
 
@@ -136,12 +138,20 @@ def _dispatch(args, box):
             times = authorization.times
             generated = json.loads(row["candidate"])["generated_at"]
             adapter = GatewayAdapter(times.scheduled_at, generated, times.collected_at)
-        except (trust.TrustError, OutboxError, KeyError, ValueError):
+        except (trust.TrustError, OutboxError, KeyError, ValueError) as error:
             # A possibly durable in-flight record must stay visible to operators.
             name = (
                 "uncertain" if row["status"] in ("sending", "uncertain") else "blocked"
             )
             counts[name] = counts.get(name, 0) + 1
+            # Value-free rejection codes only; never bytes, keys or tokens.
+            reason = (
+                str(error)
+                if isinstance(error, (trust.TrustError, OutboxError))
+                else "candidate_invalid"
+            )
+            reasons = counts.setdefault("reasons", {})
+            reasons[reason] = reasons.get(reason, 0) + 1
             continue
         if transport is None:
             # Configuration and credential errors reject the whole run.
