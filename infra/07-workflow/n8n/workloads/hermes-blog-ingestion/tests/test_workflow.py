@@ -51,13 +51,14 @@ class WorkflowSourceTests(unittest.TestCase):
         ingress = self.get_node("Authenticated Ingress")
         self.assertEqual(ingress["webhookId"], "e0e44720-8ff3-4c52-a052-6cd0472582c3")
         self.assertEqual(str(uuid.UUID(ingress["webhookId"])), ingress["webhookId"])
-        self.assertEqual(
-            ingress["parameters"]["path"], "hermes-blog-ingestion-contract-hold"
-        )
+        # The exact path the Traefik router admits without SSO; nothing else is.
+        self.assertEqual(ingress["parameters"]["path"], "hermes-blog-ingestion")
+        self.assertEqual(ingress["parameters"]["httpMethod"], "POST")
 
     def test_relay_configuration_is_fixed_and_preserves_http_status(self):
         request = self.get_node("Send to Gateway")["parameters"]
-        self.assertEqual(request["url"], "https://gateway.invalid/v1/ingestions")
+        # Fixed internal Gateway on the isolated overlay network; never input-derived.
+        self.assertEqual(request["url"], "http://blog-ingestion:8787/v1/ingestions")
         self.assertEqual(request["authentication"], "genericCredentialType")
         self.assertEqual(request["genericAuthType"], "httpHeaderAuth")
         self.assertEqual(
@@ -211,6 +212,17 @@ class WorkflowSourceTests(unittest.TestCase):
         fixture["items"][0]["title"] += "😀"
         result = self.run_code("Screen Ingestion", {"body": fixture})
         self.assertEqual(json.loads(result.stdout), [{"json": {"valid": False}}])
+
+    def test_kst_offset_on_previous_utc_day_passes_unchanged(self):
+        fixture = json.loads(
+            (WORKFLOW.parent / "tests/fixtures/synthetic-report.json").read_text()
+        )
+        mutated = dict(fixture, scheduled_at="2026-10-31T08:00:00+09:00")
+        result = self.run_code("Screen Ingestion", {"body": mutated})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout), [{"json": {"valid": True, "body": mutated}}]
+        )
 
     def test_invalid_times_and_source_urls_are_screened(self):
         fixture = json.loads(
