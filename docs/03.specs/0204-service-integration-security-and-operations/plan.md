@@ -4,7 +4,7 @@ version: "1.10.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-10-31"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -885,15 +885,26 @@ worktrees, installed Cron, credentials and runtime resources from writes.
 
 #### W83: docs, review and Native admission
 
+- [x] Realign the Publisher validator pin from the pre-merge draft to the
+  main-tracked validator bytes after diff, corpus and independent review; add
+  Companion Evidence v1 structural verification and the bounded `dispatch`
+  entry point over existing delivery components. All three Hermes jobs stay
+  fail-closed until a producer trust anchor is admitted (TSK-0022, 2026-10-31).
+
 - [ ] Update Korean workload README and existing RUN-0053 only with implemented
   safe commands and recovery/uncertainty limits. Record metrics design for
   success/failure, pending/uncertain, retries and oldest pending age without
   source, credentials or report-ID labels; reuse Grafana/Prometheus ownership.
-- [ ] Design later read-only MCP `search_collected_news`,
-  `search_business_ideas`, `list_review_candidates`, `get_ingestion_status`.
-  HTTP stability precedes implementation; verify actual Hermes client,
-  authentication and Queue-mode persistent connections first. Never change
-  Blog-data MCP or treat retrieval as Vault-change/publication approval.
+- [ ] Design later read-only n8n MCP Server Trigger tools
+  `list_review_candidates`, `get_ingestion_status` and `get_ingestion_summary`
+  over Gateway `GET /v1/candidates`, `GET /v1/ingestions/{id}` and
+  `GET /v1/summary`. The Gateway has no full-text search, so the earlier
+  `search_collected_news`/`search_business_ideas` names are withdrawn rather
+  than implied. HTTP delivery stability precedes implementation; verify the
+  actual client, authentication and Queue-mode connections first. Exclude
+  project management, arbitrary HTTP, capture/review/delete and GitHub writes.
+  Never change Blog-data MCP or treat retrieval as Vault-change/publication
+  approval.
 - [ ] Run measured source tests, required documentation/static checks,
   `git diff --check` and independent review. Logical local commits follow
   repository gates; remote Git remains excluded by the current request.

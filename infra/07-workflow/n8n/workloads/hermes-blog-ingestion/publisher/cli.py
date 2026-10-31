@@ -1,15 +1,29 @@
-"""Offline staging/status CLI. No send command or credential inputs."""
+"""Staging, status and bounded dispatch CLI for the Hermes Publisher.
+
+dispatch performs at most one operation per record per invocation; the caller's
+timer re-invokes it, so retry stays here and never in n8n. Credentials arrive
+only through a private file, never argv, environment or output.
+"""
 
 import argparse
 import hashlib
 import json
 import os
 import sqlite3
+import stat
 from pathlib import Path
 
+from . import evidence as companion
+from . import policy
 from .candidates import EXPORT_NAME, JOBS, load_candidate, load_validator
+from .delivery import TransportFailure, process_one
 from .files import InputError, open_directory, safe_read
+from .gateway_adapter import DESTINATION, GatewayAdapter
+from .gateway_transport import GatewayReplayTransport
+from .http_transport import HttpTransport
 from .outbox import Outbox, OutboxError
+
+OPEN_STATES = ("awaiting_contract", "pending", "sending", "uncertain")
 
 
 def _scan(args, box):
@@ -65,6 +79,88 @@ def _scan(args, box):
     return counts
 
 
+def _auth(path):
+    """Read one 'Name: value' header from a private, owner-only regular file."""
+    path = Path(path)
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK
+    with open_directory(path.parent) as directory:
+        parent = os.fstat(directory)
+        descriptor = os.open(path.name, flags, dir_fd=directory)
+    try:
+        # Check the descriptor actually read, so a swapped path cannot pass.
+        info = os.fstat(descriptor)
+        if (
+            parent.st_uid != os.getuid()
+            or stat.S_IMODE(parent.st_mode) & 0o022
+            or not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or stat.S_IMODE(info.st_mode) & 0o077
+            or info.st_nlink != 1
+            or info.st_size > 4096
+        ):
+            raise InputError("credential_permissions")
+        raw = os.read(descriptor, 4097)
+    finally:
+        os.close(descriptor)
+    try:
+        name, value = raw.decode("ascii").strip().split(":", 1)
+    except (UnicodeError, ValueError):
+        raise InputError("credential_format") from None
+    return name.strip(), value.strip()
+
+
+def run_times(box, key):
+    """Times come only from structurally verified companion evidence."""
+    raw = box.get_unverified_evidence(key)
+    if raw is None:
+        raise companion.EvidenceError("missing")
+    return companion.verify(*key, box.get(key)["candidate"], raw)
+
+
+def _dispatch(args, box):
+    counts = {}
+    transport = None
+    for key in box.keys():
+        row = box.get(key)
+        if row["status"] not in OPEN_STATES:
+            continue
+        try:
+            bound = box.get_unverified_evidence(key) is not None
+        except OutboxError:
+            bound = True
+        if policy.evidence_required(key[0]) or bound:
+            # Mirror the policy and Outbox evidence gates of process_one before
+            # evidence parsing or credential I/O. Admitting a producer trust
+            # anchor must change those gates together, keeping this order.
+            counts["blocked"] = counts.get("blocked", 0) + 1
+            continue
+        try:
+            times = run_times(box, key)
+            generated = json.loads(row["candidate"])["generated_at"]
+            adapter = GatewayAdapter(times.scheduled_at, generated, times.collected_at)
+        except (companion.EvidenceError, OutboxError, KeyError, ValueError):
+            # Unverified, missing or inconsistent evidence never reaches transport.
+            counts["blocked"] = counts.get("blocked", 0) + 1
+            continue
+        if transport is None:
+            # Configuration and credential errors reject the whole run.
+            try:
+                http = HttpTransport(
+                    endpoint=args.endpoint,
+                    destination=DESTINATION,
+                    auth=_auth(args.auth_header_file),
+                    content_type="application/json",
+                )
+            except TransportFailure:
+                raise InputError("credential_rejected") from None
+            transport = GatewayReplayTransport(
+                box, http, allow_idempotent_replay=args.allow_replay
+            )
+        result = process_one(box, key, adapter, transport)
+        counts[result] = counts.get(result, 0) + 1
+    return counts
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -76,14 +172,27 @@ def main(argv=None):
     stage.add_argument("--outbox", type=Path, required=True)
     status = sub.add_parser("status")
     status.add_argument("--outbox", type=Path, required=True)
+    dispatch = sub.add_parser("dispatch")
+    dispatch.add_argument("--outbox", type=Path, required=True)
+    dispatch.add_argument("--endpoint", required=True)
+    dispatch.add_argument("--auth-header-file", type=Path, required=True)
+    dispatch.add_argument("--allow-replay", action="store_true")
     args = parser.parse_args(argv)
     box = None
     try:
         box = Outbox(args.outbox)
-        result = _scan(args, box) if args.command == "stage" else box.counts()
+        if args.command == "stage":
+            result = _scan(args, box)
+        elif args.command == "dispatch":
+            result = _dispatch(args, box)
+        else:
+            result = box.counts()
         print(json.dumps(result, sort_keys=True))
-        return 1 if result.get("rejected", 0) or result.get("conflict", 0) else 0
-    except (InputError, OutboxError, OSError, sqlite3.Error):
+        failed = ("rejected", "conflict")
+        if args.command == "dispatch":
+            failed = ("failed", "uncertain")
+        return 1 if any(result.get(name, 0) for name in failed) else 0
+    except (ValueError, OSError, sqlite3.Error):
         print('{"error":"operation_rejected"}')
         return 1
     finally:

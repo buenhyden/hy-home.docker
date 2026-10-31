@@ -192,8 +192,18 @@ def _interpret(box, key, status, response, request, adapter, attempts, max_attem
             code="durable_receipt",
         )
     if outcome.kind in (OutcomeKind.CONFLICT, OutcomeKind.REJECTED):
-        target = "uncertain" if status == "uncertain" else "failed"
-        return _move(box, key, status, target, code="gateway_rejected")
+        if status == "uncertain":
+            # A prior write may be durable, so stay uncertain, but a permanent
+            # rejection exhausts the budget: no automatic re-POST follows.
+            return _move(
+                box,
+                key,
+                status,
+                "uncertain",
+                code="gateway_rejected",
+                attempts=max_attempts,
+            )
+        return _move(box, key, status, "failed", code="gateway_rejected")
     if (
         status == "uncertain"
         and outcome.kind is OutcomeKind.ABSENT

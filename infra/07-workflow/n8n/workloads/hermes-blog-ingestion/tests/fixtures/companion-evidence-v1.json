@@ -1,0 +1,37 @@
+{
+  "schema_version": "hermes-companion-evidence/1",
+  "producer": {
+    "name": "hermes-direct-fetch",
+    "version": "1.0.0"
+  },
+  "job_id": "6eabd835f969",
+  "run_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "candidate_sha256": "1719b1a86fcdfb11b95bbbd23e500b2276d895bf2ef0c48add68ed62d77518ca",
+  "scheduled_at": "2026-10-30T09:00:00+09:00",
+  "items": [
+    {
+      "index": 0,
+      "source_url": "https://example.com/synthetic/1",
+      "fetched_url": "https://example.com/synthetic/1",
+      "fetched_at": "2026-10-30T09:01:10.250+09:00",
+      "http_status": 200,
+      "body_sha256": "68df2ee269ed5e8b67f984da7e0bfeaa9404578d97aa11fb87322644d1e1a455",
+      "cache": {
+        "hit": false,
+        "key_sha256": null
+      }
+    },
+    {
+      "index": 1,
+      "source_url": "https://example.com/synthetic/2",
+      "fetched_url": "https://example.com/synthetic/2",
+      "fetched_at": "2026-10-29T23:30:00Z",
+      "http_status": 200,
+      "body_sha256": "80be421c458687de2f7fd0e517f7003ded816dec407c41a6a4f62e982e4955df",
+      "cache": {
+        "hit": true,
+        "key_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      }
+    }
+  ]
+}

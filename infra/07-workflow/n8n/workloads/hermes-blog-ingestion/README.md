@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-10-31"
 ---
 
 # Hermes 수집 전송 소스
@@ -18,7 +18,7 @@ updated: "2026-10-30"
 
 | 구분 | 상태 | 확인 범위 |
 | --- | --- | --- |
-| 소스 | 부분 구현 | 로컬 대기함, 계약 어댑터, 선택적 동일 요청 재전송, 비활성 수집 흐름 |
+| 소스 | 부분 구현 | 로컬 대기함, 계약 어댑터, 선택적 동일 요청 재전송, 제한된 `dispatch`, Companion Evidence v1 구조 검증, 비활성 수집 흐름 |
 | 계약·흐름 합성 검증 | PASS | 고정 계약·Fixture와 합성 응답, 빈 VM의 입력 선별 |
 | 실제 원본 변환·전송 | BLOCKED | 실제 기사 수집 시각의 신뢰할 수 있는 근거와 전송 실행 연결 부재 |
 | 격리 n8n Queue 합성 검증 | PASS | 기본 게시 API·정적 Webhook 등록, Worker·외부 JS Runner, 가짜 Gateway 201·합성 영속 수신 |
@@ -48,7 +48,8 @@ updated: "2026-10-30"
 
 로컬 준비·상태 명령은 발행기 설명, 재현 가능한 시험 명령은 시험 설명을 봅니다.
 배포 단위는 제한된 호스트 프로세스가 우선이며 서비스 설치나 예약 실행은
-아직 구성하지 않았습니다. 네트워크 전송 명령과 실제 인증 입력도 없습니다.
+아직 구성하지 않았습니다. `dispatch` 명령은 있으나 세 작업의 차단 정책이 닫혀
+있어 실제 인증 입력이나 네트워크 요청 없이 `blocked`를 반환합니다.
 
 흐름은 `headerAuth` 수신 후 입력을 선별하고 Gateway에 전달한 응답을 확인합니다.
 입력 선별은 전체 스키마 검증이 아니며 최종 판단은 Gateway가 담당합니다. 응답의
@@ -66,6 +67,69 @@ Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습�
 승인된 비밀 관리 경로로 인증을 연결합니다. 저장소와 공개 흐름에는 비밀값이나
 실제 인증 식별자를 넣지 않습니다. 실행 데이터 저장 제한은 관리자 접근이나
 실행 중 메모리까지 격리한다는 의미가 아닙니다.
+
+### Companion Evidence v1 계약
+
+Hermes 생산자가 후보 하나마다 함께 넘기는 직접 수집 기록입니다. 기존 후보
+producer v1.0.0의 필드는 바꾸지 않습니다. 합성 예시는
+[후보](./tests/fixtures/companion-candidate-v1.json)와
+[증거](./tests/fixtures/companion-evidence-v1.json)이며 검증 구현은
+[evidence.py](publisher/evidence.py)입니다.
+
+| 필드 | 규칙 |
+| --- | --- |
+| `schema_version` | `hermes-companion-evidence/1` |
+| `producer` | `name`, `version` 두 문자열만 허용 |
+| `job_id`, `run_id` | 대기함 키와 후보 내용이 정확히 일치 |
+| `candidate_sha256` | 후보 원문 바이트의 SHA-256 |
+| `scheduled_at` | 해당 Cron 실행의 예정 시각, 시간대 포함 |
+| `items[]` | 후보 `items`와 같은 수·순서, 한 항목에 한 기록 |
+| `items[].index` | 후보 항목 순번(0부터) |
+| `items[].source_url` | 후보 항목 `source_url`과 동일, 누락 시 보고서 전체 보류 |
+| `items[].fetched_url` | 실제 응답을 받은 최종 HTTPS URL |
+| `items[].fetched_at` | 응답 바이트를 받은 실제 시각, 시간대 포함, 밀리초까지 |
+| `items[].http_status` | 2xx 정수 |
+| `items[].body_sha256` | 실제 수신 바이트의 SHA-256 |
+| `items[].cache` | `{hit:false,key_sha256:null}` 또는 `{hit:true,key_sha256:<64 hex>}` |
+
+모든 시각은 `scheduled_at` 이후, 후보 `generated_at` 이전이어야 합니다. 캐시
+적중은 캐시 생성 시각이 아니라 원래 직접 수집 시각을 기록하므로 실행 예정
+시각보다 이를 수 있습니다. 보고서 `collected_at`은 항목 `fetched_at`의 최댓값이며
+추정·대체하지 않습니다. 중복 키·알 수 없는 필드·형식 오류는 모두 거부합니다.
+
+이 검증은 구조와 결속만 확인합니다. 누가 기록했는지는 증명하지 않으므로 다음
+생산자 신뢰 조건이 별도로 승인되기 전에는 `policy.evidence_required`,
+Outbox와 재전송 경계의 차단을 열지 않습니다.
+
+1. 직접 수집 경계에서 응답 바이트를 사용하기 전에 기록을 원자적으로 영속화합니다.
+   임시 파일·fsync·rename 순서로 수집과 기록 사이의 중단 공백을 없앱니다.
+2. 기록을 만든 생산자를 Publisher가 검증할 수 있어야 하고, 같은 계정의 LLM
+   도구·내보내기 단계가 위조할 수 없어야 합니다. 서명 방식과 키 보관 위치는
+   Hermes 담당 작업이 제안하고 운영자가 승인합니다.
+3. 파일명은 기존 `SHA256(job_id + NUL + run_id).json`을 유지하고 `stage
+   --evidence-root`로 대기함에 함께 고정합니다.
+
+위 조건과 그 검증 시험이 승인되면 차단 해제는 정책·Outbox·재전송 경계의 한
+변경으로 검토합니다. 그 전에는 증거가 있어도 전송하지 않습니다.
+
+### Blog-data Gateway 계약 비교
+
+고정본은 Blog-data `dev` `a6d0957`의 1.0.0, 비교 대상은 2026-10-31 `dev`
+`1a4cd60`의 1.1.0입니다.
+
+| 파일·범위 | 비교 결과 | Publisher 영향 |
+| --- | --- | --- |
+| `ingestion-v1.schema.json` | 바이트 동일 | 없음 |
+| `synthetic-report.json` | 바이트 동일 | 없음 |
+| `POST /v1/ingestions` 요청·200·201·오류 응답 | 정의 동일 | 없음, 고정 개정 유지 |
+| `receipt`, `error`, `summary`, `capture` 정의 | 동일 | 없음 |
+| `candidates` 정의 | 항목에 `matching`, `review_count`, `latest_review` 추가 | 후속 조회 도구만 해당 |
+| `review`, `reviewReceipt`, `reviews`, `/v1/candidates/{id}/reviews` | 추가 | 후속 조회 도구만 해당 |
+
+수신 경로는 호환되므로 고정 개정·Fixture와 기존 대기함의 계약·본문·목적지를
+바꾸지 않습니다. 후속 조회 도구가 새 응답을 쓰게 될 때 별도 승인으로 조회용
+계약 참조를 추가합니다. 현재 조회 API에는 전문 검색 매개변수가 없고
+`date`, `kind`, `status`, `review_status`, `limit`, `after` 필터만 있습니다.
 
 ## Configuration
 
