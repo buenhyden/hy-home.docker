@@ -1,6 +1,6 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -16,7 +16,7 @@ Worker가 같은 서버 A의 격리된 Blog-data 수집 Gateway에 전달하는 
 파일 기반 로컬 발행기와 영속 대기함은 직접 경로가 운영 검증될 때까지 복구 경로로
 보존합니다. Blog-data `dev` 커밋 `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`의
 수집 API 계약과 합성 Fixture를 고정했고, Gateway 이미지는 Resource Export가 들어간
-Blog-data `dev` `cadea2e683fb3e03e0e7a9f27133421c981bbea8`에서 로컬 빌드합니다.
+Blog-data `dev` `a43d824334e636ddeab034982b36c0700a9d8f93`(`resource-export/2`)에서 로컬 빌드합니다.
 Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 수신 뒤에는 별도 호스트
 서명자가 Attestation을 제출하고, Windows B가 HTTPS로 Export를 가져가 ACK합니다.
 
@@ -27,13 +27,14 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 | 계약·흐름 합성 검증 | PASS | 고정 계약·Fixture와 합성 응답, 빈 VM의 입력 선별 |
 | 실제 원본 변환·전송 | BLOCKED | 실제 기사 수집 시각의 신뢰할 수 있는 근거와 전송 실행 연결 부재 |
 | 격리 n8n Queue 합성 검증 | PASS | 기본 게시 API·정적 Webhook 등록, Worker·외부 JS Runner, 가짜 Gateway 201·합성 영속 수신 |
-| 직접 경로 일회용 E2E | PASS | 호스트 → 제안 Traefik 경로 → n8n(추적 워크플로) → 실제 Gateway 이미지 → SQLite, [시험](tests/README.md) |
+| 직접 경로 일회용 E2E | PASS | 호스트 → Traefik 경로(합성 사본) → n8n(추적 워크플로) → 실제 Gateway 이미지 → SQLite, [시험](tests/README.md) |
 | Attestation·Export·ACK 일회용 E2E | PASS | 합성 서명 → `ready` Export → Manifest·파일 해시 → ACK, `held`·위조·범위 거부, 재시작 영속 |
 | Schema 3 업그레이드·백업 복원 | PASS | 이전 고정본 schema 2 저장소의 제자리 업그레이드와 두 백업의 새 볼륨 복원(합성) |
 | Attestation 서명자 | 소스 PASS, 운영 BLOCKED | `attest` 명령과 합성 시험은 통과했지만 생산자 키 저장소가 비어 있고 서명 계정·키가 없음 |
 | Hermes 플러그인 소스 | PASS(소스), 운영 NOT_RUN | PR #700으로 `hermes-plugin/`에 추적, 설치본 `~/.hermes/plugins/research-report` 네 파일과 SHA-256 일치(2026-11-01). 실제 제출은 미실행 |
 | 실제 Windows 수신기 | NOT_RUN | 서버 B의 수신기 Dry Run·ACK 미실행 |
-| 실제 운영 검증 | NOT_RUN | 운영 Traefik 경로·실제 인증·Gateway 배치·Hermes 플러그인 미적용 |
+| 서버 A 운영 배치 | 부분 적용(2026-11-01) | Gateway `a43d824…`(이미지 ID `sha256:e513b938…`) 기동, Worker 내부망 연결, n8n 자격 증명·흐름 게시, Webhook·Export Traefik 경로 적용. `export` 설정이 없어 Export는 닫힘 |
+| 실제 운영 검증 | NOT_RUN | Hermes `RESEARCH_WEBHOOK_URL` 연결, 실제 Cron 제출·`received`, Windows 수신기 미실행 |
 
 전체 시험과 최신 조사·독립 검토 결과는 `SPEC-0204-TSK-0022`가 소유합니다.
 
@@ -52,8 +53,8 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 ## Structure
 
 - [workflow.json](workflow.json): 인증 수신, 입력 선별, 내부 Gateway 전달과 영속 수신 응답 확인을 담은 비활성 흐름입니다.
-- [hermes-webhook.yml](traefik/hermes-webhook.yml): Hermes Webhook 정확한 경로 하나만 SSO 없이 허용하는 Traefik 제안 경로입니다. 운영 디렉터리 밖에 둡니다.
-- [blog-export.yml](traefik/blog-export.yml): Windows B의 Export 조회·ACK와 서버 A 호스트의 Attestation 세 요청 형태만 허용하는 Traefik 제안 경로입니다. 역시 운영 디렉터리 밖에 둡니다.
+- [hermes-webhook.yml](../../../../01-gateway/traefik/dynamic/hermes-webhook.yml): Hermes Webhook 정확한 경로 하나만 SSO 없이 허용하는 Traefik 경로입니다. 2026-11-01 운영 디렉터리에 적용했습니다.
+- [blog-export.yml](../../../../01-gateway/traefik/dynamic/blog-export.yml): Windows B의 Export 조회·ACK와 서버 A 호스트의 Attestation 세 요청 형태만 허용하는 Traefik 경로입니다. 2026-11-01 운영 디렉터리에 적용했습니다.
 - [publisher/](publisher/README.md): 제한된 파일 읽기, 로컬 대기함과 전송 상태 처리입니다.
 - [tests/](tests/README.md): 합성 시험과 소스 경계 검증입니다.
 - [install.py](install.py): 커밋 하나를 root 소유 불변 release로 설치합니다.
@@ -210,7 +211,7 @@ Hermes(호스트) ─HTTPS─▶ Traefik 정확한 경로 ─▶ n8n ─Queue─
    ─HTTP(n8n_blog_ingest_net)─▶ blog-ingestion ─▶ SQLite(로컬 디스크)
 ```
 
-- 진입: 기존 `n8n` 라우터와 SSO는 그대로 둡니다. [제안 경로](traefik/hermes-webhook.yml)는
+- 진입: 기존 `n8n` 라우터와 SSO는 그대로 둡니다. [운영 경로](../../../../01-gateway/traefik/dynamic/hermes-webhook.yml)는
   `Host` + 정확한 `Path(/webhook/hermes-blog-ingestion)` + `POST`만 일치시키고,
   출발지 `192.168.0.13/32`, 본문 1 MiB, 분당 6회로 제한합니다. 운영 Traefik 접근
   기록에서 호스트 프로세스가 `192.168.0.13:443`으로 보낸 요청은 `192.168.0.13`으로
@@ -321,8 +322,8 @@ Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만
 | CA 공개 인증서 | 서버 A의 mkcert 루트 `rootCA.pem` 공개 인증서. 수신기 설정의 CA 파일로 고정하며 지문은 적용 단계에서 운영자가 기록 |
 | 출발지 | Export 조회·ACK는 `192.168.0.22/32`, Attestation은 `192.168.0.13/32` |
 | 인증 | `export_read`, `export_ack` 각각 별도 Bearer 토큰(Gateway에는 SHA-256만 저장) |
-| API·수신기 | Blog-data Resource Export 1.0과 `scripts/ops/receive-hermes-exports.ps1`, 둘 다 `dev` `cadea2e683fb3e03e0e7a9f27133421c981bbea8` |
-| 템플릿 버전 | 각 Manifest의 `template_version`(이미지에 포함된 Resource 템플릿·프로필 레지스트리) |
+| API·수신기 | Blog-data Resource Export 1.0과 `scripts/ops/receive-hermes-exports.ps1`, 둘 다 `dev` `a43d824334e636ddeab034982b36c0700a9d8f93` |
+| 템플릿 버전 | 각 Manifest의 `template_version`(이미지에 포함된 Resource 템플릿·프로필 레지스트리, `resource-export/2+…`로 시작) |
 
 ### Blog-data Gateway 계약 비교
 

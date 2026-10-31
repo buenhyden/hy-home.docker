@@ -1,4 +1,4 @@
-"""The proposed export host admits exactly three Gateway request shapes."""
+"""The live export host admits exactly three Gateway request shapes."""
 
 import re
 import unittest
@@ -7,9 +7,11 @@ from pathlib import Path
 import yaml
 
 WORKLOAD = Path(__file__).resolve().parents[1]
-ROUTE = WORKLOAD / "traefik/blog-export.yml"
+LIVE = WORKLOAD.parents[3] / "01-gateway/traefik/dynamic"
+ROUTE = LIVE / "blog-export.yml"
 HOST = "Host(`blog-export.hy.home.arpa`)"
 UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"
+STANDARD = "gateway-standard-chain@file"
 WINDOWS, HOST_A = ["192.168.0.22/32"], ["192.168.0.13/32"]
 
 
@@ -24,15 +26,16 @@ class ExportRouteTests(unittest.TestCase):
     def kinds(self, router):
         found = {}
         for name in router["middlewares"]:
+            if name == STANDARD:
+                continue
             ((kind, value),) = self.middlewares[name].items()
             found[kind] = value
         return found
 
-    def test_file_is_a_proposal_absent_from_the_live_dynamic_directory(self):
-        self.assertTrue(self.text.startswith("# PROPOSAL"))
-        live = WORKLOAD.parents[3] / "01-gateway/traefik/dynamic"
-        for path in live.iterdir():
-            self.assertNotIn("blog-export.hy.home.arpa", path.read_text(), path)
+    def test_route_is_live_with_no_workload_copy(self):
+        # Traefik loads the live directory at once; the workload keeps no copy.
+        self.assertTrue(self.text.startswith("# LIVE"))
+        self.assertFalse((WORKLOAD / "traefik").exists())
 
     def test_exactly_three_routes_to_the_gateway_over_tls(self):
         self.assertEqual(
@@ -52,7 +55,7 @@ class ExportRouteTests(unittest.TestCase):
             self.assertNotIn("sso", " ".join(router["middlewares"]))
         self.assertEqual(
             set(self.middlewares),
-            {m for r in self.routers.values() for m in r["middlewares"]},
+            {m for r in self.routers.values() for m in r["middlewares"]} - {STANDARD},
         )
 
     def test_rules_admit_only_the_export_api_shapes(self):
@@ -98,11 +101,16 @@ class ExportRouteTests(unittest.TestCase):
             self.assertEqual({"ipAllowList", "buffering", "rateLimit"}, set(kinds))
             self.assertLessEqual(kinds["buffering"]["maxRequestBodyBytes"], 16384)
         self.assertLessEqual(attest["rateLimit"]["average"], 10)
-        # Source, then rate, then buffering: a limited request is never buffered.
+        # POL-0013: the shared per-peer chain follows the source check on
+        # every router. Then rate, then buffering: a limited request is never
+        # buffered.
+        for router in self.routers.values():
+            self.assertEqual(STANDARD, router["middlewares"][1])
         for name in ("blog-export-ack", "blog-attestation"):
             chain = [
                 next(iter(self.middlewares[m]))
                 for m in self.routers[name]["middlewares"]
+                if m != STANDARD
             ]
             self.assertEqual(["ipAllowList", "rateLimit", "buffering"], chain, name)
 

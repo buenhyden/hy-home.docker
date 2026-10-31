@@ -159,14 +159,21 @@ docker restart "$id-n8n" >/dev/null
 ready
 ok "n8n imported and published the committed workflow natively"
 
-# 5. Traefik with the proposed route; an SSO stand-in guards everything else.
+# 5. Traefik with the live routes; an SSO stand-in guards everything else.
 mkdir "$work/dynamic"
 sed -e "s#192.168.0.13/32#$lan_ip/32#" -e 's#n8n@docker#n8n-e2e@file#' \
-  "$workload/traefik/hermes-webhook.yml" >"$work/dynamic/hermes-webhook.yml"
+  "$root/infra/01-gateway/traefik/dynamic/hermes-webhook.yml" >"$work/dynamic/hermes-webhook.yml"
 # One host stands in for both Windows B and the server-A attester here; the
 # per-router source split is asserted by test_export_route.py.
 sed -e "s#192.168.0.22/32#$lan_ip/32#" -e "s#192.168.0.13/32#$lan_ip/32#" \
-  "$workload/traefik/blog-export.yml" >"$work/dynamic/blog-export.yml"
+  "$root/infra/01-gateway/traefik/dynamic/blog-export.yml" >"$work/dynamic/blog-export.yml"
+# The routes chain the live POL-0013 standard chain; carry exactly its parts.
+python3 - "$root/infra/01-gateway/traefik/dynamic/middleware.yml" "$work/dynamic/standard-chain.yml" <<'PY2'
+import sys, yaml
+m = yaml.safe_load(open(sys.argv[1]))["http"]["middlewares"]
+names = ["gateway-standard-chain", *m["gateway-standard-chain"]["chain"]["middlewares"]]
+yaml.safe_dump({"http": {"middlewares": {n: m[n] for n in names}}}, open(sys.argv[2], "w"))
+PY2
 sso_hash=$(hex 16 | openssl dgst -sha1 -binary | base64)
 cat >"$work/dynamic/standin.yml" <<YAML
 http:

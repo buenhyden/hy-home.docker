@@ -1,6 +1,6 @@
-# PROPOSAL — not loaded by Traefik. The live provider watches
-# infra/01-gateway/traefik/dynamic/, so copying this file there applies it at
-# once; do that only as the approved ingress unit in RUN-0053.
+# LIVE — Traefik watches this directory and loads this file at once. Applied
+# as the approved RUN-0053 webhook ingress unit on 2026-11-01; deleting the file
+# is the rollback. Source: infra/07-workflow/n8n/workloads/hermes-blog-ingestion.
 #
 # Admits exactly one request shape without SSO: a host-local POST to the
 # Hermes webhook path. Every other n8n path, method or source still matches the
@@ -16,6 +16,7 @@ http:
       tls: {}
       middlewares:
         - hermes-webhook-source
+        - gateway-standard-chain@file
         - hermes-webhook-body
         - hermes-webhook-rate
       service: n8n@docker

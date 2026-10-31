@@ -1,4 +1,4 @@
-"""The proposed Traefik route admits exactly one host-local webhook POST."""
+"""The live Traefik route admits exactly one host-local webhook POST."""
 
 import json
 import unittest
@@ -7,7 +7,9 @@ from pathlib import Path
 import yaml
 
 WORKLOAD = Path(__file__).resolve().parents[1]
-ROUTE = WORKLOAD / "traefik/hermes-webhook.yml"
+LIVE = WORKLOAD.parents[3] / "01-gateway/traefik/dynamic"
+ROUTE = LIVE / "hermes-webhook.yml"
+STANDARD = "gateway-standard-chain@file"
 
 
 class IngressRouteTests(unittest.TestCase):
@@ -21,13 +23,10 @@ class IngressRouteTests(unittest.TestCase):
         )
         cls.path = "/webhook/" + ingress["parameters"]["path"]
 
-    def test_file_is_a_proposal_absent_from_the_live_dynamic_directory(self):
-        self.assertTrue(self.text.startswith("# PROPOSAL"))
-        # Traefik watches this directory live; the route lands there only by approval.
-        live = WORKLOAD.parents[3] / "01-gateway/traefik/dynamic"
-        self.assertTrue(live.is_dir())
-        for path in live.iterdir():
-            self.assertNotIn("hermes-blog-ingestion-webhook", path.read_text(), path)
+    def test_route_is_live_with_no_workload_copy(self):
+        # Traefik loads the live directory at once; the workload keeps no copy.
+        self.assertTrue(self.text.startswith("# LIVE"))
+        self.assertFalse((WORKLOAD / "traefik").exists())
 
     def test_router_matches_only_the_workflow_path_by_post(self):
         (name,) = self.http["routers"]
@@ -45,7 +44,11 @@ class IngressRouteTests(unittest.TestCase):
     def test_middlewares_bound_source_size_and_rate(self):
         (router,) = self.http["routers"].values()
         middlewares = self.http["middlewares"]
-        self.assertEqual(set(router["middlewares"]), set(middlewares))
+        # POL-0013: the shared per-peer limiter, retry and breaker come right
+        # after the source check; the local limits follow.
+        self.assertEqual(STANDARD, router["middlewares"][1])
+        local = [m for m in router["middlewares"] if m != STANDARD]
+        self.assertEqual(set(local), set(middlewares))
         kinds = {next(iter(m)): m[next(iter(m))] for m in middlewares.values()}
         self.assertEqual({"ipAllowList", "buffering", "rateLimit"}, set(kinds))
         # Measured on live Traefik: a host process dialling 192.168.0.13:443

@@ -5653,6 +5653,11 @@ ROUTES_WITHOUT_SSO = {
     "storybook-mcp": "oauth-bearer",
     # Two static files (favicon, robots.txt)
     "grafana-static": "static-only",
+    # Exact-path machine routes (traefik/dynamic/hermes-webhook.yml, blog-export.yml)
+    "hermes-blog-ingestion-webhook": "n8n-header-auth-and-ip-allowlist",
+    "blog-export-read": "gateway-bearer-and-ip-allowlist",
+    "blog-export-ack": "gateway-bearer-and-ip-allowlist",
+    "blog-attestation": "gateway-bearer-and-ip-allowlist",
 }
 
 
