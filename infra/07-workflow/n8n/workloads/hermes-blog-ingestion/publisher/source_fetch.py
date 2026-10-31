@@ -12,9 +12,11 @@ import http.client
 import ipaddress
 import socket
 import ssl
+import time
+import unicodedata
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import quote, urljoin, urlsplit, urlunsplit
 
 MAX_BYTES = 2 * 1024 * 1024
 MAX_REDIRECTS = 5
@@ -22,6 +24,8 @@ MAX_URL = 2048
 TIMEOUT = 20.0
 ZONE = "hy.home.arpa"
 REDIRECTS = (301, 302, 303, 307, 308)
+CHUNK = 64 * 1024
+_SAFE = "/%:@!$&'()*+,;=-._~"
 USER_AGENT = "hy-home-attester/1"
 
 
@@ -61,7 +65,9 @@ class _Connection(http.client.HTTPSConnection):
         self._connect = connect
 
     def connect(self):
-        self.sock = self._connect(self._ip, self.port, self.host, self.timeout)
+        self.opened = self.sock = self._connect(
+            self._ip, self.port, self.host, self.timeout
+        )
 
 
 def _utc_millis(moment):
@@ -76,11 +82,9 @@ def _is_global(value):
     return address.is_global
 
 
-def _vet(url, resolve):
-    """Return (host, port, first vetted IP) or raise FetchFailure."""
-    if len(url) > MAX_URL or any(
-        c.isspace() or ord(c) < 32 or ord(c) == 127 for c in url
-    ):
+def _canonical(url):
+    """Return the ASCII form of url (IDNA host, percent-encoded path/query, no fragment)."""
+    if any(c.isspace() or unicodedata.category(c) in ("Cc", "Cf") for c in url):
         raise FetchFailure("url")
     try:
         parts = urlsplit(url)
@@ -91,7 +95,29 @@ def _vet(url, resolve):
         raise FetchFailure("scheme")
     if not host or "@" in parts.netloc:
         raise FetchFailure("url")
-    host = host.lower().rstrip(".")
+    try:
+        ipaddress.ip_address(host)
+        netloc = f"[{host}]" if ":" in host else host
+    except ValueError:
+        try:
+            netloc = host.encode("idna").decode("ascii")
+        except UnicodeError:
+            raise FetchFailure("url") from None
+    if port:
+        netloc += f":{port}"
+    path = quote(parts.path, safe=_SAFE)
+    query = quote(parts.query, safe=_SAFE + "?")
+    canonical = urlunsplit(("https", netloc, path, query, ""))
+    if len(canonical) > MAX_URL:
+        raise FetchFailure("url")
+    return canonical
+
+
+def _vet(url, resolve):
+    """Return (canonical url, host, port, first vetted IP) or raise FetchFailure."""
+    url = _canonical(url)
+    parts = urlsplit(url)
+    host, port = parts.hostname.rstrip("."), parts.port
     if host == ZONE or host.endswith("." + ZONE):
         raise FetchFailure("zone")
     try:
@@ -111,11 +137,18 @@ def _vet(url, resolve):
     if not vetted:
         raise FetchFailure("address")
     # ponytail: first vetted address only, no fallback to the others.
-    return host, port or 443, addresses[0]
+    return url, host, port or 443, addresses[0]
 
 
-def _get(host, port, ip, target, connect, deadline_timeout):
-    conn = _Connection(host, port, ip, connect, deadline_timeout)
+def _remaining(deadline, monotonic):
+    left = deadline - monotonic()
+    if left <= 0:
+        raise FetchFailure("timeout", True)
+    return left
+
+
+def _get(host, port, ip, target, connect, deadline, monotonic):
+    conn = _Connection(host, port, ip, connect, _remaining(deadline, monotonic))
     try:
         conn.request(
             "GET",
@@ -126,29 +159,48 @@ def _get(host, port, ip, target, connect, deadline_timeout):
         status = response.status
         location = response.getheader("Location")
         content_type = response.getheader("Content-Type", "")
-        if status in REDIRECTS or status >= 300:
+        if status >= 300:
             return status, location, content_type, b""
         length = response.getheader("Content-Length")
         if length and length.isdigit() and int(length) > MAX_BYTES:
             raise FetchFailure("size")
-        body = response.read(MAX_BYTES + 1)
-        if len(body) > MAX_BYTES:
-            raise FetchFailure("size")
-        return status, location, content_type, body
+        chunks, total = [], 0
+        while True:
+            conn.opened.settimeout(_remaining(deadline, monotonic))
+            chunk = response.read(CHUNK)
+            if not chunk:
+                break
+            total += len(chunk)
+            if total > MAX_BYTES:
+                raise FetchFailure("size")
+            chunks.append(chunk)
+        return status, location, content_type, b"".join(chunks)
     finally:
         conn.close()
 
 
-def fetch(url, *, resolve=socket.getaddrinfo, connect=None, now=None):
+def _redirect_target(base, location):
+    """Join a Location against base; http.client decoded its bytes as latin-1."""
+    try:
+        location = location.encode("latin-1").decode("utf-8")
+    except UnicodeError:
+        raise FetchFailure("url") from None
+    return urljoin(base, location)
+
+
+def fetch(
+    url, *, resolve=socket.getaddrinfo, connect=None, now=None, monotonic=time.monotonic
+):
     connect = connect or _tls_connect
     now = now or (lambda: datetime.now(UTC))
+    deadline = monotonic() + TIMEOUT
     for _ in range(MAX_REDIRECTS + 1):
-        host, port, ip = _vet(url, resolve)
+        url, host, port, ip = _vet(url, resolve)
         parts = urlsplit(url)
         target = (parts.path or "/") + (f"?{parts.query}" if parts.query else "")
         try:
             status, location, content_type, body = _get(
-                host, port, ip, target, connect, TIMEOUT
+                host, port, ip, target, connect, deadline, monotonic
             )
         except FetchFailure:
             raise
@@ -161,7 +213,7 @@ def fetch(url, *, resolve=socket.getaddrinfo, connect=None, now=None):
         if status in REDIRECTS:
             if not location:
                 raise FetchFailure("status")
-            url = urljoin(url, location)
+            url = _redirect_target(url, location)
             continue
         if status == 429 or status >= 500:
             raise FetchFailure("status", True)

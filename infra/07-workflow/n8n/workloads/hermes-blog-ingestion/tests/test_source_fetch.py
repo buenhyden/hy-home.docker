@@ -205,6 +205,108 @@ class RedirectTests(unittest.TestCase):
         )
 
 
+class UrlEncodingTests(unittest.TestCase):
+    def test_korean_path_is_fetched_percent_encoded(self):
+        connect, calls = connector(http(200, b"ok"))
+        result = fetch(
+            "https://ko.wikipedia.org/wiki/한국?q=한#frag",
+            resolve=resolver(),
+            connect=connect,
+        )
+        want = "/wiki/%ED%95%9C%EA%B5%AD?q=%ED%95%9C"
+        self.assertTrue(calls[0][-1].sent.startswith(f"GET {want} HTTP/1.1".encode()))
+        self.assertEqual(result.final_url, f"https://ko.wikipedia.org{want}")
+
+    def test_existing_escapes_are_kept(self):
+        connect, _ = connector(http(200, b"ok"))
+        result = fetch(
+            "https://example.com/a%20b/c%2Fd", resolve=resolver(), connect=connect
+        )
+        self.assertEqual(result.final_url, "https://example.com/a%20b/c%2Fd")
+
+    def test_idna_host_is_encoded(self):
+        resolve = resolver()
+        connect, calls = connector(http(200, b"ok"))
+        result = fetch("https://bücher.example/", resolve=resolve, connect=connect)
+        self.assertEqual(result.final_url, "https://xn--bcher-kva.example/")
+        self.assertEqual(calls[0][2], "xn--bcher-kva.example")
+
+    def test_redirect_location_with_raw_utf8_is_decoded(self):
+        raw = http(302).replace(
+            b"\r\n\r\n", b"\r\nLocation: /wiki/" + "한".encode() + b"\r\n\r\n", 1
+        )
+        connect, _ = connector(raw, http(200, b"ok"))
+        result = fetch("https://example.com/", resolve=resolver(), connect=connect)
+        self.assertEqual(result.final_url, "https://example.com/wiki/%ED%95%9C")
+
+    def test_undecodable_redirect_location_is_permanent(self):
+        raw = http(302).replace(b"\r\n\r\n", b"\r\nLocation: /\xff\xfe\r\n\r\n", 1)
+        connect, _ = connector(raw)
+        refused(
+            self, "https://example.com/", "url", resolve=resolver(), connect=connect
+        )
+
+    def test_overlong_label_and_format_chars_are_permanent(self):
+        for url in (
+            "https://" + "a" * 64 + ".com/",
+            "https://exa\u00admple.com/",
+            "https://example.com/a\u200bb",
+            "https://example.com/a\u0085b",
+        ):
+            with self.subTest(url=url[:30]):
+                refused(self, url, "url", resolve=resolver())
+
+    def test_encoded_form_over_2048_is_rejected(self):
+        refused(self, "https://example.com/" + "한" * 300, "url", resolve=resolver())
+
+
+class DeadlineTests(unittest.TestCase):
+    def test_slow_drip_body_hits_total_deadline(self):
+        clock = {"t": 0.0}
+
+        class Slow(io.BytesIO):
+            def read(self, n=-1):
+                clock["t"] += 10
+                return super().read(n)
+
+        class SlowSock(FakeSock):
+            def makefile(self, *args, **kwargs):
+                return Slow(self.response)
+
+        def connect(ip, port, name, timeout):
+            return SlowSock(http(200, b"a" * 200_000))
+
+        refused(
+            self,
+            "https://example.com/",
+            "timeout",
+            True,
+            resolve=resolver(),
+            connect=connect,
+            monotonic=lambda: clock["t"],
+        )
+
+    def test_deadline_spans_hops_and_connect_gets_remaining_time(self):
+        clock = {"t": 0.0}
+        seen = []
+
+        def connect(ip, port, name, timeout):
+            seen.append(timeout)
+            clock["t"] += 15
+            return FakeSock(http(302, Location="/next"))
+
+        refused(
+            self,
+            "https://example.com/",
+            "timeout",
+            True,
+            resolve=resolver(),
+            connect=connect,
+            monotonic=lambda: clock["t"],
+        )
+        self.assertEqual(seen, [20.0, 5.0])
+
+
 class OutcomeTests(unittest.TestCase):
     def test_body_over_2_mib(self):
         connect, _ = connector(http(200, b"a" * (2 * 1024 * 1024 + 1)))
@@ -299,7 +401,7 @@ class OutcomeTests(unittest.TestCase):
                 + source_fetch.fetch.__code__.co_kwonlyargcount
             ]
         )
-        self.assertEqual(names, {"url", "resolve", "connect", "now"})
+        self.assertEqual(names, {"url", "resolve", "connect", "now", "monotonic"})
 
 
 if __name__ == "__main__":
