@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.9.0"
+version: "1.9.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-10-31"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -579,7 +579,9 @@ originate from the actual n8n worker; host probes prove a different path.
     candidate validation, duplicate/conflict handling, restart recovery,
     bounded retry and durable-receipt reconciliation. TSK-0022 owns W79-W83
     and reports SOURCE, SYNTHETIC, API_COMPATIBILITY, N8N_NATIVE,
-    SERVER_B_NATIVE and DELIVERY separately. Exact Gateway contract/fixtures,
+    SERVER_B_NATIVE and DELIVERY separately. Dispatch additionally requires
+    producer-authenticated collection evidence, reported as PRODUCER_AUTH; a
+    structural evidence check alone never authorizes delivery. Exact Gateway contract/fixtures,
     native worker networking/authentication and actual durable persistence
     remain required blocked lanes until supplied and approved. Source-only
     Publisher or simulated adapter evidence does not close this criterion.

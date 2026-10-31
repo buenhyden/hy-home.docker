@@ -762,15 +762,27 @@ README `Companion Evidence v1 계약` section; candidate producer v1.0.0 fields 
    `scheduled_instant`) and the SHA-256 of the exported candidate bytes, one
    record per candidate item in the same order; items without a source URL
    make the whole run unverifiable.
-4. Propose a producer authentication mechanism the Publisher can verify and the
-   same-account LLM tool and exporter stages cannot forge, with key custody and
-   rotation. Its approval is the trust-anchor precondition.
+4. Producer authentication is decided (2026-10-31): a restricted producer
+   account outside the LLM tool and exporter account holds an Ed25519 key and
+   signs each finished Companion (workload README, Producer authentication).
+   Provide that account, the public key and custody/rotation evidence for
+   review; adding the key to `producer-keys.json` is the trust-anchor step.
 5. Write to `<evidence-root>/SHA256(job_id NUL run_id).json` and validate
    against `tests/fixtures/companion-*-v1.json` plus `publisher/evidence.py`.
 
 Also re-align the exporter with the SPEC-0247 validator: either regenerate or
 retire pre-change exports, and change `schema_version` whenever the item field
-set changes. Acceptance: real runs verify with zero rejections; crash injection between fetch
+set changes. Mapping from the current `acquisition_receipt.py` to Companion v1: one
+Companion per run built from that run's receipts in candidate item order;
+`canonical_url` to `source_url` and `fetched_url`; `content_digest` to
+`body_sha256`, with the definition fixed to the decoded response body;
+`acquisition_completed_at` to `fetched_at`; `acquisition_mode` to `cache.hit`,
+with the origin receipt's time kept as `fetched_at` for cache hits;
+`tool_call_id` unchanged; only `success` maps to `complete`, so
+`partial_failure` blocks the run. Sign the finished Companion from the
+restricted producer account and write the `.sig` before the Companion.
+
+Acceptance: real runs verify with zero rejections; crash injection between fetch
 and write yields no unbound item; a forged record from the exporter account is
 rejected by the approved mechanism.
 
@@ -778,7 +790,10 @@ rejected by the approved mechanism.
 
 1. Keep the Gateway on loopback `127.0.0.1:8787`; expose it only through an
    approved TLS terminator on `192.168.0.22` with a DNS name resolvable from the
-   n8n worker on server A and a certificate chain the worker trusts.
+   n8n worker on server A and a certificate chain the worker trusts. Server B is
+   Windows 11 with WSL2: report where Docker Engine runs, whether WSL uses NAT or
+   mirrored networking, the Windows firewall rule for 443 limited to source
+   `192.168.0.13`, and the CA the worker must trust.
 2. Restrict the entry to server A (`192.168.0.13`) and the paths
    `POST /v1/ingestions` and `GET /v1/ingestions/{id}`; later read tools need
    `GET /v1/candidates` and `GET /v1/summary` only.
@@ -817,11 +832,102 @@ JSON plus SHA-256 is not authentication; prefer a restricted producer account,
 protected handoff and independent verifier) matches the admission condition
 above. The controller ran the suite: 151/151 with the added rejection subtests.
 
+### Producer authentication and gate unification — 2026-10-31
+
+Start state: origin/main `31b92f95e`, local main fast-forwarded and clean; the
+earlier Codex worktree no longer exists and no PR was open. Main's validator
+is still `957d047c…`. This slice changes no Manifest Outbox, other workflow or
+Ollama overlay.
+
+Producer review. The Hermes lane added `acquisition_receipt.py` (source only,
+not wired to Cron). It writes one receipt per acquisition with temp file, fsync
+and hard-link publication, and a per-receipt "companion" bound to a candidate
+digest. Differences from the consumer contract: it is not a per-run Companion
+v1 document; `partial_failure` is accepted as bindable; its digest definition
+says raw response bytes; and producer identity is a self-declared string written
+by the same account, so it is not authentication. The required mapping is in
+the Hermes handoff below.
+
+Contract drift cross-check. Both validators ran on one copy of the live export
+root (19 files, manifest digest `8d412898b839bdc4`): main `957d047c` passes 8,
+blocks 5 private-infra candidates and fails 6; the Hermes inline validator
+`f454020c` passes 18 and fails 1 idea candidate whose idea source is gone. The
+two disagree on five pre-change 1.0.0 candidates (three devops lacking
+`uncertainty`, two ideas lacking `regulation`, `expected_revenue` and
+`profitability_claim`) and on the private-infra verdict. Policy decided here: a
+field-set change requires a new `schema_version`; same-version candidates with a
+different field set are not compatible; pre-change files stay in place and are
+never staged; Hermes may re-export from source under a new version without an
+Outbox conflict because those runs were never staged; and the Hermes pre-save
+check must judge identically to `957d047c`.
+
+Authentication design (single decision). A restricted producer account, separate
+from the Hermes LLM tools and exporter, holds an Ed25519 key and signs the final
+Companion v1 after the candidate is fixed. The detached signature
+(`hermes-companion-signature/1`, message `hermes-companion-evidence/1` NUL plus
+the Companion bytes) is written before the Companion and stored with it by
+`stage --evidence-root`; Outbox keeps it immutable. The Publisher reads only
+public keys from the tracked `producer-keys.json` (job scope, validity window,
+retroactive `revoked_at`, unique `key_id`). HMAC was rejected because the
+verifier would hold the forging key on the same account. The tracked store is
+empty, so every Hermes job remains blocked.
+
+Gate unification. `trust.authorize` is now the one decision consumed by
+`dispatch` (before credential I/O), `process_one`, `Outbox.bind_request`, and
+`GatewayReplayTransport` send and reconcile, which re-authorize and compare the
+request's trust token; `HttpTransport.send` requires that token for
+evidence-required jobs as defense in depth. No gate opens alone, and a key
+revoked after request binding closes binding, processing and replay. Request
+bytes, idempotency key, destination, contract revision and endpoint binding are
+unchanged. The Publisher HTTP timeout moved from 10 to 45 seconds so that it
+outlasts the workflow `executionTimeout` (30 seconds) and its Gateway request
+(20 seconds) while staying under the Traefik v3 default `readTimeout` (60
+seconds); a test asserts that order and that no workflow node retries.
+
+Ingress design (not applied). The existing `n8n` router keeps SSO. When the
+production path is fixed, a separate router admits only that exact webhook path,
+POST and an A-internal source, authenticated by n8n `headerAuth`; `/webhook/*` is
+not opened. Publisher-to-A and Worker-to-B trust and tokens stay separate, and an
+A-host probe is not Worker evidence.
+
+Independent security and code reviews found no Critical issue. Their Important
+findings were fixed: the runtime check requires `python3 -I` and that the key
+store, every publisher module and the `cryptography` package, with all
+ancestors, are neither owned nor writable by the running account (a checkout
+therefore cannot be a trust anchor; an isolated run from this checkout returns
+`store_unprotected`), a replay test now drives a genuinely uncertain bound record and shows
+reconcile reaching the network with a valid key and not after revocation,
+trust-blocked in-flight records count as `uncertain` with exit 1, and a trust
+failure inside request binding returns `blocked` instead of a terminal
+`failed`. Minor fixes: every store entry is validated, duplicate public keys
+are rejected, 401 after a lost response is tested, the pre-signature Outbox
+migration is tested, and stale docstrings were corrected. Not changed: rejection
+codes are not yet written as events, and `cryptography` (system package 41.0.7
+here) is not declared as a dependency.
+
+A re-review of the fix range confirmed the four Important fixes and raised the
+remaining library/interpreter gap, closed by the runtime check above; the
+Publisher must also run as a dedicated account distinct from the Hermes tools so
+that the Gateway credential is unreadable to them. Remaining Minor notes: no
+test injects a trust change between `process_one` and `bind_request`, such a
+race on an uncertain record is counted `blocked`, and root execution always
+blocks.
+
+Synthetic results on the controller: the workload suite passed 165/165 with no
+skip, adding real-signature dispatch (201, no resend, 401/403/409 without retry,
+outage and dropped responses reconciled only by identical replay) and trust
+negatives (forged key, tampered bytes, unknown key, malformed envelope, other
+run, other candidate digest, revoked, expired, not-yet-valid, wrong job scope,
+duplicate key id, bad public key, missing store, unsigned same-account JSON,
+immutable signature, restart, revocation after binding). Ruff passed. These
+results do not replace the earlier 151/151 for the prior revision. Server B
+TCP 22/443/8443 still did not connect from server A.
+
 ### Remaining blocked conditions and recovery
 
-- DELIVERY stays BLOCKED until both handoffs are accepted and one reviewed change
-  opens the policy, Outbox and transport evidence gates together, keeping
-  credential reads behind those gates.
+- DELIVERY stays BLOCKED until both handoffs are accepted and a reviewed key is
+  added to `producer-keys.json`; the gates already consume one trust decision,
+  so no further gate change is planned for admission.
 - Then: bind the workflow URL and credential reference, publish the workflow
   through the approved procedure, and run the W83 Native scenarios (outage and
   recovery, lost response, bad token/certificate, worker/runner path, sensitive
@@ -846,7 +952,9 @@ above. The controller ran the suite: 151/151 with the added rejection subtests.
 | Validator pin realignment | 23 | W83 | Draft/main diff, local corpus verdicts, pinned-byte, draft/changed/symlink rejection tests | Main `957d047c…`, local scratch exports | PASS | Post-PR #693 dispatch readiness — 2026-10-31 | required | - |
 | Gateway 1.1.0 compatibility | 23 | W82 | Ingestion POST request/receipt/error definitions vs pinned 1.0.0 | Blog-data dev `1a4cd60` | PASS | Post-PR #693 dispatch readiness — 2026-10-31 | required | - |
 | Companion evidence and dispatch | 23 | W83 | Evidence binding rejections, gate closure, loopback 201/200/401/409/503/drop, replay, credential privacy | Synthetic fixtures and loopback Gateway | PASS | Post-PR #693 dispatch readiness — 2026-10-31 | required | - |
-| Producer trust anchor | 23 | W83 | Authenticated Hermes direct-fetch records | Blocked: Hermes lane handoff not delivered | NOT_RUN | Handoff: Hermes producer lane (server A) | required | - |
+| Producer authentication verifier | 23 | W83 | Ed25519 signature, key store lifecycle and shared gate decision with negative tests | Synthetic keys; tracked store empty | PASS | Producer authentication and gate unification — 2026-10-31 | required | - |
+| Producer contract cross-check | 23 | W83 | Same snapshot through main `957d047c` and Hermes `f454020c` validators | Live export copy, manifest `8d412898b839bdc4` | PASS | Producer authentication and gate unification — 2026-10-31 | required | - |
+| Producer trust anchor | 23 | W83 | Real restricted producer account and reviewed key in `producer-keys.json` | Blocked: no producer account, key or signed run delivered | NOT_RUN | Handoff: Hermes producer lane (server A) | required | - |
 | Server-B TLS entry | 23 | W83 | DNS/TCP/TLS/auth from n8n worker | Blocked: Blog-data lane handoff; TCP probe from server A failed | NOT_RUN | Handoff: Blog-data Gateway lane (server B) | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, coverage, docs gates and independent review | Final Task-owned diff | NOT_RUN | Review and Completion | required | - |
 
@@ -871,8 +979,9 @@ Gates also passed. This integrates source only; criterion 23 stays pending.
 
 Earlier slices (before PR #694) recorded no commit, push, merge or deployment
 from this Task; PR #694 above is the first integrated Task slice. The later
-evidence-alignment slice is committed locally and awaits owner approval for
-push and PR. No deployment is claimed. Producer authentication, server-B TLS,
+evidence-alignment slice was committed locally at the time of that entry and
+then, with owner approval, merged as PR #695 (`31b92f95e`, 2026-10-31T02:15:09Z).
+No deployment is claimed. Producer authentication, server-B TLS,
 Native delivery evidence and operating acceptance remain separate pending work. Local source readiness
 does not imply operating readiness; resume the external-contract and operational
 lanes from these recorded boundaries.
