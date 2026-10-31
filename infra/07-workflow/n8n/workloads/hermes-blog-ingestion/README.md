@@ -259,43 +259,62 @@ Gateway로 각각 따로 연결합니다. 두 구간의 인증서 신뢰와 Toke
 승인 키로 서명된 Companion이 모든 항목의 실제 수집 시각을 결속하기 전에는
 발행기 전송이나 재전송을 시작할 수 없습니다.
 
-## Windows Blog-data 전달 설계 및 구현 인계 (2026-10-31)
+## Hermes host → n8n 직접 전송과 Windows Blog-data 인계 (2026-10-31)
 
-> **현재 상태: 설계 및 인계만 완료; 실제 서비스 연결·배포·Windows 작업 NOT_RUN.** 서버 B는 Windows(192.168.0.22)이고 Obsidian은 상시 실행되지 않는다. 기존 문서의 Linux/Docker 서버 B는 과거 가정이므로 배포 기준으로 사용하지 않는다. 기존 Gateway v1, Publisher, Outbox, n8n의 구현·합성 시험은 보존하며 재구현하지 않는다.
+> **현황:** 이 절은 최신 요구사항에 대한 아키텍처 결정 후보·실행 프롬프트다. 서버 A/B 실연결, 새로운 Hermes 플러그인, n8n 활성화, Windows 게시, 실제 Secret 사용과 E2E 검증은 모두 **NOT_RUN**. 기존 Publisher, Gateway v1 및 테스트의 완료·차단 증거는 그대로 유지한다.
 
-### 선택 배치
+### 실운영 토폴로지와 비교 근거
 
-| 경계 | 역할 | 구현 상태 |
-| --- | --- | --- |
-| 서버 A (Ubuntu 192.168.0.13) | 기존 Hermes 세 Cron + no-agent exporter + 제한 Publisher/SQLite Outbox + n8n/Valkey + 서버 A에 새로 배치할 Blog-data 소유 Linux Gateway | 기존 producer/Publisher/n8n 기반은 소스 존재. Gateway A 배치 NOT_RUN |
-| A의 export 경계 | 수신 DB에서 검증된 자료만 Blog-data-owned Resource 템플릿으로 완성 Markdown 생성, 버전/sha 고정, HTTPS export/read/ack 제공 | 신규 기능 필요, NOT_RUN |
-| 서버 B (Windows 192.168.0.22) | Windows 내장 PowerShell 5.1 + Task Scheduler로 주기적 HTTPS pull, hash 검증·파일 단독 게시·ack | 신규 기능 필요, NOT_RUN |
-| Blog-data | `30_PARA/33_Resources/R-<approved-research-slug>-Research/`에 research별 bundle, dashboard, 원문 인덱스, notes 관리 | 기존 템플릿/계약 재사용, 신규 router/consumer 필요 |
-| 공통 운영 | 기존 OpenBao, Traefik, n8n 관측 및 알림 재사용 | 실제 credential, TLS, 방화벽, 운영 실행 NOT_RUN |
+- **A = Ubuntu 192.168.0.13:** Hermes Agent는 **Docker 밖의 호스트 프로세스**. n8n·Valkey·Traefik·OpenBao 및 다른 hy-home 서비스는 Docker. Hermes가 같은 서버에 있다는 사실은 n8n container network에 자동 접속한다는 뜻이 아니다.
+- **B = Windows 192.168.0.22:** 실제 Blog-data Git checkout과 Obsidian Vault가 있다. Obsidian은 열려 있지 않아도 노트 파일이 생성되어야 한다. Windows에 새 프로그램/WSL/Docker/수신 서비스 설치 및 Vault 이전을 하지 않는다.
+- **최우선 직접 전송:** Hermes Cron의 결과 → Hermes 사용자 Plugin의 제한된 `submit_research_report` 도구 → **host-to-n8n HTTP POST**(기존 인증 Webhook, 개별 허용 경로) → 기존 n8n Gateway 전달 → 서버 A에 **Blog-data 소유 Gateway v1/SQLite** → Resource Export 준비 → B의 Windows 내장 PowerShell/Task Scheduler HTTPS Pull → 로컬 Vault 게시 및 A ACK.
+- **복구 경로:** 기존 file-based no-agent exporter `84d3f689378b` / Publisher `stage`와 SQLite Outbox는 직행 전환을 검증할 때까지 유지한다. 직접 경로에도 durable Outbox가 필요하면 **현재 Publisher Outbox API를 재사용**하고 stdin/구조화 인메모리 입력을 추가한다. SQLite 저장은 데이터 전송용 파일 투입·폴링과 다르다. Cron 중복 등록이나 평행 Outbox/DB는 만들지 않는다.
+- **Hermes 공식 기능:** Hermes Plugin은 `ctx.register_tool(name=..., toolset=..., schema=..., handler=...)`를 지원한다. 일반 `hooks.outbound`는 agent lifecycle **best-effort fire-and-forget** 이벤트, 응답 무시·실패 시 drop 가능이므로 **뉴스 본문 및 영속 receipt 전달의 정본으로 금지**한다. Hermes의 inbound webhook은 반대 방향이다.
+- **A→B 선택:** HTTPS **B Pull**은 A에 Vault 쓰기 권한을 주지 않고 Windows의 기존 NTFS에 게시한다. Windows 내장 스케줄러만 사용한다. `A→B SMB` 직접 쓰기도 비교: B 측 작업이 없지만 A에 Resource 경로 쓰기 권한이 필요하고 CIFS/SMB rename-no-replace/fsync 및 경로 공격을 실제 테스트해야 하므로 기본 경로에서 배제한다. GitHub PR로 뉴스/아이디어를 운반하지 않는다.
 
-흐름: Hermes의 직접 HTTP 수집/Receipt → 제한된 서명 생산자(Companion Ed25519) → 기존 Publisher/Outbox → 기존 n8n → A의 Blog-data Gateway v1 SQLite 영속 수신 → 신규 export 준비 → B의 HTTPS Pull → B 로컬 NTFS 원자 게시 → A의 완료 ACK. 기존 `/v1/ingestions`의 `persisted:true`는 수신 SQLite commit만 뜻하며 Windows Vault 게시 완료가 아니다.
+### 현존 소스 상태 및 차단 조건
 
-**대안 검토:** Linux A가 Windows SMB 공유에 직접 쓰면 B의 예약 작업은 사라지지만 A에 광범위한 Vault 쓰기 권한을 부여하고, CIFS의 hardlink/rename/fsync 보장이 기존 Capture의 로컬 파일 가정과 다르다. 증명되지 않은 SMB 직접 게시 대신 B pull을 기본 경로로 선택한다. Windows OpenSSH/SFTP, Windows Docker/WSL, Obsidian Local REST, GitHub PR 데이터 전달도 기본 구조로 사용하지 않는다.
+1. `workflow.json`은 `active:false`이고 `headerAuth` Webhook과 Gateway relay/200·201 persisted 검사까지 **이미 작성**되어 있다. Webhook 경로는 `hermes-blog-ingestion-contract-hold`이며 현재 Gateway URL은 `https://gateway.invalid/v1/ingestions`이다. 운영 목적지·credential·방화벽·외부 Runner 네이티브 동작은 아직 연결되지 않았다. **새 동등 워크플로를 중복 생성하지 않고 기존 것을 개정한다.**
+2. 기존 `publisher/gateway_adapter.py`는 Blog-data v1의 고정 계약을 구현하지만 authoritative `scheduled_at`, `collected_at`의 근거를 자동 생성하지 않는다. 현재 후보의 `collection_evidence` 텍스트는 fetch 증거가 아니다. `hermes-companion-evidence/1` + Ed25519 서명 및 제한 signer/key registry가 미충족이면 `blocked`를 유지한다.
+3. **기존 신뢰 정책을 직접 전송 때문에 우회하지 않는다.** 직접 수집의 출처 응답·실제 시간·내용 SHA와 별도 보호 서명 또는 동등하게 검증되는 **정식 새 계약/ADR/테스트**가 있어야 자동 수집·전송 승인 가능하다. 새 신뢰 경계가 정식 승인될 때까지 구조화 webhook에 도착한 자료는 격리/준비만 허용하고 Resource 공개·Capture는 금지한다.
+4. 수신 `200/201 persisted:true`는 A Gateway SQLite 수신 성공이지 B 로컬 노트 게시 성공이 아니다. B 완료는 별도 export_id/document SHA를 바인딩한 확인(ACK)으로만 기록한다. n8n 자체 queue/Valkey는 원본 보존 대체가 아니다.
 
-### Hermes Agent에 전달할 정확한 구현 요청
+### Hermes Agent에 실제로 전달할 구현 프롬프트 (무엇·어떻게·왜)
 
-1. **무엇:** 이미 등록된 `6eabd835f969`(전략 뉴스), `25674fbc0bf3`(DevOps 브리핑), `8d0925bc571d`(1인 사업 아이디어)의 이메일 발송과 일정은 유지하면서 구조화 Candidate v1과 검증된 수집 증거를 생성한다. 민감한 인프라 보고서 `3c3f81a925e0`는 제외한다.
-2. **어떻게:** `hermes cron list`, `hermes cron status`와 버전별 명령 도움말로 현재 ID·상태·출력 원본을 확인한다. 기존 no-agent exporter `84d3f689378b`를 재사용하고 중복 Cron을 만들지 않는다. 허용된 `~/.hermes/cron/output/<job-id>/`와 기존 아이디어 root만 읽는다. Candidate에는 immutable job/run/fire, source_ref/hash, item 제목·요약·출처 URL·검증 상태를 그대로 보존한다.
-3. **원천 근거:** 모델이 작성한 URL/시간은 증거가 아니다. 허용된 직접 HTTP 수집에서 최종 HTTPS URL, 실제 response byte hash, HTTP 2xx, fetched_at, tool_call_id, cache 정보와 scheduled_at의 신뢰 가능한 출처를 별도 Receipt로 남긴다. 실제 값이 없거나 일부 항목 실패 시 전체 보고서를 보류한다. timestamp는 추정·보간하지 않는다.
-4. **신뢰:** 기존 `hermes-companion-evidence/1` 및 `hermes-companion-signature/1` 계약을 적용하고, Hermes 실행/Publisher와 분리된 제한 signer 계정에서 Ed25519 서명한다. 개인키는 Hermes, n8n, Publisher, Git에 주지 않는다. 기존 key registry가 비어 있는 동안 `blocked`를 유지한다. 키 교체/폐기와 reviewer 승인 없는 trust 우회는 금지한다.
-5. **연결과 검증:** 기존 Publisher `stage`/`dispatch`만 사용한다. 실제 인증·Gateway URL·장기 실행 스케줄을 임의로 켜지 않는다. 세 job 각각 재실행, 중복/충돌, 404/5xx, 부분 수집, URL 리디렉션, 잘못된 타임스탬프, 서명 위조, 키 회수, 이메일 성공과 Gateway 실패 분리를 검증한다. 기존 이메일은 수집 데이터의 정본이나 전송 ACK로 간주하지 않는다.
-6. **왜:** 현재 후보의 `collection_evidence`는 실제 HTTP 수신 바이트의 출처 증명이 아니며 운영 timestamp/signature 근거가 누락되어 있다. 이것을 보완하지 않고 전달하면 재요약이나 출처 위조가 Vault까지 전파된다.
-7. **인계:** 작업별 현재/변경 전후 Cron ID, 읽은 파일과 정확한 검증기 revision/hash, 실패 코드, 관련 테스트와 rollout/rollback, 실제 NOT_RUN 항목을 남긴다. Superpowers를 사용할 수 있으면 Using Superpowers → Brainstorming → Executing Plans/Subagent Driven Development → Finishing A Development Branch 순서를 기존 Spec/Task 및 승인 규칙 아래서 적용한다.
+**무엇:** Ubuntu **호스트**에서 실행 중인 Hermes Agent에 공식 플러그인 인터페이스로 `submit_research_report` 도구를 추가한다. 이미 등록된 `6eabd835f969`(전략 뉴스), `25674fbc0bf3`(DevOps), `8d0925bc571d`(사업 아이디어) Cron의 스케줄·이메일 결과는 유지하고, 동일 실행의 구조화 결과를 **별도 파일 투입 없이** 기존 n8n 인증 Webhook으로 전달한다. 비공개 `3c3f81a925e0`(인프라 보고)는 범위 제외다.
 
-### hy-home.docker에 전달할 정확한 구현 요청
+**어떻게 1 — 현황 확인:** Hermes CLI 버전, `hermes cron list`/`hermes cron runs`/`hermes hooks list`/`hermes tools`와 기존 Job 원본·툴셋·실행 상태를 읽기 전용 확인한다. 실제 명령의 --help/현재 설치 코드에서 명령 지원을 검증한다. Cron job IDs, cadence, 성공 메일 주소, no-agent exporter `84d3f689378b`, Publisher 보호설치를 정확히 기록하고 먼저 **NO_CHANGE / MODIFY / RETIRE**로 분류한다. 기존 `jobs.json`을 직접 패치하지 않고 `cronjob_manage` 또는 현행 CLI로만 Cron을 변경한다.
 
-1. **무엇:** 기존 Hermes Publisher·Outbox·n8n/Valkey·Traefik·OpenBao·관측체계로 A의 durable store-and-forward를 구현하고 Blog-data의 새 Windows export 계약을 호스팅한다.
-2. **어떻게:** main HEAD와 `SPEC-0204-TSK-0022`, `SPEC-0247`, 기존 n8n Hermes 워크로드/검증 스크립트를 재점검한다. 항목을 `NO_CHANGE`/`IMPLEMENT`/`RETIRE`로 분리한다. Blob이나 계약을 복제하지 말고 Blog-data가 검증한 Gateway 이미지 digest와 API v1 고정 계약을 사용한다. A의 private container network에 배치하고 n8n의 기존 Gateway 전달 목적지만 변경한다.
-3. B 전용 HTTPS 조회/ACK는 Blog-data export API에 위임하며 A Traefik으로 서버 B(192.168.0.22) 접근만 허용한다. IP 주소 접속만으로 TLS 검증이 해결된다고 가정하지 않는다. 인증은 기존 Secret 관리와 독립 read/ack scope를 사용하며 token·URL credential을 Git, workflow JSON, 로그에 기록하지 않는다.
-4. `received`/`export_prepared`/`delivered_acknowledged`/`retryable`/`quarantined`/`conflict`를 분리한다. 수신 200/201의 persisted receipt를 B 완료로 승격하지 않는다. timeout/503만 고정 payload/idempotency key와 최대 5회 bounded backoff, 401/403/409는 차단·알림한다. B offline/restart 상태에서 outbox를 영속 보존한다.
-5. 기존 Prometheus/Grafana/Alertmanager 경로로 backlog depth/age, last successful ack, failure/duplicate/conflict/signature rejection/lag를 수집한다. 불필요한 Airflow DAG, 신규 Kafka, Qdrant, SeaweedFS·DB를 추가하지 않는다. 필요성이 실측될 때만 신규 서비스 제안한다.
-6. 기존 회귀 및 합성 통합 시험에 B 장기 오프라인, ack 분실, 인증/TLS 오류, 키 회전, 중복/충돌, 디스크 부족, 장애 재시작, no-clobber를 추가한다. 실제 credential 사용·n8n 활성화·Compose 재생성·실 서버 포트 개방은 별도 운용 승인과 복구 계획 없이 수행하지 않는다.
-7. **왜:** 이미 완료된 Publisher/Outbox/API를 다시 만들지 않고 Windows에 추가 프로그램이나 WSL을 설치하지 않으며 서버별 성공 상태를 정확하게 추적하기 위함이다. Linux-B, PR-as-data, 오래된 런북·스크립트·fixture·deprecated 계약은 소유자를 찾아 수정·폐기한다. 실제 수정·검증은 기존 Spec/Task에 기록하고 별도 구현 PR로 수행한다.
+**어떻게 2 — Plugin:** Hermes 공식 `~/.hermes/plugins/<name>/{plugin.yaml,__init__.py,schemas.py,tools.py}` 계약과 현재 설치 버전의 `register_tool` API를 확인한다. `submit_research_report`는 `job_id`, `run_id/fire_id`, `report_kind`, `items`, `source_text`, authoritative timestamp/evidence, canonical hash/idempotency key만 허용한다. 서버 대상/인증/임의 파일 경로를 Agent 인자로 허용하지 않는다. 세 작업 allowlist, 크기(1 MiB/100 item), 중복 키, 비밀/PII/내부 경로, HTTPS/TLS/redirect 금지, event identity, JSON schema를 **툴 핸들러에서** 검증한다. Agent의 자연어 프롬프트는 보안 권한의 정본이 아니다.
+
+**어떻게 3 — Provenance:** Hermes 웹 조사에서 직접 취득한 응답은 HTTP final URL, 실제 fetched_at, 2xx 상태, response-body SHA-256, cache/tool-call ID를 제한된 획득 컴포넌트가 기록해야 한다. 모델 생성 문자열로 receipt를 채우지 않는다. 기존 `hermes-companion-evidence/1` 및 제한된 **별도** Ed25519 signer의 서명·키 수명 조건을 만족하거나 새 직접 경로 신뢰 계약을 승인받는다. 미충족·증거 누락·원천 미확인은 reject/quarantine으로 명확히 구분한다. 이미 보호된 Publisher 키와 제한 계정 정책을 낮추지 않는다.
+
+**어떻게 4 — 전송:** 전용 도구는 고정 n8n Webhook endpoint만 사용하며 `headerAuth`/허용된 인증 방식의 비밀은 보호된 **호스트 Secret** 저장소에서 핸들러만 읽는다(도구 인자, Agent 메시지, stderr/stdout, Git, test fixture에 없음). 정상 요청은 job/run/idempotency/source hash 바이트를 고정하고 n8n이 Gateway의 `200/201 persisted:true`를 반환할 때만 `ingestion_received`를 기록한다. 503/타임아웃은 동일 바이트로 bounded retry와 기존 Outbox reconciliation; 401/403/409/422는 재시도 금지·운영자 점검. 응답 분실, unknown 결과, 재실행은 같은 key로 대조하고 원문·메일의 완료와 독립 상태를 유지한다.
+
+**어떻게 5 — Cron prompt 수정:** 기존 뉴스·아이디어 생성 조건과 이메일 전문은 그대로 유지하고, 검증된 `submit_research_report` 호출을 별도 단계로 수행하도록 세 job의 프롬프트만 **최소 변경**한다. 도구 오류·증거 거부·201 미확인 시 외관상 성공 메시지를 쓰지 말고 Cron 실패/partial 상태를 명시한다. 장애로 report가 사라지지 않는지 기존 `~/.hermes/cron/output`(Hermes 기본 실행 결과 저장소)와 durable Outbox를 통해 복구 시험한다. 플러그인 자체는 호스트 설치물이며 Docker 컨테이너나 Windows에 배포하지 않는다.
+
+**어떻게 6 — 검증/완료:** 기존 세 Cron 각각 합성 POST를 실 n8n이 아닌 로컬 fake webhook으로 검증하고, 잘못된 job, signer/key, URL, fabricated timestamp, 부분 수집, PII, 401, 409, timeout, 503, restart, receipt 분실, 동일 key replay, 이메일 성공/저장 실패, 7일 B 오프라인을 포함한다. n8n 실연동, 비밀 설치·회전, Cron 등록/수정은 운영 환경의 별도 승인과 되돌리기 계획 없이는 실행하지 않는다. 실행 전/후 Job ID·설정 diff·테스트 exit·실제 PASS/BLOCKED/NOT_RUN을 보고한다.
+
+**왜:** Hermes→n8n 전달을 불필요한 파일 polling에 의존하지 않고 직접 연결하되, 출처 신뢰·서명·정확한 수신 확인·재처리 가능성을 희생하지 않기 위해서다.
+
+**Skills:** 가능할 때 Superpowers Using Superpowers → Brainstorming → Executing Plans(작업 분할) → Subagent Driven Development(파일 소유 분리) → Finishing A Development Branch(검증/커밋) 순서로 실행하되, 현재 저장소의 승인과 Spec/Task 규칙을 우선한다.
+
+### hy-home.docker에 전달할 구현 프롬프트 (무엇·어떻게·왜)
+
+**무엇:** 기존 `workflow.json`, 제한 Publisher/SQLite Outbox, n8n/Valkey, Traefik, OpenBao 및 모니터링 서비스에 **Hermes 호스트 → n8n 직접 POST**를 추가하고, A에서 Blog-data Gateway v1/Export API를 호스팅하는 운영 경로를 만든다.
+
+**어떻게:**
+1. `main` 최신 HEAD와 `SPEC-0204-TSK-0022`, `SPEC-0247`/현행 검증기, n8n `workflow.json`, delivery/adapter/transport, 기존 회귀, Blog-data API/fixture의 정확한 커밋을 확인한다. 완료 기능은 `NO_CHANGE`로 표시하고 **재구현하지 않는다**. Hermes가 Docker가 아님을 Compose/Network 문서와 테스트에 반영한다.
+2. **기존 Webhook 단일화:** `hermes-blog-ingestion-contract-hold` 기존 워크플로를 소유 Task에서 개정하여 실제 계약 확정 전 `active:false`를 유지한다. Hermes 호스트가 접근하는 **별도 제한된 ingress**(기존 Traefik의 정확한 Webhook path 전용 ACL/TLS)만 추가한다. n8n 관리 UI와 다른 웹훅을 익명 노출하지 않는다. 전면 `sso-auth`를 우회하는 광범위 라우팅도 금지한다. n8n Webhook의 Header Auth/제한 URL/요청 크기·rate limit과 Gateway ingest credential은 서로 다른 Secret이다.
+3. **기존 Gateway 재사용:** Blog-data 소유 `scripts/lib/ingestion/**`를 검토된 소스·이미지 digest로 서버 **A의 별도 격리된 Linux 컨테이너**에서 호스팅한다. Blog-data Git/Vault 전체를 컨테이너에 마운트하지 않는다. `.github/docker/ingestion.compose.yaml`은 원래 B 준비 예제이므로 A로 옮기는 계약/Compose는 Blog-data 소유자와 협의하고 신규 저장소를 복제하지 않는다.
+4. **동일 계약 유지:** Hermes 플러그인에서 이미 `ingestion-v1.schema.json`을 만족한 report가 들어오면 n8n은 검증→Gateway 전달→receipt 반환만 담당한다. n8n의 계산으로 `scheduled_at`/`collected_at`를 만들어 넣거나 item/source 순서를 바꾸지 않는다. 초과 payload/unknown field/신뢰 위반/민감자료를 거부 또는 명확히 격리한다. 수신 `persisted:true`와 B 게시 ACK는 독립이다.
+5. **Resource 전달:** Blog-data 소유 신규 versioned Resource export API에 대해 Traefik B 전용 HTTPS read/ack 접근을 구성한다. Windows B에는 Docker·WSL·별도 프로그램을 설치하지 않는다. 기존 OpenBao/monitoring을 재사용한다. 단순 비동기 n8n 실행 성공을 `stored`로 표시하지 않는다. B 오프라인 동안 A DB와 export 패키지를 보존한다.
+6. **검증:** n8n 비활성 fixture/native import, 제한 Webhook auth, host-to-container TCP/TLS/DNS 및 timeout, exact API fixture/duplicate 200/new 201, error 400/401/403/409/422/503, 재전송, Gateway restart, Valkey worker, Secret 미노출, certificate verification, host 방화벽, producer 재시작, 원격 B ack를 계층별 합성 검증한다. `workflow.json`의 날짜 검증은 KST offset 전날 UTC 날짜도 통과하는지 회귀로 점검한다. 기존 상태·보안 게이트를 약화시키지 않는다.
+7. **문서/정리:** 기존 Spec/Task/README/RUN-0053, infra inventory, gateway/n8n 운영 문서, test fixture·script에서 Hermes Docker 가정, Linux B, 실제 배포 완료 오인, 파일 exporter 필수 가정, legacy/deprecated API/fixture를 검색한다. 정본·사용처를 확인하여 `UPDATE`/`RETIRE`하고 archive 완료 기록은 삭제/재서술하지 않는다. 코드 수정은 별도 Task와 검증된 PR로 한다.
+
+**왜:** 이미 작성된 n8n→Gateway API·재전송 엔진을 활용하고, Hermes 호스트와 n8n 컨테이너 간 명확한 네트워크·인증 경계를 운영하기 위해서다.
+
+**완료 조건:** Linux 호스트→n8n→A Gateway 201 persisted까지 합성 E2E, 장애 시 재전송, 이중 실행 안전성, Windows A→B 수신/ACK 연계, 템플릿/문서 품질 검사, rollback evidence가 모두 PASS인 경우에만 완료를 주장한다. 실제 운영 비밀·스케줄·포트·서비스 활성화는 별도 준비와 승인 이후에만 한다.
 
 ## Related Documents
 
