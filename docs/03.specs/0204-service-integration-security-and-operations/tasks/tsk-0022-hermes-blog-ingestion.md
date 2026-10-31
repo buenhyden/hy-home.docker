@@ -1041,7 +1041,7 @@ DNS/`extra_hosts`; workflow URL/credential binding and publication.
 | Protected install on server A | 23 | W83 | Real `hermes-publisher` account loads `/opt/hermes-publisher` release with `python3 -I` | Blocked: account, path and service need separate approval | NOT_RUN | Protected install and ingest-only contract — 2026-10-31 | required | - |
 | Producer trust anchor | 23 | W83 | Real restricted producer account and reviewed key in `publisher/producer-keys.json` | Blocked: no producer account, key or signed run delivered | NOT_RUN | Handoff: Hermes producer lane (server A) | required | - |
 | Server-B TLS entry | 23 | W83 | DNS/TCP/TLS/auth from n8n worker | Blocked: Blog-data lane handoff; TCP probe from server A failed | NOT_RUN | Handoff: Blog-data Gateway lane (server B) | required | - |
-| Source/static/review | 8, 23 | W83 | Focused tests, coverage, docs gates and independent review | Final Task-owned diff | NOT_RUN | Review and Completion | required | - |
+| Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | PR #696 protected-install slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
 
 ## Criterion Acceptance
 
@@ -1070,6 +1070,15 @@ No deployment is claimed. Producer authentication, server-B TLS,
 Native delivery evidence and operating acceptance remain separate pending work. Local source readiness
 does not imply operating readiness; resume the external-contract and operational
 lanes from these recorded boundaries.
+
+2026-10-31 protected-install slice: an independent whole-branch review of
+`7629bbad4..` found no Critical issue; all five Important findings were fixed
+with failing tests first and re-verified (169 tests, install check 17/17 on the
+final head). Deferred minors: skipped non-existent `sys.path` entries, about
+14 ms per runtime check (50-60 ms per record), no archive member size cap,
+undocumented fail-closed symlinked `/opt`, and a Traefik timeout check limited
+to two files. The slice updates PR #696; CI and merge are recorded on the PR.
+CI does not run this workload's suite, so these results are local evidence.
 
 Design self-review checked scope, dependencies, immutable Outbox interfaces,
 coverage of failure cases, and protected runtime exclusions against the direct
