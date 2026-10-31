@@ -1,0 +1,24 @@
+# Runs the queue attester once; the timer fires it. The operator points
+# /opt/hermes-publisher/current at an installed release
+# (/opt/hermes-publisher/releases/<commit>); install.py itself creates no
+# `current` link. Secrets under /etc/hermes-attester/ are root-owned, mode 0600
+# for hermes-attester, and read-only here; state and evidence are the only
+# writable paths.
+[Unit]
+Description=Hermes attester: attest queued Blog-data reports
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=hermes-attester
+Group=hermes-attester
+ExecStart=/opt/hermes-publisher/current/venv/bin/python -I -m publisher.cli attest-queue --gateway https://blog-export.hy.home.arpa --auth-header-file /etc/hermes-attester/auth-header --signing-key /etc/hermes-attester/signing-key --key-id hermes-attester-1 --state-dir /var/lib/hermes-attester/state --evidence-dir /var/lib/hermes-attester/evidence
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=/var/lib/hermes-attester/state /var/lib/hermes-attester/evidence
+UMask=0077
