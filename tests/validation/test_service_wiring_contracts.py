@@ -680,7 +680,14 @@ class BlogIngestionGatewayTests(unittest.TestCase):
         self.assertFalse(mounts["/data"].get("read_only", False))
         for mount in mounts.values():
             self.assertEqual("bind", mount["type"])
-            self.assertFalse(mount["bind"]["create_host_path"])
+        # Some Compose versions omit false defaults when rendering; read the source.
+        source = yaml.load(
+            (ROOT / "infra/07-workflow/n8n/docker-compose.yml").read_text(),
+            Loader=yaml.SafeLoader,
+        )["services"]["blog-ingestion"]["volumes"]
+        self.assertEqual(
+            [False, False], [v["bind"]["create_host_path"] for v in source]
+        )
 
 
 if __name__ == "__main__":
