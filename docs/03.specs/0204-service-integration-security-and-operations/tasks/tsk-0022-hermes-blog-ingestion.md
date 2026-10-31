@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1208,6 +1208,161 @@ named authentication). Fixed test-first: the route tests now require
 routers carry it live, the E2E Traefik receives the real chain parts, and the
 routers are listed with their authentication. Important findings (stale
 evidence rows, section placement) and the binding wording were corrected.
+
+### Trust adapter design — 2026-11-01
+
+Owner-approved design for the component that opens Export. Decisions marked
+as the owner's were answered directly; the read endpoints, n8n screen key,
+job limit placement and `cli attest` move are the controller's calls,
+accepted with the design. Handoff prompts for the Blog-data and Hermes
+workspaces carry the matching contract and test steps. Implementation in this
+repository starts once the Blog-data `attestation/2` contract is merged on
+`dev`, so its final field names and bounds are pinned, not guessed.
+
+#### Intent
+
+Hermes Cron reports reach the Blog-data Gateway on server A as `received`
+through the direct path (Hermes plugin → n8n → Gateway, PR #699/#703). Nothing
+may become an Export `ready` (and so reach the Windows Vault) unless a
+component that is not the LLM has proven, per item, that the cited source is
+real and says what the item quotes. Export is closed today (no `export` block in
+the Gateway config) because no such component exists.
+
+The owner wants to stop three things:
+
+1. Sources or acquisition times invented by the LLM.
+2. Content changed between submission and the Vault.
+3. Unapproved jobs mixed in.
+
+#### Goals
+
+- Per-item verification: an item reaches `ready` only when its source URL was
+  fetched by the verifier, its quotes appear verbatim in that page, and its
+  numbers/dates/Latin-script proper nouns appear in those quotes or the page.
+- Partial reports pass partially: verified items go to the Vault, the rest stay
+  `held` with reason `SOURCE_UNVERIFIED` on server A (owner decision).
+- Acquisition time is the verifier's clock at fetch, never an LLM-written value.
+  The Vault note shows the verifier's per-item `fetched_at` and `final_url`
+  (owner decision); the LLM-written `collected_at` is shown only as the report's
+  writing time.
+- One signature binds report content, the verified item list and the evidence.
+- Rendering stays Blog-data's: Resource templates and the profile registry
+  (`resource-export/2+…`); the verifier pre-checks required profile fields and
+  does not sign items that would fail rendering.
+
+#### Non-goals
+
+- No model-based judgement (owner decision: no judge model). An item whose quotes
+  are real but whose summary misreads them is left to human review: Blog-data
+  writes Hermes notes as `draft` ("before a person checks the source"), and the
+  owner accepted that this review covers the gap.
+- No change to the direct submission path's shape, the Publisher Outbox or its
+  dispatch. The n8n "Screen Ingestion" allowlist gains `source_quotes` only
+  (one-key change, republished as an approved ops unit).
+- No new service on Windows B; no Hermes migration to Docker.
+
+#### Anti-goals (failure even if it works)
+
+- A report reaches `ready` with a time or source the verifier did not observe.
+- Any manual "trusted=true", force flag or bypass path.
+- The signing key readable by Hermes, n8n, the Publisher or the repository.
+- Fetched page text treated as instructions anywhere.
+
+#### Decided shape
+
+##### Blog-data contract change (Blog-data lane, `dev` PR first)
+
+- Item schema gains `source_quotes`: 1–3 strings per item, original language,
+  bounded length (builder picks bounds with Blog-data; suggest ≤ 500 chars each).
+  Optional at ingest so existing producers keep working; an item without quotes
+  can never be verified.
+- `attestation/2`: the signed message adds `verified_items` (sorted by
+  `item_id`, each `{item_id, fetched_at, final_url}`) and `evidence_sha256` to
+  the v1 fields `{producer, job_id, run_id, fire_id, source_sha256,
+  content_sha256}`, under a new prefix `blog-data-attestation/2\0`. Body gains
+  the same two fields.
+- Gateway: candidates whose `item_id` is not in `verified_items` are `held` with
+  new reason `SOURCE_UNVERIFIED`. An empty list is valid and holds every item,
+  so a report with nothing verified is closed on record. Unknown or duplicate
+  ids are 422. Default: v1 is refused once v2 ships (no production v1 exists);
+  `publisher.cli attest` moves to v2.
+- Renderer: the note's acquisition time and source URL come from the attested
+  `fetched_at`/`final_url`; `collected_at` is labelled as report writing time.
+  Template revision and `template_version` change.
+- Read surface for the attester (scope `read`, producer-scoped):
+  `GET /v1/attestation-queue` lists report ids received and not yet attested;
+  `GET /v1/ingestions/{id}/request` returns the stored request bytes so the
+  attester recomputes `content_sha256` itself instead of trusting a fingerprint.
+- New test vectors in `attestation-v2.vectors.json`; hy-home pins the merged
+  `dev` commit and rebuilds the image.
+
+##### Hermes lane (small plugin/prompt PR, not a rewrite)
+
+- `submit_research_report` schema accepts and forwards `source_quotes`.
+- The three research Cron prompts ask for verbatim quotes per item.
+
+##### Verifier + attester on server A (this repo)
+
+- One dedicated system account (e.g. `hermes-attester`), no login shell, not
+  sharing a group with Hermes, n8n or the Publisher account.
+- systemd timer every few minutes; reads the attestation queue and stored
+  requests from the Gateway with one credential holding `attest` + `read`,
+  registered under producer `hermes`. It reaches them through a new A-host-only
+  Traefik route (approved ops unit). It never reads Hermes files or the
+  Publisher Outbox.
+- Transient fetch failures (timeout, 5xx, connection) are retried for a window
+  (default 6 hours from first attempt, builder may tune); then the attester signs
+  whatever is verified, possibly an empty list. Local state records attempts so a
+  report is never re-fetched after it is signed.
+- Per item:
+  1. Fetch `source_url`: https only; refuse private, loopback, link-local and
+     the hy.home.arpa zone after DNS resolution (re-check each redirect);
+     ≤ 5 redirects, size cap, timeout; record final URL, status, response
+     SHA-256 and fetch time (UTC, verifier clock).
+  2. Extract text (HTML → text, stdlib or an already-locked dependency);
+     normalise whitespace, quotes and Unicode (NFKC).
+  3. Every quote must appear in the normalised text.
+  4. Every number, date and Latin-script proper noun in the item's title/body
+     must appear in the quotes or the page text. Numbers, dates and units are
+     normalised to values before comparison (owner decision): Korean and English
+     forms such as `10월 31일`/`Oct 31`, `30억`/`3 billion`, `30%`/`30 percent`
+     match; an expression the rules cannot parse holds the item.
+  5. Required Resource profile fields present.
+- Evidence file per report (JSON, canonical) stored only on server A in the
+  attester's directory: per-item fetch records, check results, verifier version.
+  Default: hashes only, no page body retained.
+- Sign `attestation/2` with an Ed25519 key readable only by that account
+  (reuse `publisher/attestation.py` key-custody rules: `load_signing_key`).
+- Unapproved jobs: the attester's own job allowlist and Blog-data
+  `research-map` both limit `ready` to news `6eabd835f969`, devops `25674fbc0bf3`,
+  business idea `8d0925bc571d`.
+- Idempotent: an already-attested report is skipped; Gateway replay answers 200.
+
+##### Operations
+
+- Gateway config gains the `export` block with the attester public key only
+  when the above is deployed and verified; that is the moment Export opens.
+- Key rotation/revocation follows RUN-0053 (remove key, restart Gateway).
+- Monitoring reuses existing signals: attester journal outcome counts
+  (`attested`, `held_items`, `rejected`, `retry`) and the Gateway export list.
+
+#### Left to the builder
+
+- Exact quote/size/time bounds, HTML-to-text method, proper-noun extraction
+  rule, timer interval, file layout under the attester account.
+- Whether verifier and attester are one module or two inside the workload.
+- Test design: synthetic pages served locally in tests (no real fetches in CI).
+
+#### Order
+
+1. Blog-data `dev` PR (`source_quotes`, `attestation/2`, `SOURCE_UNVERIFIED`,
+   renderer fields, read endpoints).
+2. Hermes plugin/prompt PR (quotes); source and rehearsal may run in parallel.
+3. hy-home PR: new Blog-data pin, n8n screen allowlist, A-host read route,
+   verifier + attester, synthetic E2E.
+4. Ops units, each approved: Gateway re-pin, workflow republish, read route,
+   account, key, token, Gateway `export` block, timer; only then the Hermes
+   plugin/prompt rollout.
 
 ## Evidence
 
