@@ -169,19 +169,9 @@ def _numbers(s):
 
 _NAME = re.compile(r"\b[A-Z][A-Za-z0-9&.\-]{1,}\b", re.ASCII)
 _SENT_END = re.compile(r"[A-Za-z0-9)\"'][.!?] $")
-# Capitalised only because they start a sentence; never treated as names there.
-_STARTERS = frozenset(
-    """The An This That These Those It Its He She We They You His Her Our Their My
-    Your And But Or So Yet Nor For If When While Although Though Because Since Unless
-    Until After Before As At By In On Of To From With Without Under Over Into About
-    Between During Through Is Are Was Were Be Been Being Has Have Had Do Does Did Will
-    Would Can Could Should May Might Must Shall Not No Yes However Also Then Thus
-    Therefore Meanwhile Moreover Furthermore Instead Still Just Now Today Yesterday
-    Tomorrow Here There What Which Who Whom Whose Why How Where Some Many Most Several
-    Both Each Every All Any One Two Three Other Another Such More Less Only Even
-    Additionally Overall Recently Currently Last Next First Second Finally Please Let
-    Monday Tuesday Wednesday Thursday Friday Saturday Sunday""".split()
-)
+# Grammar capitalises the first word of a field or sentence; a plain word there
+# ("Use", "Nvidia") is no evidence of a name, a mixed-case one ("OpenAI") is.
+_PLAIN = re.compile(r"[A-Z][a-z]+", re.ASCII)
 
 
 def _names(s):
@@ -189,7 +179,7 @@ def _names(s):
         if m[0] in _MONTHS:
             continue
         before = s[: m.start()]
-        if m[0] in _STARTERS and (not before or _SENT_END.search(before)):
+        if _PLAIN.fullmatch(m[0]) and (not before or _SENT_END.search(before)):
             continue
         yield m[0]
 

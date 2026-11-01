@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.7"
+version: "0.5.8"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1519,6 +1519,44 @@ and Export lists are filtered by producer); backup
 own `readConfig`, Gateway restarted healthy with `export_enabled:true`. The
 attester keeps its key `hermes-attester-1`. A second verifier key generated
 from the handoff note was not registered and the owner deleted it.
+
+### First end-to-end report on server A — 2026-11-01
+
+After #711 and #712 merged, the owner recreated n8n, n8n-worker and both
+runners, installed plugin 0.2.3 (the update script now restarts
+`hermes-gateway.service`) and ran `hermes cron run 25674fbc0bf3` at 13:12 KST.
+The report (`add349b2-58b8-4d23-bd1e-13d9ff4be905`, 14 items, each with
+`source_url` and `source_quotes`) persisted; the plugin's first 15 s attempt
+timed out because the first JavaScript task after the recreation took 13.0 s
+(execution 93), and the retry got `200 duplicate`. The next execution took
+0.3 s; no broker 403 or missing task offer. The 13:15 attester run returned
+`{"attested": 1, "held_items": 12}`; the Gateway holds 2 `ready` and 12 `held`
+(`SOURCE_UNVERIFIED`) Export rows (read-only SQLite query).
+
+Hold causes, reproduced read-only with the attester's own fetch and
+`check_item` against the stored request (all 14 pages answered 200):
+
+| Cause | Items | Owner |
+| --- | --- | --- |
+| Quote copied from the model's markdown view (`2026-10-30 #### [title]`) | 4 AWS | Producer prompt |
+| Index URL redirects to another page (`/release-notes` → `/release-notes/system-prompts/overview`) | 3 Claude | Producer prompt |
+| GitHub release listing renders release text by script (9 KB of visible text) | 2 GitHub | Producer prompt |
+| First word of the title or body (`Use`, `Centrally`, `Includes`, `Fast`) read as a proper noun | 2 Google Cloud alone, others combined | Verifier rule |
+| Item says `PG18`, page does not | 1 Google Cloud | Correctly held |
+
+Producer: the cron prompts now also require plain visible sentences (no
+markdown, headings or relative times), the URL of the page that shows the
+quote, and a changelog instead of GitHub release listings (backup
+`jobs.json.bak-…-pre-quote-guidance`). Verifier, approved by the owner: a plain
+capitalised word (`[A-Z][a-z]+`) at the start of a field or sentence is no
+longer a name; a mixed-case or digit-bearing word there (`OpenAI`, `AlloyDB`)
+still is, and every later word is checked as before. `_STARTERS` is removed
+because the rule covers every entry. Evidence: the new plain-first-word test RED
+then GREEN, two tests pin the unchanged mixed-case and later-word checks; workload suite 301 OK; the same
+diagnosis with the new rule passes the two Google Cloud items and still holds
+`PG18`. Report `add349b2…` keeps its verdict because each report accepts one
+attestation; the rule applies to later reports after the attester release is
+reinstalled.
 
 ## Evidence
 
