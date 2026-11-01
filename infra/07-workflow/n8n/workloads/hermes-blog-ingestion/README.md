@@ -321,6 +321,11 @@ python3 -I -m publisher.cli attest-queue \
 - 실행 단위는 `deploy/hermes-attester.service`(oneshot)와 `.timer`입니다. 비밀은
   `/etc/hermes-attester/`에 두며 런타임 Python은 HTMLParser 보완이 반영된 최신 패치
   판본이어야 합니다(RUN-0053 기록).
+- 운영 반영은 저장소 스크립트로 합니다. `sudo bash deploy/install-attester.sh`는 병합된
+  `origin/main`의 Attester release를 설치하고 `.env`의 `DEFAULT_URL`로
+  `/etc/hermes-attester/environment`를 만든 뒤 한 번 수동 실행해 통과할 때만 timer를 켭니다
+  (실패하면 timer를 멈춥니다). `bash deploy/update-hermes-plugin.sh`는 같은 기준의 플러그인을
+  Hermes 사용자에게 설치하고 Cron이 도는 `hermes-gateway.service`를 재시작합니다.
 
 Windows B와 서버 A 호스트는 `blog-export.hy.home.arpa`의 정확한 경로만 씁니다.
 Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만 연결되고

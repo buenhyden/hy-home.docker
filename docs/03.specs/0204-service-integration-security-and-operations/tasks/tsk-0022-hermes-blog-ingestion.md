@@ -1600,6 +1600,15 @@ from the file, refuses to start without it, and `python -I` reads
 needs a recreation to receive the environment, and the attester reinstall
 writes the environment file.
 
+The two operator scripts used today now live in the workload instead of a
+session scratchpad: `deploy/install-attester.sh` (sudo; release from merged
+`origin/main`, environment file from `.env`, one manual run, timer stopped on
+failure) and `deploy/update-hermes-plugin.sh` (Hermes user; files listed by Git,
+hash check, `hermes plugins doctor`, gateway restart). Both derive the repository
+path from their own location. `test_deploy_scripts` pins their syntax, the
+absence of site values and that the environment file holds exactly the
+variables the unit and `source_fetch` read; shellcheck passes.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
