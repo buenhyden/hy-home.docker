@@ -148,3 +148,52 @@ class HandlerResultContractTests(unittest.TestCase):
         result = tools.handle_submit_report(None)
         self.assertIsInstance(result, str)
         self.assertFalse(json.loads(result)["ok"])
+
+
+class ProducerPinTests(unittest.TestCase):
+    """The Gateway token is bound to producer "hermes"; the model must not choose it."""
+
+    def test_sent_producer_is_pinned(self):
+        import json
+        import tempfile
+        from unittest import mock
+
+        sent = []
+
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def getcode(self):
+                return 201
+
+            def read(self):
+                return b'{"persisted": true}'
+
+        class Opener:
+            def open(self, request, timeout):
+                sent.append(json.loads(request.data))
+                return Response()
+
+        payload = make_payload()
+        payload["producer"] = "hermes-cron-devops-brief"
+        with (
+            tempfile.TemporaryDirectory() as outbox,
+            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+            mock.patch.dict(
+                "os.environ",
+                {
+                    "RESEARCH_WEBHOOK_URL": "https://gateway.invalid/hook",
+                    "RESEARCH_WEBHOOK_SECRET": "synthetic",
+                },
+            ),
+            mock.patch.object(
+                tools.urllib.request, "build_opener", return_value=Opener()
+            ),
+        ):
+            result = json.loads(tools.handle_submit_report({"payload": payload}))
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(["hermes"], [body["producer"] for body in sent])

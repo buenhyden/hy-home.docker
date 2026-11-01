@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.4"
+version: "0.5.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1444,6 +1444,23 @@ passed and fires every five minutes. A real item verification, Export `ready`,
 and the Windows pull and ACK remain NOT_RUN until a Cron report arrives.
 Rollback: disable the timer, remove the two units and the `current` link,
 `daemon-reload`. Releases are left in place.
+
+### First manual Cron submission — 2026-11-01
+
+The owner ran `hermes cron run 25674fbc0bf3` (devops-daily-brief) at 10:16 KST.
+Email went out; the Gateway answered 403 `FORBIDDEN`. Traefik passed the source
+allowlist, n8n header auth passed, and n8n execution 92 forwarded the Gateway's
+403 unchanged. Cause: `scripts/lib/ingestion/http.mjs:184` rejects a request
+whose `producer` differs from the token's producer (`hermes`); the model wrote
+`producer: "hermes-cron-devops-brief"` because the tool schema gives it no
+value. Fix: plugin 0.2.2 sets `producer` to `hermes` before validation, so the
+model cannot choose the authenticated identity
+(`ProducerPinTests`, RED then GREEN; workload suite 296 OK). Install with
+`plugin-update.sh` and re-run one job to verify. Separate finding, not fixed:
+the worker's JavaScript task runner kept failing to register ("No matching task
+offer", expired grant token, broker 403). Execution 90 timed out and 91 took
+30 s, so the plugin's first two 15 s attempts ended as Traefik 499 before the
+third reached the Gateway.
 
 ## Evidence
 

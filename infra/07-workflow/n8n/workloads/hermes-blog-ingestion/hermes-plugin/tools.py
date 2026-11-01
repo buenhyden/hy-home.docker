@@ -14,6 +14,8 @@ HERMES_HOME = Path.home() / ".hermes"
 OUTBOX_DIR = HERMES_HOME / "data" / "research-report-outbox"
 WEBHOOK_URL_DEFAULT = "https://n8n.local/webhook/hermes-blog-ingestion"
 SECRET_FILE = HERMES_HOME / "secrets" / "research-webhook.secret"
+# The Gateway binds the webhook token to this producer; the model does not choose it.
+PRODUCER = "hermes"
 
 _ALLOWED_JOBS = {
     "6eabd835f969": "news",
@@ -150,6 +152,8 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
     payload = args.get("payload") if isinstance(args, dict) else None
     if not isinstance(payload, dict):
         payload = args if isinstance(args, dict) else {}
+    if payload:
+        payload = {**payload, "producer": PRODUCER}
 
     error = _validate(payload)
     if error:
