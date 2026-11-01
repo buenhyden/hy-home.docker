@@ -27239,10 +27239,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-01T02:38:58.542836+00:00",
+      "checked_at": "2026-11-01T03:45:46.046863+00:00",
       "source_revision": "5ceed12bc554df55093b4a407255d2c3031d5067",
-      "source_state": "Uncommitted n8n runner start settings in the n8n Compose file on top of this revision (N8N_RUNNERS_GRANT_TOKEN_TTL default 120 on main and worker, N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT 0 on both runners); not a current image/build/module/Native acceptance receipt",
-      "input_sha256": "124cddd7130916d7007b765c2e82f3452f2478b7e9c13532715e62ef7199f3c8",
+      "source_state": "Uncommitted n8n runner start settings in the n8n Compose file on top of this revision (N8N_RUNNERS_GRANT_TOKEN_TTL default 120 on main and worker, N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT 0 on both runners) and OpsflowSmtp lock follow-redirects 1.16.1 -> 1.16.2 (GHSA-mrwp-f3q8-3g9p, dev dependency through axios); not a current image/build/module/Native acceptance receipt",
+      "input_sha256": "72a80f27e67d131905a64ee239dd00ecfffe5fe1d8cf46d5f5f3b082ffa6ba0a",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -27275,7 +27275,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
-          "sha256": "b6bc5cb8dad469f46aaf6f137643acc2b6e8cb13655b6e6b6723468734a72f82"
+          "sha256": "ecf0bee7e151ee77c0b517739d9cff828e646141ce22929fe1b4a2cb3ef9570f"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
@@ -27310,7 +27310,7 @@
           "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
-      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after adding the runner grant-token TTL and idle-shutdown settings to the Compose file. Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
+      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after adding the runner grant-token TTL and idle-shutdown settings to the Compose file and moving the OpsflowSmtp lock to follow-redirects 1.16.2. Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
