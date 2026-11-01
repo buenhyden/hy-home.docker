@@ -2780,10 +2780,10 @@
     "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
     "checked_at": "2026-10-15T16:35:15.922344+00:00",
     "source_binding": {
-      "checked_at": "2026-11-01T03:45:46.046863+00:00",
-      "source_revision": "5ceed12bc554df55093b4a407255d2c3031d5067",
-      "source_state": "Uncommitted n8n runner start settings in the n8n Compose file on top of this revision (N8N_RUNNERS_GRANT_TOKEN_TTL default 120 on main and worker, N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT 0 on both runners) and OpsflowSmtp lock follow-redirects 1.16.1 -> 1.16.2 (GHSA-mrwp-f3q8-3g9p, dev dependency through axios); not a current image/build/module/Native acceptance receipt",
-      "input_sha256": "72a80f27e67d131905a64ee239dd00ecfffe5fe1d8cf46d5f5f3b082ffa6ba0a",
+      "checked_at": "2026-11-01T07:13:59.433420+00:00",
+      "source_revision": "caeabf6f197800afd86115a8029a2bf5453ba4ed",
+      "source_state": "Uncommitted Blog-data Gateway image pin to Blog-data dev c05e5b88bae36ae8f5421fd27beada9b1d596a19 (Resource Export 2.0, receiver-side rendering, schema 4 unchanged) in the n8n Compose file on top of this revision; not a current image/build/module/Native acceptance receipt",
+      "input_sha256": "57ad4d23833e8563576b9021ac3b4a8f67f8a2ecb04faefe41225d99cea7707a",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -2800,7 +2800,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "d8bdab08033c85541803bc7313c6dd694e5a28a342646f5889e9dc31d5f39e95"
+          "sha256": "8792a345bd2ead857d108fc2eb100b8be19a9c5012caa5e457829b978b2adcc3"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -2851,7 +2851,7 @@
           "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
-      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after adding the runner grant-token TTL and idle-shutdown settings to the Compose file and moving the OpsflowSmtp lock to follow-redirects 1.16.2. Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
+      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after moving the Blog-data Gateway pin to dev c05e5b88ba (Resource Export 2.0). Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -3758,6 +3758,88 @@
             }
           ],
           "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after moving the Blog-data Gateway pin to dev b372de374e (attestation/2, schema 4). Image build inputs are unchanged. Older image/module receipt remains bound to its original dated source digest. P05 workflow/SQL/SMTP host installation, HOME and recovery acceptance are not renewed.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
+      },
+      {
+        "archived_at": "2026-11-01T07:13:59.433420+00:00",
+        "source_binding": {
+          "checked_at": "2026-11-01T03:45:46.046863+00:00",
+          "source_revision": "5ceed12bc554df55093b4a407255d2c3031d5067",
+          "source_state": "Uncommitted n8n runner start settings in the n8n Compose file on top of this revision (N8N_RUNNERS_GRANT_TOKEN_TTL default 120 on main and worker, N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT 0 on both runners) and OpsflowSmtp lock follow-redirects 1.16.1 -> 1.16.2 (GHSA-mrwp-f3q8-3g9p, dev dependency through axios); not a current image/build/module/Native acceptance receipt",
+          "input_sha256": "72a80f27e67d131905a64ee239dd00ecfffe5fe1d8cf46d5f5f3b082ffa6ba0a",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "d8bdab08033c85541803bc7313c6dd694e5a28a342646f5889e9dc31d5f39e95"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "ecf0bee7e151ee77c0b517739d9cff828e646141ce22929fe1b4a2cb3ef9570f"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "146d22dde82f3d5aab2f3018650c2e8eced9c8559049bffce09aa7fe325b2421"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+            }
+          ],
+          "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after adding the runner grant-token TTL and idle-shutdown settings to the Compose file and moving the OpsflowSmtp lock to follow-redirects 1.16.2. Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
           "native_test": "NOT_RUN",
           "home": "NOT_RUN",
           "signature": "NOT_RUN",
