@@ -13,14 +13,14 @@ import sqlite3
 import stat
 from pathlib import Path
 
-from . import attestation, trust
+from . import attestation, attester, trust
 from .candidates import EXPORT_NAME, JOBS, load_candidate, load_validator
 from .delivery import DispatchRequest, TransportFailure, process_one
 from .files import InputError, open_directory, safe_read
 from .gateway_adapter import DESTINATION, GatewayAdapter
 from .gateway_transport import GatewayReplayTransport
 from .http_transport import HttpTransport
-from .outbox import Outbox, OutboxError, valid_gateway_report_id
+from .outbox import Outbox, OutboxError
 
 OPEN_STATES = ("awaiting_contract", "pending", "sending", "uncertain")
 # The outer bound of one attempt: n8n queue wait plus the workflow
@@ -172,58 +172,46 @@ def _dispatch(args, box):
     return counts
 
 
-def _attest(args):
-    """Attest one delivered report; never reads the Publisher outbox."""
-    if not valid_gateway_report_id(args.report_id):
-        raise InputError("report_id")
-    validator = load_validator(args.validator, args.validator_sha256)
-    snapshot = load_candidate(
-        args.exports,
-        args.job,
-        args.run + ".json",
-        args.source_root,
-        args.item_root,
-        validator,
-    )
-    name = _evidence_name(args.job, args.run)
-    evidence = safe_read(args.evidence_root, name)
-    signature = None
-    if os.path.lexists(args.evidence_root / (name + ".sig")):
-        signature = safe_read(args.evidence_root, name + ".sig", limit=4096)
-    try:
-        # Producer trust precedes reading the signing key or any credential.
-        body, evidence_sha256 = attestation.verified_request(
-            snapshot, evidence, signature
-        )
-    except trust.TrustError as error:
-        return {"result": "blocked", "reason": str(error)}
+def _attest_queue(args):
+    auth = _auth(args.auth_header_file)
     key = attestation.load_signing_key(args.signing_key)
-    payload = attestation.request_body(args.key_id, key, attestation.message(body))
-    try:
-        http = HttpTransport(
-            endpoint=f"{args.gateway}/v1/ingestions/{args.report_id}/attestations",
-            destination=attestation.DESTINATION,
-            auth=_auth(args.auth_header_file),
-            timeout=30,
-            content_type="application/json",
-        )
-    except TransportFailure:
-        raise InputError("credential_rejected") from None
-    request = DispatchRequest(
-        key=(args.job, args.run),
-        source_sha256=hashlib.sha256(snapshot.source).hexdigest(),
-        body_sha256=hashlib.sha256(payload).hexdigest(),
-        contract_revision="blog-data-attestation/1",
-        destination=attestation.DESTINATION,
-        body=payload,
-        endpoint_sha256=http.endpoint_sha256,
-        trust=evidence_sha256,
+    gateway = args.gateway.rstrip("/")
+
+    def send(report_id, body):
+        try:
+            http = HttpTransport(
+                endpoint=f"{gateway}/v1/ingestions/{report_id}/attestations",
+                destination=attestation.DESTINATION,
+                auth=auth,
+                timeout=30,
+                content_type="application/json",
+            )
+        except TransportFailure as failure:
+            return failure
+        digest = hashlib.sha256(body).hexdigest()
+        try:
+            return http.send(
+                DispatchRequest(
+                    key=(attestation.DESTINATION, report_id),
+                    source_sha256=digest,
+                    body_sha256=digest,
+                    contract_revision="blog-data-attestation/2",
+                    destination=attestation.DESTINATION,
+                    body=body,
+                    endpoint_sha256=http.endpoint_sha256,
+                )
+            )
+        except TransportFailure as failure:
+            return failure
+
+    return attester.run(
+        attester.GatewayReader(gateway, auth),
+        send,
+        key_id=args.key_id,
+        key=key,
+        state_dir=args.state_dir,
+        evidence_dir=args.evidence_dir,
     )
-    try:
-        response = http.send(request)
-    except TransportFailure as failure:
-        return {"result": attestation.outcome(failure), "status": None}
-    return {"result": attestation.outcome(response), "status": response.status}
 
 
 def main(argv=None):
@@ -242,30 +230,15 @@ def main(argv=None):
     dispatch.add_argument("--endpoint", required=True)
     dispatch.add_argument("--auth-header-file", type=Path, required=True)
     dispatch.add_argument("--allow-replay", action="store_true")
-    attest = sub.add_parser("attest")
-    for name in (
-        "exports",
-        "source-root",
-        "item-root",
-        "validator",
-        "evidence-root",
-        "auth-header-file",
-        "signing-key",
-    ):
-        attest.add_argument("--" + name, type=Path, required=True)
-    for name in ("validator-sha256", "job", "run", "report-id", "gateway", "key-id"):
-        attest.add_argument("--" + name, required=True)
+    queue = sub.add_parser("attest-queue")
+    queue.add_argument("--gateway", required=True)
+    queue.add_argument("--auth-header-file", type=Path, required=True)
+    queue.add_argument("--signing-key", type=Path, required=True)
+    queue.add_argument("--key-id", required=True)
+    queue.add_argument("--state-dir", type=Path, required=True)
+    queue.add_argument("--evidence-dir", type=Path, required=True)
     sub.add_parser("verify-install")
     args = parser.parse_args(argv)
-    if args.command == "attest":
-        # Its own account: no outbox, only producer files, a key and one POST.
-        try:
-            result = _attest(args)
-        except (ValueError, OSError):
-            print('{"error":"operation_rejected"}')
-            return 1
-        print(json.dumps(result, sort_keys=True))
-        return 0 if result["result"] == "attested" else 1
     if args.command == "verify-install":
         # Run as the dedicated account: proves `python3 -I` loads a protected
         # install and parses the key store, without printing any key.
@@ -276,6 +249,14 @@ def main(argv=None):
             return 1
         print(json.dumps({"keys": keys, "runtime": "protected"}, sort_keys=True))
         return 0
+    if args.command == "attest-queue":
+        try:
+            result = _attest_queue(args)
+        except (ValueError, OSError):
+            print('{"error":"operation_rejected"}')
+            return 1
+        print(json.dumps(result, sort_keys=True))
+        return 1 if result["rejected"] else 0
     box = None
     try:
         box = Outbox(args.outbox)

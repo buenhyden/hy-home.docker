@@ -1,0 +1,264 @@
+{
+  "description": "attestation/2 test vectors. The key is synthetic: its seed is SHA-256 of the label below, so it is public. The Gateway refuses a configuration that trusts it, like the RFC 8032 TEST 1 key.",
+  "prefix": "blog-data-attestation/2\u0000",
+  "seed_label": "blog-data attestation/2 synthetic vector key",
+  "seed_hex": "885704f408c640ca4c48bb8c13610946d4be9784c116a558cdb6a36e68412c0c",
+  "key_id": "synthetic-v2",
+  "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA3QVeoxQq0IS5BeCHRZdTJP21KOx4xOkkwZ8PuR5gLUI=\n-----END PUBLIC KEY-----\n",
+  "limits": {
+    "source_quotes": {
+      "min_items": 1,
+      "max_items": 3,
+      "max_length": 500
+    },
+    "verified_items_max": 100,
+    "fetched_at": "UTC with Z, optional milliseconds, at most 300 s after the Gateway clock",
+    "final_url": "https only, at most 2048 characters, no credentials, whitespace or control characters",
+    "evidence_sha256": "64 lowercase hex"
+  },
+  "request": {
+    "schema_version": "1.0",
+    "producer": "hermes",
+    "job_id": "25674fbc0bf3",
+    "run_id": "2026-10-30",
+    "report_kind": "devops",
+    "scheduled_at": "2026-10-30T08:55:00Z",
+    "generated_at": "2026-10-30T08:58:00Z",
+    "collected_at": "2026-10-30T09:00:00Z",
+    "source_ref": "urn:synthetic:attestation-v2",
+    "idempotency_key": "25674fbc0bf3-2026-10-30-v2",
+    "source_text": "Synthetic attestation/2 vector report",
+    "source_sha256": "2c6a695d6a9aecc78fc933080b6bc08f52e1b31fe5884652386412f3694be3f0",
+    "items": [
+      {
+        "item_id": "item-a",
+        "kind": "devops",
+        "title": "Synthetic release note",
+        "body": "Version 2.4.1 was released on 2026-10-29.",
+        "source_url": "https://example.org/releases/2.4.1",
+        "source_quotes": ["Version 2.4.1 was released on 2026-10-29."]
+      },
+      {
+        "item_id": "item-b",
+        "kind": "devops",
+        "title": "Synthetic advisory",
+        "body": "Example Corp fixed CVE-2026-0001.",
+        "source_url": "https://example.org/advisory",
+        "source_quotes": ["Example Corp fixed CVE-2026-0001.", "The fix ships in 2.4.1."]
+      },
+      {
+        "item_id": "item-c",
+        "kind": "devops",
+        "title": "Synthetic item without quotes",
+        "body": "This item cannot be verified.",
+        "source_url": "https://example.org/unquoted"
+      }
+    ]
+  },
+  "content_sha256": "e1a570c4f770d62a794d1cd3506d84dde9ee4563f36dada553bbacc24168a9b9",
+  "evidence_sha256": "feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6",
+  "cases": [
+    {
+      "name": "all-verifiable",
+      "description": "Both quoted items verified; the unquoted item is held",
+      "signed_json": "{\"content_sha256\":\"e1a570c4f770d62a794d1cd3506d84dde9ee4563f36dada553bbacc24168a9b9\",\"evidence_sha256\":\"feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6\",\"fire_id\":null,\"job_id\":\"25674fbc0bf3\",\"producer\":\"hermes\",\"run_id\":\"2026-10-30\",\"source_sha256\":\"2c6a695d6a9aecc78fc933080b6bc08f52e1b31fe5884652386412f3694be3f0\",\"verified_items\":[{\"fetched_at\":\"2026-10-30T09:15:00Z\",\"final_url\":\"https://example.org/releases/2.4.1\",\"item_id\":\"item-a\"},{\"fetched_at\":\"2026-10-30T09:15:02.250Z\",\"final_url\":\"https://www.example.org/advisory/2026-0001\",\"item_id\":\"item-b\"}]}",
+      "message_sha256": "85798233938ba70d1fa7e515803773235baaf659a3f80d8f01258bc159e1158b",
+      "signature_base64": "cxTLuDc7S7XYGD6ZI/Fl2oFerfMJrSaEZQYY7Eg6VbDJijZGEqIJ7lo4HQs9qd8KkDm1SE82C1MtJK/cPYDBBA==",
+      "body": {
+        "schema_version": "2.0",
+        "key_id": "synthetic-v2",
+        "algorithm": "ed25519",
+        "signature": "cxTLuDc7S7XYGD6ZI/Fl2oFerfMJrSaEZQYY7Eg6VbDJijZGEqIJ7lo4HQs9qd8KkDm1SE82C1MtJK/cPYDBBA==",
+        "verified_items": [
+          {
+            "item_id": "item-a",
+            "fetched_at": "2026-10-30T09:15:00Z",
+            "final_url": "https://example.org/releases/2.4.1"
+          },
+          {
+            "item_id": "item-b",
+            "fetched_at": "2026-10-30T09:15:02.250Z",
+            "final_url": "https://www.example.org/advisory/2026-0001"
+          }
+        ],
+        "evidence_sha256": "feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6"
+      },
+      "expect": {
+        "status": 201,
+        "states": [
+          ["ready", null],
+          ["ready", null],
+          ["held", "SOURCE_UNVERIFIED"]
+        ]
+      }
+    },
+    {
+      "name": "partial",
+      "description": "Only item-a verified",
+      "signed_json": "{\"content_sha256\":\"e1a570c4f770d62a794d1cd3506d84dde9ee4563f36dada553bbacc24168a9b9\",\"evidence_sha256\":\"feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6\",\"fire_id\":null,\"job_id\":\"25674fbc0bf3\",\"producer\":\"hermes\",\"run_id\":\"2026-10-30\",\"source_sha256\":\"2c6a695d6a9aecc78fc933080b6bc08f52e1b31fe5884652386412f3694be3f0\",\"verified_items\":[{\"fetched_at\":\"2026-10-30T09:15:00Z\",\"final_url\":\"https://example.org/releases/2.4.1\",\"item_id\":\"item-a\"}]}",
+      "message_sha256": "e0e7948ffda9b88fee8afcbf670720ec7089ed58ea623231491a36d01cf4ba06",
+      "signature_base64": "fJVYjr8ZyM3KdVpSV+tC4x+LDS8IDdZ5+NZ4roDPy68iG34iDkc24TQqhf7jnAK+xMVJtxt5gmj2IOTqqhwhAw==",
+      "body": {
+        "schema_version": "2.0",
+        "key_id": "synthetic-v2",
+        "algorithm": "ed25519",
+        "signature": "fJVYjr8ZyM3KdVpSV+tC4x+LDS8IDdZ5+NZ4roDPy68iG34iDkc24TQqhf7jnAK+xMVJtxt5gmj2IOTqqhwhAw==",
+        "verified_items": [
+          {
+            "item_id": "item-a",
+            "fetched_at": "2026-10-30T09:15:00Z",
+            "final_url": "https://example.org/releases/2.4.1"
+          }
+        ],
+        "evidence_sha256": "feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6"
+      },
+      "expect": {
+        "status": 201,
+        "states": [
+          ["ready", null],
+          ["held", "SOURCE_UNVERIFIED"],
+          ["held", "SOURCE_UNVERIFIED"]
+        ]
+      }
+    },
+    {
+      "name": "empty",
+      "description": "Nothing verified: the report is closed with every item held",
+      "signed_json": "{\"content_sha256\":\"e1a570c4f770d62a794d1cd3506d84dde9ee4563f36dada553bbacc24168a9b9\",\"evidence_sha256\":\"feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6\",\"fire_id\":null,\"job_id\":\"25674fbc0bf3\",\"producer\":\"hermes\",\"run_id\":\"2026-10-30\",\"source_sha256\":\"2c6a695d6a9aecc78fc933080b6bc08f52e1b31fe5884652386412f3694be3f0\",\"verified_items\":[]}",
+      "message_sha256": "e1041610d5fa5ff8eded547d071e8d090dcc83f280c5ec68fdb8ee7dbc018a99",
+      "signature_base64": "+mhG4PEkDAXKRhiQsY1ts9Z3asmi3X/NThJDHLkCm3aJyB1D+Nn1knl/MHRVRZWpYBGJx8nhfzJCvaBRXO0LBQ==",
+      "body": {
+        "schema_version": "2.0",
+        "key_id": "synthetic-v2",
+        "algorithm": "ed25519",
+        "signature": "+mhG4PEkDAXKRhiQsY1ts9Z3asmi3X/NThJDHLkCm3aJyB1D+Nn1knl/MHRVRZWpYBGJx8nhfzJCvaBRXO0LBQ==",
+        "verified_items": [],
+        "evidence_sha256": "feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6"
+      },
+      "expect": {
+        "status": 201,
+        "states": [
+          ["held", "SOURCE_UNVERIFIED"],
+          ["held", "SOURCE_UNVERIFIED"],
+          ["held", "SOURCE_UNVERIFIED"]
+        ]
+      }
+    },
+    {
+      "name": "unknown-item",
+      "description": "A validly signed item_id that is not in the report",
+      "signed_json": "{\"content_sha256\":\"e1a570c4f770d62a794d1cd3506d84dde9ee4563f36dada553bbacc24168a9b9\",\"evidence_sha256\":\"feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6\",\"fire_id\":null,\"job_id\":\"25674fbc0bf3\",\"producer\":\"hermes\",\"run_id\":\"2026-10-30\",\"source_sha256\":\"2c6a695d6a9aecc78fc933080b6bc08f52e1b31fe5884652386412f3694be3f0\",\"verified_items\":[{\"fetched_at\":\"2026-10-30T09:15:00Z\",\"final_url\":\"https://example.org/releases/2.4.1\",\"item_id\":\"item-z\"}]}",
+      "message_sha256": "323496791ec9069dc3124a010257f3575a58bee6df7d06ca85f0b4597ae8b6e2",
+      "signature_base64": "vA7QoEN0ySNF2+KsMhNGlQFclXx42/xT6SgP4U4+ChBn5mH0YYHhZK9G8uPhsJ83jFlyjn+j0Ke1FCuH2VGYDw==",
+      "body": {
+        "schema_version": "2.0",
+        "key_id": "synthetic-v2",
+        "algorithm": "ed25519",
+        "signature": "vA7QoEN0ySNF2+KsMhNGlQFclXx42/xT6SgP4U4+ChBn5mH0YYHhZK9G8uPhsJ83jFlyjn+j0Ke1FCuH2VGYDw==",
+        "verified_items": [
+          {
+            "item_id": "item-z",
+            "fetched_at": "2026-10-30T09:15:00Z",
+            "final_url": "https://example.org/releases/2.4.1"
+          }
+        ],
+        "evidence_sha256": "feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6"
+      },
+      "expect": {
+        "status": 422,
+        "error": "VERIFIED_ITEMS_INVALID"
+      }
+    },
+    {
+      "name": "unquoted-item",
+      "description": "A validly signed item without source_quotes",
+      "signed_json": "{\"content_sha256\":\"e1a570c4f770d62a794d1cd3506d84dde9ee4563f36dada553bbacc24168a9b9\",\"evidence_sha256\":\"feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6\",\"fire_id\":null,\"job_id\":\"25674fbc0bf3\",\"producer\":\"hermes\",\"run_id\":\"2026-10-30\",\"source_sha256\":\"2c6a695d6a9aecc78fc933080b6bc08f52e1b31fe5884652386412f3694be3f0\",\"verified_items\":[{\"fetched_at\":\"2026-10-30T09:15:00Z\",\"final_url\":\"https://example.org/releases/2.4.1\",\"item_id\":\"item-c\"}]}",
+      "message_sha256": "491eff0668c58bf372f0b96b8262884963c9ab5004d9b045819345d3c75edbab",
+      "signature_base64": "Y4rH2t7fSVQVSRm9CG59CucAYAyZYfofa5r89ScK27yNvR/dSjkqMEiP1rE+f6ny6M1DRiLdDAK0arzg3vsFCQ==",
+      "body": {
+        "schema_version": "2.0",
+        "key_id": "synthetic-v2",
+        "algorithm": "ed25519",
+        "signature": "Y4rH2t7fSVQVSRm9CG59CucAYAyZYfofa5r89ScK27yNvR/dSjkqMEiP1rE+f6ny6M1DRiLdDAK0arzg3vsFCQ==",
+        "verified_items": [
+          {
+            "item_id": "item-c",
+            "fetched_at": "2026-10-30T09:15:00Z",
+            "final_url": "https://example.org/releases/2.4.1"
+          }
+        ],
+        "evidence_sha256": "feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6"
+      },
+      "expect": {
+        "status": 422,
+        "error": "VERIFIED_ITEMS_INVALID"
+      }
+    },
+    {
+      "name": "forged-signature",
+      "description": "The partial body with one signature bit flipped",
+      "body": {
+        "schema_version": "2.0",
+        "key_id": "synthetic-v2",
+        "algorithm": "ed25519",
+        "signature": "fJVYjr8ZyM3KdVtSV+tC4x+LDS8IDdZ5+NZ4roDPy68iG34iDkc24TQqhf7jnAK+xMVJtxt5gmj2IOTqqhwhAw==",
+        "verified_items": [
+          {
+            "item_id": "item-a",
+            "fetched_at": "2026-10-30T09:15:00Z",
+            "final_url": "https://example.org/releases/2.4.1"
+          }
+        ],
+        "evidence_sha256": "feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6"
+      },
+      "expect": {
+        "status": 422,
+        "error": "ATTESTATION_INVALID"
+      }
+    },
+    {
+      "name": "tampered-fetched_at",
+      "description": "The partial signature over a changed fetched_at",
+      "body": {
+        "schema_version": "2.0",
+        "key_id": "synthetic-v2",
+        "algorithm": "ed25519",
+        "signature": "fJVYjr8ZyM3KdVpSV+tC4x+LDS8IDdZ5+NZ4roDPy68iG34iDkc24TQqhf7jnAK+xMVJtxt5gmj2IOTqqhwhAw==",
+        "verified_items": [
+          {
+            "item_id": "item-a",
+            "fetched_at": "2026-10-30T09:16:00Z",
+            "final_url": "https://example.org/releases/2.4.1"
+          }
+        ],
+        "evidence_sha256": "feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6"
+      },
+      "expect": {
+        "status": 422,
+        "error": "ATTESTATION_INVALID"
+      }
+    },
+    {
+      "name": "tampered-final_url",
+      "description": "The partial signature over a changed final_url",
+      "body": {
+        "schema_version": "2.0",
+        "key_id": "synthetic-v2",
+        "algorithm": "ed25519",
+        "signature": "fJVYjr8ZyM3KdVpSV+tC4x+LDS8IDdZ5+NZ4roDPy68iG34iDkc24TQqhf7jnAK+xMVJtxt5gmj2IOTqqhwhAw==",
+        "verified_items": [
+          {
+            "item_id": "item-a",
+            "fetched_at": "2026-10-30T09:15:00Z",
+            "final_url": "https://example.org/elsewhere"
+          }
+        ],
+        "evidence_sha256": "feaa74bcc92dfe99658618acc48bb5eafe737558f5b0d3f4f8356965e08ae2a6"
+      },
+      "expect": {
+        "status": 422,
+        "error": "ATTESTATION_INVALID"
+      }
+    }
+  ]
+}

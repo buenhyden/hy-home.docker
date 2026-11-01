@@ -2,13 +2,15 @@
 # as the approved RUN-0053 export ingress unit on 2026-11-01; deleting the file
 # is the rollback. Traefik reaches the Gateway on blog_export_net.
 #
-# One host name admits three Gateway request shapes, each from one source:
+# One host name admits four Gateway request shapes, each from one source:
 #   - Windows B GETs the export list, a manifest or one file;
 #   - Windows B POSTs one ACK per export;
-#   - the server-A host attester POSTs one attestation per report.
+#   - the server-A host attester POSTs one attestation per report;
+#   - the same host GETs the attestation queue and one stored request per report.
 # Any other path or method on this host matches no router (Traefik 404), so
 # ingest, read, review and capture stay unreachable from here. The Gateway's
-# single-scope bearer tokens (export_read, export_ack, attest) remain the
+# bearer tokens (single-scope export_read, export_ack and attest; the attester
+# credential holds attest plus read) remain the
 # credential check; these routers only narrow who may present them.
 http:
   routers:
@@ -42,7 +44,17 @@ http:
         - blog-attestation-host
         - gateway-standard-chain@file
         - blog-attestation-rate
-        - blog-export-small-body
+        - blog-attestation-body
+      service: blog-ingestion-export
+    blog-attestation-read:
+      rule: Host(`blog-export.hy.home.arpa`) && Method(`GET`) && (Path(`/v1/attestation-queue`) || PathRegexp(`^/v1/ingestions/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/request$`))
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - blog-attestation-host
+        - gateway-standard-chain@file
+        - blog-attestation-read-rate
       service: blog-ingestion-export
 
   middlewares:
@@ -61,10 +73,15 @@ http:
           - 192.168.0.13/32
         ipStrategy:
           depth: 0
-    # ACK and attestation bodies are a few hundred bytes.
+    # ACK bodies are a few hundred bytes.
     blog-export-small-body:
       buffering:
         maxRequestBodyBytes: 16384
+    # An attestation/2 body lists up to 100 verified items; with 2048-char
+    # final URLs that is about 213 KB, so it needs its own cap.
+    blog-attestation-body:
+      buffering:
+        maxRequestBodyBytes: 262144
     # One pull reads the list, then a manifest and up to about seven files per
     # export, one export per candidate; a pull that hits 429 resumes next run.
     blog-export-rate:
@@ -78,6 +95,13 @@ http:
         average: 6
         period: 1m
         burst: 6
+    # A run pages the queue and reads one request per report, so reads need
+    # more headroom than the attestation POSTs.
+    blog-attestation-read-rate:
+      rateLimit:
+        average: 60
+        period: 1m
+        burst: 60
 
   services:
     blog-ingestion-export:

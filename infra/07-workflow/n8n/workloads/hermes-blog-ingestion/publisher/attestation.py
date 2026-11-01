@@ -1,28 +1,28 @@
-"""Blog-data attestation for a report this Publisher already delivered.
+"""Blog-data attestation/2: the Gateway-verified signature over a report.
 
-Runs as its own account. It never trusts Publisher state: the request bytes are
-rebuilt from producer-signed evidence exactly as dispatch builds them, and the
-Gateway verifies the signature against the report it stored, so anything n8n or
-an account in between changed fails there with 422. The signature is a separate
-contract from the Hermes companion signature and uses a separate key.
+The signed bytes bind the stored request (its SHA-256 is recomputed here, never
+trusted), the items whose source was fetched and quoted, and the evidence hash.
+The signature uses a separate key from the Hermes companion signature.
 """
 
 import base64
 import hashlib
 import json
 import os
+import re
 import stat
 from pathlib import Path
 
-from . import evidence as companion
-from . import trust
 from .delivery import FailureKind, TransportFailure
 from .files import InputError, open_directory
-from .gateway_adapter import GatewayAdapter
 
-PREFIX = b"blog-data-attestation/1\x00"
+PREFIX = b"blog-data-attestation/2\x00"
 DESTINATION = "blog-data-attestation"
 _IDENTITY = ("producer", "job_id", "run_id", "fire_id", "source_sha256")
+_ITEM_KEYS = {"item_id", "fetched_at", "final_url"}
+_FETCHED_AT = re.compile(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d{3})?Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}")
+_URL_FORBIDDEN = re.compile(r"[\s\x00-\x1f\x7f]")
 
 
 class AttestationError(ValueError):
@@ -31,55 +31,67 @@ class AttestationError(ValueError):
 
 def _canonical(value):
     # Blog-data contract.mjs canonical(): sorted keys, no spaces, raw UTF-8.
-    return json.dumps(
-        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode()
-
-
-def message(body):
-    """Bytes the Gateway verifies: prefix + identity and receive fingerprint."""
     try:
-        request = json.loads(body)
+        return json.dumps(
+            value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        ).encode()
+    except UnicodeError:  # a lone surrogate has no UTF-8 form
+        raise AttestationError("request_invalid") from None
+
+
+def _check(verified_items, evidence_sha256):
+    """Shape the Gateway also enforces; the Gateway stays the authority."""
+    ok = (
+        isinstance(evidence_sha256, str)
+        and _SHA256.fullmatch(evidence_sha256)
+        and isinstance(verified_items, list)
+        and len(verified_items) <= 100
+    )
+    previous = None
+    for item in verified_items if ok else ():
+        ok = (
+            isinstance(item, dict)
+            and set(item) == _ITEM_KEYS
+            and all(isinstance(item[k], str) for k in _ITEM_KEYS)
+            and item["item_id"] != ""
+            and (previous is None or previous < item["item_id"])
+            and _FETCHED_AT.fullmatch(item["fetched_at"])
+            and item["final_url"].startswith("https://")
+            and len(item["final_url"]) <= 2048
+            and "@" not in item["final_url"].split("/")[2]
+            and not _URL_FORBIDDEN.search(item["final_url"])
+        )
+        if not ok:
+            break
+        previous = item["item_id"]
+    if not ok:
+        raise AttestationError("verified_items")
+
+
+def message(request_bytes, verified_items, evidence_sha256):
+    """Bytes the Gateway verifies: prefix + identity, content and verified items.
+
+    request_bytes are the canonical bytes GET /v1/ingestions/{id}/request
+    returns; their SHA-256 is content_sha256 and is recomputed, not trusted.
+    """
+    _check(verified_items, evidence_sha256)
+    try:
+        request = json.loads(request_bytes)
         if not isinstance(request, dict) or not all(
             isinstance(request.get(name), str)
             for name in ("producer", "job_id", "source_sha256")
         ):
             raise ValueError
-        content = {k: v for k, v in request.items() if k != "idempotency_key"}
-        identity = {name: request.get(name) for name in _IDENTITY}
-        identity["content_sha256"] = hashlib.sha256(_canonical(content)).hexdigest()
-        return PREFIX + _canonical(identity)
     except (ValueError, UnicodeError):
         raise AttestationError("request_invalid") from None
-
-
-def verified_request(snapshot, evidence, signature, *, now=None):
-    """Return (dispatch body, evidence SHA-256) only for producer-signed evidence.
-
-    The checks trust.authorize applies before dispatch, on bytes read fresh
-    from the producer rather than from the Publisher's outbox.
-    """
-    trust.verify_signature(snapshot.job_id, evidence, signature, now=now)
-    try:
-        times = companion.verify(
-            snapshot.job_id, snapshot.run_id, snapshot.candidate, evidence
-        )
-    except companion.EvidenceError as error:
-        raise trust.TrustError(str(error)) from None
-    generated = json.loads(snapshot.candidate)["generated_at"]
-    adapter = GatewayAdapter(times.scheduled_at, generated, times.collected_at)
-    # The outbox row shape dispatch hands the adapter.
-    row = dict(
-        job_id=snapshot.job_id,
-        run_id=snapshot.run_id,
-        candidate=snapshot.candidate,
-        candidate_sha256=hashlib.sha256(snapshot.candidate).hexdigest(),
-        source_ref=snapshot.source_ref,
-        source=snapshot.source,
-        source_sha256=hashlib.sha256(snapshot.source).hexdigest(),
-        ideas=snapshot.ideas,
-    )
-    return adapter.prepare(row).body, hashlib.sha256(evidence).hexdigest()
+    content = {k: v for k, v in request.items() if k != "idempotency_key"}
+    if _canonical(content) != request_bytes:
+        raise AttestationError("fingerprint")
+    signed = {name: request.get(name) for name in _IDENTITY}
+    signed["content_sha256"] = hashlib.sha256(request_bytes).hexdigest()
+    signed["verified_items"] = verified_items
+    signed["evidence_sha256"] = evidence_sha256
+    return PREFIX + _canonical(signed)
 
 
 def load_signing_key(path):
@@ -130,15 +142,26 @@ def load_signing_key(path):
     return key
 
 
-def request_body(key_id, key, signed):
+def request_body(key_id, key, signed, verified_items, evidence_sha256):
+    _check(verified_items, evidence_sha256)
+    try:
+        return _body(key_id, key, signed, verified_items, evidence_sha256)
+    except UnicodeError:
+        raise AttestationError("request_invalid") from None
+
+
+def _body(key_id, key, signed, verified_items, evidence_sha256):
     return json.dumps(
         {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "key_id": key_id,
             "algorithm": "ed25519",
             "signature": base64.b64encode(key.sign(signed)).decode("ascii"),
+            "verified_items": verified_items,
+            "evidence_sha256": evidence_sha256,
         },
         separators=(",", ":"),
+        ensure_ascii=False,
     ).encode()
 
 

@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.7.5"
+version: "0.7.6"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -422,6 +422,7 @@ TCP router는 두지 않는다.
 | `s3` | S3 SigV4 identity |
 | `hermes-blog-ingestion-webhook` | n8n 헤더 인증; `POST /webhook/hermes-blog-ingestion` 정확한 경로만, 출발지 `192.168.0.13/32` |
 | `blog-export-read`, `blog-export-ack`, `blog-attestation` | Blog-data Gateway 단일 범위 Bearer(`export_read`, `export_ack`, `attest`); 정확한 경로·메서드만, 출발지 `192.168.0.22/32`(Export)와 `192.168.0.13/32`(Attestation) |
+| `blog-attestation-read` | Blog-data Gateway Bearer(`attest` 범위 credential이 읽기도 겸함); `GET /v1/attestation-queue`와 `GET /v1/ingestions/{uuid}/request` 정확한 경로만, 출발지 `192.168.0.13/32` |
 | `grafana-static` | 인증 없음: 정확히 `/favicon.ico`와 `/robots.txt` 경로만 해당; Method matcher 없음; 소유자의 해결을 기다리는 policy 미준수 상태 |
 
 2026-09-24(SPEC-0180 S18)에 identity 확인 없이 application에 도달하던 route 네 개의

@@ -261,6 +261,21 @@ class WorkflowSourceTests(unittest.TestCase):
                 json.loads(result.stdout), [{"json": {"valid": True, "body": request}}]
             )
 
+    def test_screen_accepts_source_quotes(self):
+        fixture = json.loads(
+            (WORKFLOW.parent / "tests/fixtures/synthetic-report.json").read_text()
+        )
+        item = dict(fixture["items"][0], source_quotes=["a quote"])
+        request = dict(fixture, items=[item])
+        result = self.run_code("Screen Ingestion", {"body": request})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout), [{"json": {"valid": True, "body": request}}]
+        )
+        bad = dict(fixture, items=[dict(item, unexpected="x")])
+        result = self.run_code("Screen Ingestion", {"body": bad})
+        self.assertEqual(json.loads(result.stdout), [{"json": {"valid": False}}])
+
     def test_success_requires_json_content_type(self):
         receipt = {
             "id": "12345678-1234-1234-1234-123456789abc",

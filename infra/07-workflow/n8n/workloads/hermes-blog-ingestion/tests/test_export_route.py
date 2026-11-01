@@ -1,4 +1,4 @@
-"""The live export host admits exactly three Gateway request shapes."""
+"""The live export host admits exactly four Gateway request shapes."""
 
 import re
 import unittest
@@ -37,9 +37,14 @@ class ExportRouteTests(unittest.TestCase):
         self.assertTrue(self.text.startswith("# LIVE"))
         self.assertFalse((WORKLOAD / "traefik").exists())
 
-    def test_exactly_three_routes_to_the_gateway_over_tls(self):
+    def test_exactly_four_routes_to_the_gateway_over_tls(self):
         self.assertEqual(
-            {"blog-export-read", "blog-export-ack", "blog-attestation"},
+            {
+                "blog-export-read",
+                "blog-export-ack",
+                "blog-attestation",
+                "blog-attestation-read",
+            },
             set(self.routers),
         )
         self.assertEqual(
@@ -74,6 +79,11 @@ class ExportRouteTests(unittest.TestCase):
             + f" && Method(`POST`) && PathRegexp(`^/v1/ingestions/{UUID}/attestations$`)",
             rules["blog-attestation"],
         )
+        self.assertEqual(
+            HOST + " && Method(`GET`) && (Path(`/v1/attestation-queue`) || "
+            f"PathRegexp(`^/v1/ingestions/{UUID}/request$`))",
+            rules["blog-attestation-read"],
+        )
         read = re.compile(f"^/v1/exports/{UUID}(/files/[0-9]{{1,3}})?$")
         export = "0f0e0d0c-0b0a-4908-8706-050403020100"
         for path in (f"/v1/exports/{export}", f"/v1/exports/{export}/files/0"):
@@ -99,8 +109,20 @@ class ExportRouteTests(unittest.TestCase):
         self.assertEqual({"ipAllowList", "rateLimit"}, set(read))
         for kinds in (ack, attest):
             self.assertEqual({"ipAllowList", "buffering", "rateLimit"}, set(kinds))
-            self.assertLessEqual(kinds["buffering"]["maxRequestBodyBytes"], 16384)
+        # ACKs are small; attestation/2 lists reach ~213 KB at 100 long URLs.
+        self.assertEqual(16384, ack["buffering"]["maxRequestBodyBytes"])
+        self.assertGreaterEqual(attest["buffering"]["maxRequestBodyBytes"], 230000)
+        self.assertLessEqual(attest["buffering"]["maxRequestBodyBytes"], 262144)
         self.assertLessEqual(attest["rateLimit"]["average"], 10)
+        reads = self.routers["blog-attestation-read"]
+        self.assertEqual(
+            ["blog-attestation-host", STANDARD, "blog-attestation-read-rate"],
+            reads["middlewares"],
+        )
+        kinds = self.kinds(reads)
+        self.assertEqual({"ipAllowList", "rateLimit"}, set(kinds))
+        self.assertEqual(HOST_A, kinds["ipAllowList"]["sourceRange"])
+        self.assertLessEqual(kinds["rateLimit"]["average"], 60)
         # POL-0013: the shared per-peer chain follows the source check on
         # every router. Then rate, then buffering: a limited request is never
         # buffered.

@@ -1,4 +1,4 @@
-"""Blog-data attestation: message parity, trust gate, key custody, outcomes."""
+"""Blog-data attestation/2: vector parity, body shape, key custody, outcomes."""
 
 import base64
 import hashlib
@@ -8,7 +8,6 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
 
 from cryptography.hazmat.primitives import serialization
 
@@ -16,108 +15,106 @@ WORKLOAD = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WORKLOAD))
 sys.path.insert(0, str(Path(__file__).parent))
 import producer  # noqa: E402
-from publisher import attestation, trust  # noqa: E402
+from publisher import attestation  # noqa: E402
 from publisher.delivery import FailureKind, TransportFailure  # noqa: E402
-from publisher.gateway_adapter import GatewayAdapter  # noqa: E402
 from publisher.http_transport import HttpResponse  # noqa: E402
-from publisher.outbox import Outbox  # noqa: E402
-from test_trust import KEY, material  # noqa: E402
 
-VECTOR = json.loads(
-    (Path(__file__).parent / "fixtures/attestation-vector-v1.json").read_text()
+V = json.loads(
+    (Path(__file__).parent / "fixtures/attestation-v2.vectors.json").read_text()
 )
-
-
-def body_of(request):
-    return json.dumps(request, ensure_ascii=False).encode()
+EVIDENCE = V["evidence_sha256"]
+REQUEST = attestation._canonical(
+    {k: v for k, v in V["request"].items() if k != "idempotency_key"}
+)
+PUBLIC = serialization.load_pem_public_key(V["public_key_pem"].encode())
+ITEMS = V["cases"][0]["body"]["verified_items"]
 
 
 class MessageTests(unittest.TestCase):
-    def test_message_matches_blog_data_vector(self):
-        message = attestation.message(body_of(VECTOR["request"]))
-        self.assertEqual(base64.b64decode(VECTOR["message_b64"]), message)
-        self.assertEqual(VECTOR["message_sha256"], hashlib.sha256(message).hexdigest())
+    def test_request_fixture_matches_content_sha256(self):
+        self.assertEqual(V["content_sha256"], hashlib.sha256(REQUEST).hexdigest())
 
-    def test_key_order_and_idempotency_key_do_not_change_the_message(self):
-        request = dict(reversed(list(VECTOR["request"].items())))
-        request["idempotency_key"] = "another-key"
-        self.assertEqual(
-            base64.b64decode(VECTOR["message_b64"]),
-            attestation.message(body_of(request)),
-        )
+    def test_vectors_match_blog_data(self):
+        checked = 0
+        for case in V["cases"]:
+            if "signed_json" not in case:
+                continue  # forged/tampered: only the Gateway can judge the signature
+            with self.subTest(case=case["name"]):
+                items = case["body"]["verified_items"]
+                signed = attestation.message(REQUEST, items, EVIDENCE)
+                self.assertEqual(
+                    case["signed_json"].encode(), signed[len(attestation.PREFIX) :]
+                )
+                self.assertEqual(
+                    case["message_sha256"], hashlib.sha256(signed).hexdigest()
+                )
+                PUBLIC.verify(base64.b64decode(case["signature_base64"]), signed)
+                checked += 1
+        self.assertEqual(5, checked)
 
-    def test_any_item_change_changes_the_message(self):
-        request = json.loads(json.dumps(VECTOR["request"]))
-        request["items"][0]["url"] = "https://example.org/other"
-        self.assertNotEqual(
-            base64.b64decode(VECTOR["message_b64"]),
-            attestation.message(body_of(request)),
-        )
-
-    def test_unparseable_body_is_refused(self):
+    def test_idempotency_key_stays_out_and_a_foreign_fingerprint_is_refused(self):
+        with_key = attestation._canonical(V["request"])
+        with self.assertRaises(attestation.AttestationError) as caught:
+            attestation.message(with_key, ITEMS, EVIDENCE)
+        self.assertEqual("fingerprint", str(caught.exception))
         for raw in (b"\xff", b"[]", b'{"producer":"hermes"}'):
             with self.subTest(raw=raw), self.assertRaises(attestation.AttestationError):
-                attestation.message(raw)
+                attestation.message(raw, ITEMS, EVIDENCE)
 
+    def test_unsorted_or_duplicate_items_rejected_locally(self):
+        a, b = ITEMS
+        for items in ([b, a], [a, a]):
+            with (
+                self.subTest(items=items),
+                self.assertRaises(attestation.AttestationError),
+            ):
+                attestation.message(REQUEST, items, EVIDENCE)
 
-class TrustGateTests(unittest.TestCase):
-    def setUp(self):
-        tmp = tempfile.TemporaryDirectory(prefix="hermes-attest-", dir="/tmp")
-        self.addCleanup(tmp.cleanup)
-        self.store = Path(tmp.name) / "producer-keys.json"
-        self.key = producer.new_key()
-        producer.write_store(self.store, producer.entry(self.key))
-        for target, value in (
-            ("publisher.trust.TRUST_STORE", self.store),
-            ("publisher.trust._runtime_protected", lambda: None),
-        ):
-            patcher = patch(target, value)
-            patcher.start()
-            self.addCleanup(patcher.stop)
-        self.snapshot, self.evidence = material()
+    def test_malformed_items_or_evidence_rejected_locally(self):
+        a = ITEMS[0]
+        bad = (
+            [{**a, "fetched_at": "2026-10-30 09:15:00"}],
+            [{**a, "final_url": "http://example.org/"}],
+            [{**a, "final_url": "https://user@example.org/"}],
+            [{**a, "final_url": "https://example.org/a b"}],
+            [{**a, "extra": 1}],
+            [{"item_id": "x", "fetched_at": a["fetched_at"]}],
+            [dict(a, item_id=f"i{n:03}") for n in range(101)],
+        )
+        for items in bad:
+            with (
+                self.subTest(items=items[:1]),
+                self.assertRaises(attestation.AttestationError),
+            ):
+                attestation.message(REQUEST, items, EVIDENCE)
+        for evidence in ("A" * 64, "a" * 63, None):
+            with (
+                self.subTest(evidence=evidence),
+                self.assertRaises(attestation.AttestationError),
+            ):
+                attestation.message(REQUEST, ITEMS, evidence)
 
-    def test_signed_evidence_yields_the_dispatch_request_bytes(self):
-        signature = producer.sign(self.key, self.evidence)
-        body, evidence_sha256 = attestation.verified_request(
-            self.snapshot, self.evidence, signature
-        )
-        times = trust.companion.verify(
-            self.snapshot.job_id,
-            self.snapshot.run_id,
-            self.snapshot.candidate,
-            self.evidence,
-        )
-        generated = json.loads(self.snapshot.candidate)["generated_at"]
-        # What dispatch sends: the adapter over the staged outbox row.
-        box = Outbox(self.store.parent / "private" / "outbox.sqlite")
-        self.addCleanup(box.close)
-        box.stage(self.snapshot)
-        expected = GatewayAdapter(
-            times.scheduled_at, generated, times.collected_at
-        ).prepare(box.get(KEY))
-        self.assertEqual(expected.body, body)
-        self.assertEqual(hashlib.sha256(self.evidence).hexdigest(), evidence_sha256)
+    def test_lone_surrogates_raise_attestation_error(self):
+        raw = json.dumps(
+            {
+                **{k: v for k, v in V["request"].items() if k != "idempotency_key"},
+                "source_text": "\\ud800",
+            }
+        ).encode()
+        raw = raw.replace(b"\\\\ud800", b"\\ud800")
+        self.assertIn(b"\\ud800", raw)
+        with self.assertRaises(attestation.AttestationError):
+            attestation.message(raw, ITEMS, EVIDENCE)
+        items = [{**ITEMS[0], "item_id": "item-\ud800"}]
+        with self.assertRaises(attestation.AttestationError):
+            attestation.message(REQUEST, items, EVIDENCE)
+        with self.assertRaises(attestation.AttestationError):
+            attestation.request_body("k", producer.new_key(), b"", items, EVIDENCE)
 
-    def test_unsigned_forged_revoked_or_foreign_evidence_is_refused(self):
-        other = producer.new_key()
-        _, foreign = material("c" * 32)
-        cases = (
-            ("signature_missing", self.evidence, None),
-            ("signature_invalid", self.evidence, producer.sign(other, self.evidence)),
-            ("identity", foreign, producer.sign(self.key, foreign)),
-        )
-        for code, evidence, signature in cases:
-            with self.subTest(code=code), self.assertRaises(trust.TrustError) as caught:
-                attestation.verified_request(self.snapshot, evidence, signature)
-            self.assertEqual(code, str(caught.exception))
-        producer.write_store(
-            self.store, producer.entry(self.key, revoked_at="2026-10-01T00:00:00Z")
-        )
-        with self.assertRaises(trust.TrustError) as caught:
-            attestation.verified_request(
-                self.snapshot, self.evidence, producer.sign(self.key, self.evidence)
-            )
-        self.assertEqual("key_revoked", str(caught.exception))
+    def test_empty_list_and_fire_id_null(self):
+        signed = attestation.message(REQUEST, [], EVIDENCE)
+        self.assertIn(b'"fire_id":null', signed)
+        self.assertIn(b'"verified_items":[]', signed)
 
 
 class KeyCustodyTests(unittest.TestCase):
@@ -136,19 +133,34 @@ class KeyCustodyTests(unittest.TestCase):
         )
 
     def test_owner_or_group_read_only_key_signs_a_verifiable_body(self):
-        message = attestation.message(body_of(VECTOR["request"]))
+        message = attestation.message(REQUEST, ITEMS, EVIDENCE)
         for mode in (0o400, 0o440, 0o600):
             with self.subTest(mode=oct(mode)):
                 self.path.chmod(mode)
                 key = attestation.load_signing_key(self.path)
-                body = json.loads(attestation.request_body("attest-1", key, message))
+                body = json.loads(
+                    attestation.request_body("attest-1", key, message, ITEMS, EVIDENCE)
+                )
                 self.assertEqual(
                     {
-                        "schema_version": "1.0",
-                        "key_id": "attest-1",
-                        "algorithm": "ed25519",
+                        "schema_version",
+                        "key_id",
+                        "algorithm",
+                        "signature",
+                        "verified_items",
+                        "evidence_sha256",
                     },
-                    {k: v for k, v in body.items() if k != "signature"},
+                    set(body),
+                )
+                self.assertEqual(
+                    ("2.0", "attest-1", "ed25519", ITEMS, EVIDENCE),
+                    (
+                        body["schema_version"],
+                        body["key_id"],
+                        body["algorithm"],
+                        body["verified_items"],
+                        body["evidence_sha256"],
+                    ),
                 )
                 self.assertRegex(body["signature"], r"^[A-Za-z0-9+/]{86}==$")
                 self.private.public_key().verify(
@@ -214,6 +226,7 @@ class OutcomeTests(unittest.TestCase):
             401: "rejected",
             403: "rejected",
             404: "rejected",
+            409: "rejected",
             422: "rejected",
             429: "retry",
             500: "retry",
@@ -234,147 +247,6 @@ class OutcomeTests(unittest.TestCase):
                 stop = (FailureKind.AUTH, FailureKind.TLS)
                 expected = "rejected" if kind in stop else "retry"
                 self.assertEqual(expected, attestation.outcome(TransportFailure(kind)))
-
-
-class AttestCliTests(unittest.TestCase):
-    """The attest command: producer trust first, then key, then one POST."""
-
-    REPORT = "0f0e0d0c-0b0a-4908-8706-050403020100"
-
-    def setUp(self):
-        import test_staging as staging
-
-        tmp = tempfile.TemporaryDirectory(prefix="hermes-attest-cli-", dir="/tmp")
-        self.addCleanup(tmp.cleanup)
-        self.root = root = Path(tmp.name)
-        self.validator, sha = staging.synthetic_validator(root)
-        self.producer = producer.new_key()
-        store = root / "producer-keys.json"
-        producer.write_store(store, producer.entry(self.producer))
-        for target, value in (
-            ("publisher.candidates.REVIEWED_SHA256", sha),
-            ("publisher.trust.TRUST_STORE", store),
-            ("publisher.trust._runtime_protected", lambda: None),
-        ):
-            patcher = patch(target, value)
-            patcher.start()
-            self.addCleanup(patcher.stop)
-        snapshot, self.evidence = material()
-        self.job, self.run = snapshot.job_id, snapshot.run_id
-        (root / "source" / snapshot.source_ref).parent.mkdir(parents=True)
-        (root / "source" / snapshot.source_ref).write_bytes(snapshot.source)
-        (root / "exports" / self.job).mkdir(parents=True)
-        (root / "exports" / self.job / f"{self.run}.json").write_bytes(
-            snapshot.candidate
-        )
-        (root / "items").mkdir()
-        self.evidence_root = root / "evidence"
-        self.evidence_root.mkdir()
-        self.name = (
-            hashlib.sha256(f"{self.job}\0{self.run}".encode()).hexdigest() + ".json"
-        )
-        (self.evidence_root / self.name).write_bytes(self.evidence)
-        self.signer = producer.new_key()
-        self.key = root / "attestation.pem"
-        self.key.write_bytes(
-            self.signer.private_bytes(
-                serialization.Encoding.PEM,
-                serialization.PrivateFormat.PKCS8,
-                serialization.NoEncryption(),
-            )
-        )
-        self.key.chmod(0o600)
-        self.auth = root / "attest.header"
-        self.auth.write_text("Authorization: Bearer synthetic-attest-token\n")
-        self.auth.chmod(0o600)
-        self.args = [
-            "attest",
-            "--exports", str(root / "exports"),
-            "--source-root", str(root / "source"),
-            "--item-root", str(root / "items"),
-            "--validator", str(self.validator),
-            "--validator-sha256", sha,
-            "--evidence-root", str(self.evidence_root),
-            "--job", self.job,
-            "--run", self.run,
-            "--report-id", self.REPORT,
-            "--gateway", "https://blog-export.example.test",
-            "--auth-header-file", str(self.auth),
-            "--signing-key", str(self.key),
-            "--key-id", "attest-1",
-        ]  # fmt: skip
-
-    def sign_evidence(self):
-        (self.evidence_root / (self.name + ".sig")).write_bytes(
-            producer.sign(self.producer, self.evidence)
-        )
-
-    def invoke(self, status=201):
-        import contextlib
-        import io
-
-        from publisher import cli
-
-        sent = []
-
-        def send(transport, request):
-            sent.append((transport, request))
-            return HttpResponse(status, b"{}")
-
-        out = io.StringIO()
-        with (
-            patch("publisher.http_transport.HttpTransport.send", send),
-            contextlib.redirect_stdout(out),
-        ):
-            code = cli.main(self.args)
-        text = out.getvalue()
-        for secret in ("synthetic-attest-token", str(self.root), "PRIVATE KEY"):
-            self.assertNotIn(secret, text)
-        return code, json.loads(text), sent
-
-    def test_signed_evidence_posts_one_verifiable_attestation(self):
-        self.sign_evidence()
-        code, result, sent = self.invoke()
-        self.assertEqual((0, {"result": "attested", "status": 201}), (code, result))
-        ((transport, request),) = sent
-        self.assertEqual(
-            ("https", "blog-export.example.test", None,
-             f"/v1/ingestions/{self.REPORT}/attestations"),
-            transport._endpoint,
-        )  # fmt: skip
-        self.assertEqual(transport._auth_header[1], "Bearer synthetic-attest-token")
-        self.assertEqual(request.endpoint_sha256, transport.endpoint_sha256)
-        body, _ = attestation.verified_request(
-            *material(), producer.sign(self.producer, self.evidence)
-        )
-        signature = json.loads(request.body)["signature"]
-        self.signer.public_key().verify(
-            base64.b64decode(signature), attestation.message(body)
-        )
-
-    def test_resent_attestation_is_success_and_refusals_stop(self):
-        self.sign_evidence()
-        self.assertEqual(0, self.invoke(200)[0])
-        code, result, _ = self.invoke(422)
-        self.assertEqual((1, {"result": "rejected", "status": 422}), (code, result))
-        code, result, _ = self.invoke(503)
-        self.assertEqual((1, {"result": "retry", "status": 503}), (code, result))
-
-    def test_unsigned_evidence_is_blocked_before_key_or_network(self):
-        self.key.chmod(0o644)  # would be refused if it were read
-        code, result, sent = self.invoke()
-        self.assertEqual(
-            (1, {"result": "blocked", "reason": "signature_missing"}), (code, result)
-        )
-        self.assertEqual([], sent)
-
-    def test_bad_report_id_or_key_is_rejected_without_network(self):
-        self.sign_evidence()
-        self.args[self.args.index("--report-id") + 1] = "../v1/summary"
-        self.assertEqual((1, {"error": "operation_rejected"}, []), self.invoke())
-        self.args[self.args.index("--report-id") + 1] = self.REPORT
-        self.key.chmod(0o644)
-        self.assertEqual((1, {"error": "operation_rejected"}, []), self.invoke())
 
 
 if __name__ == "__main__":

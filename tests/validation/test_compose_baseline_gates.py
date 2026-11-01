@@ -5658,6 +5658,7 @@ ROUTES_WITHOUT_SSO = {
     "blog-export-read": "gateway-bearer-and-ip-allowlist",
     "blog-export-ack": "gateway-bearer-and-ip-allowlist",
     "blog-attestation": "gateway-bearer-and-ip-allowlist",
+    "blog-attestation-read": "gateway-bearer-and-ip-allowlist",
 }
 
 
