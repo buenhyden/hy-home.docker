@@ -1,9 +1,10 @@
-# Runs the queue attester once; the timer fires it. The operator points
-# /opt/hermes-publisher/current at an installed release
-# (/opt/hermes-publisher/releases/<commit>); install.py itself creates no
-# `current` link. Secrets under /etc/hermes-attester/ are owned by
-# hermes-attester with mode 0600 (or root:hermes-attester 0640) and read-only
-# here; StateDirectory creates and owns the two writable paths.
+# Runs the queue attester once; the timer fires it. Install with
+# `install.py --role attester` and point /opt/hermes-attester/current at the
+# printed release (/opt/hermes-attester/releases/<commit>); install.py creates
+# no `current` link. /etc/hermes-attester/ is owned by hermes-attester, 0700,
+# and its two secret files are hermes-attester 0600: the auth-header reader
+# refuses a parent directory the account does not own. StateDirectory creates
+# and owns the two writable paths.
 [Unit]
 Description=Hermes attester: attest queued Blog-data reports
 After=network-online.target

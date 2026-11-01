@@ -1,6 +1,6 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.3.2"
+version: "0.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -57,7 +57,7 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 - [blog-export.yml](../../../../01-gateway/traefik/dynamic/blog-export.yml): Windows B의 Export 조회·ACK와 서버 A 호스트의 Attestation 세 요청 형태만 허용하는 Traefik 경로입니다. 2026-11-01 운영 디렉터리에 적용했습니다.
 - [publisher/](publisher/README.md): 제한된 파일 읽기, 로컬 대기함과 전송 상태 처리입니다.
 - [tests/](tests/README.md): 합성 시험과 소스 경계 검증입니다.
-- [install.py](install.py): 커밋 하나를 root 소유 불변 release로 설치합니다.
+- [install.py](install.py): 커밋 하나를 root 소유 불변 release로 설치합니다. `--role publisher`(기본, `/opt/hermes-publisher`)와 `--role attester`(`/opt/hermes-attester`, 서명·원본 수집 모듈 포함)가 있습니다.
 - [pyproject.toml](pyproject.toml), [requirements.lock](requirements.lock): 실행 의존성 선언과 hash 고정본입니다.
 
 ## Usage
@@ -173,7 +173,7 @@ Publisher 모듈 전체와 키 저장소의 모든 상위 경로가 root 소유�
 
 설치물은 사용자 작업 사본이나 편집 가능 설치가 아닙니다. 운영자가 검토된 커밋을
 `git archive --format=tar <commit> -- infra/07-workflow/n8n/workloads/hermes-blog-ingestion`
-으로 만들고 root가 `python3 -I install.py --archive <tar>`로 설치합니다. clone,
+으로 만들고 root가 `python3 -I install.py --archive <tar>`로 설치합니다(Attester는 `--role attester`). clone,
 tar, 설치기는 root 전용이어야 하며 설치기는 root 전용이 아닌 tar와 prefix 상위
 경로를 거부합니다. 설치기는 pax 머리글의 커밋 ID로
 `/opt/hermes-publisher/releases/<commit>`을 만들고, 명시된 Publisher 모듈 목록과
