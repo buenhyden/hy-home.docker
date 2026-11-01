@@ -674,9 +674,9 @@ class BlogIngestionGatewayTests(unittest.TestCase):
         gateway = merged["services"]["blog-ingestion"]
         # Built locally from a reviewed Blog-data commit; never pulled.
         self.assertRegex(gateway["image"], r"^hy-home/blog-ingestion:[0-9a-f]{40}$")
-        # Blog-data dev with Resource Export (attestations, exports, ACK).
+        # Blog-data dev with Resource Export 2.0 (records rendered on the receiver).
         self.assertEqual(
-            "hy-home/blog-ingestion:b372de374ec589b1bec2ff8096ae2f7272461248",
+            "hy-home/blog-ingestion:c05e5b88bae36ae8f5421fd27beada9b1d596a19",
             gateway["image"],
         )
         self.assertEqual("never", gateway["pull_policy"])

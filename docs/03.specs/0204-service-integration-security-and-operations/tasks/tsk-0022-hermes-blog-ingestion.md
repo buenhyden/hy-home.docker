@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.11"
+version: "0.5.12"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1629,6 +1629,33 @@ installed, so it rewrote `/etc/hermes-attester/environment`
 (`https://blog-export.hy.home.arpa`, `hy.home.arpa`) and the units; the unit
 now reads `EnvironmentFile` and `--gateway ${HERMES_GATEWAY_URL}`, the manual
 run and the next timer run returned `Result=success` on an empty queue.
+
+### Gateway Export 2.0 pin — 2026-11-01
+
+The owner asked to move the Gateway to Blog-data `dev`
+`c05e5b88bae36ae8f5421fd27beada9b1d596a19` (PR #649, ADR-0087): server A keeps
+only verified record JSON, and server B's receiver renders Markdown from its own
+checkout, so template, profile and Vault-rule changes no longer need a server-A
+image. The commit is the `dev` head, 17 commits ahead of `b372de374e` and 0
+behind; no store or DB file changed (schema 4 stays), and the four Export routes
+are the same. The file route now returns `application/json` records with
+`X-Content-SHA256` for Export 2.0 and still serves stored 1.0 Markdown. The
+PowerShell receiver was removed in favour of the Node.js
+`scripts/ops/receive-hermes-exports.mjs`.
+
+- Image: built with `tests/gateway-image.sh` (Dockerfile build-context
+  allowlist only) as `hy-home/blog-ingestion:c05e5b88…`, ID
+  `sha256:7bf3881c16bd4101275c622aef7aab8d488647f48368725272a8c77b5c09e56e`, no
+  registry digest (local build, not byte-reproducible). The repository tag form is kept
+  instead of the request's `blog-data-ingestion:c05e5b88ba`, because the Compose pin
+  test and E2E scripts read the full commit from that tag.
+- Backup: online backup with the running `b372` image to
+  `/data/backup-pre-export2-20261101T071025Z.sqlite3` (188,416 bytes):
+  `integrity:ok`, 1 report, 14 candidates. A copy restored into a disposable
+  volume and opened by the new image under `--network none` gave the same
+  integrity and counts.
+- Switch, Hermes run, attester `ready` and server-B receive are NOT_RUN until this
+  pin is merged and the container is recreated.
 
 ## Evidence
 
