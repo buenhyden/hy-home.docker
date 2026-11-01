@@ -25,7 +25,15 @@ BASE_PAYLOAD = {
     "source_text": "source text",
     "source_sha256": hashlib.sha256(b"source text").hexdigest(),
     "idempotency_key": "idem-1",
-    "items": [{"item_id": "item-1", "kind": "news", "title": "title", "body": "body"}],
+    "items": [
+        {
+            "item_id": "item-1",
+            "kind": "news",
+            "title": "Example ships version 2.1",
+            "body": "Example released version 2.1 of its build tool on 31 October.",
+            "source_url": "https://example.com/news/2-1",
+        }
+    ],
 }
 
 
@@ -100,7 +108,8 @@ class SourceQuotesValidationTests(unittest.TestCase):
                     "item_id": "ok",
                     "kind": "news",
                     "title": "t",
-                    "body": "b",
+                    "body": "Example released version 2.1 of its build tool.",
+                    "source_url": "https://example.com/a",
                     "source_quotes": ["good"],
                 },
                 {
@@ -142,6 +151,86 @@ class UnknownFieldTests(unittest.TestCase):
         p = make_payload(source_url="https://example.com", source_quotes=["q"])
         p["fire_id"] = "fire-1"
         self.assertIsNone(tools._validate(p))
+
+
+class ItemContentTests(unittest.TestCase):
+    """Each item stands for one article: no report titles or filler text."""
+
+    def test_report_title_as_item_title_is_rejected(self):
+        p = make_payload(title="DevOps Daily Brief research report")
+        self.assertEqual(tools._validate(p), "placeholder_item:item-1")
+
+    def test_filler_body_is_rejected(self):
+        p = make_payload(body="Report submitted")
+        self.assertEqual(tools._validate(p), "placeholder_item:item-1")
+
+    def test_test_item_title_is_rejected(self):
+        p = make_payload(title="test item")
+        self.assertEqual(tools._validate(p), "placeholder_item:item-1")
+
+    def test_one_line_body_is_too_short(self):
+        p = make_payload(body="Example shipped it.")
+        self.assertEqual(tools._validate(p), "body_too_short:item-1")
+
+    def test_quotes_need_the_page_they_came_from(self):
+        p = make_payload(source_quotes=["Example released version 2.1."])
+        del p["items"][0]["source_url"]
+        self.assertEqual(tools._validate(p), "source_url_required_with_quotes:item-1")
+
+    def test_article_item_with_page_and_quote_passes(self):
+        p = make_payload(
+            source_url="https://example.com/news/2-1",
+            source_quotes=["Example released version 2.1 of its build tool."],
+        )
+        self.assertIsNone(tools._validate(p))
+
+
+class PlaceholderFalsePositiveTests(unittest.TestCase):
+    """Real headlines and summaries that mention the filler words still pass."""
+
+    def test_real_items_mentioning_filler_words_pass(self):
+        for title, body in (
+            (
+                "Gartner forecasts IDP adoption",
+                "A new Gartner research report says 40% of platform teams will adopt IDPs by 2027.",
+            ),
+            (
+                "Kubernetes 1.33 release date still TBD",
+                "The Kubernetes release team has not yet fixed a date for version 1.33.",
+            ),
+            (
+                "Chrome 131 styles placeholders",
+                "Chrome 131 styles the ::placeholder pseudo-element natively in every form field.",
+            ),
+        ):
+            with self.subTest(title=title):
+                self.assertIsNone(tools._validate(make_payload(title=title, body=body)))
+
+    def test_non_string_title_or_body_is_named(self):
+        self.assertEqual(tools._validate(make_payload(title=["x"])), "invalid_title")
+        self.assertEqual(tools._validate(make_payload(body={"x": 1})), "invalid_body")
+
+    def test_blank_source_url_does_not_carry_quotes(self):
+        p = make_payload(
+            source_url="  ", source_quotes=["Example released version 2.1."]
+        )
+        self.assertEqual(tools._validate(p), "source_url_required_with_quotes:item-1")
+
+
+class ToolSchemaTests(unittest.TestCase):
+    """The model sees the exact field sets the plugin and n8n accept."""
+
+    def test_payload_schema_lists_exactly_the_accepted_fields(self):
+        payload = tools.SUBMIT_RESEARCH_REPORT_SCHEMA["parameters"]["properties"][
+            "payload"
+        ]
+        self.assertFalse(payload["additionalProperties"])
+        self.assertEqual(
+            set(payload["properties"]), tools._FIELDS - {"companion_evidence"}
+        )
+        item = payload["properties"]["items"]["items"]
+        self.assertFalse(item["additionalProperties"])
+        self.assertEqual(set(item["properties"]), tools._ITEM_FIELDS)
 
 
 if __name__ == "__main__":

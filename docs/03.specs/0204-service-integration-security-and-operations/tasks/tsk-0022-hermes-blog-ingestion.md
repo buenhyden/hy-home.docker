@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.12"
+version: "0.5.13"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1656,6 +1656,64 @@ PowerShell receiver was removed in favour of the Node.js
   integrity and counts.
 - Switch, Hermes run, attester `ready` and server-B receive are NOT_RUN until this
   pin is merged and the container is recreated.
+
+### Export 2.0 switch and research item quality — 2026-11-01
+
+The owner merged #717; the agent recreated only `blog-ingestion`. The running
+image is `sha256:7bf3881c…` (c05e5b88), healthy, schema 4 with every row kept
+(1 report, 14 candidates, 14 Exports at the switch). Worker to Gateway without a
+token 401, Export list from server A 403, attestation queue without a token 401.
+The owner's manual attester run and server B's dry run and empty real run all
+completed. Blog-data `dev` later moved to `e5c0884`; its four commits touch only
+docs and Vault files, so the pinned image stays.
+
+Runs after the switch, matched by run and report:
+
+| Time (KST) | Job | Plugin outbox | n8n | Gateway report | Attester | Export |
+| --- | --- | --- | --- | --- | --- | --- |
+| 13:13 | devops | 200 (retry after timeout) | success | `add349b2`, 14 items, run `local-manual-run-…` | 2 verified, 12 held | 1.0: 2 acknowledged, 12 held |
+| 16:56 | devops | 400 | `Screen Ingestion` invalid | none | — | — |
+| 17:22 | devops | 201 | success | `7247d013`, 1 item "test item", no quotes | 0 verified | 2.0 held `SOURCE_UNVERIFIED` |
+| 17:34 | devops | 400 | invalid | none | — | — |
+| 17:43, 17:45 | news | 400, 400 | invalid | none | — | — |
+| 18:19 | devops | 201 | success | `977b8bed`, 1 item, quote found, `name_not_found` | 0 verified | 2.0 held `SOURCE_UNVERIFIED` |
+
+Causes, kept apart: Hermes ran on the `beam:cloud` fallback because the primary
+model's quota was exhausted, and Firecrawl returned 402 for every page fetch.
+All four 400s were extra fields (`kind`, `body` at the top level; `scope`,
+`dimension` on items), which #718 now names inside Hermes. The two stored
+reports carried placeholder text: source text "hello" or a short label, a report
+title as the item title and "Report submitted" as the body. The attester held
+them correctly; in `977b8bed` the quote matched the page but "DevOps", "Daily"
+and "Brief" in the title did not. No Gateway, n8n or attester defect was found.
+
+Plugin 0.2.5 and the tracked prompt answer this without touching
+`source_check.py`: the tool schema shown to the model lists the exact fields,
+each item needs its article's own title and a body of at least 40 characters,
+report titles and filler are refused as `placeholder_item`, and quotes need the
+page they came from. Replayed through the new validator, today's morning report
+(14 items) and the 10:18 report (9 items) still pass, the two placeholder reports
+are refused before sending, and the four 400 payloads get named field errors.
+The direct-submission paragraph of the three cron prompts now lives in
+`deploy/research-submission-prompt.txt` and is applied by
+`deploy/update-cron-prompts.sh`; the unused `hermes-plugin/schemas.py`, whose job
+names no longer matched, is removed. Held reports are kept as they are.
+
+Attester evidence across all three stored reports (16 items, owner's root read,
+codes only): 2 verified; on the 14 held items `name_not_found` 11,
+`quote_not_found` 8, `number_not_found` 5, `field_missing` 1, `quotes_missing` 1
+(one item can carry several codes). Names and quotes dominate, which the new
+title, body and source-page rules target; the rules in `source_check.py` stay.
+An independent review found that the first placeholder pattern also refused real
+headlines (for example a "research report" or "TBD" mention) and that the prompt
+script could stop after editing some jobs. The pattern now matches only whole
+filler values, the script stages every prompt before the first edit and prints
+the backup first, and regression tests cover both, plus non-string title or body
+and a blank source URL.
+`tests/e2e-ingress.sh` now checks the Export 2.0 record file (one `record` entry,
+SHA-256 and length, UTF-8 JSON) and passed 53/53 against c05e5b88 with disposable
+containers: persist 201, replay 200 duplicate, other content 409, attestation to
+one `ready` 2.0 Export, held items without a file, ACK 201 and replay 200.
 
 ## Evidence
 

@@ -80,6 +80,15 @@ _FIELDS = frozenset(
 _ITEM_FIELDS = frozenset(
     {"item_id", "kind", "title", "body", "source_url", "source_quotes"}
 )
+# One item is one article: its own title and a summary of what the page says.
+# Report titles and filler stand in for content the page never backs.
+# Matched against the whole value, so headlines that merely mention these words pass.
+_FILLER = r"test item|report submitted|untitled|placeholder|tbd|n/a|lorem ipsum.*"
+_PLACEHOLDER_TITLE = re.compile(
+    rf"\s*(?:{_FILLER}|.*\bdaily brief\b.*|.*\bresearch report)\s*", re.IGNORECASE
+)
+_PLACEHOLDER_BODY = re.compile(rf"\s*(?:{_FILLER})\W*", re.IGNORECASE)
+BODY_MIN = 40
 
 
 def _validate(payload: dict[str, Any]) -> str | None:
@@ -133,9 +142,10 @@ def _validate(payload: dict[str, Any]) -> str | None:
             "infrastructure",
         ):
             return "invalid_item_kind"
-        if not (1 <= len(item.get("title", "")) <= 300):
+        title, body = item.get("title"), item.get("body")
+        if not isinstance(title, str) or not (1 <= len(title) <= 300):
             return "invalid_title"
-        if not (1 <= len(item.get("body", "")) <= 32768):
+        if not isinstance(body, str) or not (1 <= len(body) <= 32768):
             return "invalid_body"
         if "source_url" in item and item["source_url"] is not None:
             if (
@@ -154,6 +164,14 @@ def _validate(payload: dict[str, Any]) -> str | None:
                     or len(quote) > SOURCE_QUOTE_MAX
                 ):
                     return "invalid_source_quote"
+            if not str(item.get("source_url") or "").strip():
+                return f"source_url_required_with_quotes:{item['item_id']}"
+        if _PLACEHOLDER_TITLE.fullmatch(item["title"]) or _PLACEHOLDER_BODY.fullmatch(
+            item["body"]
+        ):
+            return f"placeholder_item:{item['item_id']}"
+        if len(item["body"]) < BODY_MIN:
+            return f"body_too_short:{item['item_id']}"
     for field in ("scheduled_at", "generated_at", "collected_at"):
         value = payload.get(field)
         if not isinstance(value, str) or not value:
@@ -359,12 +377,90 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+_STRING = {"type": "string"}
 SUBMIT_RESEARCH_REPORT_SCHEMA = {
     "name": "submit_research_report",
-    "description": "Submit a structured research report to the configured n8n webhook.",
+    "description": (
+        "Submit this cron run's verified research items. The tool sets producer, job_id, "
+        "run_id, report_kind and idempotency_key; send only the fields listed. "
+        "source_text is the text you actually collected and source_sha256 its SHA-256. "
+        "One item per article: title is that article's own headline, never the report "
+        "title; body (40+ characters) summarises only what that page says, and every "
+        "product, company, version, number and date in title or body must appear on the "
+        "page. source_url is the article page itself; source_quotes are 1-3 sentences "
+        "copied verbatim from it. If you cannot read the page, leave the item out "
+        "rather than guess. An error names the field to fix."
+    ),
     "parameters": {
         "type": "object",
-        "properties": {"payload": {"type": "object"}},
+        "properties": {
+            "payload": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "schema_version": {"type": "string", "enum": [SCHEMA_VERSION]},
+                    "producer": _STRING,
+                    "job_id": _STRING,
+                    "run_id": _STRING,
+                    "fire_id": _STRING,
+                    "report_kind": _STRING,
+                    "scheduled_at": _STRING,
+                    "generated_at": _STRING,
+                    "collected_at": _STRING,
+                    "source_ref": _STRING,
+                    "source_text": _STRING,
+                    "source_sha256": _STRING,
+                    "idempotency_key": _STRING,
+                    "items": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 100,
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "required": ["item_id", "kind", "title", "body"],
+                            "properties": {
+                                "item_id": _STRING,
+                                "kind": {
+                                    "type": "string",
+                                    "enum": [
+                                        "news",
+                                        "devops",
+                                        "business_idea",
+                                        "infrastructure",
+                                    ],
+                                },
+                                "title": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 300,
+                                },
+                                "body": {
+                                    "type": "string",
+                                    "minLength": BODY_MIN,
+                                    "maxLength": 32768,
+                                },
+                                "source_url": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 2048,
+                                },
+                                "source_quotes": {
+                                    "type": "array",
+                                    "minItems": 1,
+                                    "maxItems": 3,
+                                    "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": SOURCE_QUOTE_MAX,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            }
+        },
         "required": ["payload"],
     },
 }
