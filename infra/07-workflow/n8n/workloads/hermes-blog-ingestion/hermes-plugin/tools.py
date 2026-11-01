@@ -16,6 +16,8 @@ WEBHOOK_URL_DEFAULT = "https://n8n.local/webhook/hermes-blog-ingestion"
 SECRET_FILE = HERMES_HOME / "secrets" / "research-webhook.secret"
 # The Gateway binds the webhook token to this producer; the model does not choose it.
 PRODUCER = "hermes"
+# Hermes' plugin context, bound by register(); it reports the cron run in progress.
+_CTX = None
 
 _ALLOWED_JOBS = {
     "6eabd835f969": "news",
@@ -152,8 +154,20 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
     payload = args.get("payload") if isinstance(args, dict) else None
     if not isinstance(payload, dict):
         payload = args if isinstance(args, dict) else {}
-    if payload:
-        payload = {**payload, "producer": PRODUCER}
+    run = _CTX.current_cron_execution() if _CTX is not None else None
+    if run is None:
+        return {"ok": False, "error": "not_a_cron_run"}
+    if run.job_id not in _ALLOWED_JOBS:
+        return {"ok": False, "error": "job_not_allowed"}
+    # Identity comes from the scheduler and the token, not from the model.
+    payload = {
+        **payload,
+        "producer": PRODUCER,
+        "job_id": run.job_id,
+        "report_kind": _ALLOWED_JOBS[run.job_id],
+        "run_id": run.execution_id,
+        "idempotency_key": f"{run.job_id}-{run.execution_id}",
+    }
 
     error = _validate(payload)
     if error:
