@@ -126,6 +126,24 @@ class SourceQuotesValidationTests(unittest.TestCase):
         self.assertIsNone(tools._validate(p))
 
 
+class UnknownFieldTests(unittest.TestCase):
+    """n8n screens the exact field set; name the stray field instead of a 400."""
+
+    def test_unknown_top_level_field_is_named(self):
+        p = make_payload()
+        p["kind"] = "devops"
+        self.assertEqual(tools._validate(p), "unknown_field:kind")
+
+    def test_unknown_item_field_is_named(self):
+        p = make_payload(url="https://example.com")
+        self.assertEqual(tools._validate(p), "unknown_item_field:url")
+
+    def test_every_screened_field_still_passes(self):
+        p = make_payload(source_url="https://example.com", source_quotes=["q"])
+        p["fire_id"] = "fire-1"
+        self.assertIsNone(tools._validate(p))
+
+
 if __name__ == "__main__":
     unittest.main()
 

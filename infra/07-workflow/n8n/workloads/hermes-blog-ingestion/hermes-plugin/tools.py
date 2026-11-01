@@ -56,7 +56,36 @@ def _identity(value: Any) -> bool:
     return isinstance(value, str) and bool(_IDENTITY_RE.fullmatch(value))
 
 
+# The exact field sets the n8n Screen Ingestion node accepts; anything else is a 400 there.
+# companion_evidence is listed only so its own error below still names it.
+_FIELDS = frozenset(
+    {
+        "schema_version",
+        "producer",
+        "job_id",
+        "run_id",
+        "fire_id",
+        "report_kind",
+        "scheduled_at",
+        "generated_at",
+        "collected_at",
+        "source_ref",
+        "source_text",
+        "source_sha256",
+        "idempotency_key",
+        "items",
+        "companion_evidence",
+    }
+)
+_ITEM_FIELDS = frozenset(
+    {"item_id", "kind", "title", "body", "source_url", "source_quotes"}
+)
+
+
 def _validate(payload: dict[str, Any]) -> str | None:
+    unknown = sorted(set(payload) - _FIELDS)
+    if unknown:
+        return f"unknown_field:{unknown[0]}"
     if payload.get("schema_version") != SCHEMA_VERSION:
         return "invalid_schema_version"
     if not _identity(payload.get("producer")):
@@ -89,6 +118,9 @@ def _validate(payload: dict[str, Any]) -> str | None:
     for item in items:
         if not isinstance(item, dict):
             return "invalid_item"
+        unknown = sorted(set(item) - _ITEM_FIELDS)
+        if unknown:
+            return f"unknown_item_field:{unknown[0]}"
         for field in ("item_id", "kind", "title", "body"):
             if field not in item:
                 return f"missing_{field}"
