@@ -386,7 +386,8 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         # expired (403) and an idle-stopped runner starts cold for each daily run.
         for name in ("n8n", "n8n-worker"):
             self.assertEqual(
-                120, services[name]["environment"]["N8N_RUNNERS_GRANT_TOKEN_TTL"]
+                "${N8N_RUNNERS_GRANT_TOKEN_TTL:-120}",
+                services[name]["environment"]["N8N_RUNNERS_GRANT_TOKEN_TTL"],
             )
         for name in ("n8n-task-runner", "n8n-task-runner-worker"):
             self.assertEqual(

@@ -27239,10 +27239,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-01T02:09:03.570902+00:00",
+      "checked_at": "2026-11-01T02:38:58.542836+00:00",
       "source_revision": "5ceed12bc554df55093b4a407255d2c3031d5067",
-      "source_state": "Uncommitted n8n runner start settings in the n8n Compose file on top of this revision (N8N_RUNNERS_GRANT_TOKEN_TTL 120 on main and worker, N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT 0 on both runners); not a current image/build/module/Native acceptance receipt",
-      "input_sha256": "cb83ead1c7e23f6cab90aa3539240cc57fb0f272f05b2aac402ad56a55eef769",
+      "source_state": "Uncommitted n8n runner start settings in the n8n Compose file on top of this revision (N8N_RUNNERS_GRANT_TOKEN_TTL default 120 on main and worker, N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT 0 on both runners); not a current image/build/module/Native acceptance receipt",
+      "input_sha256": "124cddd7130916d7007b765c2e82f3452f2478b7e9c13532715e62ef7199f3c8",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -27259,7 +27259,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "4f2ff92d6160e4139220953a2b18f61deeba42bd1045930f6ef9462c778fe25f"
+          "sha256": "d8bdab08033c85541803bc7313c6dd694e5a28a342646f5889e9dc31d5f39e95"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",

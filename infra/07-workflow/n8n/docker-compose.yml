@@ -33,7 +33,7 @@ x-n8n-common-env: &n8n-common-env
   N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token
   N8N_RUNNERS_TASK_TIMEOUT: 300
   # A cold runner start here took ~40 s, past the 30 s default grant.
-  N8N_RUNNERS_GRANT_TOKEN_TTL: 120
+  N8N_RUNNERS_GRANT_TOKEN_TTL: ${N8N_RUNNERS_GRANT_TOKEN_TTL:-120}
 
   N8N_ENCRYPTION_KEY_FILE: /run/secrets/n8n_encryption_key
   N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true

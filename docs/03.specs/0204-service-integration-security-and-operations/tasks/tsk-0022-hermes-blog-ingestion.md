@@ -1473,7 +1473,7 @@ start takes 4.6 s wall for 2.3 s CPU, so it is CPU-bound. A cold start also
 reads about 35,000 runner files through overlayfs while the host swaps (5.9 GiB
 of swap in use), and that kernel time counts against the same cap. The default
 15 s idle shutdown makes a once-a-day run start cold every time. Fix with no
-resource-policy change: `N8N_RUNNERS_GRANT_TOKEN_TTL: 120` on main and worker,
+resource-policy change: `N8N_RUNNERS_GRANT_TOKEN_TTL` (default 120, written as an interpolation so the Compose secret-literal policy does not misread the `TOKEN` name) on main and worker,
 `N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: 0` on both runners (n8n 2.43.6 reads both;
 `task-runner.js:87` treats 0 as no idle shutdown). Evidence: compose contract
 test RED then GREEN. Applying it means recreating n8n, n8n-worker (with
