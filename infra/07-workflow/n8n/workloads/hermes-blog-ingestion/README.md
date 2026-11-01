@@ -1,6 +1,6 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.3.5"
+version: "0.3.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -326,6 +326,11 @@ python3 -I -m publisher.cli attest-queue \
   `/etc/hermes-attester/environment`를 만든 뒤 한 번 수동 실행해 통과할 때만 timer를 켭니다
   (실패하면 timer를 멈춥니다). `bash deploy/update-hermes-plugin.sh`는 같은 기준의 플러그인을
   Hermes 사용자에게 설치하고 Cron이 도는 `hermes-gateway.service`를 재시작합니다.
+  `bash deploy/update-cron-prompts.sh`는 플러그인이 허용한 Cron 세 개의 직접 제출 문단만
+  `deploy/research-submission-prompt.txt`로 바꿉니다. 문단 앞의 보고서·메일 지시, 주기, 전달 대상은 그대로입니다.
+- 플러그인은 n8n과 같은 필드 집합만 받고, 항목마다 기사 제목·40자 이상 요약을 요구하며
+  보고서 제목·`Report submitted` 같은 자리표시 문구와 원문 URL 없는 인용을 Hermes 안에서 거부합니다.
+  출처 검증 규칙(`publisher/source_check.py`)은 바꾸지 않습니다.
 
 Windows B와 서버 A 호스트는 `blog-export.hy.home.arpa`의 정확한 경로만 씁니다.
 Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만 연결되고

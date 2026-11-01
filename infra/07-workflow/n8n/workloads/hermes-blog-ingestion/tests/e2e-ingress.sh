@@ -334,13 +334,15 @@ body 'len(b["items"]) == 1'
 export_id=$(field "$work/body" 'b["items"][0]["export_id"]')
 call 200 "manifest readable" -H "$read" "$xb/v1/exports/$export_id"
 cp "$work/body" "$work/manifest"
+# Export 2.0 (Blog-data ADR-0087): one JSON record the receiver renders itself.
+body 'b["schema_version"] == "2.0" and [f["mode"] for f in b["files"]] == ["record"]'
 files=$(field "$work/manifest" '" ".join(str(f["seq"]) for f in b["files"])')
 for seq in $files; do
   [ "$(post -H "$read" "$xb/v1/exports/$export_id/files/$seq")" = 200 ] || fail "file $seq"
-  python3 -c 'import hashlib,json,sys; m=json.load(open(sys.argv[1])); f=[x for x in m["files"] if x["seq"]==int(sys.argv[3])][0]; raw=open(sys.argv[2],"rb").read(); raw.decode("utf-8"); assert (hashlib.sha256(raw).hexdigest(), len(raw)) == (f["markdown_sha256"], f["byte_length"])' \
+  python3 -c 'import hashlib,json,sys; m=json.load(open(sys.argv[1])); f=[x for x in m["files"] if x["seq"]==int(sys.argv[3])][0]; raw=open(sys.argv[2],"rb").read(); json.loads(raw.decode("utf-8")); assert (hashlib.sha256(raw).hexdigest(), len(raw)) == (f["sha256"], f["byte_length"])' \
     "$work/manifest" "$work/body" "$seq" || fail "file $seq differs from its manifest entry"
 done
-ok "every Resource file ($files) matches its manifest SHA-256, length and UTF-8"
+ok "the Export 2.0 record ($files) matches its manifest SHA-256 and length and parses as UTF-8 JSON"
 python3 - "$work/manifest" "$work" <<'PY'
 import json, sys, uuid
 m = json.load(open(sys.argv[1]))
