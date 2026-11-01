@@ -17,6 +17,7 @@ import hashlib
 import http.client
 import io
 import ipaddress
+import os
 import socket
 import ssl
 import time
@@ -29,7 +30,8 @@ MAX_BYTES = 2 * 1024 * 1024
 MAX_REDIRECTS = 5
 MAX_URL = 2048
 TIMEOUT = 20.0
-ZONE = "hy.home.arpa"
+# Internal names are refused before DNS; the site sets its own zone.
+ZONE = os.environ.get("HERMES_INTERNAL_ZONE", "hy.home.arpa").lower().rstrip(".")
 REDIRECTS = (301, 302, 303, 307, 308)
 CHUNK = 64 * 1024
 _SAFE = "/%:@!$&'()*+,;=-._~"

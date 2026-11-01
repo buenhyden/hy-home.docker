@@ -7,7 +7,7 @@
 http:
   routers:
     hermes-dashboard:
-      rule: "Host(`hermes.hy.home.arpa`)"
+      rule: 'Host(`hermes.{{ env "DEFAULT_URL" }}`)'
       entrypoints: websecure
       tls: true
       service: hermes-dashboard

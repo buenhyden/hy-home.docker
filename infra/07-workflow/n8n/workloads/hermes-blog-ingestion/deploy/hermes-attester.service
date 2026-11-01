@@ -5,6 +5,9 @@
 # and its two secret files are hermes-attester 0600: the auth-header reader
 # refuses a parent directory the account does not own. StateDirectory creates
 # and owns the two writable paths.
+# /etc/hermes-attester/environment (root-written, not secret) carries the site:
+# HERMES_GATEWAY_URL=https://blog-export.<DEFAULT_URL> and
+# HERMES_INTERNAL_ZONE=<DEFAULT_URL>. It is required; without it the unit fails.
 [Unit]
 Description=Hermes attester: attest queued Blog-data reports
 After=network-online.target
@@ -14,7 +17,8 @@ Wants=network-online.target
 Type=oneshot
 User=hermes-attester
 Group=hermes-attester
-ExecStart=/opt/hermes-attester/current/venv/bin/python -I -m publisher.cli attest-queue --gateway https://blog-export.hy.home.arpa --auth-header-file /etc/hermes-attester/auth-header --signing-key /etc/hermes-attester/signing-key --key-id hermes-attester-1 --state-dir /var/lib/hermes-attester/state --evidence-dir /var/lib/hermes-attester/evidence
+EnvironmentFile=/etc/hermes-attester/environment
+ExecStart=/opt/hermes-attester/current/venv/bin/python -I -m publisher.cli attest-queue --gateway ${HERMES_GATEWAY_URL} --auth-header-file /etc/hermes-attester/auth-header --signing-key /etc/hermes-attester/signing-key --key-id hermes-attester-1 --state-dir /var/lib/hermes-attester/state --evidence-dir /var/lib/hermes-attester/evidence
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=yes

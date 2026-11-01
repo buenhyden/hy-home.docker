@@ -47,7 +47,7 @@ class DeployUnitTests(unittest.TestCase):
         flags = dict(zip(argv[5::2], argv[6::2], strict=True))
         self.assertEqual(
             {
-                "--gateway": "https://blog-export.hy.home.arpa",
+                "--gateway": "${HERMES_GATEWAY_URL}",
                 "--auth-header-file": "/etc/hermes-attester/auth-header",
                 "--signing-key": "/etc/hermes-attester/signing-key",
                 "--key-id": "hermes-attester-1",
@@ -55,6 +55,13 @@ class DeployUnitTests(unittest.TestCase):
                 "--evidence-dir": "/var/lib/hermes-attester/evidence",
             },
             flags,
+        )
+
+    def test_site_values_come_from_a_required_environment_file(self):
+        # No "-" prefix: a missing file stops the unit instead of running blind.
+        unit, _ = parse("hermes-attester.service")
+        self.assertEqual(
+            "/etc/hermes-attester/environment", unit["Service"]["EnvironmentFile"]
         )
 
     def test_timer_runs_every_five_minutes(self):

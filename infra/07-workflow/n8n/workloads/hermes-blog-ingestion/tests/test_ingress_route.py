@@ -5,9 +5,9 @@ import unittest
 from pathlib import Path
 
 import yaml
+from traefik_template import LIVE, SAMPLE, rendered
 
 WORKLOAD = Path(__file__).resolve().parents[1]
-LIVE = WORKLOAD.parents[3] / "01-gateway/traefik/dynamic"
 ROUTE = LIVE / "hermes-webhook.yml"
 STANDARD = "gateway-standard-chain@file"
 
@@ -16,7 +16,7 @@ class IngressRouteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.text = ROUTE.read_text(encoding="utf-8")
-        cls.http = yaml.safe_load(cls.text)["http"]
+        cls.http = yaml.safe_load(rendered(cls.text))["http"]
         workflow = json.loads((WORKLOAD / "workflow.json").read_text())
         ingress = next(
             n for n in workflow["nodes"] if n["name"] == "Authenticated Ingress"
@@ -32,7 +32,7 @@ class IngressRouteTests(unittest.TestCase):
         (name,) = self.http["routers"]
         router = self.http["routers"][name]
         self.assertEqual(
-            "Host(`n8n.hy.home.arpa`) && Path(`" + self.path + "`) && Method(`POST`)",
+            f"Host(`n8n.{SAMPLE['DEFAULT_URL']}`) && Path(`{self.path}`) && Method(`POST`)",
             router["rule"],
         )
         self.assertEqual(["websecure"], router["entryPoints"])
@@ -51,9 +51,11 @@ class IngressRouteTests(unittest.TestCase):
         self.assertEqual(set(local), set(middlewares))
         kinds = {next(iter(m)): m[next(iter(m))] for m in middlewares.values()}
         self.assertEqual({"ipAllowList", "buffering", "rateLimit"}, set(kinds))
-        # Measured on live Traefik: a host process dialling 192.168.0.13:443
-        # arrives as 192.168.0.13; LAN clients keep their own address.
-        self.assertEqual(["192.168.0.13/32"], kinds["ipAllowList"]["sourceRange"])
+        # Measured on live Traefik: a host process dialling the published
+        # HOST_LAN_BIND_IP:443 arrives as that address; LAN clients keep theirs.
+        self.assertEqual(
+            [f"{SAMPLE['HOST_LAN_BIND_IP']}/32"], kinds["ipAllowList"]["sourceRange"]
+        )
         self.assertEqual(0, kinds["ipAllowList"]["ipStrategy"]["depth"])
         # The Gateway rejects bodies above 1 MiB; stop them at the edge.
         self.assertEqual(1048576, kinds["buffering"]["maxRequestBodyBytes"])

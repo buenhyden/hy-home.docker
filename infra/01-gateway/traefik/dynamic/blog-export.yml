@@ -15,7 +15,7 @@
 http:
   routers:
     blog-export-read:
-      rule: Host(`blog-export.hy.home.arpa`) && Method(`GET`) && (Path(`/v1/exports`) || PathRegexp(`^/v1/exports/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(/files/[0-9]{1,3})?$`))
+      rule: Host(`blog-export.{{ env "DEFAULT_URL" }}`) && Method(`GET`) && (Path(`/v1/exports`) || PathRegexp(`^/v1/exports/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(/files/[0-9]{1,3})?$`))
       entryPoints:
         - websecure
       tls: {}
@@ -25,7 +25,7 @@ http:
         - blog-export-rate
       service: blog-ingestion-export
     blog-export-ack:
-      rule: Host(`blog-export.hy.home.arpa`) && Method(`POST`) && PathRegexp(`^/v1/exports/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/acks$`)
+      rule: Host(`blog-export.{{ env "DEFAULT_URL" }}`) && Method(`POST`) && PathRegexp(`^/v1/exports/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/acks$`)
       entryPoints:
         - websecure
       tls: {}
@@ -36,7 +36,7 @@ http:
         - blog-export-small-body
       service: blog-ingestion-export
     blog-attestation:
-      rule: Host(`blog-export.hy.home.arpa`) && Method(`POST`) && PathRegexp(`^/v1/ingestions/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/attestations$`)
+      rule: Host(`blog-export.{{ env "DEFAULT_URL" }}`) && Method(`POST`) && PathRegexp(`^/v1/ingestions/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/attestations$`)
       entryPoints:
         - websecure
       tls: {}
@@ -47,7 +47,7 @@ http:
         - blog-attestation-body
       service: blog-ingestion-export
     blog-attestation-read:
-      rule: Host(`blog-export.hy.home.arpa`) && Method(`GET`) && (Path(`/v1/attestation-queue`) || PathRegexp(`^/v1/ingestions/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/request$`))
+      rule: Host(`blog-export.{{ env "DEFAULT_URL" }}`) && Method(`GET`) && (Path(`/v1/attestation-queue`) || PathRegexp(`^/v1/ingestions/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/request$`))
       entryPoints:
         - websecure
       tls: {}
@@ -59,18 +59,19 @@ http:
 
   middlewares:
     # Server B, measured as its own LAN address (no proxy in between).
+    # Site values come from the Traefik environment (Compose and .env).
     blog-export-windows:
       ipAllowList:
         sourceRange:
-          - 192.168.0.22/32
+          - '{{ env "BLOG_EXPORT_RECEIVER_IP" }}/32'
         ipStrategy:
           depth: 0
-    # A server-A host process dialling 192.168.0.13:443 arrives as
-    # 192.168.0.13 (measured for the Hermes webhook on 2026-10-31).
+    # A server-A host process dialling the published HOST_LAN_BIND_IP:443
+    # arrives as that address (measured for the Hermes webhook on 2026-10-31).
     blog-attestation-host:
       ipAllowList:
         sourceRange:
-          - 192.168.0.13/32
+          - '{{ env "HOST_LAN_BIND_IP" }}/32'
         ipStrategy:
           depth: 0
     # ACK bodies are a few hundred bytes.
