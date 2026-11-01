@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.8"
+version: "0.5.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1558,6 +1558,22 @@ diagnosis with the new rule passes the two Google Cloud items and still holds
 attestation; the rule applies to later reports after the attester release is
 reinstalled.
 
+### Windows receive and ACK — 2026-11-01
+
+The owner reinstalled the attester at `5068fd95` (#713); `/opt/hermes-attester/current`
+points at it, its `source_check.py` carries the new first-word rule, and the
+timer keeps returning `Result=success`. Server B (`192.168.0.22`) ran the
+receiver for real at 13:18–13:19 KST: Traefik shows `GET /v1/exports?state=ready`
+(683 bytes), the file downloads of both exports and `POST …/acks` answered 201
+for `7dfb3356-c8c9-46b7-b98a-0b908ffba439` and
+`9e3dd0bd-8319-4e47-a816-875d3aedf935`. The Gateway lists both as
+`acknowledged` (read-only query); 12 rows stay `held`. A later B dry run
+(`receive-hermes-exports.ps1 -DryRun`) reported `planned: []` because nothing
+was `ready` any more. Per RUN-0053 step 14, Gateway `acknowledged` is the
+Windows storage signal; the Vault files themselves were not inspected from
+server A. Open: B's scheduled task registration and the restart/restore
+checks of step 15.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -1583,7 +1599,7 @@ reinstalled.
 | Direct path source | 23 | W83 | Workflow path/URL, Gateway service isolation, exact-path route | Workload suite, wiring and Compose baseline tests | PASS | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
 | Direct path disposable E2E | 23 | W83 | Host → Traefik → native n8n → built Gateway → SQLite, failure and boundary cases | Synthetic tokens, disposable containers | PASS | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
 | Direct path operational | 23 | W83 | Live Gateway, credentials, publication, Traefik route, Hermes plugin | Gateway, Worker network, credentials, publication and route applied 2026-11-01; Hermes URL and a real Cron submission pending | NOT_RUN | Hermes host direct path with the Gateway on server A — 2026-10-31 | required | - |
-| Windows Export and ACK | 23 | W83 | B pull, Vault write, verified ACK | Blocked: receiver on server B not run; route live since 2026-11-01, Export closed until the trust adapter exists | NOT_RUN | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
+| Windows Export and ACK | 23 | W83 | B pull, Vault write, verified ACK | Real receiver run from `192.168.0.22`; two exports downloaded and ACK 201; Gateway `acknowledged` | PASS | Windows receive and ACK — 2026-11-01 | required | - |
 | Gateway `dev` pin and image | 23 | W83 | Exact `dev` commit, Dockerfile allowlist build, templates present, export API live | Blog-data `a43d824`, production image ID `sha256:e513b938…`, `resource-export/2+f45cc9bbc0a4` | PASS | Server A operational rollout — 2026-11-01 | required | - |
 | Attester source | 23 | W83 | attestation/2 vectors, SSRF-guarded fetch, item checks, queue attester retry/resend/quarantine, deploy units | Synthetic keys, fixtures and fake fetcher; `publisher.cli attest-queue` replaces `attest` | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Attestation/Export/ACK disposable E2E | 23 | W83 | Item-level attest → ready/held → pull → hash check → ACK, forged, scope, read-route and restart cases | Synthetic tokens and keys, fake fetcher, disposable containers at `b372de374e`; 53 PASS, 0 FAIL | PASS | Item-level attester implementation — 2026-11-01 | required | - |
