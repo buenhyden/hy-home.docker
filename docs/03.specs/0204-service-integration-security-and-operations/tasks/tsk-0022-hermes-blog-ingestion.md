@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.9"
+version: "0.5.10"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1573,6 +1573,32 @@ was `ready` any more. Per RUN-0053 step 14, Gateway `acknowledged` is the
 Windows storage signal; the Vault files themselves were not inspected from
 server A. Open: B's scheduled task registration and the restart/restore
 checks of step 15.
+
+### Site values from the environment — 2026-11-01
+
+The Hermes routes and the attester no longer carry this site's addresses.
+`blog-export.yml`, `hermes-webhook.yml` and `hermes.yml` read their hosts and
+sources through Traefik file-provider templates (`{{ env "DEFAULT_URL" }}`,
+`{{ env "HOST_LAN_BIND_IP" }}`, `{{ env "BLOG_EXPORT_RECEIVER_IP" }}`); the
+Traefik service receives the three from Compose with the previous values as
+defaults, and `.env.example` declares the new `BLOG_EXPORT_RECEIVER_IP`. The
+attester unit takes `--gateway ${HERMES_GATEWAY_URL}` from a required
+`EnvironmentFile=/etc/hermes-attester/environment`, which the install script
+derives from `DEFAULT_URL` in `.env`; `source_fetch` reads
+`HERMES_INTERNAL_ZONE` with the previous zone as default. Nothing is written to
+shell rc files. Evidence: route, unit and zone tests RED then GREEN; workload
+suite 305 OK; gateway, public-environment, runtime and version-bundle
+validation 184 OK; conftest 7/7; operations catalog PASS. Runtime checks in
+disposable `--network none` containers of the live Traefik image: with the
+previous values the loaded routers (6), middlewares (22) and services (3) equal
+those of the current main files; other values render (`blog-export.example.test`,
+`10.0.0.22/32`); an unset source disables only its routers (`invalid CIDR`).
+`systemd-analyze verify` passes; a transient unit expands `${HERMES_GATEWAY_URL}`
+from the file, refuses to start without it, and `python -I` reads
+`HERMES_INTERNAL_ZONE`. Not applied: the live `.env` needs
+`BLOG_EXPORT_RECEIVER_IP` (owner; agent access to `.env` is denied), Traefik
+needs a recreation to receive the environment, and the attester reinstall
+writes the environment file.
 
 ## Evidence
 
