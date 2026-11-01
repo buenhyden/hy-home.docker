@@ -26,11 +26,24 @@ MODULES = (
     "gateway_adapter", "gateway_transport", "http_transport", "outbox",
     "policy", "trust",
 )  # fmt: skip
-FILES = {
-    *(f"publisher/{name}.py" for name in MODULES),
-    "publisher/producer-keys.json",
-    "requirements.lock",
+# The attester runs as its own account from its own prefix; only its release
+# carries the signing and source-fetching modules.
+ATTESTER_MODULES = ("attestation", "attester", "source_check", "source_fetch")
+PREFIX = {
+    "publisher": Path("/opt/hermes-publisher"),
+    "attester": Path("/opt/hermes-attester"),
 }
+
+
+def role_files(role):
+    modules = MODULES + (ATTESTER_MODULES if role == "attester" else ())
+    return {
+        *(f"publisher/{name}.py" for name in modules),
+        "publisher/producer-keys.json",
+        "requirements.lock",
+    }
+
+
 COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 
 
@@ -59,7 +72,7 @@ def _directory(path):
             _fail(f"{item} is not a directory")
 
 
-def _members(archive):
+def _members(archive, wanted):
     """Read the allowlisted files of a root-only `git archive` tar."""
     for item in archive.parents:
         _root_only(item, os.lstat(item))
@@ -76,12 +89,12 @@ def _members(archive):
             files = {}
             for member in tar.getmembers():
                 name = member.name.removeprefix(WORKLOAD)
-                if member.name.startswith(WORKLOAD) and name in FILES:
+                if member.name.startswith(WORKLOAD) and name in wanted:
                     if name in files or not member.isfile():
                         _fail(f"ambiguous archive member {name}")
                     files[name] = tar.extractfile(member).read()
-    if set(files) != FILES:
-        _fail("archive lacks Publisher files")
+    if set(files) != wanted:
+        _fail("archive lacks release files")
     return commit, files
 
 
@@ -102,15 +115,16 @@ def _seal(path):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path, required=True)
-    parser.add_argument("--prefix", type=Path, default=Path("/opt/hermes-publisher"))
+    parser.add_argument("--role", choices=sorted(PREFIX), default="publisher")
+    parser.add_argument("--prefix", type=Path, help="default: /opt/hermes-<role>")
     parser.add_argument("--python", default="/usr/bin/python3")
     parser.add_argument("--find-links", type=Path, help="offline wheel directory")
     args = parser.parse_args(argv)
     if os.geteuid() != 0 or not sys.flags.isolated:
         _fail("run as root with python3 -I")
     os.umask(0o022)
-    commit, files = _members(args.archive.absolute())
-    releases = args.prefix / "releases"
+    commit, files = _members(args.archive.absolute(), role_files(args.role))
+    releases = (args.prefix or PREFIX[args.role]) / "releases"
     final, staging = releases / commit, releases / f".{commit}.partial"
     if final.exists():
         _fail("release already installed; releases are immutable")

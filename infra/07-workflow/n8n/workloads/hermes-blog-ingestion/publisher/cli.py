@@ -13,7 +13,7 @@ import sqlite3
 import stat
 from pathlib import Path
 
-from . import attestation, attester, trust
+from . import trust
 from .candidates import EXPORT_NAME, JOBS, load_candidate, load_validator
 from .delivery import DispatchRequest, TransportFailure, process_one
 from .files import InputError, open_directory, safe_read
@@ -173,6 +173,9 @@ def _dispatch(args, box):
 
 
 def _attest_queue(args):
+    # Only the attester release ships these modules (install.py --role attester).
+    from . import attestation, attester
+
     auth = _auth(args.auth_header_file)
     key = attestation.load_signing_key(args.signing_key)
     gateway = args.gateway.rstrip("/")
@@ -252,7 +255,7 @@ def main(argv=None):
     if args.command == "attest-queue":
         try:
             result = _attest_queue(args)
-        except (ValueError, OSError):
+        except (ValueError, OSError, ImportError):
             print('{"error":"operation_rejected"}')
             return 1
         print(json.dumps(result, sort_keys=True))

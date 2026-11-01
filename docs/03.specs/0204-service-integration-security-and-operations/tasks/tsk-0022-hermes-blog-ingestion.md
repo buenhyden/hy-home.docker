@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.2"
+version: "0.5.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1407,6 +1407,25 @@ returned a dict on every path. Nothing reached the plugin Outbox, Traefik or n8n
 passed. Fix: the registered handler returns `json.dumps(...)` of the unchanged
 result, plugin 0.2.1, with handler-result contract tests. The installed plugin is
 updated only after merge, and the hash comparison is repeated then.
+
+### Attester release role — 2026-11-01
+
+Preparing deploy unit 7 found two defects. `install.py` shipped only Publisher
+modules, so no release could run `attest-queue`; and `cli.py` imported
+`attestation` and `attester` at top level, so a Publisher release built from
+`main` could not import its CLI (reproduced by `tests/install-check.sh`:
+`ImportError: cannot import name 'attestation'`). No release was installed in
+production, so nothing live broke. Fix: `install.py --role attester` installs a
+separate release under `/opt/hermes-attester` with `attestation`, `attester`,
+`source_check` and `source_fetch`; the Publisher role is unchanged; `cli.py`
+imports the attester modules only inside `attest-queue` and a Publisher release
+answers `operation_rejected`; the unit runs `/opt/hermes-attester/current`.
+Secret ownership is corrected to `hermes-attester` 0700/0600, as the auth-header
+reader requires. Evidence: `tests/test_release_roles.py` 7/7 (RED then GREEN),
+`tests/install-check.sh` 21/21 PASS including four attester-role checks.
+Operations so far on server A: Gateway on `b372` schema 4, workflow
+republished, attester account, key and `attest`+`read` credential created,
+`export_enabled:true`; release install and timer NOT_RUN.
 
 ## Evidence
 

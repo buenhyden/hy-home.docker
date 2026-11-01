@@ -41,7 +41,7 @@ check() { [ "$1" = "$2" ] || { echo "FAIL $3: $1"; exit 1; }; echo "PASS $3"; }
 check "$(verify)" "$ok" "dedicated account loads the protected release"
 (cd "$site" && sha256sum --quiet -c "$release/MANIFEST.sha256") || { echo "FAIL manifest"; exit 1; }
 echo "PASS installed files match the archive manifest"
-for name in acquirer producer_sealer; do
+for name in acquirer producer_sealer attestation attester source_check source_fetch; do
   if [ -e "$site/publisher/$name.py" ]; then echo "FAIL producer module $name installed"; exit 1; fi
 done
 echo "PASS only the Publisher module allowlist is installed"
@@ -72,4 +72,21 @@ if python3 -I "$installer" --archive /root/release.tar --python "$python" 2>/dev
   echo "FAIL reinstall overwrote a release"; exit 1
 fi
 echo "PASS releases are immutable"
+
+# The attester role: its own account and prefix, plus the signing and fetching modules.
+useradd --system --no-create-home hermes-attester
+arelease=$(python3 -I "$installer" --role attester --archive /root/release.tar --python "$python")
+case "$arelease" in /opt/hermes-attester/releases/*) echo "PASS attester release under its own prefix";;
+  *) echo "FAIL attester release at $arelease"; exit 1;; esac
+asite=$("$arelease/venv/bin/python" -I -c "import sysconfig; print(sysconfig.get_path(\"purelib\"))")
+for name in attestation attester source_check source_fetch; do
+  [ -e "$asite/publisher/$name.py" ] || { echo "FAIL attester module $name missing"; exit 1; }
+done
+echo "PASS attester release carries the attester modules"
+runuser -u hermes-attester -- "$arelease/venv/bin/python" -I -m publisher.cli attest-queue --help >/dev/null \
+  || { echo "FAIL attester account cannot run attest-queue"; exit 1; }
+echo "PASS attester account runs attest-queue from the release"
+refusal=$(runuser -u hermes-publisher -- "$venv/bin/python" -I -m publisher.cli attest-queue --gateway https://g.example \
+  --auth-header-file /nonexistent --signing-key /nonexistent --key-id x --state-dir /tmp/s --evidence-dir /tmp/e 2>&1 || true)
+check "$refusal" "{\"error\":\"operation_rejected\"}" "Publisher release refuses attest-queue"
 '
